@@ -440,14 +440,9 @@ class GoodsMercuryInfoViewModel : CoreViewModel(), OnPositionClickListener {
 
     fun onBackPressed() {
         if (processMercuryProductService.modifications()) {
-            screenNavigator.openUnsavedDataDialog(
-                    yesCallbackFunc = {
-                        screenNavigator.goBack()
-                    }
-            )
-        } else {
-            screenNavigator.goBack()
+            processMercuryProductService.save()
         }
+        screenNavigator.goBack()
     }
 
     fun onClickUnitChange() {
