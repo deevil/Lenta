@@ -117,7 +117,8 @@ class TaskCardViewModel : CoreViewModel(), PageSelectionListener {
 
     val visibilityNextBtn by lazy {
         MutableLiveData(taskManager.getReceivingTask()?.taskDescription?.currentStatus.let {
-            !(taskType == TaskType.ShipmentRC && (it == TaskStatus.ShipmentSentToGis || it == TaskStatus.ShipmentRejectedByGis || it == TaskStatus.Departure || it == TaskStatus.Completed)  )
+            !(taskType == TaskType.ShipmentRC && (it == TaskStatus.ShipmentSentToGis || it == TaskStatus.ShipmentRejectedByGis || it == TaskStatus.Departure || it == TaskStatus.Completed)) ||
+                    it == TaskStatus.Completed
         })
     }
 
