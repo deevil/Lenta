@@ -26,6 +26,7 @@ class CreateTaskManager @Inject constructor(
     override fun addGood(goodInfo: GoodInfoResult) {
         task.value?.let { changedTask ->
             changedTask.goods.add(0, Good(
+                    ean = "000",
                     material = "111",
                     name = "222"
             ))
@@ -34,6 +35,18 @@ class CreateTaskManager @Inject constructor(
             task.value = changedTask
         }
     }
+
+    override fun isGoodWasAdded(ean: String?, material: String?): Boolean {
+        task.value?.goods?.find { good ->
+            if (ean != null) good.ean == ean else good.material == material
+        }?.let {
+            currentGood.value = it
+            return true
+        }
+
+        return false
+    }
+
 }
 
 
@@ -42,5 +55,6 @@ interface ICreateTaskManager {
     fun getTask(): MutableLiveData<CreateTask>
     fun updateTask(createTask: CreateTask)
     fun addGood(goodInfo: GoodInfoResult)
+    fun isGoodWasAdded(ean: String? = null, material: String? = null): Boolean
 
 }

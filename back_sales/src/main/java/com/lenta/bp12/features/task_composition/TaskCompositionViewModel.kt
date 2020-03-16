@@ -107,10 +107,10 @@ class TaskCompositionViewModel : CoreViewModel(), PageSelectionListener, OnOkInS
         analyseCode(
                 code = number,
                 funcForEan = { ean ->
-                    getGoodByEan(ean)
+                    openGoodInfo(ean)
                 },
                 funcForMatNr = { material ->
-                    getGoodByMaterial(material)
+                    openGoodInfo(material)
                 },
                 funcForSapOrBar = navigator::showTwelveCharactersEntered,
                 funcForNotValidFormat = ::notValidNumber
@@ -149,26 +149,29 @@ class TaskCompositionViewModel : CoreViewModel(), PageSelectionListener, OnOkInS
         }
     }*/
 
-    private fun getGoodByEan(ean: String) {
+    private fun openGoodInfo(ean: String? = null, material: String? = null) {
+        require((ean != null) xor (material != null)) {
+            "Only one param allowed - ean: $ean, material: $material"
+        }
 
-    }
+        if (manager.isGoodWasAdded(ean = ean, material = material)) {
+            navigator.openGoodInfoScreen()
+        } else {
+            viewModelScope.launch {
+                navigator.showProgressLoadingData()
 
-    private fun getGoodByMaterial(material: String) {
-        Logg.d { "getGoodByMaterial - $material" }
-        viewModelScope.launch {
-            navigator.showProgressLoadingData()
-
-            goodInfoNetRequest(GoodInfoParams(
-                    tkNumber = sessionInfo.market ?: "Not found!",
-                    ean = "",
-                    material = material,
-                    bpCode = "BKS",
-                    taskType = task.value!!.type.type
-            )).also {
-                navigator.hideProgress()
-            }.either(::handleFailure) { goodInfo ->
-                manager.addGood(goodInfo)
-                navigator.openGoodInfoScreen()
+                goodInfoNetRequest(GoodInfoParams(
+                        tkNumber = sessionInfo.market ?: "Not found!",
+                        ean = ean ?: "",
+                        material = material ?: "",
+                        bpCode = "BKS",
+                        taskType = task.value!!.type.type
+                )).also {
+                    navigator.hideProgress()
+                }.either(::handleFailure) { goodInfo ->
+                    manager.addGood(goodInfo)
+                    navigator.openGoodInfoScreen()
+                }
             }
         }
     }
