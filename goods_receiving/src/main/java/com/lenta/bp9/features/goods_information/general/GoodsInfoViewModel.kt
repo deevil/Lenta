@@ -17,6 +17,7 @@ import com.lenta.shared.models.core.Uom
 import com.lenta.shared.platform.time.ITimeMonitor
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo.Companion.add
 import com.lenta.shared.platform.viewmodel.CoreViewModel
+import com.lenta.shared.requests.combined.scan_info.ScanInfoResult
 import com.lenta.shared.requests.combined.scan_info.pojo.QualityInfo
 import com.lenta.shared.requests.combined.scan_info.pojo.ReasonRejectionInfo
 import com.lenta.shared.utilities.Logg
@@ -219,6 +220,8 @@ class GoodsInfoViewModel : CoreViewModel(), OnPositionClickListener {
 
     init {
         viewModelScope.launch {
+            searchProductDelegate.init(viewModelScope = this@GoodsInfoViewModel::viewModelScope,
+                    scanResultHandler = this@GoodsInfoViewModel::handleProductSearchResult)
             if (taskManager.getReceivingTask()?.taskHeader?.taskType == TaskType.RecalculationCargoUnit) {
                 paramGrwOlGrundcat.value = dataBase.getParamGrwOlGrundcat() ?: ""
                 paramGrwUlGrundcat.value = dataBase.getParamGrwUlGrundcat() ?: ""
@@ -284,12 +287,17 @@ class GoodsInfoViewModel : CoreViewModel(), OnPositionClickListener {
         }
     }
 
+    private fun handleProductSearchResult(@Suppress("UNUSED_PARAMETER") scanInfoResult: ScanInfoResult?): Boolean {
+        screenNavigator.goBack()
+        return false
+    }
+
     fun onClickDetails() {
         screenNavigator.openGoodsDetailsScreen(productInfo.value!!)
     }
 
     fun onScanResult(data: String) {
-        searchProductDelegate.searchCode(code = data, fromScan = true)
+        searchProductDelegate.searchCode(code = data, fromScan = true, isBarCode = true)
     }
 
     override fun onClickPosition(position: Int) {

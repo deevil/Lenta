@@ -16,6 +16,7 @@ import com.lenta.bp9.repos.IRepoInMemoryHolder
 import com.lenta.shared.models.core.Uom
 import com.lenta.shared.platform.time.ITimeMonitor
 import com.lenta.shared.platform.viewmodel.CoreViewModel
+import com.lenta.shared.requests.combined.scan_info.ScanInfoResult
 import com.lenta.shared.requests.combined.scan_info.pojo.QualityInfo
 import com.lenta.shared.requests.combined.scan_info.pojo.ReasonRejectionInfo
 import com.lenta.shared.utilities.Logg
@@ -223,6 +224,8 @@ class GoodsMercuryInfoViewModel : CoreViewModel(), OnPositionClickListener {
 
     init {
         viewModelScope.launch {
+            searchProductDelegate.init(viewModelScope = this@GoodsMercuryInfoViewModel::viewModelScope,
+                    scanResultHandler = this@GoodsMercuryInfoViewModel::handleProductSearchResult)
             currentDate.value = timeMonitor.getServerDate()
             if (taskManager.getReceivingTask()?.taskHeader?.taskType == TaskType.RecalculationCargoUnit) {
                 when {
@@ -276,6 +279,11 @@ class GoodsMercuryInfoViewModel : CoreViewModel(), OnPositionClickListener {
                 screenNavigator.openAlertWrongProductType()
             }
         }
+    }
+
+    private fun handleProductSearchResult(@Suppress("UNUSED_PARAMETER") scanInfoResult: ScanInfoResult?): Boolean {
+        screenNavigator.goBack()
+        return false
     }
 
     override fun onClickPosition(position: Int) {
@@ -435,7 +443,7 @@ class GoodsMercuryInfoViewModel : CoreViewModel(), OnPositionClickListener {
     }
 
     fun onScanResult(data: String) {
-        searchProductDelegate.searchCode(code = data, fromScan = true)
+        searchProductDelegate.searchCode(code = data, fromScan = true, isBarCode = true)
     }
 
     fun onBackPressed() {

@@ -213,32 +213,29 @@ class SearchProductDelegate @Inject constructor(
     }
 
     private fun openProductScreen(taskProductInfo: TaskProductInfo, initialCount: Double = 0.0) {
-        viewModelScope().launch {
-            if (taskProductInfo.isNotEdit) {
-                screenNavigator.openGoodsDetailsScreen(taskProductInfo)
-            } else {
-                when (taskProductInfo.type) {
-                    ProductType.General -> {
-                        if (taskProductInfo.isVet) {
-                            screenNavigator.openGoodsMercuryInfoScreen(taskProductInfo, isDiscrepancy)
-                        } else {
-                            screenNavigator.openGoodsInfoScreen(productInfo = taskProductInfo, isDiscrepancy = isDiscrepancy, initialCount = initialCount)
-                        }
+        if (taskProductInfo.isNotEdit) {
+            screenNavigator.openGoodsDetailsScreen(taskProductInfo)
+        } else {
+            when (taskProductInfo.type) {
+                ProductType.General -> {
+                    if (taskProductInfo.isVet) {
+                        screenNavigator.openGoodsMercuryInfoScreen(taskProductInfo, isDiscrepancy)
+                    } else {
+                        screenNavigator.openGoodsInfoScreen(productInfo = taskProductInfo, isDiscrepancy = isDiscrepancy, initialCount = initialCount)
                     }
-                    ProductType.ExciseAlcohol -> {
-                        if (taskProductInfo.isSet) {
-                            screenNavigator.openNotImplementedScreenAlert("Информация о наборе")
-                            //screenNavigator.openSetsInfoScreen(taskProductInfo)
-                        } else
-                            screenNavigator.openExciseAlcoInfoScreen(taskProductInfo)
-                    }
-                    ProductType.NonExciseAlcohol -> screenNavigator.openNonExciseAlcoInfoScreen(taskProductInfo)
-                    else -> {
-                        screenNavigator.openAlertGoodsNotInOrderScreen() //todo сообщение о неизвестном типе товара?
-                    }
+                }
+                ProductType.ExciseAlcohol -> {
+                    if (taskProductInfo.isSet) {
+                        screenNavigator.openNotImplementedScreenAlert("Информация о наборе")
+                        //screenNavigator.openSetsInfoScreen(taskProductInfo)
+                    } else
+                        screenNavigator.openExciseAlcoInfoScreen(taskProductInfo)
+                }
+                ProductType.NonExciseAlcohol -> screenNavigator.openNonExciseAlcoInfoScreen(taskProductInfo)
+                else -> {
+                    screenNavigator.openAlertGoodsNotInOrderScreen() //todo сообщение о неизвестном типе товара?
                 }
             }
         }
-
     }
 }
