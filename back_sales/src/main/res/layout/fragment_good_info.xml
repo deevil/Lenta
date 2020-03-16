@@ -28,15 +28,12 @@
                     style="@style/LinearCellStyle"
                     android:layout_weight="1">
 
-                    <com.lenta.shared.view.ClickableSpinner
-                        android:id="@+id/spin_quantity_type"
-                        style="@style/CellSpinnerStyle"
-                        android:layout_height="match_parent"
-                        android:enabled="@{vm.quantityTypeEnabled}"
-                        app:items="@{vm.quantityTypeList}"
-                        app:onPositionClickListener="@{vm.onSelectQuantityType}"
-                        app:position="@{vm.quantityTypePosition}"
-                        tools:entries="@array/test_list" />
+                    <EditText
+                        style="@style/CellEditTextStyle"
+                        android:enabled="false"
+                        android:text="@{vm.quantityType}"
+                        android:drawableEnd="@drawable/spinner_arrow_down_disabled"
+                        tools:text="Количество" />
 
                 </LinearLayout>
 
@@ -51,9 +48,9 @@
                         android:drawableEnd="@drawable/ic_bei_12dp"
                         android:enabled="@{vm.quantityEnabled}"
                         android:text="@={vm.quantity}"
-                        app:digitsForUom="@{vm.ui.units}"
-                        app:quantityType="@{vm.ui.quantityType}"
-                        app:suffix="@{vm.ui.unitsName}"
+                        app:digitsForUom="@{vm.good.units}"
+                        app:quantityTypeIcon="@{vm.quantityTypeIcon}"
+                        app:suffix="@{vm.good.units.name}"
                         tools:text="1 шт" />
 
                 </LinearLayout>
@@ -71,13 +68,13 @@
 
                     <TextView
                         style="@style/CellTextStyle"
-                        android:text="@{vm.ui.quantityText1}"
+                        android:text="@{vm.ui.totalQuantityTitle}"
                         android:textColor="@color/color_text_title_header"
                         tools:text="Итого*" />
 
                     <TextView
                         style="@style/CellTextStyle"
-                        android:text="@{vm.ui.quantityText2}"
+                        android:text="@{vm.ui.basketQuantityTitle}"
                         android:textColor="@color/color_text_title_header"
                         android:visibility="@{vm.ui.basket}"
                         tools:text="*По корзине" />

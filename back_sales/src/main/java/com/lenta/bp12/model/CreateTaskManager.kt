@@ -5,6 +5,7 @@ import com.lenta.bp12.model.pojo.CreateTask
 import com.lenta.bp12.model.pojo.Good
 import com.lenta.bp12.repository.IDatabaseRepository
 import com.lenta.bp12.request.GoodInfoResult
+import com.lenta.shared.utilities.extentions.isSapTrue
 import javax.inject.Inject
 
 class CreateTaskManager @Inject constructor(
@@ -19,16 +20,23 @@ class CreateTaskManager @Inject constructor(
         return task
     }
 
+    override fun getCurrentGood(): MutableLiveData<Good> {
+        return currentGood
+    }
+
     override fun updateTask(createTask: CreateTask) {
         task.value = createTask
     }
 
-    override fun addGood(goodInfo: GoodInfoResult) {
+    override suspend fun addGood(goodInfo: GoodInfoResult) {
         task.value?.let { changedTask ->
             changedTask.goods.add(0, Good(
-                    ean = "000",
-                    material = "111",
-                    name = "222"
+                    ean = goodInfo.eanInfo.ean,
+                    material = goodInfo.materialInfo.material,
+                    name = goodInfo.materialInfo.name,
+                    type = if (goodInfo.materialInfo.isExcise.isSapTrue()) GoodType.EXCISE else if (goodInfo.materialInfo.isAlcohol.isSapTrue()) GoodType.ALCOHOL else GoodType.COMMON,
+                    units = database.getUnitsByCode(goodInfo.materialInfo.unitCode)
+
             ))
 
             currentGood.value = changedTask.goods[0]
@@ -37,6 +45,10 @@ class CreateTaskManager @Inject constructor(
     }
 
     override fun isGoodWasAdded(ean: String?, material: String?): Boolean {
+        require((ean != null) || (material != null)) {
+            "One param must bu not null - ean: $ean, material: $material"
+        }
+
         task.value?.goods?.find { good ->
             if (ean != null) good.ean == ean else good.material == material
         }?.let {
@@ -53,8 +65,9 @@ class CreateTaskManager @Inject constructor(
 interface ICreateTaskManager {
 
     fun getTask(): MutableLiveData<CreateTask>
+    fun getCurrentGood(): MutableLiveData<Good>
     fun updateTask(createTask: CreateTask)
-    fun addGood(goodInfo: GoodInfoResult)
+    suspend fun addGood(goodInfo: GoodInfoResult)
     fun isGoodWasAdded(ean: String? = null, material: String? = null): Boolean
 
 }

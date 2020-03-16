@@ -11,10 +11,10 @@ enum class BlockType {
     LOCK
 }
 
-enum class QuantityType {
-    QUANTITY,
-    CONSIGNMENT,
-    MARK
+enum class QuantityType(description: String) {
+    QUANTITY("Количество"),
+    CONSIGNMENT("Партионно"),
+    MARK("Марочно")
 }
 
 enum class GoodType {

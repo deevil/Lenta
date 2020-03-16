@@ -43,7 +43,7 @@ class DatabaseRepository @Inject constructor(
         return withContext(Dispatchers.IO) {
             return@withContext units.getUnitName(code)?.toLowerCase(Locale.getDefault())?.let { name ->
                 Uom(code, name)
-            } ?: Uom.KG
+            } ?: Uom.ST
         }
     }
 

@@ -121,34 +121,6 @@ class TaskCompositionViewModel : CoreViewModel(), PageSelectionListener, OnOkInS
         Logg.d { "Введенный номер не является корректным!" }
     }
 
-    /*private fun searchCode(ean: String? = null, material: String? = null) {
-        viewModelScope.launch {
-            require((ean != null) xor (material != null)) {
-                "Only one param allowed - ean: $ean, material: $material"
-            }
-
-            navigator.showProgressLoadingData()
-
-            when {
-                !ean.isNullOrBlank() -> task.getGoodByEan(ean)
-                !material.isNullOrBlank() -> task.getGoodByMaterial(material)
-                else -> null
-            }.also {
-                navigator.hideProgress()
-            }?.let { good ->
-                if (task.getDescription().isStrictList && !task.isGoodFromTask(good)) {
-                    navigator.showGoodIsNotPartOfTask()
-                } else {
-                    task.addGoodToList(good)
-                    navigator.openGoodInfoWlScreen()
-                }
-                return@launch
-            }
-
-            navigator.showGoodNotFound()
-        }
-    }*/
-
     private fun openGoodInfo(ean: String? = null, material: String? = null) {
         require((ean != null) xor (material != null)) {
             "Only one param allowed - ean: $ean, material: $material"
@@ -169,18 +141,14 @@ class TaskCompositionViewModel : CoreViewModel(), PageSelectionListener, OnOkInS
                 )).also {
                     navigator.hideProgress()
                 }.either(::handleFailure) { goodInfo ->
-                    manager.addGood(goodInfo)
-                    navigator.openGoodInfoScreen()
+                    viewModelScope.launch {
+                        manager.addGood(goodInfo)
+                        navigator.openGoodInfoScreen()
+                    }
                 }
             }
         }
     }
-
-    /*override fun handleFailure(failure: Failure) {
-        navigator.openAlertScreen(failureInterpreter.getFailureDescription(failure).message)
-
-        if (failure is Failure.SapError) failure.message else resourceManager.serverConnectionError()
-    }*/
 
     override fun handleFailure(failure: Failure) {
         super.handleFailure(failure)

@@ -2,12 +2,15 @@ package com.lenta.bp12.features.good_info
 
 import androidx.lifecycle.MutableLiveData
 import com.lenta.bp12.model.GoodType
+import com.lenta.bp12.model.ICreateTaskManager
 import com.lenta.bp12.model.QuantityType
 import com.lenta.bp12.platform.navigation.IScreenNavigator
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.models.core.MatrixType
 import com.lenta.shared.models.core.Uom
+import com.lenta.shared.utilities.extentions.dropZeros
+import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.view.OnPositionClickListener
 import java.util.*
 import javax.inject.Inject
@@ -16,12 +19,20 @@ class GoodInfoViewModel : CoreViewModel() {
 
     @Inject
     lateinit var navigator: IScreenNavigator
+
     @Inject
     lateinit var sessionInfo: ISessionInfo
+
+    @Inject
+    lateinit var manager: ICreateTaskManager
 
 
     val title by lazy {
         "005588 Макароны с изюмом"
+    }
+
+    val good by lazy {
+        manager.getCurrentGood()
     }
 
     val rollbackVisibility = MutableLiveData(true)
@@ -37,25 +48,43 @@ class GoodInfoViewModel : CoreViewModel() {
     val applyEnabled = MutableLiveData(true)
 
     val ui by lazy {
-        MutableLiveData(GoodInfoUi(
-                units = Uom.DEFAULT,
-                unitsName = Uom.DEFAULT.name.toLowerCase(Locale.getDefault()),
-                quantityType = QuantityType.QUANTITY,
-                totalQuantity = "1 шт",
-                basketQuantity = "1 шт",
-                quantityText1 = "",
-                quantityText2 = "",
-                isFullMode = true,
-                matrixType = MatrixType.Active,
-                section = "02",
-                goodType = GoodType.COMMON,
-                isBasket = true,
-                isBoxScan = true,
-                isQrScan = true
-        ))
+        good.value?.let { good ->
+            MutableLiveData(GoodInfoUi(
+                    units = Uom.DEFAULT,
+                    unitsName = Uom.DEFAULT.name.toLowerCase(Locale.getDefault()),
+                    totalQuantity = "1 шт",
+                    basketQuantity = "1 шт",
+                    totalQuantityTitle = "",
+                    basketQuantityTitle = "",
+                    isFullMode = true,
+                    matrixType = MatrixType.Active,
+                    section = "02",
+                    goodType = GoodType.COMMON,
+                    isBasket = true,
+                    isBoxScan = true,
+                    isQrScan = true
+            ))
+        }
     }
 
-    val quantity = MutableLiveData("")
+    val quantityType = good.map { good ->
+        when (good?.type) {
+            GoodType.ALCOHOL -> "Партионно"
+            GoodType.EXCISE -> "Партионно"
+            else -> "Количество"
+        }
+    }
+
+    val quantity = good.map { good ->
+        good?.quantity.dropZeros()
+    }
+
+    val quantityTypeIcon = good.map { good ->
+        when (good?.type) {
+            GoodType.COMMON -> QuantityType.QUANTITY
+            else -> QuantityType.MARK
+        }
+    }
 
     val quantityEnabled = MutableLiveData(true)
 
@@ -138,11 +167,10 @@ class GoodInfoViewModel : CoreViewModel() {
 data class GoodInfoUi(
         val units: Uom,
         val unitsName: String,
-        val quantityType: QuantityType,
         val totalQuantity: String,
         val basketQuantity: String,
-        val quantityText1: String,
-        val quantityText2: String,
+        val totalQuantityTitle: String,
+        val basketQuantityTitle: String,
         val isFullMode: Boolean,
         val matrixType: MatrixType,
         val section: String,
