@@ -30,9 +30,9 @@
 
                     <EditText
                         style="@style/CellEditTextStyle"
+                        android:drawableEnd="@drawable/spinner_arrow_down_disabled"
                         android:enabled="false"
                         android:text="@{vm.quantityType}"
-                        android:drawableEnd="@drawable/spinner_arrow_down_disabled"
                         tools:text="Количество" />
 
                 </LinearLayout>
@@ -49,7 +49,6 @@
                         android:enabled="@{vm.quantityEnabled}"
                         android:text="@={vm.quantity}"
                         app:digitsForUom="@{vm.good.units}"
-                        app:quantityTypeIcon="@{vm.quantityTypeIcon}"
                         app:suffix="@{vm.good.units.name}"
                         tools:text="1 шт" />
 
@@ -89,13 +88,13 @@
 
                     <TextView
                         style="@style/CellTextStyle"
-                        android:text="@{vm.ui.totalQuantity}"
+                        android:text="@{vm.total}"
                         tools:text="1 шт" />
 
                     <TextView
                         style="@style/CellTextStyle"
-                        android:text="@{vm.ui.basketQuantity}"
-                        android:visibility="@{vm.ui.basket}"
+                        android:text="@{vm.basket}"
+                        android:visibility="@{true}"
                         tools:text="1 шт" />
 
                 </LinearLayout>
@@ -143,7 +142,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:visibility="@{vm.ui.fullMode}">
+                android:visibility="@{!vm.isCompactMode}">
 
                 <!-- Импортер -->
                 <LinearLayout style="@style/LinearRowStyle">

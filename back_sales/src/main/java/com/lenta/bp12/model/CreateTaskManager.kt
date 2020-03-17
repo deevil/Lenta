@@ -34,8 +34,12 @@ class CreateTaskManager @Inject constructor(
                     ean = goodInfo.eanInfo.ean,
                     material = goodInfo.materialInfo.material,
                     name = goodInfo.materialInfo.name,
+                    innerQuantity = goodInfo.materialInfo.innerQuantity.toDoubleOrNull() ?: 0.0,
+                    units = database.getUnitsByCode(goodInfo.materialInfo.unitCode),
                     type = if (goodInfo.materialInfo.isExcise.isSapTrue()) GoodType.EXCISE else if (goodInfo.materialInfo.isAlcohol.isSapTrue()) GoodType.ALCOHOL else GoodType.COMMON,
-                    units = database.getUnitsByCode(goodInfo.materialInfo.unitCode)
+                    isAlcohol = goodInfo.materialInfo.isAlcohol.isSapTrue(),
+                    isExcise = goodInfo.materialInfo.isExcise.isSapTrue(),
+                    providers = goodInfo.providers
 
             ))
 

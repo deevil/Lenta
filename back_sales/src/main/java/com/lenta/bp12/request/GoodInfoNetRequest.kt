@@ -54,7 +54,7 @@ data class GoodInfoResult(
         val sets: List<SetItem>, // Для BKS не используется
         /** Таблица поставщиков */
         @SerializedName("ET_LIFNR")
-        val suppliers: List<SupplierItem>,
+        val providers: List<ProviderItem>,
         /** Таблица производителей */
         @SerializedName("ET_PROD")
         val producers: List<ProducerItem>,

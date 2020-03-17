@@ -2,7 +2,7 @@ package com.lenta.bp12.model.pojo
 
 import com.google.gson.annotations.SerializedName
 
-data class SupplierItem(
+data class ProviderItem(
         /** Номер счета */
         @SerializedName("LIFNR")
         val code: String,
