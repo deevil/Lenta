@@ -96,16 +96,11 @@ class GoodInfoViewModel : CoreViewModel() {
         }
     }
 
-
-
-
-
-
     val date = MutableLiveData("")
 
     val dateEnabled = MutableLiveData(true)
 
-
+    // -----------------------------
 
 
 
