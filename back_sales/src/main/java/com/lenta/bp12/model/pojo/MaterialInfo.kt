@@ -34,8 +34,8 @@ data class MaterialInfo(
         @SerializedName("EKGRP")
         var purchaseGroup: String,
         /** ЕИ заказа на поставку */
-        @SerializedName("BSTME")
-        var unitCodeSupply: String,
+        @SerializedName("BSTME") // Коробки или штуки
+        var orderUnitCode: String,
         /** Количество вложенного */
         @SerializedName("QNTINCL")
         var innerQuantity: String,

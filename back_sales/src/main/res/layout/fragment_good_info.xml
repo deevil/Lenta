@@ -45,11 +45,12 @@
 
                     <com.lenta.shared.view.EditTextWithSuffix
                         style="@style/CellEditTextStyle"
-                        android:drawableEnd="@drawable/ic_bei_12dp"
                         android:enabled="@{vm.quantityEnabled}"
                         android:text="@={vm.quantity}"
                         app:digitsForUom="@{vm.good.units}"
+                        app:quantityTypeIcon="@{vm.good.orderUnits}"
                         app:suffix="@{vm.good.units.name}"
+                        tools:drawableEnd="@drawable/ic_bei_12dp"
                         tools:text="1 шт" />
 
                 </LinearLayout>
@@ -67,15 +68,14 @@
 
                     <TextView
                         style="@style/CellTextStyle"
-                        android:text="@{vm.ui.totalQuantityTitle}"
+                        android:text="@{vm.totalTitle}"
                         android:textColor="@color/color_text_title_header"
                         tools:text="Итого*" />
 
                     <TextView
                         style="@style/CellTextStyle"
-                        android:text="@{vm.ui.basketQuantityTitle}"
+                        android:text="@{vm.basketTitle}"
                         android:textColor="@color/color_text_title_header"
-                        android:visibility="@{vm.ui.basket}"
                         tools:text="*По корзине" />
 
                 </LinearLayout>
@@ -116,7 +116,7 @@
                         style="@style/CellSpinnerStyle"
                         android:layout_height="match_parent"
                         android:enabled="@{vm.providerEnabled}"
-                        app:items="@{vm.providerList}"
+                        app:items="@{vm.providers}"
                         app:onPositionClickListener="@{vm.onSelectProvider}"
                         app:position="@{vm.providerPosition}"
                         tools:entries="@array/test_list" />
@@ -155,10 +155,10 @@
                             android:id="@+id/spin_importer"
                             style="@style/CellSpinnerStyle"
                             android:layout_height="match_parent"
-                            android:enabled="@{vm.importerEnabled}"
-                            app:items="@{vm.importerList}"
-                            app:onPositionClickListener="@{vm.onSelectImporter}"
-                            app:position="@{vm.importerPosition}"
+                            android:enabled="@{vm.producerEnabled}"
+                            app:items="@{vm.producers}"
+                            app:onPositionClickListener="@{vm.onSelectProducer}"
+                            app:position="@{vm.producerPosition}"
                             tools:entries="@array/test_list" />
 
                     </LinearLayout>
@@ -234,7 +234,7 @@
                     android:background="@drawable/bg_white_circle"
                     android:gravity="center"
                     android:textSize="12sp"
-                    app:matrixType="@{vm.ui.matrixType}"
+                    app:matrixType="@{vm.good.matrix}"
                     tools:text="A" />
 
             </LinearLayout>
@@ -252,7 +252,7 @@
                     android:background="@drawable/bg_white_circle"
                     android:gravity="center"
                     android:textSize="12sp"
-                    app:section="@{vm.ui.section}"
+                    app:section="@{vm.good.section}"
                     tools:text="02" />
 
             </LinearLayout>
@@ -261,22 +261,20 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                app:goodTypeIcon="@{vm.ui.goodType}"
+                app:goodTypeIcon="@{vm.good.type}"
                 tools:src="@drawable/ic_alcohol_32dp" />
 
             <ImageView
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:src="@drawable/ic_basket_info_32dp"
-                app:invisible="@{!vm.ui.basket}" />
+                android:src="@drawable/ic_basket_info_32dp" />
 
             <ImageView
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:src="@drawable/ic_scan_box_32dp"
-                app:invisible="@{!vm.ui.boxScan}" />
+                android:src="@drawable/ic_scan_box_32dp" />
 
             <ImageView
                 android:layout_width="0dp"
@@ -284,8 +282,7 @@
                 android:layout_weight="1"
                 android:background="?selectableItemBackground"
                 android:onClick="@{(v) -> vm.navigator.openESInfoScreen()}"
-                android:src="@drawable/ic_scan_barcode_es_32dp"
-                app:invisible="@{!vm.ui.qrScan}" />
+                android:src="@drawable/ic_scan_barcode_es_32dp" />
 
             <ImageView
                 android:layout_width="0dp"

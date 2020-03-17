@@ -5,6 +5,7 @@ import com.lenta.bp12.model.pojo.CreateTask
 import com.lenta.bp12.model.pojo.Good
 import com.lenta.bp12.repository.IDatabaseRepository
 import com.lenta.bp12.request.GoodInfoResult
+import com.lenta.shared.models.core.getMatrixType
 import com.lenta.shared.utilities.extentions.isSapTrue
 import javax.inject.Inject
 
@@ -36,11 +37,13 @@ class CreateTaskManager @Inject constructor(
                     name = goodInfo.materialInfo.name,
                     innerQuantity = goodInfo.materialInfo.innerQuantity.toDoubleOrNull() ?: 0.0,
                     units = database.getUnitsByCode(goodInfo.materialInfo.unitCode),
+                    orderUnits = database.getUnitsByCode(goodInfo.materialInfo.orderUnitCode),
                     type = if (goodInfo.materialInfo.isExcise.isSapTrue()) GoodType.EXCISE else if (goodInfo.materialInfo.isAlcohol.isSapTrue()) GoodType.ALCOHOL else GoodType.COMMON,
                     isAlcohol = goodInfo.materialInfo.isAlcohol.isSapTrue(),
                     isExcise = goodInfo.materialInfo.isExcise.isSapTrue(),
-                    providers = goodInfo.providers
-
+                    providers = goodInfo.providers,
+                    matrix = getMatrixType(goodInfo.materialInfo.matrix),
+                    section = goodInfo.materialInfo.section
             ))
 
             currentGood.value = changedTask.goods[0]

@@ -45,8 +45,8 @@ fun setBlockTypeIcon(imageView: ImageView, blockType: BlockType) {
 @BindingAdapter("goodTypeIcon")
 fun setGoodTypeIcon(imageView: ImageView, goodType: GoodType?) {
     imageView.setImageResource(when (goodType) {
-        GoodType.ALCOHOL -> R.drawable.ic_alcohol_32dp
-        GoodType.EXCISE -> R.drawable.ic_marked_32dp
+        GoodType.ALCOHOL -> R.drawable.ic_no_excise_alco_32dp
+        GoodType.EXCISE -> R.drawable.ic_alcohol_32dp
         else -> R.drawable.ic_kandy_32dp
     }.also { iconRes ->
         imageView.setInvisible(goodType == null)

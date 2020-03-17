@@ -1,6 +1,8 @@
 package com.lenta.bp12.model.pojo
 
 import com.lenta.bp12.model.GoodType
+import com.lenta.bp12.model.QuantityType
+import com.lenta.shared.models.core.MatrixType
 import com.lenta.shared.models.core.Uom
 
 data class Good(
@@ -8,12 +10,17 @@ data class Good(
         val material: String,
         val name: String,
         val quantity: Double = 0.0,
+        //val quantityType: QuantityType,
         val innerQuantity: Double,
         val units: Uom,
+        val orderUnits: Uom,
         val type: GoodType,
         val isAlcohol: Boolean,
         val isExcise: Boolean,
-        val providers: List<ProviderItem>
+        val providers: List<ProviderItem>,
+        val producers: List<ProducerItem>,
+        val matrix: MatrixType,
+        val section: String
 ) {
 
     fun getNameWithMaterial(delimiter: String = " "): String {
@@ -30,6 +37,19 @@ data class Good(
         }
 
         val list = providers.map { it.name }.toMutableList()
+        if (list.size > 1) {
+            list.add(0, "")
+        }
+
+        return list
+    }
+
+    fun getPreparedProducerList(): List<String> {
+        if (producers.isEmpty()) {
+            return emptyList()
+        }
+
+        val list = producers.map { it.name }.toMutableList()
         if (list.size > 1) {
             list.add(0, "")
         }

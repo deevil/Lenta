@@ -112,6 +112,12 @@ class TaskCompositionViewModel : CoreViewModel(), PageSelectionListener, OnOkInS
                 funcForMatNr = { material ->
                     openGoodInfo(material)
                 },
+                funcForPriceQrCode = { qrCode ->
+                    val ean = qrCode.substringAfter("(01)", "").substringBefore("(")
+                    if (ean.isNotEmpty()) {
+                        openGoodInfo(ean)
+                    }
+                },
                 funcForSapOrBar = navigator::showTwelveCharactersEntered,
                 funcForNotValidFormat = ::notValidNumber
         )

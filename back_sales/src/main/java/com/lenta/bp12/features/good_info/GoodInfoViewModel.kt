@@ -60,11 +60,15 @@ class GoodInfoViewModel : CoreViewModel() {
         "${good?.quantity.sumWith(quantity.value?.toDoubleOrNull()).dropZeros()} ${good?.units?.name}"
     }
 
-    val providerList = good.map { good ->
+    val totalTitle = MutableLiveData("Итого*")
+
+    val basketTitle = MutableLiveData("*По корзине")
+
+    val providers = good.map { good ->
         good?.getPreparedProviderList()
     }
 
-    val providerEnabled = providerList.map { providers ->
+    val providerEnabled = providers.map { providers ->
         providers?.size ?: 0 > 1
     }
 
@@ -76,6 +80,21 @@ class GoodInfoViewModel : CoreViewModel() {
         }
     }
 
+    val producers = good.map { good ->
+        good?.getPreparedProducerList()
+    }
+
+    val producerEnabled = producers.map { producers ->
+        producers?.size ?: 0 > 1
+    }
+
+    val producerPosition = MutableLiveData(0)
+
+    val onSelectProducer = object : OnPositionClickListener {
+        override fun onClickPosition(position: Int) {
+            producerPosition.value = position
+        }
+    }
 
 
 
@@ -86,21 +105,12 @@ class GoodInfoViewModel : CoreViewModel() {
 
     val dateEnabled = MutableLiveData(true)
 
-    val importerEnabled = MutableLiveData(true)
 
-    val importerPosition = MutableLiveData(0)
 
-    val onSelectImporter = object : OnPositionClickListener {
-        override fun onClickPosition(position: Int) {
-            importerPosition.value = position
-        }
-    }
 
-    val importerList: MutableLiveData<List<String>> by lazy {
-        MutableLiveData(List(3) {
-            "Importer ${it + 1}"
-        })
-    }
+
+
+
 
     val rollbackVisibility = MutableLiveData(true)
 
