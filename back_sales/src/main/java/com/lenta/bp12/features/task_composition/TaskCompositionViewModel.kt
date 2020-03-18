@@ -8,9 +8,8 @@ import com.lenta.bp12.request.GoodInfoNetRequest
 import com.lenta.bp12.request.GoodInfoParams
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.exception.Failure
+import com.lenta.shared.platform.constants.Constants
 import com.lenta.shared.platform.viewmodel.CoreViewModel
-import com.lenta.shared.requests.combined.scan_info.analyseCode
-import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.SelectionItemsHelper
 import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
 import com.lenta.shared.utilities.databinding.PageSelectionListener
@@ -104,35 +103,29 @@ class TaskCompositionViewModel : CoreViewModel(), PageSelectionListener, OnOkInS
     }
 
     private fun checkEnteredNumber(number: String) {
-        analyseCode(
-                code = number,
-                funcForEan = { ean ->
-                    openGoodInfo(ean)
-                },
-                funcForMatNr = { material ->
-                    openGoodInfo(material)
-                },
-                funcForPriceQrCode = { qrCode ->
-                    val ean = qrCode.substringAfter("(01)", "").substringBefore("(")
-                    if (ean.isNotEmpty()) {
-                        openGoodInfo(ean)
+        number.length.let { length ->
+            if (length < Constants.SAP_6) {
+                return
+            }
+
+            if (length >= Constants.SAP_6) {
+                when (length) {
+                    Constants.SAP_6 -> openGoodByMaterial("000000000000$number")
+                    Constants.SAP_18 -> openGoodByMaterial(number)
+                    Constants.SAP_OR_BAR_12 -> {
+                        navigator.showTwelveCharactersEntered(
+                                sapCallback = { openGoodByMaterial(number) },
+                                barCallback = { openGoodByEan(number) }
+                        )
                     }
-                },
-                funcForSapOrBar = navigator::showTwelveCharactersEntered,
-                funcForNotValidFormat = ::notValidNumber
-        )
-    }
-
-    private fun notValidNumber() {
-        Logg.d { "Введенный номер не является корректным!" }
-    }
-
-    private fun openGoodInfo(ean: String? = null, material: String? = null) {
-        require((ean != null) xor (material != null)) {
-            "Only one param allowed - ean: $ean, material: $material"
+                    else -> openGoodByEan(number)
+                }
+            }
         }
+    }
 
-        if (manager.isGoodWasAdded(ean = ean, material = material)) {
+    private fun openGoodByEan(ean: String) {
+        if (manager.isExistEan(ean)) {
             navigator.openGoodInfoScreen()
         } else {
             viewModelScope.launch {
@@ -140,9 +133,30 @@ class TaskCompositionViewModel : CoreViewModel(), PageSelectionListener, OnOkInS
 
                 goodInfoNetRequest(GoodInfoParams(
                         tkNumber = sessionInfo.market ?: "Not found!",
-                        ean = ean ?: "",
-                        material = material ?: "",
-                        bpCode = "BKS",
+                        ean = ean,
+                        taskType = task.value!!.type.type
+                )).also {
+                    navigator.hideProgress()
+                }.either(::handleFailure) { goodInfo ->
+                    viewModelScope.launch {
+                        manager.addGood(goodInfo)
+                        navigator.openGoodInfoScreen()
+                    }
+                }
+            }
+        }
+    }
+
+    private fun openGoodByMaterial(material: String) {
+        if (manager.isExistMaterial(material)) {
+            navigator.openGoodInfoScreen()
+        } else {
+            viewModelScope.launch {
+                navigator.showProgressLoadingData()
+
+                goodInfoNetRequest(GoodInfoParams(
+                        tkNumber = sessionInfo.market ?: "Not found!",
+                        material = material,
                         taskType = task.value!!.type.type
                 )).also {
                     navigator.hideProgress()

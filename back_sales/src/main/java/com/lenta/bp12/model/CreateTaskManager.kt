@@ -42,8 +42,10 @@ class CreateTaskManager @Inject constructor(
                     isAlcohol = goodInfo.materialInfo.isAlcohol.isSapTrue(),
                     isExcise = goodInfo.materialInfo.isExcise.isSapTrue(),
                     providers = goodInfo.providers,
+                    producers = goodInfo.producers,
                     matrix = getMatrixType(goodInfo.materialInfo.matrix),
                     section = goodInfo.materialInfo.section
+
             ))
 
             currentGood.value = changedTask.goods[0]
@@ -51,21 +53,23 @@ class CreateTaskManager @Inject constructor(
         }
     }
 
-    override fun isGoodWasAdded(ean: String?, material: String?): Boolean {
-        require((ean != null) || (material != null)) {
-            "One param must bu not null - ean: $ean, material: $material"
-        }
-
-        task.value?.goods?.find { good ->
-            if (ean != null) good.ean == ean else good.material == material
-        }?.let {
-            currentGood.value = it
+    override fun isExistEan(ean: String): Boolean {
+        task.value?.goods?.find { it.ean == ean }?.let { good ->
+            currentGood.value = good
             return true
         }
 
         return false
     }
 
+    override fun isExistMaterial(material: String): Boolean {
+        task.value?.goods?.find { it.material == material }?.let { good ->
+            currentGood.value = good
+            return true
+        }
+
+        return false
+    }
 }
 
 
@@ -75,6 +79,7 @@ interface ICreateTaskManager {
     fun getCurrentGood(): MutableLiveData<Good>
     fun updateTask(createTask: CreateTask)
     suspend fun addGood(goodInfo: GoodInfoResult)
-    fun isGoodWasAdded(ean: String? = null, material: String? = null): Boolean
+    fun isExistEan(ean: String): Boolean
+    fun isExistMaterial(material: String): Boolean
 
 }

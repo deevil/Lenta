@@ -25,13 +25,13 @@ data class GoodInfoParams(
         val tkNumber: String,
         /** ШК товара */
         @SerializedName("IV_EAN")
-        val ean: String,
+        val ean: String = "",
         /** SAP-код товара */
         @SerializedName("IV_MATNR")
-        val material: String,
+        val material: String = "",
         /** Код бизнес процесса */
         @SerializedName("IV_CODEBP")
-        val bpCode: String,
+        val bpCode: String = "BKS",
         /** Код бизнес процесса */
         @SerializedName("IV_TYPE_TASK")
         val taskType: String,
