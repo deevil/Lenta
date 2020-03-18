@@ -55,6 +55,8 @@ data class StartRecountPGERestInfo(
         val taskExciseStamps: List<TaskExciseStampInfoRestData>,
         @SerializedName("ET_MARK_DIFF") //Таблица обработанных марок задания
         val taskExciseStampsDiscrepancies: List<TaskExciseStampDiscrepanciesRestData>,
+        @SerializedName("ET_MARK_BAD") //Таблица плохих марок задания
+        val taskExciseStampBad: List<TaskExciseStampBadRestData>,
         @SerializedName("ET_VET_DIFF") //Таблица расхождений по вет.товарам
         val taskMercuryInfoRestData: List<TaskMercuryInfoRestData>,
         @SerializedName("ET_PROD_TEXT")//Таблица ЕГАИС производителей

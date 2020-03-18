@@ -12,6 +12,8 @@ class MemoryTaskRepository : ITaskRepository {
 
     private val taskExciseStampDiscrepanciesRepository: ITaskExciseStampDiscrepanciesRepository = MemoryTaskExciseStampDiscrepanciesRepository()
 
+    private val taskExciseStampBadRepository: ITaskExciseStampBadRepository = MemoryTaskExciseStampBadRepository()
+
     private val taskBoxesRepository: ITaskBoxesRepository = MemoryTaskBoxesRepository()
 
     private val taskBoxesDiscrepanciesRepository: ITaskBoxesDiscrepanciesRepository = MemoryTaskBoxesDiscrepanciesRepository()
@@ -48,6 +50,10 @@ class MemoryTaskRepository : ITaskRepository {
 
     override fun getExciseStampsDiscrepancies(): ITaskExciseStampDiscrepanciesRepository {
         return taskExciseStampDiscrepanciesRepository
+    }
+
+    override fun getExciseStampsBad(): ITaskExciseStampBadRepository {
+        return taskExciseStampBadRepository
     }
 
     override fun getBoxes(): ITaskBoxesRepository {

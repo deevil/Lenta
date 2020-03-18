@@ -44,6 +44,9 @@ class TaskContents
                 startRecountRestInfo.taskExciseStampsDiscrepancies.map {
                     TaskExciseStampDiscrepancies.from(it)
                 },
+                startRecountRestInfo.taskExciseStampBad.map {
+                    TaskExciseStampBad.from(it)
+                },
                 startRecountRestInfo.taskBoxes.map {
                     TaskBoxInfo.from(it)
                 },
@@ -73,6 +76,9 @@ class TaskContents
                 },
                 startRecountRestInfo.taskExciseStampsDiscrepancies.map {
                     TaskExciseStampDiscrepancies.from(it)
+                },
+                startRecountRestInfo.taskExciseStampBad.map {
+                    TaskExciseStampBad.from(it)
                 },
                 startRecountRestInfo.taskBoxes.map {
                     TaskBoxInfo.from(it)
@@ -104,6 +110,9 @@ class TaskContents
                 startRecountRestInfo.taskExciseStampsDiscrepancies.map {
                     TaskExciseStampDiscrepancies.from(it)
                 },
+                startRecountRestInfo.taskExciseStampBad.map {
+                    TaskExciseStampBad.from(it)
+                },
                 startRecountRestInfo.taskBoxes.map {
                     TaskBoxInfo.from(it)
                 },
@@ -133,6 +142,9 @@ class TaskContents
                 },
                 startRecountRestInfo.taskExciseStampsDiscrepancies.map {
                     TaskExciseStampDiscrepancies.from(it)
+                },
+                startRecountRestInfo.taskExciseStampBad.map {
+                    TaskExciseStampBad.from(it)
                 },
                 startRecountRestInfo.taskBoxes.map {
                     TaskBoxInfo.from(it)
@@ -195,6 +207,7 @@ data class TaskContentsInfo(
         val taskMercuryInfo: List<TaskMercuryInfo>,
         val taskExciseStampInfo: List<TaskExciseStampInfo>,
         val taskExciseStampDiscrepancies: List<TaskExciseStampDiscrepancies>,
+        val taskExciseStampBad: List<TaskExciseStampBad>,
         val taskBoxes: List<TaskBoxInfo>,
         val taskBoxesDiscrepancies: List<TaskBoxDiscrepancies>
 )
