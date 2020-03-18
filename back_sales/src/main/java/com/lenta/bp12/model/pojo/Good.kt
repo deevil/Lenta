@@ -1,7 +1,6 @@
 package com.lenta.bp12.model.pojo
 
 import com.lenta.bp12.model.GoodType
-import com.lenta.bp12.model.QuantityType
 import com.lenta.shared.models.core.MatrixType
 import com.lenta.shared.models.core.Uom
 
@@ -10,7 +9,6 @@ data class Good(
         val material: String,
         val name: String,
         val quantity: Double = 0.0,
-        //val quantityType: QuantityType,
         val innerQuantity: Double,
         val units: Uom,
         val orderUnits: Uom,

@@ -139,8 +139,12 @@ class TaskCompositionViewModel : CoreViewModel(), PageSelectionListener, OnOkInS
                     navigator.hideProgress()
                 }.either(::handleFailure) { goodInfo ->
                     viewModelScope.launch {
-                        manager.addGood(goodInfo)
-                        navigator.openGoodInfoScreen()
+                        if (manager.isGoodCanBeAdded(goodInfo)) {
+                            manager.putInCurrentGood(goodInfo)
+                            navigator.openGoodInfoScreen()
+                        } else {
+                            navigator.showNotMatchTaskSettingsAddingNotPossible()
+                        }
                     }
                 }
             }
@@ -162,8 +166,12 @@ class TaskCompositionViewModel : CoreViewModel(), PageSelectionListener, OnOkInS
                     navigator.hideProgress()
                 }.either(::handleFailure) { goodInfo ->
                     viewModelScope.launch {
-                        manager.addGood(goodInfo)
-                        navigator.openGoodInfoScreen()
+                        if (manager.isGoodCanBeAdded(goodInfo)) {
+                            manager.putInCurrentGood(goodInfo)
+                            navigator.openGoodInfoScreen()
+                        } else {
+                            navigator.showNotMatchTaskSettingsAddingNotPossible()
+                        }
                     }
                 }
             }

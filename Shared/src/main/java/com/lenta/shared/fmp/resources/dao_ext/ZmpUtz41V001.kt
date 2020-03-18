@@ -1,13 +1,26 @@
 package com.lenta.shared.fmp.resources.dao_ext
 
 import com.lenta.shared.fmp.resources.fast.ZmpUtz41V001
+import com.lenta.shared.fmp.resources.pojo.CheckParams
 
-fun ZmpUtz41V001.isGoodAllowed(gisControl: String, taskType: String, goodGroup: String? = "", purchaseGroup: String? = ""): Boolean {
+fun ZmpUtz41V001.isGoodAllowed(controlType: String, taskType: String, goodGroup: String? = "", purchaseGroup: String? = ""): Boolean {
     @Suppress("INACCESSIBLE_TYPE")
-    return localHelper_ET_ALLOW_MATNR.getWhere("TASK_CNTRL = \"$gisControl\" AND TASK_TYPE = \"$taskType\" AND MTART = \"$goodGroup\" AND EKGRP = \"$purchaseGroup\" LIMIT 1").isNotEmpty()
+    return localHelper_ET_ALLOW_MATNR.getWhere("TASK_CNTRL = \"$controlType\" AND TASK_TYPE = \"$taskType\" AND MTART = \"$goodGroup\" AND EKGRP = \"$purchaseGroup\" LIMIT 1").isNotEmpty()
 }
 
 fun ZmpUtz41V001.getTaskAttributeList(taskType: String): Set<String> {
     @Suppress("INACCESSIBLE_TYPE")
     return localHelper_ET_ALLOW_MATNR.getWhere("TASK_TYPE = \"$taskType\"").map { it.taskCntrl }.toSet()
+}
+
+fun ZmpUtz41V001.getAllParams(taskType: String): List<CheckParams> {
+    @Suppress("INACCESSIBLE_TYPE")
+    return localHelper_ET_ALLOW_MATNR.getWhere("TASK_TYPE = \"$taskType\"").map {
+        CheckParams(
+                controlType = it.taskCntrl,
+                goodType = it.mtart,
+                goodGroup = it.matkl,
+                purchaseGroup = it.ekgrp
+        )
+    }
 }

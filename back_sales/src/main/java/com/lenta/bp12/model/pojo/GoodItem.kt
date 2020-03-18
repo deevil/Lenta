@@ -8,7 +8,7 @@ data class GoodItem(
         var material: String,
         /** Код поставщика */
         @SerializedName("LIFNR")
-        var supplierCode: String,
+        var providerCode: String,
         /** Фактическое количество */
         @SerializedName("FACT_QNT")
         var quantity: String,

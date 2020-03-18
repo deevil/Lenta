@@ -6,6 +6,7 @@ import com.lenta.bp12.model.ICreateTaskManager
 import com.lenta.bp12.platform.navigation.IScreenNavigator
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.account.ISessionInfo
+import com.lenta.shared.platform.constants.Constants
 import com.lenta.shared.utilities.extentions.dropZeros
 import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.utilities.extentions.sumWith
@@ -28,19 +29,24 @@ class GoodInfoViewModel : CoreViewModel() {
         manager.getCurrentGood()
     }
 
-    val title = good.map {good ->
+    val title = good.map { good ->
         good?.getNameWithMaterial()
     }
 
-    val isCompactMode = good.map {good ->
+    val number = MutableLiveData("")
+
+    val isCompactMode = good.map { good ->
         good?.type == GoodType.COMMON
     }
 
     val quantityType = good.map { good ->
-        when (good?.type) {
-            GoodType.EXCISE -> "Марочно"
-            GoodType.ALCOHOL -> "Партионно"
-            else -> "Количество"
+        good?.type?.let { type ->
+            when {
+                type == GoodType.EXCISE && number.value?.length == Constants.EXCISE_68 -> "Партионно"
+                type == GoodType.EXCISE -> "Марочно"
+                type == GoodType.ALCOHOL -> "Партионно"
+                else -> "Количество"
+            }
         }
     }
 
@@ -103,10 +109,6 @@ class GoodInfoViewModel : CoreViewModel() {
     // -----------------------------
 
 
-
-
-
-
     val rollbackVisibility = MutableLiveData(true)
 
     val detailsVisibility = MutableLiveData(true)
@@ -138,6 +140,14 @@ class GoodInfoViewModel : CoreViewModel() {
     }
 
     fun addProvider() {
+
+    }
+
+    fun onScanResult(data: String) {
+        checkEnteredNumber(data)
+    }
+
+    private fun checkEnteredNumber(number: String) {
 
     }
 

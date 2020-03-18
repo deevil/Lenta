@@ -281,11 +281,11 @@ class ScreenNavigator @Inject constructor(
         }
     }
 
-    override fun showProductDoesNotMatchTaskSettings() {
+    override fun showNotMatchTaskSettingsAddingNotPossible() {
         runOrPostpone {
             getFragmentStack()?.push(AlertFragment.create(
                     pageNumber = "73",
-                    message = context.getString(R.string.product_does_not_match_task_settings),
+                    message = context.getString(R.string.not_match_task_settings_adding_not_possible),
                     iconRes = R.drawable.is_warning_red_80dp
             ))
         }
@@ -377,7 +377,7 @@ interface IScreenNavigator : ICoreNavigator {
     fun showRawGoodsRemainedInTask(yesCallback: () -> Unit)
     fun showBoxWasLastScanned(afterShowCallback: () -> Unit)
     fun showDoYouReallyWantSetZeroQuantity(yesCallback: () -> Unit, counted: Int)
-    fun showProductDoesNotMatchTaskSettings()
+    fun showNotMatchTaskSettingsAddingNotPossible()
     fun openScannedMarkIsNotOnBalanceInCurrentStore(proceedCallback: () -> Unit)
     fun showScannedBoxIsNotWhole()
     fun showMarksInBoxAreNotOnBalanceInCurrentStore()

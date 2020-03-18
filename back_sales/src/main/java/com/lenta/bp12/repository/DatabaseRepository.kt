@@ -1,10 +1,12 @@
 package com.lenta.bp12.repository
 
-import com.lenta.bp12.model.pojo.GoodInfo
+import com.lenta.bp12.platform.extention.getControlType
+import com.lenta.bp12.request.GoodInfoResult
 import com.lenta.shared.fmp.resources.dao_ext.*
 import com.lenta.shared.fmp.resources.fast.*
 import com.lenta.shared.fmp.resources.slow.*
 import com.lenta.shared.models.core.Uom
+import com.lenta.shared.utilities.extentions.isSapTrue
 import com.mobrun.plugin.api.HyperHive
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -98,14 +100,6 @@ class DatabaseRepository @Inject constructor(
         }
     }
 
-    override suspend fun getGoodInfo(ean: String?, material: String?): GoodInfo? {
-        return withContext(Dispatchers.IO) {
-            // todo Логика получения товара из справочника
-
-            return@withContext null
-        }
-    }
-
     override suspend fun isGoodAllowed(gisControl: String, taskType: String, goodGroup: String?, purchaseGroup: String?): Boolean {
         return withContext(Dispatchers.IO) {
             return@withContext allowed.isGoodAllowed(gisControl, taskType, goodGroup, purchaseGroup)
@@ -117,18 +111,59 @@ class DatabaseRepository @Inject constructor(
             return@withContext forbidden.isGoodForbidden(gisControl, taskType, goodGroup, purchaseGroup)
         }
     }
+
+    override suspend fun isGoodCanBeAdded(goodInfo: GoodInfoResult, taskType: String): Boolean {
+        return withContext(Dispatchers.IO) {
+            if (goodInfo.materialInfo.isVet.isSapTrue()) {
+                return@withContext false
+            }
+
+            // Параметры товара
+            val controlType = goodInfo.getControlType().code
+            val goodType = goodInfo.materialInfo.goodType
+            val goodGroup = goodInfo.materialInfo.goodGroup
+            val purchaseGroup = goodInfo.materialInfo.purchaseGroup
+
+            // Таблицы с параметрами
+            val allowedParams = allowed.getAllParams(taskType)
+            val forbiddenParams = forbidden.getAllParams(taskType)
+
+            // Поиск по таблице разрешенных параметров
+            val allowedList = allowedParams
+                    .filter { it.controlType == controlType }
+                    .filter { it.goodType == goodType }
+                    .filter { it.goodGroup == if (goodGroup.isNotEmpty()) goodGroup else it.goodGroup }
+                    .filter { it.purchaseGroup == if (purchaseGroup.isNotEmpty()) purchaseGroup else it.purchaseGroup }
+
+            if (allowedList.isNotEmpty()) {
+                return@withContext true
+            }
+
+            // Поиск по таблице запрещенных параметров
+            val forbiddenList = forbiddenParams
+                    .filter { it.controlType == controlType }
+                    .filter { it.goodType == goodType }
+                    .filter { it.goodGroup == if (goodGroup.isNotEmpty()) goodGroup else it.goodGroup }
+                    .filter { it.purchaseGroup == if (purchaseGroup.isNotEmpty()) purchaseGroup else it.purchaseGroup }
+
+            if (forbiddenList.isNotEmpty()) {
+                return@withContext false
+            }
+
+            return@withContext true
+        }
+    }
+
 }
 
 interface IDatabaseRepository {
-
     suspend fun getAllowedAppVersion(): String?
     suspend fun getUnitsByCode(code: String): Uom
     suspend fun getTaskTypeList(): List<TaskType>
     suspend fun getStorageList(taskType: String): List<String>
     suspend fun getReturnReasonList(taskType: String): List<ReturnReason>
-    suspend fun getGoodInfo(ean: String?, material: String?): GoodInfo?
     suspend fun isGoodAllowed(gisControl: String, taskType: String, goodGroup: String?, purchaseGroup: String?): Boolean
     suspend fun isGoodForbidden(gisControl: String, taskType: String, goodGroup: String?, purchaseGroup: String?): Boolean
     suspend fun getTaskAttributes(taskType: String): Set<String>
-
+    suspend fun isGoodCanBeAdded(goodInfo: GoodInfoResult, taskType: String): Boolean
 }

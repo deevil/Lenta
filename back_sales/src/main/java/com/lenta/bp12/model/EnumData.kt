@@ -11,14 +11,14 @@ enum class BlockType {
     LOCK
 }
 
-enum class QuantityType() {
-    QUANTITY,
-    PART,
-    MARK
-}
-
 enum class GoodType {
     COMMON,
     ALCOHOL,
     EXCISE
+}
+
+enum class ControlType(val code: String) {
+    UNKNOWN("UNKNOWN"),
+    COMMON("N"),
+    ALCOHOL("A")
 }

@@ -23,5 +23,5 @@ data class ShipmentItem(
         var shipmentNumber: String,
         /** Код поставщика */
         @SerializedName("LIFNR")
-        var supplierCode: String
+        var providerCode: String
 )
