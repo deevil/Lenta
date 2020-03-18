@@ -28,9 +28,9 @@ data class ZmpUtzGrz25V001Params(
         @SerializedName("IT_DEFECTS") //Таблица транспортного брака
         val transportMarriage: List<TaskTransportMarriageInfoRestData>,
         @SerializedName("IT_BOX_DIFF") //Таблица обработанных коробов
-        val processedBoxInfo: List<TaskProcessedBoxInfoRestData>,
+        val taskBoxDiscrepancies: List<TaskBoxDiscrepanciesRestData>,
         @SerializedName("IT_MARK_DIFF") //Таблица обработанных марок задания
-        val processedExciseStamp: List<TaskProcessedExciseStampRestData>,
+        val taskExciseStampsDiscrepancies: List<TaskExciseStampDiscrepanciesRestData>,
         @SerializedName("IV_SAVE") // Сохранить результаты ( если пусто - только смена статуса)
         val isSave: String,
         @SerializedName("IV_PRINTERNAME") //Спул: длинные имена устройств

@@ -4,7 +4,9 @@ interface ITaskRepository {
     fun getProducts(): ITaskProductRepository
     fun getProductsDiscrepancies(): ITaskProductsDiscrepanciesRepository
     fun getExciseStamps(): ITaskExciseStampRepository
-    fun getExciseStampDiscrepancies(): ITaskExciseStampDiscrepanciesRepository
+    fun getExciseStampsDiscrepancies(): ITaskExciseStampDiscrepanciesRepository
+    fun getBoxes(): ITaskBoxesRepository
+    fun getBoxesDiscrepancies(): ITaskBoxesDiscrepanciesRepository
     fun getNotifications(): ITaskNotificationsRepository
     fun getReviseDocuments(): ITaskReviseDocumentsRepository
     fun getBatches(): ITaskBatchesRepository

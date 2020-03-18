@@ -1,10 +1,8 @@
 package com.lenta.bp9.model.memory
 
 import com.lenta.bp9.model.repositories.ITaskExciseStampDiscrepanciesRepository
-import com.lenta.bp9.model.task.TaskProductDiscrepancies
 import com.lenta.bp9.model.task.TaskProductInfo
-import com.lenta.bp9.model.repositories.ITaskProductsDiscrepanciesRepository
-import com.lenta.bp9.model.task.revise.TaskExciseStampDiscrepancies
+import com.lenta.bp9.model.task.TaskExciseStampDiscrepancies
 
 class MemoryTaskExciseStampDiscrepanciesRepository : ITaskExciseStampDiscrepanciesRepository {
 

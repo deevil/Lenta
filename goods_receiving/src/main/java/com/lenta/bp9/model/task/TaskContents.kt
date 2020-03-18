@@ -1,6 +1,5 @@
 package com.lenta.bp9.model.task
 
-import com.lenta.bp9.model.task.revise.TaskExciseStampDiscrepancies
 import com.lenta.bp9.requests.network.*
 import com.lenta.shared.fmp.resources.dao_ext.getProductInfoByMaterial
 import com.lenta.shared.fmp.resources.dao_ext.getUomInfo
@@ -44,6 +43,12 @@ class TaskContents
                 },
                 startRecountRestInfo.taskExciseStampsDiscrepancies.map {
                     TaskExciseStampDiscrepancies.from(it)
+                },
+                startRecountRestInfo.taskBoxes.map {
+                    TaskBoxInfo.from(it)
+                },
+                startRecountRestInfo.taskBoxesDiscrepancies.map {
+                    TaskBoxDiscrepancies.from(it)
                 }
         )
     }
@@ -68,6 +73,12 @@ class TaskContents
                 },
                 startRecountRestInfo.taskExciseStampsDiscrepancies.map {
                     TaskExciseStampDiscrepancies.from(it)
+                },
+                startRecountRestInfo.taskBoxes.map {
+                    TaskBoxInfo.from(it)
+                },
+                startRecountRestInfo.taskBoxesDiscrepancies.map {
+                    TaskBoxDiscrepancies.from(it)
                 }
         )
     }
@@ -92,6 +103,12 @@ class TaskContents
                 },
                 startRecountRestInfo.taskExciseStampsDiscrepancies.map {
                     TaskExciseStampDiscrepancies.from(it)
+                },
+                startRecountRestInfo.taskBoxes.map {
+                    TaskBoxInfo.from(it)
+                },
+                startRecountRestInfo.taskBoxesDiscrepancies.map {
+                    TaskBoxDiscrepancies.from(it)
                 }
         )
     }
@@ -116,6 +133,12 @@ class TaskContents
                 },
                 startRecountRestInfo.taskExciseStampsDiscrepancies.map {
                     TaskExciseStampDiscrepancies.from(it)
+                },
+                startRecountRestInfo.taskBoxes.map {
+                    TaskBoxInfo.from(it)
+                },
+                startRecountRestInfo.taskBoxesDiscrepancies.map {
+                    TaskBoxDiscrepancies.from(it)
                 }
         )
     }
@@ -171,5 +194,7 @@ data class TaskContentsInfo(
         val taskBatchesDiscrepancies: List<TaskBatchesDiscrepancies>,
         val taskMercuryInfo: List<TaskMercuryInfo>,
         val taskExciseStampInfo: List<TaskExciseStampInfo>,
-        val taskExciseStampDiscrepancies: List<TaskExciseStampDiscrepancies>
+        val taskExciseStampDiscrepancies: List<TaskExciseStampDiscrepancies>,
+        val taskBoxes: List<TaskBoxInfo>,
+        val taskBoxesDiscrepancies: List<TaskBoxDiscrepancies>
 )

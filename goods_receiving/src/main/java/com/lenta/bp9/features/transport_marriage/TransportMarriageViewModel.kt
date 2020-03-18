@@ -128,8 +128,8 @@ class TransportMarriageViewModel : CoreViewModel(), PageSelectionListener,
                         deviceIP = context.getDeviceIp(),
                         personalNumber = sessionInfo.personnelNumber ?: "",
                         transportMarriage = emptyList(),
-                        processedBoxInfo = emptyList(),
-                        processedExciseStamp = emptyList(),
+                        taskBoxDiscrepancies = emptyList(),
+                        taskExciseStampsDiscrepancies = emptyList(),
                         isSave = "",
                         printerName = ""
                 )
@@ -171,8 +171,8 @@ class TransportMarriageViewModel : CoreViewModel(), PageSelectionListener,
                         deviceIP = context.getDeviceIp(),
                         personalNumber = sessionInfo.personnelNumber ?: "",
                         transportMarriage = task.taskRepository.getTransportMarriage().getTransportMarriage().map { TaskTransportMarriageInfoRestData.from(it) },
-                        processedBoxInfo = emptyList(), //it_box_diff - пусто (заполнять только для марочного алкоголя, при наличии отсканированных марок) https://trello.com/c/ndvDINaT
-                        processedExciseStamp = emptyList(), //it_mark_diff - пусто(заполнять только для марочного алкоголя, при наличии отсканированных марок) https://trello.com/c/ndvDINaT
+                        taskBoxDiscrepancies = emptyList(), //todo it_box_diff - пусто (заполнять только для марочного алкоголя, при наличии отсканированных марок) https://trello.com/c/ndvDINaT
+                        taskExciseStampsDiscrepancies = task.taskRepository.getExciseStampsDiscrepancies().getExciseStampDiscrepancies().map { TaskExciseStampDiscrepanciesRestData.from(it) }, //it_mark_diff - пусто(заполнять только для марочного алкоголя, при наличии отсканированных марок) https://trello.com/c/ndvDINaT
                         isSave = "X",
                         printerName = sessionInfo.printer ?: ""
                 )

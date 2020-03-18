@@ -12,6 +12,10 @@ class MemoryTaskRepository : ITaskRepository {
 
     private val taskExciseStampDiscrepanciesRepository: ITaskExciseStampDiscrepanciesRepository = MemoryTaskExciseStampDiscrepanciesRepository()
 
+    private val taskBoxesRepository: ITaskBoxesRepository = MemoryTaskBoxesRepository()
+
+    private val taskBoxesDiscrepanciesRepository: ITaskBoxesDiscrepanciesRepository = MemoryTaskBoxesDiscrepanciesRepository()
+
     private val taskNotificationsRepository: ITaskNotificationsRepository = MemoryTaskNotificationsRepository()
 
     private val taskReviseDocumentsRepository: ITaskReviseDocumentsRepository = MemoryTaskReviseDocumentsRepository()
@@ -42,8 +46,16 @@ class MemoryTaskRepository : ITaskRepository {
         return taskExciseStampRepository
     }
 
-    override fun getExciseStampDiscrepancies(): ITaskExciseStampDiscrepanciesRepository {
+    override fun getExciseStampsDiscrepancies(): ITaskExciseStampDiscrepanciesRepository {
         return taskExciseStampDiscrepanciesRepository
+    }
+
+    override fun getBoxes(): ITaskBoxesRepository {
+        return taskBoxesRepository
+    }
+
+    override fun getBoxesDiscrepancies(): ITaskBoxesDiscrepanciesRepository {
+        return taskBoxesDiscrepanciesRepository
     }
 
     override fun getNotifications(): ITaskNotificationsRepository {

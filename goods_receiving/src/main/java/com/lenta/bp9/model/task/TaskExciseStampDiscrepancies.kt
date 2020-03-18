@@ -1,4 +1,4 @@
-package com.lenta.bp9.model.task.revise
+package com.lenta.bp9.model.task
 
 import com.google.gson.annotations.SerializedName
 import com.lenta.shared.models.core.ExciseStamp

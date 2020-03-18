@@ -1,7 +1,6 @@
 package com.lenta.bp9.model.memory
 
 import com.lenta.bp9.model.repositories.ITaskTransportMarriageRepository
-import com.lenta.bp9.model.task.TaskProcessingUnitInfo
 import com.lenta.bp9.model.task.TaskTransportMarriageInfo
 
 class MemoryTaskTransportMarriageRepository : ITaskTransportMarriageRepository {
