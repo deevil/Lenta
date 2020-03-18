@@ -2,6 +2,7 @@ package com.lenta.bp9.requests.network
 
 import com.google.gson.annotations.SerializedName
 import com.lenta.bp9.model.task.*
+import com.lenta.bp9.model.task.revise.TaskExciseStampDiscrepanciesRestData
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.fmp.ObjectRawStatus
 import com.lenta.shared.functional.Either
@@ -52,6 +53,12 @@ data class DirectSupplierStartRecountRestInfo(
         val taskMercuryNotActualRestData: List<TaskMercuryNotActualRestData>,
         @SerializedName("ET_PROD_TEXT")//Таблица ЕГАИС производителей
         val manufacturers: List<Manufacturer>,
+        @SerializedName("ET_TASK_BOX") //Список коробок задания для передачи в МП
+        val taskBoxes: List<TaskBoxInfoRestData>,
+        @SerializedName("ET_TASK_MARK") //Список марок задания для передачи в МП
+        val taskExciseStamps: List<TaskExciseStampInfoRestData>,
+        @SerializedName("ET_MARK_DIFF") //Таблица обработанных марок задания
+        val taskExciseStampsDiscrepancies: List<TaskExciseStampDiscrepanciesRestData>,
         @SerializedName("EV_RETCODE")
         override val retCode: Int,
         @SerializedName("EV_ERROR_TEXT")

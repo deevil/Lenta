@@ -1,7 +1,7 @@
 package com.lenta.bp9.requests.network
 
 import com.google.gson.annotations.SerializedName
-import com.lenta.bp9.model.task.TaskExciseStampRestData
+import com.lenta.bp9.model.task.TaskExciseStampInfoRestData
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.fmp.ObjectRawStatus
 import com.lenta.shared.functional.Either
@@ -37,7 +37,7 @@ data class ZmpUtzGrz31V001Result(
         @SerializedName("EV_EXIDV_TOP") //Номер ГЕ
         val cargoUnitNumber: String,
         @SerializedName("ET_MARKS") //Список марок задания для передачи в МП
-        val taskExciseStamps: List<TaskExciseStampRestData>,
+        val taskExciseStamps: List<TaskExciseStampInfoRestData>,
         @SerializedName("ET_PROD_TEXT")//Таблица ЕГАИС производителей
         val manufacturers: List<Manufacturer>,
         @SerializedName("ES_MATNR") //Данные по товару излишку для ПГЕ

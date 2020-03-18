@@ -16,7 +16,8 @@ data class TaskBatchesDiscrepancies(
         val uom: Uom,
         val typeDiscrepancies: String, //Тип расхождения
         val isNotEdit: Boolean,
-        val isNew: Boolean
+        val isNew: Boolean,
+        val notEditNumberDiscrepancies: String ////Количество нередактируемого расхождения, заполняется из numberDiscrepancies при получении таблицы ET_TASK_DIFF в рестах
 ) {
 
     companion object {
@@ -33,7 +34,8 @@ data class TaskBatchesDiscrepancies(
                         uom = Uom(code = uomInfo?.uom ?: "", name = uomInfo?.name ?: ""),
                         typeDiscrepancies = restData.typeDiscrepancies,
                         isNotEdit = restData.isNotEdit.isNotEmpty(),
-                        isNew = restData.isNew.isNotEmpty()
+                        isNew = restData.isNew.isNotEmpty(),
+                        notEditNumberDiscrepancies = if (restData.isNotEdit.isNotEmpty()) restData.numberDiscrepancies else ""
                 )
             }
 

@@ -46,22 +46,8 @@ class ReceivingTask(val taskHeader: TaskInfo,
         taskRepository.getBatches().updateBatches(taskContentsInfo.taskBatches)
         taskRepository.getBatchesDiscrepancies().updateBatchesDiscrepancy(taskContentsInfo.taskBatchesDiscrepancies)
         taskRepository.getMercuryDiscrepancies().updateMercuryInfo(taskContentsInfo.taskMercuryInfo)
-    }
-
-    fun updateTaskWithContentsRDS(taskContentsRDSInfo: TaskContentsRDSInfo) {
-        taskRepository.getProducts().updateProducts(taskContentsRDSInfo.products)
-        taskRepository.getProductsDiscrepancies().updateProductsDiscrepancy(taskContentsRDSInfo.productsDiscrepancies)
-        taskRepository.getBatches().updateBatches(taskContentsRDSInfo.taskBatches)
-        taskRepository.getBatchesDiscrepancies().updateBatchesDiscrepancy(taskContentsRDSInfo.taskBatchesDiscrepancies)
-        taskRepository.getMercuryDiscrepancies().updateMercuryInfo(taskContentsRDSInfo.taskMercuryInfo)
-    }
-
-    fun updateTaskWithContentsPGE(taskContentsPGEInfo: TaskContentsPGEInfo) {
-        taskRepository.getProducts().updateProducts(taskContentsPGEInfo.products)
-        taskRepository.getProductsDiscrepancies().updateProductsDiscrepancy(taskContentsPGEInfo.productsDiscrepancies)
-        taskRepository.getBatches().updateBatches(taskContentsPGEInfo.taskBatches)
-        taskRepository.getBatchesDiscrepancies().updateBatchesDiscrepancy(taskContentsPGEInfo.taskBatchesDiscrepancies)
-        taskRepository.getMercuryDiscrepancies().updateMercuryInfo(taskContentsPGEInfo.taskMercuryInfo)
+        taskRepository.getExciseStamps().updateExciseStamps(taskContentsInfo.taskExciseStampInfo)
+        taskRepository.getExciseStampDiscrepancies().updateExciseStampsDiscrepancy(taskContentsInfo.taskExciseStampDiscrepancies)
     }
 }
 

@@ -82,7 +82,9 @@ data class TaskContentsReceptionDistrCenterResult(
         @SerializedName("ET_TASK_BOX") //Список коробок задания для передачи в МП
         val taskBoxes: List<TaskBoxInfoRestData>,
         @SerializedName("ET_TASK_MARK") //Список марок задания для передачи в МП
-        val taskExciseStamps: List<TaskExciseStampRestData>,
+        val taskExciseStamps: List<TaskExciseStampInfoRestData>,
+        @SerializedName("ET_MARK_DIFF") //Таблица обработанных марок задания
+        val taskExciseStampsDiscrepancies: List<TaskExciseStampDiscrepanciesRestData>,
         @SerializedName("ET_VET_DIFF") //Таблица расхождений по вет.товарам
         val taskMercuryInfoRestData: List<TaskMercuryInfoRestData>,
         @SerializedName("EV_RETCODE")

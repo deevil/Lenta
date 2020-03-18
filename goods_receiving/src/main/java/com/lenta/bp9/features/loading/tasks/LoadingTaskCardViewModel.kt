@@ -226,7 +226,7 @@ class LoadingTaskCardViewModel : CoreLoadingViewModel() {
                     //this.updateMercuryNotActual(mercuryNotActual)
                 }
                 newTask?.taskRepository?.getCargoUnits()?.updateCargoUnits(cargoUnits)
-                newTask?.updateTaskWithContentsRDS(taskContents.getTaskContentsRDSInfo(result))
+                newTask?.updateTaskWithContents(taskContents.getTaskContentsRDSInfo(result))
                 newTask?.taskRepository?.getSections()?.updateSections(sectionInfo, sectionProducts)
                 taskManager.setTask(newTask)
                 transferToNextScreen()

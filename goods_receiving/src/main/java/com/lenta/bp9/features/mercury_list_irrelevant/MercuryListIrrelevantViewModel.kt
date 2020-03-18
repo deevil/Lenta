@@ -113,10 +113,12 @@ class MercuryListIrrelevantViewModel : CoreViewModel() {
     }
 
     private fun handleSuccessRecountStart(result: DirectSupplierStartRecountRestInfo) {
-        repoInMemoryHolder.manufacturers.value = result.manufacturers
-        taskManager.updateTaskDescription(TaskDescription.from(result.taskDescription))
-        taskManager.getReceivingTask()?.updateTaskWithContents(taskContents.getTaskContentsInfo(result))
-        screenNavigator.openGoodsListScreen()
+        viewModelScope.launch {
+            repoInMemoryHolder.manufacturers.value = result.manufacturers
+            taskManager.updateTaskDescription(TaskDescription.from(result.taskDescription))
+            taskManager.getReceivingTask()?.updateTaskWithContents(taskContents.getTaskContentsInfo(result))
+            screenNavigator.openGoodsListScreen()
+        }
     }
 
     private fun handleSuccessTransmitted(result: TransmittedRestInfo) {

@@ -61,7 +61,8 @@ class ProcessMercuryProductService
                         uom = productInfo.uom,
                         typeDiscrepancies = typeDiscrepancies,
                         isNotEdit = false,
-                        isNew = false
+                        isNew = false,
+                        notEditNumberDiscrepancies = ""
                 )
 
         val vetDocumentVolume = taskManager.getReceivingTask()?.taskRepository?.getMercuryDiscrepancies()?.findMercuryInfoOfProduct(productInfo)?.filter {
