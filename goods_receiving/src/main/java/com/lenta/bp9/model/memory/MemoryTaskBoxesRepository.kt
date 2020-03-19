@@ -12,8 +12,8 @@ class MemoryTaskBoxesRepository : ITaskBoxesRepository {
         return boxes
     }
 
-    override fun findBox(batch: TaskBoxInfo): TaskBoxInfo? {
-        return boxes.firstOrNull { it.materialNumber == batch.materialNumber && it.boxNumber == batch.boxNumber}
+    override fun findBox(box: TaskBoxInfo): TaskBoxInfo? {
+        return boxes.firstOrNull { it.materialNumber == box.materialNumber && it.boxNumber == box.boxNumber}
     }
 
     override fun findBoxOfProduct(productInfo: TaskProductInfo): TaskBoxInfo? {
@@ -23,7 +23,7 @@ class MemoryTaskBoxesRepository : ITaskBoxesRepository {
     override fun addBox(box: TaskBoxInfo): Boolean {
         var index = -1
         for (i in boxes.indices) {
-            if (box.boxNumber == boxes[i].boxNumber) {
+            if (box.materialNumber == boxes[i].materialNumber && box.boxNumber == boxes[i].boxNumber) {
                 index = i
             }
         }
@@ -35,9 +35,9 @@ class MemoryTaskBoxesRepository : ITaskBoxesRepository {
         return false
     }
 
-    override fun updateBoxes(newboxes: List<TaskBoxInfo>) {
+    override fun updateBoxes(newBoxes: List<TaskBoxInfo>) {
         boxes.clear()
-        newboxes.map {
+        newBoxes.map {
             addBox(it)
         }
     }
@@ -49,7 +49,7 @@ class MemoryTaskBoxesRepository : ITaskBoxesRepository {
 
     override fun deleteBox(box: TaskBoxInfo): Boolean {
         boxes.map { it }.filter {boxInfo ->
-            if (box.boxNumber == boxInfo.boxNumber) {
+            if (box.materialNumber == boxInfo.materialNumber && box.boxNumber == boxInfo.boxNumber) {
                 boxes.remove(boxInfo)
                 return@filter true
             }

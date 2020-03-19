@@ -122,8 +122,16 @@ class GoodsMercuryInfoViewModel : CoreViewModel(), OnPositionClickListener {
     }
     private val isClickApply: MutableLiveData<Boolean> = MutableLiveData(false)
     val isDiscrepancy: MutableLiveData<Boolean> = MutableLiveData(false)
-    val isDefect: MutableLiveData<Boolean> = spinQualitySelectedPosition.map {
-        it != 0
+    val isDefect: MutableLiveData<Boolean> = spinQualitySelectedPosition.combineLatest(isDiscrepancy).map {
+        if (taskManager.getReceivingTask()!!.taskHeader.taskType != TaskType.RecalculationCargoUnit) {
+            if (!it!!.second) {
+                qualityInfo.value?.get(it.first)?.code != "1"
+            } else true
+        } else {
+            if (!it!!.second) {
+                qualityInfo.value?.get(it.first)?.code != "1" && qualityInfo.value?.get(it.first)?.code != "2"
+            } else true
+        }
     }
     val isEizUnit: MutableLiveData<Boolean> by lazy {
         MutableLiveData(isDiscrepancy.value == false && isGoodsAddedAsSurplus.value == false)
@@ -317,7 +325,13 @@ class GoodsMercuryInfoViewModel : CoreViewModel(), OnPositionClickListener {
                     it.name
                 }
                 if (isDiscrepancy.value!!) {
-                    spinReasonRejectionSelectedPosition.value = reasonRejectionInfo.value!!.indexOfLast {it.code == "44"}
+                    spinReasonRejectionSelectedPosition.value = reasonRejectionInfo.value!!.indexOfLast {it.code == "44"}.let {
+                        if (it < 0) {
+                            0
+                        } else {
+                            it
+                        }
+                    }
                 } else {
                     spinReasonRejectionSelectedPosition.value = 0
                 }

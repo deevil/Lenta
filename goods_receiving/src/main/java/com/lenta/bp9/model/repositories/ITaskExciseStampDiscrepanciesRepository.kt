@@ -11,7 +11,7 @@ interface ITaskExciseStampDiscrepanciesRepository {
     fun updateExciseStampsDiscrepancy(newExciseStampDiscrepancies: List<TaskExciseStampDiscrepancies>)
     fun changeExciseStampDiscrepancy(discrepancy: TaskExciseStampDiscrepancies): Boolean
     fun deleteExciseStampDiscrepancy(discrepancy: TaskExciseStampDiscrepancies): Boolean
-    fun deleteExciseStampDiscrepancy(materialNumber: String, code: String, typeDiscrepancies: String): Boolean
+    fun deleteExciseStampDiscrepancy(exciseStampCode: String): Boolean
     fun deleteExciseStampsDiscrepanciesForProduct(product: TaskProductInfo): Boolean
     fun clear()
 }

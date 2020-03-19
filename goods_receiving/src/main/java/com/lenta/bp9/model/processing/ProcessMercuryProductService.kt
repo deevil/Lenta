@@ -1,9 +1,11 @@
 package com.lenta.bp9.model.processing
 
-import com.lenta.bp9.model.task.*
+import com.lenta.bp9.model.task.IReceivingTaskManager
+import com.lenta.bp9.model.task.TaskMercuryDiscrepancies
+import com.lenta.bp9.model.task.TaskProductDiscrepancies
+import com.lenta.bp9.model.task.TaskProductInfo
 import com.lenta.bp9.repos.IRepoInMemoryHolder
 import com.lenta.shared.di.AppScope
-import com.lenta.shared.utilities.Logg
 import javax.inject.Inject
 
 const val PROCESSING_MERCURY_SAVED = 1
@@ -194,7 +196,7 @@ class ProcessMercuryProductService
             it.numberDiscrepancies
         }
 
-        //весь, обработанный раннее товар из категории «Недогруз» сохраняем в категорию «Норма», а превышающее количество в Излишек
+        //весь, обработанный раннее товар из категории «Недогруз», сохраняем в категорию «Норма», а превышающее количество в Излишек
         val countNormAdd = vetDocumentVolume - vetDocumentCountAlreadyAdded
         add(countNormAdd.toString(), "1", manufacturer, productionDate)
         add(countExceeded.toString(), "2", manufacturer, productionDate)
@@ -207,10 +209,14 @@ class ProcessMercuryProductService
                 delProductDiscrepancies.add(newProductDiscrepancies[i])
             }
         }
-        if (delProductDiscrepancies.isNotEmpty()) {
-            newProductDiscrepancies.removeAll(delProductDiscrepancies)
+        delProductDiscrepancies.map {
+            if (it.isNotEdit) { //не редактируемое расхождение https://trello.com/c/Mo9AqreT
+                newProductDiscrepancies.remove(it)
+                newProductDiscrepancies.add(it)
+            } else {
+                newProductDiscrepancies.remove(it)
+            }
         }
-
 
         val delVetProductDiscrepancies = ArrayList<TaskMercuryDiscrepancies>()
         for (i in newVetProductDiscrepancies.indices) {

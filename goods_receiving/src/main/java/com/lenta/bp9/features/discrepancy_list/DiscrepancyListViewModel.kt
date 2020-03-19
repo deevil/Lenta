@@ -253,13 +253,13 @@ class DiscrepancyListViewModel : CoreViewModel(), PageSelectionListener {
                             .getReceivingTask()
                             ?.taskRepository
                             ?.getProductsDiscrepancies()
-                            ?.deleteProductDiscrepancy(countProcessed.value?.get(position)!!.productInfo!!.materialNumber, countProcessed.value?.get(position)!!.productDiscrepancies!!.typeDiscrepancies)
+                            ?.deleteProductDiscrepancy(countProcessed.value?.get(position)!!.productDiscrepancies!!)
 
                     taskManager
                             .getReceivingTask()
                             ?.taskRepository
                             ?.getMercuryDiscrepancies()
-                            ?.deleteMercuryDiscrepancy(countProcessed.value?.get(position)!!.productInfo!!.materialNumber, countProcessed.value?.get(position)!!.productDiscrepancies!!.typeDiscrepancies)
+                            ?.deleteMercuryDiscrepancyOfProduct(countProcessed.value?.get(position)!!.productInfo!!.materialNumber, countProcessed.value?.get(position)!!.productDiscrepancies!!.typeDiscrepancies)
                 }
 
             }

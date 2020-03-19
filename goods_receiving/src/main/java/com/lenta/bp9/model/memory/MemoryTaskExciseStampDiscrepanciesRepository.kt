@@ -25,9 +25,7 @@ class MemoryTaskExciseStampDiscrepanciesRepository : ITaskExciseStampDiscrepanci
     override fun addExciseStampDiscrepancy(discrepancy: TaskExciseStampDiscrepancies): Boolean {
         var index = -1
         for (i in stampsDiscrepancies.indices) {
-            if (discrepancy.materialNumber == stampsDiscrepancies[i].materialNumber &&
-                    discrepancy.code == stampsDiscrepancies[i].code &&
-                    discrepancy.typeDiscrepancies == stampsDiscrepancies[i].typeDiscrepancies) {
+            if (discrepancy.code == stampsDiscrepancies[i].code) {
                 index = i
             }
         }
@@ -52,24 +50,20 @@ class MemoryTaskExciseStampDiscrepanciesRepository : ITaskExciseStampDiscrepanci
     }
 
     override fun deleteExciseStampDiscrepancy(discrepancy: TaskExciseStampDiscrepancies): Boolean {
-        return deleteExciseStampDiscrepancy(discrepancy.materialNumber, discrepancy.code, discrepancy.typeDiscrepancies)
+        return deleteExciseStampDiscrepancy(discrepancy.code)
     }
 
-    override fun deleteExciseStampDiscrepancy(materialNumber: String, code: String, typeDiscrepancies: String): Boolean {
-        var index = -1
-        for (i in stampsDiscrepancies.indices) {
-            if (materialNumber == stampsDiscrepancies[i].materialNumber &&
-                    code == stampsDiscrepancies[i].code &&
-                    typeDiscrepancies == stampsDiscrepancies[i].typeDiscrepancies) {
-                index = i
+    override fun deleteExciseStampDiscrepancy(exciseStampCode: String): Boolean {
+        stampsDiscrepancies.map { it }.filter {discrepancies ->
+            if (exciseStampCode == discrepancies.code) {
+                stampsDiscrepancies.remove(discrepancies)
+                return@filter true
             }
-        }
+            return@filter false
 
-        if (index == -1) {
-            return false
+        }.let {
+            return it.isNotEmpty()
         }
-        stampsDiscrepancies.removeAt(index)
-        return true
     }
 
     override fun deleteExciseStampsDiscrepanciesForProduct(product: TaskProductInfo): Boolean {
@@ -84,7 +78,9 @@ class MemoryTaskExciseStampDiscrepanciesRepository : ITaskExciseStampDiscrepanci
             return false
         }
 
-        stampsDiscrepancies.removeAll(delDiscrepancies)
+        delDiscrepancies.map {
+            deleteExciseStampDiscrepancy(it)
+        }
         return true
     }
 

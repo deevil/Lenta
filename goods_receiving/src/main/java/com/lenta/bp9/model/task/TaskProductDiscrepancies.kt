@@ -15,9 +15,9 @@ data class TaskProductDiscrepancies(
         val numberDiscrepancies: String, //Количество расхождения в ПЕИ
         val uom: Uom,
         val typeDiscrepancies: String, //Тип расхождения
-        val isNotEdit: Boolean,
-        val isNew: Boolean,
-        val notEditNumberDiscrepancies: String ////Количество нередактируемого расхождения, заполняется из numberDiscrepancies при получении таблицы ET_TASK_DIFF в рестах
+        val isNotEdit: Boolean, //не редактируемое расхождение
+        val isNew: Boolean, //для ПГЕ данное поле заполняется для товаров, которые не числятся в ГЕ https://trello.com/c/Mo9AqreT
+        val notEditNumberDiscrepancies: String //Количество не редактируемого расхождения, заполняется из numberDiscrepancies при получении таблицы ET_TASK_DIFF в рестах
 ) {
 
     companion object {

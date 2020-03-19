@@ -29,8 +29,7 @@ class MemoryTaskBoxesDiscrepanciesRepository : ITaskBoxesDiscrepanciesRepository
         var index = -1
         for (i in boxesDiscrepancies.indices) {
             if (discrepancies.materialNumber == boxesDiscrepancies[i].materialNumber &&
-                    /**discrepancies.boxNumber == boxesDiscrepancies[i].boxNumber &&*/
-                    discrepancies.typeDiscrepancies == boxesDiscrepancies[i].typeDiscrepancies) {
+                    discrepancies.boxNumber == boxesDiscrepancies[i].boxNumber) {
                 index = i
             }
         }
@@ -55,20 +54,17 @@ class MemoryTaskBoxesDiscrepanciesRepository : ITaskBoxesDiscrepanciesRepository
     }
 
     override fun deleteBoxDiscrepancies(discrepancies: TaskBoxDiscrepancies): Boolean {
-        var index = -1
-        for (i in boxesDiscrepancies.indices) {
-            if (discrepancies.materialNumber == boxesDiscrepancies[i].materialNumber &&
-                    /**discrepancies.boxNumber == boxesDiscrepancies[i].boxNumber &&*/
-                    discrepancies.typeDiscrepancies == boxesDiscrepancies[i].typeDiscrepancies) {
-                index = i
+        boxesDiscrepancies.map { it }.filter {boxDiscrepancies ->
+            if (discrepancies.materialNumber == boxDiscrepancies.materialNumber &&
+                    discrepancies.boxNumber == boxDiscrepancies.boxNumber) {
+                boxesDiscrepancies.remove(discrepancies)
+                return@filter true
             }
-        }
+            return@filter false
 
-        if (index == -1) {
-            return false
+        }.let {
+            return it.isNotEmpty()
         }
-        boxesDiscrepancies.removeAt(index)
-        return true
     }
 
     override fun deleteBoxesDiscrepanciesForBox(delBox: TaskBoxInfo): Boolean {
@@ -83,7 +79,9 @@ class MemoryTaskBoxesDiscrepanciesRepository : ITaskBoxesDiscrepanciesRepository
             return false
         }
 
-        boxesDiscrepancies.removeAll(delDiscrepancies)
+        delDiscrepancies.map {
+            deleteBoxDiscrepancies(it)
+        }
         return true
     }
 

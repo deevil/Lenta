@@ -52,20 +52,17 @@ class MemoryTaskProductRepository : ITaskProductRepository {
         return addProduct(product)
     }
 
-    override fun deleteProduct(product: TaskProductInfo): Boolean {
-        var index = -1
-        for (i in productInfo.indices) {
-            if (product.materialNumber == productInfo[i].materialNumber) {
-                index = i
+    override fun deleteProduct(delProduct: TaskProductInfo): Boolean {
+        productInfo.map { it }.filter {product ->
+            if (delProduct.materialNumber == product.materialNumber) {
+                productInfo.remove(product)
+                return@filter true
             }
-        }
+            return@filter false
 
-        if (index == -1) {
-            return false
+        }.let {
+            return it.isNotEmpty()
         }
-
-        productInfo.removeAt(index)
-        return true
     }
 
     override fun clear() {

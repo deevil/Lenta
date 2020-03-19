@@ -21,9 +21,7 @@ class MemoryTaskExciseStampBadRepository : ITaskExciseStampBadRepository {
     override fun addExciseStampBad(addExciesStampBad: TaskExciseStampBad): Boolean {
         var index = -1
         for (i in stampsBad.indices) {
-            if (addExciesStampBad.materialNumber == stampsBad[i].materialNumber &&
-                    addExciesStampBad.exciseStampCode == stampsBad[i].exciseStampCode &&
-                    addExciesStampBad.typeDiscrepancies == stampsBad[i].typeDiscrepancies) {
+            if (addExciesStampBad.exciseStampCode == stampsBad[i].exciseStampCode) {
                 index = i
             }
         }
@@ -48,20 +46,16 @@ class MemoryTaskExciseStampBadRepository : ITaskExciseStampBadRepository {
     }
 
     override fun deleteExciseStampBad(delExciesStampBad: TaskExciseStampBad): Boolean {
-        var index = -1
-        for (i in stampsBad.indices) {
-            if (delExciesStampBad.materialNumber == stampsBad[i].materialNumber &&
-                    delExciesStampBad.exciseStampCode == stampsBad[i].exciseStampCode &&
-                    delExciesStampBad.typeDiscrepancies == stampsBad[i].typeDiscrepancies) {
-                index = i
+        stampsBad.map { it }.filter {stamp ->
+            if (delExciesStampBad.exciseStampCode == stamp.exciseStampCode) {
+                stampsBad.remove(stamp)
+                return@filter true
             }
-        }
+            return@filter false
 
-        if (index == -1) {
-            return false
+        }.let {
+            return it.isNotEmpty()
         }
-        stampsBad.removeAt(index)
-        return true
     }
 
     override fun clear() {
