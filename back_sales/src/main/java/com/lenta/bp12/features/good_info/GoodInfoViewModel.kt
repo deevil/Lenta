@@ -6,6 +6,7 @@ import com.lenta.bp12.model.GoodType
 import com.lenta.bp12.model.ICreateTaskManager
 import com.lenta.bp12.platform.navigation.IScreenNavigator
 import com.lenta.bp12.request.ExciseInfoNetRequest
+import com.lenta.bp12.request.ExciseInfoParams
 import com.lenta.bp12.request.GoodInfoNetRequest
 import com.lenta.bp12.request.GoodInfoParams
 import com.lenta.shared.platform.viewmodel.CoreViewModel
@@ -74,11 +75,15 @@ class GoodInfoViewModel : CoreViewModel() {
     }
 
     val total = good.map { good ->
-        "${good?.quantity.sumWith(quantity.value?.toDoubleOrNull()).dropZeros()} ${good?.units?.name}"
+        good?.quantity.sumWith(quantity.value?.toDoubleOrNull())
+    }
+
+    val totalWithUnits = total.map { quantity ->
+        "${quantity.dropZeros()} ${good.value?.units?.name}"
     }
 
     val basket = good.map { good ->
-        "${good?.quantity.sumWith(quantity.value?.toDoubleOrNull()).dropZeros()} ${good?.units?.name}"
+        "111 ${good?.units?.name}"
     }
 
     val totalTitle = MutableLiveData("Итого*")
@@ -86,10 +91,14 @@ class GoodInfoViewModel : CoreViewModel() {
     val basketTitle = MutableLiveData("*По корзине")
 
     val providers = good.map { good ->
-        good?.getPreparedProviderList()
+        good?.providers
     }
 
-    val providerEnabled = providers.map { providers ->
+    val providerList = providers.map { list ->
+        list?.map { it.name }
+    }
+
+    val providerEnabled = providerList.map { providers ->
         providers?.size ?: 0 > 1
     }
 
@@ -102,7 +111,11 @@ class GoodInfoViewModel : CoreViewModel() {
     }
 
     val producers = good.map { good ->
-        good?.getPreparedProducerList()
+        good?.producers
+    }
+
+    val producerList = producers.map { list ->
+        list?.map { it.name }
     }
 
     val producerEnabled = producers.map { producers ->
@@ -128,11 +141,11 @@ class GoodInfoViewModel : CoreViewModel() {
 
     val missingVisibility = MutableLiveData(true)
 
-    val rollbackEnabled = MutableLiveData(false)
+    val rollbackEnabled = MutableLiveData(true)
 
     val missingEnabled = MutableLiveData(false)
 
-    val applyEnabled = MutableLiveData(true)
+    val applyEnabled = MutableLiveData(false)
 
     // -----------------------------
 
@@ -156,8 +169,8 @@ class GoodInfoViewModel : CoreViewModel() {
                                 barCallback = { getGoodByEan(number) }
                         )
                     }
-                    Constants.EXCISE_68 -> {}
-                    Constants.EXCISE_150 -> {}
+                    Constants.EXCISE_68 -> { loadMarkInfo(number) }
+                    Constants.EXCISE_150 -> { loadMarkInfo(number) }
                     else -> getGoodByEan(number)
                 }
             }
@@ -197,7 +210,8 @@ class GoodInfoViewModel : CoreViewModel() {
                         manager.putInCurrentGood(goodInfo)
                     } else {
                         navigator.showNotMatchTaskSettingsAddingNotPossible {
-                            if (manager.searchNumber.isNotEmpty()) {
+                            if (manager.searchFromList) {
+                                manager.searchFromList = false
                                 manager.searchNumber = ""
                                 navigator.goBack()
                                 navigator.goBack()
@@ -211,13 +225,47 @@ class GoodInfoViewModel : CoreViewModel() {
         }
     }
 
+    private fun loadMarkInfo(number: String) {
+        viewModelScope.launch {
+            navigator.showProgressLoadingData()
 
-    fun onScanResult(data: String) {
-        if (data.length >= Constants.SAP_6) {
-            checkSearchNumber(data)
+            exciseInfoNetRequest(ExciseInfoParams(
+                    quantity = "1",
+                    tkNumber = sessionInfo.market ?: "Not found!",
+                    material = good.value!!.material,
+                    markNumber = number,
+                    materialComp = "",
+                    producerCode = producers.value?.get(producerPosition.value!!)?.code ?: "",
+                    bottledDate = "",
+                    mode = 1
+            ))
         }
     }
 
+    fun onScanResult(number: String) {
+        if (applyEnabled.value!! && number.length >= Constants.SAP_6) {
+            saveGoodInTask()
+
+            manager.searchFromList = false
+            manager.searchNumber = number
+            checkSearchNumber(number)
+        }
+    }
+
+    private fun saveGoodInTask() {
+        // Обновить параметры товара, которые нуждаются в этом
+
+
+        // Сохранить товар с список
+        manager.addGoodInTask()
+    }
+
+
+    fun onBackPressed() {
+        manager.searchFromList = false
+        manager.searchNumber = ""
+        navigator.goBack()
+    }
 
     fun onClickRollback() {
 

@@ -1,6 +1,8 @@
 package com.lenta.bp12.request
 
 import com.google.gson.annotations.SerializedName
+import com.lenta.bp12.model.pojo.MarkItem
+import com.lenta.bp12.model.pojo.ProducerItem
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.fmp.ObjectRawStatus
 import com.lenta.shared.functional.Either
@@ -22,7 +24,7 @@ class ExciseInfoNetRequest @Inject constructor(
 data class ExciseInfoParams(
         /** Код бизнес процесса */
         @SerializedName("IV_CODEBP")
-        val bpCode: String,
+        val bpCode: String = "BKS",
         /** Фактическое количество */
         @SerializedName("IV_WIV_FACT_QNTERKS")
         val quantity: String,
@@ -37,13 +39,13 @@ data class ExciseInfoParams(
         val materialComp: String,
         /** Код акцизной марки */
         @SerializedName("IV_MARK_NUM")
-        val markNumber: String,
+        val markNumber: String = "",
         /** Номер коробки */
         @SerializedName("IV_BOX_NUM")
-        val boxNumber: String,
+        val boxNumber: String = "",
         /** ЕГАИС Код организации */
         @SerializedName("IV_ZPROD")
-        val entityCode: String,
+        val producerCode: String,
         /** УТЗ ТСД: Дата розлива */
         @SerializedName("IV_BOTT_MARK")
         val bottledDate: String,
@@ -66,13 +68,13 @@ data class ExciseInfoResult(
         val statusDescription: String,
         /** Таблица марок в коробке */
         @SerializedName("ET_MARKS")
-        val marks: String,
+        val marks: List<MarkItem>,
         /** Номер товара? */
         @SerializedName("EV_MATNR_COMP")
         val materialComp: String,
         /** Таблица ЕГАИС производителей */
         @SerializedName("ET_PROD_TEXT")
-        val producers: String,
+        val producers: List<ProducerItem>,
         /** Код возврата */
         @SerializedName("EV_RETCODE")
         override val retCode: Int,

@@ -88,7 +88,7 @@
 
                     <TextView
                         style="@style/CellTextStyle"
-                        android:text="@{vm.total}"
+                        android:text="@{vm.totalWithUnits}"
                         tools:text="1 шт" />
 
                     <TextView
@@ -116,7 +116,7 @@
                         style="@style/CellSpinnerStyle"
                         android:layout_height="match_parent"
                         android:enabled="@{vm.providerEnabled}"
-                        app:items="@{vm.providers}"
+                        app:items="@{vm.providerList}"
                         app:onPositionClickListener="@{vm.onSelectProvider}"
                         app:position="@{vm.providerPosition}"
                         tools:entries="@array/test_list" />
@@ -156,7 +156,7 @@
                             style="@style/CellSpinnerStyle"
                             android:layout_height="match_parent"
                             android:enabled="@{vm.producerEnabled}"
-                            app:items="@{vm.producers}"
+                            app:items="@{vm.producerList}"
                             app:onPositionClickListener="@{vm.onSelectProducer}"
                             app:position="@{vm.producerPosition}"
                             tools:entries="@array/test_list" />

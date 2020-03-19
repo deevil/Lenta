@@ -15,6 +15,8 @@ class CreateTaskManager @Inject constructor(
 
     override var searchNumber = ""
 
+    override var searchFromList = false
+
     override val task = MutableLiveData<CreateTask>()
 
     override val currentGood = MutableLiveData<Good>()
@@ -42,8 +44,12 @@ class CreateTaskManager @Inject constructor(
         )
     }
 
-    override fun addCurrentGood() {
+    override fun addGoodInTask() {
         task.value?.let { changedTask ->
+            changedTask.goods.find { it.material == currentGood.value!!.material }?.let { good ->
+                changedTask.goods.remove(good)
+            }
+
             changedTask.goods.add(0, currentGood.value!!)
             task.value = changedTask
         }
@@ -66,13 +72,14 @@ class CreateTaskManager @Inject constructor(
 interface ICreateTaskManager {
 
     var searchNumber: String
+    var searchFromList: Boolean
 
     val task: MutableLiveData<CreateTask>
     val currentGood: MutableLiveData<Good>
 
     fun updateTask(createTask: CreateTask)
     suspend fun putInCurrentGood(goodInfo: GoodInfoResult)
-    fun addCurrentGood()
+    fun addGoodInTask()
     fun findGoodByEan(ean: String): Good?
     fun findGoodByMaterial(material: String): Good?
     suspend fun isGoodCanBeAdded(goodInfo: GoodInfoResult): Boolean

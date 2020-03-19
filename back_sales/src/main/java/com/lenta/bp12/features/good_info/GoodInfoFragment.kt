@@ -4,6 +4,7 @@ import android.view.View
 import com.lenta.bp12.R
 import com.lenta.bp12.databinding.FragmentGoodInfoBinding
 import com.lenta.bp12.platform.extention.getAppComponent
+import com.lenta.shared.platform.activity.OnBackPresserListener
 import com.lenta.shared.platform.fragment.CoreFragment
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
@@ -15,7 +16,7 @@ import com.lenta.shared.utilities.extentions.generateScreenNumberFromPostfix
 import com.lenta.shared.utilities.extentions.provideViewModel
 
 class GoodInfoFragment : CoreFragment<FragmentGoodInfoBinding, GoodInfoViewModel>(),
-        ToolbarButtonsClickListener, OnScanResultListener {
+        ToolbarButtonsClickListener, OnScanResultListener, OnBackPresserListener {
 
     override fun getLayoutId(): Int = R.layout.fragment_good_info
 
@@ -51,7 +52,8 @@ class GoodInfoFragment : CoreFragment<FragmentGoodInfoBinding, GoodInfoViewModel
 
     override fun onToolbarButtonClick(view: View) {
         when (view.id) {
-            R.id.b_2 -> vm.onClickRollback()
+            //R.id.b_2 -> vm.onClickRollback()
+            R.id.b_2 -> vm.onScanResult("147300249826851018001FZSIZAB5I6KZKWEQKPKZJHW6MYKVGAETXLPV7M5AIF7OXTQFIM347EWQGXAK65QGJFKTR7EQDHJQTJFSW5DNWTBU3BRLKVM7D6YZMYRBV6IOQY5ZXLPKLBHUZPBTRFTLQ")
             R.id.b_3 -> vm.onClickDetails()
             R.id.b_4 -> vm.onClickMissing()
             R.id.b_5 -> vm.onClickApply()
@@ -60,6 +62,11 @@ class GoodInfoFragment : CoreFragment<FragmentGoodInfoBinding, GoodInfoViewModel
 
     override fun onScanResult(data: String) {
         vm.onScanResult(data)
+    }
+
+    override fun onBackPressed(): Boolean {
+        vm.onBackPressed()
+        return true
     }
 
 }
