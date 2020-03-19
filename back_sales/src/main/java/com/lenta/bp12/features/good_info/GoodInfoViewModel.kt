@@ -1,9 +1,13 @@
 package com.lenta.bp12.features.good_info
 
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.viewModelScope
 import com.lenta.bp12.model.GoodType
 import com.lenta.bp12.model.ICreateTaskManager
 import com.lenta.bp12.platform.navigation.IScreenNavigator
+import com.lenta.bp12.request.ExciseInfoNetRequest
+import com.lenta.bp12.request.GoodInfoNetRequest
+import com.lenta.bp12.request.GoodInfoParams
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.platform.constants.Constants
@@ -11,6 +15,7 @@ import com.lenta.shared.utilities.extentions.dropZeros
 import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.utilities.extentions.sumWith
 import com.lenta.shared.view.OnPositionClickListener
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class GoodInfoViewModel : CoreViewModel() {
@@ -24,9 +29,19 @@ class GoodInfoViewModel : CoreViewModel() {
     @Inject
     lateinit var manager: ICreateTaskManager
 
+    @Inject
+    lateinit var goodInfoNetRequest: GoodInfoNetRequest
+
+    @Inject
+    lateinit var exciseInfoNetRequest: ExciseInfoNetRequest
+
+
+    val task by lazy {
+        manager.task
+    }
 
     val good by lazy {
-        manager.getCurrentGood()
+        manager.currentGood
     }
 
     val title = good.map { good ->
@@ -106,8 +121,6 @@ class GoodInfoViewModel : CoreViewModel() {
 
     val dateEnabled = MutableLiveData(true)
 
-    // -----------------------------
-
 
     val rollbackVisibility = MutableLiveData(true)
 
@@ -122,6 +135,89 @@ class GoodInfoViewModel : CoreViewModel() {
     val applyEnabled = MutableLiveData(true)
 
     // -----------------------------
+
+    init {
+        viewModelScope.launch {
+            checkSearchNumber(manager.searchNumber)
+        }
+    }
+
+    // -----------------------------
+
+    private fun checkSearchNumber(number: String) {
+        number.length.let { length ->
+            if (length >= Constants.SAP_6) {
+                when (length) {
+                    Constants.SAP_6 -> getGoodByMaterial(number)
+                    Constants.SAP_18 -> getGoodByMaterial(number)
+                    Constants.SAP_OR_BAR_12 -> {
+                        navigator.showTwelveCharactersEntered(
+                                sapCallback = { getGoodByMaterial(number) },
+                                barCallback = { getGoodByEan(number) }
+                        )
+                    }
+                    Constants.EXCISE_68 -> {}
+                    Constants.EXCISE_150 -> {}
+                    else -> getGoodByEan(number)
+                }
+            }
+        }
+    }
+
+    private fun getGoodByEan(ean: String) {
+        manager.findGoodByEan(ean)?.let {  good ->
+            manager.currentGood.value = good
+        } ?: loadGoodInfo(ean = ean)
+    }
+
+    private fun getGoodByMaterial(material: String) {
+        manager.findGoodByMaterial(material)?.let {  good ->
+            manager.currentGood.value = good
+        } ?: loadGoodInfo(material = material)
+    }
+
+    private fun loadGoodInfo(ean: String? = null, material: String? = null) {
+        require((ean != null) || (material != null)) {
+            "At least one param must be not null - ean: $ean, material: $material"
+        }
+
+        viewModelScope.launch {
+            navigator.showProgressLoadingData()
+
+            goodInfoNetRequest(GoodInfoParams(
+                    tkNumber = sessionInfo.market ?: "Not found!",
+                    ean = ean ?: "",
+                    material = material ?: "",
+                    taskType = task.value!!.type.type
+            )).also {
+                navigator.hideProgress()
+            }.either(::handleFailure) { goodInfo ->
+                viewModelScope.launch {
+                    if (manager.isGoodCanBeAdded(goodInfo)) {
+                        manager.putInCurrentGood(goodInfo)
+                    } else {
+                        navigator.showNotMatchTaskSettingsAddingNotPossible {
+                            if (manager.searchNumber.isNotEmpty()) {
+                                manager.searchNumber = ""
+                                navigator.goBack()
+                                navigator.goBack()
+                            } else {
+                                navigator.goBack()
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+
+    fun onScanResult(data: String) {
+        if (data.length >= Constants.SAP_6) {
+            checkSearchNumber(data)
+        }
+    }
+
 
     fun onClickRollback() {
 
@@ -140,14 +236,6 @@ class GoodInfoViewModel : CoreViewModel() {
     }
 
     fun addProvider() {
-
-    }
-
-    fun onScanResult(data: String) {
-        checkEnteredNumber(data)
-    }
-
-    private fun checkEnteredNumber(number: String) {
 
     }
 

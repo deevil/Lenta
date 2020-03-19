@@ -157,6 +157,7 @@ class DatabaseRepository @Inject constructor(
 }
 
 interface IDatabaseRepository {
+
     suspend fun getAllowedAppVersion(): String?
     suspend fun getUnitsByCode(code: String): Uom
     suspend fun getTaskTypeList(): List<TaskType>
@@ -166,4 +167,5 @@ interface IDatabaseRepository {
     suspend fun isGoodForbidden(gisControl: String, taskType: String, goodGroup: String?, purchaseGroup: String?): Boolean
     suspend fun getTaskAttributes(taskType: String): Set<String>
     suspend fun isGoodCanBeAdded(goodInfo: GoodInfoResult, taskType: String): Boolean
+
 }

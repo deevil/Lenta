@@ -1,11 +1,9 @@
 package com.lenta.bp12.features.task_composition
 
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
 import com.lenta.bp12.model.ICreateTaskManager
 import com.lenta.bp12.platform.navigation.IScreenNavigator
 import com.lenta.bp12.request.GoodInfoNetRequest
-import com.lenta.bp12.request.GoodInfoParams
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.platform.constants.Constants
@@ -13,7 +11,8 @@ import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.SelectionItemsHelper
 import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
 import com.lenta.shared.utilities.databinding.PageSelectionListener
-import kotlinx.coroutines.launch
+import com.lenta.shared.utilities.extentions.dropZeros
+import com.lenta.shared.utilities.extentions.map
 import javax.inject.Inject
 
 class TaskCompositionViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyboardListener {
@@ -32,16 +31,17 @@ class TaskCompositionViewModel : CoreViewModel(), PageSelectionListener, OnOkInS
 
 
     val goodSelectionsHelper = SelectionItemsHelper()
+
     val basketSelectionsHelper = SelectionItemsHelper()
 
     val selectedPage = MutableLiveData(0)
 
-    val title by lazy {
-        "ВПП // Возврат от 10.12.2018 15:20"
+    private val task by lazy {
+        manager.task
     }
 
-    val task by lazy {
-        manager.getTask()
+    val title = task.map { task ->
+        "${task?.type?.type} // ${task?.name}"
     }
 
     val deleteEnabled = MutableLiveData(false)
@@ -54,14 +54,14 @@ class TaskCompositionViewModel : CoreViewModel(), PageSelectionListener, OnOkInS
         MutableLiveData(true)
     }
 
-    val goods by lazy {
-        MutableLiveData(List(3) {
+    val goods = task.map {task ->
+        task?.goods!!.mapIndexed { index, good ->
             ItemGoodUi(
-                    position = "${it + 1}",
-                    name = "Test name ${it + 1}",
-                    quantity = (1..15).random().toString()
+                    position = "${index + 1}",
+                    name = good.name,
+                    quantity = good.quantity.dropZeros()
             )
-        })
+        }
     }
 
     val baskets by lazy {
@@ -90,7 +90,16 @@ class TaskCompositionViewModel : CoreViewModel(), PageSelectionListener, OnOkInS
     }
 
     fun onClickItemPosition(position: Int) {
-
+        selectedPage.value?.let { page ->
+            when (page) {
+                0 -> {
+                    manager.searchNumber = task.value!!.goods[position].material
+                    navigator.openGoodInfoScreen()
+                }
+                1 -> {}
+                else -> throw IllegalArgumentException("Wrong pager position!")
+            }
+        }
     }
 
     fun onScanResult(data: String) {
@@ -104,76 +113,9 @@ class TaskCompositionViewModel : CoreViewModel(), PageSelectionListener, OnOkInS
 
     private fun checkEnteredNumber(number: String) {
         number.length.let { length ->
-            if (length < Constants.SAP_6) {
-                return
-            }
-
             if (length >= Constants.SAP_6) {
-                when (length) {
-                    Constants.SAP_6 -> openGoodByMaterial("000000000000$number")
-                    Constants.SAP_18 -> openGoodByMaterial(number)
-                    Constants.SAP_OR_BAR_12 -> {
-                        navigator.showTwelveCharactersEntered(
-                                sapCallback = { openGoodByMaterial(number) },
-                                barCallback = { openGoodByEan(number) }
-                        )
-                    }
-                    else -> openGoodByEan(number)
-                }
-            }
-        }
-    }
-
-    private fun openGoodByEan(ean: String) {
-        if (manager.isExistEan(ean)) {
-            navigator.openGoodInfoScreen()
-        } else {
-            viewModelScope.launch {
-                navigator.showProgressLoadingData()
-
-                goodInfoNetRequest(GoodInfoParams(
-                        tkNumber = sessionInfo.market ?: "Not found!",
-                        ean = ean,
-                        taskType = task.value!!.type.type
-                )).also {
-                    navigator.hideProgress()
-                }.either(::handleFailure) { goodInfo ->
-                    viewModelScope.launch {
-                        if (manager.isGoodCanBeAdded(goodInfo)) {
-                            manager.putInCurrentGood(goodInfo)
-                            navigator.openGoodInfoScreen()
-                        } else {
-                            navigator.showNotMatchTaskSettingsAddingNotPossible()
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    private fun openGoodByMaterial(material: String) {
-        if (manager.isExistMaterial(material)) {
-            navigator.openGoodInfoScreen()
-        } else {
-            viewModelScope.launch {
-                navigator.showProgressLoadingData()
-
-                goodInfoNetRequest(GoodInfoParams(
-                        tkNumber = sessionInfo.market ?: "Not found!",
-                        material = material,
-                        taskType = task.value!!.type.type
-                )).also {
-                    navigator.hideProgress()
-                }.either(::handleFailure) { goodInfo ->
-                    viewModelScope.launch {
-                        if (manager.isGoodCanBeAdded(goodInfo)) {
-                            manager.putInCurrentGood(goodInfo)
-                            navigator.openGoodInfoScreen()
-                        } else {
-                            navigator.showNotMatchTaskSettingsAddingNotPossible()
-                        }
-                    }
-                }
+                manager.searchNumber = number
+                navigator.openGoodInfoScreen()
             }
         }
     }

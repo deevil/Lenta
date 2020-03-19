@@ -13,18 +13,12 @@ class CreateTaskManager @Inject constructor(
         private val database: IDatabaseRepository
 ) : ICreateTaskManager {
 
-    private val task = MutableLiveData<CreateTask>()
+    override var searchNumber = ""
 
-    private val currentGood = MutableLiveData<Good>()
+    override val task = MutableLiveData<CreateTask>()
 
+    override val currentGood = MutableLiveData<Good>()
 
-    override fun getTask(): MutableLiveData<CreateTask> {
-        return task
-    }
-
-    override fun getCurrentGood(): MutableLiveData<Good> {
-        return currentGood
-    }
 
     override fun updateTask(createTask: CreateTask) {
         task.value = createTask
@@ -55,22 +49,12 @@ class CreateTaskManager @Inject constructor(
         }
     }
 
-    override fun isExistEan(ean: String): Boolean {
-        task.value?.goods?.find { it.ean == ean }?.let { good ->
-            currentGood.value = good
-            return true
-        }
-
-        return false
+    override fun findGoodByEan(ean: String): Good? {
+        return task.value?.goods?.find { it.ean == ean }
     }
 
-    override fun isExistMaterial(material: String): Boolean {
-        task.value?.goods?.find { it.material == material }?.let { good ->
-            currentGood.value = good
-            return true
-        }
-
-        return false
+    override fun findGoodByMaterial(material: String): Good? {
+        return task.value?.goods?.find { it.material == material }
     }
 
     override suspend fun isGoodCanBeAdded(goodInfo: GoodInfoResult): Boolean {
@@ -81,13 +65,16 @@ class CreateTaskManager @Inject constructor(
 
 interface ICreateTaskManager {
 
-    fun getTask(): MutableLiveData<CreateTask>
-    fun getCurrentGood(): MutableLiveData<Good>
+    var searchNumber: String
+
+    val task: MutableLiveData<CreateTask>
+    val currentGood: MutableLiveData<Good>
+
     fun updateTask(createTask: CreateTask)
     suspend fun putInCurrentGood(goodInfo: GoodInfoResult)
     fun addCurrentGood()
-    fun isExistEan(ean: String): Boolean
-    fun isExistMaterial(material: String): Boolean
+    fun findGoodByEan(ean: String): Good?
+    fun findGoodByMaterial(material: String): Good?
     suspend fun isGoodCanBeAdded(goodInfo: GoodInfoResult): Boolean
 
 }
