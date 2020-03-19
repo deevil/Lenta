@@ -14,6 +14,7 @@ import com.lenta.shared.exception.Failure
 import com.lenta.shared.platform.constants.Constants
 import com.lenta.shared.platform.time.ITimeMonitor
 import com.lenta.shared.platform.viewmodel.CoreViewModel
+import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.databinding.PageSelectionListener
 import com.lenta.shared.utilities.date_time.DateTimeUtil
 import com.lenta.shared.utilities.extentions.getDeviceIp
@@ -117,8 +118,11 @@ class TaskCardViewModel : CoreViewModel(), PageSelectionListener {
 
     val visibilityNextBtn by lazy {
         MutableLiveData(taskManager.getReceivingTask()?.taskDescription?.currentStatus.let {
-            !(taskType == TaskType.ShipmentRC && (it == TaskStatus.ShipmentSentToGis || it == TaskStatus.ShipmentRejectedByGis || it == TaskStatus.Departure || it == TaskStatus.Completed)) ||
-                    it == TaskStatus.Completed
+            if (taskType == TaskType.ShipmentRC && (it == TaskStatus.ShipmentSentToGis || it == TaskStatus.ShipmentRejectedByGis || it == TaskStatus.Departure)) {
+                false
+            } else {
+                it != TaskStatus.Completed
+            }
         })
     }
 
@@ -269,7 +273,7 @@ class TaskCardViewModel : CoreViewModel(), PageSelectionListener {
     fun onResume() {
         viewModelScope.launch {
             updateDateTimes()
-        }
+         }
     }
 
     private fun updateDateTimes() {
