@@ -297,15 +297,14 @@ class GoodsInfoViewModel : CoreViewModel(), OnPositionClickListener {
     }
 
     fun onClickDetails() {
-        onScanResult("2999999410793")
-        //screenNavigator.openGoodsDetailsScreen(productInfo.value!!)
+        screenNavigator.openGoodsDetailsScreen(productInfo.value!!)
     }
 
     fun onScanResult(data: String) {
         addGoods.value = false
         onClickAdd()
         if (addGoods.value == true) {
-            searchProductDelegate.searchCode(code = data, fromScan = true)
+            searchProductDelegate.searchCode(code = data, fromScan = true, isBarCode = true)
         }
     }
 

@@ -143,6 +143,7 @@ class GoodsMercuryInfoViewModel : CoreViewModel(), OnPositionClickListener {
 
     val count: MutableLiveData<String> = MutableLiveData("0")
     private val countValue: MutableLiveData<Double> = count.map { it?.toDoubleOrNull() ?: 0.0 }
+    private val addGoods: MutableLiveData<Boolean> = MutableLiveData(false)
 
     val acceptTotalCount: MutableLiveData<Double> by lazy {
         countValue.combineLatest(spinQualitySelectedPosition).map {
@@ -366,6 +367,7 @@ class GoodsMercuryInfoViewModel : CoreViewModel(), OnPositionClickListener {
                     processMercuryProductService.add(count.value ?: "0", reasonRejectionInfo.value!![spinReasonRejectionSelectedPosition.value!!].code, spinManufacturers!![spinManufacturersSelectedPosition.value!!], spinProductionDate.value!![spinProductionDateSelectedPosition.value!!])
                 }
                 count.value = "0"
+                addGoods.value = true
                 if (isClickApply.value!!) {
                     processMercuryProductService.save()
                     screenNavigator.goBack()
@@ -393,6 +395,7 @@ class GoodsMercuryInfoViewModel : CoreViewModel(), OnPositionClickListener {
                 val productionDateSave = SimpleDateFormat("yyyy-MM-dd").format(formatter.parse(productionDate.value))
                 processMercuryProductService.add(convertEizToBei().toString(), qualityInfo.value!![spinQualitySelectedPosition.value!!].code, spinManufacturers!![spinManufacturersSelectedPosition.value!!], productionDateSave)
                 count.value = "0"
+                addGoods.value = true
                 if (isClickApply.value!!) {
                     processMercuryProductService.save()
                     screenNavigator.goBack()
@@ -406,6 +409,7 @@ class GoodsMercuryInfoViewModel : CoreViewModel(), OnPositionClickListener {
             PROCESSING_MERCURY_SAVED -> {
                 processMercuryProductService.add(convertEizToBei().toString(), qualityInfo.value!![spinQualitySelectedPosition.value!!].code, spinManufacturers!![spinManufacturersSelectedPosition.value!!], spinProductionDate.value!![spinProductionDateSelectedPosition.value!!])
                 count.value = "0"
+                addGoods.value = true
                 if (isClickApply.value!!) {
                     processMercuryProductService.save()
                     screenNavigator.goBack()
@@ -425,6 +429,7 @@ class GoodsMercuryInfoViewModel : CoreViewModel(), OnPositionClickListener {
                         nextCallbackFunc = {
                             processMercuryProductService.addSurplusInQuantityPGE(convertEizToBei(), spinManufacturers!![spinManufacturersSelectedPosition.value!!], spinProductionDate.value!![spinProductionDateSelectedPosition.value!!])
                             count.value = "0"
+                            addGoods.value = true
                             if (isClickApply.value!!) {
                                 processMercuryProductService.save()
                                 screenNavigator.goBack()
@@ -435,6 +440,7 @@ class GoodsMercuryInfoViewModel : CoreViewModel(), OnPositionClickListener {
             PROCESSING_MERCURY_NORM_AND_UNDERLOAD_EXCEEDED_INVOICE -> {//4.Особые случаи, 4.2.1.1 кол-во по поставке превышено
                 processMercuryProductService.addNormAndUnderloadExceededInvoicePGE(convertEizToBei(), spinManufacturers!![spinManufacturersSelectedPosition.value!!], spinProductionDate.value!![spinProductionDateSelectedPosition.value!!])
                 count.value = "0"
+                addGoods.value = true
                 if (isClickApply.value!!) {
                     processMercuryProductService.save()
                     screenNavigator.goBack()
@@ -443,6 +449,7 @@ class GoodsMercuryInfoViewModel : CoreViewModel(), OnPositionClickListener {
             PROCESSING_MERCURY_NORM_AND_UNDERLOAD_EXCEEDED_VET_DOC -> { //4.Особые случаи, 4.2.1.2 кол-во превышает кол-во по ВСД
                 processMercuryProductService.addNormAndUnderloadExceededVetDocPGE(convertEizToBei(), spinManufacturers!![spinManufacturersSelectedPosition.value!!], spinProductionDate.value!![spinProductionDateSelectedPosition.value!!])
                 count.value = "0"
+                addGoods.value = true
                 if (isClickApply.value!!) {
                     processMercuryProductService.save()
                     screenNavigator.goBack()
@@ -457,7 +464,11 @@ class GoodsMercuryInfoViewModel : CoreViewModel(), OnPositionClickListener {
     }
 
     fun onScanResult(data: String) {
-        searchProductDelegate.searchCode(code = data, fromScan = true, isBarCode = true)
+        addGoods.value = false
+        onClickAdd()
+        if (addGoods.value == true) {
+            searchProductDelegate.searchCode(code = data, fromScan = true, isBarCode = true)
+        }
     }
 
     fun onBackPressed() {
