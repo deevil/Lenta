@@ -270,14 +270,20 @@ class LoadingTaskCardViewModel : CoreLoadingViewModel() {
         taskManager.getReceivingTask()?.let { task ->
             when (task.taskDescription.currentStatus) {
                 TaskStatus.Checking -> {
-                    if (task.taskRepository.getReviseDocuments().getDeliveryDocuments().isNotEmpty()) {
-                        screenNavigator.openTaskReviseScreen()
-                    } else if (task.taskRepository.getReviseDocuments().getProductDocuments().isNotEmpty()) {
-                        screenNavigator.openProductDocumentsReviseScreen()
-                    } else {
-                        screenNavigator.openTaskListScreen()
-                        screenNavigator.openCheckingNotNeededAlert(context.getString(R.string.revise_not_needed_checking)) {
-                            screenNavigator.openFinishReviseLoadingScreen()
+                    when {
+                        task.taskRepository.getReviseDocuments().getDeliveryDocuments().isNotEmpty() -> {
+                            screenNavigator.openTaskListScreen()
+                            screenNavigator.openTaskReviseScreen()
+                        }
+                        task.taskRepository.getReviseDocuments().getProductDocuments().isNotEmpty() -> {
+                            screenNavigator.openTaskListScreen()
+                            screenNavigator.openProductDocumentsReviseScreen()
+                        }
+                        else -> {
+                            screenNavigator.openTaskListScreen()
+                            screenNavigator.openCheckingNotNeededAlert(context.getString(R.string.revise_not_needed_checking)) {
+                                screenNavigator.openFinishReviseLoadingScreen()
+                            }
                         }
                     }
                 }
