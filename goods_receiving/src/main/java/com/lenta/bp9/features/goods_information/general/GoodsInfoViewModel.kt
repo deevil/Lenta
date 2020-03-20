@@ -95,6 +95,9 @@ class GoodsInfoViewModel : CoreViewModel(), OnPositionClickListener {
     private val paramGrwOlGrundcat: MutableLiveData<String> = MutableLiveData("")
     private val paramGrwUlGrundcat: MutableLiveData<String> = MutableLiveData("")
 
+    private val paramGrsGrundNeg: MutableLiveData<String> = MutableLiveData("")
+    private val addGoods: MutableLiveData<Boolean> = MutableLiveData(false)
+
     val isGoodsAddedAsSurplus: MutableLiveData<Boolean> by lazy {
         MutableLiveData(productInfo.value?.isGoodsAddedAsSurplus == true )
     }
@@ -263,6 +266,7 @@ class GoodsInfoViewModel : CoreViewModel(), OnPositionClickListener {
             spinQuality.value = qualityInfo.value?.map {
                 it.name
             }
+            paramGrsGrundNeg.value = dataBase.getParamGrsGrundNeg() ?: ""
 
             /** определяем, что товар скоропорт https://trello.com/c/8sOTWtB7 */
             val paramGrzUffMhdhb = dataBase.getParamGrzUffMhdhb()?.toInt() ?: 60
@@ -293,11 +297,16 @@ class GoodsInfoViewModel : CoreViewModel(), OnPositionClickListener {
     }
 
     fun onClickDetails() {
-        screenNavigator.openGoodsDetailsScreen(productInfo.value!!)
+        onScanResult("2999999410793")
+        //screenNavigator.openGoodsDetailsScreen(productInfo.value!!)
     }
 
     fun onScanResult(data: String) {
-        searchProductDelegate.searchCode(code = data, fromScan = true, isBarCode = true)
+        addGoods.value = false
+        onClickAdd()
+        if (addGoods.value == true) {
+            searchProductDelegate.searchCode(code = data, fromScan = true)
+        }
     }
 
     override fun onClickPosition(position: Int) {
@@ -506,33 +515,30 @@ class GoodsInfoViewModel : CoreViewModel(), OnPositionClickListener {
 
     //ППП блок 6.58
     private fun checkParamGrsGrundNeg() {
-        viewModelScope.launch {
-            val paramGrsGrundNeg = dataBase.getParamGrsGrundNeg() ?: ""
-            if (processGeneralProductService.checkParam(paramGrsGrundNeg)) {//блок 6.58 (да)
-                //блок 6.93
-                val countWithoutParamGrsGrundNeg = processGeneralProductService.countWithoutParamGrsGrundNegPPP(paramGrsGrundNeg)
-                //блок 6.130
-                if (countWithoutParamGrsGrundNeg == 0.0) {//блок 6.130 (да)
-                    //блок 6.121
-                    processGeneralProductService.removeDiscrepancyFromProduct(paramGrsGrundNeg)
+        if (processGeneralProductService.checkParam(paramGrsGrundNeg.value!!)) {//блок 6.58 (да)
+            //блок 6.93
+            val countWithoutParamGrsGrundNeg = processGeneralProductService.countWithoutParamGrsGrundNegPPP(paramGrsGrundNeg.value!!)
+            //блок 6.130
+            if (countWithoutParamGrsGrundNeg == 0.0) {//блок 6.130 (да)
+                //блок 6.121
+                processGeneralProductService.removeDiscrepancyFromProduct(paramGrsGrundNeg.value!!)
+                //блок 6.172
+                saveCategory()
+            } else {//блок 6.130 (нет)
+                //блок 6.147
+                if (countWithoutParamGrsGrundNeg > 0.0) {//блок 6.147 (да)
+                    //блок 6.145
+                    processGeneralProductService.addWithoutUnderload(paramGrsGrundNeg.value!!, countWithoutParamGrsGrundNeg.toString())
                     //блок 6.172
                     saveCategory()
-                } else {//блок 6.130 (нет)
-                    //блок 6.147
-                    if (countWithoutParamGrsGrundNeg > 0.0) {//блок 6.147 (да)
-                        //блок 6.145
-                        processGeneralProductService.addWithoutUnderload(paramGrsGrundNeg, countWithoutParamGrsGrundNeg.toString())
-                        //блок 6.172
-                        saveCategory()
-                    } else {//блок 6.147 (нет)
-                        //блок 6.155
-                        processGeneralProductService.removeDiscrepancyFromProduct(paramGrsGrundNeg)
-                        noParamGrsGrundNeg()
-                    }
+                } else {//блок 6.147 (нет)
+                    //блок 6.155
+                    processGeneralProductService.removeDiscrepancyFromProduct(paramGrsGrundNeg.value!!)
+                    noParamGrsGrundNeg()
                 }
-            } else {//блок 6.58 (нет)
-                noParamGrsGrundNeg()
             }
+        } else {//блок 6.58 (нет)
+            noParamGrsGrundNeg()
         }
     }
 
@@ -570,6 +576,7 @@ class GoodsInfoViewModel : CoreViewModel(), OnPositionClickListener {
 
     //ППП блок 6.172
     private fun saveCategory() {
+        addGoods.value = true
         if (qualityInfo.value?.get(spinQualitySelectedPosition.value ?: 0)?.code == "1") {
             processGeneralProductService.add(acceptTotalCount.value!!.toString(), "1")
         } else {
