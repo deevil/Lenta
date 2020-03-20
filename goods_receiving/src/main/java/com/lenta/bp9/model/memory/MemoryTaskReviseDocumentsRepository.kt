@@ -147,7 +147,9 @@ class MemoryTaskReviseDocumentsRepository : ITaskReviseDocumentsRepository {
     (Т.е. сверенным считается товар у которого все привязанные ВСД сверены, суммарные количества в привязанных ВСД проверять на этом этапе не нужно)
     карточка trello 2460*/
     override fun setProductVetDocumentsReconciliation() {
-        productDocuments.map {productDoc ->
+        productDocuments.filter {
+            it.documentType == ProductDocumentType.Mercury
+        }.map {productDoc ->
             val countAttachedDocs = productVetDocuments.filter {productVetDoc ->
                 productVetDoc.productNumber == productDoc.productNumber && productVetDoc.isAttached
             }.count()
@@ -155,10 +157,8 @@ class MemoryTaskReviseDocumentsRepository : ITaskReviseDocumentsRepository {
                 productVetDoc.productNumber == productDoc.productNumber && productVetDoc.isAttached && productVetDoc.isCheck
             }.count()
             val document = productDocuments.findLast { it.documentID == productDoc.documentID && it.productNumber == productDoc.productNumber }
-            if (countAttachedDocs == countAttachedCheckDocs) {
+            if (countAttachedDocs > 0 && countAttachedDocs == countAttachedCheckDocs) {
                 document?.let { it.isCheck = true }
-            } else {
-                document?.let { it.isCheck = false }
             }
         }
     }
