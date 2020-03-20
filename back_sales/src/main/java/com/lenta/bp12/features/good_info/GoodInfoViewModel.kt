@@ -12,6 +12,7 @@ import com.lenta.bp12.request.GoodInfoParams
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.platform.constants.Constants
+import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.extentions.dropZeros
 import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.utilities.extentions.sumWith
@@ -161,7 +162,7 @@ class GoodInfoViewModel : CoreViewModel() {
         number.length.let { length ->
             if (length >= Constants.SAP_6) {
                 when (length) {
-                    Constants.SAP_6 -> getGoodByMaterial(number)
+                    Constants.SAP_6 -> getGoodByMaterial("000000000000$number")
                     Constants.SAP_18 -> getGoodByMaterial(number)
                     Constants.SAP_OR_BAR_12 -> {
                         navigator.showTwelveCharactersEntered(
@@ -230,15 +231,16 @@ class GoodInfoViewModel : CoreViewModel() {
             navigator.showProgressLoadingData()
 
             exciseInfoNetRequest(ExciseInfoParams(
-                    quantity = "1",
                     tkNumber = sessionInfo.market ?: "Not found!",
                     material = good.value!!.material,
                     markNumber = number,
-                    materialComp = "",
-                    producerCode = producers.value?.get(producerPosition.value!!)?.code ?: "",
-                    bottledDate = "",
-                    mode = 1
-            ))
+                    mode = 1,
+                    quantity = 0.0
+            )).also {
+                navigator.hideProgress()
+            }.either(::handleFailure) { exciseInfo ->
+                Logg.d { "--> exciseInfo = $exciseInfo" }
+            }
         }
     }
 

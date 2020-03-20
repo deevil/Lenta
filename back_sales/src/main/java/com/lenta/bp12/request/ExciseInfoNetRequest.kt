@@ -22,36 +22,30 @@ class ExciseInfoNetRequest @Inject constructor(
 }
 
 data class ExciseInfoParams(
-        /** Код бизнес процесса */
-        @SerializedName("IV_CODEBP")
-        val bpCode: String = "BKS",
-        /** Фактическое количество */
-        @SerializedName("IV_WIV_FACT_QNTERKS")
-        val quantity: String,
         /** Номер ТК */
         @SerializedName("IV_WERKS")
         val tkNumber: String,
         /** Номер товара */
         @SerializedName("IV_MATNR")
         val material: String,
-        /** Номер товара? */
-        @SerializedName("IV_MATNR_COMP")
-        val materialComp: String,
         /** Код акцизной марки */
         @SerializedName("IV_MARK_NUM")
-        val markNumber: String = "",
+        val markNumber: String,
         /** Номер коробки */
         @SerializedName("IV_BOX_NUM")
         val boxNumber: String = "",
         /** ЕГАИС Код организации */
         @SerializedName("IV_ZPROD")
-        val producerCode: String,
+        val producerCode: String = "",
         /** УТЗ ТСД: Дата розлива */
         @SerializedName("IV_BOTT_MARK")
-        val bottledDate: String,
+        val bottledDate: String = "",
         /** Режим работы: 1 - проверка марки, 2 - проверка коробки, 3 - проверка партионных признаков */
         @SerializedName("IV_MODE")
-        val mode: Int
+        val mode: Int,
+        /** Фактическое количество */
+        @SerializedName("IV_WIV_FACT_QNTERKS")
+        val quantity: Double
 )
 
 class ExciseInfoStatus : ObjectRawStatus<ExciseInfoResult>()
