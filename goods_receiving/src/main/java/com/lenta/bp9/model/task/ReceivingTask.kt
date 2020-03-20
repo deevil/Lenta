@@ -40,6 +40,10 @@ class ReceivingTask(val taskHeader: TaskInfo,
         return taskRepository.getCargoUnits().getCargoUnits()
     }
 
+    fun getObligatoryDeliveryDocuments(): List<DeliveryDocumentRevise> {
+        return taskRepository.getReviseDocuments().getDeliveryDocuments().filter { it.isObligatory }
+    }
+
     fun updateTaskWithContents(taskContentsInfo: TaskContentsInfo) {
         taskRepository.getProducts().updateProducts(taskContentsInfo.products)
         taskRepository.getProductsDiscrepancies().updateProductsDiscrepancy(taskContentsInfo.productsDiscrepancies)
