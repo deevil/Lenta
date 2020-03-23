@@ -4,6 +4,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.lenta.bp12.model.GoodType
 import com.lenta.bp12.model.ICreateTaskManager
+import com.lenta.bp12.model.pojo.Basket
 import com.lenta.bp12.platform.navigation.IScreenNavigator
 import com.lenta.bp12.request.ExciseInfoNetRequest
 import com.lenta.bp12.request.ExciseInfoParams
@@ -77,16 +78,28 @@ class GoodInfoViewModel : CoreViewModel() {
         good?.isBox() == false
     }
 
-    val total = good.map { good ->
+    val totalQuantity = good.map { good ->
         good?.quantity.sumWith(quantity.value?.toDoubleOrNull())
     }
 
-    val totalWithUnits = total.map { quantity ->
+    val totalWithUnits = totalQuantity.map { quantity ->
         "${quantity.dropZeros()} ${good.value?.units?.name}"
     }
 
-    val basket = good.map { good ->
-        "111 ${good?.units?.name}"
+    private val basket = good.map { good ->
+        task.value?.let { task ->
+            task.baskets.find {
+                it.section == good?.section && it.type == good.type && it.control == good.control && it.provider == good.provider
+            }
+        }
+    }
+
+    val basketNumber = basket.map { basket ->
+        task.value?.baskets?.indexOf(basket).toString()
+    }
+
+    val basketQuantity = basket.map { basket ->
+        "${task.value?.getQuantityByBasket(basket).sumWith(quantity.value?.toDoubleOrNull() ?: 0.0)} ${good.value?.units?.name}"
     }
 
     val totalTitle = MutableLiveData("Итого*")
@@ -194,8 +207,12 @@ class GoodInfoViewModel : CoreViewModel() {
                                 barCallback = { getGoodByEan(number) }
                         )
                     }
-                    Constants.EXCISE_68 -> { loadMarkInfo(number) }
-                    Constants.EXCISE_150 -> { loadMarkInfo(number) }
+                    Constants.EXCISE_68 -> {
+                        loadMarkInfo(number)
+                    }
+                    Constants.EXCISE_150 -> {
+                        loadMarkInfo(number)
+                    }
                     else -> getGoodByEan(number)
                 }
             }
@@ -203,13 +220,13 @@ class GoodInfoViewModel : CoreViewModel() {
     }
 
     private fun getGoodByEan(ean: String) {
-        manager.findGoodByEan(ean)?.let {  good ->
+        manager.findGoodByEan(ean)?.let { good ->
             manager.currentGood.value = good
         } ?: loadGoodInfo(ean = ean)
     }
 
     private fun getGoodByMaterial(material: String) {
-        manager.findGoodByMaterial(material)?.let {  good ->
+        manager.findGoodByMaterial(material)?.let { good ->
             manager.currentGood.value = good
         } ?: loadGoodInfo(material = material)
     }
@@ -279,13 +296,31 @@ class GoodInfoViewModel : CoreViewModel() {
     }
 
     private fun saveGoodInTask() {
-        total.value?.let {total ->
+        totalQuantity.value?.let { total ->
             manager.currentGood.value?.quantity = total
         }
 
         // Создать корзину, если есть необходимость
         // Сделать эту корзину текущей
         // ...
+        good.value?.let { good ->
+            val basket = task.value?.baskets?.find {
+                it.section == good.section && it.type == good.type && it.control == good.control && it.provider == good.provider
+            }
+
+            if (basket == null) {
+                manager.addBasket(Basket(
+                        section = good.section,
+                        type = good.type,
+                        control = good.control,
+                        provider = good.provider
+                ))
+            }
+        }
+
+
+
+
 
         manager.addGoodInTask()
     }

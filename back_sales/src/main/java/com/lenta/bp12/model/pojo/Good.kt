@@ -1,5 +1,6 @@
 package com.lenta.bp12.model.pojo
 
+import com.lenta.bp12.model.ControlType
 import com.lenta.bp12.model.GoodType
 import com.lenta.bp12.request.pojo.ProducerInfo
 import com.lenta.bp12.request.pojo.ProviderInfo
@@ -17,7 +18,9 @@ data class Good(
         val type: GoodType,
         val isAlcohol: Boolean,
         val isExcise: Boolean,
+        val control: ControlType,
         val providers: List<ProviderInfo>,
+        val provider: ProviderInfo? = null,
         val producers: List<ProducerInfo>,
         val matrix: MatrixType,
         val section: String,

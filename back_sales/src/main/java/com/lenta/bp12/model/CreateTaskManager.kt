@@ -1,8 +1,10 @@
 package com.lenta.bp12.model
 
 import androidx.lifecycle.MutableLiveData
+import com.lenta.bp12.model.pojo.Basket
 import com.lenta.bp12.model.pojo.TaskCreate
 import com.lenta.bp12.model.pojo.Good
+import com.lenta.bp12.platform.extention.getControlType
 import com.lenta.bp12.repository.IDatabaseRepository
 import com.lenta.bp12.request.GoodInfoResult
 import com.lenta.shared.models.core.getMatrixType
@@ -37,6 +39,7 @@ class CreateTaskManager @Inject constructor(
                 type = if (goodInfo.materialInfo.isExcise.isSapTrue()) GoodType.EXCISE else if (goodInfo.materialInfo.isAlcohol.isSapTrue()) GoodType.ALCOHOL else GoodType.COMMON,
                 isAlcohol = goodInfo.materialInfo.isAlcohol.isSapTrue(),
                 isExcise = goodInfo.materialInfo.isExcise.isSapTrue(),
+                control = goodInfo.getControlType(),
                 providers = goodInfo.providers,
                 producers = goodInfo.producers,
                 matrix = getMatrixType(goodInfo.materialInfo.matrix),
@@ -66,6 +69,13 @@ class CreateTaskManager @Inject constructor(
     override suspend fun isGoodCanBeAdded(goodInfo: GoodInfoResult): Boolean {
         return database.isGoodCanBeAdded(goodInfo, task.value!!.type.type)
     }
+
+    override fun addBasket(basket: Basket) {
+        task.value?.let { changedTask ->
+            changedTask.baskets.add(basket)
+            task.value = changedTask
+        }
+    }
 }
 
 
@@ -83,5 +93,6 @@ interface ICreateTaskManager {
     fun findGoodByEan(ean: String): Good?
     fun findGoodByMaterial(material: String): Good?
     suspend fun isGoodCanBeAdded(goodInfo: GoodInfoResult): Boolean
+    fun addBasket(basket: Basket)
 
 }

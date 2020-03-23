@@ -12,4 +12,12 @@ data class TaskCreate(
         val isCommon: Boolean,
         val goods: MutableList<Good> = mutableListOf(),
         val baskets: MutableList<Basket> = mutableListOf()
-)
+) {
+
+    fun getQuantityByBasket(basket: Basket?): Double {
+        return goods.filter {
+            basket?.section == it.section && basket.type == it.type && basket.control == it.control && basket.provider == it.provider
+        }.map { it.quantity }.sum()
+    }
+
+}
