@@ -221,7 +221,7 @@ class SearchProductDelegate @Inject constructor(
                     if (taskProductInfo.isVet) {
                         screenNavigator.openGoodsMercuryInfoScreen(taskProductInfo, isDiscrepancy)
                     } else {
-                        screenNavigator.openGoodsInfoScreen(productInfo = taskProductInfo, isDiscrepancy = isDiscrepancy, initialCount = initialCount)
+                        screenNavigator.openGoodsInfoScreen(productInfo = taskProductInfo, isDiscrepancy = isDiscrepancy)
                     }
                 }
                 ProductType.ExciseAlcohol -> {
