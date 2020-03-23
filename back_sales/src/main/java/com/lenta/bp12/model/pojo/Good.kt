@@ -20,7 +20,8 @@ data class Good(
         val providers: List<ProviderInfo>,
         val producers: List<ProducerInfo>,
         val matrix: MatrixType,
-        val section: String
+        val section: String,
+        val marks: MutableList<Mark> = mutableListOf()
 ) {
 
     fun getNameWithMaterial(delimiter: String = " "): String {

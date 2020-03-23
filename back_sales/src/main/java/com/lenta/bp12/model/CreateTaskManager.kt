@@ -1,7 +1,7 @@
 package com.lenta.bp12.model
 
 import androidx.lifecycle.MutableLiveData
-import com.lenta.bp12.model.pojo.CreateTask
+import com.lenta.bp12.model.pojo.TaskCreate
 import com.lenta.bp12.model.pojo.Good
 import com.lenta.bp12.repository.IDatabaseRepository
 import com.lenta.bp12.request.GoodInfoResult
@@ -17,13 +17,13 @@ class CreateTaskManager @Inject constructor(
 
     override var searchFromList = false
 
-    override val task = MutableLiveData<CreateTask>()
+    override val task = MutableLiveData<TaskCreate>()
 
     override val currentGood = MutableLiveData<Good>()
 
 
-    override fun updateTask(createTask: CreateTask) {
-        task.value = createTask
+    override fun updateTask(taskCreate: TaskCreate) {
+        task.value = taskCreate
     }
 
     override suspend fun putInCurrentGood(goodInfo: GoodInfoResult) {
@@ -74,10 +74,10 @@ interface ICreateTaskManager {
     var searchNumber: String
     var searchFromList: Boolean
 
-    val task: MutableLiveData<CreateTask>
+    val task: MutableLiveData<TaskCreate>
     val currentGood: MutableLiveData<Good>
 
-    fun updateTask(createTask: CreateTask)
+    fun updateTask(taskCreate: TaskCreate)
     suspend fun putInCurrentGood(goodInfo: GoodInfoResult)
     fun addGoodInTask()
     fun findGoodByEan(ean: String): Good?

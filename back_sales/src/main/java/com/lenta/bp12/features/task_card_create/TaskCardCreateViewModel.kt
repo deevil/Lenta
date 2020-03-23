@@ -3,7 +3,7 @@ package com.lenta.bp12.features.task_card_create
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.lenta.bp12.model.ICreateTaskManager
-import com.lenta.bp12.model.pojo.CreateTask
+import com.lenta.bp12.model.pojo.TaskCreate
 import com.lenta.bp12.platform.navigation.IScreenNavigator
 import com.lenta.bp12.repository.IDatabaseRepository
 import com.lenta.shared.account.ISessionInfo
@@ -135,7 +135,7 @@ class TaskCardCreateViewModel : CoreViewModel(), PageSelectionListener {
     }
 
     fun onClickNext() {
-        manager.updateTask(CreateTask(
+        manager.updateTask(TaskCreate(
                 name = taskName.value!!,
                 type = types.value!![taskTypePosition.value!!],
                 storage = storageList.value!![storagePosition.value!!],

@@ -9,6 +9,8 @@ import com.lenta.bp12.request.ExciseInfoNetRequest
 import com.lenta.bp12.request.ExciseInfoParams
 import com.lenta.bp12.request.GoodInfoNetRequest
 import com.lenta.bp12.request.GoodInfoParams
+import com.lenta.bp12.request.pojo.ProducerInfo
+import com.lenta.bp12.request.pojo.ProviderInfo
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.platform.constants.Constants
@@ -92,7 +94,14 @@ class GoodInfoViewModel : CoreViewModel() {
     val basketTitle = MutableLiveData("*По корзине")
 
     val providers = good.map { good ->
-        good?.providers
+        good?.providers?.let { providers ->
+            val list = providers.toMutableList()
+            if (list.size > 1) {
+                list.add(0, ProviderInfo())
+            }
+
+            list.toList()
+        }
     }
 
     val providerList = providers.map { list ->
@@ -112,7 +121,14 @@ class GoodInfoViewModel : CoreViewModel() {
     }
 
     val producers = good.map { good ->
-        good?.producers
+        good?.producers?.let { producers ->
+            val list = producers.toMutableList()
+            if (list.size > 1) {
+                list.add(0, ProducerInfo())
+            }
+
+            list.toList()
+        }
     }
 
     val producerList = producers.map { list ->
