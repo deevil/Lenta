@@ -1,7 +1,7 @@
 package com.lenta.bp12.di
 
 import com.lenta.bp12.ExceptionHandler
-import com.lenta.bp12.features.add_supplier.AddSupplierViewModel
+import com.lenta.bp12.features.add_provider.AddProviderViewModel
 import com.lenta.bp12.main.MainActivity
 import com.lenta.bp12.main.MainViewModel
 import com.lenta.bp12.platform.navigation.IScreenNavigator
@@ -62,6 +62,6 @@ interface AppComponent : CoreComponent {
     fun inject(it: TaskCardCreateViewModel)
     fun inject(it: TaskCardOpenViewModel)
     fun inject(it: GoodInfoViewModel)
-    fun inject(it: AddSupplierViewModel)
+    fun inject(it: AddProviderViewModel)
 
 }

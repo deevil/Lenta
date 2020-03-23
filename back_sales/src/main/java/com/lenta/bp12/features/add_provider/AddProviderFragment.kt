@@ -1,8 +1,8 @@
-package com.lenta.bp12.features.add_supplier
+package com.lenta.bp12.features.add_provider
 
 import android.view.View
 import com.lenta.bp12.R
-import com.lenta.bp12.databinding.FragmentAddSupplierBinding
+import com.lenta.bp12.databinding.FragmentAddProviderBinding
 import com.lenta.bp12.platform.extention.getAppComponent
 import com.lenta.shared.platform.fragment.CoreFragment
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
@@ -13,15 +13,15 @@ import com.lenta.shared.utilities.extentions.connectLiveData
 import com.lenta.shared.utilities.extentions.generateScreenNumberFromPostfix
 import com.lenta.shared.utilities.extentions.provideViewModel
 
-class AddSupplierFragment : CoreFragment<FragmentAddSupplierBinding, AddSupplierViewModel>(),
+class AddProviderFragment : CoreFragment<FragmentAddProviderBinding, AddProviderViewModel>(),
         ToolbarButtonsClickListener {
 
-    override fun getLayoutId(): Int = R.layout.fragment_add_supplier
+    override fun getLayoutId(): Int = R.layout.fragment_add_provider
 
     override fun getPageNumber(): String? = generateScreenNumberFromPostfix("7")
 
-    override fun getViewModel(): AddSupplierViewModel {
-        provideViewModel(AddSupplierViewModel::class.java).let {
+    override fun getViewModel(): AddProviderViewModel {
+        provideViewModel(AddProviderViewModel::class.java).let {
             getAppComponent()?.inject(it)
             return it
         }

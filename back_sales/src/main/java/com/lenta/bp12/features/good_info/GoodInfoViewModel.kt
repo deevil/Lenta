@@ -136,17 +136,25 @@ class GoodInfoViewModel : CoreViewModel() {
     val dateEnabled = MutableLiveData(true)
 
 
-    val rollbackVisibility = MutableLiveData(true)
+    val applyEnabled = quantity.map { quantity ->
+        good.value?.let { good ->
+            when (good.type) {
+                GoodType.COMMON -> quantity?.toDoubleOrNull() ?: 0.0 > 0
+                GoodType.ALCOHOL -> quantity?.toDoubleOrNull() ?: 0.0 > 0
+                GoodType.EXCISE -> quantity?.toDoubleOrNull() ?: 0.0 > 0
+            }
+        }
+    }
 
-    val detailsVisibility = MutableLiveData(true)
+    val detailsVisibility = good.map { good ->
+        good?.type == GoodType.ALCOHOL || good?.type == GoodType.EXCISE
+    }
 
-    val missingVisibility = MutableLiveData(true)
+    val rollbackVisibility = good.map { good ->
+        good?.type == GoodType.EXCISE
+    }
 
-    val rollbackEnabled = MutableLiveData(true)
-
-    val missingEnabled = MutableLiveData(false)
-
-    val applyEnabled = MutableLiveData(false)
+    val rollbackEnabled = MutableLiveData(false)
 
     // -----------------------------
 
@@ -255,37 +263,41 @@ class GoodInfoViewModel : CoreViewModel() {
     }
 
     private fun saveGoodInTask() {
-        // Обновить параметры товара, которые нуждаются в этом
+        total.value?.let {total ->
+            manager.currentGood.value?.quantity = total
+        }
 
+        // Создать корзину, если есть необходимость
+        // Сделать эту корзину текущей
+        // ...
 
-        // Сохранить товар с список
         manager.addGoodInTask()
     }
 
 
     fun onBackPressed() {
-        manager.searchFromList = false
-        manager.searchNumber = ""
-        navigator.goBack()
-    }
-
-    fun onClickRollback() {
-
+        navigator.showUnsavedDataWillBeLost {
+            manager.searchFromList = false
+            manager.searchNumber = ""
+            navigator.goBack()
+        }
     }
 
     fun onClickDetails() {
-
-    }
-
-    fun onClickMissing() {
-
+        navigator.openGoodDetailsScreen()
     }
 
     fun onClickApply() {
-
+        saveGoodInTask()
+        navigator.goBack()
+        navigator.openBasketGoodListScreen()
     }
 
     fun addProvider() {
+        navigator.openAddProviderScreen()
+    }
+
+    fun onClickRollback() {
 
     }
 

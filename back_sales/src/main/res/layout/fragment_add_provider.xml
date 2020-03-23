@@ -2,13 +2,13 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context=".features.add_supplier.AddSupplierFragment">
+    tools:context=".features.add_provider.AddProviderFragment">
 
     <data>
 
         <variable
             name="vm"
-            type="com.lenta.bp12.features.add_supplier.AddSupplierViewModel" />
+            type="com.lenta.bp12.features.add_provider.AddProviderViewModel" />
 
     </data>
 

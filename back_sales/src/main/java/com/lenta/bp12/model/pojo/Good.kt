@@ -8,7 +8,7 @@ data class Good(
         val ean: String,
         val material: String,
         val name: String,
-        val quantity: Double = 0.0,
+        var quantity: Double = 0.0,
         val innerQuantity: Double,
         val units: Uom,
         val orderUnits: Uom,

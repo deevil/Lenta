@@ -1,4 +1,4 @@
-package com.lenta.bp12.features.add_supplier
+package com.lenta.bp12.features.add_provider
 
 import androidx.lifecycle.MutableLiveData
 import com.lenta.bp12.platform.navigation.IScreenNavigator
@@ -7,7 +7,7 @@ import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
 import com.lenta.shared.utilities.extentions.map
 import javax.inject.Inject
 
-class AddSupplierViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
+class AddProviderViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
 
     @Inject
     lateinit var navigator: IScreenNavigator
