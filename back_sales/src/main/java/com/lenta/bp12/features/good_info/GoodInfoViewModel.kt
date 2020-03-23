@@ -300,15 +300,8 @@ class GoodInfoViewModel : CoreViewModel() {
             manager.currentGood.value?.quantity = total
         }
 
-        // Создать корзину, если есть необходимость
-        // Сделать эту корзину текущей
-        // ...
         good.value?.let { good ->
-            val basket = task.value?.baskets?.find {
-                it.section == good.section && it.type == good.type && it.control == good.control && it.provider == good.provider
-            }
-
-            if (basket == null) {
+            if (basket.value == null) {
                 manager.addBasket(Basket(
                         section = good.section,
                         type = good.type,
@@ -317,10 +310,6 @@ class GoodInfoViewModel : CoreViewModel() {
                 ))
             }
         }
-
-
-
-
 
         manager.addGoodInTask()
     }
