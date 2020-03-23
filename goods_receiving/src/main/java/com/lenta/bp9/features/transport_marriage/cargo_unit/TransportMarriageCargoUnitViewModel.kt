@@ -6,6 +6,8 @@ import com.lenta.bp9.features.transport_marriage.ActItem
 import com.lenta.bp9.model.task.IReceivingTaskManager
 import com.lenta.bp9.model.task.TaskTransportMarriageInfo
 import com.lenta.bp9.platform.navigation.IScreenNavigator
+import com.lenta.bp9.platform.requestCodeTypeBarCode
+import com.lenta.bp9.platform.requestCodeTypeSap
 import com.lenta.bp9.repos.IRepoInMemoryHolder
 import com.lenta.bp9.requests.network.ZmpUtzGrz26V001NetRequest
 import com.lenta.bp9.requests.network.ZmpUtzGrz26V001Params
@@ -15,6 +17,7 @@ import com.lenta.shared.exception.Failure
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.requests.combined.scan_info.ScanInfoRequest
 import com.lenta.shared.requests.combined.scan_info.ScanInfoRequestParams
+import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.SelectionItemsHelper
 import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
 import com.lenta.shared.utilities.extentions.map
@@ -89,13 +92,13 @@ class TransportMarriageCargoUnitViewModel : CoreViewModel(), OnOkInSoftKeyboardL
         actSelectionsHelper.clearPositions()
     }
 
-    private fun searchProduct(materialNumber: String, processingUnitNumber: String?) {
+    private fun searchProduct(materialNumber: String) {
         viewModelScope.launch {
             screenNavigator.showProgressLoadingData()
             val foundTransportMarriageInfo = taskManager.getReceivingTask()?.taskRepository?.getTransportMarriage()?.findTransportMarriage(cargoUnitNumber.value ?: "", materialNumber)
             if (!foundTransportMarriageInfo.isNullOrEmpty()) {
                 foundTransportMarriageInfo.findLast {
-                    it.processingUnitNumber == processingUnitNumber
+                    it.processingUnitNumber == cargoUnitNumber.value
                 }?.let {
                     screenNavigator.openTransportMarriageGoodsInfoScreen(it)
                 }
@@ -133,7 +136,7 @@ class TransportMarriageCargoUnitViewModel : CoreViewModel(), OnOkInSoftKeyboardL
 
     fun onClickItemPosition(position: Int) {
         listAct.value?.get(position)?.transportMarriage?.let {
-            searchProduct(materialNumber = it.materialNumber, processingUnitNumber = it.processingUnitNumber)
+            searchProduct(materialNumber = it.materialNumber)
         }
     }
 
@@ -151,17 +154,44 @@ class TransportMarriageCargoUnitViewModel : CoreViewModel(), OnOkInSoftKeyboardL
             ).also {
                 screenNavigator.hideProgress()
             }.either(::handleFailure) { scanInfoResult ->
-                searchProduct(materialNumber = scanInfoResult.productInfo.materialNumber, processingUnitNumber = null)
+                searchProduct(materialNumber = scanInfoResult.productInfo.materialNumber)
             }
         }
 
     }
 
     override fun onOkInSoftKeyboard(): Boolean {
-        eanCode.value?.let {
-            searchProduct(materialNumber = it, processingUnitNumber = null)
+        when (eanCode.value?.length) {
+            6 -> {
+                eanCode.value?.let {
+                    searchProduct(materialNumber = "000000000000$it")
+                }
+            }
+            12 -> {
+                screenNavigator.openSelectTypeCodeScreen(requestCodeTypeSap, requestCodeTypeBarCode)
+            }
+            else -> {
+                eanCode.value?.let {
+                    onScanResult(it)
+                }
+            }
         }
         return true
+    }
+
+    fun onResult(code: Int?) {
+        when (code) {
+            requestCodeTypeSap -> {
+                eanCode.value?.let {
+                    searchProduct(materialNumber = "000000000000${it.takeLast(6)}")
+                }
+            }
+            requestCodeTypeBarCode -> {
+                eanCode.value?.let {
+                    onScanResult(it)
+                }
+            }
+        }
     }
 
     private fun discrepancies() : Boolean {
