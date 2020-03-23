@@ -261,7 +261,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                app:goodTypeIcon="@{vm.good.type}"
+                app:goodTypeIcon="@{vm.good.kind}"
                 tools:src="@drawable/ic_alcohol_32dp" />
 
             <ImageView

@@ -1,7 +1,7 @@
 package com.lenta.bp12.model.pojo
 
 import com.lenta.bp12.model.ControlType
-import com.lenta.bp12.model.GoodType
+import com.lenta.bp12.model.GoodKind
 import com.lenta.bp12.request.pojo.ProducerInfo
 import com.lenta.bp12.request.pojo.ProviderInfo
 import com.lenta.shared.models.core.MatrixType
@@ -15,15 +15,15 @@ data class Good(
         val innerQuantity: Double,
         val units: Uom,
         val orderUnits: Uom,
-        val type: GoodType,
-        val isAlcohol: Boolean,
-        val isExcise: Boolean,
+        val kind: GoodKind,
+        val type: String,
         val control: ControlType,
-        val providers: List<ProviderInfo>,
-        val provider: ProviderInfo? = null,
-        val producers: List<ProducerInfo>,
-        val matrix: MatrixType,
         val section: String,
+        val matrix: MatrixType,
+        val providers: List<ProviderInfo>,
+        val producers: List<ProducerInfo>,
+        val provider: ProviderInfo? = null,
+        val producer: ProducerInfo? = null,
         val marks: MutableList<Mark> = mutableListOf()
 ) {
 
@@ -33,32 +33,6 @@ data class Good(
 
     fun isBox(): Boolean {
         return innerQuantity > 0
-    }
-
-    fun getPreparedProviderList(): List<String> {
-        if (providers.isEmpty()) {
-            return emptyList()
-        }
-
-        val list = providers.map { it.name }.toMutableList()
-        if (list.size > 1) {
-            list.add(0, "")
-        }
-
-        return list
-    }
-
-    fun getPreparedProducerList(): List<String> {
-        if (producers.isEmpty()) {
-            return emptyList()
-        }
-
-        val list = producers.map { it.name }.toMutableList()
-        if (list.size > 1) {
-            list.add(0, "")
-        }
-
-        return list
     }
 
 }

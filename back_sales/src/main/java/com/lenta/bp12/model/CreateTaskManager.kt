@@ -5,10 +5,10 @@ import com.lenta.bp12.model.pojo.Basket
 import com.lenta.bp12.model.pojo.TaskCreate
 import com.lenta.bp12.model.pojo.Good
 import com.lenta.bp12.platform.extention.getControlType
+import com.lenta.bp12.platform.extention.getGoodType
 import com.lenta.bp12.repository.IDatabaseRepository
 import com.lenta.bp12.request.GoodInfoResult
 import com.lenta.shared.models.core.getMatrixType
-import com.lenta.shared.utilities.extentions.isSapTrue
 import javax.inject.Inject
 
 class CreateTaskManager @Inject constructor(
@@ -23,6 +23,8 @@ class CreateTaskManager @Inject constructor(
 
     override val currentGood = MutableLiveData<Good>()
 
+    override val currentBasket = MutableLiveData<Basket>()
+
 
     override fun updateTask(taskCreate: TaskCreate) {
         task.value = taskCreate
@@ -36,9 +38,8 @@ class CreateTaskManager @Inject constructor(
                 innerQuantity = goodInfo.materialInfo.innerQuantity.toDoubleOrNull() ?: 0.0,
                 units = database.getUnitsByCode(goodInfo.materialInfo.unitCode),
                 orderUnits = database.getUnitsByCode(goodInfo.materialInfo.orderUnitCode),
-                type = if (goodInfo.materialInfo.isExcise.isSapTrue()) GoodType.EXCISE else if (goodInfo.materialInfo.isAlcohol.isSapTrue()) GoodType.ALCOHOL else GoodType.COMMON,
-                isAlcohol = goodInfo.materialInfo.isAlcohol.isSapTrue(),
-                isExcise = goodInfo.materialInfo.isExcise.isSapTrue(),
+                kind = goodInfo.getGoodType(),
+                type = goodInfo.materialInfo.goodType,
                 control = goodInfo.getControlType(),
                 providers = goodInfo.providers,
                 producers = goodInfo.producers,
@@ -75,6 +76,8 @@ class CreateTaskManager @Inject constructor(
             changedTask.baskets.add(basket)
             task.value = changedTask
         }
+
+        currentBasket.value = basket
     }
 }
 
@@ -86,6 +89,7 @@ interface ICreateTaskManager {
 
     val task: MutableLiveData<TaskCreate>
     val currentGood: MutableLiveData<Good>
+    val currentBasket: MutableLiveData<Basket>
 
     fun updateTask(taskCreate: TaskCreate)
     suspend fun putInCurrentGood(goodInfo: GoodInfoResult)

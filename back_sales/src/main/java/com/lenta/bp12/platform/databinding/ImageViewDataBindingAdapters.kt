@@ -4,7 +4,7 @@ import android.widget.ImageView
 import androidx.databinding.BindingAdapter
 import com.lenta.bp12.R
 import com.lenta.bp12.model.BlockType
-import com.lenta.bp12.model.GoodType
+import com.lenta.bp12.model.GoodKind
 import com.lenta.bp12.model.TaskStatus
 import com.lenta.bp12.platform.extention.getDescriptionResId
 import com.lenta.shared.utilities.databinding.dataBindingHelpHolder
@@ -43,18 +43,18 @@ fun setBlockTypeIcon(imageView: ImageView, blockType: BlockType) {
 }
 
 @BindingAdapter("goodTypeIcon")
-fun setGoodTypeIcon(imageView: ImageView, goodType: GoodType?) {
-    imageView.setImageResource(when (goodType) {
-        GoodType.ALCOHOL -> R.drawable.ic_no_excise_alco_32dp
-        GoodType.EXCISE -> R.drawable.ic_alcohol_32dp
+fun setGoodTypeIcon(imageView: ImageView, goodKind: GoodKind?) {
+    imageView.setImageResource(when (goodKind) {
+        GoodKind.ALCOHOL -> R.drawable.ic_no_excise_alco_32dp
+        GoodKind.EXCISE -> R.drawable.ic_alcohol_32dp
         else -> R.drawable.ic_kandy_32dp
     }.also { iconRes ->
-        imageView.setInvisible(goodType == null)
+        imageView.setInvisible(goodKind == null)
 
-        goodType?.let {
+        goodKind?.let {
             imageView.setOnClickListener {
                 dataBindingHelpHolder.coreNavigator.openAlertScreen(
-                        message = imageView.context.getString(goodType.getDescriptionResId()),
+                        message = imageView.context.getString(goodKind.getDescriptionResId()),
                         iconRes = iconRes
                 )
             }

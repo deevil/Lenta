@@ -2,7 +2,7 @@ package com.lenta.bp12.features.good_info
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import com.lenta.bp12.model.GoodType
+import com.lenta.bp12.model.GoodKind
 import com.lenta.bp12.model.ICreateTaskManager
 import com.lenta.bp12.model.pojo.Basket
 import com.lenta.bp12.platform.navigation.IScreenNavigator
@@ -56,15 +56,15 @@ class GoodInfoViewModel : CoreViewModel() {
     val number = MutableLiveData("")
 
     val isCompactMode = good.map { good ->
-        good?.type == GoodType.COMMON
+        good?.kind == GoodKind.COMMON
     }
 
     val quantityType = good.map { good ->
-        good?.type?.let { type ->
+        good?.kind?.let { type ->
             when {
-                type == GoodType.EXCISE && number.value?.length == Constants.EXCISE_68 -> "Партионно"
-                type == GoodType.EXCISE -> "Марочно"
-                type == GoodType.ALCOHOL -> "Партионно"
+                type == GoodKind.EXCISE && number.value?.length == Constants.EXCISE_68 -> "Партионно"
+                type == GoodKind.EXCISE -> "Марочно"
+                type == GoodKind.ALCOHOL -> "Партионно"
                 else -> "Количество"
             }
         }
@@ -167,20 +167,20 @@ class GoodInfoViewModel : CoreViewModel() {
 
     val applyEnabled = quantity.map { quantity ->
         good.value?.let { good ->
-            when (good.type) {
-                GoodType.COMMON -> quantity?.toDoubleOrNull() ?: 0.0 > 0
-                GoodType.ALCOHOL -> quantity?.toDoubleOrNull() ?: 0.0 > 0
-                GoodType.EXCISE -> quantity?.toDoubleOrNull() ?: 0.0 > 0
+            when (good.kind) {
+                GoodKind.COMMON -> quantity?.toDoubleOrNull() ?: 0.0 > 0
+                GoodKind.ALCOHOL -> quantity?.toDoubleOrNull() ?: 0.0 > 0
+                GoodKind.EXCISE -> quantity?.toDoubleOrNull() ?: 0.0 > 0
             }
         }
     }
 
     val detailsVisibility = good.map { good ->
-        good?.type == GoodType.ALCOHOL || good?.type == GoodType.EXCISE
+        good?.kind == GoodKind.ALCOHOL || good?.kind == GoodKind.EXCISE
     }
 
     val rollbackVisibility = good.map { good ->
-        good?.type == GoodType.EXCISE
+        good?.kind == GoodKind.EXCISE
     }
 
     val rollbackEnabled = MutableLiveData(false)
@@ -323,14 +323,14 @@ class GoodInfoViewModel : CoreViewModel() {
         }
     }
 
-    fun onClickDetails() {
-        navigator.openGoodDetailsScreen()
-    }
-
     fun onClickApply() {
         saveGoodInTask()
         navigator.goBack()
         navigator.openBasketGoodListScreen()
+    }
+
+    fun onClickDetails() {
+        navigator.openGoodDetailsScreen()
     }
 
     fun addProvider() {
