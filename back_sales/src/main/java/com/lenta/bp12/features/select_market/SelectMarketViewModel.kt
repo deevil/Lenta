@@ -2,7 +2,6 @@ package com.lenta.bp12.features.select_market
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import com.google.gson.Gson
 
 import com.lenta.bp12.platform.navigation.IScreenNavigator
 import com.lenta.bp12.repository.IRepoInMemoryHolder
@@ -56,7 +55,7 @@ class SelectMarketViewModel : CoreViewModel(), OnPositionClickListener {
 
     init {
         viewModelScope.launch {
-            repoInMemoryHolder.storesRequestResult?.markets?.let { list ->
+            repoInMemoryHolder.storesRequestResult?.marketInfos?.let { list ->
                 markets.value = list.map {
                     MarketUi(number = it.tkNumber, address = it.address)
                 }

@@ -1,7 +1,7 @@
 package com.lenta.bp12.request
 
 import com.google.gson.annotations.SerializedName
-import com.lenta.bp12.model.pojo.*
+import com.lenta.bp12.request.pojo.*
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.fmp.ObjectRawStatus
 import com.lenta.shared.functional.Either
@@ -43,19 +43,19 @@ class TaskContentStatus : ObjectRawStatus<TaskContentResult>()
 data class TaskContentResult(
         /** Таблица состава задания */
         @SerializedName("ET_TASK_POS")
-        val goods: List<GoodItem>,
+        val goods: List<GoodInfo>,
         /** Таблица марок задания */
         @SerializedName("ET_TASK_MARK")
-        val marks: List<MarkItem>,
+        val marks: List<MarkInfo>,
         /** Таблица партий */
         @SerializedName("ET_TASK_PARTS")
-        val shipments: List<ShipmentItem>,
+        val shipments: List<ShipmentInfo>,
         /** Справочные данные товара */
         @SerializedName("ET_MATERIALS")
-        val additionalInfo: List<AdditionalInfoItem>,
+        val additionalInfo: List<AdditionalInfo>,
         /** Таблица производителей */
         @SerializedName("ET_PROD")
-        val producers: List<ProdItem>,
+        val producers: List<TaskProducerInfo>,
         /** Код возврата */
         @SerializedName("EV_RETCODE")
         override val retCode: Int,

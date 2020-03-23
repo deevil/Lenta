@@ -1,6 +1,8 @@
 package com.lenta.bp12.model.pojo
 
 import com.lenta.bp12.model.GoodType
+import com.lenta.bp12.request.pojo.ProducerInfo
+import com.lenta.bp12.request.pojo.ProviderInfo
 import com.lenta.shared.models.core.MatrixType
 import com.lenta.shared.models.core.Uom
 
@@ -15,8 +17,8 @@ data class Good(
         val type: GoodType,
         val isAlcohol: Boolean,
         val isExcise: Boolean,
-        val providers: List<ProviderItem>,
-        val producers: List<ProducerItem>,
+        val providers: List<ProviderInfo>,
+        val producers: List<ProducerInfo>,
         val matrix: MatrixType,
         val section: String
 ) {

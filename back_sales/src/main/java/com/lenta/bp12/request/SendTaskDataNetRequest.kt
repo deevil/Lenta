@@ -1,10 +1,10 @@
 package com.lenta.bp12.request
 
 import com.google.gson.annotations.SerializedName
-import com.lenta.bp12.model.pojo.CreatedTaskItem
-import com.lenta.bp12.model.pojo.GoodItem
-import com.lenta.bp12.model.pojo.MarkItem
-import com.lenta.bp12.model.pojo.ShipmentItem
+import com.lenta.bp12.request.pojo.SentTaskInfo
+import com.lenta.bp12.request.pojo.GoodInfo
+import com.lenta.bp12.request.pojo.MarkInfo
+import com.lenta.bp12.request.pojo.ShipmentInfo
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.fmp.ObjectRawStatus
 import com.lenta.shared.functional.Either
@@ -50,13 +50,13 @@ data class SendTaskDataParams(
         val isNotFinish: String,
         /** Таблица состава задания */
         @SerializedName("ET_TASK_POS")
-        val goods: List<GoodItem>,
+        val goods: List<GoodInfo>,
         /** Таблица марок задания */
         @SerializedName("ET_TASK_MARK")
-        val marks: List<MarkItem>,
+        val marks: List<MarkInfo>,
         /** Таблица партий */
         @SerializedName("ET_TASK_PARTS")
-        val shipments: List<ShipmentItem>
+        val shipments: List<ShipmentInfo>
 )
 
 class SendTaskDataStatus : ObjectRawStatus<SendTaskDataResult>()
@@ -64,7 +64,7 @@ class SendTaskDataStatus : ObjectRawStatus<SendTaskDataResult>()
 data class SendTaskDataResult(
         /** Список созданных заданий */
         @SerializedName("ET_TASK_LIST")
-        val createdTasks: List<CreatedTaskItem>,
+        val sentTasks: List<SentTaskInfo>,
         /** Код возврата */
         @SerializedName("EV_RETCODE")
         override val retCode: Int,

@@ -1,8 +1,8 @@
-package com.lenta.bp12.model.pojo
+package com.lenta.bp12.request.pojo
 
 import com.google.gson.annotations.SerializedName
 
-data class CreatedTaskItem(
+data class SentTaskInfo(
         /** Первая строка созданного задания */
         @SerializedName("TEXT1")
         val text1: String,

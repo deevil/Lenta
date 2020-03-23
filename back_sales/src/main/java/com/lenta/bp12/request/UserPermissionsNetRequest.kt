@@ -1,11 +1,10 @@
 package com.lenta.bp12.request
 
 import com.google.gson.annotations.SerializedName
-import com.lenta.bp12.model.pojo.*
+import com.lenta.bp12.request.pojo.MarketInfo
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.fmp.ObjectRawStatus
 import com.lenta.shared.functional.Either
-import com.lenta.shared.functional.rightToLeft
 import com.lenta.shared.interactor.UseCase
 import com.lenta.shared.requests.FmpRequestsHelper
 import com.lenta.shared.requests.SapResponse
@@ -30,7 +29,7 @@ class PermissionsRequestStatus : ObjectRawStatus<PermissionsRequestResult>()
 data class PermissionsRequestResult(
         /** Список адресов ТК */
         @SerializedName("ET_WERKS")
-        val markets: List<Market>,
+        val marketInfos: List<MarketInfo>,
         /** Код возврата */
         @SerializedName("EV_RETCODE")
         override val retCode: Int,

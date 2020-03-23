@@ -1,7 +1,11 @@
 package com.lenta.bp12.request
 
 import com.google.gson.annotations.SerializedName
-import com.lenta.bp12.model.pojo.*
+import com.lenta.bp12.request.pojo.ProducerInfo
+import com.lenta.bp12.request.pojo.ProviderInfo
+import com.lenta.bp12.request.pojo.EanInfo
+import com.lenta.bp12.request.pojo.MaterialInfo
+import com.lenta.bp12.request.pojo.SetInfo
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.fmp.ObjectRawStatus
 import com.lenta.shared.functional.Either
@@ -51,13 +55,13 @@ data class GoodInfoResult(
         val materialInfo: MaterialInfo,
         /** Таблица наборов */
         @SerializedName("ET_SET")
-        val sets: List<SetItem>, // Для BKS не используется
+        val sets: List<SetInfo>, // Для BKS не используется
         /** Таблица поставщиков */
         @SerializedName("ET_LIFNR")
-        val providers: List<ProviderItem>,
+        val providers: List<ProviderInfo>,
         /** Таблица производителей */
         @SerializedName("ET_PROD")
-        val producers: List<ProducerItem>,
+        val producers: List<ProducerInfo>,
         /** Код возврата */
         @SerializedName("EV_RETCODE")
         override val retCode: Int,

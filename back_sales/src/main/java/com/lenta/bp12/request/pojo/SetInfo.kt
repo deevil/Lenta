@@ -1,8 +1,8 @@
-package com.lenta.bp12.model.pojo
+package com.lenta.bp12.request.pojo
 
 import com.google.gson.annotations.SerializedName
 
-data class SetItem(
+data class SetInfo(
         /** Номер товара? */
         @SerializedName("MATNR_OSN")
         var ean: String,

@@ -1,8 +1,8 @@
 package com.lenta.bp12.request
 
 import com.google.gson.annotations.SerializedName
-import com.lenta.bp12.model.pojo.MarkItem
-import com.lenta.bp12.model.pojo.ProducerItem
+import com.lenta.bp12.request.pojo.MarkInfo
+import com.lenta.bp12.request.pojo.ProducerInfo
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.fmp.ObjectRawStatus
 import com.lenta.shared.functional.Either
@@ -62,13 +62,13 @@ data class ExciseInfoResult(
         val statusDescription: String,
         /** Таблица марок в коробке */
         @SerializedName("ET_MARKS")
-        val marks: List<MarkItem>,
+        val marks: List<MarkInfo>,
         /** Номер товара? */
         @SerializedName("EV_MATNR_COMP")
         val materialComp: String,
         /** Таблица ЕГАИС производителей */
         @SerializedName("ET_PROD_TEXT")
-        val producers: List<ProducerItem>,
+        val producers: List<ProducerInfo>,
         /** Код возврата */
         @SerializedName("EV_RETCODE")
         override val retCode: Int,
