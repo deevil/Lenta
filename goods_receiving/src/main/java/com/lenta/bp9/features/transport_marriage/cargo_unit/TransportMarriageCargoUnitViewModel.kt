@@ -10,8 +10,11 @@ import com.lenta.bp9.repos.IRepoInMemoryHolder
 import com.lenta.bp9.requests.network.ZmpUtzGrz26V001NetRequest
 import com.lenta.bp9.requests.network.ZmpUtzGrz26V001Params
 import com.lenta.bp9.requests.network.ZmpUtzGrz26V001Result
+import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.platform.viewmodel.CoreViewModel
+import com.lenta.shared.requests.combined.scan_info.ScanInfoRequest
+import com.lenta.shared.requests.combined.scan_info.ScanInfoRequestParams
 import com.lenta.shared.utilities.SelectionItemsHelper
 import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
 import com.lenta.shared.utilities.extentions.map
@@ -32,6 +35,10 @@ class TransportMarriageCargoUnitViewModel : CoreViewModel(), OnOkInSoftKeyboardL
     lateinit var hyperHive: HyperHive
     @Inject
     lateinit var repoInMemoryHolder: IRepoInMemoryHolder
+    @Inject
+    lateinit var scanInfoRequest: ScanInfoRequest
+    @Inject
+    lateinit var sessionInfo: ISessionInfo
 
     val actSelectionsHelper = SelectionItemsHelper()
     val cargoUnitNumber: MutableLiveData<String> = MutableLiveData("")
@@ -86,7 +93,7 @@ class TransportMarriageCargoUnitViewModel : CoreViewModel(), OnOkInSoftKeyboardL
         viewModelScope.launch {
             screenNavigator.showProgressLoadingData()
             val foundTransportMarriageInfo = taskManager.getReceivingTask()?.taskRepository?.getTransportMarriage()?.findTransportMarriage(cargoUnitNumber.value ?: "", materialNumber)
-            if (foundTransportMarriageInfo != null) {
+            if (!foundTransportMarriageInfo.isNullOrEmpty()) {
                 foundTransportMarriageInfo.findLast {
                     it.processingUnitNumber == processingUnitNumber
                 }?.let {
@@ -131,7 +138,23 @@ class TransportMarriageCargoUnitViewModel : CoreViewModel(), OnOkInSoftKeyboardL
     }
 
     fun onScanResult(data: String) {
-        searchProduct(materialNumber = data, processingUnitNumber = null)
+        viewModelScope.launch {
+            screenNavigator.showProgressLoadingData()
+
+            scanInfoRequest(
+                    ScanInfoRequestParams(
+                            number = data,
+                            tkNumber = sessionInfo.market ?: "",
+                            fromScan = true,
+                            isBarCode = true
+                    )
+            ).also {
+                screenNavigator.hideProgress()
+            }.either(::handleFailure) { scanInfoResult ->
+                searchProduct(materialNumber = scanInfoResult.productInfo.materialNumber, processingUnitNumber = null)
+            }
+        }
+
     }
 
     override fun onOkInSoftKeyboard(): Boolean {
