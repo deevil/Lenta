@@ -297,8 +297,7 @@ class GoodsInfoViewModel : CoreViewModel(), OnPositionClickListener {
     }
 
     fun onClickDetails() {
-        onScanResult("2999999410779")
-        //screenNavigator.openGoodsDetailsScreen(productInfo.value!!)
+        screenNavigator.openGoodsDetailsScreen(productInfo.value!!)
     }
 
     fun onScanResult(data: String) {
