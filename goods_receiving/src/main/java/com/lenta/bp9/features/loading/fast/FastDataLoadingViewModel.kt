@@ -54,10 +54,9 @@ class FastDataLoadingViewModel : CoreLoadingViewModel() {
     }
 
     override fun handleFailure(failure: Failure) {
+        screenNavigator.openLoginScreen()
         screenNavigator.openAlertScreen(failureInterpreter.getFailureDescription(failure).message)
-        /**screenNavigator.openSelectMarketScreen()
-        screenNavigator.closeAllScreen()
-        screenNavigator.openAlertScreen(failure)*/
+
     }
 
     private fun handleSuccess(@Suppress("UNUSED_PARAMETER") b: Boolean) {
