@@ -69,7 +69,7 @@ class TaskCardFragment : CoreFragment<FragmentTaskCardBinding, TaskCardViewModel
                 TaskStatus.Unloaded -> {
                     when (vm.taskType) {
                         TaskType.RecalculationCargoUnit -> bottomToolbarUiModel.uiModelButton2.show(ButtonDecorationInfo.skipAlternate)
-                        TaskType.ReceptionDistributionCenter, TaskType.OwnProduction -> bottomToolbarUiModel.uiModelButton2.show(ButtonDecorationInfo.transportMarriage)
+                        TaskType.ReceptionDistributionCenter -> bottomToolbarUiModel.uiModelButton2.show(ButtonDecorationInfo.transportMarriage)
                     }
                 }
                 TaskStatus.Checked -> {

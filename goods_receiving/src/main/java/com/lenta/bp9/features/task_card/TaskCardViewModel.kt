@@ -110,7 +110,7 @@ class TaskCardViewModel : CoreViewModel(), PageSelectionListener {
         MutableLiveData(taskManager.getReceivingTask()?.taskDescription?.currentStatus.let {
             it == TaskStatus.Recounted ||
                     (it == TaskStatus.Checked && taskType != TaskType.ShipmentPP) ||
-                    (it == TaskStatus.Unloaded && (taskType == TaskType.RecalculationCargoUnit || taskType == TaskType.ReceptionDistributionCenter || taskType == TaskType.OwnProduction)) ||
+                    (it == TaskStatus.Unloaded && (taskType == TaskType.RecalculationCargoUnit || taskType == TaskType.ReceptionDistributionCenter)) ||
                     (it == TaskStatus.ReadyToShipment && taskType == TaskType.ShipmentRC) ||
                     isShipmentPPSkipRecount
         })
@@ -427,7 +427,7 @@ class TaskCardViewModel : CoreViewModel(), PageSelectionListener {
             }
             TaskStatus.Checked -> screenNavigator.openStartConditionsReviseLoadingScreen()
             TaskStatus.Unloaded -> {
-                if (taskManager.getReceivingTask()?.taskHeader?.taskType == TaskType.ReceptionDistributionCenter || taskManager.getReceivingTask()?.taskHeader?.taskType == TaskType.OwnProduction) {
+                if (taskManager.getReceivingTask()?.taskHeader?.taskType == TaskType.ReceptionDistributionCenter) {
                     screenNavigator.openNoTransportDefectDeclaredDialog(
                             nextCallbackFunc = {
                                 if (taskManager.getReceivingTask()?.taskDescription?.quantityOutgoingFillings == 0) {
