@@ -55,7 +55,9 @@ class BasketGoodListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
         MutableLiveData(true)
     }
 
-    val deleteEnabled = MutableLiveData(false)
+    val deleteEnabled by lazy {
+        selectionsHelper.selectedPositions.map { it?.isNotEmpty() ?: false }
+    }
 
     // -----------------------------
 
@@ -93,7 +95,15 @@ class BasketGoodListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
     }
 
     fun onClickDelete() {
+        val materials = mutableListOf<String>()
+        selectionsHelper.selectedPositions.value?.map { position ->
+            goods.value?.get(position)?.material?.let {
+                materials.add(it)
+            }
+        }
 
+        selectionsHelper.clearPositions()
+        manager.deleteGoodByMaterials(materials)
     }
 
 }

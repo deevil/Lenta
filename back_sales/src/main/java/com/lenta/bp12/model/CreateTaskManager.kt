@@ -86,6 +86,17 @@ class CreateTaskManager @Inject constructor(
         return if (position != null) position + 1 else 0
     }
 
+    override fun deleteGoodByMaterials(materials: List<String>) {
+        task.value?.let { changedTask ->
+            changedTask.goods.let { goods ->
+                materials.forEach { material ->
+                    goods.remove(goods.find { it.material == material })
+                }
+            }
+
+            task.value = changedTask
+        }
+    }
 }
 
 
@@ -106,5 +117,6 @@ interface ICreateTaskManager {
     suspend fun isGoodCanBeAdded(goodInfo: GoodInfoResult): Boolean
     fun addBasket(basket: Basket)
     fun getBasketPosition(basket: Basket?): Int
+    fun deleteGoodByMaterials(materials: List<String>)
 
 }
