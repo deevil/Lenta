@@ -18,10 +18,7 @@ data class GoodInfo(
         /** Позиция удалена */
         @SerializedName("IS_DEL")
         var isDeleted: String,
-        /** Количество вложенного */
-        @SerializedName("QNTINCL")
-        var innerQuantity: String,
-        /** Единицы измерения заказа */
+        /** Единица измерения заказа на поставку */
         @SerializedName("BSTME")
         var unitsCode: String
 )

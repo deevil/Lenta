@@ -22,7 +22,7 @@ class BasketGoodListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
 
     val selectionsHelper = SelectionItemsHelper()
 
-    val task by lazy {
+    private val task by lazy {
         manager.task
     }
 
@@ -95,15 +95,15 @@ class BasketGoodListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
     }
 
     fun onClickDelete() {
-        val materials = mutableListOf<String>()
+        val materialList = mutableListOf<String>()
         selectionsHelper.selectedPositions.value?.map { position ->
             goods.value?.get(position)?.material?.let {
-                materials.add(it)
+                materialList.add(it)
             }
         }
 
         selectionsHelper.clearPositions()
-        manager.deleteGoodByMaterials(materials)
+        manager.deleteGoodByMaterials(materialList)
     }
 
 }

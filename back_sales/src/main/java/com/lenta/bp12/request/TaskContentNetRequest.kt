@@ -49,7 +49,7 @@ data class TaskContentResult(
         val marks: List<MarkInfo>,
         /** Таблица партий */
         @SerializedName("ET_TASK_PARTS")
-        val shipments: List<ShipmentInfo>,
+        val parts: List<PartInfo>,
         /** Справочные данные товара */
         @SerializedName("ET_MATERIALS")
         val additionalInfo: List<AdditionalInfo>,

@@ -2,6 +2,7 @@ package com.lenta.bp12.features.task_composition
 
 import androidx.lifecycle.MutableLiveData
 import com.lenta.bp12.model.ICreateTaskManager
+import com.lenta.bp12.model.pojo.Basket
 import com.lenta.bp12.platform.navigation.IScreenNavigator
 import com.lenta.bp12.request.GoodInfoNetRequest
 import com.lenta.shared.account.ISessionInfo
@@ -54,53 +55,34 @@ class TaskCompositionViewModel : CoreViewModel(), PageSelectionListener, OnOkInS
         MutableLiveData(true)
     }
 
-    val goods = task.map {task ->
-        task?.goods!!.mapIndexed { index, good ->
+    val goods = task.map { task ->
+        task?.goods!!.reversed().mapIndexed { index, good ->
             ItemGoodUi(
-                    position = "${index + 1}",
-                    name = good.name,
+                    material = good.material,
+                    position = "${task.goods.size - index}",
+                    name = good.getNameWithMaterial(),
                     quantity = good.quantity.dropZeros()
             )
         }
     }
 
-    val baskets by lazy {
-        MutableLiveData(List(3) {
+    val baskets = task.map { task ->
+        task?.baskets!!.reversed().mapIndexed { index, basket ->
+            val position = task.baskets.size - index
             ItemBasketUi(
-                    position = "${it + 1}",
-                    name = "Test name ${it + 1}",
-                    description = "Test description ${it + 1}",
-                    quantity = (1..15).random().toString()
+                    basket = basket,
+                    position = "$position",
+                    name = "Корзина $position",
+                    description = basket.getDescription(),
+                    quantity = task.getQuantityByBasket(basket).dropZeros()
             )
-        })
+        }
     }
 
     // -----------------------------
 
     override fun onPageSelected(position: Int) {
         selectedPage.value = position
-    }
-
-    fun onClickDelete() {
-
-    }
-
-    fun onClickSave() {
-
-    }
-
-    fun onClickItemPosition(position: Int) {
-        selectedPage.value?.let { page ->
-            when (page) {
-                0 -> {
-                    manager.searchNumber = task.value!!.goods[position].material
-                    manager.searchFromList = true
-                    navigator.openGoodInfoScreen()
-                }
-                1 -> {}
-                else -> throw IllegalArgumentException("Wrong pager position!")
-            }
-        }
     }
 
     fun onScanResult(data: String) {
@@ -112,6 +94,23 @@ class TaskCompositionViewModel : CoreViewModel(), PageSelectionListener, OnOkInS
         return true
     }
 
+    fun onClickItemPosition(position: Int) {
+        selectedPage.value?.let { page ->
+            when (page) {
+                0 -> {
+                    manager.searchNumber = goods.value!![position].material
+                    manager.searchFromList = true
+                    navigator.openGoodInfoScreen()
+                }
+                1 -> {
+                    manager.currentBasket.value = baskets.value!![position].basket
+                    navigator.openBasketPropertiesScreen()
+                }
+                else -> throw IllegalArgumentException("Wrong pager position!")
+            }
+        }
+    }
+
     private fun checkEnteredNumber(number: String) {
         number.length.let { length ->
             if (length >= Constants.SAP_6) {
@@ -119,6 +118,42 @@ class TaskCompositionViewModel : CoreViewModel(), PageSelectionListener, OnOkInS
                 manager.searchFromList = true
                 navigator.openGoodInfoScreen()
             }
+        }
+    }
+
+    fun onClickDelete() {
+        selectedPage.value?.let { page ->
+            when (page) {
+                0 -> {
+                    val materialList = mutableListOf<String>()
+                    goodSelectionsHelper.selectedPositions.value?.map { position ->
+                        goods.value?.get(position)?.material?.let {
+                            materialList.add(it)
+                        }
+                    }
+
+                    goodSelectionsHelper.clearPositions()
+                    manager.deleteGoodByMaterials(materialList)
+                }
+                1 -> {
+                    val basketList = mutableListOf<Basket>()
+                    basketSelectionsHelper.selectedPositions.value?.map { position ->
+                        baskets.value?.get(position)?.basket?.let {
+                            basketList.add(it)
+                        }
+                    }
+
+                    basketSelectionsHelper.clearPositions()
+                    manager.deleteBaskets(basketList)
+                }
+                else -> throw IllegalArgumentException("Wrong pager position!")
+            }
+        }
+    }
+
+    fun onClickSave() {
+        navigator.showMakeTaskCountedAndClose {
+            navigator.openSaveDataScreen()
         }
     }
 
@@ -141,12 +176,14 @@ class TaskCompositionViewModel : CoreViewModel(), PageSelectionListener, OnOkInS
 
 
 data class ItemGoodUi(
+        val material: String,
         val position: String,
         val name: String,
         val quantity: String
 )
 
 data class ItemBasketUi(
+        val basket: Basket,
         val position: String,
         val name: String,
         val description: String,

@@ -86,10 +86,10 @@ class CreateTaskManager @Inject constructor(
         return if (position != null) position + 1 else 0
     }
 
-    override fun deleteGoodByMaterials(materials: List<String>) {
+    override fun deleteGoodByMaterials(materialList: List<String>) {
         task.value?.let { changedTask ->
             changedTask.goods.let { goods ->
-                materials.forEach { material ->
+                materialList.forEach { material ->
                     goods.remove(goods.find { it.material == material })
                 }
             }
@@ -97,6 +97,19 @@ class CreateTaskManager @Inject constructor(
             task.value = changedTask
         }
     }
+
+    override fun deleteBaskets(basketList: MutableList<Basket>) {
+        task.value?.let { changedTask ->
+            changedTask.baskets.let { baskets ->
+                basketList.forEach { basket ->
+                    baskets.remove(basket)
+                }
+            }
+
+            task.value = changedTask
+        }
+    }
+
 }
 
 
@@ -117,6 +130,7 @@ interface ICreateTaskManager {
     suspend fun isGoodCanBeAdded(goodInfo: GoodInfoResult): Boolean
     fun addBasket(basket: Basket)
     fun getBasketPosition(basket: Basket?): Int
-    fun deleteGoodByMaterials(materials: List<String>)
+    fun deleteGoodByMaterials(materialList: List<String>)
+    fun deleteBaskets(basketList: MutableList<Basket>)
 
 }

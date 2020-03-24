@@ -24,7 +24,10 @@ data class Good(
         val producers: List<ProducerInfo>,
         val provider: ProviderInfo? = null,
         val producer: ProducerInfo? = null,
-        val marks: MutableList<Mark> = mutableListOf()
+        val marks: MutableList<Mark> = mutableListOf(),
+        val parts: MutableList<Part> = mutableListOf(),
+        var isCounted: Boolean = false,
+        var isDelete: Boolean = false
 ) {
 
     fun getNameWithMaterial(delimiter: String = " "): String {

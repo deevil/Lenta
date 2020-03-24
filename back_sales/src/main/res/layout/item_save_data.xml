@@ -6,7 +6,7 @@
 
         <variable
             name="item"
-            type="com.lenta.bp12.features.save_data.ItemTaskUi" />
+            type="com.lenta.bp12.features.save_data.SaveDataUi" />
 
     </data>
 

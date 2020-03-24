@@ -1,11 +1,9 @@
 package com.lenta.bp12.features.good_list
 
-import com.lenta.shared.platform.viewmodel.CoreViewModel
 import androidx.lifecycle.MutableLiveData
-import com.lenta.bp12.features.basket_good_list.ItemGoodUi
-import com.lenta.bp12.features.task_composition.ItemBasketUi
 import com.lenta.bp12.platform.navigation.IScreenNavigator
 import com.lenta.shared.account.ISessionInfo
+import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.SelectionItemsHelper
 import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
 import com.lenta.shared.utilities.databinding.PageSelectionListener
@@ -15,6 +13,7 @@ class GoodListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
 
     @Inject
     lateinit var navigator: IScreenNavigator
+
     @Inject
     lateinit var sessionInfo: ISessionInfo
 
@@ -50,10 +49,9 @@ class GoodListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
 
     val processed by lazy {
         MutableLiveData(List(3) {
-            ItemBasketUi(
+            ItemGoodUi(
                     position = "${it + 1}",
                     name = "Test name ${it + 1}",
-                    description = "Test description ${it + 1}",
                     quantity = (1..15).random().toString()
             )
         })
