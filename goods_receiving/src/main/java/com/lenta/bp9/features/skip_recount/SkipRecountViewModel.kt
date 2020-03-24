@@ -17,6 +17,7 @@ import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.extentions.getDeviceIp
 import com.lenta.shared.utilities.extentions.map
+import com.mobrun.plugin.api.HyperHive
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -33,6 +34,8 @@ class SkipRecountViewModel : CoreViewModel() {
     lateinit var taskManager: IReceivingTaskManager
     @Inject
     lateinit var skipRecountNetRequest: SkipRecountNetRequest
+    @Inject
+    lateinit var hyperHive: HyperHive
 
     val customComment: MutableLiveData<String> = MutableLiveData("")
 
@@ -63,22 +66,24 @@ class SkipRecountViewModel : CoreViewModel() {
     }
 
     private fun handleSuccess(result: SkipRecountResult) {
-        val notifications = result.notifications.map { TaskNotification.from(it) }
-        val sectionInfo = result.sectionsInfo.map { TaskSectionInfo.from(it) }
-        val sectionProducts = result.sectionProducts.map { TaskSectionProducts.from(it) }
-        taskManager.updateTaskDescription(TaskDescription.from(result.taskDescription))
-        taskManager.getReceivingTask()?.taskRepository?.getNotifications()?.updateWithNotifications(notifications, null, null, null)
-        taskManager.getReceivingTask()?.taskRepository?.getSections()?.updateSections(sectionInfo, sectionProducts)
-        if (taskManager.getReceivingTask()?.taskDescription?.isSpecialControlGoods == true) {
-            //есть спецтовары
-            screenNavigator.openTransferGoodsSectionScreen()
-            screenNavigator.openAlertHaveIsSpecialGoodsScreen()
-        } else {
-            //нет спецтоваров
-            screenNavigator.openMainMenuScreen()
-            screenNavigator.openTaskListScreen()
-            screenNavigator.openTaskCardScreen(TaskCardMode.Full)
-            screenNavigator.openAlertNoIsSpecialGoodsScreen()
+        viewModelScope.launch {
+            val notifications = result.notifications.map { TaskNotification.from(it) }
+            val sectionInfo = result.sectionsInfo.map { TaskSectionInfo.from(it) }
+            val sectionProducts = result.sectionProducts.map { TaskSectionProducts.from(hyperHive, it) }
+            taskManager.updateTaskDescription(TaskDescription.from(result.taskDescription))
+            taskManager.getReceivingTask()?.taskRepository?.getNotifications()?.updateWithNotifications(notifications, null, null, null)
+            taskManager.getReceivingTask()?.taskRepository?.getSections()?.updateSections(sectionInfo, sectionProducts)
+            if (taskManager.getReceivingTask()?.taskDescription?.isSpecialControlGoods == true) {
+                //есть спецтовары
+                screenNavigator.openTransferGoodsSectionScreen()
+                screenNavigator.openAlertHaveIsSpecialGoodsScreen()
+            } else {
+                //нет спецтоваров
+                screenNavigator.openMainMenuScreen()
+                screenNavigator.openTaskListScreen()
+                screenNavigator.openTaskCardScreen(TaskCardMode.Full)
+                screenNavigator.openAlertNoIsSpecialGoodsScreen()
+            }
         }
     }
 

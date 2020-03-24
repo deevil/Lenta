@@ -32,14 +32,14 @@ class RepresPersonNumEntryViewModel : CoreViewModel(), OnOkInSoftKeyboardListene
     val personnelNumber = MutableLiveData("")
     val fullName = MutableLiveData("")
     val employeesPosition = MutableLiveData("")
-    val enabledApplyButton = fullName.map { !it.isNullOrBlank() }
+    val enabledBtnNext = fullName.map { !it.isNullOrBlank() }
 
     fun getTitle(): String {
         return taskManager.getReceivingTask()?.taskHeader?.caption ?: ""
     }
 
     fun getDescription(): String {
-        return sectionInfo.value!!.sectionNumber
+        return "${sectionInfo.value!!.sectionNumber}-${sectionInfo.value!!.sectionName}"
     }
 
     private fun searchPersonnelNumber() {
@@ -64,8 +64,8 @@ class RepresPersonNumEntryViewModel : CoreViewModel(), OnOkInSoftKeyboardListene
         screenNavigator.openAlertScreen(failure)
     }
 
-    fun onClickApply() {
-        taskManager.getReceivingTask()?.taskRepository?.getSections()?.changeSection(sectionInfo.value!!.copy(personnelNumber = personnelNumber.value!!))
+    fun onClickNext() {
+        taskManager.getReceivingTask()?.taskRepository?.getSections()?.changeSection(sectionInfo.value!!.copy(personnelNumber = personnelNumber.value!!, employeeName = fullName.value!!))
         screenNavigator.openTransferGoodsSectionScreen()
     }
 

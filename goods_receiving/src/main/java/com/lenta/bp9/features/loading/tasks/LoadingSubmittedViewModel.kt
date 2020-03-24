@@ -52,12 +52,14 @@ class LoadingSubmittedViewModel : CoreLoadingViewModel() {
     }
 
     override fun handleFailure(failure: Failure) {
-        screenNavigator.openAlertScreen(failure)
         screenNavigator.goBack()
+        screenNavigator.openAlertScreen(failure)
     }
 
     private fun handleSuccess(result: SubmittedRestInfo) {
         taskManager.updateTaskDescription(TaskDescription.from(result.taskDescription))
+        screenNavigator.openMainMenuScreen()
+        screenNavigator.openTaskListScreen()
         screenNavigator.openTaskCardScreen(TaskCardMode.Full)
     }
 

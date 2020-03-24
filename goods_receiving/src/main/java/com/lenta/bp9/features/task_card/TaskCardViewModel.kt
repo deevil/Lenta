@@ -19,6 +19,7 @@ import com.lenta.shared.utilities.databinding.PageSelectionListener
 import com.lenta.shared.utilities.date_time.DateTimeUtil
 import com.lenta.shared.utilities.extentions.getDeviceIp
 import com.lenta.shared.utilities.extentions.map
+import com.mobrun.plugin.api.HyperHive
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -42,6 +43,8 @@ class TaskCardViewModel : CoreViewModel(), PageSelectionListener {
     lateinit var skipRecountNetRequest: SkipRecountNetRequest
     @Inject
     lateinit var zmpUtzGrz41V001NetRequest: ZmpUtzGrz41V001NetRequest
+    @Inject
+    lateinit var hyperHive: HyperHive
 
     val selectedPage = MutableLiveData(0)
 
@@ -512,13 +515,15 @@ class TaskCardViewModel : CoreViewModel(), PageSelectionListener {
     }
 
     private fun handleSuccessSkipRecount(result: SkipRecountResult) {
-        val notifications = result.notifications.map { TaskNotification.from(it) }
-        val sectionInfo = result.sectionsInfo.map { TaskSectionInfo.from(it) }
-        val sectionProducts = result.sectionProducts.map { TaskSectionProducts.from(it) }
-        taskManager.updateTaskDescription(TaskDescription.from(result.taskDescription))
-        taskManager.getReceivingTask()?.taskRepository?.getNotifications()?.updateWithNotifications(notifications, null, null, null)
-        taskManager.getReceivingTask()?.taskRepository?.getSections()?.updateSections(sectionInfo, sectionProducts)
-        screenNavigator.openTaskCardScreen(TaskCardMode.Full)
+        viewModelScope.launch {
+            val notifications = result.notifications.map { TaskNotification.from(it) }
+            val sectionInfo = result.sectionsInfo.map { TaskSectionInfo.from(it) }
+            val sectionProducts = result.sectionProducts.map { TaskSectionProducts.from(hyperHive, it) }
+            taskManager.updateTaskDescription(TaskDescription.from(result.taskDescription))
+            taskManager.getReceivingTask()?.taskRepository?.getNotifications()?.updateWithNotifications(notifications, null, null, null)
+            taskManager.getReceivingTask()?.taskRepository?.getSections()?.updateSections(sectionInfo, sectionProducts)
+            screenNavigator.openTaskCardScreen(TaskCardMode.Full)
+        }
     }
 
     private fun shipmentAllowedByGis() {

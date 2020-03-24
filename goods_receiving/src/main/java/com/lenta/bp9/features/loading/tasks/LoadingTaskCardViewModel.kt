@@ -153,7 +153,7 @@ class LoadingTaskCardViewModel : CoreLoadingViewModel() {
                 val mercuryNotActual = result.taskMercuryNotActualRestData.map { TaskMercuryNotActual.from(hyperHive, it) }
 
                 val sectionInfo = result.sectionsInfo.map { TaskSectionInfo.from(it) }
-                val sectionProducts = result.sectionProducts.map { TaskSectionProducts.from(it) }
+                val sectionProducts = result.sectionProducts.map { TaskSectionProducts.from(hyperHive, it) }
 
                 val newTask = taskManager.newReceivingTask(taskHeader, TaskDescription.from(result.taskDescription))
                 newTask?.taskRepository?.getNotifications()?.updateWithNotifications(notifications, documentNotifications, productNotifications, conditionNotifications)
@@ -205,7 +205,7 @@ class LoadingTaskCardViewModel : CoreLoadingViewModel() {
                 //val mercuryNotActual = result.taskMercuryNotActualRestData.map { TaskMercuryNotActual.from(hyperHive, it) }
 
                 val sectionInfo = result.sectionsInfo.map { TaskSectionInfo.from(it) }
-                val sectionProducts = result.sectionProducts.map { TaskSectionProducts.from(it) }
+                val sectionProducts = result.sectionProducts.map { TaskSectionProducts.from(hyperHive, it) }
 
                 val cargoUnits = result.cargoUnits.map { TaskCargoUnitInfo.from(it) }
 
