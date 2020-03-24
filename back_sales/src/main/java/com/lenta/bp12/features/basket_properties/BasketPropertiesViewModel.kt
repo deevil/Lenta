@@ -1,8 +1,9 @@
 package com.lenta.bp12.features.basket_properties
 
-import androidx.lifecycle.MutableLiveData
+import com.lenta.bp12.model.ICreateTaskManager
 import com.lenta.bp12.platform.navigation.IScreenNavigator
 import com.lenta.shared.platform.viewmodel.CoreViewModel
+import com.lenta.shared.utilities.extentions.map
 import javax.inject.Inject
 
 class BasketPropertiesViewModel : CoreViewModel() {
@@ -10,18 +11,25 @@ class BasketPropertiesViewModel : CoreViewModel() {
     @Inject
     lateinit var navigator: IScreenNavigator
 
+    @Inject
+    lateinit var manager: ICreateTaskManager
 
-    val title by lazy {
-        "Корзина 02: C-02/1HAW/O/ПП-256985"
+
+    val basket by lazy {
+        manager.currentBasket
     }
 
-    val properties by lazy {
-        MutableLiveData(BasketPropertiesUi(
-                section = "02",
-                type = "1HAW",
-                gisControl = "Партионный",
-                provider = "106453 Поставщик 4"
-        ))
+    val title = basket.map { basket ->
+        "Корзина ${manager.getBasketPosition(basket)}: ${basket?.getDescription()}"
+    }
+
+    val properties = basket.map { basket ->
+        BasketPropertiesUi(
+                section = basket?.section ?: "",
+                type = basket?.type ?: "",
+                gisControl = basket?.control?.description ?: "",
+                provider = "${basket?.provider?.code} ${basket?.provider?.name}"
+        )
     }
 
 }

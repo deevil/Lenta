@@ -31,13 +31,7 @@ class BasketGoodListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
     }
 
     val title = basket.map { basket ->
-        val position = task.value?.baskets?.indexOf(basket) ?: 0 + 1
-        val number = if (position.toString().length == 1) "0$position" else "$position"
-        val type = basket?.type
-        val control = basket?.control?.code
-        val provider = basket?.provider?.code
-
-        "Корзина ${position}: C-${number}/${type}/${control}/ПП-${provider}"
+        "Корзина ${manager.getBasketPosition(basket)}: ${basket?.getDescription()}"
     }
 
     val numberField: MutableLiveData<String> = MutableLiveData("")
@@ -65,24 +59,6 @@ class BasketGoodListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
 
     // -----------------------------
 
-    fun onClickDelete() {
-
-    }
-
-    fun onClickProperties() {
-        navigator.openBasketPropertiesScreen()
-    }
-
-    fun onClickNext() {
-        navigator.goBackTo("TaskCompositionFragment")
-    }
-
-    fun onClickItemPosition(position: Int) {
-        manager.searchNumber = goods.value!![position].material
-        manager.searchFromList = true
-        navigator.openGoodInfoScreen()
-    }
-
     fun onScanResult(data: String) {
         checkEnteredNumber(data)
     }
@@ -100,6 +76,24 @@ class BasketGoodListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
                 navigator.openGoodInfoScreen()
             }
         }
+    }
+
+    fun onClickItemPosition(position: Int) {
+        manager.searchNumber = goods.value!![position].material
+        manager.searchFromList = true
+        navigator.openGoodInfoScreen()
+    }
+
+    fun onClickNext() {
+        navigator.goBackTo("TaskCompositionFragment")
+    }
+
+    fun onClickProperties() {
+        navigator.openBasketPropertiesScreen()
+    }
+
+    fun onClickDelete() {
+
     }
 
 }

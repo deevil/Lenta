@@ -14,7 +14,7 @@ fun GoodKind.getDescriptionResId(): Int {
     }
 }
 
-fun GoodInfoResult.getGoodType(): GoodKind {
+fun GoodInfoResult.getGoodKind(): GoodKind {
     val isAlcohol = this.materialInfo.isAlcohol.isSapTrue()
     val isExcise = this.materialInfo.isExcise.isSapTrue()
 

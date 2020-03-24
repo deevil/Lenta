@@ -8,4 +8,10 @@ data class Basket(
         val type: String,
         val control: ControlType,
         val provider: ProviderInfo? = null
-)
+) {
+
+    fun getDescription(): String {
+        return "C-${section}/${type}/${control.code}/ПП-${provider?.code}"
+    }
+
+}

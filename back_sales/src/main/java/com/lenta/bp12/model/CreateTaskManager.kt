@@ -5,7 +5,7 @@ import com.lenta.bp12.model.pojo.Basket
 import com.lenta.bp12.model.pojo.TaskCreate
 import com.lenta.bp12.model.pojo.Good
 import com.lenta.bp12.platform.extention.getControlType
-import com.lenta.bp12.platform.extention.getGoodType
+import com.lenta.bp12.platform.extention.getGoodKind
 import com.lenta.bp12.repository.IDatabaseRepository
 import com.lenta.bp12.request.GoodInfoResult
 import com.lenta.shared.models.core.getMatrixType
@@ -38,7 +38,7 @@ class CreateTaskManager @Inject constructor(
                 innerQuantity = goodInfo.materialInfo.innerQuantity.toDoubleOrNull() ?: 0.0,
                 units = database.getUnitsByCode(goodInfo.materialInfo.unitCode),
                 orderUnits = database.getUnitsByCode(goodInfo.materialInfo.orderUnitCode),
-                kind = goodInfo.getGoodType(),
+                kind = goodInfo.getGoodKind(),
                 type = goodInfo.materialInfo.goodType,
                 control = goodInfo.getControlType(),
                 providers = goodInfo.providers,
@@ -79,6 +79,13 @@ class CreateTaskManager @Inject constructor(
 
         currentBasket.value = basket
     }
+
+    override fun getBasketPosition(basket: Basket?): Int {
+        val position = task.value?.baskets?.indexOf(basket)
+
+        return if (position != null) position + 1 else 0
+    }
+
 }
 
 
@@ -98,5 +105,6 @@ interface ICreateTaskManager {
     fun findGoodByMaterial(material: String): Good?
     suspend fun isGoodCanBeAdded(goodInfo: GoodInfoResult): Boolean
     fun addBasket(basket: Basket)
+    fun getBasketPosition(basket: Basket?): Int
 
 }
