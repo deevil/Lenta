@@ -6,6 +6,7 @@ import com.lenta.bp9.platform.navigation.IScreenNavigator
 import com.lenta.bp9.requests.network.FastResourcesMultiRequest
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.exception.Failure
+import com.lenta.shared.exception.IFailureInterpreter
 import com.lenta.shared.features.loading.CoreLoadingViewModel
 import com.lenta.shared.platform.time.ITimeMonitor
 import com.lenta.shared.requests.network.ServerTime
@@ -26,6 +27,8 @@ class FastDataLoadingViewModel : CoreLoadingViewModel() {
     lateinit var sessionInfo: ISessionInfo
     @Inject
     lateinit var timeMonitor: ITimeMonitor
+    @Inject
+    lateinit var failureInterpreter: IFailureInterpreter
 
     override val title: MutableLiveData<String> = MutableLiveData()
     override val progress: MutableLiveData<Boolean> = MutableLiveData(true)
@@ -51,9 +54,10 @@ class FastDataLoadingViewModel : CoreLoadingViewModel() {
     }
 
     override fun handleFailure(failure: Failure) {
-        screenNavigator.openSelectMarketScreen()
+        screenNavigator.openAlertScreen(failureInterpreter.getFailureDescription(failure).message)
+        /**screenNavigator.openSelectMarketScreen()
         screenNavigator.closeAllScreen()
-        screenNavigator.openAlertScreen(failure)
+        screenNavigator.openAlertScreen(failure)*/
     }
 
     private fun handleSuccess(@Suppress("UNUSED_PARAMETER") b: Boolean) {

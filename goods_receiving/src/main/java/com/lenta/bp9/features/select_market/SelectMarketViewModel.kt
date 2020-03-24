@@ -2,7 +2,6 @@ package com.lenta.bp9.features.select_market
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import com.lenta.bp9.AndroidApplication
 import com.lenta.bp9.platform.navigation.IScreenNavigator
 import com.lenta.bp9.repos.IRepoInMemoryHolder
 import com.lenta.bp9.requests.network.MarketOverIPParams
@@ -47,7 +46,29 @@ class SelectMarketViewModel : CoreViewModel(), OnPositionClickListener {
 
     init {
         viewModelScope.launch {
-            screenNavigator.showProgressLoadingData()
+            repoInMemoryHolder.permissions?.markets?.let { list ->
+
+                markets.value = list.map { MarketUI(number = it.number, address = it.address) }
+
+                if (selectedPosition.value == null) {
+                    if (appSettings.lastTK != null) {
+                        list.forEachIndexed { index, market ->
+                            if (market.number == appSettings.lastTK) {
+                                onClickPosition(index)
+                            }
+                        }
+                    } else {
+                        onClickPosition(0)
+                    }
+                }
+
+
+
+                if (list.size == 1) {
+                    onClickNext()
+                }
+            }
+            /**screenNavigator.showProgressLoadingData()
 
             repoInMemoryHolder.permissions?.markets?.let { list ->
 
@@ -63,7 +84,7 @@ class SelectMarketViewModel : CoreViewModel(), OnPositionClickListener {
                                     werks = "")).either(::handleFailure, ::handleMarketOverIPSuccess)
                 }
             }
-            screenNavigator.hideProgress()
+            screenNavigator.hideProgress()*/
         }
     }
 
@@ -81,7 +102,16 @@ class SelectMarketViewModel : CoreViewModel(), OnPositionClickListener {
 
     fun onClickNext() {
         viewModelScope.launch {
-            screenNavigator.showProgressLoadingData()
+            markets.value?.getOrNull(selectedPosition.value ?: -1)?.number?.let { tkNumber ->
+                if (appSettings.lastTK != tkNumber) {
+                    printerManager.setDefaultPrinterForTk(tkNumber)
+                }
+                sessionInfo.market = tkNumber
+                appSettings.lastTK = tkNumber
+            }
+            screenNavigator.openFastDataLoadingScreen()
+
+            /**screenNavigator.showProgressLoadingData()
             markets.value?.getOrNull(selectedPosition.value ?: -1)?.number?.let { tkNumber ->
                 if (appSettings.lastTK != tkNumber) {
                     printerManager.setDefaultPrinterForTk(tkNumber)
@@ -98,7 +128,7 @@ class SelectMarketViewModel : CoreViewModel(), OnPositionClickListener {
                 }
             }
             screenNavigator.hideProgress()
-            screenNavigator.openFastDataLoadingScreen()
+            screenNavigator.openFastDataLoadingScreen()*/
         }
     }
 
@@ -107,3 +137,5 @@ class SelectMarketViewModel : CoreViewModel(), OnPositionClickListener {
         selectedPosition.value = position
     }
 }
+
+
