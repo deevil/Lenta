@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.lenta.bp9.R
+import com.lenta.bp9.features.loading.tasks.TaskCardMode
 import com.lenta.bp9.model.task.*
 import com.lenta.bp9.platform.navigation.IScreenNavigator
 import com.lenta.bp9.requests.network.SkipRecountNetRequest
@@ -74,7 +75,9 @@ class SkipRecountViewModel : CoreViewModel() {
             screenNavigator.openAlertHaveIsSpecialGoodsScreen()
         } else {
             //нет спецтоваров
-            screenNavigator.goBack()
+            screenNavigator.openMainMenuScreen()
+            screenNavigator.openTaskListScreen()
+            screenNavigator.openTaskCardScreen(TaskCardMode.Full)
             screenNavigator.openAlertNoIsSpecialGoodsScreen()
         }
     }
