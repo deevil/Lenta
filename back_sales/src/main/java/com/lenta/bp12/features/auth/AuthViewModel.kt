@@ -113,6 +113,12 @@ class AuthViewModel : CoreAuthViewModel() {
                     password.value = "987654321"
                 }
 
+                /*if (login.value.isNullOrEmpty()) {
+                    login.value = "MAKAROV"
+                }
+                if (login.value == "MAKAROV" && getPassword().isEmpty()) {
+                    password.value = "1q2w3e4r"
+                }*/
             }
         }
     }

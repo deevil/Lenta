@@ -153,6 +153,7 @@ class TaskCompositionViewModel : CoreViewModel(), PageSelectionListener, OnOkInS
 
     fun onClickSave() {
         navigator.showMakeTaskCountedAndClose {
+            manager.finishCurrentTask()
             navigator.openSaveDataScreen()
         }
     }

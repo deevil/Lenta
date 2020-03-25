@@ -110,6 +110,14 @@ class CreateTaskManager @Inject constructor(
         }
     }
 
+    override fun finishCurrentTask() {
+        task.value?.let { changedTask ->
+            changedTask.isFinish = true
+
+            task.value = changedTask
+        }
+    }
+
 }
 
 
@@ -132,5 +140,6 @@ interface ICreateTaskManager {
     fun getBasketPosition(basket: Basket?): Int
     fun deleteGoodByMaterials(materialList: List<String>)
     fun deleteBaskets(basketList: MutableList<Basket>)
+    fun finishCurrentTask()
 
 }

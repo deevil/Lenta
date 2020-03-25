@@ -301,8 +301,11 @@ class GoodInfoViewModel : CoreViewModel() {
     }
 
     private fun saveGoodInTask() {
-        totalQuantity.value?.let { total ->
-            manager.currentGood.value?.quantity = total
+        good.value?.let { good ->
+            good.isCounted = true
+            good.quantity = totalQuantity.value ?: 0.0
+
+            manager.currentGood.value = good
         }
 
         good.value?.let { good ->

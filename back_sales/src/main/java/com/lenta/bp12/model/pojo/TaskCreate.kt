@@ -13,7 +13,7 @@ data class TaskCreate(
         val isCommon: Boolean,
         val goods: MutableList<Good> = mutableListOf(),
         val baskets: MutableList<Basket> = mutableListOf(),
-        val isFinish: Boolean = false
+        var isFinish: Boolean = false
 ) {
 
     fun getQuantityByBasket(basket: Basket?): Double {
