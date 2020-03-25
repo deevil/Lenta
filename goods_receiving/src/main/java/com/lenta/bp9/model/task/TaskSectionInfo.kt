@@ -23,7 +23,7 @@ data class TaskSectionInfo(
                                 quantitySectionProducts = restData.quantitySectionProducts,
                                 dateTransferSection = restData.dateTransferSection,
                                 timeTransferSection = restData.timeTransferSection,
-                                isNotEdit = restData.notEdit.isNotEmpty()
+                                isNotEdit = restData.isNotEdit.isNotEmpty()
                         )
                 }
         }
@@ -45,5 +45,21 @@ data class TaskSectionRestData(
         @SerializedName("TRANSF_TIME")
         val timeTransferSection: String, //Время передачи в секцию
         @SerializedName("NOT_EDIT")
-        val notEdit: String //Запрет редактирования
-)
+        val isNotEdit: String //Запрет редактирования
+) {
+
+        companion object {
+                fun from(data: TaskSectionInfo): TaskSectionRestData {
+                        return TaskSectionRestData(
+                                sectionNumber = data.sectionNumber,
+                                sectionName = data.sectionName,
+                                personnelNumber = data.personnelNumber,
+                                employeeName = data.employeeName,
+                                quantitySectionProducts = data.quantitySectionProducts,
+                                dateTransferSection = data.dateTransferSection,
+                                timeTransferSection = data.timeTransferSection,
+                                isNotEdit = if (data.isNotEdit) "X" else ""
+                        )
+                }
+        }
+}

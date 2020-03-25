@@ -6,12 +6,15 @@ import com.lenta.bp9.model.task.IReceivingTaskManager
 import com.lenta.bp9.model.task.TaskSectionInfo
 import com.lenta.bp9.platform.navigation.IScreenNavigator
 import com.lenta.shared.exception.Failure
+import com.lenta.shared.platform.constants.Constants
+import com.lenta.shared.platform.time.ITimeMonitor
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.requests.network.PersonnelNumberNetRequest
 import com.lenta.shared.requests.network.TabNumberInfo
 import com.lenta.shared.requests.network.TabNumberParams
 import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
+import com.lenta.shared.utilities.date_time.DateTimeUtil
 import com.lenta.shared.utilities.extentions.map
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -24,6 +27,8 @@ class RepresPersonNumEntryViewModel : CoreViewModel(), OnOkInSoftKeyboardListene
     lateinit var taskManager: IReceivingTaskManager
     @Inject
     lateinit var personnelNumberNetRequest: PersonnelNumberNetRequest
+    @Inject
+    lateinit var timeMonitor: ITimeMonitor
 
     val sectionInfo: MutableLiveData<TaskSectionInfo> = MutableLiveData()
     val editTextFocus = MutableLiveData<Boolean>()
@@ -65,7 +70,14 @@ class RepresPersonNumEntryViewModel : CoreViewModel(), OnOkInSoftKeyboardListene
     }
 
     fun onClickNext() {
-        taskManager.getReceivingTask()?.taskRepository?.getSections()?.changeSection(sectionInfo.value!!.copy(personnelNumber = personnelNumber.value!!, employeeName = fullName.value!!))
+        val milliseconds = timeMonitor.getUnixTime()
+        val currentDate = DateTimeUtil.formatDate(milliseconds, Constants.DATE_FORMAT_yyyy_mm_dd)
+        val currentTime = DateTimeUtil.formatDate(milliseconds, Constants.TIME_FORMAT_hhmmss)
+        taskManager.getReceivingTask()?.taskRepository?.getSections()?.changeSection(sectionInfo.value!!.copy(
+                personnelNumber = personnelNumber.value!!,
+                employeeName = fullName.value!!,
+                dateTransferSection = currentDate,
+                timeTransferSection = currentTime))
         screenNavigator.openTransferGoodsSectionScreen()
     }
 
