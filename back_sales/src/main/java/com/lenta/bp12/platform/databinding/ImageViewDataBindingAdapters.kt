@@ -42,8 +42,8 @@ fun setBlockTypeIcon(imageView: ImageView, blockType: BlockType) {
     }
 }
 
-@BindingAdapter("goodTypeIcon")
-fun setGoodTypeIcon(imageView: ImageView, goodKind: GoodKind?) {
+@BindingAdapter("goodKindIcon")
+fun setGoodKindIcon(imageView: ImageView, goodKind: GoodKind?) {
     imageView.setImageResource(when (goodKind) {
         GoodKind.ALCOHOL -> R.drawable.ic_no_excise_alco_32dp
         GoodKind.EXCISE -> R.drawable.ic_alcohol_32dp

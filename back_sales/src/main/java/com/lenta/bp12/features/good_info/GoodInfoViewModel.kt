@@ -199,7 +199,7 @@ class GoodInfoViewModel : CoreViewModel() {
         number.length.let { length ->
             if (length >= Constants.SAP_6) {
                 when (length) {
-                    Constants.SAP_6 -> getGoodByMaterial("000000000000$number")
+                    Constants.SAP_6 -> getGoodByMaterial(number.takeLast(6))
                     Constants.SAP_18 -> getGoodByMaterial(number)
                     Constants.SAP_OR_BAR_12 -> {
                         navigator.showTwelveCharactersEntered(
@@ -208,7 +208,7 @@ class GoodInfoViewModel : CoreViewModel() {
                         )
                     }
                     Constants.EXCISE_68 -> {
-                        loadMarkInfo(number)
+                        //loadMarkInfo(number)
                     }
                     Constants.EXCISE_150 -> {
                         loadMarkInfo(number)
@@ -281,6 +281,11 @@ class GoodInfoViewModel : CoreViewModel() {
                 navigator.hideProgress()
             }.either(::handleFailure) { exciseInfo ->
                 Logg.d { "--> exciseInfo = $exciseInfo" }
+
+
+
+
+
             }
         }
     }

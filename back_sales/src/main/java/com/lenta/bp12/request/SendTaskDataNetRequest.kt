@@ -20,13 +20,13 @@ class SendTaskDataNetRequest @Inject constructor(
         private val fmpRequestsHelper: FmpRequestsHelper
 ) : UseCase<SendTaskDataResult, TaskData> {
 
-    override suspend fun run(taskData: TaskData): Either<Failure, SendTaskDataResult> {
+    override suspend fun run(params: TaskData): Either<Failure, SendTaskDataResult> {
 
         val goods = mutableListOf<GoodInfo>()
         val marks = mutableListOf<MarkInfo>()
         val parts = mutableListOf<PartInfo>()
 
-        taskData.task.goods.forEach { good ->
+        params.task.goods.forEach { good ->
             goods.add(
                     GoodInfo(
                             material = good.material,
@@ -67,15 +67,15 @@ class SendTaskDataNetRequest @Inject constructor(
 
         return fmpRequestsHelper.restRequest("ZMP_UTZ_BKS_04_V001",
                 SendTaskDataParams(
-                        deviceIp = taskData.deviceIp,
-                        taskNumber = taskData.task.number,
-                        userNumber = taskData.userNumber,
-                        taskName = taskData.task.name,
-                        taskType = taskData.task.type.type,
-                        tkNumber = taskData.tkNumber,
-                        storage = taskData.task.storage,
-                        reasonCode = taskData.task.reason.code,
-                        isNotFinish = (!taskData.task.isFinish).toSapBooleanString(),
+                        deviceIp = params.deviceIp,
+                        taskNumber = params.task.number,
+                        userNumber = params.userNumber,
+                        taskName = params.task.name,
+                        taskType = params.task.type.type,
+                        tkNumber = params.tkNumber,
+                        storage = params.task.storage,
+                        reasonCode = params.task.reason.code,
+                        isNotFinish = (!params.task.isFinish).toSapBooleanString(),
                         goods = goods,
                         marks = marks,
                         parts = parts
