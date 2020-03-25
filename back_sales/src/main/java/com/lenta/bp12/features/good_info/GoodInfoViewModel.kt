@@ -5,6 +5,8 @@ import androidx.lifecycle.viewModelScope
 import com.lenta.bp12.model.GoodKind
 import com.lenta.bp12.model.ICreateTaskManager
 import com.lenta.bp12.model.pojo.Basket
+import com.lenta.bp12.model.pojo.Good
+import com.lenta.bp12.model.pojo.TaskCreate
 import com.lenta.bp12.platform.navigation.IScreenNavigator
 import com.lenta.bp12.request.ExciseInfoNetRequest
 import com.lenta.bp12.request.ExciseInfoParams
@@ -29,10 +31,10 @@ class GoodInfoViewModel : CoreViewModel() {
     lateinit var navigator: IScreenNavigator
 
     @Inject
-    lateinit var sessionInfo: ISessionInfo
+    lateinit var manager: ICreateTaskManager
 
     @Inject
-    lateinit var manager: ICreateTaskManager
+    lateinit var sessionInfo: ISessionInfo
 
     @Inject
     lateinit var goodInfoNetRequest: GoodInfoNetRequest
@@ -189,6 +191,9 @@ class GoodInfoViewModel : CoreViewModel() {
 
     init {
         viewModelScope.launch {
+
+            //task.value = manager.task.map { it }
+            //good.value = manager.currentGood.value
             checkSearchNumber(manager.searchNumber)
         }
     }

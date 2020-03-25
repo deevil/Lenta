@@ -16,7 +16,7 @@ class CreateTaskManager @Inject constructor(
         private val database: IDatabaseRepository
 ) : ICreateTaskManager {
 
-    override lateinit var mode: Mode
+    override var mode: Mode = Mode.CREATE_TASK
 
     override var searchNumber = ""
 
@@ -153,6 +153,6 @@ interface ICreateTaskManager {
     fun deleteGoodByMaterials(materialList: List<String>)
     fun deleteBaskets(basketList: MutableList<Basket>)
     fun finishCurrentTask()
-    fun addProviderInCurrentGood(provider: ProviderInfo)
+    fun addProviderInCurrentGood(providerInfo: ProviderInfo)
 
 }

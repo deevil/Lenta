@@ -199,7 +199,7 @@ class TaskCompositionFragment : CoreFragment<FragmentTaskCompositionBinding, Tas
 
     override fun onBackPressed(): Boolean {
         vm.onBackPressed()
-        return true
+        return false
     }
 
     override fun onScanResult(data: String) {

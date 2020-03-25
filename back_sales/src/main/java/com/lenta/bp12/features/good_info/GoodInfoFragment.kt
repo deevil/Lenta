@@ -62,7 +62,7 @@ class GoodInfoFragment : CoreFragment<FragmentGoodInfoBinding, GoodInfoViewModel
 
     override fun onBackPressed(): Boolean {
         vm.onBackPressed()
-        return true
+        return false
     }
 
 }

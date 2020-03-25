@@ -45,6 +45,10 @@ class DatabaseRepository @Inject constructor(
 
     override suspend fun getUnitsByCode(code: String): Uom {
         return withContext(Dispatchers.IO) {
+            if (code.isEmpty()) {
+                return@withContext Uom.ST
+            }
+
             return@withContext units.getUnitName(code)?.toLowerCase(Locale.getDefault())?.let { name ->
                 Uom(code, name)
             } ?: Uom.ST

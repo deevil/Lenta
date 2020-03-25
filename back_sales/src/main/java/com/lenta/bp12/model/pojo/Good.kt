@@ -14,7 +14,7 @@ data class Good(
         var quantity: Double = 0.0,
         val innerQuantity: Double,
         val units: Uom,
-        val orderUnits: Uom,
+        val orderUnits: Uom?,
         val kind: GoodKind,
         val type: String,
         val control: ControlType,

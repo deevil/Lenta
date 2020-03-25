@@ -1,8 +1,10 @@
 package com.lenta.bp12.features.task_composition
 
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.viewModelScope
 import com.lenta.bp12.model.ICreateTaskManager
 import com.lenta.bp12.model.pojo.Basket
+import com.lenta.bp12.model.pojo.TaskCreate
 import com.lenta.bp12.platform.navigation.IScreenNavigator
 import com.lenta.bp12.request.GoodInfoNetRequest
 import com.lenta.shared.account.ISessionInfo
@@ -14,6 +16,7 @@ import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
 import com.lenta.shared.utilities.databinding.PageSelectionListener
 import com.lenta.shared.utilities.extentions.dropZeros
 import com.lenta.shared.utilities.extentions.map
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class TaskCompositionViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyboardListener {
@@ -34,9 +37,7 @@ class TaskCompositionViewModel : CoreViewModel(), PageSelectionListener, OnOkInS
 
     val selectedPage = MutableLiveData(0)
 
-    private val task by lazy {
-        manager.task
-    }
+    private val task = MutableLiveData<TaskCreate>()
 
     val title = task.map { task ->
         "${task?.type?.type} // ${task?.name}"
@@ -73,6 +74,14 @@ class TaskCompositionViewModel : CoreViewModel(), PageSelectionListener, OnOkInS
                     description = basket.getDescription(),
                     quantity = task.getQuantityByBasket(basket).dropZeros()
             )
+        }
+    }
+
+    // -----------------------------
+
+    init {
+        viewModelScope.launch {
+            task.value = manager.task.value
         }
     }
 
