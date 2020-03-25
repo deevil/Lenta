@@ -285,7 +285,10 @@ class TaskCardViewModel : CoreViewModel(), PageSelectionListener {
         val nextDate = taskManager.getReceivingTask()?.taskDescription?.nextStatusDate ?: ""
         val nextTime = taskManager.getReceivingTask()?.taskDescription?.nextStatusTime ?: ""
         currentStatusDateTime.value = currentDate + "\n" + currentTime
-        nextStatusDateTime.value = nextDate + "\n" + nextTime
+        //для текущего статуса Выполнено не показываем дату и время для нового статуса, с сервера почему-то это поле приходит заполненным
+        if (taskManager.getReceivingTask()?.taskDescription?.currentStatus != TaskStatus.Completed) {
+            nextStatusDateTime.value = nextDate + "\n" + nextTime
+        }
     }
 
     override fun onPageSelected(position: Int) {
