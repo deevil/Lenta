@@ -22,3 +22,8 @@ enum class ControlType(val code: String, val description: String) {
     COMMON("N", "Обычный"),
     ALCOHOL("A", "Алкоголь")
 }
+
+enum class Mode {
+    CREATE_TASK,
+    WORK_WITH_TASK
+}

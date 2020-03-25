@@ -8,12 +8,15 @@ import com.lenta.bp12.platform.extention.getControlType
 import com.lenta.bp12.platform.extention.getGoodKind
 import com.lenta.bp12.repository.IDatabaseRepository
 import com.lenta.bp12.request.GoodInfoResult
+import com.lenta.bp12.request.pojo.ProviderInfo
 import com.lenta.shared.models.core.getMatrixType
 import javax.inject.Inject
 
 class CreateTaskManager @Inject constructor(
         private val database: IDatabaseRepository
 ) : ICreateTaskManager {
+
+    override lateinit var mode: Mode
 
     override var searchNumber = ""
 
@@ -41,8 +44,8 @@ class CreateTaskManager @Inject constructor(
                 kind = goodInfo.getGoodKind(),
                 type = goodInfo.materialInfo.goodType,
                 control = goodInfo.getControlType(),
-                providers = goodInfo.providers,
-                producers = goodInfo.producers,
+                providers = goodInfo.providers.toMutableList(),
+                producers = goodInfo.producers.toMutableList(),
                 matrix = getMatrixType(goodInfo.materialInfo.matrix),
                 section = goodInfo.materialInfo.section
         )
@@ -118,10 +121,19 @@ class CreateTaskManager @Inject constructor(
         }
     }
 
+    override fun addProviderInCurrentGood(providerInfo: ProviderInfo) {
+        currentGood.value?.let { good ->
+            good.providers.add(0, providerInfo)
+
+            currentGood.value = good
+        }
+    }
 }
 
 
 interface ICreateTaskManager {
+
+    var mode: Mode
 
     var searchNumber: String
     var searchFromList: Boolean
@@ -141,5 +153,6 @@ interface ICreateTaskManager {
     fun deleteGoodByMaterials(materialList: List<String>)
     fun deleteBaskets(basketList: MutableList<Basket>)
     fun finishCurrentTask()
+    fun addProviderInCurrentGood(provider: ProviderInfo)
 
 }

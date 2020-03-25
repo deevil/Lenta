@@ -1,7 +1,9 @@
 package com.lenta.bp12.repository
 
 import com.lenta.bp12.platform.extention.getControlType
+import com.lenta.bp12.platform.extention.getProviderInfo
 import com.lenta.bp12.request.GoodInfoResult
+import com.lenta.bp12.request.pojo.ProviderInfo
 import com.lenta.shared.fmp.resources.dao_ext.*
 import com.lenta.shared.fmp.resources.fast.*
 import com.lenta.shared.fmp.resources.slow.*
@@ -29,7 +31,7 @@ class DatabaseRepository @Inject constructor(
     private val allowed: ZmpUtz41V001 by lazy { ZmpUtz41V001(hyperHive) } // Разрешенные товары
     private val forbidden: ZmpUtz42V001 by lazy { ZmpUtz42V001(hyperHive) } // Запрещенные товары
     private val returnReasons: ZmpUtz44V001 by lazy { ZmpUtz44V001(hyperHive) } // Причины возврата
-    private val suppliers: ZmpUtz09V001 by lazy { ZmpUtz09V001(hyperHive) } // Поставщики
+    private val providers: ZmpUtz09V001 by lazy { ZmpUtz09V001(hyperHive) } // Поставщики
     private val alcohol: ZmpUtz22V001 by lazy { ZmpUtz22V001(hyperHive) } // Алкогольные товары
     private val goods: ZmpUtz30V001 by lazy { ZmpUtz30V001(hyperHive) } // Товары
     private val producers: ZmpUtz43V001 by lazy { ZmpUtz43V001(hyperHive) } // Производители
@@ -154,6 +156,12 @@ class DatabaseRepository @Inject constructor(
         }
     }
 
+    override suspend fun getProviderInfo(code: String): ProviderInfo? {
+        return withContext(Dispatchers.IO) {
+            return@withContext providers.getProviderInfo(code)
+        }
+    }
+
 }
 
 interface IDatabaseRepository {
@@ -167,5 +175,6 @@ interface IDatabaseRepository {
     suspend fun isGoodForbidden(gisControl: String, taskType: String, goodGroup: String?, purchaseGroup: String?): Boolean
     suspend fun getTaskAttributes(taskType: String): Set<String>
     suspend fun isGoodCanBeAdded(goodInfo: GoodInfoResult, taskType: String): Boolean
+    suspend fun getProviderInfo(code: String): ProviderInfo?
 
 }

@@ -25,9 +25,6 @@ class TaskCompositionViewModel : CoreViewModel(), PageSelectionListener, OnOkInS
     lateinit var manager: ICreateTaskManager
 
     @Inject
-    lateinit var goodInfoNetRequest: GoodInfoNetRequest
-
-    @Inject
     lateinit var sessionInfo: ISessionInfo
 
 
