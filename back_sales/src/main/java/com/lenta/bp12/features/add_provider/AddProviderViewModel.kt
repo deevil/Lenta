@@ -3,6 +3,7 @@ package com.lenta.bp12.features.add_provider
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.lenta.bp12.model.ICreateTaskManager
+import com.lenta.bp12.model.pojo.Good
 import com.lenta.bp12.platform.navigation.IScreenNavigator
 import com.lenta.bp12.repository.DatabaseRepository
 import com.lenta.bp12.request.pojo.ProviderInfo
@@ -24,9 +25,7 @@ class AddProviderViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
     lateinit var manager: ICreateTaskManager
 
 
-    val good by lazy {
-        manager.currentGood
-    }
+    val good = MutableLiveData<Good>()
 
     val title = good.map { good ->
         good?.getNameWithMaterial()
@@ -44,6 +43,14 @@ class AddProviderViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
 
     val applyEnabled = provider.map { providerInfo ->
         providerInfo != null
+    }
+
+    // -----------------------------
+
+    init {
+        viewModelScope.launch {
+            good.value = manager.currentGood.value
+        }
     }
 
     // -----------------------------

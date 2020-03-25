@@ -35,7 +35,7 @@ data class Good(
     }
 
     fun isBox(): Boolean {
-        return innerQuantity > 0
+        return innerQuantity > 1
     }
 
 }

@@ -65,4 +65,8 @@ class GoodInfoFragment : CoreFragment<FragmentGoodInfoBinding, GoodInfoViewModel
         return false
     }
 
+    override fun onResume() {
+        super.onResume()
+        vm.updateData()
+    }
 }

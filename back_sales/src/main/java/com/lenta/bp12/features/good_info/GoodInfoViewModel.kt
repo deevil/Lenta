@@ -43,13 +43,9 @@ class GoodInfoViewModel : CoreViewModel() {
     lateinit var exciseInfoNetRequest: ExciseInfoNetRequest
 
 
-    val task by lazy {
-        manager.task
-    }
+    val task = MutableLiveData<TaskCreate>()
 
-    val good by lazy {
-        manager.currentGood
-    }
+    val good = MutableLiveData<Good>()
 
     val title = good.map { good ->
         good?.getNameWithMaterial()
@@ -72,6 +68,10 @@ class GoodInfoViewModel : CoreViewModel() {
         }
     }
 
+    val markScanEnabled = good.map { good ->
+        good?.kind == GoodKind.EXCISE
+    }
+
     val quantity = good.map { good ->
         if (good?.isBox() == true) good.innerQuantity.dropZeros() else "1"
     }
@@ -80,8 +80,8 @@ class GoodInfoViewModel : CoreViewModel() {
         good?.isBox() == false
     }
 
-    val totalQuantity = good.map { good ->
-        good?.quantity.sumWith(quantity.value?.toDoubleOrNull())
+    private val totalQuantity = quantity.map { quantity ->
+        quantity?.toDoubleOrNull().sumWith(good.value?.quantity)
     }
 
     val totalWithUnits = totalQuantity.map { quantity ->
@@ -97,16 +97,17 @@ class GoodInfoViewModel : CoreViewModel() {
     }
 
     val basketNumber = basket.map { basket ->
-        task.value?.baskets?.indexOf(basket).toString()
+        val number = task.value?.baskets?.indexOf(basket) ?: -1
+        if (number >= 0) number.toString() else ""
     }
 
     val basketQuantity = basket.map { basket ->
-        "${task.value?.getQuantityByBasket(basket).sumWith(quantity.value?.toDoubleOrNull() ?: 0.0)} ${good.value?.units?.name}"
+        "${task.value?.getQuantityByBasket(basket).sumWith(quantity.value?.toDoubleOrNull() ?: 0.0).dropZeros()} ${good.value?.units?.name}"
     }
 
-    val totalTitle = MutableLiveData("Итого*")
+    val totalTitle = MutableLiveData("Итого")
 
-    val basketTitle = MutableLiveData("*По корзине")
+    val basketTitle = MutableLiveData("По корзине")
 
     val providers = good.map { good ->
         good?.providers?.let { providers ->
@@ -192,7 +193,7 @@ class GoodInfoViewModel : CoreViewModel() {
     init {
         viewModelScope.launch {
 
-            //task.value = manager.task.map { it }
+            task.value = manager.task.value
             //good.value = manager.currentGood.value
             checkSearchNumber(manager.searchNumber)
         }
@@ -216,7 +217,7 @@ class GoodInfoViewModel : CoreViewModel() {
                         //loadMarkInfo(number)
                     }
                     Constants.EXCISE_150 -> {
-                        loadMarkInfo(number)
+                        //loadMarkInfo(number)
                     }
                     else -> getGoodByEan(number)
                 }
@@ -255,6 +256,8 @@ class GoodInfoViewModel : CoreViewModel() {
                 viewModelScope.launch {
                     if (manager.isGoodCanBeAdded(goodInfo)) {
                         manager.putInCurrentGood(goodInfo)
+                        good.value = manager.currentGood.value
+
                     } else {
                         navigator.showNotMatchTaskSettingsAddingNotPossible {
                             if (manager.searchFromList) {
@@ -352,6 +355,10 @@ class GoodInfoViewModel : CoreViewModel() {
 
     fun onClickRollback() {
 
+    }
+
+    fun updateData() {
+        good.value = manager.currentGood.value
     }
 
 }
