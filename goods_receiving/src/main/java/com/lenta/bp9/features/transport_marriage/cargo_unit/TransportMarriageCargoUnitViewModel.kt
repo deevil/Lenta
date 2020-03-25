@@ -48,6 +48,7 @@ class TransportMarriageCargoUnitViewModel : CoreViewModel(), OnOkInSoftKeyboardL
     val eanCode: MutableLiveData<String> = MutableLiveData()
     val requestFocusToEan: MutableLiveData<Boolean> = MutableLiveData()
     val listAct:MutableLiveData<List<ActItem>> = MutableLiveData()
+    private val isScan: MutableLiveData<Boolean> = MutableLiveData(false)
     private val origTransportMarriage: MutableLiveData<List<TaskTransportMarriageInfo>?> = MutableLiveData()
     val deleteButtonEnabled: MutableLiveData<Boolean> = actSelectionsHelper.selectedPositions.map {
         it?.isNotEmpty() ?: false
@@ -100,7 +101,7 @@ class TransportMarriageCargoUnitViewModel : CoreViewModel(), OnOkInSoftKeyboardL
                 foundTransportMarriageInfo.findLast {
                     it.processingUnitNumber == cargoUnitNumber.value
                 }?.let {
-                    screenNavigator.openTransportMarriageGoodsInfoScreen(it)
+                    screenNavigator.openTransportMarriageGoodsInfoScreen(transportMarriageInfo = it)
                 }
             } else {
                 taskManager.getReceivingTask()?.let { task ->
@@ -128,13 +129,14 @@ class TransportMarriageCargoUnitViewModel : CoreViewModel(), OnOkInSoftKeyboardL
             }
             taskManager.getReceivingTask()?.taskRepository?.getTransportMarriage()?.findTransportMarriage(cargoUnitNumber = cargoUnitNumber.value ?: "", materialNumber = result.processingUnits[0].materialNumber)?.
                     map {
-                        screenNavigator.openTransportMarriageGoodsInfoScreen(it)
+                        screenNavigator.openTransportMarriageGoodsInfoScreen(transportMarriageInfo = it)
                         return@map
                     }
         }
     }
 
     fun onClickItemPosition(position: Int) {
+        isScan.value = false
         listAct.value?.get(position)?.transportMarriage?.let {
             searchProduct(materialNumber = it.materialNumber)
         }
@@ -142,6 +144,7 @@ class TransportMarriageCargoUnitViewModel : CoreViewModel(), OnOkInSoftKeyboardL
 
     fun onScanResult(data: String) {
         viewModelScope.launch {
+            isScan.value = true
             screenNavigator.showProgressLoadingData()
 
             scanInfoRequest(
@@ -161,6 +164,7 @@ class TransportMarriageCargoUnitViewModel : CoreViewModel(), OnOkInSoftKeyboardL
     }
 
     override fun onOkInSoftKeyboard(): Boolean {
+        isScan.value = true
         when (eanCode.value?.length) {
             6 -> {
                 eanCode.value?.let {
@@ -244,7 +248,23 @@ class TransportMarriageCargoUnitViewModel : CoreViewModel(), OnOkInSoftKeyboardL
                 val batchNumber = result.taskBatches.findLast {batchesInfo ->
                     batchesInfo.materialNumber == processingUnitInfo.materialNumber && batchesInfo.processingUnitNumber == processingUnitInfo.processingUnitNumber
                 }?.batchNumber
-                taskManager.getReceivingTask()?.taskRepository?.getTransportMarriage()?.addTransportMarriage(TaskTransportMarriageInfo.from(hyperHive, processingUnitInfo, cargoUnitNumber.value ?: "", batchNumber ?: ""))
+                taskManager.getReceivingTask()?.
+                        taskRepository?.
+                        getTransportMarriage()?.
+                        addTransportMarriage(TaskTransportMarriageInfo.from(hyperHive, processingUnitInfo, cargoUnitNumber.value ?: "", batchNumber ?: ""))
+            }
+            //если нажали Целиком, то MENGE для каждого товара сразу записываем все кол-во из поля quantityInvestments
+            val transportMarriageInfoCurrent = taskManager.getReceivingTask()?.
+                    taskRepository?.
+                    getTransportMarriage()?.
+                    getTransportMarriage()?.map {
+                it.copy(quantity = it.quantityInvestments)
+            }
+            transportMarriageInfoCurrent?.let {
+                taskManager.getReceivingTask()?.
+                        taskRepository?.
+                        getTransportMarriage()?.
+                        updateTransportMarriage(it)
             }
             updateData()
         }

@@ -196,7 +196,7 @@ class TransportMarriageViewModel : CoreViewModel(), PageSelectionListener,
             screenNavigator.openTransportMarriageCargoUnitScreen(listCargoUnits.value?.get(position)?.cargoUnitNumber ?: "")
         } else {
             listAct.value?.get(position)?.transportMarriage?.let {
-                screenNavigator.openTransportMarriageGoodsInfoScreen(it)
+                screenNavigator.openTransportMarriageGoodsInfoScreen(transportMarriageInfo = it)
             }
         }
     }
