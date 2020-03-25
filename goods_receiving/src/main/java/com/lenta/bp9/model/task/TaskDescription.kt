@@ -17,8 +17,8 @@ data class TaskDescription(val currentStatus: TaskStatus,   //Код текущ�
                       val ttnNumber: String,           //Номер ТН\ТТН (ZTTN)
                       val orderNumber: String,         //Номер заказа (EBELN)
                       val deliveryNumber: String,      //Номер поставки\Транспортировки (VBELN)
-                      val orderText: String,           //привозит данные для поля "Заказ" (ОРЦ, https://trello.com/c/7pJ5ckNF)
-                      val deliveryText: String,        //привозит данные для поля "Исходящая поставка" (ОРЦ, https://trello.com/c/7pJ5ckNF)
+                      val shipmentOrder: String,           //привозит данные для поля "Заказ" (ОРЦ, https://trello.com/c/7pJ5ckNF)
+                      val shipmentDelivery: String,        //привозит данные для поля "Исходящая поставка" (ОРЦ, https://trello.com/c/7pJ5ckNF)
                       val plannedDeliveryDate: String, //Плановая дата поставки (DATE_PLAN)
                       val plannedDeliveryTime: String, //Плановое время поставки (TIME_PLAN)
                       val actualArrivalDate: String,   //Фактическая дата прибытия (DATE_FACT)
@@ -57,8 +57,8 @@ data class TaskDescription(val currentStatus: TaskStatus,   //Код текущ�
                     ttnNumber = restData.ttnNumber,
                     orderNumber = restData.orderNumber,
                     deliveryNumber = restData.deliveryNumber ?: "",
-                    orderText = restData.orderText,
-                    deliveryText = restData.deliveryText,
+                    shipmentOrder = restData.shipmentOrder,
+                    shipmentDelivery = restData.shipmentDelivery,
                     plannedDeliveryDate = restData.plannedDeliveryDate,
                     plannedDeliveryTime = restData.plannedDeliveryTime,
                     actualArrivalDate = restData.actualArrivalDate,
@@ -110,9 +110,9 @@ data class TaskDescriptionRestInfo(
         @SerializedName("VBELN")
         val deliveryNumber: String?,
         @SerializedName("EBELN_STR")
-        val orderText: String,
+        val shipmentOrder: String,
         @SerializedName("VBELN_STR")
-        val deliveryText: String,
+        val shipmentDelivery: String,
         @SerializedName("DATE_PLAN")
         val plannedDeliveryDate: String,
         @SerializedName("TIME_PLAN")

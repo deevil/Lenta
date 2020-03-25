@@ -245,10 +245,10 @@ class TaskCardViewModel : CoreViewModel(), PageSelectionListener {
         taskManager.getReceivingTask()?.taskDescription?.actualArrivalDate ?: ""
     }
     val shipmentOrder by lazy {
-        taskManager.getReceivingTask()?.taskDescription?.orderNumber ?: ""
+        taskManager.getReceivingTask()?.taskDescription?.shipmentOrder ?: ""
     }
     val shipmentDelivery by lazy {
-        taskManager.getReceivingTask()?.taskDescription?.deliveryNumber ?: ""
+        taskManager.getReceivingTask()?.taskDescription?.shipmentDelivery ?: ""
     }
     val shipmentDeliveryOTM by lazy {
         taskManager.getReceivingTask()?.taskDescription?.deliveryNumberOTM ?: ""

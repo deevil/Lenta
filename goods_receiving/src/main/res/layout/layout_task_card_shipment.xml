@@ -89,20 +89,20 @@
             style="@style/TextTitle"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="22dp"
+            android:layout_marginStart="16dp"
             android:layout_marginTop="8dp"
             android:layout_marginEnd="8dp"
             android:text='@{vm.isBksDiff ? @string/return_invoice : @string/number_TN}'
             app:layout_constraintEnd_toStartOf="@+id/guideline"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/div_hor_1"
-            tools:text="Номер ТН"/>
+            tools:text="Номер ТН" />
 
         <TextView
             android:id="@+id/tv_tn_number_val"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="22dp"
+            android:layout_marginStart="16dp"
             android:layout_marginEnd="8dp"
             android:text='@{vm.shipmentNumberTN}'
             app:layout_constraintEnd_toEndOf="parent"
@@ -114,7 +114,7 @@
             style="@style/TextTitle"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="22dp"
+            android:layout_marginStart="16dp"
             android:layout_marginEnd="8dp"
             android:text="@string/number_TTN"
             app:layout_constraintEnd_toStartOf="@+id/guideline"
@@ -125,7 +125,7 @@
             android:id="@+id/tv_ttn_number_val"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="22dp"
+            android:layout_marginStart="16dp"
             android:layout_marginEnd="8dp"
             android:text='@{vm.shipmentNumberTTN}'
             app:layout_constraintBottom_toBottomOf="@+id/tv_ttn_number"
@@ -137,7 +137,7 @@
             style="@style/TextTitle"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="22dp"
+            android:layout_marginStart="16dp"
             android:layout_marginTop="8dp"
             android:layout_marginEnd="8dp"
             android:text="@string/plan_date"
@@ -149,19 +149,19 @@
             android:id="@+id/tv_plan_date_val"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="22dp"
+            android:layout_marginStart="16dp"
             android:layout_marginEnd="8dp"
             android:text='@{vm.shipmentPlanDate}'
+            app:layout_constraintBaseline_toBaselineOf="@+id/tv_plan_date"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@id/guideline"
-            app:layout_constraintBaseline_toBaselineOf="@+id/tv_plan_date" />
+            app:layout_constraintStart_toEndOf="@id/guideline" />
 
         <TextView
             android:id="@+id/tv_fact_date"
             style="@style/TextTitle"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="22dp"
+            android:layout_marginStart="16dp"
             android:layout_marginEnd="8dp"
             android:text="@string/fact_date"
             app:layout_constraintEnd_toStartOf="@+id/guideline"
@@ -172,7 +172,7 @@
             android:id="@+id/tv_fact_date_val"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="22dp"
+            android:layout_marginStart="16dp"
             android:layout_marginEnd="8dp"
             android:text='@{vm.shipmentFactDate}'
             app:layout_constraintEnd_toEndOf="parent"
@@ -184,7 +184,7 @@
             style="@style/TextTitle"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="22dp"
+            android:layout_marginStart="16dp"
             android:layout_marginTop="8dp"
             android:layout_marginEnd="8dp"
             android:text="@string/order"
@@ -196,19 +196,20 @@
             android:id="@+id/tv_order_val"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="22dp"
+            android:layout_marginStart="16dp"
             android:layout_marginEnd="8dp"
+            android:maxLines="1"
             android:text='@{vm.shipmentOrder}'
+            app:layout_constraintBaseline_toBaselineOf="@+id/tv_order"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@id/guideline"
-            app:layout_constraintBaseline_toBaselineOf="@+id/tv_order" />
+            app:layout_constraintStart_toEndOf="@id/guideline" />
 
         <TextView
             android:id="@+id/tv_delivery"
             style="@style/TextTitle"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="22dp"
+            android:layout_marginStart="16dp"
             android:layout_marginEnd="8dp"
             android:text="@string/outbound_delivery"
             app:layout_constraintEnd_toStartOf="@+id/guideline"
@@ -219,8 +220,9 @@
             android:id="@+id/tv_delivery_val"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="22dp"
+            android:layout_marginStart="16dp"
             android:layout_marginEnd="8dp"
+            android:maxLines="1"
             android:text='@{vm.shipmentDelivery}'
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/guideline"
@@ -231,7 +233,7 @@
             style="@style/TextTitle"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="22dp"
+            android:layout_marginStart="16dp"
             android:layout_marginTop="8dp"
             android:layout_marginEnd="8dp"
             android:text="@string/delivery_otm"
@@ -243,19 +245,20 @@
             android:id="@+id/tv_delivery_otm_val"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="22dp"
+            android:layout_marginStart="16dp"
             android:layout_marginEnd="8dp"
+            android:maxLines="1"
             android:text='@{vm.shipmentDeliveryOTM}'
+            app:layout_constraintBaseline_toBaselineOf="@+id/tv_delivery_otm"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@id/guideline"
-            app:layout_constraintBaseline_toBaselineOf="@+id/tv_delivery_otm"/>
+            app:layout_constraintStart_toEndOf="@id/guideline" />
 
         <TextView
             android:id="@+id/tv_transportation"
             style="@style/TextTitle"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="22dp"
+            android:layout_marginStart="16dp"
             android:layout_marginEnd="8dp"
             android:text="@string/transportation"
             app:layout_constraintEnd_toStartOf="@+id/guideline"
@@ -266,8 +269,9 @@
             android:id="@+id/tv_transportation_val"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="22dp"
+            android:layout_marginStart="16dp"
             android:layout_marginEnd="8dp"
+            android:maxLines="1"
             android:text='@{vm.shipmentTransportation}'
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/guideline"
