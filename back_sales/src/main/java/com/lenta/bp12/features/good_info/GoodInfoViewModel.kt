@@ -43,9 +43,13 @@ class GoodInfoViewModel : CoreViewModel() {
     lateinit var exciseInfoNetRequest: ExciseInfoNetRequest
 
 
-    val task = MutableLiveData<TaskCreate>()
+    val task by lazy {
+        manager.task
+    }
 
-    val good = MutableLiveData<Good>()
+    val good by lazy {
+        manager.currentGood
+    }
 
     val title = good.map { good ->
         good?.getNameWithMaterial()
@@ -193,7 +197,7 @@ class GoodInfoViewModel : CoreViewModel() {
     init {
         viewModelScope.launch {
 
-            task.value = manager.task.value
+            //task.value = manager.task.value
             //good.value = manager.currentGood.value
             checkSearchNumber(manager.searchNumber)
         }
@@ -256,7 +260,7 @@ class GoodInfoViewModel : CoreViewModel() {
                 viewModelScope.launch {
                     if (manager.isGoodCanBeAdded(goodInfo)) {
                         manager.putInCurrentGood(goodInfo)
-                        good.value = manager.currentGood.value
+                        //good.value = manager.currentGood.value
 
                     } else {
                         navigator.showNotMatchTaskSettingsAddingNotPossible {
