@@ -236,7 +236,6 @@ class GoodInfoViewModel : CoreViewModel() {
 
     init {
         viewModelScope.launch {
-            //task.value = manager.task.value
             checkSearchNumber(manager.searchNumber)
         }
     }
