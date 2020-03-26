@@ -183,12 +183,19 @@ class TransportMarriageViewModel : CoreViewModel(), PageSelectionListener,
     }
 
     private fun handleSuccessProcess(result: ZmpUtzGrz25V001Result) {
-        screenNavigator.openMainMenuScreen()
-        screenNavigator.openTaskListScreen()
-        taskManager.updateTaskDescription(TaskDescription.from(result.taskDescription))
         val notifications = result.notifications.map { TaskNotification.from(it) }
         taskManager.getReceivingTask()?.taskRepository?.getNotifications()?.updateWithNotifications(general = notifications, document = null, product = null, condition = null)
-        screenNavigator.openTaskCardScreen(TaskCardMode.Full)
+        taskManager.updateTaskDescription(TaskDescription.from(result.taskDescription))
+        screenNavigator.openMainMenuScreen()
+        screenNavigator.openTaskListScreen()
+        screenNavigator.openSupplyResultsActDisagreementTransportationDialog(transportationNumber = taskManager.getReceivingTask()?.taskDescription?.transportationNumber ?: "",
+                docCallbackFunc = {
+                    screenNavigator.openTaskCardScreen(TaskCardMode.Full)
+                    screenNavigator.openFormedDocsScreen()
+                },
+                nextCallbackFunc = {
+                    screenNavigator.openTaskCardScreen(TaskCardMode.Full)
+                })
     }
 
     fun onClickItemPosition(position: Int) {

@@ -1023,6 +1023,20 @@ class ScreenNavigator(
         }
     }
 
+    override fun openSupplyResultsActDisagreementTransportationDialog(transportationNumber: String, docCallbackFunc: () -> Unit, nextCallbackFunc: () -> Unit) {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(message = context.getString(R.string.msg_act_disagreement_transport_marriage, transportationNumber),
+                    codeConfirmForButton4 = backFragmentResultHelper.setFuncForResult(docCallbackFunc),
+                    codeConfirmForRight = backFragmentResultHelper.setFuncForResult(nextCallbackFunc),
+                    iconRes = R.drawable.ic_done_green_80dp,
+                    pageNumber = "78",
+                    description = context.getString(R.string.supply_results),
+                    isVisibleLeftButton = false,
+                    buttonDecorationInfo4 = ButtonDecorationInfo.docs,
+                    rightButtonDecorationInfo = ButtonDecorationInfo.next))
+        }
+    }
+
     private fun getFragmentStack() = foregroundActivityProvider.getActivity()?.fragmentStack
 }
 
@@ -1145,4 +1159,5 @@ interface IScreenNavigator : ICoreNavigator {
     fun openAlertBothSurplusAndUnderloadScreen()
     fun openAlertCountMoreCargoUnitDialog(yesCallbackFunc: () -> Unit)
     fun openShelfLifeExpiresDialog(noCallbackFunc: () -> Unit, yesCallbackFunc: () -> Unit, expiresThrough: String, shelfLife: String)
+    fun openSupplyResultsActDisagreementTransportationDialog(transportationNumber: String, docCallbackFunc: () -> Unit, nextCallbackFunc: () -> Unit)
 }
