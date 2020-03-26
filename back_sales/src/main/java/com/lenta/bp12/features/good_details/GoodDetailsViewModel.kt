@@ -24,7 +24,7 @@ class GoodDetailsViewModel : CoreViewModel(), PageSelectionListener {
     val categorySelectionsHelper = SelectionItemsHelper()
 
     val task by lazy {
-        manager.task
+        manager.currentTask
     }
 
     val good by lazy {

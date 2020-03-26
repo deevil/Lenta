@@ -137,7 +137,7 @@ class TaskCardCreateViewModel : CoreViewModel(), PageSelectionListener {
     }
 
     fun onClickNext() {
-        manager.updateTask(TaskCreate(
+        manager.updateCurrentTask(TaskCreate(
                 name = taskName.value!!,
                 type = types.value!![taskTypePosition.value!!],
                 storage = storageList.value!![storagePosition.value!!],

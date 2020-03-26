@@ -5,8 +5,6 @@ import androidx.lifecycle.viewModelScope
 import com.lenta.bp12.model.GoodKind
 import com.lenta.bp12.model.ICreateTaskManager
 import com.lenta.bp12.model.pojo.Basket
-import com.lenta.bp12.model.pojo.Good
-import com.lenta.bp12.model.pojo.TaskCreate
 import com.lenta.bp12.platform.navigation.IScreenNavigator
 import com.lenta.bp12.request.ExciseInfoNetRequest
 import com.lenta.bp12.request.ExciseInfoParams
@@ -44,7 +42,7 @@ class GoodInfoViewModel : CoreViewModel() {
 
 
     val task by lazy {
-        manager.task
+        manager.currentTask
     }
 
     val good by lazy {
@@ -121,13 +119,13 @@ class GoodInfoViewModel : CoreViewModel() {
     val basketNumber by lazy {
         basket.map { basket ->
             val number = task.value?.baskets?.indexOf(basket) ?: -1
-            if (number >= 0) number.toString() else ""
+            if (number >= 0) "${number + 1}" else ""
         }
     }
 
     val basketQuantity by lazy {
-        basket.map { basket ->
-            "${task.value?.getQuantityByBasket(basket).sumWith(quantity.value?.toDoubleOrNull() ?: 0.0).dropZeros()} ${good.value?.units?.name}"
+        quantity.map { quantity ->
+            "${task.value?.getQuantityByBasket(basket.value).sumWith(quantity?.toDoubleOrNull() ?: 0.0).dropZeros()} ${good.value?.units?.name}"
         }
     }
 
@@ -232,6 +230,8 @@ class GoodInfoViewModel : CoreViewModel() {
 
     val rollbackEnabled = MutableLiveData(false)
 
+    var isExistUnsavedData = false
+
     // -----------------------------
 
     init {
@@ -247,7 +247,7 @@ class GoodInfoViewModel : CoreViewModel() {
         number.length.let { length ->
             if (length >= Constants.SAP_6) {
                 when (length) {
-                    Constants.SAP_6 -> getGoodByMaterial(number.takeLast(6))
+                    Constants.SAP_6 -> getGoodByMaterial(number)
                     Constants.SAP_18 -> getGoodByMaterial(number)
                     Constants.SAP_OR_BAR_12 -> {
                         navigator.showTwelveCharactersEntered(
@@ -269,13 +269,15 @@ class GoodInfoViewModel : CoreViewModel() {
 
     private fun getGoodByEan(ean: String) {
         manager.findGoodByEan(ean)?.let { good ->
-            manager.currentGood.value = good
+            Logg.d { "--> getGoodByEan: good = $good" }
+            manager.updateCurrentGood(good)
         } ?: loadGoodInfo(ean = ean)
     }
 
     private fun getGoodByMaterial(material: String) {
         manager.findGoodByMaterial(material)?.let { good ->
-            manager.currentGood.value = good
+            Logg.d { "--> getGoodByMaterial: good = $good" }
+            manager.updateCurrentGood(good)
         } ?: loadGoodInfo(material = material)
     }
 
@@ -298,8 +300,7 @@ class GoodInfoViewModel : CoreViewModel() {
                 viewModelScope.launch {
                     if (manager.isGoodCanBeAdded(goodInfo)) {
                         manager.putInCurrentGood(goodInfo)
-                        //good.value = manager.currentGood.value
-
+                        isExistUnsavedData = true
                     } else {
                         navigator.showNotMatchTaskSettingsAddingNotPossible {
                             if (manager.searchFromList) {
@@ -330,12 +331,13 @@ class GoodInfoViewModel : CoreViewModel() {
             )).also {
                 navigator.hideProgress()
             }.either(::handleFailure) { exciseInfo ->
-                Logg.d { "--> exciseInfo = $exciseInfo" }
+                viewModelScope.launch {
+                    Logg.d { "--> exciseInfo = $exciseInfo" }
 
-                // todo Логика сохранения марок
+                    // todo Логика сохранения марок
+                    isExistUnsavedData = true
 
-
-
+                }
             }
         }
     }
@@ -354,11 +356,12 @@ class GoodInfoViewModel : CoreViewModel() {
         good.value?.let { good ->
             good.isCounted = true
             good.quantity = totalQuantity.value ?: 0.0
+            good.provider = providers.value!![providerPosition.value!!]
 
-            manager.currentGood.value = good
-        }
+            Logg.d { "--> saveGoodInTask: good = $good" }
 
-        good.value?.let { good ->
+            manager.updateCurrentGood(good)
+
             if (basket.value == null) {
                 manager.addBasket(Basket(
                         section = good.section,
@@ -369,14 +372,17 @@ class GoodInfoViewModel : CoreViewModel() {
             }
         }
 
-        manager.addGoodInTask()
+        manager.addCurrentGoodInTask()
     }
 
-
     fun onBackPressed() {
-        navigator.showUnsavedDataWillBeLost {
-            manager.searchFromList = false
-            manager.searchNumber = ""
+        if (isExistUnsavedData) {
+            navigator.showUnsavedDataWillBeLost {
+                manager.searchFromList = false
+                manager.searchNumber = ""
+                navigator.goBack()
+            }
+        } else {
             navigator.goBack()
         }
     }
@@ -400,7 +406,7 @@ class GoodInfoViewModel : CoreViewModel() {
     }
 
     fun updateData() {
-        good.value = manager.currentGood.value
+        manager.updateCurrentGood(good.value)
     }
 
 }

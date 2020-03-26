@@ -1,12 +1,9 @@
 package com.lenta.bp12.features.task_composition
 
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
 import com.lenta.bp12.model.ICreateTaskManager
 import com.lenta.bp12.model.pojo.Basket
-import com.lenta.bp12.model.pojo.TaskCreate
 import com.lenta.bp12.platform.navigation.IScreenNavigator
-import com.lenta.bp12.request.GoodInfoNetRequest
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.platform.constants.Constants
@@ -16,7 +13,6 @@ import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
 import com.lenta.shared.utilities.databinding.PageSelectionListener
 import com.lenta.shared.utilities.extentions.dropZeros
 import com.lenta.shared.utilities.extentions.map
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class TaskCompositionViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyboardListener {
@@ -38,7 +34,7 @@ class TaskCompositionViewModel : CoreViewModel(), PageSelectionListener, OnOkInS
     val selectedPage = MutableLiveData(0)
 
     private val task by lazy {
-        manager.task
+        manager.currentTask
     }
 
     val title by lazy {
@@ -109,7 +105,7 @@ class TaskCompositionViewModel : CoreViewModel(), PageSelectionListener, OnOkInS
                     navigator.openGoodInfoScreen()
                 }
                 1 -> {
-                    manager.currentBasket.value = baskets.value!![position].basket
+                    manager.updateCurrentBasket(baskets.value!![position].basket)
                     navigator.openBasketPropertiesScreen()
                 }
                 else -> throw IllegalArgumentException("Wrong pager position!")

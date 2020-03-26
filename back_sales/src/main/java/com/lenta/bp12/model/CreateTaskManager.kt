@@ -10,6 +10,7 @@ import com.lenta.bp12.repository.IDatabaseRepository
 import com.lenta.bp12.request.GoodInfoResult
 import com.lenta.bp12.request.pojo.ProviderInfo
 import com.lenta.shared.models.core.getMatrixType
+import com.lenta.shared.platform.constants.Constants
 import javax.inject.Inject
 
 class CreateTaskManager @Inject constructor(
@@ -22,15 +23,23 @@ class CreateTaskManager @Inject constructor(
 
     override var searchFromList = false
 
-    override val task = MutableLiveData<TaskCreate>()
+    override val currentTask = MutableLiveData<TaskCreate>()
 
     override val currentGood = MutableLiveData<Good>()
 
     override val currentBasket = MutableLiveData<Basket>()
 
 
-    override fun updateTask(taskCreate: TaskCreate) {
-        task.value = taskCreate
+    override fun updateCurrentTask(task: TaskCreate?) {
+        currentTask.value = task
+    }
+
+    override fun updateCurrentGood(good: Good?) {
+        currentGood.value = good
+    }
+
+    override fun updateCurrentBasket(basket: Basket?) {
+        currentBasket.value = basket
     }
 
     override suspend fun putInCurrentGood(goodInfo: GoodInfoResult) {
@@ -51,73 +60,74 @@ class CreateTaskManager @Inject constructor(
         )
     }
 
-    override fun addGoodInTask() {
-        task.value?.let { changedTask ->
-            changedTask.goods.find { it.material == currentGood.value!!.material }?.let { good ->
-                changedTask.goods.remove(good)
+    override fun addCurrentGoodInTask() {
+        currentTask.value?.let { task ->
+            task.goods.find { it.material == currentGood.value!!.material }?.let { good ->
+                task.goods.remove(good)
             }
 
-            changedTask.goods.add(0, currentGood.value!!)
-            task.value = changedTask
+            task.goods.add(0, currentGood.value!!)
+            updateCurrentTask(task)
         }
     }
 
     override fun findGoodByEan(ean: String): Good? {
-        return task.value?.goods?.find { it.ean == ean }
+        return currentTask.value?.goods?.find { it.ean == ean }
     }
 
     override fun findGoodByMaterial(material: String): Good? {
-        return task.value?.goods?.find { it.material == material }
+        val formattedMaterial = if (material.length == Constants.SAP_6) "000000000000$material" else material
+        return currentTask.value?.goods?.find { it.material == formattedMaterial }
     }
 
     override suspend fun isGoodCanBeAdded(goodInfo: GoodInfoResult): Boolean {
-        return database.isGoodCanBeAdded(goodInfo, task.value!!.type.type)
+        return database.isGoodCanBeAdded(goodInfo, currentTask.value!!.type.type)
     }
 
     override fun addBasket(basket: Basket) {
-        task.value?.let { changedTask ->
-            changedTask.baskets.add(basket)
-            task.value = changedTask
+        currentTask.value?.let { task ->
+            task.baskets.add(basket)
+            updateCurrentTask(task)
         }
 
-        currentBasket.value = basket
+        updateCurrentBasket(basket)
     }
 
     override fun getBasketPosition(basket: Basket?): Int {
-        val position = task.value?.baskets?.indexOf(basket)
+        val position = currentTask.value?.baskets?.indexOf(basket)
 
         return if (position != null) position + 1 else 0
     }
 
     override fun deleteGoodByMaterials(materialList: List<String>) {
-        task.value?.let { changedTask ->
-            changedTask.goods.let { goods ->
+        currentTask.value?.let { task ->
+            task.goods.let { goods ->
                 materialList.forEach { material ->
                     goods.remove(goods.find { it.material == material })
                 }
             }
 
-            task.value = changedTask
+            updateCurrentTask(task)
         }
     }
 
     override fun deleteBaskets(basketList: MutableList<Basket>) {
-        task.value?.let { changedTask ->
-            changedTask.baskets.let { baskets ->
+        currentTask.value?.let { task ->
+            task.baskets.let { baskets ->
                 basketList.forEach { basket ->
                     baskets.remove(basket)
                 }
             }
 
-            task.value = changedTask
+            updateCurrentTask(task)
         }
     }
 
     override fun finishCurrentTask() {
-        task.value?.let { changedTask ->
-            changedTask.isFinish = true
+        currentTask.value?.let { task ->
+            task.isFinish = true
 
-            task.value = changedTask
+            updateCurrentTask(task)
         }
     }
 
@@ -125,9 +135,10 @@ class CreateTaskManager @Inject constructor(
         currentGood.value?.let { good ->
             good.providers.add(0, providerInfo)
 
-            currentGood.value = good
+            updateCurrentGood(good)
         }
     }
+
 }
 
 
@@ -138,13 +149,16 @@ interface ICreateTaskManager {
     var searchNumber: String
     var searchFromList: Boolean
 
-    val task: MutableLiveData<TaskCreate>
+    val currentTask: MutableLiveData<TaskCreate>
     val currentGood: MutableLiveData<Good>
     val currentBasket: MutableLiveData<Basket>
 
-    fun updateTask(taskCreate: TaskCreate)
+    fun updateCurrentTask(task: TaskCreate?)
+    fun updateCurrentGood(good: Good?)
+    fun updateCurrentBasket(basket: Basket?)
+
     suspend fun putInCurrentGood(goodInfo: GoodInfoResult)
-    fun addGoodInTask()
+    fun addCurrentGoodInTask()
     fun findGoodByEan(ean: String): Good?
     fun findGoodByMaterial(material: String): Good?
     suspend fun isGoodCanBeAdded(goodInfo: GoodInfoResult): Boolean

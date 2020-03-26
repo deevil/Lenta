@@ -23,7 +23,7 @@ class BasketGoodListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
     val selectionsHelper = SelectionItemsHelper()
 
     private val task by lazy {
-        manager.task
+        manager.currentTask
     }
 
     val basket by lazy {
@@ -59,7 +59,9 @@ class BasketGoodListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
         MutableLiveData(true)
     }
 
-    val deleteEnabled = selectionsHelper.selectedPositions.map { it?.isNotEmpty() ?: false }
+    val deleteEnabled = selectionsHelper.selectedPositions.map {
+        it?.isNotEmpty() ?: false
+    }
 
     // -----------------------------
 
@@ -77,6 +79,7 @@ class BasketGoodListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
             if (length >= Constants.SAP_6) {
                 manager.searchNumber = number
                 manager.searchFromList = true
+                navigator.goBack()
                 navigator.openGoodInfoScreen()
             }
         }
@@ -89,7 +92,7 @@ class BasketGoodListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
     }
 
     fun onClickNext() {
-        navigator.goBackTo("TaskCompositionFragment")
+        navigator.goBack()
     }
 
     fun onClickProperties() {
@@ -106,6 +109,7 @@ class BasketGoodListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
 
         selectionsHelper.clearPositions()
         manager.deleteGoodByMaterials(materialList)
+        manager.updateCurrentBasket(manager.currentBasket.value)
     }
 
 }

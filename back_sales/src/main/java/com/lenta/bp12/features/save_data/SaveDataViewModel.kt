@@ -34,7 +34,7 @@ class SaveDataViewModel : CoreViewModel() {
 
 
     val task by lazy {
-        manager.task
+        manager.currentTask
     }
 
     val title by lazy {
