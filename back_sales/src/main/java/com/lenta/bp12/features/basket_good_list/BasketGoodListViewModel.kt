@@ -22,6 +22,8 @@ class BasketGoodListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
 
     val selectionsHelper = SelectionItemsHelper()
 
+
+    // todo Изминить способ получения данных из менеджера
     private val task by lazy {
         manager.task
     }
