@@ -22,8 +22,6 @@ class BasketGoodListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
 
     val selectionsHelper = SelectionItemsHelper()
 
-
-    // todo Изминить способ получения данных из менеджера
     private val task by lazy {
         manager.task
     }
@@ -32,23 +30,27 @@ class BasketGoodListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
         manager.currentBasket
     }
 
-    val title = basket.map { basket ->
-        "Корзина ${manager.getBasketPosition(basket)}: ${basket?.getDescription()}"
+    val title by lazy {
+        basket.map { basket ->
+            "Корзина ${manager.getBasketPosition(basket)}: ${basket?.getDescription()}"
+        }
     }
 
     val numberField: MutableLiveData<String> = MutableLiveData("")
 
-    val goods = basket.map { basket ->
-        task.value?.let { task ->
-            task.goods.filter {
-                basket?.section == it.section && basket.type == it.type && basket.control == it.control && basket.provider == it.provider
-            }.mapIndexed { index, good ->
-                ItemGoodUi(
-                        position = "${index + 1}",
-                        name = good.getNameWithMaterial(),
-                        quantity = good.quantity.dropZeros(),
-                        material = good.material
-                )
+    val goods by lazy {
+        basket.map { basket ->
+            task.value?.let { task ->
+                task.goods.filter {
+                    basket?.section == it.section && basket.type == it.type && basket.control == it.control && basket.provider == it.provider
+                }.mapIndexed { index, good ->
+                    ItemGoodUi(
+                            position = "${index + 1}",
+                            name = good.getNameWithMaterial(),
+                            quantity = good.quantity.dropZeros(),
+                            material = good.material
+                    )
+                }
             }
         }
     }
@@ -57,9 +59,7 @@ class BasketGoodListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
         MutableLiveData(true)
     }
 
-    val deleteEnabled by lazy {
-        selectionsHelper.selectedPositions.map { it?.isNotEmpty() ?: false }
-    }
+    val deleteEnabled = selectionsHelper.selectedPositions.map { it?.isNotEmpty() ?: false }
 
     // -----------------------------
 

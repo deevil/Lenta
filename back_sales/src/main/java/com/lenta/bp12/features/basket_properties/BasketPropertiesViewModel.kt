@@ -19,17 +19,21 @@ class BasketPropertiesViewModel : CoreViewModel() {
         manager.currentBasket
     }
 
-    val title = basket.map { basket ->
-        "Корзина ${manager.getBasketPosition(basket)}: ${basket?.getDescription()}"
+    val title by lazy {
+        basket.map { basket ->
+            "Корзина ${manager.getBasketPosition(basket)}: ${basket?.getDescription()}"
+        }
     }
 
-    val properties = basket.map { basket ->
-        BasketPropertiesUi(
-                section = basket?.section ?: "",
-                type = basket?.type ?: "",
-                gisControl = basket?.control?.description ?: "",
-                provider = "${basket?.provider?.code} ${basket?.provider?.name}"
-        )
+    val properties by lazy {
+        basket.map { basket ->
+            BasketPropertiesUi(
+                    section = basket?.section ?: "",
+                    type = basket?.type ?: "",
+                    gisControl = basket?.control?.description ?: "",
+                    provider = "${basket?.provider?.code} ${basket?.provider?.name}"
+            )
+        }
     }
 
 }

@@ -31,31 +31,35 @@ class GoodDetailsViewModel : CoreViewModel(), PageSelectionListener {
         manager.currentGood
     }
 
-    val title = good.map { good ->
-        good?.getNameWithMaterial()
+    val title by lazy {
+        good.map { good ->
+            good?.getNameWithMaterial()
+        }
     }
 
     val selectedPage = MutableLiveData(0)
 
-    val baskets = good.map { good ->
-        val basketList = mutableListOf<ItemBasketUi>()
+    val baskets by lazy {
+        good.map { good ->
+            val basketList = mutableListOf<ItemBasketUi>()
 
-        task.value?.let { task ->
-            task.baskets.find {
-                it.section == good?.section && it.type == good.type && it.control == good.control && it.provider == good.provider
-            }.also { basket ->
-                basketList.add(
-                        ItemBasketUi(
-                                position = "1",
-                                name = "Корзина ${manager.getBasketPosition(basket)}",
-                                description = basket?.getDescription() ?: "Not found!",
-                                quantity = task.getQuantityByBasket(basket).dropZeros()
-                        )
-                )
+            task.value?.let { task ->
+                task.baskets.find {
+                    it.section == good?.section && it.type == good.type && it.control == good.control && it.provider == good.provider
+                }.also { basket ->
+                    basketList.add(
+                            ItemBasketUi(
+                                    position = "1",
+                                    name = "Корзина ${manager.getBasketPosition(basket)}",
+                                    description = basket?.getDescription() ?: "Not found!",
+                                    quantity = task.getQuantityByBasket(basket).dropZeros()
+                            )
+                    )
+                }
             }
-        }
 
-        basketList.toList()
+            basketList.toList()
+        }
     }
 
     val categories by lazy {

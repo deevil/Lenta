@@ -51,85 +51,113 @@ class GoodInfoViewModel : CoreViewModel() {
         manager.currentGood
     }
 
-    val title = good.map { good ->
-        good?.getNameWithMaterial()
+    val title by lazy {
+        good.map { good ->
+            good?.getNameWithMaterial()
+        }
     }
 
     val number = MutableLiveData("")
 
-    val isCompactMode = good.map { good ->
-        good?.kind == GoodKind.COMMON
+    val isCompactMode by lazy {
+        good.map { good ->
+            good?.kind == GoodKind.COMMON
+        }
     }
 
-    val quantityType = good.map { good ->
-        good?.kind?.let { type ->
-            when {
-                type == GoodKind.EXCISE && number.value?.length == Constants.EXCISE_68 -> "Партионно"
-                type == GoodKind.EXCISE -> "Марочно"
-                type == GoodKind.ALCOHOL -> "Партионно"
-                else -> "Количество"
+    val quantityType by lazy {
+        good.map { good ->
+            good?.kind?.let { type ->
+                when {
+                    type == GoodKind.EXCISE && number.value?.length == Constants.EXCISE_68 -> "Партионно"
+                    type == GoodKind.EXCISE -> "Марочно"
+                    type == GoodKind.ALCOHOL -> "Партионно"
+                    else -> "Количество"
+                }
             }
         }
     }
 
-    val markScanEnabled = good.map { good ->
-        good?.kind == GoodKind.EXCISE
+    val markScanEnabled by lazy {
+        good.map { good ->
+            good?.kind == GoodKind.EXCISE
+        }
     }
 
-    val quantity = good.map { good ->
-        if (good?.isBox() == true) good.innerQuantity.dropZeros() else "1"
+    val quantity by lazy {
+        good.map { good ->
+            if (good?.isBox() == true) good.innerQuantity.dropZeros() else "1"
+        }
     }
 
-    val quantityEnabled = good.map { good ->
-        good?.isBox() == false
+    val quantityEnabled by lazy {
+        good.map { good ->
+            good?.isBox() == false
+        }
     }
 
-    private val totalQuantity = quantity.map { quantity ->
-        quantity?.toDoubleOrNull().sumWith(good.value?.quantity)
+    private val totalQuantity by lazy {
+        quantity.map { quantity ->
+            quantity?.toDoubleOrNull().sumWith(good.value?.quantity)
+        }
     }
 
-    val totalWithUnits = totalQuantity.map { quantity ->
-        "${quantity.dropZeros()} ${good.value?.units?.name}"
+    val totalWithUnits by lazy {
+        totalQuantity.map { quantity ->
+            "${quantity.dropZeros()} ${good.value?.units?.name}"
+        }
     }
 
-    private val basket = good.map { good ->
-        task.value?.let { task ->
-            task.baskets.find {
-                it.section == good?.section && it.type == good.type && it.control == good.control && it.provider == good.provider
+    private val basket by lazy {
+        good.map { good ->
+            task.value?.let { task ->
+                task.baskets.find {
+                    it.section == good?.section && it.type == good.type && it.control == good.control && it.provider == good.provider
+                }
             }
         }
     }
 
-    val basketNumber = basket.map { basket ->
-        val number = task.value?.baskets?.indexOf(basket) ?: -1
-        if (number >= 0) number.toString() else ""
+    val basketNumber by lazy {
+        basket.map { basket ->
+            val number = task.value?.baskets?.indexOf(basket) ?: -1
+            if (number >= 0) number.toString() else ""
+        }
     }
 
-    val basketQuantity = basket.map { basket ->
-        "${task.value?.getQuantityByBasket(basket).sumWith(quantity.value?.toDoubleOrNull() ?: 0.0).dropZeros()} ${good.value?.units?.name}"
+    val basketQuantity by lazy {
+        basket.map { basket ->
+            "${task.value?.getQuantityByBasket(basket).sumWith(quantity.value?.toDoubleOrNull() ?: 0.0).dropZeros()} ${good.value?.units?.name}"
+        }
     }
 
     val totalTitle = MutableLiveData("Итого")
 
     val basketTitle = MutableLiveData("По корзине")
 
-    val providers = good.map { good ->
-        good?.providers?.let { providers ->
-            val list = providers.toMutableList()
-            if (list.size > 1) {
-                list.add(0, ProviderInfo())
-            }
+    private val providers by lazy {
+        good.map { good ->
+            good?.providers?.let { providers ->
+                val list = providers.toMutableList()
+                if (list.size > 1) {
+                    list.add(0, ProviderInfo())
+                }
 
-            list.toList()
+                list.toList()
+            }
         }
     }
 
-    val providerList = providers.map { list ->
-        list?.map { it.name }
+    val providerList by lazy {
+        providers.map { list ->
+            list?.map { it.name }
+        }
     }
 
-    val providerEnabled = providerList.map { providers ->
-        providers?.size ?: 0 > 1
+    val providerEnabled by lazy {
+        providerList.map { providers ->
+            providers?.size ?: 0 > 1
+        }
     }
 
     val providerPosition = MutableLiveData(0)
@@ -140,23 +168,29 @@ class GoodInfoViewModel : CoreViewModel() {
         }
     }
 
-    val producers = good.map { good ->
-        good?.producers?.let { producers ->
-            val list = producers.toMutableList()
-            if (list.size > 1) {
-                list.add(0, ProducerInfo())
-            }
+    private val producers by lazy {
+        good.map { good ->
+            good?.producers?.let { producers ->
+                val list = producers.toMutableList()
+                if (list.size > 1) {
+                    list.add(0, ProducerInfo())
+                }
 
-            list.toList()
+                list.toList()
+            }
         }
     }
 
-    val producerList = producers.map { list ->
-        list?.map { it.name }
+    val producerList by lazy {
+        producers.map { list ->
+            list?.map { it.name }
+        }
     }
 
-    val producerEnabled = producers.map { producers ->
-        producers?.size ?: 0 > 1
+    val producerEnabled by lazy {
+        producers.map { producers ->
+            producers?.size ?: 0 > 1
+        }
     }
 
     val producerPosition = MutableLiveData(0)
@@ -172,22 +206,28 @@ class GoodInfoViewModel : CoreViewModel() {
     val dateEnabled = MutableLiveData(true)
 
 
-    val applyEnabled = quantity.map { quantity ->
-        good.value?.let { good ->
-            when (good.kind) {
-                GoodKind.COMMON -> quantity?.toDoubleOrNull() ?: 0.0 > 0
-                GoodKind.ALCOHOL -> quantity?.toDoubleOrNull() ?: 0.0 > 0
-                GoodKind.EXCISE -> quantity?.toDoubleOrNull() ?: 0.0 > 0
+    val applyEnabled by lazy {
+        quantity.map { quantity ->
+            good.value?.let { good ->
+                when (good.kind) {
+                    GoodKind.COMMON -> quantity?.toDoubleOrNull() ?: 0.0 > 0
+                    GoodKind.ALCOHOL -> quantity?.toDoubleOrNull() ?: 0.0 > 0
+                    GoodKind.EXCISE -> quantity?.toDoubleOrNull() ?: 0.0 > 0
+                }
             }
         }
     }
 
-    val detailsVisibility = good.map { good ->
-        good?.kind == GoodKind.ALCOHOL || good?.kind == GoodKind.EXCISE
+    val detailsVisibility by lazy {
+        good.map { good ->
+            good?.kind == GoodKind.ALCOHOL || good?.kind == GoodKind.EXCISE
+        }
     }
 
-    val rollbackVisibility = good.map { good ->
-        good?.kind == GoodKind.EXCISE
+    val rollbackVisibility by lazy {
+        good.map { good ->
+            good?.kind == GoodKind.EXCISE
+        }
     }
 
     val rollbackEnabled = MutableLiveData(false)
@@ -196,9 +236,7 @@ class GoodInfoViewModel : CoreViewModel() {
 
     init {
         viewModelScope.launch {
-
             //task.value = manager.task.value
-            //good.value = manager.currentGood.value
             checkSearchNumber(manager.searchNumber)
         }
     }
@@ -294,7 +332,7 @@ class GoodInfoViewModel : CoreViewModel() {
             }.either(::handleFailure) { exciseInfo ->
                 Logg.d { "--> exciseInfo = $exciseInfo" }
 
-
+                // todo Логика сохранения марок
 
 
 

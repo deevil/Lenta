@@ -25,15 +25,21 @@ class AddProviderViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
     lateinit var manager: ICreateTaskManager
 
 
-    val good = MutableLiveData<Good>()
+    val good by lazy {
+        manager.currentGood
+    }
 
-    val title = good.map { good ->
-        good?.getNameWithMaterial()
+    val title by lazy {
+        good.map { good ->
+            good?.getNameWithMaterial()
+        }
     }
 
     val numberField: MutableLiveData<String> = MutableLiveData("")
 
-    val requestFocusToNumberField: MutableLiveData<Boolean> = MutableLiveData()
+    val requestFocusToNumberField by lazy {
+        MutableLiveData(true)
+    }
 
     val provider = MutableLiveData<ProviderInfo>()
 
@@ -43,14 +49,6 @@ class AddProviderViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
 
     val applyEnabled = provider.map { providerInfo ->
         providerInfo != null
-    }
-
-    // -----------------------------
-
-    init {
-        viewModelScope.launch {
-            good.value = manager.currentGood.value
-        }
     }
 
     // -----------------------------

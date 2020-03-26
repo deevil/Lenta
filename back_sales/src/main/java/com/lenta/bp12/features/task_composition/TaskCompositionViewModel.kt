@@ -37,51 +37,51 @@ class TaskCompositionViewModel : CoreViewModel(), PageSelectionListener, OnOkInS
 
     val selectedPage = MutableLiveData(0)
 
-    private val task = MutableLiveData<TaskCreate>()
+    private val task by lazy {
+        manager.task
+    }
 
-    val title = task.map { task ->
-        "${task?.type?.type} // ${task?.name}"
+    val title by lazy {
+        task.map { task ->
+            "${task?.type?.type} // ${task?.name}"
+        }
     }
 
     val deleteEnabled = MutableLiveData(false)
 
     val saveEnabled = MutableLiveData(false)
 
-    val numberField: MutableLiveData<String> = MutableLiveData("")
+    val numberField = MutableLiveData("")
 
     val requestFocusToNumberField by lazy {
         MutableLiveData(true)
     }
 
-    val goods = task.map { task ->
-        task?.goods!!.reversed().mapIndexed { index, good ->
-            ItemGoodUi(
-                    material = good.material,
-                    position = "${task.goods.size - index}",
-                    name = good.getNameWithMaterial(),
-                    quantity = good.quantity.dropZeros()
-            )
+    val goods by lazy {
+        task.map { task ->
+            task?.goods!!.reversed().mapIndexed { index, good ->
+                ItemGoodUi(
+                        material = good.material,
+                        position = "${task.goods.size - index}",
+                        name = good.getNameWithMaterial(),
+                        quantity = good.quantity.dropZeros()
+                )
+            }
         }
     }
 
-    val baskets = task.map { task ->
-        task?.baskets!!.reversed().mapIndexed { index, basket ->
-            val position = task.baskets.size - index
-            ItemBasketUi(
-                    basket = basket,
-                    position = "$position",
-                    name = "Корзина $position",
-                    description = basket.getDescription(),
-                    quantity = task.getQuantityByBasket(basket).dropZeros()
-            )
-        }
-    }
-
-    // -----------------------------
-
-    init {
-        viewModelScope.launch {
-            task.value = manager.task.value
+    val baskets by lazy {
+        task.map { task ->
+            task?.baskets!!.reversed().mapIndexed { index, basket ->
+                val position = task.baskets.size - index
+                ItemBasketUi(
+                        basket = basket,
+                        position = "$position",
+                        name = "Корзина $position",
+                        description = basket.getDescription(),
+                        quantity = task.getQuantityByBasket(basket).dropZeros()
+                )
+            }
         }
     }
 
