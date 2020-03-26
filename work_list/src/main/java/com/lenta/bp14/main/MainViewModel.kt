@@ -3,7 +3,7 @@ package com.lenta.bp14.main
 import androidx.lifecycle.viewModelScope
 import com.lenta.bp14.models.IGeneralTaskManager
 import com.lenta.bp14.platform.navigation.IScreenNavigator
-import com.lenta.bp14.platform.sound.ISoundPlayer
+import com.lenta.shared.platform.sound.ISoundPlayer
 import com.lenta.shared.features.loading.startProgressTimer
 import com.lenta.shared.platform.activity.main_activity.CoreMainViewModel
 import com.lenta.shared.platform.statusbar.StatusBarUiModel
