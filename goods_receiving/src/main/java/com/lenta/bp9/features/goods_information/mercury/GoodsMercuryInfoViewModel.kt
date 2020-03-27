@@ -111,7 +111,7 @@ class GoodsMercuryInfoViewModel : CoreViewModel(), OnPositionClickListener {
         }
         "${findMercuryInfoOfProduct?.sumByDouble {mercuryInfo ->
             mercuryInfo.volume
-        }.toStringFormatted()} ${uom.value?.name}"
+        }.toStringFormatted()} ${findMercuryInfoOfProduct?.last()?.uom?.name}"
     }
     val tvProductionDate = mercuryVolume.map {
         if (isTaskPGE.value == true && isGoodsAddedAsSurplus.value == true) {
