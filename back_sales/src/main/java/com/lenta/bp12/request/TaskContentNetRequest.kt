@@ -43,7 +43,7 @@ class TaskContentStatus : ObjectRawStatus<TaskContentResult>()
 data class TaskContentResult(
         /** Таблица состава задания */
         @SerializedName("ET_TASK_POS")
-        val goods: List<GoodInfo>,
+        val positions: List<PositionInfo>,
         /** Таблица марок задания */
         @SerializedName("ET_TASK_MARK")
         val marks: List<MarkInfo>,

@@ -41,24 +41,18 @@ class GoodDetailsViewModel : CoreViewModel(), PageSelectionListener {
 
     val baskets by lazy {
         good.map { good ->
-            val basketList = mutableListOf<ItemBasketUi>()
-
             task.value?.let { task ->
-                task.baskets.find {
-                    it.section == good?.section && it.type == good.type && it.control == good.control && it.provider == good.provider
-                }.also { basket ->
-                    basketList.add(
-                            ItemBasketUi(
-                                    position = "1",
-                                    name = "Корзина ${manager.getBasketPosition(basket)}",
-                                    description = basket?.getDescription() ?: "Not found!",
-                                    quantity = task.getQuantityByBasket(basket).dropZeros()
-                            )
+                task.baskets.filter {
+                    it.section == good?.section && it.type == good.type && it.control == good.control
+                }.mapIndexed { index, basket ->
+                    ItemBasketUi(
+                            position = "${index + 1}",
+                            name = "Корзина ${manager.getBasketPosition(basket)}",
+                            description = basket.getDescription(),
+                            quantity = task.getQuantityByBasket(basket).dropZeros()
                     )
                 }
             }
-
-            basketList.toList()
         }
     }
 

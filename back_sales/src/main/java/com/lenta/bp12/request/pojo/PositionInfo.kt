@@ -2,7 +2,7 @@ package com.lenta.bp12.request.pojo
 
 import com.google.gson.annotations.SerializedName
 
-data class GoodInfo(
+data class PositionInfo(
         /** SAP-код товара */
         @SerializedName("MATNR")
         var material: String,

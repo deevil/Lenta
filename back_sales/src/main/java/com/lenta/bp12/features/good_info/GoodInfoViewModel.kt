@@ -16,6 +16,7 @@ import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.platform.constants.Constants
 import com.lenta.shared.utilities.Logg
+import com.lenta.shared.utilities.extentions.combineLatest
 import com.lenta.shared.utilities.extentions.dropZeros
 import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.utilities.extentions.sumWith
@@ -96,7 +97,7 @@ class GoodInfoViewModel : CoreViewModel() {
 
     private val totalQuantity by lazy {
         quantity.map { quantity ->
-            quantity?.toDoubleOrNull().sumWith(good.value?.quantity)
+            quantity?.toDoubleOrNull().sumWith(good.value?.getTotalQuantity())
         }
     }
 
@@ -107,10 +108,12 @@ class GoodInfoViewModel : CoreViewModel() {
     }
 
     private val basket by lazy {
-        good.map { good ->
-            task.value?.let { task ->
-                task.baskets.find {
-                    it.section == good?.section && it.type == good.type && it.control == good.control && it.provider == good.provider
+        good.combineLatest(providerPosition).map {
+            it?.first?.let { good ->
+                task.value?.let { task ->
+                    task.baskets.find {basket ->
+                        basket.section == good.section && basket.type == good.type && basket.control == good.control && basket.provider == getProvider()
+                    }
                 }
             }
         }
@@ -353,9 +356,8 @@ class GoodInfoViewModel : CoreViewModel() {
 
     private fun saveGoodInTask() {
         good.value?.let { good ->
-            good.isCounted = true
-            good.quantity = totalQuantity.value ?: 0.0
-            good.provider = providers.value!![providerPosition.value!!]
+            val quantity = quantity.value?.toDoubleOrNull() ?: 0.0
+            good.addPosition(quantity, getProvider())
 
             Logg.d { "--> saveGoodInTask: good = $good" }
 
@@ -366,12 +368,25 @@ class GoodInfoViewModel : CoreViewModel() {
                         section = good.section,
                         type = good.type,
                         control = good.control,
-                        provider = good.provider
+                        provider = getProvider()
                 ))
+            } else {
+                manager.updateCurrentBasket(basket.value)
             }
         }
 
         manager.addCurrentGoodInTask()
+    }
+
+    private fun getProvider(): ProviderInfo? {
+        val position = providerPosition.value!!
+        return  providers.value?.let { providers ->
+            when (providers.size) {
+                0 -> null
+                1 -> providers[0]
+                else -> if (position != 0) providers[position] else null
+            }
+        }
     }
 
     fun onBackPressed() {

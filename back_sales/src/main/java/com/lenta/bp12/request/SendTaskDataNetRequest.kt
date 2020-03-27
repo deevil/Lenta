@@ -3,7 +3,7 @@ package com.lenta.bp12.request
 import com.google.gson.annotations.SerializedName
 import com.lenta.bp12.model.pojo.TaskCreate
 import com.lenta.bp12.request.pojo.SentTaskInfo
-import com.lenta.bp12.request.pojo.GoodInfo
+import com.lenta.bp12.request.pojo.PositionInfo
 import com.lenta.bp12.request.pojo.MarkInfo
 import com.lenta.bp12.request.pojo.PartInfo
 import com.lenta.shared.exception.Failure
@@ -22,22 +22,24 @@ class SendTaskDataNetRequest @Inject constructor(
 
     override suspend fun run(params: TaskData): Either<Failure, SendTaskDataResult> {
 
-        val goods = mutableListOf<GoodInfo>()
+        val positions = mutableListOf<PositionInfo>()
         val marks = mutableListOf<MarkInfo>()
         val parts = mutableListOf<PartInfo>()
 
         params.task.goods.forEach { good ->
-            goods.add(
-                    GoodInfo(
-                            material = good.material,
-                            providerCode = good.provider?.code ?: "Not found!",
-                            quantity = good.quantity.dropZeros(),
-                            isCounted = good.isCounted.toSapBooleanString(),
-                            isDeleted = good.isDelete.toSapBooleanString(),
-                            unitsCode = good.units.code
-                    )
-            )
-
+            good.positions.forEach { position ->
+                positions.add(
+                        PositionInfo(
+                                material = good.material,
+                                providerCode = position.provider?.code ?: "Not found!",
+                                quantity = position.quantity.dropZeros(),
+                                isCounted = position.isCounted.toSapBooleanString(),
+                                isDeleted = position.isDelete.toSapBooleanString(),
+                                unitsCode = good.units.code
+                        )
+                )
+            }
+            
             good.marks.map { mark ->
                 marks.add(
                         MarkInfo(
@@ -76,7 +78,7 @@ class SendTaskDataNetRequest @Inject constructor(
                         storage = params.task.storage,
                         reasonCode = params.task.reason.code,
                         isNotFinish = (!params.task.isFinish).toSapBooleanString(),
-                        goods = goods,
+                        positions = positions,
                         marks = marks,
                         parts = parts
                 ), SendTaskDataStatus::class.java)
@@ -121,7 +123,7 @@ data class SendTaskDataParams(
         val isNotFinish: String,
         /** Таблица состава задания */
         @SerializedName("IT_TASK_POS")
-        val goods: List<GoodInfo>,
+        val positions: List<PositionInfo>,
         /** Таблица марок задания */
         @SerializedName("IT_TASK_MARK")
         val marks: List<MarkInfo>,

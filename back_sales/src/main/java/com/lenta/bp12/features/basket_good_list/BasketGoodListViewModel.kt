@@ -42,12 +42,12 @@ class BasketGoodListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
         basket.map { basket ->
             task.value?.let { task ->
                 task.goods.filter {
-                    basket?.section == it.section && basket.type == it.type && basket.control == it.control && basket.provider == it.provider
+                    it.section == basket?.section && it.type == basket.type && it.control == basket.control
                 }.mapIndexed { index, good ->
                     ItemGoodUi(
                             position = "${index + 1}",
                             name = good.getNameWithMaterial(),
-                            quantity = good.quantity.dropZeros(),
+                            quantity = good.getQuantityByProvider(basket?.provider).dropZeros(),
                             material = good.material
                     )
                 }

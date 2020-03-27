@@ -2,6 +2,7 @@ package com.lenta.bp12.model.pojo
 
 import com.lenta.shared.fmp.resources.dao_ext.ReturnReason
 import com.lenta.shared.fmp.resources.dao_ext.TaskType
+import com.lenta.shared.utilities.extentions.sumWith
 
 data class TaskCreate(
         val number: String = "",
@@ -17,9 +18,19 @@ data class TaskCreate(
 ) {
 
     fun getQuantityByBasket(basket: Basket?): Double {
-        return goods.filter {
-            basket?.section == it.section && basket.type == it.type && basket.control == it.control && basket.provider == it.provider
-        }.map { it.quantity }.sum()
+        var quantity = 0.0
+
+        goods.filter {
+            it.section == basket?.section && it.type == basket.type && it.control == basket.control
+        }.forEach { good ->
+            val positionQuantity = good.positions.filter {
+                it.provider?.code == basket?.provider?.code
+            }.map { it.quantity }.sum()
+
+            quantity = quantity.sumWith(positionQuantity)
+        }
+
+        return quantity
     }
 
 }
