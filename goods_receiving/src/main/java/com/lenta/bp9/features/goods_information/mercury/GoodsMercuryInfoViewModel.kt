@@ -270,14 +270,20 @@ class GoodsMercuryInfoViewModel : CoreViewModel(), OnPositionClickListener {
                 }
             }
 
-            generalShelfLife.value = productInfo.value?.generalShelfLife
-            remainingShelfLife.value = productInfo.value?.remainingShelfLife
-
             /** определяем, что товар скоропорт, это общий для всех алгоритм https://trello.com/c/8sOTWtB7 */
             val paramGrzUffMhdhb = dataBase.getParamGrzUffMhdhb()?.toInt() ?: 60
             isPerishable.value = (productInfo.value?.generalShelfLife?.toInt() ?: 0) > 0 ||
                     (productInfo.value?.remainingShelfLife?.toInt() ?: 0) > 0 ||
                     ((productInfo.value?.mhdhbDays ?: 0) > 0 && (productInfo.value?.mhdhbDays ?: 0) < paramGrzUffMhdhb )
+            if (isPerishable.value == true) {
+                if ( (productInfo.value?.generalShelfLife?.toInt() ?: 0) <  paramGrzUffMhdhb) { //https://trello.com/c/7OqxSqOP
+                    generalShelfLife.value = productInfo.value?.mhdhbDays.toString()
+                    remainingShelfLife.value = productInfo.value?.mhdrzDays.toString()
+                } else {
+                    generalShelfLife.value = productInfo.value?.generalShelfLife
+                    remainingShelfLife.value = productInfo.value?.remainingShelfLife
+                }
+            }
 
             spinQuality.value = qualityInfo.value?.map {
                 it.name

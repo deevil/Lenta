@@ -185,7 +185,8 @@ class SearchProductDelegate @Inject constructor(
                 numberStampsControl = "0",
                 processingUnit = "",
                 isGoodsAddedAsSurplus = true,
-                mhdhbDays = materialInfo?.mhdhbDays ?: 0
+                mhdhbDays = materialInfo?.mhdhbDays ?: 0,
+                mhdrzDays = materialInfo?.mhdrzDays ?: 0
         )
         taskManager.getReceivingTask()!!.taskRepository.getProducts().addProduct(goodsSurplus)
         openProductScreen(taskProductInfo = goodsSurplus)

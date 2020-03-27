@@ -203,7 +203,8 @@ class TaskContents
                     numberStampsControl = it.quantityStampsControl,
                     processingUnit = it.processingUnit ?: "",
                     isGoodsAddedAsSurplus = false,
-                    mhdhbDays = materialInfo?.mhdhbDays ?: 0
+                    mhdhbDays = materialInfo?.mhdhbDays ?: 0,
+                    mhdrzDays = materialInfo?.mhdrzDays ?: 0
             )
         }
     }
