@@ -13,7 +13,8 @@ import com.lenta.bp9.features.driver_data.DriverDataFragment
 import com.lenta.bp9.features.editing_invoice.EditingInvoiceFragment
 import com.lenta.bp9.features.formed_docs.FormedDocsFragment
 import com.lenta.bp9.features.goods_details.GoodsDetailsFragment
-import com.lenta.bp9.features.goods_information.excise_alco.ExciseAlcoInfoFragment
+import com.lenta.bp9.features.goods_information.excise_alco_stamp_acc.ExciseAlcoStampAccInfoFragment
+import com.lenta.bp9.features.goods_information.excise_alco_box_acc.ExciseAlcoBoxAccInfoFragment
 import com.lenta.bp9.features.goods_information.general.GoodsInfoFragment
 import com.lenta.bp9.features.goods_information.mercury.GoodsMercuryInfoFragment
 import com.lenta.bp9.features.goods_information.non_excise_alco.NonExciseAlcoInfoFragment
@@ -377,9 +378,9 @@ class ScreenNavigator(
         )
     }
 
-    override fun openExciseAlcoInfoScreen(productInfo: TaskProductInfo) {
+    override fun openExciseAlcoStampAccInfoScreen(productInfo: TaskProductInfo) {
         runOrPostpone {
-            getFragmentStack()?.push(ExciseAlcoInfoFragment.create(productInfo))
+            getFragmentStack()?.push(ExciseAlcoStampAccInfoFragment.create(productInfo))
         }
     }
 
@@ -1037,6 +1038,16 @@ class ScreenNavigator(
         }
     }
 
+    override fun openExciseAlcoBoxAccInfoScreen(productInfo: TaskProductInfo) {
+        runOrPostpone {
+            getFragmentStack()?.push(ExciseAlcoBoxAccInfoFragment.create(productInfo))
+        }
+    }
+
+    override fun openAlertUnknownGoodsTypeScreen() {
+        openInfoScreen(context.getString(R.string.unknown_goods_type))
+    }
+
     private fun getFragmentStack() = foregroundActivityProvider.getActivity()?.fragmentStack
 }
 
@@ -1080,7 +1091,7 @@ interface IScreenNavigator : ICoreNavigator {
     fun openSupplyResultsAutomaticChargeErrorDialog()
     fun openSupplyResultsAutomaticChargeSuccessDialog(numberSupply: String, leftCallbackFunc: () -> Unit, rightCallbackFunc: () -> Unit)
     fun openAlertOverlimit()
-    fun openExciseAlcoInfoScreen(productInfo: TaskProductInfo)
+    fun openExciseAlcoStampAccInfoScreen(productInfo: TaskProductInfo)
     fun openFinishReviseLoadingScreen()
     fun openRegisterArrivalLoadingScreen(isInStockPaperTTN: Boolean = false, isEdo: Boolean = false, status: TaskStatus = TaskStatus.Other)
     fun openStartReviseLoadingScreen()
@@ -1160,4 +1171,6 @@ interface IScreenNavigator : ICoreNavigator {
     fun openAlertCountMoreCargoUnitDialog(yesCallbackFunc: () -> Unit)
     fun openShelfLifeExpiresDialog(noCallbackFunc: () -> Unit, yesCallbackFunc: () -> Unit, expiresThrough: String, shelfLife: String)
     fun openSupplyResultsActDisagreementTransportationDialog(transportationNumber: String, docCallbackFunc: () -> Unit, nextCallbackFunc: () -> Unit)
+    fun openExciseAlcoBoxAccInfoScreen(productInfo: TaskProductInfo)
+    fun openAlertUnknownGoodsTypeScreen()
 }

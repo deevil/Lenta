@@ -49,7 +49,7 @@ class ReceivingTask(val taskHeader: TaskInfo,
         taskRepository.getProductsDiscrepancies().updateProductsDiscrepancy(taskContentsInfo.productsDiscrepancies)
         taskRepository.getBatches().updateBatches(taskContentsInfo.taskBatches)
         taskRepository.getBatchesDiscrepancies().updateBatchesDiscrepancy(taskContentsInfo.taskBatchesDiscrepancies)
-        taskRepository.getMercuryDiscrepancies().updateMercuryInfo(taskContentsInfo.taskMercuryInfo)
+        taskContentsInfo.taskMercuryInfo?.let { taskRepository.getMercuryDiscrepancies().updateMercuryInfo(it) }
         taskRepository.getExciseStamps().updateExciseStamps(taskContentsInfo.taskExciseStampInfo)
         taskRepository.getExciseStampsDiscrepancies().updateExciseStampsDiscrepancy(taskContentsInfo.taskExciseStampDiscrepancies)
         taskRepository.getExciseStampsBad().updateExciseStampBad(taskContentsInfo.taskExciseStampBad)
