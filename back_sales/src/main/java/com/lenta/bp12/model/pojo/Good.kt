@@ -57,4 +57,10 @@ data class Good(
         return positions.filter { it.provider == provider }.map { it.quantity }.sum()
     }
 
+    fun deletePositions(positionList: List<Position>) {
+        positionList.forEach { position ->
+            positions.remove(position)
+        }
+    }
+
 }

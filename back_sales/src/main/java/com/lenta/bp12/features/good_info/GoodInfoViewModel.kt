@@ -14,6 +14,7 @@ import com.lenta.bp12.request.pojo.ProducerInfo
 import com.lenta.bp12.request.pojo.ProviderInfo
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.account.ISessionInfo
+import com.lenta.shared.exception.Failure
 import com.lenta.shared.platform.constants.Constants
 import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.extentions.combineLatest
@@ -127,8 +128,10 @@ class GoodInfoViewModel : CoreViewModel() {
     }
 
     val basketQuantity by lazy {
-        quantity.map { quantity ->
-            "${task.value?.getQuantityByBasket(basket.value).sumWith(quantity?.toDoubleOrNull() ?: 0.0).dropZeros()} ${good.value?.units?.name}"
+        quantity.combineLatest(basket).map {
+            it?.first?.let { quantity ->
+                "${task.value?.getQuantityByBasket(basket.value).sumWith(quantity.toDoubleOrNull() ?: 0.0).dropZeros()} ${good.value?.units?.name}"
+            }
         }
     }
 
@@ -271,14 +274,12 @@ class GoodInfoViewModel : CoreViewModel() {
 
     private fun getGoodByEan(ean: String) {
         manager.findGoodByEan(ean)?.let { good ->
-            Logg.d { "--> getGoodByEan: good = $good" }
             manager.updateCurrentGood(good)
         } ?: loadGoodInfo(ean = ean)
     }
 
     private fun getGoodByMaterial(material: String) {
         manager.findGoodByMaterial(material)?.let { good ->
-            Logg.d { "--> getGoodByMaterial: good = $good" }
             manager.updateCurrentGood(good)
         } ?: loadGoodInfo(material = material)
     }
@@ -344,6 +345,12 @@ class GoodInfoViewModel : CoreViewModel() {
         }
     }
 
+    override fun handleFailure(failure: Failure) {
+        super.handleFailure(failure)
+        navigator.goBack()
+        navigator.openAlertScreen(failure)
+    }
+
     fun onScanResult(number: String) {
         if (applyEnabled.value!! && number.length >= Constants.SAP_6) {
             saveGoodInTask()
@@ -358,8 +365,6 @@ class GoodInfoViewModel : CoreViewModel() {
         good.value?.let { good ->
             val quantity = quantity.value?.toDoubleOrNull() ?: 0.0
             good.addPosition(quantity, getProvider())
-
-            Logg.d { "--> saveGoodInTask: good = $good" }
 
             manager.updateCurrentGood(good)
 

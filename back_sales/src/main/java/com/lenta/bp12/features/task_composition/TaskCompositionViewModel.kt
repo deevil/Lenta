@@ -11,6 +11,7 @@ import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.SelectionItemsHelper
 import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
 import com.lenta.shared.utilities.databinding.PageSelectionListener
+import com.lenta.shared.utilities.extentions.combineLatest
 import com.lenta.shared.utilities.extentions.dropZeros
 import com.lenta.shared.utilities.extentions.map
 import javax.inject.Inject
@@ -43,10 +44,6 @@ class TaskCompositionViewModel : CoreViewModel(), PageSelectionListener, OnOkInS
         }
     }
 
-    val deleteEnabled = MutableLiveData(false)
-
-    val saveEnabled = MutableLiveData(false)
-
     val numberField = MutableLiveData("")
 
     val requestFocusToNumberField by lazy {
@@ -78,6 +75,20 @@ class TaskCompositionViewModel : CoreViewModel(), PageSelectionListener, OnOkInS
                         quantity = task.getQuantityByBasket(basket).dropZeros()
                 )
             }
+        }
+    }
+
+    val deleteEnabled = selectedPage.combineLatest(goodSelectionsHelper.selectedPositions).combineLatest(basketSelectionsHelper.selectedPositions).map {
+        val tab = it!!.first.first
+        val isGoodSelected = it.first.second.isNotEmpty()
+        val isBasketSelected = it.second.isNotEmpty()
+
+        tab == 0 && isGoodSelected || tab == 1 && isBasketSelected
+    }
+
+    val saveEnabled by lazy {
+        goods.map {
+            it?.isNotEmpty()
         }
     }
 
@@ -118,6 +129,7 @@ class TaskCompositionViewModel : CoreViewModel(), PageSelectionListener, OnOkInS
             if (length >= Constants.SAP_6) {
                 manager.searchNumber = number
                 manager.searchFromList = true
+                numberField.value = ""
                 navigator.openGoodInfoScreen()
             }
         }

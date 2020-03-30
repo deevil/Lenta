@@ -33,4 +33,20 @@ data class TaskCreate(
         return quantity
     }
 
+    fun deleteEmptyBaskets() {
+        baskets.removeAll(baskets.filter { getQuantityByBasket(it) == 0.0 })
+    }
+
+    fun deleteGoodFromBasket(basket: Basket) {
+        goods.filter {
+            it.section == basket.section && it.type == basket.type && it.control == basket.control
+        }.forEach { good ->
+            val positionList = good.positions.filter {
+                it.provider?.code == basket.provider?.code
+            }
+
+            good.deletePositions(positionList)
+        }
+    }
+
 }

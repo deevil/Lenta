@@ -107,6 +107,7 @@ class CreateTaskManager @Inject constructor(
                 }
             }
 
+            task.deleteEmptyBaskets()
             updateCurrentTask(task)
         }
     }
@@ -115,6 +116,7 @@ class CreateTaskManager @Inject constructor(
         currentTask.value?.let { task ->
             task.baskets.let { baskets ->
                 basketList.forEach { basket ->
+                    task.deleteGoodFromBasket(basket)
                     baskets.remove(basket)
                 }
             }
