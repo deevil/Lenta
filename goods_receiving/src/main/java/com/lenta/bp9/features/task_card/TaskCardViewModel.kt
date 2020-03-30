@@ -19,6 +19,7 @@ import com.lenta.shared.utilities.databinding.PageSelectionListener
 import com.lenta.shared.utilities.date_time.DateTimeUtil
 import com.lenta.shared.utilities.extentions.getDeviceIp
 import com.lenta.shared.utilities.extentions.map
+import com.lenta.shared.utilities.extentions.toStringFormatted
 import com.mobrun.plugin.api.HyperHive
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -256,12 +257,20 @@ class TaskCardViewModel : CoreViewModel(), PageSelectionListener {
     val shipmentTransportation by lazy {
         taskManager.getReceivingTask()?.taskDescription?.transportationNumber ?: ""
     }
-    val countGE by lazy {
-        taskManager.getReceivingTask()?.taskDescription?.countGE ?: ""
+    val stringsGoods by lazy {
+        taskManager.getReceivingTask()?.taskDescription?.quantityPositions.toString()
     }
 
-    val countEO by lazy {
-        taskManager.getReceivingTask()?.taskDescription?.countEO ?: ""
+    val quantityST by lazy {
+        taskManager.getReceivingTask()?.taskDescription?.quantityST.toStringFormatted()
+    }
+
+    val quantityKG by lazy {
+        taskManager.getReceivingTask()?.taskDescription?.quantityKG.toStringFormatted()
+    }
+
+    val quantityAll by lazy {
+        taskManager.getReceivingTask()?.taskDescription?.quantityAll.toStringFormatted()
     }
 
 

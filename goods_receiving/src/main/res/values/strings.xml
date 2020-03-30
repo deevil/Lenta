@@ -253,4 +253,7 @@
     <string name="msg_act_disagreement_transport_marriage">Акт разногласий по транспортировке №%1$s Был успешно сформирован и отправлен на печать</string>
     <string name="unknown_goods_type">Неизвестный тип товара</string>
     <string name="create_inbound_delivery_dialog">Входящая поставка отсутствует. Создать входящую поставку на открытое количество?</string>
+    <string name="quantity_st">Количество, шт</string>
+    <string name="quantity_kg">Количество, кг</string>
+    <string name="quantity_all">Общее количество, всего</string>
 </resources>
