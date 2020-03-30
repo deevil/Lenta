@@ -15,6 +15,7 @@ import com.lenta.bp16.features.pack_list.PackListFragment
 import com.lenta.bp16.features.raw_list.RawListFragment
 import com.lenta.bp16.features.select_market.SelectMarketFragment
 import com.lenta.bp16.features.processing_unit_task_list.ProcessingUnitTaskListFragment
+import com.lenta.bp16.features.reprint_label.ReprintLabelFragment
 import com.lenta.shared.account.IAuthenticator
 import com.lenta.shared.features.alert.AlertFragment
 import com.lenta.shared.platform.activity.ForegroundActivityProvider
@@ -119,6 +120,12 @@ class ScreenNavigator @Inject constructor(
     override fun openPackGoodListScreen() {
         runOrPostpone {
             getFragmentStack()?.push(PackGoodListFragment())
+        }
+    }
+
+    override fun openReprintLabelScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(ReprintLabelFragment())
         }
     }
 
@@ -231,6 +238,7 @@ interface IScreenNavigator : ICoreNavigator {
     fun openGoodPackagingScreen()
     fun openPackListScreen()
     fun openPackGoodListScreen()
+    fun openReprintLabelScreen()
 
     fun showDefrostingPhaseIsCompleted(nextCallback: () -> Unit)
     fun showConfirmNoSuchItemLeft(taskType: String, confirmCallback: () -> Unit)
