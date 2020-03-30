@@ -477,7 +477,7 @@ class GoodsInfoViewModel : CoreViewModel(), OnPositionClickListener {
         } else {
             //блок 6.144
             expirationDate.value!!.time = formatter.parse(shelfLifeDate.value)
-            expirationDate.value!!.add(Calendar.DATE, productInfo.value!!.generalShelfLife.toInt())
+            expirationDate.value!!.add(Calendar.DATE, generalShelfLife.value?.toInt() ?: 0)
         }
 
         //блок 6.152
@@ -494,7 +494,7 @@ class GoodsInfoViewModel : CoreViewModel(), OnPositionClickListener {
         }
 
         //блоки 6.157 и 6.182
-        if ( Days.daysBetween(DateTime(currentDate.value), DateTime(expirationDate.value!!.time)).days > productInfo.value!!.remainingShelfLife.toLong() ) {
+        if ( Days.daysBetween(DateTime(currentDate.value), DateTime(expirationDate.value!!.time)).days > remainingShelfLife.value?.toLong() ?: 0 ) {
             //блок 6.192
             addOrdinaryGoods()
             return
@@ -698,7 +698,7 @@ class GoodsInfoViewModel : CoreViewModel(), OnPositionClickListener {
         } else {
             //блок 7.153
             expirationDate.value!!.time = formatter.parse(shelfLifeDate.value)
-            expirationDate.value!!.add(Calendar.DATE, productInfo.value!!.generalShelfLife.toInt())
+            expirationDate.value!!.add(Calendar.DATE, generalShelfLife.value?.toInt() ?: 0)
         }
 
         //блок 7.160
@@ -716,7 +716,7 @@ class GoodsInfoViewModel : CoreViewModel(), OnPositionClickListener {
         }
 
         //блоки 7.167 и 7.190
-        if ( Days.daysBetween(DateTime(currentDate.value), DateTime(expirationDate.value!!.time)).days > productInfo.value!!.remainingShelfLife.toLong() ) {
+        if ( Days.daysBetween(DateTime(currentDate.value), DateTime(expirationDate.value!!.time)).days > remainingShelfLife.value?.toLong() ?: 0 ) {
             //блок 7.203
             addOrdinaryGoodsPGE()
             return
@@ -742,7 +742,7 @@ class GoodsInfoViewModel : CoreViewModel(), OnPositionClickListener {
 
     //ПГЕ блоки 7.177 и 7.185
     private fun saveCategoryPGE(checkCategoryType: Boolean) {
-        //есл checkCategoryType==true, значит перед сохранением (блок 7.185) делаем блок 7.177
+        //если checkCategoryType==true, значит перед сохранением (блок 7.185) делаем блок 7.177
         if (checkCategoryType && qualityInfo.value!![spinQualitySelectedPosition.value!!].code == paramGrwOlGrundcat.value) { //блок 7.177 (да)
             //блоки 7.181 и 7.185
             processGeneralProductService.add((convertEizToBei() + processGeneralProductService.getCountCategoryNorm()).toString(), qualityInfo.value!![spinQualitySelectedPosition.value!!].code)
