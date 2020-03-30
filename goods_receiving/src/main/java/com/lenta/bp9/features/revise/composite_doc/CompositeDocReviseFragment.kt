@@ -36,7 +36,7 @@ class CompositeDocReviseFragment : CoreFragment<FragmentCompositeDocReviseBindin
 
     override fun getLayoutId(): Int = R.layout.fragment_composite_doc_revise
 
-    override fun getPageNumber(): String = "09/119"
+    override fun getPageNumber(): String = "09/110"
 
     override fun getViewModel(): CompositeDocReviseViewModel {
         provideViewModel(CompositeDocReviseViewModel::class.java).let { vm ->
