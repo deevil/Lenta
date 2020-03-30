@@ -47,13 +47,14 @@ class SaveDataFragment : CoreFragment<FragmentSaveDataBinding, SaveDataViewModel
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
         initSaveData()
     }
 
     private fun initSaveData() {
         binding?.rvConfig = DataBindingRecyclerViewConfig<ItemSaveDataBinding>(
                 layoutId = R.layout.item_save_data,
-                itemId = BR.vm
+                itemId = BR.item
         )
     }
 

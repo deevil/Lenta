@@ -65,12 +65,16 @@ class SaveDataViewModel : CoreViewModel() {
 
     private fun sendTaskData() {
         viewModelScope.launch {
+            navigator.showProgressLoadingData()
+
             sendTaskDataNetRequest(TaskData(
                     deviceIp = deviceInfo.getDeviceIp(),
                     tkNumber = sessionInfo.market ?: "Not found!",
                     userNumber = sessionInfo.personnelNumber ?: "Not found!",
                     task = task.value!!
-            )).either(::handleFailure) { sendTaskDataResult ->
+            )).also {
+                navigator.hideProgress()
+            }.either(::handleFailure) { sendTaskDataResult ->
                 sentTaskInfoList.postValue(sendTaskDataResult.sentTasks)
             }
         }
