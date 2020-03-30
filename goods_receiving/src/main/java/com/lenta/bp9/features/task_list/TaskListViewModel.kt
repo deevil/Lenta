@@ -154,6 +154,7 @@ class TaskListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
                     ),
                     numberEO = filterSearch.value
             )
+            filterSearch.value = ""
         }
         return true
     }
