@@ -252,4 +252,5 @@
     <string name="the_shelf_life_expires">Срок годности товара истекает через %1$s дней (%2$s - кол-во дней СГ). Принять такой товар?</string>
     <string name="msg_act_disagreement_transport_marriage">Акт разногласий по транспортировке №%1$s Был успешно сформирован и отправлен на печать</string>
     <string name="unknown_goods_type">Неизвестный тип товара</string>
+    <string name="create_inbound_delivery_dialog">Входящая поставка отсутствует. Создать входящую поставку на открытое количество?</string>
 </resources>

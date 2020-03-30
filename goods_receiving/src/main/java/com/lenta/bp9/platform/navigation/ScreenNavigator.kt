@@ -1048,6 +1048,17 @@ class ScreenNavigator(
         openInfoScreen(context.getString(R.string.unknown_goods_type))
     }
 
+    override fun openCreateInboundDeliveryDialog(yesCallbackFunc: () -> Unit) {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    message = context.getString(R.string.create_inbound_delivery_dialog),
+                    codeConfirmForRight = backFragmentResultHelper.setFuncForResult(yesCallbackFunc),
+                    pageNumber = "94",
+                    leftButtonDecorationInfo = ButtonDecorationInfo.no,
+                    rightButtonDecorationInfo = ButtonDecorationInfo.yes))
+        }
+    }
+
     private fun getFragmentStack() = foregroundActivityProvider.getActivity()?.fragmentStack
 }
 
@@ -1173,4 +1184,5 @@ interface IScreenNavigator : ICoreNavigator {
     fun openSupplyResultsActDisagreementTransportationDialog(transportationNumber: String, docCallbackFunc: () -> Unit, nextCallbackFunc: () -> Unit)
     fun openExciseAlcoBoxAccInfoScreen(productInfo: TaskProductInfo)
     fun openAlertUnknownGoodsTypeScreen()
+    fun openCreateInboundDeliveryDialog(yesCallbackFunc: () -> Unit)
 }

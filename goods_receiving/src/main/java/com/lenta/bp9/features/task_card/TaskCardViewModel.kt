@@ -425,7 +425,13 @@ class TaskCardViewModel : CoreViewModel(), PageSelectionListener {
                 }
             }
             TaskStatus.Arrived -> {
-                if (taskManager.getReceivingTask()?.taskHeader?.taskType == TaskType.ReceptionDistributionCenter || taskManager.getReceivingTask()?.taskHeader?.taskType == TaskType.OwnProduction) {
+                if (isEdo && taskManager.getReceivingTask()?.taskHeader?.taskType == TaskType.DirectSupplier) {
+                    screenNavigator.openCreateInboundDeliveryDialog(
+                            yesCallbackFunc = {
+                                screenNavigator.openStartReviseLoadingScreen()
+                            }
+                    )
+                } else if (taskManager.getReceivingTask()?.taskHeader?.taskType == TaskType.ReceptionDistributionCenter || taskManager.getReceivingTask()?.taskHeader?.taskType == TaskType.OwnProduction) {
                     screenNavigator.openUnloadingStartRDSLoadingScreen()
                 } else {
                     screenNavigator.openStartReviseLoadingScreen()
