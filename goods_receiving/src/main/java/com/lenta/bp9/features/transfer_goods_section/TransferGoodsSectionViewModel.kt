@@ -20,13 +20,14 @@ class TransferGoodsSectionViewModel : CoreViewModel(), PageSelectionListener {
     lateinit var screenNavigator: IScreenNavigator
     @Inject
     lateinit var taskManager: IReceivingTaskManager
-    @Inject
-    lateinit var personnelNumberNetRequest: PersonnelNumberNetRequest
 
     val listSections: MutableLiveData<List<TransferGoodsSectionItem>> = MutableLiveData()
-    private val tmpPersonnelNumberInfo: ArrayList<SectionPersonnelNumberInfo> = ArrayList()
-    private val listPersonnelNumberInfo: MutableLiveData<List<SectionPersonnelNumberInfo>> = MutableLiveData()
     val selectedPage = MutableLiveData(0)
+    val enabledBtnSave: MutableLiveData<Boolean> = listSections.map {
+        taskManager.getReceivingTask()?.getProcessedSections()?.filter {sectionInfo ->
+            sectionInfo.personnelNumber.isNotEmpty()
+        }?.size ?: 0 > 0
+    }
 
     private fun updateTransmitted() {
         listSections.postValue(
@@ -35,7 +36,7 @@ class TransferGoodsSectionViewModel : CoreViewModel(), PageSelectionListener {
                 }?.mapIndexed { index, taskSectionInfo ->
                     TransferGoodsSectionItem(
                             number = index + 1,
-                            condition = taskSectionInfo.sectionNumber,
+                            condition = "${taskSectionInfo.sectionNumber}-${taskSectionInfo.sectionName}",
                             representative = "",
                             ofGoods = taskSectionInfo.quantitySectionProducts,
                             sectionInfo = taskSectionInfo,
@@ -50,8 +51,8 @@ class TransferGoodsSectionViewModel : CoreViewModel(), PageSelectionListener {
                 }?.mapIndexed { index, taskSectionInfo ->
                     TransferGoodsSectionItem(
                             number = index + 1,
-                            condition = taskSectionInfo.sectionNumber,
-                            representative = getFio(taskSectionInfo.personnelNumber),
+                            condition = "${taskSectionInfo.sectionNumber}-${taskSectionInfo.sectionName}",
+                            representative = taskSectionInfo.employeeName,
                             ofGoods = taskSectionInfo.quantitySectionProducts,
                             sectionInfo = taskSectionInfo,
                             even = index % 2 == 0)
@@ -64,7 +65,6 @@ class TransferGoodsSectionViewModel : CoreViewModel(), PageSelectionListener {
 
     override fun onPageSelected(position: Int) {
         selectedPage.value = position
-        updatePersonnelNumberInfo()
         if (selectedPage.value == 0) {
             updateTransmitted()
         } else {
@@ -80,34 +80,25 @@ class TransferGoodsSectionViewModel : CoreViewModel(), PageSelectionListener {
         screenNavigator.openSubmittedLoadingScreen()
     }
 
-    private fun updatePersonnelNumberInfo() {
-        viewModelScope.launch {
-            screenNavigator.showProgress(personnelNumberNetRequest)
-            tmpPersonnelNumberInfo.clear()
-            taskManager.getReceivingTask()?.getProcessedSections()?.map {
-                addPersonnelNumberInfo(it)
-            }
-            listPersonnelNumberInfo.postValue(tmpPersonnelNumberInfo)
-            screenNavigator.hideProgress()
+    fun onBackPressed() {
+        screenNavigator.openUnsavedDataDialog(
+                yesCallbackFunc = {
+                    screenNavigator.openUnlockTaskLoadingScreen()
+                }
+        )
+    }
+
+    fun onResume() {
+        moveToPreviousPageIfNeeded()
+    }
+
+    private fun moveToPreviousPageIfNeeded() {
+        if (selectedPage.value == 0) {
+            val isNotEmptyTransferred = taskManager.getReceivingTask()?.getProcessedSections()?.filter {sectionInfo ->
+                sectionInfo.personnelNumber.isNotEmpty()
+            }?.size ?: 0 > 0
+            selectedPage.value = if (isNotEmptyTransferred) 1 else 0
         }
-    }
-
-    private suspend fun addPersonnelNumberInfo(sectionInfo: TaskSectionInfo) {
-        personnelNumberNetRequest(TabNumberParams(tabNumber = sectionInfo.personnelNumber)).either({
-            ""
-        }, {
-            tmpPersonnelNumberInfo.add(SectionPersonnelNumberInfo(
-                    sectionNumber = sectionInfo.sectionNumber,
-                    personnelNumber = sectionInfo.personnelNumber,
-                    fio = it.name.toString()
-            ))
-        })
-    }
-
-    private fun getFio(personnelNumber: String) : String {
-        return listPersonnelNumberInfo.value?.first {
-            it.personnelNumber == personnelNumber
-        }?.fio ?: ""
     }
 
 }

@@ -23,51 +23,145 @@ class TaskContents
         ZfmpUtz48V001(hyperHive)
     }
 
-    fun getTaskContentsInfo(startRecountRestInfo: DirectSupplierStartRecountRestInfo) : TaskContentsInfo {
+    suspend fun getTaskContentsInfo(startRecountRestInfo: DirectSupplierStartRecountRestInfo) : TaskContentsInfo {
         return TaskContentsInfo(
                 conversionToProductInfo(startRecountRestInfo.taskComposition),
-                conversionToProductDiscrepancies(startRecountRestInfo.taskProductDiscrepancies),
+                startRecountRestInfo.taskProductDiscrepancies.map {
+                    TaskProductDiscrepancies.from(hyperHive, it)
+                },
                 startRecountRestInfo.taskBatches.map {
                     TaskBatchInfo.from(it)
                 },
-                conversionToBatchesDiscrepancies(startRecountRestInfo.taskBatchesDiscrepancies),
-                conversionToMercuryInfo(startRecountRestInfo.taskMercuryInfoRestData)
+                startRecountRestInfo.taskBatchesDiscrepancies.map {
+                    TaskBatchesDiscrepancies.from(hyperHive, it)
+                },
+                startRecountRestInfo.taskMercuryInfoRestData.map {
+                    TaskMercuryInfo.from(hyperHive, it)
+                },
+                startRecountRestInfo.taskExciseStamps.map {
+                    TaskExciseStampInfo.from(it)
+                },
+                startRecountRestInfo.taskExciseStampsDiscrepancies.map {
+                    TaskExciseStampDiscrepancies.from(it)
+                },
+                startRecountRestInfo.taskExciseStampBad.map {
+                    TaskExciseStampBad.from(it)
+                },
+                startRecountRestInfo.taskBoxes.map {
+                    TaskBoxInfo.from(it)
+                },
+                startRecountRestInfo.taskBoxesDiscrepancies.map {
+                    TaskBoxDiscrepancies.from(it)
+                }
         )
     }
 
-    fun getTaskContentsInfo(startRecountRestInfo: TaskContentsRequestResult) : TaskContentsInfo {
+    suspend fun getTaskContentsInfo(startRecountRestInfo: TaskContentsRequestResult) : TaskContentsInfo {
         return TaskContentsInfo(
                 conversionToProductInfo(startRecountRestInfo.taskComposition),
-                conversionToProductDiscrepancies(startRecountRestInfo.taskProductDiscrepancies),
+                startRecountRestInfo.taskProductDiscrepancies.map {
+                    TaskProductDiscrepancies.from(hyperHive, it)
+                },
                 startRecountRestInfo.taskBatches.map {
                     TaskBatchInfo.from(it)
                 },
-                conversionToBatchesDiscrepancies(startRecountRestInfo.taskBatchesDiscrepancies),
-                conversionToMercuryInfo(startRecountRestInfo.taskMercuryInfoRestData)
+                startRecountRestInfo.taskBatchesDiscrepancies.map {
+                    TaskBatchesDiscrepancies.from(hyperHive, it)
+                },
+                startRecountRestInfo.taskMercuryInfoRestData.map {
+                    TaskMercuryInfo.from(hyperHive, it)
+                },
+                startRecountRestInfo.taskExciseStamps.map {
+                    TaskExciseStampInfo.from(it)
+                },
+                startRecountRestInfo.taskExciseStampsDiscrepancies.map {
+                    TaskExciseStampDiscrepancies.from(it)
+                },
+                startRecountRestInfo.taskExciseStampBad.map {
+                    TaskExciseStampBad.from(it)
+                },
+                startRecountRestInfo.taskBoxes.map {
+                    TaskBoxInfo.from(it)
+                },
+                startRecountRestInfo.taskBoxesDiscrepancies.map {
+                    TaskBoxDiscrepancies.from(it)
+                }
         )
     }
 
-    fun getTaskContentsRDSInfo(startRecountRestInfo: TaskContentsReceptionDistrCenterResult) : TaskContentsRDSInfo {
-        return TaskContentsRDSInfo(
+    suspend fun getTaskContentsRDSInfo(startRecountRestInfo: TaskContentsReceptionDistrCenterResult) : TaskContentsInfo {
+        return TaskContentsInfo(
                 conversionToProductInfo(startRecountRestInfo.taskComposition),
-                conversionToProductDiscrepancies(startRecountRestInfo.taskProductDiscrepancies),
+                startRecountRestInfo.taskProductDiscrepancies.map {
+                    TaskProductDiscrepancies.from(hyperHive, it)
+                },
                 startRecountRestInfo.taskBatches.map {
                     TaskBatchInfo.from(it)
                 },
-                conversionToBatchesDiscrepancies(startRecountRestInfo.taskBatchesDiscrepancies),
-                conversionToMercuryInfo(startRecountRestInfo.taskMercuryInfoRestData)
+                startRecountRestInfo.taskBatchesDiscrepancies.map {
+                    TaskBatchesDiscrepancies.from(hyperHive, it)
+                },
+
+                //это условие прописано временно, т.к. на продакшене для ПГЕ и ПРЦ не реализована таблица ET_VET_DIFF, она приходит пустой в 28 и 30 рестах, поэтому обрабатываем данные товары не как вет, а как обычные
+                if (startRecountRestInfo.taskMercuryInfoRestData != null) {
+                    startRecountRestInfo.taskMercuryInfoRestData.map {
+                        TaskMercuryInfo.from(hyperHive, it)
+                    }
+                } else null,
+
+                startRecountRestInfo.taskExciseStamps.map {
+                    TaskExciseStampInfo.from(it)
+                },
+                startRecountRestInfo.taskExciseStampsDiscrepancies.map {
+                    TaskExciseStampDiscrepancies.from(it)
+                },
+                startRecountRestInfo.taskExciseStampBad.map {
+                    TaskExciseStampBad.from(it)
+                },
+                startRecountRestInfo.taskBoxes.map {
+                    TaskBoxInfo.from(it)
+                },
+                startRecountRestInfo.taskBoxesDiscrepancies.map {
+                    TaskBoxDiscrepancies.from(it)
+                }
         )
     }
 
-    fun getTaskContentsPGEInfo(startRecountRestInfo: StartRecountPGERestInfo) : TaskContentsPGEInfo {
-        return TaskContentsPGEInfo(
+    suspend fun getTaskContentsPGEInfo(startRecountRestInfo: StartRecountPGERestInfo) : TaskContentsInfo {
+        return TaskContentsInfo(
                 conversionToProductInfo(startRecountRestInfo.taskComposition),
-                conversionToProductDiscrepancies(startRecountRestInfo.taskProductDiscrepancies),
+                startRecountRestInfo.taskProductDiscrepancies.map {
+                    TaskProductDiscrepancies.from(hyperHive, it)
+                },
                 startRecountRestInfo.taskBatches.map {
                     TaskBatchInfo.from(it)
                 },
-                conversionToBatchesDiscrepancies(startRecountRestInfo.taskBatchesDiscrepancies),
-                conversionToMercuryInfo(startRecountRestInfo.taskMercuryInfoRestData)
+                startRecountRestInfo.taskBatchesDiscrepancies.map {
+                    TaskBatchesDiscrepancies.from(hyperHive, it)
+                },
+
+                //это условие прописано временно, т.к. на продакшене для ПГЕ и ПРЦ не реализована таблица ET_VET_DIFF, она приходит пустой в 28 и 30 рестах, поэтому обрабатываем данные товары не как вет, а как обычные
+                if (startRecountRestInfo.taskMercuryInfoRestData != null) {
+                    startRecountRestInfo.taskMercuryInfoRestData.map {
+                        TaskMercuryInfo.from(hyperHive, it)
+                    }
+                } else null,
+
+                startRecountRestInfo.taskExciseStamps.map {
+                    TaskExciseStampInfo.from(it)
+                },
+                startRecountRestInfo.taskExciseStampsDiscrepancies.map {
+                    TaskExciseStampDiscrepancies.from(it)
+                },
+                startRecountRestInfo.taskExciseStampBad.map {
+                    TaskExciseStampBad.from(it)
+                },
+                startRecountRestInfo.taskBoxes.map {
+                    TaskBoxInfo.from(it)
+                },
+                startRecountRestInfo.taskBoxesDiscrepancies.map {
+                    TaskBoxDiscrepancies.from(it)
+                }
         )
     }
 
@@ -109,54 +203,8 @@ class TaskContents
                     numberStampsControl = it.quantityStampsControl,
                     processingUnit = it.processingUnit ?: "",
                     isGoodsAddedAsSurplus = false,
-                    mhdhbDays = materialInfo?.mhdhbDays ?: 0
-            )
-        }
-    }
-
-    private fun conversionToProductDiscrepancies(taskProductDiscrepanciesRestData: List<TaskProductDiscrepanciesRestData>) : List<TaskProductDiscrepancies> {
-        return taskProductDiscrepanciesRestData.map {
-            val uomInfo = zmpUtz07V001.getUomInfo(it.unit)
-            TaskProductDiscrepancies(
-                    materialNumber = it.materialNumber,
-                    exidv = it.exidv,
-                    numberDiscrepancies = it.numberDiscrepancies,
-                    uom = Uom(code = uomInfo?.uom ?: "", name = uomInfo?.name ?: ""),
-                    typeDiscrepancies = it.typeDiscrepancies,
-                    isNotEdit = it.isNotEdit.isNotEmpty(),
-                    isNew = it.isNew.isNotEmpty()
-            )
-        }
-    }
-
-    private fun conversionToBatchesDiscrepancies(taskBatchesDiscrepanciesRestData: List<TaskBatchesDiscrepanciesRestData>) : List<TaskBatchesDiscrepancies> {
-        return taskBatchesDiscrepanciesRestData.map {
-            val uomInfo = zmpUtz07V001.getUomInfo(it.unit)
-            TaskBatchesDiscrepancies(
-                    materialNumber = it.materialNumber,
-                    exidv = it.exidv,
-                    numberDiscrepancies = it.numberDiscrepancies,
-                    uom = Uom(code = uomInfo?.uom ?: "", name = uomInfo?.name ?: ""),
-                    typeDiscrepancies = it.typeDiscrepancies,
-                    isNotEdit = it.isNotEdit.isNotEmpty(),
-                    isNew = it.isNew.isNotEmpty()
-            )
-        }
-    }
-
-    private fun conversionToMercuryInfo(taskMercuryInfoRestData: List<TaskMercuryInfoRestData>) : List<TaskMercuryInfo> {
-        return taskMercuryInfoRestData.map {
-            val uomInfo = zmpUtz07V001.getUomInfo(it.unit)
-            TaskMercuryInfo(
-                    materialNumber= it.materialNumber,
-                    vetDocumentID = it.vetDocumentID,
-                    volume = it.volume.toDouble(),
-                    uom = Uom(code = uomInfo?.uom ?: "", name = uomInfo?.name ?: ""),
-                    typeDiscrepancies = it.typeDiscrepancies,
-                    numberDiscrepancies = it.numberDiscrepancies.toDouble(),
-                    productionDate = it.productionDate,
-                    manufacturer = it.manufacturer,
-                    productionDateTo = it.productionDateTo
+                    mhdhbDays = materialInfo?.mhdhbDays ?: 0,
+                    mhdrzDays = materialInfo?.mhdrzDays ?: 0
             )
         }
     }
@@ -167,21 +215,10 @@ data class TaskContentsInfo(
         val productsDiscrepancies: List<TaskProductDiscrepancies>,
         val taskBatches: List<TaskBatchInfo>,
         val taskBatchesDiscrepancies: List<TaskBatchesDiscrepancies>,
-        val taskMercuryInfo: List<TaskMercuryInfo>
-)
-
-data class TaskContentsRDSInfo(
-        val products: List<TaskProductInfo>,
-        val productsDiscrepancies: List<TaskProductDiscrepancies>,
-        val taskBatches: List<TaskBatchInfo>,
-        val taskBatchesDiscrepancies: List<TaskBatchesDiscrepancies>,
-        val taskMercuryInfo: List<TaskMercuryInfo>
-)
-
-data class TaskContentsPGEInfo(
-        val products: List<TaskProductInfo>,
-        val productsDiscrepancies: List<TaskProductDiscrepancies>,
-        val taskBatches: List<TaskBatchInfo>,
-        val taskBatchesDiscrepancies: List<TaskBatchesDiscrepancies>,
-        val taskMercuryInfo: List<TaskMercuryInfo>
+        val taskMercuryInfo: List<TaskMercuryInfo>?,
+        val taskExciseStampInfo: List<TaskExciseStampInfo>,
+        val taskExciseStampDiscrepancies: List<TaskExciseStampDiscrepancies>,
+        val taskExciseStampBad: List<TaskExciseStampBad>,
+        val taskBoxes: List<TaskBoxInfo>,
+        val taskBoxesDiscrepancies: List<TaskBoxDiscrepancies>
 )

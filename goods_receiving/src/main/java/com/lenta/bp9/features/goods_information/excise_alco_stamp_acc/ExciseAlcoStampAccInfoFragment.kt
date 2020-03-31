@@ -1,10 +1,10 @@
-package com.lenta.bp9.features.goods_information.excise_alco
+package com.lenta.bp9.features.goods_information.excise_alco_stamp_acc
 
 import android.os.Bundle
 import android.view.View
 import android.widget.AdapterView
 import com.lenta.bp9.R
-import com.lenta.bp9.databinding.FragmentExciseAlcoInfoBinding
+import com.lenta.bp9.databinding.FragmentExciseAlcoStampAccInfoBinding
 import com.lenta.bp9.model.task.TaskProductInfo
 import com.lenta.bp9.platform.extentions.getAppComponent
 import com.lenta.shared.platform.fragment.CoreFragment
@@ -17,13 +17,13 @@ import com.lenta.shared.utilities.extentions.connectLiveData
 import com.lenta.shared.utilities.extentions.provideViewModel
 import com.lenta.shared.utilities.state.state
 
-class ExciseAlcoInfoFragment : CoreFragment<FragmentExciseAlcoInfoBinding, ExciseAlcoInfoViewModel>(),
+class ExciseAlcoStampAccInfoFragment : CoreFragment<FragmentExciseAlcoStampAccInfoBinding, ExciseAlcoStampAccInfoViewModel>(),
         ToolbarButtonsClickListener,
         OnScanResultListener {
 
     companion object {
-        fun create(productInfo: TaskProductInfo): ExciseAlcoInfoFragment {
-            ExciseAlcoInfoFragment().let {
+        fun create(productInfo: TaskProductInfo): ExciseAlcoStampAccInfoFragment {
+            ExciseAlcoStampAccInfoFragment().let {
                 it.productInfo = productInfo
                 return it
             }
@@ -32,12 +32,12 @@ class ExciseAlcoInfoFragment : CoreFragment<FragmentExciseAlcoInfoBinding, Excis
 
     private var productInfo by state<TaskProductInfo?>(null)
 
-    override fun getLayoutId(): Int = R.layout.fragment_excise_alco_info
+    override fun getLayoutId(): Int = R.layout.fragment_excise_alco_stamp_acc_info
 
     override fun getPageNumber(): String = "09/18"
 
-    override fun getViewModel(): ExciseAlcoInfoViewModel {
-        provideViewModel(ExciseAlcoInfoViewModel::class.java).let {vm ->
+    override fun getViewModel(): ExciseAlcoStampAccInfoViewModel {
+        provideViewModel(ExciseAlcoStampAccInfoViewModel::class.java).let { vm ->
             getAppComponent()?.inject(vm)
             vm.productInfo.value = productInfo
             return vm

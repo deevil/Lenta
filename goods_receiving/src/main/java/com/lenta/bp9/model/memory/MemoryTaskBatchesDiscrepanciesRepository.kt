@@ -15,7 +15,10 @@ class MemoryTaskBatchesDiscrepanciesRepository : ITaskBatchesDiscrepanciesReposi
     override fun findBatchDiscrepanciesOfBatch(batch: TaskBatchInfo): List<TaskBatchesDiscrepancies> {
         val foundDiscrepancies = ArrayList<TaskBatchesDiscrepancies>()
         for (i in batchesDiscrepancies.indices) {
-            if (batch.materialNumber == batchesDiscrepancies[i].materialNumber /**&& batch.batchNumber == batchesDiscrepancies[i].batchNumber*/) {
+            if (batch.materialNumber == batchesDiscrepancies[i].materialNumber &&
+                    batch.setMaterialNumber == batchesDiscrepancies[i].setMaterialNumber &&
+                    batch.processingUnitNumber == batchesDiscrepancies[i].processingUnitNumber &&
+                    batch.batchNumber == batchesDiscrepancies[i].batchNumber) {
                 foundDiscrepancies.add(batchesDiscrepancies[i])
             }
         }
@@ -26,7 +29,9 @@ class MemoryTaskBatchesDiscrepanciesRepository : ITaskBatchesDiscrepanciesReposi
         var index = -1
         for (i in batchesDiscrepancies.indices) {
             if (discrepancies.materialNumber == batchesDiscrepancies[i].materialNumber &&
-                    /**discrepancies.batchNumber == batchesDiscrepancies[i].batchNumber &&*/
+                    discrepancies.setMaterialNumber == batchesDiscrepancies[i].setMaterialNumber &&
+                    discrepancies.processingUnitNumber == batchesDiscrepancies[i].processingUnitNumber &&
+                    discrepancies.batchNumber == batchesDiscrepancies[i].batchNumber &&
                     discrepancies.typeDiscrepancies == batchesDiscrepancies[i].typeDiscrepancies) {
                 index = i
             }
@@ -52,26 +57,29 @@ class MemoryTaskBatchesDiscrepanciesRepository : ITaskBatchesDiscrepanciesReposi
     }
 
     override fun deleteBatchDiscrepancies(discrepancies: TaskBatchesDiscrepancies): Boolean {
-        var index = -1
-        for (i in batchesDiscrepancies.indices) {
-            if (discrepancies.materialNumber == batchesDiscrepancies[i].materialNumber &&
-                    /**discrepancies.batchNumber == batchesDiscrepancies[i].batchNumber &&*/
-                    discrepancies.typeDiscrepancies == batchesDiscrepancies[i].typeDiscrepancies) {
-                index = i
+        batchesDiscrepancies.map { it }.filter {batchDiscrepancies ->
+            if (discrepancies.materialNumber == batchDiscrepancies.materialNumber &&
+                    discrepancies.setMaterialNumber == batchDiscrepancies.setMaterialNumber &&
+                    discrepancies.processingUnitNumber == batchDiscrepancies.processingUnitNumber &&
+                    discrepancies.batchNumber == batchDiscrepancies.batchNumber &&
+                    discrepancies.typeDiscrepancies == batchDiscrepancies.typeDiscrepancies) {
+                batchesDiscrepancies.remove(discrepancies)
+                return@filter true
             }
-        }
+            return@filter false
 
-        if (index == -1) {
-            return false
+        }.let {
+            return it.isNotEmpty()
         }
-        batchesDiscrepancies.removeAt(index)
-        return true
     }
 
     override fun deleteBatchesDiscrepanciesForBatch(batch: TaskBatchInfo): Boolean {
         val delDiscrepancies = ArrayList<TaskBatchesDiscrepancies>()
         for (i in batchesDiscrepancies.indices) {
-            if (batch.materialNumber == batchesDiscrepancies[i].materialNumber /**&& batch.batchNumber == batchesDiscrepancies[i].batchNumber*/) {
+            if (batch.materialNumber == batchesDiscrepancies[i].materialNumber &&
+                    batch.setMaterialNumber == batchesDiscrepancies[i].setMaterialNumber &&
+                    batch.processingUnitNumber == batchesDiscrepancies[i].processingUnitNumber &&
+                    batch.batchNumber == batchesDiscrepancies[i].batchNumber) {
                 delDiscrepancies.add(batchesDiscrepancies[i])
             }
         }
@@ -80,7 +88,9 @@ class MemoryTaskBatchesDiscrepanciesRepository : ITaskBatchesDiscrepanciesReposi
             return false
         }
 
-        batchesDiscrepancies.removeAll(delDiscrepancies)
+        delDiscrepancies.map {
+            deleteBatchDiscrepancies(it)
+        }
         return true
     }
 

@@ -15,7 +15,7 @@ class ProcessExciseAlcoProductService
     private var productDiscrepancyInfo: ArrayList<TaskProductDiscrepancies> = ArrayList()
     private lateinit var batchInfo: TaskBatchInfo
     private var batchDiscrepancyInfo: ArrayList<TaskBatchesDiscrepancies> = ArrayList()
-    private val currentExciseStamps: ArrayList<TaskExciseStamp> = ArrayList()
+    private val currentExciseStamps: ArrayList<TaskExciseStampInfo> = ArrayList()
 
     fun newProcessNonExciseAlcoProductService(productInfo: TaskProductInfo) : ProcessExciseAlcoProductService? {
         return if (productInfo.type == ProductType.ExciseAlcohol){
@@ -50,7 +50,8 @@ class ProcessExciseAlcoProductService
                             uom = productInfo.uom,
                             typeDiscrepancies = typeDiscrepancies,
                             isNotEdit = false,
-                            isNew = false
+                            isNew = false,
+                            notEditNumberDiscrepancies = ""
                     ))
         } else {
             taskManager.getReceivingTask()?.
@@ -115,7 +116,8 @@ class ProcessExciseAlcoProductService
                             uom = productInfo.uom,
                             typeDiscrepancies = typeDiscrepancies,
                             isNotEdit = false,
-                            isNew = false
+                            isNew = false,
+                            notEditNumberDiscrepancies = ""
                     ))
         } else {
             taskManager.getReceivingTask()?.

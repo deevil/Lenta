@@ -59,7 +59,7 @@ class ProductDocumentsReviseViewModel : CoreViewModel(), PageSelectionListener {
     val docsToCheck: MutableLiveData<List<ProductDocumentVM>> = MutableLiveData()
     val checkedDocs: MutableLiveData<List<ProductDocumentVM>> = MutableLiveData()
 
-    var currentSortMode: SortMode = SortMode.DocumentName
+    var currentSortMode: SortMode = SortMode.ProductNumber
 
     private val isTaskPRCorPSP by lazy {
         MutableLiveData(taskManager.getReceivingTask()!!.taskHeader.taskType == TaskType.ReceptionDistributionCenter || taskManager.getReceivingTask()!!.taskHeader.taskType == TaskType.OwnProduction)
@@ -85,7 +85,8 @@ class ProductDocumentsReviseViewModel : CoreViewModel(), PageSelectionListener {
         checked?.let { checkedList ->
             checkedDocs.value = checkedList.sortedBy { if (currentSortMode == SortMode.DocumentName) it.documentName else it.productNumber }.mapIndexed { index, document ->
                 ProductDocumentVM(position = checkedList.size - index,
-                        name = document.documentName,
+                        sortName1 = if (currentSortMode == SortMode.DocumentName) document.documentName else document.productNumber.takeLast(6) + " " + (ZfmpUtz48V001.getProductInfoByMaterial(document.productNumber)?.name ?: ""),
+                        sortName2 = if (currentSortMode == SortMode.ProductNumber) document.documentName else document.productNumber.takeLast(6) + " " + (ZfmpUtz48V001.getProductInfoByMaterial(document.productNumber)?.name ?: ""),
                         productName = document.productNumber.takeLast(6) + " " + (ZfmpUtz48V001.getProductInfoByMaterial(document.productNumber)?.name
                                 ?: ""),
                         type = document.documentType,
@@ -101,9 +102,9 @@ class ProductDocumentsReviseViewModel : CoreViewModel(), PageSelectionListener {
         unchecked?.let { uncheckedList ->
             docsToCheck.value = uncheckedList.sortedBy { if (currentSortMode == SortMode.DocumentName) it.documentName else it.productNumber }.mapIndexed { index, document ->
                 ProductDocumentVM(position = uncheckedList.size - index,
-                        name = document.documentName,
-                        productName = document.productNumber.takeLast(6) + " " + (ZfmpUtz48V001.getProductInfoByMaterial(document.productNumber)?.name
-                                ?: ""),
+                        sortName1 = if (currentSortMode == SortMode.DocumentName) document.documentName else document.productNumber.takeLast(6) + " " + (ZfmpUtz48V001.getProductInfoByMaterial(document.productNumber)?.name ?: ""),
+                        sortName2 = if (currentSortMode == SortMode.ProductNumber) document.documentName else document.productNumber.takeLast(6) + " " + (ZfmpUtz48V001.getProductInfoByMaterial(document.productNumber)?.name ?: ""),
+                        productName = document.productNumber.takeLast(6) + " " + (ZfmpUtz48V001.getProductInfoByMaterial(document.productNumber)?.name ?: ""),
                         type = document.documentType,
                         isObligatory = document.isObligatory,
                         isCheck = false,
@@ -198,11 +199,7 @@ class ProductDocumentsReviseViewModel : CoreViewModel(), PageSelectionListener {
     }
 
     fun onClickSave() {
-        val isUncheckedObligatoryDeliveryDocuments = taskManager.getReceivingTask()?.getUncheckedDeliveryDocuments()?.findLast {
-            it.isObligatory
-        }?.isObligatory ?: false
-
-        if (isTaskPRCorPSP.value == true && isUncheckedObligatoryDeliveryDocuments) {
+        if (isTaskPRCorPSP.value == true && !taskManager.getReceivingTask()?.getObligatoryDeliveryDocuments().isNullOrEmpty()) {
             screenNavigator.openRemainsUnconfirmedBindingDocsPRCDialog(
                     nextCallbackFunc = {
                         saveData()
@@ -247,7 +244,8 @@ class ProductDocumentsReviseViewModel : CoreViewModel(), PageSelectionListener {
 
 data class ProductDocumentVM(
         val position: Int,
-        val name: String,
+        val sortName1: String,
+        val sortName2: String,
         val productName: String,
         val type: ProductDocumentType,
         val isObligatory: Boolean,

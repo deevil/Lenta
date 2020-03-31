@@ -13,7 +13,8 @@ import com.lenta.bp9.features.driver_data.DriverDataFragment
 import com.lenta.bp9.features.editing_invoice.EditingInvoiceFragment
 import com.lenta.bp9.features.formed_docs.FormedDocsFragment
 import com.lenta.bp9.features.goods_details.GoodsDetailsFragment
-import com.lenta.bp9.features.goods_information.excise_alco.ExciseAlcoInfoFragment
+import com.lenta.bp9.features.goods_information.excise_alco_stamp_acc.ExciseAlcoStampAccInfoFragment
+import com.lenta.bp9.features.goods_information.excise_alco_box_acc.ExciseAlcoBoxAccInfoFragment
 import com.lenta.bp9.features.goods_information.general.GoodsInfoFragment
 import com.lenta.bp9.features.goods_information.mercury.GoodsMercuryInfoFragment
 import com.lenta.bp9.features.goods_information.non_excise_alco.NonExciseAlcoInfoFragment
@@ -138,9 +139,9 @@ class ScreenNavigator(
         }
     }
 
-    override fun openTaskCardScreen(mode: TaskCardMode) {
+    override fun openTaskCardScreen(mode: TaskCardMode, taskType: TaskType) {
         runOrPostpone {
-            getFragmentStack()?.push(TaskCardFragment.create(mode))
+            getFragmentStack()?.push(TaskCardFragment.create(mode, taskType))
         }
     }
 
@@ -377,9 +378,9 @@ class ScreenNavigator(
         )
     }
 
-    override fun openExciseAlcoInfoScreen(productInfo: TaskProductInfo) {
+    override fun openExciseAlcoStampAccInfoScreen(productInfo: TaskProductInfo) {
         runOrPostpone {
-            getFragmentStack()?.push(ExciseAlcoInfoFragment.create(productInfo))
+            getFragmentStack()?.push(ExciseAlcoStampAccInfoFragment.create(productInfo))
         }
     }
 
@@ -977,16 +978,6 @@ class ScreenNavigator(
         }
     }
 
-    override fun openExceededPlannedQuantityInProcessingUnitDialog(nextCallbackFunc: () -> Unit) {
-        runOrPostpone {
-            getFragmentStack()?.push(AlertFragment.create(
-                    message = context.getString(R.string.exceeded_planned_quantity_in_processing_unit_dialog),
-                    codeConfirmForRight = backFragmentResultHelper.setFuncForResult(nextCallbackFunc),
-                    pageNumber = "95",
-                    rightButtonDecorationInfo = ButtonDecorationInfo.nextAlternate))
-        }
-    }
-
     override fun openExceededPlannedQuantityBatchInProcessingUnitDialog(nextCallbackFunc: () -> Unit) {
         runOrPostpone {
             getFragmentStack()?.push(AlertFragment.create(
@@ -1033,6 +1024,41 @@ class ScreenNavigator(
         }
     }
 
+    override fun openSupplyResultsActDisagreementTransportationDialog(transportationNumber: String, docCallbackFunc: () -> Unit, nextCallbackFunc: () -> Unit) {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(message = context.getString(R.string.msg_act_disagreement_transport_marriage, transportationNumber),
+                    codeConfirmForButton4 = backFragmentResultHelper.setFuncForResult(docCallbackFunc),
+                    codeConfirmForRight = backFragmentResultHelper.setFuncForResult(nextCallbackFunc),
+                    iconRes = R.drawable.ic_done_green_80dp,
+                    pageNumber = "78",
+                    description = context.getString(R.string.supply_results),
+                    isVisibleLeftButton = false,
+                    buttonDecorationInfo4 = ButtonDecorationInfo.docs,
+                    rightButtonDecorationInfo = ButtonDecorationInfo.next))
+        }
+    }
+
+    override fun openExciseAlcoBoxAccInfoScreen(productInfo: TaskProductInfo) {
+        runOrPostpone {
+            getFragmentStack()?.push(ExciseAlcoBoxAccInfoFragment.create(productInfo))
+        }
+    }
+
+    override fun openAlertUnknownGoodsTypeScreen() {
+        openInfoScreen(context.getString(R.string.unknown_goods_type))
+    }
+
+    override fun openCreateInboundDeliveryDialog(yesCallbackFunc: () -> Unit) {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    message = context.getString(R.string.create_inbound_delivery_dialog),
+                    codeConfirmForRight = backFragmentResultHelper.setFuncForResult(yesCallbackFunc),
+                    pageNumber = "94",
+                    leftButtonDecorationInfo = ButtonDecorationInfo.no,
+                    rightButtonDecorationInfo = ButtonDecorationInfo.yes))
+        }
+    }
+
     private fun getFragmentStack() = foregroundActivityProvider.getActivity()?.fragmentStack
 }
 
@@ -1048,7 +1074,7 @@ interface IScreenNavigator : ICoreNavigator {
     fun openAlertNotPermissions(message: String)
     fun openTaskSearchScreen(loadingMode: TaskListLoadingMode)
     fun openGoodsListScreen()
-    fun openTaskCardScreen(mode: TaskCardMode)
+    fun openTaskCardScreen(mode: TaskCardMode, taskType: TaskType)
     fun openTaskCardLoadingScreen(mode: TaskCardMode, taskNumber: String, loadFullData: Boolean)
     fun openConfirmationUnlock(callbackFunc: () -> Unit)
     fun openConfirmationView(callbackFunc: () -> Unit)
@@ -1076,7 +1102,7 @@ interface IScreenNavigator : ICoreNavigator {
     fun openSupplyResultsAutomaticChargeErrorDialog()
     fun openSupplyResultsAutomaticChargeSuccessDialog(numberSupply: String, leftCallbackFunc: () -> Unit, rightCallbackFunc: () -> Unit)
     fun openAlertOverlimit()
-    fun openExciseAlcoInfoScreen(productInfo: TaskProductInfo)
+    fun openExciseAlcoStampAccInfoScreen(productInfo: TaskProductInfo)
     fun openFinishReviseLoadingScreen()
     fun openRegisterArrivalLoadingScreen(isInStockPaperTTN: Boolean = false, isEdo: Boolean = false, status: TaskStatus = TaskStatus.Other)
     fun openStartReviseLoadingScreen()
@@ -1151,9 +1177,12 @@ interface IScreenNavigator : ICoreNavigator {
     fun openTransportMarriageGoodsDetailsScreen(cargoUnitNumber: String, materialNumber: String, materialName: String)
     fun openAlertAmountEnteredGreaterPUScreen()
     fun openAddGoodsSurplusDialog(codeConfirmationAddGoodsSurplus: Int)
-    fun openExceededPlannedQuantityInProcessingUnitDialog(nextCallbackFunc: () -> Unit)
     fun openExceededPlannedQuantityBatchInProcessingUnitDialog(nextCallbackFunc: () -> Unit)
     fun openAlertBothSurplusAndUnderloadScreen()
     fun openAlertCountMoreCargoUnitDialog(yesCallbackFunc: () -> Unit)
     fun openShelfLifeExpiresDialog(noCallbackFunc: () -> Unit, yesCallbackFunc: () -> Unit, expiresThrough: String, shelfLife: String)
+    fun openSupplyResultsActDisagreementTransportationDialog(transportationNumber: String, docCallbackFunc: () -> Unit, nextCallbackFunc: () -> Unit)
+    fun openExciseAlcoBoxAccInfoScreen(productInfo: TaskProductInfo)
+    fun openAlertUnknownGoodsTypeScreen()
+    fun openCreateInboundDeliveryDialog(yesCallbackFunc: () -> Unit)
 }

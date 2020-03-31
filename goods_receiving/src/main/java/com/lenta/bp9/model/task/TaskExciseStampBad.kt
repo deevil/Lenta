@@ -2,48 +2,53 @@ package com.lenta.bp9.model.task
 
 import com.google.gson.annotations.SerializedName
 
-//IT_BOX_DIFF Таблица обработанных коробов
-data class TaskProcessedBoxInfo(
+//ET_MARK_BAD Таблица плохих марок задания
+data class TaskExciseStampBad(
         val processingUnitNumber: String,
         val materialNumber: String,
+        val exciseStampCode: String,
         val boxNumber: String,
-        val reasonRejection: String,
+        val typeDiscrepancies: String,
         var isScan: Boolean )
 {
 
     companion object {
-        fun from(restData: TaskProcessedBoxInfoRestData): TaskProcessedBoxInfo {
-            return TaskProcessedBoxInfo(
+        fun from(restData: TaskExciseStampBadRestData): TaskExciseStampBad {
+            return TaskExciseStampBad(
                     processingUnitNumber = restData.processingUnitNumber,
                     materialNumber = restData.materialNumber,
+                    exciseStampCode = restData.exciseStampCode,
                     boxNumber = restData.boxNumber,
-                    reasonRejection = restData.reasonRejection,
+                    typeDiscrepancies = restData.typeDiscrepancies,
                     isScan = restData.isScan.isNotEmpty()
             )
         }
     }
 }
 
-data class TaskProcessedBoxInfoRestData(
+data class TaskExciseStampBadRestData(
         @SerializedName("EXIDV") //Номер ЕО
         val processingUnitNumber: String,
         @SerializedName("MATNR") //Номер товара
         val materialNumber: String,
+        @SerializedName("MARK_NUM") //Код акцизной марки
+        val exciseStampCode: String,
         @SerializedName("BOX_NUM") //Номер коробки
         val boxNumber: String,
-        @SerializedName("GRUND") //Причина отклонения при ППП
-        var reasonRejection: String,
+        @SerializedName("GRUND") //Тип расхождения
+        var typeDiscrepancies: String,
         @SerializedName("IS_SCAN")
         var isScan: String
 ) {
 
     companion object {
-        fun from(data: TaskProcessedBoxInfo): TaskProcessedBoxInfoRestData {
-            return TaskProcessedBoxInfoRestData(
+        fun from(data: TaskExciseStampBad): TaskExciseStampBadRestData {
+            return TaskExciseStampBadRestData(
                     processingUnitNumber = data.processingUnitNumber,
                     materialNumber = data.materialNumber,
+                    exciseStampCode = data.exciseStampCode,
                     boxNumber = data.boxNumber,
-                    reasonRejection = data.reasonRejection,
+                    typeDiscrepancies = data.typeDiscrepancies,
                     isScan = if (data.isScan) "X" else ""
             )
         }

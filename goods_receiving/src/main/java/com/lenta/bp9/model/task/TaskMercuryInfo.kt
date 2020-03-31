@@ -1,7 +1,12 @@
 package com.lenta.bp9.model.task
 
 import com.google.gson.annotations.SerializedName
+import com.lenta.shared.fmp.resources.dao_ext.getUomInfo
+import com.lenta.shared.fmp.resources.fast.ZmpUtz07V001
 import com.lenta.shared.models.core.Uom
+import com.mobrun.plugin.api.HyperHive
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 //ET_VET_DIFF Таблица расхождений по вет.товарам (получаемая инфа с сервера для обработки)
 data class TaskMercuryInfo(
@@ -24,7 +29,31 @@ data class TaskMercuryInfo(
         /**Поле типа DATS (ET_VET_DIFF -> PRODDATE_TO)*/
         val productionDateTo: String
 
-)
+) {
+
+    companion object {
+        suspend fun from(hyperHive: HyperHive, restData: TaskMercuryInfoRestData): TaskMercuryInfo {
+            return withContext(Dispatchers.IO) {
+                val zmpUtz07V001: ZmpUtz07V001 by lazy {
+                    ZmpUtz07V001(hyperHive)
+                }
+                val uomInfo = zmpUtz07V001.getUomInfo(restData.unit)
+                return@withContext TaskMercuryInfo(
+                        materialNumber= restData.materialNumber,
+                        vetDocumentID = restData.vetDocumentID,
+                        volume = restData.volume.toDouble(),
+                        uom = Uom(code = uomInfo?.uom ?: "", name = uomInfo?.name ?: ""),
+                        typeDiscrepancies = restData.typeDiscrepancies,
+                        numberDiscrepancies = restData.numberDiscrepancies.toDouble(),
+                        productionDate = restData.productionDate,
+                        manufacturer = restData.manufacturer,
+                        productionDateTo = restData.productionDateTo
+                )
+            }
+
+        }
+    }
+}
 
 data class TaskMercuryInfoRestData(
         @SerializedName("MATNR")

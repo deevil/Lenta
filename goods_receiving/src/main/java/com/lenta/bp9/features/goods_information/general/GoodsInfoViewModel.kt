@@ -17,6 +17,7 @@ import com.lenta.shared.models.core.Uom
 import com.lenta.shared.platform.time.ITimeMonitor
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo.Companion.add
 import com.lenta.shared.platform.viewmodel.CoreViewModel
+import com.lenta.shared.requests.combined.scan_info.ScanInfoResult
 import com.lenta.shared.requests.combined.scan_info.pojo.QualityInfo
 import com.lenta.shared.requests.combined.scan_info.pojo.ReasonRejectionInfo
 import com.lenta.shared.utilities.Logg
@@ -93,6 +94,9 @@ class GoodsInfoViewModel : CoreViewModel(), OnPositionClickListener {
 
     private val paramGrwOlGrundcat: MutableLiveData<String> = MutableLiveData("")
     private val paramGrwUlGrundcat: MutableLiveData<String> = MutableLiveData("")
+
+    private val paramGrsGrundNeg: MutableLiveData<String> = MutableLiveData("")
+    private val addGoods: MutableLiveData<Boolean> = MutableLiveData(false)
 
     val isGoodsAddedAsSurplus: MutableLiveData<Boolean> by lazy {
         MutableLiveData(productInfo.value?.isGoodsAddedAsSurplus == true )
@@ -219,6 +223,8 @@ class GoodsInfoViewModel : CoreViewModel(), OnPositionClickListener {
 
     init {
         viewModelScope.launch {
+            searchProductDelegate.init(viewModelScope = this@GoodsInfoViewModel::viewModelScope,
+                    scanResultHandler = this@GoodsInfoViewModel::handleProductSearchResult)
             if (taskManager.getReceivingTask()?.taskHeader?.taskType == TaskType.RecalculationCargoUnit) {
                 paramGrwOlGrundcat.value = dataBase.getParamGrwOlGrundcat() ?: ""
                 paramGrwUlGrundcat.value = dataBase.getParamGrwUlGrundcat() ?: ""
@@ -260,6 +266,7 @@ class GoodsInfoViewModel : CoreViewModel(), OnPositionClickListener {
             spinQuality.value = qualityInfo.value?.map {
                 it.name
             }
+            paramGrsGrundNeg.value = dataBase.getParamGrsGrundNeg() ?: ""
 
             /** определяем, что товар скоропорт https://trello.com/c/8sOTWtB7 */
             val paramGrzUffMhdhb = dataBase.getParamGrzUffMhdhb()?.toInt() ?: 60
@@ -273,8 +280,13 @@ class GoodsInfoViewModel : CoreViewModel(), OnPositionClickListener {
                 }
                 currentDate.value = timeMonitor.getServerDate()
                 expirationDate.value = Calendar.getInstance()
-                generalShelfLife.value = productInfo.value?.generalShelfLife
-                remainingShelfLife.value = productInfo.value?.remainingShelfLife
+                if ( (productInfo.value?.generalShelfLife?.toInt() ?: 0) <  paramGrzUffMhdhb) { //https://trello.com/c/7OqxSqOP
+                    generalShelfLife.value = productInfo.value?.mhdhbDays.toString()
+                    remainingShelfLife.value = productInfo.value?.mhdrzDays.toString()
+                } else {
+                    generalShelfLife.value = productInfo.value?.generalShelfLife
+                    remainingShelfLife.value = productInfo.value?.remainingShelfLife
+                }
             }
 
             if (processGeneralProductService.newProcessGeneralProductService(productInfo.value!!) == null) {
@@ -284,12 +296,21 @@ class GoodsInfoViewModel : CoreViewModel(), OnPositionClickListener {
         }
     }
 
+    private fun handleProductSearchResult(@Suppress("UNUSED_PARAMETER") scanInfoResult: ScanInfoResult?): Boolean {
+        screenNavigator.goBack()
+        return false
+    }
+
     fun onClickDetails() {
         screenNavigator.openGoodsDetailsScreen(productInfo.value!!)
     }
 
     fun onScanResult(data: String) {
-        searchProductDelegate.searchCode(code = data, fromScan = true)
+        addGoods.value = false
+        onClickAdd()
+        if (addGoods.value == true) {
+            searchProductDelegate.searchCode(code = data, fromScan = true, isBarCode = true)
+        }
     }
 
     override fun onClickPosition(position: Int) {
@@ -456,7 +477,7 @@ class GoodsInfoViewModel : CoreViewModel(), OnPositionClickListener {
         } else {
             //блок 6.144
             expirationDate.value!!.time = formatter.parse(shelfLifeDate.value)
-            expirationDate.value!!.add(Calendar.DATE, productInfo.value!!.generalShelfLife.toInt())
+            expirationDate.value!!.add(Calendar.DATE, generalShelfLife.value?.toInt() ?: 0)
         }
 
         //блок 6.152
@@ -473,7 +494,7 @@ class GoodsInfoViewModel : CoreViewModel(), OnPositionClickListener {
         }
 
         //блоки 6.157 и 6.182
-        if ( Days.daysBetween(DateTime(currentDate.value), DateTime(expirationDate.value!!.time)).days > productInfo.value!!.remainingShelfLife.toLong() ) {
+        if ( Days.daysBetween(DateTime(currentDate.value), DateTime(expirationDate.value!!.time)).days > remainingShelfLife.value?.toLong() ?: 0 ) {
             //блок 6.192
             addOrdinaryGoods()
             return
@@ -498,33 +519,30 @@ class GoodsInfoViewModel : CoreViewModel(), OnPositionClickListener {
 
     //ППП блок 6.58
     private fun checkParamGrsGrundNeg() {
-        viewModelScope.launch {
-            val paramGrsGrundNeg = dataBase.getParamGrsGrundNeg() ?: ""
-            if (processGeneralProductService.checkParam(paramGrsGrundNeg)) {//блок 6.58 (да)
-                //блок 6.93
-                val countWithoutParamGrsGrundNeg = processGeneralProductService.countWithoutParamGrsGrundNegPPP(paramGrsGrundNeg)
-                //блок 6.130
-                if (countWithoutParamGrsGrundNeg == 0.0) {//блок 6.130 (да)
-                    //блок 6.121
-                    processGeneralProductService.removeDiscrepancyFromProduct(paramGrsGrundNeg)
+        if (processGeneralProductService.checkParam(paramGrsGrundNeg.value!!)) {//блок 6.58 (да)
+            //блок 6.93
+            val countWithoutParamGrsGrundNeg = processGeneralProductService.countWithoutParamGrsGrundNegPPP(paramGrsGrundNeg.value!!)
+            //блок 6.130
+            if (countWithoutParamGrsGrundNeg == 0.0) {//блок 6.130 (да)
+                //блок 6.121
+                processGeneralProductService.removeDiscrepancyFromProduct(paramGrsGrundNeg.value!!)
+                //блок 6.172
+                saveCategory()
+            } else {//блок 6.130 (нет)
+                //блок 6.147
+                if (countWithoutParamGrsGrundNeg > 0.0) {//блок 6.147 (да)
+                    //блок 6.145
+                    processGeneralProductService.addWithoutUnderload(paramGrsGrundNeg.value!!, countWithoutParamGrsGrundNeg.toString())
                     //блок 6.172
                     saveCategory()
-                } else {//блок 6.130 (нет)
-                    //блок 6.147
-                    if (countWithoutParamGrsGrundNeg > 0.0) {//блок 6.147 (да)
-                        //блок 6.145
-                        processGeneralProductService.addWithoutUnderload(paramGrsGrundNeg, countWithoutParamGrsGrundNeg.toString())
-                        //блок 6.172
-                        saveCategory()
-                    } else {//блок 6.147 (нет)
-                        //блок 6.155
-                        processGeneralProductService.removeDiscrepancyFromProduct(paramGrsGrundNeg)
-                        noParamGrsGrundNeg()
-                    }
+                } else {//блок 6.147 (нет)
+                    //блок 6.155
+                    processGeneralProductService.removeDiscrepancyFromProduct(paramGrsGrundNeg.value!!)
+                    noParamGrsGrundNeg()
                 }
-            } else {//блок 6.58 (нет)
-                noParamGrsGrundNeg()
             }
+        } else {//блок 6.58 (нет)
+            noParamGrsGrundNeg()
         }
     }
 
@@ -562,6 +580,7 @@ class GoodsInfoViewModel : CoreViewModel(), OnPositionClickListener {
 
     //ППП блок 6.172
     private fun saveCategory() {
+        addGoods.value = true
         if (qualityInfo.value?.get(spinQualitySelectedPosition.value ?: 0)?.code == "1") {
             processGeneralProductService.add(acceptTotalCount.value!!.toString(), "1")
         } else {
@@ -679,7 +698,7 @@ class GoodsInfoViewModel : CoreViewModel(), OnPositionClickListener {
         } else {
             //блок 7.153
             expirationDate.value!!.time = formatter.parse(shelfLifeDate.value)
-            expirationDate.value!!.add(Calendar.DATE, productInfo.value!!.generalShelfLife.toInt())
+            expirationDate.value!!.add(Calendar.DATE, generalShelfLife.value?.toInt() ?: 0)
         }
 
         //блок 7.160
@@ -697,7 +716,7 @@ class GoodsInfoViewModel : CoreViewModel(), OnPositionClickListener {
         }
 
         //блоки 7.167 и 7.190
-        if ( Days.daysBetween(DateTime(currentDate.value), DateTime(expirationDate.value!!.time)).days > productInfo.value!!.remainingShelfLife.toLong() ) {
+        if ( Days.daysBetween(DateTime(currentDate.value), DateTime(expirationDate.value!!.time)).days > remainingShelfLife.value?.toLong() ?: 0 ) {
             //блок 7.203
             addOrdinaryGoodsPGE()
             return
@@ -723,7 +742,7 @@ class GoodsInfoViewModel : CoreViewModel(), OnPositionClickListener {
 
     //ПГЕ блоки 7.177 и 7.185
     private fun saveCategoryPGE(checkCategoryType: Boolean) {
-        //есл checkCategoryType==true, значит перед сохранением (блок 7.185) делаем блок 7.177
+        //если checkCategoryType==true, значит перед сохранением (блок 7.185) делаем блок 7.177
         if (checkCategoryType && qualityInfo.value!![spinQualitySelectedPosition.value!!].code == paramGrwOlGrundcat.value) { //блок 7.177 (да)
             //блоки 7.181 и 7.185
             processGeneralProductService.add((convertEizToBei() + processGeneralProductService.getCountCategoryNorm()).toString(), qualityInfo.value!![spinQualitySelectedPosition.value!!].code)

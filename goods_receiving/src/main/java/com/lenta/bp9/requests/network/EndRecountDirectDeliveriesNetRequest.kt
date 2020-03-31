@@ -28,6 +28,12 @@ data class EndRecountDDParameters(
         val discrepanciesProduct: List<TaskProductDiscrepanciesRestData>,
         @SerializedName("IT_PARTS_DIFF")
         val discrepanciesBatches: List<TaskBatchesDiscrepanciesRestData>,
+        @SerializedName("IT_BOX_DIFF")
+        val discrepanciesBoxes: List<TaskBoxDiscrepanciesRestData>,
+        @SerializedName("IT_MARK_DIFF")
+        val discrepanciesExciseStamp: List<TaskExciseStampDiscrepanciesRestData>,
+        @SerializedName("IT_MARK_BAD")
+        val exciseStampBad: List<TaskExciseStampBadRestData>,
         @SerializedName("IT_VET_DIFF")
         val discrepanciesMercury: List<TaskMercuryDiscrepanciesRestData?>
 )

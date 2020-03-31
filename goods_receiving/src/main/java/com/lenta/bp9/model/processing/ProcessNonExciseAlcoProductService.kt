@@ -45,7 +45,8 @@ class ProcessNonExciseAlcoProductService
                             uom = productInfo.uom,
                             typeDiscrepancies = typeDiscrepancies,
                             isNotEdit = false,
-                            isNew = false
+                            isNew = false,
+                            notEditNumberDiscrepancies = ""
                     ))
         } else {
             taskManager.getReceivingTask()?.
