@@ -1,8 +1,45 @@
 package com.lenta.bp16.features.defect_list
 
+import androidx.lifecycle.MutableLiveData
+import com.lenta.bp16.model.ITaskManager
+import com.lenta.bp16.platform.navigation.IScreenNavigator
 import com.lenta.shared.platform.viewmodel.CoreViewModel
+import com.lenta.shared.utilities.extentions.map
+import javax.inject.Inject
 
 class DefectListViewModel : CoreViewModel() {
 
-    // TODO: Implement the ViewModel
+    @Inject
+    lateinit var navigator: IScreenNavigator
+
+    @Inject
+    lateinit var taskManager: ITaskManager
+
+
+    val good by lazy {
+        taskManager.currentGood
+    }
+
+    val title by lazy {
+        good.map { it?.getNameWithMaterial() }
+    }
+
+    val defects by lazy {
+        MutableLiveData(List(3) {
+            DefectListUi(
+                    position = "${it + 1}",
+                    packType = "0125641452 / Брак",
+                    cause = "Машинный брак",
+                    weight = "${(1..150).random()} кг"
+            )
+        })
+    }
+
 }
+
+data class DefectListUi(
+        val position: String,
+        val packType: String,
+        val cause: String,
+        val weight: String
+)
