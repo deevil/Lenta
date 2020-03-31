@@ -207,6 +207,10 @@ class ProcessingUnitTaskListViewModel : CoreViewModel(), PageSelectionListener, 
         }
     }
 
+    fun onClickLabel() {
+        navigator.openReprintLabelScreen()
+    }
+
 }
 
 data class ItemProcessingUnitTaskUi(

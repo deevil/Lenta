@@ -38,12 +38,14 @@ class PackListFragment : CoreFragment<FragmentPackListBinding, PackListViewModel
     }
 
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
+        bottomToolbarUiModel.uiModelButton1.show(ButtonDecorationInfo.labels)
         bottomToolbarUiModel.uiModelButton3.show(ButtonDecorationInfo.add)
         bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.complete)
     }
 
     override fun onToolbarButtonClick(view: View) {
         when (view.id) {
+            R.id.b_1 -> vm.onClickLabel()
             R.id.b_3 -> vm.onClickAdd()
             R.id.b_5 -> vm.onClickComplete()
         }
