@@ -13,8 +13,8 @@ class MainMenuViewModel : CoreViewModel() {
     lateinit var navigator: IScreenNavigator
     @Inject
     lateinit var taskManager: ITaskManager
-    @Inject
-    lateinit var printer: IPrinter
+    //@Inject
+    //lateinit var printer: IPrinter
 
 
     fun onClickAuxiliaryMenu() {
@@ -23,7 +23,11 @@ class MainMenuViewModel : CoreViewModel() {
 
     fun onClickExternalSupply() {
         taskManager.taskType = TaskType.EXTERNAL_SUPPLY
-        navigator.openExternalSupplyTaskListScreen()
+        //navigator.openExternalSupplyTaskListScreen()
+
+        navigator.openReprintLabelScreen()
+
+
 
         //TODO удалить после окончательной реализации печати
         /*viewModelScope.launch {

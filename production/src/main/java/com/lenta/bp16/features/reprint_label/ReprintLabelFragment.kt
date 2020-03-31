@@ -62,8 +62,22 @@ class ReprintLabelFragment : CoreFragment<FragmentReprintLabelBinding, ReprintLa
         binding?.let { layoutBinding ->
             val onClickSelectionListener = View.OnClickListener {
                 (it!!.tag as Int).let { position ->
-                    vm.selectionsHelper.revert(position = position)
-                    layoutBinding.rv.adapter?.notifyItemChanged(position)
+                    vm.selectionsHelper.let { selectionsHelper ->
+                        selectionsHelper.selectedPositions.value?.let { positions ->
+                            if (positions.isNotEmpty()) {
+                                if (positions.contains(position)) {
+                                    selectionsHelper.revert(position)
+                                } else {
+                                    selectionsHelper.clearPositions()
+                                    selectionsHelper.add(position)
+                                }
+                            } else {
+                                selectionsHelper.add(position)
+                            }
+                        }
+                    }
+
+                    layoutBinding.rv.adapter?.notifyDataSetChanged()
                 }
             }
 
@@ -78,18 +92,6 @@ class ReprintLabelFragment : CoreFragment<FragmentReprintLabelBinding, ReprintLa
                             binding.tvItemNumber.tag = position
                             binding.tvItemNumber.setOnClickListener(onClickSelectionListener)
                             binding.selectedForDelete = vm.selectionsHelper.isSelected(position)
-                            recyclerViewKeyHandler?.let {
-                                binding.root.isSelected = it.isSelected(position)
-                            }
-                        }
-                    },
-                    onItemClickListener = AdapterView.OnItemClickListener { _, _, position, _ ->
-                        recyclerViewKeyHandler?.let {
-                            if (it.isSelected(position)) {
-                                vm.onClickItemPosition(position)
-                            } else {
-                                it.selectPosition(position)
-                            }
                         }
                     })
 

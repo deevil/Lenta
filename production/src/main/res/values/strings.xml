@@ -20,6 +20,7 @@
     <string name="not_saved_data_will_be_lost">Несохраненные данные будут утеряны, все равно продолжить?</string>
     <string name="more_than_one_order_for_this_product">По данному товару активно более одного заказа на упаковку</string>
     <string name="error_completing_object_processing">Ошибка завершения обработки объекта</string>
+    <string name="label_sent_to_print">Этикетка отправлена на печать</string>
 
     // Заголовки списков
     <string name="sku">SKU</string>

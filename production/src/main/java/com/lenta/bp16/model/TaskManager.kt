@@ -1,6 +1,7 @@
 package com.lenta.bp16.model
 
 import androidx.lifecycle.MutableLiveData
+import com.lenta.bp16.data.LabelInfo
 import com.lenta.bp16.model.pojo.Good
 import com.lenta.bp16.model.pojo.Pack
 import com.lenta.bp16.model.pojo.Raw
@@ -19,6 +20,8 @@ class TaskManager @Inject constructor(
     override lateinit var taskType: TaskType
 
     override val tasks = MutableLiveData<List<Task>>(emptyList())
+
+    override val labels = MutableLiveData<List<LabelInfo>>(emptyList())
 
     override val currentTask = MutableLiveData<Task>()
 
@@ -130,12 +133,25 @@ class TaskManager @Inject constructor(
     override fun onTaskChanged() {
         currentTask.value = currentTask.value
     }
+
+    override fun addLabelToList(labelInfo: LabelInfo) {
+        labels.value?.let { list ->
+            // todo Добавить проверку количества добавленных элементов
+
+            val labelList = list.toMutableList()
+            labelList.add(0, labelInfo)
+
+            labels.value = labelList
+        }
+    }
+
 }
 
 interface ITaskManager {
     var taskType: TaskType
 
     val tasks: MutableLiveData<List<Task>>
+    val labels: MutableLiveData<List<LabelInfo>>
     val currentTask: MutableLiveData<Task>
     val currentGood: MutableLiveData<Good>
     val currentRaw: MutableLiveData<Raw>
@@ -148,4 +164,5 @@ interface ITaskManager {
     fun completeCurrentGood()
     fun onTaskChanged()
     fun setDataSentForPackTask()
+    fun addLabelToList(labelInfo: LabelInfo)
 }

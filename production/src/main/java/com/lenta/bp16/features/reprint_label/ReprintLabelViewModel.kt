@@ -1,12 +1,20 @@
 package com.lenta.bp16.features.reprint_label
 
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.viewModelScope
+import com.lenta.bp16.data.IPrinter
+import com.lenta.bp16.data.LabelInfo
 import com.lenta.bp16.model.ITaskManager
 import com.lenta.bp16.platform.navigation.IScreenNavigator
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.platform.viewmodel.CoreViewModel
+import com.lenta.shared.settings.IAppSettings
+import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.SelectionItemsHelper
 import com.lenta.shared.utilities.extentions.map
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 class ReprintLabelViewModel : CoreViewModel() {
@@ -20,6 +28,12 @@ class ReprintLabelViewModel : CoreViewModel() {
     @Inject
     lateinit var sessionInfo: ISessionInfo
 
+    @Inject
+    lateinit var appSettings: IAppSettings
+
+    @Inject
+    lateinit var printer: IPrinter
+
 
     val selectionsHelper = SelectionItemsHelper()
 
@@ -28,7 +42,20 @@ class ReprintLabelViewModel : CoreViewModel() {
     }
 
     val labels by lazy {
-        MutableLiveData(List(3){
+        /*taskManager.labels.map { list ->
+            list?.mapIndexed { index, labelInfo ->
+                ReprintLabelUi(
+                        labelInfo = labelInfo,
+                        position = "${index + 1}",
+                        name = labelInfo.goodsName,
+                        order = labelInfo.aufnr,
+                        time = labelInfo.productTime,
+                        quantity = labelInfo.quantity
+                )
+            }
+        }*/
+
+        MutableLiveData(List(5){
             ReprintLabelUi(
                     position = "${it + 1}",
                     name = "Test name ${it + 1}",
@@ -46,16 +73,43 @@ class ReprintLabelViewModel : CoreViewModel() {
     // -----------------------------
 
     fun onClickItemPosition(position: Int) {
-
+        Logg.d { "--> onClickItemPosition: $position" }
     }
 
     fun onClickPrint() {
+        /*labels.value?.let { labels ->
+            val label = labels[selectionsHelper.selectedPositions.value!!.first()].labelInfo
+            printLabel(label)
+        }*/
+    }
 
+    private fun printLabel(labelInfo: LabelInfo) {
+        viewModelScope.launch {
+            withContext(Dispatchers.IO) {
+                appSettings.printerIpAddress.let { ipAddress ->
+                    if (ipAddress == null) {
+                        return@let null
+                    }
+                    printer.printLabel(labelInfo, ipAddress)
+                            .either(::handleFailure) {
+                                navigator.showLabelSentToPrint {
+                                    navigator.goBack()
+                                }
+                            }
+                }
+
+            }.also {
+                if (it == null) {
+                    navigator.showAlertNoIpPrinter()
+                }
+            }
+        }
     }
 
 }
 
 data class ReprintLabelUi(
+        //val labelInfo: LabelInfo,
         val position: String,
         val name: String,
         val order: String,

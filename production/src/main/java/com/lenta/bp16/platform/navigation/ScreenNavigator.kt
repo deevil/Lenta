@@ -221,6 +221,20 @@ class ScreenNavigator @Inject constructor(
             ))
         }
     }
+
+    override fun showLabelSentToPrint(nextCallback: () -> Unit) {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    pageNumber = "99",
+                    message = context.getString(R.string.label_sent_to_print),
+                    iconRes = R.drawable.ic_question_80dp,
+                    isVisibleLeftButton = false,
+                    codeConfirmForRight = backFragmentResultHelper.setFuncForResult(nextCallback),
+                    rightButtonDecorationInfo = ButtonDecorationInfo.next
+            ))
+        }
+    }
+
 }
 
 interface IScreenNavigator : ICoreNavigator {
@@ -247,5 +261,6 @@ interface IScreenNavigator : ICoreNavigator {
     fun showMoreThanOneOrderForThisProduct()
     fun showNotSavedDataWillBeLost(yesCallback: () -> Unit)
     fun showAlertNoIpPrinter()
+    fun showLabelSentToPrint(nextCallback: () -> Unit)
     //fun showErrorCompletingObjectProcessing()
 }
