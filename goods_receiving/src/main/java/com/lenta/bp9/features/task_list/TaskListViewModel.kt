@@ -171,7 +171,7 @@ class TaskListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
             else -> null
         }
         task?.let {
-            val loadFullData = it.status != TaskStatus.Traveling && it.status != TaskStatus.Ordered && it.status != TaskStatus.ReadyToShipment //ReadyToShipment этот статус добавлен для ОРЦ, п.п. 5.5.2 из ТП
+            val loadFullData = it.status != TaskStatus.Traveling && it.status != TaskStatus.Ordered && it.status != TaskStatus.ReadyToShipment //ReadyToShipment этот статус добавлен для ОПП, п.п. 5.5.2 из ТП
             when (it.lockStatus) {
                 TaskLockStatus.LockedByMe -> {
                     screenNavigator.openConfirmationUnlock {

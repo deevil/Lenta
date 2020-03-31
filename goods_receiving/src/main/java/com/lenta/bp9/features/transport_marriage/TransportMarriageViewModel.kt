@@ -146,7 +146,7 @@ class TransportMarriageViewModel : CoreViewModel(), PageSelectionListener,
         taskManager.updateTaskDescription(TaskDescription.from(result.taskDescription))
         val notifications = result.notifications.map { TaskNotification.from(it) }
         taskManager.getReceivingTask()?.taskRepository?.getNotifications()?.updateWithNotifications(general = notifications, document = null, product = null, condition = null)
-        screenNavigator.openTaskCardScreen(TaskCardMode.Full)
+        screenNavigator.openTaskCardScreen(TaskCardMode.Full, taskManager.getReceivingTask()?.taskHeader?.taskType ?: TaskType.None)
     }
 
     fun onClickDelete() {
@@ -190,11 +190,11 @@ class TransportMarriageViewModel : CoreViewModel(), PageSelectionListener,
         screenNavigator.openTaskListScreen()
         screenNavigator.openSupplyResultsActDisagreementTransportationDialog(transportationNumber = taskManager.getReceivingTask()?.taskDescription?.transportationNumber ?: "",
                 docCallbackFunc = {
-                    screenNavigator.openTaskCardScreen(TaskCardMode.Full)
+                    screenNavigator.openTaskCardScreen(TaskCardMode.Full, taskManager.getReceivingTask()?.taskHeader?.taskType ?: TaskType.None)
                     screenNavigator.openFormedDocsScreen()
                 },
                 nextCallbackFunc = {
-                    screenNavigator.openTaskCardScreen(TaskCardMode.Full)
+                    screenNavigator.openTaskCardScreen(TaskCardMode.Full, taskManager.getReceivingTask()?.taskHeader?.taskType ?: TaskType.None)
                 })
     }
 

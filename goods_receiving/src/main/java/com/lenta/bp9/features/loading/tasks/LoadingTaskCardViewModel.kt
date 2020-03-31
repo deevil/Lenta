@@ -124,7 +124,7 @@ class LoadingTaskCardViewModel : CoreLoadingViewModel() {
             val newTask = taskManager.newReceivingTask(taskHeader, TaskDescription.from(result.taskDescription))
             newTask?.taskRepository?.getNotifications()?.updateWithNotifications(notifications, null, null, null)
             taskManager.setTask(newTask)
-            screenNavigator.openTaskCardScreen(mode)
+            screenNavigator.openTaskCardScreen(mode, taskManager.getReceivingTask()?.taskHeader?.taskType ?: TaskType.None)
         }
     }
 
@@ -258,7 +258,7 @@ class LoadingTaskCardViewModel : CoreLoadingViewModel() {
                             screenNavigator.openControlDeliveryCargoUnitsScreen() //экран Контроль погрузки ГЕ
                         }
                         else -> {
-                            screenNavigator.openTaskCardScreen(TaskCardMode.Full)
+                            screenNavigator.openTaskCardScreen(TaskCardMode.Full, taskManager.getReceivingTask()?.taskHeader?.taskType ?: TaskType.None)
                         }
                     }
                 }
@@ -301,7 +301,7 @@ class LoadingTaskCardViewModel : CoreLoadingViewModel() {
                     screenNavigator.openGoodsListScreen()
                 }
                 else -> {
-                    screenNavigator.openTaskCardScreen(TaskCardMode.Full)
+                    screenNavigator.openTaskCardScreen(TaskCardMode.Full, taskManager.getReceivingTask()?.taskHeader?.taskType ?: TaskType.None)
                 }
             }
         }

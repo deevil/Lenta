@@ -88,7 +88,7 @@ class InputOutgoingFillingsViewModel : CoreViewModel() {
 
         taskManager.updateTaskDescription(TaskDescription.from(result.taskDescription))
 
-        screenNavigator.openTaskCardScreen(TaskCardMode.Full)
+        screenNavigator.openTaskCardScreen(TaskCardMode.Full, taskManager.getReceivingTask()?.taskHeader?.taskType ?: TaskType.None)
     }
 }
 

@@ -207,8 +207,12 @@ class TaskCardViewModel : CoreViewModel(), PageSelectionListener {
     }
 
     //для ОПП, п.5.5.3 из ТП
-    val isBksDiff by lazy {
+    private val isBksDiff by lazy {
         taskManager.getReceivingTask()?.taskDescription?.isBksDiff == true
+    }
+
+    val isBksTN by lazy { //https://trello.com/c/VQOineBU
+        taskManager.getReceivingTask()?.taskDescription?.isBksTN == true
     }
 
     val changeCurrentDateTimePossible by lazy {
@@ -246,17 +250,35 @@ class TaskCardViewModel : CoreViewModel(), PageSelectionListener {
         taskManager.getReceivingTask()?.taskDescription?.actualArrivalDate ?: ""
     }
     val shipmentOrder by lazy {
-        taskManager.getReceivingTask()?.taskDescription?.shipmentOrder ?: ""
+        if (taskType == TaskType.ShipmentRC) {
+            taskManager.getReceivingTask()?.taskDescription?.shipmentOrder ?: ""
+        } else {
+            taskManager.getReceivingTask()?.taskDescription?.orderNumber ?: ""
+        }
+
     }
     val shipmentDelivery by lazy {
-        taskManager.getReceivingTask()?.taskDescription?.shipmentDelivery ?: ""
+        if (taskType == TaskType.ShipmentRC) {
+            taskManager.getReceivingTask()?.taskDescription?.shipmentDelivery ?: ""
+        } else {
+            taskManager.getReceivingTask()?.taskDescription?.deliveryNumber ?: ""
+        }
+
     }
+
+    val isTaskTypeShipmentRC by lazy {
+        taskManager.getReceivingTask()?.taskHeader?.taskType == TaskType.ShipmentRC
+    }
+
     val shipmentDeliveryOTM by lazy {
         taskManager.getReceivingTask()?.taskDescription?.deliveryNumberOTM ?: ""
     }
+
     val shipmentTransportation by lazy {
         taskManager.getReceivingTask()?.taskDescription?.transportationNumber ?: ""
     }
+
+
     val stringsGoods by lazy {
         taskManager.getReceivingTask()?.taskDescription?.quantityPositions.toString()
     }
@@ -515,7 +537,7 @@ class TaskCardViewModel : CoreViewModel(), PageSelectionListener {
 
         taskManager.updateTaskDescription(TaskDescription.from(result.taskDescription))
 
-        screenNavigator.openTaskCardScreen(TaskCardMode.Full)
+        screenNavigator.openTaskCardScreen(TaskCardMode.Full, taskManager.getReceivingTask()?.taskHeader?.taskType ?: TaskType.None)
     }
 
     private fun shipmentSkipRecount() {
@@ -540,7 +562,7 @@ class TaskCardViewModel : CoreViewModel(), PageSelectionListener {
             taskManager.updateTaskDescription(TaskDescription.from(result.taskDescription))
             taskManager.getReceivingTask()?.taskRepository?.getNotifications()?.updateWithNotifications(notifications, null, null, null)
             taskManager.getReceivingTask()?.taskRepository?.getSections()?.updateSections(sectionInfo, sectionProducts)
-            screenNavigator.openTaskCardScreen(TaskCardMode.Full)
+            screenNavigator.openTaskCardScreen(TaskCardMode.Full, taskManager.getReceivingTask()?.taskHeader?.taskType ?: TaskType.None)
         }
     }
 
@@ -565,7 +587,7 @@ class TaskCardViewModel : CoreViewModel(), PageSelectionListener {
 
         screenNavigator.openShipmentPostingSuccessfulDialog(
                 nextCallbackFunc = {
-                    screenNavigator.openTaskCardScreen(TaskCardMode.Full)
+                    screenNavigator.openTaskCardScreen(TaskCardMode.Full, taskManager.getReceivingTask()?.taskHeader?.taskType ?: TaskType.None)
                 }
         )
     }

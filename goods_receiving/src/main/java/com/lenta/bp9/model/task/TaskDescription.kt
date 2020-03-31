@@ -47,7 +47,8 @@ data class TaskDescription(val currentStatus: TaskStatus,   //Код текущ�
                       val quantityOutgoingFillings: Int, //Количество исходящих пломб (задания ПРЦ, EV_NUM_SEALS из ZMP_UTZ_GRZ_21_V001 и ZMP_UTZ_GRZ_28_V001)
                       val quantityST: Double, //Количество в задании, ШТ
                       val quantityKG: Double, //Количество в задании, КГ
-                      val quantityAll: Double //Общее количество в задании
+                      val quantityAll: Double, //Общее количество в задании
+                      val isBksTN: Boolean
 ) {
 
     companion object {
@@ -92,7 +93,8 @@ data class TaskDescription(val currentStatus: TaskStatus,   //Код текущ�
                     quantityOutgoingFillings = 0,
                     quantityST = restData.quantityST.toDouble() ?: 0.0,
                     quantityKG = restData.quantityKG.toDouble() ?: 0.0,
-                    quantityAll = restData.quantityAll.toDouble() ?: 0.0
+                    quantityAll = restData.quantityAll.toDouble() ?: 0.0,
+                    isBksTN = restData.isBksTN.isNotEmpty()
             )
         }
     }
@@ -174,7 +176,9 @@ data class TaskDescriptionRestInfo(
         @SerializedName("QNT_KG")
         val quantityKG: String,
         @SerializedName("QNT_ALL")
-        val quantityAll: String
+        val quantityAll: String,
+        @SerializedName("IS_BKS_TN")
+        val isBksTN: String
 
 ) {
 }

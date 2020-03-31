@@ -81,7 +81,7 @@ class SkipRecountViewModel : CoreViewModel() {
                 //нет спецтоваров
                 screenNavigator.openMainMenuScreen()
                 screenNavigator.openTaskListScreen()
-                screenNavigator.openTaskCardScreen(TaskCardMode.Full)
+                screenNavigator.openTaskCardScreen(TaskCardMode.Full, taskManager.getReceivingTask()?.taskHeader?.taskType ?: TaskType.None)
                 screenNavigator.openAlertNoIsSpecialGoodsScreen()
             }
         }

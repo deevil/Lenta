@@ -59,7 +59,7 @@ class LoadingSubmittedViewModel : CoreLoadingViewModel() {
         taskManager.updateTaskDescription(TaskDescription.from(result.taskDescription))
         screenNavigator.openMainMenuScreen()
         screenNavigator.openTaskListScreen()
-        screenNavigator.openTaskCardScreen(TaskCardMode.Full)
+        screenNavigator.openTaskCardScreen(TaskCardMode.Full, taskManager.getReceivingTask()?.taskHeader?.taskType ?: TaskType.None)
     }
 
     override fun clean() {

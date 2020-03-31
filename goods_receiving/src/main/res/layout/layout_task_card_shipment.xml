@@ -64,21 +64,11 @@
             app:layout_constraintTop_toBottomOf="@+id/tv_delivery" />
 
         <View
-            android:id="@+id/div_hor_6"
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:layout_marginTop="8dp"
-            android:background="@color/color_divider"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tv_transportation" />
-
-        <View
             android:id="@+id/div_vert_1"
             android:layout_width="1dp"
             android:layout_height="0dp"
             android:background="@color/color_divider"
-            app:layout_constraintBottom_toTopOf="@id/div_hor_6"
+            app:layout_constraintBottom_toTopOf="@id/div_hor_4"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="@+id/guideline"
@@ -92,7 +82,7 @@
             android:layout_marginStart="16dp"
             android:layout_marginTop="8dp"
             android:layout_marginEnd="8dp"
-            android:text='@{vm.isBksDiff ? @string/return_invoice : @string/number_TN}'
+            android:text='@{vm.isBksTN ? @string/return_invoice : @string/number_TN}'
             app:layout_constraintEnd_toStartOf="@+id/guideline"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/div_hor_1"
@@ -228,54 +218,93 @@
             app:layout_constraintStart_toEndOf="@id/guideline"
             app:layout_constraintTop_toBottomOf="@+id/tv_order_val" />
 
-        <TextView
-            android:id="@+id/tv_delivery_otm"
-            style="@style/TextTitle"
-            android:layout_width="0dp"
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/ConstraintShelfLife"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="8dp"
-            android:layout_marginEnd="8dp"
-            android:text="@string/delivery_otm"
-            app:layout_constraintEnd_toStartOf="@+id/guideline"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/div_hor_4" />
-
-        <TextView
-            android:id="@+id/tv_delivery_otm_val"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginEnd="8dp"
-            android:maxLines="1"
-            android:text='@{vm.shipmentDeliveryOTM}'
-            app:layout_constraintBaseline_toBaselineOf="@+id/tv_delivery_otm"
+            android:visibility="@{vm.isTaskTypeShipmentRC}"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@id/guideline" />
-
-        <TextView
-            android:id="@+id/tv_transportation"
-            style="@style/TextTitle"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginEnd="8dp"
-            android:text="@string/transportation"
-            app:layout_constraintEnd_toStartOf="@+id/guideline"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tv_delivery_otm" />
+            app:layout_constraintTop_toBottomOf="@+id/div_hor_4">
 
-        <TextView
-            android:id="@+id/tv_transportation_val"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginEnd="8dp"
-            android:maxLines="1"
-            android:text='@{vm.shipmentTransportation}'
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@id/guideline"
-            app:layout_constraintTop_toBottomOf="@+id/tv_delivery_otm_val" />
+            <TextView
+                android:id="@+id/tv_delivery_otm"
+                style="@style/TextTitle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="8dp"
+                android:ellipsize="end"
+                android:gravity="start|center_vertical"
+                android:text="@string/delivery_otm"
+                app:layout_constraintEnd_toStartOf="@+id/div_vert_2"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/tv_delivery_otm_val"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="8dp"
+                android:maxLines="1"
+                android:text='@{vm.shipmentDeliveryOTM}'
+                app:layout_constraintBottom_toBottomOf="@+id/tv_delivery_otm"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toEndOf="@+id/div_vert_2"
+                app:layout_constraintTop_toTopOf="@+id/tv_delivery_otm"
+                app:layout_constraintVertical_bias="1.0" />
+
+            <TextView
+                android:id="@+id/tv_transportation"
+                style="@style/TextTitle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="8dp"
+                android:text="@string/transportation"
+                app:layout_constraintEnd_toStartOf="@+id/div_vert_2"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tv_delivery_otm" />
+
+            <TextView
+                android:id="@+id/tv_transportation_val"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="8dp"
+                android:maxLines="1"
+                android:text='@{vm.shipmentTransportation}'
+                app:layout_constraintBottom_toBottomOf="@+id/tv_transportation"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/div_vert_2"
+                app:layout_constraintTop_toBottomOf="@+id/tv_delivery_otm" />
+
+            <View
+                android:id="@+id/div_vert_2"
+                android:layout_width="1dp"
+                android:layout_height="0dp"
+                android:layout_marginStart="1dp"
+                android:background="@color/color_divider"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.0" />
+
+            <View
+                android:id="@+id/div_hor_5"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginTop="8dp"
+                android:background="@color/color_divider"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tv_transportation" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
