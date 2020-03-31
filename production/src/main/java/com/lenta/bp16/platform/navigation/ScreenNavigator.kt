@@ -227,7 +227,7 @@ class ScreenNavigator @Inject constructor(
             getFragmentStack()?.push(AlertFragment.create(
                     pageNumber = "99",
                     message = context.getString(R.string.label_sent_to_print),
-                    iconRes = R.drawable.ic_question_80dp,
+                    iconRes = R.drawable.ic_info_green_80dp,
                     isVisibleLeftButton = false,
                     codeConfirmForRight = backFragmentResultHelper.setFuncForResult(nextCallback),
                     rightButtonDecorationInfo = ButtonDecorationInfo.next
