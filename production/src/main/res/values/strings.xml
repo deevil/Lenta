@@ -47,5 +47,6 @@
     <string name="planed_quantity">План на передел</string>
     <string name="next_raw">Следующий передел</string>
     <string name="no_ip_printer_alert">IP адрес принтера не указан</string>
+    <string name="reprint_labels">Повторная печать этикеток</string>
 
 </resources>
