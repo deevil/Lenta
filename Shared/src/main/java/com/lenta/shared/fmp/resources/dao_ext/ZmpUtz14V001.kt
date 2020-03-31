@@ -92,6 +92,10 @@ fun ZmpUtz14V001.getPcpExpirTimeMm(): String? {
     return getParams("PCP_EXPIR_TIME_MM").firstOrNull()
 }
 
+fun ZmpUtz14V001.getLabelLimit(): String? {
+    return getParams("PRO_MAX_LBL_QNT").firstOrNull()
+}
+
 fun ZmpUtz14V001.getGrzUffMhdhb(): String? {
     return getParams("GRZ_UFF_MHDHB").firstOrNull()
 }

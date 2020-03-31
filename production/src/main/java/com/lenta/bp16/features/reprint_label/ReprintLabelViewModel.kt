@@ -42,7 +42,7 @@ class ReprintLabelViewModel : CoreViewModel() {
     }
 
     val labels by lazy {
-        /*taskManager.labels.map { list ->
+        taskManager.labels.map { list ->
             list?.mapIndexed { index, labelInfo ->
                 ReprintLabelUi(
                         labelInfo = labelInfo,
@@ -53,17 +53,7 @@ class ReprintLabelViewModel : CoreViewModel() {
                         quantity = labelInfo.quantity
                 )
             }
-        }*/
-
-        MutableLiveData(List(5){
-            ReprintLabelUi(
-                    position = "${it + 1}",
-                    name = "Test name ${it + 1}",
-                    order = "555",
-                    time = "12.12.2020 12:12",
-                    quantity = "${(1..123).random()} кг"
-            )
-        })
+        }
     }
 
     val printEnabled by lazy {
@@ -77,10 +67,10 @@ class ReprintLabelViewModel : CoreViewModel() {
     }
 
     fun onClickPrint() {
-        /*labels.value?.let { labels ->
+        labels.value?.let { labels ->
             val label = labels[selectionsHelper.selectedPositions.value!!.first()].labelInfo
             printLabel(label)
-        }*/
+        }
     }
 
     private fun printLabel(labelInfo: LabelInfo) {
@@ -109,7 +99,7 @@ class ReprintLabelViewModel : CoreViewModel() {
 }
 
 data class ReprintLabelUi(
-        //val labelInfo: LabelInfo,
+        val labelInfo: LabelInfo,
         val position: String,
         val name: String,
         val order: String,

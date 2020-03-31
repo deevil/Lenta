@@ -19,15 +19,22 @@ class TaskManager @Inject constructor(
 
     override lateinit var taskType: TaskType
 
-    override val tasks = MutableLiveData<List<Task>>(emptyList())
-
     override val labels = MutableLiveData<List<LabelInfo>>(emptyList())
+
+    var labelLimit = 0
+
+    override val tasks = MutableLiveData<List<Task>>(emptyList())
 
     override val currentTask = MutableLiveData<Task>()
 
     override val currentGood = MutableLiveData<Good>()
 
     override val currentRaw = MutableLiveData<Raw>()
+
+
+    override suspend fun getLabelLimit() {
+        labelLimit = repository.getLabelLimit()
+    }
 
     override fun addTasks(taskListResult: TaskListResult) {
         val taskList = tasks.value!!.filter { it.isProcessed }.toMutableList()
@@ -134,14 +141,17 @@ class TaskManager @Inject constructor(
         currentTask.value = currentTask.value
     }
 
-    override fun addLabelToList(labelInfo: LabelInfo) {
-        labels.value?.let { list ->
-            // todo Добавить проверку количества добавленных элементов
+    override fun  addLabelToList(labelInfo: LabelInfo) {
+        if (labelLimit > 0) {
+            labels.value?.let { list ->
+                val labelList = list.toMutableList()
+                if (labelList.size == labelLimit) {
+                    labelList.removeAt(labelList.size - 1)
+                }
 
-            val labelList = list.toMutableList()
-            labelList.add(0, labelInfo)
-
-            labels.value = labelList
+                labelList.add(0, labelInfo)
+                labels.value = labelList
+            }
         }
     }
 
@@ -164,5 +174,6 @@ interface ITaskManager {
     fun completeCurrentGood()
     fun onTaskChanged()
     fun setDataSentForPackTask()
+    suspend fun getLabelLimit()
     fun addLabelToList(labelInfo: LabelInfo)
 }
