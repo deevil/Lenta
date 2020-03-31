@@ -32,4 +32,10 @@
     <integer name="sku_plan_quantity_column_2">60</integer>
     <integer name="sku_plan_quantity_column_3">30</integer>
 
+    <!-- Список товаров - № / ПФ / Тара/Печать / Кол-во -->
+    <integer name="reprint_label_column_1">15</integer>
+    <integer name="reprint_label_column_2">41</integer>
+    <integer name="reprint_label_column_3">22</integer>
+    <integer name="reprint_label_column_4">22</integer>
+
 </resources>

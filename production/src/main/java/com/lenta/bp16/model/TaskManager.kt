@@ -1,6 +1,7 @@
 package com.lenta.bp16.model
 
 import androidx.lifecycle.MutableLiveData
+import com.lenta.bp16.data.LabelInfo
 import com.lenta.bp16.model.pojo.Good
 import com.lenta.bp16.model.pojo.Pack
 import com.lenta.bp16.model.pojo.Raw
@@ -18,6 +19,10 @@ class TaskManager @Inject constructor(
 
     override lateinit var taskType: TaskType
 
+    override val labels = MutableLiveData<List<LabelInfo>>(emptyList())
+
+    var labelLimit = 0
+
     override val tasks = MutableLiveData<List<Task>>(emptyList())
 
     override val currentTask = MutableLiveData<Task>()
@@ -25,6 +30,11 @@ class TaskManager @Inject constructor(
     override val currentGood = MutableLiveData<Good>()
 
     override val currentRaw = MutableLiveData<Raw>()
+
+
+    override suspend fun getLabelLimit() {
+        labelLimit = repository.getLabelLimit()
+    }
 
     override fun addTasks(taskListResult: TaskListResult) {
         val taskList = tasks.value!!.filter { it.isProcessed }.toMutableList()
@@ -130,12 +140,28 @@ class TaskManager @Inject constructor(
     override fun onTaskChanged() {
         currentTask.value = currentTask.value
     }
+
+    override fun  addLabelToList(labelInfo: LabelInfo) {
+        if (labelLimit > 0) {
+            labels.value?.let { list ->
+                val labelList = list.toMutableList()
+                if (labelList.size == labelLimit) {
+                    labelList.removeAt(labelList.size - 1)
+                }
+
+                labelList.add(0, labelInfo)
+                labels.value = labelList
+            }
+        }
+    }
+
 }
 
 interface ITaskManager {
     var taskType: TaskType
 
     val tasks: MutableLiveData<List<Task>>
+    val labels: MutableLiveData<List<LabelInfo>>
     val currentTask: MutableLiveData<Task>
     val currentGood: MutableLiveData<Good>
     val currentRaw: MutableLiveData<Raw>
@@ -148,4 +174,6 @@ interface ITaskManager {
     fun completeCurrentGood()
     fun onTaskChanged()
     fun setDataSentForPackTask()
+    suspend fun getLabelLimit()
+    fun addLabelToList(labelInfo: LabelInfo)
 }

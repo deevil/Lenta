@@ -4,7 +4,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.lenta.bp16.data.IPrinter
 import com.lenta.bp16.data.IScales
-import com.lenta.bp16.data.PrintInnerTagInfo
+import com.lenta.bp16.data.LabelInfo
 import com.lenta.bp16.model.ITaskManager
 import com.lenta.bp16.model.pojo.Pack
 import com.lenta.bp16.platform.navigation.IScreenNavigator
@@ -30,18 +30,25 @@ class GoodWeighingViewModel : CoreViewModel() {
 
     @Inject
     lateinit var navigator: IScreenNavigator
+
     @Inject
     lateinit var sessionInfo: ISessionInfo
+
     @Inject
     lateinit var appSettings: IAppSettings
+
     @Inject
     lateinit var taskManager: ITaskManager
+
     @Inject
     lateinit var packCodeNetRequest: PackCodeNetRequest
+
     @Inject
     lateinit var scales: IScales
+
     @Inject
     lateinit var printer: IPrinter
+
     @Inject
     lateinit var repository: IGeneralRepository
 
@@ -144,7 +151,7 @@ class GoodWeighingViewModel : CoreViewModel() {
 
                     val barcode = barCodeText.replace("(", "").replace(")", "")
 
-                    printTag(PrintInnerTagInfo(
+                    printLabel(LabelInfo(
                             quantity = "${total.value!!}  ${good.value?.units?.name}",
                             codeCont = packCodeResult.packCode,
                             storCond = "${packCodeResult.dataLabel.storCondTime} ч",
@@ -172,7 +179,7 @@ class GoodWeighingViewModel : CoreViewModel() {
     }
 
     private fun getTimeInMinutes(sourceTime: String, units: String): Int {
-        return when(units.toLowerCase(Locale.getDefault())) {
+        return when (units.toLowerCase(Locale.getDefault())) {
             "m" -> (sourceTime.toDoubleOrNull() ?: 0.0).toInt()
             "h" -> (sourceTime.toDoubleOrNull() ?: 0.0 * 60).toInt()
             else -> 0
@@ -263,19 +270,18 @@ class GoodWeighingViewModel : CoreViewModel() {
         }
     }
 
-    private fun printTag(printInfo: PrintInnerTagInfo) {
+    private fun printLabel(labelInfo: LabelInfo) {
         viewModelScope.launch {
             withContext(IO) {
                 appSettings.printerIpAddress.let { ipAddress ->
                     if (ipAddress == null) {
                         return@let null
                     }
-                    printer.printTag(printInfo, ipAddress)
+                    printer.printLabel(labelInfo, ipAddress)
                             .either(::handleFailure) {
-                                // todo Что-то делаем после печати?
+                                taskManager.addLabelToList(labelInfo)
                             }
                 }
-
             }.also {
                 if (it == null) {
                     navigator.showAlertNoIpPrinter()
