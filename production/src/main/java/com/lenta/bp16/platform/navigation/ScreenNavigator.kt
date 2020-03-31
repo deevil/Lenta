@@ -3,6 +3,8 @@ package com.lenta.bp16.platform.navigation
 import android.content.Context
 import com.lenta.bp16.R
 import com.lenta.bp16.features.auth.AuthFragment
+import com.lenta.bp16.features.defect_info.DefectInfoFragment
+import com.lenta.bp16.features.defect_list.DefectListFragment
 import com.lenta.bp16.features.external_supply_list.ExternalSupplyListFragment
 import com.lenta.bp16.features.external_supply_task_list.ExternalSupplyTaskListFragment
 import com.lenta.bp16.features.good_packaging.GoodPackagingFragment
@@ -126,6 +128,18 @@ class ScreenNavigator @Inject constructor(
     override fun openReprintLabelScreen() {
         runOrPostpone {
             getFragmentStack()?.push(ReprintLabelFragment())
+        }
+    }
+
+    override fun openDefectInfoScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(DefectInfoFragment())
+        }
+    }
+
+    override fun openDefectListScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(DefectListFragment())
         }
     }
 
@@ -253,6 +267,8 @@ interface IScreenNavigator : ICoreNavigator {
     fun openPackListScreen()
     fun openPackGoodListScreen()
     fun openReprintLabelScreen()
+    fun openDefectInfoScreen()
+    fun openDefectListScreen()
 
     fun showDefrostingPhaseIsCompleted(nextCallback: () -> Unit)
     fun showConfirmNoSuchItemLeft(taskType: String, confirmCallback: () -> Unit)
