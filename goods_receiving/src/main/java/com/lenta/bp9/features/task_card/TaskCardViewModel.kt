@@ -110,14 +110,17 @@ class TaskCardViewModel : CoreViewModel(), PageSelectionListener {
                 taskManager.getReceivingTask()?.taskDescription?.isSkipCountMan == true
     }
 
-    val visibilityBtn by lazy {
+    val visibilitySecondBtn by lazy {
         MutableLiveData(taskManager.getReceivingTask()?.taskDescription?.currentStatus.let {
             it == TaskStatus.Recounted ||
-                    (it == TaskStatus.Checked && taskType != TaskType.ShipmentPP) ||
+                    (it == TaskStatus.Checked && taskType == TaskType.ShipmentPP) ||
                     (it == TaskStatus.Unloaded && (taskType == TaskType.RecalculationCargoUnit || taskType == TaskType.ReceptionDistributionCenter)) ||
-                    (it == TaskStatus.ReadyToShipment && taskType == TaskType.ShipmentRC) ||
-                    isShipmentPPSkipRecount
+                    (it == TaskStatus.ReadyToShipment && taskType == TaskType.ShipmentRC)
         })
+    }
+
+    val visibilityBtnFourth by lazy {
+        MutableLiveData(isShipmentPPSkipRecount)
     }
 
     val visibilityNextBtn by lazy {
@@ -343,11 +346,7 @@ class TaskCardViewModel : CoreViewModel(), PageSelectionListener {
                 }
             }
             TaskStatus.Checked -> {
-                if (isShipmentPPSkipRecount) {
-                    shipmentSkipRecount()
-                } else {
-                    screenNavigator.openStartReviseLoadingScreen()
-                }
+                screenNavigator.openStartReviseLoadingScreen()
             }
             TaskStatus.Recounted -> screenNavigator.openRecountStartLoadingScreen()
             TaskStatus.ReadyToShipment -> {
@@ -358,8 +357,12 @@ class TaskCardViewModel : CoreViewModel(), PageSelectionListener {
         }
     }
 
-    fun onClickSupply() {
+    fun onClickDocs() {
         screenNavigator.openFormedDocsScreen()
+    }
+
+    fun onClickFourth() {
+        shipmentSkipRecount()
     }
 
     fun onClickNext() {
