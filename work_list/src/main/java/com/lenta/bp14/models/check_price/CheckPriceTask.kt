@@ -16,7 +16,7 @@ import com.lenta.bp14.models.general.AppTaskTypes
 import com.lenta.bp14.models.general.IGeneralRepo
 import com.lenta.bp14.models.print.PriceTagType
 import com.lenta.bp14.platform.IVibrateHelper
-import com.lenta.bp14.platform.sound.ISoundPlayer
+import com.lenta.shared.platform.sound.ISoundPlayer
 import com.lenta.bp14.requests.check_price.CheckPriceReport
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.functional.Either

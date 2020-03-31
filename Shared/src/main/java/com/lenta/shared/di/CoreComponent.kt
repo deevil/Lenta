@@ -35,6 +35,7 @@ import com.lenta.shared.platform.navigation.pictogram.IIconDescriptionHelper
 import com.lenta.shared.platform.network_state.INetworkStateMonitor
 import com.lenta.shared.platform.network_state.NetworkStateMonitor
 import com.lenta.shared.platform.resources.ISharedStringResourceManager
+import com.lenta.shared.platform.sound.ISoundPlayer
 import com.lenta.shared.platform.time.ITimeMonitor
 import com.lenta.shared.print.IPrintPriceNetService
 import com.lenta.shared.progress.IProgressUseCaseInformator
@@ -84,6 +85,7 @@ interface CoreComponent {
     fun getDefaultSettingsManager(): DefaultSettingsManager
     fun getIIconDescriptionHelper(): IIconDescriptionHelper
     fun getIPrintPriceNetService(): IPrintPriceNetService
+    fun getISoundPlayer(): ISoundPlayer
 
 
     fun inject(it: FmpSettingsViewModel)

@@ -15,6 +15,7 @@ import com.lenta.bp16.features.pack_list.PackListViewModel
 import com.lenta.bp16.features.processing_unit_list.ProcessingUnitListViewModel
 import com.lenta.bp16.features.processing_unit_task_list.ProcessingUnitTaskListViewModel
 import com.lenta.bp16.features.raw_list.RawListViewModel
+import com.lenta.bp16.features.reprint_label.ReprintLabelViewModel
 import com.lenta.bp16.features.select_market.SelectMarketViewModel
 import com.lenta.bp16.main.MainActivity
 import com.lenta.bp16.main.MainViewModel
@@ -54,5 +55,6 @@ interface AppComponent : CoreComponent {
     fun inject(it: GoodPackagingViewModel)
     fun inject(it: PackListViewModel)
     fun inject(it: PackGoodListViewModel)
+    fun inject(it: ReprintLabelViewModel)
 
 }

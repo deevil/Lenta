@@ -49,6 +49,11 @@ class GeneralRepository @Inject constructor(
         }
     }
 
+    override suspend fun getLabelLimit(): Int {
+        return withContext(Dispatchers.IO) {
+            return@withContext settings.getLabelLimit()?.toIntOrNull() ?: 0
+        }
+    }
 }
 
 interface IGeneralRepository {
@@ -59,5 +64,6 @@ interface IGeneralRepository {
     suspend fun getServerAddress(): String?
     suspend fun getPcpContTimeMm(): Int
     suspend fun getPcpExpirTimeMm(): Int
+    suspend fun getLabelLimit(): Int
 
 }
