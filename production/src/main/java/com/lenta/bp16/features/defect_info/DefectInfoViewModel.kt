@@ -89,10 +89,6 @@ class DefectInfoViewModel : CoreViewModel() {
         "${it.dropZeros()} ${good.value!!.units.name}"
     }
 
-    val labelEnabled: MutableLiveData<Boolean> = total.map {
-        it ?: 0.0 != 0.0
-    }
-
     private val categories = MutableLiveData<List<DictElement>>(emptyList())
 
     val categoryEnabled = categories.map {
@@ -127,6 +123,11 @@ class DefectInfoViewModel : CoreViewModel() {
         override fun onClickPosition(position: Int) {
             defectPosition.value = position
         }
+    }
+
+    val labelEnabled: MutableLiveData<Boolean> = total.map {
+        // todo Проверка: Не должно быть 0, должна быть выбрана категория и описание дефекта
+        it ?: 0.0 != 0.0
     }
 
     // -----------------------------

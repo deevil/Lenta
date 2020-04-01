@@ -84,7 +84,9 @@ class GoodWeighingViewModel : CoreViewModel() {
     }
 
     private val defect by lazy {
-        MutableLiveData(0.0)
+        good.map { good ->
+            good?.packs?.filter { it.materialDef == raw.value?.material }?.map { it.quantity }?.sum()
+        }
     }
 
     val defectWithUnits = defect.map {
