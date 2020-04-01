@@ -512,8 +512,7 @@ class GoodsInfoViewModel : CoreViewModel(), OnPositionClickListener {
                     //блок 6.192
                     addOrdinaryGoods()
                 },
-                expiresThrough = remainingShelfLife.value ?: "",
-                shelfLife = generalShelfLife.value ?: ""
+                expiresThrough = Days.daysBetween(DateTime(currentDate.value), DateTime(expirationDate.value!!.time)).days.toString()
         )
     }
 
@@ -735,8 +734,7 @@ class GoodsInfoViewModel : CoreViewModel(), OnPositionClickListener {
                     //блок 7.203
                     addOrdinaryGoodsPGE()
                 },
-                expiresThrough = remainingShelfLife.value ?: "",
-                shelfLife = generalShelfLife.value ?: ""
+                expiresThrough = Days.daysBetween(DateTime(currentDate.value), DateTime(expirationDate.value!!.time)).days.toString()
         )
     }
 

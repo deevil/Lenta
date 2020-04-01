@@ -383,8 +383,7 @@ class GoodsMercuryInfoViewModel : CoreViewModel(), OnPositionClickListener {
                                 yesCallbackFunc = {
                                     addProductDiscrepanciesPGE()
                                 },
-                                expiresThrough = remainingShelfLife.value ?: "",
-                                shelfLife = generalShelfLife.value ?: ""
+                                expiresThrough = Days.daysBetween(DateTime(currentDate.value), DateTime(expirationDate.value!!.time)).days.toString()
                         )
                     }
                 }
@@ -414,8 +413,7 @@ class GoodsMercuryInfoViewModel : CoreViewModel(), OnPositionClickListener {
                                 yesCallbackFunc = {
                                     addProductDiscrepancies()
                                 },
-                                expiresThrough = remainingShelfLife.value ?: "",
-                                shelfLife = generalShelfLife.value ?: ""
+                                expiresThrough = Days.daysBetween(DateTime(currentDate.value), DateTime(expirationDate.value!!.time)).days.toString()
                         )
                     }
                 }

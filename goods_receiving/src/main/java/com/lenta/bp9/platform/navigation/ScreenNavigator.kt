@@ -1011,10 +1011,10 @@ class ScreenNavigator(
         }
     }
 
-    override fun openShelfLifeExpiresDialog(noCallbackFunc: () -> Unit, yesCallbackFunc: () -> Unit, expiresThrough: String, shelfLife: String) {
+    override fun openShelfLifeExpiresDialog(noCallbackFunc: () -> Unit, yesCallbackFunc: () -> Unit, expiresThrough: String) {
         runOrPostpone {
             getFragmentStack()?.push(AlertFragment.create(
-                    message = context.getString(R.string.the_shelf_life_expires, expiresThrough, shelfLife),
+                    message = context.getString(R.string.the_shelf_life_expires, expiresThrough),
                     codeConfirmForLeft = backFragmentResultHelper.setFuncForResult(noCallbackFunc),
                     codeConfirmForRight = backFragmentResultHelper.setFuncForResult(yesCallbackFunc),
                     iconRes = R.drawable.ic_question_80dp,
@@ -1180,7 +1180,7 @@ interface IScreenNavigator : ICoreNavigator {
     fun openExceededPlannedQuantityBatchInProcessingUnitDialog(nextCallbackFunc: () -> Unit)
     fun openAlertBothSurplusAndUnderloadScreen()
     fun openAlertCountMoreCargoUnitDialog(yesCallbackFunc: () -> Unit)
-    fun openShelfLifeExpiresDialog(noCallbackFunc: () -> Unit, yesCallbackFunc: () -> Unit, expiresThrough: String, shelfLife: String)
+    fun openShelfLifeExpiresDialog(noCallbackFunc: () -> Unit, yesCallbackFunc: () -> Unit, expiresThrough: String)
     fun openSupplyResultsActDisagreementTransportationDialog(transportationNumber: String, docCallbackFunc: () -> Unit, nextCallbackFunc: () -> Unit)
     fun openExciseAlcoBoxAccInfoScreen(productInfo: TaskProductInfo)
     fun openAlertUnknownGoodsTypeScreen()
