@@ -242,7 +242,7 @@ class DefectInfoViewModel : CoreViewModel() {
 
                     printLabel(LabelInfo(
                             quantity = "${total.value!!}  ${good.value?.units?.name}",
-                            codeCont = packCodeResult.packCode,
+                            codeCont = "${packCodeResult.packCode} БРАК",
                             storCond = "${packCodeResult.dataLabel.storCondTime} ч",
                             planAufFinish = SimpleDateFormat(Constants.DATE_FORMAT_dd_mm_yyyy_hh_mm, Locale.getDefault()).format(planAufFinish.time),
                             aufnr = raw.value!!.orderNumber,
