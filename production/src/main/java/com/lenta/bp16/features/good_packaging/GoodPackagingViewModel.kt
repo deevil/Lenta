@@ -65,6 +65,12 @@ class GoodPackagingViewModel : CoreViewModel() {
         "${raw.value?.planned.dropZeros()} ${good.value?.units?.name}"
     }
 
+    val defectVisibility by lazy {
+        raw.map {
+            it?.isWasDef == true
+        }
+    }
+
     val completeEnabled = entered.map {
         it ?: 0.0 != 0.0
     }

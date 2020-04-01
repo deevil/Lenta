@@ -42,6 +42,7 @@ class GoodPackagingFragment : CoreFragment<FragmentGoodWeighingBinding, GoodPack
         bottomToolbarUiModel.uiModelButton2.show(ButtonDecorationInfo.defect)
         bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.complete, enabled = false)
 
+        connectLiveData(vm.defectVisibility, getBottomToolBarUIModel()!!.uiModelButton2.visibility)
         connectLiveData(vm.completeEnabled, getBottomToolBarUIModel()!!.uiModelButton5.enabled)
     }
 
