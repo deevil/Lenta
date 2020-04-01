@@ -133,8 +133,8 @@ class DefectInfoViewModel : CoreViewModel() {
 
     init {
         viewModelScope.launch {
-            categories.value = database.getDefectCategory()
-            defects.value = database.getDefectType()
+            categories.value = database.getCategoryList()
+            defects.value = database.getDefectList()
         }
     }
 

@@ -44,7 +44,7 @@
 
                 <TextView
                     style="@style/CellTextStyle"
-                    android:text="@{item.packType}"
+                    android:text="@{item.packAndCategory}"
                     tools:text="5236521789 / Брак" />
 
                 <TextView

@@ -57,15 +57,27 @@ class DatabaseRepository @Inject constructor(
         }
     }
 
-    override suspend fun getDefectCategory(): List<DictElement> {
+    override suspend fun getCategoryList(): List<DictElement> {
         return withContext(Dispatchers.IO) {
             return@withContext dictonary.getItemsByTidSorted("025")?.toElementList() ?: emptyList()
         }
     }
 
-    override suspend fun getDefectType(): List<DictElement> {
+    override suspend fun getDefectList(): List<DictElement> {
         return withContext(Dispatchers.IO) {
             return@withContext dictonary.getItemsByTidSorted("024")?.toElementList() ?: emptyList()
+        }
+    }
+
+    override suspend fun getCategory(categoryCode: String): DictElement? {
+        return withContext(Dispatchers.IO) {
+            return@withContext getCategoryList().find { it.code == categoryCode }
+        }
+    }
+
+    override suspend fun getDefect(defectCode: String): DictElement? {
+        return withContext(Dispatchers.IO) {
+            return@withContext getDefectList().find { it.code == defectCode }
         }
     }
 
@@ -80,7 +92,9 @@ interface IDatabaseRepository {
     suspend fun getPcpContTimeMm(): Int
     suspend fun getPcpExpirTimeMm(): Int
     suspend fun getLabelLimit(): Int
-    suspend fun getDefectCategory(): List<DictElement>
-    suspend fun getDefectType(): List<DictElement>
+    suspend fun getCategoryList(): List<DictElement>
+    suspend fun getDefectList(): List<DictElement>
+    suspend fun getCategory(categoryCode: String): DictElement?
+    suspend fun getDefect(defectCode: String): DictElement?
 
 }

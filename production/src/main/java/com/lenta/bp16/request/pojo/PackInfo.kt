@@ -9,6 +9,9 @@ data class PackInfo(
         /** SAP – код товара */
         @SerializedName("MATNR_OSN")
         val materialOsn: String,
+        /** SAP код сырья из которого был произведен брак */
+        @SerializedName("MATNR_DEF")
+        val materialDef: String,
         /** Номер технологического заказа */
         @SerializedName("AUFNR")
         val orderNumber: String,
@@ -20,5 +23,11 @@ data class PackInfo(
         val quantity: Double,
         /** Признак – «Дефростирование завершено» */
         @SerializedName("DEF_OUT")
-        val isDefOut: String
+        val isDefOut: String,
+        /** Тип брака (категория) */
+        @SerializedName("TYPE_DEF")
+        val categoryCode: String,
+        /** Код причины брака */
+        @SerializedName("GRUND")
+        val defectCode: String
 )

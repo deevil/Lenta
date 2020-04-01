@@ -80,10 +80,13 @@ class TaskManager @Inject constructor(
                             Pack(
                                     material = packInfo.material,
                                     materialOsn = packInfo.materialOsn,
+                                    materialDef = packInfo.materialDef,
                                     code = packInfo.code,
                                     orderNumber = packInfo.orderNumber,
                                     quantity = packInfo.quantity,
-                                    isDefOut = packInfo.isDefOut.isSapTrue()
+                                    isDefOut = packInfo.isDefOut.isSapTrue(),
+                                    category = database.getCategory(packInfo.categoryCode),
+                                    defect = database.getDefect(packInfo.defectCode)
                             )
                         }.toMutableList()
                 )
