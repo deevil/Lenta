@@ -6,15 +6,14 @@ import com.lenta.bp16.data.IPrinter
 import com.lenta.bp16.data.IScales
 import com.lenta.bp16.data.LabelInfo
 import com.lenta.bp16.model.ITaskManager
-import com.lenta.bp16.model.pojo.Category
-import com.lenta.bp16.model.pojo.Defect
 import com.lenta.bp16.model.pojo.Pack
 import com.lenta.bp16.platform.navigation.IScreenNavigator
-import com.lenta.bp16.repository.IGeneralRepository
+import com.lenta.bp16.repository.IDatabaseRepository
 import com.lenta.bp16.request.PackCodeNetRequest
 import com.lenta.bp16.request.PackCodeParams
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.exception.Failure
+import com.lenta.shared.fmp.resources.dao_ext.DictElement
 import com.lenta.shared.platform.constants.Constants
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.settings.IAppSettings
@@ -53,7 +52,7 @@ class DefectInfoViewModel : CoreViewModel() {
     lateinit var appSettings: IAppSettings
 
     @Inject
-    lateinit var repository: IGeneralRepository
+    lateinit var database: IDatabaseRepository
 
 
     val good by lazy {
@@ -94,13 +93,13 @@ class DefectInfoViewModel : CoreViewModel() {
         it ?: 0.0 != 0.0
     }
 
-    private val category = MutableLiveData<List<Category>>(emptyList())
+    private val categories = MutableLiveData<List<DictElement>>(emptyList())
 
-    val categoryEnabled = category.map {
+    val categoryEnabled = categories.map {
         it?.size ?: 0 > 1
     }
 
-    val categoryList = category.map { list ->
+    val categoryList = categories.map { list ->
         list?.map { it.description }
     }
 
@@ -112,13 +111,13 @@ class DefectInfoViewModel : CoreViewModel() {
         }
     }
 
-    private val defect = MutableLiveData<List<Defect>>(emptyList())
+    private val defects = MutableLiveData<List<DictElement>>(emptyList())
 
-    val defectEnabled = defect.map {
+    val defectEnabled = defects.map {
         it?.size ?: 0 > 1
     }
 
-    val defectList = defect.map { list ->
+    val defectList = defects.map { list ->
         list?.map { it.description }
     }
 
@@ -134,7 +133,8 @@ class DefectInfoViewModel : CoreViewModel() {
 
     init {
         viewModelScope.launch {
-
+            categories.value = database.getDefectCategory()
+            defects.value = database.getDefectType()
         }
     }
 
@@ -205,11 +205,11 @@ class DefectInfoViewModel : CoreViewModel() {
 
                 viewModelScope.launch {
                     val productTime = Calendar.getInstance()
-                    productTime.add(Calendar.MINUTE, repository.getPcpExpirTimeMm())
+                    productTime.add(Calendar.MINUTE, database.getPcpExpirTimeMm())
 
                     val planAufFinish = Calendar.getInstance()
                     planAufFinish.add(Calendar.MINUTE, getTimeInMinutes(packCodeResult.dataLabel.planAufFinish, packCodeResult.dataLabel.planAufUnit))
-                    planAufFinish.add(Calendar.MINUTE, repository.getPcpContTimeMm())
+                    planAufFinish.add(Calendar.MINUTE, database.getPcpContTimeMm())
 
                     val dateExpir = packCodeResult.dataLabel.dateExpiration.toIntOrNull()?.let { days ->
                         val dateExpiration = Calendar.getInstance()

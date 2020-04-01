@@ -3,6 +3,7 @@ package com.lenta.bp16.repository
 import com.lenta.shared.fmp.resources.dao_ext.*
 import com.lenta.shared.fmp.resources.fast.ZmpUtz07V001
 import com.lenta.shared.fmp.resources.fast.ZmpUtz14V001
+import com.lenta.shared.fmp.resources.fast.ZmpUtz17V001
 import com.lenta.shared.models.core.Uom
 import com.mobrun.plugin.api.HyperHive
 import kotlinx.coroutines.Dispatchers
@@ -10,12 +11,13 @@ import kotlinx.coroutines.withContext
 import java.util.*
 import javax.inject.Inject
 
-class GeneralRepository @Inject constructor(
+class DatabaseRepository @Inject constructor(
         private val hyperHive: HyperHive
-) : IGeneralRepository {
+) : IDatabaseRepository {
 
-    private val settings: ZmpUtz14V001 by lazy { ZmpUtz14V001(hyperHive) } // Настройки
     private val units: ZmpUtz07V001 by lazy { ZmpUtz07V001(hyperHive) } // Единицы измерения
+    private val settings: ZmpUtz14V001 by lazy { ZmpUtz14V001(hyperHive) } // Настройки
+    private val dictonary: ZmpUtz17V001 by lazy { ZmpUtz17V001(hyperHive) } // Справочник с наборами данных
 
     override suspend fun getAllowedAppVersion(): String? {
         return withContext(Dispatchers.IO) {
@@ -54,9 +56,22 @@ class GeneralRepository @Inject constructor(
             return@withContext settings.getLabelLimit()?.toIntOrNull() ?: 0
         }
     }
+
+    override suspend fun getDefectCategory(): List<DictElement> {
+        return withContext(Dispatchers.IO) {
+            return@withContext dictonary.getItemsByTidSorted("025")?.toElementList() ?: emptyList()
+        }
+    }
+
+    override suspend fun getDefectType(): List<DictElement> {
+        return withContext(Dispatchers.IO) {
+            return@withContext dictonary.getItemsByTidSorted("024")?.toElementList() ?: emptyList()
+        }
+    }
+
 }
 
-interface IGeneralRepository {
+interface IDatabaseRepository {
 
     suspend fun getAllowedAppVersion(): String?
     suspend fun getUnitsByCode(code: String): Uom
@@ -65,5 +80,7 @@ interface IGeneralRepository {
     suspend fun getPcpContTimeMm(): Int
     suspend fun getPcpExpirTimeMm(): Int
     suspend fun getLabelLimit(): Int
+    suspend fun getDefectCategory(): List<DictElement>
+    suspend fun getDefectType(): List<DictElement>
 
 }

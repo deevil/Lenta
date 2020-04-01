@@ -7,14 +7,14 @@ import com.lenta.bp16.model.pojo.Pack
 import com.lenta.bp16.model.pojo.Raw
 import com.lenta.bp16.model.pojo.Task
 import com.lenta.bp16.platform.extention.getTaskStatus
-import com.lenta.bp16.repository.IGeneralRepository
+import com.lenta.bp16.repository.IDatabaseRepository
 import com.lenta.bp16.request.TaskInfoResult
 import com.lenta.bp16.request.TaskListResult
 import com.lenta.shared.utilities.extentions.isSapTrue
 import javax.inject.Inject
 
 class TaskManager @Inject constructor(
-        private val repository: IGeneralRepository
+        private val database: IDatabaseRepository
 ) : ITaskManager {
 
     override lateinit var taskType: TaskType
@@ -33,7 +33,7 @@ class TaskManager @Inject constructor(
 
 
     override suspend fun getLabelLimit() {
-        labelLimit = repository.getLabelLimit()
+        labelLimit = database.getLabelLimit()
     }
 
     override fun addTasks(taskListResult: TaskListResult) {
@@ -62,7 +62,7 @@ class TaskManager @Inject constructor(
                 Good(
                         material = goodInfo.material,
                         name = goodInfo.name,
-                        units = repository.getUnitsByCode(goodInfo.unitsCode),
+                        units = database.getUnitsByCode(goodInfo.unitsCode),
                         arrived = goodInfo.quantity,
                         raws = taskInfoResult.raws.filter { it.material == goodInfo.material }.map { rawInfo ->
                             Raw(
