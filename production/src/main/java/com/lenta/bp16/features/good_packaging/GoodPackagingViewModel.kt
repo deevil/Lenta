@@ -93,4 +93,8 @@ class GoodPackagingViewModel : CoreViewModel() {
         navigator.openAlertScreen(failure)
     }
 
+    fun onClickDefect() {
+        navigator.openDefectInfoScreen()
+    }
+
 }

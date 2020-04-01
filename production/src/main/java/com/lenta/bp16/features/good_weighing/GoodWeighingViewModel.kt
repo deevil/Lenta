@@ -300,4 +300,8 @@ class GoodWeighingViewModel : CoreViewModel() {
         }
     }
 
+    fun onClickDefect() {
+        navigator.openDefectInfoScreen()
+    }
+
 }
