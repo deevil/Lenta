@@ -44,6 +44,8 @@ data class StartReviseRequestResult(
         val productNotifications: List<TaskNotificationRestInfo>,
         @SerializedName("ET_VET_CHK")
         val productsVetDocumentRevise: List<ProductVetDocumentReviseRestData>,
+        @SerializedName("ET_CMPLX_DOC")
+        val complexDocumentsRevise: List<ComplexDocumentReviseRestData>,
         @SerializedName("EV_RETCODE")
         override val retCode: Int,
         @SerializedName("EV_ERROR_TEXT")
