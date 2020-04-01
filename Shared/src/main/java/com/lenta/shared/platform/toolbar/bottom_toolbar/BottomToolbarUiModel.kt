@@ -351,6 +351,10 @@ data class ButtonDecorationInfo(
             ButtonDecorationInfo(R.drawable.ic_done_white_24dp, R.string.inStock)
         }
 
+        val label: ButtonDecorationInfo by lazy {
+            ButtonDecorationInfo(R.drawable.ic_print_white_24dp, R.string.label)
+        }
+
         val labels: ButtonDecorationInfo by lazy {
             ButtonDecorationInfo(R.drawable.ic_print_white_24dp, R.string.labels)
         }

@@ -73,7 +73,7 @@ class GoodWeighingViewModel : CoreViewModel() {
         it?.toDoubleOrNull() ?: 0.0
     }
 
-    private val weighted = MutableLiveData<Double>(0.0)
+    private val weighted = MutableLiveData(0.0)
 
     private val total = entered.map {
         it.sumWith(weighted.value ?: 0.0)

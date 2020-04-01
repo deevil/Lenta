@@ -184,6 +184,7 @@
     <string name="transport_marriage_abbr">Тр брак</string>
     <string name="entirely">Целиком</string>
     <string name="cancellation">Отмена</string>
+    <string name="label">Этикетка</string>
     <string name="labels">Этикетки</string>
     <string name="change_weight_equipment">Смена весового оборудования</string>
     <string name="enter_name_weight_equipment">Введите имя весового оборудования для получения веса на этот терминал</string>
