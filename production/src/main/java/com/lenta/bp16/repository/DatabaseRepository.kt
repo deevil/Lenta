@@ -59,13 +59,31 @@ class DatabaseRepository @Inject constructor(
 
     override suspend fun getCategoryList(): List<DictElement> {
         return withContext(Dispatchers.IO) {
-            return@withContext dictonary.getItemsByTidSorted("025")?.toElementList() ?: emptyList()
+            val list = dictonary.getItemsByTidSorted("025")?.toElementList()?.toMutableList() ?: mutableListOf()
+            if (list.size > 1) {
+                list.add(0, DictElement(
+                        code = "0",
+                        order = "0",
+                        description = ""
+                ))
+            }
+
+            return@withContext list
         }
     }
 
     override suspend fun getDefectList(): List<DictElement> {
         return withContext(Dispatchers.IO) {
-            return@withContext dictonary.getItemsByTidSorted("024")?.toElementList() ?: emptyList()
+            val list = dictonary.getItemsByTidSorted("024")?.toElementList()?.toMutableList() ?: mutableListOf()
+            if (list.size > 1) {
+                list.add(0, DictElement(
+                        code = "0",
+                        order = "0",
+                        description = ""
+                ))
+            }
+
+            return@withContext list
         }
     }
 

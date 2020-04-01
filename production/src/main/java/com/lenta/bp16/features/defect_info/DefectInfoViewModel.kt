@@ -17,6 +17,7 @@ import com.lenta.shared.fmp.resources.dao_ext.DictElement
 import com.lenta.shared.platform.constants.Constants
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.settings.IAppSettings
+import com.lenta.shared.utilities.extentions.combineLatest
 import com.lenta.shared.utilities.extentions.dropZeros
 import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.utilities.extentions.sumWith
@@ -75,10 +76,6 @@ class DefectInfoViewModel : CoreViewModel() {
         it?.toDoubleOrNull() ?: 0.0
     }
 
-    val addEnabled: MutableLiveData<Boolean> = entered.map {
-        it ?: 0.0 != 0.0
-    }
-
     private val weighted = MutableLiveData(0.0)
 
     private val total = entered.map {
@@ -92,7 +89,7 @@ class DefectInfoViewModel : CoreViewModel() {
     private val categories = MutableLiveData<List<DictElement>>(emptyList())
 
     val categoryEnabled = categories.map {
-        it?.size ?: 0 > 1
+        it?.size ?: 0 > 1 && weighted.value!! == 0.0
     }
 
     val categoryList = categories.map { list ->
@@ -110,7 +107,7 @@ class DefectInfoViewModel : CoreViewModel() {
     private val defects = MutableLiveData<List<DictElement>>(emptyList())
 
     val defectEnabled = defects.map {
-        it?.size ?: 0 > 1
+        it?.size ?: 0 > 1 && weighted.value!! == 0.0
     }
 
     val defectList = defects.map { list ->
@@ -125,9 +122,20 @@ class DefectInfoViewModel : CoreViewModel() {
         }
     }
 
-    val labelEnabled: MutableLiveData<Boolean> = total.map {
-        // todo Проверка: Не должно быть 0, должна быть выбрана категория и описание дефекта
+    val addEnabled: MutableLiveData<Boolean> = entered.map {
         it ?: 0.0 != 0.0
+    }
+
+    val labelEnabled: MutableLiveData<Boolean> = total.combineLatest(categoryPosition).combineLatest(defectPosition).map {
+        val quantity = it?.first?.first ?: 0.0
+        val categoryPosition = it?.first?.second ?: 0
+        val defectPosition = it?.second ?: 0
+
+        val isQuantityNotNull = quantity != 0.0
+        val isCategorySelected = categories.value!!.size == 1 || categories.value!!.size > 1 && categoryPosition != 0
+        val isDefectSelected = defects.value!!.size == 1 || defects.value!!.size > 1 && defectPosition != 0
+
+        isQuantityNotNull && isCategorySelected && isDefectSelected
     }
 
     // -----------------------------
