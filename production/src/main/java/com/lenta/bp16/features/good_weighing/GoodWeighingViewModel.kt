@@ -83,6 +83,14 @@ class GoodWeighingViewModel : CoreViewModel() {
         "${it.dropZeros()} ${good.value!!.units.name}"
     }
 
+    private val defect by lazy {
+        MutableLiveData(0.0)
+    }
+
+    val defectWithUnits = defect.map {
+        "${it.dropZeros()} ${good.value!!.units.name}"
+    }
+
     val planned by lazy {
         "${raw.value!!.planned.dropZeros()} ${good.value!!.units.name}"
     }
