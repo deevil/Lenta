@@ -20,24 +20,25 @@
         android:orientation="vertical">
 
         <!-- Текущее количество -->
-        <LinearLayout
-            style="@style/LinearRowStyle">
+        <LinearLayout style="@style/LinearRowStyle">
 
             <LinearLayout
                 style="@style/LinearCellStyle"
                 android:layout_weight="1">
 
-                <EditText
-                    style="@style/CellEditTextStyle"
-                    android:drawableEnd="@drawable/spinner_arrow_down_disabled"
-                    android:enabled="false"
-                    android:text="@{vm.quantityType}"
-                    tools:text="Брак" />
+                <com.lenta.shared.view.ClickableSpinner
+                    android:id="@+id/spin_category"
+                    style="@style/CellSpinnerStyle"
+                    android:layout_height="match_parent"
+                    android:enabled="@{vm.categoryEnabled}"
+                    app:items="@{vm.categoryList}"
+                    app:onPositionClickListener="@{vm.onSelectCategory}"
+                    app:position="@{vm.categoryPosition}"
+                    tools:entries="@array/test_list" />
 
             </LinearLayout>
 
-            <View
-                style="@style/VerticalDivider" />
+            <View style="@style/VerticalDivider" />
 
             <LinearLayout
                 style="@style/LinearCellStyle"
@@ -57,12 +58,10 @@
 
         </LinearLayout>
 
-        <View
-            style="@style/HorizontalDivider" />
+        <View style="@style/HorizontalDivider" />
 
         <!-- Общее количество -->
-        <LinearLayout
-            style="@style/LinearRowStyle">
+        <LinearLayout style="@style/LinearRowStyle">
 
             <LinearLayout
                 style="@style/LinearCellStyle"
@@ -74,8 +73,7 @@
 
             </LinearLayout>
 
-            <View
-                style="@style/VerticalDivider" />
+            <View style="@style/VerticalDivider" />
 
             <LinearLayout
                 style="@style/LinearCellStyle"
@@ -90,33 +88,30 @@
 
         </LinearLayout>
 
-        <View
-            style="@style/HorizontalDivider" />
+        <View style="@style/HorizontalDivider" />
 
         <!-- Продукт для обработки -->
-        <LinearLayout
-            style="@style/LinearRowStyle">
+        <LinearLayout style="@style/LinearRowStyle">
 
             <LinearLayout
                 style="@style/LinearCellStyle"
                 android:layout_weight="1">
 
                 <com.lenta.shared.view.ClickableSpinner
-                    android:id="@+id/spin_provider"
+                    android:id="@+id/spin_defect"
                     style="@style/CellSpinnerStyle"
                     android:layout_height="match_parent"
-                    android:enabled="@{vm.providerEnabled}"
-                    app:items="@{vm.providerList}"
-                    app:onPositionClickListener="@{vm.onSelectProvider}"
-                    app:position="@{vm.providerPosition}"
+                    android:enabled="@{vm.defectEnabled}"
+                    app:items="@{vm.defectList}"
+                    app:onPositionClickListener="@{vm.onSelectDefect}"
+                    app:position="@{vm.defectPosition}"
                     tools:entries="@array/test_list" />
 
             </LinearLayout>
 
         </LinearLayout>
 
-        <View
-            style="@style/HorizontalDivider" />
+        <View style="@style/HorizontalDivider" />
 
     </LinearLayout>
 

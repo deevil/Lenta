@@ -6,6 +6,8 @@ import com.lenta.bp16.data.IPrinter
 import com.lenta.bp16.data.IScales
 import com.lenta.bp16.data.LabelInfo
 import com.lenta.bp16.model.ITaskManager
+import com.lenta.bp16.model.pojo.Category
+import com.lenta.bp16.model.pojo.Defect
 import com.lenta.bp16.model.pojo.Pack
 import com.lenta.bp16.platform.navigation.IScreenNavigator
 import com.lenta.bp16.repository.IGeneralRepository
@@ -16,8 +18,10 @@ import com.lenta.shared.exception.Failure
 import com.lenta.shared.platform.constants.Constants
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.settings.IAppSettings
+import com.lenta.shared.utilities.extentions.dropZeros
 import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.utilities.extentions.sumWith
+import com.lenta.shared.view.OnPositionClickListener
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -82,8 +86,56 @@ class DefectInfoViewModel : CoreViewModel() {
         it.sumWith(weighted.value ?: 0.0)
     }
 
+    val totalWithUnits = total.map {
+        "${it.dropZeros()} ${good.value!!.units.name}"
+    }
+
     val labelEnabled: MutableLiveData<Boolean> = total.map {
         it ?: 0.0 != 0.0
+    }
+
+    private val category = MutableLiveData<List<Category>>(emptyList())
+
+    val categoryEnabled = category.map {
+        it?.size ?: 0 > 1
+    }
+
+    val categoryList = category.map { list ->
+        list?.map { it.description }
+    }
+
+    val categoryPosition = MutableLiveData(0)
+
+    val onSelectCategory = object : OnPositionClickListener {
+        override fun onClickPosition(position: Int) {
+            categoryPosition.value = position
+        }
+    }
+
+    private val defect = MutableLiveData<List<Defect>>(emptyList())
+
+    val defectEnabled = defect.map {
+        it?.size ?: 0 > 1
+    }
+
+    val defectList = defect.map { list ->
+        list?.map { it.description }
+    }
+
+    val defectPosition = MutableLiveData(0)
+
+    val onSelectDefect = object : OnPositionClickListener {
+        override fun onClickPosition(position: Int) {
+            defectPosition.value = position
+        }
+    }
+
+    // -----------------------------
+
+    init {
+        viewModelScope.launch {
+
+        }
     }
 
     // -----------------------------
