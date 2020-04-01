@@ -193,7 +193,9 @@ class DefectInfoViewModel : CoreViewModel() {
                             deviceIp = deviceIp.value ?: "Not found!",
                             material = good.value!!.material,
                             orderNumber = raw.value!!.orderNumber,
-                            quantity = total.value!!
+                            quantity = total.value!!,
+                            categoryCode = categories.value!![categoryPosition.value!!].code,
+                            defectCode = defects.value!![defectPosition.value!!].code
                     )
             ).also {
                 navigator.hideProgress()
@@ -203,9 +205,12 @@ class DefectInfoViewModel : CoreViewModel() {
                             Pack(
                                     material = it.material,
                                     materialOsn = raw.value!!.materialOsn,
+                                    materialDef = raw.value!!.material,
                                     code = packCodeResult.packCode,
                                     orderNumber = raw.value!!.orderNumber,
-                                    quantity = total.value!!
+                                    quantity = total.value!!,
+                                    category = categories.value!![categoryPosition.value!!],
+                                    defect = defects.value!![defectPosition.value!!]
                             )
                     )
 
@@ -337,7 +342,9 @@ class DefectInfoViewModel : CoreViewModel() {
     }
 
     private fun printLabel(labelInfo: LabelInfo) {
-        viewModelScope.launch {
+        taskManager.addLabelToList(labelInfo)
+
+        /*viewModelScope.launch {
             withContext(Dispatchers.IO) {
                 appSettings.printerIpAddress.let { ipAddress ->
                     if (ipAddress == null) {
@@ -353,7 +360,7 @@ class DefectInfoViewModel : CoreViewModel() {
                     navigator.showAlertNoIpPrinter()
                 }
             }
-        }
+        }*/
     }
 
 }

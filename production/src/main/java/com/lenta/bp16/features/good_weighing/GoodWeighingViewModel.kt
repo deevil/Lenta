@@ -287,7 +287,9 @@ class GoodWeighingViewModel : CoreViewModel() {
     }
 
     private fun printLabel(labelInfo: LabelInfo) {
-        viewModelScope.launch {
+        taskManager.addLabelToList(labelInfo)
+
+        /*viewModelScope.launch {
             withContext(IO) {
                 appSettings.printerIpAddress.let { ipAddress ->
                     if (ipAddress == null) {
@@ -303,7 +305,7 @@ class GoodWeighingViewModel : CoreViewModel() {
                     navigator.showAlertNoIpPrinter()
                 }
             }
-        }
+        }*/
     }
 
     fun onBackPressed() {
