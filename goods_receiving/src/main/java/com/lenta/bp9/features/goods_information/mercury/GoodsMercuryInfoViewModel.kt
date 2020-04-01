@@ -14,17 +14,21 @@ import com.lenta.bp9.platform.navigation.IScreenNavigator
 import com.lenta.bp9.repos.IDataBaseRepo
 import com.lenta.bp9.repos.IRepoInMemoryHolder
 import com.lenta.shared.models.core.Uom
+import com.lenta.shared.platform.constants.Constants
 import com.lenta.shared.platform.time.ITimeMonitor
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.requests.combined.scan_info.ScanInfoResult
 import com.lenta.shared.requests.combined.scan_info.pojo.QualityInfo
 import com.lenta.shared.requests.combined.scan_info.pojo.ReasonRejectionInfo
 import com.lenta.shared.utilities.Logg
+import com.lenta.shared.utilities.date_time.DateTimeUtil
 import com.lenta.shared.utilities.extentions.combineLatest
 import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.utilities.extentions.toStringFormatted
 import com.lenta.shared.view.OnPositionClickListener
 import kotlinx.coroutines.launch
+import org.joda.time.DateTime
+import org.joda.time.Days
 import java.text.SimpleDateFormat
 import java.util.*
 import javax.inject.Inject
@@ -76,6 +80,7 @@ class GoodsMercuryInfoViewModel : CoreViewModel(), OnPositionClickListener {
     @SuppressLint("SimpleDateFormat")
     private val formatter = SimpleDateFormat("dd.MM.yyyy")
     private val currentDate: MutableLiveData<Date> = MutableLiveData()
+    private val expirationDate: MutableLiveData<Calendar> = MutableLiveData()
 
     val spinQuality: MutableLiveData<List<String>> = MutableLiveData()
     val spinQualitySelectedPosition: MutableLiveData<Int> = MutableLiveData(0)
@@ -236,6 +241,7 @@ class GoodsMercuryInfoViewModel : CoreViewModel(), OnPositionClickListener {
             searchProductDelegate.init(viewModelScope = this@GoodsMercuryInfoViewModel::viewModelScope,
                     scanResultHandler = this@GoodsMercuryInfoViewModel::handleProductSearchResult)
             currentDate.value = timeMonitor.getServerDate()
+            expirationDate.value = Calendar.getInstance()
             if (taskManager.getReceivingTask()?.taskHeader?.taskType == TaskType.RecalculationCargoUnit) {
                 when {
                     isGoodsAddedAsSurplus.value == true -> {
@@ -352,13 +358,74 @@ class GoodsMercuryInfoViewModel : CoreViewModel(), OnPositionClickListener {
         screenNavigator.openGoodsDetailsScreen(productInfo.value!!)
     }
 
+    @SuppressLint("SimpleDateFormat")
     fun onClickAdd() {
-        //меркурий для ПГЕ
         if (isTaskPGE.value == true) {
-            addProductDiscrepanciesPGE()
-            return
-        }
+            //меркурий для ПГЕ
+            if (isPerishable.value == true) { //https://trello.com/c/fqOMeUob
+                expirationDate.value!!.time = SimpleDateFormat("yyyy-MM-dd").parse(spinProductionDate.value!![spinProductionDateSelectedPosition.value!!])
+                expirationDate.value!!.add(Calendar.DATE, generalShelfLife.value?.toInt() ?: 0)
 
+                if (expirationDate.value!!.time <= currentDate.value) {
+                    screenNavigator.openShelfLifeExpiredDialog(
+                            yesCallbackFunc = {
+                                spinQualitySelectedPosition.value = qualityInfo.value!!.indexOfLast {it.code == "5"}//устанавливаем брак складской (как и в обычном товаре, Маша Стоян)
+                            }
+                    )
+                } else {
+                    if ( Days.daysBetween(DateTime(currentDate.value), DateTime(expirationDate.value!!.time)).days > remainingShelfLife.value?.toLong() ?: 0 ) {
+                        addProductDiscrepanciesPGE()
+                    }  else {
+                        screenNavigator.openShelfLifeExpiresDialog(
+                                noCallbackFunc = {
+                                    spinQualitySelectedPosition.value = qualityInfo.value!!.indexOfLast {it.code == "5"} //устанавливаем брак складской (как и в обычном товаре, Маша Стоян)
+                                },
+                                yesCallbackFunc = {
+                                    addProductDiscrepanciesPGE()
+                                },
+                                expiresThrough = remainingShelfLife.value ?: "",
+                                shelfLife = generalShelfLife.value ?: ""
+                        )
+                    }
+                }
+            } else {
+                addProductDiscrepanciesPGE()
+            }
+        } else {
+            //меркурий для ППП
+            if (isPerishable.value == true) { //https://trello.com/c/fqOMeUob
+                expirationDate.value!!.time = SimpleDateFormat("yyyy-MM-dd").parse(spinProductionDate.value!![spinProductionDateSelectedPosition.value!!])
+                expirationDate.value!!.add(Calendar.DATE, generalShelfLife.value?.toInt() ?: 0)
+
+                if (expirationDate.value!!.time <= currentDate.value) {
+                    screenNavigator.openShelfLifeExpiredDialog(
+                            yesCallbackFunc = {
+                                spinQualitySelectedPosition.value = qualityInfo.value!!.indexOfLast {it.code == "7"}
+                            }
+                    )
+                } else {
+                    if ( Days.daysBetween(DateTime(currentDate.value), DateTime(expirationDate.value!!.time)).days > remainingShelfLife.value?.toLong() ?: 0 ) {
+                        addProductDiscrepancies()
+                    }  else {
+                        screenNavigator.openShelfLifeExpiresDialog(
+                                noCallbackFunc = {
+                                    spinQualitySelectedPosition.value = qualityInfo.value!!.indexOfLast {it.code == "7"}
+                                },
+                                yesCallbackFunc = {
+                                    addProductDiscrepancies()
+                                },
+                                expiresThrough = remainingShelfLife.value ?: "",
+                                shelfLife = generalShelfLife.value ?: ""
+                        )
+                    }
+                }
+            } else {
+                addProductDiscrepancies()
+            }
+        }
+    }
+
+    private fun addProductDiscrepancies() {
         //меркурий для ППП
         val reasonRejectionCode = if (qualityInfo.value?.get(spinQualitySelectedPosition.value ?: 0)?.code == "1") {
             "1"
@@ -387,6 +454,10 @@ class GoodsMercuryInfoViewModel : CoreViewModel(), OnPositionClickListener {
             }
         }
         count.value = "0"
+    }
+
+    private fun addGoodsPGE() {
+
     }
 
     @SuppressLint("SimpleDateFormat")

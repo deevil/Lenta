@@ -709,7 +709,7 @@ class GoodsInfoViewModel : CoreViewModel(), OnPositionClickListener {
                     yesCallbackFunc = {
                         //блок 7.183
                         spinQualitySelectedPosition.value = qualityInfo.value!!.indexOfLast {it.code == "5"} //устанавливаем брак складской, Маша Стоян
-                        //spinShelfLifeSelectedPosition.value = shelfLifeInfo.value!!.indexOfLast {it.code == "001"} закомиченно, т.к. данное поле активно только при категориях Норма и Излишек
+                        //spinShelfLifeSelectedPosition.value = shelfLifeInfo.value!!.indexOfLast {it.code == "001"} закомичено, т.к. данное поле активно только при категориях Норма и Излишек
                     }
             )
             return
@@ -727,7 +727,7 @@ class GoodsInfoViewModel : CoreViewModel(), OnPositionClickListener {
                 //блок 7.200
                 noCallbackFunc = {
                     //блок 7.201
-                    spinQualitySelectedPosition.value = qualityInfo.value!!.indexOfLast {it.code == "5"} //устанавливаем брак складской, Маша Стоян
+                    spinQualitySelectedPosition.value = qualityInfo.value!!.indexOfLast {it.code == "5"} //устанавливаем брак складской♂
                     //spinShelfLifeSelectedPosition.value = shelfLifeInfo.value!!.indexOfLast {it.code == "001"} закомиченно, т.к. данное поле активно только при категориях Норма и Излишек
                 },
                 //блок 7.199
