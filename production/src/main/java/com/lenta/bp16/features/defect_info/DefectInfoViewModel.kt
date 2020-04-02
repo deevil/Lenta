@@ -1,4 +1,4 @@
-package com.lenta.bp16.features.good_weighing
+package com.lenta.bp16.features.defect_info
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
@@ -13,41 +13,44 @@ import com.lenta.bp16.request.PackCodeNetRequest
 import com.lenta.bp16.request.PackCodeParams
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.exception.Failure
+import com.lenta.shared.fmp.resources.dao_ext.DictElement
 import com.lenta.shared.platform.constants.Constants
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.settings.IAppSettings
+import com.lenta.shared.utilities.extentions.combineLatest
 import com.lenta.shared.utilities.extentions.dropZeros
 import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.utilities.extentions.sumWith
-import kotlinx.coroutines.Dispatchers.IO
+import com.lenta.shared.view.OnPositionClickListener
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.text.SimpleDateFormat
 import java.util.*
 import javax.inject.Inject
 
-class GoodWeighingViewModel : CoreViewModel() {
+class DefectInfoViewModel : CoreViewModel() {
 
     @Inject
     lateinit var navigator: IScreenNavigator
 
     @Inject
-    lateinit var sessionInfo: ISessionInfo
-
-    @Inject
-    lateinit var appSettings: IAppSettings
-
-    @Inject
     lateinit var taskManager: ITaskManager
-
-    @Inject
-    lateinit var packCodeNetRequest: PackCodeNetRequest
 
     @Inject
     lateinit var scales: IScales
 
     @Inject
     lateinit var printer: IPrinter
+
+    @Inject
+    lateinit var packCodeNetRequest: PackCodeNetRequest
+
+    @Inject
+    lateinit var sessionInfo: ISessionInfo
+
+    @Inject
+    lateinit var appSettings: IAppSettings
 
     @Inject
     lateinit var database: IDatabaseRepository
@@ -83,39 +86,102 @@ class GoodWeighingViewModel : CoreViewModel() {
         "${it.dropZeros()} ${good.value!!.units.name}"
     }
 
-    private val defect by lazy {
-        good.map { good ->
-            good?.packs?.filter { it.materialDef == raw.value?.material }?.map { it.quantity }?.sum()
+    private val categories = MutableLiveData<List<DictElement>>(emptyList())
+
+    val categoryEnabled = categories.map {
+        it?.size ?: 0 > 1 && weighted.value!! == 0.0
+    }
+
+    val categoryList = categories.map { list ->
+        list?.map { it.description }
+    }
+
+    val categoryPosition = MutableLiveData(0)
+
+    val onSelectCategory = object : OnPositionClickListener {
+        override fun onClickPosition(position: Int) {
+            categoryPosition.value = position
         }
     }
 
-    val defectWithUnits by lazy {
-        defect.map {
-            "${it.dropZeros()} ${good.value!!.units.name}"
+    private val defects = MutableLiveData<List<DictElement>>(emptyList())
+
+    val defectEnabled = defects.map {
+        it?.size ?: 0 > 1 && weighted.value!! == 0.0
+    }
+
+    val defectList = defects.map { list ->
+        list?.map { it.description }
+    }
+
+    val defectPosition = MutableLiveData(0)
+
+    val onSelectDefect = object : OnPositionClickListener {
+        override fun onClickPosition(position: Int) {
+            defectPosition.value = position
         }
-    }
-
-    val planned by lazy {
-        "${raw.value!!.planned.dropZeros()} ${good.value!!.units.name}"
-    }
-
-    val defectVisibility by lazy {
-        raw.map {
-            it?.isWasDef == true
-        }
-    }
-
-    val completeEnabled: MutableLiveData<Boolean> = total.map {
-        it ?: 0.0 != 0.0
     }
 
     val addEnabled: MutableLiveData<Boolean> = entered.map {
         it ?: 0.0 != 0.0
     }
 
+    val labelEnabled: MutableLiveData<Boolean> = total.combineLatest(categoryPosition).combineLatest(defectPosition).map {
+        val quantity = it?.first?.first ?: 0.0
+        val categoryPosition = it?.first?.second ?: 0
+        val defectPosition = it?.second ?: 0
+
+        val isQuantityNotNull = quantity != 0.0
+        val isCategorySelected = categories.value!!.size == 1 || categories.value!!.size > 1 && categoryPosition != 0
+        val isDefectSelected = defects.value!!.size == 1 || defects.value!!.size > 1 && defectPosition != 0
+
+        isQuantityNotNull && isCategorySelected && isDefectSelected
+    }
+
     // -----------------------------
 
-    fun onClickComplete() {
+    init {
+        viewModelScope.launch {
+            categories.value = database.getCategoryList()
+            defects.value = database.getDefectList()
+        }
+    }
+
+    // -----------------------------
+
+    fun onBackPressed() {
+        if (entered.value ?: 0.0 != 0.0 || weighted.value ?: 0.0 != 0.0) {
+            navigator.showNotSavedDataWillBeLost {
+                navigator.goBack()
+            }
+        } else {
+            navigator.goBack()
+        }
+    }
+    
+    fun onClickDetails() {
+        navigator.openDefectListScreen()
+    }
+
+    fun onClickGetWeight() {
+        viewModelScope.launch {
+            withContext(Dispatchers.IO) {
+                navigator.showProgressLoadingData()
+                scales.getWeight().also {
+                    navigator.hideProgress()
+                }.either(::handleFailure) { weight ->
+                    weightField.postValue(weight)
+                }
+            }
+        }
+    }
+
+    fun onClickAdd() {
+        weighted.value = total.value!!
+        weightField.value = "0"
+    }
+
+    fun onClickLabel() {
         viewModelScope.launch {
             navigator.showProgressLoadingData()
 
@@ -127,7 +193,9 @@ class GoodWeighingViewModel : CoreViewModel() {
                             deviceIp = deviceIp.value ?: "Not found!",
                             material = good.value!!.material,
                             orderNumber = raw.value!!.orderNumber,
-                            quantity = total.value!!
+                            quantity = total.value!!,
+                            categoryCode = categories.value!![categoryPosition.value!!].code,
+                            defectCode = defects.value!![defectPosition.value!!].code
                     )
             ).also {
                 navigator.hideProgress()
@@ -137,9 +205,12 @@ class GoodWeighingViewModel : CoreViewModel() {
                             Pack(
                                     material = it.material,
                                     materialOsn = raw.value!!.materialOsn,
+                                    materialDef = raw.value!!.material,
                                     code = packCodeResult.packCode,
                                     orderNumber = raw.value!!.orderNumber,
-                                    quantity = total.value!!
+                                    quantity = total.value!!,
+                                    category = categories.value!![categoryPosition.value!!],
+                                    defect = defects.value!![defectPosition.value!!]
                             )
                     )
 
@@ -171,7 +242,7 @@ class GoodWeighingViewModel : CoreViewModel() {
 
                     printLabel(LabelInfo(
                             quantity = "${total.value!!}  ${good.value?.units?.name}",
-                            codeCont = packCodeResult.packCode,
+                            codeCont = "${packCodeResult.packCode} БРАК",
                             storCond = "${packCodeResult.dataLabel.storCondTime} ч",
                             planAufFinish = SimpleDateFormat(Constants.DATE_FORMAT_dd_mm_yyyy_hh_mm, Locale.getDefault()).format(planAufFinish.time),
                             aufnr = raw.value!!.orderNumber,
@@ -270,27 +341,9 @@ class GoodWeighingViewModel : CoreViewModel() {
         navigator.openAlertScreen(failure)
     }
 
-    fun onClickAdd() {
-        weighted.value = total.value!!
-        weightField.value = "0"
-    }
-
-    fun onClickGetWeight() {
-        viewModelScope.launch {
-            withContext(IO) {
-                navigator.showProgressLoadingData()
-                scales.getWeight().also {
-                    navigator.hideProgress()
-                }.either(::handleFailure) { weight ->
-                    weightField.postValue(weight)
-                }
-            }
-        }
-    }
-
     private fun printLabel(labelInfo: LabelInfo) {
         viewModelScope.launch {
-            withContext(IO) {
+            withContext(Dispatchers.IO) {
                 appSettings.printerIpAddress.let { ipAddress ->
                     if (ipAddress == null) {
                         return@let null
@@ -306,20 +359,6 @@ class GoodWeighingViewModel : CoreViewModel() {
                 }
             }
         }
-    }
-
-    fun onBackPressed() {
-        if (entered.value ?: 0.0 != 0.0 || weighted.value ?: 0.0 != 0.0) {
-            navigator.showNotSavedDataWillBeLost {
-                navigator.goBack()
-            }
-        } else {
-            navigator.goBack()
-        }
-    }
-
-    fun onClickDefect() {
-        navigator.openDefectInfoScreen()
     }
 
 }

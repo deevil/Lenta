@@ -10,6 +10,7 @@
     <string name="good_list">Список товаров</string>
     <string name="pu_number">ЕО %1$s</string>
     <string name="good_card">Карточка товара</string>
+    <string name="defect_detail">Детализация брака</string>
     <string name="pack_list">Список тар</string>
 
     // Информационные сообщения
@@ -33,6 +34,7 @@
     <string name="sf">ПФ</string>
     <string name="total_processed">Обработано</string>
     <string name="pack_number">Номер тары</string>
+    <string name="pack_type_cause">Тара/Тип/Причина</string>
     <string name="total_weight">Общий вес</string>
     <string name="plan_quantity">Плановое кол-во</string>
     <string name="quantity">Кол-во</string>
@@ -49,5 +51,8 @@
     <string name="next_raw">Следующий передел</string>
     <string name="no_ip_printer_alert">IP адрес принтера не указан</string>
     <string name="reprint_labels">Повторная печать этикеток</string>
+    <string name="defect">Брак</string>
+    <string name="total_sf">Итого ПФ</string>
+    <string name="total_defect">Итого брак</string>
 
 </resources>
