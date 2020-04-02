@@ -1,7 +1,7 @@
 package com.lenta.bp12.request
 
 import com.google.gson.annotations.SerializedName
-import com.lenta.bp12.model.pojo.TaskCreate
+import com.lenta.bp12.model.pojo.Task
 import com.lenta.bp12.request.pojo.SentTaskInfo
 import com.lenta.bp12.request.pojo.PositionInfo
 import com.lenta.bp12.request.pojo.MarkInfo
@@ -90,7 +90,7 @@ data class TaskData(
         val deviceIp: String,
         val tkNumber: String,
         val userNumber: String,
-        val task: TaskCreate
+        val task: Task
 )
 
 data class SendTaskDataParams(

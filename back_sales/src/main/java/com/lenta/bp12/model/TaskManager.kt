@@ -2,20 +2,22 @@ package com.lenta.bp12.model
 
 import androidx.lifecycle.MutableLiveData
 import com.lenta.bp12.model.pojo.Basket
-import com.lenta.bp12.model.pojo.TaskCreate
 import com.lenta.bp12.model.pojo.Good
+import com.lenta.bp12.model.pojo.Task
+import com.lenta.bp12.model.pojo.TaskType
 import com.lenta.bp12.platform.extention.getControlType
 import com.lenta.bp12.platform.extention.getGoodKind
 import com.lenta.bp12.repository.IDatabaseRepository
 import com.lenta.bp12.request.GoodInfoResult
 import com.lenta.bp12.request.pojo.ProviderInfo
+import com.lenta.bp12.request.pojo.TaskInfo
 import com.lenta.shared.models.core.getMatrixType
 import com.lenta.shared.platform.constants.Constants
 import javax.inject.Inject
 
-class CreateTaskManager @Inject constructor(
+class TaskManager @Inject constructor(
         private val database: IDatabaseRepository
-) : ICreateTaskManager {
+) : ITaskManager {
 
     override var mode: Mode = Mode.CREATE_TASK
 
@@ -23,14 +25,16 @@ class CreateTaskManager @Inject constructor(
 
     override var searchFromList = false
 
-    override val currentTask = MutableLiveData<TaskCreate>()
+    override val tasks = MutableLiveData<List<Task>>(emptyList())
+
+    override val currentTask = MutableLiveData<Task>()
 
     override val currentGood = MutableLiveData<Good>()
 
     override val currentBasket = MutableLiveData<Basket>()
 
 
-    override fun updateCurrentTask(task: TaskCreate?) {
+    override fun updateCurrentTask(task: Task?) {
         currentTask.value = task
     }
 
@@ -69,6 +73,30 @@ class CreateTaskManager @Inject constructor(
             task.goods.add(0, currentGood.value!!)
             updateCurrentTask(task)
         }
+    }
+
+    override suspend fun addTasks(tasksInfo: List<TaskInfo>) {
+        val taskList = tasksInfo.map { taskInfo ->
+            Task(
+                    number = taskInfo.number,
+                    name = taskInfo.name,
+                    type = database.getTaskType(taskInfo.type),
+
+
+                    )
+        }
+
+
+        /*tasks.value?.let { tasks ->
+            val taskList = mutableListOf<Task>()
+
+            tasksInfo.map { taskInfo ->
+                taskList.add(Task(
+
+                ))
+
+            }
+        }*/
     }
 
     override fun findGoodByEan(ean: String): Good? {
@@ -144,18 +172,20 @@ class CreateTaskManager @Inject constructor(
 }
 
 
-interface ICreateTaskManager {
+interface ITaskManager {
 
     var mode: Mode
 
     var searchNumber: String
     var searchFromList: Boolean
 
-    val currentTask: MutableLiveData<TaskCreate>
+    val tasks: MutableLiveData<List<Task>>
+
+    val currentTask: MutableLiveData<Task>
     val currentGood: MutableLiveData<Good>
     val currentBasket: MutableLiveData<Basket>
 
-    fun updateCurrentTask(task: TaskCreate?)
+    fun updateCurrentTask(task: Task?)
     fun updateCurrentGood(good: Good?)
     fun updateCurrentBasket(basket: Basket?)
 
@@ -170,5 +200,6 @@ interface ICreateTaskManager {
     fun deleteBaskets(basketList: MutableList<Basket>)
     fun finishCurrentTask()
     fun addProviderInCurrentGood(providerInfo: ProviderInfo)
+    suspend fun addTasks(tasksInfo: List<TaskInfo>)
 
 }

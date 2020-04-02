@@ -1,6 +1,6 @@
 package com.lenta.bp12.features.basket_properties
 
-import com.lenta.bp12.model.ICreateTaskManager
+import com.lenta.bp12.model.ITaskManager
 import com.lenta.bp12.platform.navigation.IScreenNavigator
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.extentions.map
@@ -12,7 +12,7 @@ class BasketPropertiesViewModel : CoreViewModel() {
     lateinit var navigator: IScreenNavigator
 
     @Inject
-    lateinit var manager: ICreateTaskManager
+    lateinit var manager: ITaskManager
 
 
     val basket by lazy {

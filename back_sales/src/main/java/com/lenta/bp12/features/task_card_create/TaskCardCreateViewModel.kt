@@ -2,8 +2,8 @@ package com.lenta.bp12.features.task_card_create
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import com.lenta.bp12.model.ICreateTaskManager
-import com.lenta.bp12.model.pojo.TaskCreate
+import com.lenta.bp12.model.ITaskManager
+import com.lenta.bp12.model.pojo.Task
 import com.lenta.bp12.platform.navigation.IScreenNavigator
 import com.lenta.bp12.repository.IDatabaseRepository
 import com.lenta.shared.account.ISessionInfo
@@ -32,7 +32,7 @@ class TaskCardCreateViewModel : CoreViewModel(), PageSelectionListener {
     lateinit var database: IDatabaseRepository
 
     @Inject
-    lateinit var manager: ICreateTaskManager
+    lateinit var manager: ITaskManager
 
 
     val title by lazy {
@@ -137,7 +137,7 @@ class TaskCardCreateViewModel : CoreViewModel(), PageSelectionListener {
     }
 
     fun onClickNext() {
-        manager.updateCurrentTask(TaskCreate(
+        manager.updateCurrentTask(Task(
                 name = taskName.value!!,
                 type = types.value!![taskTypePosition.value!!],
                 storage = storageList.value!![storagePosition.value!!],

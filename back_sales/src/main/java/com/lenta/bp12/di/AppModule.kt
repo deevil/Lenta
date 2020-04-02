@@ -38,7 +38,7 @@ class AppModule {
 
         @Binds
         @AppScope
-        fun bindCreateTaskManager(realisation: CreateTaskManager): ICreateTaskManager
+        fun bindCreateTaskManager(realisation: TaskManager): ITaskManager
 
         @Binds
         @AppScope

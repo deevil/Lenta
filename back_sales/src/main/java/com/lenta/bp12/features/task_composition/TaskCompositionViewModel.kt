@@ -1,7 +1,7 @@
 package com.lenta.bp12.features.task_composition
 
 import androidx.lifecycle.MutableLiveData
-import com.lenta.bp12.model.ICreateTaskManager
+import com.lenta.bp12.model.ITaskManager
 import com.lenta.bp12.model.pojo.Basket
 import com.lenta.bp12.platform.navigation.IScreenNavigator
 import com.lenta.shared.account.ISessionInfo
@@ -22,7 +22,7 @@ class TaskCompositionViewModel : CoreViewModel(), PageSelectionListener, OnOkInS
     lateinit var navigator: IScreenNavigator
 
     @Inject
-    lateinit var manager: ICreateTaskManager
+    lateinit var manager: ITaskManager
 
     @Inject
     lateinit var sessionInfo: ISessionInfo

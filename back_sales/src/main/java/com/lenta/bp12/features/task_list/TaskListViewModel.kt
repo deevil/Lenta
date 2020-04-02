@@ -1,25 +1,42 @@
 package com.lenta.bp12.features.task_list
 
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.viewModelScope
 import com.lenta.bp12.model.BlockType
+import com.lenta.bp12.model.ITaskManager
 import com.lenta.bp12.model.TaskStatus
 import com.lenta.bp12.platform.navigation.IScreenNavigator
+import com.lenta.bp12.request.TaskListNetRequest
+import com.lenta.bp12.request.TaskListParams
 import com.lenta.shared.account.ISessionInfo
+import com.lenta.shared.exception.Failure
 import com.lenta.shared.platform.viewmodel.CoreViewModel
+import com.lenta.shared.settings.IAppSettings
 import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
 import com.lenta.shared.utilities.databinding.PageSelectionListener
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyboardListener {
 
     @Inject
     lateinit var navigator: IScreenNavigator
+
     @Inject
     lateinit var sessionInfo: ISessionInfo
 
+    @Inject
+    lateinit var taskListNetRequest: TaskListNetRequest
+
+    @Inject
+    lateinit var appSettings: IAppSettings
+
+    @Inject
+    lateinit var manager: ITaskManager
+
 
     val title by lazy {
-       "TK - ${sessionInfo.market}"
+        "TK - ${sessionInfo.market}"
     }
 
     val selectedPage = MutableLiveData(0)
@@ -58,12 +75,44 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
 
     // -----------------------------
 
+    init {
+        viewModelScope.launch {
+            loadTaskList()
+        }
+    }
+
+    // -----------------------------
+
     override fun onPageSelected(position: Int) {
         selectedPage.value = position
     }
 
-    fun onClickMenu() {
+    fun loadTaskList() {
+        viewModelScope.launch {
+            navigator.showProgressLoadingData()
 
+            taskListNetRequest(
+                    TaskListParams(
+                            tkNumber = sessionInfo.market ?: "",
+                            userAddress = "",
+                            userNumber = appSettings.lastPersonnelNumber ?: "Not found!",
+                            mode = 1
+                    )
+            ).also {
+                navigator.hideProgress()
+            }.either(::handleFailure) { taskListResult ->
+                manager.addTasks(taskListResult.tasks)
+            }
+        }
+    }
+
+    override fun handleFailure(failure: Failure) {
+        super.handleFailure(failure)
+        navigator.openAlertScreen(failure)
+    }
+
+    fun onClickMenu() {
+        navigator.goBack()
     }
 
     fun onClickUpdate() {

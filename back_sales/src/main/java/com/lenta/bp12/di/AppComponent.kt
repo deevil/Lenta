@@ -24,7 +24,7 @@ import com.lenta.bp12.features.task_card_open.TaskCardOpenViewModel
 import com.lenta.bp12.features.task_composition.TaskCompositionViewModel
 import com.lenta.bp12.features.task_list.TaskListViewModel
 import com.lenta.bp12.features.task_search.TaskSearchViewModel
-import com.lenta.bp12.model.ICreateTaskManager
+import com.lenta.bp12.model.ITaskManager
 import com.lenta.bp12.model.IOpenTaskManager
 import com.lenta.shared.di.AppScope
 import com.lenta.shared.di.CoreComponent
@@ -37,7 +37,7 @@ interface AppComponent : CoreComponent {
     fun getScreenNavigator(): IScreenNavigator
     fun getGeneralRepository(): IDatabaseRepository
     fun getResourceManager(): IResourceManager
-    fun getCreateTaskManager(): ICreateTaskManager
+    fun getCreateTaskManager(): ITaskManager
     fun getOpenTaskManager(): IOpenTaskManager
 
     fun inject(mainActivity: MainActivity)

@@ -1,7 +1,10 @@
 package com.lenta.bp12.repository
 
+import com.lenta.bp12.model.pojo.TaskType
 import com.lenta.bp12.platform.extention.getControlType
 import com.lenta.bp12.platform.extention.getProviderInfo
+import com.lenta.bp12.platform.extention.getTaskType
+import com.lenta.bp12.platform.extention.getTaskTypeList
 import com.lenta.bp12.request.GoodInfoResult
 import com.lenta.bp12.request.pojo.ProviderInfo
 import com.lenta.shared.fmp.resources.dao_ext.*
@@ -63,6 +66,12 @@ class DatabaseRepository @Inject constructor(
             }
 
             return@withContext taskTypeList
+        }
+    }
+
+    override suspend fun getTaskType(code: String): TaskType? {
+        return withContext(Dispatchers.IO) {
+            return@withContext taskTypes.getTaskType(code)
         }
     }
 
@@ -173,6 +182,7 @@ interface IDatabaseRepository {
     suspend fun getAllowedAppVersion(): String?
     suspend fun getUnitsByCode(code: String): Uom
     suspend fun getTaskTypeList(): List<TaskType>
+    suspend fun getTaskType(code: String): TaskType?
     suspend fun getStorageList(taskType: String): List<String>
     suspend fun getReturnReasonList(taskType: String): List<ReturnReason>
     suspend fun isGoodAllowed(gisControl: String, taskType: String, goodGroup: String?, purchaseGroup: String?): Boolean

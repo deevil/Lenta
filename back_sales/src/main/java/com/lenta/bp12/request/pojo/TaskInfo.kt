@@ -8,7 +8,7 @@ data class TaskInfo(
         var number: String,
         /** Наименование задания */
         @SerializedName("DESCR")
-        var description: String,
+        var name: String,
         /** Тип задания */
         @SerializedName("TASK_TYPE")
         var type: String,

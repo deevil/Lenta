@@ -1,13 +1,12 @@
 package com.lenta.bp12.model.pojo
 
 import com.lenta.shared.fmp.resources.dao_ext.ReturnReason
-import com.lenta.shared.fmp.resources.dao_ext.TaskType
 import com.lenta.shared.utilities.extentions.sumWith
 
-data class TaskCreate(
+data class Task(
         val number: String = "",
         val name: String,
-        val type: TaskType,
+        val type: TaskType?,
         val storage: String,
         val reason: ReturnReason,
         val isAlcohol: Boolean,
