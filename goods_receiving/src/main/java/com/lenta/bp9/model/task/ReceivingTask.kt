@@ -40,28 +40,21 @@ class ReceivingTask(val taskHeader: TaskInfo,
         return taskRepository.getCargoUnits().getCargoUnits()
     }
 
+    fun getObligatoryDeliveryDocuments(): List<DeliveryDocumentRevise> {
+        return taskRepository.getReviseDocuments().getDeliveryDocuments().filter { it.isObligatory }
+    }
+
     fun updateTaskWithContents(taskContentsInfo: TaskContentsInfo) {
         taskRepository.getProducts().updateProducts(taskContentsInfo.products)
         taskRepository.getProductsDiscrepancies().updateProductsDiscrepancy(taskContentsInfo.productsDiscrepancies)
         taskRepository.getBatches().updateBatches(taskContentsInfo.taskBatches)
         taskRepository.getBatchesDiscrepancies().updateBatchesDiscrepancy(taskContentsInfo.taskBatchesDiscrepancies)
-        taskRepository.getMercuryDiscrepancies().updateMercuryInfo(taskContentsInfo.taskMercuryInfo)
-    }
-
-    fun updateTaskWithContentsRDS(taskContentsRDSInfo: TaskContentsRDSInfo) {
-        taskRepository.getProducts().updateProducts(taskContentsRDSInfo.products)
-        taskRepository.getProductsDiscrepancies().updateProductsDiscrepancy(taskContentsRDSInfo.productsDiscrepancies)
-        taskRepository.getBatches().updateBatches(taskContentsRDSInfo.taskBatches)
-        taskRepository.getBatchesDiscrepancies().updateBatchesDiscrepancy(taskContentsRDSInfo.taskBatchesDiscrepancies)
-        taskRepository.getMercuryDiscrepancies().updateMercuryInfo(taskContentsRDSInfo.taskMercuryInfo)
-    }
-
-    fun updateTaskWithContentsPGE(taskContentsPGEInfo: TaskContentsPGEInfo) {
-        taskRepository.getProducts().updateProducts(taskContentsPGEInfo.products)
-        taskRepository.getProductsDiscrepancies().updateProductsDiscrepancy(taskContentsPGEInfo.productsDiscrepancies)
-        taskRepository.getBatches().updateBatches(taskContentsPGEInfo.taskBatches)
-        taskRepository.getBatchesDiscrepancies().updateBatchesDiscrepancy(taskContentsPGEInfo.taskBatchesDiscrepancies)
-        taskRepository.getMercuryDiscrepancies().updateMercuryInfo(taskContentsPGEInfo.taskMercuryInfo)
+        taskContentsInfo.taskMercuryInfo?.let { taskRepository.getMercuryDiscrepancies().updateMercuryInfo(it) }
+        taskRepository.getExciseStamps().updateExciseStamps(taskContentsInfo.taskExciseStampInfo)
+        taskRepository.getExciseStampsDiscrepancies().updateExciseStampsDiscrepancy(taskContentsInfo.taskExciseStampDiscrepancies)
+        taskRepository.getExciseStampsBad().updateExciseStampBad(taskContentsInfo.taskExciseStampBad)
+        taskRepository.getBoxes().updateBoxes(taskContentsInfo.taskBoxes)
+        taskRepository.getBoxesDiscrepancies().updateBoxesDiscrepancy(taskContentsInfo.taskBoxesDiscrepancies)
     }
 }
 

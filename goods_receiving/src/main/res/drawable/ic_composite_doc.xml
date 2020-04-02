@@ -1,11 +1,10 @@
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
-    android:width="32dp"
-    android:height="32dp"
-    android:viewportWidth="32"
-    android:viewportHeight="32">
-
+    android:width="22dp"
+    android:height="27dp"
+    android:viewportWidth="22"
+    android:viewportHeight="27">
   <path
-      android:pathData="M24.5,15H23v-4c0,-1.1 -0.9,-2 -2,-2h-4V7.5a2.5,2.5 0,0 0,-5 0V9H8c-1.1,0 -1.99,0.9 -1.99,2v3.8H7.5c1.49,0 2.7,1.21 2.7,2.7 0,1.49 -1.21,2.7 -2.7,2.7H6V24c0,1.1 0.9,2 2,2h3.8v-1.5c0,-1.49 1.21,-2.7 2.7,-2.7 1.49,0 2.7,1.21 2.7,2.7V26H21c1.1,0 2,-0.9 2,-2v-4h1.5a2.5,2.5 0,0 0,0 -5z"
+      android:pathData="M13.75,0L22,8.1v16.2c0,1.43 -1.148,2.61 -2.583,2.695L19.25,27L2.736,27c-1.456,0 -2.645,-1.127 -2.731,-2.536L0,24.3l0.014,-21.6c0,-1.43 1.135,-2.61 2.57,-2.695L2.75,0h11zM17.811,18l-3.946,3.753 -1.676,-1.594L11,21.276 13.865,24 19,19.117 17.811,18zM9.811,11l-3.946,3.753 -1.676,-1.594L3,14.276 5.865,17 11,12.117 9.811,11zM12.375,2.025v7.425h7.563l-7.563,-7.425z"
       android:fillColor="#CCD7DE"
       android:fillType="nonZero"/>
 </vector>

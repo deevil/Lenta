@@ -3,10 +3,7 @@ package com.lenta.bp9.features.loading.tasks
 import android.content.Context
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import com.lenta.bp9.model.task.IReceivingTaskManager
-import com.lenta.bp9.model.task.TaskContents
-import com.lenta.bp9.model.task.TaskDescription
-import com.lenta.bp9.model.task.TaskDocumentsPrinting
+import com.lenta.bp9.model.task.*
 import com.lenta.bp9.platform.navigation.IScreenNavigator
 import com.lenta.bp9.requests.network.*
 import com.lenta.shared.account.ISessionInfo
@@ -43,7 +40,7 @@ class LoadingSubmittedViewModel : CoreLoadingViewModel() {
                         taskNumber = task.taskHeader.taskNumber,
                         deviceIP = context.getDeviceIp(),
                         personnelNumber = sessionInfo.personnelNumber ?: "",
-                        sectionsInfo = task.taskRepository.getSections().getSections()
+                        sectionsInfo = task.taskRepository.getSections().getSections().map { TaskSectionRestData.from(it) }
                 )
                 submittedNetRequest(params).either(::handleFailure, ::handleSuccess)
             }
@@ -52,13 +49,17 @@ class LoadingSubmittedViewModel : CoreLoadingViewModel() {
     }
 
     override fun handleFailure(failure: Failure) {
-        screenNavigator.openAlertScreen(failure)
         screenNavigator.goBack()
+        screenNavigator.openAlertScreen(failure)
     }
 
     private fun handleSuccess(result: SubmittedRestInfo) {
+        val notifications = result.notifications.map { TaskNotification.from(it) }
+        taskManager.getReceivingTask()?.taskRepository?.getNotifications()?.updateWithNotifications(general = notifications, document = null, product = null, condition = null)
         taskManager.updateTaskDescription(TaskDescription.from(result.taskDescription))
-        screenNavigator.openTaskCardScreen(TaskCardMode.Full)
+        screenNavigator.openMainMenuScreen()
+        screenNavigator.openTaskListScreen()
+        screenNavigator.openTaskCardScreen(TaskCardMode.Full, taskManager.getReceivingTask()?.taskHeader?.taskType ?: TaskType.None)
     }
 
     override fun clean() {

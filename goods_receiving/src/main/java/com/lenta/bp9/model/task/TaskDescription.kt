@@ -6,7 +6,7 @@ import com.lenta.shared.utilities.date_time.DateTimeUtil
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
-//ТП. Таблица 75 ZSGRZ_TASK_EXCH Структура карточки задания
+//Таблица ES_TASK Структура карточки задания
 data class TaskDescription(val currentStatus: TaskStatus,   //Код текущего статуса (CUR_STAT)
                       val currentStatusText: String,   //Текс текущего статуса (CUR_ST_TEXT)
                       var currentStatusDate: String,   //Дата текущего статуса (CUR_ST_DATE)
@@ -17,6 +17,8 @@ data class TaskDescription(val currentStatus: TaskStatus,   //Код текущ�
                       val ttnNumber: String,           //Номер ТН\ТТН (ZTTN)
                       val orderNumber: String,         //Номер заказа (EBELN)
                       val deliveryNumber: String,      //Номер поставки\Транспортировки (VBELN)
+                      val shipmentOrder: String,           //привозит данные для поля "Заказ" (ОРЦ, https://trello.com/c/7pJ5ckNF)
+                      val shipmentDelivery: String,        //привозит данные для поля "Исходящая поставка" (ОРЦ, https://trello.com/c/7pJ5ckNF)
                       val plannedDeliveryDate: String, //Плановая дата поставки (DATE_PLAN)
                       val plannedDeliveryTime: String, //Плановое время поставки (TIME_PLAN)
                       val actualArrivalDate: String,   //Фактическая дата прибытия (DATE_FACT)
@@ -42,7 +44,11 @@ data class TaskDescription(val currentStatus: TaskStatus,   //Код текущ�
                       val transportationNumber: String, //Номер транспортировки в задании ОРЦ
                       val deliveryNumberOTM: String, //Номер поставки OTM в задании ОРЦ
                       val submergedGE: String, //Погруженные ГЕ в задании ОРЦ
-                      val quantityOutgoingFillings: Int //Количество исходящих пломб (задания ПРЦ, EV_NUM_SEALS из ZMP_UTZ_GRZ_21_V001 и ZMP_UTZ_GRZ_28_V001)
+                      val quantityOutgoingFillings: Int, //Количество исходящих пломб (задания ПРЦ, EV_NUM_SEALS из ZMP_UTZ_GRZ_21_V001 и ZMP_UTZ_GRZ_28_V001)
+                      val quantityST: Double, //Количество в задании, ШТ
+                      val quantityKG: Double, //Количество в задании, КГ
+                      val quantityAll: Double, //Общее количество в задании
+                      val isBksTN: Boolean
 ) {
 
     companion object {
@@ -55,6 +61,8 @@ data class TaskDescription(val currentStatus: TaskStatus,   //Код текущ�
                     ttnNumber = restData.ttnNumber,
                     orderNumber = restData.orderNumber,
                     deliveryNumber = restData.deliveryNumber ?: "",
+                    shipmentOrder = restData.shipmentOrder,
+                    shipmentDelivery = restData.shipmentDelivery,
                     plannedDeliveryDate = restData.plannedDeliveryDate,
                     plannedDeliveryTime = restData.plannedDeliveryTime,
                     actualArrivalDate = restData.actualArrivalDate,
@@ -82,7 +90,11 @@ data class TaskDescription(val currentStatus: TaskStatus,   //Код текущ�
                     submergedGE = restData.submergedGE,
                     nextStatusDate = "",
                     nextStatusTime = "",
-                    quantityOutgoingFillings = 0
+                    quantityOutgoingFillings = 0,
+                    quantityST = restData.quantityST.toDouble() ?: 0.0,
+                    quantityKG = restData.quantityKG.toDouble() ?: 0.0,
+                    quantityAll = restData.quantityAll.toDouble() ?: 0.0,
+                    isBksTN = restData.isBksTN.isNotEmpty()
             )
         }
     }
@@ -105,6 +117,10 @@ data class TaskDescriptionRestInfo(
         val orderNumber: String,
         @SerializedName("VBELN")
         val deliveryNumber: String?,
+        @SerializedName("EBELN_STR")
+        val shipmentOrder: String,
+        @SerializedName("VBELN_STR")
+        val shipmentDelivery: String,
         @SerializedName("DATE_PLAN")
         val plannedDeliveryDate: String,
         @SerializedName("TIME_PLAN")
@@ -154,7 +170,15 @@ data class TaskDescriptionRestInfo(
         @SerializedName("IS_BKS_DIFF")
         val isBksDiff: String,
         @SerializedName("IS_SKIP_COUNT_MAN")
-        val isSkipCountMan: String
+        val isSkipCountMan: String,
+        @SerializedName("QNT_ST")
+        val quantityST: String,
+        @SerializedName("QNT_KG")
+        val quantityKG: String,
+        @SerializedName("QNT_ALL")
+        val quantityAll: String,
+        @SerializedName("IS_BKS_TN")
+        val isBksTN: String
 
 ) {
 }

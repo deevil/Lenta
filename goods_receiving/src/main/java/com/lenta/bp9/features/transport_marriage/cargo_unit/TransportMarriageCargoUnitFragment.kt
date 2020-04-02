@@ -20,6 +20,7 @@ import com.lenta.shared.utilities.databinding.DataBindingAdapter
 import com.lenta.shared.utilities.databinding.DataBindingRecyclerViewConfig
 import com.lenta.shared.utilities.databinding.RecyclerViewKeyHandler
 import com.lenta.shared.utilities.extentions.connectLiveData
+import com.lenta.shared.utilities.extentions.getFragmentResultCode
 import com.lenta.shared.utilities.extentions.provideViewModel
 import com.lenta.shared.utilities.state.state
 
@@ -149,6 +150,11 @@ class TransportMarriageCargoUnitFragment : CoreFragment<FragmentTransportMarriag
             return true
         }
         return false
+    }
+
+    override fun onFragmentResult(arguments: Bundle) {
+        super.onFragmentResult(arguments)
+        vm.onResult(arguments.getFragmentResultCode())
     }
 
 }

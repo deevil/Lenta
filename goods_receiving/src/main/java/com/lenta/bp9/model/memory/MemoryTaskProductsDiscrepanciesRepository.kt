@@ -50,33 +50,25 @@ class MemoryTaskProductsDiscrepanciesRepository : ITaskProductsDiscrepanciesRepo
     }
 
     override fun deleteProductDiscrepancy(discrepancy: TaskProductDiscrepancies): Boolean {
-        var index = -1
-        for (i in productsDiscrepancies.indices) {
-            if (discrepancy.materialNumber == productsDiscrepancies[i].materialNumber && discrepancy.typeDiscrepancies == productsDiscrepancies[i].typeDiscrepancies) {
-                index = i
-            }
-        }
-
-        if (index == -1) {
-            return false
-        }
-        productsDiscrepancies.removeAt(index)
-        return true
+        return deleteProductDiscrepancy(discrepancy.materialNumber, discrepancy.typeDiscrepancies)
     }
 
     override fun deleteProductDiscrepancy(materialNumber: String, typeDiscrepancies: String): Boolean {
-        var index = -1
-        for (i in productsDiscrepancies.indices) {
-            if (materialNumber == productsDiscrepancies[i].materialNumber && typeDiscrepancies == productsDiscrepancies[i].typeDiscrepancies) {
-                index = i
+        productsDiscrepancies.map { it }.filter {discrepancies ->
+            if (materialNumber == discrepancies.materialNumber && typeDiscrepancies == discrepancies.typeDiscrepancies) {
+                if (discrepancies.isNotEdit) { //не редактируемое расхождение https://trello.com/c/Mo9AqreT
+                    productsDiscrepancies.remove(discrepancies)
+                    productsDiscrepancies.add(discrepancies)
+                } else {
+                    productsDiscrepancies.remove(discrepancies)
+                }
+                return@filter true
             }
-        }
+            return@filter false
 
-        if (index == -1) {
-            return false
+        }.let {
+            return it.isNotEmpty()
         }
-        productsDiscrepancies.removeAt(index)
-        return true
     }
 
     override fun deleteProductsDiscrepanciesForProduct(product: TaskProductInfo): Boolean {
@@ -91,7 +83,9 @@ class MemoryTaskProductsDiscrepanciesRepository : ITaskProductsDiscrepanciesRepo
             return false
         }
 
-        productsDiscrepancies.removeAll(delDiscrepancies)
+        delDiscrepancies.map {
+            deleteProductDiscrepancy(it)
+        }
         return true
     }
 

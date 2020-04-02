@@ -39,13 +39,16 @@ class GoodPackagingFragment : CoreFragment<FragmentGoodWeighingBinding, GoodPack
 
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
         bottomToolbarUiModel.uiModelButton1.show(ButtonDecorationInfo.back)
+        bottomToolbarUiModel.uiModelButton2.show(ButtonDecorationInfo.defect)
         bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.complete, enabled = false)
 
+        connectLiveData(vm.defectVisibility, getBottomToolBarUIModel()!!.uiModelButton2.visibility)
         connectLiveData(vm.completeEnabled, getBottomToolBarUIModel()!!.uiModelButton5.enabled)
     }
 
     override fun onToolbarButtonClick(view: View) {
         when (view.id) {
+            R.id.b_2 -> vm.onClickDefect()
             R.id.b_5 -> vm.onClickComplete()
         }
     }

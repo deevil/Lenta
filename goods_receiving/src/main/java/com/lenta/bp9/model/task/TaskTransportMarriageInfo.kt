@@ -40,7 +40,7 @@ data class TaskTransportMarriageInfo(
                         materialNumber = materialInfo?.material ?: "",
                         materialName = materialInfo?.name ?: "",
                         batchNumber = batchNumber,
-                        quantity = restData.menge.toDouble() ?: 0.0,
+                        quantity = 0.0,
                         quantityInvestments = restData.menge.toDouble() ?: 0.0,
                         uom = Uom(code = uomInfo?.uom ?: "", name = uomInfo?.name ?: ""),
                         sectionId = materialInfo?.abtnr ?: ""

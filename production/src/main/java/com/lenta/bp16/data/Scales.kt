@@ -1,13 +1,12 @@
 package com.lenta.bp16.data
 
-import com.lenta.bp16.repository.IGeneralRepository
+import com.lenta.bp16.repository.IDatabaseRepository
 import com.lenta.shared.analytics.AnalyticsHelper
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.functional.Either
 import com.lenta.shared.settings.IAppSettings
 import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.extentions.dropZeros
-import com.mobrun.plugin.api.HyperHive
 import okhttp3.HttpUrl
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -16,13 +15,13 @@ import javax.inject.Inject
 class Scales @Inject constructor(
         private val appSettings: IAppSettings,
         private val analyticsHelper: AnalyticsHelper,
-        private val repository: IGeneralRepository
+        private val database: IDatabaseRepository
 ) : IScales {
 
     private val client = OkHttpClient()
 
     override suspend fun getWeight(): Either<Failure, String> {
-        val serverAddress = repository.getServerAddress()
+        val serverAddress = database.getServerAddress()
         val deviceName = appSettings.weightEquipmentName
 
         if (serverAddress.isNullOrEmpty() || deviceName.isNullOrEmpty()) {

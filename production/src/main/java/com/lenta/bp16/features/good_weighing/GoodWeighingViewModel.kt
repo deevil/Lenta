@@ -8,7 +8,7 @@ import com.lenta.bp16.data.LabelInfo
 import com.lenta.bp16.model.ITaskManager
 import com.lenta.bp16.model.pojo.Pack
 import com.lenta.bp16.platform.navigation.IScreenNavigator
-import com.lenta.bp16.repository.IGeneralRepository
+import com.lenta.bp16.repository.IDatabaseRepository
 import com.lenta.bp16.request.PackCodeNetRequest
 import com.lenta.bp16.request.PackCodeParams
 import com.lenta.shared.account.ISessionInfo
@@ -50,7 +50,7 @@ class GoodWeighingViewModel : CoreViewModel() {
     lateinit var printer: IPrinter
 
     @Inject
-    lateinit var repository: IGeneralRepository
+    lateinit var database: IDatabaseRepository
 
 
     val good by lazy {
@@ -73,7 +73,7 @@ class GoodWeighingViewModel : CoreViewModel() {
         it?.toDoubleOrNull() ?: 0.0
     }
 
-    private val weighted = MutableLiveData<Double>(0.0)
+    private val weighted = MutableLiveData(0.0)
 
     private val total = entered.map {
         it.sumWith(weighted.value ?: 0.0)
@@ -83,8 +83,26 @@ class GoodWeighingViewModel : CoreViewModel() {
         "${it.dropZeros()} ${good.value!!.units.name}"
     }
 
+    private val defect by lazy {
+        good.map { good ->
+            good?.packs?.filter { it.materialDef == raw.value?.material }?.map { it.quantity }?.sum()
+        }
+    }
+
+    val defectWithUnits by lazy {
+        defect.map {
+            "${it.dropZeros()} ${good.value!!.units.name}"
+        }
+    }
+
     val planned by lazy {
         "${raw.value!!.planned.dropZeros()} ${good.value!!.units.name}"
+    }
+
+    val defectVisibility by lazy {
+        raw.map {
+            it?.isWasDef == true
+        }
     }
 
     val completeEnabled: MutableLiveData<Boolean> = total.map {
@@ -130,11 +148,11 @@ class GoodWeighingViewModel : CoreViewModel() {
 
                 viewModelScope.launch {
                     val productTime = Calendar.getInstance()
-                    productTime.add(Calendar.MINUTE, repository.getPcpExpirTimeMm())
+                    productTime.add(Calendar.MINUTE, database.getPcpExpirTimeMm())
 
                     val planAufFinish = Calendar.getInstance()
                     planAufFinish.add(Calendar.MINUTE, getTimeInMinutes(packCodeResult.dataLabel.planAufFinish, packCodeResult.dataLabel.planAufUnit))
-                    planAufFinish.add(Calendar.MINUTE, repository.getPcpContTimeMm())
+                    planAufFinish.add(Calendar.MINUTE, database.getPcpContTimeMm())
 
                     val dateExpir = packCodeResult.dataLabel.dateExpiration.toIntOrNull()?.let { days ->
                         val dateExpiration = Calendar.getInstance()
@@ -298,6 +316,10 @@ class GoodWeighingViewModel : CoreViewModel() {
         } else {
             navigator.goBack()
         }
+    }
+
+    fun onClickDefect() {
+        navigator.openDefectInfoScreen()
     }
 
 }

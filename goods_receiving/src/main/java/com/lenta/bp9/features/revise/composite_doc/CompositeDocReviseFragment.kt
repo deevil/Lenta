@@ -36,7 +36,7 @@ class CompositeDocReviseFragment : CoreFragment<FragmentCompositeDocReviseBindin
 
     override fun getLayoutId(): Int = R.layout.fragment_composite_doc_revise
 
-    override fun getPageNumber(): String = "09/119"
+    override fun getPageNumber(): String = "09/110"
 
     override fun getViewModel(): CompositeDocReviseViewModel {
         provideViewModel(CompositeDocReviseViewModel::class.java).let { vm ->
@@ -54,8 +54,8 @@ class CompositeDocReviseFragment : CoreFragment<FragmentCompositeDocReviseBindin
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
         bottomToolbarUiModel.uiModelButton1.show(ButtonDecorationInfo.back)
         bottomToolbarUiModel.uiModelButton2.show(ButtonDecorationInfo.refusal)
-        bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.next)
-        connectLiveData(vm.enabledNextBtn, bottomToolbarUiModel.uiModelButton5.enabled)
+        bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.apply)
+        connectLiveData(vm.enabledApplyBtn, bottomToolbarUiModel.uiModelButton5.enabled)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -89,7 +89,7 @@ class CompositeDocReviseFragment : CoreFragment<FragmentCompositeDocReviseBindin
     override fun onToolbarButtonClick(view: View) {
         when (view.id) {
             R.id.b_2 -> vm.onClickRefusal()
-            R.id.b_5 -> vm.onClickNext()
+            R.id.b_5 -> vm.onClickApply()
         }
     }
 

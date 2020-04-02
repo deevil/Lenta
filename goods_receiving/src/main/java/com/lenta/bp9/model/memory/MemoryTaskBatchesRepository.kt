@@ -23,7 +23,10 @@ class MemoryTaskBatchesRepository : ITaskBatchesRepository {
     override fun addBatch(batch: TaskBatchInfo): Boolean {
         var index = -1
         for (i in batchesInfo.indices) {
-            if (batch.materialNumber == batchesInfo[i].materialNumber && batch.batchNumber == batchesInfo[i].batchNumber) {
+            if (batch.materialNumber == batchesInfo[i].materialNumber &&
+                    batch.setMaterialNumber == batchesInfo[i].setMaterialNumber &&
+                    batch.processingUnitNumber == batchesInfo[i].processingUnitNumber &&
+                    batch.batchNumber == batchesInfo[i].batchNumber) {
                 index = i
             }
         }
@@ -47,20 +50,20 @@ class MemoryTaskBatchesRepository : ITaskBatchesRepository {
         return addBatch(batch)
     }
 
-    override fun deleteBatch(batch: TaskBatchInfo): Boolean {
-        var index = -1
-        for (i in batchesInfo.indices) {
-            if (batch.materialNumber == batchesInfo[i].materialNumber && batch.batchNumber == batchesInfo[i].batchNumber) {
-                index = i
+    override fun deleteBatch(delBatch: TaskBatchInfo): Boolean {
+        batchesInfo.map { it }.filter {batch ->
+            if (delBatch.materialNumber == batch.materialNumber &&
+                    delBatch.setMaterialNumber == batch.setMaterialNumber &&
+                    delBatch.processingUnitNumber == batch.processingUnitNumber &&
+                    delBatch.batchNumber == batch.batchNumber) {
+                batchesInfo.remove(batch)
+                return@filter true
             }
-        }
+            return@filter false
 
-        if (index == -1) {
-            return false
+        }.let {
+            return it.isNotEmpty()
         }
-
-        batchesInfo.removeAt(index)
-        return true
     }
 
     override fun clear() {

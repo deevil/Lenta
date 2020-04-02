@@ -128,8 +128,8 @@ class TransportMarriageViewModel : CoreViewModel(), PageSelectionListener,
                         deviceIP = context.getDeviceIp(),
                         personalNumber = sessionInfo.personnelNumber ?: "",
                         transportMarriage = emptyList(),
-                        processedBoxInfo = emptyList(),
-                        processedExciseStamp = emptyList(),
+                        taskBoxDiscrepancies = emptyList(),
+                        taskExciseStampsDiscrepancies = emptyList(),
                         isSave = "",
                         printerName = ""
                 )
@@ -146,7 +146,7 @@ class TransportMarriageViewModel : CoreViewModel(), PageSelectionListener,
         taskManager.updateTaskDescription(TaskDescription.from(result.taskDescription))
         val notifications = result.notifications.map { TaskNotification.from(it) }
         taskManager.getReceivingTask()?.taskRepository?.getNotifications()?.updateWithNotifications(general = notifications, document = null, product = null, condition = null)
-        screenNavigator.openTaskCardScreen(TaskCardMode.Full)
+        screenNavigator.openTaskCardScreen(TaskCardMode.Full, taskManager.getReceivingTask()?.taskHeader?.taskType ?: TaskType.None)
     }
 
     fun onClickDelete() {
@@ -171,8 +171,8 @@ class TransportMarriageViewModel : CoreViewModel(), PageSelectionListener,
                         deviceIP = context.getDeviceIp(),
                         personalNumber = sessionInfo.personnelNumber ?: "",
                         transportMarriage = task.taskRepository.getTransportMarriage().getTransportMarriage().map { TaskTransportMarriageInfoRestData.from(it) },
-                        processedBoxInfo = emptyList(), //it_box_diff - пусто (заполнять только для марочного алкоголя, при наличии отсканированных марок) https://trello.com/c/ndvDINaT
-                        processedExciseStamp = emptyList(), //it_mark_diff - пусто(заполнять только для марочного алкоголя, при наличии отсканированных марок) https://trello.com/c/ndvDINaT
+                        taskBoxDiscrepancies = task.taskRepository.getBoxesDiscrepancies().getBoxesDiscrepancies().map { TaskBoxDiscrepanciesRestData.from(it) }, //it_box_diff - пусто (заполнять только для марочного алкоголя, при наличии отсканированных марок) https://trello.com/c/ndvDINaT
+                        taskExciseStampsDiscrepancies = task.taskRepository.getExciseStampsDiscrepancies().getExciseStampDiscrepancies().map { TaskExciseStampDiscrepanciesRestData.from(it) }, //it_mark_diff - пусто(заполнять только для марочного алкоголя, при наличии отсканированных марок) https://trello.com/c/ndvDINaT
                         isSave = "X",
                         printerName = sessionInfo.printer ?: ""
                 )
@@ -183,12 +183,19 @@ class TransportMarriageViewModel : CoreViewModel(), PageSelectionListener,
     }
 
     private fun handleSuccessProcess(result: ZmpUtzGrz25V001Result) {
-        screenNavigator.openMainMenuScreen()
-        screenNavigator.openTaskListScreen()
-        taskManager.updateTaskDescription(TaskDescription.from(result.taskDescription))
         val notifications = result.notifications.map { TaskNotification.from(it) }
         taskManager.getReceivingTask()?.taskRepository?.getNotifications()?.updateWithNotifications(general = notifications, document = null, product = null, condition = null)
-        screenNavigator.openTaskCardScreen(TaskCardMode.Full)
+        taskManager.updateTaskDescription(TaskDescription.from(result.taskDescription))
+        screenNavigator.openMainMenuScreen()
+        screenNavigator.openTaskListScreen()
+        screenNavigator.openSupplyResultsActDisagreementTransportationDialog(transportationNumber = taskManager.getReceivingTask()?.taskDescription?.transportationNumber ?: "",
+                docCallbackFunc = {
+                    screenNavigator.openTaskCardScreen(TaskCardMode.Full, taskManager.getReceivingTask()?.taskHeader?.taskType ?: TaskType.None)
+                    screenNavigator.openFormedDocsScreen()
+                },
+                nextCallbackFunc = {
+                    screenNavigator.openTaskCardScreen(TaskCardMode.Full, taskManager.getReceivingTask()?.taskHeader?.taskType ?: TaskType.None)
+                })
     }
 
     fun onClickItemPosition(position: Int) {
@@ -196,7 +203,7 @@ class TransportMarriageViewModel : CoreViewModel(), PageSelectionListener,
             screenNavigator.openTransportMarriageCargoUnitScreen(listCargoUnits.value?.get(position)?.cargoUnitNumber ?: "")
         } else {
             listAct.value?.get(position)?.transportMarriage?.let {
-                screenNavigator.openTransportMarriageGoodsInfoScreen(it)
+                screenNavigator.openTransportMarriageGoodsInfoScreen(transportMarriageInfo = it)
             }
         }
     }

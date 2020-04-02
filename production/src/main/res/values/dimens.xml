@@ -38,4 +38,9 @@
     <integer name="reprint_label_column_3">25</integer>
     <integer name="reprint_label_column_4">20</integer>
 
+    <!-- Список тар - № / Тара/Тип/Причина / Кол-во -->
+    <integer name="pack_type_cause_quantity_column_1">10</integer>
+    <integer name="pack_type_cause_quantity_column_2">60</integer>
+    <integer name="pack_type_cause_quantity_column_3">30</integer>
+
 </resources>

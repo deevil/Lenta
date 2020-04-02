@@ -40,7 +40,7 @@ data class ZmpUtzGrz26V001Result(
         @SerializedName("ET_TASK_BOX") //Список коробок задания для передачи в МП
         val taskBoxes: List<TaskBoxInfoRestData>,
         @SerializedName("ET_TASK_MARK") //Список марок задания для передачи в МП
-        val taskExciseStamps: List<TaskExciseStampRestData>,
+        val taskExciseStamps: List<TaskExciseStampInfoRestData>,
         @SerializedName("EV_RETCODE")
         override val retCode: Int,
         @SerializedName("EV_ERROR_TEXT")

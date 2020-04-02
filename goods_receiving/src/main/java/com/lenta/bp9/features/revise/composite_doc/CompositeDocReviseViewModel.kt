@@ -27,7 +27,7 @@ class CompositeDocReviseViewModel : CoreViewModel() {
         taskManager.getReceivingTask()?.taskHeader?.caption ?: ""
     }
 
-    val enabledNextBtn = listComplexDoc.map {conditions ->
+    val enabledApplyBtn = listComplexDoc.map {conditions ->
         conditions?.findLast { it.isCheck.value == false } == null
     }
 
@@ -58,7 +58,7 @@ class CompositeDocReviseViewModel : CoreViewModel() {
         screenNavigator.openRejectScreen()
     }
 
-    fun onClickNext() {
+    fun onClickApply() {
         taskManager.getReceivingTask()?.taskRepository?.getReviseDocuments()?.setVerifiedCompositeDocument(document.value?.documentID ?: "")
         screenNavigator.goBack()
     }

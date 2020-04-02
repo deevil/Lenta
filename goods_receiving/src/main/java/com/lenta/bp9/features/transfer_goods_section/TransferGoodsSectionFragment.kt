@@ -17,17 +17,20 @@ import com.lenta.bp9.BR
 import com.lenta.bp9.databinding.ItemTileTransferGoodsSectionBinding
 import com.lenta.bp9.databinding.LayoutTransferGoodsSectionBinding
 import com.lenta.bp9.model.task.TaskSectionInfo
+import com.lenta.shared.platform.activity.OnBackPresserListener
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListener
 import com.lenta.shared.utilities.databinding.DataBindingAdapter
 import com.lenta.shared.utilities.databinding.DataBindingRecyclerViewConfig
 import com.lenta.shared.utilities.databinding.PageSelectionListener
+import com.lenta.shared.utilities.extentions.connectLiveData
 import com.lenta.shared.utilities.state.state
 
 class TransferGoodsSectionFragment : CoreFragment<FragmentTransferGoodsSectionBinding, TransferGoodsSectionViewModel>(),
         ViewPagerSettings,
         PageSelectionListener,
-        ToolbarButtonsClickListener {
+        ToolbarButtonsClickListener,
+        OnBackPresserListener {
 
     override fun getLayoutId(): Int = R.layout.fragment_transfer_goods_section
 
@@ -48,6 +51,7 @@ class TransferGoodsSectionFragment : CoreFragment<FragmentTransferGoodsSectionBi
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
         bottomToolbarUiModel.uiModelButton1.show(ButtonDecorationInfo.back)
         bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.save)
+        connectLiveData(vm.enabledBtnSave, bottomToolbarUiModel.uiModelButton5.enabled)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -103,6 +107,16 @@ class TransferGoodsSectionFragment : CoreFragment<FragmentTransferGoodsSectionBi
 
     override fun onPageSelected(position: Int) {
         vm.onPageSelected(position)
+    }
+
+    override fun onBackPressed(): Boolean {
+        vm.onBackPressed()
+        return false
+    }
+
+    override fun onResume() {
+        super.onResume()
+        vm.onResume()
     }
 
 }

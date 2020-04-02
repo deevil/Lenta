@@ -28,13 +28,15 @@ import com.lenta.shared.utilities.databinding.RecyclerViewKeyHandler
 import com.lenta.shared.utilities.databinding.ViewPagerSettings
 import com.lenta.shared.utilities.extentions.connectLiveData
 import com.lenta.shared.utilities.extentions.provideViewModel
+import com.lenta.shared.utilities.state.state
 
 class TaskCardFragment : CoreFragment<FragmentTaskCardBinding, TaskCardViewModel>(), ViewPagerSettings, ToolbarButtonsClickListener, OnBackPresserListener {
 
     companion object {
-        fun create(mode: TaskCardMode): TaskCardFragment {
+        fun create(mode: TaskCardMode, taskType: TaskType): TaskCardFragment {
             TaskCardFragment().let {
                 it.mode = mode
+                it.taskType = taskType
                 return it
             }
         }
@@ -43,10 +45,11 @@ class TaskCardFragment : CoreFragment<FragmentTaskCardBinding, TaskCardViewModel
     private var notificationsRecyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
 
     private var mode: TaskCardMode = TaskCardMode.None
+    private var taskType: TaskType = TaskType.None
 
     override fun getLayoutId(): Int = R.layout.fragment_task_card
 
-    override fun getPageNumber() = "09/06"
+    override fun getPageNumber() = if (this.taskType == TaskType.ShipmentPP || this.taskType == TaskType.ShipmentRC) "09/109" else "09/06"
 
     override fun getViewModel(): TaskCardViewModel {
         provideViewModel(TaskCardViewModel::class.java).let {
@@ -69,7 +72,7 @@ class TaskCardFragment : CoreFragment<FragmentTaskCardBinding, TaskCardViewModel
                 TaskStatus.Unloaded -> {
                     when (vm.taskType) {
                         TaskType.RecalculationCargoUnit -> bottomToolbarUiModel.uiModelButton2.show(ButtonDecorationInfo.skipAlternate)
-                        TaskType.ReceptionDistributionCenter, TaskType.OwnProduction -> bottomToolbarUiModel.uiModelButton2.show(ButtonDecorationInfo.transportMarriage)
+                        TaskType.ReceptionDistributionCenter -> bottomToolbarUiModel.uiModelButton2.show(ButtonDecorationInfo.transportMarriage)
                     }
                 }
                 TaskStatus.Checked -> {

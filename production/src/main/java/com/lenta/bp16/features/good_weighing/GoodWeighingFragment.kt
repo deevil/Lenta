@@ -40,16 +40,19 @@ class GoodWeighingFragment : CoreFragment<FragmentGoodWeighingBinding, GoodWeigh
 
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
         bottomToolbarUiModel.uiModelButton1.show(ButtonDecorationInfo.back)
+        bottomToolbarUiModel.uiModelButton2.show(ButtonDecorationInfo.defect)
         bottomToolbarUiModel.uiModelButton3.show(ButtonDecorationInfo.getWeight)
         bottomToolbarUiModel.uiModelButton4.show(ButtonDecorationInfo.add, enabled = false)
         bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.complete, enabled = false)
 
+        connectLiveData(vm.defectVisibility, getBottomToolBarUIModel()!!.uiModelButton2.visibility)
         connectLiveData(vm.completeEnabled, getBottomToolBarUIModel()!!.uiModelButton5.enabled)
         connectLiveData(vm.addEnabled, getBottomToolBarUIModel()!!.uiModelButton4.enabled)
     }
 
     override fun onToolbarButtonClick(view: View) {
         when (view.id) {
+            R.id.b_2 -> vm.onClickDefect()
             R.id.b_3 -> vm.onClickGetWeight()
             R.id.b_4 -> vm.onClickAdd()
             R.id.b_5 -> vm.onClickComplete()

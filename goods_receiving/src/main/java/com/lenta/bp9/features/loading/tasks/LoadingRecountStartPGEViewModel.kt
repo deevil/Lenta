@@ -72,7 +72,7 @@ class LoadingRecountStartPGEViewModel : CoreLoadingViewModel() {
         viewModelScope.launch {
             repoInMemoryHolder.manufacturers.value = result.manufacturers
             taskManager.updateTaskDescription(TaskDescription.from(result.taskDescription))
-            taskManager.getReceivingTask()?.updateTaskWithContentsPGE(taskContents.getTaskContentsPGEInfo(result))
+            taskManager.getReceivingTask()?.updateTaskWithContents(taskContents.getTaskContentsPGEInfo(result))
             screenNavigator.openGoodsListScreen()
         }
     }

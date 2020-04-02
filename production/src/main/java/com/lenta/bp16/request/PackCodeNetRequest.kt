@@ -51,7 +51,13 @@ data class PackCodeParams(
         val material: String,
         /** Фактическое количество сырья */
         @SerializedName("IV_FACT_QNT")
-        val quantity: Double
+        val quantity: Double,
+        /** Тип брака (категория) */
+        @SerializedName("IV_TYPE_DEF")
+        val categoryCode: String = "",
+        /** Код причины брака */
+        @SerializedName("IV_GRUND")
+        val defectCode: String = ""
 )
 
 class PackCodeStatus : ObjectRawStatus<PackCodeResult>()

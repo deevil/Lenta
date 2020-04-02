@@ -3,26 +3,27 @@ package com.lenta.bp9.model.task
 import com.google.gson.annotations.SerializedName
 import com.lenta.shared.models.core.ExciseStamp
 
-class TaskProcessedExciseStamp(materialNumber: String, //Номер товара
+//ET_MARK_DIFF Таблица обработанных марок задания
+class TaskExciseStampDiscrepancies(materialNumber: String, //Номер товара
                       code: String, //Код акцизной марки
                       val processingUnitNumber: String,
-                      val reasonRejection: String,
+                      val typeDiscrepancies: String,
                       val isScan: Boolean,
                       val boxNumber: String,
                       val packNumber: String,
                       val isMSC: Boolean,
                       val organizationCodeEGAIS: String,
                       val bottlingDate: String,
-                      val isUnknown: Boolean ) : ExciseStamp(materialNumber, code)
+                      val isUnknown: Boolean) : ExciseStamp(materialNumber, code)
 {
 
     companion object {
-        fun from(restData: TaskProcessedExciseStampRestData): TaskProcessedExciseStamp {
-            return TaskProcessedExciseStamp(
+        fun from(restData: TaskExciseStampDiscrepanciesRestData): TaskExciseStampDiscrepancies {
+            return TaskExciseStampDiscrepancies(
                     materialNumber = restData.materialNumber,
                     code = restData.code,
                     processingUnitNumber = restData.processingUnitNumber,
-                    reasonRejection = restData.reasonRejection,
+                    typeDiscrepancies = restData.typeDiscrepancies,
                     isScan = restData.isScan.isNotEmpty(),
                     boxNumber = restData.boxNumber,
                     packNumber = restData.packNumber,
@@ -35,38 +36,38 @@ class TaskProcessedExciseStamp(materialNumber: String, //Номер товара
     }
 }
 
-data class TaskProcessedExciseStampRestData(
+data class TaskExciseStampDiscrepanciesRestData(
         @SerializedName("EXIDV") //Номер ЕО
         val processingUnitNumber: String,
         @SerializedName("MATNR") //Номер товара
         val materialNumber: String,
         @SerializedName("MARK_NUM") //Код акцизной марки
         val code: String,
-        @SerializedName("GRUND") //Причина отклонения при ППП
-        var reasonRejection: String,
+        @SerializedName("GRUND") //тип расхождения
+        val typeDiscrepancies: String,
         @SerializedName("IS_SCAN")
-        var isScan: String,
+        val isScan: String,
         @SerializedName("BOX_NUM") //Номер коробки
         val boxNumber: String,
         @SerializedName("PACK_NUM") //Номер дополнительной упаковки
         val packNumber: String,
-        @SerializedName("IS_MSC") //Общий флаг
-        var isMSC: String,
+        @SerializedName("IS_MSC")
+        val isMSC: String,
         @SerializedName("ZPROD") //ЕГАИС Код организации
         val organizationCodeEGAIS: String,
         @SerializedName("BOTT_MARK") //УТЗ ТСД: Дата розлива
         val bottlingDate: String,
-        @SerializedName("IS_UNKNOWN") //Общий флаг
+        @SerializedName("IS_UNKNOWN")
         val isUnknown: String
 ) {
 
     companion object {
-        fun from(data: TaskProcessedExciseStamp): TaskProcessedExciseStampRestData {
-            return TaskProcessedExciseStampRestData(
+        fun from(data: TaskExciseStampDiscrepancies): TaskExciseStampDiscrepanciesRestData {
+            return TaskExciseStampDiscrepanciesRestData(
                     materialNumber = data.materialNumber,
                     code = data.code,
                     processingUnitNumber = data.processingUnitNumber,
-                    reasonRejection = data.reasonRejection,
+                    typeDiscrepancies = data.typeDiscrepancies,
                     isScan = if (data.isScan) "X" else "",
                     boxNumber = data.boxNumber,
                     packNumber = data.packNumber,

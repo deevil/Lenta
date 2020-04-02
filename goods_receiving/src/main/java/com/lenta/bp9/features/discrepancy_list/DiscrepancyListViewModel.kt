@@ -253,13 +253,13 @@ class DiscrepancyListViewModel : CoreViewModel(), PageSelectionListener {
                             .getReceivingTask()
                             ?.taskRepository
                             ?.getProductsDiscrepancies()
-                            ?.deleteProductDiscrepancy(countProcessed.value?.get(position)!!.productInfo!!.materialNumber, countProcessed.value?.get(position)!!.productDiscrepancies!!.typeDiscrepancies)
+                            ?.deleteProductDiscrepancy(countProcessed.value?.get(position)!!.productDiscrepancies!!)
 
                     taskManager
                             .getReceivingTask()
                             ?.taskRepository
                             ?.getMercuryDiscrepancies()
-                            ?.deleteMercuryDiscrepancy(countProcessed.value?.get(position)!!.productInfo!!.materialNumber, countProcessed.value?.get(position)!!.productDiscrepancies!!.typeDiscrepancies)
+                            ?.deleteMercuryDiscrepancyOfProduct(countProcessed.value?.get(position)!!.productInfo!!.materialNumber, countProcessed.value?.get(position)!!.productDiscrepancies!!.typeDiscrepancies)
                 }
 
             }
@@ -293,6 +293,9 @@ class DiscrepancyListViewModel : CoreViewModel(), PageSelectionListener {
                     personalNumber = sessionInfo.personnelNumber ?: "",
                     discrepanciesProduct = taskManager.getReceivingTask()!!.taskRepository.getProductsDiscrepancies().getProductsDiscrepancies().map { TaskProductDiscrepanciesRestData.from(it) },
                     discrepanciesBatches = taskManager.getReceivingTask()!!.taskRepository.getBatchesDiscrepancies().getBatchesDiscrepancies().map { TaskBatchesDiscrepanciesRestData.from(it) },
+                    discrepanciesBoxes = taskManager.getReceivingTask()!!.taskRepository.getBoxesDiscrepancies().getBoxesDiscrepancies().map { TaskBoxDiscrepanciesRestData.from(it) },
+                    discrepanciesExciseStamp = taskManager.getReceivingTask()!!.taskRepository.getExciseStampsDiscrepancies().getExciseStampDiscrepancies().map { TaskExciseStampDiscrepanciesRestData.from(it) },
+                    exciseStampBad = taskManager.getReceivingTask()!!.taskRepository.getExciseStampsBad().getExciseStampsBad().map { TaskExciseStampBadRestData.from(it) },
                     discrepanciesMercury = taskManager.getReceivingTask()!!.taskRepository.getMercuryDiscrepancies().getMercuryDiscrepancies().map { TaskMercuryDiscrepanciesRestData.from(it) }
             )).either(::handleFailure, ::handleSuccess)
             screenNavigator.hideProgress()
@@ -301,7 +304,7 @@ class DiscrepancyListViewModel : CoreViewModel(), PageSelectionListener {
 
     private fun handleSuccess(result: EndRecountDDResult) {
         taskManager.updateTaskDescription(TaskDescription.from(result.taskDescription))
-        screenNavigator.openTaskCardScreen(TaskCardMode.Full)
+        screenNavigator.openTaskCardScreen(TaskCardMode.Full, taskManager.getReceivingTask()?.taskHeader?.taskType ?: TaskType.None)
     }
 
     override fun handleFailure(failure: Failure) {

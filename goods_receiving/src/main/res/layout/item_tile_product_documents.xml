@@ -91,7 +91,7 @@
 
 
         <TextView
-            android:id="@+id/tv_product_name"
+            android:id="@+id/tv_sort_name1"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
@@ -99,8 +99,8 @@
             android:ellipsize="end"
             android:gravity="start|center_vertical"
             android:maxLines="1"
-            android:text="@{vm.productName}"
-            app:layout_constraintBottom_toTopOf="@id/tv_name"
+            android:text="@{vm.sortName1}"
+            app:layout_constraintBottom_toTopOf="@id/tv_sort_name2"
             app:layout_constraintEnd_toStartOf="@+id/imageView2"
             app:layout_constraintStart_toEndOf="@+id/div_vert1"
             app:layout_constraintTop_toTopOf="parent"
@@ -108,7 +108,7 @@
             tools:text="000000 Товар" />
 
         <TextView
-            android:id="@+id/tv_name"
+            android:id="@+id/tv_sort_name2"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
@@ -116,11 +116,11 @@
             android:ellipsize="end"
             android:gravity="start|center_vertical"
             android:maxLines="1"
-            android:text="@{vm.name}"
+            android:text="@{vm.sortName2}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/imageView2"
             app:layout_constraintStart_toEndOf="@+id/div_vert1"
-            app:layout_constraintTop_toBottomOf="@id/tv_product_name"
+            app:layout_constraintTop_toBottomOf="@id/tv_sort_name1"
             app:layout_constraintVertical_chainStyle="packed"
             tools:text="Сертификат чего-то" />
 

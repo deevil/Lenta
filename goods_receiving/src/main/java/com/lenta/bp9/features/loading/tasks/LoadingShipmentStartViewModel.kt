@@ -82,7 +82,7 @@ class LoadingShipmentStartViewModel : CoreLoadingViewModel() {
                 /** На карточке задания в статусе "Прибыло" (CUR_STAT=4) , при вызове интерфейса ZMP_UTZ_GRZ_37_V001, проверять наличие записей в таблицах ET_COND_CHECK и ET_COND_NOTIFY*/
                 if (result.conditionNotifications.isEmpty() && result.transportConditions.isEmpty()) {
                     screenNavigator.openCheckingNotNeededAlert(context.getString(R.string.revise_not_needed)) {
-                        screenNavigator.openTaskCardScreen(TaskCardMode.Full)
+                        screenNavigator.openTaskCardScreen(TaskCardMode.Full, taskManager.getReceivingTask()?.taskHeader?.taskType ?: TaskType.None)
                     }
                 } else {
                     screenNavigator.openTransportConditionsScreen() //экран Контроль условий перевозки

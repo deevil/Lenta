@@ -7,6 +7,7 @@ import com.lenta.bp9.features.mercury_list_irrelevant.ZMP_UTZ_GRZ_13_V001
 import com.lenta.bp9.model.task.IReceivingTaskManager
 import com.lenta.bp9.model.task.TaskDescription
 import com.lenta.bp9.model.task.TaskMercuryNotActual
+import com.lenta.bp9.model.task.TaskType
 import com.lenta.bp9.platform.navigation.IScreenNavigator
 import com.lenta.bp9.requests.network.TransmittedNetRequest
 import com.lenta.bp9.requests.network.TransmittedParams
@@ -70,7 +71,7 @@ class LoadingTransmittedViewModel : CoreLoadingViewModel() {
                 )
             } else {
                 taskManager.updateTaskDescription(TaskDescription.from(result.taskDescription))
-                screenNavigator.openTaskCardScreen(TaskCardMode.Full)
+                screenNavigator.openTaskCardScreen(TaskCardMode.Full, taskManager.getReceivingTask()?.taskHeader?.taskType ?: TaskType.None)
             }
         }
     }

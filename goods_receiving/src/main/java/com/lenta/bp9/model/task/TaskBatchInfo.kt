@@ -11,7 +11,7 @@ data class TaskBatchInfo(
         val egais: String, //ЕГАИС Код организации
         val bottlingDate: String, //УТЗ ТСД: Дата розлива
         val purchaseOrderScope: Double, //Объем заказа на поставку
-        val materialNumberSet: String // Номер набора
+        val setMaterialNumber: String // Номер набора
 ) {
     companion object {
         fun from(restData: TaskBatchInfoRestData): TaskBatchInfo {
@@ -23,7 +23,7 @@ data class TaskBatchInfo(
                     egais = restData.egais,
                     bottlingDate = restData.bottlingDate,
                     purchaseOrderScope = restData.purchaseOrderScope.toDouble(),
-                    materialNumberSet = restData.materialNumberSet
+                    setMaterialNumber = restData.setMaterialNumber
                 )
         }
     }
@@ -52,7 +52,7 @@ data class TaskBatchInfoRestData(
         @SerializedName("MENGE")
         val purchaseOrderScope: String,
         @SerializedName("MATNR_OSN")
-        val materialNumberSet: String
+        val setMaterialNumber: String
 ) {
 
     companion object {
@@ -65,7 +65,7 @@ data class TaskBatchInfoRestData(
                     egais = data.egais,
                     bottlingDate = data.bottlingDate,
                     purchaseOrderScope = data.purchaseOrderScope.toString(),
-                    materialNumberSet = data.materialNumberSet
+                    setMaterialNumber = data.setMaterialNumber
             )
         }
     }

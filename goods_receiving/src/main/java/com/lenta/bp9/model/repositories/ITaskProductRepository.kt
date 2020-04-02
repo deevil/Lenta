@@ -9,6 +9,6 @@ interface ITaskProductRepository {
     fun addProduct(product: TaskProductInfo): Boolean
     fun updateProducts(newProducts: List<TaskProductInfo>)
     fun changeProduct(product: TaskProductInfo): Boolean
-    fun deleteProduct(product: TaskProductInfo): Boolean
+    fun deleteProduct(delProduct: TaskProductInfo): Boolean
     fun clear()
 }

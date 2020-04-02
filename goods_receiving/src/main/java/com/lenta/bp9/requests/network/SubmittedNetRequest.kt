@@ -24,7 +24,7 @@ data class SubmittedParams(
         @SerializedName("IV_PERNR")
         val personnelNumber: String, //Табельный номер
         @SerializedName("IT_TASK_PERNR")
-        val sectionsInfo: List<TaskSectionInfo> //таблица секция\представитель
+        val sectionsInfo: List<TaskSectionRestData> //таблица секция\представитель
 )
 
 class SubmittedStatus : ObjectRawStatus<SubmittedRestInfo>()

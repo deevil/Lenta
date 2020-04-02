@@ -3,25 +3,25 @@ package com.lenta.bp9.model.task
 import com.google.gson.annotations.SerializedName
 import com.lenta.shared.models.core.ExciseStamp
 
-class TaskExciseStamp(materialNumber: String, //Номер товара
+class TaskExciseStampInfo(materialNumber: String, //Номер товара
                       code: String, //Код акцизной марки
                       val processingUnitNumber: String,
                       val batchNumber: String,
                       val boxNumber: String,
-                      val materialNumberSet: String,
+                      val setMaterialNumber: String,
                       val organizationCodeEGAIS: String,
                       val bottlingDate: String ) : ExciseStamp(materialNumber, code)
 {
 
     companion object {
-        fun from(restData: TaskExciseStampRestData): TaskExciseStamp {
-            return TaskExciseStamp(
+        fun from(restData: TaskExciseStampInfoRestData): TaskExciseStampInfo {
+            return TaskExciseStampInfo(
                     materialNumber = restData.materialNumber,
                     code = restData.code,
                     processingUnitNumber = restData.processingUnitNumber,
                     batchNumber = restData.batchNumber,
                     boxNumber = restData.boxNumber,
-                    materialNumberSet = restData.materialNumberSet,
+                    setMaterialNumber = restData.setMaterialNumber,
                     organizationCodeEGAIS = restData.organizationCodeEGAIS,
                     bottlingDate = restData.bottlingDate
             )
@@ -29,7 +29,7 @@ class TaskExciseStamp(materialNumber: String, //Номер товара
     }
 }
 
-data class TaskExciseStampRestData(
+data class TaskExciseStampInfoRestData(
         @SerializedName("EXIDV") //Номер ЕО
         val processingUnitNumber: String,
         @SerializedName("MATNR") //Номер товара
@@ -41,7 +41,7 @@ data class TaskExciseStampRestData(
         @SerializedName("MARK_NUM") //Код акцизной марки
         val code: String,
         @SerializedName("MATNR_OSN") // Номер набора
-        val materialNumberSet: String,
+        val setMaterialNumber: String,
         @SerializedName("ZPROD") //ЕГАИС Код организации
         val organizationCodeEGAIS: String,
         @SerializedName("BOTT_MARK") //УТЗ ТСД: Дата розлива
@@ -49,14 +49,14 @@ data class TaskExciseStampRestData(
 ) {
 
     companion object {
-        fun from(data: TaskExciseStamp): TaskExciseStampRestData {
-            return TaskExciseStampRestData(
+        fun from(data: TaskExciseStampInfo): TaskExciseStampInfoRestData {
+            return TaskExciseStampInfoRestData(
                     materialNumber = data.materialNumber,
                     code = data.code,
                     processingUnitNumber = data.processingUnitNumber,
                     batchNumber = data.batchNumber,
                     boxNumber = data.boxNumber,
-                    materialNumberSet = data.materialNumberSet,
+                    setMaterialNumber = data.setMaterialNumber,
                     organizationCodeEGAIS = data.organizationCodeEGAIS,
                     bottlingDate = data.bottlingDate
             )
