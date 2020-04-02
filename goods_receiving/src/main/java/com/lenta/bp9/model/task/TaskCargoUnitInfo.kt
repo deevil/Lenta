@@ -38,8 +38,8 @@ data class TaskCargoUnitInfo(
                     isNoGisControl = restData.isNoGisControl.isNotEmpty(),
                     isStamp = restData.isStamp.isNotEmpty(),
                     quantityPositions = restData.quantityPositions,
-                    isPack = restData.isPack.isNotEmpty(),
-                    stock = restData.stock
+                    isPack = if (restData.isPack.isNullOrEmpty()) false else restData.isPack.isNotEmpty(),
+                    stock = if (restData.stock.isNullOrEmpty()) "" else restData.stock
             )
         }
     }
@@ -74,10 +74,10 @@ data class TaskCargoUnitInfoRestData(
         val isStamp: String,
         @SerializedName("QNT_POS") //Количество позиций (QNT_POS)
         val quantityPositions: String,
-        @SerializedName("IS_PACK") //товар для упаковки
-        val isPack: String,
-        @SerializedName("LGORT") //Склад
-        val stock: String
+        @SerializedName("IS_PACK1") //товар для упаковки
+        val isPack: String?,
+        @SerializedName("LGORT1") //Склад
+        val stock: String?
 ) {
 
     companion object {
