@@ -276,11 +276,11 @@ class ControlDeliveryCargoUnitsViewModel : CoreViewModel(), PageSelectionListene
 
     private fun handleSuccessNewCargoUnit(result: GettingDataNewCargoUnitResult) {
         when (result.cargoUnitType.toInt()) {
-            0 -> screenNavigator.openNewCargoUnitAnotherTransportationDialog(searchCargoUnitNumber.value ?: "", nextCallbackFunc = {
+            0 -> screenNavigator.openNewCargoUnitAnotherTransportationDialog(cargoUnitNumber = searchCargoUnitNumber.value ?: "", marketNumber = result.marketNumber, nextCallbackFunc = {
                 screenNavigator.openCargoUnitCardScreen(TaskNewCargoUnitInfoRestData.inCargoUnitInfo(result.cargoUnitStructure, searchCargoUnitNumber.value ?: ""), true)
             })
-            1 -> screenNavigator.openAlertNewCargoUnitScreen(searchCargoUnitNumber.value ?: "")
-            2 -> screenNavigator.openNewCargoUnitCurrentTransportationDialog(searchCargoUnitNumber.value ?: "", nextCallbackFunc = {
+            1 -> screenNavigator.openAlertNewCargoUnitScreen(cargoUnitNumber = searchCargoUnitNumber.value ?: "", marketNumber = result.marketNumber)
+            2 -> screenNavigator.openNewCargoUnitCurrentTransportationDialog(cargoUnitNumber = searchCargoUnitNumber.value ?: "", marketNumber =result.marketNumber,  nextCallbackFunc = {
                 screenNavigator.openCargoUnitCardScreen(TaskNewCargoUnitInfoRestData.inCargoUnitInfo(result.cargoUnitStructure, searchCargoUnitNumber.value ?: ""), true)
             })
         }

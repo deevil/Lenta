@@ -694,30 +694,30 @@ class ScreenNavigator(
         }
     }
 
-    override fun openNewCargoUnitAnotherTransportationDialog(cargoUnitNumber: String, nextCallbackFunc: () -> Unit) {
+    override fun openNewCargoUnitAnotherTransportationDialog(cargoUnitNumber: String, marketNumber: String, nextCallbackFunc: () -> Unit) {
         runOrPostpone {
             getFragmentStack()?.push(AlertFragment.create(
-                    message = context.getString(R.string.dialog_new_cargo_unit_another_transportation, cargoUnitNumber),
+                    message = context.getString(R.string.dialog_new_cargo_unit_another_transportation, cargoUnitNumber, marketNumber),
                     codeConfirmForRight = backFragmentResultHelper.setFuncForResult(nextCallbackFunc),
                     pageNumber = "95",
                     rightButtonDecorationInfo = ButtonDecorationInfo.nextAlternate))
         }
     }
 
-    override fun openNewCargoUnitCurrentTransportationDialog(cargoUnitNumber: String, nextCallbackFunc: () -> Unit) {
+    override fun openNewCargoUnitCurrentTransportationDialog(cargoUnitNumber: String, marketNumber: String, nextCallbackFunc: () -> Unit) {
         runOrPostpone {
             getFragmentStack()?.push(AlertFragment.create(
-                    message = context.getString(R.string.dialog_new_cargo_unit_current_transportation, cargoUnitNumber),
+                    message = context.getString(R.string.dialog_new_cargo_unit_current_transportation, cargoUnitNumber, marketNumber),
                     codeConfirmForRight = backFragmentResultHelper.setFuncForResult(nextCallbackFunc),
                     pageNumber = "95",
                     rightButtonDecorationInfo = ButtonDecorationInfo.nextAlternate))
         }
     }
 
-    override fun openAlertNewCargoUnitScreen(cargoUnitNumber: String) {
+    override fun openAlertNewCargoUnitScreen(cargoUnitNumber: String, marketNumber: String) {
         runOrPostpone {
             getFragmentStack()?.push(AlertFragment.create(
-                    message = context.getString(R.string.alert_new_cargo_unit, cargoUnitNumber),
+                    message = context.getString(R.string.alert_new_cargo_unit, cargoUnitNumber, marketNumber),
                     iconRes = R.drawable.ic_info_pink,
                     textColor = ContextCompat.getColor(context, R.color.color_text_dialogWarning),
                     pageNumber = "97")
@@ -1144,9 +1144,9 @@ interface IScreenNavigator : ICoreNavigator {
     fun openAlertSealDamageScreen()
     fun openCargoUnitCardScreen(cargoUnitInfo: TaskCargoUnitInfo, isSurplus: Boolean? = false)
     fun openControlDeliveryCargoUnitsScreen()
-    fun openNewCargoUnitAnotherTransportationDialog(cargoUnitNumber: String, nextCallbackFunc: () -> Unit)
-    fun openNewCargoUnitCurrentTransportationDialog(cargoUnitNumber: String, nextCallbackFunc: () -> Unit)
-    fun openAlertNewCargoUnitScreen(cargoUnitNumber: String)
+    fun openNewCargoUnitAnotherTransportationDialog(cargoUnitNumber: String, marketNumber: String, nextCallbackFunc: () -> Unit)
+    fun openNewCargoUnitCurrentTransportationDialog(cargoUnitNumber: String, marketNumber: String, nextCallbackFunc: () -> Unit)
+    fun openAlertNewCargoUnitScreen(cargoUnitNumber: String, marketNumber: String)
     fun openSkipRecountScreen()
     fun openAlertHaveIsSpecialGoodsScreen()
     fun openAlertNoIsSpecialGoodsScreen()
