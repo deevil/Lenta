@@ -89,8 +89,10 @@ class GoodWeighingViewModel : CoreViewModel() {
         }
     }
 
-    val defectWithUnits = defect.map {
-        "${it.dropZeros()} ${good.value!!.units.name}"
+    val defectWithUnits by lazy {
+        defect.map {
+            "${it.dropZeros()} ${good.value!!.units.name}"
+        }
     }
 
     val planned by lazy {
@@ -287,9 +289,7 @@ class GoodWeighingViewModel : CoreViewModel() {
     }
 
     private fun printLabel(labelInfo: LabelInfo) {
-        taskManager.addLabelToList(labelInfo)
-
-        /*viewModelScope.launch {
+        viewModelScope.launch {
             withContext(IO) {
                 appSettings.printerIpAddress.let { ipAddress ->
                     if (ipAddress == null) {
@@ -305,7 +305,7 @@ class GoodWeighingViewModel : CoreViewModel() {
                     navigator.showAlertNoIpPrinter()
                 }
             }
-        }*/
+        }
     }
 
     fun onBackPressed() {
