@@ -74,9 +74,9 @@ data class TaskCargoUnitInfoRestData(
         val isStamp: String,
         @SerializedName("QNT_POS") //Количество позиций (QNT_POS)
         val quantityPositions: String,
-        @SerializedName("IS_PACK1") //товар для упаковки
+        @SerializedName("IS_PACK") //товар для упаковки
         val isPack: String?,
-        @SerializedName("LGORT1") //Склад
+        @SerializedName("LGORT") //Склад
         val stock: String?
 ) {
 
