@@ -148,7 +148,7 @@
     <string name="alert_not_correct_date">Некорректная дата</string>
     <string name="the_shelf_life_has_expired">Срок годности истек. Пометить как брак?</string>
     <string name="section">Секция</string>
-    <string name="unsaved_data_will_lost">Не сохранённые данные будут утеряны. Всё равно выйти?</string>
+    <string name="unsaved_data_will_lost">Несохранённые данные будут утеряны. Всё равно выйти?</string>
     <string name="delivery_note_correction">Исправление поставки по накладной</string>
     <string name="in_total">Итог</string>
     <string name="removed">Удалённые</string>
@@ -246,9 +246,14 @@
     <string name="no_product_in_cargo_unit_dialog">Данного товара нет в ГЕ, вы хотите добавить такой товар как излишек?</string>
     <string name="enter_processing_unit_number">Введите номер ЕО</string>
     <string name="vet_with_production_date_txt">По ВСД с датой производства</string>
-    <string name="exceeded_planned_quantity_in_processing_unit_dialog">Превышено плановое количество в ЕО. Принять количество и пометить как излишек?</string>
-    <string name="exceeded_planned_quantity_batch_in_processing_unit_dialog">Превышено плановое количество в ЕО. Принять количество и пометить как излишек? (Требуется ввод партионных признаков)</string>
+    <string name="exceeded_planned_quantity_batch_in_processing_unit_dialog">Превышено плановое количество в ЕО. Принять количество и пометить как излишек? Укажите партионные признаки</string>
     <string name="alert_both_surplus_and_underload">Не допускается одновременно указывать Излишек и Недогруз</string>
     <string name="alert_count_larger_cargo_unit">Введенное кол-во больше чем в ГЕ. Принять такое кол-во и пометить как \"больше чем в ТН\"?</string>
     <string name="the_shelf_life_expires">Срок годности товара истекает через %1$s дней (%2$s - кол-во дней СГ). Принять такой товар?</string>
+    <string name="msg_act_disagreement_transport_marriage">Акт разногласий по транспортировке №%1$s Был успешно сформирован и отправлен на печать</string>
+    <string name="unknown_goods_type">Неизвестный тип товара</string>
+    <string name="create_inbound_delivery_dialog">Входящая поставка отсутствует. Создать входящую поставку на открытое количество?</string>
+    <string name="quantity_st">Количество, шт</string>
+    <string name="quantity_kg">Количество, кг</string>
+    <string name="quantity_all">Общее количество, всего</string>
 </resources>

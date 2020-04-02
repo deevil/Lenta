@@ -10,6 +10,6 @@ interface ITaskBatchesRepository {
     fun addBatch(batch: TaskBatchInfo): Boolean
     fun updateBatches(newBatches: List<TaskBatchInfo>)
     fun changeBatch(batch: TaskBatchInfo): Boolean
-    fun deleteBatch(batch: TaskBatchInfo): Boolean
+    fun deleteBatch(delBatch: TaskBatchInfo): Boolean
     fun clear()
 }

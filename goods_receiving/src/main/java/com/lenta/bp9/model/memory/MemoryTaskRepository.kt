@@ -6,13 +6,21 @@ class MemoryTaskRepository : ITaskRepository {
 
     private val taskProductRepository: ITaskProductRepository = MemoryTaskProductRepository()
 
+    private val taskProductsDiscrepanciesRepository: ITaskProductsDiscrepanciesRepository = MemoryTaskProductsDiscrepanciesRepository()
+
     private val taskExciseStampRepository: ITaskExciseStampRepository = MemoryTaskExciseStampRepository()
+
+    private val taskExciseStampDiscrepanciesRepository: ITaskExciseStampDiscrepanciesRepository = MemoryTaskExciseStampDiscrepanciesRepository()
+
+    private val taskExciseStampBadRepository: ITaskExciseStampBadRepository = MemoryTaskExciseStampBadRepository()
+
+    private val taskBoxesRepository: ITaskBoxesRepository = MemoryTaskBoxesRepository()
+
+    private val taskBoxesDiscrepanciesRepository: ITaskBoxesDiscrepanciesRepository = MemoryTaskBoxesDiscrepanciesRepository()
 
     private val taskNotificationsRepository: ITaskNotificationsRepository = MemoryTaskNotificationsRepository()
 
     private val taskReviseDocumentsRepository: ITaskReviseDocumentsRepository = MemoryTaskReviseDocumentsRepository()
-
-    private val taskProductsDiscrepanciesRepository: ITaskProductsDiscrepanciesRepository = MemoryTaskProductsDiscrepanciesRepository()
 
     private val taskBatchesRepository: ITaskBatchesRepository = MemoryTaskBatchesRepository()
 
@@ -32,8 +40,28 @@ class MemoryTaskRepository : ITaskRepository {
         return taskProductRepository
     }
 
+    override fun getProductsDiscrepancies(): ITaskProductsDiscrepanciesRepository {
+        return taskProductsDiscrepanciesRepository
+    }
+
     override fun getExciseStamps(): ITaskExciseStampRepository {
         return taskExciseStampRepository
+    }
+
+    override fun getExciseStampsDiscrepancies(): ITaskExciseStampDiscrepanciesRepository {
+        return taskExciseStampDiscrepanciesRepository
+    }
+
+    override fun getExciseStampsBad(): ITaskExciseStampBadRepository {
+        return taskExciseStampBadRepository
+    }
+
+    override fun getBoxes(): ITaskBoxesRepository {
+        return taskBoxesRepository
+    }
+
+    override fun getBoxesDiscrepancies(): ITaskBoxesDiscrepanciesRepository {
+        return taskBoxesDiscrepanciesRepository
     }
 
     override fun getNotifications(): ITaskNotificationsRepository {
@@ -42,10 +70,6 @@ class MemoryTaskRepository : ITaskRepository {
 
     override fun getReviseDocuments(): ITaskReviseDocumentsRepository {
         return taskReviseDocumentsRepository
-    }
-
-    override fun getProductsDiscrepancies(): ITaskProductsDiscrepanciesRepository {
-        return taskProductsDiscrepanciesRepository
     }
 
     override fun getBatches(): ITaskBatchesRepository {

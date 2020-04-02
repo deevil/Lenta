@@ -3,10 +3,7 @@ package com.lenta.bp9.features.loading.tasks
 import android.content.Context
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import com.lenta.bp9.model.task.IReceivingTaskManager
-import com.lenta.bp9.model.task.TaskDescription
-import com.lenta.bp9.model.task.TaskNotification
-import com.lenta.bp9.model.task.TaskStatus
+import com.lenta.bp9.model.task.*
 import com.lenta.bp9.model.task.revise.*
 import com.lenta.bp9.platform.navigation.IScreenNavigator
 import com.lenta.bp9.repos.IRepoInMemoryHolder
@@ -73,7 +70,7 @@ class LoadingRegisterArrivalViewModel : CoreLoadingViewModel() {
 
         taskManager.updateTaskDescription(TaskDescription.from(result.taskDescription))
 
-        screenNavigator.openTaskCardScreen(TaskCardMode.Full)
+        screenNavigator.openTaskCardScreen(TaskCardMode.Full, taskManager.getReceivingTask()?.taskHeader?.taskType ?: TaskType.None)
 
         //trello https://trello.com/c/XKpOCvZo
         if (isInStockPaperTTN.value == false && isEdo.value == true && status.value == TaskStatus.Ordered) {

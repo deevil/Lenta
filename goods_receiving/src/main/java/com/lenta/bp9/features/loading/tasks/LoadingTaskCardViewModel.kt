@@ -124,7 +124,7 @@ class LoadingTaskCardViewModel : CoreLoadingViewModel() {
             val newTask = taskManager.newReceivingTask(taskHeader, TaskDescription.from(result.taskDescription))
             newTask?.taskRepository?.getNotifications()?.updateWithNotifications(notifications, null, null, null)
             taskManager.setTask(newTask)
-            screenNavigator.openTaskCardScreen(mode)
+            screenNavigator.openTaskCardScreen(mode, taskManager.getReceivingTask()?.taskHeader?.taskType ?: TaskType.None)
         }
     }
 
@@ -153,7 +153,7 @@ class LoadingTaskCardViewModel : CoreLoadingViewModel() {
                 val mercuryNotActual = result.taskMercuryNotActualRestData.map { TaskMercuryNotActual.from(hyperHive, it) }
 
                 val sectionInfo = result.sectionsInfo.map { TaskSectionInfo.from(it) }
-                val sectionProducts = result.sectionProducts.map { TaskSectionProducts.from(it) }
+                val sectionProducts = result.sectionProducts.map { TaskSectionProducts.from(hyperHive, it) }
 
                 val newTask = taskManager.newReceivingTask(taskHeader, TaskDescription.from(result.taskDescription))
                 newTask?.taskRepository?.getNotifications()?.updateWithNotifications(notifications, documentNotifications, productNotifications, conditionNotifications)
@@ -205,7 +205,7 @@ class LoadingTaskCardViewModel : CoreLoadingViewModel() {
                 //val mercuryNotActual = result.taskMercuryNotActualRestData.map { TaskMercuryNotActual.from(hyperHive, it) }
 
                 val sectionInfo = result.sectionsInfo.map { TaskSectionInfo.from(it) }
-                val sectionProducts = result.sectionProducts.map { TaskSectionProducts.from(it) }
+                val sectionProducts = result.sectionProducts.map { TaskSectionProducts.from(hyperHive, it) }
 
                 val cargoUnits = result.cargoUnits.map { TaskCargoUnitInfo.from(it) }
 
@@ -226,7 +226,7 @@ class LoadingTaskCardViewModel : CoreLoadingViewModel() {
                     //this.updateMercuryNotActual(mercuryNotActual)
                 }
                 newTask?.taskRepository?.getCargoUnits()?.updateCargoUnits(cargoUnits)
-                newTask?.updateTaskWithContentsRDS(taskContents.getTaskContentsRDSInfo(result))
+                newTask?.updateTaskWithContents(taskContents.getTaskContentsRDSInfo(result))
                 newTask?.taskRepository?.getSections()?.updateSections(sectionInfo, sectionProducts)
                 taskManager.setTask(newTask)
                 transferToNextScreen()
@@ -258,7 +258,7 @@ class LoadingTaskCardViewModel : CoreLoadingViewModel() {
                             screenNavigator.openControlDeliveryCargoUnitsScreen() //экран Контроль погрузки ГЕ
                         }
                         else -> {
-                            screenNavigator.openTaskCardScreen(TaskCardMode.Full)
+                            screenNavigator.openTaskCardScreen(TaskCardMode.Full, taskManager.getReceivingTask()?.taskHeader?.taskType ?: TaskType.None)
                         }
                     }
                 }
@@ -270,14 +270,20 @@ class LoadingTaskCardViewModel : CoreLoadingViewModel() {
         taskManager.getReceivingTask()?.let { task ->
             when (task.taskDescription.currentStatus) {
                 TaskStatus.Checking -> {
-                    if (task.taskRepository.getReviseDocuments().getDeliveryDocuments().isNotEmpty()) {
-                        screenNavigator.openTaskReviseScreen()
-                    } else if (task.taskRepository.getReviseDocuments().getProductDocuments().isNotEmpty()) {
-                        screenNavigator.openProductDocumentsReviseScreen()
-                    } else {
-                        screenNavigator.openTaskListScreen()
-                        screenNavigator.openCheckingNotNeededAlert(context.getString(R.string.revise_not_needed_checking)) {
-                            screenNavigator.openFinishReviseLoadingScreen()
+                    when {
+                        task.taskRepository.getReviseDocuments().getDeliveryDocuments().isNotEmpty() -> {
+                            screenNavigator.openTaskListScreen()
+                            screenNavigator.openTaskReviseScreen()
+                        }
+                        task.taskRepository.getReviseDocuments().getProductDocuments().isNotEmpty() -> {
+                            screenNavigator.openTaskListScreen()
+                            screenNavigator.openProductDocumentsReviseScreen()
+                        }
+                        else -> {
+                            screenNavigator.openTaskListScreen()
+                            screenNavigator.openCheckingNotNeededAlert(context.getString(R.string.revise_not_needed_checking)) {
+                                screenNavigator.openFinishReviseLoadingScreen()
+                            }
                         }
                     }
                 }
@@ -295,7 +301,7 @@ class LoadingTaskCardViewModel : CoreLoadingViewModel() {
                     screenNavigator.openGoodsListScreen()
                 }
                 else -> {
-                    screenNavigator.openTaskCardScreen(TaskCardMode.Full)
+                    screenNavigator.openTaskCardScreen(TaskCardMode.Full, taskManager.getReceivingTask()?.taskHeader?.taskType ?: TaskType.None)
                 }
             }
         }

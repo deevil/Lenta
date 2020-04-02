@@ -144,10 +144,6 @@ class ProcessGeneralProductService
         add((countNormAndParam - productInfo.orderQuantity.toDouble()).toString(), paramGrwOlGrundcat)
     }
 
-    fun getQuantityCapitalized() : Double {
-        return productInfo.quantityCapitalized.toDouble()
-    }
-
     fun getQuantityAllCategoryPPP(count: Double) : Double {
         return ((taskManager.getReceivingTask()?.taskRepository?.getProductsDiscrepancies()?.getCountAcceptOfProduct(productInfo) ?: 0.0)
                 + (taskManager.getReceivingTask()?.taskRepository?.getProductsDiscrepancies()?.getCountRefusalOfProduct(productInfo) ?: 0.0) + count)
@@ -186,7 +182,8 @@ class ProcessGeneralProductService
                                 uom = productInfo.uom,
                                 typeDiscrepancies = typeDiscrepancies,
                                 isNotEdit = false,
-                                isNew = false
+                                isNew = false,
+                                notEditNumberDiscrepancies = ""
                         ))
             } else {
                 taskManager.getReceivingTask()?.

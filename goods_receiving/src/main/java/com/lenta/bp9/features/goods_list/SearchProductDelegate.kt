@@ -185,7 +185,8 @@ class SearchProductDelegate @Inject constructor(
                 numberStampsControl = "0",
                 processingUnit = "",
                 isGoodsAddedAsSurplus = true,
-                mhdhbDays = materialInfo?.mhdhbDays ?: 0
+                mhdhbDays = materialInfo?.mhdhbDays ?: 0,
+                mhdrzDays = materialInfo?.mhdrzDays ?: 0
         )
         taskManager.getReceivingTask()!!.taskRepository.getProducts().addProduct(goodsSurplus)
         openProductScreen(taskProductInfo = goodsSurplus)
@@ -213,37 +214,40 @@ class SearchProductDelegate @Inject constructor(
     }
 
     private fun openProductScreen(taskProductInfo: TaskProductInfo, initialCount: Double = 0.0) {
-        viewModelScope().launch {
-            if (taskProductInfo.isNotEdit) {
-                screenNavigator.openGoodsDetailsScreen(taskProductInfo)
-            } else {
-                when (taskProductInfo.type) {
-                    ProductType.General -> {
-                        if (taskProductInfo.isVet) {
-                            //todo для ПГЕ Меркурия, товар, который добавляется как излишек и отсутствует в поставке, должна быть доработана логика со стороны аналитиков, пока не обрабатывается, а появляется сообщение (карточка трелло https://trello.com/c/eo1nRdKC)
-                            if (taskManager.getReceivingTask()?.taskHeader?.taskType == TaskType.RecalculationCargoUnit && taskProductInfo.isGoodsAddedAsSurplus) {
-                                screenNavigator.openNotImplementedScreenAlert("Карточка товара (ПГЕ для Меркурия)") //когда будет доработана ветка по пге по излишку, удалить это сообщение
-                            } else {
-                                screenNavigator.openGoodsMercuryInfoScreen(taskProductInfo, isDiscrepancy) //эта ветка для остальных заданий и товаров
-                            }
-                        } else {
-                            screenNavigator.openGoodsInfoScreen(productInfo = taskProductInfo, isDiscrepancy = isDiscrepancy, initialCount = initialCount)
-                        }
+        if (taskProductInfo.isNotEdit) {
+            screenNavigator.openGoodsDetailsScreen(taskProductInfo)
+        } else {
+            when (taskProductInfo.type) {
+                ProductType.General -> {
+                    if (taskProductInfo.isVet &&
+                            //это условие прописано временно, т.к. на продакшене для ПГЕ и ПРЦ не реализована таблица ET_VET_DIFF, она приходит пустой  в 28 и 30 рестах, поэтому обрабатываем данные товары не как вет, а как обычные. Не делал условия для типов задания, чтобы если для других типов задания эта таблица будет пустая, то товары обрабатывались как обычные, а не веттовары
+                            !taskManager.getReceivingTask()?.taskRepository?.getMercuryDiscrepancies()?.getMercuryInfo().isNullOrEmpty()) {
+                        screenNavigator.openGoodsMercuryInfoScreen(taskProductInfo, isDiscrepancy)
+                    } else {
+                        screenNavigator.openGoodsInfoScreen(productInfo = taskProductInfo, isDiscrepancy = isDiscrepancy)
                     }
-                    ProductType.ExciseAlcohol -> {
-                        if (taskProductInfo.isSet) {
+                }
+                ProductType.ExciseAlcohol -> {
+                    when {
+                        taskProductInfo.isSet -> {
                             screenNavigator.openNotImplementedScreenAlert("Информация о наборе")
                             //screenNavigator.openSetsInfoScreen(taskProductInfo)
-                        } else
-                            screenNavigator.openExciseAlcoInfoScreen(taskProductInfo)
+                        }
+                        taskProductInfo.isBoxFl -> { //алкоголь, коробочный учет https://trello.com/c/KbBbXj2t
+                            screenNavigator.openExciseAlcoBoxAccInfoScreen(taskProductInfo)
+                        }
+                        taskProductInfo.isMarkFl -> { //алкоголь, марочный учет
+                            screenNavigator.openNotImplementedScreenAlert("Информация о марочном учете")
+                            //screenNavigator.openExciseAlcoStampAccInfoScreen(taskProductInfo)
+                        }
+                        else -> screenNavigator.openAlertUnknownGoodsTypeScreen() //сообщение о неизвестном типе товара
                     }
-                    ProductType.NonExciseAlcohol -> screenNavigator.openNonExciseAlcoInfoScreen(taskProductInfo)
-                    else -> {
-                        screenNavigator.openAlertGoodsNotInOrderScreen() //todo сообщение о неизвестном типе товара?
-                    }
+                }
+                ProductType.NonExciseAlcohol -> screenNavigator.openNonExciseAlcoInfoScreen(taskProductInfo)
+                else -> {
+                    screenNavigator.openAlertUnknownGoodsTypeScreen() //сообщение о неизвестном типе товара
                 }
             }
         }
-
     }
 }

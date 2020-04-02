@@ -203,6 +203,10 @@ class ExternalSupplyTaskListViewModel : CoreViewModel(), PageSelectionListener, 
         }
     }
 
+    fun onClickLabel() {
+        navigator.openReprintLabelScreen()
+    }
+
 }
 
 data class ItemExternalSupplyTaskUi(

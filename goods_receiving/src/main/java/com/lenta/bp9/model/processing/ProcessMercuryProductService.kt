@@ -1,18 +1,20 @@
 package com.lenta.bp9.model.processing
 
-import com.lenta.bp9.model.task.*
-import com.lenta.bp9.model.task.revise.ProductVetDocumentRevise
+import com.lenta.bp9.model.task.IReceivingTaskManager
+import com.lenta.bp9.model.task.TaskMercuryDiscrepancies
+import com.lenta.bp9.model.task.TaskProductDiscrepancies
+import com.lenta.bp9.model.task.TaskProductInfo
 import com.lenta.bp9.repos.IRepoInMemoryHolder
 import com.lenta.shared.di.AppScope
-import com.lenta.shared.utilities.Logg
 import javax.inject.Inject
 
 const val PROCESSING_MERCURY_SAVED = 1
 const val PROCESSING_MERCURY_QUANT_GREAT_IN_VET_DOC = 2
 const val PROCESSING_MERCURY_QUANT_GREAT_IN_INVOICE = 3
-const val PROCESSING_MERCURY_SURPLUS_PGE_ENOUGH_QUANTITY = 4
-const val PROCESSING_MERCURY_SURPLUS_PGE_NOT_HAVE_ENOUGH_QUANTITY = 5
-const val PROCESSING_MERCURY_UNDERLOAD_AND_SURPLUS_IN_ONE_DELIVERY = 6
+const val PROCESSING_MERCURY_SURPLUS_IN_QUANTITY = 4
+const val PROCESSING_MERCURY_UNDERLOAD_AND_SURPLUS_IN_ONE_DELIVERY = 5
+const val PROCESSING_MERCURY_NORM_AND_UNDERLOAD_EXCEEDED_INVOICE = 6
+const val PROCESSING_MERCURY_NORM_AND_UNDERLOAD_EXCEEDED_VET_DOC = 7
 
 @AppScope
 class ProcessMercuryProductService
@@ -45,27 +47,24 @@ class ProcessMercuryProductService
         else null
     }
 
-    fun add(countForProduct: String, countForVetDoc: String, reasonRejectionCode: String, manufacturer: String, productionDate: String){
+    fun add(count: String, typeDiscrepancies: String, manufacturer: String, productionDate: String){
         isModifications = true
-        val countAddForProduct = if (taskManager.getReceivingTask()?.taskHeader?.taskType == TaskType.RecalculationCargoUnit) {
-            countForProduct.toDouble()
-        } else { //для ППП
-            if (reasonRejectionCode == "1") countForProduct.toDouble() else getNewCountRefusalOfReasonRejection(reasonRejectionCode) + countForProduct.toDouble()
-        }
+        val countAdd = getNewCountByDiscrepanciesOfProduct(typeDiscrepancies) + count.toDouble()
 
         var foundDiscrepancy = newProductDiscrepancies.findLast {
-            it.typeDiscrepancies == reasonRejectionCode
+            it.typeDiscrepancies == typeDiscrepancies
         }
 
-        foundDiscrepancy = foundDiscrepancy?.copy(numberDiscrepancies = countAddForProduct.toString())
+        foundDiscrepancy = foundDiscrepancy?.copy(numberDiscrepancies = countAdd.toString())
                 ?: TaskProductDiscrepancies(
                         materialNumber = productInfo.materialNumber,
                         exidv = "",
-                        numberDiscrepancies = countAddForProduct.toString(),
+                        numberDiscrepancies = countAdd.toString(),
                         uom = productInfo.uom,
-                        typeDiscrepancies = reasonRejectionCode,
+                        typeDiscrepancies = typeDiscrepancies,
                         isNotEdit = false,
-                        isNew = false
+                        isNew = false,
+                        notEditNumberDiscrepancies = ""
                 )
 
         val vetDocumentVolume = taskManager.getReceivingTask()?.taskRepository?.getMercuryDiscrepancies()?.findMercuryInfoOfProduct(productInfo)?.filter {
@@ -77,23 +76,23 @@ class ProcessMercuryProductService
         val vetDocumentCountAlreadyAdded = newVetProductDiscrepancies.filter {
             it.manufacturer == manufacturer &&
                     it.productionDate == productionDate &&
-                    it.typeDiscrepancies == reasonRejectionCode
+                    it.typeDiscrepancies == typeDiscrepancies
         }.sumByDouble {
             it.numberDiscrepancies
         }
-        var countAllAdd = countForVetDoc.toDouble() + vetDocumentCountAlreadyAdded
+        var countAllAddVetDoc = countAdd + vetDocumentCountAlreadyAdded
 
         val foundVetDiscrepancy = taskManager.getReceivingTask()?.taskRepository?.getMercuryDiscrepancies()?.findMercuryInfoOfProduct(productInfo)?.filter {
             it.manufacturer == manufacturer &&
                     it.productionDate == productionDate
         }?.map {
             val addCount: Double
-            if (vetDocumentVolume <= countAllAdd && countAllAdd > 0.0) {
+            if (vetDocumentVolume <= countAllAddVetDoc && countAllAddVetDoc > 0.0) {
                 addCount = vetDocumentVolume
-                countAllAdd -= vetDocumentVolume
+                countAllAddVetDoc -= vetDocumentVolume
             } else {
-                addCount = countAllAdd
-                countAllAdd = 0.0
+                addCount = countAllAddVetDoc
+                countAllAddVetDoc = 0.0
             }
 
             TaskMercuryDiscrepancies(
@@ -101,7 +100,7 @@ class ProcessMercuryProductService
                     vetDocumentID = it.vetDocumentID,
                     volume = it.volume,
                     uom = productInfo.uom,
-                    typeDiscrepancies = reasonRejectionCode,
+                    typeDiscrepancies = typeDiscrepancies,
                     numberDiscrepancies = addCount,
                     productionDate = it.productionDate,
                     manufacturer = it.manufacturer,
@@ -115,15 +114,92 @@ class ProcessMercuryProductService
         }
     }
 
-    fun addSurplusPGEEnoughQuantity(count: Double, manufacturer: String, productionDate: String) {
-        val countNorm = productInfo.orderQuantity.toDouble() - (getQuantityAllCategoryExceptNonOrderOfProductPGE(count) - count)
-        val countSurplus = count - countNorm
-        if (countNorm > 0.0) {
-            add(countNorm.toString(), countNorm.toString(), "1", manufacturer, productionDate)
+    fun addSurplusInQuantityPGE(count: Double, manufacturer: String, productionDate: String) {
+        val countNormAdd = productInfo.orderQuantity.toDouble() - (getQuantityAllCategoryExceptNonOrderOfProductPGE(count) - count)
+        val countSurplusAdd = count - countNormAdd
+        if (countNormAdd > 0.0) {
+            add(countNormAdd.toString(), "1", manufacturer, productionDate)
         }
-        if (countSurplus > 0.0) {
-            add(countSurplus.toString(), countSurplus.toString(), "2", manufacturer, productionDate)
+        if (countSurplusAdd > 0.0) {
+            add(countSurplusAdd.toString(), "2", manufacturer, productionDate)
         }
+    }
+
+    fun addNormAndUnderloadExceededInvoicePGE(count: Double, manufacturer: String, productionDate: String) {
+        val countExceeded = getQuantityAllCategoryExceptNonOrderOfProductPGE(count) - productInfo.orderQuantity.toDouble()
+
+        //удаляем превышающее количество из недогруза в текущей ВСД
+        var delCount: Double = countExceeded
+        newVetProductDiscrepancies.filter {newVet ->
+            newVet.typeDiscrepancies == "3" && newVet.manufacturer == manufacturer && newVet.productionDate == productionDate
+        }.map {
+            if ((it.numberDiscrepancies - delCount) < 0.0) {
+                newVetProductDiscrepancies.remove(it)
+                delCount -= it.numberDiscrepancies
+            } else {
+                if ((it.numberDiscrepancies - delCount) > 0.0 ) {
+                    changeNewVetProductDiscrepancy(it.copy(numberDiscrepancies = it.numberDiscrepancies - delCount))
+                } else {
+                    newVetProductDiscrepancies.remove(it)
+                }
+                delCount -= it.numberDiscrepancies
+            }
+        }
+
+        //у продукта удаляем превышающее количество из недогруза
+        newProductDiscrepancies.findLast {it.typeDiscrepancies == "3"}?.let {
+            if ((it.numberDiscrepancies.toDouble() - countExceeded) > 0.0) {
+                changeNewProductDiscrepancy(it.copy(numberDiscrepancies = (it.numberDiscrepancies.toDouble() - countExceeded).toString() ))
+            } else {
+                newProductDiscrepancies.remove(it)
+            }
+        }
+
+        //добавляем в Норму превышающее количество из недогруза кол-во до максимума по инфойсу(productInfo.orderQuantity)
+        add(count.toString(), "1", manufacturer, productionDate)
+    }
+
+    fun addNormAndUnderloadExceededVetDocPGE(count: Double, manufacturer: String, productionDate: String) {
+        val vetDocumentVolume = taskManager.getReceivingTask()?.taskRepository?.getMercuryDiscrepancies()?.findMercuryInfoOfProduct(productInfo)?.filter {
+            it.manufacturer == manufacturer &&
+                    it.productionDate == productionDate
+        }?.sumByDouble {
+            it.volume
+        } ?: 0.0
+
+        val countExceeded = getQuantityAllCategoryExceptNonOrderOfVetDocPGE(count, manufacturer, productionDate) - vetDocumentVolume
+        val countUnderloadVetDoc = newVetProductDiscrepancies.filter {
+            it.typeDiscrepancies == "3" && it.manufacturer == manufacturer && it.productionDate == productionDate
+        }.sumByDouble {
+            it.numberDiscrepancies
+        } //кол-во расхождений по недогрузу считаем через фильтр, т.к. ВСД могут быть одинаковые по производителю и дате (см. vetDocumentVolume в ф-ции add() )
+
+        //удаляем расхождения по недогрузу из текущей ВСД
+        newVetProductDiscrepancies.removeAll(newVetProductDiscrepancies.filter {
+            it.typeDiscrepancies == "3" && it.manufacturer == manufacturer && it.productionDate == productionDate
+        })
+
+        //у продукта удаляем кол-во недогруза указанного в текущей ВСД
+        newProductDiscrepancies.findLast {it.typeDiscrepancies == "3"}?.let {
+            if ((it.numberDiscrepancies.toDouble() - countUnderloadVetDoc) > 0.0) {
+                changeNewProductDiscrepancy(it.copy(numberDiscrepancies = (it.numberDiscrepancies.toDouble() - countUnderloadVetDoc).toString() ))
+            } else {
+                newProductDiscrepancies.remove(it)
+            }
+        }
+
+        //после удаления недогруза подсчитываем оставшееся кол-во по текущей ВСД
+        val vetDocumentCountAlreadyAdded = newVetProductDiscrepancies.filter {
+            it.manufacturer == manufacturer &&
+                    it.productionDate == productionDate
+        }.sumByDouble {
+            it.numberDiscrepancies
+        }
+
+        //весь, обработанный раннее товар из категории «Недогруз», сохраняем в категорию «Норма», а превышающее количество в Излишек
+        val countNormAdd = vetDocumentVolume - vetDocumentCountAlreadyAdded
+        add(countNormAdd.toString(), "1", manufacturer, productionDate)
+        add(countExceeded.toString(), "2", manufacturer, productionDate)
     }
 
     fun delDiscrepancy(typeDiscrepancies: String) {
@@ -133,10 +209,14 @@ class ProcessMercuryProductService
                 delProductDiscrepancies.add(newProductDiscrepancies[i])
             }
         }
-        if (delProductDiscrepancies.isNotEmpty()) {
-            newProductDiscrepancies.removeAll(delProductDiscrepancies)
+        delProductDiscrepancies.map {
+            if (it.isNotEdit) { //не редактируемое расхождение https://trello.com/c/Mo9AqreT
+                newProductDiscrepancies.remove(it)
+                newProductDiscrepancies.add(it)
+            } else {
+                newProductDiscrepancies.remove(it)
+            }
         }
-
 
         val delVetProductDiscrepancies = ArrayList<TaskMercuryDiscrepancies>()
         for (i in newVetProductDiscrepancies.indices) {
@@ -272,15 +352,36 @@ class ProcessMercuryProductService
         }
 
         if (reasonRejectionCode == "2" &&
-                getQuantityAllCategoryExceptNonOrderOfProductPGE(count) > productInfo.orderQuantity.toDouble() &&
-                getQuantityAllCategoryExceptNonOrderOfVetDocPGE(count, manufacturer, productionDate) <= vetDocumentIDVolume) {
-            return PROCESSING_MERCURY_SURPLUS_PGE_ENOUGH_QUANTITY
+                getQuantityAllCategoryExceptNonOrderOfProductPGE(count) > productInfo.orderQuantity.toDouble() /**&& ddi скорее всего здесь должно быть два условия, больше, и меньше или равно, а згачит условие не актуально, см. ТП ТП (меркурий по ПГЕ) -> 3.2.2.16 Обработка расхождений при пересчете ГЕ (Меркурий) - 2.2.	Излишек по количеству
+                (getQuantityAllCategoryExceptNonOrderOfVetDocPGE(count, manufacturer, productionDate) > vetDocumentIDVolume || getQuantityAllCategoryExceptNonOrderOfVetDocPGE(count, manufacturer, productionDate) < vetDocumentIDVolume)*/
+        ) {
+            return PROCESSING_MERCURY_SURPLUS_IN_QUANTITY
         }
 
-        if (reasonRejectionCode == "2" &&
-                getQuantityAllCategoryExceptNonOrderOfProductPGE(count) > productInfo.orderQuantity.toDouble() &&
-                getQuantityAllCategoryExceptNonOrderOfVetDocPGE(count, manufacturer, productionDate) > vetDocumentIDVolume) {
-            return PROCESSING_MERCURY_SURPLUS_PGE_NOT_HAVE_ENOUGH_QUANTITY
+        //норма и недогруз ТП 4.2
+        if (reasonRejectionCode == "1") {
+            //ТП 4.2.1.1
+            if (newVetProductDiscrepancies.any {it.manufacturer == manufacturer &&
+                            it.productionDate == productionDate &&
+                            it.typeDiscrepancies == "3"} &&
+                            getQuantityAllCategoryExceptNonOrderOfVetDocPGE(count, manufacturer, productionDate) <= vetDocumentIDVolume &&
+                            getQuantityAllCategoryExceptNonOrderOfProductPGE(count) <= productInfo.orderQuantity.toDouble()) {
+                return PROCESSING_MERCURY_SAVED
+            }
+            if (newVetProductDiscrepancies.any {it.manufacturer == manufacturer &&
+                            it.productionDate == productionDate &&
+                            it.typeDiscrepancies == "3"} &&
+                    getQuantityAllCategoryExceptNonOrderOfVetDocPGE(count, manufacturer, productionDate) <= vetDocumentIDVolume &&
+                    getQuantityAllCategoryExceptNonOrderOfProductPGE(count) > productInfo.orderQuantity.toDouble()) {
+                return PROCESSING_MERCURY_NORM_AND_UNDERLOAD_EXCEEDED_INVOICE
+            }
+            //ТП 4.2.1.2
+            if (newVetProductDiscrepancies.any {it.manufacturer == manufacturer &&
+                            it.productionDate == productionDate &&
+                            it.typeDiscrepancies == "3"} &&
+                            getQuantityAllCategoryExceptNonOrderOfVetDocPGE(count, manufacturer, productionDate) > vetDocumentIDVolume) {
+                return PROCESSING_MERCURY_NORM_AND_UNDERLOAD_EXCEEDED_VET_DOC
+            }
         }
 
         if ( getQuantityAllCategoryExceptNonOrderOfVetDocPGE(count, manufacturer, productionDate) > vetDocumentIDVolume ) {
@@ -344,14 +445,12 @@ class ProcessMercuryProductService
         }
     }
 
-    private fun getNewCountRefusalOfReasonRejection(reasonRejectionCode: String) : Double {
-        var countRefusal = 0.0
-        newProductDiscrepancies.filter {
-            it.typeDiscrepancies == reasonRejectionCode
-        }.map {discrepancies ->
-            countRefusal += discrepancies.numberDiscrepancies.toDouble()
+    private fun getNewCountByDiscrepanciesOfProduct(typeDiscrepancies: String) : Double {
+        return newProductDiscrepancies.filter {
+            it.typeDiscrepancies == typeDiscrepancies
+        }.sumByDouble {
+            it.numberDiscrepancies.toDouble()
         }
-        return countRefusal
     }
 
     fun modifications() : Boolean {

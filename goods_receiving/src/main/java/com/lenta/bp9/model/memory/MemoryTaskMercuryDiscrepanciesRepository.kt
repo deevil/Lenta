@@ -69,51 +69,31 @@ class MemoryTaskMercuryDiscrepanciesRepository : ITaskMercuryDiscrepanciesReposi
     }
 
     override fun changeMercuryDiscrepancy(discrepancy: TaskMercuryDiscrepancies): Boolean {
-        deleteMercuryDiscrepancyForVetDoc(discrepancy)
+        deleteMercuryDiscrepancy(discrepancy)
         return addMercuryDiscrepancy(discrepancy)
     }
 
-    override fun deleteMercuryDiscrepancyForVetDoc(discrepancy: TaskMercuryDiscrepancies): Boolean {
-        var index = -1
-        for (i in mercuryDiscrepancies.indices) {
-            if (discrepancy.materialNumber == mercuryDiscrepancies[i].materialNumber &&
-                    discrepancy.manufacturer == mercuryDiscrepancies[i].manufacturer &&
-                    discrepancy.productionDate == mercuryDiscrepancies[i].productionDate &&
-                    discrepancy.vetDocumentID == mercuryDiscrepancies[i].vetDocumentID &&
-                    discrepancy.typeDiscrepancies == mercuryDiscrepancies[i].typeDiscrepancies) {
-                index = i
+    override fun deleteMercuryDiscrepancy(delDiscrepancy: TaskMercuryDiscrepancies): Boolean {
+        mercuryDiscrepancies.map { it }.filter {discrepancy ->
+            if (delDiscrepancy.materialNumber == discrepancy.materialNumber &&
+                    delDiscrepancy.manufacturer == discrepancy.manufacturer &&
+                    delDiscrepancy.productionDate == discrepancy.productionDate &&
+                    delDiscrepancy.vetDocumentID == discrepancy.vetDocumentID &&
+                    delDiscrepancy.typeDiscrepancies == discrepancy.typeDiscrepancies) {
+                mercuryDiscrepancies.remove(discrepancy)
+                return@filter true
             }
-        }
+            return@filter false
 
-        if (index == -1) {
-            return false
+        }.let {
+            return it.isNotEmpty()
         }
-        mercuryDiscrepancies.removeAt(index)
-        return true
     }
 
-    override fun deleteMercuryDiscrepancy(discrepancy: TaskMercuryDiscrepancies): Boolean {
+    override fun deleteMercuryDiscrepancyOfProduct(materialNumber: String, typeDiscrepancies: String): Boolean {
         val delDiscrepancies = ArrayList<TaskMercuryDiscrepancies>()
         for (i in mercuryDiscrepancies.indices) {
-            if (discrepancy.materialNumber == mercuryDiscrepancies[i].materialNumber &&
-                    discrepancy.typeDiscrepancies == mercuryDiscrepancies[i].typeDiscrepancies) {
-                delDiscrepancies.add(mercuryDiscrepancies[i])
-            }
-        }
-
-        if (delDiscrepancies.isEmpty()) {
-            return false
-        }
-
-        mercuryDiscrepancies.removeAll(delDiscrepancies)
-        return true
-    }
-
-    override fun deleteMercuryDiscrepancy(materialNumber: String, typeDiscrepancies: String): Boolean {
-        val delDiscrepancies = ArrayList<TaskMercuryDiscrepancies>()
-        for (i in mercuryDiscrepancies.indices) {
-            if (materialNumber == mercuryDiscrepancies[i].materialNumber &&
-                    typeDiscrepancies == mercuryDiscrepancies[i].typeDiscrepancies) {
+            if (materialNumber == mercuryDiscrepancies[i].materialNumber && typeDiscrepancies == mercuryDiscrepancies[i].typeDiscrepancies) {
                 delDiscrepancies.add(mercuryDiscrepancies[i])
             }
         }
@@ -138,7 +118,9 @@ class MemoryTaskMercuryDiscrepanciesRepository : ITaskMercuryDiscrepanciesReposi
             return false
         }
 
-        mercuryDiscrepancies.removeAll(delDiscrepancies)
+        delDiscrepancies.map {
+            deleteMercuryDiscrepancy(it)
+        }
         return true
     }
 

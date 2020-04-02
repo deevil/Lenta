@@ -55,19 +55,16 @@ class MemoryTaskCargoUnitsRepository : ITaskCargoUnitsRepository {
     }
 
     override fun deleteCargoUnit(cargoUnit: TaskCargoUnitInfo): Boolean {
-        var index = -1
-        for (i in cargoUnitsInfo.indices) {
-            if (cargoUnit.cargoUnitNumber == cargoUnitsInfo[i].cargoUnitNumber) {
-                index = i
+        cargoUnitsInfo.map { it }.filter {unitInfo ->
+            if (cargoUnit.cargoUnitNumber == unitInfo.cargoUnitNumber) {
+                cargoUnitsInfo.remove(unitInfo)
+                return@filter true
             }
-        }
+            return@filter false
 
-        if (index == -1) {
-            return false
+        }.let {
+            return it.isNotEmpty()
         }
-
-        cargoUnitsInfo.removeAt(index)
-        return true
     }
 
     override fun clear() {

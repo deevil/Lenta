@@ -6,12 +6,18 @@ import com.lenta.bp9.features.transport_marriage.ActItem
 import com.lenta.bp9.model.task.IReceivingTaskManager
 import com.lenta.bp9.model.task.TaskTransportMarriageInfo
 import com.lenta.bp9.platform.navigation.IScreenNavigator
+import com.lenta.bp9.platform.requestCodeTypeBarCode
+import com.lenta.bp9.platform.requestCodeTypeSap
 import com.lenta.bp9.repos.IRepoInMemoryHolder
 import com.lenta.bp9.requests.network.ZmpUtzGrz26V001NetRequest
 import com.lenta.bp9.requests.network.ZmpUtzGrz26V001Params
 import com.lenta.bp9.requests.network.ZmpUtzGrz26V001Result
+import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.platform.viewmodel.CoreViewModel
+import com.lenta.shared.requests.combined.scan_info.ScanInfoRequest
+import com.lenta.shared.requests.combined.scan_info.ScanInfoRequestParams
+import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.SelectionItemsHelper
 import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
 import com.lenta.shared.utilities.extentions.map
@@ -32,12 +38,17 @@ class TransportMarriageCargoUnitViewModel : CoreViewModel(), OnOkInSoftKeyboardL
     lateinit var hyperHive: HyperHive
     @Inject
     lateinit var repoInMemoryHolder: IRepoInMemoryHolder
+    @Inject
+    lateinit var scanInfoRequest: ScanInfoRequest
+    @Inject
+    lateinit var sessionInfo: ISessionInfo
 
     val actSelectionsHelper = SelectionItemsHelper()
     val cargoUnitNumber: MutableLiveData<String> = MutableLiveData("")
     val eanCode: MutableLiveData<String> = MutableLiveData()
     val requestFocusToEan: MutableLiveData<Boolean> = MutableLiveData()
     val listAct:MutableLiveData<List<ActItem>> = MutableLiveData()
+    private val isScan: MutableLiveData<Boolean> = MutableLiveData(false)
     private val origTransportMarriage: MutableLiveData<List<TaskTransportMarriageInfo>?> = MutableLiveData()
     val deleteButtonEnabled: MutableLiveData<Boolean> = actSelectionsHelper.selectedPositions.map {
         it?.isNotEmpty() ?: false
@@ -82,15 +93,15 @@ class TransportMarriageCargoUnitViewModel : CoreViewModel(), OnOkInSoftKeyboardL
         actSelectionsHelper.clearPositions()
     }
 
-    private fun searchProduct(materialNumber: String, processingUnitNumber: String?) {
+    private fun searchProduct(materialNumber: String) {
         viewModelScope.launch {
             screenNavigator.showProgressLoadingData()
             val foundTransportMarriageInfo = taskManager.getReceivingTask()?.taskRepository?.getTransportMarriage()?.findTransportMarriage(cargoUnitNumber.value ?: "", materialNumber)
-            if (foundTransportMarriageInfo != null) {
+            if (!foundTransportMarriageInfo.isNullOrEmpty()) {
                 foundTransportMarriageInfo.findLast {
-                    it.processingUnitNumber == processingUnitNumber
+                    it.processingUnitNumber == cargoUnitNumber.value
                 }?.let {
-                    screenNavigator.openTransportMarriageGoodsInfoScreen(it)
+                    screenNavigator.openTransportMarriageGoodsInfoScreen(transportMarriageInfo = it)
                 }
             } else {
                 taskManager.getReceivingTask()?.let { task ->
@@ -118,27 +129,73 @@ class TransportMarriageCargoUnitViewModel : CoreViewModel(), OnOkInSoftKeyboardL
             }
             taskManager.getReceivingTask()?.taskRepository?.getTransportMarriage()?.findTransportMarriage(cargoUnitNumber = cargoUnitNumber.value ?: "", materialNumber = result.processingUnits[0].materialNumber)?.
                     map {
-                        screenNavigator.openTransportMarriageGoodsInfoScreen(it)
+                        screenNavigator.openTransportMarriageGoodsInfoScreen(transportMarriageInfo = it)
                         return@map
                     }
         }
     }
 
     fun onClickItemPosition(position: Int) {
+        isScan.value = false
         listAct.value?.get(position)?.transportMarriage?.let {
-            searchProduct(materialNumber = it.materialNumber, processingUnitNumber = it.processingUnitNumber)
+            searchProduct(materialNumber = it.materialNumber)
         }
     }
 
     fun onScanResult(data: String) {
-        searchProduct(materialNumber = data, processingUnitNumber = null)
+        viewModelScope.launch {
+            isScan.value = true
+            screenNavigator.showProgressLoadingData()
+
+            scanInfoRequest(
+                    ScanInfoRequestParams(
+                            number = data,
+                            tkNumber = sessionInfo.market ?: "",
+                            fromScan = true,
+                            isBarCode = true
+                    )
+            ).also {
+                screenNavigator.hideProgress()
+            }.either(::handleFailure) { scanInfoResult ->
+                searchProduct(materialNumber = scanInfoResult.productInfo.materialNumber)
+            }
+        }
+
     }
 
     override fun onOkInSoftKeyboard(): Boolean {
-        eanCode.value?.let {
-            searchProduct(materialNumber = it, processingUnitNumber = null)
+        isScan.value = true
+        when (eanCode.value?.length) {
+            6 -> {
+                eanCode.value?.let {
+                    searchProduct(materialNumber = "000000000000$it")
+                }
+            }
+            12 -> {
+                screenNavigator.openSelectTypeCodeScreen(requestCodeTypeSap, requestCodeTypeBarCode)
+            }
+            else -> {
+                eanCode.value?.let {
+                    onScanResult(it)
+                }
+            }
         }
         return true
+    }
+
+    fun onResult(code: Int?) {
+        when (code) {
+            requestCodeTypeSap -> {
+                eanCode.value?.let {
+                    searchProduct(materialNumber = "000000000000${it.takeLast(6)}")
+                }
+            }
+            requestCodeTypeBarCode -> {
+                eanCode.value?.let {
+                    onScanResult(it)
+                }
+            }
+        }
     }
 
     private fun discrepancies() : Boolean {
@@ -191,7 +248,23 @@ class TransportMarriageCargoUnitViewModel : CoreViewModel(), OnOkInSoftKeyboardL
                 val batchNumber = result.taskBatches.findLast {batchesInfo ->
                     batchesInfo.materialNumber == processingUnitInfo.materialNumber && batchesInfo.processingUnitNumber == processingUnitInfo.processingUnitNumber
                 }?.batchNumber
-                taskManager.getReceivingTask()?.taskRepository?.getTransportMarriage()?.addTransportMarriage(TaskTransportMarriageInfo.from(hyperHive, processingUnitInfo, cargoUnitNumber.value ?: "", batchNumber ?: ""))
+                taskManager.getReceivingTask()?.
+                        taskRepository?.
+                        getTransportMarriage()?.
+                        addTransportMarriage(TaskTransportMarriageInfo.from(hyperHive, processingUnitInfo, cargoUnitNumber.value ?: "", batchNumber ?: ""))
+            }
+            //если нажали Целиком, то MENGE для каждого товара сразу записываем все кол-во из поля quantityInvestments
+            val transportMarriageInfoCurrent = taskManager.getReceivingTask()?.
+                    taskRepository?.
+                    getTransportMarriage()?.
+                    getTransportMarriage()?.map {
+                it.copy(quantity = it.quantityInvestments)
+            }
+            transportMarriageInfoCurrent?.let {
+                taskManager.getReceivingTask()?.
+                        taskRepository?.
+                        getTransportMarriage()?.
+                        updateTransportMarriage(it)
             }
             updateData()
         }

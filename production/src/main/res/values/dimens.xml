@@ -32,4 +32,15 @@
     <integer name="sku_plan_quantity_column_2">60</integer>
     <integer name="sku_plan_quantity_column_3">30</integer>
 
+    <!-- Список товаров - № / ПФ / Тара/Печать / Кол-во -->
+    <integer name="reprint_label_column_1">15</integer>
+    <integer name="reprint_label_column_2">40</integer>
+    <integer name="reprint_label_column_3">25</integer>
+    <integer name="reprint_label_column_4">20</integer>
+
+    <!-- Список тар - № / Тара/Тип/Причина / Кол-во -->
+    <integer name="pack_type_cause_quantity_column_1">10</integer>
+    <integer name="pack_type_cause_quantity_column_2">60</integer>
+    <integer name="pack_type_cause_quantity_column_3">30</integer>
+
 </resources>

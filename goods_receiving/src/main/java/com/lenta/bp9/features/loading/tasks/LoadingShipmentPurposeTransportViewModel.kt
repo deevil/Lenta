@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.lenta.bp9.model.task.IReceivingTaskManager
 import com.lenta.bp9.model.task.TaskDescription
 import com.lenta.bp9.model.task.TaskNotification
+import com.lenta.bp9.model.task.TaskType
 import com.lenta.bp9.model.task.revise.TransportConditionRestData
 import com.lenta.bp9.platform.navigation.IScreenNavigator
 import com.lenta.bp9.requests.network.*
@@ -69,7 +70,7 @@ class LoadingShipmentPurposeTransportViewModel : CoreLoadingViewModel() {
         taskManager.updateTaskDescription(TaskDescription.from(result.taskDescription))
         val notifications = result.notifications.map { TaskNotification.from(it) }
         taskManager.getReceivingTask()?.taskRepository?.getNotifications()?.updateWithNotifications(general = notifications, document = null, product = null, condition = null)
-        screenNavigator.openTaskCardScreen(TaskCardMode.Full)
+        screenNavigator.openTaskCardScreen(TaskCardMode.Full, taskManager.getReceivingTask()?.taskHeader?.taskType ?: TaskType.None)
     }
 
     override fun clean() {

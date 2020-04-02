@@ -10,7 +10,8 @@ import com.lenta.bp9.features.driver_data.DriverDataViewModel
 import com.lenta.bp9.features.editing_invoice.EditingInvoiceViewModel
 import com.lenta.bp9.features.formed_docs.FormedDocsViewModel
 import com.lenta.bp9.features.goods_details.GoodsDetailsViewModel
-import com.lenta.bp9.features.goods_information.excise_alco.ExciseAlcoInfoViewModel
+import com.lenta.bp9.features.goods_information.excise_alco_stamp_acc.ExciseAlcoStampAccInfoViewModel
+import com.lenta.bp9.features.goods_information.excise_alco_box_acc.ExciseAlcoBoxAccInfoViewModel
 import com.lenta.bp9.features.goods_information.general.GoodsInfoViewModel
 import com.lenta.bp9.features.goods_information.mercury.GoodsMercuryInfoViewModel
 import com.lenta.bp9.features.goods_information.non_excise_alco.NonExciseAlcoInfoViewModel
@@ -77,7 +78,7 @@ interface AppComponent {
     fun inject(it: RussianAlcoFormReviseViewModel)
     fun inject(it: DiscrepancyListViewModel)
     fun inject(it: NonExciseAlcoInfoViewModel)
-    fun inject(it: ExciseAlcoInfoViewModel)
+    fun inject(it: ExciseAlcoStampAccInfoViewModel)
     fun inject(it: LoadingFinishReviseViewModel)
     fun inject(it: LoadingStartReviseViewModel)
     fun inject(it: LoadingUnlockTaskViewModel)
@@ -117,4 +118,5 @@ interface AppComponent {
     fun inject(it: TransportMarriageCargoUnitViewModel)
     fun inject(it: TransportMarriageGoodsInfoViewModel)
     fun inject(it: TransportMarriageGoodsDetailsViewModel)
+    fun inject(it: ExciseAlcoBoxAccInfoViewModel)
 }

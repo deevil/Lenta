@@ -25,11 +25,11 @@ class Printer @Inject constructor(
         private val analyticsHelper: AnalyticsHelper
 ) : IPrinter {
 
-    override fun printTag(printInnerTagInfo: PrintInnerTagInfo, ip: String): Either<Failure, Boolean> {
+    override fun printLabel(labelInfo: LabelInfo, ip: String): Either<Failure, Boolean> {
 
         val template = readTemplateFromAsset() ?: return Either.Left(Failure.FileReadingError)
 
-        generatePriceTagFromTemplate(printInnerTagInfo, template).let {
+        generatePriceLabelFromTemplate(labelInfo, template).let {
             return if (it == null) {
                 Either.Left(Failure.PrintTemplateError)
             } else {
@@ -81,7 +81,7 @@ class Printer @Inject constructor(
         })
     }
 
-    private fun generatePriceTagFromTemplate(printInnerTagInfo: PrintInnerTagInfo, template: String): String? {
+    private fun generatePriceLabelFromTemplate(labelInfo: LabelInfo, template: String): String? {
 
         if (template.isBlank()) {
             return null
@@ -91,20 +91,20 @@ class Printer @Inject constructor(
 
         mutableMapOf<String, String>().apply {
 
-            put("QUANTITY", printInnerTagInfo.quantity)
-            put("CODECONT", printInnerTagInfo.codeCont)
-            put("STORCOND", printInnerTagInfo.storCond)
-            put("PLANAUFFINISH", printInnerTagInfo.planAufFinish)
-            put("AUFNR", printInnerTagInfo.aufnr)
-            put("NAMEOSN", printInnerTagInfo.nameOsn)
-            put("DATEEXPIR", printInnerTagInfo.dateExpir)
-            put("GOODSNAME", printInnerTagInfo.goodsName)
-            put("WEIGHER", printInnerTagInfo.weigher)
-            put("PRODUCTTIME", printInnerTagInfo.productTime)
-            put("NAMEDONE", printInnerTagInfo.nameDone)
-            put("GOODSCODE", printInnerTagInfo.goodsCode)
-            put("BARCODE", printInnerTagInfo.barcode)
-            put("TEXTBARCODE", printInnerTagInfo.barcodeText)
+            put("QUANTITY", labelInfo.quantity)
+            put("CODECONT", labelInfo.codeCont)
+            put("STORCOND", labelInfo.storCond)
+            put("PLANAUFFINISH", labelInfo.planAufFinish)
+            put("AUFNR", labelInfo.aufnr)
+            put("NAMEOSN", labelInfo.nameOsn)
+            put("DATEEXPIR", labelInfo.dateExpir)
+            put("GOODSNAME", labelInfo.goodsName)
+            put("WEIGHER", labelInfo.weigher)
+            put("PRODUCTTIME", labelInfo.productTime)
+            put("NAMEDONE", labelInfo.nameDone)
+            put("GOODSCODE", labelInfo.goodsCode)
+            put("BARCODE", labelInfo.barcode)
+            put("TEXTBARCODE", labelInfo.barcodeText)
 
 
             /*put("GOODSNAME",
@@ -172,64 +172,36 @@ class Printer @Inject constructor(
 }
 
 interface IPrinter {
-    fun printTag(printInnerTagInfo: PrintInnerTagInfo, ip: String): Either<Failure, Boolean>
+    fun printLabel(labelInfo: LabelInfo, ip: String): Either<Failure, Boolean>
 }
 
-data class PrintInnerTagInfo(
-        /**
-         * количество
-         **/
+data class LabelInfo(
+        /** Количество **/
         val quantity: String,
-        /**
-         * номер тары
-         **/
+        /** Номер тары **/
         val codeCont: String,
-        /**
-         * условия хранения
-         */
+        /** Условия хранения */
         val storCond: String,
-        /**
-         * Плановое окончание тех. процесса
-         */
+        /** Плановое окончание тех. процесса */
         val planAufFinish: String,
-        /**
-         * Номер технологического заказа
-         */
+        /** Номер технологического заказа */
         val aufnr: String,
-        /**
-         * Наименование следующего передела
-         */
+        /** Наименование следующего передела */
         val nameOsn: String,
-        /**
-         * Годен до:
-         */
+        /** Годен до: */
         val dateExpir: String,
-        /**
-         * Наименование продукта
-         */
+        /** Наименование продукта */
         val goodsName: String,
-        /**
-         * номер весов
-         */
+        /** Номер весов */
         val weigher: String,
-        /**
-         * Изготовлено
-         */
+        /** Изготовлено */
         val productTime: String,
-        /**
-         * Наименование готового продукта
-         */
+        /** Наименование готового продукта */
         val nameDone: String,
-        /**
-         * Код товара
-         */
+        /** Код товара */
         val goodsCode: String,
-        /**
-         * barcode
-         */
+        /** Штрихкод */
         val barcode: String,
-        /**
-         * barcode для отображения в текстовом виде
-         */
+        /** Штрихкод для отображения в текстовом виде */
         val barcodeText: String
 )

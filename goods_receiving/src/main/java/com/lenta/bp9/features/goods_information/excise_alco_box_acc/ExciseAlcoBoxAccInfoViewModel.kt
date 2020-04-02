@@ -1,4 +1,4 @@
-package com.lenta.bp9.features.goods_information.excise_alco
+package com.lenta.bp9.features.goods_information.excise_alco_box_acc
 
 import android.content.Context
 import androidx.lifecycle.MutableLiveData
@@ -6,7 +6,6 @@ import androidx.lifecycle.viewModelScope
 import com.lenta.bp9.R
 import com.lenta.bp9.features.goods_list.SearchProductDelegate
 import com.lenta.bp9.model.processing.ProcessExciseAlcoProductService
-import com.lenta.bp9.model.processing.ProcessNonExciseAlcoProductService
 import com.lenta.bp9.model.task.IReceivingTaskManager
 import com.lenta.bp9.model.task.TaskBatchInfo
 import com.lenta.bp9.model.task.TaskProductInfo
@@ -22,7 +21,7 @@ import com.lenta.shared.view.OnPositionClickListener
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-class ExciseAlcoInfoViewModel : CoreViewModel(), OnPositionClickListener {
+class ExciseAlcoBoxAccInfoViewModel : CoreViewModel(), OnPositionClickListener {
 
     @Inject
     lateinit var screenNavigator: IScreenNavigator

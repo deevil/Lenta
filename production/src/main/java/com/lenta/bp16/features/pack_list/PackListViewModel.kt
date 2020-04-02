@@ -91,6 +91,10 @@ class PackListViewModel : CoreViewModel() {
         }
     }
 
+    fun onClickLabel() {
+        navigator.openReprintLabelScreen()
+    }
+
 }
 
 data class ItemPackListUi(

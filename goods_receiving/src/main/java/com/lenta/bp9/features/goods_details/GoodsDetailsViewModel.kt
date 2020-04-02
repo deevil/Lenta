@@ -42,10 +42,7 @@ class GoodsDetailsViewModel : CoreViewModel() {
     val batchInfo: MutableLiveData<TaskBatchInfo> = MutableLiveData()
     val goodsDetails: MutableLiveData<List<GoodsDetailsCategoriesItem>> = MutableLiveData()
     private val reasonRejectionInfo: MutableLiveData<List<ReasonRejectionInfo>> = MutableLiveData()
-    val isTaskPGE: MutableLiveData<Boolean> by lazy {
-        MutableLiveData(repoInMemoryHolder.taskList.value?.taskListLoadingMode == TaskListLoadingMode.PGE)
-    }
-    val isVetProduct: MutableLiveData<Boolean> by lazy {
+    private val isVetProduct: MutableLiveData<Boolean> by lazy {
         MutableLiveData(productInfo.value?.isVet ?: false)
     }
     val categoriesSelectionsHelper = SelectionItemsHelper()

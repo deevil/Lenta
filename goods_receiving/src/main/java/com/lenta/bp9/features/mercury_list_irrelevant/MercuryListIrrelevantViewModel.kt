@@ -9,6 +9,7 @@ import com.lenta.bp9.features.reject.RejectType
 import com.lenta.bp9.model.task.IReceivingTaskManager
 import com.lenta.bp9.model.task.TaskContents
 import com.lenta.bp9.model.task.TaskDescription
+import com.lenta.bp9.model.task.TaskType
 import com.lenta.bp9.platform.navigation.IScreenNavigator
 import com.lenta.bp9.repos.IRepoInMemoryHolder
 import com.lenta.bp9.requests.network.*
@@ -113,15 +114,17 @@ class MercuryListIrrelevantViewModel : CoreViewModel() {
     }
 
     private fun handleSuccessRecountStart(result: DirectSupplierStartRecountRestInfo) {
-        repoInMemoryHolder.manufacturers.value = result.manufacturers
-        taskManager.updateTaskDescription(TaskDescription.from(result.taskDescription))
-        taskManager.getReceivingTask()?.updateTaskWithContents(taskContents.getTaskContentsInfo(result))
-        screenNavigator.openGoodsListScreen()
+        viewModelScope.launch {
+            repoInMemoryHolder.manufacturers.value = result.manufacturers
+            taskManager.updateTaskDescription(TaskDescription.from(result.taskDescription))
+            taskManager.getReceivingTask()?.updateTaskWithContents(taskContents.getTaskContentsInfo(result))
+            screenNavigator.openGoodsListScreen()
+        }
     }
 
     private fun handleSuccessTransmitted(result: TransmittedRestInfo) {
         taskManager.updateTaskDescription(TaskDescription.from(result.taskDescription))
-        screenNavigator.openTaskCardScreen(TaskCardMode.Full)
+        screenNavigator.openTaskCardScreen(TaskCardMode.Full, taskManager.getReceivingTask()?.taskHeader?.taskType ?: TaskType.None)
     }
 
     fun onClickTemporary() {

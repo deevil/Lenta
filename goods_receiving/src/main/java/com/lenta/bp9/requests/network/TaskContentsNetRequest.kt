@@ -33,6 +33,16 @@ data class TaskContentsRequestResult(
         val taskBatches: List<TaskBatchInfoRestData>,
         @SerializedName("ET_PARTS_DIFF") //Таблица расхождений по партиям
         val taskBatchesDiscrepancies: List<TaskBatchesDiscrepanciesRestData>,
+        @SerializedName("ET_TASK_BOX") //Список коробок задания для передачи в МП
+        val taskBoxes: List<TaskBoxInfoRestData>,
+        @SerializedName("ET_BOX_DIFF") //Таблица обработанных коробов
+        val taskBoxesDiscrepancies: List<TaskBoxDiscrepanciesRestData>,
+        @SerializedName("ET_TASK_MARK") //Список марок задания для передачи в МП
+        val taskExciseStamps: List<TaskExciseStampInfoRestData>,
+        @SerializedName("ET_MARK_DIFF") //Таблица обработанных марок задания
+        val taskExciseStampsDiscrepancies: List<TaskExciseStampDiscrepanciesRestData>,
+        @SerializedName("ET_MARK_BAD") //Таблица плохих марок задания
+        val taskExciseStampBad: List<TaskExciseStampBadRestData>,
         @SerializedName("ET_VET_DIFF") //Таблица расхождений по вет.товарам
         val taskMercuryInfoRestData: List<TaskMercuryInfoRestData>,
         @SerializedName("ET_VET_NOT_ACTUAL") //Список не актуальных ВСД

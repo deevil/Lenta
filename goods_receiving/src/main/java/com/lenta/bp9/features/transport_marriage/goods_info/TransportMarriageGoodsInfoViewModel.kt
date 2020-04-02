@@ -12,9 +12,14 @@ import com.lenta.bp9.repos.IRepoInMemoryHolder
 import com.lenta.bp9.requests.network.ZmpUtzGrz26V001NetRequest
 import com.lenta.bp9.requests.network.ZmpUtzGrz26V001Params
 import com.lenta.bp9.requests.network.ZmpUtzGrz26V001Result
+import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.models.core.Uom
 import com.lenta.shared.platform.viewmodel.CoreViewModel
+import com.lenta.shared.requests.combined.scan_info.ScanCodeInfo
+import com.lenta.shared.requests.combined.scan_info.ScanInfoRequest
+import com.lenta.shared.requests.combined.scan_info.ScanInfoRequestParams
+import com.lenta.shared.requests.combined.scan_info.ScanInfoResult
 import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.extentions.combineLatest
 import com.lenta.shared.utilities.extentions.map
@@ -38,6 +43,10 @@ class TransportMarriageGoodsInfoViewModel : CoreViewModel(), OnPositionClickList
     lateinit var hyperHive: HyperHive
     @Inject
     lateinit var repoInMemoryHolder: IRepoInMemoryHolder
+    @Inject
+    lateinit var scanInfoRequest: ScanInfoRequest
+    @Inject
+    lateinit var sessionInfo: ISessionInfo
 
     val transportMarriageInfoCurrent: MutableLiveData<TaskTransportMarriageInfo> = MutableLiveData()
     val cargoUnitNumber by lazy {
@@ -51,6 +60,7 @@ class TransportMarriageGoodsInfoViewModel : CoreViewModel(), OnPositionClickList
     val spinQualitySelectedPosition: MutableLiveData<Int> = MutableLiveData(0)
     val spinProcessingUnit: MutableLiveData<List<String>> = MutableLiveData()
     val spinProcessingUnitSelectedPosition: MutableLiveData<Int> = MutableLiveData(0)
+    private val isScan: MutableLiveData<Boolean> = MutableLiveData(false)
     val suffix: MutableLiveData<String> = MutableLiveData()
     val count: MutableLiveData<String> = MutableLiveData("0")
     private val countValue: MutableLiveData<Double> = count.map {
@@ -96,7 +106,7 @@ class TransportMarriageGoodsInfoViewModel : CoreViewModel(), OnPositionClickList
         viewModelScope.launch {
             screenNavigator.showProgressLoadingData()
             val foundTransportMarriageInfo = taskManager.getReceivingTask()?.taskRepository?.getTransportMarriage()?.findTransportMarriage(cargoUnitNumber ?: "", materialNumber)
-            if (foundTransportMarriageInfo != null) {
+            if (!foundTransportMarriageInfo.isNullOrEmpty()) {
                 transportMarriageOfProduct.value = foundTransportMarriageInfo
                 spinProcessingUnit.postValue(
                         transportMarriageOfProduct.value?.map {
@@ -113,6 +123,13 @@ class TransportMarriageGoodsInfoViewModel : CoreViewModel(), OnPositionClickList
                 }
                 transportMarriageOfProduct.value?.get(spinProcessingUnitSelectedPosition.value!!)?.let {
                     transportMarriageInfoCurrent.value = it
+                }
+
+                if (isScan.value == true) {
+                    transportMarriageInfoCurrent.value?.let {
+                        screenNavigator.goBack()
+                        screenNavigator.openTransportMarriageGoodsInfoScreen(transportMarriageInfo = it)
+                    }
                 }
             } else {
                 taskManager.getReceivingTask()?.let { task ->
@@ -152,6 +169,13 @@ class TransportMarriageGoodsInfoViewModel : CoreViewModel(), OnPositionClickList
             }
             transportMarriageOfProduct.value?.get(spinProcessingUnitSelectedPosition.value!!)?.let {
                 transportMarriageInfoCurrent.value = it
+            }
+
+            if (isScan.value == true) {
+                transportMarriageInfoCurrent.value?.let {
+                    screenNavigator.goBack()
+                    screenNavigator.openTransportMarriageGoodsInfoScreen(transportMarriageInfo = it)
+                }
             }
         }
     }
@@ -195,10 +219,22 @@ class TransportMarriageGoodsInfoViewModel : CoreViewModel(), OnPositionClickList
     }
 
     fun onScanResult(data: String) {
-        searchProduct(data)
-        transportMarriageInfoCurrent.value?.let {
-            screenNavigator.goBack()
-            screenNavigator.openTransportMarriageGoodsInfoScreen(transportMarriageInfo = it)
+        viewModelScope.launch {
+            screenNavigator.showProgressLoadingData()
+
+            scanInfoRequest(
+                    ScanInfoRequestParams(
+                            number = data,
+                            tkNumber = sessionInfo.market ?: "",
+                            fromScan = true,
+                            isBarCode = true
+                    )
+            ).also {
+                screenNavigator.hideProgress()
+            }.either(::handleFailure) { scanInfoResult ->
+                isScan.value = true
+                searchProduct(scanInfoResult.productInfo.materialNumber)
+            }
         }
     }
 

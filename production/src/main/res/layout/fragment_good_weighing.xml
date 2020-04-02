@@ -65,7 +65,7 @@
 
                 <TextView
                     style="@style/CellTextStyle"
-                    android:text="@string/total" />
+                    android:text="@string/total_sf" />
 
             </LinearLayout>
 
@@ -80,6 +80,39 @@
                     style="@style/CellTextStyle"
                     android:text="@{vm.totalWithUnits}"
                     tools:text="12 кг" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <View
+            style="@style/HorizontalDivider" />
+
+        <!-- Общее количество брака -->
+        <LinearLayout
+            style="@style/LinearRowStyle">
+
+            <LinearLayout
+                style="@style/LinearCellStyle"
+                android:layout_weight="1">
+
+                <TextView
+                    style="@style/CellTextStyle"
+                    android:text="@string/total_defect" />
+
+            </LinearLayout>
+
+            <View
+                style="@style/VerticalDivider" />
+
+            <LinearLayout
+                style="@style/LinearCellStyle"
+                android:layout_weight="1">
+
+                <TextView
+                    style="@style/CellTextStyle"
+                    android:text="@{vm.defectWithUnits}"
+                    tools:text="7 кг" />
 
             </LinearLayout>
 

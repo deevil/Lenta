@@ -65,12 +65,8 @@ data class ButtonDecorationInfo(
         @DrawableRes val iconRes: Int,
         @StringRes val titleRes: Int
 ) {
+
     companion object {
-
-        val empty: ButtonDecorationInfo by lazy {
-            ButtonDecorationInfo(0, 0)
-        }
-
         val filter: ButtonDecorationInfo by lazy {
             ButtonDecorationInfo(R.drawable.ic_search, R.string.filter)
         }
@@ -209,6 +205,10 @@ data class ButtonDecorationInfo(
 
         val not_framed: ButtonDecorationInfo by lazy {
             ButtonDecorationInfo(R.drawable.ic_framed_no_24dp, R.string.not_framed)
+        }
+
+        val empty: ButtonDecorationInfo by lazy {
+            ButtonDecorationInfo(0, 0)
         }
 
         val skip: ButtonDecorationInfo by lazy {
@@ -363,7 +363,19 @@ data class ButtonDecorationInfo(
             ButtonDecorationInfo(R.drawable.ic_basket_info_24dp, R.string.properties)
         }
 
+        val label: ButtonDecorationInfo by lazy {
+            ButtonDecorationInfo(R.drawable.ic_print_white_24dp, R.string.label)
+        }
+
+        val labels: ButtonDecorationInfo by lazy {
+            ButtonDecorationInfo(R.drawable.ic_print_white_24dp, R.string.labels)
+        }
+
+        val defect: ButtonDecorationInfo by lazy {
+            ButtonDecorationInfo(R.drawable.ic_delete_white_24dp, R.string.defect)
+        }
     }
+
 }
 
 

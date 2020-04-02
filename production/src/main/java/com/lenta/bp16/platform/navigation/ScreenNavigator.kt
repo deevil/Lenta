@@ -3,6 +3,8 @@ package com.lenta.bp16.platform.navigation
 import android.content.Context
 import com.lenta.bp16.R
 import com.lenta.bp16.features.auth.AuthFragment
+import com.lenta.bp16.features.defect_info.DefectInfoFragment
+import com.lenta.bp16.features.defect_list.DefectListFragment
 import com.lenta.bp16.features.external_supply_list.ExternalSupplyListFragment
 import com.lenta.bp16.features.external_supply_task_list.ExternalSupplyTaskListFragment
 import com.lenta.bp16.features.good_packaging.GoodPackagingFragment
@@ -15,6 +17,7 @@ import com.lenta.bp16.features.pack_list.PackListFragment
 import com.lenta.bp16.features.raw_list.RawListFragment
 import com.lenta.bp16.features.select_market.SelectMarketFragment
 import com.lenta.bp16.features.processing_unit_task_list.ProcessingUnitTaskListFragment
+import com.lenta.bp16.features.reprint_label.ReprintLabelFragment
 import com.lenta.shared.account.IAuthenticator
 import com.lenta.shared.features.alert.AlertFragment
 import com.lenta.shared.platform.activity.ForegroundActivityProvider
@@ -122,6 +125,24 @@ class ScreenNavigator @Inject constructor(
         }
     }
 
+    override fun openReprintLabelScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(ReprintLabelFragment())
+        }
+    }
+
+    override fun openDefectInfoScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(DefectInfoFragment())
+        }
+    }
+
+    override fun openDefectListScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(DefectListFragment())
+        }
+    }
+
 
     // Информационные экраны
     override fun showDefrostingPhaseIsCompleted(nextCallback: () -> Unit) {
@@ -214,6 +235,20 @@ class ScreenNavigator @Inject constructor(
             ))
         }
     }
+
+    override fun showLabelSentToPrint(nextCallback: () -> Unit) {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    pageNumber = "99",
+                    message = context.getString(R.string.label_sent_to_print),
+                    iconRes = R.drawable.ic_info_green_80dp,
+                    isVisibleLeftButton = false,
+                    codeConfirmForRight = backFragmentResultHelper.setFuncForResult(nextCallback),
+                    rightButtonDecorationInfo = ButtonDecorationInfo.next
+            ))
+        }
+    }
+
 }
 
 interface IScreenNavigator : ICoreNavigator {
@@ -231,6 +266,9 @@ interface IScreenNavigator : ICoreNavigator {
     fun openGoodPackagingScreen()
     fun openPackListScreen()
     fun openPackGoodListScreen()
+    fun openReprintLabelScreen()
+    fun openDefectInfoScreen()
+    fun openDefectListScreen()
 
     fun showDefrostingPhaseIsCompleted(nextCallback: () -> Unit)
     fun showConfirmNoSuchItemLeft(taskType: String, confirmCallback: () -> Unit)
@@ -239,5 +277,6 @@ interface IScreenNavigator : ICoreNavigator {
     fun showMoreThanOneOrderForThisProduct()
     fun showNotSavedDataWillBeLost(yesCallback: () -> Unit)
     fun showAlertNoIpPrinter()
+    fun showLabelSentToPrint(nextCallback: () -> Unit)
     //fun showErrorCompletingObjectProcessing()
 }

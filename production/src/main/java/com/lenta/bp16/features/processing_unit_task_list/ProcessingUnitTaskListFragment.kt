@@ -56,12 +56,14 @@ class ProcessingUnitTaskListFragment : CoreFragment<FragmentProcessingUnitTaskLi
 
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
         bottomToolbarUiModel.uiModelButton1.show(ButtonDecorationInfo.menu)
+        bottomToolbarUiModel.uiModelButton3.show(ButtonDecorationInfo.labels)
         bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.update)
     }
 
     override fun onToolbarButtonClick(view: View) {
         when (view.id) {
             R.id.b_1 -> vm.onClickMenu()
+            R.id.b_3 -> vm.onClickLabel()
             R.id.b_5 -> vm.onClickRefresh()
         }
     }

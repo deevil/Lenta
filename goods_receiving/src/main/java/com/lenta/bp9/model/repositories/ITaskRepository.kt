@@ -2,10 +2,14 @@ package com.lenta.bp9.model.repositories
 
 interface ITaskRepository {
     fun getProducts(): ITaskProductRepository
+    fun getProductsDiscrepancies(): ITaskProductsDiscrepanciesRepository
     fun getExciseStamps(): ITaskExciseStampRepository
+    fun getExciseStampsDiscrepancies(): ITaskExciseStampDiscrepanciesRepository
+    fun getExciseStampsBad(): ITaskExciseStampBadRepository
+    fun getBoxes(): ITaskBoxesRepository
+    fun getBoxesDiscrepancies(): ITaskBoxesDiscrepanciesRepository
     fun getNotifications(): ITaskNotificationsRepository
     fun getReviseDocuments(): ITaskReviseDocumentsRepository
-    fun getProductsDiscrepancies(): ITaskProductsDiscrepanciesRepository
     fun getBatches(): ITaskBatchesRepository
     fun getBatchesDiscrepancies(): ITaskBatchesDiscrepanciesRepository
     fun getMercuryDiscrepancies(): ITaskMercuryDiscrepanciesRepository

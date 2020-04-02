@@ -4,11 +4,11 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.lenta.bp16.data.IPrinter
 import com.lenta.bp16.data.IScales
-import com.lenta.bp16.data.PrintInnerTagInfo
+import com.lenta.bp16.data.LabelInfo
 import com.lenta.bp16.model.ITaskManager
 import com.lenta.bp16.model.pojo.Pack
 import com.lenta.bp16.platform.navigation.IScreenNavigator
-import com.lenta.bp16.repository.IGeneralRepository
+import com.lenta.bp16.repository.IDatabaseRepository
 import com.lenta.bp16.request.PackCodeNetRequest
 import com.lenta.bp16.request.PackCodeParams
 import com.lenta.shared.account.ISessionInfo
@@ -30,20 +30,27 @@ class GoodWeighingViewModel : CoreViewModel() {
 
     @Inject
     lateinit var navigator: IScreenNavigator
+
     @Inject
     lateinit var sessionInfo: ISessionInfo
+
     @Inject
     lateinit var appSettings: IAppSettings
+
     @Inject
     lateinit var taskManager: ITaskManager
+
     @Inject
     lateinit var packCodeNetRequest: PackCodeNetRequest
+
     @Inject
     lateinit var scales: IScales
+
     @Inject
     lateinit var printer: IPrinter
+
     @Inject
-    lateinit var repository: IGeneralRepository
+    lateinit var database: IDatabaseRepository
 
 
     val good by lazy {
@@ -66,7 +73,7 @@ class GoodWeighingViewModel : CoreViewModel() {
         it?.toDoubleOrNull() ?: 0.0
     }
 
-    private val weighted = MutableLiveData<Double>(0.0)
+    private val weighted = MutableLiveData(0.0)
 
     private val total = entered.map {
         it.sumWith(weighted.value ?: 0.0)
@@ -76,8 +83,26 @@ class GoodWeighingViewModel : CoreViewModel() {
         "${it.dropZeros()} ${good.value!!.units.name}"
     }
 
+    private val defect by lazy {
+        good.map { good ->
+            good?.packs?.filter { it.materialDef == raw.value?.material }?.map { it.quantity }?.sum()
+        }
+    }
+
+    val defectWithUnits by lazy {
+        defect.map {
+            "${it.dropZeros()} ${good.value!!.units.name}"
+        }
+    }
+
     val planned by lazy {
         "${raw.value!!.planned.dropZeros()} ${good.value!!.units.name}"
+    }
+
+    val defectVisibility by lazy {
+        raw.map {
+            it?.isWasDef == true
+        }
     }
 
     val completeEnabled: MutableLiveData<Boolean> = total.map {
@@ -123,11 +148,11 @@ class GoodWeighingViewModel : CoreViewModel() {
 
                 viewModelScope.launch {
                     val productTime = Calendar.getInstance()
-                    productTime.add(Calendar.MINUTE, repository.getPcpExpirTimeMm())
+                    productTime.add(Calendar.MINUTE, database.getPcpExpirTimeMm())
 
                     val planAufFinish = Calendar.getInstance()
                     planAufFinish.add(Calendar.MINUTE, getTimeInMinutes(packCodeResult.dataLabel.planAufFinish, packCodeResult.dataLabel.planAufUnit))
-                    planAufFinish.add(Calendar.MINUTE, repository.getPcpContTimeMm())
+                    planAufFinish.add(Calendar.MINUTE, database.getPcpContTimeMm())
 
                     val dateExpir = packCodeResult.dataLabel.dateExpiration.toIntOrNull()?.let { days ->
                         val dateExpiration = Calendar.getInstance()
@@ -144,7 +169,7 @@ class GoodWeighingViewModel : CoreViewModel() {
 
                     val barcode = barCodeText.replace("(", "").replace(")", "")
 
-                    printTag(PrintInnerTagInfo(
+                    printLabel(LabelInfo(
                             quantity = "${total.value!!}  ${good.value?.units?.name}",
                             codeCont = packCodeResult.packCode,
                             storCond = "${packCodeResult.dataLabel.storCondTime} ч",
@@ -172,7 +197,7 @@ class GoodWeighingViewModel : CoreViewModel() {
     }
 
     private fun getTimeInMinutes(sourceTime: String, units: String): Int {
-        return when(units.toLowerCase(Locale.getDefault())) {
+        return when (units.toLowerCase(Locale.getDefault())) {
             "m" -> (sourceTime.toDoubleOrNull() ?: 0.0).toInt()
             "h" -> (sourceTime.toDoubleOrNull() ?: 0.0 * 60).toInt()
             else -> 0
@@ -263,19 +288,18 @@ class GoodWeighingViewModel : CoreViewModel() {
         }
     }
 
-    private fun printTag(printInfo: PrintInnerTagInfo) {
+    private fun printLabel(labelInfo: LabelInfo) {
         viewModelScope.launch {
             withContext(IO) {
                 appSettings.printerIpAddress.let { ipAddress ->
                     if (ipAddress == null) {
                         return@let null
                     }
-                    printer.printTag(printInfo, ipAddress)
+                    printer.printLabel(labelInfo, ipAddress)
                             .either(::handleFailure) {
-                                // todo Что-то делаем после печати?
+                                taskManager.addLabelToList(labelInfo)
                             }
                 }
-
             }.also {
                 if (it == null) {
                     navigator.showAlertNoIpPrinter()
@@ -292,6 +316,10 @@ class GoodWeighingViewModel : CoreViewModel() {
         } else {
             navigator.goBack()
         }
+    }
+
+    fun onClickDefect() {
+        navigator.openDefectInfoScreen()
     }
 
 }

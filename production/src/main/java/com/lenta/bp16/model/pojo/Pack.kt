@@ -1,13 +1,18 @@
 package com.lenta.bp16.model.pojo
 
+import com.lenta.shared.fmp.resources.dao_ext.DictElement
+
 
 data class Pack(
         val material: String, // sap-код товара
         val materialOsn: String, // sap-код полуфабриката
+        val materialDef: String = "", // sap-код полуфабриката из которого произведен брак
         val code: String,
         val orderNumber: String,
         val quantity: Double,
-        val isDefOut: Boolean = false
+        val isDefOut: Boolean = false,
+        val category: DictElement? = null,
+        val defect: DictElement? = null
 ) {
 
     fun getShortPackNumber(): String {
