@@ -96,7 +96,7 @@ class InvoiceReviseViewModel : CoreViewModel(), PageSelectionListener {
     }
 
     val isEInvoice: Boolean by lazy {
-        taskManager.getReceivingTask()?.taskDescription?.isEDO ?: false
+        taskManager.getReceivingTask()?.taskRepository?.getReviseDocuments()?.getInvoiceInfo()?.isEDO ?: false
     }
 
     val editingAvailable: MutableLiveData<Boolean> = headerCheck.map {
