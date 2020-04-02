@@ -40,7 +40,7 @@
                     android:layout_weight="@integer/pack_type_cause_quantity_column_1">
 
                     <TextView
-                        style="@style/ColumnTitleStyle"
+                        style="@style/FirstRowTextStyle"
                         android:layout_width="wrap_content"
                         android:layout_marginStart="0dp"
                         android:text="@string/number" />
@@ -52,7 +52,7 @@
                     android:layout_weight="@integer/pack_type_cause_quantity_column_2">
 
                     <TextView
-                        style="@style/ColumnTitleStyle"
+                        style="@style/FirstRowTextStyle"
                         android:text="@string/pack_type_cause" />
 
                 </LinearLayout>
@@ -62,7 +62,7 @@
                     android:layout_weight="@integer/pack_type_cause_quantity_column_3">
 
                     <TextView
-                        style="@style/ColumnTitleStyle"
+                        style="@style/FirstRowTextStyle"
                         android:text="@string/quantity" />
 
                 </LinearLayout>
