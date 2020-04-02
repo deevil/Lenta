@@ -36,7 +36,7 @@ data class TaskCargoUnitInfo(
                     isSpecialControlGoods = restData.isSpecialControlGoods.isNotEmpty(),
                     isVet = restData.isVet.isNotEmpty(),
                     isNoGisControl = restData.isNoGisControl.isNotEmpty(),
-                    isStamp = restData.isStamp.isNotEmpty(),
+                    isStamp = if (restData.isStamp.isNullOrEmpty()) false else restData.isStamp.isNotEmpty(),
                     quantityPositions = restData.quantityPositions,
                     isPack = if (restData.isPack.isNullOrEmpty()) false else restData.isPack.isNotEmpty(),
                     stock = if (restData.stock.isNullOrEmpty()) "" else restData.stock
@@ -71,7 +71,7 @@ data class TaskCargoUnitInfoRestData(
         @SerializedName("IS_GIS_NO") //Индикатор: Без ГИС-контроля
         val isNoGisControl: String,
         @SerializedName("IS_MARK") //Индикатор: марки
-        val isStamp: String,
+        val isStamp: String?,
         @SerializedName("QNT_POS") //Количество позиций (QNT_POS)
         val quantityPositions: String,
         @SerializedName("IS_PACK") //товар для упаковки
