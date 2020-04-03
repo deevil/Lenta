@@ -677,7 +677,7 @@ class GoodsInfoViewModel : CoreViewModel(), OnPositionClickListener {
         }
     }
 
-    //ПГЕ-скоропорт. в блок-схеме лист 7 "Карточка товара ППП" блок - 7.2
+    //ПГЕ-скоропорт. в блок-схеме лист 7 "Карточка товара ПГЕ" блок - 7.2
     private fun addPerishablePGE() {
         //блок 7.103
         if (qualityInfo.value?.get(spinQualitySelectedPosition.value ?: 0)?.code != "1") {
