@@ -196,6 +196,12 @@ class TaskListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
             else -> MutableLiveData(emptyList())
         }
     }
+
+    fun onScanResult(data: String) {
+        if (taskListLoadingMode == TaskListLoadingMode.Receiving) { //https://trello.com/c/zM0vlI9H
+            filterSearch.value = data
+        }
+    }
 }
 
 data class TaskItemVm(
