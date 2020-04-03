@@ -56,10 +56,10 @@ class ProcessMercuryProductService
             it.typeDiscrepancies == typeDiscrepancies
         }
 
-        foundDiscrepancy = foundDiscrepancy?.copy(numberDiscrepancies = countAdd.toString())
+        foundDiscrepancy = foundDiscrepancy?.copy(numberDiscrepancies = countAdd.toString(), processingUnitNumber = productInfo.processingUnit)
                 ?: TaskProductDiscrepancies(
                         materialNumber = productInfo.materialNumber,
-                        exidv = "",
+                        processingUnitNumber = productInfo.processingUnit,
                         numberDiscrepancies = countAdd.toString(),
                         uom = productInfo.uom,
                         typeDiscrepancies = typeDiscrepancies,

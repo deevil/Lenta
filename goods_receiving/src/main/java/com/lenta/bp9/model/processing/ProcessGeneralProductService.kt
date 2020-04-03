@@ -177,7 +177,7 @@ class ProcessGeneralProductService
                         getProductsDiscrepancies()?.
                         changeProductDiscrepancy(TaskProductDiscrepancies(
                                 materialNumber = productInfo.materialNumber,
-                                exidv = "",
+                                processingUnitNumber = productInfo.processingUnit,
                                 numberDiscrepancies = countAdd.toString(),
                                 uom = productInfo.uom,
                                 typeDiscrepancies = typeDiscrepancies,
@@ -189,7 +189,7 @@ class ProcessGeneralProductService
                 taskManager.getReceivingTask()?.
                         taskRepository?.
                         getProductsDiscrepancies()?.
-                        changeProductDiscrepancy(foundDiscrepancy.copy(numberDiscrepancies = countAdd.toString()))
+                        changeProductDiscrepancy(foundDiscrepancy.copy(numberDiscrepancies = countAdd.toString(), processingUnitNumber = productInfo.processingUnit))
             }
         }
 

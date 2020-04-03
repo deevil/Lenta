@@ -11,7 +11,7 @@ import kotlinx.coroutines.withContext
 //ET_TASK_DIFF Таблица расхождений по товару
 data class TaskProductDiscrepancies(
         val materialNumber: String,
-        val exidv: String, //Номер ЕО
+        val processingUnitNumber: String, //Номер ЕО
         val numberDiscrepancies: String, //Количество расхождения в ПЕИ
         val uom: Uom,
         val typeDiscrepancies: String, //Тип расхождения
@@ -29,7 +29,7 @@ data class TaskProductDiscrepancies(
                 val uomInfo = zmpUtz07V001.getUomInfo(restData.unit)
                 return@withContext TaskProductDiscrepancies(
                         materialNumber = restData.materialNumber,
-                        exidv = restData.exidv,
+                        processingUnitNumber = restData.processingUnitNumber,
                         numberDiscrepancies = restData.numberDiscrepancies,
                         uom = Uom(code = uomInfo?.uom ?: "", name = uomInfo?.name ?: ""),
                         typeDiscrepancies = restData.typeDiscrepancies,
@@ -47,7 +47,7 @@ data class TaskProductDiscrepanciesRestData(
         @SerializedName("MATNR")
         val materialNumber: String,
         @SerializedName("EXIDV")
-        val exidv: String,
+        val processingUnitNumber: String,
         @SerializedName("LFIMG_DIFF")
         val numberDiscrepancies: String,
         @SerializedName("VRKME")
@@ -64,7 +64,7 @@ data class TaskProductDiscrepanciesRestData(
         fun from(data: TaskProductDiscrepancies): TaskProductDiscrepanciesRestData {
             return TaskProductDiscrepanciesRestData(
                     materialNumber = data.materialNumber,
-                    exidv = data.exidv,
+                    processingUnitNumber = data.processingUnitNumber,
                     numberDiscrepancies = data.numberDiscrepancies,
                     unit = data.uom.code,
                     typeDiscrepancies = data.typeDiscrepancies,
