@@ -241,10 +241,10 @@ class TaskCardViewModel : CoreViewModel(), PageSelectionListener {
     val nextStatusDateTime: MutableLiveData<String> = MutableLiveData("")
 
     val shipmentNumberTN by lazy {
-        taskManager.getReceivingTask()?.taskDescription?.ttnNumber ?: ""
+        taskManager.getReceivingTask()?.taskDescription?.tnNumber ?: ""
     }
     val shipmentNumberTTN by lazy {
-        taskManager.getReceivingTask()?.taskDescription?.deliveryNumber ?: ""
+        taskManager.getReceivingTask()?.taskDescription?.ttnNumber ?: ""
     }
     val shipmentPlanDate by lazy {
         taskManager.getReceivingTask()?.taskDescription?.plannedDeliveryDate ?: ""
