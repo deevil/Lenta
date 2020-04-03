@@ -1,10 +1,12 @@
 package com.lenta.bp12.repository
 
+import com.lenta.bp12.model.pojo.ReturnReason
 import com.lenta.bp12.model.pojo.TaskType
 import com.lenta.bp12.platform.extention.getControlType
 import com.lenta.bp12.platform.extention.getProviderInfo
 import com.lenta.bp12.platform.extention.getTaskType
 import com.lenta.bp12.platform.extention.getTaskTypeList
+import com.lenta.bp12.platform.extention.getReturnReasonList
 import com.lenta.bp12.request.GoodInfoResult
 import com.lenta.bp12.request.pojo.ProviderInfo
 import com.lenta.shared.fmp.resources.dao_ext.*
@@ -48,10 +50,6 @@ class DatabaseRepository @Inject constructor(
 
     override suspend fun getUnitsByCode(code: String): Uom {
         return withContext(Dispatchers.IO) {
-            if (code.isEmpty()) {
-                return@withContext Uom.ST
-            }
-
             return@withContext units.getUnitName(code)?.toLowerCase(Locale.getDefault())?.let { name ->
                 Uom(code, name)
             } ?: Uom.ST
@@ -77,10 +75,6 @@ class DatabaseRepository @Inject constructor(
 
     override suspend fun getStorageList(taskType: String): List<String> {
         return withContext(Dispatchers.IO) {
-            if (taskType.isEmpty()) {
-                return@withContext emptyList<String>()
-            }
-
             val storageList = storages.getStorageList(taskType).toMutableList()
             if (storageList.size > 1) {
                 storageList.add(0, "")
@@ -92,10 +86,6 @@ class DatabaseRepository @Inject constructor(
 
     override suspend fun getReturnReasonList(taskType: String): List<ReturnReason> {
         return withContext(Dispatchers.IO) {
-            if (taskType.isEmpty()) {
-                return@withContext emptyList<ReturnReason>()
-            }
-
             val returnReasonList = returnReasons.getReturnReasonList(taskType).toMutableList()
             if (returnReasonList.size > 1) {
                 returnReasonList.add(0, ReturnReason())
@@ -107,10 +97,6 @@ class DatabaseRepository @Inject constructor(
 
     override suspend fun getTaskAttributes(taskType: String): Set<String> {
         return withContext(Dispatchers.IO) {
-            if (taskType.isEmpty()) {
-                return@withContext emptySet<String>()
-            }
-
             return@withContext allowed.getTaskAttributeList(taskType)
         }
     }

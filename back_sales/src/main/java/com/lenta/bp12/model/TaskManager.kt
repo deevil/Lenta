@@ -5,6 +5,7 @@ import com.lenta.bp12.model.pojo.Basket
 import com.lenta.bp12.model.pojo.Good
 import com.lenta.bp12.model.pojo.Task
 import com.lenta.bp12.model.pojo.TaskType
+import com.lenta.bp12.platform.extention.getBlockType
 import com.lenta.bp12.platform.extention.getControlType
 import com.lenta.bp12.platform.extention.getGoodKind
 import com.lenta.bp12.repository.IDatabaseRepository
@@ -13,6 +14,7 @@ import com.lenta.bp12.request.pojo.ProviderInfo
 import com.lenta.bp12.request.pojo.TaskInfo
 import com.lenta.shared.models.core.getMatrixType
 import com.lenta.shared.platform.constants.Constants
+import com.lenta.shared.utilities.extentions.isSapTrue
 import javax.inject.Inject
 
 class TaskManager @Inject constructor(
@@ -33,6 +35,10 @@ class TaskManager @Inject constructor(
 
     override val currentBasket = MutableLiveData<Basket>()
 
+
+    override fun updateTasks(taskList: List<Task>?) {
+        tasks.value = taskList ?: emptyList()
+    }
 
     override fun updateCurrentTask(task: Task?) {
         currentTask.value = task
@@ -80,23 +86,32 @@ class TaskManager @Inject constructor(
             Task(
                     number = taskInfo.number,
                     name = taskInfo.name,
-                    type = database.getTaskType(taskInfo.type),
+                    type = TaskType(
+                            type = taskInfo.type,
+                            description = taskInfo.name,
+                            section = taskInfo.section,
+                            purchaseGroup = taskInfo.purchaseGroup,
+                            goodGroup = taskInfo.goodGroup
+                    ),
+                    storage = taskInfo.storage,
 
-
-                    )
+                    isStrict = taskInfo.isStrict.isSapTrue(),
+                    blockType = taskInfo.blockType.getBlockType(),
+                    blockUser = taskInfo.blockUser,
+                    blockIp = taskInfo.blockIp,
+                    isFinish = !taskInfo.isNotFinish.isSapTrue(),
+                    control = taskInfo.control.getControlType(),
+                    comment = taskInfo.comment,
+                    provider = ProviderInfo(
+                            code = taskInfo.providerCode,
+                            name = taskInfo.providerName
+                    ),
+                    quantity = taskInfo.quantity.toIntOrNull() ?: 0,
+                    reason = database.getReturnReasonList(taskInfo.type).first { it.code == taskInfo.reasonCode }
+            )
         }
 
-
-        /*tasks.value?.let { tasks ->
-            val taskList = mutableListOf<Task>()
-
-            tasksInfo.map { taskInfo ->
-                taskList.add(Task(
-
-                ))
-
-            }
-        }*/
+        updateTasks(taskList)
     }
 
     override fun findGoodByEan(ean: String): Good? {
@@ -109,7 +124,7 @@ class TaskManager @Inject constructor(
     }
 
     override suspend fun isGoodCanBeAdded(goodInfo: GoodInfoResult): Boolean {
-        return database.isGoodCanBeAdded(goodInfo, currentTask.value!!.type.type)
+        return database.isGoodCanBeAdded(goodInfo, currentTask.value!!.type!!.type)
     }
 
     override fun addBasket(basket: Basket) {
@@ -185,6 +200,7 @@ interface ITaskManager {
     val currentGood: MutableLiveData<Good>
     val currentBasket: MutableLiveData<Basket>
 
+    fun updateTasks(taskList: List<Task>?)
     fun updateCurrentTask(task: Task?)
     fun updateCurrentGood(good: Good?)
     fun updateCurrentBasket(basket: Basket?)

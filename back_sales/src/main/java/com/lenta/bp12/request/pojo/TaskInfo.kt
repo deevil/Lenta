@@ -32,17 +32,29 @@ data class TaskInfo(
         var isNotFinish: String,
         /** Гис-контроль задания */
         @SerializedName("TASK_CNTRL")
-        var gisControl: String,
+        var control: String,
         /** Текстовый комментарий */
-        @SerializedName("COMMENT")
+        @SerializedName("TASK_COMMENT")
         var comment: String,
         /** Код поставщика */
         @SerializedName("LIFNR")
-        var supplierCode: String,
+        var providerCode: String,
+        /** Наименование поставщика */
+        @SerializedName("LIFNR_NAME")
+        var providerName: String,
         /** Количество позиций */
         @SerializedName("QNT_POS")
         var quantity: String,
         /** Код причины возврата */
         @SerializedName("REASONE_CODE")
-        var reasonCode: String
+        var reasonCode: String,
+        /** Секция */
+        @SerializedName("ABTNR")
+        var section: String,
+        /** Группа закупок */
+        @SerializedName("EKGRP")
+        var purchaseGroup: String,
+        /** Товарная группа */
+        @SerializedName("MTART")
+        var goodGroup: String
 )

@@ -296,7 +296,7 @@ class GoodInfoViewModel : CoreViewModel() {
                     tkNumber = sessionInfo.market ?: "Not found!",
                     ean = ean ?: "",
                     material = material ?: "",
-                    taskType = task.value!!.type.type
+                    taskType = task.value!!.type!!.type
             )).also {
                 navigator.hideProgress()
             }.either(::handleFailure) { goodInfo ->

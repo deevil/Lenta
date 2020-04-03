@@ -14,6 +14,7 @@ import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.settings.IAppSettings
 import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
 import com.lenta.shared.utilities.databinding.PageSelectionListener
+import com.lenta.shared.utilities.extentions.map
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -47,17 +48,23 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
         MutableLiveData(true)
     }
 
+    val tasks by lazy {
+        manager.tasks
+    }
+
     val processing by lazy {
-        MutableLiveData(List(3) {
-            ItemTaskUi(
-                    position = "${it + 1}",
-                    name = "Test name ${it + 1}",
-                    supplier = "Test supplier ${it + 1}",
-                    taskStatus = TaskStatus.COMMON,
-                    blockType = BlockType.UNLOCK,
-                    quantity = (1..15).random().toString()
-            )
-        })
+        tasks.map { list ->
+            list?.mapIndexed { index, task ->
+                ItemTaskUi(
+                        position = "${index + 1}",
+                        name = task.name,
+                        provider = task.getProviderCodeWithName(),
+                        taskStatus = task.status,
+                        blockType = task.blockType,
+                        quantity = task.quantity.toString()
+                )
+            }
+        }
     }
 
     val search by lazy {
@@ -65,7 +72,7 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
             ItemTaskUi(
                     position = "${it + 1}",
                     name = "Test name ${it + 1}",
-                    supplier = "Test supplier ${it + 1}",
+                    provider = "Test supplier ${it + 1}",
                     taskStatus = TaskStatus.COMMON,
                     blockType = BlockType.UNLOCK,
                     quantity = (1..15).random().toString()
@@ -94,14 +101,16 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
             taskListNetRequest(
                     TaskListParams(
                             tkNumber = sessionInfo.market ?: "",
-                            userAddress = "",
+                            user = sessionInfo.userName!!,
                             userNumber = appSettings.lastPersonnelNumber ?: "Not found!",
                             mode = 1
                     )
             ).also {
                 navigator.hideProgress()
             }.either(::handleFailure) { taskListResult ->
-                manager.addTasks(taskListResult.tasks)
+                viewModelScope.launch {
+                    manager.addTasks(taskListResult.tasks)
+                }
             }
         }
     }
@@ -116,7 +125,7 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
     }
 
     fun onClickUpdate() {
-
+        loadTaskList()
     }
 
     fun onClickItemPosition(position: Int) {
@@ -132,7 +141,7 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
 data class ItemTaskUi(
         val position: String,
         val name: String,
-        val supplier: String,
+        val provider: String,
         val taskStatus: TaskStatus,
         val blockType: BlockType,
         val quantity: String

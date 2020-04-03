@@ -1,8 +1,10 @@
 package com.lenta.bp12.platform.extention
 
+import com.lenta.bp12.model.pojo.ReturnReason
 import com.lenta.bp12.model.pojo.TaskType
 import com.lenta.bp12.request.pojo.ProviderInfo
 import com.lenta.shared.fmp.resources.fast.ZmpUtz39V001
+import com.lenta.shared.fmp.resources.fast.ZmpUtz44V001
 import com.lenta.shared.fmp.resources.slow.ZmpUtz09V001
 
 fun ZmpUtz09V001.getProviderInfo(code: String): ProviderInfo? {
@@ -40,6 +42,16 @@ fun ZmpUtz39V001.getTaskType(code: String): TaskType? {
                 description = it.annotation,
                 section = it.divAbtnr,
                 purchaseGroup = it.divEkgrp
+        )
+    }
+}
+
+fun ZmpUtz44V001.getReturnReasonList(taskType: String): List<ReturnReason> {
+    @Suppress("INACCESSIBLE_TYPE")
+    return localHelper_ET_TASK_REASONS.getWhere("TASK_TYPE = \"$taskType\"").map {
+        ReturnReason(
+                code = it.reason,
+                description = it.grtxt
         )
     }
 }

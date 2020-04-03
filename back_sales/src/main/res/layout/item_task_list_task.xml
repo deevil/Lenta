@@ -62,7 +62,7 @@
                     <TextView
                         style="@style/CellTextStyle"
                         android:layout_width="wrap_content"
-                        android:text="@{item.supplier}"
+                        android:text="@{item.provider}"
                         tools:text="105648 ООО Мираторг" />
 
                 </LinearLayout>

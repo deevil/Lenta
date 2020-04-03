@@ -3,12 +3,12 @@ package com.lenta.bp12.features.task_card_create
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.lenta.bp12.model.ITaskManager
+import com.lenta.bp12.model.pojo.ReturnReason
 import com.lenta.bp12.model.pojo.Task
+import com.lenta.bp12.model.pojo.TaskType
 import com.lenta.bp12.platform.navigation.IScreenNavigator
 import com.lenta.bp12.repository.IDatabaseRepository
 import com.lenta.shared.account.ISessionInfo
-import com.lenta.shared.fmp.resources.dao_ext.ReturnReason
-import com.lenta.shared.fmp.resources.dao_ext.TaskType
 import com.lenta.shared.platform.constants.Constants
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.databinding.PageSelectionListener
@@ -141,9 +141,9 @@ class TaskCardCreateViewModel : CoreViewModel(), PageSelectionListener {
                 name = taskName.value!!,
                 type = types.value!![taskTypePosition.value!!],
                 storage = storageList.value!![storagePosition.value!!],
-                reason = reasons.value!![returnReasonPosition.value!!],
-                isAlcohol = isAlcohol.value!!,
-                isCommon = isCommon.value!!
+                reason = reasons.value!![returnReasonPosition.value!!]
+                //isAlcoholAllowed = isAlcohol.value!!,
+                //isCommonAllowed = isCommon.value!!
         ))
 
         navigator.openTaskCompositionScreen()

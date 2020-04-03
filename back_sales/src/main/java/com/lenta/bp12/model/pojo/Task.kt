@@ -1,6 +1,9 @@
 package com.lenta.bp12.model.pojo
 
-import com.lenta.shared.fmp.resources.dao_ext.ReturnReason
+import com.lenta.bp12.model.BlockType
+import com.lenta.bp12.model.ControlType
+import com.lenta.bp12.model.TaskStatus
+import com.lenta.bp12.request.pojo.ProviderInfo
 import com.lenta.shared.utilities.extentions.sumWith
 
 data class Task(
@@ -9,11 +12,24 @@ data class Task(
         val type: TaskType?,
         val storage: String,
         val reason: ReturnReason,
-        val isAlcohol: Boolean,
-        val isCommon: Boolean,
+        //val isAlcoholAllowed: Boolean = false,
+        //val isCommonAllowed: Boolean = false,
         val goods: MutableList<Good> = mutableListOf(),
         val baskets: MutableList<Basket> = mutableListOf(),
-        var isFinish: Boolean = false
+        var isFinish: Boolean = false,
+
+        val isStrict: Boolean = false,
+        var status: TaskStatus = TaskStatus.COMMON,
+        val blockType: BlockType = BlockType.UNLOCK,
+        val blockUser: String = "",
+        val blockIp: String = "",
+        val control: ControlType = ControlType.UNKNOWN,
+        var comment: String = "",
+        val provider: ProviderInfo? = null,
+        val quantity: Int = 0
+        //val section: String = "",
+        //val purchaseGroup: String = "",
+        //val goodGroup: String = ""
 ) {
 
     fun getQuantityByBasket(basket: Basket?): Double {
@@ -46,6 +62,10 @@ data class Task(
 
             good.deletePositions(positionList)
         }
+    }
+
+    fun getProviderCodeWithName(): String {
+        return "${provider?.code} ${provider?.name}"
     }
 
 }
