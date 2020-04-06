@@ -52,9 +52,9 @@ class ProcessingUnitListViewModel : CoreViewModel() {
 
     val completeEnabled by lazy {
         task.map { task ->
-            task?.isProcessed == false && task.goods?.map {
+            task?.isProcessed == false && task.goods.map {
                 it.getPackedQuantity()
-            }?.any { it > 0.0 } ?: false
+            }.any { it > 0.0 }
         }
     }
 

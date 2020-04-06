@@ -255,7 +255,8 @@ class DefectInfoViewModel : CoreViewModel() {
                             nameDone = packCodeResult.dataLabel.materialNameDone,
                             goodsCode = packCodeResult.dataLabel.material.takeLast(6),
                             barcode = barcode,
-                            barcodeText = barCodeText
+                            barcodeText = barCodeText,
+                            printTime = Date()
                     ))
 
                     total.value = 0.0
