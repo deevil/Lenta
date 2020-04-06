@@ -46,7 +46,7 @@ class ReprintLabelViewModel : CoreViewModel() {
                 ReprintLabelUi(
                         labelInfo = labelInfo,
                         position = "${index + 1}",
-                        name = labelInfo.goodsName,
+                        name = labelInfo.nameOsn,
                         order = labelInfo.aufnr,
                         time = labelInfo.productTime,
                         quantity = labelInfo.quantity
