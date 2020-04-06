@@ -205,6 +205,16 @@ class ScreenNavigator @Inject constructor(
         }
     }
 
+    override fun showMoreThanOneGoodForThisTask() {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    pageNumber = "32.2",
+                    message = context.getString(R.string.more_than_one_good_for_this_task),
+                    iconRes = R.drawable.is_warning_red_80dp
+            ))
+        }
+    }
+
     /*override fun showErrorCompletingObjectProcessing() {
         runOrPostpone {
             getFragmentStack()?.push(AlertFragment.create(
@@ -275,6 +285,7 @@ interface IScreenNavigator : ICoreNavigator {
     fun showConfirmNoRawItem(taskType: String, confirmCallback: () -> Unit)
     fun showFixingPackagingPhaseSuccessful(nextCallback: () -> Unit)
     fun showMoreThanOneOrderForThisProduct()
+    fun showMoreThanOneGoodForThisTask()
     fun showNotSavedDataWillBeLost(yesCallback: () -> Unit)
     fun showAlertNoIpPrinter()
     fun showLabelSentToPrint(nextCallback: () -> Unit)
