@@ -347,8 +347,13 @@ class DefectInfoViewModel : CoreViewModel() {
                     if (ipAddress == null) {
                         return@let null
                     }
+
+                    navigator.showProgressLoadingData()
+
                     printer.printLabel(labelInfo, ipAddress)
-                            .either(::handleFailure) {
+                            .also {
+                                navigator.hideProgress()
+                            }.either(::handleFailure) {
                                 // Ничего не делаем...
                             }
                 }
