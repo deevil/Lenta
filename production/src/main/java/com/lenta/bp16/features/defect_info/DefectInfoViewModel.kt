@@ -340,9 +340,10 @@ class DefectInfoViewModel : CoreViewModel() {
     }
 
     private fun printLabel(labelInfo: LabelInfo) {
+        taskManager.addLabelToList(labelInfo)
+
         viewModelScope.launch {
             withContext(Dispatchers.IO) {
-                taskManager.addLabelToList(labelInfo)
                 appSettings.printerIpAddress.let { ipAddress ->
                     if (ipAddress == null) {
                         return@let null
