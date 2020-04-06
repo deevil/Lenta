@@ -260,8 +260,6 @@ class DefectInfoViewModel : CoreViewModel() {
 
                     total.value = 0.0
                     weightField.value = "0"
-
-                    navigator.openPackListScreen()
                 }
             }
         }
@@ -344,13 +342,14 @@ class DefectInfoViewModel : CoreViewModel() {
     private fun printLabel(labelInfo: LabelInfo) {
         viewModelScope.launch {
             withContext(Dispatchers.IO) {
+                taskManager.addLabelToList(labelInfo)
                 appSettings.printerIpAddress.let { ipAddress ->
                     if (ipAddress == null) {
                         return@let null
                     }
                     printer.printLabel(labelInfo, ipAddress)
                             .either(::handleFailure) {
-                                taskManager.addLabelToList(labelInfo)
+                                // Ничего не делаем...
                             }
                 }
             }.also {

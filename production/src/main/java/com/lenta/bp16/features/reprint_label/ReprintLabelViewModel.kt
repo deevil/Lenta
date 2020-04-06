@@ -1,6 +1,5 @@
 package com.lenta.bp16.features.reprint_label
 
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.lenta.bp16.data.IPrinter
 import com.lenta.bp16.data.LabelInfo
