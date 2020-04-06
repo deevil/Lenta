@@ -291,13 +291,14 @@ class GoodWeighingViewModel : CoreViewModel() {
     private fun printLabel(labelInfo: LabelInfo) {
         viewModelScope.launch {
             withContext(IO) {
+                taskManager.addLabelToList(labelInfo)
                 appSettings.printerIpAddress.let { ipAddress ->
                     if (ipAddress == null) {
                         return@let null
                     }
                     printer.printLabel(labelInfo, ipAddress)
                             .either(::handleFailure) {
-                                taskManager.addLabelToList(labelInfo)
+                                // Ничего не делаем...
                             }
                 }
             }.also {

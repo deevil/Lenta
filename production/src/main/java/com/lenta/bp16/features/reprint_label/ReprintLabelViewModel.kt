@@ -87,7 +87,6 @@ class ReprintLabelViewModel : CoreViewModel() {
                                 }
                             }
                 }
-
             }.also {
                 if (it == null) {
                     navigator.showAlertNoIpPrinter()
