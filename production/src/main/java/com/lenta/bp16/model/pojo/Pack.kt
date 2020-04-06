@@ -24,4 +24,8 @@ data class Pack(
         return number
     }
 
+    fun isNotDefect(): Boolean {
+        return category == null && defect == null
+    }
+
 }

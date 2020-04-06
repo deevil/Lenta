@@ -43,6 +43,8 @@ class PackListViewModel : CoreViewModel() {
             good?.packs?.filter {
                 it.materialOsn == raw.value?.materialOsn
             }?.filter {
+                it.isNotDefect()
+            }?.filter {
                 if (raw.value?.isWasDef == true) !it.isDefOut else !it.isDefOut || it.isDefOut
             }?.let { packs ->
                 packs.mapIndexed { index, pack ->
