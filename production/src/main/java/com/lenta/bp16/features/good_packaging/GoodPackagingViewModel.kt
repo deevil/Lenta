@@ -59,8 +59,10 @@ class GoodPackagingViewModel : CoreViewModel() {
         }
     }
 
-    val defectWithUnits = defect.map {
-        "${it.dropZeros()} ${good.value!!.units.name}"
+    val defectWithUnits by lazy {
+        defect.map {
+            "${it.dropZeros()} ${good.value!!.units.name}"
+        }
     }
 
     val planned by lazy {

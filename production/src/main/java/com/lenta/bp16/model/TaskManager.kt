@@ -14,14 +14,15 @@ import com.lenta.shared.utilities.extentions.isSapTrue
 import javax.inject.Inject
 
 class TaskManager @Inject constructor(
-        private val database: IDatabaseRepository
+        private val database: IDatabaseRepository,
+        private val persistLabelList: PersistLabelList
 ) : ITaskManager {
 
     override lateinit var taskType: TaskType
 
-    override val labels = MutableLiveData<List<LabelInfo>>(emptyList())
-
     var labelLimit = 0
+
+    override val labels = MutableLiveData<List<LabelInfo>>(emptyList())
 
     override val tasks = MutableLiveData<List<Task>>(emptyList())
 
@@ -32,8 +33,30 @@ class TaskManager @Inject constructor(
     override val currentRaw = MutableLiveData<Raw>()
 
 
-    override suspend fun getLabelLimit() {
+    override suspend fun getLabelList() {
         labelLimit = database.getLabelLimit()
+
+        val labelList = persistLabelList.getLabelList().toMutableList()
+        while (labelList.size > labelLimit && labelList.isNotEmpty()) {
+            labelList.removeAt(labelList.size - 1)
+        }
+
+        labels.postValue(labelList)
+    }
+
+    override suspend fun addLabelToList(labelInfo: LabelInfo) {
+        if (labelLimit > 0) {
+            labels.value?.let { list ->
+                val labelList = list.toMutableList()
+                if (labelList.size == labelLimit) {
+                    labelList.removeAt(labelList.size - 1)
+                }
+
+                labelList.add(0, labelInfo)
+                persistLabelList.saveLabelList(labelList)
+                labels.postValue(labelList)
+            }
+        }
     }
 
     override fun addTasks(taskListResult: TaskListResult) {
@@ -109,7 +132,7 @@ class TaskManager @Inject constructor(
 
     override fun completeCurrentGood() {
         currentTask.value?.let { task ->
-            task.goods?.find { it.material == currentGood.value?.material }?.let { good ->
+            task.goods.find { it.material == currentGood.value?.material }?.let { good ->
                 good.isProcessed = true
             }
 
@@ -144,20 +167,6 @@ class TaskManager @Inject constructor(
         currentTask.value = currentTask.value
     }
 
-    override fun  addLabelToList(labelInfo: LabelInfo) {
-        if (labelLimit > 0) {
-            labels.value?.let { list ->
-                val labelList = list.toMutableList()
-                if (labelList.size == labelLimit) {
-                    labelList.removeAt(labelList.size - 1)
-                }
-
-                labelList.add(0, labelInfo)
-                labels.value = labelList
-            }
-        }
-    }
-
 }
 
 interface ITaskManager {
@@ -177,6 +186,6 @@ interface ITaskManager {
     fun completeCurrentGood()
     fun onTaskChanged()
     fun setDataSentForPackTask()
-    suspend fun getLabelLimit()
-    fun addLabelToList(labelInfo: LabelInfo)
+    suspend fun getLabelList()
+    suspend fun addLabelToList(labelInfo: LabelInfo)
 }
