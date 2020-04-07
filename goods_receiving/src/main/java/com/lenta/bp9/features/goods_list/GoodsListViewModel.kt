@@ -84,7 +84,7 @@ class GoodsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKey
     }
 
     val enabledBtnSkipForShipmentPP: MutableLiveData<Boolean> by lazy {
-        MutableLiveData(taskManager.getReceivingTask()?.taskDescription?.isSkipCountMan == false)
+        MutableLiveData(taskManager.getReceivingTask()?.taskDescription?.isSkipCountMan == true)
     }
 
     val isTaskPGE: MutableLiveData<Boolean> by lazy {
