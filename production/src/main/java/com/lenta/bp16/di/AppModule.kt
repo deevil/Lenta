@@ -4,7 +4,9 @@ import com.lenta.bp16.data.IPrinter
 import com.lenta.bp16.data.IScales
 import com.lenta.bp16.data.Printer
 import com.lenta.bp16.data.Scales
+import com.lenta.bp16.model.IPersistLabelList
 import com.lenta.bp16.model.ITaskManager
+import com.lenta.bp16.model.PersistLabelList
 import com.lenta.bp16.model.TaskManager
 import com.lenta.bp16.platform.navigation.IScreenNavigator
 import com.lenta.bp16.platform.navigation.ScreenNavigator
@@ -51,6 +53,10 @@ class AppModule {
         @Binds
         @AppScope
         fun bindPrinter(realisation: Printer): IPrinter
+
+        @Binds
+        @AppScope
+        fun bindPersistTaskData(realisation: PersistLabelList): IPersistLabelList
 
     }
 
