@@ -57,6 +57,7 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
             list?.mapIndexed { index, task ->
                 ItemTaskUi(
                         position = "${index + 1}",
+                        number = task.number,
                         name = task.name,
                         provider = task.getProviderCodeWithName(),
                         taskStatus = task.status,
@@ -71,6 +72,7 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
         MutableLiveData(List(3) {
             ItemTaskUi(
                     position = "${it + 1}",
+                    number = "1",
                     name = "Test name ${it + 1}",
                     provider = "Test supplier ${it + 1}",
                     taskStatus = TaskStatus.COMMON,
@@ -94,7 +96,7 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
         selectedPage.value = position
     }
 
-    fun loadTaskList() {
+    private fun loadTaskList() {
         viewModelScope.launch {
             navigator.showProgressLoadingData()
 
@@ -129,7 +131,22 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
     }
 
     fun onClickItemPosition(position: Int) {
+        selectedPage.value?.let { page ->
+            when (page) {
+                0 -> {
+                    tasks.value?.let { tasks ->
+                        manager.updateCurrentTask(tasks[position])
+                        navigator.openTaskCardOpenScreen()
+                    }
+                }
+                1 -> {
+                    // todo Открытие задачи из списка найденных задач
+                    // ...
 
+                }
+                else -> throw IllegalArgumentException("Wrong pager position!")
+            }
+        }
     }
 
     override fun onOkInSoftKeyboard(): Boolean {
@@ -140,6 +157,7 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
 
 data class ItemTaskUi(
         val position: String,
+        val number: String,
         val name: String,
         val provider: String,
         val taskStatus: TaskStatus,

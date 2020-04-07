@@ -64,7 +64,7 @@
 
                 <TextView
                     style="@style/CellTextStyle"
-                    android:text="@{vm.ui.supplier}"
+                    android:text="@{vm.ui.provider}"
                     android:textColor="@color/color_text_title_header"
                     tools:text="568932 ООО Микоян" />
 

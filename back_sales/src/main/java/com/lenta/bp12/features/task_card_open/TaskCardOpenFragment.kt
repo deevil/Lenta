@@ -18,10 +18,10 @@ import com.lenta.shared.utilities.extentions.connectLiveData
 import com.lenta.shared.utilities.extentions.generateScreenNumberFromPostfix
 import com.lenta.shared.utilities.extentions.provideViewModel
 
-class TaskCardOpenFragment : CoreFragment<FragmentTaskCardCreateBinding, TaskCardOpenViewModel>(),
+class TaskCardOpenFragment : CoreFragment<FragmentTaskCardOpenBinding, TaskCardOpenViewModel>(),
         ToolbarButtonsClickListener, ViewPagerSettings {
 
-    override fun getLayoutId(): Int = R.layout.fragment_task_card_create
+    override fun getLayoutId(): Int = R.layout.fragment_task_card_open
 
     override fun getPageNumber(): String? = generateScreenNumberFromPostfix("8")
 
@@ -60,7 +60,7 @@ class TaskCardOpenFragment : CoreFragment<FragmentTaskCardCreateBinding, TaskCar
 
     private fun initTaskCardType(container: ViewGroup): View {
         DataBindingUtil.inflate<LayoutTaskCardOpenTypeBinding>(LayoutInflater.from(container.context),
-                R.layout.layout_task_card_create_type,
+                R.layout.layout_task_card_open_type,
                 container,
                 false).let { layoutBinding ->
 
@@ -73,7 +73,7 @@ class TaskCardOpenFragment : CoreFragment<FragmentTaskCardCreateBinding, TaskCar
 
     private fun initTaskCardComment(container: ViewGroup): View {
         DataBindingUtil.inflate<LayoutTaskCardOpenCommentBinding>(LayoutInflater.from(container.context),
-                R.layout.layout_task_card_create_comment,
+                R.layout.layout_task_card_open_comment,
                 container,
                 false).let { layoutBinding ->
 

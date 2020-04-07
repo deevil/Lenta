@@ -2,12 +2,14 @@ package com.lenta.bp12.features.task_card_open
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import com.lenta.bp12.model.IOpenTaskManager
+import com.lenta.bp12.model.ControlType
+import com.lenta.bp12.model.ITaskManager
 import com.lenta.bp12.platform.navigation.IScreenNavigator
 import com.lenta.bp12.repository.IDatabaseRepository
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.databinding.PageSelectionListener
+import com.lenta.shared.utilities.extentions.map
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -23,11 +25,15 @@ class TaskCardOpenViewModel : CoreViewModel(), PageSelectionListener {
     lateinit var database: IDatabaseRepository
 
     @Inject
-    lateinit var openTaskManager: IOpenTaskManager
+    lateinit var manager: ITaskManager
 
 
     val title by lazy {
         "ТК - ${sessionInfo.market}"
+    }
+
+    val task by lazy {
+        manager.currentTask
     }
 
     val nextEnabled = MutableLiveData(false)
@@ -35,18 +41,22 @@ class TaskCardOpenViewModel : CoreViewModel(), PageSelectionListener {
     val selectedPage = MutableLiveData(0)
 
     val ui by lazy {
-        TaskCardOpenUi(
-                type = "Возврат брака прямому поставщику",
-                name = "Возврат от 05.08.2020 15:16",
-                supplier = "568932 ООО Микоян",
-                storage = "0010",
-                reason = "Нарушение товарного вида",
-                description = "Возврат прямому поставщику",
-                comment = "Комплектование необходимо выполнить до 16:00!!!",
-                isStrict = false,
-                isAlcohol = false,
-                isCommon = true
-        )
+        task.map {
+            it?.let { task ->
+                TaskCardOpenUi(
+                        type = task.type?.description ?: "",
+                        name = task.name,
+                        provider = task.getProviderCodeWithName(),
+                        storage = task.storage,
+                        reason = task.reason.description,
+                        description = task.type?.description ?: "",
+                        comment = task.comment,
+                        isStrict = task.isStrict,
+                        isAlcohol = task.control == ControlType.ALCOHOL,
+                        isCommon = task.control == ControlType.COMMON
+                )
+            }
+        }
     }
 
     // -----------------------------
@@ -72,7 +82,7 @@ class TaskCardOpenViewModel : CoreViewModel(), PageSelectionListener {
 data class TaskCardOpenUi(
         val type: String,
         val name: String,
-        val supplier: String,
+        val provider: String,
         val storage: String,
         val reason: String,
         val description: String,
