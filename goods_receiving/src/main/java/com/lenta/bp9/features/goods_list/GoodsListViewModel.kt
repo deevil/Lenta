@@ -3,12 +3,11 @@ package com.lenta.bp9.features.goods_list
 import android.content.Context
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import com.lenta.bp9.R
 import com.lenta.bp9.features.loading.tasks.TaskCardMode
 import com.lenta.bp9.model.task.*
 import com.lenta.bp9.platform.navigation.IScreenNavigator
-import com.lenta.bp9.requests.network.EndRecountDDParameters
-import com.lenta.bp9.requests.network.EndRecountDDResult
-import com.lenta.bp9.requests.network.EndRecountDirectDeliveriesNetRequest
+import com.lenta.bp9.requests.network.*
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.models.core.ProductType
@@ -21,6 +20,7 @@ import com.lenta.shared.utilities.databinding.PageSelectionListener
 import com.lenta.shared.utilities.extentions.getDeviceIp
 import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.utilities.extentions.toStringFormatted
+import com.mobrun.plugin.api.HyperHive
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -38,13 +38,22 @@ class GoodsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKey
     lateinit var sessionInfo: ISessionInfo
     @Inject
     lateinit var searchProductDelegate: SearchProductDelegate
+    @Inject
+    lateinit var skipRecountNetRequest: SkipRecountNetRequest
+    @Inject
+    lateinit var hyperHive: HyperHive
 
     val selectedPage = MutableLiveData(0)
     val countedSelectionsHelper = SelectionItemsHelper()
+    val toProcessingSelectionsHelper = SelectionItemsHelper()
+    val processedSelectionsHelper = SelectionItemsHelper()
     val listCounted: MutableLiveData<List<ListCountedItem>> = MutableLiveData()
     val listWithoutBarcode: MutableLiveData<List<ListWithoutBarcodeItem>> = MutableLiveData()
+    val listToProcessing: MutableLiveData<List<ListShipmentPPItem>> = MutableLiveData()
+    val listProcessed: MutableLiveData<List<ListShipmentPPItem>> = MutableLiveData()
     val eanCode: MutableLiveData<String> = MutableLiveData()
     val requestFocusToEan: MutableLiveData<Boolean> = MutableLiveData()
+    val taskType: MutableLiveData<TaskType> = MutableLiveData()
     private val isBatches: MutableLiveData<Boolean> = MutableLiveData(false)
 
     val visibilityCleanButton: MutableLiveData<Boolean> = selectedPage.map {
@@ -59,6 +68,25 @@ class GoodsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKey
     val visibilityBatchesButton: MutableLiveData<Boolean> by lazy {
         MutableLiveData(taskManager.getReceivingTask()?.taskDescription?.isAlco == true && taskManager.getReceivingTask()?.taskHeader?.taskType == TaskType.RecalculationCargoUnit)
     }
+
+    val enabledBtnSaveForShipmentPP: MutableLiveData<Boolean> = listToProcessing.map {
+        it?.isEmpty()
+    }
+
+    val enabledBtnMissingForShipmentPP = toProcessingSelectionsHelper.selectedPositions.map {
+        val selectedComponentsPositions = toProcessingSelectionsHelper.selectedPositions.value
+        !selectedComponentsPositions.isNullOrEmpty()
+    }
+
+    val enabledBtnCleanForShipmentPP = processedSelectionsHelper.selectedPositions.map {
+        val selectedComponentsPositions = processedSelectionsHelper.selectedPositions.value
+        !selectedComponentsPositions.isNullOrEmpty()
+    }
+
+    val enabledBtnSkipForShipmentPP: MutableLiveData<Boolean> by lazy {
+        MutableLiveData(taskManager.getReceivingTask()?.taskDescription?.isSkipCountMan == false)
+    }
+
     val isTaskPGE: MutableLiveData<Boolean> by lazy {
         MutableLiveData(taskManager.getReceivingTask()?.taskHeader?.taskType == TaskType.RecalculationCargoUnit)
     }
@@ -71,8 +99,17 @@ class GoodsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKey
     }
 
     fun onResume() {
-        updateListCounted()
-        updateListWithoutBarcode()
+        updateData()
+    }
+
+    private fun updateData() {
+        if (taskType.value == TaskType.ShipmentPP) {
+            updateListToProcessing()
+            updateListProcessed()
+        } else {
+            updateListCounted()
+            updateListWithoutBarcode()
+        }
     }
 
     private fun updateListCounted() {
@@ -173,9 +210,9 @@ class GoodsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKey
                                 .filter {
                                     if (task.taskHeader.taskType == TaskType.RecalculationCargoUnit) {
                                         it.isNoEAN && (task.taskRepository.getProductsDiscrepancies().getCountAcceptOfProductPGE(it) +
-                                                task.taskRepository.getProductsDiscrepancies().getCountRefusalOfProduct(it) == 0.0)
+                                                task.taskRepository.getProductsDiscrepancies().getCountRefusalOfProductPGE(it) == 0.0)
                                     } else {
-                                        it.isNoEAN && (task.taskRepository.getProductsDiscrepancies().getCountAcceptOfProductPGE(it) +
+                                        it.isNoEAN && (task.taskRepository.getProductsDiscrepancies().getCountAcceptOfProduct(it) +
                                                 task.taskRepository.getProductsDiscrepancies().getCountRefusalOfProduct(it) == 0.0)
                                     }
                                 }.mapIndexed { index, productInfo ->
@@ -206,6 +243,46 @@ class GoodsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKey
         }
     }
 
+    private fun updateListToProcessing() {
+        taskManager.getReceivingTask()?.let { task ->
+            listToProcessing.postValue(
+                    task.getProcessedProducts()
+                            .filter {
+                                task.taskRepository.getProductsDiscrepancies().getQuantityDiscrepanciesOfProduct(it) == 0
+                            }.mapIndexed { index, productInfo ->
+                                ListShipmentPPItem(
+                                        number = index + 1,
+                                        name = "${productInfo.getMaterialLastSix()} ${productInfo.description}",
+                                        countWithUom = "${productInfo.orderQuantity.toDouble().toStringFormatted()} ${productInfo.uom.name}",
+                                        productInfo = productInfo,
+                                        even = index % 2 == 0)
+                            }
+                            .reversed())
+        }
+
+        toProcessingSelectionsHelper.clearPositions()
+    }
+
+    private fun updateListProcessed() {
+        taskManager.getReceivingTask()?.let { task ->
+            listProcessed.postValue(
+                    task.getProcessedProducts()
+                            .filter {
+                                task.taskRepository.getProductsDiscrepancies().getQuantityDiscrepanciesOfProduct(it) > 0
+                            }.mapIndexed { index, productInfo ->
+                                ListShipmentPPItem(
+                                        number = index + 1,
+                                        name = "${productInfo.getMaterialLastSix()} ${productInfo.description}",
+                                        countWithUom = "${task.taskRepository.getProductsDiscrepancies().getAllCountDiscrepanciesOfProduct(productInfo).toStringFormatted()} ${productInfo.uom.name}",
+                                        productInfo = productInfo,
+                                        even = index % 2 == 0)
+                            }
+                            .reversed())
+        }
+
+        processedSelectionsHelper.clearPositions()
+    }
+
     fun getTitle(): String {
         return taskManager.getReceivingTask()?.taskHeader?.caption ?: ""
     }
@@ -226,9 +303,17 @@ class GoodsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKey
 
     fun onClickItemPosition(position: Int) {
         val matnr: String? = if (selectedPage.value == 0) {
-            listCounted.value?.get(position)?.productInfo?.materialNumber
+            if (taskType.value == TaskType.ShipmentPP) {
+                listToProcessing.value?.get(position)?.productInfo?.materialNumber
+            } else {
+                listCounted.value?.get(position)?.productInfo?.materialNumber
+            }
         } else {
-            listWithoutBarcode.value?.get(position)?.productInfo?.materialNumber
+            if (taskType.value == TaskType.ShipmentPP) {
+                listProcessed.value?.get(position)?.productInfo?.materialNumber
+            } else {
+                listWithoutBarcode.value?.get(position)?.productInfo?.materialNumber
+            }
         }
         searchProductDelegate.searchCode(code = matnr ?: "", fromScan = false)
     }
@@ -249,41 +334,115 @@ class GoodsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKey
         screenNavigator.openRejectScreen()
     }
 
-    fun onClickClean() {
-        if (!isBatches.value!!) {
-            countedSelectionsHelper.selectedPositions.value?.map { position ->
-                if (!listCounted.value?.get(position)!!.productInfo!!.isNotEdit) {
-                    taskManager
-                            .getReceivingTask()
-                            ?.taskRepository
-                            ?.getProductsDiscrepancies()
-                            ?.deleteProductsDiscrepanciesForProduct(listCounted.value?.get(position)!!.productInfo!!)
+    fun onClickThirdBtn() {
+        if (taskType.value == TaskType.ShipmentPP) {//https://trello.com/c/3WVovfmE
+            shipmentSkipRecount()
+        } else {
+            if (!isBatches.value!!) {
+                countedSelectionsHelper.selectedPositions.value?.map { position ->
+                    if (!listCounted.value?.get(position)!!.productInfo!!.isNotEdit) {
+                        taskManager
+                                .getReceivingTask()
+                                ?.taskRepository
+                                ?.getProductsDiscrepancies()
+                                ?.deleteProductsDiscrepanciesForProduct(listCounted.value?.get(position)!!.productInfo!!)
 
+                        taskManager
+                                .getReceivingTask()
+                                ?.taskRepository
+                                ?.getMercuryDiscrepancies()
+                                ?.deleteMercuryDiscrepanciesForProduct(listCounted.value?.get(position)!!.productInfo!!)
+                    }
+                }
+            } else {
+                countedSelectionsHelper.selectedPositions.value?.map { position ->
                     taskManager
                             .getReceivingTask()
                             ?.taskRepository
-                            ?.getMercuryDiscrepancies()
-                            ?.deleteMercuryDiscrepanciesForProduct(listCounted.value?.get(position)!!.productInfo!!)
+                            ?.getBatchesDiscrepancies()
+                            ?.deleteBatchesDiscrepanciesForBatch(listCounted.value?.get(position)!!.batchInfo!!)
                 }
             }
-        } else {
-            countedSelectionsHelper.selectedPositions.value?.map { position ->
-                taskManager
-                        .getReceivingTask()
-                        ?.taskRepository
-                        ?.getBatchesDiscrepancies()
-                        ?.deleteBatchesDiscrepanciesForBatch(listCounted.value?.get(position)!!.batchInfo!!)
-            }
+            updateData()
         }
-
-        updateListCounted()
-        updateListWithoutBarcode()
     }
 
-    fun onClickBatches() {
-        /**isBatches.value = !isBatches.value!!
-        updateListCounted()
-        updateListWithoutBarcode()*/
+    private fun shipmentSkipRecount() {
+        viewModelScope.launch {
+            screenNavigator.showProgress(context.getString(R.string.skipping_recount))
+            val params = SkipRecountParameters(
+                    taskNumber = taskManager.getReceivingTask()?.taskHeader?.taskNumber ?: "",
+                    deviceIP = context.getDeviceIp(),
+                    personalNumber = sessionInfo.personnelNumber ?: "",
+                    comment = ""
+            )
+            skipRecountNetRequest(params).either(::handleFailure, ::handleSuccessSkipRecount)
+            screenNavigator.hideProgress()
+        }
+    }
+
+    private fun handleSuccessSkipRecount(result: SkipRecountResult) {
+        viewModelScope.launch {
+            val notifications = result.notifications.map { TaskNotification.from(it) }
+            val sectionInfo = result.sectionsInfo.map { TaskSectionInfo.from(it) }
+            val sectionProducts = result.sectionProducts.map { TaskSectionProducts.from(hyperHive, it) }
+            taskManager.updateTaskDescription(TaskDescription.from(result.taskDescription))
+            taskManager.getReceivingTask()?.taskRepository?.getNotifications()?.updateWithNotifications(notifications, null, null, null)
+            taskManager.getReceivingTask()?.taskRepository?.getSections()?.updateSections(sectionInfo, sectionProducts)
+            screenNavigator.openTaskCardScreen(TaskCardMode.Full, taskManager.getReceivingTask()?.taskHeader?.taskType ?: TaskType.None)
+        }
+    }
+
+    fun onClickFourthBtn() {
+        if (taskType.value == TaskType.ShipmentPP) {//https://trello.com/c/3WVovfmE
+            if (selectedPage.value == 0) {
+                missingGoodsForShipmentPP()
+            } else {
+                cleanGoodsForShipmentPP()
+            }
+        } else {
+            /**isBatches.value = !isBatches.value!!
+            updateListCounted()
+            updateListWithoutBarcode()*/
+        }
+    }
+
+    private fun missingGoodsForShipmentPP() {
+        toProcessingSelectionsHelper.selectedPositions.value?.map { position ->
+            taskManager.getReceivingTask()?.
+                    taskRepository?.
+                    getProductsDiscrepancies()?.
+                    changeProductDiscrepancy(TaskProductDiscrepancies(
+                            materialNumber = listToProcessing.value?.get(position)!!.productInfo!!.materialNumber,
+                            processingUnitNumber = listToProcessing.value?.get(position)!!.productInfo!!.processingUnit,
+                            numberDiscrepancies = "0",
+                            uom = listToProcessing.value?.get(position)!!.productInfo!!.uom,
+                            typeDiscrepancies = "3",
+                            isNotEdit = false,
+                            isNew = false,
+                            notEditNumberDiscrepancies = ""
+                    ))
+        }
+
+        updateData()
+    }
+
+    private fun cleanGoodsForShipmentPP() {
+        processedSelectionsHelper.selectedPositions.value?.map { position ->
+            taskManager
+                    .getReceivingTask()
+                    ?.taskRepository
+                    ?.getProductsDiscrepancies()
+                    ?.deleteProductsDiscrepanciesForProduct(listProcessed.value?.get(position)!!.productInfo!!)
+
+            taskManager
+                    .getReceivingTask()
+                    ?.taskRepository
+                    ?.getMercuryDiscrepancies()
+                    ?.deleteMercuryDiscrepanciesForProduct(listProcessed.value?.get(position)!!.productInfo!!)
+        }
+
+        updateData()
     }
 
     fun onClickSave() {

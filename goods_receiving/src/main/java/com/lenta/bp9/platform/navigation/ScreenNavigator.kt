@@ -133,9 +133,9 @@ class ScreenNavigator(
         }
     }
 
-    override fun openGoodsListScreen() {
+    override fun openGoodsListScreen(taskType: TaskType) {
         runOrPostpone {
-            getFragmentStack()?.push(GoodsListFragment())
+            getFragmentStack()?.push(GoodsListFragment.create(taskType))
         }
     }
 
@@ -1073,7 +1073,7 @@ interface IScreenNavigator : ICoreNavigator {
     fun openSelectionPersonnelNumberScreen()
     fun openAlertNotPermissions(message: String)
     fun openTaskSearchScreen(loadingMode: TaskListLoadingMode)
-    fun openGoodsListScreen()
+    fun openGoodsListScreen(taskType: TaskType)
     fun openTaskCardScreen(mode: TaskCardMode, taskType: TaskType)
     fun openTaskCardLoadingScreen(mode: TaskCardMode, taskNumber: String, loadFullData: Boolean)
     fun openConfirmationUnlock(callbackFunc: () -> Unit)

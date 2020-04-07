@@ -298,7 +298,7 @@ class LoadingTaskCardViewModel : CoreLoadingViewModel() {
                     }
                 }
                 TaskStatus.Recounting -> {
-                    screenNavigator.openGoodsListScreen()
+                    screenNavigator.openGoodsListScreen(task.taskHeader.taskType)
                 }
                 TaskStatus.TransferringToSection -> {
                     screenNavigator.openTransferGoodsSectionScreen()

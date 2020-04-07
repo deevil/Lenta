@@ -243,18 +243,6 @@ class ProcessMercuryProductService
             }
         }
 
-        //Кол-во, которое было оприходовано по этому заказу и этому товару
-        val quantityCapitalized = ((taskManager.getReceivingTask()?.taskRepository?.getProductsDiscrepancies()?.getCountAcceptOfProduct(productInfo) ?: 0.0) +
-                (taskManager.getReceivingTask()?.taskRepository?.getProductsDiscrepancies()?.getCountRefusalOfProduct(productInfo) ?: 0.0)).toString()
-
-        productInfo = productInfo.copy(quantityCapitalized =  quantityCapitalized)
-
-        taskManager.getReceivingTask()?.
-                taskRepository?.
-                getProducts()?.
-                changeProduct(productInfo.copy(quantityCapitalized = quantityCapitalized))
-
-
         if (newVetProductDiscrepancies.isNotEmpty()) {
             newVetProductDiscrepancies.map {
                 taskManager.getReceivingTask()?.

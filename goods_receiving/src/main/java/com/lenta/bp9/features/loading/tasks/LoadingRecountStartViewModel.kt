@@ -91,7 +91,7 @@ class LoadingRecountStartViewModel : CoreLoadingViewModel() {
             } else {
                 taskManager.updateTaskDescription(TaskDescription.from(result.taskDescription))
                 taskManager.getReceivingTask()?.updateTaskWithContents(taskContents.getTaskContentsInfo(result))
-                screenNavigator.openGoodsListScreen()
+                screenNavigator.openGoodsListScreen(taskType = taskManager.getReceivingTask()?.taskHeader?.taskType ?: TaskType.None)
             }
         }
     }

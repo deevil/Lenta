@@ -149,6 +149,16 @@ class MemoryTaskProductsDiscrepanciesRepository : ITaskProductsDiscrepanciesRepo
         return countDiscrepancies
     }
 
+    override fun getQuantityDiscrepanciesOfProduct(product: TaskProductInfo): Int {
+        return findProductDiscrepanciesOfProduct(product).size
+    }
+
+    override fun getAllCountDiscrepanciesOfProduct(product: TaskProductInfo): Double {
+        return findProductDiscrepanciesOfProduct(product).sumByDouble {
+            it.numberDiscrepancies.toDouble()
+        }
+    }
+
 
     override fun clear() {
         productsDiscrepancies.clear()
