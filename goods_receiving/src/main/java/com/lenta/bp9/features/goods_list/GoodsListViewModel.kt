@@ -253,7 +253,7 @@ class GoodsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKey
                                 ListShipmentPPItem(
                                         number = index + 1,
                                         name = "${productInfo.getMaterialLastSix()} ${productInfo.description}",
-                                        countWithUom = "${productInfo.orderQuantity.toDouble().toStringFormatted()} ${productInfo.uom.name}",
+                                        countWithUom = "${productInfo.origQuantity.toDouble().toStringFormatted()} ${productInfo.uom.name}",
                                         productInfo = productInfo,
                                         even = index % 2 == 0)
                             }
@@ -460,7 +460,7 @@ class GoodsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKey
                 it
             } ?: 0.0
 
-            if (countProductNotProcessed > 0.0) {
+            if (countProductNotProcessed > 0.0 && taskType.value != TaskType.ShipmentPP) { //https://trello.com/c/3WVovfmE если это ОПП, то мы сразу переходим к сохранению (условию else)
                 screenNavigator.openDiscrepancyListScreen()
             } else {
                 screenNavigator.showProgressLoadingData()
