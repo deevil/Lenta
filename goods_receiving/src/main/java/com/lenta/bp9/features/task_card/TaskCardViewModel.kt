@@ -342,7 +342,7 @@ class TaskCardViewModel : CoreViewModel(), PageSelectionListener {
             TaskStatus.Unloaded -> {
                 when (taskType) {
                     TaskType.RecalculationCargoUnit -> screenNavigator.openSkipRecountScreen()
-                    TaskType.ReceptionDistributionCenter, TaskType.OwnProduction -> screenNavigator.openTransportMarriageScreen()
+                    TaskType.ReceptionDistributionCenter -> screenNavigator.openTransportMarriageScreen()
                 }
             }
             TaskStatus.Checked -> {
@@ -473,18 +473,24 @@ class TaskCardViewModel : CoreViewModel(), PageSelectionListener {
             }
             TaskStatus.Checked -> screenNavigator.openStartConditionsReviseLoadingScreen()
             TaskStatus.Unloaded -> {
-                if (taskManager.getReceivingTask()?.taskHeader?.taskType == TaskType.ReceptionDistributionCenter || taskManager.getReceivingTask()?.taskHeader?.taskType == TaskType.OwnProduction) {
-                    screenNavigator.openNoTransportDefectDeclaredDialog(
-                            nextCallbackFunc = {
-                                if (taskManager.getReceivingTask()?.taskDescription?.quantityOutgoingFillings == 0) {
-                                    fixationDeparture()
-                                } else {
-                                    screenNavigator.openInputOutgoingFillingsScreen()
+                when (taskManager.getReceivingTask()?.taskHeader?.taskType) {
+                    TaskType.ReceptionDistributionCenter -> {
+                        screenNavigator.openNoTransportDefectDeclaredDialog(
+                                nextCallbackFunc = {
+                                    if (taskManager.getReceivingTask()?.taskDescription?.quantityOutgoingFillings == 0) {
+                                        fixationDeparture()
+                                    } else {
+                                        screenNavigator.openInputOutgoingFillingsScreen()
+                                    }
                                 }
-                            }
-                    )
-                } else {
-                    screenNavigator.openRecountStartLoadingScreen()
+                        )
+                    }
+                    TaskType.OwnProduction -> {
+                        fixationDeparture()
+                    }
+                    else -> {
+                        screenNavigator.openRecountStartLoadingScreen()
+                    }
                 }
             }
             TaskStatus.Recounted -> screenNavigator.openTransmittedLoadingScreen()
