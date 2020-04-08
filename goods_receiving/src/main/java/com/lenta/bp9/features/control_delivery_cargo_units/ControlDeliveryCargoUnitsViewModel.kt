@@ -147,6 +147,7 @@ class ControlDeliveryCargoUnitsViewModel : CoreViewModel(), PageSelectionListene
     fun onClickSave() {
         viewModelScope.launch {
             if (taskType == TaskType.ShipmentRC) {
+                processCargoUnitsService.save()
                 screenNavigator.openShipmentEndRecountLoadingScreen()
             } else {
                 screenNavigator.showProgressLoadingData()
