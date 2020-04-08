@@ -4,14 +4,16 @@ import com.lenta.bp16.data.IPrinter
 import com.lenta.bp16.data.IScales
 import com.lenta.bp16.data.Printer
 import com.lenta.bp16.data.Scales
+import com.lenta.bp16.model.IPersistLabelList
 import com.lenta.bp16.model.ITaskManager
+import com.lenta.bp16.model.PersistLabelList
 import com.lenta.bp16.model.TaskManager
 import com.lenta.bp16.platform.navigation.IScreenNavigator
 import com.lenta.bp16.platform.navigation.ScreenNavigator
 import com.lenta.bp16.platform.resource.IResourceManager
 import com.lenta.bp16.platform.resource.ResourceManager
-import com.lenta.bp16.repository.GeneralRepository
-import com.lenta.bp16.repository.IGeneralRepository
+import com.lenta.bp16.repository.DatabaseRepository
+import com.lenta.bp16.repository.IDatabaseRepository
 import com.lenta.bp16.repository.IRepoInMemoryHolder
 import com.lenta.bp16.repository.RepoInMemoryHolder
 import com.lenta.shared.di.AppScope
@@ -34,7 +36,7 @@ class AppModule {
 
         @Binds
         @AppScope
-        fun bindGeneralRepository(realisation: GeneralRepository): IGeneralRepository
+        fun bindGeneralRepository(realisation: DatabaseRepository): IDatabaseRepository
 
         @Binds
         @AppScope
@@ -51,6 +53,10 @@ class AppModule {
         @Binds
         @AppScope
         fun bindPrinter(realisation: Printer): IPrinter
+
+        @Binds
+        @AppScope
+        fun bindPersistTaskData(realisation: PersistLabelList): IPersistLabelList
 
     }
 

@@ -4,6 +4,8 @@ import com.lenta.bp16.ExceptionHandler
 import com.lenta.bp16.data.IPrinter
 import com.lenta.bp16.data.IScales
 import com.lenta.bp16.features.auth.AuthViewModel
+import com.lenta.bp16.features.defect_info.DefectInfoViewModel
+import com.lenta.bp16.features.defect_list.DefectListViewModel
 import com.lenta.bp16.features.external_supply_list.ExternalSupplyListViewModel
 import com.lenta.bp16.features.external_supply_task_list.ExternalSupplyTaskListViewModel
 import com.lenta.bp16.features.good_packaging.GoodPackagingViewModel
@@ -15,13 +17,14 @@ import com.lenta.bp16.features.pack_list.PackListViewModel
 import com.lenta.bp16.features.processing_unit_list.ProcessingUnitListViewModel
 import com.lenta.bp16.features.processing_unit_task_list.ProcessingUnitTaskListViewModel
 import com.lenta.bp16.features.raw_list.RawListViewModel
+import com.lenta.bp16.features.reprint_label.ReprintLabelViewModel
 import com.lenta.bp16.features.select_market.SelectMarketViewModel
 import com.lenta.bp16.main.MainActivity
 import com.lenta.bp16.main.MainViewModel
 import com.lenta.bp16.model.ITaskManager
 import com.lenta.bp16.platform.navigation.IScreenNavigator
 import com.lenta.bp16.platform.resource.IResourceManager
-import com.lenta.bp16.repository.IGeneralRepository
+import com.lenta.bp16.repository.IDatabaseRepository
 import com.lenta.shared.di.AppScope
 import com.lenta.shared.di.CoreComponent
 import dagger.Component
@@ -31,7 +34,7 @@ import dagger.Component
 interface AppComponent : CoreComponent {
 
     fun getScreenNavigator(): IScreenNavigator
-    fun getGeneralRepository(): IGeneralRepository
+    fun getGeneralRepository(): IDatabaseRepository
     fun getTaskManager(): ITaskManager
     fun getResourceManager(): IResourceManager
     fun getScales(): IScales
@@ -54,5 +57,8 @@ interface AppComponent : CoreComponent {
     fun inject(it: GoodPackagingViewModel)
     fun inject(it: PackListViewModel)
     fun inject(it: PackGoodListViewModel)
+    fun inject(it: ReprintLabelViewModel)
+    fun inject(it: DefectInfoViewModel)
+    fun inject(it: DefectListViewModel)
 
 }

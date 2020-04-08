@@ -10,6 +10,7 @@
     <string name="good_list">Список товаров</string>
     <string name="pu_number">ЕО %1$s</string>
     <string name="good_card">Карточка товара</string>
+    <string name="defect_detail">Детализация брака</string>
     <string name="pack_list">Список тар</string>
 
     // Информационные сообщения
@@ -19,7 +20,9 @@
     <string name="fixing_beginning_of_packaging_phase_was_successful">Этап дефростирования завершен.\nФиксация начала этапа упаковки прошла успешно.</string>
     <string name="not_saved_data_will_be_lost">Несохраненные данные будут утеряны, все равно продолжить?</string>
     <string name="more_than_one_order_for_this_product">По данному товару активно более одного заказа на упаковку</string>
+    <string name="more_than_one_good_for_this_task">По данной задаче активно более одного товара на упаковку</string>
     <string name="error_completing_object_processing">Ошибка завершения обработки объекта</string>
+    <string name="label_sent_to_print">Этикетка отправлена на печать</string>
 
     // Заголовки списков
     <string name="sku">SKU</string>
@@ -29,10 +32,14 @@
     <string name="remain">Остаток</string>
     <string name="arrived">Прибыло</string>
     <string name="sf_type">Вид ПФ</string>
+    <string name="sf">ПФ</string>
     <string name="total_processed">Обработано</string>
     <string name="pack_number">Номер тары</string>
+    <string name="pack_type_cause">Тара/Тип/Причина</string>
     <string name="total_weight">Общий вес</string>
     <string name="plan_quantity">Плановое кол-во</string>
+    <string name="quantity">Кол-во</string>
+    <string name="pack_print">Тара/Печать</string>
 
     // Разные строки
     <string name="processing_pu">Обработка ЕО</string>
@@ -44,5 +51,9 @@
     <string name="planed_quantity">План на передел</string>
     <string name="next_raw">Следующий передел</string>
     <string name="no_ip_printer_alert">IP адрес принтера не указан</string>
+    <string name="reprint_labels">Повторная печать этикеток</string>
+    <string name="defect">Брак</string>
+    <string name="total_sf">Итого ПФ</string>
+    <string name="total_defect">Итого брак</string>
 
 </resources>

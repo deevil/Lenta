@@ -53,8 +53,26 @@ class GoodPackagingViewModel : CoreViewModel() {
         "${it.dropZeros()} ${good.value!!.units.name}"
     }
 
+    private val defect by lazy {
+        good.map { good ->
+            good?.packs?.filter { it.materialDef == raw.value?.material }?.map { it.quantity }?.sum()
+        }
+    }
+
+    val defectWithUnits by lazy {
+        defect.map {
+            "${it.dropZeros()} ${good.value!!.units.name}"
+        }
+    }
+
     val planned by lazy {
         "${raw.value?.planned.dropZeros()} ${good.value?.units?.name}"
+    }
+
+    val defectVisibility by lazy {
+        raw.map {
+            it?.isWasDef == true
+        }
     }
 
     val completeEnabled = entered.map {
@@ -91,6 +109,10 @@ class GoodPackagingViewModel : CoreViewModel() {
     override fun handleFailure(failure: Failure) {
         super.handleFailure(failure)
         navigator.openAlertScreen(failure)
+    }
+
+    fun onClickDefect() {
+        navigator.openDefectInfoScreen()
     }
 
 }

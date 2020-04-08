@@ -41,6 +41,8 @@ class PackListViewModel : CoreViewModel() {
     val packs: MutableLiveData<List<ItemPackListUi>> by lazy {
         good.map { good ->
             good?.packs?.filter {
+                it.isNotDefect()
+            }?.filter {
                 it.materialOsn == raw.value?.materialOsn
             }?.filter {
                 if (raw.value?.isWasDef == true) !it.isDefOut else !it.isDefOut || it.isDefOut
@@ -89,6 +91,10 @@ class PackListViewModel : CoreViewModel() {
             navigator.goBack()
             navigator.goBack()
         }
+    }
+
+    fun onClickLabel() {
+        navigator.openReprintLabelScreen()
     }
 
 }
