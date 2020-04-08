@@ -65,7 +65,7 @@ class TransportConditionsReviseViewModel : CoreViewModel(), PageSelectionListene
     }
 
     fun onClickSecondButton() {
-        if (typeTask == TaskType.ReceptionDistributionCenter || typeTask == TaskType.OwnProduction || typeTask == TaskType.ShipmentRC) {
+        if (typeTask == TaskType.ReceptionDistributionCenter || typeTask == TaskType.OwnProduction) {
             screenNavigator.openSealDamageDialog(
                     nextCallbackFunc = {
                         checkedConditions.value?.map {
