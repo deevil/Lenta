@@ -89,6 +89,69 @@ class MemoryTaskProductsDiscrepanciesRepository : ITaskProductsDiscrepanciesRepo
         return true
     }
 
+    override fun changeProductDiscrepancyNotRecountPGE(discrepancy: TaskProductDiscrepancies): Boolean {
+        deleteProductDiscrepancyNotRecountPGE(discrepancy)
+        return addProductDiscrepancy(discrepancy)
+    }
+
+    override fun deleteProductDiscrepancyNotRecountPGE(discrepancy: TaskProductDiscrepancies): Boolean {
+        return deleteProductDiscrepancyNotRecountPGE(discrepancy.materialNumber, discrepancy.typeDiscrepancies)
+    }
+
+    override fun deleteProductDiscrepancyNotRecountPGE(materialNumber: String, typeDiscrepancies: String): Boolean {
+        productsDiscrepancies.map { it }.filter {discrepancies ->
+            if (materialNumber == discrepancies.materialNumber && typeDiscrepancies == discrepancies.typeDiscrepancies) {
+                productsDiscrepancies.remove(discrepancies)
+                return@filter true
+            }
+            return@filter false
+
+        }.let {
+            return it.isNotEmpty()
+        }
+    }
+
+    override fun deleteProductsDiscrepanciesForProductNotRecountPGE(product: TaskProductInfo): Boolean {
+        val delDiscrepancies = ArrayList<TaskProductDiscrepancies>()
+        for (i in productsDiscrepancies.indices) {
+            if (product.materialNumber == productsDiscrepancies[i].materialNumber && productsDiscrepancies[i].typeDiscrepancies != "1") {
+                delDiscrepancies.add(productsDiscrepancies[i])
+            }
+        }
+
+        if (delDiscrepancies.isEmpty()) {
+            return false
+        }
+
+        delDiscrepancies.map {
+            deleteProductDiscrepancyNotRecountPGE(it)
+            findProductDiscrepanciesOfProduct(product).findLast {findNormDiscrepancies ->
+                findNormDiscrepancies.typeDiscrepancies == "1"
+            }?.let {normDiscrepancies ->
+                changeProductDiscrepancyNotRecountPGE(normDiscrepancies.copy(numberDiscrepancies = normDiscrepancies.notEditNumberDiscrepancies))
+            }
+        }
+        return true
+    }
+
+    override fun deleteProductsDiscrepanciesOfProductOfDiscrepanciesNotRecountPGE(product: TaskProductInfo, typeDiscrepancies: String): Boolean {
+        productsDiscrepancies.map { it }.filter {discrepancies ->
+            if (product.materialNumber == discrepancies.materialNumber && typeDiscrepancies == discrepancies.typeDiscrepancies && discrepancies.typeDiscrepancies != "1") {
+                productsDiscrepancies.remove(discrepancies)
+                findProductDiscrepanciesOfProduct(product).findLast {findNormDiscrepancies ->
+                    findNormDiscrepancies.typeDiscrepancies == "1"
+                }?.let {normDiscrepancies ->
+                    changeProductDiscrepancyNotRecountPGE(normDiscrepancies.copy(numberDiscrepancies = (normDiscrepancies.numberDiscrepancies.toDouble() + discrepancies.numberDiscrepancies.toDouble()).toString()))
+                }
+                return@filter true
+            }
+            return@filter false
+
+        }.let {
+            return it.isNotEmpty()
+        }
+    }
+
     override fun getCountAcceptOfProduct(product: TaskProductInfo): Double {
         var countAccept = 0.0
         findProductDiscrepanciesOfProduct(product).filter {

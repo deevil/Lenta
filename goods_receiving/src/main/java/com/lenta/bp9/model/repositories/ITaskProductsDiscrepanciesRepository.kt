@@ -12,6 +12,11 @@ interface ITaskProductsDiscrepanciesRepository {
     fun deleteProductDiscrepancy(discrepancy: TaskProductDiscrepancies): Boolean
     fun deleteProductDiscrepancy(materialNumber: String, typeDiscrepancies: String): Boolean
     fun deleteProductsDiscrepanciesForProduct(product: TaskProductInfo): Boolean
+    fun changeProductDiscrepancyNotRecountPGE(discrepancy: TaskProductDiscrepancies): Boolean
+    fun deleteProductDiscrepancyNotRecountPGE(discrepancy: TaskProductDiscrepancies): Boolean
+    fun deleteProductDiscrepancyNotRecountPGE(materialNumber: String, typeDiscrepancies: String): Boolean
+    fun deleteProductsDiscrepanciesForProductNotRecountPGE(product: TaskProductInfo): Boolean
+    fun deleteProductsDiscrepanciesOfProductOfDiscrepanciesNotRecountPGE(product: TaskProductInfo, typeDiscrepancies: String): Boolean
     fun getCountAcceptOfProduct(product: TaskProductInfo): Double
     fun getCountRefusalOfProduct(product: TaskProductInfo): Double
     fun getCountProductNotProcessedOfProduct(product: TaskProductInfo): Double

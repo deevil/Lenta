@@ -1059,6 +1059,18 @@ class ScreenNavigator(
         }
     }
 
+    override fun openAlertUnableSaveNegativeQuantity() {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    message = context.getString(R.string.alert_unable_to_save_negative_quantity),
+                    iconRes = R.drawable.ic_info_pink,
+                    textColor = ContextCompat.getColor(context, R.color.color_text_dialogWarning),
+                    pageNumber = "97",
+                    timeAutoExitInMillis = 3000)
+            )
+        }
+    }
+
     private fun getFragmentStack() = foregroundActivityProvider.getActivity()?.fragmentStack
 }
 
@@ -1185,4 +1197,5 @@ interface IScreenNavigator : ICoreNavigator {
     fun openExciseAlcoBoxAccInfoScreen(productInfo: TaskProductInfo)
     fun openAlertUnknownGoodsTypeScreen()
     fun openCreateInboundDeliveryDialog(yesCallbackFunc: () -> Unit)
+    fun openAlertUnableSaveNegativeQuantity()
 }

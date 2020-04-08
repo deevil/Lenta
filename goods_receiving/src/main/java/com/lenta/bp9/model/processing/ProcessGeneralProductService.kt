@@ -193,4 +193,44 @@ class ProcessGeneralProductService
             }
         }
     }
+
+    fun addNotRecountPGE(countNorm: String, countDefect: String, typeDiscrepanciesDefect: String){
+        val countAddDefect: Double = getCountOfDiscrepancies(typeDiscrepanciesDefect) + countDefect.toDouble()
+
+        val foundNormDiscrepancy = taskManager.getReceivingTask()?.taskRepository?.getProductsDiscrepancies()?.findProductDiscrepanciesOfProduct(productInfo)?.findLast {
+            it.materialNumber == productInfo.materialNumber && it.typeDiscrepancies == "1"
+        }
+
+        val foundDefectDiscrepancy = taskManager.getReceivingTask()?.taskRepository?.getProductsDiscrepancies()?.findProductDiscrepanciesOfProduct(productInfo)?.findLast {
+            it.materialNumber == productInfo.materialNumber && it.typeDiscrepancies == typeDiscrepanciesDefect
+        }
+
+        foundNormDiscrepancy?.let {
+            taskManager.getReceivingTask()?.
+                    taskRepository?.
+                    getProductsDiscrepancies()?.
+                    changeProductDiscrepancyNotRecountPGE(it.copy(numberDiscrepancies = countNorm))
+        }
+
+        if (foundDefectDiscrepancy == null) {
+            taskManager.getReceivingTask()?.
+                    taskRepository?.
+                    getProductsDiscrepancies()?.
+                    changeProductDiscrepancy(TaskProductDiscrepancies(
+                            materialNumber = productInfo.materialNumber,
+                            processingUnitNumber = productInfo.processingUnit,
+                            numberDiscrepancies = countAddDefect.toString(),
+                            uom = productInfo.uom,
+                            typeDiscrepancies = typeDiscrepanciesDefect,
+                            isNotEdit = false,
+                            isNew = false,
+                            notEditNumberDiscrepancies = ""
+                    ))
+        } else {
+            taskManager.getReceivingTask()?.
+                    taskRepository?.
+                    getProductsDiscrepancies()?.
+                    changeProductDiscrepancyNotRecountPGE(foundDefectDiscrepancy.copy(numberDiscrepancies = countAddDefect.toString(), processingUnitNumber = productInfo.processingUnit))
+        }
+    }
 }

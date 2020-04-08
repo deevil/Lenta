@@ -340,18 +340,22 @@ class GoodsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKey
         } else {
             if (!isBatches.value!!) {
                 countedSelectionsHelper.selectedPositions.value?.map { position ->
-                    if (!listCounted.value?.get(position)!!.productInfo!!.isNotEdit) {
-                        taskManager
-                                .getReceivingTask()
-                                ?.taskRepository
-                                ?.getProductsDiscrepancies()
-                                ?.deleteProductsDiscrepanciesForProduct(listCounted.value?.get(position)!!.productInfo!!)
+                    val isNotRecountBreakingCargoUnit = isTaskPGE.value == true && taskManager.getReceivingTask()!!.taskHeader.isCracked && listCounted.value?.get(position)!!.productInfo!!.isWithoutRecount
+                    if (isNotRecountBreakingCargoUnit) { //если это не пересчетная ГЕ //https://trello.com/c/PRTAVnUP
+                        taskManager.getReceivingTask()?.taskRepository?.getProductsDiscrepancies()?.deleteProductsDiscrepanciesForProductNotRecountPGE(listCounted.value?.get(position)!!.productInfo!!)
+                    }
+                    if (!listCounted.value?.get(position)!!.productInfo!!.isNotEdit && !isNotRecountBreakingCargoUnit) {
+                    taskManager
+                            .getReceivingTask()
+                            ?.taskRepository
+                            ?.getProductsDiscrepancies()
+                            ?.deleteProductsDiscrepanciesForProduct(listCounted.value?.get(position)!!.productInfo!!)
 
-                        taskManager
-                                .getReceivingTask()
-                                ?.taskRepository
-                                ?.getMercuryDiscrepancies()
-                                ?.deleteMercuryDiscrepanciesForProduct(listCounted.value?.get(position)!!.productInfo!!)
+                    taskManager
+                            .getReceivingTask()
+                            ?.taskRepository
+                            ?.getMercuryDiscrepancies()
+                            ?.deleteMercuryDiscrepanciesForProduct(listCounted.value?.get(position)!!.productInfo!!)
                     }
                 }
             } else {
