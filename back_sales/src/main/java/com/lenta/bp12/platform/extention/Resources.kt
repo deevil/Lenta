@@ -7,6 +7,7 @@ import com.lenta.shared.fmp.resources.fast.ZmpUtz39V001
 import com.lenta.shared.fmp.resources.fast.ZmpUtz44V001
 import com.lenta.shared.fmp.resources.slow.ZmpUtz09V001
 
+
 fun ZmpUtz09V001.getProviderInfo(code: String): ProviderInfo? {
     var formattedCode = code
     while (formattedCode.length < 10) {

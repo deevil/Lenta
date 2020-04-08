@@ -1,15 +1,13 @@
 package com.lenta.bp12.model
 
 import androidx.lifecycle.MutableLiveData
-import com.lenta.bp12.model.pojo.Basket
-import com.lenta.bp12.model.pojo.Good
-import com.lenta.bp12.model.pojo.Task
-import com.lenta.bp12.model.pojo.TaskType
+import com.lenta.bp12.model.pojo.*
 import com.lenta.bp12.platform.extention.getBlockType
 import com.lenta.bp12.platform.extention.getControlType
 import com.lenta.bp12.platform.extention.getGoodKind
 import com.lenta.bp12.repository.IDatabaseRepository
 import com.lenta.bp12.request.GoodInfoResult
+import com.lenta.bp12.request.TaskContentResult
 import com.lenta.bp12.request.pojo.ProviderInfo
 import com.lenta.bp12.request.pojo.TaskInfo
 import com.lenta.shared.models.core.getMatrixType
@@ -58,7 +56,7 @@ class TaskManager @Inject constructor(
                 material = goodInfo.materialInfo.material,
                 name = goodInfo.materialInfo.name,
                 innerQuantity = goodInfo.materialInfo.innerQuantity.toDoubleOrNull() ?: 0.0,
-                units = database.getUnitsByCode(goodInfo.materialInfo.unitCode),
+                units = database.getUnitsByCode(goodInfo.materialInfo.unitsCode),
                 orderUnits = database.getUnitsByCode(goodInfo.materialInfo.orderUnitCode),
                 kind = goodInfo.getGoodKind(),
                 type = goodInfo.materialInfo.goodType,
@@ -112,6 +110,49 @@ class TaskManager @Inject constructor(
         }
 
         updateTasks(taskList)
+    }
+
+    override suspend fun addGoodsInCurrentTask(taskContentResult: TaskContentResult) {
+        currentTask.value?.let { task ->
+
+
+
+            taskContentResult.positions.map { positionInfo ->
+                val position = Position(
+                        quantity = positionInfo.quantity.toDoubleOrNull() ?: 0.0,
+                        provider = database.getProviderInfo(positionInfo.providerCode),
+                        isCounted = positionInfo.isCounted.isSapTrue(),
+                        isDelete = positionInfo.isDeleted.isSapTrue()
+                )
+
+                var good = task.goods.find { it.isSameMaterial(positionInfo.material) }
+
+                val goodttt = database.getGoodInfoByMaterial(positionInfo.material)
+
+
+
+
+
+
+
+                /*if (good == null) {
+                    good = Good(
+                            material = positionInfo.material,
+                            units = database.getUnitsByCode(positionInfo.unitsCode)
+                    )
+                }
+
+
+                good.positions.add(0, position)
+
+                task.goods.add(Good(
+                        material = positionInfo.material,
+                        units = database.getUnitsByCode(positionInfo.unitsCode)
+                ))*/
+
+            }
+        }
+
     }
 
     override fun findGoodByEan(ean: String): Good? {
@@ -217,5 +258,6 @@ interface ITaskManager {
     fun finishCurrentTask()
     fun addProviderInCurrentGood(providerInfo: ProviderInfo)
     suspend fun addTasks(tasksInfo: List<TaskInfo>)
+    suspend fun addGoodsInCurrentTask(taskContentResult: TaskContentResult)
 
 }

@@ -12,16 +12,16 @@ data class Good(
         val ean: String,
         val material: String,
         val name: String,
-        val innerQuantity: Double,
-        val units: Uom,
-        val orderUnits: Uom,
+        val innerQuantity: Double = 0.0,
+        val units: Uom = Uom.ST,
+        val orderUnits: Uom= Uom.ST,
         val kind: GoodKind,
-        val type: String,
-        val control: ControlType,
+        val type: String = "",
+        val control: ControlType = ControlType.COMMON,
         val section: String,
         val matrix: MatrixType,
-        val providers: MutableList<ProviderInfo>,
-        val producers: MutableList<ProducerInfo>,
+        val providers: MutableList<ProviderInfo> = mutableListOf(),
+        val producers: MutableList<ProducerInfo> = mutableListOf(),
         val positions: MutableList<Position> = mutableListOf(),
         val marks: MutableList<Mark> = mutableListOf(),
         val parts: MutableList<Part> = mutableListOf()
@@ -61,6 +61,10 @@ data class Good(
         positionList.forEach { position ->
             positions.remove(position)
         }
+    }
+
+    fun isSameMaterial(material: String): Boolean {
+        return this.material.takeLast(6) == material.takeLast(6)
     }
 
 }

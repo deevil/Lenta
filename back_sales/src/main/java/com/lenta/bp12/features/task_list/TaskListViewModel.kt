@@ -104,7 +104,7 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
                     TaskListParams(
                             tkNumber = sessionInfo.market ?: "",
                             user = sessionInfo.userName!!,
-                            userNumber = appSettings.lastPersonnelNumber ?: "Not found!",
+                            userNumber = appSettings.lastPersonnelNumber ?: "",
                             mode = 1
                     )
             ).also {
@@ -135,6 +135,9 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
             when (page) {
                 0 -> {
                     tasks.value?.let { tasks ->
+                        // todo Поведение в зависимости от типа блокировки
+                        // ...
+
                         manager.updateCurrentTask(tasks[position])
                         navigator.openTaskCardOpenScreen()
                     }

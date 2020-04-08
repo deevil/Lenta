@@ -22,9 +22,6 @@ class TaskCardOpenViewModel : CoreViewModel(), PageSelectionListener {
     lateinit var sessionInfo: ISessionInfo
 
     @Inject
-    lateinit var database: IDatabaseRepository
-
-    @Inject
     lateinit var manager: ITaskManager
 
 
@@ -35,8 +32,6 @@ class TaskCardOpenViewModel : CoreViewModel(), PageSelectionListener {
     val task by lazy {
         manager.currentTask
     }
-
-    val nextEnabled = MutableLiveData(false)
 
     val selectedPage = MutableLiveData(0)
 
@@ -61,20 +56,18 @@ class TaskCardOpenViewModel : CoreViewModel(), PageSelectionListener {
 
     // -----------------------------
 
-    init {
-        viewModelScope.launch {
-            //taskTypes.value = database.getTaskTypeList()
-        }
-    }
-
-    // -----------------------------
-
     override fun onPageSelected(position: Int) {
         selectedPage.value = position
     }
 
     fun onClickNext() {
         navigator.openGoodListScreen()
+    }
+
+    fun onBackPressed() {
+        // todo Запрос на разблокировку задания
+        // ...
+
     }
 
 }

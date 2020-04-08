@@ -1,18 +1,16 @@
 package com.lenta.bp12.repository
 
+import com.lenta.bp12.model.pojo.Good
 import com.lenta.bp12.model.pojo.ReturnReason
 import com.lenta.bp12.model.pojo.TaskType
-import com.lenta.bp12.platform.extention.getControlType
-import com.lenta.bp12.platform.extention.getProviderInfo
-import com.lenta.bp12.platform.extention.getTaskType
-import com.lenta.bp12.platform.extention.getTaskTypeList
-import com.lenta.bp12.platform.extention.getReturnReasonList
+import com.lenta.bp12.platform.extention.*
 import com.lenta.bp12.request.GoodInfoResult
 import com.lenta.bp12.request.pojo.ProviderInfo
 import com.lenta.shared.fmp.resources.dao_ext.*
 import com.lenta.shared.fmp.resources.fast.*
 import com.lenta.shared.fmp.resources.slow.*
 import com.lenta.shared.models.core.Uom
+import com.lenta.shared.models.core.getMatrixType
 import com.lenta.shared.utilities.extentions.isSapTrue
 import com.mobrun.plugin.api.HyperHive
 import kotlinx.coroutines.Dispatchers
@@ -41,6 +39,33 @@ class DatabaseRepository @Inject constructor(
     private val goods: ZmpUtz30V001 by lazy { ZmpUtz30V001(hyperHive) } // Товары
     private val producers: ZmpUtz43V001 by lazy { ZmpUtz43V001(hyperHive) } // Производители
 
+
+    override suspend fun getGoodByMaterial(material: String): Good? {
+        return withContext(Dispatchers.IO) {
+            return@withContext products.getProductInfoByMaterial(material)?.let { goodInfo ->
+                val ean = getEanByMaterialUnits(material, goodInfo.buom)
+
+
+
+
+                Good(
+                        ean = ean ?: "",
+                        material = material,
+                        name = goodInfo.name,
+                        units = getUnitsByCode(goodInfo.buom),
+                        kind = goodInfo.getGoodKind(),
+                        section = goodInfo.abtnr,
+                        matrix = getMatrixType(goodInfo.matrType)
+                )
+            }
+        }
+    }
+
+    private suspend fun getEanByMaterialUnits(material: String, unitsCode: String): String? {
+        return withContext(Dispatchers.IO) {
+            return@withContext eanInfo.getEanInfoByMaterialUnits(material, unitsCode)?.toEanInfo()?.ean
+        }
+    }
 
     override suspend fun getAllowedAppVersion(): String? {
         return withContext(Dispatchers.IO) {
@@ -165,6 +190,7 @@ class DatabaseRepository @Inject constructor(
 
 interface IDatabaseRepository {
 
+    suspend fun getGoodByMaterial(material: String): Good?
     suspend fun getAllowedAppVersion(): String?
     suspend fun getUnitsByCode(code: String): Uom
     suspend fun getTaskTypeList(): List<TaskType>

@@ -8,6 +8,7 @@ import androidx.databinding.DataBindingUtil
 import com.lenta.bp12.R
 import com.lenta.bp12.databinding.*
 import com.lenta.bp12.platform.extention.getAppComponent
+import com.lenta.shared.platform.activity.OnBackPresserListener
 import com.lenta.shared.platform.fragment.CoreFragment
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
@@ -19,7 +20,7 @@ import com.lenta.shared.utilities.extentions.generateScreenNumberFromPostfix
 import com.lenta.shared.utilities.extentions.provideViewModel
 
 class TaskCardOpenFragment : CoreFragment<FragmentTaskCardOpenBinding, TaskCardOpenViewModel>(),
-        ToolbarButtonsClickListener, ViewPagerSettings {
+        ToolbarButtonsClickListener, ViewPagerSettings, OnBackPresserListener {
 
     override fun getLayoutId(): Int = R.layout.fragment_task_card_open
 
@@ -39,9 +40,7 @@ class TaskCardOpenFragment : CoreFragment<FragmentTaskCardOpenBinding, TaskCardO
 
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
         bottomToolbarUiModel.uiModelButton1.show(ButtonDecorationInfo.back)
-        bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.next, enabled = false)
-
-        connectLiveData(vm.nextEnabled, getBottomToolBarUIModel()!!.uiModelButton5.enabled)
+        bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.next)
     }
 
     override fun onToolbarButtonClick(view: View) {
@@ -99,6 +98,11 @@ class TaskCardOpenFragment : CoreFragment<FragmentTaskCardOpenBinding, TaskCardO
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding?.viewPagerSettings = this
+    }
+
+    override fun onBackPressed(): Boolean {
+        vm.onBackPressed()
+        return false
     }
 
 }

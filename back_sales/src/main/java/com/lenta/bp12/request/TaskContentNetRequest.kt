@@ -8,6 +8,7 @@ import com.lenta.shared.functional.Either
 import com.lenta.shared.interactor.UseCase
 import com.lenta.shared.requests.FmpRequestsHelper
 import com.lenta.shared.requests.SapResponse
+import com.lenta.shared.utilities.extentions.toSapBooleanString
 import javax.inject.Inject
 
 class TaskContentNetRequest @Inject constructor(
@@ -35,7 +36,7 @@ data class TaskContentParams(
         val userNumber: String,
         /** Необходимость заполнения справочных данных */
         @SerializedName("IV_MATNR_DATA_FLG")
-        val isNeedAdditionalData: Boolean
+        val isNeedAdditionalData: String = false.toSapBooleanString()
 )
 
 class TaskContentStatus : ObjectRawStatus<TaskContentResult>()
