@@ -1,4 +1,4 @@
-package com.lenta.bp12.features.task_composition
+package com.lenta.bp12.features.create_task.task_composition
 
 import com.lenta.bp12.R
 import com.lenta.shared.platform.fragment.CoreFragment
@@ -12,9 +12,9 @@ import android.view.ViewGroup
 import android.view.View
 import android.widget.AdapterView
 import androidx.databinding.DataBindingUtil
-import com.lenta.bp12.databinding.*
 import com.lenta.bp12.platform.extention.getAppComponent
 import com.lenta.bp12.BR
+import com.lenta.bp12.databinding.*
 import com.lenta.shared.platform.activity.OnBackPresserListener
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListener

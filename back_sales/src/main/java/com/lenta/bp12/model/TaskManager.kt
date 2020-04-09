@@ -33,6 +33,8 @@ class TaskManager @Inject constructor(
 
     override val currentBasket = MutableLiveData<Basket>()
 
+    override val currentPosition = MutableLiveData<Position>()
+
 
     override fun updateTasks(taskList: List<Task>?) {
         tasks.value = taskList ?: emptyList()
@@ -219,6 +221,7 @@ interface ITaskManager {
     val currentTask: MutableLiveData<Task>
     val currentGood: MutableLiveData<Good>
     val currentBasket: MutableLiveData<Basket>
+    val currentPosition: MutableLiveData<Position>
 
     fun updateTasks(taskList: List<Task>?)
     fun updateCurrentTask(task: Task?)

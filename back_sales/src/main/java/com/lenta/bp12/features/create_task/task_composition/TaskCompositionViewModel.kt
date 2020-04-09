@@ -1,4 +1,4 @@
-package com.lenta.bp12.features.task_composition
+package com.lenta.bp12.features.create_task.task_composition
 
 import androidx.lifecycle.MutableLiveData
 import com.lenta.bp12.model.ITaskManager

@@ -2,13 +2,13 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context=".features.good_info_create.GoodInfoOpenFragment">
+    tools:context=".features.work_with_task.good_info.GoodInfoOpenFragment">
 
     <data>
 
         <variable
             name="vm"
-            type="com.lenta.bp12.features.good_info_open.GoodInfoOpenViewModel" />
+            type="com.lenta.bp12.features.work_with_task.good_info.GoodInfoOpenViewModel" />
 
     </data>
 
@@ -70,13 +70,7 @@
                         style="@style/CellTextStyle"
                         android:text="@{vm.totalTitle}"
                         android:textColor="@color/color_text_title_header"
-                        tools:text="Итого*" />
-
-                    <TextView
-                        style="@style/CellTextStyle"
-                        android:text="@{vm.basketTitle}"
-                        android:textColor="@color/color_text_title_header"
-                        tools:text="*По корзине" />
+                        tools:text="Итого" />
 
                 </LinearLayout>
 
@@ -89,12 +83,6 @@
                     <TextView
                         style="@style/CellTextStyle"
                         android:text="@{vm.totalWithUnits}"
-                        tools:text="1 шт" />
-
-                    <TextView
-                        style="@style/CellTextStyle"
-                        android:text="@{vm.basketQuantity}"
-                        android:visibility="@{true}"
                         tools:text="1 шт" />
 
                 </LinearLayout>
@@ -264,28 +252,12 @@
                 app:goodKindIcon="@{vm.good.kind}"
                 tools:src="@drawable/ic_alcohol_32dp" />
 
-            <FrameLayout
+            <ImageView
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="1">
-
-                <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:src="@drawable/ic_clear_basket_32dp" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:layout_marginTop="1dp"
-                    android:text="@{vm.basketNumber}"
-                    android:textColor="@color/button_bg_color"
-                    android:textSize="12sp"
-                    tools:text="5" />
-
-            </FrameLayout>
+                android:layout_weight="1"
+                android:src="@drawable/ic_clear_basket_32dp"
+                android:visibility="invisible" />
 
             <ImageView
                 android:layout_width="0dp"

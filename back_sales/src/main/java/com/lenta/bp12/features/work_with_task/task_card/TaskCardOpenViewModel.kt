@@ -1,16 +1,13 @@
-package com.lenta.bp12.features.task_card_open
+package com.lenta.bp12.features.work_with_task.task_card
 
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
 import com.lenta.bp12.model.ControlType
 import com.lenta.bp12.model.ITaskManager
 import com.lenta.bp12.platform.navigation.IScreenNavigator
-import com.lenta.bp12.repository.IDatabaseRepository
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.databinding.PageSelectionListener
 import com.lenta.shared.utilities.extentions.map
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class TaskCardOpenViewModel : CoreViewModel(), PageSelectionListener {

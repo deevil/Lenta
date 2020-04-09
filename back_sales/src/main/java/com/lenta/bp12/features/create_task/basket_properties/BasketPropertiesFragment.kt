@@ -1,4 +1,4 @@
-package com.lenta.bp12.features.basket_properties
+package com.lenta.bp12.features.create_task.basket_properties
 
 import com.lenta.bp12.R
 import com.lenta.bp12.databinding.FragmentBasketPropertiesBinding

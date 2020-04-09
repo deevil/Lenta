@@ -1,4 +1,4 @@
-package com.lenta.bp12.features.task_card_create
+package com.lenta.bp12.features.work_with_task.task_card
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -8,25 +8,25 @@ import androidx.databinding.DataBindingUtil
 import com.lenta.bp12.R
 import com.lenta.bp12.databinding.*
 import com.lenta.bp12.platform.extention.getAppComponent
+import com.lenta.shared.platform.activity.OnBackPresserListener
 import com.lenta.shared.platform.fragment.CoreFragment
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListener
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
 import com.lenta.shared.utilities.databinding.ViewPagerSettings
-import com.lenta.shared.utilities.extentions.connectLiveData
 import com.lenta.shared.utilities.extentions.generateScreenNumberFromPostfix
 import com.lenta.shared.utilities.extentions.provideViewModel
 
-class TaskCardCreateFragment : CoreFragment<FragmentTaskCardCreateBinding, TaskCardCreateViewModel>(),
-        ToolbarButtonsClickListener, ViewPagerSettings {
+class TaskCardOpenFragment : CoreFragment<FragmentTaskCardOpenBinding, TaskCardOpenViewModel>(),
+        ToolbarButtonsClickListener, ViewPagerSettings, OnBackPresserListener {
 
-    override fun getLayoutId(): Int = R.layout.fragment_task_card_create
+    override fun getLayoutId(): Int = R.layout.fragment_task_card_open
 
     override fun getPageNumber(): String? = generateScreenNumberFromPostfix("8")
 
-    override fun getViewModel(): TaskCardCreateViewModel {
-        provideViewModel(TaskCardCreateViewModel::class.java).let {
+    override fun getViewModel(): TaskCardOpenViewModel {
+        provideViewModel(TaskCardOpenViewModel::class.java).let {
             getAppComponent()?.inject(it)
             return it
         }
@@ -39,9 +39,7 @@ class TaskCardCreateFragment : CoreFragment<FragmentTaskCardCreateBinding, TaskC
 
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
         bottomToolbarUiModel.uiModelButton1.show(ButtonDecorationInfo.back)
-        bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.next, enabled = false)
-
-        connectLiveData(vm.nextEnabled, getBottomToolBarUIModel()!!.uiModelButton5.enabled)
+        bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.next)
     }
 
     override fun onToolbarButtonClick(view: View) {
@@ -59,8 +57,8 @@ class TaskCardCreateFragment : CoreFragment<FragmentTaskCardCreateBinding, TaskC
     }
 
     private fun initTaskCardType(container: ViewGroup): View {
-        DataBindingUtil.inflate<LayoutTaskCardCreateTypeBinding>(LayoutInflater.from(container.context),
-                R.layout.layout_task_card_create_type,
+        DataBindingUtil.inflate<LayoutTaskCardOpenTypeBinding>(LayoutInflater.from(container.context),
+                R.layout.layout_task_card_open_type,
                 container,
                 false).let { layoutBinding ->
 
@@ -72,8 +70,8 @@ class TaskCardCreateFragment : CoreFragment<FragmentTaskCardCreateBinding, TaskC
     }
 
     private fun initTaskCardComment(container: ViewGroup): View {
-        DataBindingUtil.inflate<LayoutTaskCardCreateCommentBinding>(LayoutInflater.from(container.context),
-                R.layout.layout_task_card_create_comment,
+        DataBindingUtil.inflate<LayoutTaskCardOpenCommentBinding>(LayoutInflater.from(container.context),
+                R.layout.layout_task_card_open_comment,
                 container,
                 false).let { layoutBinding ->
 
@@ -99,6 +97,11 @@ class TaskCardCreateFragment : CoreFragment<FragmentTaskCardCreateBinding, TaskC
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding?.viewPagerSettings = this
+    }
+
+    override fun onBackPressed(): Boolean {
+        vm.onBackPressed()
+        return false
     }
 
 }

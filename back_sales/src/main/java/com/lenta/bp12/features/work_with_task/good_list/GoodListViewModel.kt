@@ -1,4 +1,4 @@
-package com.lenta.bp12.features.good_list
+package com.lenta.bp12.features.work_with_task.good_list
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
@@ -6,6 +6,7 @@ import com.lenta.bp12.model.ITaskManager
 import com.lenta.bp12.platform.navigation.IScreenNavigator
 import com.lenta.bp12.request.TaskContentNetRequest
 import com.lenta.bp12.request.TaskContentParams
+import com.lenta.bp12.request.pojo.ProviderInfo
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.platform.device_info.DeviceInfo
@@ -70,7 +71,9 @@ class GoodListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
                 good.positions.filter { !it.isCounted }.map { position ->
                     itemList.add(SimpleItemGood(
                             name = good.getNameWithMaterial(),
-                            quantity = position.quantity
+                            quantity = position.quantity,
+                            material = good.material,
+                            provider = position.provider
                     ))
                 }
             }
@@ -78,7 +81,9 @@ class GoodListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
             itemList.mapIndexed { index, simpleItemGood ->
                 ItemGoodNotProcessedUi(
                         position = "${index + 1}",
-                        name = simpleItemGood.name
+                        name = simpleItemGood.name,
+                        material = simpleItemGood.material,
+                        provider = simpleItemGood.provider
                 )
             }
         }
@@ -92,7 +97,9 @@ class GoodListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
                 good.positions.filter { it.isCounted }.map { position ->
                     itemList.add(SimpleItemGood(
                             name = good.getNameWithMaterial(),
-                            quantity = position.quantity
+                            quantity = position.quantity,
+                            material = good.material,
+                            provider = position.provider
                     ))
                 }
             }
@@ -101,7 +108,9 @@ class GoodListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
                 ItemGoodProcessedUi(
                         position = "${index + 1}",
                         name = simpleItemGood.name,
-                        quantity = simpleItemGood.quantity.dropZeros()
+                        quantity = simpleItemGood.quantity.dropZeros(),
+                        material = simpleItemGood.material,
+                        provider = simpleItemGood.provider
                 )
             }
         }
@@ -159,7 +168,19 @@ class GoodListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
     }
 
     fun onClickItemPosition(position: Int) {
+        selectedPage.value?.let { page ->
+            when (page) {
+                0 -> {
+                    manager.searchNumber = notProcessed.value!![position].material
+                    manager.searchFromList = true
+                    navigator.openGoodInfoOpenScreen()
+                }
+                1 -> {
 
+                }
+                else -> throw IllegalArgumentException("Wrong pager position!")
+            }
+        }
     }
 
     override fun onOkInSoftKeyboard(): Boolean {
@@ -170,16 +191,22 @@ class GoodListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
 
 data class SimpleItemGood(
         val name: String,
-        val quantity: Double
+        val quantity: Double,
+        val material: String,
+        val provider: ProviderInfo?
 )
 
 data class ItemGoodNotProcessedUi(
         val position: String,
-        val name: String
+        val name: String,
+        val material: String,
+        val provider: ProviderInfo?
 )
 
 data class ItemGoodProcessedUi(
         val position: String,
         val name: String,
-        val quantity: String
+        val quantity: String,
+        val material: String,
+        val provider: ProviderInfo?
 )

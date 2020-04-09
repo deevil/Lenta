@@ -1,4 +1,4 @@
-package com.lenta.bp12.features.good_info_open
+package com.lenta.bp12.features.work_with_task.good_info
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope

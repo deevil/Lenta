@@ -1,4 +1,4 @@
-package com.lenta.bp12.features.task_list
+package com.lenta.bp12.features.work_with_task.task_list
 
 import com.lenta.bp12.R
 import com.lenta.bp12.databinding.FragmentTaskListBinding
@@ -24,7 +24,6 @@ import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListe
 import com.lenta.shared.utilities.databinding.DataBindingAdapter
 import com.lenta.shared.utilities.databinding.DataBindingRecyclerViewConfig
 import com.lenta.shared.utilities.databinding.RecyclerViewKeyHandler
-import com.lenta.shared.utilities.extentions.connectLiveData
 
 class TaskListFragment : CoreFragment<FragmentTaskListBinding, TaskListViewModel>(),
         ToolbarButtonsClickListener, ViewPagerSettings {

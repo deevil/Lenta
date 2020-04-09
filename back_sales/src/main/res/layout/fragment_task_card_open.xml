@@ -2,13 +2,13 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context=".features.task_card_open.TaskCardOpenFragment">
+    tools:context=".features.work_with_task.task_card.TaskCardOpenFragment">
 
     <data>
 
         <variable
             name="vm"
-            type="com.lenta.bp12.features.task_card_open.TaskCardOpenViewModel" />
+            type="com.lenta.bp12.features.work_with_task.task_card.TaskCardOpenViewModel" />
 
         <variable
             name="viewPagerSettings"

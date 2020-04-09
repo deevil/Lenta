@@ -1,4 +1,4 @@
-package com.lenta.bp12.features.task_card_create
+package com.lenta.bp12.features.create_task.task_card
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope

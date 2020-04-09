@@ -1,4 +1,4 @@
-package com.lenta.bp12.features.basket_good_list
+package com.lenta.bp12.features.create_task.basket_good_list
 
 import android.os.Bundle
 import android.view.View

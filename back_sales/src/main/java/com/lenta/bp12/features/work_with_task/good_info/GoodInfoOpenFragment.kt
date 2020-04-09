@@ -1,8 +1,8 @@
-package com.lenta.bp12.features.good_info_create
+package com.lenta.bp12.features.work_with_task.good_info
 
 import android.view.View
 import com.lenta.bp12.R
-import com.lenta.bp12.databinding.FragmentGoodInfoCreateBinding
+import com.lenta.bp12.databinding.FragmentGoodInfoOpenBinding
 import com.lenta.bp12.platform.extention.getAppComponent
 import com.lenta.shared.platform.activity.OnBackPresserListener
 import com.lenta.shared.platform.fragment.CoreFragment
@@ -15,15 +15,15 @@ import com.lenta.shared.utilities.extentions.connectLiveData
 import com.lenta.shared.utilities.extentions.generateScreenNumberFromPostfix
 import com.lenta.shared.utilities.extentions.provideViewModel
 
-class GoodInfoCreateFragment : CoreFragment<FragmentGoodInfoCreateBinding, GoodInfoCreateViewModel>(),
+class GoodInfoOpenFragment : CoreFragment<FragmentGoodInfoOpenBinding, GoodInfoOpenViewModel>(),
         ToolbarButtonsClickListener, OnScanResultListener, OnBackPresserListener {
 
-    override fun getLayoutId(): Int = R.layout.fragment_good_info_create
+    override fun getLayoutId(): Int = R.layout.fragment_good_info_open
 
     override fun getPageNumber(): String? = generateScreenNumberFromPostfix("12")
 
-    override fun getViewModel(): GoodInfoCreateViewModel {
-        provideViewModel(GoodInfoCreateViewModel::class.java).let {
+    override fun getViewModel(): GoodInfoOpenViewModel {
+        provideViewModel(GoodInfoOpenViewModel::class.java).let {
             getAppComponent()?.inject(it)
             return it
         }

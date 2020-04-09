@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context=".features.task_search.TaskSearchFragment">
+    tools:context=".features.work_with_task.task_search.TaskSearchFragment">
 
     <data>
 
         <variable
             name="vm"
-            type="com.lenta.bp12.features.task_search.TaskSearchViewModel" />
+            type="com.lenta.bp12.features.work_with_task.task_search.TaskSearchViewModel" />
 
     </data>
 

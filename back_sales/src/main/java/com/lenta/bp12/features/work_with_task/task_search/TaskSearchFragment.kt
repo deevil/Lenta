@@ -1,4 +1,4 @@
-package com.lenta.bp12.features.task_search
+package com.lenta.bp12.features.work_with_task.task_search
 
 import android.view.View
 import com.lenta.bp12.R
