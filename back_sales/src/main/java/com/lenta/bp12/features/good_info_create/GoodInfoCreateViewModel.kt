@@ -1,4 +1,4 @@
-package com.lenta.bp12.features.good_info
+package com.lenta.bp12.features.good_info_create
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
@@ -25,7 +25,7 @@ import com.lenta.shared.view.OnPositionClickListener
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-class GoodInfoViewModel : CoreViewModel() {
+class GoodInfoCreateViewModel : CoreViewModel() {
 
     @Inject
     lateinit var navigator: IScreenNavigator

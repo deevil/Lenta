@@ -9,7 +9,8 @@ import com.lenta.bp12.features.basket_properties.BasketPropertiesFragment
 import com.lenta.bp12.features.discrepancy_list.DiscrepancyListFragment
 import com.lenta.bp12.features.enter_employee_number.EnterEmployeeNumberFragment
 import com.lenta.bp12.features.good_details.GoodDetailsFragment
-import com.lenta.bp12.features.good_info.GoodInfoFragment
+import com.lenta.bp12.features.good_info_create.GoodInfoCreateFragment
+import com.lenta.bp12.features.good_info_open.GoodInfoOpenFragment
 import com.lenta.bp12.features.good_list.GoodListFragment
 import com.lenta.bp12.features.loading.fast.FastDataLoadingFragment
 import com.lenta.bp12.features.main_menu.MainMenuFragment
@@ -123,9 +124,15 @@ class ScreenNavigator @Inject constructor(
         }
     }
 
-    override fun openGoodInfoScreen() {
+    override fun openGoodInfoCreateScreen() {
         runOrPostpone {
-            getFragmentStack()?.push(GoodInfoFragment())
+            getFragmentStack()?.push(GoodInfoCreateFragment())
+        }
+    }
+
+    override fun openGoodInfoOpenScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(GoodInfoOpenFragment())
         }
     }
 
@@ -362,7 +369,8 @@ interface IScreenNavigator : ICoreNavigator {
     fun openTaskListScreen()
     fun openBasketPropertiesScreen()
     fun openDiscrepancyListScreen()
-    fun openGoodInfoScreen()
+    fun openGoodInfoCreateScreen()
+    fun openGoodInfoOpenScreen()
     fun openGoodListScreen()
     fun openTaskCardCreateScreen()
     fun openTaskCardOpenScreen()

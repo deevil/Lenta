@@ -113,7 +113,7 @@ class TaskCompositionViewModel : CoreViewModel(), PageSelectionListener, OnOkInS
                 0 -> {
                     manager.searchNumber = goods.value!![position].material
                     manager.searchFromList = true
-                    navigator.openGoodInfoScreen()
+                    navigator.openGoodInfoCreateScreen()
                 }
                 1 -> {
                     manager.updateCurrentBasket(baskets.value!![position].basket)
@@ -130,7 +130,7 @@ class TaskCompositionViewModel : CoreViewModel(), PageSelectionListener, OnOkInS
                 manager.searchNumber = number
                 manager.searchFromList = true
                 numberField.value = ""
-                navigator.openGoodInfoScreen()
+                navigator.openGoodInfoCreateScreen()
             }
         }
     }
