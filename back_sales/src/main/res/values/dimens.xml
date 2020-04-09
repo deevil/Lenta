@@ -1,6 +1,10 @@
 <resources>
 
     // Состав задания - № / Наименование / Количество
+    <integer name="number_name_column_1">15</integer>
+    <integer name="number_name_column_2">75</integer>
+
+    // Состав задания - № / Наименование / Количество
     <integer name="name_quantity_column_1">15</integer>
     <integer name="name_quantity_column_2">60</integer>
     <integer name="name_quantity_column_3">25</integer>

@@ -77,7 +77,7 @@ class SendTaskDataNetRequest @Inject constructor(
                         tkNumber = params.tkNumber,
                         storage = params.task.storage,
                         reasonCode = params.task.reason.code,
-                        isNotFinish = (!params.task.isFinish).toSapBooleanString(),
+                        isNotFinish = (!params.task.isProcessed).toSapBooleanString(),
                         positions = positions,
                         marks = marks,
                         parts = parts

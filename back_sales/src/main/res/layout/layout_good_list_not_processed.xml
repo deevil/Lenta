@@ -31,7 +31,7 @@
 
                 <LinearLayout
                     style="@style/LinearCellStyle"
-                    android:layout_weight="@integer/name_quantity_column_1">
+                    android:layout_weight="@integer/number_name_column_1">
 
                     <TextView
                         style="@style/FirstRowTextStyle"
@@ -42,21 +42,11 @@
 
                 <LinearLayout
                     style="@style/LinearCellStyle"
-                    android:layout_weight="@integer/name_quantity_column_2">
+                    android:layout_weight="@integer/number_name_column_2">
 
                     <TextView
                         style="@style/FirstRowTextStyle"
                         android:text="@string/good" />
-
-                </LinearLayout>
-
-                <LinearLayout
-                    style="@style/LinearCellStyle"
-                    android:layout_weight="@integer/name_quantity_column_3">
-
-                    <TextView
-                        style="@style/FirstRowTextStyle"
-                        android:text="@string/quantity" />
 
                 </LinearLayout>
 
@@ -75,7 +65,7 @@
             android:layout_weight="1"
             app:items="@{vm.notProcessed}"
             app:rv_config="@{rvConfig}"
-            tools:listitem="@layout/item_good_list_good" />
+            tools:listitem="@layout/item_good_list_not_processed" />
 
     </LinearLayout>
 

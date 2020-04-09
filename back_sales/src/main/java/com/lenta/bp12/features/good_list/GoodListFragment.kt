@@ -84,13 +84,13 @@ class GoodListFragment : CoreFragment<FragmentGoodListBinding, GoodListViewModel
             }
 
             layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
-                    layoutId = R.layout.item_good_list_good,
+                    layoutId = R.layout.item_good_list_not_processed,
                     itemId = BR.item,
-                    realisation = object : DataBindingAdapter<ItemGoodListGoodBinding> {
-                        override fun onCreate(binding: ItemGoodListGoodBinding) {
+                    realisation = object : DataBindingAdapter<ItemGoodListNotProcessedBinding> {
+                        override fun onCreate(binding: ItemGoodListNotProcessedBinding) {
                         }
 
-                        override fun onBind(binding: ItemGoodListGoodBinding, position: Int) {
+                        override fun onBind(binding: ItemGoodListNotProcessedBinding, position: Int) {
                             binding.tvItemNumber.tag = position
                             binding.tvItemNumber.setOnClickListener(onClickSelectionListener)
                             binding.selectedForDelete = vm.notProcessedSelectionsHelper.isSelected(position)
@@ -138,13 +138,13 @@ class GoodListFragment : CoreFragment<FragmentGoodListBinding, GoodListViewModel
             }
 
             layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
-                    layoutId = R.layout.item_good_list_good,
+                    layoutId = R.layout.item_good_list_processed,
                     itemId = BR.item,
-                    realisation = object : DataBindingAdapter<ItemGoodListGoodBinding> {
-                        override fun onCreate(binding: ItemGoodListGoodBinding) {
+                    realisation = object : DataBindingAdapter<ItemGoodListProcessedBinding> {
+                        override fun onCreate(binding: ItemGoodListProcessedBinding) {
                         }
 
-                        override fun onBind(binding: ItemGoodListGoodBinding, position: Int) {
+                        override fun onBind(binding: ItemGoodListProcessedBinding, position: Int) {
                             binding.tvItemNumber.tag = position
                             binding.tvItemNumber.setOnClickListener(onClickSelectionListener)
                             binding.selectedForDelete = vm.processedSelectionsHelper.isSelected(position)

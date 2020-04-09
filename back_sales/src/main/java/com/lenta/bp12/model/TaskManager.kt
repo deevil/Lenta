@@ -97,7 +97,7 @@ class TaskManager @Inject constructor(
                     blockType = taskInfo.blockType.getBlockType(),
                     blockUser = taskInfo.blockUser,
                     blockIp = taskInfo.blockIp,
-                    isFinish = !taskInfo.isNotFinish.isSapTrue(),
+                    isProcessed = !taskInfo.isNotFinish.isSapTrue(),
                     control = taskInfo.control.getControlType(),
                     comment = taskInfo.comment,
                     provider = ProviderInfo(
@@ -114,9 +114,6 @@ class TaskManager @Inject constructor(
 
     override suspend fun addGoodsInCurrentTask(taskContentResult: TaskContentResult) {
         currentTask.value?.let { task ->
-
-
-
             taskContentResult.positions.map { positionInfo ->
                 val position = Position(
                         quantity = positionInfo.quantity.toDoubleOrNull() ?: 0.0,
@@ -125,34 +122,16 @@ class TaskManager @Inject constructor(
                         isDelete = positionInfo.isDeleted.isSapTrue()
                 )
 
-                var good = task.goods.find { it.isSameMaterial(positionInfo.material) }
+                val good = task.goods.find { it.isSameMaterial(positionInfo.material) }
+                        ?: database.getGoodByMaterial(positionInfo.material)
 
-                val goodttt = database.getGoodInfoByMaterial(positionInfo.material)
+                good?.positions?.add(0, position)
 
-
-
-
-
-
-
-                /*if (good == null) {
-                    good = Good(
-                            material = positionInfo.material,
-                            units = database.getUnitsByCode(positionInfo.unitsCode)
-                    )
-                }
-
-
-                good.positions.add(0, position)
-
-                task.goods.add(Good(
-                        material = positionInfo.material,
-                        units = database.getUnitsByCode(positionInfo.unitsCode)
-                ))*/
-
+                task.updateGood(good)
             }
-        }
 
+            updateCurrentTask(task)
+        }
     }
 
     override fun findGoodByEan(ean: String): Good? {
@@ -211,7 +190,7 @@ class TaskManager @Inject constructor(
 
     override fun finishCurrentTask() {
         currentTask.value?.let { task ->
-            task.isFinish = true
+            task.isProcessed = true
 
             updateCurrentTask(task)
         }

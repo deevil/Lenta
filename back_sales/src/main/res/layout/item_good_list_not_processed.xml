@@ -7,7 +7,7 @@
 
         <variable
             name="item"
-            type="com.lenta.bp12.features.good_list.ItemGoodUi" />
+            type="com.lenta.bp12.features.good_list.ItemGoodNotProcessedUi" />
 
         <variable
             name="selectedForDelete"
@@ -29,7 +29,7 @@
 
             <LinearLayout
                 style="@style/LinearCellStyle"
-                android:layout_weight="@integer/name_quantity_column_1">
+                android:layout_weight="@integer/number_name_column_1">
 
                 <TextView
                     android:id="@+id/tv_item_number"
@@ -48,7 +48,7 @@
 
             <LinearLayout
                 style="@style/LinearCellStyle"
-                android:layout_weight="@integer/name_quantity_column_2"
+                android:layout_weight="@integer/number_name_column_2"
                 android:orientation="horizontal">
 
                 <LinearLayout
@@ -71,20 +71,6 @@
                     android:padding="5dp"
                     android:src="@drawable/ic_keyboard_arrow_right_white_16dp"
                     tools:ignore="ContentDescription" />
-
-            </LinearLayout>
-
-            <View style="@style/VerticalDivider" />
-
-            <LinearLayout
-                style="@style/LinearCellStyle"
-                android:layout_weight="@integer/name_quantity_column_3">
-
-                <TextView
-                    style="@style/CellTextStyle"
-                    android:gravity="center"
-                    android:text="@{item.quantity}"
-                    tools:text="5 шт" />
 
             </LinearLayout>
 

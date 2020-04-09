@@ -14,8 +14,8 @@ import com.lenta.shared.settings.IAppSettings
 import com.lenta.shared.utilities.SelectionItemsHelper
 import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
 import com.lenta.shared.utilities.databinding.PageSelectionListener
+import com.lenta.shared.utilities.extentions.dropZeros
 import com.lenta.shared.utilities.extentions.map
-import com.lenta.shared.utilities.extentions.toSapBooleanString
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -56,7 +56,6 @@ class GoodListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
         }
     }
 
-
     val numberField: MutableLiveData<String> = MutableLiveData("")
 
     val requestFocusToNumberField by lazy {
@@ -64,23 +63,48 @@ class GoodListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
     }
 
     val notProcessed by lazy {
-        MutableLiveData(List(3) {
-            ItemGoodUi(
-                    position = "${it + 1}",
-                    name = "Test name ${it + 1}",
-                    quantity = (1..15).random().toString()
-            )
-        })
+        task.map { task ->
+            val itemList = mutableListOf<SimpleItemGood>()
+
+            task?.goods?.map { good ->
+                good.positions.filter { !it.isCounted }.map { position ->
+                    itemList.add(SimpleItemGood(
+                            name = good.getNameWithMaterial(),
+                            quantity = position.quantity
+                    ))
+                }
+            }
+
+            itemList.mapIndexed { index, simpleItemGood ->
+                ItemGoodNotProcessedUi(
+                        position = "${index + 1}",
+                        name = simpleItemGood.name
+                )
+            }
+        }
     }
 
     val processed by lazy {
-        MutableLiveData(List(3) {
-            ItemGoodUi(
-                    position = "${it + 1}",
-                    name = "Test name ${it + 1}",
-                    quantity = (1..15).random().toString()
-            )
-        })
+        task.map { task ->
+            val itemList = mutableListOf<SimpleItemGood>()
+
+            task?.goods?.map { good ->
+                good.positions.filter { it.isCounted }.map { position ->
+                    itemList.add(SimpleItemGood(
+                            name = good.getNameWithMaterial(),
+                            quantity = position.quantity
+                    ))
+                }
+            }
+
+            itemList.mapIndexed { index, simpleItemGood ->
+                ItemGoodProcessedUi(
+                        position = "${index + 1}",
+                        name = simpleItemGood.name,
+                        quantity = simpleItemGood.quantity.dropZeros()
+                )
+            }
+        }
     }
 
     val deleteEnabled = MutableLiveData(false)
@@ -113,7 +137,9 @@ class GoodListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
             )).also {
                 navigator.hideProgress()
             }.either(::handleFailure) { taskContentResult ->
-                manager.addGoodsInCurrentTask(taskContentResult)
+                viewModelScope.launch {
+                    manager.addGoodsInCurrentTask(taskContentResult)
+                }
             }
         }
     }
@@ -142,7 +168,17 @@ class GoodListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
 
 }
 
-data class ItemGoodUi(
+data class SimpleItemGood(
+        val name: String,
+        val quantity: Double
+)
+
+data class ItemGoodNotProcessedUi(
+        val position: String,
+        val name: String
+)
+
+data class ItemGoodProcessedUi(
         val position: String,
         val name: String,
         val quantity: String

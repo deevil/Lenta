@@ -75,7 +75,7 @@
             android:layout_weight="1"
             app:items="@{vm.processed}"
             app:rv_config="@{rvConfig}"
-            tools:listitem="@layout/item_good_list_good" />
+            tools:listitem="@layout/item_good_list_processed" />
 
     </LinearLayout>
 

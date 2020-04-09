@@ -43,13 +43,8 @@ class DatabaseRepository @Inject constructor(
     override suspend fun getGoodByMaterial(material: String): Good? {
         return withContext(Dispatchers.IO) {
             return@withContext products.getProductInfoByMaterial(material)?.let { goodInfo ->
-                val ean = getEanByMaterialUnits(material, goodInfo.buom)
-
-
-
-
                 Good(
-                        ean = ean ?: "",
+                        ean = getEanByMaterialUnits(material, goodInfo.buom) ?: "",
                         material = material,
                         name = goodInfo.name,
                         units = getUnitsByCode(goodInfo.buom),

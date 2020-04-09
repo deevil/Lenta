@@ -32,7 +32,7 @@ data class Good(
     }
 
     fun isBox(): Boolean {
-        return innerQuantity > 1
+        return innerQuantity > 1 // По умолчанию всегда 1.0
     }
 
     fun addPosition(quantity: Double, provider: ProviderInfo?) {

@@ -12,12 +12,9 @@ data class Task(
         val type: TaskType?,
         val storage: String,
         val reason: ReturnReason,
-        //val isAlcoholAllowed: Boolean = false,
-        //val isCommonAllowed: Boolean = false,
         val goods: MutableList<Good> = mutableListOf(),
         val baskets: MutableList<Basket> = mutableListOf(),
-        var isFinish: Boolean = false,
-
+        var isProcessed: Boolean = false,
         val isStrict: Boolean = false,
         var status: TaskStatus = TaskStatus.COMMON,
         val blockType: BlockType = BlockType.UNLOCK,
@@ -27,9 +24,6 @@ data class Task(
         var comment: String = "",
         val provider: ProviderInfo? = null,
         val quantity: Int = 0
-        //val section: String = "",
-        //val purchaseGroup: String = "",
-        //val goodGroup: String = ""
 ) {
 
     fun getQuantityByBasket(basket: Basket?): Double {
@@ -66,6 +60,17 @@ data class Task(
 
     fun getProviderCodeWithName(): String {
         return "${provider?.code} ${provider?.name}"
+    }
+
+    fun updateGood(good: Good?) {
+        good?.let { goodUpdate ->
+            val index = goods.indexOf(goods.find { it.material == goodUpdate.material })
+            if (index >= 0) {
+                goods.removeAt(index)
+            }
+
+            goods.add(0, goodUpdate)
+        }
     }
 
 }
