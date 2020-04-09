@@ -21,7 +21,7 @@ class MainMenuViewModel : CoreViewModel() {
 
     init {
         viewModelScope.launch {
-            taskManager.getLabelLimit()
+            taskManager.getLabelList()
         }
     }
 

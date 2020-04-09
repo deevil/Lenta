@@ -37,7 +37,7 @@ class PackGoodListViewModel : CoreViewModel() {
 
     val completeEnabled by lazy {
         task.map { task ->
-            task?.isProcessed == false && task.goods?.any { it.packs.isNotEmpty() } == true || task?.isProcessed == false && task.isPackSent
+            task?.isProcessed == false && task.goods.any { it.packs.isNotEmpty() } || task?.isProcessed == false && task.isPackSent
         }
     }
 
@@ -49,7 +49,7 @@ class PackGoodListViewModel : CoreViewModel() {
                         material = good.material,
                         name = good.name,
                         arrived = "${good.arrived.dropZeros()} ${good.units.name}",
-                        arrowVisibility = !task.isProcessed && task.goods?.any { it.packs.isNotEmpty() } == false && !task.isPackSent
+                        arrowVisibility = !task.isProcessed && !task.goods.any { it.packs.isNotEmpty() } && !task.isPackSent
                 )
             }
         }

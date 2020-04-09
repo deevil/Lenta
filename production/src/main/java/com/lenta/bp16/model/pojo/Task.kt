@@ -13,6 +13,6 @@ data class Task(
         val type: TaskType,
         val quantity: Double,
         val taskInfo: TaskInfo,
-        var goods: List<Good>? = null
+        var goods: List<Good> = emptyList()
 ) {
 }

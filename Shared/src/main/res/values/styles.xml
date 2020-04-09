@@ -81,7 +81,6 @@
     </style>
 
     <style name="SpinnerItemStyle" parent="Widget.AppCompat.TextView.SpinnerItem">
-        <item name="android:textSize">15sp</item>
         <item name="android:drawableRight">@drawable/selector_spinner_arrow</item>
         <item name="android:textColor">@color/spinner_text_color</item>
     </style>

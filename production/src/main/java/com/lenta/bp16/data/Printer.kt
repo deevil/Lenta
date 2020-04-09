@@ -7,14 +7,14 @@ import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.analytics.AnalyticsHelper
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.functional.Either
-import com.lenta.shared.utilities.Logg
 import com.lenta.shared.settings.IAppSettings
+import com.lenta.shared.utilities.Logg
 import java.io.BufferedReader
 import java.io.InputStreamReader
-import java.lang.Exception
 import java.net.InetSocketAddress
 import java.net.Socket
 import java.nio.charset.StandardCharsets
+import java.util.*
 import javax.inject.Inject
 
 class Printer @Inject constructor(
@@ -203,5 +203,7 @@ data class LabelInfo(
         /** Штрихкод */
         val barcode: String,
         /** Штрихкод для отображения в текстовом виде */
-        val barcodeText: String
+        val barcodeText: String,
+        /** Время печати */
+        val printTime: Date
 )

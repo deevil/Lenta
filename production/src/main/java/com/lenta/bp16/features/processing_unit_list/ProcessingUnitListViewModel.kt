@@ -10,6 +10,7 @@ import com.lenta.bp16.request.UnblockTaskNetRequest
 import com.lenta.bp16.request.UnblockTaskParams
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.platform.viewmodel.CoreViewModel
+import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.extentions.dropZeros
 import com.lenta.shared.utilities.extentions.map
 import kotlinx.coroutines.launch
@@ -51,7 +52,9 @@ class ProcessingUnitListViewModel : CoreViewModel() {
 
     val completeEnabled by lazy {
         task.map { task ->
-            task?.isProcessed == false && task.goods?.any { it.packs.isNotEmpty() } ?: false
+            task?.isProcessed == false && task.goods.map {
+                it.getPackedQuantity()
+            }.any { it > 0.0 }
         }
     }
 

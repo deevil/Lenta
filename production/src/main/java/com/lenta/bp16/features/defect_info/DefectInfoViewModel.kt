@@ -255,13 +255,12 @@ class DefectInfoViewModel : CoreViewModel() {
                             nameDone = packCodeResult.dataLabel.materialNameDone,
                             goodsCode = packCodeResult.dataLabel.material.takeLast(6),
                             barcode = barcode,
-                            barcodeText = barCodeText
+                            barcodeText = barCodeText,
+                            printTime = Date()
                     ))
 
                     total.value = 0.0
                     weightField.value = "0"
-
-                    navigator.openPackListScreen()
                 }
             }
         }
@@ -344,13 +343,20 @@ class DefectInfoViewModel : CoreViewModel() {
     private fun printLabel(labelInfo: LabelInfo) {
         viewModelScope.launch {
             withContext(Dispatchers.IO) {
+                taskManager.addLabelToList(labelInfo)
+
                 appSettings.printerIpAddress.let { ipAddress ->
                     if (ipAddress == null) {
                         return@let null
                     }
+
+                    navigator.showProgressLoadingData()
+
                     printer.printLabel(labelInfo, ipAddress)
-                            .either(::handleFailure) {
-                                taskManager.addLabelToList(labelInfo)
+                            .also {
+                                navigator.hideProgress()
+                            }.either(::handleFailure) {
+                                // Ничего не делаем...
                             }
                 }
             }.also {

@@ -50,7 +50,7 @@ class ExternalSupplyListViewModel : CoreViewModel() {
 
     val completeEnabled by lazy {
         task.map { task ->
-            task?.isProcessed == false && task.goods?.any { it.packs.isNotEmpty() } ?: false
+            task?.isProcessed == false && task.goods.any { it.packs.isNotEmpty() }
         }
     }
 
