@@ -30,7 +30,7 @@ class PackGoodListViewModel : CoreViewModel() {
     lateinit var endProcessingNetRequest: EndProcessingNetRequest
 
 
-    val task by lazy {
+    private val task by lazy {
         taskManager.currentTask
     }
 
@@ -61,21 +61,36 @@ class PackGoodListViewModel : CoreViewModel() {
 
     // -----------------------------
 
+    init {
+        viewModelScope.launch {
+            checkTaskForCorrectness()
+        }
+    }
+
+    // -----------------------------
+
+    private fun checkTaskForCorrectness() {
+        task.value!!.let { task ->
+            if (task.goods.any { it.raws.size > 1 }) {
+                navigator.showMoreThanOneOrderForThisProduct {
+                    onBackPressed()
+                }
+            }
+        }
+    }
+
     fun onClickItemPosition(position: Int) {
         if (task.value?.isProcessed == true) {
             return
         }
 
         val material = packGoods.value!![position].material
-        task.value?.goods?.find { it.material == material }?.let { good ->
-            if (good.raws.size > 1) {
-                navigator.showMoreThanOneOrderForThisProduct()
-                return
+        task.value?.let { task ->
+            task.goods.find { it.material == material }?.let { good ->
+                taskManager.currentGood.value = good
+                taskManager.currentRaw.value = good.raws.find { it.material == good.material }
+                navigator.openGoodPackagingScreen()
             }
-
-            taskManager.currentGood.value = good
-            taskManager.currentRaw.value = good.raws.find { it.material == good.material }
-            navigator.openGoodPackagingScreen()
         }
     }
 
