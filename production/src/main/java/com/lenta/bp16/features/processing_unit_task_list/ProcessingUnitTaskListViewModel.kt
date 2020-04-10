@@ -201,11 +201,7 @@ class ProcessingUnitTaskListViewModel : CoreViewModel(), PageSelectionListener, 
 
     private fun openTaskByType(task: Task) {
         if (task.taskInfo.isPack.isSapTrue()) {
-            if (task.goods.size > 1) {
-                navigator.showMoreThanOneGoodForThisTask()
-            } else {
-                navigator.openPackGoodListScreen()
-            }
+            navigator.openPackGoodListScreen()
         } else {
             navigator.openProcessingUnitListScreen()
         }
