@@ -49,7 +49,7 @@ class PackGoodListViewModel : CoreViewModel() {
                         material = good.material,
                         name = good.name,
                         arrived = "${good.arrived.dropZeros()} ${good.units.name}",
-                        arrowVisibility = !task.isProcessed && !task.goods.any { it.packs.isNotEmpty() } && !task.isPackSent
+                        remain = "${(good.arrived - good.getPackedQuantity()).dropZeros()} ${good.units.name}"
                 )
             }
         }
@@ -121,5 +121,5 @@ data class ItemPackGoodListUi(
         val material: String,
         val name: String,
         val arrived: String,
-        val arrowVisibility: Boolean
+        val remain: String
 )
