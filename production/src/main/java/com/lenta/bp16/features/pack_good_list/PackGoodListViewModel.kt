@@ -19,10 +19,13 @@ class PackGoodListViewModel : CoreViewModel() {
 
     @Inject
     lateinit var navigator: IScreenNavigator
+
     @Inject
     lateinit var taskManager: ITaskManager
+
     @Inject
     lateinit var unblockTaskNetRequest: UnblockTaskNetRequest
+
     @Inject
     lateinit var endProcessingNetRequest: EndProcessingNetRequest
 
@@ -35,12 +38,6 @@ class PackGoodListViewModel : CoreViewModel() {
         task.map { it?.taskInfo?.text3 }
     }
 
-    val completeEnabled by lazy {
-        task.map { task ->
-            task?.isProcessed == false && task.goods.any { it.packs.isNotEmpty() } || task?.isProcessed == false && task.isPackSent
-        }
-    }
-
     val packGoods: MutableLiveData<List<ItemPackGoodListUi>> by lazy {
         task.map { task ->
             task?.goods?.mapIndexed { index, good ->
@@ -49,16 +46,23 @@ class PackGoodListViewModel : CoreViewModel() {
                         material = good.material,
                         name = good.name,
                         arrived = "${good.arrived.dropZeros()} ${good.units.name}",
-                        remain = "${(good.arrived - good.getPackedQuantity()).dropZeros()} ${good.units.name}"
+                        remain = "${(good.arrived - good.getPackedQuantity()).dropZeros()} ${good.units.name}",
+                        arrowVisibility = !task.isProcessed
                 )
             }
+        }
+    }
+
+    val completeEnabled by lazy {
+        task.map { task ->
+            task?.isProcessed == false && !task.goods.any { it.packs.isEmpty() }
         }
     }
 
     // -----------------------------
 
     fun onClickItemPosition(position: Int) {
-        if (task.value?.isProcessed == true || completeEnabled.value == true) {
+        if (task.value?.isProcessed == true) {
             return
         }
 
@@ -121,5 +125,6 @@ data class ItemPackGoodListUi(
         val material: String,
         val name: String,
         val arrived: String,
-        val remain: String
+        val remain: String,
+        val arrowVisibility: Boolean
 )
