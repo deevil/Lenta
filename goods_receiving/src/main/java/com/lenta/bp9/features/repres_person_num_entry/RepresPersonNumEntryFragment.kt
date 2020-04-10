@@ -47,14 +47,14 @@ class RepresPersonNumEntryFragment : CoreFragment<FragmentRepresPersonNumEntryBi
 
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
         bottomToolbarUiModel.uiModelButton1.show(ButtonDecorationInfo.back)
-        bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.next)
+        bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.apply)
 
-        connectLiveData(vm.enabledBtnNext, bottomToolbarUiModel.uiModelButton5.enabled)
+        connectLiveData(vm.enabledBtnApply, bottomToolbarUiModel.uiModelButton5.enabled)
     }
 
     override fun onToolbarButtonClick(view: View) {
         when (view.id) {
-            R.id.b_5 -> vm.onClickNext()
+            R.id.b_5 -> vm.onClickApply()
         }
     }
 

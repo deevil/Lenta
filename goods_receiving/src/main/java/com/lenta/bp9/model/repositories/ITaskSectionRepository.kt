@@ -15,5 +15,6 @@ interface ITaskSectionRepository {
     fun addSectionProductsList(sections: List<TaskSectionProducts>): Boolean
     fun changeSection(section: TaskSectionInfo): Boolean
     fun updateSections(newSections: List<TaskSectionInfo>, newSectionProducts: List<TaskSectionProducts>)
+    fun getSignModification() : Boolean
     fun clear()
 }

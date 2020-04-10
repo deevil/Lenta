@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.lenta.bp9.model.task.IReceivingTaskManager
 import com.lenta.bp9.model.task.TaskContents
 import com.lenta.bp9.model.task.TaskDescription
+import com.lenta.bp9.model.task.TaskType
 import com.lenta.bp9.platform.navigation.IScreenNavigator
 import com.lenta.bp9.repos.IRepoInMemoryHolder
 import com.lenta.bp9.requests.network.StartRecountPGENetRequest
@@ -73,7 +74,7 @@ class LoadingRecountStartPGEViewModel : CoreLoadingViewModel() {
             repoInMemoryHolder.manufacturers.value = result.manufacturers
             taskManager.updateTaskDescription(TaskDescription.from(result.taskDescription))
             taskManager.getReceivingTask()?.updateTaskWithContents(taskContents.getTaskContentsPGEInfo(result))
-            screenNavigator.openGoodsListScreen()
+            screenNavigator.openGoodsListScreen(taskType = taskManager.getReceivingTask()?.taskHeader?.taskType ?: TaskType.None)
         }
     }
 
