@@ -95,8 +95,10 @@
                 <TextView
                     style="@style/CellTextStyle"
                     android:gravity="center"
+                    android:layout_marginStart="1dp"
+                    android:layout_marginEnd="1dp"
                     android:text="@{item.quantity}"
-                    tools:text="113.7 кг" />
+                    tools:text="1135.75 кг" />
 
             </LinearLayout>
 

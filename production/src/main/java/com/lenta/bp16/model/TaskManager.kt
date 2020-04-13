@@ -41,6 +41,7 @@ class TaskManager @Inject constructor(
             labelList.removeAt(labelList.size - 1)
         }
 
+        persistLabelList.saveLabelList(labelList)
         labels.postValue(labelList)
     }
 
@@ -48,11 +49,12 @@ class TaskManager @Inject constructor(
         if (labelLimit > 0) {
             labels.value?.let { list ->
                 val labelList = list.toMutableList()
-                if (labelList.size == labelLimit) {
+                while (labelList.size >= labelLimit) {
                     labelList.removeAt(labelList.size - 1)
                 }
 
                 labelList.add(0, labelInfo)
+
                 persistLabelList.saveLabelList(labelList)
                 labels.postValue(labelList)
             }
