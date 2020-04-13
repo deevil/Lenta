@@ -49,7 +49,7 @@ class ReprintLabelViewModel : CoreViewModel() {
                 ReprintLabelUi(
                         labelInfo = labelInfo,
                         position = "${list.size - index}",
-                        name = labelInfo.nameOsn,
+                        name = labelInfo.goodsName,
                         packNumber = labelInfo.codeCont,
                         date = SimpleDateFormat(Constants.DATE_FORMAT_ddmmyy, Locale.getDefault()).format(labelInfo.printTime),
                         time = SimpleDateFormat(Constants.TIME_FORMAT_HHmm, Locale.getDefault()).format(labelInfo.printTime),
