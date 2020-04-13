@@ -48,7 +48,7 @@ class ReprintLabelViewModel : CoreViewModel() {
             list?.mapIndexed { index, labelInfo ->
                 ReprintLabelUi(
                         labelInfo = labelInfo,
-                        position = "${index + 1}",
+                        position = "${list.size - index}",
                         name = labelInfo.nameOsn,
                         packNumber = labelInfo.codeCont,
                         date = SimpleDateFormat(Constants.DATE_FORMAT_ddmmyy, Locale.getDefault()).format(labelInfo.printTime),
