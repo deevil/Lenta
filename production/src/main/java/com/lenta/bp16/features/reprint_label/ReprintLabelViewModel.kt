@@ -91,7 +91,8 @@ class ReprintLabelViewModel : CoreViewModel() {
                                 navigator.hideProgress()
                             }.either(::handleFailure) {
                                 navigator.showLabelSentToPrint {
-                                    navigator.goBack()
+                                    // Ничего не делаем...
+
                                 }
                             }
                 }
