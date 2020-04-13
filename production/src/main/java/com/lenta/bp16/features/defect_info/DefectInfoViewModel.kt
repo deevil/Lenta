@@ -259,7 +259,7 @@ class DefectInfoViewModel : CoreViewModel() {
                             printTime = Date()
                     ))
 
-                    total.value = 0.0
+                    weighted.value = 0.0
                     weightField.value = "0"
                 }
             }
