@@ -1,6 +1,8 @@
 package com.lenta.bp9.features.search_task
 
 import android.content.Context
+import android.view.View
+import android.widget.EditText
 import androidx.lifecycle.MutableLiveData
 import com.lenta.bp9.R
 import com.lenta.bp9.features.loading.tasks.TaskListLoadingMode
@@ -11,6 +13,7 @@ import com.lenta.bp9.repos.IRepoInMemoryHolder
 import com.lenta.bp9.requests.network.TaskListSearchParams
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.platform.viewmodel.CoreViewModel
+import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
 import com.lenta.shared.utilities.extentions.combineLatest
 import com.lenta.shared.utilities.extentions.map
@@ -82,6 +85,17 @@ class SearchTaskViewModel: CoreViewModel(), OnOkInSoftKeyboardListener {
     fun onDigitPressed(digit: Int) {
         requestFocusToSupplier.value = true
         supplier.value = supplier.value ?: "" + digit
+    }
+
+    fun onScanResult(data: String, view: View?) {
+        view?.let {v ->
+            (v is EditText).let {
+                if (it) {
+                    (v as EditText).setText(data)
+                    v.requestFocus()
+                }
+            }
+        }
     }
 
 }

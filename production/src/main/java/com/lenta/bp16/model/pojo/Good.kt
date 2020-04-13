@@ -20,4 +20,8 @@ data class Good(
         return "${material.takeLast(6)}$delimiter$name"
     }
 
+    /*fun isExistNotDefectPack(): Boolean {
+        return packs.any { it.category != null || it.defect != null }
+    }*/
+
 }

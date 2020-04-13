@@ -37,7 +37,7 @@ class RepresPersonNumEntryViewModel : CoreViewModel(), OnOkInSoftKeyboardListene
     val personnelNumber = MutableLiveData("")
     val fullName = MutableLiveData("")
     val employeesPosition = MutableLiveData("")
-    val enabledBtnNext = fullName.map { !it.isNullOrBlank() }
+    val enabledBtnApply = fullName.map { !it.isNullOrBlank() }
 
     fun getTitle(): String {
         return taskManager.getReceivingTask()?.taskHeader?.caption ?: ""
@@ -69,7 +69,7 @@ class RepresPersonNumEntryViewModel : CoreViewModel(), OnOkInSoftKeyboardListene
         screenNavigator.openAlertScreen(failure)
     }
 
-    fun onClickNext() {
+    fun onClickApply() {
         val milliseconds = timeMonitor.getUnixTime()
         val currentDate = DateTimeUtil.formatDate(milliseconds, Constants.DATE_FORMAT_yyyy_mm_dd)
         val currentTime = DateTimeUtil.formatDate(milliseconds, Constants.TIME_FORMAT_hhmmss)

@@ -110,14 +110,17 @@ class TaskCardViewModel : CoreViewModel(), PageSelectionListener {
                 taskManager.getReceivingTask()?.taskDescription?.isSkipCountMan == true
     }
 
-    val visibilityBtn by lazy {
+    val visibilitySecondBtn by lazy {
         MutableLiveData(taskManager.getReceivingTask()?.taskDescription?.currentStatus.let {
             it == TaskStatus.Recounted ||
-                    (it == TaskStatus.Checked && taskType != TaskType.ShipmentPP) ||
+                    (it == TaskStatus.Checked && taskType == TaskType.ShipmentPP) ||
                     (it == TaskStatus.Unloaded && (taskType == TaskType.RecalculationCargoUnit || taskType == TaskType.ReceptionDistributionCenter)) ||
-                    (it == TaskStatus.ReadyToShipment && taskType == TaskType.ShipmentRC) ||
-                    isShipmentPPSkipRecount
+                    (it == TaskStatus.ReadyToShipment && taskType == TaskType.ShipmentRC)
         })
+    }
+
+    val visibilityBtnFourth by lazy {
+        MutableLiveData(isShipmentPPSkipRecount)
     }
 
     val visibilityNextBtn by lazy {
@@ -238,10 +241,10 @@ class TaskCardViewModel : CoreViewModel(), PageSelectionListener {
     val nextStatusDateTime: MutableLiveData<String> = MutableLiveData("")
 
     val shipmentNumberTN by lazy {
-        taskManager.getReceivingTask()?.taskDescription?.ttnNumber ?: ""
+        taskManager.getReceivingTask()?.taskDescription?.tnNumber ?: ""
     }
     val shipmentNumberTTN by lazy {
-        taskManager.getReceivingTask()?.taskDescription?.deliveryNumber ?: ""
+        taskManager.getReceivingTask()?.taskDescription?.ttnNumber ?: ""
     }
     val shipmentPlanDate by lazy {
         taskManager.getReceivingTask()?.taskDescription?.plannedDeliveryDate ?: ""
@@ -339,15 +342,11 @@ class TaskCardViewModel : CoreViewModel(), PageSelectionListener {
             TaskStatus.Unloaded -> {
                 when (taskType) {
                     TaskType.RecalculationCargoUnit -> screenNavigator.openSkipRecountScreen()
-                    TaskType.ReceptionDistributionCenter, TaskType.OwnProduction -> screenNavigator.openTransportMarriageScreen()
+                    TaskType.ReceptionDistributionCenter -> screenNavigator.openTransportMarriageScreen()
                 }
             }
             TaskStatus.Checked -> {
-                if (isShipmentPPSkipRecount) {
-                    shipmentSkipRecount()
-                } else {
-                    screenNavigator.openStartReviseLoadingScreen()
-                }
+                screenNavigator.openStartReviseLoadingScreen()
             }
             TaskStatus.Recounted -> screenNavigator.openRecountStartLoadingScreen()
             TaskStatus.ReadyToShipment -> {
@@ -358,8 +357,12 @@ class TaskCardViewModel : CoreViewModel(), PageSelectionListener {
         }
     }
 
-    fun onClickSupply() {
+    fun onClickDocs() {
         screenNavigator.openFormedDocsScreen()
+    }
+
+    fun onClickFourth() {
+        shipmentSkipRecount()
     }
 
     fun onClickNext() {
@@ -470,18 +473,24 @@ class TaskCardViewModel : CoreViewModel(), PageSelectionListener {
             }
             TaskStatus.Checked -> screenNavigator.openStartConditionsReviseLoadingScreen()
             TaskStatus.Unloaded -> {
-                if (taskManager.getReceivingTask()?.taskHeader?.taskType == TaskType.ReceptionDistributionCenter) {
-                    screenNavigator.openNoTransportDefectDeclaredDialog(
-                            nextCallbackFunc = {
-                                if (taskManager.getReceivingTask()?.taskDescription?.quantityOutgoingFillings == 0) {
-                                    fixationDeparture()
-                                } else {
-                                    screenNavigator.openInputOutgoingFillingsScreen()
+                when (taskManager.getReceivingTask()?.taskHeader?.taskType) {
+                    TaskType.ReceptionDistributionCenter -> {
+                        screenNavigator.openNoTransportDefectDeclaredDialog(
+                                nextCallbackFunc = {
+                                    if (taskManager.getReceivingTask()?.taskDescription?.quantityOutgoingFillings == 0) {
+                                        fixationDeparture()
+                                    } else {
+                                        screenNavigator.openInputOutgoingFillingsScreen()
+                                    }
                                 }
-                            }
-                    )
-                } else {
-                    screenNavigator.openRecountStartLoadingScreen()
+                        )
+                    }
+                    TaskType.OwnProduction -> {
+                        fixationDeparture()
+                    }
+                    else -> {
+                        screenNavigator.openRecountStartLoadingScreen()
+                    }
                 }
             }
             TaskStatus.Recounted -> screenNavigator.openTransmittedLoadingScreen()

@@ -80,7 +80,7 @@ class TaskReviseViewModel : CoreViewModel(), PageSelectionListener {
                         isInvoice = document.documentType == DocumentType.Invoice,
                         isCompositeDoc = document.documentType == DocumentType.CompositeDoc,
                         id = document.documentID,
-                        isEDO = taskManager.getReceivingTask()?.taskDescription?.isEDO!!)
+                        isEDO = taskManager.getReceivingTask()?.taskRepository?.getReviseDocuments()?.getInvoiceInfo()?.isEDO == true)
             }
         }
 
@@ -95,7 +95,7 @@ class TaskReviseViewModel : CoreViewModel(), PageSelectionListener {
                         isInvoice = document.documentType == DocumentType.Invoice,
                         isCompositeDoc = document.documentType == DocumentType.CompositeDoc,
                         id = document.documentID,
-                        isEDO = taskManager.getReceivingTask()?.taskDescription?.isEDO!!)
+                        isEDO = taskManager.getReceivingTask()?.taskRepository?.getReviseDocuments()?.getInvoiceInfo()?.isEDO == true)
             }
         }
 

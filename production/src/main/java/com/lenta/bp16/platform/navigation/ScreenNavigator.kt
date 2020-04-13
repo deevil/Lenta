@@ -195,35 +195,17 @@ class ScreenNavigator @Inject constructor(
         }
     }
 
-    override fun showMoreThanOneOrderForThisProduct() {
+    override fun showMoreThanOneOrderForThisProduct(backCallback: () -> Unit) {
         runOrPostpone {
             getFragmentStack()?.push(AlertFragment.create(
                     pageNumber = "32.1",
                     message = context.getString(R.string.more_than_one_order_for_this_product),
-                    iconRes = R.drawable.is_warning_red_80dp
+                    iconRes = R.drawable.is_warning_red_80dp,
+                    codeConfirmForLeft = backFragmentResultHelper.setFuncForResult(backCallback),
+                    leftButtonDecorationInfo = ButtonDecorationInfo.back
             ))
         }
     }
-
-    override fun showMoreThanOneGoodForThisTask() {
-        runOrPostpone {
-            getFragmentStack()?.push(AlertFragment.create(
-                    pageNumber = "32.2",
-                    message = context.getString(R.string.more_than_one_good_for_this_task),
-                    iconRes = R.drawable.is_warning_red_80dp
-            ))
-        }
-    }
-
-    /*override fun showErrorCompletingObjectProcessing() {
-        runOrPostpone {
-            getFragmentStack()?.push(AlertFragment.create(
-                    pageNumber = "31.5",
-                    message = context.getString(R.string.error_completing_object_processing),
-                    iconRes = R.drawable.is_warning_red_80dp
-            ))
-        }
-    }*/
 
     override fun showNotSavedDataWillBeLost(yesCallback: () -> Unit) {
         runOrPostpone {
@@ -284,10 +266,8 @@ interface IScreenNavigator : ICoreNavigator {
     fun showConfirmNoSuchItemLeft(taskType: String, confirmCallback: () -> Unit)
     fun showConfirmNoRawItem(taskType: String, confirmCallback: () -> Unit)
     fun showFixingPackagingPhaseSuccessful(nextCallback: () -> Unit)
-    fun showMoreThanOneOrderForThisProduct()
-    fun showMoreThanOneGoodForThisTask()
+    fun showMoreThanOneOrderForThisProduct(backCallback: () -> Unit)
     fun showNotSavedDataWillBeLost(yesCallback: () -> Unit)
     fun showAlertNoIpPrinter()
     fun showLabelSentToPrint(nextCallback: () -> Unit)
-    //fun showErrorCompletingObjectProcessing()
 }

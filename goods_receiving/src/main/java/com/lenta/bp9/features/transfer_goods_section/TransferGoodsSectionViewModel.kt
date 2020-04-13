@@ -23,16 +23,14 @@ class TransferGoodsSectionViewModel : CoreViewModel(), PageSelectionListener {
 
     val listSections: MutableLiveData<List<TransferGoodsSectionItem>> = MutableLiveData()
     val selectedPage = MutableLiveData(0)
-    val enabledBtnSave: MutableLiveData<Boolean> = listSections.map {
-        taskManager.getReceivingTask()?.getProcessedSections()?.filter {sectionInfo ->
-            sectionInfo.personnelNumber.isNotEmpty()
-        }?.size ?: 0 > 0
+    val enabledBtnSave by lazy {
+        MutableLiveData(taskManager.getReceivingTask()?.taskRepository?.getSections()?.getSignModification() == true)
     }
 
     private fun updateTransmitted() {
         listSections.postValue(
                 taskManager.getReceivingTask()?.getProcessedSections()?.filter {
-                    it.personnelNumber.isNullOrEmpty()
+                    it.personnelNumber.isEmpty()
                 }?.mapIndexed { index, taskSectionInfo ->
                     TransferGoodsSectionItem(
                             number = index + 1,
@@ -81,11 +79,15 @@ class TransferGoodsSectionViewModel : CoreViewModel(), PageSelectionListener {
     }
 
     fun onBackPressed() {
-        screenNavigator.openUnsavedDataDialog(
-                yesCallbackFunc = {
-                    screenNavigator.openUnlockTaskLoadingScreen()
-                }
-        )
+        if (enabledBtnSave.value == true) {
+            screenNavigator.openUnsavedDataDialog(
+                    yesCallbackFunc = {
+                        screenNavigator.openUnlockTaskLoadingScreen()
+                    }
+            )
+        } else {
+            screenNavigator.openUnlockTaskLoadingScreen()
+        }
     }
 
     fun onResume() {
@@ -93,12 +95,10 @@ class TransferGoodsSectionViewModel : CoreViewModel(), PageSelectionListener {
     }
 
     private fun moveToPreviousPageIfNeeded() {
-        if (selectedPage.value == 0) {
-            val isNotEmptyTransferred = taskManager.getReceivingTask()?.getProcessedSections()?.filter {sectionInfo ->
-                sectionInfo.personnelNumber.isNotEmpty()
-            }?.size ?: 0 > 0
-            selectedPage.value = if (isNotEmptyTransferred) 1 else 0
-        }
+        val isNotEmptyTransmitted = taskManager.getReceivingTask()?.getProcessedSections()?.filter {sectionInfo ->
+            sectionInfo.personnelNumber.isEmpty()
+        }?.size ?: 0 > 0
+        selectedPage.value = if (isNotEmptyTransmitted) 0 else 1
     }
 
 }

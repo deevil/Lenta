@@ -3,9 +3,8 @@ package com.lenta.bp16.features.good_packaging
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.lenta.bp16.model.ITaskManager
+import com.lenta.bp16.model.pojo.Pack
 import com.lenta.bp16.platform.navigation.IScreenNavigator
-import com.lenta.bp16.request.EndProcessingNetRequest
-import com.lenta.bp16.request.EndProcessingParams
 import com.lenta.bp16.request.PackGoodNetRequest
 import com.lenta.bp16.request.PackGoodParams
 import com.lenta.shared.account.ISessionInfo
@@ -13,7 +12,6 @@ import com.lenta.shared.exception.Failure
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.extentions.dropZeros
 import com.lenta.shared.utilities.extentions.map
-import com.lenta.shared.utilities.extentions.sumWith
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -21,10 +19,13 @@ class GoodPackagingViewModel : CoreViewModel() {
 
     @Inject
     lateinit var navigator: IScreenNavigator
+
     @Inject
     lateinit var sessionInfo: ISessionInfo
+
     @Inject
     lateinit var taskManager: ITaskManager
+
     @Inject
     lateinit var packGoodNetRequest: PackGoodNetRequest
 
@@ -99,7 +100,20 @@ class GoodPackagingViewModel : CoreViewModel() {
                 navigator.hideProgress()
             }.either(::handleFailure) {
                 navigator.showFixingPackagingPhaseSuccessful {
-                    taskManager.setDataSentForPackTask()
+                    good.value?.let {
+                        it.packs.add(0,
+                                Pack(
+                                        material = it.material,
+                                        materialOsn = raw.value!!.materialOsn,
+                                        code = "",
+                                        orderNumber = raw.value!!.orderNumber,
+                                        quantity = entered.value!!
+                                )
+                        )
+
+                        taskManager.updateGoodInCurrentTask(it)
+                    }
+
                     navigator.goBack()
                 }
             }

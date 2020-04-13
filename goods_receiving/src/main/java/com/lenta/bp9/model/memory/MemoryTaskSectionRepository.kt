@@ -10,6 +10,8 @@ class MemoryTaskSectionRepository : ITaskSectionRepository {
 
     private val sectionProductsInfo: ArrayList<TaskSectionProducts> = ArrayList()
 
+    private var isModifications: Boolean = false
+
     override fun getSections(): List<TaskSectionInfo> {
         return sectionInfo
     }
@@ -101,6 +103,7 @@ class MemoryTaskSectionRepository : ITaskSectionRepository {
         if (index != -1) {
             sectionInfo.removeAt(index)
         }
+        isModifications = true
         return addSection(section)
     }
 
@@ -110,8 +113,13 @@ class MemoryTaskSectionRepository : ITaskSectionRepository {
         addSectionProductsList(newSectionProducts)
     }
 
+    override fun getSignModification(): Boolean {
+        return isModifications
+    }
+
     override fun clear() {
         sectionInfo.clear()
         sectionProductsInfo.clear()
+        isModifications = false
     }
 }

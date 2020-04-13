@@ -77,10 +77,9 @@ class TaskCardFragment : CoreFragment<FragmentTaskCardBinding, TaskCardViewModel
                 }
                 TaskStatus.Checked -> {
                     if (vm.taskType == TaskType.ShipmentPP) {
-                        bottomToolbarUiModel.uiModelButton2.show(ButtonDecorationInfo.skipAlternate)
-                    } else {
-                        bottomToolbarUiModel.uiModelButton2.show(ButtonDecorationInfo.verify)
+                        bottomToolbarUiModel.uiModelButton4.show(ButtonDecorationInfo.skipAlternate)
                     }
+                    bottomToolbarUiModel.uiModelButton2.show(ButtonDecorationInfo.verify)
                 }
                 TaskStatus.Recounted -> bottomToolbarUiModel.uiModelButton2.show(ButtonDecorationInfo.recount)
                 TaskStatus.ReadyToShipment -> {
@@ -90,10 +89,12 @@ class TaskCardFragment : CoreFragment<FragmentTaskCardBinding, TaskCardViewModel
                 }
             }
 
-            bottomToolbarUiModel.uiModelButton4.show(ButtonDecorationInfo.docs)
+            bottomToolbarUiModel.uiModelButton3.show(ButtonDecorationInfo.docs)
             bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.nextAlternate)
-            connectLiveData(vm.visibilityBtn, bottomToolbarUiModel.uiModelButton2.visibility)
+            connectLiveData(vm.visibilitySecondBtn, bottomToolbarUiModel.uiModelButton2.visibility)
             connectLiveData(vm.enabledBtn, bottomToolbarUiModel.uiModelButton2.enabled)
+            connectLiveData(vm.visibilityBtnFourth, bottomToolbarUiModel.uiModelButton4.visibility)
+            connectLiveData(vm.enabledBtn, bottomToolbarUiModel.uiModelButton4.enabled)
             connectLiveData(vm.visibilityNextBtn, bottomToolbarUiModel.uiModelButton5.visibility)
             connectLiveData(vm.enabledBtn, bottomToolbarUiModel.uiModelButton5.enabled)
         }
@@ -103,10 +104,15 @@ class TaskCardFragment : CoreFragment<FragmentTaskCardBinding, TaskCardViewModel
                 TaskStatus.Unloaded -> {
                     when (vm.taskType) {
                         TaskType.RecalculationCargoUnit -> bottomToolbarUiModel.uiModelButton2.show(ButtonDecorationInfo.skipAlternate, enabled = false)
-                        TaskType.ReceptionDistributionCenter, TaskType.OwnProduction -> bottomToolbarUiModel.uiModelButton2.show(ButtonDecorationInfo.transportMarriage, enabled = false)
+                        TaskType.ReceptionDistributionCenter -> bottomToolbarUiModel.uiModelButton2.show(ButtonDecorationInfo.transportMarriage, enabled = false)
                     }
                 }
-                TaskStatus.Checked -> bottomToolbarUiModel.uiModelButton2.show(ButtonDecorationInfo.verify, enabled = false)
+                TaskStatus.Checked -> {
+                    if (vm.taskType == TaskType.ShipmentPP) {
+                        bottomToolbarUiModel.uiModelButton4.show(ButtonDecorationInfo.skipAlternate, enabled = false)
+                    }
+                    bottomToolbarUiModel.uiModelButton2.show(ButtonDecorationInfo.verify, enabled = false)
+                }
                 TaskStatus.Recounted -> bottomToolbarUiModel.uiModelButton2.show(ButtonDecorationInfo.recount, enabled = false)
                 TaskStatus.ReadyToShipment -> {
                     if (vm.taskType == TaskType.ShipmentPP || vm.taskType == TaskType.ShipmentRC) {
@@ -115,9 +121,11 @@ class TaskCardFragment : CoreFragment<FragmentTaskCardBinding, TaskCardViewModel
                 }
             }
 
-            bottomToolbarUiModel.uiModelButton4.show(ButtonDecorationInfo.docs)
+            bottomToolbarUiModel.uiModelButton3.show(ButtonDecorationInfo.docs)
             bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.nextAlternate, enabled = false)
-            connectLiveData(vm.visibilityBtn, bottomToolbarUiModel.uiModelButton2.visibility)
+            connectLiveData(vm.visibilitySecondBtn, bottomToolbarUiModel.uiModelButton2.visibility)
+            connectLiveData(vm.visibilityBtnFourth, bottomToolbarUiModel.uiModelButton4.visibility)
+            connectLiveData(vm.visibilityNextBtn, bottomToolbarUiModel.uiModelButton5.visibility)
         }
     }
 
@@ -143,7 +151,8 @@ class TaskCardFragment : CoreFragment<FragmentTaskCardBinding, TaskCardViewModel
     override fun onToolbarButtonClick(view: View) {
         when (view.id) {
             R.id.b_2 -> vm.onClickSecondButton()
-            R.id.b_4 -> vm.onClickSupply()
+            R.id.b_3 -> vm.onClickDocs()
+            R.id.b_4 -> vm.onClickFourth()
             R.id.b_5 -> vm.onClickNext()
         }
     }

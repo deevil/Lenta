@@ -45,7 +45,7 @@ class ProcessExciseAlcoProductService
                     getProductsDiscrepancies()?.
                     changeProductDiscrepancy(TaskProductDiscrepancies(
                             materialNumber = productInfo.materialNumber,
-                            exidv = "",
+                            processingUnitNumber = "",
                             numberDiscrepancies = countAdd.toString(),
                             uom = productInfo.uom,
                             typeDiscrepancies = typeDiscrepancies,
@@ -111,7 +111,7 @@ class ProcessExciseAlcoProductService
                     getProductsDiscrepancies()?.
                     changeProductDiscrepancy(TaskProductDiscrepancies(
                             materialNumber = productInfo.materialNumber,
-                            exidv = "",
+                            processingUnitNumber = productInfo.processingUnit,
                             numberDiscrepancies = count,
                             uom = productInfo.uom,
                             typeDiscrepancies = typeDiscrepancies,
@@ -123,7 +123,7 @@ class ProcessExciseAlcoProductService
             taskManager.getReceivingTask()?.
                     taskRepository?.
                     getProductsDiscrepancies()?.
-                    changeProductDiscrepancy(foundDiscrepancy.copy(numberDiscrepancies = count))
+                    changeProductDiscrepancy(foundDiscrepancy.copy(numberDiscrepancies = count, processingUnitNumber = productInfo.processingUnit))
         }
 
         taskManager.getReceivingTask()?.

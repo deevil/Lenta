@@ -141,19 +141,25 @@ class GoodsDetailsViewModel : CoreViewModel() {
     }
 
     fun onClickDelete() {
-        if (productInfo.value != null && !productInfo.value!!.isNotEdit) {
+        if (taskManager.getReceivingTask()?.taskHeader?.taskType == TaskType.RecalculationCargoUnit && taskManager.getReceivingTask()!!.taskHeader.isCracked && productInfo.value!!.isWithoutRecount) { //если это не пересчетная ГЕ //https://trello.com/c/PRTAVnUP
             categoriesSelectionsHelper.selectedPositions.value?.map { position ->
-                taskManager
-                        .getReceivingTask()
-                        ?.taskRepository
-                        ?.getProductsDiscrepancies()
-                        ?.deleteProductDiscrepancy(goodsDetails.value?.get(position)!!.materialNumber, goodsDetails.value?.get(position)!!.typeDiscrepancies)
+                taskManager.getReceivingTask()?.taskRepository?.getProductsDiscrepancies()?.deleteProductsDiscrepanciesOfProductOfDiscrepanciesNotRecountPGE(productInfo.value!!, goodsDetails.value?.get(position)!!.typeDiscrepancies)
+            }
+        } else {
+            if (productInfo.value != null && !productInfo.value!!.isNotEdit) {
+                categoriesSelectionsHelper.selectedPositions.value?.map { position ->
+                    taskManager
+                            .getReceivingTask()
+                            ?.taskRepository
+                            ?.getProductsDiscrepancies()
+                            ?.deleteProductDiscrepancy(goodsDetails.value?.get(position)!!.materialNumber, goodsDetails.value?.get(position)!!.typeDiscrepancies)
 
-                if (isVetProduct.value!!) {
-                    processMercuryProductService.delDiscrepancy(goodsDetails.value?.get(position)!!.typeDiscrepancies)
+                    if (isVetProduct.value!!) {
+                        processMercuryProductService.delDiscrepancy(goodsDetails.value?.get(position)!!.typeDiscrepancies)
+                    }
                 }
             }
-            updateProduct()
         }
+        updateProduct()
     }
 }
