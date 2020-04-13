@@ -9,10 +9,9 @@ data class Task(
         val number: String,
         var status: TaskStatus,
         val isPack: Boolean,
-        var isPackSent: Boolean = false,
         val type: TaskType,
         val quantity: Double,
         val taskInfo: TaskInfo,
-        var goods: List<Good> = emptyList()
+        var goods: MutableList<Good> = mutableListOf()
 ) {
 }
