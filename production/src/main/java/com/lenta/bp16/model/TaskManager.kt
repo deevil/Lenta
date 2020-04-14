@@ -96,7 +96,7 @@ class TaskManager @Inject constructor(
                 }
 
                 val packList = taskInfoResult.packs.filter { packInfo ->
-                    rawList.any { it.orderNumber == packInfo.orderNumber }
+                    rawList.any { it.orderNumber == packInfo.orderNumber } || packInfo.materialDef == goodInfo.material
                 }.map { packInfo ->
                     Pack(
                             material = packInfo.material,

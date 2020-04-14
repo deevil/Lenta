@@ -30,7 +30,7 @@ class DefectListViewModel : CoreViewModel() {
 
     val defects by lazy {
         good.map { good ->
-            good?.packs?.filter { it.materialDef == good.material }?.mapIndexed { index, pack ->
+            good?.packs?.filter { it.isDefect() }?.mapIndexed { index, pack ->
                 DefectListUi(
                         position = "${index + 1}",
                         packAndCategory = "${pack.code} / ${pack.category?.description}",

@@ -25,7 +25,11 @@ data class Pack(
     }
 
     fun isNotDefect(): Boolean {
-        return category == null && defect == null
+        return materialDef.isEmpty()
+    }
+
+    fun isDefect(): Boolean {
+        return materialDef.isNotEmpty()
     }
 
 }

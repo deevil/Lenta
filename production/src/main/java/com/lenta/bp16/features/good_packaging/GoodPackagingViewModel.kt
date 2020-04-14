@@ -56,7 +56,7 @@ class GoodPackagingViewModel : CoreViewModel() {
 
     private val defect by lazy {
         good.map { good ->
-            good?.packs?.filter { it.materialDef == raw.value?.material }?.map { it.quantity }?.sum()
+            good?.getDefectQuantity()
         }
     }
 
