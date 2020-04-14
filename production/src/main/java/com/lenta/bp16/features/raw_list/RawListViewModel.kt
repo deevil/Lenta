@@ -6,6 +6,7 @@ import com.lenta.bp16.platform.navigation.IScreenNavigator
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.extentions.dropZeros
 import com.lenta.shared.utilities.extentions.map
+import com.lenta.shared.utilities.extentions.sumList
 import javax.inject.Inject
 
 class RawListViewModel : CoreViewModel() {
@@ -32,8 +33,8 @@ class RawListViewModel : CoreViewModel() {
         good.map { good ->
             good?.raws?.mapIndexed { index, raw ->
                 val packed = good.packs.filter {
-                    it.orderNumber == raw.orderNumber
-                }.map { it.quantity }.sum()
+                    it.isNotDefect() && it.orderNumber == raw.orderNumber
+                }.map { it.quantity }.sumList()
 
                 ItemRawListUi(
                         position = (index + 1).toString(),

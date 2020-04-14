@@ -17,6 +17,10 @@ data class Good(
         return packs.map { it.quantity }.sumList()
     }
 
+    fun getNotDefectQuantity(): Double {
+        return packs.filter { it.isNotDefect() }.map { it.quantity }.sumList()
+    }
+
     fun getDefectQuantity(): Double {
         return packs.filter { it.isDefect() }.map { it.quantity }.sumList()
     }
