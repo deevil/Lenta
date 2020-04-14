@@ -55,10 +55,10 @@
     </style>
 
     <style name="spinner_style" parent="Widget.AppCompat.Spinner">
-        <item name="android:minHeight">40sp</item>
+        <item name="android:minHeight">40dp</item>
         <item name="android:background">@drawable/bg_border_rectangle</item>
-        <item name="android:paddingTop">8dp</item>
-        <item name="android:paddingBottom">8dp</item>
+        <item name="android:paddingTop">6dp</item>
+        <item name="android:paddingBottom">6dp</item>
         <item name="android:dropDownVerticalOffset">16dp</item>
         <item name="android:spinnerMode">dropdown</item>
     </style>

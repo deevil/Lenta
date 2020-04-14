@@ -27,9 +27,7 @@
                 android:layout_weight="1">
 
                 <com.lenta.shared.view.ClickableSpinner
-                    android:id="@+id/spin_category"
                     style="@style/CellSpinnerStyle"
-                    android:layout_height="match_parent"
                     android:enabled="@{vm.categoryEnabled}"
                     app:items="@{vm.categoryList}"
                     app:onPositionClickListener="@{vm.onSelectCategory}"
@@ -98,7 +96,6 @@
                 android:layout_weight="1">
 
                 <com.lenta.shared.view.ClickableSpinner
-                    android:id="@+id/spin_defect"
                     style="@style/CellSpinnerStyle"
                     android:layout_height="match_parent"
                     android:enabled="@{vm.defectEnabled}"
