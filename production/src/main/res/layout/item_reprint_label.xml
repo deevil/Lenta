@@ -71,7 +71,7 @@
                     android:layout_marginTop="5dp"
                     android:text="@{item.packNumber}"
                     app:zoom="@{true}"
-                    tools:text="5566871952" />
+                    tools:text="5566 БРАК" />
 
                 <TextView
                     style="@style/CellTextStyle"
@@ -98,7 +98,7 @@
                     android:layout_marginStart="1dp"
                     android:layout_marginEnd="1dp"
                     android:text="@{item.quantity}"
-                    tools:text="1135.75 кг" />
+                    tools:text="12.345 кг" />
 
             </LinearLayout>
 

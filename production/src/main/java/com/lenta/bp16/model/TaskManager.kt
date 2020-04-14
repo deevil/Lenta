@@ -88,7 +88,7 @@ class TaskManager @Inject constructor(
                     Raw(
                             material = rawInfo.material,
                             materialOsn = rawInfo.materialOsn,
-                            orderNumber = rawInfo.orderNumber,
+                            order = rawInfo.orderNumber,
                             name = rawInfo.name,
                             planned = rawInfo.planned,
                             isWasDef = rawInfo.isWasDef.isSapTrue()
@@ -96,14 +96,14 @@ class TaskManager @Inject constructor(
                 }
 
                 val packList = taskInfoResult.packs.filter { packInfo ->
-                    rawList.any { it.orderNumber == packInfo.orderNumber }
+                    rawList.any { it.order == packInfo.order } || packInfo.materialDef == goodInfo.material
                 }.map { packInfo ->
                     Pack(
                             material = packInfo.material,
                             materialOsn = packInfo.materialOsn,
                             materialDef = packInfo.materialDef,
                             code = packInfo.code,
-                            orderNumber = packInfo.orderNumber,
+                            order = packInfo.order,
                             quantity = packInfo.quantity,
                             isDefOut = packInfo.isDefOut.isSapTrue(),
                             category = database.getCategory(packInfo.categoryCode),

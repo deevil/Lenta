@@ -85,7 +85,7 @@ class GoodWeighingViewModel : CoreViewModel() {
 
     private val defect by lazy {
         good.map { good ->
-            good?.packs?.filter { it.materialDef == raw.value?.material }?.map { it.quantity }?.sum()
+            good?.getDefectQuantity()
         }
     }
 
@@ -96,7 +96,9 @@ class GoodWeighingViewModel : CoreViewModel() {
     }
 
     val planned by lazy {
-        "${raw.value!!.planned.dropZeros()} ${good.value!!.units.name}"
+        raw.map { raw ->
+            "${raw?.planned.dropZeros()} ${good.value!!.units.name}"
+        }
     }
 
     val defectVisibility by lazy {
@@ -126,7 +128,7 @@ class GoodWeighingViewModel : CoreViewModel() {
                             parent = taskManager.currentTask.value!!.taskInfo.number,
                             deviceIp = deviceIp.value ?: "Not found!",
                             material = good.value!!.material,
-                            orderNumber = raw.value!!.orderNumber,
+                            order = raw.value!!.order,
                             quantity = total.value!!
                     )
             ).also {
@@ -138,7 +140,7 @@ class GoodWeighingViewModel : CoreViewModel() {
                                     material = it.material,
                                     materialOsn = raw.value!!.materialOsn,
                                     code = packCodeResult.packCode,
-                                    orderNumber = raw.value!!.orderNumber,
+                                    order = raw.value!!.order,
                                     quantity = total.value!!
                             )
                     )
@@ -161,11 +163,11 @@ class GoodWeighingViewModel : CoreViewModel() {
                     }
 
                     val barCodeText = "(01)${getFormattedEan(packCodeResult.dataLabel.ean, total.value!!)}" +
-                            "(3103)${getFormattedWeight(weightField.value!!)}" +
-                            "(8008)${SimpleDateFormat(Constants.DATE_FORMAT_yyMMddhhmm, Locale.getDefault()).format(productTime.time)}" +
-                            "(10)${raw.value!!.orderNumber}" +
-                            "(7003)${dateExpir?.let { SimpleDateFormat(Constants.DATE_FORMAT_yyMMddhhmm, Locale.getDefault()).format(it.time) }}" +
-                            "(91)0${packCodeResult.packCode}"
+                            //"(3103)${getFormattedWeight(weightField.value!!)}" +
+                            //"(8008)${SimpleDateFormat(Constants.DATE_FORMAT_yyMMddhhmm, Locale.getDefault()).format(productTime.time)}" +
+                            //"(10)${raw.value!!.orderNumber}" +
+                            //"(7003)${dateExpir?.let { SimpleDateFormat(Constants.DATE_FORMAT_yyMMddhhmm, Locale.getDefault()).format(it.time) }}" +
+                            "(91)${packCodeResult.packCode}"
 
                     val barcode = barCodeText.replace("(", "").replace(")", "")
 
@@ -174,7 +176,7 @@ class GoodWeighingViewModel : CoreViewModel() {
                             codeCont = packCodeResult.packCode,
                             storCond = "${packCodeResult.dataLabel.storCondTime} ч",
                             planAufFinish = SimpleDateFormat(Constants.DATE_FORMAT_dd_mm_yyyy_hh_mm, Locale.getDefault()).format(planAufFinish.time),
-                            aufnr = raw.value!!.orderNumber,
+                            aufnr = raw.value!!.order,
                             nameOsn = raw.value!!.name,
                             dateExpir = dateExpir?.let { SimpleDateFormat(Constants.DATE_FORMAT_dd_mm_yyyy_hh_mm, Locale.getDefault()).format(it.time) }
                                     ?: "",
