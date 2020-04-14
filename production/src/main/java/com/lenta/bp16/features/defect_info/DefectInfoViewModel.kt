@@ -192,7 +192,7 @@ class DefectInfoViewModel : CoreViewModel() {
                             parent = taskManager.currentTask.value!!.taskInfo.number,
                             deviceIp = deviceIp.value ?: "Not found!",
                             material = good.value!!.material,
-                            orderNumber = raw.value!!.orderNumber,
+                            order = raw.value!!.order,
                             quantity = total.value!!,
                             categoryCode = categories.value!![categoryPosition.value!!].code,
                             defectCode = defects.value!![defectPosition.value!!].code
@@ -207,7 +207,7 @@ class DefectInfoViewModel : CoreViewModel() {
                                     materialOsn = raw.value!!.materialOsn,
                                     materialDef = raw.value!!.material,
                                     code = packCodeResult.packCode,
-                                    orderNumber = raw.value!!.orderNumber,
+                                    order = raw.value!!.order,
                                     quantity = total.value!!,
                                     category = categories.value!![categoryPosition.value!!],
                                     defect = defects.value!![defectPosition.value!!]
@@ -245,7 +245,7 @@ class DefectInfoViewModel : CoreViewModel() {
                             codeCont = "${packCodeResult.packCode} БРАК",
                             storCond = "${packCodeResult.dataLabel.storCondTime} ч",
                             planAufFinish = SimpleDateFormat(Constants.DATE_FORMAT_dd_mm_yyyy_hh_mm, Locale.getDefault()).format(planAufFinish.time),
-                            aufnr = raw.value!!.orderNumber,
+                            aufnr = raw.value!!.order,
                             nameOsn = raw.value!!.name,
                             dateExpir = dateExpir?.let { SimpleDateFormat(Constants.DATE_FORMAT_dd_mm_yyyy_hh_mm, Locale.getDefault()).format(it.time) }
                                     ?: "",

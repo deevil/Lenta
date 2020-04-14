@@ -33,12 +33,13 @@ class RawListViewModel : CoreViewModel() {
         good.map { good ->
             good?.raws?.mapIndexed { index, raw ->
                 val packed = good.packs.filter {
-                    it.isNotDefect() && it.orderNumber == raw.orderNumber
+                    it.isNotDefect() && it.order == raw.order
                 }.map { it.quantity }.sumList()
 
                 ItemRawListUi(
                         position = (index + 1).toString(),
                         materialOsn = raw.materialOsn,
+                        order = raw.order,
                         name = raw.name,
                         processingStatus = "${packed.dropZeros()} ${good.units.name} из ${raw.planned.dropZeros()} ${good.units.name}",
                         arrowVisibility = !good.isProcessed
@@ -71,8 +72,8 @@ class RawListViewModel : CoreViewModel() {
             return
         }
 
-        val materialOsn = raws.value!![position].materialOsn
-        good.value?.raws?.find { it.materialOsn == materialOsn }?.let { raw ->
+        val order = raws.value!![position].order
+        good.value?.raws?.find { it.order == order }?.let { raw ->
             taskManager.currentRaw.value = raw
             navigator.openGoodWeighingScreen()
         }
@@ -83,6 +84,7 @@ class RawListViewModel : CoreViewModel() {
 data class ItemRawListUi(
         val position: String,
         val materialOsn: String,
+        val order: String,
         val name: String,
         val processingStatus: String,
         val arrowVisibility: Boolean

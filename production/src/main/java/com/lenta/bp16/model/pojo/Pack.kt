@@ -8,7 +8,7 @@ data class Pack(
         val materialOsn: String, // sap-код полуфабриката
         val materialDef: String = "", // sap-код полуфабриката из которого произведен брак
         val code: String,
-        val orderNumber: String,
+        val order: String,
         val quantity: Double,
         val isDefOut: Boolean = false,
         val category: DictElement? = null,

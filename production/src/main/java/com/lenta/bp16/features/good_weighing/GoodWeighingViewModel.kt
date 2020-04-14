@@ -96,7 +96,9 @@ class GoodWeighingViewModel : CoreViewModel() {
     }
 
     val planned by lazy {
-        "${raw.value!!.planned.dropZeros()} ${good.value!!.units.name}"
+        raw.map { raw ->
+            "${raw?.planned.dropZeros()} ${good.value!!.units.name}"
+        }
     }
 
     val defectVisibility by lazy {
@@ -126,7 +128,7 @@ class GoodWeighingViewModel : CoreViewModel() {
                             parent = taskManager.currentTask.value!!.taskInfo.number,
                             deviceIp = deviceIp.value ?: "Not found!",
                             material = good.value!!.material,
-                            orderNumber = raw.value!!.orderNumber,
+                            order = raw.value!!.order,
                             quantity = total.value!!
                     )
             ).also {
@@ -138,7 +140,7 @@ class GoodWeighingViewModel : CoreViewModel() {
                                     material = it.material,
                                     materialOsn = raw.value!!.materialOsn,
                                     code = packCodeResult.packCode,
-                                    orderNumber = raw.value!!.orderNumber,
+                                    order = raw.value!!.order,
                                     quantity = total.value!!
                             )
                     )
@@ -174,7 +176,7 @@ class GoodWeighingViewModel : CoreViewModel() {
                             codeCont = packCodeResult.packCode,
                             storCond = "${packCodeResult.dataLabel.storCondTime} ч",
                             planAufFinish = SimpleDateFormat(Constants.DATE_FORMAT_dd_mm_yyyy_hh_mm, Locale.getDefault()).format(planAufFinish.time),
-                            aufnr = raw.value!!.orderNumber,
+                            aufnr = raw.value!!.order,
                             nameOsn = raw.value!!.name,
                             dateExpir = dateExpir?.let { SimpleDateFormat(Constants.DATE_FORMAT_dd_mm_yyyy_hh_mm, Locale.getDefault()).format(it.time) }
                                     ?: "",

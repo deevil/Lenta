@@ -92,7 +92,7 @@ class GoodPackagingViewModel : CoreViewModel() {
                             taskType = taskManager.getTaskTypeCode(),
                             deviceIp = deviceIp.value ?: "Not found!",
                             material = good.value!!.material,
-                            orderNumber = raw.value!!.orderNumber,
+                            order = raw.value!!.order,
                             quantity = entered.value!!,
                             taskNumber = taskManager.currentTask.value!!.taskInfo.number
                     )
@@ -106,7 +106,7 @@ class GoodPackagingViewModel : CoreViewModel() {
                                         material = it.material,
                                         materialOsn = raw.value!!.materialOsn,
                                         code = "",
-                                        orderNumber = raw.value!!.orderNumber,
+                                        order = raw.value!!.order,
                                         quantity = entered.value!!
                                 )
                         )
