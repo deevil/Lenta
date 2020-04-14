@@ -95,7 +95,7 @@ class PackGoodListViewModel : CoreViewModel() {
     }
 
     fun onClickComplete() {
-        navigator.showConfirmNoSuchItemLeft(taskManager.taskType.abbreviation) {
+        navigator.showConfirmNoRawItem(taskManager.taskType.abbreviation) {
             viewModelScope.launch {
                 navigator.showProgressLoadingData()
 
