@@ -232,11 +232,11 @@ class DefectInfoViewModel : CoreViewModel() {
                     }
 
                     val barCodeText = "(01)${getFormattedEan(packCodeResult.dataLabel.ean, total.value!!)}" +
-                            "(3103)${getFormattedWeight(weightField.value!!)}" +
-                            "(8008)${SimpleDateFormat(Constants.DATE_FORMAT_yyMMddhhmm, Locale.getDefault()).format(productTime.time)}" +
-                            "(10)${raw.value!!.orderNumber}" +
-                            "(7003)${dateExpir?.let { SimpleDateFormat(Constants.DATE_FORMAT_yyMMddhhmm, Locale.getDefault()).format(it.time) }}" +
-                            "(91)0${packCodeResult.packCode}"
+                            //"(3103)${getFormattedWeight(weightField.value!!)}" +
+                            //"(8008)${SimpleDateFormat(Constants.DATE_FORMAT_yyMMddhhmm, Locale.getDefault()).format(productTime.time)}" +
+                            //"(10)${raw.value!!.orderNumber}" +
+                            //"(7003)${dateExpir?.let { SimpleDateFormat(Constants.DATE_FORMAT_yyMMddhhmm, Locale.getDefault()).format(it.time) }}" +
+                            "(91)${packCodeResult.packCode}"
 
                     val barcode = barCodeText.replace("(", "").replace(")", "")
 
