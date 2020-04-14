@@ -8,7 +8,7 @@ data class Pack(
         val materialOsn: String, // sap-код полуфабриката
         val materialDef: String = "", // sap-код полуфабриката из которого произведен брак
         val code: String,
-        val orderNumber: String,
+        val order: String,
         val quantity: Double,
         val isDefOut: Boolean = false,
         val category: DictElement? = null,
@@ -25,7 +25,11 @@ data class Pack(
     }
 
     fun isNotDefect(): Boolean {
-        return category == null && defect == null
+        return materialDef.isEmpty()
+    }
+
+    fun isDefect(): Boolean {
+        return materialDef.isNotEmpty()
     }
 
 }
