@@ -831,7 +831,7 @@ class ScreenNavigator(
     override fun openShipmentAdjustmentConfirmationDialog(submergedGE: String, nextCallbackFunc: () -> Unit) {
         runOrPostpone {
             getFragmentStack()?.push(AlertFragment.create(
-                    message = submergedGE,
+                    message = context.getString(R.string.dialog_submerged_ge, submergedGE),
                     codeConfirmForRight = backFragmentResultHelper.setFuncForResult(nextCallbackFunc),
                     pageNumber = "95",
                     rightButtonDecorationInfo = ButtonDecorationInfo.nextAlternate))

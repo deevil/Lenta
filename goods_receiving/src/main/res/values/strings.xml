@@ -259,4 +259,5 @@
     <string name="quantity_all">Общее количество, всего</string>
     <string name="plan">План</string>
     <string name="alert_unable_to_save_negative_quantity">Невозможно сохранить отрицательное количество</string>
+    <string name="dialog_submerged_ge">Были погружены %1$s ГЕ. На непогруженные ГЕ будет создано новое задание на отгрузку.</string>
 </resources>
