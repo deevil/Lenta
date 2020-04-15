@@ -57,7 +57,7 @@ class EditingInvoiceViewModel : CoreViewModel(), PageSelectionListener, OnOkInSo
     val requestFocusToNumberField: MutableLiveData<Boolean> = MutableLiveData()
 
     val editingAvailable: Boolean by lazy {
-        !(taskManager.getReceivingTask()?.taskDescription?.isAlco == true || taskManager.getReceivingTask()?.taskDescription?.isEDO == true)
+        !(taskManager.getReceivingTask()?.taskDescription?.isAlco == true || taskManager.getReceivingTask()?.taskRepository?.getReviseDocuments()?.getInvoiceInfo()?.isEDO == true)
     }
 
     val listTotal by lazy {

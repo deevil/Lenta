@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:tools="http://schemas.android.com/tools">
+    xmlns:tools="http://schemas.android.com/tools">
 
     <data>
 
@@ -24,12 +24,12 @@
 
             <LinearLayout
                 style="@style/LinearCellStyle"
-                android:layout_weight="@integer/sku_plan_quantity_column_1">
+                android:layout_weight="@integer/sku_arrived_remain_column_1">
 
                 <TextView
                     android:id="@+id/tv_item_number"
                     style="@style/CellTextStyle"
-                    android:gravity="center"
+                    android:layout_width="wrap_content"
                     android:text="@{item.position}"
                     tools:text="1" />
 
@@ -39,17 +39,17 @@
 
             <LinearLayout
                 style="@style/LinearCellStyle"
-                android:layout_weight="@integer/sku_plan_quantity_column_2"
+                android:layout_weight="@integer/sku_arrived_remain_column_2"
                 android:orientation="horizontal">
 
                 <TextView
                     style="@style/CellTextStyle"
                     android:layout_width="0dp"
-                    android:layout_marginStart="8dp"
+                    android:layout_marginEnd="0dp"
                     android:layout_weight="1"
                     android:maxLines="2"
                     android:text="@{item.name}"
-                    tools:text="000002 Щука замороженная" />
+                    tools:text="000001 Форель замороженная" />
 
                 <ImageView
                     android:layout_width="wrap_content"
@@ -65,21 +65,28 @@
 
             <LinearLayout
                 style="@style/LinearCellStyle"
-                android:layout_weight="@integer/sku_plan_quantity_column_3">
+                android:layout_weight="@integer/sku_arrived_remain_column_3"
+                android:orientation="horizontal">
 
-                <FrameLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent">
+                <TextView
+                    style="@style/CellTextStyle"
+                    android:gravity="center"
+                    android:text="@{item.arrived}"
+                    tools:text="60 кг" />
 
-                    <TextView
-                        style="@style/CellTextStyle"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:text="@{item.arrived}"
-                        tools:text="10 кг" />
+            </LinearLayout>
 
-                </FrameLayout>
+            <View style="@style/VerticalDivider" />
+
+            <LinearLayout
+                style="@style/LinearCellStyle"
+                android:layout_weight="@integer/sku_arrived_remain_column_4">
+
+                <TextView
+                    style="@style/CellTextStyle"
+                    android:gravity="center"
+                    android:text="@{item.remain}"
+                    tools:text="20 кг" />
 
             </LinearLayout>
 

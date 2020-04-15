@@ -29,19 +29,17 @@
         <com.lenta.shared.view.ClickableSpinner
             android:id="@+id/spin_market"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="34dp"
             android:layout_centerHorizontal="true"
             android:layout_marginStart="16dp"
             android:layout_marginEnd="16dp"
-            android:paddingTop="8dp"
-            android:paddingBottom="8dp"
             app:items="@{vm.marketsNames}"
-            app:position="@{vm.selectedPosition}"
-            app:onPositionClickListener="@{vm}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            app:onPositionClickListener="@{vm}"
+            app:position="@{vm.selectedPosition}" />
 
         <TextView
             android:id="@+id/tv_address"

@@ -56,10 +56,12 @@ class TransportConditionsReviseFragment : CoreFragment<FragmentTransportConditio
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
         bottomToolbarUiModel.cleanAll()
         bottomToolbarUiModel.uiModelButton1.show(ButtonDecorationInfo.back)
-        if (vm.typeTask == TaskType.ReceptionDistributionCenter || vm.typeTask == TaskType.OwnProduction || vm.typeTask == TaskType.ShipmentRC) {
+        if (vm.typeTask == TaskType.ReceptionDistributionCenter || vm.typeTask == TaskType.OwnProduction) {
             bottomToolbarUiModel.uiModelButton2.show(ButtonDecorationInfo.breaking)
         } else {
-            bottomToolbarUiModel.uiModelButton2.show(ButtonDecorationInfo.refusal)
+            if (vm.typeTask != TaskType.ShipmentRC) { //https://trello.com/c/vMdcpNPY
+                bottomToolbarUiModel.uiModelButton2.show(ButtonDecorationInfo.refusal)
+            }
         }
         if (vm.isTaskPRCorPSPStatusUnloading.value == true) {
             bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.next)

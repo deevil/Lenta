@@ -134,9 +134,9 @@ class ScreenNavigator(
         }
     }
 
-    override fun openGoodsListScreen() {
+    override fun openGoodsListScreen(taskType: TaskType) {
         runOrPostpone {
-            getFragmentStack()?.push(GoodsListFragment())
+            getFragmentStack()?.push(GoodsListFragment.create(taskType))
         }
     }
 
@@ -695,30 +695,30 @@ class ScreenNavigator(
         }
     }
 
-    override fun openNewCargoUnitAnotherTransportationDialog(cargoUnitNumber: String, nextCallbackFunc: () -> Unit) {
+    override fun openNewCargoUnitAnotherTransportationDialog(cargoUnitNumber: String, marketNumber: String, nextCallbackFunc: () -> Unit) {
         runOrPostpone {
             getFragmentStack()?.push(AlertFragment.create(
-                    message = context.getString(R.string.dialog_new_cargo_unit_another_transportation, cargoUnitNumber),
+                    message = context.getString(R.string.dialog_new_cargo_unit_another_transportation, cargoUnitNumber, marketNumber),
                     codeConfirmForRight = backFragmentResultHelper.setFuncForResult(nextCallbackFunc),
                     pageNumber = "95",
                     rightButtonDecorationInfo = ButtonDecorationInfo.nextAlternate))
         }
     }
 
-    override fun openNewCargoUnitCurrentTransportationDialog(cargoUnitNumber: String, nextCallbackFunc: () -> Unit) {
+    override fun openNewCargoUnitCurrentTransportationDialog(cargoUnitNumber: String, marketNumber: String, nextCallbackFunc: () -> Unit) {
         runOrPostpone {
             getFragmentStack()?.push(AlertFragment.create(
-                    message = context.getString(R.string.dialog_new_cargo_unit_current_transportation, cargoUnitNumber),
+                    message = context.getString(R.string.dialog_new_cargo_unit_current_transportation, cargoUnitNumber, marketNumber),
                     codeConfirmForRight = backFragmentResultHelper.setFuncForResult(nextCallbackFunc),
                     pageNumber = "95",
                     rightButtonDecorationInfo = ButtonDecorationInfo.nextAlternate))
         }
     }
 
-    override fun openAlertNewCargoUnitScreen(cargoUnitNumber: String) {
+    override fun openAlertNewCargoUnitScreen(cargoUnitNumber: String, marketNumber: String) {
         runOrPostpone {
             getFragmentStack()?.push(AlertFragment.create(
-                    message = context.getString(R.string.alert_new_cargo_unit, cargoUnitNumber),
+                    message = context.getString(R.string.alert_new_cargo_unit, cargoUnitNumber, marketNumber),
                     iconRes = R.drawable.ic_info_pink_80dp,
                     textColor = ContextCompat.getColor(context, R.color.color_text_dialogWarning),
                     pageNumber = "97")
@@ -1012,10 +1012,10 @@ class ScreenNavigator(
         }
     }
 
-    override fun openShelfLifeExpiresDialog(noCallbackFunc: () -> Unit, yesCallbackFunc: () -> Unit, expiresThrough: String, shelfLife: String) {
+    override fun openShelfLifeExpiresDialog(noCallbackFunc: () -> Unit, yesCallbackFunc: () -> Unit, expiresThrough: String) {
         runOrPostpone {
             getFragmentStack()?.push(AlertFragment.create(
-                    message = context.getString(R.string.the_shelf_life_expires, expiresThrough, shelfLife),
+                    message = context.getString(R.string.the_shelf_life_expires, expiresThrough),
                     codeConfirmForLeft = backFragmentResultHelper.setFuncForResult(noCallbackFunc),
                     codeConfirmForRight = backFragmentResultHelper.setFuncForResult(yesCallbackFunc),
                     iconRes = R.drawable.ic_question_80dp,
@@ -1060,6 +1060,18 @@ class ScreenNavigator(
         }
     }
 
+    override fun openAlertUnableSaveNegativeQuantity() {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    message = context.getString(R.string.alert_unable_to_save_negative_quantity),
+                    iconRes = R.drawable.ic_info_pink_80dp,
+                    textColor = ContextCompat.getColor(context, R.color.color_text_dialogWarning),
+                    pageNumber = "97",
+                    timeAutoExitInMillis = 3000)
+            )
+        }
+    }
+
     private fun getFragmentStack() = foregroundActivityProvider.getActivity()?.fragmentStack
 }
 
@@ -1074,7 +1086,7 @@ interface IScreenNavigator : ICoreNavigator {
     fun openSelectionPersonnelNumberScreen()
     fun openAlertNotPermissions(message: String)
     fun openTaskSearchScreen(loadingMode: TaskListLoadingMode)
-    fun openGoodsListScreen()
+    fun openGoodsListScreen(taskType: TaskType)
     fun openTaskCardScreen(mode: TaskCardMode, taskType: TaskType)
     fun openTaskCardLoadingScreen(mode: TaskCardMode, taskNumber: String, loadFullData: Boolean)
     fun openConfirmationUnlock(callbackFunc: () -> Unit)
@@ -1145,9 +1157,9 @@ interface IScreenNavigator : ICoreNavigator {
     fun openAlertSealDamageScreen()
     fun openCargoUnitCardScreen(cargoUnitInfo: TaskCargoUnitInfo, isSurplus: Boolean? = false)
     fun openControlDeliveryCargoUnitsScreen()
-    fun openNewCargoUnitAnotherTransportationDialog(cargoUnitNumber: String, nextCallbackFunc: () -> Unit)
-    fun openNewCargoUnitCurrentTransportationDialog(cargoUnitNumber: String, nextCallbackFunc: () -> Unit)
-    fun openAlertNewCargoUnitScreen(cargoUnitNumber: String)
+    fun openNewCargoUnitAnotherTransportationDialog(cargoUnitNumber: String, marketNumber: String, nextCallbackFunc: () -> Unit)
+    fun openNewCargoUnitCurrentTransportationDialog(cargoUnitNumber: String, marketNumber: String, nextCallbackFunc: () -> Unit)
+    fun openAlertNewCargoUnitScreen(cargoUnitNumber: String, marketNumber: String)
     fun openSkipRecountScreen()
     fun openAlertHaveIsSpecialGoodsScreen()
     fun openAlertNoIsSpecialGoodsScreen()
@@ -1181,9 +1193,10 @@ interface IScreenNavigator : ICoreNavigator {
     fun openExceededPlannedQuantityBatchInProcessingUnitDialog(nextCallbackFunc: () -> Unit)
     fun openAlertBothSurplusAndUnderloadScreen()
     fun openAlertCountMoreCargoUnitDialog(yesCallbackFunc: () -> Unit)
-    fun openShelfLifeExpiresDialog(noCallbackFunc: () -> Unit, yesCallbackFunc: () -> Unit, expiresThrough: String, shelfLife: String)
+    fun openShelfLifeExpiresDialog(noCallbackFunc: () -> Unit, yesCallbackFunc: () -> Unit, expiresThrough: String)
     fun openSupplyResultsActDisagreementTransportationDialog(transportationNumber: String, docCallbackFunc: () -> Unit, nextCallbackFunc: () -> Unit)
     fun openExciseAlcoBoxAccInfoScreen(productInfo: TaskProductInfo)
     fun openAlertUnknownGoodsTypeScreen()
     fun openCreateInboundDeliveryDialog(yesCallbackFunc: () -> Unit)
+    fun openAlertUnableSaveNegativeQuantity()
 }

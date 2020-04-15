@@ -95,7 +95,11 @@ class DatabaseRepository @Inject constructor(
 
     override suspend fun getDefect(defectCode: String): DictElement? {
         return withContext(Dispatchers.IO) {
-            return@withContext getDefectList().find { it.code == defectCode }
+            var formattedCode = defectCode
+            while (formattedCode.startsWith("0")) {
+                formattedCode = formattedCode.substring(1)
+            }
+            return@withContext getDefectList().find { it.code == formattedCode }
         }
     }
 

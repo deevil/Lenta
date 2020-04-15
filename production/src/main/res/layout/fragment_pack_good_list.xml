@@ -31,7 +31,7 @@
 
                 <LinearLayout
                     style="@style/LinearCellStyle"
-                    android:layout_weight="@integer/sku_plan_quantity_column_1">
+                    android:layout_weight="@integer/sku_arrived_remain_column_1">
 
                     <TextView
                         style="@style/FirstRowTextStyle"
@@ -42,7 +42,7 @@
 
                 <LinearLayout
                     style="@style/LinearCellStyle"
-                    android:layout_weight="@integer/sku_plan_quantity_column_2">
+                    android:layout_weight="@integer/sku_arrived_remain_column_2">
 
                     <TextView
                         style="@style/FirstRowTextStyle"
@@ -52,11 +52,21 @@
 
                 <LinearLayout
                     style="@style/LinearCellStyle"
-                    android:layout_weight="@integer/sku_plan_quantity_column_3">
+                    android:layout_weight="@integer/sku_arrived_remain_column_3">
 
                     <TextView
                         style="@style/FirstRowTextStyle"
-                        android:text="@string/plan_quantity" />
+                        android:text="@string/arrived" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    style="@style/LinearCellStyle"
+                    android:layout_weight="@integer/sku_arrived_remain_column_4">
+
+                    <TextView
+                        style="@style/FirstRowTextStyle"
+                        android:text="@string/remain" />
 
                 </LinearLayout>
 

@@ -109,6 +109,7 @@
     <string name="shipment_date">Дата отгрузки</string>
     <string name="processed">Обработанные</string>
     <string name="not_processed">Не обработанные</string>
+    <string name="to_processing">К обработке</string>
     <string name="discrepancies_found">Обнаружены расхождения</string>
     <string name="select_type_code_description">Введено 12 знаков. Какой код вы ввели?</string>
     <string name="goods_not_in_order">Товара нет в заказе</string>
@@ -192,9 +193,9 @@
     <string name="reduction_cargo_unit">ГЕ</string>
     <string name="reduction_eo">ЕО</string>
     <string name="alert_seal_damage">Завершите пересчёт всех ГЕ из вскрытой транспортировки. Все расхождения будут рассматриваться как транспортный брак. Водитель ТЭК должен подтвердить расхождения.</string>
-    <string name="dialog_new_cargo_unit_another_transportation">ГЕ-%1$s предназначена для ТК и в данной транспортировке не числится. Добавить внеплановую ГЕ как излишек?</string>
-    <string name="dialog_new_cargo_unit_current_transportation">ГЕ-%1$s предназначена для ТК, находящийся далее по маршруту следования машины. Добавить внеплановую ГЕ как излишек?</string>
-    <string name="alert_new_cargo_unit">ГЕ-%1$s предназначена для ТК, находящийся далее по маршруту</string>
+    <string name="dialog_new_cargo_unit_another_transportation">ГЕ-%1$s предназначена для ТК%2$s и в данной транспортировке не числится. Добавить внеплановую ГЕ как излишек?</string>
+    <string name="dialog_new_cargo_unit_current_transportation">ГЕ-%1$s предназначена для ТК%2$s, находящийся далее по маршруту следования машины. Добавить внеплановую ГЕ как излишек?</string>
+    <string name="alert_new_cargo_unit">ГЕ-%1$s предназначена для ТК%2$s, находящийся далее по маршруту</string>
     <string name="skip_recount_header">Укажите причину и подтвердите пропуск пересчёта данной ГЕ"</string>
     <string name="skip_recount">Пропустить пересчёт</string>
     <string name="skipping_recount">Пропуск пересчёта</string>
@@ -249,11 +250,13 @@
     <string name="exceeded_planned_quantity_batch_in_processing_unit_dialog">Превышено плановое количество в ЕО. Принять количество и пометить как излишек? Укажите партионные признаки</string>
     <string name="alert_both_surplus_and_underload">Не допускается одновременно указывать Излишек и Недогруз</string>
     <string name="alert_count_larger_cargo_unit">Введенное кол-во больше чем в ГЕ. Принять такое кол-во и пометить как \"больше чем в ТН\"?</string>
-    <string name="the_shelf_life_expires">Срок годности товара истекает через %1$s дней (%2$s - кол-во дней СГ). Принять такой товар?</string>
+    <string name="the_shelf_life_expires">Срок годности товара истекает через %1$s дней. Принять такой товар?</string>
     <string name="msg_act_disagreement_transport_marriage">Акт разногласий по транспортировке №%1$s Был успешно сформирован и отправлен на печать</string>
     <string name="unknown_goods_type">Неизвестный тип товара</string>
     <string name="create_inbound_delivery_dialog">Входящая поставка отсутствует. Создать входящую поставку на открытое количество?</string>
     <string name="quantity_st">Количество, шт</string>
     <string name="quantity_kg">Количество, кг</string>
     <string name="quantity_all">Общее количество, всего</string>
+    <string name="plan">План</string>
+    <string name="alert_unable_to_save_negative_quantity">Невозможно сохранить отрицательное количество</string>
 </resources>

@@ -14,7 +14,8 @@ data class TaskDescription(val currentStatus: TaskStatus,   //Код текущ�
                       val nextStatusText: String,      //Следующий статус (NEXT_ST_TEXT)
                       var nextStatusDate: String,      //Дата следуюшего статуса, изначальна равна текущей дате, может быть изменена пользователем
                       var nextStatusTime: String,      //Время следуюшего статуса, изначальна равно текущму времени, может быть изменено пользователем
-                      val ttnNumber: String,           //Номер ТН\ТТН (ZTTN)
+                      val tnNumber: String,           //Номер ТН (TN_NUM)
+                      val ttnNumber: String,           //Номер ТТН (ZTTN)
                       val orderNumber: String,         //Номер заказа (EBELN)
                       val deliveryNumber: String,      //Номер поставки\Транспортировки (VBELN)
                       val shipmentOrder: String,           //привозит данные для поля "Заказ" (ОРЦ, https://trello.com/c/7pJ5ckNF)
@@ -58,6 +59,7 @@ data class TaskDescription(val currentStatus: TaskStatus,   //Код текущ�
                     currentStatusDate = restData.currentStatusDate,
                     currentStatusTime = restData.currentStatusTime,
                     nextStatusText = restData.nextStatusText,
+                    tnNumber = restData.tnNumber,
                     ttnNumber = restData.ttnNumber,
                     orderNumber = restData.orderNumber,
                     deliveryNumber = restData.deliveryNumber ?: "",
@@ -111,6 +113,8 @@ data class TaskDescriptionRestInfo(
         val currentStatusTime: String,
         @SerializedName("NEXT_ST_TEXT")
         val nextStatusText: String,
+        @SerializedName("TN_NUM")
+        val tnNumber: String,
         @SerializedName("ZTTN")
         val ttnNumber: String,
         @SerializedName("EBELN")

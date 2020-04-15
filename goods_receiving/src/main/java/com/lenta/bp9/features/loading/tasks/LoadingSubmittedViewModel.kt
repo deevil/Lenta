@@ -57,9 +57,7 @@ class LoadingSubmittedViewModel : CoreLoadingViewModel() {
         val notifications = result.notifications.map { TaskNotification.from(it) }
         taskManager.getReceivingTask()?.taskRepository?.getNotifications()?.updateWithNotifications(general = notifications, document = null, product = null, condition = null)
         taskManager.updateTaskDescription(TaskDescription.from(result.taskDescription))
-        screenNavigator.openMainMenuScreen()
-        screenNavigator.openTaskListScreen()
-        screenNavigator.openTaskCardScreen(TaskCardMode.Full, taskManager.getReceivingTask()?.taskHeader?.taskType ?: TaskType.None)
+        screenNavigator.openTaskListLoadingScreen(TaskListLoadingMode.PGE)
     }
 
     override fun clean() {

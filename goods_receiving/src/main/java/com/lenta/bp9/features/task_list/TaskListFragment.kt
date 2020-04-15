@@ -19,13 +19,19 @@ import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListener
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
+import com.lenta.shared.scan.OnScanResultListener
 import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.databinding.*
 import com.lenta.shared.utilities.extentions.connectLiveData
 import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.utilities.extentions.provideViewModel
 
-class TaskListFragment : CoreFragment<FragmentTaskListBinding, TaskListViewModel>(), ToolbarButtonsClickListener, OnKeyDownListener, ViewPagerSettings, PageSelectionListener {
+class TaskListFragment : CoreFragment<FragmentTaskListBinding, TaskListViewModel>(),
+        ToolbarButtonsClickListener,
+        OnKeyDownListener,
+        ViewPagerSettings,
+        PageSelectionListener,
+        OnScanResultListener {
 
     private var toProcessRecyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
     private var searchRecyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
@@ -253,5 +259,9 @@ class TaskListFragment : CoreFragment<FragmentTaskListBinding, TaskListViewModel
                     postponedRecyclerViewKeyHandler = rvKeyHandler
                     return layoutBinding.root
                 }
+    }
+
+    override fun onScanResult(data: String) {
+        vm.onScanResult(data)
     }
 }
