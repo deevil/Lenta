@@ -112,7 +112,7 @@ class TaskCompositionViewModel : CoreViewModel(), PageSelectionListener, OnOkInS
             when (page) {
                 0 -> {
                     manager.searchNumber = goods.value!![position].material
-                    manager.searchFromList = true
+                    manager.openExistGood = true
                     navigator.openGoodInfoCreateScreen()
                 }
                 1 -> {
@@ -128,7 +128,7 @@ class TaskCompositionViewModel : CoreViewModel(), PageSelectionListener, OnOkInS
         number.length.let { length ->
             if (length >= Constants.SAP_6) {
                 manager.searchNumber = number
-                manager.searchFromList = true
+                manager.openExistGood = true
                 numberField.value = ""
                 navigator.openGoodInfoCreateScreen()
             }

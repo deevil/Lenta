@@ -306,8 +306,8 @@ class GoodInfoCreateViewModel : CoreViewModel() {
                         isExistUnsavedData = true
                     } else {
                         navigator.showNotMatchTaskSettingsAddingNotPossible {
-                            if (manager.searchFromList) {
-                                manager.searchFromList = false
+                            if (manager.openExistGood) {
+                                manager.openExistGood = false
                                 manager.searchNumber = ""
                                 navigator.goBack()
                                 navigator.goBack()
@@ -355,7 +355,7 @@ class GoodInfoCreateViewModel : CoreViewModel() {
         if (applyEnabled.value!! && number.length >= Constants.SAP_6) {
             saveGoodInTask()
 
-            manager.searchFromList = false
+            manager.openExistGood = false
             manager.searchNumber = number
             checkSearchNumber(number)
         }
@@ -397,7 +397,7 @@ class GoodInfoCreateViewModel : CoreViewModel() {
     fun onBackPressed() {
         if (isExistUnsavedData) {
             navigator.showUnsavedDataWillBeLost {
-                manager.searchFromList = false
+                manager.openExistGood = false
                 manager.searchNumber = ""
                 navigator.goBack()
             }

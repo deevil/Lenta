@@ -1,4 +1,4 @@
-package com.lenta.bp12.features.work_with_task.task_card
+package com.lenta.bp12.features.open_task.task_card
 
 import android.os.Bundle
 import android.view.LayoutInflater

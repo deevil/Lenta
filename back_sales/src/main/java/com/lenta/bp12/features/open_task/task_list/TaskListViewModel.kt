@@ -1,4 +1,4 @@
-package com.lenta.bp12.features.work_with_task.task_list
+package com.lenta.bp12.features.open_task.task_list
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope

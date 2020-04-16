@@ -78,7 +78,7 @@ class BasketGoodListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
         number.length.let { length ->
             if (length >= Constants.SAP_6) {
                 manager.searchNumber = number
-                manager.searchFromList = true
+                manager.openExistGood = true
                 navigator.goBack()
                 navigator.openGoodInfoCreateScreen()
             }
@@ -87,7 +87,7 @@ class BasketGoodListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
 
     fun onClickItemPosition(position: Int) {
         manager.searchNumber = goods.value!![position].material
-        manager.searchFromList = true
+        manager.openExistGood = true
         navigator.openGoodInfoCreateScreen()
     }
 

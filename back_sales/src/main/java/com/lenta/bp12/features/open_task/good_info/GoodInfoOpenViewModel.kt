@@ -1,10 +1,9 @@
-package com.lenta.bp12.features.work_with_task.good_info
+package com.lenta.bp12.features.open_task.good_info
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.lenta.bp12.model.GoodKind
 import com.lenta.bp12.model.ITaskManager
-import com.lenta.bp12.model.pojo.Basket
 import com.lenta.bp12.platform.navigation.IScreenNavigator
 import com.lenta.bp12.request.ExciseInfoNetRequest
 import com.lenta.bp12.request.ExciseInfoParams
@@ -17,7 +16,6 @@ import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.platform.constants.Constants
 import com.lenta.shared.utilities.Logg
-import com.lenta.shared.utilities.extentions.combineLatest
 import com.lenta.shared.utilities.extentions.dropZeros
 import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.utilities.extentions.sumWith
@@ -49,6 +47,10 @@ class GoodInfoOpenViewModel : CoreViewModel() {
 
     val good by lazy {
         manager.currentGood
+    }
+
+    val position by lazy {
+        manager.currentPosition
     }
 
     val title by lazy {
@@ -108,36 +110,7 @@ class GoodInfoOpenViewModel : CoreViewModel() {
         }
     }
 
-    private val basket by lazy {
-        good.combineLatest(providerPosition).map {
-            it?.first?.let { good ->
-                task.value?.let { task ->
-                    task.baskets.find {basket ->
-                        basket.section == good.section && basket.type == good.type && basket.control == good.control && basket.provider == getProvider()
-                    }
-                }
-            }
-        }
-    }
-
-    val basketNumber by lazy {
-        basket.map { basket ->
-            val number = task.value?.baskets?.indexOf(basket) ?: -1
-            if (number >= 0) "${number + 1}" else ""
-        }
-    }
-
-    val basketQuantity by lazy {
-        quantity.combineLatest(basket).map {
-            it?.first?.let { quantity ->
-                "${task.value?.getQuantityByBasket(basket.value).sumWith(quantity.toDoubleOrNull() ?: 0.0).dropZeros()} ${good.value?.units?.name}"
-            }
-        }
-    }
-
     val totalTitle = MutableLiveData("Итого")
-
-    val basketTitle = MutableLiveData("По корзине")
 
     private val providers by lazy {
         good.map { good ->
@@ -242,7 +215,13 @@ class GoodInfoOpenViewModel : CoreViewModel() {
 
     init {
         viewModelScope.launch {
-            checkSearchNumber(manager.searchNumber)
+            if (good.value == null) {
+                checkSearchNumber(manager.searchNumber)
+            }
+
+            if (position.value != null) {
+
+            }
         }
     }
 
@@ -306,14 +285,16 @@ class GoodInfoOpenViewModel : CoreViewModel() {
                         isExistUnsavedData = true
                     } else {
                         navigator.showNotMatchTaskSettingsAddingNotPossible {
-                            if (manager.searchFromList) {
-                                manager.searchFromList = false
+                            navigator.goBack()
+
+                            /*if (manager.searchFromList) {
+                                manager.openFromList = false
                                 manager.searchNumber = ""
                                 navigator.goBack()
                                 navigator.goBack()
                             } else {
                                 navigator.goBack()
-                            }
+                            }*/
                         }
                     }
                 }
@@ -355,7 +336,7 @@ class GoodInfoOpenViewModel : CoreViewModel() {
         if (applyEnabled.value!! && number.length >= Constants.SAP_6) {
             saveGoodInTask()
 
-            manager.searchFromList = false
+            //manager.openFromList = false
             manager.searchNumber = number
             checkSearchNumber(number)
         }
@@ -368,7 +349,7 @@ class GoodInfoOpenViewModel : CoreViewModel() {
 
             manager.updateCurrentGood(good)
 
-            if (basket.value == null) {
+            /*if (basket.value == null) {
                 manager.addBasket(Basket(
                         section = good.section,
                         type = good.type,
@@ -377,7 +358,7 @@ class GoodInfoOpenViewModel : CoreViewModel() {
                 ))
             } else {
                 manager.updateCurrentBasket(basket.value)
-            }
+            }*/
         }
 
         manager.addCurrentGoodInTask()
@@ -397,7 +378,7 @@ class GoodInfoOpenViewModel : CoreViewModel() {
     fun onBackPressed() {
         if (isExistUnsavedData) {
             navigator.showUnsavedDataWillBeLost {
-                manager.searchFromList = false
+                //manager.openFromList = false
                 manager.searchNumber = ""
                 navigator.goBack()
             }

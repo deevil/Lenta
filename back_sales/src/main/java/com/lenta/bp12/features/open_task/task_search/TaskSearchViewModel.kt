@@ -1,4 +1,4 @@
-package com.lenta.bp12.features.work_with_task.task_search
+package com.lenta.bp12.features.open_task.task_search
 
 import androidx.lifecycle.MutableLiveData
 import com.lenta.bp12.platform.navigation.IScreenNavigator

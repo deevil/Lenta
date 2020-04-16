@@ -1,4 +1,4 @@
-package com.lenta.bp12.features.work_with_task.task_card
+package com.lenta.bp12.features.open_task.task_card
 
 import androidx.lifecycle.MutableLiveData
 import com.lenta.bp12.model.ControlType

@@ -1,4 +1,4 @@
-package com.lenta.bp12.features.work_with_task.task_list
+package com.lenta.bp12.features.open_task.task_list
 
 import com.lenta.bp12.R
 import com.lenta.bp12.databinding.FragmentTaskListBinding

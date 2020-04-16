@@ -15,11 +15,11 @@ import com.lenta.bp12.features.loading.fast.FastLoadingViewModel
 import com.lenta.bp12.features.main_menu.MainMenuViewModel
 import com.lenta.bp12.features.save_data.SaveDataViewModel
 import com.lenta.bp12.features.select_market.SelectMarketViewModel
-import com.lenta.bp12.features.work_with_task.good_info.GoodInfoOpenViewModel
-import com.lenta.bp12.features.work_with_task.good_list.GoodListViewModel
-import com.lenta.bp12.features.work_with_task.task_card.TaskCardOpenViewModel
-import com.lenta.bp12.features.work_with_task.task_list.TaskListViewModel
-import com.lenta.bp12.features.work_with_task.task_search.TaskSearchViewModel
+import com.lenta.bp12.features.open_task.good_info.GoodInfoOpenViewModel
+import com.lenta.bp12.features.open_task.good_list.GoodListViewModel
+import com.lenta.bp12.features.open_task.task_card.TaskCardOpenViewModel
+import com.lenta.bp12.features.open_task.task_list.TaskListViewModel
+import com.lenta.bp12.features.open_task.task_search.TaskSearchViewModel
 import com.lenta.bp12.main.MainActivity
 import com.lenta.bp12.main.MainViewModel
 import com.lenta.bp12.model.ITaskManager

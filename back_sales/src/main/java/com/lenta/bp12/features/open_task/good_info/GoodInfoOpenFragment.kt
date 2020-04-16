@@ -1,4 +1,4 @@
-package com.lenta.bp12.features.work_with_task.good_info
+package com.lenta.bp12.features.open_task.good_info
 
 import android.view.View
 import com.lenta.bp12.R

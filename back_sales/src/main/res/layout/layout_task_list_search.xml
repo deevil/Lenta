@@ -8,7 +8,7 @@
 
         <variable
             name="vm"
-            type="com.lenta.bp12.features.work_with_task.task_list.TaskListViewModel" />
+            type="com.lenta.bp12.features.open_task.task_list.TaskListViewModel" />
 
         <variable
             name="rvConfig"

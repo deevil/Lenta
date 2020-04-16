@@ -2,13 +2,13 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context=".features.work_with_task.good_info.GoodInfoOpenFragment">
+    tools:context=".features.open_task.good_info.GoodInfoOpenFragment">
 
     <data>
 
         <variable
             name="vm"
-            type="com.lenta.bp12.features.work_with_task.good_info.GoodInfoOpenViewModel" />
+            type="com.lenta.bp12.features.open_task.good_info.GoodInfoOpenViewModel" />
 
     </data>
 

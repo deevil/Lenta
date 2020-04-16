@@ -1,4 +1,4 @@
-package com.lenta.bp12.features.work_with_task.good_list
+package com.lenta.bp12.features.open_task.good_list
 
 import android.os.Bundle
 import android.view.LayoutInflater

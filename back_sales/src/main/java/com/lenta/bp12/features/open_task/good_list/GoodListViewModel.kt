@@ -1,4 +1,4 @@
-package com.lenta.bp12.features.work_with_task.good_list
+package com.lenta.bp12.features.open_task.good_list
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
@@ -73,7 +73,7 @@ class GoodListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
                             name = good.getNameWithMaterial(),
                             quantity = position.quantity,
                             material = good.material,
-                            provider = position.provider
+                            providerCode = position.provider?.code ?: ""
                     ))
                 }
             }
@@ -83,7 +83,7 @@ class GoodListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
                         position = "${index + 1}",
                         name = simpleItemGood.name,
                         material = simpleItemGood.material,
-                        provider = simpleItemGood.provider
+                        providerCode = simpleItemGood.providerCode
                 )
             }
         }
@@ -99,7 +99,7 @@ class GoodListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
                             name = good.getNameWithMaterial(),
                             quantity = position.quantity,
                             material = good.material,
-                            provider = position.provider
+                            providerCode = position.provider?.code ?: ""
                     ))
                 }
             }
@@ -110,7 +110,7 @@ class GoodListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
                         name = simpleItemGood.name,
                         quantity = simpleItemGood.quantity.dropZeros(),
                         material = simpleItemGood.material,
-                        provider = simpleItemGood.provider
+                        providerCode = simpleItemGood.providerCode
                 )
             }
         }
@@ -171,12 +171,16 @@ class GoodListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
         selectedPage.value?.let { page ->
             when (page) {
                 0 -> {
-                    manager.searchNumber = notProcessed.value!![position].material
-                    manager.searchFromList = true
-                    navigator.openGoodInfoOpenScreen()
+                    notProcessed.value?.get(position)?.let { position ->
+                        manager.prepareGoodAndPosition(position.material, position.providerCode)
+                        navigator.openGoodInfoOpenScreen()
+                    }
                 }
                 1 -> {
-
+                    processed.value?.get(position)?.let { position ->
+                        manager.prepareGoodAndPosition(position.material, position.providerCode)
+                        navigator.openGoodInfoOpenScreen()
+                    }
                 }
                 else -> throw IllegalArgumentException("Wrong pager position!")
             }
@@ -193,14 +197,14 @@ data class SimpleItemGood(
         val name: String,
         val quantity: Double,
         val material: String,
-        val provider: ProviderInfo?
+        val providerCode: String
 )
 
 data class ItemGoodNotProcessedUi(
         val position: String,
         val name: String,
         val material: String,
-        val provider: ProviderInfo?
+        val providerCode: String
 )
 
 data class ItemGoodProcessedUi(
@@ -208,5 +212,5 @@ data class ItemGoodProcessedUi(
         val name: String,
         val quantity: String,
         val material: String,
-        val provider: ProviderInfo?
+        val providerCode: String
 )

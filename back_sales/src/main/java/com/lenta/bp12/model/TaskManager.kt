@@ -23,7 +23,7 @@ class TaskManager @Inject constructor(
 
     override var searchNumber = ""
 
-    override var searchFromList = false
+    override var openExistGood = false
 
     override val tasks = MutableLiveData<List<Task>>(emptyList())
 
@@ -50,6 +50,10 @@ class TaskManager @Inject constructor(
 
     override fun updateCurrentBasket(basket: Basket?) {
         currentBasket.value = basket
+    }
+
+    override fun updateCurrentPosition(position: Position?) {
+        currentPosition.value = position
     }
 
     override suspend fun putInCurrentGood(goodInfo: GoodInfoResult) {
@@ -206,6 +210,17 @@ class TaskManager @Inject constructor(
         }
     }
 
+    override fun prepareGoodAndPosition(material: String, providerCode: String) {
+        findGoodByMaterial(material)?.let { good ->
+            //openExistGood = true
+            updateCurrentGood(good)
+
+            good.positions.find { it.provider?.code == providerCode }?.let { position ->
+                updateCurrentPosition(position)
+            }
+        }
+    }
+
 }
 
 
@@ -214,7 +229,7 @@ interface ITaskManager {
     var mode: Mode
 
     var searchNumber: String
-    var searchFromList: Boolean
+    var openExistGood: Boolean
 
     val tasks: MutableLiveData<List<Task>>
 
@@ -227,6 +242,7 @@ interface ITaskManager {
     fun updateCurrentTask(task: Task?)
     fun updateCurrentGood(good: Good?)
     fun updateCurrentBasket(basket: Basket?)
+    fun updateCurrentPosition(position: Position?)
 
     suspend fun putInCurrentGood(goodInfo: GoodInfoResult)
     fun addCurrentGoodInTask()
@@ -241,5 +257,6 @@ interface ITaskManager {
     fun addProviderInCurrentGood(providerInfo: ProviderInfo)
     suspend fun addTasks(tasksInfo: List<TaskInfo>)
     suspend fun addGoodsInCurrentTask(taskContentResult: TaskContentResult)
+    fun prepareGoodAndPosition(material: String, providerCode: String)
 
 }
