@@ -112,7 +112,7 @@ class GoodInfoOpenViewModel : CoreViewModel() {
 
     val totalTitle = MutableLiveData("Итого")
 
-    private val providers by lazy {
+    private val providersjj by lazy {
         good.map { good ->
             good?.providers?.let { providers ->
                 val list = providers.toMutableList()
@@ -124,6 +124,8 @@ class GoodInfoOpenViewModel : CoreViewModel() {
             }
         }
     }
+
+    private val providers = MutableLiveData<List<ProviderInfo>>(emptyList())
 
     val providerList by lazy {
         providers.map { list ->
@@ -215,13 +217,31 @@ class GoodInfoOpenViewModel : CoreViewModel() {
 
     init {
         viewModelScope.launch {
-            if (good.value == null) {
+            position.value?.let { position ->
+                val list = mutableListOf<ProviderInfo>()
+                list.add(position.provider)
+                providers.value = list
+            } ?: checkSearchNumber(manager.searchNumber)
+
+
+
+
+
+            //checkSearchNumber(manager.searchNumber)
+
+            /*if (!manager.openGoodFromList) {
                 checkSearchNumber(manager.searchNumber)
             }
 
-            if (position.value != null) {
 
-            }
+
+
+
+            if (position.value != null) {
+                providers.value =
+            } else {
+                checkSearchNumber(manager.searchNumber)
+            }*/
         }
     }
 

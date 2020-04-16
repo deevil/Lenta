@@ -23,7 +23,9 @@ class TaskManager @Inject constructor(
 
     override var searchNumber = ""
 
-    override var openExistGood = false
+    override var openGoodFromList = false
+
+    override var openPositionFromList = false
 
     override val tasks = MutableLiveData<List<Task>>(emptyList())
 
@@ -212,7 +214,7 @@ class TaskManager @Inject constructor(
 
     override fun prepareGoodAndPosition(material: String, providerCode: String) {
         findGoodByMaterial(material)?.let { good ->
-            //openExistGood = true
+            //openPositionFromList = true
             updateCurrentGood(good)
 
             good.positions.find { it.provider?.code == providerCode }?.let { position ->
@@ -229,7 +231,8 @@ interface ITaskManager {
     var mode: Mode
 
     var searchNumber: String
-    var openExistGood: Boolean
+    var openGoodFromList: Boolean
+    var openPositionFromList: Boolean
 
     val tasks: MutableLiveData<List<Task>>
 
