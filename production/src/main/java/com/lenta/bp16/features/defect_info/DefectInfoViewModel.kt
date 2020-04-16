@@ -225,9 +225,13 @@ class DefectInfoViewModel : CoreViewModel() {
                     planAufFinish.add(Calendar.MINUTE, getTimeInMinutes(packCodeResult.dataLabel.planAufFinish, packCodeResult.dataLabel.planAufUnit))
                     planAufFinish.add(Calendar.MINUTE, database.getPcpContTimeMm())
 
-                    val dateExpir = packCodeResult.dataLabel.dateExpiration.toIntOrNull()?.let { days ->
+                    val dateExpir = packCodeResult.dataLabel.time.toIntOrNull()?.let { time ->
                         val dateExpiration = Calendar.getInstance()
-                        dateExpiration.add(Calendar.DAY_OF_YEAR, days)
+                        when (packCodeResult.dataLabel.timeType.toIntOrNull()) {
+                            1 -> dateExpiration.add(Calendar.HOUR_OF_DAY, time)
+                            2 -> dateExpiration.add(Calendar.DAY_OF_YEAR, time)
+                        }
+
                         dateExpiration
                     }
 
