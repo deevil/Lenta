@@ -7,12 +7,14 @@ import com.lenta.bp9.model.task.TaskBatchInfo
 import com.lenta.bp9.model.task.TaskProductDiscrepancies
 import com.lenta.bp9.model.task.TaskProductInfo
 import com.lenta.bp9.platform.navigation.IScreenNavigator
+import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.SelectionItemsHelper
 import com.lenta.shared.utilities.databinding.Evenable
+import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
 import com.lenta.shared.utilities.databinding.PageSelectionListener
 import javax.inject.Inject
 
-class ExciseAlcoBoxListViewModel : CoreViewModel(), PageSelectionListener {
+class ExciseAlcoBoxListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyboardListener {
 
     @Inject
     lateinit var screenNavigator: IScreenNavigator
@@ -24,6 +26,23 @@ class ExciseAlcoBoxListViewModel : CoreViewModel(), PageSelectionListener {
     val countNotProcessed: MutableLiveData<List<BoxListItem>> = MutableLiveData()
     val countProcessed: MutableLiveData<List<BoxListItem>> = MutableLiveData()
     val processedSelectionsHelper = SelectionItemsHelper()
+    val scanCode: MutableLiveData<String> = MutableLiveData()
+    val requestFocusToScanCode: MutableLiveData<Boolean> = MutableLiveData()
+
+    fun onClickSecondBtn(){
+        if (selectedPage.value == 0) {
+            Logg.d { "testddi ${selectedPage.value}" }
+        } else {
+            Logg.d { "testddi ${selectedPage.value}" }
+        }
+    }
+
+    fun onClickHandleGoods(){
+    }
+
+    fun onClickApply(){
+        screenNavigator.openExciseAlcoBoxCardScreen(productInfo.value!!)
+    }
 
     fun onClickItemPosition(position: Int) {
         /**val matnr: String? = if (selectedPage.value == 0) {
@@ -32,6 +51,17 @@ class ExciseAlcoBoxListViewModel : CoreViewModel(), PageSelectionListener {
             countProcessed.value?.get(position)?.productInfo?.materialNumber
         }
         searchProductDelegate.searchCode(code = matnr ?: "", fromScan = false, isDiscrepancy = true)*/
+    }
+
+    override fun onOkInSoftKeyboard(): Boolean {
+        /**eanCode.value?.let {
+            searchProductDelegate.searchCode(it, fromScan = false)
+        }*/
+        return true
+    }
+
+    fun onScanResult(data: String) {
+        //searchProductDelegate.searchCode(code = data, fromScan = true, isBarCode = true)
     }
 
     override fun onPageSelected(position: Int) {

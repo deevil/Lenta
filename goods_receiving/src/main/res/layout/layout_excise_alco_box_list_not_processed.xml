@@ -40,6 +40,32 @@
             app:rv_config="@{rvConfig}"
             tools:listitem="@layout/item_tile_excis_alco_box_list_not_processed" />
 
+        <EditText
+            android:id="@+id/et_search"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginBottom="8dp"
+            android:digits="0123456789"
+            android:drawableEnd="@drawable/ic_search_white_24dp"
+            android:ellipsize="end"
+            android:hint="@string/scan_box_or_stamp"
+            android:imeOptions="actionSearch"
+            android:inputType="numberDecimal"
+            android:maxLines="1"
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp"
+            android:text="@={vm.scanCode}"
+            app:cursorToLastPos="@{true}"
+            app:onOkInSoftKeyboard="@{vm}"
+            app:requestFocus="@{vm.requestFocusToScanCode}"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            tools:ignore="Autofill" />
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </layout>

@@ -1,4 +1,4 @@
-package com.lenta.bp9.features.goods_information.excise_alco_box_acc
+package com.lenta.bp9.features.goods_information.excise_alco_box_acc.excise_alco_box_card
 
 import android.content.Context
 import androidx.lifecycle.MutableLiveData
@@ -21,7 +21,7 @@ import com.lenta.shared.view.OnPositionClickListener
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-class ExciseAlcoBoxAccInfoViewModel : CoreViewModel(), OnPositionClickListener {
+class ExciseAlcoBoxCardViewModel : CoreViewModel(), OnPositionClickListener {
 
     @Inject
     lateinit var screenNavigator: IScreenNavigator
@@ -48,6 +48,10 @@ class ExciseAlcoBoxAccInfoViewModel : CoreViewModel(), OnPositionClickListener {
     val spinQualitySelectedPosition: MutableLiveData<Int> = MutableLiveData(0)
     val spinReasonRejection: MutableLiveData<List<String>> = MutableLiveData()
     val spinReasonRejectionSelectedPosition: MutableLiveData<Int> = MutableLiveData(0)
+    val spinManufacturers: MutableLiveData<List<String>> = MutableLiveData()
+    val spinManufacturersSelectedPosition: MutableLiveData<Int> = MutableLiveData(0)
+    val spinBottlingDate: MutableLiveData<List<String>> = MutableLiveData()
+    val spinBottlingDateSelectedPosition: MutableLiveData<Int> = MutableLiveData(0)
     val suffix: MutableLiveData<String> = MutableLiveData()
     val isDefect: MutableLiveData<Boolean> = spinQualitySelectedPosition.map {
         it != 0
@@ -61,13 +65,13 @@ class ExciseAlcoBoxAccInfoViewModel : CoreViewModel(), OnPositionClickListener {
     private val countValue: MutableLiveData<Double> = count.map { it?.toDoubleOrNull() ?: 0.0 }
 
     val acceptTotalCount: MutableLiveData<Double> = countValue.combineLatest(spinQualitySelectedPosition).map{
-            val countAccept = taskManager.getReceivingTask()!!.taskRepository.getProductsDiscrepancies().getCountAcceptOfProduct(productInfo.value!!)
+        val countAccept = taskManager.getReceivingTask()!!.taskRepository.getProductsDiscrepancies().getCountAcceptOfProduct(productInfo.value!!)
 
-            if (qualityInfo.value?.get(it!!.second)?.code == "1") {
-                (it?.first ?: 0.0) + countAccept
-            } else {
-                countAccept
-            }
+        if (qualityInfo.value?.get(it!!.second)?.code == "1") {
+            (it?.first ?: 0.0) + countAccept
+        } else {
+            countAccept
+        }
     }
 
     val acceptTotalCountWithUom: MutableLiveData<String> = acceptTotalCount.map {
@@ -171,31 +175,10 @@ class ExciseAlcoBoxAccInfoViewModel : CoreViewModel(), OnPositionClickListener {
         }
     }
 
-    fun onClickBoxes() {
-        screenNavigator.openExciseAlcoBoxListScreen(productInfo.value!!)
-    }
-
-    fun onClickDetails(){
-        screenNavigator.openGoodsDetailsScreen(productInfo.value!!)
-    }
-
-    fun onClickAdd() {
-        if (processExciseAlcoBoxAccService.overlimit(countValue.value!!)) {
-            screenNavigator.openAlertOverlimit()
-        } else {
-            if (qualityInfo.value?.get(spinQualitySelectedPosition.value ?: 0)?.code == "1") {
-                processExciseAlcoBoxAccService.add(acceptTotalCount.value!!.toString(), "1")
-            } else {
-                processExciseAlcoBoxAccService.add(count.value!!, reasonRejectionInfo.value!![spinReasonRejectionSelectedPosition.value!!].code)
-            }
-        }
-
-        count.value = "0"
+    fun onClickRollback(){
     }
 
     fun onClickApply() {
-        onClickAdd()
-        screenNavigator.goBack()
     }
 
     fun onScanResult(data: String) {

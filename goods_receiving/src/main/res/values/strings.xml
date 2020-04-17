@@ -104,7 +104,6 @@
     <string name="EGAIS_fixation_date">Дата фикс. ЕГАИС</string>
     <string name="adiitional_list_number">Номер доп. листа</string>
     <string name="alcocode">Алкокод</string>
-    <string name="pour_date">Дата розлива</string>
     <string name="number_TTN">Номер ТТН</string>
     <string name="shipment_date">Дата отгрузки</string>
     <string name="processed">Обработанные</string>
@@ -263,4 +262,7 @@
     <string name="box_control">Контроль коробов</string>
     <string name="box_list">Список коробов</string>
     <string name="not_required">Не требуется</string>
+    <string name="box_number">Номер коробки</string>
+    <string name="box_stamp">Короб/Марка</string>
+    <string name="scan_box_or_stamp">Отсканируйте короб или марку</string>
 </resources>

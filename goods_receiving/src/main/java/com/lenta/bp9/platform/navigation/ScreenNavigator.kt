@@ -15,6 +15,7 @@ import com.lenta.bp9.features.formed_docs.FormedDocsFragment
 import com.lenta.bp9.features.goods_details.GoodsDetailsFragment
 import com.lenta.bp9.features.goods_information.excise_alco_stamp_acc.ExciseAlcoStampAccInfoFragment
 import com.lenta.bp9.features.goods_information.excise_alco_box_acc.ExciseAlcoBoxAccInfoFragment
+import com.lenta.bp9.features.goods_information.excise_alco_box_acc.excise_alco_box_card.ExciseAlcoBoxCardFragment
 import com.lenta.bp9.features.goods_information.excise_alco_box_acc.excise_alco_box_list.ExciseAlcoBoxListFragment
 import com.lenta.bp9.features.goods_information.general.GoodsInfoFragment
 import com.lenta.bp9.features.goods_information.mercury.GoodsMercuryInfoFragment
@@ -1078,6 +1079,12 @@ class ScreenNavigator(
         }
     }
 
+    override fun openExciseAlcoBoxCardScreen(productInfo: TaskProductInfo) {
+        runOrPostpone {
+            getFragmentStack()?.push(ExciseAlcoBoxCardFragment.create(productInfo))
+        }
+    }
+
     private fun getFragmentStack() = foregroundActivityProvider.getActivity()?.fragmentStack
 }
 
@@ -1206,4 +1213,5 @@ interface IScreenNavigator : ICoreNavigator {
     fun openCreateInboundDeliveryDialog(yesCallbackFunc: () -> Unit)
     fun openAlertUnableSaveNegativeQuantity()
     fun openExciseAlcoBoxListScreen(productInfo: TaskProductInfo)
+    fun openExciseAlcoBoxCardScreen(productInfo: TaskProductInfo)
 }

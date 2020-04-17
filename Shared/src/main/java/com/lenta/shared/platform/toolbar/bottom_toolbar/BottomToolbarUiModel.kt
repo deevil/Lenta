@@ -343,6 +343,10 @@ data class ButtonDecorationInfo(
             ButtonDecorationInfo(R.drawable.ic_entirely_24dp, R.string.entirely)
         }
 
+        val selectAll: ButtonDecorationInfo by lazy {
+            ButtonDecorationInfo(R.drawable.ic_entirely_24dp, R.string.select_all)
+        }
+
         val cancellation: ButtonDecorationInfo by lazy {
             ButtonDecorationInfo(R.drawable.ic_arrow_verify_white_24dp, R.string.cancellation)
         }
@@ -365,6 +369,10 @@ data class ButtonDecorationInfo(
 
         val boxes: ButtonDecorationInfo by lazy {
             ButtonDecorationInfo(R.drawable.ic_box_white_24dp, R.string.boxes)
+        }
+
+        val handleGoods: ButtonDecorationInfo by lazy {
+            ButtonDecorationInfo(R.drawable.ic_handle_goods_white_24dp, R.string.handle_goods)
         }
     }
 

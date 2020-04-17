@@ -12,16 +12,21 @@ import android.view.ViewGroup
 import android.view.View
 import android.widget.AdapterView
 import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.Observer
 import com.lenta.bp9.BR
 import com.lenta.bp9.databinding.*
 import com.lenta.bp9.model.task.TaskProductInfo
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
+import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListener
+import com.lenta.shared.scan.OnScanResultListener
 import com.lenta.shared.utilities.databinding.*
 import com.lenta.shared.utilities.state.state
 
 class ExciseAlcoBoxListFragment : CoreFragment<FragmentExciseAlcoBoxListBinding, ExciseAlcoBoxListViewModel>(),
         ViewPagerSettings,
-        PageSelectionListener {
+        PageSelectionListener,
+        ToolbarButtonsClickListener,
+        OnScanResultListener {
 
     companion object {
         fun create(productInfo: TaskProductInfo): ExciseAlcoBoxListFragment {
@@ -50,15 +55,25 @@ class ExciseAlcoBoxListFragment : CoreFragment<FragmentExciseAlcoBoxListBinding,
 
     override fun setupTopToolBar(topToolbarUiModel: TopToolbarUiModel) {
         topToolbarUiModel.title.value = "${vm.productInfo.value?.getMaterialLastSix()} ${vm.productInfo.value?.description}"
-        topToolbarUiModel.description.value = getString(R.string.goods_info)
+        topToolbarUiModel.description.value = "Список коробов"
     }
 
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
         bottomToolbarUiModel.uiModelButton1.show(ButtonDecorationInfo.back)
-        bottomToolbarUiModel.uiModelButton2.show(ButtonDecorationInfo.boxes)
-        bottomToolbarUiModel.uiModelButton3.show(ButtonDecorationInfo.details)
-        bottomToolbarUiModel.uiModelButton4.show(ButtonDecorationInfo.add)
+        viewLifecycleOwner.apply {
+            vm.selectedPage.observe(this, Observer {
+                bottomToolbarUiModel.uiModelButton2.clean()
+                bottomToolbarUiModel.uiModelButton4.clean()
+                if (it == 0) {
+                    bottomToolbarUiModel.uiModelButton2.show(ButtonDecorationInfo.selectAll)
+                    bottomToolbarUiModel.uiModelButton4.show(ButtonDecorationInfo.handleGoods)
+                } else {
+                    bottomToolbarUiModel.uiModelButton2.show(ButtonDecorationInfo.clean)
+                }
+            })
+        }
         bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.apply)
+
     }
 
     override fun getPagerItemView(container: ViewGroup, position: Int): View {
@@ -142,6 +157,14 @@ class ExciseAlcoBoxListFragment : CoreFragment<FragmentExciseAlcoBoxListBinding,
                 }
     }
 
+    override fun onToolbarButtonClick(view: View) {
+        when (view.id) {
+            R.id.b_2 -> vm.onClickSecondBtn()
+            R.id.b_4 -> vm.onClickHandleGoods()
+            R.id.b_5 -> vm.onClickApply()
+        }
+    }
+
     override fun getTextTitle(position: Int): String = getString(if (position == 0) R.string.not_processed else R.string.processed)
 
     override fun countTab(): Int = 2
@@ -153,6 +176,10 @@ class ExciseAlcoBoxListFragment : CoreFragment<FragmentExciseAlcoBoxListBinding,
 
     override fun onPageSelected(position: Int) {
         vm.onPageSelected(position)
+    }
+
+    override fun onScanResult(data: String) {
+        vm.onScanResult(data)
     }
 
 }
