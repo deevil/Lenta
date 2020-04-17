@@ -7,7 +7,7 @@
 
         <variable
             name="item"
-            type="com.lenta.bp12.features.discrepancy_list.ItemGoodUi" />
+            type="com.lenta.bp12.features.open_task.discrepancy_list.ItemGoodUi" />
 
         <variable
             name="selectedForDelete"

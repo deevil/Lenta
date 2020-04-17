@@ -1,4 +1,4 @@
-package com.lenta.bp12.features.discrepancy_list
+package com.lenta.bp12.features.open_task.discrepancy_list
 
 import android.os.Bundle
 import android.view.View

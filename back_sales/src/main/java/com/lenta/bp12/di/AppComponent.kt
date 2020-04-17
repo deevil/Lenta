@@ -8,7 +8,7 @@ import com.lenta.bp12.features.create_task.basket_properties.BasketPropertiesVie
 import com.lenta.bp12.features.create_task.good_info.GoodInfoCreateViewModel
 import com.lenta.bp12.features.create_task.task_card.TaskCardCreateViewModel
 import com.lenta.bp12.features.create_task.task_composition.TaskCompositionViewModel
-import com.lenta.bp12.features.discrepancy_list.DiscrepancyListViewModel
+import com.lenta.bp12.features.open_task.discrepancy_list.DiscrepancyListViewModel
 import com.lenta.bp12.features.enter_employee_number.EnterEmployeeNumberViewModel
 import com.lenta.bp12.features.create_task.good_details.GoodDetailsViewModel
 import com.lenta.bp12.features.loading.fast.FastLoadingViewModel

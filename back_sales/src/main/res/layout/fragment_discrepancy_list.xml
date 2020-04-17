@@ -2,13 +2,13 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context=".features.discrepancy_list.DiscrepancyListFragment">
+    tools:context=".features.open_task.discrepancy_list.DiscrepancyListFragment">
 
     <data>
 
         <variable
             name="vm"
-            type="com.lenta.bp12.features.discrepancy_list.DiscrepancyListViewModel" />
+            type="com.lenta.bp12.features.open_task.discrepancy_list.DiscrepancyListViewModel" />
 
         <variable
             name="rvConfig"

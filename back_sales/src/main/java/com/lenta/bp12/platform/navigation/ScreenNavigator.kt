@@ -6,7 +6,7 @@ import com.lenta.bp12.features.create_task.add_provider.AddProviderFragment
 import com.lenta.bp12.features.auth.AuthFragment
 import com.lenta.bp12.features.create_task.basket_good_list.BasketGoodListFragment
 import com.lenta.bp12.features.create_task.basket_properties.BasketPropertiesFragment
-import com.lenta.bp12.features.discrepancy_list.DiscrepancyListFragment
+import com.lenta.bp12.features.open_task.discrepancy_list.DiscrepancyListFragment
 import com.lenta.bp12.features.enter_employee_number.EnterEmployeeNumberFragment
 import com.lenta.bp12.features.create_task.good_details.GoodDetailsFragment
 import com.lenta.bp12.features.create_task.good_info.GoodInfoCreateFragment
