@@ -12,6 +12,7 @@ import com.lenta.bp9.features.formed_docs.FormedDocsViewModel
 import com.lenta.bp9.features.goods_details.GoodsDetailsViewModel
 import com.lenta.bp9.features.goods_information.excise_alco_stamp_acc.ExciseAlcoStampAccInfoViewModel
 import com.lenta.bp9.features.goods_information.excise_alco_box_acc.ExciseAlcoBoxAccInfoViewModel
+import com.lenta.bp9.features.goods_information.excise_alco_box_acc.excise_alco_box_list.ExciseAlcoBoxListViewModel
 import com.lenta.bp9.features.goods_information.general.GoodsInfoViewModel
 import com.lenta.bp9.features.goods_information.mercury.GoodsMercuryInfoViewModel
 import com.lenta.bp9.features.goods_information.non_excise_alco.NonExciseAlcoInfoViewModel
@@ -119,4 +120,5 @@ interface AppComponent {
     fun inject(it: TransportMarriageGoodsInfoViewModel)
     fun inject(it: TransportMarriageGoodsDetailsViewModel)
     fun inject(it: ExciseAlcoBoxAccInfoViewModel)
+    fun inject(it: ExciseAlcoBoxListViewModel)
 }

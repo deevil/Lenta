@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="40"
+    android:viewportHeight="40">
+    <path android:fillColor="#FFF"
+        android:pathData="M34.667 34.667H13.333V21.333h21.334v13.334zm-16.62-21.334h4.62v5.334h-8.175l3.555-5.334zm15.461 5.334h-8.175v-5.334h4.62l3.555 5.334zm3.82 1.309a1.325 1.325 0 0 0-.09-.452c-.015-.037-.035-.07-.053-.107-.025-.05-.042-.106-.076-.156l-5.333-8a1.331 1.331 0 0 0-1.11-.594H17.334c-.446 0-.861.222-1.109.594l-5.333 8c-.034.05-.051.106-.076.156-.018.036-.038.07-.052.107a1.325 1.325 0 0 0-.091.452c-.001.01-.005.016-.005.024v16c0 .737.597 1.333 1.333 1.333h24c.736 0 1.333-.596 1.333-1.333V20c0-.008-.004-.015-.005-.024z"
+        tools:ignore="InvalidVectorPath" />
+    <path android:fillColor="#FFF"
+        android:pathData="M22.333 24h3.333v8.333h-3.333zM26.5 24h1v8.333h-1zM28.167 24h1v8.333h-1zM29.833 24H31.5v8.333h-1.667zM19.833 24H21.5v8.333h-1.667zM16.5 24H19v8.333h-2.5z"
+        />
+</vector>

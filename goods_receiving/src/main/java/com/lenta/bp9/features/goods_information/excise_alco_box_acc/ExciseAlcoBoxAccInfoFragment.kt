@@ -54,24 +54,6 @@ class ExciseAlcoBoxAccInfoFragment : CoreFragment<FragmentExciseAlcoBoxAccInfoBi
             override fun onNothingSelected(adapterView: AdapterView<*>) {
             }
         }
-
-        binding?.spinnerManufacturers?.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-            override fun onItemSelected(adapterView: AdapterView<*>, view: View?, position: Int, l: Long) {
-                vm.onClickPositionSpinManufacturers(position)
-            }
-
-            override fun onNothingSelected(adapterView: AdapterView<*>) {
-            }
-        }
-
-        binding?.spinnerBottlingDate?.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-            override fun onItemSelected(adapterView: AdapterView<*>, view: View?, position: Int, l: Long) {
-                vm.onClickPositionSpinBottlingDate(position)
-            }
-
-            override fun onNothingSelected(adapterView: AdapterView<*>) {
-            }
-        }
     }
 
     override fun setupTopToolBar(topToolbarUiModel: TopToolbarUiModel) {
@@ -81,7 +63,7 @@ class ExciseAlcoBoxAccInfoFragment : CoreFragment<FragmentExciseAlcoBoxAccInfoBi
 
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
         bottomToolbarUiModel.uiModelButton1.show(ButtonDecorationInfo.back)
-        bottomToolbarUiModel.uiModelButton2.show(ButtonDecorationInfo.rollback)
+        bottomToolbarUiModel.uiModelButton2.show(ButtonDecorationInfo.boxes)
         bottomToolbarUiModel.uiModelButton3.show(ButtonDecorationInfo.details)
         bottomToolbarUiModel.uiModelButton4.show(ButtonDecorationInfo.add)
         bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.apply)
@@ -92,7 +74,7 @@ class ExciseAlcoBoxAccInfoFragment : CoreFragment<FragmentExciseAlcoBoxAccInfoBi
 
     override fun onToolbarButtonClick(view: View) {
         when (view.id) {
-            R.id.b_2 -> vm.onClickRollback()
+            R.id.b_2 -> vm.onClickBoxes()
             R.id.b_3 -> vm.onClickDetails()
             R.id.b_4 -> vm.onClickAdd()
             R.id.b_5 -> vm.onClickApply()

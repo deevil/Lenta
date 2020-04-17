@@ -46,10 +46,6 @@ class ExciseAlcoBoxAccInfoViewModel : CoreViewModel(), OnPositionClickListener {
     val planQuantityBatch: MutableLiveData<String> = MutableLiveData()
     val spinQuality: MutableLiveData<List<String>> = MutableLiveData()
     val spinQualitySelectedPosition: MutableLiveData<Int> = MutableLiveData(0)
-    val spinManufacturers: MutableLiveData<List<String>> = MutableLiveData()
-    val spinManufacturersSelectedPosition: MutableLiveData<Int> = MutableLiveData(0)
-    val spinBottlingDate: MutableLiveData<List<String>> = MutableLiveData()
-    val spinBottlingDateSelectedPosition: MutableLiveData<Int> = MutableLiveData(0)
     val spinReasonRejection: MutableLiveData<List<String>> = MutableLiveData()
     val spinReasonRejectionSelectedPosition: MutableLiveData<Int> = MutableLiveData(0)
     val suffix: MutableLiveData<String> = MutableLiveData()
@@ -64,48 +60,95 @@ class ExciseAlcoBoxAccInfoViewModel : CoreViewModel(), OnPositionClickListener {
     val count: MutableLiveData<String> = MutableLiveData("0")
     private val countValue: MutableLiveData<Double> = count.map { it?.toDoubleOrNull() ?: 0.0 }
 
-    val acceptTotalCount: MutableLiveData<Double> by lazy  {
-        countValue.combineLatest(spinQualitySelectedPosition).map{
+    val acceptTotalCount: MutableLiveData<Double> = countValue.combineLatest(spinQualitySelectedPosition).map{
+            val countAccept = taskManager.getReceivingTask()!!.taskRepository.getProductsDiscrepancies().getCountAcceptOfProduct(productInfo.value!!)
+
             if (qualityInfo.value?.get(it!!.second)?.code == "1") {
-                (it?.first ?: 0.0) + taskManager.getReceivingTask()!!.taskRepository.getProductsDiscrepancies().getCountAcceptOfProduct(productInfo.value!!)
+                (it?.first ?: 0.0) + countAccept
             } else {
-                taskManager.getReceivingTask()!!.taskRepository.getProductsDiscrepancies().getCountAcceptOfProduct(productInfo.value!!)
+                countAccept
+            }
+    }
+
+    val acceptTotalCountWithUom: MutableLiveData<String> = acceptTotalCount.map {
+        val countAccept = taskManager.getReceivingTask()!!.taskRepository.getProductsDiscrepancies().getCountAcceptOfProduct(productInfo.value!!)
+        when {
+            (it ?: 0.0) > 0.0 -> {
+                "+ ${it.toStringFormatted()} ${productInfo.value?.purchaseOrderUnits?.name}"
+            }
+            else -> { //если было введено отрицательное значение
+                "${if (countAccept > 0.0) "+ " + countAccept.toStringFormatted() else countAccept.toStringFormatted()} ${productInfo.value?.purchaseOrderUnits?.name}"
             }
         }
     }
 
-    val refusalTotalCount: MutableLiveData<Double> = //by lazy  {
-        countValue.
-                combineLatest(spinQualitySelectedPosition).
-                map{
-                    if (qualityInfo.value?.get(it?.second ?: 0)?.code != "1") {
-                        (it?.first ?: 0.0) + taskManager.getReceivingTask()!!.taskRepository.getProductsDiscrepancies().getCountRefusalOfProduct(productInfo.value!!)
-                    } else {
-                        taskManager.getReceivingTask()!!.taskRepository.getProductsDiscrepancies().getCountRefusalOfProduct(productInfo.value!!)
-                    }
+    val refusalTotalCount: MutableLiveData<Double> = countValue.combineLatest(spinQualitySelectedPosition).map{
+        val countRefusal = taskManager.getReceivingTask()!!.taskRepository.getProductsDiscrepancies().getCountRefusalOfProduct(productInfo.value!!)
+        if (qualityInfo.value?.get(it?.second ?: 0)?.code != "1") {
+            (it?.first ?: 0.0) + countRefusal
+        } else {
+            countRefusal
+        }
+    }
+
+    val refusalTotalCountWithUom: MutableLiveData<String> = refusalTotalCount.map {
+        val countRefusal = taskManager.getReceivingTask()!!.taskRepository.getProductsDiscrepancies().getCountRefusalOfProduct(productInfo.value!!)
+
+        if ((it ?: 0.0) > 0.0) {
+            "- ${it.toStringFormatted()} ${productInfo.value?.purchaseOrderUnits?.name}"
+        } else { //если было введено отрицательное значение
+            "${if (countRefusal > 0.0) "- " + countRefusal.toStringFormatted() else countRefusal.toStringFormatted()} ${productInfo.value?.purchaseOrderUnits?.name}"
+        }
+    }
+
+    val tvStampControlVal: MutableLiveData<String> = acceptTotalCount.combineLatest(spinQualitySelectedPosition).map {
+        if (qualityInfo.value?.get(it?.second ?: 0)?.code == "1") {
+            if ( (productInfo.value?.numberBoxesControl?.toInt() == 0 && productInfo.value?.numberStampsControl?.toInt() == 0) ||
+                    ((it?.first ?: 0.0) <= 0.0) ) {
+                context.getString(R.string.not_required)
+            } else {
+                "${productInfo.value?.numberBoxesControl} из ${productInfo.value?.numberStampsControl}"
+            }
+        } else {
+            "" //это поле отображается только при выбранной категории "Норма"
+        }
+    }
+
+    val checkStampControl: MutableLiveData<Boolean> by lazy {
+        //todo https://trello.com/c/Z1SPfmAJ, 1.5. Проставлять чекбокс при прохождении контроля Y марок в Z коробах;
+        MutableLiveData(false)
+    }
+
+    val tvBoxControlVal: MutableLiveData<String> = acceptTotalCount.combineLatest(spinQualitySelectedPosition).map {
+        if (qualityInfo.value?.get(it?.second ?: 0)?.code == "1") {
+            if ( (productInfo.value?.numberBoxesControl?.toInt() == 0 && productInfo.value?.numberStampsControl?.toInt() == 0) ||
+                    ((it?.first ?: 0.0) <= 0.0) ) {
+                context.getString(R.string.not_required)
+            } else {
+                if ((it?.first ?: 0.0) < (productInfo.value?.numberBoxesControl?.toDouble() ?: 0.0)) {
+                    "${"Значение F изначально равно 0. Увеличивать на +1 при прохождении контроля одного короба"} из ${it?.first.toString()}"
+                } else {
+                    "${"Значение F изначально равно 0. Увеличивать на +1 при прохождении контроля одного короба"} из ${productInfo.value?.numberBoxesControl}"
                 }
-    //}
-
-    /**val totalCountExciseStamps: MutableLiveData<String> by lazy {
-        countValue.map {
-            "${taskManager.
-                    getReceivingTask()!!.
-                    taskRepository.
-                    getExciseStamps().
-                    findExciseStampsOfProduct(productInfo.value!!).
-                    size} из ${((productInfo.value!!.numberStampsControl).toDouble()).toStringFormatted()}"
+            }
+        } else {
+            "" //это поле отображается только при выбранной категории "Норма"
         }
-    }*/
-    val totalCountExciseStamps: MutableLiveData<String> =
-        countValue.map {
-            "${taskManager.
-                    getReceivingTask()!!.
-                    taskRepository.
-                    getExciseStamps().
-                    findExciseStampsOfProduct(productInfo.value!!).
-                    size + processExciseAlcoProductService.getCountExciseStamps()} из ${((productInfo.value!!.numberStampsControl).toDouble()).toStringFormatted()}"
-        }
+    }
 
+    val checkBoxControl: MutableLiveData<Boolean> by lazy {
+        //todo https://trello.com/c/Z1SPfmAJ, 2.4. Устанавливать чекбокс, когда F=Z;
+        MutableLiveData(false)
+    }
+
+    val tvBoxListVal: MutableLiveData<String> by lazy {
+        MutableLiveData("${productInfo.value?.origQuantity}")
+    }
+
+    val checkBoxList: MutableLiveData<Boolean> by lazy {
+        //todo https://trello.com/c/lqyZlYQu, 1.5. Устанавливать чекбокс, когда F= Q;
+        MutableLiveData(true)
+    }
 
     val enabledApplyButton: MutableLiveData<Boolean> = countValue.
             map {
@@ -114,13 +157,11 @@ class ExciseAlcoBoxAccInfoViewModel : CoreViewModel(), OnPositionClickListener {
 
     init {
         viewModelScope.launch {
-            suffix.value = productInfo.value?.uom?.name
+            suffix.value = productInfo.value?.purchaseOrderUnits?.name
             qualityInfo.value = dataBase.getQualityInfo()
             spinQuality.value = qualityInfo.value?.map {
                 it.name
             }
-            //todo временно закоментированно spinManufacturers.value = listOf(taskManager.getReceivingTask()!!.taskRepository.getBatches().findBatchOfProduct(productInfo.value!!)?.manufacturer ?: "")
-            spinBottlingDate.value = listOf(taskManager.getReceivingTask()!!.taskRepository.getBatches().findBatchOfProduct(productInfo.value!!)?.bottlingDate ?: "")
             batchInfo.value = taskManager.getReceivingTask()!!.taskRepository.getBatches().findBatchOfProduct(productInfo.value!!)
             //todo временно закоментированно planQuantityBatch.value = batchInfo.value?.planQuantityBatch + " " + batchInfo.value?.uom?.name + "."
             if (processExciseAlcoProductService.newProcessNonExciseAlcoProductService(productInfo.value!!) == null){
@@ -130,10 +171,8 @@ class ExciseAlcoBoxAccInfoViewModel : CoreViewModel(), OnPositionClickListener {
         }
     }
 
-    fun onClickRollback() {
-        //todo
-        /**processExciseAlcoProductService.rollback()
-        updateCounts()*/
+    fun onClickBoxes() {
+        screenNavigator.openExciseAlcoBoxListScreen(productInfo.value!!)
     }
 
     fun onClickDetails(){
@@ -171,14 +210,6 @@ class ExciseAlcoBoxAccInfoViewModel : CoreViewModel(), OnPositionClickListener {
 
     override fun onClickPosition(position: Int) {
         spinReasonRejectionSelectedPosition.value = position
-    }
-
-    fun onClickPositionSpinManufacturers(position: Int){
-        spinManufacturersSelectedPosition.value = position
-    }
-
-    fun onClickPositionSpinBottlingDate(position: Int){
-        spinBottlingDateSelectedPosition.value = position
     }
 
     fun onClickPositionSpinQuality(position: Int){
