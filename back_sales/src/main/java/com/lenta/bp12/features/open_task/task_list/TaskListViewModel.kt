@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.lenta.bp12.model.BlockType
 import com.lenta.bp12.model.ITaskManager
 import com.lenta.bp12.model.TaskStatus
+import com.lenta.bp12.model.pojo.Task
 import com.lenta.bp12.platform.navigation.IScreenNavigator
 import com.lenta.bp12.request.TaskListNetRequest
 import com.lenta.bp12.request.TaskListParams
@@ -135,24 +136,44 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
             when (page) {
                 0 -> {
                     tasks.value?.let { tasks ->
-                        // todo Поведение в зависимости от типа блокировки
-                        // ...
-
-                        manager.updateCurrentTask(tasks[position])
-                        navigator.openTaskCardOpenScreen()
+                        tasks.find { it.number == processing.value!![position].number }?.let { task ->
+                            task.apply {
+                                when (blockType) {
+                                    BlockType.LOCK -> navigator.showAlertBlockedTaskAnotherUser(blockUser, blockIp)
+                                    BlockType.SELF_LOCK -> navigator.showAlertBlockedTaskByMe(blockUser) { openTask(task) }
+                                    else -> openTask(task)
+                                }
+                            }
+                        }
                     }
                 }
                 1 -> {
-                    // todo Открытие задачи из списка найденных задач
-                    // ...
-
+                    tasks.value?.let { tasks ->
+                        tasks.find { it.number == search.value!![position].number }?.let { task ->
+                            task.apply {
+                                when (blockType) {
+                                    BlockType.LOCK -> navigator.showAlertBlockedTaskAnotherUser(blockUser, blockIp)
+                                    BlockType.SELF_LOCK -> navigator.showAlertBlockedTaskByMe(blockUser) { openTask(task) }
+                                    else -> openTask(task)
+                                }
+                            }
+                        }
+                    }
                 }
                 else -> throw IllegalArgumentException("Wrong pager position!")
             }
         }
     }
 
+    private fun openTask(task: Task) {
+        manager.updateCurrentTask(task)
+        navigator.openTaskCardOpenScreen()
+    }
+
     override fun onOkInSoftKeyboard(): Boolean {
+        // todo Что-то сделать при вводе номера/пользователя?
+        // ...
+
         return true
     }
 

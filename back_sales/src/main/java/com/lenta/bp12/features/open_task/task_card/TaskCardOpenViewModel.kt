@@ -74,13 +74,17 @@ class TaskCardOpenViewModel : CoreViewModel(), PageSelectionListener {
 
     fun onBackPressed() {
         viewModelScope.launch {
+            navigator.showProgressLoadingData()
+
             unblockTaskNetRequest(
                     UnblockTaskParams(
                             taskNumber = task.value!!.number,
                             userNumber = sessionInfo.personnelNumber ?: "",
                             deviceIp = deviceInfo.getDeviceIp()
                     )
-            )
+            ).also {
+                navigator.hideProgress()
+            }
 
             navigator.goBack()
         }

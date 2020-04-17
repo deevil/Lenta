@@ -33,8 +33,8 @@ fun setBlockTypeIcon(imageView: ImageView, blockType: BlockType) {
             setVisible(false)
         } else {
             setImageResource(when (blockType) {
-                BlockType.SELF_LOCK -> R.drawable.ic_lock_dark_24dp
-                BlockType.LOCK -> R.drawable.ic_lock_open_dark_24dp
+                BlockType.SELF_LOCK -> R.drawable.ic_lock_open_dark_24dp
+                BlockType.LOCK -> R.drawable.ic_processed_status_dark_24dp
                 else -> R.drawable.ic_play_arrow_dark_24dp
             })
             setVisible()
