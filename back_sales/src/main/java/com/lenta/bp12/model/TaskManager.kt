@@ -59,21 +59,28 @@ class TaskManager @Inject constructor(
     }
 
     override suspend fun putInCurrentGood(goodInfo: GoodInfoResult) {
-        currentGood.value = Good(
+        val newGood = Good(
                 ean = goodInfo.eanInfo.ean,
                 material = goodInfo.materialInfo.material,
                 name = goodInfo.materialInfo.name,
-                innerQuantity = goodInfo.materialInfo.innerQuantity.toDoubleOrNull() ?: 0.0,
                 units = database.getUnitsByCode(goodInfo.materialInfo.unitsCode),
-                orderUnits = database.getUnitsByCode(goodInfo.materialInfo.orderUnitCode),
                 kind = goodInfo.getGoodKind(),
                 type = goodInfo.materialInfo.goodType,
                 control = goodInfo.getControlType(),
-                providers = goodInfo.providers.toMutableList(),
-                producers = goodInfo.producers.toMutableList(),
+                section = goodInfo.materialInfo.section,
                 matrix = getMatrixType(goodInfo.materialInfo.matrix),
-                section = goodInfo.materialInfo.section
+                isFullData = true,
+                innerQuantity = goodInfo.materialInfo.innerQuantity.toDoubleOrNull() ?: 0.0,
+                orderUnits = database.getUnitsByCode(goodInfo.materialInfo.orderUnitCode),
+                providers = goodInfo.providers.toMutableList(),
+                producers = goodInfo.producers.toMutableList()
         )
+
+        findGoodByMaterial(newGood.material)?.let { good ->
+            newGood.positions = good.positions
+        }
+
+        currentGood.value = newGood
     }
 
     override fun addCurrentGoodInTask() {

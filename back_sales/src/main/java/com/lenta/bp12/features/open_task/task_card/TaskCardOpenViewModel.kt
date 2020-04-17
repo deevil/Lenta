@@ -1,13 +1,18 @@
 package com.lenta.bp12.features.open_task.task_card
 
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.viewModelScope
 import com.lenta.bp12.model.ControlType
 import com.lenta.bp12.model.ITaskManager
 import com.lenta.bp12.platform.navigation.IScreenNavigator
+import com.lenta.bp12.request.UnblockTaskNetRequest
+import com.lenta.bp12.request.UnblockTaskParams
 import com.lenta.shared.account.ISessionInfo
+import com.lenta.shared.platform.device_info.DeviceInfo
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.databinding.PageSelectionListener
 import com.lenta.shared.utilities.extentions.map
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class TaskCardOpenViewModel : CoreViewModel(), PageSelectionListener {
@@ -20,6 +25,12 @@ class TaskCardOpenViewModel : CoreViewModel(), PageSelectionListener {
 
     @Inject
     lateinit var manager: ITaskManager
+
+    @Inject
+    lateinit var unblockTaskNetRequest: UnblockTaskNetRequest
+
+    @Inject
+    lateinit var deviceInfo: DeviceInfo
 
 
     val title by lazy {
@@ -62,9 +73,17 @@ class TaskCardOpenViewModel : CoreViewModel(), PageSelectionListener {
     }
 
     fun onBackPressed() {
-        // todo Запрос на разблокировку задания
-        // ...
+        viewModelScope.launch {
+            unblockTaskNetRequest(
+                    UnblockTaskParams(
+                            taskNumber = task.value!!.number,
+                            userNumber = sessionInfo.personnelNumber ?: "",
+                            deviceIp = deviceInfo.getDeviceIp()
+                    )
+            )
 
+            navigator.goBack()
+        }
     }
 
 }

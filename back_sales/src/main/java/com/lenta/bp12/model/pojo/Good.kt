@@ -6,23 +6,27 @@ import com.lenta.bp12.request.pojo.ProducerInfo
 import com.lenta.bp12.request.pojo.ProviderInfo
 import com.lenta.shared.models.core.MatrixType
 import com.lenta.shared.models.core.Uom
+import com.lenta.shared.utilities.extentions.sumList
 import com.lenta.shared.utilities.extentions.sumWith
 
 data class Good(
         val ean: String,
         val material: String,
         val name: String,
-        val innerQuantity: Double = 0.0,
         val units: Uom = Uom.ST,
-        val orderUnits: Uom= Uom.ST,
         val kind: GoodKind,
         val type: String = "",
         val control: ControlType = ControlType.COMMON,
         val section: String,
         val matrix: MatrixType,
+        var positions: MutableList<Position> = mutableListOf(),
+
+        var isFullData: Boolean = false,
+
+        val innerQuantity: Double = 0.0,
+        val orderUnits: Uom= Uom.ST,
         val providers: MutableList<ProviderInfo> = mutableListOf(),
         val producers: MutableList<ProducerInfo> = mutableListOf(),
-        val positions: MutableList<Position> = mutableListOf(),
         val marks: MutableList<Mark> = mutableListOf(),
         val parts: MutableList<Part> = mutableListOf()
 ) {
@@ -36,7 +40,7 @@ data class Good(
     }
 
     fun addPosition(quantity: Double, provider: ProviderInfo?) {
-        val position = positions.find { it.provider == provider }
+        val position = positions.find { it.provider?.code == provider?.code }
         val oldQuantity = position?.quantity
 
         if (position != null) {
@@ -50,11 +54,11 @@ data class Good(
     }
 
     fun getTotalQuantity(): Double {
-        return positions.map { it.quantity }.sum()
+        return positions.map { it.quantity }.sumList()
     }
 
     fun getQuantityByProvider(provider: ProviderInfo?): Double {
-        return positions.filter { it.provider == provider }.map { it.quantity }.sum()
+        return positions.filter { it.provider?.code == provider?.code }.map { it.quantity }.sumList()
     }
 
     fun deletePositions(positionList: List<Position>) {

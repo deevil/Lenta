@@ -217,35 +217,34 @@ class GoodInfoOpenViewModel : CoreViewModel() {
 
     init {
         viewModelScope.launch {
-            position.value?.let { position ->
-                val list = mutableListOf<ProviderInfo>()
-                list.add(position.provider)
-                providers.value = list
-            } ?: checkSearchNumber(manager.searchNumber)
-
-
-
-
-
-            //checkSearchNumber(manager.searchNumber)
-
-            /*if (!manager.openGoodFromList) {
-                checkSearchNumber(manager.searchNumber)
-            }
-
-
-
-
-
             if (position.value != null) {
-                providers.value =
+                loadProviderFromPosition()
             } else {
                 checkSearchNumber(manager.searchNumber)
-            }*/
+            }
         }
     }
 
     // -----------------------------
+
+    private fun loadProviderFromPosition() {
+        position.value?.let { position ->
+            providers.value = listOf(position.provider!!)
+        }
+    }
+
+    private fun loadProvidersFromGood() {
+        providers.value = good.value?.let { good ->
+            good.providers.let { providers ->
+                val list = providers.toMutableList()
+                if (list.size > 1) {
+                    list.add(0, ProviderInfo())
+                }
+
+                list.toList()
+            }
+        }
+    }
 
     private fun checkSearchNumber(number: String) {
         number.length.let { length ->
@@ -272,15 +271,33 @@ class GoodInfoOpenViewModel : CoreViewModel() {
     }
 
     private fun getGoodByEan(ean: String) {
-        manager.findGoodByEan(ean)?.let { good ->
+        good.value?.let { good ->
+            if (good.ean == ean) {
+                return
+            }
+        }
+
+        val good = manager.findGoodByEan(ean)
+        if (good != null && good.isFullData) {
             manager.updateCurrentGood(good)
-        } ?: loadGoodInfo(ean = ean)
+        } else {
+            loadGoodInfo(ean = ean)
+        }
     }
 
     private fun getGoodByMaterial(material: String) {
-        manager.findGoodByMaterial(material)?.let { good ->
+        good.value?.let { good ->
+            if (good.isSameMaterial(material)) {
+                return
+            }
+        }
+
+        val good = manager.findGoodByMaterial(material)
+        if (good != null && good.isFullData) {
             manager.updateCurrentGood(good)
-        } ?: loadGoodInfo(material = material)
+        } else {
+            loadGoodInfo(material = material)
+        }
     }
 
     private fun loadGoodInfo(ean: String? = null, material: String? = null) {
@@ -301,26 +318,20 @@ class GoodInfoOpenViewModel : CoreViewModel() {
             }.either(::handleFailure) { goodInfo ->
                 viewModelScope.launch {
                     if (manager.isGoodCanBeAdded(goodInfo)) {
-                        manager.putInCurrentGood(goodInfo)
                         isExistUnsavedData = true
+                        manager.currentPosition.value = null
+                        manager.putInCurrentGood(goodInfo)
+                        loadProvidersFromGood()
                     } else {
                         navigator.showNotMatchTaskSettingsAddingNotPossible {
                             navigator.goBack()
-
-                            /*if (manager.searchFromList) {
-                                manager.openFromList = false
-                                manager.searchNumber = ""
-                                navigator.goBack()
-                                navigator.goBack()
-                            } else {
-                                navigator.goBack()
-                            }*/
                         }
                     }
                 }
             }
         }
     }
+
 
     private fun loadMarkInfo(number: String) {
         viewModelScope.launch {
@@ -356,7 +367,6 @@ class GoodInfoOpenViewModel : CoreViewModel() {
         if (applyEnabled.value!! && number.length >= Constants.SAP_6) {
             saveGoodInTask()
 
-            //manager.openFromList = false
             manager.searchNumber = number
             checkSearchNumber(number)
         }
@@ -368,17 +378,6 @@ class GoodInfoOpenViewModel : CoreViewModel() {
             good.addPosition(quantity, getProvider())
 
             manager.updateCurrentGood(good)
-
-            /*if (basket.value == null) {
-                manager.addBasket(Basket(
-                        section = good.section,
-                        type = good.type,
-                        control = good.control,
-                        provider = getProvider()
-                ))
-            } else {
-                manager.updateCurrentBasket(basket.value)
-            }*/
         }
 
         manager.addCurrentGoodInTask()
@@ -386,7 +385,7 @@ class GoodInfoOpenViewModel : CoreViewModel() {
 
     private fun getProvider(): ProviderInfo? {
         val position = providerPosition.value!!
-        return  providers.value?.let { providers ->
+        return providers.value?.let { providers ->
             when (providers.size) {
                 0 -> null
                 1 -> providers[0]
@@ -398,11 +397,13 @@ class GoodInfoOpenViewModel : CoreViewModel() {
     fun onBackPressed() {
         if (isExistUnsavedData) {
             navigator.showUnsavedDataWillBeLost {
-                //manager.openFromList = false
+                manager.currentPosition.value = null
                 manager.searchNumber = ""
                 navigator.goBack()
             }
         } else {
+            manager.currentPosition.value = null
+            manager.searchNumber = ""
             navigator.goBack()
         }
     }
@@ -410,7 +411,6 @@ class GoodInfoOpenViewModel : CoreViewModel() {
     fun onClickApply() {
         saveGoodInTask()
         navigator.goBack()
-        navigator.openBasketGoodListScreen()
     }
 
     fun onClickDetails() {
