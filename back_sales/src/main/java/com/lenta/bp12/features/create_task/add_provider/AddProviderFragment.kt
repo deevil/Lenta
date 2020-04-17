@@ -1,4 +1,4 @@
-package com.lenta.bp12.features.add_provider
+package com.lenta.bp12.features.create_task.add_provider
 
 import android.view.View
 import com.lenta.bp12.R

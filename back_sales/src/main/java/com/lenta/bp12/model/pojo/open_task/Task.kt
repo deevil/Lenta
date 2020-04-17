@@ -1,8 +1,11 @@
-package com.lenta.bp12.model.pojo
+package com.lenta.bp12.model.pojo.open_task
 
 import com.lenta.bp12.model.BlockType
 import com.lenta.bp12.model.ControlType
 import com.lenta.bp12.model.TaskStatus
+import com.lenta.bp12.model.pojo.ReturnReason
+import com.lenta.bp12.model.pojo.TaskType
+import com.lenta.bp12.model.pojo.create_task.Basket
 import com.lenta.bp12.request.pojo.ProviderInfo
 import com.lenta.shared.utilities.extentions.sumWith
 

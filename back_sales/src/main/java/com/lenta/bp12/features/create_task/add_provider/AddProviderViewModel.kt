@@ -1,8 +1,8 @@
-package com.lenta.bp12.features.add_provider
+package com.lenta.bp12.features.create_task.add_provider
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import com.lenta.bp12.model.ITaskManager
+import com.lenta.bp12.model.ICreateTaskManager
 import com.lenta.bp12.platform.navigation.IScreenNavigator
 import com.lenta.bp12.repository.DatabaseRepository
 import com.lenta.bp12.request.pojo.ProviderInfo
@@ -21,7 +21,7 @@ class AddProviderViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
     lateinit var database: DatabaseRepository
 
     @Inject
-    lateinit var manager: ITaskManager
+    lateinit var manager: ICreateTaskManager
 
 
     val good by lazy {

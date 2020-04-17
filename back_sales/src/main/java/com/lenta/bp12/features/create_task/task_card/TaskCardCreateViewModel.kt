@@ -2,10 +2,10 @@ package com.lenta.bp12.features.create_task.task_card
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import com.lenta.bp12.model.ITaskManager
+import com.lenta.bp12.model.ICreateTaskManager
 import com.lenta.bp12.model.pojo.ReturnReason
-import com.lenta.bp12.model.pojo.Task
 import com.lenta.bp12.model.pojo.TaskType
+import com.lenta.bp12.model.pojo.create_task.Task
 import com.lenta.bp12.platform.navigation.IScreenNavigator
 import com.lenta.bp12.repository.IDatabaseRepository
 import com.lenta.shared.account.ISessionInfo
@@ -32,7 +32,7 @@ class TaskCardCreateViewModel : CoreViewModel(), PageSelectionListener {
     lateinit var database: IDatabaseRepository
 
     @Inject
-    lateinit var manager: ITaskManager
+    lateinit var manager: ICreateTaskManager
 
 
     val title by lazy {

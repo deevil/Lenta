@@ -1,7 +1,7 @@
 package com.lenta.bp12.request
 
 import com.google.gson.annotations.SerializedName
-import com.lenta.bp12.model.pojo.Task
+import com.lenta.bp12.model.pojo.open_task.Task
 import com.lenta.bp12.request.pojo.SentTaskInfo
 import com.lenta.bp12.request.pojo.PositionInfo
 import com.lenta.bp12.request.pojo.MarkInfo

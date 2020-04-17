@@ -3,9 +3,9 @@ package com.lenta.bp12.features.open_task.task_list
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.lenta.bp12.model.BlockType
-import com.lenta.bp12.model.ITaskManager
+import com.lenta.bp12.model.IOpenTaskManager
 import com.lenta.bp12.model.TaskStatus
-import com.lenta.bp12.model.pojo.Task
+import com.lenta.bp12.model.pojo.open_task.Task
 import com.lenta.bp12.platform.navigation.IScreenNavigator
 import com.lenta.bp12.request.TaskListNetRequest
 import com.lenta.bp12.request.TaskListParams
@@ -34,7 +34,7 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
     lateinit var appSettings: IAppSettings
 
     @Inject
-    lateinit var manager: ITaskManager
+    lateinit var manager: IOpenTaskManager
 
 
     val title by lazy {

@@ -2,11 +2,10 @@ package com.lenta.bp12.features.open_task.good_list
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import com.lenta.bp12.model.ITaskManager
+import com.lenta.bp12.model.IOpenTaskManager
 import com.lenta.bp12.platform.navigation.IScreenNavigator
 import com.lenta.bp12.request.TaskContentNetRequest
 import com.lenta.bp12.request.TaskContentParams
-import com.lenta.bp12.request.pojo.ProviderInfo
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.platform.device_info.DeviceInfo
@@ -35,7 +34,7 @@ class GoodListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
     lateinit var deviceInfo: DeviceInfo
 
     @Inject
-    lateinit var manager: ITaskManager
+    lateinit var manager: IOpenTaskManager
 
     @Inject
     lateinit var appSettings: IAppSettings

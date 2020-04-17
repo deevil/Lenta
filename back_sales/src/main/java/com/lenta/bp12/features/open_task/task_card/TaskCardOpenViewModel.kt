@@ -3,7 +3,7 @@ package com.lenta.bp12.features.open_task.task_card
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.lenta.bp12.model.ControlType
-import com.lenta.bp12.model.ITaskManager
+import com.lenta.bp12.model.IOpenTaskManager
 import com.lenta.bp12.platform.navigation.IScreenNavigator
 import com.lenta.bp12.request.UnblockTaskNetRequest
 import com.lenta.bp12.request.UnblockTaskParams
@@ -24,7 +24,7 @@ class TaskCardOpenViewModel : CoreViewModel(), PageSelectionListener {
     lateinit var sessionInfo: ISessionInfo
 
     @Inject
-    lateinit var manager: ITaskManager
+    lateinit var manager: IOpenTaskManager
 
     @Inject
     lateinit var unblockTaskNetRequest: UnblockTaskNetRequest

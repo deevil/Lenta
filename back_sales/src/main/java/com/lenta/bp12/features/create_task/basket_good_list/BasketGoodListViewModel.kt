@@ -1,7 +1,7 @@
 package com.lenta.bp12.features.create_task.basket_good_list
 
 import androidx.lifecycle.MutableLiveData
-import com.lenta.bp12.model.ITaskManager
+import com.lenta.bp12.model.ICreateTaskManager
 import com.lenta.bp12.platform.navigation.IScreenNavigator
 import com.lenta.shared.platform.constants.Constants
 import com.lenta.shared.platform.viewmodel.CoreViewModel
@@ -17,7 +17,7 @@ class BasketGoodListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
     lateinit var navigator: IScreenNavigator
 
     @Inject
-    lateinit var manager: ITaskManager
+    lateinit var manager: ICreateTaskManager
 
 
     val selectionsHelper = SelectionItemsHelper()

@@ -3,7 +3,7 @@ package com.lenta.bp12.features.open_task.good_info
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.lenta.bp12.model.GoodKind
-import com.lenta.bp12.model.ITaskManager
+import com.lenta.bp12.model.IOpenTaskManager
 import com.lenta.bp12.platform.navigation.IScreenNavigator
 import com.lenta.bp12.request.ExciseInfoNetRequest
 import com.lenta.bp12.request.ExciseInfoParams
@@ -29,7 +29,7 @@ class GoodInfoOpenViewModel : CoreViewModel() {
     lateinit var navigator: IScreenNavigator
 
     @Inject
-    lateinit var manager: ITaskManager
+    lateinit var manager: IOpenTaskManager
 
     @Inject
     lateinit var sessionInfo: ISessionInfo

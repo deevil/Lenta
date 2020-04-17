@@ -1,9 +1,9 @@
-package com.lenta.bp12.features.good_details
+package com.lenta.bp12.features.create_task.good_details
 
-import com.lenta.shared.platform.viewmodel.CoreViewModel
 import androidx.lifecycle.MutableLiveData
-import com.lenta.bp12.model.ITaskManager
+import com.lenta.bp12.model.ICreateTaskManager
 import com.lenta.bp12.platform.navigation.IScreenNavigator
+import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.SelectionItemsHelper
 import com.lenta.shared.utilities.databinding.PageSelectionListener
 import com.lenta.shared.utilities.extentions.dropZeros
@@ -16,7 +16,7 @@ class GoodDetailsViewModel : CoreViewModel(), PageSelectionListener {
     lateinit var navigator: IScreenNavigator
 
     @Inject
-    lateinit var manager: ITaskManager
+    lateinit var manager: ICreateTaskManager
 
 
     val basketSelectionsHelper = SelectionItemsHelper()

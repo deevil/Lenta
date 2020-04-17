@@ -2,7 +2,7 @@ package com.lenta.bp12.features.save_data
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import com.lenta.bp12.model.ITaskManager
+import com.lenta.bp12.model.IOpenTaskManager
 import com.lenta.bp12.platform.navigation.IScreenNavigator
 import com.lenta.bp12.request.SendTaskDataNetRequest
 import com.lenta.bp12.request.TaskData
@@ -24,7 +24,7 @@ class SaveDataViewModel : CoreViewModel() {
     lateinit var sessionInfo: ISessionInfo
 
     @Inject
-    lateinit var manager: ITaskManager
+    lateinit var manager: IOpenTaskManager
 
     @Inject
     lateinit var sendTaskDataNetRequest: SendTaskDataNetRequest

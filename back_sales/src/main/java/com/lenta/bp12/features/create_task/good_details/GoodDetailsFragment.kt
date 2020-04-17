@@ -1,4 +1,4 @@
-package com.lenta.bp12.features.good_details
+package com.lenta.bp12.features.create_task.good_details
 
 import com.lenta.bp12.R
 import com.lenta.bp12.platform.extention.getAppComponent

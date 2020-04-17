@@ -1,4 +1,4 @@
-package com.lenta.bp12.model.pojo
+package com.lenta.bp12.model.pojo.create_task
 
 import com.lenta.bp12.model.ControlType
 import com.lenta.bp12.request.pojo.ProviderInfo

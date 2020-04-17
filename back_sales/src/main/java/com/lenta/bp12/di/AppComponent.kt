@@ -1,7 +1,7 @@
 package com.lenta.bp12.di
 
 import com.lenta.bp12.ExceptionHandler
-import com.lenta.bp12.features.add_provider.AddProviderViewModel
+import com.lenta.bp12.features.create_task.add_provider.AddProviderViewModel
 import com.lenta.bp12.features.auth.AuthViewModel
 import com.lenta.bp12.features.create_task.basket_good_list.BasketGoodListViewModel
 import com.lenta.bp12.features.create_task.basket_properties.BasketPropertiesViewModel
@@ -10,7 +10,7 @@ import com.lenta.bp12.features.create_task.task_card.TaskCardCreateViewModel
 import com.lenta.bp12.features.create_task.task_composition.TaskCompositionViewModel
 import com.lenta.bp12.features.discrepancy_list.DiscrepancyListViewModel
 import com.lenta.bp12.features.enter_employee_number.EnterEmployeeNumberViewModel
-import com.lenta.bp12.features.good_details.GoodDetailsViewModel
+import com.lenta.bp12.features.create_task.good_details.GoodDetailsViewModel
 import com.lenta.bp12.features.loading.fast.FastLoadingViewModel
 import com.lenta.bp12.features.main_menu.MainMenuViewModel
 import com.lenta.bp12.features.save_data.SaveDataViewModel
@@ -22,7 +22,8 @@ import com.lenta.bp12.features.open_task.task_list.TaskListViewModel
 import com.lenta.bp12.features.open_task.task_search.TaskSearchViewModel
 import com.lenta.bp12.main.MainActivity
 import com.lenta.bp12.main.MainViewModel
-import com.lenta.bp12.model.ITaskManager
+import com.lenta.bp12.model.ICreateTaskManager
+import com.lenta.bp12.model.IOpenTaskManager
 import com.lenta.bp12.platform.navigation.IScreenNavigator
 import com.lenta.bp12.platform.resource.IResourceManager
 import com.lenta.bp12.repository.IDatabaseRepository
@@ -37,7 +38,8 @@ interface AppComponent : CoreComponent {
     fun getScreenNavigator(): IScreenNavigator
     fun getGeneralRepository(): IDatabaseRepository
     fun getResourceManager(): IResourceManager
-    fun getTaskManager(): ITaskManager
+    fun getCreateTaskManager(): ICreateTaskManager
+    fun getOpenTaskManager(): IOpenTaskManager
 
     fun inject(mainActivity: MainActivity)
     fun inject(mainViewModel: MainViewModel)
