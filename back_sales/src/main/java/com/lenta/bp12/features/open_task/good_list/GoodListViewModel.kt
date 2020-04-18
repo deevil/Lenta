@@ -52,7 +52,7 @@ class GoodListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
 
     val title by lazy {
         task.map { task ->
-            "${task?.type?.type}-${task?.number} // ${task?.name}"
+            "${task?.properties?.type}-${task?.number} // ${task?.name}"
         }
     }
 

@@ -40,7 +40,7 @@ class TaskCompositionViewModel : CoreViewModel(), PageSelectionListener, OnOkInS
 
     val title by lazy {
         task.map { task ->
-            "${task?.type?.type} // ${task?.name}"
+            "${task?.properties?.type} // ${task?.name}"
         }
     }
 

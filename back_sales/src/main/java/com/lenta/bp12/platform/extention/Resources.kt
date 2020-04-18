@@ -1,7 +1,7 @@
 package com.lenta.bp12.platform.extention
 
 import com.lenta.bp12.model.pojo.ReturnReason
-import com.lenta.bp12.model.pojo.TaskType
+import com.lenta.bp12.model.pojo.Properties
 import com.lenta.bp12.request.pojo.ProviderInfo
 import com.lenta.shared.fmp.resources.fast.ZmpUtz39V001
 import com.lenta.shared.fmp.resources.fast.ZmpUtz44V001
@@ -23,10 +23,10 @@ fun ZmpUtz09V001.getProviderInfo(code: String): ProviderInfo? {
     }
 }
 
-fun ZmpUtz39V001.getTaskTypeList(): List<TaskType> {
+fun ZmpUtz39V001.getTaskTypeList(): List<Properties> {
     @Suppress("INACCESSIBLE_TYPE")
     return localHelper_ET_TASK_TPS.all.map {
-        TaskType(
+        Properties(
                 type = it.taskType,
                 description = it.annotation,
                 section = it.divAbtnr,
@@ -35,10 +35,10 @@ fun ZmpUtz39V001.getTaskTypeList(): List<TaskType> {
     }
 }
 
-fun ZmpUtz39V001.getTaskType(code: String): TaskType? {
+fun ZmpUtz39V001.getTaskType(code: String): Properties? {
     @Suppress("INACCESSIBLE_TYPE")
     return localHelper_ET_TASK_TPS.getWhere("TASK_TYPE = \"$code\" LIMIT 1").first()?.let {
-        TaskType(
+        Properties(
                 type = it.taskType,
                 description = it.annotation,
                 section = it.divAbtnr,

@@ -73,7 +73,7 @@ class SendTaskDataNetRequest @Inject constructor(
                         taskNumber = params.task.number,
                         userNumber = params.userNumber,
                         taskName = params.task.name,
-                        taskType = params.task.type!!.type,
+                        taskType = params.task.properties!!.type,
                         tkNumber = params.tkNumber,
                         storage = params.task.storage,
                         reasonCode = params.task.reason.code,

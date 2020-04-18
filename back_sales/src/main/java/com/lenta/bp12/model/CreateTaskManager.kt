@@ -87,7 +87,7 @@ class CreateTaskManager @Inject constructor(
     }
 
     override suspend fun isGoodCanBeAdded(goodInfo: GoodInfoResult): Boolean {
-        return database.isGoodCanBeAdded(goodInfo, currentTask.value!!.type!!.type)
+        return database.isGoodCanBeAdded(goodInfo, currentTask.value!!.properties!!.type)
     }
 
     override fun addBasket(basket: Basket) {

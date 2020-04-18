@@ -4,7 +4,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.lenta.bp12.model.ICreateTaskManager
 import com.lenta.bp12.model.pojo.ReturnReason
-import com.lenta.bp12.model.pojo.TaskType
+import com.lenta.bp12.model.pojo.Properties
 import com.lenta.bp12.model.pojo.create_task.Task
 import com.lenta.bp12.platform.navigation.IScreenNavigator
 import com.lenta.bp12.repository.IDatabaseRepository
@@ -73,7 +73,7 @@ class TaskCardCreateViewModel : CoreViewModel(), PageSelectionListener {
         }
     }
 
-    private val types = MutableLiveData<List<TaskType>>(emptyList())
+    private val types = MutableLiveData<List<Properties>>(emptyList())
 
     private val reasons = MutableLiveData<List<ReturnReason>>(emptyList())
 
@@ -139,7 +139,7 @@ class TaskCardCreateViewModel : CoreViewModel(), PageSelectionListener {
     fun onClickNext() {
         manager.updateCurrentTask(Task(
                 name = taskName.value!!,
-                type = types.value!![taskTypePosition.value!!],
+                properties = types.value!![taskTypePosition.value!!],
                 storage = storageList.value!![storagePosition.value!!],
                 reason = reasons.value!![returnReasonPosition.value!!]
                 //isAlcoholAllowed = isAlcohol.value!!,

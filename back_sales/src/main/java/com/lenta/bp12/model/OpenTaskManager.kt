@@ -2,7 +2,6 @@ package com.lenta.bp12.model
 
 import androidx.lifecycle.MutableLiveData
 import com.lenta.bp12.model.pojo.*
-import com.lenta.bp12.model.pojo.create_task.Basket
 import com.lenta.bp12.model.pojo.open_task.Good
 import com.lenta.bp12.model.pojo.open_task.Task
 import com.lenta.bp12.platform.extention.getBlockType
@@ -94,7 +93,7 @@ class OpenTaskManager @Inject constructor(
             Task(
                     number = taskInfo.number,
                     name = taskInfo.name,
-                    type = TaskType(
+                    properties = Properties(
                             type = taskInfo.type,
                             description = taskInfo.name,
                             section = taskInfo.section,
@@ -104,9 +103,11 @@ class OpenTaskManager @Inject constructor(
                     storage = taskInfo.storage,
 
                     isStrict = taskInfo.isStrict.isSapTrue(),
-                    blockType = taskInfo.blockType.getBlockType(),
-                    blockUser = taskInfo.blockUser,
-                    blockIp = taskInfo.blockIp,
+                    block = Block(
+                            type = taskInfo.blockType.getBlockType(),
+                            user = taskInfo.blockUser,
+                            ip = taskInfo.blockIp
+                    ),
                     isProcessed = !taskInfo.isNotFinish.isSapTrue(),
                     control = taskInfo.control.getControlType(),
                     comment = taskInfo.comment,
@@ -154,10 +155,10 @@ class OpenTaskManager @Inject constructor(
     }
 
     override suspend fun isGoodCanBeAdded(goodInfo: GoodInfoResult): Boolean {
-        return database.isGoodCanBeAdded(goodInfo, currentTask.value!!.type!!.type)
+        return database.isGoodCanBeAdded(goodInfo, currentTask.value!!.properties!!.type)
     }
 
-    override fun deleteGoodByMaterials(materialList: List<String>) {
+    /*override fun deleteGoodByMaterials(materialList: List<String>) {
         currentTask.value?.let { task ->
             task.goods.let { goods ->
                 materialList.forEach { material ->
@@ -168,7 +169,7 @@ class OpenTaskManager @Inject constructor(
             task.deleteEmptyBaskets()
             updateCurrentTask(task)
         }
-    }
+    }*/
 
     override fun finishCurrentTask() {
         currentTask.value?.let { task ->
@@ -222,7 +223,7 @@ interface IOpenTaskManager {
     fun findGoodByEan(ean: String): Good?
     fun findGoodByMaterial(material: String): Good?
     suspend fun isGoodCanBeAdded(goodInfo: GoodInfoResult): Boolean
-    fun deleteGoodByMaterials(materialList: List<String>)
+    //fun deleteGoodByMaterials(materialList: List<String>)
     fun finishCurrentTask()
     fun addProviderInCurrentGood(providerInfo: ProviderInfo)
     suspend fun addTasks(tasksInfo: List<TaskInfo>)

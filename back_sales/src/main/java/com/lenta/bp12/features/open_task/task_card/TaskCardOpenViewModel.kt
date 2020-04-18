@@ -47,12 +47,12 @@ class TaskCardOpenViewModel : CoreViewModel(), PageSelectionListener {
         task.map {
             it?.let { task ->
                 TaskCardOpenUi(
-                        type = task.type?.description ?: "",
+                        type = task.properties?.description ?: "",
                         name = task.name,
                         provider = task.getProviderCodeWithName(),
                         storage = task.storage,
                         reason = task.reason.description,
-                        description = task.type?.description ?: "",
+                        description = task.properties?.description ?: "",
                         comment = task.comment,
                         isStrict = task.isStrict,
                         isAlcohol = task.control == ControlType.ALCOHOL,

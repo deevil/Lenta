@@ -62,7 +62,7 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
                         name = task.name,
                         provider = task.getProviderCodeWithName(),
                         taskStatus = task.status,
-                        blockType = task.blockType,
+                        blockType = task.block.type,
                         quantity = task.quantity.toString()
                 )
             }
@@ -138,9 +138,9 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
                     tasks.value?.let { tasks ->
                         tasks.find { it.number == processing.value!![position].number }?.let { task ->
                             task.apply {
-                                when (blockType) {
-                                    BlockType.LOCK -> navigator.showAlertBlockedTaskAnotherUser(blockUser, blockIp)
-                                    BlockType.SELF_LOCK -> navigator.showAlertBlockedTaskByMe(blockUser) { openTask(task) }
+                                when (block.type) {
+                                    BlockType.LOCK -> navigator.showAlertBlockedTaskAnotherUser(block.user, block.ip)
+                                    BlockType.SELF_LOCK -> navigator.showAlertBlockedTaskByMe(block.user) { openTask(task) }
                                     else -> openTask(task)
                                 }
                             }
@@ -151,9 +151,9 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
                     tasks.value?.let { tasks ->
                         tasks.find { it.number == search.value!![position].number }?.let { task ->
                             task.apply {
-                                when (blockType) {
-                                    BlockType.LOCK -> navigator.showAlertBlockedTaskAnotherUser(blockUser, blockIp)
-                                    BlockType.SELF_LOCK -> navigator.showAlertBlockedTaskByMe(blockUser) { openTask(task) }
+                                when (block.type) {
+                                    BlockType.LOCK -> navigator.showAlertBlockedTaskAnotherUser(block.user, block.ip)
+                                    BlockType.SELF_LOCK -> navigator.showAlertBlockedTaskByMe(block.user) { openTask(task) }
                                     else -> openTask(task)
                                 }
                             }

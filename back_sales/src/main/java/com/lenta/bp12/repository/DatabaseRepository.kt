@@ -2,7 +2,7 @@ package com.lenta.bp12.repository
 
 import com.lenta.bp12.model.pojo.open_task.Good
 import com.lenta.bp12.model.pojo.ReturnReason
-import com.lenta.bp12.model.pojo.TaskType
+import com.lenta.bp12.model.pojo.Properties
 import com.lenta.bp12.platform.extention.*
 import com.lenta.bp12.request.GoodInfoResult
 import com.lenta.bp12.request.pojo.ProviderInfo
@@ -76,18 +76,18 @@ class DatabaseRepository @Inject constructor(
         }
     }
 
-    override suspend fun getTaskTypeList(): List<TaskType> {
+    override suspend fun getTaskTypeList(): List<Properties> {
         return withContext(Dispatchers.IO) {
             val taskTypeList = taskTypes.getTaskTypeList().toMutableList()
             if (taskTypeList.size > 1) {
-                taskTypeList.add(0, TaskType())
+                taskTypeList.add(0, Properties())
             }
 
             return@withContext taskTypeList
         }
     }
 
-    override suspend fun getTaskType(code: String): TaskType? {
+    override suspend fun getTaskType(code: String): Properties? {
         return withContext(Dispatchers.IO) {
             return@withContext taskTypes.getTaskType(code)
         }
@@ -188,8 +188,8 @@ interface IDatabaseRepository {
     suspend fun getGoodByMaterial(material: String): Good?
     suspend fun getAllowedAppVersion(): String?
     suspend fun getUnitsByCode(code: String): Uom
-    suspend fun getTaskTypeList(): List<TaskType>
-    suspend fun getTaskType(code: String): TaskType?
+    suspend fun getTaskTypeList(): List<Properties>
+    suspend fun getTaskType(code: String): Properties?
     suspend fun getStorageList(taskType: String): List<String>
     suspend fun getReturnReasonList(taskType: String): List<ReturnReason>
     suspend fun isGoodAllowed(gisControl: String, taskType: String, goodGroup: String?, purchaseGroup: String?): Boolean
