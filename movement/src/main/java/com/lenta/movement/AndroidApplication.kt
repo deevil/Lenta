@@ -20,6 +20,6 @@ class AndroidApplication: CoreApplication() {
     }
 
     override fun onHandleException() {
-        TODO("Not yet implemented")
+
     }
 }

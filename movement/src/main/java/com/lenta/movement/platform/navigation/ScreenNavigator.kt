@@ -1,5 +1,10 @@
 package com.lenta.movement.platform.navigation
 
+import com.lenta.movement.features.auth.AuthFragment
+import com.lenta.movement.features.home.HomeFragment
+import com.lenta.movement.features.loading.fast.FastDataLoadingFragment
+import com.lenta.movement.features.selectmarket.SelectMarketFragment
+import com.lenta.movement.features.selectpersonalnumber.SelectPersonnelNumberFragment
 import com.lenta.shared.account.IAuthenticator
 import com.lenta.shared.platform.activity.ForegroundActivityProvider
 import com.lenta.shared.platform.navigation.ICoreNavigator
@@ -21,27 +26,45 @@ class ScreenNavigator(
         }
     }
 
-    override fun openSelectMarketScreen() {
-        runOrPostpone {
-            // TODO getFragmentStack()?.replace(SelectMarketFragment())
-        }
-    }
-
     override fun openLoginScreen() {
         runOrPostpone {
             getFragmentStack()?.let {
                 it.popAll()
-                // TODO it.replace(AuthFragment())
+                it.replace(AuthFragment())
             }
         }
-
     }
 
+    override fun openSelectMarketScreen() {
+        runOrPostpone {
+            getFragmentStack()?.replace(SelectMarketFragment())
+        }
+    }
+
+    override fun openFastDataLoadingScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(FastDataLoadingFragment())
+        }
+    }
+
+    override fun openSelectionPersonnelNumberScreen() {
+        runOrPostpone {
+            getFragmentStack()?.replace(SelectPersonnelNumberFragment())
+        }
+    }
+
+    override fun openMainMenuScreen() {
+        runOrPostpone {
+            getFragmentStack()?.replace(HomeFragment())
+        }
+    }
 }
 
 interface IScreenNavigator : ICoreNavigator {
     fun openFirstScreen()
     fun openLoginScreen()
     fun openSelectMarketScreen()
-
+    fun openFastDataLoadingScreen()
+    fun openSelectionPersonnelNumberScreen()
+    fun openMainMenuScreen()
 }
