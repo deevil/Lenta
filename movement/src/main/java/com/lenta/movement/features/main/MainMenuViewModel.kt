@@ -1,10 +1,10 @@
-package com.lenta.movement.features.home
+package com.lenta.movement.features.main
 
 import com.lenta.movement.platform.navigation.IScreenNavigator
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import javax.inject.Inject
 
-class HomeViewModel: CoreViewModel() {
+class MainMenuViewModel: CoreViewModel() {
 
     @Inject
     lateinit var screenNavigator: IScreenNavigator

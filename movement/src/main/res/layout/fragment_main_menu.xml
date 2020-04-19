@@ -7,7 +7,7 @@
 
         <variable
             name="vm"
-            type="com.lenta.movement.features.home.HomeViewModel" />
+            type="com.lenta.movement.features.main.MainMenuViewModel" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout

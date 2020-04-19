@@ -1,7 +1,7 @@
 package com.lenta.movement.platform.navigation
 
 import com.lenta.movement.features.auth.AuthFragment
-import com.lenta.movement.features.home.HomeFragment
+import com.lenta.movement.features.main.MainMenuFragment
 import com.lenta.movement.features.loading.fast.FastDataLoadingFragment
 import com.lenta.movement.features.selectmarket.SelectMarketFragment
 import com.lenta.movement.features.selectpersonalnumber.SelectPersonnelNumberFragment
@@ -55,7 +55,7 @@ class ScreenNavigator(
 
     override fun openMainMenuScreen() {
         runOrPostpone {
-            getFragmentStack()?.replace(HomeFragment())
+            getFragmentStack()?.replace(MainMenuFragment())
         }
     }
 }

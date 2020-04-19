@@ -1,8 +1,8 @@
-package com.lenta.movement.features.home
+package com.lenta.movement.features.main
 
 import android.view.View
 import com.lenta.movement.R
-import com.lenta.movement.databinding.FragmentHomeBinding
+import com.lenta.movement.databinding.FragmentMainMenuBinding
 import com.lenta.movement.platform.extensions.getAppComponent
 import com.lenta.shared.platform.fragment.CoreFragment
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
@@ -12,15 +12,15 @@ import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
 import com.lenta.shared.utilities.extentions.getAppInfo
 import com.lenta.shared.utilities.extentions.provideViewModel
 
-class HomeFragment: CoreFragment<FragmentHomeBinding, HomeViewModel>(),
+class MainMenuFragment : CoreFragment<FragmentMainMenuBinding, MainMenuViewModel>(),
     ToolbarButtonsClickListener {
 
-    override fun getLayoutId() = R.layout.fragment_home
+    override fun getLayoutId() = R.layout.fragment_main_menu
 
     override fun getPageNumber(): String = "10/04"
 
-    override fun getViewModel(): HomeViewModel {
-        provideViewModel(HomeViewModel::class.java).let {
+    override fun getViewModel(): MainMenuViewModel {
+        provideViewModel(MainMenuViewModel::class.java).let {
             getAppComponent()?.inject(it)
             return it
         }

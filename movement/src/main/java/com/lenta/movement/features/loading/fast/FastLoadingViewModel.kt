@@ -29,26 +29,35 @@ class FastLoadingViewModel : CoreLoadingViewModel() {
 
     @Inject
     lateinit var hyperHive: HyperHive
+
     @Inject
     lateinit var fastResourcesNetRequest: FastResourcesMultiRequest
+
     @Inject
     lateinit var screenNavigator: IScreenNavigator
+
     @Inject
     lateinit var failureInterpreter: IFailureInterpreter
+
     @Inject
     lateinit var stockNetRequest: StockNetRequest
+
     @Inject
     lateinit var appUpdateChecker: AppUpdateChecker
+
     @Inject
     lateinit var repoInMemoryHolder: IRepoInMemoryHolder
+
     @Inject
     lateinit var serverTimeRequest: ServerTimeRequest
+
     @Inject
     lateinit var sessionInfo: ISessionInfo
+
     @Inject
     lateinit var timeMonitor: ITimeMonitor
 
-    val zmpUtz14V001: ZmpUtz14V001 by lazy { ZmpUtz14V001(hyperHive) }
+    private val zmpUtz14V001: ZmpUtz14V001 by lazy { ZmpUtz14V001(hyperHive) }
 
     override val title: MutableLiveData<String> = MutableLiveData()
     override val progress: MutableLiveData<Boolean> = MutableLiveData(true)
@@ -58,8 +67,12 @@ class FastLoadingViewModel : CoreLoadingViewModel() {
     init {
         viewModelScope.launch {
             progress.value = true
-            serverTimeRequest(ServerTimeRequestParam(sessionInfo.market
-                    ?: "")).either(::handleFailure, ::handleSuccessServerTime)
+            serverTimeRequest(
+                ServerTimeRequestParam(
+                    sessionInfo.market
+                        ?: ""
+                )
+            ).either(::handleFailure, ::handleSuccessServerTime)
 
         }
     }
@@ -87,8 +100,8 @@ class FastLoadingViewModel : CoreLoadingViewModel() {
         repoInMemoryHolder.stockLockRequestResult = stockLockRequestResult
         viewModelScope.launch {
             if (appUpdateChecker.isNeedUpdate(withContext(Dispatchers.IO) {
-                        return@withContext zmpUtz14V001.getAllowedWobAppVersion()
-                    })) {
+                    return@withContext zmpUtz14V001.getAllowedWobAppVersion()
+                })) {
 
                 hyperHive.authAPI.unAuth()
                 screenNavigator.closeAllScreen()
