@@ -12,6 +12,7 @@ import com.lenta.bp12.request.GoodInfoResult
 import com.lenta.bp12.request.TaskContentResult
 import com.lenta.bp12.request.pojo.ProviderInfo
 import com.lenta.bp12.request.pojo.TaskInfo
+import com.lenta.bp12.request.pojo.TaskSearchParams
 import com.lenta.shared.models.core.getMatrixType
 import com.lenta.shared.platform.constants.Constants
 import com.lenta.shared.utilities.extentions.isSapTrue
@@ -26,6 +27,8 @@ class OpenTaskManager @Inject constructor(
     override var openGoodFromList = false
 
     override var openPositionFromList = false
+
+    override val searchParams = MutableLiveData<TaskSearchParams>()
 
     override val tasks = MutableLiveData<List<Task>>(emptyList())
 
@@ -195,6 +198,8 @@ interface IOpenTaskManager {
     var searchNumber: String
     var openGoodFromList: Boolean
     var openPositionFromList: Boolean
+
+    val searchParams: MutableLiveData<TaskSearchParams>
 
     val tasks: MutableLiveData<List<Task>>
     val searchTasks: MutableLiveData<List<Task>>
