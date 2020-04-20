@@ -40,7 +40,7 @@ class GoodListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
     lateinit var appSettings: IAppSettings
 
 
-    val notProcessedSelectionsHelper = SelectionItemsHelper()
+    val processingSelectionsHelper = SelectionItemsHelper()
 
     val processedSelectionsHelper = SelectionItemsHelper()
 
@@ -62,7 +62,7 @@ class GoodListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
         MutableLiveData(true)
     }
 
-    val notProcessed by lazy {
+    val processing by lazy {
         task.map { task ->
             val itemList = mutableListOf<SimpleItemGood>()
 
@@ -115,9 +115,15 @@ class GoodListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
         }
     }
 
-    val deleteEnabled = MutableLiveData(false)
+    val deleteEnabled = selectedPage.map { page ->
+        page == 0 && !processedSelectionsHelper.isSelectedEmpty() || page == 1 && !processedSelectionsHelper.isSelectedEmpty()
+    }
 
-    val saveEnabled = MutableLiveData(false)
+    val saveEnabled by lazy {
+        processed.map { list ->
+            list?.isNotEmpty()
+        }
+    }
 
     // -----------------------------
 
@@ -163,14 +169,16 @@ class GoodListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
     }
 
     fun onClickSave() {
-
+        navigator.showMakeTaskCountedAndClose {
+            navigator.openDiscrepancyListScreen()
+        }
     }
 
     fun onClickItemPosition(position: Int) {
         selectedPage.value?.let { page ->
             when (page) {
                 0 -> {
-                    notProcessed.value?.get(position)?.let { position ->
+                    processing.value?.get(position)?.let { position ->
                         manager.prepareGoodAndPosition(position.material, position.providerCode)
                         navigator.openGoodInfoOpenScreen()
                     }

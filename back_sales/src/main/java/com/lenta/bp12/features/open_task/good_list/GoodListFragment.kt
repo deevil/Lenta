@@ -71,29 +71,29 @@ class GoodListFragment : CoreFragment<FragmentGoodListBinding, GoodListViewModel
     }
 
     private fun initGoodListNotProcessed(container: ViewGroup): View {
-        DataBindingUtil.inflate<LayoutGoodListNotProcessedBinding>(LayoutInflater.from(container.context),
-                R.layout.layout_good_list_not_processed,
+        DataBindingUtil.inflate<LayoutGoodListProcessingBinding>(LayoutInflater.from(container.context),
+                R.layout.layout_good_list_processing,
                 container,
                 false).let { layoutBinding ->
 
             val onClickSelectionListener = View.OnClickListener {
                 (it!!.tag as Int).let { position ->
-                    vm.notProcessedSelectionsHelper.revert(position = position)
+                    vm.processingSelectionsHelper.revert(position = position)
                     layoutBinding.rv.adapter?.notifyItemChanged(position)
                 }
             }
 
             layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
-                    layoutId = R.layout.item_good_list_not_processed,
+                    layoutId = R.layout.item_good_list_processing,
                     itemId = BR.item,
-                    realisation = object : DataBindingAdapter<ItemGoodListNotProcessedBinding> {
-                        override fun onCreate(binding: ItemGoodListNotProcessedBinding) {
+                    realisation = object : DataBindingAdapter<ItemGoodListProcessingBinding> {
+                        override fun onCreate(binding: ItemGoodListProcessingBinding) {
                         }
 
-                        override fun onBind(binding: ItemGoodListNotProcessedBinding, position: Int) {
+                        override fun onBind(binding: ItemGoodListProcessingBinding, position: Int) {
                             binding.tvItemNumber.tag = position
                             binding.tvItemNumber.setOnClickListener(onClickSelectionListener)
-                            binding.selectedForDelete = vm.notProcessedSelectionsHelper.isSelected(position)
+                            binding.selectedForDelete = vm.processingSelectionsHelper.isSelected(position)
                             notProcessedRecyclerViewKeyHandler?.let {
                                 binding.root.isSelected = it.isSelected(position)
                             }
@@ -115,7 +115,7 @@ class GoodListFragment : CoreFragment<FragmentGoodListBinding, GoodListViewModel
             layoutBinding.lifecycleOwner = viewLifecycleOwner
             notProcessedRecyclerViewKeyHandler = RecyclerViewKeyHandler(
                     rv = layoutBinding.rv,
-                    items = vm.notProcessed,
+                    items = vm.processing,
                     lifecycleOwner = layoutBinding.lifecycleOwner!!,
                     initPosInfo = notProcessedRecyclerViewKeyHandler?.posInfo?.value
             )
@@ -169,7 +169,7 @@ class GoodListFragment : CoreFragment<FragmentGoodListBinding, GoodListViewModel
             layoutBinding.lifecycleOwner = viewLifecycleOwner
             processedRecyclerViewKeyHandler = RecyclerViewKeyHandler(
                     rv = layoutBinding.rv,
-                    items = vm.notProcessed,
+                    items = vm.processing,
                     lifecycleOwner = layoutBinding.lifecycleOwner!!,
                     initPosInfo = processedRecyclerViewKeyHandler?.posInfo?.value
             )

@@ -1,9 +1,11 @@
 package com.lenta.bp12.features.open_task.discrepancy_list
 
 import androidx.lifecycle.MutableLiveData
+import com.lenta.bp12.model.IOpenTaskManager
 import com.lenta.bp12.platform.navigation.IScreenNavigator
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.SelectionItemsHelper
+import com.lenta.shared.utilities.extentions.map
 import javax.inject.Inject
 
 class DiscrepancyListViewModel : CoreViewModel() {
@@ -11,18 +13,21 @@ class DiscrepancyListViewModel : CoreViewModel() {
     @Inject
     lateinit var navigator: IScreenNavigator
 
+    @Inject
+    lateinit var manager: IOpenTaskManager
+
 
     val selectionsHelper = SelectionItemsHelper()
 
-    val title by lazy {
-        "ВПП-328 // Возврат от 10.12.2018 15:20"
+    val task by lazy {
+        manager.currentTask
     }
 
-    val deleteEnabled = MutableLiveData(false)
-
-    val deleteVisibility = MutableLiveData(false)
-
-    val missingEnabled = MutableLiveData(false)
+    val title by lazy {
+        task.map { task ->
+            "${task?.properties?.type}-${task?.number} // ${task?.name}"
+        }
+    }
 
     val goods by lazy {
         MutableLiveData(List(3) {
@@ -32,6 +37,12 @@ class DiscrepancyListViewModel : CoreViewModel() {
             )
         })
     }
+
+    val deleteEnabled = MutableLiveData(false)
+
+    val deleteVisibility = MutableLiveData(false)
+
+    val missingEnabled = MutableLiveData(false)
 
     // -----------------------------
 
