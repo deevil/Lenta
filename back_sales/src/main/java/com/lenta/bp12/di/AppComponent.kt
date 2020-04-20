@@ -10,9 +10,10 @@ import com.lenta.bp12.features.create_task.task_card.TaskCardCreateViewModel
 import com.lenta.bp12.features.create_task.task_composition.TaskCompositionViewModel
 import com.lenta.bp12.features.open_task.discrepancy_list.DiscrepancyListViewModel
 import com.lenta.bp12.features.enter_employee_number.EnterEmployeeNumberViewModel
-import com.lenta.bp12.features.create_task.good_details.GoodDetailsViewModel
+import com.lenta.bp12.features.create_task.basket_details.BasketDetailsViewModel
 import com.lenta.bp12.features.loading.fast.FastLoadingViewModel
 import com.lenta.bp12.features.main_menu.MainMenuViewModel
+import com.lenta.bp12.features.open_task.category_details.CategoryDetailsViewModel
 import com.lenta.bp12.features.save_data.SaveDataViewModel
 import com.lenta.bp12.features.select_market.SelectMarketViewModel
 import com.lenta.bp12.features.open_task.good_info.GoodInfoOpenViewModel
@@ -53,7 +54,8 @@ interface AppComponent : CoreComponent {
 
     fun inject(it: TaskCompositionViewModel)
     fun inject(it: BasketGoodListViewModel)
-    fun inject(it: GoodDetailsViewModel)
+    fun inject(it: BasketDetailsViewModel)
+    fun inject(it: CategoryDetailsViewModel)
     fun inject(it: SaveDataViewModel)
     fun inject(it: TaskListViewModel)
     fun inject(it: GoodListViewModel)

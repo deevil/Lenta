@@ -2,13 +2,13 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context="com.lenta.bp14.features.work_list.goods_list.GoodsListWlFragment">
+    tools:context=".features.create_task.basket_details.BasketDetailsFragment">
 
     <data>
 
         <variable
             name="vm"
-            type="com.lenta.bp12.features.create_task.good_details.GoodDetailsViewModel" />
+            type="com.lenta.bp12.features.create_task.basket_details.BasketDetailsViewModel" />
 
         <variable
             name="rvConfig"
@@ -75,7 +75,7 @@
             android:layout_weight="1"
             app:items="@{vm.baskets}"
             app:rv_config="@{rvConfig}"
-            tools:listitem="@layout/item_good_details_basket" />
+            tools:listitem="@layout/item_basket_details" />
 
     </LinearLayout>
 
