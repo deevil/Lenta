@@ -28,7 +28,7 @@ data class Good(
 
         val innerQuantity: Double = 0.0,
         val orderUnits: Uom= Uom.ST,
-        val providers: MutableList<ProviderInfo> = mutableListOf(),
+        val providers: MutableList<ProviderInfo> = mutableListOf(), // ?
         val producers: MutableList<ProducerInfo> = mutableListOf(),
         val marks: MutableList<Mark> = mutableListOf(),
         val parts: MutableList<Part> = mutableListOf()

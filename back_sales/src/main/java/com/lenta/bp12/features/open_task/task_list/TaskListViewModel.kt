@@ -15,6 +15,7 @@ import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.settings.IAppSettings
 import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
 import com.lenta.shared.utilities.databinding.PageSelectionListener
+import com.lenta.shared.utilities.extentions.combineLatest
 import com.lenta.shared.utilities.extentions.map
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -53,9 +54,26 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
         manager.tasks
     }
 
+    val searchTasks by lazy {
+        manager.searchTasks
+    }
+
     val processing by lazy {
-        tasks.map { list ->
-            list?.mapIndexed { index, task ->
+        tasks.combineLatest(numberField).map { pair ->
+            val list = pair?.first
+            val number = pair?.second
+
+            val taskList = if (number.isNullOrEmpty()) {
+                list
+            } else {
+                if (number.all { it.isDigit() }) {
+                    list?.filter { it.number.contains(number) }
+                } else {
+                    list?.filter { it.block.user.contains(number) }
+                }
+            }
+
+            taskList?.mapIndexed { index, task ->
                 ItemTaskUi(
                         position = "${index + 1}",
                         number = task.number,

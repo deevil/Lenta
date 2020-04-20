@@ -29,6 +29,8 @@ class OpenTaskManager @Inject constructor(
 
     override val tasks = MutableLiveData<List<Task>>(emptyList())
 
+    override val searchTasks = MutableLiveData<List<Task>>(emptyList())
+
     override val currentTask = MutableLiveData<Task>()
 
     override val currentGood = MutableLiveData<Good>()
@@ -158,19 +160,6 @@ class OpenTaskManager @Inject constructor(
         return database.isGoodCanBeAdded(goodInfo, currentTask.value!!.properties!!.type)
     }
 
-    /*override fun deleteGoodByMaterials(materialList: List<String>) {
-        currentTask.value?.let { task ->
-            task.goods.let { goods ->
-                materialList.forEach { material ->
-                    goods.remove(goods.find { it.material == material })
-                }
-            }
-
-            task.deleteEmptyBaskets()
-            updateCurrentTask(task)
-        }
-    }*/
-
     override fun finishCurrentTask() {
         currentTask.value?.let { task ->
             task.isProcessed = true
@@ -208,6 +197,7 @@ interface IOpenTaskManager {
     var openPositionFromList: Boolean
 
     val tasks: MutableLiveData<List<Task>>
+    val searchTasks: MutableLiveData<List<Task>>
 
     val currentTask: MutableLiveData<Task>
     val currentGood: MutableLiveData<Good>
@@ -223,7 +213,6 @@ interface IOpenTaskManager {
     fun findGoodByEan(ean: String): Good?
     fun findGoodByMaterial(material: String): Good?
     suspend fun isGoodCanBeAdded(goodInfo: GoodInfoResult): Boolean
-    //fun deleteGoodByMaterials(materialList: List<String>)
     fun finishCurrentTask()
     fun addProviderInCurrentGood(providerInfo: ProviderInfo)
     suspend fun addTasks(tasksInfo: List<TaskInfo>)
