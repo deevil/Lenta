@@ -10,6 +10,7 @@ class TaskSearchViewModel : CoreViewModel() {
 
     @Inject
     lateinit var navigator: IScreenNavigator
+
     @Inject
     lateinit var sessionInfo: ISessionInfo
 

@@ -15,6 +15,7 @@ import android.view.ViewGroup
 import android.view.View
 import android.widget.AdapterView
 import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.Observer
 import com.lenta.bp12.BR
 import com.lenta.bp12.databinding.ItemTaskListTaskBinding
 import com.lenta.bp12.databinding.LayoutTaskListProcessingBinding
@@ -50,12 +51,22 @@ class TaskListFragment : CoreFragment<FragmentTaskListBinding, TaskListViewModel
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
         bottomToolbarUiModel.uiModelButton1.show(ButtonDecorationInfo.menu)
         bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.update)
+
+        viewLifecycleOwner.apply {
+            vm.selectedPage.observe(this, Observer {
+                if (it == 0) {
+                    bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.update)
+                } else {
+                    bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.filter)
+                }
+            })
+        }
     }
 
     override fun onToolbarButtonClick(view: View) {
         when (view.id) {
             R.id.b_1 -> vm.onClickMenu()
-            R.id.b_5 -> vm.onClickUpdate()
+            R.id.b_5 -> if (vm.selectedPage.value == 0) vm.onClickUpdate() else vm.onClickFilter()
         }
     }
 

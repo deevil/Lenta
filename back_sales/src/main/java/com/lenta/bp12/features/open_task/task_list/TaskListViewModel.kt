@@ -149,6 +149,10 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
         loadTaskList()
     }
 
+    fun onClickFilter() {
+        navigator.openTaskSearchScreen()
+    }
+
     fun onClickItemPosition(position: Int) {
         selectedPage.value?.let { page ->
             when (page) {
