@@ -18,80 +18,13 @@ import javax.inject.Inject
 
 class SendTaskDataNetRequest @Inject constructor(
         private val fmpRequestsHelper: FmpRequestsHelper
-) : UseCase<SendTaskDataResult, TaskData> {
+) : UseCase<SendTaskDataResult, SendTaskDataParams> {
 
-    override suspend fun run(params: TaskData): Either<Failure, SendTaskDataResult> {
-
-        val positions = mutableListOf<PositionInfo>()
-        val marks = mutableListOf<MarkInfo>()
-        val parts = mutableListOf<PartInfo>()
-
-        params.task.goods.forEach { good ->
-            good.positions.forEach { position ->
-                positions.add(
-                        PositionInfo(
-                                material = good.material,
-                                providerCode = position.provider?.code ?: "Not found!",
-                                quantity = position.quantity.dropZeros(),
-                                isCounted = position.isCounted.toSapBooleanString(),
-                                isDeleted = position.isDelete.toSapBooleanString(),
-                                unitsCode = good.units.code
-                        )
-                )
-            }
-            
-            good.marks.map { mark ->
-                marks.add(
-                        MarkInfo(
-                                material = good.material,
-                                markNumber = mark.markNumber,
-                                boxNumber = mark.boxNumber,
-                                isBadMark = mark.isBadMark.toSapBooleanString(),
-                                providerCode = mark.providerCode
-                        )
-                )
-            }
-
-            good.parts.map { part ->
-                parts.add(
-                        PartInfo(
-                                material = good.material,
-                                producer = part.producer,
-                                productionDate = part.productionDate,
-                                unitsCode = part.units.code,
-                                quantity = part.quantity.dropZeros(),
-                                partNumber = part.partNumber,
-                                providerCode = part.providerCode
-                        )
-                )
-            }
-        }
-
-        return fmpRequestsHelper.restRequest("ZMP_UTZ_BKS_04_V001",
-                SendTaskDataParams(
-                        deviceIp = params.deviceIp,
-                        taskNumber = params.task.number,
-                        userNumber = params.userNumber,
-                        taskName = params.task.name,
-                        taskType = params.task.properties!!.type,
-                        tkNumber = params.tkNumber,
-                        storage = params.task.storage,
-                        reasonCode = params.task.reason.code,
-                        isNotFinish = (!params.task.isProcessed).toSapBooleanString(),
-                        positions = positions,
-                        marks = marks,
-                        parts = parts
-                ), SendTaskDataStatus::class.java)
+    override suspend fun run(params: SendTaskDataParams): Either<Failure, SendTaskDataResult> {
+        return fmpRequestsHelper.restRequest("ZMP_UTZ_BKS_04_V001", params, SendTaskDataStatus::class.java)
     }
 
 }
-
-data class TaskData(
-        val deviceIp: String,
-        val tkNumber: String,
-        val userNumber: String,
-        val task: Task
-)
 
 data class SendTaskDataParams(
         /** IP адрес ТСД */

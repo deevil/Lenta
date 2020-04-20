@@ -8,13 +8,20 @@ import com.lenta.bp12.platform.extention.getControlType
 import com.lenta.bp12.platform.extention.getGoodKind
 import com.lenta.bp12.repository.IDatabaseRepository
 import com.lenta.bp12.request.GoodInfoResult
+import com.lenta.bp12.request.SendTaskDataParams
+import com.lenta.bp12.request.pojo.MarkInfo
+import com.lenta.bp12.request.pojo.PartInfo
+import com.lenta.bp12.request.pojo.PositionInfo
 import com.lenta.bp12.request.pojo.ProviderInfo
 import com.lenta.shared.models.core.getMatrixType
 import com.lenta.shared.platform.constants.Constants
+import com.lenta.shared.utilities.extentions.dropZeros
+import com.lenta.shared.utilities.extentions.toSapBooleanString
 import javax.inject.Inject
 
 class CreateTaskManager @Inject constructor(
-        private val database: IDatabaseRepository
+        private val database: IDatabaseRepository,
+        private val generalTaskManager: IGeneralTaskManager
 ) : ICreateTaskManager {
 
 
@@ -147,6 +154,72 @@ class CreateTaskManager @Inject constructor(
         }
     }
 
+    override fun prepareSendTaskDataParams(deviceIp: String, tkNumber: String, userNumber: String) {
+        currentTask.value?.let { task ->
+            val positions = mutableListOf<PositionInfo>()
+            val marks = mutableListOf<MarkInfo>()
+            val parts = mutableListOf<PartInfo>()
+
+            task.goods.forEach { good ->
+                good.positions.forEach { position ->
+                    positions.add(
+                            PositionInfo(
+                                    material = good.material,
+                                    providerCode = position.provider?.code ?: "",
+                                    quantity = position.quantity.dropZeros(),
+                                    isCounted = true.toSapBooleanString(),
+                                    isDeleted = false.toSapBooleanString(),
+                                    unitsCode = good.units.code
+                            )
+                    )
+                }
+
+                good.marks.map { mark ->
+                    marks.add(
+                            MarkInfo(
+                                    material = good.material,
+                                    markNumber = mark.markNumber,
+                                    boxNumber = mark.boxNumber,
+                                    isBadMark = mark.isBadMark.toSapBooleanString(),
+                                    providerCode = mark.providerCode
+                            )
+                    )
+                }
+
+                good.parts.map { part ->
+                    parts.add(
+                            PartInfo(
+                                    material = good.material,
+                                    producer = part.producer,
+                                    productionDate = part.productionDate,
+                                    unitsCode = part.units.code,
+                                    quantity = part.quantity.dropZeros(),
+                                    partNumber = part.partNumber,
+                                    providerCode = part.providerCode
+                            )
+                    )
+                }
+            }
+
+            generalTaskManager.setSendTaskDataParams(
+                    SendTaskDataParams(
+                            deviceIp = deviceIp,
+                            taskNumber = task.number,
+                            userNumber = userNumber,
+                            taskName = task.name,
+                            taskType = task.properties!!.type,
+                            tkNumber = tkNumber,
+                            storage = task.storage,
+                            reasonCode = task.reason.code,
+                            isNotFinish = (!task.isProcessed).toSapBooleanString(),
+                            positions = positions,
+                            marks = marks,
+                            parts = parts
+                    )
+            )
+        }
+    }
+
 }
 
 
@@ -174,5 +247,6 @@ interface ICreateTaskManager {
     fun deleteBaskets(basketList: MutableList<Basket>)
     fun finishCurrentTask()
     fun addProviderInCurrentGood(providerInfo: ProviderInfo)
+    fun prepareSendTaskDataParams(deviceIp: String, tkNumber: String, userNumber: String)
 
 }

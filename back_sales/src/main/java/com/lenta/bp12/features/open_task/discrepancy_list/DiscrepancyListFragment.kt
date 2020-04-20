@@ -49,7 +49,6 @@ class DiscrepancyListFragment : CoreFragment<FragmentDiscrepancyListBinding, Dis
         bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.skip)
 
         connectLiveData(vm.deleteEnabled, getBottomToolBarUIModel()!!.uiModelButton3.enabled)
-        connectLiveData(vm.deleteVisibility, getBottomToolBarUIModel()!!.uiModelButton3.visibility)
         connectLiveData(vm.missingEnabled, getBottomToolBarUIModel()!!.uiModelButton5.enabled)
     }
 

@@ -1,7 +1,9 @@
 package com.lenta.bp12.model
 
 import androidx.lifecycle.MutableLiveData
-import com.lenta.bp12.model.pojo.*
+import com.lenta.bp12.model.pojo.Block
+import com.lenta.bp12.model.pojo.Position
+import com.lenta.bp12.model.pojo.Properties
 import com.lenta.bp12.model.pojo.open_task.Good
 import com.lenta.bp12.model.pojo.open_task.Task
 import com.lenta.bp12.platform.extention.getBlockType
@@ -9,17 +11,19 @@ import com.lenta.bp12.platform.extention.getControlType
 import com.lenta.bp12.platform.extention.getGoodKind
 import com.lenta.bp12.repository.IDatabaseRepository
 import com.lenta.bp12.request.GoodInfoResult
+import com.lenta.bp12.request.SendTaskDataParams
 import com.lenta.bp12.request.TaskContentResult
-import com.lenta.bp12.request.pojo.ProviderInfo
-import com.lenta.bp12.request.pojo.TaskInfo
-import com.lenta.bp12.request.pojo.TaskSearchParams
+import com.lenta.bp12.request.pojo.*
 import com.lenta.shared.models.core.getMatrixType
 import com.lenta.shared.platform.constants.Constants
+import com.lenta.shared.utilities.extentions.dropZeros
 import com.lenta.shared.utilities.extentions.isSapTrue
+import com.lenta.shared.utilities.extentions.toSapBooleanString
 import javax.inject.Inject
 
 class OpenTaskManager @Inject constructor(
-        private val database: IDatabaseRepository
+        private val database: IDatabaseRepository,
+        private val generalTaskManager: IGeneralTaskManager
 ) : IOpenTaskManager {
 
     override var searchNumber = ""
@@ -227,6 +231,80 @@ class OpenTaskManager @Inject constructor(
         }
     }
 
+    override fun isExistUncountedPositions(): Boolean {
+        val list = currentTask.value?.goods?.map { good ->
+            good.positions.any { !it.isCounted }
+        } ?: emptyList()
+
+        return list.isNotEmpty()
+    }
+
+    override fun prepareSendTaskDataParams(deviceIp: String, tkNumber: String, userNumber: String) {
+        currentTask.value?.let { task ->
+            val positions = mutableListOf<PositionInfo>()
+            val marks = mutableListOf<MarkInfo>()
+            val parts = mutableListOf<PartInfo>()
+
+            task.goods.forEach { good ->
+                good.positions.forEach { position ->
+                    positions.add(
+                            PositionInfo(
+                                    material = good.material,
+                                    providerCode = position.provider?.code ?: "",
+                                    quantity = position.quantity.dropZeros(),
+                                    isCounted = position.isCounted.toSapBooleanString(),
+                                    isDeleted = position.isDelete.toSapBooleanString(),
+                                    unitsCode = good.units.code
+                            )
+                    )
+                }
+
+                good.marks.map { mark ->
+                    marks.add(
+                            MarkInfo(
+                                    material = good.material,
+                                    markNumber = mark.markNumber,
+                                    boxNumber = mark.boxNumber,
+                                    isBadMark = mark.isBadMark.toSapBooleanString(),
+                                    providerCode = mark.providerCode
+                            )
+                    )
+                }
+
+                good.parts.map { part ->
+                    parts.add(
+                            PartInfo(
+                                    material = good.material,
+                                    producer = part.producer,
+                                    productionDate = part.productionDate,
+                                    unitsCode = part.units.code,
+                                    quantity = part.quantity.dropZeros(),
+                                    partNumber = part.partNumber,
+                                    providerCode = part.providerCode
+                            )
+                    )
+                }
+            }
+
+            generalTaskManager.setSendTaskDataParams(
+                    SendTaskDataParams(
+                            deviceIp = deviceIp,
+                            taskNumber = task.number,
+                            userNumber = userNumber,
+                            taskName = task.name,
+                            taskType = task.properties!!.type,
+                            tkNumber = tkNumber,
+                            storage = task.storage,
+                            reasonCode = task.reason.code,
+                            isNotFinish = (!task.isProcessed).toSapBooleanString(),
+                            positions = positions,
+                            marks = marks,
+                            parts = parts
+                    )
+            )
+        }
+    }
+
 }
 
 
@@ -262,5 +340,7 @@ interface IOpenTaskManager {
     suspend fun addFoundTasks(tasksInfo: List<TaskInfo>)
     suspend fun addGoodsInCurrentTask(taskContentResult: TaskContentResult)
     fun prepareGoodAndPosition(material: String, providerCode: String)
+    fun isExistUncountedPositions(): Boolean
+    fun prepareSendTaskDataParams(deviceIp: String, tkNumber: String, userNumber: String)
 
 }

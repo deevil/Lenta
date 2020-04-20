@@ -169,8 +169,18 @@ class GoodListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
     }
 
     fun onClickSave() {
-        navigator.showMakeTaskCountedAndClose {
-            navigator.openDiscrepancyListScreen()
+        if (manager.isExistUncountedPositions()) {
+            navigator.showMakeTaskCountedAndClose {
+                navigator.openDiscrepancyListScreen()
+            }
+        } else {
+            manager.prepareSendTaskDataParams(
+                    deviceIp = deviceInfo.getDeviceIp(),
+                    tkNumber = sessionInfo.market ?: "",
+                    userNumber = sessionInfo.personnelNumber ?: ""
+            )
+
+            navigator.openSaveDataScreen()
         }
     }
 

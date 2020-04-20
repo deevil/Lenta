@@ -2,14 +2,12 @@ package com.lenta.bp12.features.save_data
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import com.lenta.bp12.model.IOpenTaskManager
+import com.lenta.bp12.model.IGeneralTaskManager
 import com.lenta.bp12.platform.navigation.IScreenNavigator
 import com.lenta.bp12.request.SendTaskDataNetRequest
-import com.lenta.bp12.request.TaskData
 import com.lenta.bp12.request.pojo.SentTaskInfo
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.exception.Failure
-import com.lenta.shared.platform.device_info.DeviceInfo
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.extentions.map
 import kotlinx.coroutines.launch
@@ -24,18 +22,11 @@ class SaveDataViewModel : CoreViewModel() {
     lateinit var sessionInfo: ISessionInfo
 
     @Inject
-    lateinit var manager: IOpenTaskManager
+    lateinit var generalTaskManager: IGeneralTaskManager
 
     @Inject
     lateinit var sendTaskDataNetRequest: SendTaskDataNetRequest
 
-    @Inject
-    lateinit var deviceInfo: DeviceInfo
-
-
-    val task by lazy {
-        manager.currentTask
-    }
 
     val title by lazy {
         "TK - ${sessionInfo.market}"
@@ -67,12 +58,9 @@ class SaveDataViewModel : CoreViewModel() {
         viewModelScope.launch {
             navigator.showProgressLoadingData()
 
-            sendTaskDataNetRequest(TaskData(
-                    deviceIp = deviceInfo.getDeviceIp(),
-                    tkNumber = sessionInfo.market ?: "Not found!",
-                    userNumber = sessionInfo.personnelNumber ?: "Not found!",
-                    task = task.value!!
-            )).also {
+            sendTaskDataNetRequest(
+                    generalTaskManager.getSendTaskDataParams()
+            ).also {
                 navigator.hideProgress()
             }.either(::handleFailure) { sendTaskDataResult ->
                 sentTaskInfoList.postValue(sendTaskDataResult.sentTasks)

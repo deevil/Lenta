@@ -1,6 +1,5 @@
 package com.lenta.bp12.features.open_task.discrepancy_list
 
-import androidx.lifecycle.MutableLiveData
 import com.lenta.bp12.model.IOpenTaskManager
 import com.lenta.bp12.platform.navigation.IScreenNavigator
 import com.lenta.shared.platform.viewmodel.CoreViewModel
@@ -30,21 +29,46 @@ class DiscrepancyListViewModel : CoreViewModel() {
     }
 
     val goods by lazy {
-        MutableLiveData(List(3) {
-            ItemGoodUi(
-                    position = "${it + 1}",
-                    name = "Test name ${it + 1}"
-            )
-        })
+        task.map { task ->
+            val itemList = mutableListOf<SimpleItemGood>()
+
+            task?.goods?.map { good ->
+                good.positions.filter { !it.isCounted }.map { position ->
+                    itemList.add(SimpleItemGood(
+                            name = good.getNameWithMaterial(),
+                            material = good.material,
+                            providerCode = position.provider?.code ?: ""
+                    ))
+                }
+            }
+
+            itemList.mapIndexed { index, simpleItemGood ->
+                ItemGoodUi(
+                        position = "${index + 1}",
+                        name = simpleItemGood.name,
+                        material = simpleItemGood.material,
+                        providerCode = simpleItemGood.providerCode
+                )
+            }
+        }
     }
 
-    val deleteEnabled = MutableLiveData(false)
+    val deleteEnabled = selectionsHelper.selectedPositions.map {
+        it?.isNotEmpty()
+    }
 
-    val deleteVisibility = MutableLiveData(false)
-
-    val missingEnabled = MutableLiveData(false)
+    val missingEnabled = selectionsHelper.selectedPositions.map {
+        it?.isNotEmpty()
+    }
 
     // -----------------------------
+
+    fun onClickItemPosition(position: Int) {
+        goods.value?.get(position)?.let {
+            manager.prepareGoodAndPosition(it.material, it.providerCode)
+            navigator.openGoodInfoOpenScreen()
+        }
+    }
 
     fun onClickDelete() {
 
@@ -58,13 +82,18 @@ class DiscrepancyListViewModel : CoreViewModel() {
 
     }
 
-    fun onClickItemPosition(position: Int) {
-
-    }
-
 }
+
+
+data class SimpleItemGood(
+        val name: String,
+        val material: String,
+        val providerCode: String
+)
 
 data class ItemGoodUi(
         val position: String,
-        val name: String
+        val name: String,
+        val material: String,
+        val providerCode: String
 )

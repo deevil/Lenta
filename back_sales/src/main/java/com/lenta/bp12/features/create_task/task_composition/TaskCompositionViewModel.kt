@@ -7,6 +7,7 @@ import com.lenta.bp12.platform.navigation.IScreenNavigator
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.platform.constants.Constants
+import com.lenta.shared.platform.device_info.DeviceInfo
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.SelectionItemsHelper
 import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
@@ -26,6 +27,9 @@ class TaskCompositionViewModel : CoreViewModel(), PageSelectionListener, OnOkInS
 
     @Inject
     lateinit var sessionInfo: ISessionInfo
+
+    @Inject
+    lateinit var deviceInfo: DeviceInfo
 
 
     val goodSelectionsHelper = SelectionItemsHelper()
@@ -167,6 +171,12 @@ class TaskCompositionViewModel : CoreViewModel(), PageSelectionListener, OnOkInS
 
     fun onClickSave() {
         navigator.showMakeTaskCountedAndClose {
+            manager.prepareSendTaskDataParams(
+                    deviceIp = deviceInfo.getDeviceIp(),
+                    tkNumber = sessionInfo.market ?: "",
+                    userNumber = sessionInfo.personnelNumber ?: ""
+            )
+
             manager.finishCurrentTask()
             navigator.openSaveDataScreen()
         }
