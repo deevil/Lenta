@@ -13,4 +13,16 @@ class MainMenuViewModel: CoreViewModel() {
         screenNavigator.openAuxiliaryMenuScreen()
     }
 
+    fun onClickCreateBox() {
+        screenNavigator.openGoodsList()
+    }
+
+    fun onClickCreateTask() {
+        screenNavigator.openCreateTask()
+    }
+
+    fun onClickWorkWithTask() {
+        screenNavigator.openTaskList()
+    }
+
 }

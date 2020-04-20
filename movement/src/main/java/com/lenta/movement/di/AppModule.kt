@@ -1,5 +1,6 @@
 package com.lenta.movement.di
 
+import android.content.Context
 import com.lenta.movement.platform.navigation.IScreenNavigator
 import com.lenta.movement.platform.navigation.ScreenNavigator
 import com.lenta.movement.repos.IRepoInMemoryHolder
@@ -17,11 +18,12 @@ class AppModule {
     @Provides
     @AppScope
     internal fun provideScreenNavigator(
+        context: Context,
         iCoreNavigator: ICoreNavigator,
         foregroundActivityProvider: ForegroundActivityProvider,
         authenticator: IAuthenticator
     ): IScreenNavigator {
-        return ScreenNavigator(iCoreNavigator, foregroundActivityProvider, authenticator)
+        return ScreenNavigator(context, iCoreNavigator, foregroundActivityProvider, authenticator)
     }
 
     @Provides

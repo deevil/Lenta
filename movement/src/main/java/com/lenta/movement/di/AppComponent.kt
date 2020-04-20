@@ -3,6 +3,7 @@ package com.lenta.movement.di
 import com.lenta.movement.features.loading.fast.FastLoadingViewModel
 import com.lenta.movement.features.auth.AuthViewModel
 import com.lenta.movement.features.main.MainMenuViewModel
+import com.lenta.movement.features.main.box.GoodsListViewModel
 import com.lenta.movement.features.selectmarket.SelectMarketViewModel
 import com.lenta.movement.features.selectpersonalnumber.SelectPersonnelNumberViewModel
 import com.lenta.movement.main.MainActivity
@@ -21,4 +22,5 @@ interface AppComponent {
     fun inject(it: FastLoadingViewModel)
     fun inject(it: SelectPersonnelNumberViewModel)
     fun inject(it: MainMenuViewModel)
+    fun inject(it: GoodsListViewModel)
 }

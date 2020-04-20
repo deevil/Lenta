@@ -1,3 +1,10 @@
 <resources>
     <string name="app_name">Перемещение</string>
+
+    <string name="main_menu_create_box">Создать короба</string>
+    <string name="create_box_title">Создание коробов</string>
+    <string name="create_box_product_list">Список товаров</string>
+    <string name="main_menu_create_task_button">Создать задание</string>
+    <string name="main_menu_work_with_task_button">Работа с заданиями</string>
+    <string name="unsaved_data_will_lost">Несохранённые данные будут утеряны. Всё равно выйти?</string>
 </resources>
