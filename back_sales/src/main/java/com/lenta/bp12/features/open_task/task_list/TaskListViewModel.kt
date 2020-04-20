@@ -50,12 +50,12 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
         MutableLiveData(true)
     }
 
-    val tasks by lazy {
+    private val tasks by lazy {
         manager.tasks
     }
 
-    val searchTasks by lazy {
-        manager.searchTasks
+    private val foundTasks by lazy {
+        manager.foundTasks
     }
 
     val processing by lazy {
@@ -63,7 +63,7 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
             val list = pair?.first
             val number = pair?.second
 
-            val taskList = if (number.isNullOrEmpty()) {
+            if (number.isNullOrEmpty()) {
                 list
             } else {
                 if (number.all { it.isDigit() }) {
@@ -71,41 +71,56 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
                 } else {
                     list?.filter { it.block.user.contains(number) }
                 }
-            }
-
-            taskList?.mapIndexed { index, task ->
-                ItemTaskUi(
-                        position = "${index + 1}",
-                        number = task.number,
-                        name = task.name,
-                        provider = task.getProviderCodeWithName(),
-                        taskStatus = task.status,
-                        blockType = task.block.type,
-                        quantity = task.quantity.toString()
-                )
+            }?.let {taskList ->
+                taskList.mapIndexed { index, task ->
+                    ItemTaskUi(
+                            position = "${taskList.size - index}",
+                            number = task.number,
+                            name = task.name,
+                            provider = task.getProviderCodeWithName(),
+                            taskStatus = task.status,
+                            blockType = task.block.type,
+                            quantity = task.quantity.toString()
+                    )
+                }
             }
         }
     }
 
-    val search by lazy {
-        MutableLiveData(List(3) {
-            ItemTaskUi(
-                    position = "${it + 1}",
-                    number = "1",
-                    name = "Test name ${it + 1}",
-                    provider = "Test supplier ${it + 1}",
-                    taskStatus = TaskStatus.COMMON,
-                    blockType = BlockType.UNLOCK,
-                    quantity = (1..15).random().toString()
-            )
-        })
+    val found by lazy {
+        foundTasks.combineLatest(numberField).map { pair ->
+            val list = pair?.first
+            val number = pair?.second
+
+            if (number.isNullOrEmpty()) {
+                list
+            } else {
+                if (number.all { it.isDigit() }) {
+                    list?.filter { it.number.contains(number) }
+                } else {
+                    list?.filter { it.block.user.contains(number) }
+                }
+            }?.let {taskList ->
+                taskList.mapIndexed { index, task ->
+                    ItemTaskUi(
+                            position = "${taskList.size - index}",
+                            number = task.number,
+                            name = task.name,
+                            provider = task.getProviderCodeWithName(),
+                            taskStatus = task.status,
+                            blockType = task.block.type,
+                            quantity = task.quantity.toString()
+                    )
+                }
+            }
+        }
     }
 
     // -----------------------------
 
     init {
         viewModelScope.launch {
-            loadTaskList()
+            //loadTaskList()
         }
     }
 
@@ -136,8 +151,37 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
         }
     }
 
+    private fun loadFoundTaskList() {
+        manager.searchParams.value?.let { params ->
+            viewModelScope.launch {
+                navigator.showProgressLoadingData()
+
+                taskListNetRequest(
+                        TaskListParams(
+                                tkNumber = sessionInfo.market ?: "",
+                                user = sessionInfo.userName!!,
+                                userNumber = appSettings.lastPersonnelNumber ?: "",
+                                mode = 2,
+                                taskSearchParams = params
+                        )
+                ).also {
+                    navigator.hideProgress()
+                }.either(::handleLoadFoundTaskListFailure) { taskListResult ->
+                    viewModelScope.launch {
+                        manager.addFoundTasks(taskListResult.tasks)
+                    }
+                }
+            }
+        }
+    }
+
     override fun handleFailure(failure: Failure) {
         super.handleFailure(failure)
+        navigator.openAlertScreen(failure)
+    }
+
+    private fun handleLoadFoundTaskListFailure(failure: Failure) {
+        manager.searchParams.value = null
         navigator.openAlertScreen(failure)
     }
 
@@ -147,6 +191,7 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
 
     fun onClickUpdate() {
         loadTaskList()
+        loadFoundTaskList()
     }
 
     fun onClickFilter() {
@@ -171,7 +216,7 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
                 }
                 1 -> {
                     tasks.value?.let { tasks ->
-                        tasks.find { it.number == search.value!![position].number }?.let { task ->
+                        tasks.find { it.number == found.value!![position].number }?.let { task ->
                             task.apply {
                                 when (block.type) {
                                     BlockType.LOCK -> navigator.showAlertBlockedTaskAnotherUser(block.user, block.ip)

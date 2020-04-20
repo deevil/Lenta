@@ -5,14 +5,14 @@ import com.google.gson.annotations.SerializedName
 data class TaskSearchParams(
         /** Код поставщика */
         @SerializedName("LIFNR")
-        var supplierCode: String,
+        var providerCode: String,
         /** SAP-код товара */
         @SerializedName("MATNR")
         var material: String,
         /** Номер отдела (секция) */
         @SerializedName("ABTNR")
-        var sectionNumber: String,
+        var section: String,
         /** Код акцизной марки */
         @SerializedName("MARK_NUM")
-        var exciseMarkCode: String
+        var exciseMark: String
 )

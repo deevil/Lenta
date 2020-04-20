@@ -65,7 +65,7 @@
                     style="@style/CellEditTextStyle"
                     android:digits="0123456789"
                     android:inputType="number"
-                    android:text="@={vm.good}" />
+                    android:text="@={vm.material}" />
 
             </LinearLayout>
 

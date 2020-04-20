@@ -32,7 +32,7 @@ class OpenTaskManager @Inject constructor(
 
     override val tasks = MutableLiveData<List<Task>>(emptyList())
 
-    override val searchTasks = MutableLiveData<List<Task>>(emptyList())
+    override val foundTasks = MutableLiveData<List<Task>>(emptyList())
 
     override val currentTask = MutableLiveData<Task>()
 
@@ -43,6 +43,10 @@ class OpenTaskManager @Inject constructor(
 
     override fun updateTasks(taskList: List<Task>?) {
         tasks.value = taskList ?: emptyList()
+    }
+
+    override fun updateFoundTasks(taskList: List<Task>?) {
+        foundTasks.value = taskList ?: emptyList()
     }
 
     override fun updateCurrentTask(task: Task?) {
@@ -106,7 +110,6 @@ class OpenTaskManager @Inject constructor(
                             goodGroup = taskInfo.goodGroup
                     ),
                     storage = taskInfo.storage,
-
                     isStrict = taskInfo.isStrict.isSapTrue(),
                     block = Block(
                             type = taskInfo.blockType.getBlockType(),
@@ -126,6 +129,40 @@ class OpenTaskManager @Inject constructor(
         }
 
         updateTasks(taskList)
+    }
+
+    override suspend fun addFoundTasks(tasksInfo: List<TaskInfo>) {
+        val taskList = tasksInfo.map { taskInfo ->
+            Task(
+                    number = taskInfo.number,
+                    name = taskInfo.name,
+                    properties = Properties(
+                            type = taskInfo.type,
+                            description = taskInfo.name,
+                            section = taskInfo.section,
+                            purchaseGroup = taskInfo.purchaseGroup,
+                            goodGroup = taskInfo.goodGroup
+                    ),
+                    storage = taskInfo.storage,
+                    isStrict = taskInfo.isStrict.isSapTrue(),
+                    block = Block(
+                            type = taskInfo.blockType.getBlockType(),
+                            user = taskInfo.blockUser,
+                            ip = taskInfo.blockIp
+                    ),
+                    isProcessed = !taskInfo.isNotFinish.isSapTrue(),
+                    control = taskInfo.control.getControlType(),
+                    comment = taskInfo.comment,
+                    provider = ProviderInfo(
+                            code = taskInfo.providerCode,
+                            name = taskInfo.providerName
+                    ),
+                    quantity = taskInfo.quantity.toIntOrNull() ?: 0,
+                    reason = database.getReturnReasonList(taskInfo.type).first { it.code == taskInfo.reasonCode }
+            )
+        }
+
+        updateFoundTasks(taskList)
     }
 
     override suspend fun addGoodsInCurrentTask(taskContentResult: TaskContentResult) {
@@ -202,13 +239,14 @@ interface IOpenTaskManager {
     val searchParams: MutableLiveData<TaskSearchParams>
 
     val tasks: MutableLiveData<List<Task>>
-    val searchTasks: MutableLiveData<List<Task>>
+    val foundTasks: MutableLiveData<List<Task>>
 
     val currentTask: MutableLiveData<Task>
     val currentGood: MutableLiveData<Good>
     val currentPosition: MutableLiveData<Position>
 
     fun updateTasks(taskList: List<Task>?)
+    fun updateFoundTasks(taskList: List<Task>?)
     fun updateCurrentTask(task: Task?)
     fun updateCurrentGood(good: Good?)
     fun updateCurrentPosition(position: Position?)
@@ -221,6 +259,7 @@ interface IOpenTaskManager {
     fun finishCurrentTask()
     fun addProviderInCurrentGood(providerInfo: ProviderInfo)
     suspend fun addTasks(tasksInfo: List<TaskInfo>)
+    suspend fun addFoundTasks(tasksInfo: List<TaskInfo>)
     suspend fun addGoodsInCurrentTask(taskContentResult: TaskContentResult)
     fun prepareGoodAndPosition(material: String, providerCode: String)
 

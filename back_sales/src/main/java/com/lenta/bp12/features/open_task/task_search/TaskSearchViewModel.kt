@@ -3,6 +3,7 @@ package com.lenta.bp12.features.open_task.task_search
 import androidx.lifecycle.MutableLiveData
 import com.lenta.bp12.model.IOpenTaskManager
 import com.lenta.bp12.platform.navigation.IScreenNavigator
+import com.lenta.bp12.request.pojo.TaskSearchParams
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.extentions.combineLatest
@@ -27,13 +28,13 @@ class TaskSearchViewModel : CoreViewModel() {
 
     val provider = MutableLiveData("")
 
-    val good = MutableLiveData("")
+    val material = MutableLiveData("")
 
     val mark = MutableLiveData("")
 
     val section = MutableLiveData("")
 
-    val searchEnabled = provider.combineLatest(good).combineLatest(mark).combineLatest(section).map {
+    val searchEnabled = provider.combineLatest(material).combineLatest(mark).combineLatest(section).map {
         val provider = it!!.first.first.first
         val good = it.first.first.second
         val mark = it.first.second
@@ -45,7 +46,14 @@ class TaskSearchViewModel : CoreViewModel() {
     // -----------------------------
 
     fun onClickSearch() {
+        manager.searchParams.value = TaskSearchParams(
+                providerCode = provider.value ?: "",
+                material = material.value ?: "",
+                section = section.value ?: "",
+                exciseMark = mark.value ?: ""
+        )
 
+        navigator.goBack()
     }
 
 }
