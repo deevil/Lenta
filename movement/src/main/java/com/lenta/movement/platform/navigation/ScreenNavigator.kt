@@ -6,6 +6,7 @@ import com.lenta.movement.features.auth.AuthFragment
 import com.lenta.movement.features.main.MainMenuFragment
 import com.lenta.movement.features.loading.fast.FastDataLoadingFragment
 import com.lenta.movement.features.main.box.GoodsListFragment
+import com.lenta.movement.features.main.box.create.CreateBoxesFragment
 import com.lenta.movement.features.selectmarket.SelectMarketFragment
 import com.lenta.movement.features.selectpersonalnumber.SelectPersonnelNumberFragment
 import com.lenta.shared.account.IAuthenticator
@@ -115,7 +116,9 @@ class ScreenNavigator(
     }
 
     override fun openCreateBoxByProduct(productInfo: ProductInfo) {
-        openNotImplementedScreenAlert("Информация о товаре")
+        runOrPostpone {
+            getFragmentStack()?.push(CreateBoxesFragment.newInstance(productInfo))
+        }
     }
 }
 

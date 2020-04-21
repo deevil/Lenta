@@ -9,4 +9,9 @@
     <string name="unsaved_data_will_lost">Несохранённые данные будут утеряны. Всё равно выйти?</string>
     <string name="select_type_code_description">Введено 12 знаков. Какой код вы ввели?</string>
     <string name="alert_product_incorrect_for_create_box">Для товара %s не предусмотрено создание коробов</string>
+
+    <string name="create_boxes_filling_tab_title">Количество</string>
+    <string name="create_boxes_box_list_tab_title">Корода</string>
+
+
 </resources>
