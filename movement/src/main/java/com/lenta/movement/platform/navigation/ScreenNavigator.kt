@@ -10,6 +10,7 @@ import com.lenta.movement.features.selectmarket.SelectMarketFragment
 import com.lenta.movement.features.selectpersonalnumber.SelectPersonnelNumberFragment
 import com.lenta.shared.account.IAuthenticator
 import com.lenta.shared.features.alert.AlertFragment
+import com.lenta.shared.models.core.ProductInfo
 import com.lenta.shared.platform.activity.ForegroundActivityProvider
 import com.lenta.shared.platform.navigation.ICoreNavigator
 import com.lenta.shared.platform.navigation.runOrPostpone
@@ -91,6 +92,31 @@ class ScreenNavigator(
                 rightButtonDecorationInfo = ButtonDecorationInfo.yes))
         }
     }
+
+    override fun openSelectTypeCodeScreen(codeConfirmationForSap: Int, codeConfirmationForBarCode: Int) {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                message = context.getString(R.string.select_type_code_description),
+                iconRes = 0,
+                codeConfirmForRight = codeConfirmationForBarCode,
+                codeConfirmForLeft = codeConfirmationForSap,
+                pageNumber = "90",
+                leftButtonDecorationInfo = ButtonDecorationInfo.sap,
+                rightButtonDecorationInfo = ButtonDecorationInfo.barcode)
+            )
+        }
+    }
+
+    override fun openProductIncorrectForCreateBox(productInfo: ProductInfo) {
+        openAlertScreen(
+            message = context.getString(R.string.alert_product_incorrect_for_create_box, productInfo.materialNumber),
+            iconRes = com.lenta.shared.R.drawable.is_warning_red_80dp
+        )
+    }
+
+    override fun openCreateBoxByProduct(productInfo: ProductInfo) {
+        openNotImplementedScreenAlert("Информация о товаре")
+    }
 }
 
 interface IScreenNavigator : ICoreNavigator {
@@ -104,4 +130,7 @@ interface IScreenNavigator : ICoreNavigator {
     fun openUnsavedDataDialog(yesCallbackFunc: () -> Unit)
     fun openCreateTask()
     fun openTaskList()
+    fun openSelectTypeCodeScreen(codeConfirmationForSap: Int, codeConfirmationForBarCode: Int)
+    fun openProductIncorrectForCreateBox(productInfo: ProductInfo)
+    fun openCreateBoxByProduct(productInfo: ProductInfo)
 }

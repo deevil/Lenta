@@ -19,13 +19,13 @@ import com.lenta.shared.scan.OnScanResultListener
 import com.lenta.shared.utilities.databinding.DataBindingAdapter
 import com.lenta.shared.utilities.databinding.DataBindingRecyclerViewConfig
 import com.lenta.shared.utilities.databinding.RecyclerViewKeyHandler
-import com.lenta.shared.utilities.extentions.getFragmentResultCode
 import com.lenta.shared.utilities.extentions.provideViewModel
 
 class GoodsListFragment : CoreFragment<FragmentGoodsListBinding, GoodsListViewModel>(),
     OnScanResultListener,
     OnBackPresserListener,
     OnKeyDownListener {
+
 
     private var recyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
 
@@ -101,11 +101,6 @@ class GoodsListFragment : CoreFragment<FragmentGoodsListBinding, GoodsListViewMo
 
     override fun onScanResult(data: String) {
         vm.onScanResult(data)
-    }
-
-    override fun onFragmentResult(arguments: Bundle) {
-        super.onFragmentResult(arguments)
-        vm.onResult(arguments.getFragmentResultCode())
     }
 
     override fun onBackPressed(): Boolean {
