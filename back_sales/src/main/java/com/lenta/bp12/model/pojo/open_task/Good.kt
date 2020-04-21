@@ -52,7 +52,8 @@ data class Good(
 
         positions.add(0, Position(
                 quantity = quantity.sumWith(oldQuantity),
-                provider = provider
+                provider = provider,
+                isCounted = true
         ))
     }
 
@@ -72,6 +73,18 @@ data class Good(
 
     fun isSameMaterial(material: String): Boolean {
         return this.material.takeLast(6) == material.takeLast(6)
+    }
+
+    fun markPositionDelete(providerCode: String) {
+        positions.find { it.provider?.code == providerCode }?.let {
+            it.isDelete = true
+        }
+    }
+
+    fun markPositionUncounted(providerCode: String) {
+        positions.find { it.provider?.code == providerCode }?.let {
+            it.isCounted = false
+        }
     }
 
 }

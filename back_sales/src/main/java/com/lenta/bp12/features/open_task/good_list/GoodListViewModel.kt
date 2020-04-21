@@ -3,6 +3,7 @@ package com.lenta.bp12.features.open_task.good_list
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.lenta.bp12.model.IOpenTaskManager
+import com.lenta.bp12.model.SimplePosition
 import com.lenta.bp12.platform.navigation.IScreenNavigator
 import com.lenta.bp12.request.TaskContentNetRequest
 import com.lenta.bp12.request.TaskContentParams
@@ -67,7 +68,7 @@ class GoodListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
             val itemList = mutableListOf<SimpleItemGood>()
 
             task?.goods?.map { good ->
-                good.positions.filter { !it.isCounted }.map { position ->
+                good.positions.filter { !it.isDelete && !it.isCounted }.map { position ->
                     itemList.add(SimpleItemGood(
                             name = good.getNameWithMaterial(),
                             quantity = position.quantity,
@@ -78,7 +79,7 @@ class GoodListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
             }
 
             itemList.mapIndexed { index, simpleItemGood ->
-                ItemGoodNotProcessedUi(
+                ItemGoodProcessingUi(
                         position = "${index + 1}",
                         name = simpleItemGood.name,
                         material = simpleItemGood.material,
@@ -93,7 +94,7 @@ class GoodListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
             val itemList = mutableListOf<SimpleItemGood>()
 
             task?.goods?.map { good ->
-                good.positions.filter { it.isCounted }.map { position ->
+                good.positions.filter { !it.isDelete && it.isCounted }.map { position ->
                     itemList.add(SimpleItemGood(
                             name = good.getNameWithMaterial(),
                             quantity = position.quantity,
@@ -165,7 +166,37 @@ class GoodListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
     }
 
     fun onClickDelete() {
+        selectedPage.value?.let { page ->
+            when (page) {
+                0 -> {
+                    val items = mutableListOf<SimplePosition>()
+                    processingSelectionsHelper.selectedPositions.value?.forEach {position ->
+                        processing.value?.get(position)?.let { item ->
+                            items.add(SimplePosition(
+                                    material = item.material,
+                                    providerCode = item.providerCode
+                            ))
+                        }
+                    }
 
+                    manager.deleteUncountedPositions(items)
+                }
+                1 ->{
+                    val items = mutableListOf<SimplePosition>()
+                    processedSelectionsHelper.selectedPositions.value?.forEach {position ->
+                        processing.value?.get(position)?.let { item ->
+                            items.add(SimplePosition(
+                                    material = item.material,
+                                    providerCode = item.providerCode
+                            ))
+                        }
+                    }
+
+                    manager.deleteCountedPositions(items)
+                }
+                else -> throw IllegalArgumentException("Wrong pager position!")
+            }
+        }
     }
 
     fun onClickSave() {
@@ -217,7 +248,7 @@ data class SimpleItemGood(
         val providerCode: String
 )
 
-data class ItemGoodNotProcessedUi(
+data class ItemGoodProcessingUi(
         val position: String,
         val name: String,
         val material: String,

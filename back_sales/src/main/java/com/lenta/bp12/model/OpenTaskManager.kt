@@ -16,6 +16,7 @@ import com.lenta.bp12.request.TaskContentResult
 import com.lenta.bp12.request.pojo.*
 import com.lenta.shared.models.core.getMatrixType
 import com.lenta.shared.platform.constants.Constants
+import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.extentions.dropZeros
 import com.lenta.shared.utilities.extentions.isSapTrue
 import com.lenta.shared.utilities.extentions.toSapBooleanString
@@ -236,6 +237,8 @@ class OpenTaskManager @Inject constructor(
             good.positions.any { !it.isCounted }
         } ?: emptyList()
 
+        Logg.d { "--> list = $list" }
+
         return list.isNotEmpty()
     }
 
@@ -305,6 +308,26 @@ class OpenTaskManager @Inject constructor(
         }
     }
 
+    override fun deleteUncountedPositions(items: MutableList<SimplePosition>) {
+        currentTask.value?.let { task ->
+            items.forEach { item ->
+                task.goods.find { it.material == item.material }?.markPositionDelete(item.providerCode)
+            }
+
+            updateCurrentTask(task)
+        }
+    }
+
+    override fun deleteCountedPositions(items: MutableList<SimplePosition>) {
+        currentTask.value?.let { task ->
+            items.forEach { item ->
+                task.goods.find { it.material == item.material }?.markPositionUncounted(item.providerCode)
+            }
+
+            updateCurrentTask(task)
+        }
+    }
+
 }
 
 
@@ -342,5 +365,12 @@ interface IOpenTaskManager {
     fun prepareGoodAndPosition(material: String, providerCode: String)
     fun isExistUncountedPositions(): Boolean
     fun prepareSendTaskDataParams(deviceIp: String, tkNumber: String, userNumber: String)
+    fun deleteUncountedPositions(items: MutableList<SimplePosition>)
+    fun deleteCountedPositions(items: MutableList<SimplePosition>)
 
 }
+
+data class SimplePosition(
+        val material: String,
+        val providerCode: String
+)

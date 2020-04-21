@@ -7,7 +7,7 @@
 
         <variable
             name="item"
-            type="com.lenta.bp12.features.open_task.good_list.ItemGoodNotProcessedUi" />
+            type="com.lenta.bp12.features.open_task.good_list.ItemGoodProcessingUi" />
 
         <variable
             name="selectedForDelete"
