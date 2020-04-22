@@ -93,7 +93,8 @@ class ProcessingUnitListViewModel : CoreViewModel() {
                 ).also {
                     navigator.hideProgress()
                 }.either(::handleFailure) {
-                    completeTask()
+                    manager.completeCurrentTask()
+                    navigator.goBack()
                 }
             }
         }
@@ -102,11 +103,6 @@ class ProcessingUnitListViewModel : CoreViewModel() {
     override fun handleFailure(failure: Failure) {
         super.handleFailure(failure)
         navigator.openAlertScreen(failure)
-    }
-
-    private fun completeTask() {
-        manager.completeCurrentTask()
-        navigator.goBack()
     }
 
 }

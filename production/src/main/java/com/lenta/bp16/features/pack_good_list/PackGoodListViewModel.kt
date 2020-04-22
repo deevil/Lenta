@@ -94,6 +94,19 @@ class PackGoodListViewModel : CoreViewModel() {
         }
     }
 
+    fun onBackPressed() {
+        viewModelScope.launch {
+            unblockTaskNetRequest(
+                    UnblockTaskParams(
+                            taskNumber = task.value!!.taskInfo.number,
+                            unblockType = manager.getTaskTypeCode()
+                    )
+            )
+
+            navigator.goBack()
+        }
+    }
+
     fun onClickComplete() {
         navigator.showConfirmNoRawItem(manager.taskType.abbreviation) {
             viewModelScope.launch {
@@ -108,7 +121,6 @@ class PackGoodListViewModel : CoreViewModel() {
                     navigator.hideProgress()
                 }.either(::handleFailure) {
                     manager.completeCurrentTask()
-
                     navigator.goBack()
                 }
             }
@@ -118,19 +130,6 @@ class PackGoodListViewModel : CoreViewModel() {
     override fun handleFailure(failure: Failure) {
         super.handleFailure(failure)
         navigator.openAlertScreen(failure)
-    }
-
-    fun onBackPressed() {
-        viewModelScope.launch {
-            unblockTaskNetRequest(
-                    UnblockTaskParams(
-                            taskNumber = task.value!!.taskInfo.number,
-                            unblockType = manager.getTaskTypeCode()
-                    )
-            )
-
-            navigator.goBack()
-        }
     }
 
 }
