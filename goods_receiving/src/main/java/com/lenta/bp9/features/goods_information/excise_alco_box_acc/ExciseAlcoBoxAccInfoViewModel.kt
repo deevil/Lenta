@@ -11,13 +11,17 @@ import com.lenta.bp9.model.task.TaskBatchInfo
 import com.lenta.bp9.model.task.TaskProductInfo
 import com.lenta.bp9.platform.navigation.IScreenNavigator
 import com.lenta.bp9.repos.IDataBaseRepo
+import com.lenta.shared.fmp.resources.dao_ext.getProductInfoByMaterial
+import com.lenta.shared.fmp.resources.slow.ZfmpUtz48V001
 import com.lenta.shared.platform.viewmodel.CoreViewModel
+import com.lenta.shared.requests.combined.scan_info.ScanInfoResult
 import com.lenta.shared.requests.combined.scan_info.pojo.QualityInfo
 import com.lenta.shared.requests.combined.scan_info.pojo.ReasonRejectionInfo
 import com.lenta.shared.utilities.extentions.combineLatest
 import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.utilities.extentions.toStringFormatted
 import com.lenta.shared.view.OnPositionClickListener
+import com.mobrun.plugin.api.HyperHive
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -35,6 +39,12 @@ class ExciseAlcoBoxAccInfoViewModel : CoreViewModel(), OnPositionClickListener {
     lateinit var searchProductDelegate: SearchProductDelegate
     @Inject
     lateinit var context: Context
+    @Inject
+    lateinit var hyperHive: HyperHive
+
+    private val ZfmpUtz48V001: ZfmpUtz48V001 by lazy {
+        ZfmpUtz48V001(hyperHive)
+    }
 
     val productInfo: MutableLiveData<TaskProductInfo> = MutableLiveData()
     val batchInfo: MutableLiveData<TaskBatchInfo> = productInfo.map {
@@ -53,7 +63,6 @@ class ExciseAlcoBoxAccInfoViewModel : CoreViewModel(), OnPositionClickListener {
         it != 0
     }
 
-    private val scannedStampCode: MutableLiveData<String> = MutableLiveData()
     private val qualityInfo: MutableLiveData<List<QualityInfo>> = MutableLiveData()
     private val reasonRejectionInfo: MutableLiveData<List<ReasonRejectionInfo>> = MutableLiveData()
 
@@ -107,7 +116,11 @@ class ExciseAlcoBoxAccInfoViewModel : CoreViewModel(), OnPositionClickListener {
                     ((it?.first ?: 0.0) <= 0.0) ) {
                 context.getString(R.string.not_required)
             } else {
-                "${productInfo.value?.numberBoxesControl} из ${productInfo.value?.numberStampsControl}"
+                if ((it?.first ?: 0.0) < (productInfo.value?.numberBoxesControl?.toDouble() ?: 0.0) ) {
+                    "${it?.first.toStringFormatted()} из ${productInfo.value?.numberStampsControl?.toDouble().toStringFormatted()}"
+                } else {
+                    "${productInfo.value?.numberBoxesControl?.toDouble().toStringFormatted()} из ${productInfo.value?.numberStampsControl?.toDouble().toStringFormatted()}"
+                }
             }
         } else {
             "" //это поле отображается только при выбранной категории "Норма"
@@ -126,9 +139,9 @@ class ExciseAlcoBoxAccInfoViewModel : CoreViewModel(), OnPositionClickListener {
                 context.getString(R.string.not_required)
             } else {
                 if ((it?.first ?: 0.0) < (productInfo.value?.numberBoxesControl?.toDouble() ?: 0.0)) {
-                    "${"Значение F изначально равно 0. Увеличивать на +1 при прохождении контроля одного короба"} из ${it?.first.toString()}"
+                    "${"Значение F изначально равно 0. Увеличивать на +1 при прохождении контроля одного короба"} из ${it?.first.toStringFormatted()}"
                 } else {
-                    "${"Значение F изначально равно 0. Увеличивать на +1 при прохождении контроля одного короба"} из ${productInfo.value?.numberBoxesControl}"
+                    "${"Значение F изначально равно 0. Увеличивать на +1 при прохождении контроля одного короба"} из ${productInfo.value?.numberBoxesControl?.toDouble().toStringFormatted()}"
                 }
             }
         } else {
@@ -142,21 +155,27 @@ class ExciseAlcoBoxAccInfoViewModel : CoreViewModel(), OnPositionClickListener {
     }
 
     val tvBoxListVal: MutableLiveData<String> by lazy {
-        MutableLiveData("${productInfo.value?.origQuantity}")
+        MutableLiveData(productInfo.value?.origQuantity?.toDouble().toStringFormatted())
     }
 
     val checkBoxList: MutableLiveData<Boolean> by lazy {
         //todo https://trello.com/c/lqyZlYQu, 1.5. Устанавливать чекбокс, когда F= Q;
-        MutableLiveData(true)
+        MutableLiveData(false)
     }
 
-    val enabledApplyButton: MutableLiveData<Boolean> = countValue.
-            map {
-                it!! != 0.0
+    val enabledApplyButton: MutableLiveData<Boolean> = countValue.map {
+                if (qualityInfo.value?.get(spinQualitySelectedPosition.value ?: 0)?.code == "1") {
+                    it!! != 0.0
+                } else {
+                    it!! != 0.0 && checkBoxList.value == true
+                }
             }
 
     init {
         viewModelScope.launch {
+            searchProductDelegate.init(viewModelScope = this@ExciseAlcoBoxAccInfoViewModel::viewModelScope,
+                    scanResultHandler = this@ExciseAlcoBoxAccInfoViewModel::handleProductSearchResult)
+
             suffix.value = productInfo.value?.purchaseOrderUnits?.name
             qualityInfo.value = dataBase.getQualityInfo()
             spinQuality.value = qualityInfo.value?.map {
@@ -171,38 +190,57 @@ class ExciseAlcoBoxAccInfoViewModel : CoreViewModel(), OnPositionClickListener {
         }
     }
 
+    private fun handleProductSearchResult(@Suppress("UNUSED_PARAMETER") scanInfoResult: ScanInfoResult?): Boolean {
+        screenNavigator.goBack()
+        return false
+    }
+
     fun onClickBoxes() {
         screenNavigator.openExciseAlcoBoxListScreen(productInfo.value!!)
     }
 
     fun onClickDetails(){
-        screenNavigator.openGoodsDetailsScreen(productInfo.value!!)
+        onScanResult("236201423037880319001474IWQLBGL752YAKJV4AZV3PAMXNLUX2VUBSZXVA3BTGCOYSFBCUK27SMSZPST642LQNOYX4UEHJ5WNK72JQSVEVAJMAM6SUIKHEHK6ZGEB7JLFYVLZ7WKGNET47UYEBY")
+        //screenNavigator.openGoodsDetailsScreen(productInfo.value!!)
     }
 
-    fun onClickAdd() {
-        if (processExciseAlcoBoxAccService.overlimit(countValue.value!!)) {
-            screenNavigator.openAlertOverlimit()
+    fun onClickAdd() : Boolean {
+        count.value = "0"
+        return if (processExciseAlcoBoxAccService.overLimit(countValue.value!!)) {
+            screenNavigator.openAlertOverLimit()
+            false
         } else {
             if (qualityInfo.value?.get(spinQualitySelectedPosition.value ?: 0)?.code == "1") {
                 processExciseAlcoBoxAccService.add(acceptTotalCount.value!!.toString(), "1")
             } else {
                 processExciseAlcoBoxAccService.add(count.value!!, reasonRejectionInfo.value!![spinReasonRejectionSelectedPosition.value!!].code)
             }
+            true
         }
-
-        count.value = "0"
     }
 
     fun onClickApply() {
-        onClickAdd()
-        screenNavigator.goBack()
+        if (onClickAdd()) {
+            screenNavigator.goBack()
+        }
     }
 
     fun onScanResult(data: String) {
-        scannedStampCode.value = data
+        /**if (onClickAdd()) {
+            searchProductDelegate.searchCode(code = data, fromScan = true, isBarCode = true)
+        }*/
         when (data.length) {
             68, 150 -> {
-
+                val exciseStampInfo = processExciseAlcoBoxAccService.searchExciseStamp(data)
+                if (exciseStampInfo?.materialNumber == null) {
+                    screenNavigator.openAlertScannedStampNotFoundScreen()
+                } else {
+                    if (exciseStampInfo.materialNumber != productInfo.value!!.materialNumber) {
+                        screenNavigator.openAlertScannedStampBelongsAnotherProductScreen(exciseStampInfo.materialNumber, ZfmpUtz48V001.getProductInfoByMaterial(exciseStampInfo.materialNumber)?.name ?: "")
+                    } else {
+                        screenNavigator.openExciseAlcoBoxCardScreen(productInfo.value!!)
+                    }
+                }
             }
             else -> searchProductDelegate.searchCode(code = data, fromScan = true)
         }

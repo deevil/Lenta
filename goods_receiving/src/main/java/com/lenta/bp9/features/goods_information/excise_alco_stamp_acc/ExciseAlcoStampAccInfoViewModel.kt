@@ -142,7 +142,7 @@ class ExciseAlcoStampAccInfoViewModel : CoreViewModel(), OnPositionClickListener
 
     fun onClickAdd() {
         if (processExciseAlcoStampAccService.overlimit(countValue.value!!)) {
-            screenNavigator.openAlertOverlimit()
+            screenNavigator.openAlertOverLimit()
         } else {
             if (qualityInfo.value?.get(spinQualitySelectedPosition.value ?: 0)?.code == "1") {
                 processExciseAlcoStampAccService.add(acceptTotalCount.value!!.toString(), "1")

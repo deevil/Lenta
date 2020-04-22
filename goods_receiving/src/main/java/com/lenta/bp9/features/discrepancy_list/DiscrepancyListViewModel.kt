@@ -50,6 +50,7 @@ class DiscrepancyListViewModel : CoreViewModel(), PageSelectionListener {
     val processedSelectionsHelper = SelectionItemsHelper()
     val countNotProcessed: MutableLiveData<List<GoodsDiscrepancyItem>> = MutableLiveData()
     val countProcessed: MutableLiveData<List<GoodsDiscrepancyItem>> = MutableLiveData()
+    val countControl: MutableLiveData<List<GoodsDiscrepancyItem>> = MutableLiveData()
     private val isBatches: MutableLiveData<Boolean> = MutableLiveData(false)
     private val qualityInfo: MutableLiveData<List<QualityInfo>> = MutableLiveData()
 
@@ -66,7 +67,13 @@ class DiscrepancyListViewModel : CoreViewModel(), PageSelectionListener {
         taskManager.getReceivingTask()!!.taskRepository.getProducts().getProducts().size <= (it?.size ?: 0)
     }
 
-    val visibilityBatchesButton: MutableLiveData<Boolean> = MutableLiveData()
+    val visibilityBatchesButton: MutableLiveData<Boolean> by lazy {
+        MutableLiveData(taskManager.getReceivingTask()?.taskDescription?.isAlco ?: false)
+    }
+
+    val isAlco: MutableLiveData<Boolean> by lazy {
+        MutableLiveData(taskManager.getReceivingTask()?.taskDescription?.isAlco ?: false)
+    }
 
     init {
         viewModelScope.launch {
@@ -93,7 +100,7 @@ class DiscrepancyListViewModel : CoreViewModel(), PageSelectionListener {
                     )
                 }
             }
-            visibilityBatchesButton.value = taskManager.getReceivingTask()?.taskDescription?.isAlco
+            //visibilityBatchesButton.value = taskManager.getReceivingTask()?.taskDescription?.isAlco
             updateCountNotProcessed()
             updateCountProcessed()
             screenNavigator.hideProgress()

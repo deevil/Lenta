@@ -265,4 +265,7 @@
     <string name="box_number">Номер коробки</string>
     <string name="box_stamp">Короб/Марка</string>
     <string name="scan_box_or_stamp">Отсканируйте короб или марку</string>
+    <string name="control">Контроль</string>
+    <string name="scanned_stamp_not_listed_in_current_delivery">Отсканированная марка не числится в текущей поставке. Перейдите к коробу, в которой находится эта марка и отсканируйте ее снова.</string>
+    <string name="scanned_mark_belongs_to_another_product">Отсканированная марка принадлежит товару \"%1$s\" \"%2$s\"</string>
 </resources>

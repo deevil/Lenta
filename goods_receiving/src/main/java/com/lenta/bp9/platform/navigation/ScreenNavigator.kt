@@ -371,7 +371,7 @@ class ScreenNavigator(
         }
     }
 
-    override fun openAlertOverlimit() {
+    override fun openAlertOverLimit() {
         openAlertScreen(message = context.getString(R.string.alert_overlimit),
                 iconRes = R.drawable.ic_info_pink,
                 textColor = ContextCompat.getColor(context, R.color.color_text_dialogWarning),
@@ -1085,6 +1085,28 @@ class ScreenNavigator(
         }
     }
 
+    override fun openAlertScannedStampNotFoundScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    message = context.getString(R.string.scanned_stamp_not_listed_in_current_delivery),
+                    iconRes = R.drawable.ic_info_pink,
+                    textColor = ContextCompat.getColor(context, R.color.color_text_dialogWarning),
+                    pageNumber = "97")
+            )
+        }
+    }
+
+    override fun openAlertScannedStampBelongsAnotherProductScreen(materialNumber: String, materialName: String) {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    message = context.getString(R.string.scanned_mark_belongs_to_another_product, materialNumber.substring(materialNumber.length - 6), materialName),
+                    iconRes = R.drawable.ic_info_pink,
+                    textColor = ContextCompat.getColor(context, R.color.color_text_dialogWarning),
+                    pageNumber = "97")
+            )
+        }
+    }
+
     private fun getFragmentStack() = foregroundActivityProvider.getActivity()?.fragmentStack
 }
 
@@ -1127,7 +1149,7 @@ interface IScreenNavigator : ICoreNavigator {
     fun openSupplyResultsSuccessDialog(numberSupply: String, leftCallbackFunc: () -> Unit, rightCallbackFunc: () -> Unit)
     fun openSupplyResultsAutomaticChargeErrorDialog()
     fun openSupplyResultsAutomaticChargeSuccessDialog(numberSupply: String, leftCallbackFunc: () -> Unit, rightCallbackFunc: () -> Unit)
-    fun openAlertOverlimit()
+    fun openAlertOverLimit()
     fun openExciseAlcoStampAccInfoScreen(productInfo: TaskProductInfo)
     fun openFinishReviseLoadingScreen()
     fun openRegisterArrivalLoadingScreen(isInStockPaperTTN: Boolean = false, isEdo: Boolean = false, status: TaskStatus = TaskStatus.Other)
@@ -1214,4 +1236,6 @@ interface IScreenNavigator : ICoreNavigator {
     fun openAlertUnableSaveNegativeQuantity()
     fun openExciseAlcoBoxListScreen(productInfo: TaskProductInfo)
     fun openExciseAlcoBoxCardScreen(productInfo: TaskProductInfo)
+    fun openAlertScannedStampNotFoundScreen()
+    fun openAlertScannedStampBelongsAnotherProductScreen(materialNumber: String, materialName: String)
 }

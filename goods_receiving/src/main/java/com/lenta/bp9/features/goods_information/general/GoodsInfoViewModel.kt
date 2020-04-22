@@ -276,8 +276,7 @@ class GoodsInfoViewModel : CoreViewModel(), OnPositionClickListener {
 
             /** определяем, что товар скоропорт https://trello.com/c/8sOTWtB7 */
             val paramGrzUffMhdhb = dataBase.getParamGrzUffMhdhb()?.toInt() ?: 60
-            isPerishable.value = (productInfo.value?.generalShelfLife?.toInt() ?: 0) > 0 ||
-                    (productInfo.value?.remainingShelfLife?.toInt() ?: 0) > 0 ||
+            isPerishable.value = ((productInfo.value?.generalShelfLife?.toInt() ?: 0) > 0 && (productInfo.value?.remainingShelfLife?.toInt() ?: 0) > 0) ||
                     ((productInfo.value?.mhdhbDays ?: 0) > 0 && (productInfo.value?.mhdhbDays ?: 0) < paramGrzUffMhdhb )
             if (isPerishable.value == true) {
                 shelfLifeInfo.value = dataBase.getTermControlInfo()
@@ -286,12 +285,12 @@ class GoodsInfoViewModel : CoreViewModel(), OnPositionClickListener {
                 }
                 currentDate.value = timeMonitor.getServerDate()
                 expirationDate.value = Calendar.getInstance()
-                if ( (productInfo.value?.generalShelfLife?.toInt() ?: 0) <  paramGrzUffMhdhb) { //https://trello.com/c/7OqxSqOP
-                    generalShelfLife.value = productInfo.value?.mhdhbDays.toString()
-                    remainingShelfLife.value = productInfo.value?.mhdrzDays.toString()
-                } else {
+                if ( (productInfo.value?.generalShelfLife?.toInt() ?: 0) > 0 && (productInfo.value?.remainingShelfLife?.toInt() ?: 0) > 0 ) { //https://trello.com/c/7OqxSqOP
                     generalShelfLife.value = productInfo.value?.generalShelfLife
                     remainingShelfLife.value = productInfo.value?.remainingShelfLife
+                } else {
+                    generalShelfLife.value = productInfo.value?.mhdhbDays.toString()
+                    remainingShelfLife.value = productInfo.value?.mhdrzDays.toString()
                 }
             }
 
