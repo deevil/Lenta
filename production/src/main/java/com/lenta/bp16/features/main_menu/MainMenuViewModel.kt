@@ -14,14 +14,14 @@ class MainMenuViewModel : CoreViewModel() {
     lateinit var navigator: IScreenNavigator
 
     @Inject
-    lateinit var taskManager: ITaskManager
+    lateinit var manager: ITaskManager
 
 
     // -----------------------------
 
     init {
         viewModelScope.launch {
-            taskManager.getLabelList()
+            manager.getLabelList()
         }
     }
 
@@ -32,12 +32,12 @@ class MainMenuViewModel : CoreViewModel() {
     }
 
     fun onClickExternalSupply() {
-        taskManager.taskType = TaskType.EXTERNAL_SUPPLY
+        manager.taskType = TaskType.EXTERNAL_SUPPLY
         navigator.openExternalSupplyTaskListScreen()
     }
 
     fun onClickProcessingUnit() {
-        taskManager.taskType = TaskType.PROCESSING_UNIT
+        manager.taskType = TaskType.PROCESSING_UNIT
         navigator.openProcessingUnitTaskListScreen()
     }
 

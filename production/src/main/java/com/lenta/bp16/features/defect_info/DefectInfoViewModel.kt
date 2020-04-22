@@ -35,7 +35,7 @@ class DefectInfoViewModel : CoreViewModel() {
     lateinit var navigator: IScreenNavigator
 
     @Inject
-    lateinit var taskManager: ITaskManager
+    lateinit var manager: ITaskManager
 
     @Inject
     lateinit var scales: IScales
@@ -57,11 +57,11 @@ class DefectInfoViewModel : CoreViewModel() {
 
 
     val good by lazy {
-        taskManager.currentGood
+        manager.currentGood
     }
 
     val raw by lazy {
-        taskManager.currentRaw
+        manager.currentRaw
     }
 
     val title by lazy {
@@ -188,8 +188,8 @@ class DefectInfoViewModel : CoreViewModel() {
             packCodeNetRequest(
                     PackCodeParams(
                             marketNumber = sessionInfo.market ?: "Not found!",
-                            taskType = taskManager.getTaskTypeCode(),
-                            parent = taskManager.currentTask.value!!.taskInfo.number,
+                            taskType = manager.getTaskTypeCode(),
+                            parent = manager.currentTask.value!!.taskInfo.number,
                             deviceIp = deviceIp.value ?: "Not found!",
                             material = good.value!!.material,
                             order = raw.value!!.order,
@@ -200,10 +200,10 @@ class DefectInfoViewModel : CoreViewModel() {
             ).also {
                 navigator.hideProgress()
             }.either(::handleFailure) { packCodeResult ->
-                good.value?.let {
-                    it.packs.add(0,
+                good.value?.let {good ->
+                    good.packs.add(0,
                             Pack(
-                                    material = it.material,
+                                    material = good.material,
                                     materialOsn = raw.value!!.materialOsn,
                                     materialDef = raw.value!!.material,
                                     code = packCodeResult.packCode,
@@ -214,7 +214,8 @@ class DefectInfoViewModel : CoreViewModel() {
                             )
                     )
 
-                    good.value = it
+                    manager.updateCurrentGood(good)
+                    manager.onTaskChanged()
                 }
 
                 viewModelScope.launch {
@@ -246,14 +247,14 @@ class DefectInfoViewModel : CoreViewModel() {
 
                     printLabel(LabelInfo(
                             quantity = "${total.value!!}  ${good.value?.units?.name}",
-                            codeCont = "${packCodeResult.packCode} БРАК",
+                            codeCont = packCodeResult.packCode,
                             storCond = "${packCodeResult.dataLabel.storCondTime} ч",
                             planAufFinish = SimpleDateFormat(Constants.DATE_FORMAT_dd_mm_yyyy_hh_mm, Locale.getDefault()).format(planAufFinish.time),
                             aufnr = raw.value!!.order,
                             nameOsn = raw.value!!.name,
                             dateExpir = dateExpir?.let { SimpleDateFormat(Constants.DATE_FORMAT_dd_mm_yyyy_hh_mm, Locale.getDefault()).format(it.time) }
                                     ?: "",
-                            goodsName = packCodeResult.dataLabel.materialName,
+                            goodsName = "***БРАК*** ${packCodeResult.dataLabel.materialName}",
                             weigher = appSettings.weightEquipmentName ?: "",
                             productTime = SimpleDateFormat(Constants.DATE_FORMAT_dd_mm_yyyy_hh_mm, Locale.getDefault()).format(productTime.time),
                             nameDone = packCodeResult.dataLabel.materialNameDone,
@@ -278,7 +279,7 @@ class DefectInfoViewModel : CoreViewModel() {
         }
     }
 
-    fun getFormattedWeight(weight: String): String {
+    /*fun getFormattedWeight(weight: String): String {
         if (weight.isEmpty()) {
             return "000000"
         }
@@ -296,7 +297,7 @@ class DefectInfoViewModel : CoreViewModel() {
         }
 
         return "$kilogram$gram"
-    }
+    }*/
 
     fun getFormattedEan(sourceEan: String, quantity: Double): String {
         val ean = sourceEan.take(7)
@@ -347,7 +348,7 @@ class DefectInfoViewModel : CoreViewModel() {
     private fun printLabel(labelInfo: LabelInfo) {
         viewModelScope.launch {
             withContext(Dispatchers.IO) {
-                taskManager.addLabelToList(labelInfo)
+                manager.addLabelToList(labelInfo)
 
                 appSettings.printerIpAddress.let { ipAddress ->
                     if (ipAddress == null) {
