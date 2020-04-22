@@ -90,7 +90,7 @@ class ExternalSupplyTaskListViewModel : CoreViewModel(), PageSelectionListener, 
 
     init {
         viewModelScope.launch {
-            loadTaskList()
+            //loadTaskList()
         }
     }
 

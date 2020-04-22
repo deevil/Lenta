@@ -90,7 +90,7 @@ class ProcessingUnitTaskListViewModel : CoreViewModel(), PageSelectionListener, 
 
     init {
         viewModelScope.launch {
-            loadTaskList()
+            //loadTaskList()
         }
     }
 
