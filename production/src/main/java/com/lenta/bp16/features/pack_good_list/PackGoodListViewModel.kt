@@ -21,7 +21,7 @@ class PackGoodListViewModel : CoreViewModel() {
     lateinit var navigator: IScreenNavigator
 
     @Inject
-    lateinit var taskManager: ITaskManager
+    lateinit var manager: ITaskManager
 
     @Inject
     lateinit var unblockTaskNetRequest: UnblockTaskNetRequest
@@ -31,7 +31,7 @@ class PackGoodListViewModel : CoreViewModel() {
 
 
     private val task by lazy {
-        taskManager.currentTask
+        manager.currentTask
     }
 
     val title by lazy {
@@ -87,27 +87,27 @@ class PackGoodListViewModel : CoreViewModel() {
         val material = packGoods.value!![position].material
         task.value?.let { task ->
             task.goods.find { it.material == material }?.let { good ->
-                taskManager.currentGood.value = good
-                taskManager.currentRaw.value = good.raws.find { it.material == good.material }
+                manager.updateCurrentGood(good)
+                manager.updateCurrentRaw(good.raws.find { it.material == good.material })
                 navigator.openGoodPackagingScreen()
             }
         }
     }
 
     fun onClickComplete() {
-        navigator.showConfirmNoRawItem(taskManager.taskType.abbreviation) {
+        navigator.showConfirmNoRawItem(manager.taskType.abbreviation) {
             viewModelScope.launch {
                 navigator.showProgressLoadingData()
 
                 endProcessingNetRequest(
                         EndProcessingParams(
-                                taskNumber = taskManager.currentTask.value!!.number,
-                                taskType = taskManager.getTaskTypeCode()
+                                taskNumber = manager.currentTask.value!!.number,
+                                taskType = manager.getTaskTypeCode()
                         )
                 ).also {
                     navigator.hideProgress()
                 }.either(::handleFailure) {
-                    taskManager.completeCurrentTask()
+                    manager.completeCurrentTask()
 
                     navigator.goBack()
                 }
@@ -125,7 +125,7 @@ class PackGoodListViewModel : CoreViewModel() {
             unblockTaskNetRequest(
                     UnblockTaskParams(
                             taskNumber = task.value!!.taskInfo.number,
-                            unblockType = taskManager.getTaskTypeCode()
+                            unblockType = manager.getTaskTypeCode()
                     )
             )
 

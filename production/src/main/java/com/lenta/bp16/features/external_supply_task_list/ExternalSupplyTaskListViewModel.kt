@@ -31,7 +31,7 @@ class ExternalSupplyTaskListViewModel : CoreViewModel(), PageSelectionListener, 
     @Inject
     lateinit var sessionInfo: ISessionInfo
     @Inject
-    lateinit var taskManager: ITaskManager
+    lateinit var manager: ITaskManager
     @Inject
     lateinit var taskListNetRequest: TaskListNetRequest
     @Inject
@@ -41,7 +41,7 @@ class ExternalSupplyTaskListViewModel : CoreViewModel(), PageSelectionListener, 
 
 
     private val tasks by lazy {
-        taskManager.tasks.map {
+        manager.tasks.map {
             it?.filter { task -> task.type == TaskType.EXTERNAL_SUPPLY }
         }
     }
@@ -52,7 +52,7 @@ class ExternalSupplyTaskListViewModel : CoreViewModel(), PageSelectionListener, 
 
     val description by lazy {
         tasks.map {
-            resourceManager.workWith(taskManager.taskType.abbreviation, it?.size ?: 0)
+            resourceManager.workWith(manager.taskType.abbreviation, it?.size ?: 0)
         }
     }
 
@@ -107,13 +107,13 @@ class ExternalSupplyTaskListViewModel : CoreViewModel(), PageSelectionListener, 
             taskListNetRequest(
                     TaskListParams(
                             tkNumber = sessionInfo.market ?: "",
-                            taskType = taskManager.getTaskTypeCode(),
+                            taskType = manager.getTaskTypeCode(),
                             deviceIp = deviceIp.value ?: "Not found!"
                     )
             ).also {
                 navigator.hideProgress()
             }.either(::handleFailure) { taskListResult ->
-                taskManager.addTasks(taskListResult)
+                manager.addTasks(taskListResult)
             }
         }
     }
@@ -148,7 +148,7 @@ class ExternalSupplyTaskListViewModel : CoreViewModel(), PageSelectionListener, 
 
     private fun formatNumberForSearch(number: String): String {
         var formattedNumber = number
-        while (formattedNumber.length < taskManager.taskType.numberLength) {
+        while (formattedNumber.length < manager.taskType.numberLength) {
             formattedNumber = "0$formattedNumber"
         }
 
@@ -156,8 +156,8 @@ class ExternalSupplyTaskListViewModel : CoreViewModel(), PageSelectionListener, 
     }
 
     private fun openTaskByNumber(taskNumber: String) {
-        taskManager.tasks.value?.find { it.number == taskNumber }?.let { task ->
-            taskManager.currentTask.value = task
+        manager.tasks.value?.find { it.number == taskNumber }?.let { task ->
+            manager.updateCurrentTask(task)
             numberField.value = ""
 
             task.taskInfo.apply {
@@ -181,13 +181,13 @@ class ExternalSupplyTaskListViewModel : CoreViewModel(), PageSelectionListener, 
                                 marketNumber = sessionInfo.market ?: "Not found!",
                                 deviceIp = deviceIp.value ?: "Not found!",
                                 taskNumber = task.number,
-                                blockingType = taskManager.getBlockType()
+                                blockingType = manager.getBlockType()
                         )
                 ).also {
                     navigator.hideProgress()
                 }.either(::handleFailure) { taskInfoResult ->
                     viewModelScope.launch {
-                        taskManager.addTaskInfoToCurrentTask(taskInfoResult)
+                        manager.addTaskInfoToCurrentTask(taskInfoResult)
                         openTaskByType(task)
                     }
                 }

@@ -20,7 +20,7 @@ class ExternalSupplyListViewModel : CoreViewModel() {
     @Inject
     lateinit var navigator: IScreenNavigator
     @Inject
-    lateinit var taskManager: ITaskManager
+    lateinit var manager: ITaskManager
     @Inject
     lateinit var unblockTaskNetRequest: UnblockTaskNetRequest
     @Inject
@@ -28,7 +28,7 @@ class ExternalSupplyListViewModel : CoreViewModel() {
 
 
     private val task by lazy {
-        taskManager.currentTask
+        manager.currentTask
     }
 
     val title by lazy {
@@ -59,7 +59,7 @@ class ExternalSupplyListViewModel : CoreViewModel() {
     fun onClickItemPosition(position: Int) {
         val material = goods.value!![position].material
         task.value?.goods?.first { it.material == material }?.let { good ->
-            taskManager.currentGood.value = good
+            manager.updateCurrentGood(good)
             navigator.openRawListScreen()
         }
     }
@@ -69,7 +69,7 @@ class ExternalSupplyListViewModel : CoreViewModel() {
             unblockTaskNetRequest(
                     UnblockTaskParams(
                             taskNumber = task.value!!.taskInfo.number,
-                            unblockType = taskManager.getTaskTypeCode()
+                            unblockType = manager.getTaskTypeCode()
                     )
             )
 
@@ -78,14 +78,14 @@ class ExternalSupplyListViewModel : CoreViewModel() {
     }
 
     fun onClickComplete() {
-        navigator.showConfirmNoRawItem(taskManager.taskType.abbreviation) {
+        navigator.showConfirmNoRawItem(manager.taskType.abbreviation) {
             viewModelScope.launch {
                 navigator.showProgressLoadingData()
 
                 endProcessingNetRequest(
                         EndProcessingParams(
                                 taskNumber = task.value!!.taskInfo.number,
-                                taskType = taskManager.getTaskTypeCode()
+                                taskType = manager.getTaskTypeCode()
                         )
                 ).also {
                     navigator.hideProgress()
@@ -102,7 +102,7 @@ class ExternalSupplyListViewModel : CoreViewModel() {
     }
 
     private fun completeTask() {
-        taskManager.completeCurrentTask()
+        manager.completeCurrentTask()
         navigator.goBack()
     }
 
