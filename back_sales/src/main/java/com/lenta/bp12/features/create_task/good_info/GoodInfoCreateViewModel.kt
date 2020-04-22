@@ -84,6 +84,7 @@ class GoodInfoCreateViewModel : CoreViewModel() {
         }
     }
 
+    // todo Добавить текущую позицию?
     val quantity by lazy {
         good.map { good ->
             if (good?.isBox() == true) good.innerQuantity.dropZeros() else "1"

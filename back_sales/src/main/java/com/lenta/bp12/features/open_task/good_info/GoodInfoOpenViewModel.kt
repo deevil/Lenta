@@ -87,14 +87,14 @@ class GoodInfoOpenViewModel : CoreViewModel() {
     }
 
     val quantity by lazy {
-        good.map { good ->
-            if (good?.isBox() == true) good.innerQuantity.dropZeros() else "1"
+        position.map { position ->
+            if (position?.isBox() == true) position.innerQuantity.dropZeros() else "1"
         }
     }
 
     val quantityEnabled by lazy {
-        good.map { good ->
-            good?.isBox() == false
+        position.map { position ->
+            position?.isBox() == false
         }
     }
 
@@ -112,7 +112,7 @@ class GoodInfoOpenViewModel : CoreViewModel() {
 
     val totalTitle = MutableLiveData("Итого")
 
-    private val providersjj by lazy {
+    private val providersjj by lazy {  // todo Вернуть добавление провайдера по умолчанию
         good.map { good ->
             good?.providers?.let { providers ->
                 val list = providers.toMutableList()
@@ -229,7 +229,7 @@ class GoodInfoOpenViewModel : CoreViewModel() {
 
     private fun loadProviderFromPosition() {
         position.value?.let { position ->
-            providers.value = listOf(position.provider!!)
+            providers.value = listOf(position.provider)
         }
     }
 
@@ -375,23 +375,12 @@ class GoodInfoOpenViewModel : CoreViewModel() {
     private fun saveGoodInTask() {
         good.value?.let { good ->
             val quantity = quantity.value?.toDoubleOrNull() ?: 0.0
-            good.addPosition(quantity, getProvider())
+            good.addPosition(quantity, task.value!!.provider)
 
             manager.updateCurrentGood(good)
         }
 
         manager.addCurrentGoodInTask()
-    }
-
-    private fun getProvider(): ProviderInfo? {
-        val position = providerPosition.value!!
-        return providers.value?.let { providers ->
-            when (providers.size) {
-                0 -> null
-                1 -> providers[0]
-                else -> if (position != 0) providers[position] else null
-            }
-        }
     }
 
     fun onBackPressed() {

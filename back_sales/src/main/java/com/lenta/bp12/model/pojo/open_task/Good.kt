@@ -4,7 +4,6 @@ import com.lenta.bp12.model.ControlType
 import com.lenta.bp12.model.GoodKind
 import com.lenta.bp12.model.pojo.Mark
 import com.lenta.bp12.model.pojo.Part
-import com.lenta.bp12.model.pojo.Position
 import com.lenta.bp12.request.pojo.ProducerInfo
 import com.lenta.bp12.request.pojo.ProviderInfo
 import com.lenta.shared.models.core.MatrixType
@@ -16,7 +15,7 @@ data class Good(
         val ean: String,
         val material: String,
         val name: String,
-        val units: Uom = Uom.ST,
+        val units: Uom = Uom.ST, // todo Перенести в позицию
         val kind: GoodKind,
         val type: String = "",
         val control: ControlType = ControlType.COMMON,
@@ -26,7 +25,6 @@ data class Good(
 
         var isFullData: Boolean = false,
 
-        val innerQuantity: Double = 0.0,
         val orderUnits: Uom= Uom.ST,
         val providers: MutableList<ProviderInfo> = mutableListOf(), // ?
         val producers: MutableList<ProducerInfo> = mutableListOf(),
@@ -38,12 +36,8 @@ data class Good(
         return "${material.takeLast(6)}$delimiter$name"
     }
 
-    fun isBox(): Boolean {
-        return innerQuantity > 1 // По умолчанию всегда 1.0
-    }
-
-    fun addPosition(quantity: Double, provider: ProviderInfo?) {
-        val position = positions.find { it.provider?.code == provider?.code }
+    fun addPosition(quantity: Double, provider: ProviderInfo) {
+        val position = positions.find { it.provider.code == provider.code }
         val oldQuantity = position?.quantity
 
         if (position != null) {
@@ -62,7 +56,7 @@ data class Good(
     }
 
     fun getQuantityByProvider(provider: ProviderInfo?): Double {
-        return positions.filter { it.provider?.code == provider?.code }.map { it.quantity }.sumList()
+        return positions.filter { it.provider.code == provider?.code }.map { it.quantity }.sumList()
     }
 
     fun deletePositions(positionList: List<Position>) {
@@ -76,13 +70,13 @@ data class Good(
     }
 
     fun markPositionDelete(providerCode: String) {
-        positions.find { it.provider?.code == providerCode }?.let {
+        positions.find { it.provider.code == providerCode }?.let {
             it.isDelete = true
         }
     }
 
     fun markPositionUncounted(providerCode: String) {
-        positions.find { it.provider?.code == providerCode }?.let {
+        positions.find { it.provider.code == providerCode }?.let {
             it.isCounted = false
         }
     }

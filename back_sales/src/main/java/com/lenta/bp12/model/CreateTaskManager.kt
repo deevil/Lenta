@@ -166,6 +166,7 @@ class CreateTaskManager @Inject constructor(
                             PositionInfo(
                                     material = good.material,
                                     providerCode = position.provider?.code ?: "",
+                                    providerName = position.provider?.name ?: "",
                                     quantity = position.quantity.dropZeros(),
                                     isCounted = true.toSapBooleanString(),
                                     isDeleted = false.toSapBooleanString(),

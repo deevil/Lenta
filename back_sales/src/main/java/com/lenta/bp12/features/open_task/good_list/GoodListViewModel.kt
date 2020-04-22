@@ -15,6 +15,7 @@ import com.lenta.shared.settings.IAppSettings
 import com.lenta.shared.utilities.SelectionItemsHelper
 import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
 import com.lenta.shared.utilities.databinding.PageSelectionListener
+import com.lenta.shared.utilities.extentions.combineLatest
 import com.lenta.shared.utilities.extentions.dropZeros
 import com.lenta.shared.utilities.extentions.map
 import kotlinx.coroutines.launch
@@ -73,7 +74,7 @@ class GoodListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
                             name = good.getNameWithMaterial(),
                             quantity = position.quantity,
                             material = good.material,
-                            providerCode = position.provider?.code ?: ""
+                            providerCode = position.provider.code
                     ))
                 }
             }
@@ -99,7 +100,7 @@ class GoodListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
                             name = good.getNameWithMaterial(),
                             quantity = position.quantity,
                             material = good.material,
-                            providerCode = position.provider?.code ?: ""
+                            providerCode = position.provider.code ?: ""
                     ))
                 }
             }
@@ -116,8 +117,12 @@ class GoodListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
         }
     }
 
-    val deleteEnabled = selectedPage.map { page ->
-        page == 0 && !processedSelectionsHelper.isSelectedEmpty() || page == 1 && !processedSelectionsHelper.isSelectedEmpty()
+    val deleteEnabled = selectedPage.combineLatest(processingSelectionsHelper.selectedPositions).combineLatest(processedSelectionsHelper.selectedPositions).map {
+        val page = it!!.first.first
+        val isSelectedProcessing = it.first.second.isNotEmpty()
+        val isSelectedProcessed = it.second.isNotEmpty()
+
+        page == 0 && isSelectedProcessing || page == 1 && isSelectedProcessed
     }
 
     val saveEnabled by lazy {

@@ -9,6 +9,9 @@ data class PositionInfo(
         /** Код поставщика */
         @SerializedName("LIFNR")
         var providerCode: String,
+        /** Наименование поставщика */
+        @SerializedName("LIFNR_NAME")
+        var providerName: String,
         /** Фактическое количество */
         @SerializedName("FACT_QNT")
         var quantity: String,
@@ -18,7 +21,10 @@ data class PositionInfo(
         /** Позиция удалена */
         @SerializedName("IS_DEL")
         var isDeleted: String,
+        /** Вложенное количество */
+        @SerializedName("QNTINCL")
+        var innerQuantity: String = "",
         /** Единица измерения заказа на поставку */
         @SerializedName("BSTME")
-        var unitsCode: String
+        var unitsCode: String = ""
 )

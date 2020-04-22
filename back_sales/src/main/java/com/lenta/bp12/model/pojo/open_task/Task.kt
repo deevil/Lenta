@@ -20,12 +20,12 @@ data class Task(
         val block: Block,
         val control: ControlType = ControlType.UNKNOWN,
         var comment: String = "",
-        val provider: ProviderInfo? = null,
+        val provider: ProviderInfo,
         val quantity: Int = 0
 ) {
 
     fun getProviderCodeWithName(): String {
-        return "${provider?.code} ${provider?.name}"
+        return "${provider.code} ${provider.name}"
     }
 
     fun updateGood(good: Good?) {

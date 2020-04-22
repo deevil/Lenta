@@ -2,7 +2,7 @@ package com.lenta.bp12.model
 
 import androidx.lifecycle.MutableLiveData
 import com.lenta.bp12.model.pojo.Block
-import com.lenta.bp12.model.pojo.Position
+import com.lenta.bp12.model.pojo.open_task.Position
 import com.lenta.bp12.model.pojo.Properties
 import com.lenta.bp12.model.pojo.open_task.Good
 import com.lenta.bp12.model.pojo.open_task.Task
@@ -78,8 +78,6 @@ class OpenTaskManager @Inject constructor(
                 section = goodInfo.materialInfo.section,
                 matrix = getMatrixType(goodInfo.materialInfo.matrix),
                 isFullData = true,
-                innerQuantity = goodInfo.materialInfo.innerQuantity.toDoubleOrNull() ?: 0.0,
-                orderUnits = database.getUnitsByCode(goodInfo.materialInfo.orderUnitCode),
                 providers = goodInfo.providers.toMutableList(),
                 producers = goodInfo.producers.toMutableList()
         )
@@ -174,8 +172,12 @@ class OpenTaskManager @Inject constructor(
         currentTask.value?.let { task ->
             taskContentResult.positions.map { positionInfo ->
                 val position = Position(
-                        quantity = positionInfo.quantity.toDoubleOrNull() ?: 0.0,
-                        provider = database.getProviderInfo(positionInfo.providerCode),
+                        innerQuantity = positionInfo.innerQuantity.toDoubleOrNull() ?: 1.0,
+                        provider = ProviderInfo(
+                                name = positionInfo.providerName,
+                                code = positionInfo.providerCode
+                        ),
+                        units = database.getUnitsByCode(positionInfo.unitsCode),
                         isCounted = positionInfo.isCounted.isSapTrue(),
                         isDelete = positionInfo.isDeleted.isSapTrue()
                 )
@@ -226,7 +228,7 @@ class OpenTaskManager @Inject constructor(
             //openPositionFromList = true
             updateCurrentGood(good)
 
-            good.positions.find { it.provider?.code == providerCode }?.let { position ->
+            good.positions.find { it.provider.code == providerCode }?.let { position ->
                 updateCurrentPosition(position)
             }
         }
@@ -253,7 +255,8 @@ class OpenTaskManager @Inject constructor(
                     positions.add(
                             PositionInfo(
                                     material = good.material,
-                                    providerCode = position.provider?.code ?: "",
+                                    providerCode = position.provider.code,
+                                    providerName = position.provider.name,
                                     quantity = position.quantity.dropZeros(),
                                     isCounted = position.isCounted.toSapBooleanString(),
                                     isDeleted = position.isDelete.toSapBooleanString(),
