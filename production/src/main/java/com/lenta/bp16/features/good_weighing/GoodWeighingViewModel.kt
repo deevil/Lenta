@@ -38,7 +38,7 @@ class GoodWeighingViewModel : CoreViewModel() {
     lateinit var appSettings: IAppSettings
 
     @Inject
-    lateinit var taskManager: ITaskManager
+    lateinit var manager: ITaskManager
 
     @Inject
     lateinit var packCodeNetRequest: PackCodeNetRequest
@@ -54,11 +54,11 @@ class GoodWeighingViewModel : CoreViewModel() {
 
 
     val good by lazy {
-        taskManager.currentGood
+        manager.currentGood
     }
 
     val raw by lazy {
-        taskManager.currentRaw
+        manager.currentRaw
     }
 
     val title by lazy {
@@ -124,8 +124,8 @@ class GoodWeighingViewModel : CoreViewModel() {
             packCodeNetRequest(
                     PackCodeParams(
                             marketNumber = sessionInfo.market ?: "Not found!",
-                            taskType = taskManager.getTaskTypeCode(),
-                            parent = taskManager.currentTask.value!!.taskInfo.number,
+                            taskType = manager.getTaskTypeCode(),
+                            parent = manager.currentTask.value!!.taskInfo.number,
                             deviceIp = deviceIp.value ?: "Not found!",
                             material = good.value!!.material,
                             order = raw.value!!.order,
@@ -134,10 +134,10 @@ class GoodWeighingViewModel : CoreViewModel() {
             ).also {
                 navigator.hideProgress()
             }.either(::handleFailure) { packCodeResult ->
-                good.value?.let {
-                    it.packs.add(0,
+                good.value?.let { good ->
+                    good.packs.add(0,
                             Pack(
-                                    material = it.material,
+                                    material = good.material,
                                     materialOsn = raw.value!!.materialOsn,
                                     code = packCodeResult.packCode,
                                     order = raw.value!!.order,
@@ -145,7 +145,8 @@ class GoodWeighingViewModel : CoreViewModel() {
                             )
                     )
 
-                    good.value = it
+                    manager.updateCurrentGood(good)
+                    manager.onTaskChanged()
                 }
 
                 viewModelScope.launch {
@@ -211,7 +212,7 @@ class GoodWeighingViewModel : CoreViewModel() {
         }
     }
 
-    fun getFormattedWeight(weight: String): String {
+    /*fun getFormattedWeight(weight: String): String {
         if (weight.isEmpty()) {
             return "000000"
         }
@@ -229,7 +230,7 @@ class GoodWeighingViewModel : CoreViewModel() {
         }
 
         return "$kilogram$gram"
-    }
+    }*/
 
     fun getFormattedEan(sourceEan: String, quantity: Double): String {
         val ean = sourceEan.take(7)
@@ -298,7 +299,7 @@ class GoodWeighingViewModel : CoreViewModel() {
     private fun printLabel(labelInfo: LabelInfo) {
         viewModelScope.launch {
             withContext(IO) {
-                taskManager.addLabelToList(labelInfo)
+                manager.addLabelToList(labelInfo)
 
                 appSettings.printerIpAddress.let { ipAddress ->
                     if (ipAddress == null) {
