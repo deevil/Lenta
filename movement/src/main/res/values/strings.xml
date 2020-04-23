@@ -11,7 +11,11 @@
     <string name="alert_product_incorrect_for_create_box">Для товара %s не предусмотрено создание коробов</string>
 
     <string name="create_boxes_filling_tab_title">Количество</string>
-    <string name="create_boxes_box_list_tab_title">Корода</string>
+    <string-array name="create_boxes_filling_count_spinner">
+        <item>Количество</item>
+    </string-array>
+    
+    <string name="create_boxes_box_list_tab_title">Короба</string>
 
 
 </resources>

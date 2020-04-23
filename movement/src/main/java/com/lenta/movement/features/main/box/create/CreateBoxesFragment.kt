@@ -1,11 +1,14 @@
 package com.lenta.movement.features.main.box.create
 
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import com.lenta.movement.R
 import com.lenta.movement.databinding.FragmentCreateBoxesBinding
+import com.lenta.movement.databinding.LayoutBoxCreatePuckerTabBinding
 import com.lenta.movement.platform.extensions.getAppComponent
 import com.lenta.shared.models.core.ProductInfo
 import com.lenta.shared.platform.fragment.CoreFragment
@@ -28,7 +31,6 @@ class CreateBoxesFragment : CoreFragment<FragmentCreateBoxesBinding, CreateBoxes
     }
 
     private var productInfo: ProductInfo? by state(null)
-
 
     override fun getLayoutId() = R.layout.fragment_create_boxes
 
@@ -76,7 +78,20 @@ class CreateBoxesFragment : CoreFragment<FragmentCreateBoxesBinding, CreateBoxes
     }
 
     override fun getPagerItemView(container: ViewGroup, position: Int): View {
-        return View(context) // TODO
+        return when (CreateBoxesPage.values()[position]) {
+            CreateBoxesPage.FILLING -> {
+                DataBindingUtil.inflate<LayoutBoxCreatePuckerTabBinding>(
+                    LayoutInflater.from(container.context),
+                    R.layout.layout_box_create_pucker_tab,
+                    container,
+                    false
+                ).apply {
+                    this.vm = vm
+                    this.lifecycleOwner = viewLifecycleOwner
+                }.root
+            }
+            CreateBoxesPage.BOX_LIST -> View(context) // TODO
+        }
     }
 
     override fun getTextTitle(position: Int): String {
@@ -87,6 +102,5 @@ class CreateBoxesFragment : CoreFragment<FragmentCreateBoxesBinding, CreateBoxes
     }
 
     override fun countTab() = CreateBoxesPage.values().size
-
 
 }

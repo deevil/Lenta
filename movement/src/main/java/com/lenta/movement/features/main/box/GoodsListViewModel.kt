@@ -111,7 +111,7 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
                         screenNavigator.openAlertScreen(failure)
                     },
                     fnR = { scanInfoResult ->
-                        if (scanInfoResult.productInfo.type != ProductType.NonExciseAlcohol) {
+                        if (scanInfoResult.productInfo.type != ProductType.ExciseAlcohol) {
                             screenNavigator.openProductIncorrectForCreateBox(scanInfoResult.productInfo)
                         } else {
                             screenNavigator.openCreateBoxByProduct(scanInfoResult.productInfo)
