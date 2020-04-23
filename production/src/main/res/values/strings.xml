@@ -38,7 +38,7 @@
     <string name="pack_type_cause">Тара/Тип/Причина</string>
     <string name="total_weight">Общий вес</string>
     <string name="plan_quantity">Плановое кол-во</string>
-    <string name="quantity">Кол-во</string>
+    <string name="short_quantity">Кол-во</string>
     <string name="pack_print">Тара/Печать</string>
 
     // Разные строки

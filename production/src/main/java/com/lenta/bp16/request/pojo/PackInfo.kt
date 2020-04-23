@@ -14,7 +14,7 @@ data class PackInfo(
         val materialDef: String,
         /** Номер технологического заказа */
         @SerializedName("AUFNR")
-        val orderNumber: String,
+        val order: String,
         /** Код тары */
         @SerializedName("CODE_CONT")
         val code: String,

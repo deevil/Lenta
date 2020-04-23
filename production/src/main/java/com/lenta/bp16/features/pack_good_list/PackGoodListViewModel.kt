@@ -19,26 +19,23 @@ class PackGoodListViewModel : CoreViewModel() {
 
     @Inject
     lateinit var navigator: IScreenNavigator
+
     @Inject
-    lateinit var taskManager: ITaskManager
+    lateinit var manager: ITaskManager
+
     @Inject
     lateinit var unblockTaskNetRequest: UnblockTaskNetRequest
+
     @Inject
     lateinit var endProcessingNetRequest: EndProcessingNetRequest
 
 
-    val task by lazy {
-        taskManager.currentTask
+    private val task by lazy {
+        manager.currentTask
     }
 
     val title by lazy {
         task.map { it?.taskInfo?.text3 }
-    }
-
-    val completeEnabled by lazy {
-        task.map { task ->
-            task?.isProcessed == false && task.goods.any { it.packs.isNotEmpty() } || task?.isProcessed == false && task.isPackSent
-        }
     }
 
     val packGoods: MutableLiveData<List<ItemPackGoodListUi>> by lazy {
@@ -49,47 +46,81 @@ class PackGoodListViewModel : CoreViewModel() {
                         material = good.material,
                         name = good.name,
                         arrived = "${good.arrived.dropZeros()} ${good.units.name}",
-                        arrowVisibility = !task.isProcessed && !task.goods.any { it.packs.isNotEmpty() } && !task.isPackSent
+                        remain = "${(good.arrived - good.getPackedQuantity()).dropZeros()} ${good.units.name}",
+                        arrowVisibility = !task.isProcessed
                 )
             }
         }
     }
 
+    val completeEnabled by lazy {
+        task.map { task ->
+            task?.isProcessed == false && !task.goods.any { it.packs.isEmpty() }
+        }
+    }
+
     // -----------------------------
 
+    init {
+        viewModelScope.launch {
+            checkTaskForCorrectness()
+        }
+    }
+
+    // -----------------------------
+
+    private fun checkTaskForCorrectness() {
+        task.value!!.let { task ->
+            if (task.goods.any { it.raws.size > 1 }) {
+                navigator.showMoreThanOneOrderForThisProduct {
+                    onBackPressed()
+                }
+            }
+        }
+    }
+
     fun onClickItemPosition(position: Int) {
-        if (task.value?.isProcessed == true || completeEnabled.value == true) {
+        if (task.value?.isProcessed == true) {
             return
         }
 
         val material = packGoods.value!![position].material
-        task.value?.goods?.find { it.material == material }?.let { good ->
-            if (good.raws.size > 1) {
-                navigator.showMoreThanOneOrderForThisProduct()
-                return
+        task.value?.let { task ->
+            task.goods.find { it.material == material }?.let { good ->
+                manager.updateCurrentGood(good)
+                manager.updateCurrentRaw(good.raws.find { it.material == good.material })
+                navigator.openGoodPackagingScreen()
             }
+        }
+    }
 
-            taskManager.currentGood.value = good
-            taskManager.currentRaw.value = good.raws.find { it.material == good.material }
-            navigator.openGoodPackagingScreen()
+    fun onBackPressed() {
+        viewModelScope.launch {
+            unblockTaskNetRequest(
+                    UnblockTaskParams(
+                            taskNumber = task.value!!.taskInfo.number,
+                            unblockType = manager.getTaskTypeCode()
+                    )
+            )
+
+            navigator.goBack()
         }
     }
 
     fun onClickComplete() {
-        navigator.showConfirmNoSuchItemLeft(taskManager.taskType.abbreviation) {
+        navigator.showConfirmNoRawItem(manager.taskType.abbreviation) {
             viewModelScope.launch {
                 navigator.showProgressLoadingData()
 
                 endProcessingNetRequest(
                         EndProcessingParams(
-                                taskNumber = taskManager.currentTask.value!!.number,
-                                taskType = taskManager.getTaskTypeCode()
+                                taskNumber = manager.currentTask.value!!.number,
+                                taskType = manager.getTaskTypeCode()
                         )
                 ).also {
                     navigator.hideProgress()
                 }.either(::handleFailure) {
-                    taskManager.completeCurrentTask()
-
+                    manager.completeCurrentTask()
                     navigator.goBack()
                 }
             }
@@ -101,19 +132,6 @@ class PackGoodListViewModel : CoreViewModel() {
         navigator.openAlertScreen(failure)
     }
 
-    fun onBackPressed() {
-        viewModelScope.launch {
-            unblockTaskNetRequest(
-                    UnblockTaskParams(
-                            taskNumber = task.value!!.taskInfo.number,
-                            unblockType = taskManager.getTaskTypeCode()
-                    )
-            )
-
-            navigator.goBack()
-        }
-    }
-
 }
 
 data class ItemPackGoodListUi(
@@ -121,5 +139,6 @@ data class ItemPackGoodListUi(
         val material: String,
         val name: String,
         val arrived: String,
+        val remain: String,
         val arrowVisibility: Boolean
 )

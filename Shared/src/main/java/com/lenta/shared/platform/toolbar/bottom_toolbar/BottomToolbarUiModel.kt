@@ -39,26 +39,27 @@ data class ButtonUiModel(
         val visibility: MutableLiveData<Boolean> = MutableLiveData(),
         val enabled: MutableLiveData<Boolean> = MutableLiveData(),
         val requestFocus: MutableLiveData<Any> = MutableLiveData()
-
 ) {
+
     fun clean() {
         buttonDecorationInfo.value = ButtonDecorationInfo.empty
-        visibility.value = false
-        enabled.value = true
+        visibility.postValue(false)
+        enabled.postValue(true)
     }
 
     fun show(buttonDecorationInfo: ButtonDecorationInfo? = null, visible: Boolean = true, enabled: Boolean = true) {
-        this.visibility.value = visible
-        this.enabled.value = enabled
+        this.visibility.postValue(visible)
+        this.enabled.postValue(enabled)
+
         buttonDecorationInfo?.let {
             this.buttonDecorationInfo.value = it
         }
-
     }
 
     fun requestFocus() {
         requestFocus.postValue(true)
     }
+
 }
 
 data class ButtonDecorationInfo(

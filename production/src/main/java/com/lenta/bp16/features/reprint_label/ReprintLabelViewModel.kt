@@ -25,7 +25,7 @@ class ReprintLabelViewModel : CoreViewModel() {
     lateinit var navigator: IScreenNavigator
 
     @Inject
-    lateinit var taskManager: ITaskManager
+    lateinit var manager: ITaskManager
 
     @Inject
     lateinit var sessionInfo: ISessionInfo
@@ -44,12 +44,12 @@ class ReprintLabelViewModel : CoreViewModel() {
     }
 
     val labels by lazy {
-        taskManager.labels.map { list ->
+        manager.labels.map { list ->
             list?.mapIndexed { index, labelInfo ->
                 ReprintLabelUi(
                         labelInfo = labelInfo,
-                        position = "${index + 1}",
-                        name = labelInfo.nameOsn,
+                        position = "${list.size - index}",
+                        name = labelInfo.goodsName,
                         packNumber = labelInfo.codeCont,
                         date = SimpleDateFormat(Constants.DATE_FORMAT_ddmmyy, Locale.getDefault()).format(labelInfo.printTime),
                         time = SimpleDateFormat(Constants.TIME_FORMAT_HHmm, Locale.getDefault()).format(labelInfo.printTime),
@@ -91,7 +91,8 @@ class ReprintLabelViewModel : CoreViewModel() {
                                 navigator.hideProgress()
                             }.either(::handleFailure) {
                                 navigator.showLabelSentToPrint {
-                                    navigator.goBack()
+                                    // Ничего не делаем...
+
                                 }
                             }
                 }

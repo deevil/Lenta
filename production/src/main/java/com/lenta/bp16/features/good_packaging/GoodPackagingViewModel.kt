@@ -3,9 +3,8 @@ package com.lenta.bp16.features.good_packaging
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.lenta.bp16.model.ITaskManager
+import com.lenta.bp16.model.pojo.Pack
 import com.lenta.bp16.platform.navigation.IScreenNavigator
-import com.lenta.bp16.request.EndProcessingNetRequest
-import com.lenta.bp16.request.EndProcessingParams
 import com.lenta.bp16.request.PackGoodNetRequest
 import com.lenta.bp16.request.PackGoodParams
 import com.lenta.shared.account.ISessionInfo
@@ -13,7 +12,6 @@ import com.lenta.shared.exception.Failure
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.extentions.dropZeros
 import com.lenta.shared.utilities.extentions.map
-import com.lenta.shared.utilities.extentions.sumWith
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -21,20 +19,23 @@ class GoodPackagingViewModel : CoreViewModel() {
 
     @Inject
     lateinit var navigator: IScreenNavigator
+
     @Inject
     lateinit var sessionInfo: ISessionInfo
+
     @Inject
-    lateinit var taskManager: ITaskManager
+    lateinit var manager: ITaskManager
+
     @Inject
     lateinit var packGoodNetRequest: PackGoodNetRequest
 
 
     val good by lazy {
-        taskManager.currentGood
+        manager.currentGood
     }
 
     val raw by lazy {
-        taskManager.currentRaw
+        manager.currentRaw
     }
 
     val title by lazy {
@@ -55,7 +56,7 @@ class GoodPackagingViewModel : CoreViewModel() {
 
     private val defect by lazy {
         good.map { good ->
-            good?.packs?.filter { it.materialDef == raw.value?.material }?.map { it.quantity }?.sum()
+            good?.getDefectQuantity()
         }
     }
 
@@ -88,18 +89,32 @@ class GoodPackagingViewModel : CoreViewModel() {
             packGoodNetRequest(
                     PackGoodParams(
                             marketNumber = sessionInfo.market ?: "Not found!",
-                            taskType = taskManager.getTaskTypeCode(),
+                            taskType = manager.getTaskTypeCode(),
                             deviceIp = deviceIp.value ?: "Not found!",
                             material = good.value!!.material,
-                            orderNumber = raw.value!!.orderNumber,
+                            order = raw.value!!.order,
                             quantity = entered.value!!,
-                            taskNumber = taskManager.currentTask.value!!.taskInfo.number
+                            taskNumber = manager.currentTask.value!!.taskInfo.number
                     )
             ).also {
                 navigator.hideProgress()
             }.either(::handleFailure) {
                 navigator.showFixingPackagingPhaseSuccessful {
-                    taskManager.setDataSentForPackTask()
+                    good.value?.let { good ->
+                        good.packs.add(0,
+                                Pack(
+                                        material = good.material,
+                                        materialOsn = raw.value!!.materialOsn,
+                                        code = "",
+                                        order = raw.value!!.order,
+                                        quantity = entered.value!!
+                                )
+                        )
+
+                        manager.updateCurrentGood(good)
+                        manager.onTaskChanged()
+                    }
+
                     navigator.goBack()
                 }
             }

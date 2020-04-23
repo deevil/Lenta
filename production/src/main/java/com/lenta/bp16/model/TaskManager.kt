@@ -20,7 +20,7 @@ class TaskManager @Inject constructor(
 
     override lateinit var taskType: TaskType
 
-    var labelLimit = 0
+    private var labelLimit = 0
 
     override val labels = MutableLiveData<List<LabelInfo>>(emptyList())
 
@@ -33,6 +33,24 @@ class TaskManager @Inject constructor(
     override val currentRaw = MutableLiveData<Raw>()
 
 
+    override fun updateCurrentTask(task: Task?) {
+        currentTask.value = task
+    }
+
+    override fun updateCurrentGood(good: Good?) {
+        currentGood.value = good
+    }
+
+    override fun updateCurrentRaw(raw: Raw?) {
+        currentRaw.value = raw
+    }
+
+    override fun onTaskChanged() {
+        currentTask.value?.let { task ->
+            currentTask.value = task
+        }
+    }
+
     override suspend fun getLabelList() {
         labelLimit = database.getLabelLimit()
 
@@ -41,6 +59,7 @@ class TaskManager @Inject constructor(
             labelList.removeAt(labelList.size - 1)
         }
 
+        persistLabelList.saveLabelList(labelList)
         labels.postValue(labelList)
     }
 
@@ -48,11 +67,12 @@ class TaskManager @Inject constructor(
         if (labelLimit > 0) {
             labels.value?.let { list ->
                 val labelList = list.toMutableList()
-                if (labelList.size == labelLimit) {
+                while (labelList.size >= labelLimit) {
                     labelList.removeAt(labelList.size - 1)
                 }
 
                 labelList.add(0, labelInfo)
+
                 persistLabelList.saveLabelList(labelList)
                 labels.postValue(labelList)
             }
@@ -82,40 +102,44 @@ class TaskManager @Inject constructor(
     override suspend fun addTaskInfoToCurrentTask(taskInfoResult: TaskInfoResult) {
         currentTask.value?.let { task ->
             task.goods = taskInfoResult.goods.map { goodInfo ->
+                val rawList = taskInfoResult.raws.filter { it.material == goodInfo.material }.map { rawInfo ->
+                    Raw(
+                            material = rawInfo.material,
+                            materialOsn = rawInfo.materialOsn,
+                            order = rawInfo.orderNumber,
+                            name = rawInfo.name,
+                            planned = rawInfo.planned,
+                            isWasDef = rawInfo.isWasDef.isSapTrue()
+                    )
+                }
+
+                val packList = taskInfoResult.packs.filter { packInfo ->
+                    rawList.any { it.order == packInfo.order } || packInfo.materialDef == goodInfo.material
+                }.map { packInfo ->
+                    Pack(
+                            material = packInfo.material,
+                            materialOsn = packInfo.materialOsn,
+                            materialDef = packInfo.materialDef,
+                            code = packInfo.code,
+                            order = packInfo.order,
+                            quantity = packInfo.quantity,
+                            isDefOut = packInfo.isDefOut.isSapTrue(),
+                            category = database.getCategory(packInfo.categoryCode),
+                            defect = database.getDefect(packInfo.defectCode)
+                    )
+                }
+
                 Good(
                         material = goodInfo.material,
                         name = goodInfo.name,
                         units = database.getUnitsByCode(goodInfo.unitsCode),
                         arrived = goodInfo.quantity,
-                        raws = taskInfoResult.raws.filter { it.material == goodInfo.material }.map { rawInfo ->
-                            Raw(
-                                    material = rawInfo.material,
-                                    materialOsn = rawInfo.materialOsn,
-                                    orderNumber = rawInfo.orderNumber,
-                                    name = rawInfo.name,
-                                    planned = rawInfo.planned,
-                                    isWasDef = rawInfo.isWasDef.isSapTrue()
-                            )
-                        }.toMutableList(),
-                        packs = taskInfoResult.packs.filter { packInfo ->
-                            taskInfoResult.raws.any { it.orderNumber == packInfo.orderNumber }
-                        }.map { packInfo ->
-                            Pack(
-                                    material = packInfo.material,
-                                    materialOsn = packInfo.materialOsn,
-                                    materialDef = packInfo.materialDef,
-                                    code = packInfo.code,
-                                    orderNumber = packInfo.orderNumber,
-                                    quantity = packInfo.quantity,
-                                    isDefOut = packInfo.isDefOut.isSapTrue(),
-                                    category = database.getCategory(packInfo.categoryCode),
-                                    defect = database.getDefect(packInfo.defectCode)
-                            )
-                        }.toMutableList()
+                        raws = rawList.toMutableList(),
+                        packs = packList.toMutableList()
                 )
-            }
+            }.toMutableList()
 
-            currentTask.value = task
+            updateCurrentTask(task)
         }
     }
 
@@ -136,14 +160,7 @@ class TaskManager @Inject constructor(
                 good.isProcessed = true
             }
 
-            currentTask.value = task
-        }
-    }
-
-    override fun setDataSentForPackTask() {
-        currentTask.value?.let { task ->
-            task.isPackSent = true
-            currentTask.value = task
+            updateCurrentTask(task)
         }
     }
 
@@ -155,21 +172,16 @@ class TaskManager @Inject constructor(
     }
 
     override fun getBlockType(): Int {
-        //todo Добавить варианты с переблокировкой
-
         return when (taskType) {
             TaskType.PROCESSING_UNIT -> 1
             TaskType.EXTERNAL_SUPPLY -> 3
         }
     }
 
-    override fun onTaskChanged() {
-        currentTask.value = currentTask.value
-    }
-
 }
 
 interface ITaskManager {
+
     var taskType: TaskType
 
     val tasks: MutableLiveData<List<Task>>
@@ -178,14 +190,19 @@ interface ITaskManager {
     val currentGood: MutableLiveData<Good>
     val currentRaw: MutableLiveData<Raw>
 
+    fun updateCurrentTask(task: Task?)
+    fun updateCurrentGood(good: Good?)
+    fun updateCurrentRaw(raw: Raw?)
+
+    fun onTaskChanged()
+
     fun addTasks(taskListResult: TaskListResult)
     suspend fun addTaskInfoToCurrentTask(taskInfoResult: TaskInfoResult)
     fun getTaskTypeCode(): Int
     fun getBlockType(): Int
     fun completeCurrentTask()
     fun completeCurrentGood()
-    fun onTaskChanged()
-    fun setDataSentForPackTask()
     suspend fun getLabelList()
     suspend fun addLabelToList(labelInfo: LabelInfo)
+
 }
