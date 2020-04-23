@@ -64,3 +64,12 @@ fun String.getBlockType(): BlockType {
         else -> BlockType.UNLOCK
     }
 }
+
+fun String.addZerosToStart(targetLength: Int): String {
+    var value = this
+    while (value.length < targetLength) {
+        value = "0$value"
+    }
+
+    return value
+}

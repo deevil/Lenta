@@ -332,7 +332,6 @@ class GoodInfoOpenViewModel : CoreViewModel() {
         }
     }
 
-
     private fun loadMarkInfo(number: String) {
         viewModelScope.launch {
             navigator.showProgressLoadingData()
@@ -364,7 +363,7 @@ class GoodInfoOpenViewModel : CoreViewModel() {
     }
 
     fun onScanResult(number: String) {
-        if (applyEnabled.value!! && number.length >= Constants.SAP_6) {
+        if (!task.value!!.isStrict && applyEnabled.value!! && number.length >= Constants.SAP_6) {
             saveGoodInTask()
 
             manager.searchNumber = number

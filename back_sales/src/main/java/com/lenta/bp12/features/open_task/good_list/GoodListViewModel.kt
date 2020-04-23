@@ -9,6 +9,7 @@ import com.lenta.bp12.request.TaskContentNetRequest
 import com.lenta.bp12.request.TaskContentParams
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.exception.Failure
+import com.lenta.shared.platform.constants.Constants
 import com.lenta.shared.platform.device_info.DeviceInfo
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.settings.IAppSettings
@@ -175,7 +176,7 @@ class GoodListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
             when (page) {
                 0 -> {
                     val items = mutableListOf<SimplePosition>()
-                    processingSelectionsHelper.selectedPositions.value?.forEach {position ->
+                    processingSelectionsHelper.selectedPositions.value?.forEach { position ->
                         processing.value?.get(position)?.let { item ->
                             items.add(SimplePosition(
                                     material = item.material,
@@ -186,10 +187,10 @@ class GoodListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
 
                     manager.deleteUncountedPositions(items)
                 }
-                1 ->{
+                1 -> {
                     val items = mutableListOf<SimplePosition>()
-                    processedSelectionsHelper.selectedPositions.value?.forEach {position ->
-                        processing.value?.get(position)?.let { item ->
+                    processedSelectionsHelper.selectedPositions.value?.forEach { position ->
+                        processed.value?.get(position)?.let { item ->
                             items.add(SimplePosition(
                                     material = item.material,
                                     providerCode = item.providerCode
@@ -241,7 +242,16 @@ class GoodListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
     }
 
     override fun onOkInSoftKeyboard(): Boolean {
+        checkEnteredNumber(numberField.value ?: "")
         return true
+    }
+
+    private fun checkEnteredNumber(number: String) {
+        if (!task.value!!.isStrict && number.length >= Constants.SAP_6) {
+            manager.searchNumber = number
+            numberField.value = ""
+            navigator.openGoodInfoOpenScreen()
+        }
     }
 
 }

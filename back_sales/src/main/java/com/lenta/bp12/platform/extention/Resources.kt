@@ -9,10 +9,7 @@ import com.lenta.shared.fmp.resources.slow.ZmpUtz09V001
 
 
 fun ZmpUtz09V001.getProviderInfo(code: String): ProviderInfo? {
-    var formattedCode = code
-    while (formattedCode.length < 10) {
-        formattedCode = "0$formattedCode"
-    }
+    val formattedCode = code.addZerosToStart(10)
 
     @Suppress("INACCESSIBLE_TYPE")
     return localHelper_ET_VENDORS.getWhere("VENDOR = \"$formattedCode\" LIMIT 1").first()?.let { provider ->

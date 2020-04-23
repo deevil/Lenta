@@ -6,6 +6,7 @@ import com.lenta.bp12.model.pojo.open_task.Position
 import com.lenta.bp12.model.pojo.Properties
 import com.lenta.bp12.model.pojo.open_task.Good
 import com.lenta.bp12.model.pojo.open_task.Task
+import com.lenta.bp12.platform.extention.addZerosToStart
 import com.lenta.bp12.platform.extention.getBlockType
 import com.lenta.bp12.platform.extention.getControlType
 import com.lenta.bp12.platform.extention.getGoodKind
@@ -29,9 +30,9 @@ class OpenTaskManager @Inject constructor(
 
     override var searchNumber = ""
 
-    override var openGoodFromList = false
+    //override var openGoodFromList = false
 
-    override var openPositionFromList = false
+    //override var openPositionFromList = false
 
     override val searchParams = MutableLiveData<TaskSearchParams>()
 
@@ -123,7 +124,7 @@ class OpenTaskManager @Inject constructor(
                     control = taskInfo.control.getControlType(),
                     comment = taskInfo.comment,
                     provider = ProviderInfo(
-                            code = taskInfo.providerCode,
+                            code = taskInfo.providerCode.addZerosToStart(10),
                             name = taskInfo.providerName
                     ),
                     quantity = taskInfo.quantity.toIntOrNull() ?: 0,
@@ -157,7 +158,7 @@ class OpenTaskManager @Inject constructor(
                     control = taskInfo.control.getControlType(),
                     comment = taskInfo.comment,
                     provider = ProviderInfo(
-                            code = taskInfo.providerCode,
+                            code = taskInfo.providerCode.addZerosToStart(10),
                             name = taskInfo.providerName
                     ),
                     quantity = taskInfo.quantity.toIntOrNull() ?: 0,
@@ -175,7 +176,7 @@ class OpenTaskManager @Inject constructor(
                         innerQuantity = positionInfo.innerQuantity.toDoubleOrNull() ?: 1.0,
                         provider = ProviderInfo(
                                 name = positionInfo.providerName,
-                                code = positionInfo.providerCode
+                                code = positionInfo.providerCode.addZerosToStart(10)
                         ),
                         units = database.getUnitsByCode(positionInfo.unitsCode),
                         isCounted = positionInfo.isCounted.isSapTrue(),
@@ -235,8 +236,12 @@ class OpenTaskManager @Inject constructor(
     }
 
     override fun isExistUncountedPositions(): Boolean {
-        val list = currentTask.value?.goods?.map { good ->
+        /*val list = currentTask.value?.goods?.map { good ->
             good.positions.any { !it.isCounted }
+        } ?: emptyList()*/
+
+        val list = currentTask.value?.goods?.map { good ->
+            good.positions.filter { !it.isCounted }
         } ?: emptyList()
 
         Logg.d { "--> list = $list" }
@@ -337,8 +342,8 @@ class OpenTaskManager @Inject constructor(
 interface IOpenTaskManager {
 
     var searchNumber: String
-    var openGoodFromList: Boolean
-    var openPositionFromList: Boolean
+    //var openGoodFromList: Boolean
+    //var openPositionFromList: Boolean
 
     val searchParams: MutableLiveData<TaskSearchParams>
 

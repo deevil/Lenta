@@ -71,12 +71,14 @@ data class Good(
 
     fun markPositionDelete(providerCode: String) {
         positions.find { it.provider.code == providerCode }?.let {
+            it.quantity = 0.0
             it.isDelete = true
         }
     }
 
     fun markPositionUncounted(providerCode: String) {
         positions.find { it.provider.code == providerCode }?.let {
+            it.quantity = 0.0
             it.isCounted = false
         }
     }
