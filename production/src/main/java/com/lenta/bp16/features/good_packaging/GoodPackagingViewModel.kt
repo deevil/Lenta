@@ -24,18 +24,18 @@ class GoodPackagingViewModel : CoreViewModel() {
     lateinit var sessionInfo: ISessionInfo
 
     @Inject
-    lateinit var taskManager: ITaskManager
+    lateinit var manager: ITaskManager
 
     @Inject
     lateinit var packGoodNetRequest: PackGoodNetRequest
 
 
     val good by lazy {
-        taskManager.currentGood
+        manager.currentGood
     }
 
     val raw by lazy {
-        taskManager.currentRaw
+        manager.currentRaw
     }
 
     val title by lazy {
@@ -89,21 +89,21 @@ class GoodPackagingViewModel : CoreViewModel() {
             packGoodNetRequest(
                     PackGoodParams(
                             marketNumber = sessionInfo.market ?: "Not found!",
-                            taskType = taskManager.getTaskTypeCode(),
+                            taskType = manager.getTaskTypeCode(),
                             deviceIp = deviceIp.value ?: "Not found!",
                             material = good.value!!.material,
                             order = raw.value!!.order,
                             quantity = entered.value!!,
-                            taskNumber = taskManager.currentTask.value!!.taskInfo.number
+                            taskNumber = manager.currentTask.value!!.taskInfo.number
                     )
             ).also {
                 navigator.hideProgress()
             }.either(::handleFailure) {
                 navigator.showFixingPackagingPhaseSuccessful {
-                    good.value?.let {
-                        it.packs.add(0,
+                    good.value?.let { good ->
+                        good.packs.add(0,
                                 Pack(
-                                        material = it.material,
+                                        material = good.material,
                                         materialOsn = raw.value!!.materialOsn,
                                         code = "",
                                         order = raw.value!!.order,
@@ -111,7 +111,8 @@ class GoodPackagingViewModel : CoreViewModel() {
                                 )
                         )
 
-                        taskManager.updateGoodInCurrentTask(it)
+                        manager.updateCurrentGood(good)
+                        manager.onTaskChanged()
                     }
 
                     navigator.goBack()

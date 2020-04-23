@@ -8,7 +8,6 @@ import com.lenta.bp16.request.*
 import com.lenta.bp16.request.pojo.PackCode
 import com.lenta.shared.platform.device_info.DeviceInfo
 import com.lenta.shared.platform.viewmodel.CoreViewModel
-import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.extentions.dropZeros
 import com.lenta.shared.utilities.extentions.map
 import kotlinx.coroutines.launch
@@ -19,7 +18,7 @@ class PackListViewModel : CoreViewModel() {
     @Inject
     lateinit var navigator: IScreenNavigator
     @Inject
-    lateinit var taskManager: ITaskManager
+    lateinit var manager: ITaskManager
     @Inject
     lateinit var endDefrostingNetRequest: EndDefrostingNetRequest
     @Inject
@@ -27,11 +26,11 @@ class PackListViewModel : CoreViewModel() {
 
 
     val good by lazy {
-        taskManager.currentGood
+        manager.currentGood
     }
 
     val raw by lazy {
-        taskManager.currentRaw
+        manager.currentRaw
     }
 
     val title by lazy {
@@ -80,7 +79,6 @@ class PackListViewModel : CoreViewModel() {
                     navigator.openAlertScreen(failure)
                 }) {
                     navigator.showDefrostingPhaseIsCompleted {
-                        taskManager.onTaskChanged()
                         navigator.goBack()
                         navigator.goBack()
                     }
