@@ -74,8 +74,16 @@ class ProcessExciseAlcoBoxAccService
         }
     }
 
-    fun searchBox(code: String) {
+    fun searchBox(boxNumber: String) : TaskBoxInfo? {
+        return taskManager.getReceivingTask()?.taskRepository?.getBoxes()?.getBoxes()?.findLast {
+            it.boxNumber == boxNumber
+        }
+    }
 
+    fun getCountBoxOfProductOfDiscrepancies(materialNumber: String, boxNumber: String, typeDiscrepancies: String) : Int {
+        return taskManager.getReceivingTask()?.taskRepository?.getBoxesDiscrepancies()?.getBoxesDiscrepancies()?.filter {
+            it.boxNumber == boxNumber && it.materialNumber == materialNumber && it.typeDiscrepancies == typeDiscrepancies
+        }?.size ?: 0
     }
 
 }

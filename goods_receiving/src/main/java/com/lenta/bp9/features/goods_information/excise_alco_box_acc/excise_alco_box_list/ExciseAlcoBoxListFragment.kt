@@ -182,4 +182,10 @@ class ExciseAlcoBoxListFragment : CoreFragment<FragmentExciseAlcoBoxListBinding,
         vm.onScanResult(data)
     }
 
+    override fun onResume() {
+        super.onResume()
+        vm.onResume()
+    }
+
+
 }

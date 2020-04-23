@@ -200,7 +200,7 @@ class ExciseAlcoBoxAccInfoViewModel : CoreViewModel(), OnPositionClickListener {
     }
 
     fun onClickDetails(){
-        onScanResult("236201423037880319001474IWQLBGL752YAKJV4AZV3PAMXNLUX2VUBSZXVA3BTGCOYSFBCUK27SMSZPST642LQNOYX4UEHJ5WNK72JQSVEVAJMAM6SUIKHEHK6ZGEB7JLFYVLZ7WKGNET47UYEBY")
+        onScanResult("03000042907513119000438453")
         //screenNavigator.openGoodsDetailsScreen(productInfo.value!!)
     }
 
@@ -229,16 +229,60 @@ class ExciseAlcoBoxAccInfoViewModel : CoreViewModel(), OnPositionClickListener {
         /**if (onClickAdd()) {
             searchProductDelegate.searchCode(code = data, fromScan = true, isBarCode = true)
         }*/
+
+        if ( (countValue.value ?: 0.0) <= 0.0 ) {
+            screenNavigator.openAlertMustEnterQuantityScreen()
+            return
+        }
+
         when (data.length) {
             68, 150 -> {
                 val exciseStampInfo = processExciseAlcoBoxAccService.searchExciseStamp(data)
-                if (exciseStampInfo?.materialNumber == null) {
-                    screenNavigator.openAlertScannedStampNotFoundScreen()
+                if (exciseStampInfo == null) {
+                    screenNavigator.openAlertScannedStampNotFoundScreen() //Отсканированная марка не числится в текущей поставке. Перейдите к коробу, в которой находится эта марка и отсканируйте ее снова.
                 } else {
                     if (exciseStampInfo.materialNumber != productInfo.value!!.materialNumber) {
+                        //Отсканированная марка принадлежит товару <SAP-код> <Название>"
                         screenNavigator.openAlertScannedStampBelongsAnotherProductScreen(exciseStampInfo.materialNumber, ZfmpUtz48V001.getProductInfoByMaterial(exciseStampInfo.materialNumber)?.name ?: "")
                     } else {
-                        screenNavigator.openExciseAlcoBoxCardScreen(productInfo.value!!)
+                        if (qualityInfo.value?.get(spinQualitySelectedPosition.value ?: 0)?.code == "1") {
+                            if (processExciseAlcoBoxAccService.getCountBoxOfProductOfDiscrepancies(productInfo.value!!.materialNumber, exciseStampInfo.boxNumber, "1") >= acceptTotalCount.value!!.toInt()) {
+                                screenNavigator.openAlertRequiredQuantityBoxesAlreadyProcessedScreen() //Необходимое количество коробок уже обработано
+                            } else {
+                                screenNavigator.openExciseAlcoBoxCardScreen(productInfo.value!!)
+                            }
+                        } else {
+                            if (checkBoxList.value == true) {
+                                screenNavigator.openAlertRequiredQuantityBoxesAlreadyProcessedScreen() //Необходимое количество коробок уже обработано
+                            } else {
+                                screenNavigator.openExciseAlcoBoxCardScreen(productInfo.value!!)
+                            }
+                        }
+                    }
+                }
+            }
+            26 -> {
+                val boxInfo = processExciseAlcoBoxAccService.searchBox(boxNumber = data)
+                if (boxInfo == null) {
+                    screenNavigator.openAlertScannedBoxNotFoundScreen() //Отсканированная коробка не числится в задании. Отдайте коробку поставщику.
+                } else {
+                    if (boxInfo.materialNumber != productInfo.value!!.materialNumber) {
+                        //Отсканированная коробка принадлежит товару <SAP-код> <Название>
+                        screenNavigator.openAlertScannedBoxBelongsAnotherProductScreen(materialNumber = boxInfo.materialNumber, materialName = ZfmpUtz48V001.getProductInfoByMaterial(boxInfo.materialNumber)?.name ?: "")
+                    } else {
+                        if (qualityInfo.value?.get(spinQualitySelectedPosition.value ?: 0)?.code == "1") {
+                            if (processExciseAlcoBoxAccService.getCountBoxOfProductOfDiscrepancies(productInfo.value!!.materialNumber, boxInfo.boxNumber, "1") >= acceptTotalCount.value!!.toInt()) {
+                                screenNavigator.openAlertRequiredQuantityBoxesAlreadyProcessedScreen() //Необходимое количество коробок уже обработано
+                            } else {
+                                screenNavigator.openExciseAlcoBoxCardScreen(productInfo.value!!)
+                            }
+                        } else {
+                            if (checkBoxList.value == true) {
+                                screenNavigator.openAlertRequiredQuantityBoxesAlreadyProcessedScreen() //Необходимое количество коробок уже обработано
+                            } else {
+                                screenNavigator.openExciseAlcoBoxCardScreen(productInfo.value!!)
+                            }
+                        }
                     }
                 }
             }

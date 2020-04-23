@@ -268,4 +268,8 @@
     <string name="control">Контроль</string>
     <string name="scanned_stamp_not_listed_in_current_delivery">Отсканированная марка не числится в текущей поставке. Перейдите к коробу, в которой находится эта марка и отсканируйте ее снова.</string>
     <string name="scanned_mark_belongs_to_another_product">Отсканированная марка принадлежит товару \"%1$s\" \"%2$s\"</string>
+    <string name="required_quantity_boxes_already_processed">Необходимое количество коробок уже обработано</string>
+    <string name="must_enter_quantity">Необходимо ввести количество</string>
+    <string name="scanned_box_not_listed_in_current_delivery">Отсканированная коробка не числится в задании. Отдайте коробку поставщику.</string>
+    <string name="scanned_box_belongs_to_another_product">Отсканированная коробка принадлежит товару \"%1$s\" \"%2$s\"</string>
 </resources>

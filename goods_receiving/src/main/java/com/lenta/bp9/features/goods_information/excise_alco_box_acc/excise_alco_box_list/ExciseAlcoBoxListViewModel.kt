@@ -2,10 +2,8 @@ package com.lenta.bp9.features.goods_information.excise_alco_box_acc.excise_alco
 
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import androidx.lifecycle.MutableLiveData
-import com.lenta.bp9.model.task.IReceivingTaskManager
-import com.lenta.bp9.model.task.TaskBatchInfo
-import com.lenta.bp9.model.task.TaskProductDiscrepancies
-import com.lenta.bp9.model.task.TaskProductInfo
+import androidx.lifecycle.viewModelScope
+import com.lenta.bp9.model.task.*
 import com.lenta.bp9.platform.navigation.IScreenNavigator
 import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.SelectionItemsHelper
@@ -28,6 +26,50 @@ class ExciseAlcoBoxListViewModel : CoreViewModel(), PageSelectionListener, OnOkI
     val processedSelectionsHelper = SelectionItemsHelper()
     val scanCode: MutableLiveData<String> = MutableLiveData()
     val requestFocusToScanCode: MutableLiveData<Boolean> = MutableLiveData()
+
+    fun onResume() {
+        updateData()
+    }
+
+    private fun updateData() {
+        val boxNotProcessed = taskManager.getReceivingTask()?.taskRepository?.getBoxes()?.getBoxes()
+        val boxProcessed = taskManager.getReceivingTask()?.taskRepository?.getBoxesDiscrepancies()?.getBoxesDiscrepancies()
+
+        boxNotProcessed?.let {boxInfoList ->
+            countNotProcessed.postValue(
+                    boxInfoList
+                            .filter {
+                                taskManager.getReceivingTask()?.taskRepository?.getBoxesDiscrepancies()?.findDiscrepanciesOfBox(it)?.filter { foundDiscrepancies ->
+                                    foundDiscrepancies.boxNumber == it.boxNumber
+                                }?.size == 0
+                            }
+                            .mapIndexed { index, boxInfo ->
+                                BoxListItem(
+                                        number = index + 1,
+                                        name = "${boxInfo.boxNumber.substring(0,10)} ${boxInfo.boxNumber.substring(10,20)} ${boxInfo.boxNumber.substring(20,26)}",
+                                        productInfo = productInfo.value,
+                                        productDiscrepancies = null,
+                                        boxInfo = boxInfo,
+                                        even = index % 2 == 0)
+                            }
+                            .reversed())
+        }
+
+        boxProcessed?.let {boxDiscrepanciesList ->
+            countProcessed.postValue(
+                    boxDiscrepanciesList
+                            .mapIndexed { index, boxDiscrepancies ->
+                                BoxListItem(
+                                        number = index + 1,
+                                        name = "${boxDiscrepancies.boxNumber.substring(0,10)} ${boxDiscrepancies.boxNumber.substring(10,20)} ${boxDiscrepancies.boxNumber.substring(20,26)}",
+                                        productInfo = productInfo.value,
+                                        productDiscrepancies = null,
+                                        boxInfo = null,
+                                        even = index % 2 == 0)
+                            }
+                            .reversed())
+        }
+    }
 
     fun onClickSecondBtn(){
         if (selectedPage.value == 0) {
@@ -73,13 +115,9 @@ class ExciseAlcoBoxListViewModel : CoreViewModel(), PageSelectionListener, OnOkI
 data class BoxListItem(
         val number: Int,
         val name: String,
-        val countRefusalWithUom: String,
-        val quantityNotProcessedWithUom: String,
-        val discrepanciesName: String,
-        val isNormDiscrepancies: Boolean,
         val productInfo: TaskProductInfo?,
         val productDiscrepancies: TaskProductDiscrepancies?,
-        val batchInfo: TaskBatchInfo?,
+        val boxInfo: TaskBoxInfo?,
         val even: Boolean
 ) : Evenable {
     override fun isEven() = even

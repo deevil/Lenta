@@ -1098,8 +1098,54 @@ class ScreenNavigator(
 
     override fun openAlertScannedStampBelongsAnotherProductScreen(materialNumber: String, materialName: String) {
         runOrPostpone {
+            val materialNumberLastSix = if (materialNumber.length > 6) materialNumber.substring(materialNumber.length - 6) else materialNumber
             getFragmentStack()?.push(AlertFragment.create(
-                    message = context.getString(R.string.scanned_mark_belongs_to_another_product, materialNumber.substring(materialNumber.length - 6), materialName),
+                    message = context.getString(R.string.scanned_mark_belongs_to_another_product, materialNumberLastSix, materialName),
+                    iconRes = R.drawable.ic_info_pink,
+                    textColor = ContextCompat.getColor(context, R.color.color_text_dialogWarning),
+                    pageNumber = "97")
+            )
+        }
+    }
+
+    override fun openAlertRequiredQuantityBoxesAlreadyProcessedScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    message = context.getString(R.string.required_quantity_boxes_already_processed),
+                    iconRes = R.drawable.ic_info_pink,
+                    textColor = ContextCompat.getColor(context, R.color.color_text_dialogWarning),
+                    pageNumber = "97")
+            )
+        }
+    }
+
+    override fun openAlertMustEnterQuantityScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    message = context.getString(R.string.must_enter_quantity),
+                    iconRes = R.drawable.ic_info_pink,
+                    textColor = ContextCompat.getColor(context, R.color.color_text_dialogWarning),
+                    pageNumber = "97")
+            )
+        }
+    }
+
+    override fun openAlertScannedBoxNotFoundScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    message = context.getString(R.string.scanned_box_not_listed_in_current_delivery),
+                    iconRes = R.drawable.ic_info_pink,
+                    textColor = ContextCompat.getColor(context, R.color.color_text_dialogWarning),
+                    pageNumber = "97")
+            )
+        }
+    }
+
+    override fun openAlertScannedBoxBelongsAnotherProductScreen(materialNumber: String, materialName: String) {
+        runOrPostpone {
+            val materialNumberLastSix = if (materialNumber.length > 6) materialNumber.substring(materialNumber.length - 6) else materialNumber
+            getFragmentStack()?.push(AlertFragment.create(
+                    message = context.getString(R.string.scanned_box_belongs_to_another_product, materialNumberLastSix, materialName),
                     iconRes = R.drawable.ic_info_pink,
                     textColor = ContextCompat.getColor(context, R.color.color_text_dialogWarning),
                     pageNumber = "97")
@@ -1238,4 +1284,8 @@ interface IScreenNavigator : ICoreNavigator {
     fun openExciseAlcoBoxCardScreen(productInfo: TaskProductInfo)
     fun openAlertScannedStampNotFoundScreen()
     fun openAlertScannedStampBelongsAnotherProductScreen(materialNumber: String, materialName: String)
+    fun openAlertRequiredQuantityBoxesAlreadyProcessedScreen()
+    fun openAlertMustEnterQuantityScreen()
+    fun openAlertScannedBoxNotFoundScreen()
+    fun openAlertScannedBoxBelongsAnotherProductScreen(materialNumber: String, materialName: String)
 }
