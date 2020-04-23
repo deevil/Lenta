@@ -191,4 +191,7 @@
     <string name="enter_name_weight_equipment">Введите имя весового оборудования для получения веса на этот терминал</string>
     <string name="enter_printer_address">Введите IP-адрес принтера для печати с этого терминала</string>
     <string name="inStock">В наличии</string>
+    <string name="boxes">Короба</string>
+    <string name="handle_goods">Обработать</string>
+    <string name="select_all">Выбрать все</string>
 </resources>

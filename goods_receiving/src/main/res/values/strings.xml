@@ -104,7 +104,6 @@
     <string name="EGAIS_fixation_date">Дата фикс. ЕГАИС</string>
     <string name="adiitional_list_number">Номер доп. листа</string>
     <string name="alcocode">Алкокод</string>
-    <string name="pour_date">Дата розлива</string>
     <string name="number_TTN">Номер ТТН</string>
     <string name="shipment_date">Дата отгрузки</string>
     <string name="processed">Обработанные</string>
@@ -129,7 +128,7 @@
     <string name="supply_results_automatic_charge_error">Автосписание не прошло, для дальнейшей обработки задания необходимо завершить автосписание через SAP ERP</string>
     <string name="batch_with_bottling_date">Партия (%1$s) с датой розлива</string>
     <string name="alert_overlimit">Введенное количество больше планового. Измените количество.</string>
-    <string name="stamp_control">Контроль марок</string>
+    <string name="stamp_control">Контроль марок в кор.</string>
     <string name="bottling_date">Дата розлива</string>
     <string name="general_shelf_life">Общий СГ</string>
     <string name="remaining_shelf_life">Остаточный СГ</string>
@@ -259,4 +258,18 @@
     <string name="quantity_all">Общее количество, всего</string>
     <string name="plan">План</string>
     <string name="alert_unable_to_save_negative_quantity">Невозможно сохранить отрицательное количество</string>
+    <string name="dialog_submerged_ge">Были погружены %1$s ГЕ. На непогруженные ГЕ будет создано новое задание на отгрузку.</string>
+    <string name="box_control">Контроль коробов</string>
+    <string name="box_list">Список коробов</string>
+    <string name="not_required">Не требуется</string>
+    <string name="box_number">Номер коробки</string>
+    <string name="box_stamp">Короб/Марка</string>
+    <string name="scan_box_or_stamp">Отсканируйте короб или марку</string>
+    <string name="control">Контроль</string>
+    <string name="scanned_stamp_not_listed_in_current_delivery">Отсканированная марка не числится в текущей поставке. Перейдите к коробу, в которой находится эта марка и отсканируйте ее снова.</string>
+    <string name="scanned_mark_belongs_to_another_product">Отсканированная марка принадлежит товару \"%1$s\" \"%2$s\"</string>
+    <string name="required_quantity_boxes_already_processed">Необходимое количество коробок уже обработано</string>
+    <string name="must_enter_quantity">Необходимо ввести количество</string>
+    <string name="scanned_box_not_listed_in_current_delivery">Отсканированная коробка не числится в задании. Отдайте коробку поставщику.</string>
+    <string name="scanned_box_belongs_to_another_product">Отсканированная коробка принадлежит товару \"%1$s\" \"%2$s\"</string>
 </resources>

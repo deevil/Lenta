@@ -2,15 +2,17 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context=".features.goods_information.excise_alco_box_acc.ExciseAlcoBoxAccInfoFragment">
+    tools:context=".features.goods_information.excise_alco_box_acc.excise_alco_box_card.ExciseAlcoBoxCardFragment">
 
     <data>
 
         <variable
             name="vm"
-            type="com.lenta.bp9.features.goods_information.excise_alco_box_acc.ExciseAlcoBoxAccInfoViewModel" />
+            type="com.lenta.bp9.features.goods_information.excise_alco_box_acc.excise_alco_box_card.ExciseAlcoBoxCardViewModel" />
+
 
     </data>
+
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -38,7 +40,7 @@
             android:layout_width="1dp"
             android:layout_height="0dp"
             android:background="@color/color_divider"
-            app:layout_constraintBottom_toBottomOf="@+id/div_hor3"
+            app:layout_constraintBottom_toBottomOf="@+id/div_hor2"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="@+id/guideline"
@@ -68,6 +70,7 @@
             android:inputType="numberDecimal"
             android:maxLines="1"
             android:maxLength="6"
+            android:enabled="false"
             app:maxLengthForScanProtect="@{6}"
             android:text="@={vm.count}"
             app:digitsForUom="@{vm.productInfo.uom}"
@@ -87,77 +90,6 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/et_inventory" />
 
-        <TextView
-            android:id="@+id/tv_accept"
-            style="@style/TextTitle"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_marginEnd="8dp"
-            android:ellipsize="end"
-            android:maxLines="1"
-            android:text="@{vm.tvAccept}"
-            app:layout_constraintBottom_toBottomOf="@+id/tv_accept_val"
-            app:layout_constraintEnd_toStartOf="@+id/div_vert1"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/tv_accept_val"
-            tools:text="Принять (кор=3 шт)"/>
-
-        <TextView
-            android:id="@+id/tv_accept_val"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="8dp"
-            android:layout_marginEnd="8dp"
-            android:ellipsize="end"
-            android:maxLines="1"
-            android:gravity="start|center_vertical"
-            android:text='@{vm.acceptTotalCountWithUom}'
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="@+id/guideline"
-            app:layout_constraintTop_toBottomOf="@+id/div_hor2"
-            tools:text="+ 10 шт" />
-
-        <TextView
-            android:id="@+id/tv_refusal"
-            style="@style/TextTitle"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_marginEnd="8dp"
-            android:text="@string/refusal"
-            app:layout_constraintEnd_toStartOf="@+id/guideline"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tv_accept" />
-
-        <TextView
-            android:id="@+id/tv_refusal_val"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_marginEnd="8dp"
-            android:ellipsize="end"
-            android:maxLines="1"
-            android:gravity="start|center_vertical"
-            android:textColor="@color/color_pressed_red"
-            android:text='@{vm.refusalTotalCountWithUom}'
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="@+id/guideline"
-            app:layout_constraintTop_toBottomOf="@+id/tv_accept_val"
-            tools:text="- 10 шт"/>
-
-        <View
-            android:id="@+id/div_hor3"
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:layout_marginTop="28dp"
-            android:background="@color/color_divider"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tv_accept_val" />
-
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/ConstraintNorm"
             android:layout_width="match_parent"
@@ -166,7 +98,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="1.0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/div_hor3">
+            app:layout_constraintTop_toBottomOf="@+id/div_hor2">
 
             <View
                 android:id="@+id/div_vert2"
@@ -174,9 +106,9 @@
                 android:layout_height="0dp"
                 android:layout_marginStart="1dp"
                 android:background="@color/color_divider"
-                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintBottom_toBottomOf="@+id/div_hor4"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintStart_toStartOf="@+id/div_hor3"
                 app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
@@ -214,13 +146,13 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="8dp"
-                android:enabled="false"
                 android:checked="@{vm.checkStampControl}"
+                android:enabled="false"
                 app:layout_constraintStart_toEndOf="@+id/div_vert2"
                 app:layout_constraintTop_toTopOf="@+id/div_vert2" />
 
             <View
-                android:id="@+id/div_hor5"
+                android:id="@+id/div_hor3"
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
                 android:layout_marginTop="8dp"
@@ -264,10 +196,58 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="8dp"
-                android:enabled="false"
                 android:checked="@{vm.checkBoxControl}"
+                android:enabled="false"
                 app:layout_constraintStart_toEndOf="@+id/div_vert2"
-                app:layout_constraintTop_toBottomOf="@+id/div_hor5" />
+                app:layout_constraintTop_toBottomOf="@+id/div_hor3" />
+
+            <View
+                android:id="@+id/div_hor4"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginTop="8dp"
+                android:background="@color/color_divider"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/checkBox_box_control" />
+
+            <com.lenta.shared.view.ClickableSpinner
+                android:id="@+id/spinner_manufacturers"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="8dp"
+                app:items="@{vm.spinManufacturers}"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/div_hor4"
+                app:position="@{vm.spinManufacturersSelectedPosition}" />
+
+            <View
+                android:id="@+id/div_hor5"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginTop="8dp"
+                android:background="@color/color_divider"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="1.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/spinner_manufacturers" />
+
+            <TextView
+                android:id="@+id/tv_bottling_date"
+                style="@style/TextTitle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="8dp"
+                android:ellipsize="end"
+                android:text="@string/bottling_date"
+                app:layout_constraintBottom_toBottomOf="@+id/spinner_bottling_date"
+                app:layout_constraintEnd_toStartOf="@+id/div_vert3"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/spinner_bottling_date" />
 
             <View
                 android:id="@+id/div_hor6"
@@ -277,7 +257,30 @@
                 android:background="@color/color_divider"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/checkBox_box_control" />
+                app:layout_constraintTop_toBottomOf="@+id/spinner_bottling_date" />
+
+            <com.lenta.shared.view.ClickableSpinner
+                android:id="@+id/spinner_bottling_date"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="8dp"
+                app:items="@{vm.spinBottlingDate}"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/div_vert3"
+                app:layout_constraintTop_toBottomOf="@+id/div_hor5"
+                app:position="@{vm.spinBottlingDateSelectedPosition}" />
+
+            <View
+                android:id="@+id/div_vert3"
+                android:layout_width="1dp"
+                android:layout_height="0dp"
+                android:background="@color/color_divider"
+                app:layout_constraintBottom_toBottomOf="@+id/div_hor6"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="@+id/div_hor5"
+                app:layout_constraintTop_toBottomOf="@+id/div_hor5" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -285,71 +288,12 @@
             android:id="@+id/ConstraintDefect"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
             android:visibility="@{vm.isDefect}"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/ConstraintNorm">
-
-            <View
-                android:id="@+id/div_vert3"
-                android:layout_width="1dp"
-                android:layout_height="0dp"
-                android:layout_marginStart="1dp"
-                android:background="@color/color_divider"
-                app:layout_constraintBottom_toBottomOf="@+id/div_hor7"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <TextView
-                android:id="@+id/tv_box_list"
-                style="@style/TextTitle"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginEnd="8dp"
-                android:ellipsize="end"
-                android:text="@string/box_list"
-                app:layout_constraintBottom_toBottomOf="@+id/checkBox_box_list"
-                app:layout_constraintEnd_toStartOf="@+id/div_vert3"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="@+id/checkBox_box_list" />
-
-            <TextView
-                android:id="@+id/tv_box_list_val"
-                style="@style/TextTitle"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginEnd="8dp"
-                android:ellipsize="end"
-                android:maxLines="1"
-                android:text="@{vm.tvBoxListVal}"
-                app:layout_constraintBottom_toBottomOf="@+id/checkBox_box_list"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/checkBox_box_list"
-                app:layout_constraintTop_toTopOf="@+id/checkBox_box_list" />
-
-            <CheckBox
-                android:id="@+id/checkBox_box_list"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="8dp"
-                android:enabled="false"
-                android:checked="@{vm.checkBoxList}"
-                app:layout_constraintStart_toEndOf="@+id/div_vert3"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <View
-                android:id="@+id/div_hor7"
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:layout_marginTop="8dp"
-                android:background="@color/color_divider"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/checkBox_box_list" />
 
             <com.lenta.shared.view.ClickableSpinner
                 android:id="@+id/spinner_reject_rejection"
@@ -361,12 +305,12 @@
                 app:items="@{vm.spinReasonRejection}"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/div_vert3"
+                app:layout_constraintTop_toTopOf="parent"
                 app:onPositionClickListener="@{vm}"
                 app:position="@{vm.spinReasonRejectionSelectedPosition}" />
 
             <View
-                android:id="@+id/div_hor8"
+                android:id="@+id/div_hor7"
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
                 android:layout_marginTop="8dp"
@@ -389,9 +333,9 @@
             android:gravity="center"
             android:onClick="@{(v) -> vm.screenNavigator.openSectionInfoScreen(vm.productInfo.sectionId)}"
             android:text='@{"" + vm.productInfo.sectionId}'
-            app:layout_constraintBottom_toBottomOf="@+id/b_scan"
+            app:layout_constraintBottom_toBottomOf="@+id/b_scan_es"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/b_scan"
+            app:layout_constraintTop_toTopOf="@+id/b_scan_es"
             tools:text="02" />
 
         <ImageButton
@@ -400,9 +344,9 @@
             android:layout_height="wrap_content"
             android:background="?selectableItemBackground"
             app:alcoIcon="@{vm.productInfo.type}"
-            app:layout_constraintBottom_toBottomOf="@+id/b_scan"
+            app:layout_constraintBottom_toBottomOf="@+id/b_scan_es"
             app:layout_constraintStart_toEndOf="@+id/tv_section"
-            app:layout_constraintTop_toTopOf="@+id/b_scan"
+            app:layout_constraintTop_toTopOf="@+id/b_scan_es"
             tools:src="@drawable/ic_excise_white_48dp" />
 
         <ImageButton
@@ -414,36 +358,26 @@
             android:onClick="@{(v) -> vm.screenNavigator.openBoxInfoScreen()}"
             android:padding="4dp"
             android:src="@drawable/is_scan_box"
-            app:layout_constraintBottom_toBottomOf="@+id/b_scan"
+            app:layout_constraintBottom_toBottomOf="@+id/b_scan_es"
             app:layout_constraintEnd_toStartOf="@+id/b_scan_es"
-            app:layout_constraintTop_toTopOf="@+id/b_scan"
+            app:layout_constraintTop_toTopOf="@+id/b_scan_es"
             tools:visibility="visible" />
 
         <ImageButton
             android:id="@+id/b_scan_es"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:layout_marginBottom="8dp"
             android:background="?selectableItemBackground"
             android:onClick="@{(v) -> vm.screenNavigator.openESInfoScreen()}"
             android:padding="4dp"
             android:src="@drawable/is_scan_barcode_es"
-            app:layout_constraintBottom_toBottomOf="@+id/b_scan"
-            app:layout_constraintEnd_toStartOf="@+id/b_scan"
-            app:layout_constraintTop_toTopOf="@+id/b_scan"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
             tools:visibility="visible" />
 
-        <ImageButton
-            android:id="@+id/b_scan"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="4dp"
-            android:background="?selectableItemBackground"
-            android:onClick="@{(v) -> vm.screenNavigator.openEanInfoScreen()}"
-            android:padding="8dp"
-            android:src="@drawable/ic_scan_barcode_48dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
-
     </androidx.constraintlayout.widget.ConstraintLayout>
+
 
 </layout>
