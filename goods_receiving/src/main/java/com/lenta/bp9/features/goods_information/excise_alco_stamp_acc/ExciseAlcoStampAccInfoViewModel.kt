@@ -5,7 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.lenta.bp9.R
 import com.lenta.bp9.features.goods_list.SearchProductDelegate
-import com.lenta.bp9.model.processing.ProcessExciseAlcoProductService
+import com.lenta.bp9.model.processing.ProcessExciseAlcoStampAccService
 import com.lenta.bp9.model.task.IReceivingTaskManager
 import com.lenta.bp9.model.task.TaskBatchInfo
 import com.lenta.bp9.model.task.TaskProductInfo
@@ -28,7 +28,7 @@ class ExciseAlcoStampAccInfoViewModel : CoreViewModel(), OnPositionClickListener
     @Inject
     lateinit var taskManager: IReceivingTaskManager
     @Inject
-    lateinit var processExciseAlcoProductService: ProcessExciseAlcoProductService
+    lateinit var processExciseAlcoStampAccService: ProcessExciseAlcoStampAccService
     @Inject
     lateinit var dataBase: IDataBaseRepo
     @Inject
@@ -103,7 +103,7 @@ class ExciseAlcoStampAccInfoViewModel : CoreViewModel(), OnPositionClickListener
                     taskRepository.
                     getExciseStamps().
                     findExciseStampsOfProduct(productInfo.value!!).
-                    size + processExciseAlcoProductService.getCountExciseStamps()} из ${((productInfo.value!!.numberStampsControl).toDouble()).toStringFormatted()}"
+                    size + processExciseAlcoStampAccService.getCountExciseStamps()} из ${((productInfo.value!!.numberStampsControl).toDouble()).toStringFormatted()}"
         }
 
 
@@ -123,10 +123,10 @@ class ExciseAlcoStampAccInfoViewModel : CoreViewModel(), OnPositionClickListener
             spinBottlingDate.value = listOf(taskManager.getReceivingTask()!!.taskRepository.getBatches().findBatchOfProduct(productInfo.value!!)?.bottlingDate ?: "")
             batchInfo.value = taskManager.getReceivingTask()!!.taskRepository.getBatches().findBatchOfProduct(productInfo.value!!)
             //todo временно закоментированно planQuantityBatch.value = batchInfo.value?.planQuantityBatch + " " + batchInfo.value?.uom?.name + "."
-            if (processExciseAlcoProductService.newProcessNonExciseAlcoProductService(productInfo.value!!) == null){
+            /**if (processExciseAlcoProductService.newProcessNonExciseAlcoProductService(productInfo.value!!) == null){
                 screenNavigator.goBack()
                 screenNavigator.openAlertWrongProductType()
-            }
+            }*/
         }
     }
 
@@ -141,13 +141,13 @@ class ExciseAlcoStampAccInfoViewModel : CoreViewModel(), OnPositionClickListener
     }
 
     fun onClickAdd() {
-        if (processExciseAlcoProductService.overlimit(countValue.value!!)) {
-            screenNavigator.openAlertOverlimit()
+        if (processExciseAlcoStampAccService.overlimit(countValue.value!!)) {
+            screenNavigator.openAlertOverLimit()
         } else {
             if (qualityInfo.value?.get(spinQualitySelectedPosition.value ?: 0)?.code == "1") {
-                processExciseAlcoProductService.add(acceptTotalCount.value!!.toString(), "1")
+                processExciseAlcoStampAccService.add(acceptTotalCount.value!!.toString(), "1")
             } else {
-                processExciseAlcoProductService.add(count.value!!, reasonRejectionInfo.value!![spinReasonRejectionSelectedPosition.value!!].code)
+                processExciseAlcoStampAccService.add(count.value!!, reasonRejectionInfo.value!![spinReasonRejectionSelectedPosition.value!!].code)
             }
         }
 

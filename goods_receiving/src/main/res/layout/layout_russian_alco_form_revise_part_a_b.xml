@@ -166,7 +166,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="22dp"
             android:layout_marginEnd="8dp"
-            android:text="@string/pour_date"
+            android:text="@string/bottling_date"
             app:layout_constraintEnd_toStartOf="@+id/guideline"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/tv_quantity_a_caption"

@@ -4,10 +4,12 @@ import com.lenta.bp9.model.task.IReceivingTaskManager
 import com.lenta.bp9.model.task.TaskMercuryDiscrepancies
 import com.lenta.bp9.model.task.TaskProductDiscrepancies
 import com.lenta.bp9.model.task.TaskProductInfo
+import com.lenta.bp9.repos.IDataBaseRepo
 import com.lenta.bp9.repos.IRepoInMemoryHolder
 import com.lenta.shared.di.AppScope
 import javax.inject.Inject
 
+const val PROCESSING_MERCURY_UNKNOWN = 0
 const val PROCESSING_MERCURY_SAVED = 1
 const val PROCESSING_MERCURY_QUANT_GREAT_IN_VET_DOC = 2
 const val PROCESSING_MERCURY_QUANT_GREAT_IN_INVOICE = 3
@@ -15,6 +17,10 @@ const val PROCESSING_MERCURY_SURPLUS_IN_QUANTITY = 4
 const val PROCESSING_MERCURY_UNDERLOAD_AND_SURPLUS_IN_ONE_DELIVERY = 5
 const val PROCESSING_MERCURY_NORM_AND_UNDERLOAD_EXCEEDED_INVOICE = 6
 const val PROCESSING_MERCURY_NORM_AND_UNDERLOAD_EXCEEDED_VET_DOC = 7
+const val PROCESSING_MERCURY_ROUND_QUANTITY_TO_PLANNED = 8
+const val PROCESSING_MERCURY_CANT_SAVE_NEGATIVE_NUMBER = 9
+const val PROCESSING_MERCURY_OVERDELIVERY_MORE_EQUAL_NOT_ORDER = 10
+const val PROCESSING_MERCURY_OVERDELIVERY_LESS_NOT_ORDER = 11
 
 @AppScope
 class ProcessMercuryProductService
@@ -286,8 +292,15 @@ class ProcessMercuryProductService
         newVetProductDiscrepancies.add(newVetDiscrepancy)
     }
 
-    fun checkConditionsOfPreservation(count: String, reasonRejectionCode: String, manufacturer: String, productionDate: String) : Int {
+    fun checkConditionsOfPreservationOfProduct(count: String,
+                                               typeDiscrepancies: String,
+                                               manufacturer: String,
+                                               productionDate: String,
+                                               paramGrzRoundLackRatio: Double,
+                                               paramGrzRoundLackUnit: Double,
+                                               paramGrzRoundHeapRatio: Double) : Int {
 
+        //суммарное кол-во по ВСД (ET_VET_DIFF, поле VSDVOLUME)
         val vetDocumentIDVolume = taskManager.getReceivingTask()?.taskRepository?.getMercuryDiscrepancies()?.findMercuryInfoOfProduct(productInfo)?.filter {
             it.manufacturer == manufacturer &&
                     it.productionDate == productionDate
@@ -295,23 +308,191 @@ class ProcessMercuryProductService
             it.volume
         } ?: 0.0
 
-        if ( getQuantityAllCategoryExceptNonOrderOfVetDoc(if (reasonRejectionCode != "41") count.toDouble() else 0.0, manufacturer, productionDate) > vetDocumentIDVolume ) {
+        //1.1. Проверяем есть ли разница между плановым кол-ом в ВП и суммой фактически введенного кол-ва с учетом всех введенных категорий, за исключением категории “Незаказ”
+        val productCategoriesSum = getQuantityAllCategoryExceptNonOrderOfProduct(if (typeDiscrepancies != "41") count.toDouble() else 0.0)
+        if (productCategoriesSum < productInfo.origQuantity.toDouble() ) {
+            val diff = productInfo.origQuantity.toDouble() - productCategoriesSum
+            // выявили Недогруз, переходим к проверке на микроокругление (пункт 1.1.1).
+            //1.1.1. Рассчитываем кол-во с % погрешности, используя следующую формулу:
+            //Значение из поля «плановое кол-во» умножаем на значение из параметра GRZ_ROUND_LACK_RATIO.
+            val acceptableRelError = productInfo.origQuantity.toDouble() * paramGrzRoundLackRatio
+
+            //1.1.2 Кол-во недогруза сравниваем со значение, полученным в п. 1.1.1 значением:
+            if (diff <= acceptableRelError) {
+                //- в случае если полученное значение меньше или равно значению из п. 1.1.1, то переходим к пункту 1.1.3.
+                //1.1.3 Если значение меньше или равно значению из  GRZ_ROUND_LACK_UNIT то запоминаем кол-во с округлением и переходим к пункту 1.3.
+                if (diff <= paramGrzRoundLackUnit) {
+                    //1.3 Выполняем проверку округленного кол-ва(плановое количество), сравниваем его с суммарным кол-вом по ВСД
+                    if (productInfo.origQuantity.toDouble() <= vetDocumentIDVolume) {
+                        //если сумма <= суммарному кол-ву по ВСД то выводить экран с сообщением “Вы хотите округлить кол-во до планового?”.
+                        return PROCESSING_MERCURY_ROUND_QUANTITY_TO_PLANNED
+                    } else {
+                        //Если условие не выполнено, система отображает ошибку - «Введенное кол-во больше чем в ВСД, измените кол-во».
+                        return PROCESSING_MERCURY_QUANT_GREAT_IN_VET_DOC
+                    }
+                } else {
+                    //- в случае если полученное значение больше значения из п. 1.1.3., то переходим к пункту 2.
+                    return checkConditionsOfPreservationOfVSD(count, typeDiscrepancies, manufacturer, productionDate)
+                }
+            } else {
+                //- в случае если полученное значение больше значения из п. 1.1.1., то переходим к пункту 2.
+                return checkConditionsOfPreservationOfVSD(count, typeDiscrepancies, manufacturer, productionDate)
+            }
+        } else if (productCategoriesSum > productInfo.origQuantity.toDouble()) {
+            val diff = productCategoriesSum - productInfo.origQuantity.toDouble()
+            // выявили Излишек, переходим к пункту 1.2.1
+            //1.2.1. Рассчитываем кол-во с % погрешности, используя следующую формулу:
+            //Значение из поля «плановое кол-во» умножаем на значение из параметра GRZ_ROUND_HEAP_RATIO.
+            val acceptableRelError = productInfo.origQuantity.toDouble() * paramGrzRoundHeapRatio
+
+            //1.2.2. Кол-во излишка сравниваем со значение, полученным в п. 1.2.1 значением:
+            if (diff <= acceptableRelError) {
+                //1.3 Выполняем проверку округленного кол-ва(плановое количество), сравниваем его с суммарным кол-вом по ВСД
+                if (productInfo.origQuantity.toDouble() <= vetDocumentIDVolume) {
+                    //если сумма <= суммарному кол-ву по ВСД то выводить экран с сообщением “Вы хотите округлить кол-во до планового?”.
+                    return PROCESSING_MERCURY_ROUND_QUANTITY_TO_PLANNED
+                } else {
+                    //Если условие не выполнено, система отображает ошибку - «Введенное кол-во больше чем в ВСД, измените кол-во».
+                    return PROCESSING_MERCURY_QUANT_GREAT_IN_VET_DOC
+                }
+            } else {
+                //- в случае если полученное значение больше значения из п. 1.2.1., то переходим к пункту 2.
+                return checkConditionsOfPreservationOfVSD(count, typeDiscrepancies, manufacturer, productionDate)
+            }
+        } else {
+            //- в случае если разницы между плановым кол-ом в ВП и суммой фактически введенного кол-ва с учетом всех введенных категорий, за исключением категории “Незаказ”, нет, то переходим к пункту 2.
+            return checkConditionsOfPreservationOfVSD(count, typeDiscrepancies, manufacturer, productionDate)
+        }
+    }
+
+    fun checkConditionsOfPreservationOfVSD(count: String, typeDiscrepancies: String, manufacturer: String, productionDate: String) : Int {
+        //суммарное кол-во по ВСД (ET_VET_DIFF, поле VSDVOLUME)
+        val vetDocumentIDVolume = taskManager.getReceivingTask()?.taskRepository?.getMercuryDiscrepancies()?.findMercuryInfoOfProduct(productInfo)?.filter {
+            it.manufacturer == manufacturer &&
+                    it.productionDate == productionDate
+        }?.sumByDouble {
+            it.volume
+        } ?: 0.0
+
+        //Сумма всех заявленных категорий по текущему ВСД за исключением «Незаказ»
+        val batchCategoriesSum = getQuantityAllCategoryExceptNonOrderOfVetDoc(if (typeDiscrepancies != "41") count.toDouble() else 0.0, manufacturer, productionDate)
+        // 2. Сумма всех заявленных категорий по текущему ВСД за исключением «Незаказ» <= суммарному кол-ву по ВСД (ET_VET_DIFF, поле VSDVOLUME).
+        if (batchCategoriesSum < 0) {
+            return PROCESSING_MERCURY_CANT_SAVE_NEGATIVE_NUMBER
+        }
+
+        // 2. Сумма всех заявленных категорий по текущему ВСД за исключением «Незаказ» <= суммарному кол-ву по ВСД (ET_VET_DIFF, поле VSDVOLUME).
+        if (batchCategoriesSum > vetDocumentIDVolume) {
+            //Если условие не выполнено, система отображает ошибку - «Введенное кол-во больше чем в ВСД, измените кол-во».
             return PROCESSING_MERCURY_QUANT_GREAT_IN_VET_DOC
         }
 
-        if ( getQuantityAllCategoryExceptNonOrderOfVetDoc(if (reasonRejectionCode != "41") count.toDouble() else 0.0, manufacturer, productionDate) <= productInfo.orderQuantity.toDouble() ) {
+        //Если условие выше выполнено, переходить к п.3
+        val notOrderCount = getQuantityNonOrderOfProduct(if (typeDiscrepancies == "41") count.toDouble() else 0.0)
+        // 3. Сумма всех заявленных категорий по текущему ВСД за исключением «Незаказ» <= количеству в ВП за вычитом категории незаказ(ET_TASK_POS, поле MENGE)
+        if (batchCategoriesSum <= productInfo.origQuantity.toDouble() - notOrderCount) {
+            //Если условие выполнено - сохранять результат пересчета.
             return PROCESSING_MERCURY_SAVED
-        } else {
-            if (productInfo.uom.name == "ШТ") {
-                return PROCESSING_MERCURY_QUANT_GREAT_IN_INVOICE
-            }
         }
 
-        return if (getQuantityAllCategoryExceptNonOrderOfProduct(if (reasonRejectionCode != "41") count.toDouble() else 0.0) <= (productInfo.origQuantity.toDouble() + productInfo.overdToleranceLimit.toDouble())) {
-            PROCESSING_MERCURY_SAVED
-        } else {
-            PROCESSING_MERCURY_QUANT_GREAT_IN_INVOICE
+        //В случае если кол-во в поставке меньше кол-ва в заказе, то при вводе кол-ва больше чем в ВП выводим ошибку о превышении кол-ва в ВП.
+        val productCategoriesSum = getQuantityAllCategoryExceptNonOrderOfProduct(if (typeDiscrepancies != "41") count.toDouble() else 0.0)
+        if (productInfo.origQuantity.toDouble() < productInfo.orderQuantity.toDouble() && productCategoriesSum > productInfo.origQuantity.toDouble()) {
+            return PROCESSING_MERCURY_QUANT_GREAT_IN_INVOICE
         }
+
+        //Если условие выше не выполнено и MEINS = шт. - отображать ошибку «Введенное кол-во больше чем в ВП, измените кол-во».
+        if (productInfo.uom.code == "ST") {
+            return PROCESSING_MERCURY_QUANT_GREAT_IN_INVOICE
+        }
+
+        //Если условие выше не выполнено и MEINS = г. - переходить к п. 4
+        val overSupply = productInfo.orderQuantity.toDouble() + (productInfo.overdToleranceLimit.toDouble() / 100) * productInfo.orderQuantity.toDouble()
+        // 4. Сумма всех заявленных категорий за исключением «Незаказ» <= плановому кол-ву в заказе + кол-во в рамках сверхпоставки (UEBTO).
+        if (productCategoriesSum > overSupply) {
+            //Если условие не выполнено, система отображает ошибку - «Введенное кол-во больше чем в ВП, измените кол-во».
+            return PROCESSING_MERCURY_QUANT_GREAT_IN_INVOICE
+        }
+
+        //Если условие выполнено, переходим к п.5.
+        // 5. Сумма всех заявленных категорий за исключением «Незаказ» <= плановому кол-ву в заказе + кол-во в рамках сверхпоставки (UEBTO):
+        if (productCategoriesSum <= overSupply) {
+            // - Проверить наличие категории "Незаказ"
+            // - Если по товару есть категория "Незаказ"
+            if (getQuantityNonOrderOfProduct(0.0) > 0.0) {
+                //выполнить переливание из категории "Незаказ" в категорию "Норма"
+                //в размере кол-ва введенного в рамках сверхпоставки (расчет введенного количества сверхпоставки как сумма всех заявленных категорий за вычетом количества заказа):
+                val delta = productCategoriesSum - productInfo.orderQuantity.toDouble()
+                val notOrderedCategory = newProductDiscrepancies.first { it.typeDiscrepancies == "41"}
+
+                //В случае если кол-во сверхпоставки >= кол-во категории "Незаказ", то:
+                if (delta >= notOrderedCategory.numberDiscrepancies.toDouble()) {
+                    return PROCESSING_MERCURY_OVERDELIVERY_MORE_EQUAL_NOT_ORDER
+                } else { // В случае если кол-во сверхпоставки < кол-ва категории "Незаказ", то
+                    return PROCESSING_MERCURY_OVERDELIVERY_LESS_NOT_ORDER
+                }
+            } else {
+                return PROCESSING_MERCURY_UNKNOWN
+            }
+        } else {
+            return PROCESSING_MERCURY_UNKNOWN
+        }
+    }
+
+    fun overDeliveryMoreEqualNotOrder(count: String, isConvertUnit: Boolean, typeDiscrepancies: String, manufacturer: String, productionDate: String) {
+        val productCategoriesSum = getQuantityAllCategoryExceptNonOrderOfProduct(if (typeDiscrepancies != "41") count.toDouble() else 0.0)
+        val delta = productCategoriesSum - productInfo.orderQuantity.toDouble()
+        val enteredCount = count.toDouble() - delta
+
+        // 1. Категорию "Незаказ" удаляем:
+        // в текущей ВСД
+        newVetProductDiscrepancies.filter {newVet ->
+            newVet.typeDiscrepancies == "41" && newVet.manufacturer == manufacturer && newVet.productionDate == productionDate
+        }.map {
+            newVetProductDiscrepancies.remove(it)
+        }
+        //у продукта
+        newProductDiscrepancies.findLast {it.typeDiscrepancies == "41"}?.let {
+            newProductDiscrepancies.remove(it)
+        }
+
+        // 2. Кол-во сверхпоставки записываем в категорию "Норма"
+        add(delta.toString(), isConvertUnit, "1", manufacturer, productionDate)
+
+        // 3. Сохраняем выбранную категорию
+        add(enteredCount.toString(), isConvertUnit, typeDiscrepancies, manufacturer, productionDate)
+    }
+
+    fun overDeliveryLessNotOrder(count: String, isConvertUnit: Boolean, typeDiscrepancies: String, manufacturer: String, productionDate: String) {
+        val productCategoriesSum = getQuantityAllCategoryExceptNonOrderOfProduct(if (typeDiscrepancies != "41") count.toDouble() else 0.0)
+        val delta = productCategoriesSum - productInfo.orderQuantity.toDouble()
+        val enteredCount = count.toDouble() - delta
+
+        // 1. Кол-во категории "Незаказ" уменьшаем в размере кол-ва сверхпоставки:
+        // в текущей ВСД запоминаем, сколько было в категории "Незаказ" (у продукта столько же)
+        val countNotOrderVetDoc = newVetProductDiscrepancies.filter {
+            it.typeDiscrepancies == "41" && it.manufacturer == manufacturer && it.productionDate == productionDate
+        }.sumByDouble {
+            it.numberDiscrepancies
+        } //кол-во расхождений по "Незаказ" считаем через фильтр, т.к. ВСД могут быть одинаковые по производителю и дате (см. vetDocumentVolume в ф-ции add() )
+        //у текущей ВСД удаляем весь "Незаказ"
+        newVetProductDiscrepancies.filter {newVet ->
+            newVet.typeDiscrepancies == "41" && newVet.manufacturer == manufacturer && newVet.productionDate == productionDate
+        }.map {
+            newVetProductDiscrepancies.remove(it)
+        }
+        //у продукта удаляем весь "Незаказ"
+        newProductDiscrepancies.findLast {it.typeDiscrepancies == "41"}?.let {
+            newProductDiscrepancies.remove(it)
+        }
+        //записываем новое значение (из того, что было, вычитаем дельту)
+        add((countNotOrderVetDoc - delta).toString(), isConvertUnit, "1", manufacturer, productionDate)
+
+        // 2. Кол-во сверхпоставки записываем в категорию "Норма"
+        add(delta.toString(), isConvertUnit, "1", manufacturer, productionDate)
+
+        // 3. Сохраняем выбранную категорию
+        add(enteredCount.toString(), isConvertUnit, typeDiscrepancies, manufacturer, productionDate)
     }
 
     private fun getQuantityAllCategoryExceptNonOrderOfVetDoc(count: Double, manufacturer: String, productionDate: String) : Double {
@@ -328,6 +509,12 @@ class ProcessMercuryProductService
         }.sumByDouble {
             it.numberDiscrepancies.toDouble()
         } ) + count
+    }
+
+    private fun getQuantityNonOrderOfProduct(count: Double) : Double {
+        return (newProductDiscrepancies.findLast {newDiscrepancies ->
+            newDiscrepancies.typeDiscrepancies == "41"
+        }?.numberDiscrepancies?.toDouble()) ?: 0.0 + count
     }
 
     fun checkConditionsOfPreservationPGE(count: Double, isConvertUnit: Boolean, reasonRejectionCode: String, manufacturer: String, productionDate: String) : Int {
@@ -456,4 +643,10 @@ class ProcessMercuryProductService
     private fun convertUnitForPGEProduct(countValue: Double) : Double {
         return countValue * productInfo.quantityInvest.toDouble()
     }
+
+    //В случае, если пользователь согласился округлить, то фактическое значение приравнивается к плановому.
+    fun getRoundingQuantityPPP (count: String, reasonRejectionCode: String) : Double {
+        return productInfo.origQuantity.toDouble() - getQuantityAllCategoryExceptNonOrderOfProduct(if (reasonRejectionCode != "41") count.toDouble() else 0.0)
+    }
+
 }

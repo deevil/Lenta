@@ -88,6 +88,18 @@ class DataBaseRepo(
         zmpUtz14V001.getGrzWerksOwnpr()
     }
 
+    override suspend fun getParamGrzRoundLackRatio(): String? = withContext(Dispatchers.IO) {
+        zmpUtz14V001.getParamGrzRoundLackRatio()
+    }
+
+    override suspend fun getParamGrzRoundLackUnit(): String? = withContext(Dispatchers.IO) {
+        zmpUtz14V001.getParamGrzRoundLackUnit()
+    }
+
+    override suspend fun getParamGrzRoundHeapRatio(): String? = withContext(Dispatchers.IO) {
+        zmpUtz14V001.getParamGrzRoundHeapRatio()
+    }
+
     override suspend fun getExclusionFromIntegration(): List<QualityInfo>? = withContext(Dispatchers.IO) {
         zmpUtz17V001.getAllQuality()?.toQualityInfoList()?.filter {
             it.id == "016"
@@ -176,6 +188,9 @@ interface IDataBaseRepo {
     suspend fun getParamGrwOlGrundcat(): String?
     suspend fun getParamGrwUlGrundcat(): String?
     suspend fun getParamGrzWerksOwnpr(): List<String>?
+    suspend fun getParamGrzRoundLackRatio(): String?
+    suspend fun getParamGrzRoundLackUnit(): String?
+    suspend fun getParamGrzRoundHeapRatio(): String?
     suspend fun getExclusionFromIntegration(): List<QualityInfo>?
     suspend fun getAllStatusInfoForPRC(): List<QualityInfo>?
     suspend fun getStatusInfoForPRC(): List<QualityInfo>?

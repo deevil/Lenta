@@ -13,7 +13,7 @@ class MemoryTaskBoxesRepository : ITaskBoxesRepository {
     }
 
     override fun findBox(box: TaskBoxInfo): TaskBoxInfo? {
-        return boxes.firstOrNull { it.materialNumber == box.materialNumber && it.boxNumber == box.boxNumber}
+        return boxes.firstOrNull { it.boxNumber == box.boxNumber}
     }
 
     override fun findBoxOfProduct(productInfo: TaskProductInfo): TaskBoxInfo? {
@@ -23,7 +23,7 @@ class MemoryTaskBoxesRepository : ITaskBoxesRepository {
     override fun addBox(box: TaskBoxInfo): Boolean {
         var index = -1
         for (i in boxes.indices) {
-            if (box.materialNumber == boxes[i].materialNumber && box.boxNumber == boxes[i].boxNumber) {
+            if (box.boxNumber == boxes[i].boxNumber) {
                 index = i
             }
         }
@@ -49,7 +49,7 @@ class MemoryTaskBoxesRepository : ITaskBoxesRepository {
 
     override fun deleteBox(box: TaskBoxInfo): Boolean {
         boxes.map { it }.filter {boxInfo ->
-            if (box.materialNumber == boxInfo.materialNumber && box.boxNumber == boxInfo.boxNumber) {
+            if (box.boxNumber == boxInfo.boxNumber) {
                 boxes.remove(boxInfo)
                 return@filter true
             }

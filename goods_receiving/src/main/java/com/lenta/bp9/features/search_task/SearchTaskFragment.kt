@@ -80,37 +80,37 @@ class SearchTaskFragment: CoreFragment<FragmentSearchTaskBinding, SearchTaskView
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding?.etSupplier?.setOnFocusChangeListener { v, hasFocus ->
-            if (!hasFocus) {
+            if (hasFocus) {
                 viewFocus = v
             }
         }
 
         binding?.etOrder?.setOnFocusChangeListener { v, hasFocus ->
-            if (!hasFocus) {
+            if (hasFocus) {
                 viewFocus = v
             }
         }
 
         binding?.etInvoice?.setOnFocusChangeListener { v, hasFocus ->
-            if (!hasFocus) {
+            if (hasFocus) {
                 viewFocus = v
             }
         }
 
         binding?.etTransportation?.setOnFocusChangeListener { v, hasFocus ->
-            if (!hasFocus) {
+            if (hasFocus) {
                 viewFocus = v
             }
         }
 
         binding?.etNumberGE?.setOnFocusChangeListener { v, hasFocus ->
-            if (!hasFocus) {
+            if (hasFocus) {
                 viewFocus = v
             }
         }
 
         binding?.etNumberEO?.setOnFocusChangeListener { v, hasFocus ->
-            if (!hasFocus) {
+            if (hasFocus) {
                 viewFocus = v
             }
         }

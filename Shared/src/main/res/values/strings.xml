@@ -193,5 +193,7 @@
     <string name="inStock">В наличии</string>
     <string name="proceed">Продолжить</string>
     <string name="properties">Свойства</string>
-
+    <string name="boxes">Короба</string>
+    <string name="handle_goods">Обработать</string>
+    <string name="select_all">Выбрать все</string>
 </resources>

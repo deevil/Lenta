@@ -1,5 +1,7 @@
 package com.lenta.shared.features.login
 
+import android.view.View
+import android.widget.EditText
 import androidx.lifecycle.MutableLiveData
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 
@@ -12,7 +14,15 @@ abstract class CoreAuthViewModel : CoreViewModel() {
     abstract fun onClickEnter()
     abstract fun onClickAuxiliaryMenu()
     abstract fun onResume()
-    fun onScanResult(data: String) {
-        login.postValue(data)
+    fun onScanResult(data: String, view: View?) {
+        view?.let {v ->
+            (v is EditText).let {
+                if (it) {
+                    (v as EditText).setText(data)
+                    v.requestFocus()
+                }
+            }
+        }
+        //login.postValue(data)
     }
 }

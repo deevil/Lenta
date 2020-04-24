@@ -9,6 +9,7 @@ import androidx.databinding.DataBindingUtil
 import com.lenta.bp9.BR
 import com.lenta.bp9.R
 import com.lenta.bp9.databinding.*
+import com.lenta.bp9.model.task.TaskType
 import com.lenta.bp9.platform.extentions.getAppComponent
 import com.lenta.shared.keys.KeyCode
 import com.lenta.shared.keys.OnKeyDownListener
@@ -28,6 +29,7 @@ class DiscrepancyListFragment : CoreFragment<FragmentDiscrepancyListBinding, Dis
         ToolbarButtonsClickListener {
 
     private var notProcessedRecyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
+    private var controlRecyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
 
     override fun getLayoutId(): Int = R.layout.fragment_discrepancy_list
 
@@ -71,51 +73,68 @@ class DiscrepancyListFragment : CoreFragment<FragmentDiscrepancyListBinding, Dis
     }
 
     override fun getPagerItemView(container: ViewGroup, position: Int): View {
-        if (position == 0) {
-            DataBindingUtil
-                    .inflate<LayoutDiscrepancyListNotProcessedBinding>(LayoutInflater.from(container.context),
-                            R.layout.layout_discrepancy_list_not_processed,
-                            container,
-                            false).let { layoutBinding ->
-
-                        layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
-                                layoutId = R.layout.item_tile_discrepancy_list_not_processed,
-                                itemId = BR.vm,
-                                realisation = object : DataBindingAdapter<ItemTileDiscrepancyListNotProcessedBinding> {
-                                    override fun onCreate(binding: ItemTileDiscrepancyListNotProcessedBinding) {
-                                    }
-
-                                    override fun onBind(binding: ItemTileDiscrepancyListNotProcessedBinding, position: Int) {
-                                        notProcessedRecyclerViewKeyHandler?.let {
-                                            binding.root.isSelected = it.isSelected(position)
-                                        }
-                                    }
-
-                                },
-                                onItemClickListener = AdapterView.OnItemClickListener { _, _, position, _ ->
-                                    notProcessedRecyclerViewKeyHandler?.let {
-                                        if (it.isSelected(position)) {
-                                            vm.onClickItemPosition(position)
-                                        } else {
-                                            it.selectPosition(position)
-                                        }
-                                    }
-
-                                }
-                        )
-
-                        layoutBinding.vm = vm
-                        layoutBinding.lifecycleOwner = viewLifecycleOwner
-                        notProcessedRecyclerViewKeyHandler = RecyclerViewKeyHandler(
-                                rv = layoutBinding.rv,
-                                items = vm.countNotProcessed,
-                                lifecycleOwner = layoutBinding.lifecycleOwner!!,
-                                initPosInfo = notProcessedRecyclerViewKeyHandler?.posInfo?.value
-                        )
-                        return layoutBinding.root
-                    }
+        return if (vm.isAlco.value == true) {
+            when(position) {
+                0 -> prepareNotProcessedView(container)
+                1 -> prepareControlView(container)
+                2 -> prepareProcessedView(container)
+                else -> View(context)
+            }
+        } else {
+            when(position) {
+                0 -> prepareNotProcessedView(container)
+                1 -> prepareProcessedView(container)
+                else -> View(context)
+            }
         }
+    }
 
+    private fun prepareNotProcessedView(container: ViewGroup): View {
+        DataBindingUtil
+                .inflate<LayoutDiscrepancyListNotProcessedBinding>(LayoutInflater.from(container.context),
+                        R.layout.layout_discrepancy_list_not_processed,
+                        container,
+                        false).let { layoutBinding ->
+
+                    layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
+                            layoutId = R.layout.item_tile_discrepancy_list_not_processed,
+                            itemId = BR.vm,
+                            realisation = object : DataBindingAdapter<ItemTileDiscrepancyListNotProcessedBinding> {
+                                override fun onCreate(binding: ItemTileDiscrepancyListNotProcessedBinding) {
+                                }
+
+                                override fun onBind(binding: ItemTileDiscrepancyListNotProcessedBinding, position: Int) {
+                                    notProcessedRecyclerViewKeyHandler?.let {
+                                        binding.root.isSelected = it.isSelected(position)
+                                    }
+                                }
+
+                            },
+                            onItemClickListener = AdapterView.OnItemClickListener { _, _, position, _ ->
+                                notProcessedRecyclerViewKeyHandler?.let {
+                                    if (it.isSelected(position)) {
+                                        vm.onClickItemPosition(position)
+                                    } else {
+                                        it.selectPosition(position)
+                                    }
+                                }
+
+                            }
+                    )
+
+                    layoutBinding.vm = vm
+                    layoutBinding.lifecycleOwner = viewLifecycleOwner
+                    notProcessedRecyclerViewKeyHandler = RecyclerViewKeyHandler(
+                            rv = layoutBinding.rv,
+                            items = vm.countNotProcessed,
+                            lifecycleOwner = layoutBinding.lifecycleOwner!!,
+                            initPosInfo = notProcessedRecyclerViewKeyHandler?.posInfo?.value
+                    )
+                    return layoutBinding.root
+                }
+    }
+
+    private fun prepareProcessedView(container: ViewGroup): View {
         DataBindingUtil
                 .inflate<LayoutDiscrepancyListProcessedBinding>(LayoutInflater.from(container.context),
                         R.layout.layout_discrepancy_list_processed,
@@ -151,9 +170,71 @@ class DiscrepancyListFragment : CoreFragment<FragmentDiscrepancyListBinding, Dis
                 }
     }
 
-    override fun getTextTitle(position: Int): String = getString(if (position == 0) R.string.not_processed else R.string.processed)
+    private fun prepareControlView(container: ViewGroup): View {
+        DataBindingUtil
+                .inflate<LayoutDiscrepancyListControlBinding>(LayoutInflater.from(container.context),
+                        R.layout.layout_discrepancy_list_control,
+                        container,
+                        false).let { layoutBinding ->
 
-    override fun countTab(): Int = 2
+                    layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
+                            layoutId = R.layout.item_tile_discrepancy_list_control,
+                            itemId = BR.vm,
+                            realisation = object : DataBindingAdapter<ItemTileDiscrepancyListControlBinding> {
+                                override fun onCreate(binding: ItemTileDiscrepancyListControlBinding) {
+                                }
+
+                                override fun onBind(binding: ItemTileDiscrepancyListControlBinding, position: Int) {
+                                    controlRecyclerViewKeyHandler?.let {
+                                        binding.root.isSelected = it.isSelected(position)
+                                    }
+                                }
+
+                            },
+                            onItemClickListener = AdapterView.OnItemClickListener { _, _, position, _ ->
+                                controlRecyclerViewKeyHandler?.let {
+                                    if (it.isSelected(position)) {
+                                        vm.onClickItemPosition(position)
+                                    } else {
+                                        it.selectPosition(position)
+                                    }
+                                }
+
+                            }
+                    )
+
+                    layoutBinding.vm = vm
+                    layoutBinding.lifecycleOwner = viewLifecycleOwner
+                    controlRecyclerViewKeyHandler = RecyclerViewKeyHandler(
+                            rv = layoutBinding.rv,
+                            items = vm.countControl,
+                            lifecycleOwner = layoutBinding.lifecycleOwner!!,
+                            initPosInfo = controlRecyclerViewKeyHandler?.posInfo?.value
+                    )
+                    return layoutBinding.root
+                }
+    }
+
+    override fun getTextTitle(position: Int): String {
+        return if (vm.isAlco.value == true) {
+            when (position) {
+                0 -> getString(R.string.not_processed)
+                1 -> getString(R.string.control)
+                2 -> getString(R.string.processed)
+                else -> ""
+            }
+        } else {
+            when (position) {
+                0 -> getString(R.string.not_processed)
+                1 -> getString(R.string.processed)
+                else -> ""
+            }
+        }
+    }
+
+    override fun countTab(): Int {
+        return if (vm.isAlco.value == true) 3 else 2
+    }
 
     override fun onPageSelected(position: Int) {
         vm.onPageSelected(position)

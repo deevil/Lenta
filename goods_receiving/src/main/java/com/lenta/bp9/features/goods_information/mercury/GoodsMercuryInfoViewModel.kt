@@ -109,6 +109,9 @@ class GoodsMercuryInfoViewModel : CoreViewModel(), OnPositionClickListener {
     val suffix: MutableLiveData<String> = MutableLiveData()
     val generalShelfLife: MutableLiveData<String> = MutableLiveData()
     val remainingShelfLife: MutableLiveData<String> = MutableLiveData()
+    val paramGrzRoundLackRatio: MutableLiveData<String> = MutableLiveData()
+    val paramGrzRoundLackUnit: MutableLiveData<String> = MutableLiveData()
+    val paramGrzRoundHeapRatio: MutableLiveData<String> = MutableLiveData()
 
     private val mercuryVolume  = spinManufacturersSelectedPosition.combineLatest(spinProductionDateSelectedPosition).map {
         val findMercuryInfoOfProduct = taskManager.getReceivingTask()?.taskRepository?.getMercuryDiscrepancies()?.findMercuryInfoOfProduct(productInfo.value!!)?.filter {taskMercuryInfo ->
@@ -282,18 +285,22 @@ class GoodsMercuryInfoViewModel : CoreViewModel(), OnPositionClickListener {
                     (productInfo.value?.remainingShelfLife?.toInt() ?: 0) > 0 ||
                     ((productInfo.value?.mhdhbDays ?: 0) > 0 && (productInfo.value?.mhdhbDays ?: 0) < paramGrzUffMhdhb )
             if (isPerishable.value == true) {
-                if ( (productInfo.value?.generalShelfLife?.toInt() ?: 0) <  paramGrzUffMhdhb) { //https://trello.com/c/7OqxSqOP
-                    generalShelfLife.value = productInfo.value?.mhdhbDays.toString()
-                    remainingShelfLife.value = productInfo.value?.mhdrzDays.toString()
-                } else {
+                if ( (productInfo.value?.generalShelfLife?.toInt() ?: 0) > 0 || (productInfo.value?.remainingShelfLife?.toInt() ?: 0) > 0 ) { //https://trello.com/c/XSAxdgjt
                     generalShelfLife.value = productInfo.value?.generalShelfLife
                     remainingShelfLife.value = productInfo.value?.remainingShelfLife
+                } else {
+                    generalShelfLife.value = productInfo.value?.mhdhbDays.toString()
+                    remainingShelfLife.value = productInfo.value?.mhdrzDays.toString()
                 }
             }
 
             spinQuality.value = qualityInfo.value?.map {
                 it.name
             }
+
+            paramGrzRoundLackRatio.value = dataBase.getParamGrzRoundLackRatio()
+            paramGrzRoundLackUnit.value = dataBase.getParamGrzRoundLackUnit()
+            paramGrzRoundHeapRatio.value = dataBase.getParamGrzRoundHeapRatio()
 
             if (processMercuryProductService.newProcessMercuryProductService(productInfo.value!!) == null) {
                 screenNavigator.goBack()
@@ -430,7 +437,15 @@ class GoodsMercuryInfoViewModel : CoreViewModel(), OnPositionClickListener {
         } else {
             reasonRejectionInfo.value!![spinReasonRejectionSelectedPosition.value!!].code
         }
-        when (processMercuryProductService.checkConditionsOfPreservation(count.value ?: "0", reasonRejectionCode, spinManufacturers!![spinManufacturersSelectedPosition.value!!], spinProductionDate.value!![spinProductionDateSelectedPosition.value!!])) {
+
+        when (processMercuryProductService.checkConditionsOfPreservationOfProduct(
+                                            count = count.value ?: "0",
+                                            typeDiscrepancies = reasonRejectionCode,
+                                            manufacturer = spinManufacturers!![spinManufacturersSelectedPosition.value!!],
+                                            productionDate = spinProductionDate.value!![spinProductionDateSelectedPosition.value!!],
+                                            paramGrzRoundLackRatio = paramGrzRoundLackRatio.value?.replace(",", ".")?.toDouble() ?: 0.0,
+                                            paramGrzRoundLackUnit = paramGrzRoundLackUnit.value?.replace(",", ".")?.toDouble() ?: 0.0,
+                                            paramGrzRoundHeapRatio = paramGrzRoundHeapRatio.value?.replace(",", ".")?.toDouble() ?: 0.0)) {
             PROCESSING_MERCURY_SAVED -> {
                 if (qualityInfo.value?.get(spinQualitySelectedPosition.value ?: 0)?.code == "1") {
                     processMercuryProductService.add(count.value ?: "0", false,"1", spinManufacturers!![spinManufacturersSelectedPosition.value!!], spinProductionDate.value!![spinProductionDateSelectedPosition.value!!])
@@ -445,24 +460,57 @@ class GoodsMercuryInfoViewModel : CoreViewModel(), OnPositionClickListener {
                 }
             }
             PROCESSING_MERCURY_QUANT_GREAT_IN_VET_DOC -> {
+                //отображает ошибку - «Введенное кол-во больше чем в ВСД, измените кол-во»
                 screenNavigator.openAlertQuantGreatInVetDocScreen()
             }
             PROCESSING_MERCURY_QUANT_GREAT_IN_INVOICE -> {
+                //отображать ошибку «Введенное кол-во больше чем в ВП, измените кол-во»
                 screenNavigator.openAlertQuantGreatInInvoiceScreen()
+            }
+            PROCESSING_MERCURY_ROUND_QUANTITY_TO_PLANNED -> {
+                screenNavigator.openRoundingIssueDialog(
+                        noCallbackFunc = {
+                            //- В случае, если пользователь отказался округлить, то переходим к п.2 (проверка по ВСД)
+                            processMercuryProductService.checkConditionsOfPreservationOfVSD(
+                                    count = count.value ?: "0",
+                                    typeDiscrepancies = reasonRejectionCode,
+                                    manufacturer = spinManufacturers!![spinManufacturersSelectedPosition.value!!],
+                                    productionDate = spinProductionDate.value!![spinProductionDateSelectedPosition.value!!])
+                        },
+                        yesCallbackFunc = {
+                            //- В случае, если пользователь согласился округлить, то фактическое значение приравнивается к плановому
+                            val enteredCount = processMercuryProductService.getRoundingQuantityPPP(count = count.value ?: "0", reasonRejectionCode = reasonRejectionCode)
+                            //и переходим к п.2 (проверка по ВСД)
+                            processMercuryProductService.checkConditionsOfPreservationOfVSD(
+                                                            count = enteredCount.toString(),
+                                                            typeDiscrepancies = reasonRejectionCode,
+                                                            manufacturer = spinManufacturers!![spinManufacturersSelectedPosition.value!!],
+                                                            productionDate = spinProductionDate.value!![spinProductionDateSelectedPosition.value!!])
+                        }
+                )
+            }
+            PROCESSING_MERCURY_CANT_SAVE_NEGATIVE_NUMBER -> {
+                //отображать ошибку «Невозможно сохранить отрицательное количество»
+                screenNavigator.openAlertUnableSaveNegativeQuantity()
+            }
+            PROCESSING_MERCURY_OVERDELIVERY_MORE_EQUAL_NOT_ORDER -> {
+                processMercuryProductService.overDeliveryMoreEqualNotOrder(count.value ?: "0", false, reasonRejectionInfo.value!![spinReasonRejectionSelectedPosition.value!!].code, spinManufacturers!![spinManufacturersSelectedPosition.value!!], spinProductionDate.value!![spinProductionDateSelectedPosition.value!!])
+            }
+            PROCESSING_MERCURY_OVERDELIVERY_LESS_NOT_ORDER -> {
+                processMercuryProductService.overDeliveryLessNotOrder(count.value ?: "0", false, reasonRejectionInfo.value!![spinReasonRejectionSelectedPosition.value!!].code, spinManufacturers!![spinManufacturersSelectedPosition.value!!], spinProductionDate.value!![spinProductionDateSelectedPosition.value!!])
+            }
+            PROCESSING_MERCURY_UNKNOWN -> {
+                //на Windows Mobile нет действия
             }
         }
         count.value = "0"
     }
 
-    private fun addGoodsPGE() {
-
-    }
-
     @SuppressLint("SimpleDateFormat")
     private fun addProductDiscrepanciesPGE() {
-        val mercuryUom = taskManager.getReceivingTask()?.taskRepository?.getMercuryDiscrepancies()?.findMercuryInfoOfProduct(productInfo.value!!)?.filter {taskMercuryInfo ->
+        val mercuryUom = taskManager.getReceivingTask()?.taskRepository?.getMercuryDiscrepancies()?.findMercuryInfoOfProduct(productInfo.value!!)?.last { taskMercuryInfo ->
             taskMercuryInfo.manufacturer == spinManufacturers!![spinManufacturersSelectedPosition.value!!] && taskMercuryInfo.productionDate == spinProductionDate.value!![spinProductionDateSelectedPosition.value!!]
-        }?.last()?.uom
+        }?.uom
 
         //https://trello.com/c/yALoQg2b
         val isConvertUnit = uom.value != mercuryUom
