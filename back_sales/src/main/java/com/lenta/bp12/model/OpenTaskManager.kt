@@ -30,10 +30,6 @@ class OpenTaskManager @Inject constructor(
 
     override var searchNumber = ""
 
-    //override var openGoodFromList = false
-
-    //override var openPositionFromList = false
-
     override val searchParams = MutableLiveData<TaskSearchParams>()
 
     override val tasks = MutableLiveData<List<Task>>(emptyList())
@@ -226,7 +222,6 @@ class OpenTaskManager @Inject constructor(
 
     override fun prepareGoodAndPosition(material: String, providerCode: String) {
         findGoodByMaterial(material)?.let { good ->
-            //openPositionFromList = true
             updateCurrentGood(good)
 
             good.positions.find { it.provider.code == providerCode }?.let { position ->
@@ -234,20 +229,6 @@ class OpenTaskManager @Inject constructor(
             }
         }
     }
-
-    /*override fun isExistUncountedPositions(): Boolean {
-        *//*val list = currentTask.value?.goods?.map { good ->
-            good.positions.any { !it.isCounted }
-        } ?: emptyList()*//*
-
-        val list = currentTask.value?.goods?.map { good ->
-            good.positions.filter { !it.isCounted }
-        } ?: emptyList()
-
-        Logg.d { "--> isExistUncountedPositions / list = $list" }
-
-        return list.isNotEmpty()
-    }*/
 
     override fun prepareSendTaskDataParams(deviceIp: String, tkNumber: String, userNumber: String) {
         currentTask.value?.let { task ->
@@ -342,8 +323,6 @@ class OpenTaskManager @Inject constructor(
 interface IOpenTaskManager {
 
     var searchNumber: String
-    //var openGoodFromList: Boolean
-    //var openPositionFromList: Boolean
 
     val searchParams: MutableLiveData<TaskSearchParams>
 
@@ -371,7 +350,6 @@ interface IOpenTaskManager {
     suspend fun addFoundTasks(tasksInfo: List<TaskInfo>)
     suspend fun addGoodsInCurrentTask(taskContentResult: TaskContentResult)
     fun prepareGoodAndPosition(material: String, providerCode: String)
-    //fun isExistUncountedPositions(): Boolean
     fun prepareSendTaskDataParams(deviceIp: String, tkNumber: String, userNumber: String)
     fun deleteUncountedPositions(items: MutableList<SimplePosition>)
     fun deleteCountedPositions(items: MutableList<SimplePosition>)

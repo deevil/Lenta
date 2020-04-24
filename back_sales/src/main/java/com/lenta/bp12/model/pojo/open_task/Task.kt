@@ -41,23 +41,11 @@ data class Task(
     }
 
     fun isExistProcessedPositions(): Boolean {
-        val list = mutableListOf<Position>()
-
-        goods.map { good ->
-            good.positions.filter { it.isCounted || it.isDelete }.forEach {
-                list.add(it)
-            }
-        }
-
-        Logg.d { "--> list = $list" }
-
-        return list.isNotEmpty()
+        return goods.any { good -> good.positions.any { it.isCounted || it.isDelete } }
     }
 
     fun isExistUncountedPositions(): Boolean {
-        return goods.map { good ->
-            good.positions.any { !it.isCounted && !it.isDelete }
-        }.isNotEmpty()
+        return goods.any { good -> good.positions.any { !it.isCounted && !it.isDelete } }
     }
 
 }
