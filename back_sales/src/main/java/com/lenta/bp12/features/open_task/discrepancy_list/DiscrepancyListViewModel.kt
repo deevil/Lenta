@@ -53,28 +53,32 @@ class DiscrepancyListViewModel : CoreViewModel() {
         }
     }
 
-    /*val deleteEnabled = selectionsHelper.selectedPositions.map {
-        it?.isNotEmpty()
-    }
-
-    val missingEnabled = selectionsHelper.selectedPositions.map {
-        it?.isNotEmpty()
-    }*/
-
     // -----------------------------
 
     fun onClickItemPosition(position: Int) {
         goods.value?.get(position)?.let {
-            manager.prepareGoodAndPosition(it.material, it.providerCode)
+            manager.preparePositionToOpen(it.material, it.providerCode)
             navigator.openGoodInfoOpenScreen()
         }
     }
 
-    fun onClickDelete() {
+    private fun isListEmpty() = goods.value?.isNullOrEmpty() == true
 
+    fun onClickDelete() {
+        if (isListEmpty()) {
+            return
+        }
+
+        selectionsHelper.selectedPositions.value?.let {
+
+        }
     }
 
     fun onClickMissing() {
+        if (isListEmpty()) {
+            return
+        }
+
 
     }
 

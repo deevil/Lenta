@@ -13,7 +13,6 @@ import com.lenta.shared.platform.constants.Constants
 import com.lenta.shared.platform.device_info.DeviceInfo
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.settings.IAppSettings
-import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.SelectionItemsHelper
 import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
 import com.lenta.shared.utilities.databinding.PageSelectionListener
@@ -208,7 +207,6 @@ class GoodListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
 
     fun onClickSave() {
         if (task.value!!.isExistUncountedPositions()) {
-            Logg.d { "--> isExistUncountedPositions!!!" }
             navigator.showMakeTaskCountedAndClose {
                 navigator.openDiscrepancyListScreen()
             }
@@ -228,13 +226,13 @@ class GoodListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
             when (page) {
                 0 -> {
                     processing.value?.get(position)?.let { position ->
-                        manager.prepareGoodAndPosition(position.material, position.providerCode)
+                        manager.preparePositionToOpen(position.material, position.providerCode)
                         navigator.openGoodInfoOpenScreen()
                     }
                 }
                 1 -> {
                     processed.value?.get(position)?.let { position ->
-                        manager.prepareGoodAndPosition(position.material, position.providerCode)
+                        manager.preparePositionToOpen(position.material, position.providerCode)
                         navigator.openGoodInfoOpenScreen()
                     }
                 }

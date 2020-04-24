@@ -220,7 +220,7 @@ class OpenTaskManager @Inject constructor(
         }
     }
 
-    override fun prepareGoodAndPosition(material: String, providerCode: String) {
+    override fun preparePositionToOpen(material: String, providerCode: String) {
         findGoodByMaterial(material)?.let { good ->
             updateCurrentGood(good)
 
@@ -349,7 +349,7 @@ interface IOpenTaskManager {
     suspend fun addTasks(tasksInfo: List<TaskInfo>)
     suspend fun addFoundTasks(tasksInfo: List<TaskInfo>)
     suspend fun addGoodsInCurrentTask(taskContentResult: TaskContentResult)
-    fun prepareGoodAndPosition(material: String, providerCode: String)
+    fun preparePositionToOpen(material: String, providerCode: String)
     fun prepareSendTaskDataParams(deviceIp: String, tkNumber: String, userNumber: String)
     fun deleteUncountedPositions(items: MutableList<SimplePosition>)
     fun deleteCountedPositions(items: MutableList<SimplePosition>)
