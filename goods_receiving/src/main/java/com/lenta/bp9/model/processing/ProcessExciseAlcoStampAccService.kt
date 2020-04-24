@@ -6,7 +6,7 @@ import com.lenta.shared.models.core.ProductType
 import javax.inject.Inject
 
 @AppScope
-class ProcessExciseAlcoProductService
+class ProcessExciseAlcoStampAccService
 @Inject constructor() {
     @Inject
     lateinit var taskManager: IReceivingTaskManager
@@ -17,7 +17,7 @@ class ProcessExciseAlcoProductService
     private var batchDiscrepancyInfo: ArrayList<TaskBatchesDiscrepancies> = ArrayList()
     private val currentExciseStamps: ArrayList<TaskExciseStampInfo> = ArrayList()
 
-    fun newProcessNonExciseAlcoProductService(productInfo: TaskProductInfo) : ProcessExciseAlcoProductService? {
+    fun newProcessNonExciseAlcoProductService(productInfo: TaskProductInfo) : ProcessExciseAlcoStampAccService? {
         return if (productInfo.type == ProductType.ExciseAlcohol){
             this.productInfo = productInfo.copy()
             this.batchInfo = taskManager.getReceivingTask()!!.taskRepository.getBatches().findBatchOfProduct(productInfo)!!.copy()

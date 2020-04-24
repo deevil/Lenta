@@ -286,12 +286,12 @@ class GoodsInfoViewModel : CoreViewModel(), OnPositionClickListener {
                 }
                 currentDate.value = timeMonitor.getServerDate()
                 expirationDate.value = Calendar.getInstance()
-                if ( (productInfo.value?.generalShelfLife?.toInt() ?: 0) <  paramGrzUffMhdhb) { //https://trello.com/c/7OqxSqOP
-                    generalShelfLife.value = productInfo.value?.mhdhbDays.toString()
-                    remainingShelfLife.value = productInfo.value?.mhdrzDays.toString()
-                } else {
+                if ( (productInfo.value?.generalShelfLife?.toInt() ?: 0) > 0 || (productInfo.value?.remainingShelfLife?.toInt() ?: 0) > 0 ) { //https://trello.com/c/XSAxdgjt
                     generalShelfLife.value = productInfo.value?.generalShelfLife
                     remainingShelfLife.value = productInfo.value?.remainingShelfLife
+                } else {
+                    generalShelfLife.value = productInfo.value?.mhdhbDays.toString()
+                    remainingShelfLife.value = productInfo.value?.mhdrzDays.toString()
                 }
             }
 

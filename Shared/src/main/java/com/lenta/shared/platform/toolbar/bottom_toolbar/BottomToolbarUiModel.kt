@@ -43,13 +43,13 @@ data class ButtonUiModel(
 
     fun clean() {
         buttonDecorationInfo.value = ButtonDecorationInfo.empty
-        visibility.postValue(false)
-        enabled.postValue(true)
+        visibility.value = false
+        enabled.value = true
     }
 
     fun show(buttonDecorationInfo: ButtonDecorationInfo? = null, visible: Boolean = true, enabled: Boolean = true) {
-        this.visibility.postValue(visible)
-        this.enabled.postValue(enabled)
+        this.visibility.value = visible
+        this.enabled.value = enabled
 
         buttonDecorationInfo?.let {
             this.buttonDecorationInfo.value = it
@@ -344,6 +344,10 @@ data class ButtonDecorationInfo(
             ButtonDecorationInfo(R.drawable.ic_entirely_24dp, R.string.entirely)
         }
 
+        val selectAll: ButtonDecorationInfo by lazy {
+            ButtonDecorationInfo(R.drawable.ic_entirely_24dp, R.string.select_all)
+        }
+
         val cancellation: ButtonDecorationInfo by lazy {
             ButtonDecorationInfo(R.drawable.ic_arrow_verify_white_24dp, R.string.cancellation)
         }
@@ -362,6 +366,14 @@ data class ButtonDecorationInfo(
 
         val defect: ButtonDecorationInfo by lazy {
             ButtonDecorationInfo(R.drawable.ic_delete_white_24dp, R.string.defect)
+        }
+
+        val boxes: ButtonDecorationInfo by lazy {
+            ButtonDecorationInfo(R.drawable.ic_box_white_24dp, R.string.boxes)
+        }
+
+        val handleGoods: ButtonDecorationInfo by lazy {
+            ButtonDecorationInfo(R.drawable.ic_handle_goods_white_24dp, R.string.handle_goods)
         }
     }
 

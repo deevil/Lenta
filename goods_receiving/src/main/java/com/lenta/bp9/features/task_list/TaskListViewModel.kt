@@ -200,6 +200,7 @@ class TaskListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
     fun onScanResult(data: String) {
         if (taskListLoadingMode == TaskListLoadingMode.Receiving || taskListLoadingMode == TaskListLoadingMode.PGE) { //ППП - https://trello.com/c/zM0vlI9H и ПГЕ - https://trello.com/c/KlGPXY74
             filterSearch.value = data
+            onOkInSoftKeyboard()
         }
     }
 }

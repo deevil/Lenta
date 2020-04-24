@@ -114,7 +114,7 @@ class NonExciseAlcoInfoViewModel : CoreViewModel(), OnPositionClickListener {
 
     fun onClickAdd() {
         if (processNonExciseAlcoProductService.overlimit(countValue.value!!)) {
-            screenNavigator.openAlertOverlimit()
+            screenNavigator.openAlertOverLimit()
         } else {
             if (qualityInfo.value?.get(spinQualitySelectedPosition.value ?: 0)?.code == "1") {
                 processNonExciseAlcoProductService.add(acceptTotalCount.value!!.toString(), "1")
