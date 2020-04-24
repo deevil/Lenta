@@ -272,4 +272,5 @@
     <string name="must_enter_quantity">Необходимо ввести количество</string>
     <string name="scanned_box_not_listed_in_current_delivery">Отсканированная коробка не числится в задании. Отдайте коробку поставщику.</string>
     <string name="scanned_box_belongs_to_another_product">Отсканированная коробка принадлежит товару \"%1$s\" \"%2$s\"</string>
+    <string name="date_of_entry">Дата ввоза</string>
 </resources>

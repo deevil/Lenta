@@ -1079,9 +1079,9 @@ class ScreenNavigator(
         }
     }
 
-    override fun openExciseAlcoBoxCardScreen(productInfo: TaskProductInfo) {
+    override fun openExciseAlcoBoxCardScreen(productInfo: TaskProductInfo, boxInfo: TaskBoxInfo?, exciseStampInfo: TaskExciseStampInfo?, selectQualityCode: String, selectReasonRejectionCode: String?, initialCount: String) {
         runOrPostpone {
-            getFragmentStack()?.push(ExciseAlcoBoxCardFragment.create(productInfo))
+            getFragmentStack()?.push(ExciseAlcoBoxCardFragment.create(productInfo, boxInfo, exciseStampInfo, selectQualityCode, selectReasonRejectionCode, initialCount))
         }
     }
 
@@ -1281,7 +1281,7 @@ interface IScreenNavigator : ICoreNavigator {
     fun openCreateInboundDeliveryDialog(yesCallbackFunc: () -> Unit)
     fun openAlertUnableSaveNegativeQuantity()
     fun openExciseAlcoBoxListScreen(productInfo: TaskProductInfo)
-    fun openExciseAlcoBoxCardScreen(productInfo: TaskProductInfo)
+    fun openExciseAlcoBoxCardScreen(productInfo: TaskProductInfo, boxInfo: TaskBoxInfo?, exciseStampInfo: TaskExciseStampInfo?, selectQualityCode: String, selectReasonRejectionCode: String?, initialCount: String)
     fun openAlertScannedStampNotFoundScreen()
     fun openAlertScannedStampBelongsAnotherProductScreen(materialNumber: String, materialName: String)
     fun openAlertRequiredQuantityBoxesAlreadyProcessedScreen()

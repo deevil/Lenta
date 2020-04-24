@@ -5,6 +5,8 @@ import android.view.View
 import android.widget.AdapterView
 import com.lenta.bp9.R
 import com.lenta.bp9.databinding.FragmentExciseAlcoBoxCardBinding
+import com.lenta.bp9.model.task.TaskBoxInfo
+import com.lenta.bp9.model.task.TaskExciseStampInfo
 import com.lenta.bp9.model.task.TaskProductInfo
 import com.lenta.bp9.platform.extentions.getAppComponent
 import com.lenta.shared.platform.fragment.CoreFragment
@@ -22,15 +24,31 @@ class ExciseAlcoBoxCardFragment : CoreFragment<FragmentExciseAlcoBoxCardBinding,
         ToolbarButtonsClickListener {
 
     companion object {
-        fun create(productInfo: TaskProductInfo): ExciseAlcoBoxCardFragment {
+        fun create(
+                productInfo: TaskProductInfo,
+                boxInfo: TaskBoxInfo?,
+                exciseStampInfo: TaskExciseStampInfo?,
+                selectQualityCode: String,
+                selectReasonRejectionCode: String?,
+                initialCount: String): ExciseAlcoBoxCardFragment {
             ExciseAlcoBoxCardFragment().let {
                 it.productInfo = productInfo
+                it.boxInfo = boxInfo
+                it.exciseStampInfo = exciseStampInfo
+                it.selectQualityCode = selectQualityCode
+                it.selectReasonRejectionCode = selectReasonRejectionCode
+                it.initialCount = initialCount
                 return it
             }
         }
     }
 
     private var productInfo by state<TaskProductInfo?>(null)
+    private var boxInfo by state<TaskBoxInfo?>(null)
+    private var exciseStampInfo by state<TaskExciseStampInfo?>(null)
+    private var selectQualityCode by state<String?>(null)
+    private var selectReasonRejectionCode by state<String?>(null)
+    private var initialCount by state<String?>(null)
 
     override fun getLayoutId(): Int = R.layout.fragment_excise_alco_box_card
 
@@ -39,7 +57,18 @@ class ExciseAlcoBoxCardFragment : CoreFragment<FragmentExciseAlcoBoxCardBinding,
     override fun getViewModel(): ExciseAlcoBoxCardViewModel {
         provideViewModel(ExciseAlcoBoxCardViewModel::class.java).let {vm ->
             getAppComponent()?.inject(vm)
-            vm.productInfo.value = productInfo
+            vm.productInfo.value = this.productInfo
+            vm.selectQualityCode.value = this.selectQualityCode
+            vm.initialCount.value = this.initialCount
+            selectReasonRejectionCode?.let {
+                vm.selectReasonRejectionCode.value = it
+            }
+            boxInfo?.let {
+                vm.boxInfo.value = it
+            }
+            exciseStampInfo?.let {
+                vm.exciseStampInfo.value = it
+            }
             return vm
         }
     }
@@ -54,8 +83,8 @@ class ExciseAlcoBoxCardFragment : CoreFragment<FragmentExciseAlcoBoxCardBinding,
         bottomToolbarUiModel.uiModelButton2.show(ButtonDecorationInfo.rollback)
         bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.apply)
 
-        connectLiveData(vm.enabledApplyButton, bottomToolbarUiModel.uiModelButton4.enabled)
-        connectLiveData(vm.enabledApplyButton, bottomToolbarUiModel.uiModelButton5.enabled)
+        connectLiveData(vm.visibilityRollbackBtn, bottomToolbarUiModel.uiModelButton2.visibility)
+        connectLiveData(vm.enabledRollbackBtn, bottomToolbarUiModel.uiModelButton2.enabled)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

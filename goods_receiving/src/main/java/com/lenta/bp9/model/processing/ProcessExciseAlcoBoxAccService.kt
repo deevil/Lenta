@@ -12,30 +12,63 @@ class ProcessExciseAlcoBoxAccService
     lateinit var taskManager: IReceivingTaskManager
 
     private lateinit var productInfo: TaskProductInfo
-    private var productDiscrepancyInfo: ArrayList<TaskProductDiscrepancies> = ArrayList()
-    private lateinit var batchInfo: TaskBatchInfo
-    private var batchDiscrepancyInfo: ArrayList<TaskBatchesDiscrepancies> = ArrayList()
+    private var currentProductDiscrepancies: ArrayList<TaskProductDiscrepancies> = ArrayList()
+    private val currentBoxes: ArrayList<TaskBoxInfo> = ArrayList()
+    private val currentBoxDiscrepancies: ArrayList<TaskBoxDiscrepancies> = ArrayList()
     private val currentExciseStamps: ArrayList<TaskExciseStampInfo> = ArrayList()
+    private val currentExciseStampsDiscrepancies: ArrayList<TaskExciseStampDiscrepancies> = ArrayList()
 
-    fun newProcessNonExciseAlcoProductService(productInfo: TaskProductInfo) : ProcessExciseAlcoBoxAccService? {
+    fun newProcessExciseAlcoBoxService(productInfo: TaskProductInfo) : ProcessExciseAlcoBoxAccService? {
         return if (productInfo.type == ProductType.ExciseAlcohol && productInfo.isBoxFl){ //алкоголь, коробочный учет https://trello.com/c/KbBbXj2t
             this.productInfo = productInfo.copy()
-            this.batchInfo = taskManager.getReceivingTask()!!.taskRepository.getBatches().findBatchOfProduct(productInfo)!!.copy()
-            productDiscrepancyInfo.clear()
-            batchDiscrepancyInfo.clear()
+            currentProductDiscrepancies.clear()
+            taskManager.getReceivingTask()?.taskRepository?.getProductsDiscrepancies()?.findProductDiscrepanciesOfProduct(productInfo)?.map {
+                currentProductDiscrepancies.add(it.copy())
+            }
+            currentBoxes.clear()
+            taskManager.getReceivingTask()?.taskRepository?.getBoxes()?.findBoxesOfProduct(productInfo)?.map {
+                currentBoxes.add(it.copy())
+            }
+            currentBoxDiscrepancies.clear()
+            taskManager.getReceivingTask()?.taskRepository?.getBoxesDiscrepancies()?.findBoxesDiscrepanciesOfProduct(productInfo)?.map {
+                currentBoxDiscrepancies.add(it.copy())
+            }
             currentExciseStamps.clear()
+            taskManager.getReceivingTask()?.taskRepository?.getExciseStamps()?.findExciseStampsOfProduct(productInfo)?.map {
+                currentExciseStamps.add(it.copy())
+            }
+            currentExciseStampsDiscrepancies.clear()
+            taskManager.getReceivingTask()?.taskRepository?.getExciseStampsDiscrepancies()?.findExciseStampsDiscrepanciesOfProduct(productInfo)?.map {
+                currentExciseStampsDiscrepancies.add(it.copy())
+            }
             this
         }
         else null
     }
 
-    private fun getCountOfDiscrepancies(typeDiscrepancies: String) : Double {
-        return taskManager.getReceivingTask()!!.taskRepository.getProductsDiscrepancies().getCountOfDiscrepanciesOfProduct(productInfo, typeDiscrepancies)
-    }
-
     fun add(count: String, typeDiscrepancies: String){
-        val countAdd = if (typeDiscrepancies == "1") count.toDouble() else getCountOfDiscrepancies(typeDiscrepancies) + count.toDouble()
-        val foundDiscrepancy = taskManager.getReceivingTask()?.taskRepository?.getProductsDiscrepancies()?.findProductDiscrepanciesOfProduct(productInfo)?.findLast {
+        val countAdd = if (typeDiscrepancies == "1") count.toDouble() else getCountOfDiscrepanciesOfProduct(typeDiscrepancies) + count.toDouble()
+
+        //добавляем кол-во по расхождению для продукта
+        var foundDiscrepancy = currentProductDiscrepancies.findLast {
+            it.typeDiscrepancies == typeDiscrepancies
+        }
+
+        foundDiscrepancy = foundDiscrepancy?.copy(numberDiscrepancies = countAdd.toString(), processingUnitNumber = productInfo.processingUnit)
+                ?: TaskProductDiscrepancies(
+                        materialNumber = productInfo.materialNumber,
+                        processingUnitNumber = productInfo.processingUnit,
+                        numberDiscrepancies = countAdd.toString(),
+                        uom = productInfo.uom,
+                        typeDiscrepancies = typeDiscrepancies,
+                        isNotEdit = false,
+                        isNew = false,
+                        notEditNumberDiscrepancies = ""
+                )
+
+        changeCurrentProductDiscrepancy(foundDiscrepancy)
+
+        /**val foundDiscrepancy = taskManager.getReceivingTask()?.taskRepository?.getProductsDiscrepancies()?.findProductDiscrepanciesOfProduct(productInfo)?.findLast {
             it.materialNumber == productInfo.materialNumber && it.typeDiscrepancies == typeDiscrepancies
         }
 
@@ -58,18 +91,56 @@ class ProcessExciseAlcoBoxAccService
                     taskRepository?.
                     getProductsDiscrepancies()?.
                     changeProductDiscrepancy(foundDiscrepancy.copy(numberDiscrepancies = countAdd.toString()))
+        }*/
+
+    }
+
+    fun addExciseStampDiscrepancy(exciseStamp: TaskExciseStampInfo, typeDiscrepancies: String) {
+        var index = -1
+        for (i in currentExciseStampsDiscrepancies.indices) {
+            if (exciseStamp.code == currentExciseStampsDiscrepancies[i].code) {
+                index = i
+            }
         }
 
+        if (index == -1) {
+            currentExciseStampsDiscrepancies.add(TaskExciseStampDiscrepancies(
+                    materialNumber = exciseStamp.materialNumber,
+                    code = exciseStamp.code,
+                    processingUnitNumber = exciseStamp.processingUnitNumber,
+                    typeDiscrepancies = typeDiscrepancies,
+                    isScan = true,
+                    boxNumber = exciseStamp.boxNumber,
+                    packNumber = "",
+                    isMSC = false,
+                    organizationCodeEGAIS = exciseStamp.organizationCodeEGAIS,
+                    bottlingDate = exciseStamp.bottlingDate,
+                    isUnknown = false
+            ))
+        }
+    }
+
+    private fun changeCurrentProductDiscrepancy(newDiscrepancy: TaskProductDiscrepancies) {
+        var index = -1
+        for (i in currentProductDiscrepancies.indices) {
+            if (newDiscrepancy.typeDiscrepancies == currentProductDiscrepancies[i].typeDiscrepancies) {
+                index = i
+            }
+        }
+
+        if (index != -1) {
+            currentProductDiscrepancies.removeAt(index)
+        }
+
+        currentProductDiscrepancies.add(newDiscrepancy)
     }
 
     fun overLimit(count: Double) : Boolean {
-        return productInfo.origQuantity.toDouble() < ((taskManager.getReceivingTask()?.taskRepository?.getProductsDiscrepancies()?.getCountAcceptOfProduct(productInfo) ?: 0.0)
-                + (taskManager.getReceivingTask()?.taskRepository?.getProductsDiscrepancies()?.getCountRefusalOfProduct(productInfo) ?: 0.0) + count)
-
+        return productInfo.origQuantity.toDouble() < (getCountAcceptOfProduct() + getCountRefusalOfProduct() + count)
     }
 
     fun searchExciseStamp(code: String) : TaskExciseStampInfo? {
-        return taskManager.getReceivingTask()?.taskRepository?.getExciseStamps()?.getExciseStamps()?.findLast {
+        return currentExciseStamps.findLast {
             it.code == code
         }
     }
@@ -84,6 +155,30 @@ class ProcessExciseAlcoBoxAccService
         return taskManager.getReceivingTask()?.taskRepository?.getBoxesDiscrepancies()?.getBoxesDiscrepancies()?.filter {
             it.boxNumber == boxNumber && it.materialNumber == materialNumber && it.typeDiscrepancies == typeDiscrepancies
         }?.size ?: 0
+    }
+
+    private fun getCountOfDiscrepanciesOfProduct(typeDiscrepancies: String) : Double {
+        return currentProductDiscrepancies.filter {productDiscrepancies ->
+            productDiscrepancies.typeDiscrepancies == typeDiscrepancies
+        }.sumByDouble {
+            it.numberDiscrepancies.toDouble()
+        }
+    }
+
+    fun getCountAcceptOfProduct() : Double {
+        return currentProductDiscrepancies.filter {productDiscrepancies ->
+            productDiscrepancies.typeDiscrepancies == "1"
+        }.sumByDouble {
+            it.numberDiscrepancies.toDouble()
+        }
+    }
+
+    fun getCountRefusalOfProduct() : Double {
+        return currentProductDiscrepancies.filter {productDiscrepancies ->
+            productDiscrepancies.typeDiscrepancies != "1"
+        }.sumByDouble {
+            it.numberDiscrepancies.toDouble()
+        }
     }
 
 }

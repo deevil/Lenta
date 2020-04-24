@@ -39,7 +39,7 @@ class ExciseAlcoBoxListViewModel : CoreViewModel(), PageSelectionListener, OnOkI
             countNotProcessed.postValue(
                     boxInfoList
                             .filter {
-                                taskManager.getReceivingTask()?.taskRepository?.getBoxesDiscrepancies()?.findDiscrepanciesOfBox(it)?.filter { foundDiscrepancies ->
+                                taskManager.getReceivingTask()?.taskRepository?.getBoxesDiscrepancies()?.findBoxesDiscrepanciesOfBox(it)?.filter { foundDiscrepancies ->
                                     foundDiscrepancies.boxNumber == it.boxNumber
                                 }?.size == 0
                             }
@@ -83,7 +83,6 @@ class ExciseAlcoBoxListViewModel : CoreViewModel(), PageSelectionListener, OnOkI
     }
 
     fun onClickApply(){
-        screenNavigator.openExciseAlcoBoxCardScreen(productInfo.value!!)
     }
 
     fun onClickItemPosition(position: Int) {

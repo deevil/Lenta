@@ -15,10 +15,20 @@ class MemoryTaskBoxesDiscrepanciesRepository : ITaskBoxesDiscrepanciesRepository
         return boxesDiscrepancies
     }
 
-    override fun findDiscrepanciesOfBox(findBox: TaskBoxInfo): List<TaskBoxDiscrepancies> {
+    override fun findBoxesDiscrepanciesOfBox(box: TaskBoxInfo): List<TaskBoxDiscrepancies> {
         val foundDiscrepancies = ArrayList<TaskBoxDiscrepancies>()
         for (i in boxesDiscrepancies.indices) {
-            if (findBox.boxNumber == boxesDiscrepancies[i].boxNumber) {
+            if (box.boxNumber == boxesDiscrepancies[i].boxNumber) {
+                foundDiscrepancies.add(boxesDiscrepancies[i])
+            }
+        }
+        return foundDiscrepancies
+    }
+
+    override fun findBoxesDiscrepanciesOfProduct(product: TaskProductInfo): List<TaskBoxDiscrepancies> {
+        val foundDiscrepancies = ArrayList<TaskBoxDiscrepancies>()
+        for (i in boxesDiscrepancies.indices) {
+            if (product.materialNumber == boxesDiscrepancies[i].materialNumber) {
                 foundDiscrepancies.add(boxesDiscrepancies[i])
             }
         }
@@ -29,7 +39,8 @@ class MemoryTaskBoxesDiscrepanciesRepository : ITaskBoxesDiscrepanciesRepository
         var index = -1
         for (i in boxesDiscrepancies.indices) {
             if (discrepancies.materialNumber == boxesDiscrepancies[i].materialNumber &&
-                    discrepancies.boxNumber == boxesDiscrepancies[i].boxNumber) {
+                    discrepancies.boxNumber == boxesDiscrepancies[i].boxNumber &&
+                    discrepancies.typeDiscrepancies == boxesDiscrepancies[i].typeDiscrepancies) {
                 index = i
             }
         }
@@ -56,7 +67,8 @@ class MemoryTaskBoxesDiscrepanciesRepository : ITaskBoxesDiscrepanciesRepository
     override fun deleteBoxDiscrepancies(discrepancies: TaskBoxDiscrepancies): Boolean {
         boxesDiscrepancies.map { it }.filter {boxDiscrepancies ->
             if (discrepancies.materialNumber == boxDiscrepancies.materialNumber &&
-                    discrepancies.boxNumber == boxDiscrepancies.boxNumber) {
+                    discrepancies.boxNumber == boxDiscrepancies.boxNumber &&
+                    discrepancies.typeDiscrepancies == boxDiscrepancies.typeDiscrepancies) {
                 boxesDiscrepancies.remove(discrepancies)
                 return@filter true
             }
@@ -70,7 +82,8 @@ class MemoryTaskBoxesDiscrepanciesRepository : ITaskBoxesDiscrepanciesRepository
     override fun deleteBoxesDiscrepanciesForBox(delBox: TaskBoxInfo): Boolean {
         val delDiscrepancies = ArrayList<TaskBoxDiscrepancies>()
         for (i in boxesDiscrepancies.indices) {
-            if (delBox.materialNumber == boxesDiscrepancies[i].materialNumber && delBox.boxNumber == boxesDiscrepancies[i].boxNumber) {
+            if (delBox.materialNumber == boxesDiscrepancies[i].materialNumber &&
+                    delBox.boxNumber == boxesDiscrepancies[i].boxNumber) {
                 delDiscrepancies.add(boxesDiscrepancies[i])
             }
         }

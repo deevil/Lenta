@@ -2,10 +2,12 @@ package com.lenta.bp9.model.repositories
 
 import com.lenta.bp9.model.task.TaskBoxDiscrepancies
 import com.lenta.bp9.model.task.TaskBoxInfo
+import com.lenta.bp9.model.task.TaskProductInfo
 
 interface ITaskBoxesDiscrepanciesRepository {
     fun getBoxesDiscrepancies(): List<TaskBoxDiscrepancies>
-    fun findDiscrepanciesOfBox(findBox: TaskBoxInfo): List<TaskBoxDiscrepancies>
+    fun findBoxesDiscrepanciesOfBox(box: TaskBoxInfo): List<TaskBoxDiscrepancies>
+    fun findBoxesDiscrepanciesOfProduct(product: TaskProductInfo): List<TaskBoxDiscrepancies>
     fun addBoxDiscrepancies(discrepancies: TaskBoxDiscrepancies): Boolean
     fun updateBoxesDiscrepancy(newBoxesDiscrepancies: List<TaskBoxDiscrepancies>)
     fun changeBoxDiscrepancy(discrepancy: TaskBoxDiscrepancies): Boolean

@@ -1,24 +1,28 @@
 package com.lenta.bp9.features.goods_information.excise_alco_box_acc.excise_alco_box_card
 
+import android.annotation.SuppressLint
 import android.content.Context
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.lenta.bp9.R
 import com.lenta.bp9.features.goods_list.SearchProductDelegate
 import com.lenta.bp9.model.processing.ProcessExciseAlcoBoxAccService
-import com.lenta.bp9.model.task.IReceivingTaskManager
-import com.lenta.bp9.model.task.TaskBatchInfo
-import com.lenta.bp9.model.task.TaskProductInfo
+import com.lenta.bp9.model.task.*
 import com.lenta.bp9.platform.navigation.IScreenNavigator
 import com.lenta.bp9.repos.IDataBaseRepo
+import com.lenta.bp9.repos.IRepoInMemoryHolder
+import com.lenta.shared.platform.constants.Constants
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.requests.combined.scan_info.pojo.QualityInfo
 import com.lenta.shared.requests.combined.scan_info.pojo.ReasonRejectionInfo
+import com.lenta.shared.utilities.date_time.DateTimeUtil
 import com.lenta.shared.utilities.extentions.combineLatest
 import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.utilities.extentions.toStringFormatted
 import com.lenta.shared.view.OnPositionClickListener
 import kotlinx.coroutines.launch
+import java.text.SimpleDateFormat
+import java.util.*
 import javax.inject.Inject
 
 class ExciseAlcoBoxCardViewModel : CoreViewModel(), OnPositionClickListener {
@@ -32,18 +36,20 @@ class ExciseAlcoBoxCardViewModel : CoreViewModel(), OnPositionClickListener {
     @Inject
     lateinit var dataBase: IDataBaseRepo
     @Inject
-    lateinit var searchProductDelegate: SearchProductDelegate
-    @Inject
     lateinit var context: Context
+    @Inject
+    lateinit var repoInMemoryHolder: IRepoInMemoryHolder
 
     val productInfo: MutableLiveData<TaskProductInfo> = MutableLiveData()
-    val batchInfo: MutableLiveData<TaskBatchInfo> = productInfo.map {
-        taskManager.getReceivingTask()!!.taskRepository.getBatches().findBatchOfProduct(it!!)
-    }
+    val boxInfo: MutableLiveData<TaskBoxInfo> = MutableLiveData()
+    val exciseStampInfo: MutableLiveData<TaskExciseStampInfo> = MutableLiveData()
+    val selectQualityCode: MutableLiveData<String> = MutableLiveData()
+    val selectReasonRejectionCode: MutableLiveData<String> = MutableLiveData()
+    val initialCount: MutableLiveData<String> = MutableLiveData()
+    val enabledSpinCategorySubcategory: MutableLiveData<Boolean> = MutableLiveData()
     val tvAccept: MutableLiveData<String> by lazy {
         MutableLiveData(context.getString(R.string.accept, "${productInfo.value?.purchaseOrderUnits?.name}=${productInfo.value?.quantityInvest?.toDouble().toStringFormatted()} ${productInfo.value?.uom?.name}"))
     }
-    val planQuantityBatch: MutableLiveData<String> = MutableLiveData()
     val spinQuality: MutableLiveData<List<String>> = MutableLiveData()
     val spinQualitySelectedPosition: MutableLiveData<Int> = MutableLiveData(0)
     val spinReasonRejection: MutableLiveData<List<String>> = MutableLiveData()
@@ -53,6 +59,13 @@ class ExciseAlcoBoxCardViewModel : CoreViewModel(), OnPositionClickListener {
     val spinBottlingDate: MutableLiveData<List<String>> = MutableLiveData()
     val spinBottlingDateSelectedPosition: MutableLiveData<Int> = MutableLiveData(0)
     val suffix: MutableLiveData<String> = MutableLiveData()
+    val tvBottlingDate: MutableLiveData<String> by lazy {
+        if (productInfo.value!!.isRus) {
+            MutableLiveData(context.getString(R.string.bottling_date))
+        } else {
+            MutableLiveData(context.getString(R.string.date_of_entry))
+        }
+    }
     val isDefect: MutableLiveData<Boolean> = spinQualitySelectedPosition.map {
         it != 0
     }
@@ -61,11 +74,11 @@ class ExciseAlcoBoxCardViewModel : CoreViewModel(), OnPositionClickListener {
     private val qualityInfo: MutableLiveData<List<QualityInfo>> = MutableLiveData()
     private val reasonRejectionInfo: MutableLiveData<List<ReasonRejectionInfo>> = MutableLiveData()
 
-    val count: MutableLiveData<String> = MutableLiveData("0")
+    val count: MutableLiveData<String> = MutableLiveData()
     private val countValue: MutableLiveData<Double> = count.map { it?.toDoubleOrNull() ?: 0.0 }
 
     val acceptTotalCount: MutableLiveData<Double> = countValue.combineLatest(spinQualitySelectedPosition).map{
-        val countAccept = taskManager.getReceivingTask()!!.taskRepository.getProductsDiscrepancies().getCountAcceptOfProduct(productInfo.value!!)
+        val countAccept = processExciseAlcoBoxAccService.taskManager.getReceivingTask()!!.taskRepository.getProductsDiscrepancies().getCountAcceptOfProduct(productInfo.value!!)
 
         if (qualityInfo.value?.get(it!!.second)?.code == "1") {
             (it?.first ?: 0.0) + countAccept
@@ -145,32 +158,69 @@ class ExciseAlcoBoxCardViewModel : CoreViewModel(), OnPositionClickListener {
         MutableLiveData(false)
     }
 
-    val tvBoxListVal: MutableLiveData<String> by lazy {
-        MutableLiveData("${productInfo.value?.origQuantity}")
+    val visibilityRollbackBtn: MutableLiveData<Boolean> = countValue.map {
+        it!! != 0.0
     }
 
-    val checkBoxList: MutableLiveData<Boolean> by lazy {
-        //todo https://trello.com/c/lqyZlYQu, 1.5. Устанавливать чекбокс, когда F= Q;
-        MutableLiveData(true)
+    val enabledRollbackBtn: MutableLiveData<Boolean> = countValue.map {
+        it!! != 0.0
     }
 
-    val enabledApplyButton: MutableLiveData<Boolean> = countValue.
-            map {
-                it!! != 0.0
-            }
+    @SuppressLint("SimpleDateFormat")
+    private val formatterRU = SimpleDateFormat("dd.MM.yyyy")
+    @SuppressLint("SimpleDateFormat")
+    private val formatterEN = SimpleDateFormat("yyyy-MM-dd")
 
     init {
         viewModelScope.launch {
+            count.value = initialCount.value
             suffix.value = productInfo.value?.purchaseOrderUnits?.name
-            qualityInfo.value = dataBase.getQualityInfo()
+
+            if (selectReasonRejectionCode.value != null) {
+                qualityInfo.value = dataBase.getQualityBoxesDefectInfo()
+                enabledSpinCategorySubcategory.value = false
+            } else {
+                qualityInfo.value = dataBase.getQualityInfo()
+                enabledSpinCategorySubcategory.value = true
+            }
             spinQuality.value = qualityInfo.value?.map {
                 it.name
             }
-            batchInfo.value = taskManager.getReceivingTask()!!.taskRepository.getBatches().findBatchOfProduct(productInfo.value!!)
-            //todo временно закоментированно planQuantityBatch.value = batchInfo.value?.planQuantityBatch + " " + batchInfo.value?.uom?.name + "."
-            if (processExciseAlcoBoxAccService.newProcessNonExciseAlcoProductService(productInfo.value!!) == null){
-                screenNavigator.goBack()
-                screenNavigator.openAlertWrongProductType()
+
+            val positionQuality = qualityInfo.value?.indexOfLast {it.code == selectQualityCode.value} ?: 0
+            spinQualitySelectedPosition.value = if (positionQuality == -1) {
+                0
+            } else {
+                positionQuality
+            }
+            if (selectReasonRejectionCode.value != null) {
+                reasonRejectionInfo.value = dataBase.getReasonRejectionInfoOfQuality(selectQualityCode.value.toString())
+                spinReasonRejection.value = reasonRejectionInfo.value?.map {
+                    it.name
+                }
+                val positionReasonRejection = reasonRejectionInfo.value?.indexOfLast {it.code == selectReasonRejectionCode.value} ?: 0
+                spinReasonRejectionSelectedPosition.value = if (positionReasonRejection == -1) {
+                    0
+                } else {
+                    positionReasonRejection
+                }
+            }
+
+            if (exciseStampInfo.value != null) { //значит была отсканирована марка
+                val manufacturerCode = taskManager.getReceivingTask()?.taskRepository?.getBatches()?.getBatches()?.findLast {
+                    it.batchNumber == exciseStampInfo.value!!.batchNumber
+                }?.egais ?: ""
+                val manufacturerName = repoInMemoryHolder.manufacturers.value?.findLast {
+                    it.code == manufacturerCode
+                }?.name ?: ""
+                spinManufacturers.value = listOf(manufacturerName)
+
+                val dateOfPour = taskManager.getReceivingTask()?.taskRepository?.getBatches()?.getBatches()?.findLast {
+                    it.batchNumber == exciseStampInfo.value!!.batchNumber
+                }?.bottlingDate
+                if (!dateOfPour.isNullOrEmpty()) {
+                    spinBottlingDate.value = listOf(formatterRU.format(formatterEN.parse(dateOfPour)))
+                }
             }
         }
     }
@@ -187,7 +237,7 @@ class ExciseAlcoBoxCardViewModel : CoreViewModel(), OnPositionClickListener {
             68, 150 -> {
 
             }
-            else -> searchProductDelegate.searchCode(code = data, fromScan = true)
+            else -> ""
         }
     }
 
@@ -198,7 +248,11 @@ class ExciseAlcoBoxCardViewModel : CoreViewModel(), OnPositionClickListener {
     fun onClickPositionSpinQuality(position: Int){
         viewModelScope.launch {
             spinQualitySelectedPosition.value = position
-            updateDataSpinReasonRejection(qualityInfo.value!![position].code)
+            if (selectReasonRejectionCode.value != null) { //если это первый вход на экран, то в ф-ции init мы установили значение для spinReasonRejectionSelectedPosition, которое пришло
+                selectReasonRejectionCode.value = null //делаем, чтобы в последствии при выборе другого qualityInfo устанавливался первый элемент из списка spinReasonRejection
+            } else {
+                updateDataSpinReasonRejection(qualityInfo.value!![position].code)
+            }
         }
     }
 

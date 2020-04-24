@@ -3,14 +3,15 @@ package com.lenta.bp9.model.task
 import com.google.gson.annotations.SerializedName
 import com.lenta.shared.models.core.ExciseStamp
 
-class TaskExciseStampInfo(materialNumber: String, //Номер товара
-                      code: String, //Код акцизной марки
+data class TaskExciseStampInfo(
+                      val materialNumber: String, //Номер товара
+                      val code: String, //Код акцизной марки
                       val processingUnitNumber: String,
                       val batchNumber: String,
                       val boxNumber: String,
                       val setMaterialNumber: String,
                       val organizationCodeEGAIS: String,
-                      val bottlingDate: String ) : ExciseStamp(materialNumber, code)
+                      val bottlingDate: String )
 {
 
     companion object {
