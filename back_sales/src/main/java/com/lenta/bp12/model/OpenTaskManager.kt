@@ -17,7 +17,6 @@ import com.lenta.bp12.request.TaskContentResult
 import com.lenta.bp12.request.pojo.*
 import com.lenta.shared.models.core.getMatrixType
 import com.lenta.shared.platform.constants.Constants
-import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.extentions.dropZeros
 import com.lenta.shared.utilities.extentions.isSapTrue
 import com.lenta.shared.utilities.extentions.toSapBooleanString
@@ -116,7 +115,7 @@ class OpenTaskManager @Inject constructor(
                             user = taskInfo.blockUser,
                             ip = taskInfo.blockIp
                     ),
-                    isProcessed = !taskInfo.isNotFinish.isSapTrue(),
+                    isFinished = !taskInfo.isNotFinish.isSapTrue(),
                     control = taskInfo.control.getControlType(),
                     comment = taskInfo.comment,
                     provider = ProviderInfo(
@@ -150,7 +149,7 @@ class OpenTaskManager @Inject constructor(
                             user = taskInfo.blockUser,
                             ip = taskInfo.blockIp
                     ),
-                    isProcessed = !taskInfo.isNotFinish.isSapTrue(),
+                    isFinished = !taskInfo.isNotFinish.isSapTrue(),
                     control = taskInfo.control.getControlType(),
                     comment = taskInfo.comment,
                     provider = ProviderInfo(
@@ -206,7 +205,7 @@ class OpenTaskManager @Inject constructor(
 
     override fun finishCurrentTask() {
         currentTask.value?.let { task ->
-            task.isProcessed = true
+            task.isFinished = true
 
             updateCurrentTask(task)
         }
@@ -288,7 +287,7 @@ class OpenTaskManager @Inject constructor(
                             tkNumber = tkNumber,
                             storage = task.storage,
                             reasonCode = task.reason.code,
-                            isNotFinish = (!task.isProcessed).toSapBooleanString(),
+                            isNotFinish = (!task.isFinished).toSapBooleanString(),
                             positions = positions,
                             marks = marks,
                             parts = parts
@@ -297,7 +296,7 @@ class OpenTaskManager @Inject constructor(
         }
     }
 
-    override fun deleteUncountedPositions(items: MutableList<SimplePosition>) {
+    override fun markPositionsDelete(items: List<SimplePosition>) {
         currentTask.value?.let { task ->
             items.forEach { item ->
                 task.goods.find { it.material == item.material }?.markPositionDelete(item.providerCode)
@@ -307,10 +306,20 @@ class OpenTaskManager @Inject constructor(
         }
     }
 
-    override fun deleteCountedPositions(items: MutableList<SimplePosition>) {
+    override fun markPositionsUncounted(items: List<SimplePosition>) {
         currentTask.value?.let { task ->
             items.forEach { item ->
                 task.goods.find { it.material == item.material }?.markPositionUncounted(item.providerCode)
+            }
+
+            updateCurrentTask(task)
+        }
+    }
+
+    override fun markPositionsMissing(items: List<SimplePosition>) {
+        currentTask.value?.let { task ->
+            items.forEach { item ->
+                task.goods.find { it.material == item.material }?.markPositionMissing(item.providerCode)
             }
 
             updateCurrentTask(task)
@@ -351,8 +360,9 @@ interface IOpenTaskManager {
     suspend fun addGoodsInCurrentTask(taskContentResult: TaskContentResult)
     fun preparePositionToOpen(material: String, providerCode: String)
     fun prepareSendTaskDataParams(deviceIp: String, tkNumber: String, userNumber: String)
-    fun deleteUncountedPositions(items: MutableList<SimplePosition>)
-    fun deleteCountedPositions(items: MutableList<SimplePosition>)
+    fun markPositionsDelete(items: List<SimplePosition>)
+    fun markPositionsUncounted(items: List<SimplePosition>)
+    fun markPositionsMissing(items: List<SimplePosition>)
 
 }
 

@@ -185,7 +185,7 @@ class GoodListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
                         }
                     }
 
-                    manager.deleteUncountedPositions(items)
+                    manager.markPositionsDelete(items)
                 }
                 1 -> {
                     val items = mutableListOf<SimplePosition>()
@@ -198,7 +198,7 @@ class GoodListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
                         }
                     }
 
-                    manager.deleteCountedPositions(items)
+                    manager.markPositionsUncounted(items)
                 }
                 else -> throw IllegalArgumentException("Wrong pager position!")
             }
@@ -206,18 +206,21 @@ class GoodListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
     }
 
     fun onClickSave() {
-        if (task.value!!.isExistUncountedPositions()) {
-            navigator.showMakeTaskCountedAndClose {
-                navigator.openDiscrepancyListScreen()
-            }
-        } else {
-            manager.prepareSendTaskDataParams(
-                    deviceIp = deviceInfo.getDeviceIp(),
-                    tkNumber = sessionInfo.market ?: "",
-                    userNumber = sessionInfo.personnelNumber ?: ""
-            )
+        task.value?.let { task ->
+            if (task.isExistUncountedPositions()) {
+                navigator.showMakeTaskCountedAndClose {
+                    navigator.openDiscrepancyListScreen()
+                }
+            } else {
+                manager.finishCurrentTask()
+                manager.prepareSendTaskDataParams(
+                        deviceIp = deviceInfo.getDeviceIp(),
+                        tkNumber = sessionInfo.market ?: "",
+                        userNumber = sessionInfo.personnelNumber ?: ""
+                )
 
-            navigator.openSaveDataScreen()
+                navigator.openSaveDataScreen()
+            }
         }
     }
 

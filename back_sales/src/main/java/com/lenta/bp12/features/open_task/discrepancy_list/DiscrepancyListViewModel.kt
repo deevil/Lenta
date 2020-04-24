@@ -1,8 +1,12 @@
 package com.lenta.bp12.features.open_task.discrepancy_list
 
 import com.lenta.bp12.model.IOpenTaskManager
+import com.lenta.bp12.model.SimplePosition
 import com.lenta.bp12.platform.navigation.IScreenNavigator
+import com.lenta.shared.account.ISessionInfo
+import com.lenta.shared.platform.device_info.DeviceInfo
 import com.lenta.shared.platform.viewmodel.CoreViewModel
+import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.SelectionItemsHelper
 import com.lenta.shared.utilities.extentions.map
 import javax.inject.Inject
@@ -14,6 +18,12 @@ class DiscrepancyListViewModel : CoreViewModel() {
 
     @Inject
     lateinit var manager: IOpenTaskManager
+
+    @Inject
+    lateinit var sessionInfo: ISessionInfo
+
+    @Inject
+    lateinit var deviceInfo: DeviceInfo
 
 
     val selectionsHelper = SelectionItemsHelper()
@@ -30,11 +40,11 @@ class DiscrepancyListViewModel : CoreViewModel() {
 
     val goods by lazy {
         task.map { task ->
-            val itemList = mutableListOf<SimpleItemGood>()
-
-            task?.goods?.map { good ->
-                good.positions.filter { !it.isDelete && !it.isCounted }.map { position ->
-                    itemList.add(SimpleItemGood(
+            val positions = mutableListOf<SimpleItemGood>()
+            task?.goods?.forEach { good ->
+                good.positions.filter { !it.isDelete && !it.isCounted }.forEach { position ->
+                    Logg.d { "--> discrepancy item = $position" }
+                    positions.add(SimpleItemGood(
                             name = good.getNameWithMaterial(),
                             material = good.material,
                             providerCode = position.provider.code
@@ -42,12 +52,12 @@ class DiscrepancyListViewModel : CoreViewModel() {
                 }
             }
 
-            itemList.mapIndexed { index, simpleItemGood ->
+            positions.mapIndexed { index, position ->
                 ItemGoodUi(
-                        position = "${index + 1}",
-                        name = simpleItemGood.name,
-                        material = simpleItemGood.material,
-                        providerCode = simpleItemGood.providerCode
+                        position = "${positions.size - index}",
+                        name = position.name,
+                        material = position.material,
+                        providerCode = position.providerCode
                 )
             }
         }
@@ -62,28 +72,65 @@ class DiscrepancyListViewModel : CoreViewModel() {
         }
     }
 
-    private fun isListEmpty() = goods.value?.isNullOrEmpty() == true
+    private fun isNotEmptyList() = goods.value?.isNullOrEmpty() == false
 
-    fun onClickDelete() {
-        if (isListEmpty()) {
-            return
+    private fun getSimplePositions(): List<SimplePosition> {
+        val items = mutableListOf<SimplePosition>()
+        goods.value?.let { list ->
+            selectionsHelper.selectedPositions.value?.let { positions ->
+                if (positions.isEmpty()) {
+                    list.forEach {
+                        items.add(SimplePosition(
+                                material = it.material,
+                                providerCode = it.providerCode
+                        ))
+                    }
+                } else {
+                    positions.forEach { position ->
+                        list[position].let {
+                            items.add(SimplePosition(
+                                    material = it.material,
+                                    providerCode = it.providerCode
+                            ))
+                        }
+                    }
+                }
+            }
         }
 
-        selectionsHelper.selectedPositions.value?.let {
+        return items
+    }
 
+    fun onClickDelete() {
+        if (isNotEmptyList()) {
+            manager.markPositionsDelete(getSimplePositions())
         }
     }
 
     fun onClickMissing() {
-        if (isListEmpty()) {
-            return
+        if (isNotEmptyList()) {
+            manager.markPositionsMissing(getSimplePositions())
         }
-
-
     }
 
     fun onClickSkip() {
+        if (isNotEmptyList()) {
+            navigator.showRawGoodsRemainedInTask {
+                prepareToSaveAndOpenNextScreen()
+            }
+        } else {
+            manager.finishCurrentTask()
+            prepareToSaveAndOpenNextScreen()
+        }
+    }
 
+    private fun prepareToSaveAndOpenNextScreen() {
+        manager.prepareSendTaskDataParams(
+                deviceIp = deviceInfo.getDeviceIp(),
+                tkNumber = sessionInfo.market ?: "",
+                userNumber = sessionInfo.personnelNumber ?: ""
+        )
+        navigator.openSaveDataScreen()
     }
 
 }

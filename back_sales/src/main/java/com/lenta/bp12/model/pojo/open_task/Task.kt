@@ -15,7 +15,7 @@ data class Task(
         val storage: String,
         val reason: ReturnReason,
         val goods: MutableList<Good> = mutableListOf(),
-        var isProcessed: Boolean = false,
+        var isFinished: Boolean = false,
         val isStrict: Boolean = false,
         var status: TaskStatus = TaskStatus.COMMON,
         val block: Block,

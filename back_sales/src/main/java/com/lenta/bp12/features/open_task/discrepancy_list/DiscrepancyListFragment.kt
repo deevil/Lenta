@@ -72,7 +72,7 @@ class DiscrepancyListFragment : CoreFragment<FragmentDiscrepancyListBinding, Dis
 
             layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
                     layoutId = R.layout.item_discrepancy_list,
-                    itemId = BR.vm,
+                    itemId = BR.item,
                     realisation = object : DataBindingAdapter<ItemDiscrepancyListBinding> {
                         override fun onCreate(binding: ItemDiscrepancyListBinding) {
                         }

@@ -83,4 +83,11 @@ data class Good(
         }
     }
 
+    fun markPositionMissing(providerCode: String) {
+        positions.find { it.provider.code == providerCode }?.let {
+            it.quantity = 0.0
+            it.isCounted = true
+        }
+    }
+
 }
