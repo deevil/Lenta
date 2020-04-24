@@ -2,6 +2,7 @@ package com.lenta.bp12.features.open_task.good_info
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import com.lenta.bp12.model.Category
 import com.lenta.bp12.model.GoodKind
 import com.lenta.bp12.model.IOpenTaskManager
 import com.lenta.bp12.platform.navigation.IScreenNavigator
@@ -67,18 +68,7 @@ class GoodInfoOpenViewModel : CoreViewModel() {
         }
     }
 
-    val quantityType by lazy {
-        good.map { good ->
-            good?.kind?.let { type ->
-                when {
-                    type == GoodKind.EXCISE && number.value?.length == Constants.EXCISE_68 -> "Партионно"
-                    type == GoodKind.EXCISE -> "Марочно"
-                    type == GoodKind.ALCOHOL -> "Партионно"
-                    else -> "Количество"
-                }
-            }
-        }
-    }
+    val category = MutableLiveData(Category.QUANTITY)
 
     val markScanEnabled by lazy {
         good.map { good ->
@@ -218,6 +208,7 @@ class GoodInfoOpenViewModel : CoreViewModel() {
     init {
         viewModelScope.launch {
             if (position.value != null) {
+                category.value = position.value!!.category
                 loadProviderFromPosition()
             } else {
                 checkSearchNumber(manager.searchNumber)
@@ -322,6 +313,7 @@ class GoodInfoOpenViewModel : CoreViewModel() {
                         manager.currentPosition.value = null
                         manager.putInCurrentGood(goodInfo)
                         loadProvidersFromGood()
+                        category.value = Category.QUANTITY
                     } else {
                         navigator.showNotMatchTaskSettingsAddingNotPossible {
                             navigator.goBack()
@@ -371,10 +363,36 @@ class GoodInfoOpenViewModel : CoreViewModel() {
         }
     }
 
+    fun addProvider() {
+        navigator.openAddProviderScreen()
+    }
+
+    fun updateData() {
+        manager.updateCurrentGood(good.value)
+    }
+
+    fun onClickRollback() {
+
+    }
+
+    fun onClickDetails() {
+        navigator.openCategoryDetailsScreen()
+    }
+
+    fun onClickMissing() {
+        quantity.value = "0"
+        saveGoodInTask()
+    }
+
+    fun onClickApply() {
+        saveGoodInTask()
+        navigator.goBack()
+    }
+
     private fun saveGoodInTask() {
         good.value?.let { good ->
             val quantity = quantity.value?.toDoubleOrNull() ?: 0.0
-            good.addPosition(quantity, task.value!!.provider)
+            good.addPosition(quantity, task.value!!.provider, category.value!!)
 
             manager.updateCurrentGood(good)
         }
@@ -394,27 +412,6 @@ class GoodInfoOpenViewModel : CoreViewModel() {
             manager.searchNumber = ""
             navigator.goBack()
         }
-    }
-
-    fun onClickApply() {
-        saveGoodInTask()
-        navigator.goBack()
-    }
-
-    fun onClickDetails() {
-        navigator.openCategoryDetailsScreen()
-    }
-
-    fun addProvider() {
-        navigator.openAddProviderScreen()
-    }
-
-    fun onClickRollback() {
-
-    }
-
-    fun updateData() {
-        manager.updateCurrentGood(good.value)
     }
 
 }

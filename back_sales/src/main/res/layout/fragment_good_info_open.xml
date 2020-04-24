@@ -32,7 +32,7 @@
                         style="@style/CellEditTextStyle"
                         android:drawableEnd="@drawable/spinner_arrow_down_disabled"
                         android:enabled="false"
-                        android:text="@{vm.quantityType}"
+                        android:text="@{vm.category.description}"
                         tools:text="Количество" />
 
                 </LinearLayout>
@@ -48,7 +48,7 @@
                         android:enabled="@{vm.quantityEnabled}"
                         android:text="@={vm.quantity}"
                         app:digitsForUom="@{vm.good.units}"
-                        app:quantityTypeIcon="@{vm.good.orderUnits}"
+                        app:quantityTypeIcon="@{vm.position.units}"
                         app:suffix="@{vm.good.units.name}"
                         tools:drawableEnd="@drawable/ic_bei_12dp"
                         tools:text="1 шт" />

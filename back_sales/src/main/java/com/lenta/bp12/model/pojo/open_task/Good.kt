@@ -1,5 +1,6 @@
 package com.lenta.bp12.model.pojo.open_task
 
+import com.lenta.bp12.model.Category
 import com.lenta.bp12.model.ControlType
 import com.lenta.bp12.model.GoodKind
 import com.lenta.bp12.model.pojo.Mark
@@ -15,7 +16,7 @@ data class Good(
         val ean: String,
         val material: String,
         val name: String,
-        val units: Uom = Uom.ST, // todo Перенести в позицию
+        val units: Uom = Uom.ST,
         val kind: GoodKind,
         val type: String = "",
         val control: ControlType = ControlType.COMMON,
@@ -25,7 +26,6 @@ data class Good(
 
         var isFullData: Boolean = false,
 
-        val orderUnits: Uom= Uom.ST,
         val providers: MutableList<ProviderInfo> = mutableListOf(), // ?
         val producers: MutableList<ProducerInfo> = mutableListOf(),
         val marks: MutableList<Mark> = mutableListOf(),
@@ -36,7 +36,7 @@ data class Good(
         return "${material.takeLast(6)}$delimiter$name"
     }
 
-    fun addPosition(quantity: Double, provider: ProviderInfo) {
+    fun addPosition(quantity: Double, provider: ProviderInfo, category: Category) {
         val position = positions.find { it.provider.code == provider.code }
         val oldQuantity = position?.quantity
 
@@ -47,16 +47,13 @@ data class Good(
         positions.add(0, Position(
                 quantity = quantity.sumWith(oldQuantity),
                 provider = provider,
+                category = category,
                 isCounted = true
         ))
     }
 
     fun getTotalQuantity(): Double {
         return positions.map { it.quantity }.sumList()
-    }
-
-    fun getQuantityByProvider(provider: ProviderInfo?): Double {
-        return positions.filter { it.provider.code == provider?.code }.map { it.quantity }.sumList()
     }
 
     fun deletePositions(positionList: List<Position>) {

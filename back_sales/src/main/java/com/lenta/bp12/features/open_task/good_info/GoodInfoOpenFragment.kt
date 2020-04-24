@@ -39,6 +39,7 @@ class GoodInfoOpenFragment : CoreFragment<FragmentGoodInfoOpenBinding, GoodInfoO
         bottomToolbarUiModel.uiModelButton1.show(ButtonDecorationInfo.back)
         bottomToolbarUiModel.uiModelButton2.show(ButtonDecorationInfo.rollback)
         bottomToolbarUiModel.uiModelButton3.show(ButtonDecorationInfo.details)
+        bottomToolbarUiModel.uiModelButton4.show(ButtonDecorationInfo.missing)
         bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.apply, enabled = false)
 
         connectLiveData(vm.rollbackVisibility, getBottomToolBarUIModel()!!.uiModelButton2.visibility)
@@ -52,6 +53,7 @@ class GoodInfoOpenFragment : CoreFragment<FragmentGoodInfoOpenBinding, GoodInfoO
             //R.id.b_2 -> vm.onClickRollback()
             R.id.b_2 -> vm.onScanResult("147300249826851018001FZSIZAB5I6KZKWEQKPKZJHW6MYKVGAETXLPV7M5AIF7OXTQFIM347EWQGXAK65QGJFKTR7EQDHJQTJFSW5DNWTBU3BRLKVM7D6YZMYRBV6IOQY5ZXLPKLBHUZPBTRFTLQ")
             R.id.b_3 -> vm.onClickDetails()
+            R.id.b_4 -> vm.onClickMissing()
             R.id.b_5 -> vm.onClickApply()
         }
     }

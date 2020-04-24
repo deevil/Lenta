@@ -23,7 +23,8 @@ enum class ControlType(val code: String, val description: String) {
     ALCOHOL("A", "Алкоголь")
 }
 
-enum class Mode {
-    CREATE_TASK,
-    WORK_WITH_TASK
+enum class Category(val description: String) {
+    QUANTITY("Количество"),
+    PART("Партионно"),
+    MARK("Марочно")
 }

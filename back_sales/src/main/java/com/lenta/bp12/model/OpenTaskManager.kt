@@ -6,10 +6,7 @@ import com.lenta.bp12.model.pojo.open_task.Position
 import com.lenta.bp12.model.pojo.Properties
 import com.lenta.bp12.model.pojo.open_task.Good
 import com.lenta.bp12.model.pojo.open_task.Task
-import com.lenta.bp12.platform.extention.addZerosToStart
-import com.lenta.bp12.platform.extention.getBlockType
-import com.lenta.bp12.platform.extention.getControlType
-import com.lenta.bp12.platform.extention.getGoodKind
+import com.lenta.bp12.platform.extention.*
 import com.lenta.bp12.repository.IDatabaseRepository
 import com.lenta.bp12.request.GoodInfoResult
 import com.lenta.bp12.request.SendTaskDataParams
@@ -167,23 +164,26 @@ class OpenTaskManager @Inject constructor(
     override suspend fun addGoodsInCurrentTask(taskContentResult: TaskContentResult) {
         currentTask.value?.let { task ->
             taskContentResult.positions.map { positionInfo ->
-                val position = Position(
-                        innerQuantity = positionInfo.innerQuantity.toDoubleOrNull() ?: 1.0,
-                        provider = ProviderInfo(
-                                name = positionInfo.providerName,
-                                code = positionInfo.providerCode.addZerosToStart(10)
-                        ),
-                        units = database.getUnitsByCode(positionInfo.unitsCode),
-                        isCounted = positionInfo.isCounted.isSapTrue(),
-                        isDelete = positionInfo.isDeleted.isSapTrue()
-                )
-
-                val good = task.goods.find { it.isSameMaterial(positionInfo.material) }
+                val receivedGood = task.goods.find { it.isSameMaterial(positionInfo.material) }
                         ?: database.getGoodByMaterial(positionInfo.material)
 
-                good?.positions?.add(0, position)
+                receivedGood?.let { good ->
+                    val position = Position(
+                            innerQuantity = positionInfo.innerQuantity.toDoubleOrNull() ?: 1.0,
+                            provider = ProviderInfo(
+                                    name = positionInfo.providerName,
+                                    code = positionInfo.providerCode.addZerosToStart(10)
+                            ),
+                            units = database.getUnitsByCode(positionInfo.unitsCode),
+                            category = positionInfo.getCategory(good.kind),
+                            isCounted = positionInfo.isCounted.isSapTrue(),
+                            isDelete = positionInfo.isDeleted.isSapTrue()
+                    )
 
-                task.updateGood(good)
+                    good.positions.add(0, position)
+
+                    task.updateGood(good)
+                }
             }
 
             updateCurrentTask(task)

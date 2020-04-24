@@ -2,9 +2,11 @@ package com.lenta.bp12.platform.extention
 
 import com.lenta.bp12.R
 import com.lenta.bp12.model.BlockType
+import com.lenta.bp12.model.Category
 import com.lenta.bp12.model.ControlType
 import com.lenta.bp12.model.GoodKind
 import com.lenta.bp12.request.GoodInfoResult
+import com.lenta.bp12.request.pojo.PositionInfo
 import com.lenta.shared.fmp.resources.slow.ZfmpUtz48V001
 import com.lenta.shared.utilities.extentions.isSapTrue
 
@@ -46,6 +48,17 @@ fun GoodInfoResult.getControlType(): ControlType {
         !isAlcohol && !isVet -> ControlType.COMMON
         isAlcohol && !isVet -> ControlType.ALCOHOL
         else -> ControlType.UNKNOWN
+    }
+}
+
+fun PositionInfo.getCategory(goodKind: GoodKind): Category {
+    val isExcise = goodKind == GoodKind.EXCISE
+    val inner = this.innerQuantity.toDoubleOrNull() ?: 0.0
+
+    return when {
+        isExcise && inner <= 1 -> Category.MARK
+        isExcise && inner > 1 -> Category.PART
+        else -> Category.QUANTITY
     }
 }
 
