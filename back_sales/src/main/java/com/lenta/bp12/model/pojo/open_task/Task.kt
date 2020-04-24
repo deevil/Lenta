@@ -6,6 +6,7 @@ import com.lenta.bp12.model.pojo.Block
 import com.lenta.bp12.model.pojo.Properties
 import com.lenta.bp12.model.pojo.ReturnReason
 import com.lenta.bp12.request.pojo.ProviderInfo
+import com.lenta.shared.utilities.Logg
 
 data class Task(
         val number: String = "",
@@ -37,6 +38,26 @@ data class Task(
 
             goods.add(0, goodUpdate)
         }
+    }
+
+    fun isExistProcessedPositions(): Boolean {
+        val list = mutableListOf<Position>()
+
+        goods.map { good ->
+            good.positions.filter { it.isCounted || it.isDelete }.forEach {
+                list.add(it)
+            }
+        }
+
+        Logg.d { "--> list = $list" }
+
+        return list.isNotEmpty()
+    }
+
+    fun isExistUncountedPositions(): Boolean {
+        return goods.map { good ->
+            good.positions.any { !it.isCounted && !it.isDelete }
+        }.isNotEmpty()
     }
 
 }

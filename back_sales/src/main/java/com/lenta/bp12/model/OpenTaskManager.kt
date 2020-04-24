@@ -235,19 +235,19 @@ class OpenTaskManager @Inject constructor(
         }
     }
 
-    override fun isExistUncountedPositions(): Boolean {
-        /*val list = currentTask.value?.goods?.map { good ->
+    /*override fun isExistUncountedPositions(): Boolean {
+        *//*val list = currentTask.value?.goods?.map { good ->
             good.positions.any { !it.isCounted }
-        } ?: emptyList()*/
+        } ?: emptyList()*//*
 
         val list = currentTask.value?.goods?.map { good ->
             good.positions.filter { !it.isCounted }
         } ?: emptyList()
 
-        Logg.d { "--> list = $list" }
+        Logg.d { "--> isExistUncountedPositions / list = $list" }
 
         return list.isNotEmpty()
-    }
+    }*/
 
     override fun prepareSendTaskDataParams(deviceIp: String, tkNumber: String, userNumber: String) {
         currentTask.value?.let { task ->
@@ -371,7 +371,7 @@ interface IOpenTaskManager {
     suspend fun addFoundTasks(tasksInfo: List<TaskInfo>)
     suspend fun addGoodsInCurrentTask(taskContentResult: TaskContentResult)
     fun prepareGoodAndPosition(material: String, providerCode: String)
-    fun isExistUncountedPositions(): Boolean
+    //fun isExistUncountedPositions(): Boolean
     fun prepareSendTaskDataParams(deviceIp: String, tkNumber: String, userNumber: String)
     fun deleteUncountedPositions(items: MutableList<SimplePosition>)
     fun deleteCountedPositions(items: MutableList<SimplePosition>)

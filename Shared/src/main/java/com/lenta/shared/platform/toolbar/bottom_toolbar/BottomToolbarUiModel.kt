@@ -43,13 +43,13 @@ data class ButtonUiModel(
 
     fun clean() {
         buttonDecorationInfo.value = ButtonDecorationInfo.empty
-        visibility.postValue(false)
-        enabled.postValue(true)
+        visibility.value = false
+        enabled.value = true
     }
 
     fun show(buttonDecorationInfo: ButtonDecorationInfo? = null, visible: Boolean = true, enabled: Boolean = true) {
-        this.visibility.postValue(visible)
-        this.enabled.postValue(enabled)
+        this.visibility.value = visible
+        this.enabled.value = enabled
 
         buttonDecorationInfo?.let {
             this.buttonDecorationInfo.value = it

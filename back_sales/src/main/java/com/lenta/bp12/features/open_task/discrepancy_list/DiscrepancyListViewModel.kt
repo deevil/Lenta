@@ -33,11 +33,11 @@ class DiscrepancyListViewModel : CoreViewModel() {
             val itemList = mutableListOf<SimpleItemGood>()
 
             task?.goods?.map { good ->
-                good.positions.filter { !it.isCounted }.map { position ->
+                good.positions.filter { !it.isDelete && !it.isCounted }.map { position ->
                     itemList.add(SimpleItemGood(
                             name = good.getNameWithMaterial(),
                             material = good.material,
-                            providerCode = position.provider?.code ?: ""
+                            providerCode = position.provider.code
                     ))
                 }
             }
@@ -53,13 +53,13 @@ class DiscrepancyListViewModel : CoreViewModel() {
         }
     }
 
-    val deleteEnabled = selectionsHelper.selectedPositions.map {
+    /*val deleteEnabled = selectionsHelper.selectedPositions.map {
         it?.isNotEmpty()
     }
 
     val missingEnabled = selectionsHelper.selectedPositions.map {
         it?.isNotEmpty()
-    }
+    }*/
 
     // -----------------------------
 

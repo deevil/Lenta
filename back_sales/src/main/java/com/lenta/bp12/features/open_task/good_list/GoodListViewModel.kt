@@ -13,6 +13,7 @@ import com.lenta.shared.platform.constants.Constants
 import com.lenta.shared.platform.device_info.DeviceInfo
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.settings.IAppSettings
+import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.SelectionItemsHelper
 import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
 import com.lenta.shared.utilities.databinding.PageSelectionListener
@@ -123,12 +124,12 @@ class GoodListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
         val isSelectedProcessing = it.first.second.isNotEmpty()
         val isSelectedProcessed = it.second.isNotEmpty()
 
-        page == 0 && isSelectedProcessing || page == 1 && isSelectedProcessed
+        task.value?.isStrict == false && (page == 0 && isSelectedProcessing || page == 1 && isSelectedProcessed)
     }
 
     val saveEnabled by lazy {
-        processed.map { list ->
-            list?.isNotEmpty()
+        task.map {
+            it?.isExistProcessedPositions()
         }
     }
 
@@ -206,7 +207,8 @@ class GoodListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
     }
 
     fun onClickSave() {
-        if (manager.isExistUncountedPositions()) {
+        if (task.value!!.isExistUncountedPositions()) {
+            Logg.d { "--> isExistUncountedPositions!!!" }
             navigator.showMakeTaskCountedAndClose {
                 navigator.openDiscrepancyListScreen()
             }
