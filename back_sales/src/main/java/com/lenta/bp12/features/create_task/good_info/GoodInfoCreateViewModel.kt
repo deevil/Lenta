@@ -414,7 +414,7 @@ class GoodInfoCreateViewModel : CoreViewModel() {
     }
 
     fun onClickDetails() {
-        navigator.openBasketDetailsScreen()
+        navigator.openGoodDetailsCreateScreen()
     }
 
     fun addProvider() {

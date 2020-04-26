@@ -8,7 +8,7 @@ data class Position(
         var quantity: Double = 0.0,
         val innerQuantity: Double = 1.0,
         val units: Uom = Uom.ST,
-        var category: Category,
+        var category: Category = Category.QUANTITY,
         var provider: ProviderInfo,
         var isCounted: Boolean = false,
         var isDelete: Boolean = false

@@ -57,7 +57,7 @@ fun PositionInfo.getCategory(goodKind: GoodKind): Category {
 
     return when {
         isExcise && inner <= 1 -> Category.MARK
-        isExcise && inner > 1 -> Category.PART
+        isExcise && inner > 1 -> Category.CONSIGNMENT
         else -> Category.QUANTITY
     }
 }

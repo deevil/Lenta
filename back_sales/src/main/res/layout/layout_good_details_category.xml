@@ -2,13 +2,13 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context=".features.open_task.category_details.CategoryDetailsFragment">
+    tools:context=".features.create_task.good_details.GoodDetailsCreateFragment">
 
     <data>
 
         <variable
             name="vm"
-            type="com.lenta.bp12.features.open_task.category_details.CategoryDetailsViewModel" />
+            type="com.lenta.bp12.features.create_task.good_details.GoodDetailsCreateViewModel" />
 
         <variable
             name="rvConfig"

@@ -25,6 +25,6 @@ enum class ControlType(val code: String, val description: String) {
 
 enum class Category(val description: String) {
     QUANTITY("Количество"),
-    PART("Партионно"),
+    CONSIGNMENT("Партионно"),
     MARK("Марочно")
 }

@@ -2,13 +2,13 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context=".features.create_task.basket_details.BasketDetailsFragment">
+    tools:context=".features.open_task.good_details.GoodDetailsOpenFragment">
 
     <data>
 
         <variable
             name="vm"
-            type="com.lenta.bp12.features.create_task.basket_details.BasketDetailsViewModel" />
+            type="com.lenta.bp12.features.open_task.good_details.GoodDetailsOpenViewModel" />
 
         <variable
             name="rvConfig"
@@ -46,7 +46,7 @@
 
                     <TextView
                         style="@style/FirstRowTextStyle"
-                        android:text="@string/basket" />
+                        android:text="@string/consignments" />
 
                 </LinearLayout>
 
@@ -56,7 +56,7 @@
 
                     <TextView
                         style="@style/FirstRowTextStyle"
-                        android:text="@string/of_goods" />
+                        android:text="@string/quantity" />
 
                 </LinearLayout>
 
@@ -66,16 +66,16 @@
 
         </LinearLayout>
 
-        <!-- Список корзин -->
+        <!-- Список категорий -->
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rv"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_marginBottom="8dp"
             android:layout_weight="1"
-            app:items="@{vm.baskets}"
+            app:items="@{vm.items}"
             app:rv_config="@{rvConfig}"
-            tools:listitem="@layout/item_basket_details" />
+            tools:listitem="@layout/item_consignment_details" />
 
     </LinearLayout>
 

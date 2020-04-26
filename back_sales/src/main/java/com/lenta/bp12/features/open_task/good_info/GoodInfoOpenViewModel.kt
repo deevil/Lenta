@@ -174,7 +174,6 @@ class GoodInfoOpenViewModel : CoreViewModel() {
 
     val dateEnabled = MutableLiveData(true)
 
-
     val applyEnabled by lazy {
         quantity.map { quantity ->
             good.value?.let { good ->
@@ -376,7 +375,7 @@ class GoodInfoOpenViewModel : CoreViewModel() {
     }
 
     fun onClickDetails() {
-        navigator.openCategoryDetailsScreen()
+        navigator.openGoodDetailsOpenScreen()
     }
 
     fun onClickMissing() {

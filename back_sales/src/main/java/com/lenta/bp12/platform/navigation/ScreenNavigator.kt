@@ -8,7 +8,7 @@ import com.lenta.bp12.features.create_task.basket_good_list.BasketGoodListFragme
 import com.lenta.bp12.features.create_task.basket_properties.BasketPropertiesFragment
 import com.lenta.bp12.features.open_task.discrepancy_list.DiscrepancyListFragment
 import com.lenta.bp12.features.enter_employee_number.EnterEmployeeNumberFragment
-import com.lenta.bp12.features.create_task.basket_details.BasketDetailsFragment
+import com.lenta.bp12.features.create_task.good_details.GoodDetailsCreateFragment
 import com.lenta.bp12.features.create_task.good_info.GoodInfoCreateFragment
 import com.lenta.bp12.features.open_task.good_info.GoodInfoOpenFragment
 import com.lenta.bp12.features.open_task.good_list.GoodListFragment
@@ -19,7 +19,7 @@ import com.lenta.bp12.features.select_market.SelectMarketFragment
 import com.lenta.bp12.features.create_task.task_card.TaskCardCreateFragment
 import com.lenta.bp12.features.open_task.task_card.TaskCardOpenFragment
 import com.lenta.bp12.features.create_task.task_composition.TaskCompositionFragment
-import com.lenta.bp12.features.open_task.category_details.CategoryDetailsFragment
+import com.lenta.bp12.features.open_task.good_details.GoodDetailsOpenFragment
 import com.lenta.bp12.features.open_task.task_list.TaskListFragment
 import com.lenta.bp12.features.open_task.task_search.TaskSearchFragment
 import com.lenta.shared.account.IAuthenticator
@@ -95,15 +95,15 @@ class ScreenNavigator @Inject constructor(
         }
     }
 
-    override fun openBasketDetailsScreen() {
+    override fun openGoodDetailsCreateScreen() {
         runOrPostpone {
-            getFragmentStack()?.push(BasketDetailsFragment())
+            getFragmentStack()?.push(GoodDetailsCreateFragment())
         }
     }
 
-    override fun openCategoryDetailsScreen() {
+    override fun openGoodDetailsOpenScreen() {
         runOrPostpone {
-            getFragmentStack()?.push(CategoryDetailsFragment())
+            getFragmentStack()?.push(GoodDetailsOpenFragment())
         }
     }
 
@@ -371,8 +371,8 @@ interface IScreenNavigator : ICoreNavigator {
 
     fun openTaskCompositionScreen()
     fun openBasketGoodListScreen()
-    fun openBasketDetailsScreen()
-    fun openCategoryDetailsScreen()
+    fun openGoodDetailsCreateScreen()
+    fun openGoodDetailsOpenScreen()
     fun openSaveDataScreen()
     fun openTaskListScreen()
     fun openBasketPropertiesScreen()

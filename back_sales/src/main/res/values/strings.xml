@@ -33,6 +33,7 @@
     <string name="basket">Корзина</string>
     <string name="task">Задание</string>
     <string name="tags">Признаки</string>
+    <string name="consignments">Партии</string>
 
     // Информационные сообщения
     <string name="unsent_data_found_on_device">На устройстве обнаружены непереданные данные. Перейти к данным?</string>

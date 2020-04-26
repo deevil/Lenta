@@ -1,4 +1,4 @@
-package com.lenta.bp12.features.open_task.category_details
+package com.lenta.bp12.features.open_task.good_details
 
 import androidx.lifecycle.MutableLiveData
 import com.lenta.bp12.model.ICreateTaskManager
@@ -8,7 +8,7 @@ import com.lenta.shared.utilities.SelectionItemsHelper
 import com.lenta.shared.utilities.extentions.map
 import javax.inject.Inject
 
-class CategoryDetailsViewModel : CoreViewModel() {
+class GoodDetailsOpenViewModel : CoreViewModel() {
 
     @Inject
     lateinit var navigator: IScreenNavigator
@@ -33,17 +33,20 @@ class CategoryDetailsViewModel : CoreViewModel() {
         }
     }
 
-    val categories by lazy {
+    val items by lazy {
         MutableLiveData(List(3) {
-            ItemCategoryUi(
+            ItemConsignmentUi(
                     position = "${it + 1}",
-                    type = "Test category ${it + 1}",
+                    date = "Test date ${it + 1}",
+                    provider = "Test provider ${it + 1}",
                     quantity = (1..15).random().toString()
             )
         })
     }
 
-    val deleteEnabled = MutableLiveData(false)
+    val deleteEnabled = selectionsHelper.selectedPositions.map {
+        it?.isNotEmpty() ?: false
+    }
 
     // -----------------------------
 
@@ -54,8 +57,9 @@ class CategoryDetailsViewModel : CoreViewModel() {
 }
 
 
-data class ItemCategoryUi(
+data class ItemConsignmentUi(
         val position: String,
-        val type: String,
+        val date: String,
+        val provider: String,
         val quantity: String
 )
