@@ -1,30 +1,26 @@
 package com.lenta.movement.features.main.box
 
+import android.content.Context
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import com.lenta.movement.models.repositories.IBoxesRepository
 import com.lenta.movement.platform.navigation.IScreenNavigator
+import com.lenta.movement.requests.network.SavePackagedExciseBoxesNetRequest
+import com.lenta.movement.requests.network.SavePackagedExciseBoxesParams
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.models.core.ProductType
 import com.lenta.shared.platform.viewmodel.CoreViewModel
-import com.lenta.shared.requests.combined.scan_info.ScanInfoRequest
-import com.lenta.shared.requests.combined.scan_info.ScanInfoRequestParams
 import com.lenta.shared.utilities.SelectionItemsHelper
 import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
-import kotlinx.coroutines.CompletableDeferred
+import com.lenta.shared.utilities.extentions.getDeviceIp
+import com.lenta.shared.utilities.extentions.map
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
 
-    companion object {
-        private const val SAP_RC = 160
-        private const val BAR_RC = 170
-    }
-
-    private enum class CodeType {
-        SAP,
-        BAR
-    }
+    @Inject
+    lateinit var context: Context
 
     @Inject
     lateinit var screenNavigator: IScreenNavigator
@@ -33,9 +29,13 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
     lateinit var sessionInfo: ISessionInfo
 
     @Inject
-    lateinit var scanInfoRequest: ScanInfoRequest
+    lateinit var scanInfoHelper: ScanInfoHelper
 
-    private var resultCodeTypeDeferred: CompletableDeferred<CodeType>? = null
+    @Inject
+    lateinit var boxesRepository: IBoxesRepository
+
+    @Inject
+    lateinit var savePackagedExciseBoxesNetRequest: SavePackagedExciseBoxesNetRequest
 
     val selectionsHelper = SelectionItemsHelper()
 
@@ -43,19 +43,17 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
     val eanCode: MutableLiveData<String> = MutableLiveData()
     val requestFocusToEan: MutableLiveData<Boolean> = MutableLiveData()
 
-    override fun handleFragmentResult(code: Int?): Boolean {
-        val result = when (code) {
-            SAP_RC -> CodeType.SAP
-            BAR_RC -> CodeType.BAR
-            else -> return false
+    val deleteEnabled: MutableLiveData<Boolean> =
+        selectionsHelper.selectedPositions.map { selectedPositions ->
+            selectedPositions.orEmpty().isNotEmpty()
         }
-        resultCodeTypeDeferred?.complete(result)
 
-        return true
+    val completeEnabled: MutableLiveData<Boolean> = goodsList.map { goodsListOrNull ->
+        goodsListOrNull.orEmpty().isNotEmpty()
     }
 
-    fun onScanResult(data: String) {
-        searchCode(code = data, fromScan = true, isBarCode = true)
+    override fun handleFragmentResult(code: Int?): Boolean {
+        return scanInfoHelper.handleFragmentResult(code) || super.handleFragmentResult(code)
     }
 
     override fun onOkInSoftKeyboard(): Boolean {
@@ -64,17 +62,8 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
         return true
     }
 
-    fun onClickItemPosition(position: Int) {
-        //TODO("Not yet implemented")
-    }
-
-    fun onBackPressed() {
-        screenNavigator.openUnsavedDataDialog(
-            yesCallbackFunc = {
-                screenNavigator.goBack()
-                screenNavigator.goBack()
-            }
-        )
+    fun onScanResult(data: String) {
+        searchCode(code = data, fromScan = true, isBarCode = true)
     }
 
     fun onDigitPressed(digit: Int) {
@@ -82,51 +71,97 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
         eanCode.value = eanCode.value ?: "" + digit
     }
 
-    private fun searchCode(code: String, fromScan: Boolean, isBarCode: Boolean? = null) {
-        viewModelScope.launch {
-            val codeType = if (isBarCode == null && code.length == 12) {
-                selectCodeType()
-            } else if (isBarCode == true) {
-                CodeType.BAR
-            } else {
-                CodeType.SAP
+    fun onResume() {
+        updateGoodsList()
+    }
+
+    fun onBackPressed() {
+        if (boxesRepository.getBoxes().isNotEmpty()) {
+            screenNavigator.openUnsavedDataDialog(
+                yesCallbackFunc = {
+                    boxesRepository.clear()
+                    screenNavigator.goBack()
+                    screenNavigator.goBack()
+                }
+            )
+        } else {
+            screenNavigator.goBack()
+        }
+    }
+
+    fun onDeleteClick() {
+        selectionsHelper.selectedPositions.value.orEmpty()
+            .flatMap { doRemovePositions ->
+                boxesRepository.getBoxesGroupByProduct().toList()[doRemovePositions].second
+            }
+            .forEach { doRemoveBox ->
+                boxesRepository.removeBox(doRemoveBox)
             }
 
-            if (codeType == null) return@launch
+        updateGoodsList()
 
-            screenNavigator.showProgress(scanInfoRequest)
-            scanInfoRequest(
-                ScanInfoRequestParams(
-                    number = when (codeType) {
-                        CodeType.SAP -> "000000000000${code.takeLast(6)}"
-                        else -> code
+        selectionsHelper.clearPositions()
+    }
+
+    fun onCompleteClick() {
+        viewModelScope.launch {
+            screenNavigator.showProgress(savePackagedExciseBoxesNetRequest)
+            savePackagedExciseBoxesNetRequest(
+                params = SavePackagedExciseBoxesParams(
+                    userNumber = sessionInfo.personnelNumber ?: "",
+                    deviceIp = context.getDeviceIp(),
+                    boxes = boxesRepository.getBoxes().map { box ->
+                        SavePackagedExciseBoxesParams.Box(
+                            code = box.code,
+                            materialNumber = box.productInfo.materialNumber
+                        )
                     },
-                    tkNumber = sessionInfo.market.orEmpty(),
-                    fromScan = fromScan,
-                    isBarCode = codeType == CodeType.BAR
-                )
-            )
-                .either(
-                    fnL = { failure ->
-                        screenNavigator.openAlertScreen(failure)
-                    },
-                    fnR = { scanInfoResult ->
-                        if (scanInfoResult.productInfo.type != ProductType.ExciseAlcohol) {
-                            screenNavigator.openProductIncorrectForCreateBox(scanInfoResult.productInfo)
-                        } else {
-                            screenNavigator.openCreateBoxByProduct(scanInfoResult.productInfo)
+                    stamps = boxesRepository.getBoxes().flatMap { box ->
+                        box.stamps.map { stamp ->
+                            SavePackagedExciseBoxesParams.Stamp(
+                                code = stamp.code,
+                                boxCode = box.code
+                            )
                         }
                     }
                 )
+            ).either(
+                fnL = { failure ->
+                    screenNavigator.openAlertScreen(failure)
+                },
+                fnR = {
+                    boxesRepository.clear()
+                    screenNavigator.goBack()
+                }
+            )
             screenNavigator.hideProgress()
         }
     }
 
-    private suspend fun selectCodeType(): CodeType? {
-        screenNavigator.openSelectTypeCodeScreen(SAP_RC, BAR_RC)
-        resultCodeTypeDeferred = CompletableDeferred()
+    private fun searchCode(code: String, fromScan: Boolean, isBarCode: Boolean? = null) {
+        viewModelScope.launch {
+            scanInfoHelper.searchCode(code, fromScan, isBarCode) { productInfo ->
+                if (productInfo.type != ProductType.ExciseAlcohol) {
+                    screenNavigator.openProductIncorrectForCreateBox(productInfo)
+                } else {
+                    screenNavigator.openCreateBoxByProduct(productInfo)
+                }
+            }
+        }
+    }
 
-        return resultCodeTypeDeferred?.await()
+    private fun updateGoodsList() {
+        val goodsBoxesList = boxesRepository.getBoxesGroupByProduct()
+            .toList()
+            .mapIndexed { index, (product, boxes) ->
+                GoodListItem(
+                    number = index + 1,
+                    name = product.description,
+                    countWithUom = "${boxes.size} кор"
+                )
+            }
+
+        goodsList.postValue(goodsBoxesList)
     }
 
 }

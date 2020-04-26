@@ -11,11 +11,20 @@
     <string name="alert_product_incorrect_for_create_box">Для товара %s не предусмотрено создание коробов</string>
 
     <string name="create_boxes_filling_tab_title">Количество</string>
-    <string-array name="create_boxes_filling_count_spinner">
-        <item>Количество</item>
-    </string-array>
-    
+    <string name="create_boxes_filling_tab_attachment_format">Вложение (кор = %d шт)</string>
+    <string name="create_boxes_filling_tab_progress_format">%1$d из %2$d</string>
+
     <string name="create_boxes_box_list_tab_title">Короба</string>
+    <string name="create_boxes_box_list_tab_box_number">Номер короба</string>
+    <string name="stamp_max_count">Достигнуто максимальное количество марок для комплектации текущего короба. Завершите комплектацию этого короба и продолжите добавление марок в следующий короб.</string>
+    <string name="stamp_was_added_msg">Марка была добавлена. Перепривязка невозможна.</string>
+    <string name="stamp_was_added_to_box_msg">Марка была добавлена в короб %s. Перепривязка невозможна.</string>
+    <string name="box_number_was_used_msg">Указанный номер был использован ранее при создании другого короба</string>
+    <string name="ean_invalid_msg">Неверный формат штрихкода</string>
+
+    <string name="unsaved_data_confirmation">Несохранённые данные будут утеряны, всё равно продолжить?</string>
+    <string name="box_saved_msg">Короб %s сохранен</string>
+    <string name="save_to_sap_erp_msg">Сохранение в SAP ERP</string>
 
 
 </resources>

@@ -5,11 +5,7 @@
     tools:ignore="ContentDescription">
 
     <data>
-
-        <import type="java.util.ArrayList" />
-
-        <import type="kotlin.collections.CollectionsKt" />
-
+        <import type="android.text.TextUtils"/>
         <variable
             name="vm"
             type="com.lenta.movement.features.main.box.create.CreateBoxesViewModel" />
@@ -43,28 +39,32 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/topHorizontalDiv" />
 
-        <com.lenta.shared.view.EditTextWithSuffix
+        <EditText
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:layout_marginEnd="16dp"
-            android:text="Количество"
+            android:clickable="false"
+            android:focusable="false"
+            android:text="@string/quantity"
             app:layout_constraintBottom_toTopOf="@+id/horizontalDiv1"
             app:layout_constraintEnd_toEndOf="@+id/centerVerticalGuideline"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/topHorizontalDiv" />
 
-        <com.lenta.shared.view.EditTextWithSuffix
+        <EditText
             android:id="@+id/countText"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:layout_marginEnd="16dp"
+            android:text="0 шт."
+            android:clickable="false"
+            android:focusable="false"
             app:layout_constraintBottom_toTopOf="@+id/horizontalDiv1"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="@+id/centerVerticalGuideline"
-            app:layout_constraintTop_toBottomOf="@+id/topHorizontalDiv"
-            tools:text="0 шт." />
+            app:layout_constraintTop_toBottomOf="@+id/topHorizontalDiv" />
 
         <ImageView
             android:layout_width="wrap_content"
@@ -72,10 +72,10 @@
             android:layout_marginTop="6dp"
             android:layout_marginEnd="12dp"
             android:layout_marginBottom="6dp"
+            android:src="@drawable/ic_eiz_24dp"
             app:layout_constraintBottom_toBottomOf="@+id/countText"
             app:layout_constraintEnd_toEndOf="@+id/countText"
-            app:layout_constraintTop_toTopOf="@+id/countText"
-            tools:src="@drawable/ic_eiz_24dp" />
+            app:layout_constraintTop_toTopOf="@+id/countText" />
 
         <View
             android:id="@+id/horizontalDiv1"
@@ -90,6 +90,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:layout_marginEnd="16dp"
+            android:text="@{@string/create_boxes_filling_tab_attachment_format(vm.productInfo.quantityInvestments)}"
             app:layout_constraintBottom_toTopOf="@id/horizontalDiv2"
             app:layout_constraintEnd_toEndOf="@+id/centerVerticalGuideline"
             app:layout_constraintStart_toStartOf="parent"
@@ -101,6 +102,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
+            android:clickable="false"
+            android:focusable="false"
+            android:checked="@{vm.stamps.size() == vm.productInfo.quantityInvestments}"
             app:layout_constraintBottom_toTopOf="@id/horizontalDiv2"
             app:layout_constraintStart_toStartOf="@+id/centerVerticalGuideline"
             app:layout_constraintTop_toBottomOf="@+id/horizontalDiv1"
@@ -110,6 +114,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
+            android:text="@{@string/create_boxes_filling_tab_progress_format(vm.stamps.size(), vm.productInfo.quantityInvestments)}"
             app:layout_constraintBottom_toTopOf="@id/horizontalDiv2"
             app:layout_constraintStart_toEndOf="@+id/completableCheckbox"
             app:layout_constraintTop_toBottomOf="@+id/horizontalDiv1"
@@ -123,15 +128,19 @@
             android:background="@color/color_divider"
             app:layout_constraintTop_toBottomOf="@+id/horizontalDiv1" />
 
-        <com.lenta.shared.view.ClickableSpinner
+        <EditText
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:layout_marginEnd="16dp"
+            android:clickable="false"
+            android:focusable="false"
+            android:text='@{vm.stamps.size() > 0 ? vm.stamps.get(0).manufacturerName : ""}'
             app:layout_constraintBottom_toTopOf="@+id/horizontalDiv3"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/horizontalDiv2" />
+            app:layout_constraintTop_toBottomOf="@+id/horizontalDiv2"
+            tools:text="Производитель винишка №1" />
 
         <View
             android:id="@+id/horizontalDiv3"
@@ -155,18 +164,22 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:layout_marginEnd="16dp"
-            android:text="Дата розлива"
+            android:text='@{vm.productInfo.isRus ? "Дата розлива" : "Дата ввоза"}'
             app:layout_constraintBottom_toTopOf="@+id/horizontalDiv4"
             app:layout_constraintEnd_toEndOf="@+id/centerVerticalGuideline"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/horizontalDiv3" />
+            app:layout_constraintTop_toBottomOf="@+id/horizontalDiv3"
+            tools:text="Дата розлива"/>
 
-        <com.lenta.shared.view.EditTextWithSuffix
+        <EditText
             android:id="@+id/dateOfPourText"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:layout_marginEnd="16dp"
+            android:clickable="false"
+            android:focusable="false"
+            android:text='@{vm.stamps.size() > 0 ? vm.stamps.get(0).dateOfPour : ""}'
             app:layout_constraintBottom_toTopOf="@+id/horizontalDiv4"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="@+id/centerVerticalGuideline"
@@ -181,11 +194,14 @@
             android:background="@color/color_divider"
             app:layout_constraintTop_toBottomOf="@+id/horizontalDiv3" />
 
-        <com.lenta.shared.view.EditTextWithSuffix
+        <EditText
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:layout_marginEnd="16dp"
+            android:clickable="false"
+            android:focusable="false"
+            android:text='@{TextUtils.isEmpty(vm.boxNumber) ? "Отсканируйте номер коробки" : vm.boxNumber }'
             app:layout_constraintBottom_toTopOf="@+id/horizontalDiv4"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
