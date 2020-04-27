@@ -84,21 +84,20 @@ class GoodInfoOpenViewModel : CoreViewModel() {
         }
     }
 
-    val quantityEnabled by lazy {
-        position.map { position ->
-            position?.isBox() == false
-        }
-    }
+    val quantityEnabled = MutableLiveData(true)
 
     private val totalQuantity by lazy {
-        quantity.map {quantity ->
+        quantity.map { quantity ->
             quantity?.toDoubleOrNull().sumWith(good.value?.getTotalQuantity())
         }
     }
 
     val totalWithUnits by lazy {
-        totalQuantity.map { quantity ->
-            "${quantity.dropZeros()} ${good.value?.units?.name}"
+        totalQuantity.combineLatest(good).map {
+            val quantity = it!!.first
+            val good = it.second
+
+            "${quantity.dropZeros()} ${good.units.name}"
         }
     }
 
@@ -154,13 +153,14 @@ class GoodInfoOpenViewModel : CoreViewModel() {
     val dateEnabled = MutableLiveData(true)
 
     val applyEnabled by lazy {
-        quantity.map { quantity ->
-            good.value?.let { good ->
-                when (good.kind) {
-                    GoodKind.COMMON -> quantity?.toDoubleOrNull() ?: 0.0 > 0
-                    GoodKind.ALCOHOL -> quantity?.toDoubleOrNull() ?: 0.0 > 0
-                    GoodKind.EXCISE -> quantity?.toDoubleOrNull() ?: 0.0 > 0
-                }
+        quantity.combineLatest(good).map {
+            val quantity = it!!.first
+            val good = it.second
+
+            when (good.kind) {
+                GoodKind.COMMON -> quantity?.toDoubleOrNull() ?: 0.0 > 0
+                GoodKind.ALCOHOL -> quantity?.toDoubleOrNull() ?: 0.0 > 0
+                GoodKind.EXCISE -> quantity?.toDoubleOrNull() ?: 0.0 > 0
             }
         }
     }

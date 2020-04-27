@@ -223,11 +223,7 @@ class GoodInfoCreateViewModel : CoreViewModel() {
         }
     }
 
-    val detailsVisibility by lazy {
-        good.map { good ->
-            good?.kind == GoodKind.ALCOHOL || good?.kind == GoodKind.EXCISE
-        }
-    }
+    val detailsVisibility = MutableLiveData(true)
 
     val rollbackVisibility by lazy {
         good.map { good ->
