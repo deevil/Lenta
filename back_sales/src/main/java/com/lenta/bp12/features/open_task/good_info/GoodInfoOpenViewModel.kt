@@ -17,9 +17,7 @@ import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.platform.constants.Constants
 import com.lenta.shared.utilities.Logg
-import com.lenta.shared.utilities.extentions.dropZeros
-import com.lenta.shared.utilities.extentions.map
-import com.lenta.shared.utilities.extentions.sumWith
+import com.lenta.shared.utilities.extentions.*
 import com.lenta.shared.view.OnPositionClickListener
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -78,7 +76,11 @@ class GoodInfoOpenViewModel : CoreViewModel() {
 
     val quantity by lazy {
         position.map { position ->
-            if (position?.isBox() == true) position.innerQuantity.dropZeros() else "1"
+            if (position?.isCounted == true) {
+                position.quantity.dropZeros()
+            } else {
+                if (position?.isBox() == true) position.innerQuantity.dropZeros() else "1"
+            }
         }
     }
 
@@ -89,8 +91,12 @@ class GoodInfoOpenViewModel : CoreViewModel() {
     }
 
     private val totalQuantity by lazy {
-        quantity.map { quantity ->
-            quantity?.toDoubleOrNull().sumWith(good.value?.getTotalQuantity())
+        quantity.map {
+            val quantity = it?.toDoubleOrNull() ?: 0.0
+            val total = good.value?.getTotalQuantity() ?: 0.0
+            val isCounted = position.value?.isCounted == true
+
+            quantity.sumWith(if (isCounted) total.subWith(quantity) else total)
         }
     }
 
@@ -102,38 +108,15 @@ class GoodInfoOpenViewModel : CoreViewModel() {
 
     val totalTitle = MutableLiveData("Итого")
 
-    private val providersjj by lazy {  // todo Вернуть добавление провайдера по умолчанию
-        good.map { good ->
-            good?.providers?.let { providers ->
-                val list = providers.toMutableList()
-                if (list.size > 1) {
-                    list.add(0, ProviderInfo())
-                }
-
-                list.toList()
-            }
+    private val provider by lazy {
+        task.map { task ->
+            task?.provider
         }
     }
 
-    private val providers = MutableLiveData<List<ProviderInfo>>(emptyList())
-
-    val providerList by lazy {
-        providers.map { list ->
-            list?.map { it.name }
-        }
-    }
-
-    val providerEnabled by lazy {
-        providerList.map { providers ->
-            providers?.size ?: 0 > 1
-        }
-    }
-
-    val providerPosition = MutableLiveData(0)
-
-    val onSelectProvider = object : OnPositionClickListener {
-        override fun onClickPosition(position: Int) {
-            providerPosition.value = position
+    val providerName by lazy {
+        provider.map { provider ->
+            provider?.name
         }
     }
 
@@ -200,7 +183,7 @@ class GoodInfoOpenViewModel : CoreViewModel() {
 
     val rollbackEnabled = MutableLiveData(false)
 
-    var isExistUnsavedData = false
+    private var isExistUnsavedData = false
 
     // -----------------------------
 
@@ -208,7 +191,6 @@ class GoodInfoOpenViewModel : CoreViewModel() {
         viewModelScope.launch {
             if (position.value != null) {
                 category.value = position.value!!.category
-                loadProviderFromPosition()
             } else {
                 checkSearchNumber(manager.searchNumber)
             }
@@ -216,25 +198,6 @@ class GoodInfoOpenViewModel : CoreViewModel() {
     }
 
     // -----------------------------
-
-    private fun loadProviderFromPosition() {
-        position.value?.let { position ->
-            providers.value = listOf(position.provider)
-        }
-    }
-
-    private fun loadProvidersFromGood() {
-        providers.value = good.value?.let { good ->
-            good.providers.let { providers ->
-                val list = providers.toMutableList()
-                if (list.size > 1) {
-                    list.add(0, ProviderInfo())
-                }
-
-                list.toList()
-            }
-        }
-    }
 
     private fun checkSearchNumber(number: String) {
         number.length.let { length ->
@@ -311,7 +274,6 @@ class GoodInfoOpenViewModel : CoreViewModel() {
                         isExistUnsavedData = true
                         manager.currentPosition.value = null
                         manager.putInCurrentGood(goodInfo)
-                        loadProvidersFromGood()
                         category.value = Category.QUANTITY
                     } else {
                         navigator.showNotMatchTaskSettingsAddingNotPossible {
@@ -362,10 +324,6 @@ class GoodInfoOpenViewModel : CoreViewModel() {
         }
     }
 
-    fun addProvider() {
-        navigator.openAddProviderScreen()
-    }
-
     fun updateData() {
         manager.updateCurrentGood(good.value)
     }
@@ -381,6 +339,7 @@ class GoodInfoOpenViewModel : CoreViewModel() {
     fun onClickMissing() {
         quantity.value = "0"
         saveGoodInTask()
+        navigator.goBack()
     }
 
     fun onClickApply() {

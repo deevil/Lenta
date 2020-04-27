@@ -251,8 +251,10 @@ class GoodListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
 
     private fun checkEnteredNumber(number: String) {
         if (!task.value!!.isStrict && number.length >= Constants.SAP_6) {
+            manager.clearCurrentGoodPosition()
             manager.searchNumber = number
             numberField.value = ""
+
             navigator.openGoodInfoOpenScreen()
         }
     }

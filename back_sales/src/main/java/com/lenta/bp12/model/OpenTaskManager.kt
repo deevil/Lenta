@@ -326,6 +326,11 @@ class OpenTaskManager @Inject constructor(
         }
     }
 
+    override fun clearCurrentGoodPosition() {
+        currentGood.value = null
+        currentPosition.value = null
+    }
+
 }
 
 
@@ -363,6 +368,7 @@ interface IOpenTaskManager {
     fun markPositionsDelete(items: List<SimplePosition>)
     fun markPositionsUncounted(items: List<SimplePosition>)
     fun markPositionsMissing(items: List<SimplePosition>)
+    fun clearCurrentGoodPosition()
 
 }
 
