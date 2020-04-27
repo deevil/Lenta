@@ -9,6 +9,7 @@ import com.lenta.bp9.model.task.TaskBoxInfo
 import com.lenta.bp9.model.task.TaskExciseStampInfo
 import com.lenta.bp9.model.task.TaskProductInfo
 import com.lenta.bp9.platform.extentions.getAppComponent
+import com.lenta.shared.platform.activity.OnBackPresserListener
 import com.lenta.shared.platform.fragment.CoreFragment
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
@@ -21,12 +22,14 @@ import com.lenta.shared.utilities.state.state
 
 class ExciseAlcoBoxCardFragment : CoreFragment<FragmentExciseAlcoBoxCardBinding, ExciseAlcoBoxCardViewModel>(),
         OnScanResultListener,
-        ToolbarButtonsClickListener {
+        ToolbarButtonsClickListener,
+        OnBackPresserListener {
 
     companion object {
         fun create(
                 productInfo: TaskProductInfo,
                 boxInfo: TaskBoxInfo?,
+                massProcessingBoxesNumber: List<String>?,
                 exciseStampInfo: TaskExciseStampInfo?,
                 selectQualityCode: String,
                 selectReasonRejectionCode: String?,
@@ -34,6 +37,7 @@ class ExciseAlcoBoxCardFragment : CoreFragment<FragmentExciseAlcoBoxCardBinding,
             ExciseAlcoBoxCardFragment().let {
                 it.productInfo = productInfo
                 it.boxInfo = boxInfo
+                it.massProcessingBoxesNumber = massProcessingBoxesNumber
                 it.exciseStampInfo = exciseStampInfo
                 it.selectQualityCode = selectQualityCode
                 it.selectReasonRejectionCode = selectReasonRejectionCode
@@ -45,6 +49,7 @@ class ExciseAlcoBoxCardFragment : CoreFragment<FragmentExciseAlcoBoxCardBinding,
 
     private var productInfo by state<TaskProductInfo?>(null)
     private var boxInfo by state<TaskBoxInfo?>(null)
+    private var massProcessingBoxesNumber by state<List<String>?>(null)
     private var exciseStampInfo by state<TaskExciseStampInfo?>(null)
     private var selectQualityCode by state<String?>(null)
     private var selectReasonRejectionCode by state<String?>(null)
@@ -66,6 +71,9 @@ class ExciseAlcoBoxCardFragment : CoreFragment<FragmentExciseAlcoBoxCardBinding,
             boxInfo?.let {
                 vm.boxInfo.value = it
             }
+            massProcessingBoxesNumber?.let {
+                vm.massProcessingBoxesNumber.value = it
+            }
             exciseStampInfo?.let {
                 vm.exciseStampInfo.value = it
             }
@@ -75,7 +83,7 @@ class ExciseAlcoBoxCardFragment : CoreFragment<FragmentExciseAlcoBoxCardBinding,
 
     override fun setupTopToolBar(topToolbarUiModel: TopToolbarUiModel) {
         topToolbarUiModel.title.value = "${vm.productInfo.value?.getMaterialLastSix()} ${vm.productInfo.value?.description}"
-        topToolbarUiModel.description.value = "Карточка короба"
+        topToolbarUiModel.description.value = vm.getDescription()
     }
 
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
@@ -108,6 +116,11 @@ class ExciseAlcoBoxCardFragment : CoreFragment<FragmentExciseAlcoBoxCardBinding,
 
     override fun onScanResult(data: String) {
         vm.onScanResult(data)
+    }
+
+    override fun onBackPressed(): Boolean {
+        vm.onBackPressed()
+        return false
     }
 
 }

@@ -12,6 +12,7 @@ interface ITaskBoxesDiscrepanciesRepository {
     fun updateBoxesDiscrepancy(newBoxesDiscrepancies: List<TaskBoxDiscrepancies>)
     fun changeBoxDiscrepancy(discrepancy: TaskBoxDiscrepancies): Boolean
     fun deleteBoxDiscrepancies(discrepancies: TaskBoxDiscrepancies): Boolean
+    fun deleteBoxDiscrepancies(materialNumber: String, boxNumber: String, typeDiscrepancies: String): Boolean
     fun deleteBoxesDiscrepanciesForBox(delBox: TaskBoxInfo): Boolean
     fun clear()
 }

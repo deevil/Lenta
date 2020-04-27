@@ -60,9 +60,9 @@ class EditingInvoiceFragment : CoreFragment<FragmentEditingInvoiceBinding, Editi
                 if (vm.editingAvailable) {
                     bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.save)
                     if (it == 1) {
-                        bottomToolbarUiModel.uiModelButton3.show(ButtonDecorationInfo.restore)
+                        bottomToolbarUiModel.uiModelButton3.show(ButtonDecorationInfo.restore, enabled = vm.enabledRestoreDelBtn.value ?: false)
                     } else {
-                        bottomToolbarUiModel.uiModelButton3.show(ButtonDecorationInfo.delete)
+                        bottomToolbarUiModel.uiModelButton3.show(ButtonDecorationInfo.delete, enabled = vm.enabledRestoreDelBtn.value ?: false)
                     }
                     connectLiveData(vm.enabledRestoreDelBtn, bottomToolbarUiModel.uiModelButton3.enabled)
                 }

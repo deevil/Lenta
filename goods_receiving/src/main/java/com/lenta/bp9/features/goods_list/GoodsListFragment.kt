@@ -29,7 +29,6 @@ import com.lenta.shared.utilities.extentions.getFragmentResultCode
 class GoodsListFragment : CoreFragment<FragmentGoodsListBinding, GoodsListViewModel>(),
         ViewPagerSettings,
         OnScanResultListener,
-        PageSelectionListener,
         ToolbarButtonsClickListener,
         OnBackPresserListener,
         OnKeyDownListener {
@@ -77,10 +76,10 @@ class GoodsListFragment : CoreFragment<FragmentGoodsListBinding, GoodsListViewMo
             viewLifecycleOwner.apply {
                 vm.selectedPage.observe(this, Observer {
                     if (it == 0) {
-                        bottomToolbarUiModel.uiModelButton4.show(ButtonDecorationInfo.missing)
+                        bottomToolbarUiModel.uiModelButton4.show(ButtonDecorationInfo.missing, enabled = vm.enabledBtnMissingForShipmentPP.value ?: false)
                         connectLiveData(vm.enabledBtnMissingForShipmentPP, bottomToolbarUiModel.uiModelButton4.enabled)
                     } else {
-                        bottomToolbarUiModel.uiModelButton4.show(ButtonDecorationInfo.clean)
+                        bottomToolbarUiModel.uiModelButton4.show(ButtonDecorationInfo.clean, enabled = vm.enabledBtnCleanForShipmentPP.value ?: false)
                         connectLiveData(vm.enabledBtnCleanForShipmentPP, bottomToolbarUiModel.uiModelButton4.enabled)
                     }
                 })
@@ -91,7 +90,7 @@ class GoodsListFragment : CoreFragment<FragmentGoodsListBinding, GoodsListViewMo
             if (vm.isTaskPGE.value == false) {
                 bottomToolbarUiModel.uiModelButton2.show(ButtonDecorationInfo.refusal)
             }
-            bottomToolbarUiModel.uiModelButton3.show(ButtonDecorationInfo.clean)
+            bottomToolbarUiModel.uiModelButton3.show(ButtonDecorationInfo.clean, visible = vm.visibilityCleanButton.value ?: true, enabled = vm.enabledCleanButton.value ?: false)
             bottomToolbarUiModel.uiModelButton4.show(ButtonDecorationInfo.batches)
 
             connectLiveData(vm.visibilityCleanButton, bottomToolbarUiModel.uiModelButton3.visibility)
@@ -346,10 +345,6 @@ class GoodsListFragment : CoreFragment<FragmentGoodsListBinding, GoodsListViewMo
         } else {
             getString(if (position == 0) R.string.counted else R.string.without_barcode)
         }
-    }
-
-    override fun onPageSelected(position: Int) {
-        vm.onPageSelected(position)
     }
 
     override fun countTab(): Int {

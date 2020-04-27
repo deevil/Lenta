@@ -65,11 +65,15 @@ class MemoryTaskBoxesDiscrepanciesRepository : ITaskBoxesDiscrepanciesRepository
     }
 
     override fun deleteBoxDiscrepancies(discrepancies: TaskBoxDiscrepancies): Boolean {
+        return deleteBoxDiscrepancies(discrepancies.materialNumber, discrepancies.boxNumber, discrepancies.typeDiscrepancies)
+    }
+
+    override fun deleteBoxDiscrepancies(materialNumber: String, boxNumber: String, typeDiscrepancies: String): Boolean {
         boxesDiscrepancies.map { it }.filter {boxDiscrepancies ->
-            if (discrepancies.materialNumber == boxDiscrepancies.materialNumber &&
-                    discrepancies.boxNumber == boxDiscrepancies.boxNumber &&
-                    discrepancies.typeDiscrepancies == boxDiscrepancies.typeDiscrepancies) {
-                boxesDiscrepancies.remove(discrepancies)
+            if (materialNumber == boxDiscrepancies.materialNumber &&
+                    boxNumber == boxDiscrepancies.boxNumber &&
+                    typeDiscrepancies == boxDiscrepancies.typeDiscrepancies) {
+                boxesDiscrepancies.remove(boxDiscrepancies)
                 return@filter true
             }
             return@filter false
