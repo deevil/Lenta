@@ -91,12 +91,8 @@ class GoodInfoOpenViewModel : CoreViewModel() {
     }
 
     private val totalQuantity by lazy {
-        quantity.map {
-            val quantity = it?.toDoubleOrNull() ?: 0.0
-            val total = good.value?.getTotalQuantity() ?: 0.0
-            val isCounted = position.value?.isCounted == true
-
-            quantity.sumWith(if (isCounted) total.subWith(quantity) else total)
+        quantity.map {quantity ->
+            quantity?.toDoubleOrNull().sumWith(good.value?.getTotalQuantity())
         }
     }
 
@@ -350,7 +346,12 @@ class GoodInfoOpenViewModel : CoreViewModel() {
     private fun saveGoodInTask() {
         good.value?.let { good ->
             val quantity = quantity.value?.toDoubleOrNull() ?: 0.0
-            good.addPosition(quantity, task.value!!.provider, category.value!!)
+
+            if (position.value?.isCounted == true) {
+                good.replacePosition(quantity, task.value!!.provider, category.value!!)
+            } else {
+                good.addPosition(quantity, task.value!!.provider, category.value!!)
+            }
 
             manager.updateCurrentGood(good)
         }

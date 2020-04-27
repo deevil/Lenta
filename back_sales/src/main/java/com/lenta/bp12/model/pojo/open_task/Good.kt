@@ -52,6 +52,21 @@ data class Good(
         ))
     }
 
+    fun replacePosition(quantity: Double, provider: ProviderInfo, category: Category) {
+        val position = positions.find { it.provider.code == provider.code }
+
+        if (position != null) {
+            positions.remove(position)
+        }
+
+        positions.add(0, Position(
+                quantity = quantity,
+                provider = provider,
+                category = category,
+                isCounted = true
+        ))
+    }
+
     fun getTotalQuantity(): Double {
         return positions.map { it.quantity }.sumList()
     }
