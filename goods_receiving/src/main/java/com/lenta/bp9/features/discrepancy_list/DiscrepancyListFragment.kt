@@ -6,6 +6,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
 import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Observer
 import com.lenta.bp9.BR
 import com.lenta.bp9.R
 import com.lenta.bp9.databinding.*
@@ -18,6 +20,7 @@ import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListener
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
+import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.databinding.*
 import com.lenta.shared.utilities.extentions.connectLiveData
 import com.lenta.shared.utilities.extentions.provideViewModel
@@ -25,7 +28,6 @@ import com.lenta.shared.utilities.state.state
 
 class DiscrepancyListFragment : CoreFragment<FragmentDiscrepancyListBinding, DiscrepancyListViewModel>(),
         ViewPagerSettings,
-        PageSelectionListener,
         ToolbarButtonsClickListener {
 
     private var notProcessedRecyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
@@ -49,7 +51,7 @@ class DiscrepancyListFragment : CoreFragment<FragmentDiscrepancyListBinding, Dis
 
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
         bottomToolbarUiModel.uiModelButton1.show(ButtonDecorationInfo.back)
-        bottomToolbarUiModel.uiModelButton3.show(ButtonDecorationInfo.clean)
+        bottomToolbarUiModel.uiModelButton3.show(ButtonDecorationInfo.clean, visible = vm.visibilityCleanButton.value ?: false, enabled = vm.enabledCleanButton.value ?: false)
         bottomToolbarUiModel.uiModelButton4.show(ButtonDecorationInfo.batches)
         bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.save)
 
@@ -234,10 +236,6 @@ class DiscrepancyListFragment : CoreFragment<FragmentDiscrepancyListBinding, Dis
 
     override fun countTab(): Int {
         return if (vm.isAlco.value == true) 3 else 2
-    }
-
-    override fun onPageSelected(position: Int) {
-        vm.onPageSelected(position)
     }
 
     override fun onResume() {

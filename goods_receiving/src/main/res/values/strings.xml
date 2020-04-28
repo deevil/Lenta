@@ -128,7 +128,7 @@
     <string name="supply_results_automatic_charge_error">Автосписание не прошло, для дальнейшей обработки задания необходимо завершить автосписание через SAP ERP</string>
     <string name="batch_with_bottling_date">Партия (%1$s) с датой розлива</string>
     <string name="alert_overlimit">Введенное количество больше планового. Измените количество.</string>
-    <string name="stamp_control">Контроль марок в кор.</string>
+    <string name="stamp_control_in_box">Контроль марок в кор.</string>
     <string name="bottling_date">Дата розлива</string>
     <string name="general_shelf_life">Общий СГ</string>
     <string name="remaining_shelf_life">Остаточный СГ</string>
@@ -259,7 +259,7 @@
     <string name="plan">План</string>
     <string name="alert_unable_to_save_negative_quantity">Невозможно сохранить отрицательное количество</string>
     <string name="dialog_submerged_ge">Были погружены %1$s ГЕ. На непогруженные ГЕ будет создано новое задание на отгрузку.</string>
-    <string name="box_control">Контроль коробов</string>
+    <string name="boxes_control">Контроль коробов</string>
     <string name="box_list">Список коробов</string>
     <string name="not_required">Не требуется</string>
     <string name="box_number">Номер коробки</string>
@@ -272,4 +272,20 @@
     <string name="must_enter_quantity">Необходимо ввести количество</string>
     <string name="scanned_box_not_listed_in_current_delivery">Отсканированная коробка не числится в задании. Отдайте коробку поставщику.</string>
     <string name="scanned_box_belongs_to_another_product">Отсканированная коробка принадлежит товару \"%1$s\" \"%2$s\"</string>
+    <string name="date_of_entry">Дата ввоза</string>
+    <string name="stamps_control">Контроль марок</string>
+    <string name="box_control">Контроль короба</string>
+    <string name="invalid_barcode_format_scanned">Отсканирован неверный формат ШК</string>
+    <string name="scanned_stamp_not_listed_in_current_delivery_box">Марка не найдена в поставке. Верните товар поставщику. Отсканированная марка будет помечена как проблемная</string>
+    <string name="scanned_stamp_is_already_processed">АМ уже обработана</string>
+    <string name="discrepancy_scanned_mark_current_box">Отсканированная марка числится в коробке %1$s. Пометить текущую коробку %1$s в коробку %2$s как \"%3$s\"?</string>
+    <string name="box_not_found_in_delivery">Коробка не найдена в поставке.</string>
+    <string name="no_box_selection_required">По товару \"%1$s\" \"%2$s\" было выбрано все свободное количество, выбор коробок не требуется</string>
+    <string name="alert_more_boxes_selected_than_entered">Выбрано больше элементов, чем введено</string>
+    <string name="bulk_box_processing">Массовая обработка коробов</string>
+    <string name="norm_control_performed">Контроль нормы выполнен</string>
+    <string name="norm_control">Контроль нормы.</string>
+    <string name="box_abbreviated">кор.</string>
+    <string name="accounting_for_marriage">Учет брака.</string>
+    <string name="accounting_of_marriage_completed">Учет брака выполнен</string>
 </resources>

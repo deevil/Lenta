@@ -23,6 +23,5 @@ abstract class CoreAuthViewModel : CoreViewModel() {
                 }
             }
         }
-        //login.postValue(data)
     }
 }

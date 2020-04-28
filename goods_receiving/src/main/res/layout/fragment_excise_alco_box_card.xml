@@ -52,6 +52,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
             android:layout_marginEnd="8dp"
+            android:enabled="@{vm.enabledSpinCategorySubcategory.booleanValue()}"
             app:items="@{vm.spinQuality}"
             app:position="@{vm.spinQualitySelectedPosition}"
             app:layout_constraintBottom_toBottomOf="@+id/et_inventory"
@@ -119,7 +120,7 @@
                 android:layout_marginStart="8dp"
                 android:layout_marginEnd="8dp"
                 android:ellipsize="end"
-                android:text="@string/stamp_control"
+                android:text="@string/stamps_control"
                 app:layout_constraintBottom_toBottomOf="@+id/checkBox_stamp_control"
                 app:layout_constraintEnd_toStartOf="@+id/div_vert2"
                 app:layout_constraintStart_toStartOf="parent"
@@ -175,21 +176,6 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="@+id/checkBox_box_control" />
 
-            <TextView
-                android:id="@+id/tv_box_control_val"
-                style="@style/TextTitle"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginEnd="8dp"
-                android:ellipsize="end"
-                android:maxLines="1"
-                android:text="@{vm.tvBoxControlVal}"
-                app:layout_constraintBottom_toBottomOf="@+id/checkBox_box_control"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/checkBox_box_control"
-                app:layout_constraintTop_toTopOf="@+id/checkBox_box_control" />
-
             <CheckBox
                 android:id="@+id/checkBox_box_control"
                 android:layout_width="wrap_content"
@@ -243,7 +229,7 @@
                 android:layout_marginStart="8dp"
                 android:layout_marginEnd="8dp"
                 android:ellipsize="end"
-                android:text="@string/bottling_date"
+                android:text="@{vm.tvBottlingDate}"
                 app:layout_constraintBottom_toBottomOf="@+id/spinner_bottling_date"
                 app:layout_constraintEnd_toStartOf="@+id/div_vert3"
                 app:layout_constraintStart_toStartOf="parent"
@@ -302,6 +288,7 @@
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="8dp"
                 android:layout_marginEnd="8dp"
+                android:enabled="@{vm.enabledSpinCategorySubcategory.booleanValue()}"
                 app:items="@{vm.spinReasonRejection}"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -327,15 +314,15 @@
             android:layout_width="36sp"
             android:layout_height="36sp"
             android:layout_marginStart="8dp"
+            android:layout_marginBottom="16dp"
             android:clickable="true"
             android:focusable="true"
             android:foreground="?selectableItemBackground"
             android:gravity="center"
             android:onClick="@{(v) -> vm.screenNavigator.openSectionInfoScreen(vm.productInfo.sectionId)}"
             android:text='@{"" + vm.productInfo.sectionId}'
-            app:layout_constraintBottom_toBottomOf="@+id/b_scan_es"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/b_scan_es"
             tools:text="02" />
 
         <ImageButton
@@ -344,9 +331,9 @@
             android:layout_height="wrap_content"
             android:background="?selectableItemBackground"
             app:alcoIcon="@{vm.productInfo.type}"
-            app:layout_constraintBottom_toBottomOf="@+id/b_scan_es"
+            app:layout_constraintBottom_toBottomOf="@+id/tv_section"
             app:layout_constraintStart_toEndOf="@+id/tv_section"
-            app:layout_constraintTop_toTopOf="@+id/b_scan_es"
+            app:layout_constraintTop_toTopOf="@+id/tv_section"
             tools:src="@drawable/ic_excise_white_48dp" />
 
         <ImageButton
@@ -358,9 +345,9 @@
             android:onClick="@{(v) -> vm.screenNavigator.openBoxInfoScreen()}"
             android:padding="4dp"
             android:src="@drawable/is_scan_box"
-            app:layout_constraintBottom_toBottomOf="@+id/b_scan_es"
+            app:layout_constraintBottom_toBottomOf="@+id/tv_section"
             app:layout_constraintEnd_toStartOf="@+id/b_scan_es"
-            app:layout_constraintTop_toTopOf="@+id/b_scan_es"
+            app:layout_constraintTop_toTopOf="@+id/tv_section"
             tools:visibility="visible" />
 
         <ImageButton
@@ -368,13 +355,14 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="8dp"
-            android:layout_marginBottom="8dp"
             android:background="?selectableItemBackground"
             android:onClick="@{(v) -> vm.screenNavigator.openESInfoScreen()}"
             android:padding="4dp"
+            android:visibility="@{!vm.isDefect}"
             android:src="@drawable/is_scan_barcode_es"
-            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintBottom_toBottomOf="@+id/tv_section"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/tv_section"
             tools:visibility="visible" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>

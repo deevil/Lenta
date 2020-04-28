@@ -15,6 +15,8 @@ data class GoodsDiscrepancyItem(
         val productInfo: TaskProductInfo?,
         val productDiscrepancies: TaskProductDiscrepancies?,
         val batchInfo: TaskBatchInfo?,
+        val checkBoxControl: Boolean,
+        val checkStampControl: Boolean,
         val even: Boolean
 ) : Evenable {
     override fun isEven() = even

@@ -168,7 +168,7 @@
             android:layout_marginEnd="8dp"
             android:ellipsize="end"
             android:maxLines="1"
-            android:text="@string/stamp_control"
+            android:text="@string/stamp_control_in_box"
             app:layout_constraintBottom_toBottomOf="@+id/tv_stamp_control_val"
             app:layout_constraintEnd_toStartOf="@+id/div_vert"
             app:layout_constraintStart_toStartOf="parent"

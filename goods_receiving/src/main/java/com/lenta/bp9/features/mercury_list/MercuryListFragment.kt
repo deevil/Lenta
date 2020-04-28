@@ -69,10 +69,10 @@ class MercuryListFragment : CoreFragment<FragmentMercuryListBinding, MercuryList
         viewLifecycleOwner.apply {
             vm.selectedPage.observe(this, Observer {
                 if (it == 0) {
-                    bottomToolbarUiModel.uiModelButton2.show(ButtonDecorationInfo.untie)
+                    bottomToolbarUiModel.uiModelButton2.show(ButtonDecorationInfo.untie, enabled = vm.untiedEnabled.value ?: false)
                     connectLiveData(vm.untiedEnabled, bottomToolbarUiModel.uiModelButton2.enabled)
                 } else {
-                    bottomToolbarUiModel.uiModelButton2.show(ButtonDecorationInfo.tied)
+                    bottomToolbarUiModel.uiModelButton2.show(ButtonDecorationInfo.tied, enabled = vm.tiedEnabled.value ?: false)
                     connectLiveData(vm.tiedEnabled, bottomToolbarUiModel.uiModelButton2.enabled)
                 }
             })
