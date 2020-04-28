@@ -1,9 +1,7 @@
 package com.lenta.bp9.features.goods_information.general
 
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import android.widget.AdapterView
 import com.lenta.bp9.R
 import com.lenta.bp9.databinding.FragmentGoodsInfoBinding
@@ -24,7 +22,8 @@ import com.lenta.shared.utilities.state.state
 
 class GoodsInfoFragment : CoreFragment<FragmentGoodsInfoBinding, GoodsInfoViewModel>(),
         ToolbarButtonsClickListener,
-        OnScanResultListener {
+        OnScanResultListener,
+        OnBackPresserListener {
 
     companion object {
         fun create(productInfo: TaskProductInfo, isDiscrepancy: Boolean, initialCount: Double = 0.0): GoodsInfoFragment {
@@ -104,6 +103,11 @@ class GoodsInfoFragment : CoreFragment<FragmentGoodsInfoBinding, GoodsInfoViewMo
         }
 
         DateInputMask(binding?.etShelfLife!!).listen()
+    }
+
+    override fun onBackPressed(): Boolean {
+        vm.onBackPressed()
+        return false
     }
 
 }
