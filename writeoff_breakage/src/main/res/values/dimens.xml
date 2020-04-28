@@ -1,0 +1,13 @@
+<resources>
+
+    <!-- № / Наименование -->
+    <integer name="number_name_1">30</integer>
+    <integer name="number_name_2">70</integer>
+
+    <!-- № / Наименование / Количество -->
+    <integer name="number_name_quantity_1">15</integer>
+    <integer name="number_name_quantity_2">60</integer>
+    <integer name="number_name_quantity_3">25</integer>
+
+
+</resources>
