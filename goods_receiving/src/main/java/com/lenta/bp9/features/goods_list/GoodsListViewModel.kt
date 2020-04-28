@@ -39,8 +39,6 @@ class GoodsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKey
     @Inject
     lateinit var searchProductDelegate: SearchProductDelegate
     @Inject
-    lateinit var skipRecountNetRequest: SkipRecountNetRequest
-    @Inject
     lateinit var hyperHive: HyperHive
 
     val selectedPage = MutableLiveData(0)
@@ -333,7 +331,7 @@ class GoodsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKey
 
     fun onClickThirdBtn() {
         if (taskType.value == TaskType.ShipmentPP) {//https://trello.com/c/3WVovfmE
-            shipmentSkipRecount()
+            screenNavigator.openSkipRecountScreen()
         } else {
             if (!isBatches.value!!) {
                 countedSelectionsHelper.selectedPositions.value?.map { position ->
@@ -365,20 +363,6 @@ class GoodsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKey
                 }
             }
             updateData()
-        }
-    }
-
-    private fun shipmentSkipRecount() {
-        viewModelScope.launch {
-            screenNavigator.showProgress(context.getString(R.string.skipping_recount))
-            val params = SkipRecountParameters(
-                    taskNumber = taskManager.getReceivingTask()?.taskHeader?.taskNumber ?: "",
-                    deviceIP = context.getDeviceIp(),
-                    personalNumber = sessionInfo.personnelNumber ?: "",
-                    comment = ""
-            )
-            skipRecountNetRequest(params).either(::handleFailure, ::handleSuccessSkipRecount)
-            screenNavigator.hideProgress()
         }
     }
 
