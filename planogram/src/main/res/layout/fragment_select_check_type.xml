@@ -46,7 +46,7 @@
                 android:maxLines="1"
                 android:onClick="@{() -> vm.onClickSelfControl()}"
                 android:text="@string/self_control_tc"
-                app:icon="@drawable/ic_search_white_24dp"/>
+                app:icon="@drawable/ic_loupe_white_24dp"/>
 
             <Button
                 android:id="@+id/btn_external_audit"

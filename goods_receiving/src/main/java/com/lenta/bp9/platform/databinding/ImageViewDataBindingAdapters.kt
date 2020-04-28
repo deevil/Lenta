@@ -89,7 +89,7 @@ fun TaskPostponedStatus.getIconRes(): Int? {
     return when (this) {
         TaskPostponedStatus.PauseSign -> R.drawable.ic_pause_dark_24dp
         TaskPostponedStatus.PlaySign -> R.drawable.ic_play_arrow_dark_24dp
-        TaskPostponedStatus.Breaking -> R.drawable.ic_seal_24dp
+        TaskPostponedStatus.Breaking -> R.drawable.ic_seal_white_24dp
         else -> null
     }
 }
@@ -132,7 +132,7 @@ fun ConditionViewType.getIconRes(): Int? {
     return when (this) {
         ConditionViewType.Temperature -> R.drawable.ic_temperature
         ConditionViewType.Simple -> R.drawable.ic_simple_delivery_doc
-        ConditionViewType.Seal -> R.drawable.ic_seal_24dp
+        ConditionViewType.Seal -> R.drawable.ic_seal_white_24dp
         else -> null
     }
 }
