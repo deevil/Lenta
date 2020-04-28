@@ -109,7 +109,6 @@ class TaskCompositionFragment : CoreFragment<FragmentTaskCompositionBinding, Tas
                                 it.selectPosition(position)
                             }
                         }
-
                     }
             )
 
@@ -163,7 +162,6 @@ class TaskCompositionFragment : CoreFragment<FragmentTaskCompositionBinding, Tas
                                 it.selectPosition(position)
                             }
                         }
-
                     }
             )
 

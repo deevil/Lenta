@@ -210,7 +210,6 @@ class GoodInfoCreateViewModel : CoreViewModel() {
 
     val dateEnabled = MutableLiveData(true)
 
-
     val applyEnabled by lazy {
         quantity.map { quantity ->
             good.value?.let { good ->
