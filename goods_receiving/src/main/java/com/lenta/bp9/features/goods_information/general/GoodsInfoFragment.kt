@@ -6,6 +6,7 @@ import android.widget.AdapterView
 import com.lenta.bp9.R
 import com.lenta.bp9.databinding.FragmentGoodsInfoBinding
 import com.lenta.bp9.model.task.TaskProductInfo
+import com.lenta.bp9.model.task.TaskType
 import com.lenta.bp9.platform.extentions.getAppComponent
 import com.lenta.shared.platform.activity.OnBackPresserListener
 import com.lenta.shared.platform.fragment.CoreFragment
@@ -26,11 +27,12 @@ class GoodsInfoFragment : CoreFragment<FragmentGoodsInfoBinding, GoodsInfoViewMo
         OnBackPresserListener {
 
     companion object {
-        fun create(productInfo: TaskProductInfo, isDiscrepancy: Boolean, initialCount: Double = 0.0): GoodsInfoFragment {
+        fun create(productInfo: TaskProductInfo, isDiscrepancy: Boolean, initialCount: Double = 0.0, taskType: TaskType): GoodsInfoFragment {
             GoodsInfoFragment().let {
                 it.productInfo = productInfo
                 it.isDiscrepancy = isDiscrepancy
                 it.initialCount = initialCount
+                it.taskType = taskType
                 return it
             }
         }
@@ -39,10 +41,11 @@ class GoodsInfoFragment : CoreFragment<FragmentGoodsInfoBinding, GoodsInfoViewMo
     private var isDiscrepancy by state<Boolean?>(null)
     private var productInfo by state<TaskProductInfo?>(null)
     private var initialCount by state<Double>(0.0)
+    private var taskType: TaskType = TaskType.None
 
     override fun getLayoutId(): Int = R.layout.fragment_goods_info
 
-    override fun getPageNumber(): String = "09/16"
+    override fun getPageNumber(): String = if (this.taskType == TaskType.ShipmentPP) "09/113" else "09/16" //https://trello.com/c/QJHtAO6F
 
     override fun getViewModel(): GoodsInfoViewModel {
         provideViewModel(GoodsInfoViewModel::class.java).let {vm ->

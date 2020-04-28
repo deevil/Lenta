@@ -445,7 +445,7 @@ class GoodsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKey
                 it
             } ?: 0.0
 
-            if (countProductNotProcessed > 0.0 && taskType.value != TaskType.ShipmentPP) { //https://trello.com/c/3WVovfmE если это ОПП, то мы сразу переходим к сохранению (условию else)
+            if (countProductNotProcessed > 0.0) {
                 screenNavigator.openDiscrepancyListScreen()
             } else {
                 screenNavigator.showProgressLoadingData()
