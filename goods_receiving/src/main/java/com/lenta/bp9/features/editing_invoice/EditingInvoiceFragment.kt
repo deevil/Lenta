@@ -7,6 +7,8 @@ import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
 import com.lenta.shared.utilities.extentions.provideViewModel
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.LayoutInflater
 import com.lenta.shared.utilities.databinding.ViewPagerSettings
 import android.view.ViewGroup
@@ -21,6 +23,8 @@ import com.lenta.shared.keys.KeyCode
 import com.lenta.shared.keys.OnKeyDownListener
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListener
+import com.lenta.shared.platform.viewmodel.CoreViewModel
+import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.databinding.DataBindingAdapter
 import com.lenta.shared.utilities.databinding.DataBindingRecyclerViewConfig
 import com.lenta.shared.utilities.databinding.RecyclerViewKeyHandler
@@ -104,7 +108,12 @@ class EditingInvoiceFragment : CoreFragment<FragmentEditingInvoiceBinding, Editi
                                         override fun onBind(binding: ItemTileEditingInvoiceTotalBinding, position: Int) {
                                             binding.tvCounter.tag = position
                                             binding.tvCounter.setOnClickListener(onClickSelectionListener)
-                                            binding.etQuantity.setOnEditorActionListener { v, actionId, event ->
+                                            binding.etQuantity.setOnFocusChangeListener { v, hasFocus ->
+                                                if (!hasFocus) {
+                                                    vm.finishedInput(position)
+                                                }
+                                            }
+                                            /**binding.etQuantity.setOnEditorActionListener { v, actionId, event ->
                                                 when(actionId) {
                                                     EditorInfo.IME_ACTION_NEXT -> {
                                                         vm.finishedInput(position)
@@ -112,7 +121,7 @@ class EditingInvoiceFragment : CoreFragment<FragmentEditingInvoiceBinding, Editi
                                                     }
                                                     else -> return@setOnEditorActionListener false
                                                 }
-                                            }
+                                            }*/
                                             binding.selectedForDelete = vm.totalSelectionsHelper.isSelected(position)
                                             totalRecyclerViewKeyHandler?.let {
                                                 binding.root.isSelected = it.isSelected(position)
