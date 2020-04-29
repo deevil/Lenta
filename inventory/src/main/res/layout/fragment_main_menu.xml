@@ -61,7 +61,7 @@
             android:onClick="@{(view) -> vm.onClickWorkWithTask()}"
             android:text="@string/work_with_tasks"
             android:textAllCaps="false"
-            app:icon="@drawable/ic_detail"
+            app:icon="@drawable/ic_detail_white_32dp"
             app:iconGravity="end"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
