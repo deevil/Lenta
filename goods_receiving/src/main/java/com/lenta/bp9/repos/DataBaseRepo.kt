@@ -100,6 +100,10 @@ class DataBaseRepo(
         zmpUtz14V001.getParamGrzRoundHeapRatio()
     }
 
+    override suspend fun getParamGrzCrGrundcat(): String? = withContext(Dispatchers.IO) {
+        zmpUtz14V001.getGrzCrGrundcat()
+    }
+
     override suspend fun getExclusionFromIntegration(): List<QualityInfo>? = withContext(Dispatchers.IO) {
         zmpUtz17V001.getAllQuality()?.toQualityInfoList()?.filter {
             it.id == "016"
@@ -171,6 +175,18 @@ class DataBaseRepo(
             it.id == "006" && it.code == "4"
         }
     }
+
+    override suspend fun getQualityBoxesDefectInfo(): List<QualityInfo>? = withContext(Dispatchers.IO) {
+        zmpUtz17V001.getAllQuality()?.toQualityInfoList()?.filter {
+            it.id == "005" && it.code != "4"
+        }
+    }
+
+    override suspend fun getGrzCrGrundcatName(code: String): String? = withContext(Dispatchers.IO) {
+        zmpUtz20V001.getAllReasonRejection()?.toReasonRejectionInfoList()?.findLast {
+            it.code == code
+        }?.name
+    }
 }
 
 interface IDataBaseRepo {
@@ -191,6 +207,7 @@ interface IDataBaseRepo {
     suspend fun getParamGrzRoundLackRatio(): String?
     suspend fun getParamGrzRoundLackUnit(): String?
     suspend fun getParamGrzRoundHeapRatio(): String?
+    suspend fun getParamGrzCrGrundcat(): String?
     suspend fun getExclusionFromIntegration(): List<QualityInfo>?
     suspend fun getAllStatusInfoForPRC(): List<QualityInfo>?
     suspend fun getStatusInfoForPRC(): List<QualityInfo>?
@@ -203,4 +220,6 @@ interface IDataBaseRepo {
     suspend fun getFailureReasons(): List<QualityInfo>?
     suspend fun getStatusInfoShipmentRC(): List<QualityInfo>?
     suspend fun getQualityInfoTransportMarriage(): List<QualityInfo>?
+    suspend fun getQualityBoxesDefectInfo(): List<QualityInfo>?
+    suspend fun getGrzCrGrundcatName(code: String): String?
 }

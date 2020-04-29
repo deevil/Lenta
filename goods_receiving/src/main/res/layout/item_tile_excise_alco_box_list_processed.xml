@@ -109,6 +109,8 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:enabled="false"
+            android:visibility="@{!vm.isDefectiveBox}"
+            android:checked="@{vm.checkBoxControl}"
             app:layout_constraintBottom_toBottomOf="@+id/tv_counter"
             app:layout_constraintStart_toEndOf="@+id/div_vert2"
             app:layout_constraintTop_toTopOf="@+id/tv_counter" />
@@ -119,9 +121,27 @@
             android:layout_height="wrap_content"
             android:layout_marginEnd="16dp"
             android:enabled="false"
+            android:visibility="@{!vm.isDefectiveBox}"
+            android:checked="@{vm.checkStampControl}"
             app:layout_constraintBottom_toBottomOf="@+id/tv_counter"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="@+id/tv_counter" />
+
+        <ImageView
+            android:id="@+id/iv_defective_box"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"
+            android:src="@drawable/ic_defective_box"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="@+id/vertical_guidline_2"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_goneMarginStart="8dp"
+            app:visibleOrGone='@{vm.isDefectiveBox}'
+            tools:src="@drawable/ic_defective_box" />
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>

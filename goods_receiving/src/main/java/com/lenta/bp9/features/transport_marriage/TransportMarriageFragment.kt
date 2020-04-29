@@ -59,7 +59,7 @@ class TransportMarriageFragment : CoreFragment<FragmentTransportMarriageBinding,
                 if (it == 0) {
                     bottomToolbarUiModel.uiModelButton3.clean()
                 } else {
-                    bottomToolbarUiModel.uiModelButton3.show(ButtonDecorationInfo.delete)
+                    bottomToolbarUiModel.uiModelButton3.show(ButtonDecorationInfo.delete, enabled = vm.deleteButtonEnabled.value ?: false)
                     connectLiveData(vm.deleteButtonEnabled, bottomToolbarUiModel.uiModelButton3.enabled)
                 }
             })

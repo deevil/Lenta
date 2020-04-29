@@ -16,28 +16,39 @@ import androidx.lifecycle.Observer
 import com.lenta.bp9.BR
 import com.lenta.bp9.databinding.*
 import com.lenta.bp9.model.task.TaskProductInfo
+import com.lenta.shared.keys.KeyCode
+import com.lenta.shared.keys.OnKeyDownListener
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListener
 import com.lenta.shared.scan.OnScanResultListener
+import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.databinding.*
+import com.lenta.shared.utilities.extentions.connectLiveData
 import com.lenta.shared.utilities.state.state
 
 class ExciseAlcoBoxListFragment : CoreFragment<FragmentExciseAlcoBoxListBinding, ExciseAlcoBoxListViewModel>(),
         ViewPagerSettings,
         PageSelectionListener,
         ToolbarButtonsClickListener,
-        OnScanResultListener {
+        OnScanResultListener,
+        OnKeyDownListener {
 
     companion object {
-        fun create(productInfo: TaskProductInfo): ExciseAlcoBoxListFragment {
+        fun create(productInfo: TaskProductInfo, selectQualityCode: String, selectReasonRejectionCode: String?, initialCount: String): ExciseAlcoBoxListFragment {
             ExciseAlcoBoxListFragment().let {
                 it.productInfo = productInfo
+                it.selectQualityCode = selectQualityCode
+                it.selectReasonRejectionCode = selectReasonRejectionCode
+                it.initialCount = initialCount
                 return it
             }
         }
     }
 
     private var productInfo by state<TaskProductInfo?>(null)
+    private var selectQualityCode by state<String?>(null)
+    private var selectReasonRejectionCode by state<String?>(null)
+    private var initialCount by state<String?>(null)
 
     private var notProcessedRecyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
 
@@ -49,30 +60,40 @@ class ExciseAlcoBoxListFragment : CoreFragment<FragmentExciseAlcoBoxListBinding,
         provideViewModel(ExciseAlcoBoxListViewModel::class.java).let {vm ->
             getAppComponent()?.inject(vm)
             vm.productInfo.value = productInfo
+            vm.selectQualityCode.value = this.selectQualityCode
+            vm.initialCount.value = this.initialCount
+            selectReasonRejectionCode?.let {
+                vm.selectReasonRejectionCode.value = it
+            }
             return vm
         }
     }
 
     override fun setupTopToolBar(topToolbarUiModel: TopToolbarUiModel) {
         topToolbarUiModel.title.value = "${vm.productInfo.value?.getMaterialLastSix()} ${vm.productInfo.value?.description}"
-        topToolbarUiModel.description.value = "Список коробов"
+        topToolbarUiModel.description.value = vm.getDescription() //"Список коробов"
     }
 
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
         bottomToolbarUiModel.uiModelButton1.show(ButtonDecorationInfo.back)
+        bottomToolbarUiModel.uiModelButton3.show(ButtonDecorationInfo.clean, visible = vm.visibilityCleanButton.value ?: false, enabled = vm.enabledCleanButton.value ?: false)
+        bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.apply)
+
+        connectLiveData(vm.visibilityCleanButton, bottomToolbarUiModel.uiModelButton3.visibility)
+        connectLiveData(vm.enabledCleanButton, bottomToolbarUiModel.uiModelButton3.enabled)
+        connectLiveData(vm.enabledHandleGoodsButton, bottomToolbarUiModel.uiModelButton4.enabled)
+
         viewLifecycleOwner.apply {
             vm.selectedPage.observe(this, Observer {
-                bottomToolbarUiModel.uiModelButton2.clean()
-                bottomToolbarUiModel.uiModelButton4.clean()
                 if (it == 0) {
-                    bottomToolbarUiModel.uiModelButton2.show(ButtonDecorationInfo.selectAll)
-                    bottomToolbarUiModel.uiModelButton4.show(ButtonDecorationInfo.handleGoods)
+                    bottomToolbarUiModel.uiModelButton2.show(ButtonDecorationInfo.selectAll, enabled = selectQualityCode != "1")
+                    bottomToolbarUiModel.uiModelButton4.show(ButtonDecorationInfo.handleGoods, enabled = selectQualityCode != "1" && vm.enabledHandleGoodsButton.value == true)
                 } else {
-                    bottomToolbarUiModel.uiModelButton2.show(ButtonDecorationInfo.clean)
+                    bottomToolbarUiModel.uiModelButton2.clean()
+                    bottomToolbarUiModel.uiModelButton4.clean()
                 }
             })
         }
-        bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.apply)
 
     }
 
@@ -84,6 +105,13 @@ class ExciseAlcoBoxListFragment : CoreFragment<FragmentExciseAlcoBoxListBinding,
                             container,
                             false).let { layoutBinding ->
 
+                        val onClickSelectionListener = View.OnClickListener {
+                            (it!!.tag as Int).let { position ->
+                                vm.notProcessedSelectionsHelper.revert(position = position)
+                                layoutBinding.rv.adapter?.notifyItemChanged(position)
+                            }
+                        }
+
                         layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
                                 layoutId = R.layout.item_tile_excis_alco_box_list_not_processed,
                                 itemId = BR.vm,
@@ -92,6 +120,9 @@ class ExciseAlcoBoxListFragment : CoreFragment<FragmentExciseAlcoBoxListBinding,
                                     }
 
                                     override fun onBind(binding: ItemTileExcisAlcoBoxListNotProcessedBinding, position: Int) {
+                                        binding.tvCounter.tag = position
+                                        binding.tvCounter.setOnClickListener(onClickSelectionListener)
+                                        binding.selectedItem = if (vm.isSelectAll.value == true) true else vm.notProcessedSelectionsHelper.isSelected(position)
                                         notProcessedRecyclerViewKeyHandler?.let {
                                             binding.root.isSelected = it.isSelected(position)
                                         }
@@ -159,7 +190,8 @@ class ExciseAlcoBoxListFragment : CoreFragment<FragmentExciseAlcoBoxListBinding,
 
     override fun onToolbarButtonClick(view: View) {
         when (view.id) {
-            R.id.b_2 -> vm.onClickSecondBtn()
+            R.id.b_2 -> vm.onClickSelectAll()
+            R.id.b_3 -> vm.onClickClean()
             R.id.b_4 -> vm.onClickHandleGoods()
             R.id.b_5 -> vm.onClickApply()
         }
@@ -187,5 +219,22 @@ class ExciseAlcoBoxListFragment : CoreFragment<FragmentExciseAlcoBoxListBinding,
         vm.onResume()
     }
 
+    override fun onKeyDown(keyCode: KeyCode): Boolean {
+        when (vm.selectedPage.value) {
+            0 -> notProcessedRecyclerViewKeyHandler
+            1 -> notProcessedRecyclerViewKeyHandler
+            else -> null
+        }?.let {
+            if (!it.onKeyDown(keyCode)) {
+                keyCode.digit?.let { digit ->
+                    vm.onDigitPressed(digit)
+                    return true
+                }
+                return false
+            }
+            return true
+        }
+        return false
+    }
 
 }

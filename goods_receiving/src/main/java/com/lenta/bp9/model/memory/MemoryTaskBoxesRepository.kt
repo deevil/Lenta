@@ -16,8 +16,8 @@ class MemoryTaskBoxesRepository : ITaskBoxesRepository {
         return boxes.firstOrNull { it.boxNumber == box.boxNumber}
     }
 
-    override fun findBoxOfProduct(productInfo: TaskProductInfo): TaskBoxInfo? {
-        return boxes.firstOrNull { it.materialNumber == productInfo.materialNumber}
+    override fun findBoxesOfProduct(productInfo: TaskProductInfo): List<TaskBoxInfo>? {
+        return boxes.filter { it.materialNumber == productInfo.materialNumber}
     }
 
     override fun addBox(box: TaskBoxInfo): Boolean {

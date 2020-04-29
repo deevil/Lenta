@@ -19,8 +19,10 @@ import com.lenta.shared.models.core.ProductType
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.requests.combined.scan_info.ScanInfoResult
 import com.lenta.shared.requests.combined.scan_info.pojo.QualityInfo
+import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.SelectionItemsHelper
 import com.lenta.shared.utilities.databinding.PageSelectionListener
+import com.lenta.shared.utilities.extentions.combineLatest
 import com.lenta.shared.utilities.extentions.getDeviceIp
 import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.utilities.extentions.toStringFormatted
@@ -54,13 +56,20 @@ class DiscrepancyListViewModel : CoreViewModel(), PageSelectionListener {
     private val isBatches: MutableLiveData<Boolean> = MutableLiveData(false)
     private val qualityInfo: MutableLiveData<List<QualityInfo>> = MutableLiveData()
 
+    val isAlco: MutableLiveData<Boolean> by lazy {
+        MutableLiveData(taskManager.getReceivingTask()?.taskDescription?.isAlco ?: false)
+    }
+
     val visibilityCleanButton: MutableLiveData<Boolean> = selectedPage.map {
-        it == 1
+        if (isAlco.value == false) {
+            it == 1
+        } else {
+            it == 2
+        }
     }
 
     val enabledCleanButton: MutableLiveData<Boolean> = processedSelectionsHelper.selectedPositions.map {
-        val selectedComponentsPositions = processedSelectionsHelper.selectedPositions.value
-        !selectedComponentsPositions.isNullOrEmpty()
+        !it.isNullOrEmpty()
     }
 
     val enabledSaveButton: MutableLiveData<Boolean> = countProcessed.map {
@@ -68,10 +77,6 @@ class DiscrepancyListViewModel : CoreViewModel(), PageSelectionListener {
     }
 
     val visibilityBatchesButton: MutableLiveData<Boolean> by lazy {
-        MutableLiveData(taskManager.getReceivingTask()?.taskDescription?.isAlco ?: false)
-    }
-
-    val isAlco: MutableLiveData<Boolean> by lazy {
         MutableLiveData(taskManager.getReceivingTask()?.taskDescription?.isAlco ?: false)
     }
 
@@ -100,9 +105,9 @@ class DiscrepancyListViewModel : CoreViewModel(), PageSelectionListener {
                     )
                 }
             }
-            //visibilityBatchesButton.value = taskManager.getReceivingTask()?.taskDescription?.isAlco
             updateCountNotProcessed()
             updateCountProcessed()
+            updateCountControl()
             screenNavigator.hideProgress()
         }
     }
@@ -140,6 +145,8 @@ class DiscrepancyListViewModel : CoreViewModel(), PageSelectionListener {
                                             productInfo = productInfo,
                                             productDiscrepancies = null,
                                             batchInfo = null,
+                                            checkBoxControl = false,
+                                            checkStampControl = false,
                                             even = index % 2 == 0)
                                 }
                                 .reversed())
@@ -198,6 +205,8 @@ class DiscrepancyListViewModel : CoreViewModel(), PageSelectionListener {
                                             productInfo = productInfo,
                                             productDiscrepancies = productDiscrepancies,
                                             batchInfo = null,
+                                            checkBoxControl = false,
+                                            checkStampControl = false,
                                             even = index % 2 == 0)
                                 }.reversed())
             } else {
@@ -235,6 +244,64 @@ class DiscrepancyListViewModel : CoreViewModel(), PageSelectionListener {
         processedSelectionsHelper.clearPositions()
     }
 
+    private fun updateCountControl() {
+        taskManager.getReceivingTask()?.let { task ->
+            if (!isBatches.value!!) {
+                countControl.postValue( //https://trello.com/c/9K1FZnUU, отображать перечень маркированных товаров, по которым не пройден хотя бы один из видов контроля
+                        task.getProcessedProducts()
+                                .filter {goodsInfo ->
+                                    taskManager.getReceivingTask()!!.taskRepository.getBoxesDiscrepancies().findBoxesDiscrepanciesOfProduct(goodsInfo).filter {
+                                        it.isScan
+                                    }.size < (goodsInfo.numberBoxesControl.toInt()) ||
+                                            taskManager.getReceivingTask()!!.taskRepository.getExciseStampsDiscrepancies().findExciseStampsDiscrepanciesOfProduct(goodsInfo).filter {
+                                                it.isScan
+                                            }.size < (goodsInfo.numberStampsControl.toInt())
+                                }
+                                .mapIndexed { index, productInfo ->
+                                    val checkBoxControl = taskManager.getReceivingTask()!!.taskRepository.getBoxesDiscrepancies().findBoxesDiscrepanciesOfProduct(productInfo).filter {
+                                        it.isScan
+                                    }.size >= (productInfo.numberBoxesControl.toInt())
+                                    val checkStampControl = taskManager.getReceivingTask()!!.taskRepository.getExciseStampsDiscrepancies().findExciseStampsDiscrepanciesOfProduct(productInfo).filter {
+                                        it.isScan
+                                    }.size >= (productInfo.numberStampsControl.toInt())
+                                    GoodsDiscrepancyItem(
+                                            number = index + 1,
+                                            name = "${productInfo.getMaterialLastSix()} ${productInfo.description}",
+                                            countRefusalWithUom = "",
+                                            quantityNotProcessedWithUom = "",
+                                            discrepanciesName = "",
+                                            isNormDiscrepancies = false,
+                                            productInfo = productInfo,
+                                            productDiscrepancies = null,
+                                            batchInfo = null,
+                                            checkBoxControl = checkBoxControl,
+                                            checkStampControl = checkStampControl,
+                                            even = index % 2 == 0)
+                                }
+                                .reversed())
+            } else {
+                /**countNotProcessed.postValue(
+                task.getProcessedBatches()
+                .filter {
+                task.taskRepository.getBatchesDiscrepancies().getCountBatchNotProcessedOfBatch(it) > 0.0
+                }
+                .mapIndexed { index, batchInfo ->
+                GoodsDiscrepancyItem(
+                number = index + 1,
+                name = "${batchInfo.getMaterialLastSix()} ${batchInfo.description} \nДР-${batchInfo.bottlingDate} // ${batchInfo.manufacturer}",
+                countAcceptWithUom = "",
+                countRefusalWithUom = "",
+                quantityNotProcessedWithUom = "? ${task.taskRepository.getBatchesDiscrepancies().getCountBatchNotProcessedOfBatch(batchInfo).toStringFormatted()} ${batchInfo.uom.name}",
+                productInfo = null,
+                batchInfo = batchInfo,
+                even = index % 2 == 0)
+                }
+                .reversed())*/
+            }
+
+        }
+    }
+
     fun getTitle(): String {
         return taskManager.getReceivingTask()?.taskHeader?.caption ?: ""
     }
@@ -247,7 +314,11 @@ class DiscrepancyListViewModel : CoreViewModel(), PageSelectionListener {
         val matnr: String? = if (selectedPage.value == 0) {
             countNotProcessed.value?.get(position)?.productInfo?.materialNumber
         } else {
-            countProcessed.value?.get(position)?.productInfo?.materialNumber
+            if ( (isAlco.value == true && selectedPage.value == 2) || (isAlco.value == false && selectedPage.value == 1)) {
+                countProcessed.value?.get(position)?.productInfo?.materialNumber
+            } else {
+                countControl.value?.get(position)?.productInfo?.materialNumber
+            }
         }
         searchProductDelegate.searchCode(code = matnr ?: "", fromScan = false, isDiscrepancy = true)
     }

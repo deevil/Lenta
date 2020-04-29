@@ -61,8 +61,7 @@ class GoodsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKey
     }
 
     val enabledCleanButton: MutableLiveData<Boolean> = countedSelectionsHelper.selectedPositions.map {
-        val selectedComponentsPositions = countedSelectionsHelper.selectedPositions.value
-        !selectedComponentsPositions.isNullOrEmpty()
+        !it.isNullOrEmpty()
     }
 
     val visibilityBatchesButton: MutableLiveData<Boolean> by lazy {
@@ -74,13 +73,11 @@ class GoodsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKey
     }
 
     val enabledBtnMissingForShipmentPP = toProcessingSelectionsHelper.selectedPositions.map {
-        val selectedComponentsPositions = toProcessingSelectionsHelper.selectedPositions.value
-        !selectedComponentsPositions.isNullOrEmpty()
+        !it.isNullOrEmpty()
     }
 
     val enabledBtnCleanForShipmentPP = processedSelectionsHelper.selectedPositions.map {
-        val selectedComponentsPositions = processedSelectionsHelper.selectedPositions.value
-        !selectedComponentsPositions.isNullOrEmpty()
+        !it.isNullOrEmpty()
     }
 
     val enabledBtnSkipForShipmentPP: MutableLiveData<Boolean> by lazy {

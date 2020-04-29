@@ -17,6 +17,7 @@ import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.requests.combined.scan_info.ScanInfoResult
 import com.lenta.shared.requests.combined.scan_info.pojo.QualityInfo
 import com.lenta.shared.requests.combined.scan_info.pojo.ReasonRejectionInfo
+import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.extentions.combineLatest
 import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.utilities.extentions.toStringFormatted
@@ -42,18 +43,14 @@ class ExciseAlcoBoxAccInfoViewModel : CoreViewModel(), OnPositionClickListener {
     @Inject
     lateinit var hyperHive: HyperHive
 
-    private val ZfmpUtz48V001: ZfmpUtz48V001 by lazy {
+    private val zfmpUtz48V001: ZfmpUtz48V001 by lazy {
         ZfmpUtz48V001(hyperHive)
     }
 
     val productInfo: MutableLiveData<TaskProductInfo> = MutableLiveData()
-    val batchInfo: MutableLiveData<TaskBatchInfo> = productInfo.map {
-        taskManager.getReceivingTask()!!.taskRepository.getBatches().findBatchOfProduct(it!!)
-    }
     val tvAccept: MutableLiveData<String> by lazy {
         MutableLiveData(context.getString(R.string.accept, "${productInfo.value?.purchaseOrderUnits?.name}=${productInfo.value?.quantityInvest?.toDouble().toStringFormatted()} ${productInfo.value?.uom?.name}"))
     }
-    val planQuantityBatch: MutableLiveData<String> = MutableLiveData()
     val spinQuality: MutableLiveData<List<String>> = MutableLiveData()
     val spinQualitySelectedPosition: MutableLiveData<Int> = MutableLiveData(0)
     val spinReasonRejection: MutableLiveData<List<String>> = MutableLiveData()
@@ -62,6 +59,7 @@ class ExciseAlcoBoxAccInfoViewModel : CoreViewModel(), OnPositionClickListener {
     val isDefect: MutableLiveData<Boolean> = spinQualitySelectedPosition.map {
         it != 0
     }
+    private val isClickApply: MutableLiveData<Boolean> = MutableLiveData(false)
 
     private val qualityInfo: MutableLiveData<List<QualityInfo>> = MutableLiveData()
     private val reasonRejectionInfo: MutableLiveData<List<ReasonRejectionInfo>> = MutableLiveData()
@@ -110,16 +108,20 @@ class ExciseAlcoBoxAccInfoViewModel : CoreViewModel(), OnPositionClickListener {
         }
     }
 
+    val checkStampControlVisibility: MutableLiveData<Boolean> = MutableLiveData()
+
     val tvStampControlVal: MutableLiveData<String> = acceptTotalCount.combineLatest(spinQualitySelectedPosition).map {
         if (qualityInfo.value?.get(it?.second ?: 0)?.code == "1") {
             if ( (productInfo.value?.numberBoxesControl?.toInt() == 0 && productInfo.value?.numberStampsControl?.toInt() == 0) ||
                     ((it?.first ?: 0.0) <= 0.0) ) {
+                checkStampControlVisibility.value = false
                 context.getString(R.string.not_required)
             } else {
+                checkStampControlVisibility.value = true
                 if ((it?.first ?: 0.0) < (productInfo.value?.numberBoxesControl?.toDouble() ?: 0.0) ) {
-                    "${it?.first.toStringFormatted()} из ${productInfo.value?.numberStampsControl?.toDouble().toStringFormatted()}"
+                    "${it?.first.toStringFormatted()} кор x ${productInfo.value?.numberStampsControl?.toDouble().toStringFormatted()}"
                 } else {
-                    "${productInfo.value?.numberBoxesControl?.toDouble().toStringFormatted()} из ${productInfo.value?.numberStampsControl?.toDouble().toStringFormatted()}"
+                    "${productInfo.value?.numberBoxesControl?.toDouble().toStringFormatted()} кор x ${productInfo.value?.numberStampsControl?.toDouble().toStringFormatted()}"
                 }
             }
         } else {
@@ -127,49 +129,73 @@ class ExciseAlcoBoxAccInfoViewModel : CoreViewModel(), OnPositionClickListener {
         }
     }
 
-    val checkStampControl: MutableLiveData<Boolean> by lazy {
-        //todo https://trello.com/c/Z1SPfmAJ, 1.5. Проставлять чекбокс при прохождении контроля Y марок в Z коробах;
-        MutableLiveData(false)
+    val checkStampControl: MutableLiveData<Boolean> = checkStampControlVisibility.map {
+        //https://trello.com/c/Z1SPfmAJ, Проставлять чекбокс при прохождении контроля всех марок во всех коробах
+        taskManager.getReceivingTask()!!.taskRepository.getExciseStampsDiscrepancies().findExciseStampsDiscrepanciesOfProduct(productInfo.value!!).filter {
+            it.isScan
+        }.size >= (productInfo.value?.numberStampsControl?.toInt() ?: 0)
     }
+
+    val checkBoxControlVisibility: MutableLiveData<Boolean> = MutableLiveData()
 
     val tvBoxControlVal: MutableLiveData<String> = acceptTotalCount.combineLatest(spinQualitySelectedPosition).map {
         if (qualityInfo.value?.get(it?.second ?: 0)?.code == "1") {
             if ( (productInfo.value?.numberBoxesControl?.toInt() == 0 && productInfo.value?.numberStampsControl?.toInt() == 0) ||
                     ((it?.first ?: 0.0) <= 0.0) ) {
+                checkBoxControlVisibility.value = false
                 context.getString(R.string.not_required)
             } else {
-                if ((it?.first ?: 0.0) < (productInfo.value?.numberBoxesControl?.toDouble() ?: 0.0)) {
-                    "${"Значение F изначально равно 0. Увеличивать на +1 при прохождении контроля одного короба"} из ${it?.first.toStringFormatted()}"
-                } else {
-                    "${"Значение F изначально равно 0. Увеличивать на +1 при прохождении контроля одного короба"} из ${productInfo.value?.numberBoxesControl?.toDouble().toStringFormatted()}"
-                }
+                checkBoxControlVisibility.value = true
+                val countBoxProcessed = taskManager.getReceivingTask()!!.taskRepository.getBoxesDiscrepancies().findBoxesDiscrepanciesOfProduct(productInfo.value!!).filter {boxDiscrepancies ->
+                    boxDiscrepancies.isScan
+                }.size
+                "$countBoxProcessed из ${productInfo.value?.numberBoxesControl?.toDouble().toStringFormatted()}"
             }
         } else {
             "" //это поле отображается только при выбранной категории "Норма"
         }
     }
 
-    val checkBoxControl: MutableLiveData<Boolean> by lazy {
-        //todo https://trello.com/c/Z1SPfmAJ, 2.4. Устанавливать чекбокс, когда F=Z;
-        MutableLiveData(false)
+    val checkBoxControl: MutableLiveData<Boolean> = checkBoxControlVisibility.map {
+        //https://trello.com/c/Z1SPfmAJ, 2.4. Устанавливать чекбокс, когда F=Z;
+        taskManager.getReceivingTask()!!.taskRepository.getBoxesDiscrepancies().findBoxesDiscrepanciesOfProduct(productInfo.value!!).filter {
+            it.isScan
+        }.size >= (productInfo.value?.numberBoxesControl?.toInt() ?: 0)
     }
 
-    val tvBoxListVal: MutableLiveData<String> by lazy {
-        MutableLiveData(productInfo.value?.origQuantity?.toDouble().toStringFormatted())
-    }
+    val checkBoxListVisibility: MutableLiveData<Boolean> = MutableLiveData()
 
-    val checkBoxList: MutableLiveData<Boolean> by lazy {
-        //todo https://trello.com/c/lqyZlYQu, 1.5. Устанавливать чекбокс, когда F= Q;
-        MutableLiveData(false)
-    }
-
-    val enabledApplyButton: MutableLiveData<Boolean> = countValue.map {
-                if (qualityInfo.value?.get(spinQualitySelectedPosition.value ?: 0)?.code == "1") {
-                    it!! != 0.0
+    val tvBoxListVal: MutableLiveData<String> = refusalTotalCount.combineLatest(spinQualitySelectedPosition).map {
+        if (qualityInfo.value?.get(it?.second ?: 0)?.code != "1") {
+            if (processExciseAlcoBoxAccService.getCountUntreatedBoxes() == 0) {
+                checkBoxListVisibility.value = true
+                "${processExciseAlcoBoxAccService.getCountDefectBoxes()} из ${processExciseAlcoBoxAccService.getCountDefectBoxes()}"
+            } else {
+                if ( it?.first?.toInt() == processExciseAlcoBoxAccService.getCountUntreatedBoxes() ) {
+                    checkBoxListVisibility.value = false
+                    context.getString(R.string.not_required)
                 } else {
-                    it!! != 0.0 && checkBoxList.value == true
+                    checkBoxListVisibility.value = true
+                    "${it?.first.toStringFormatted()} из ${processExciseAlcoBoxAccService.getCountUntreatedBoxes()}"
                 }
             }
+        } else {
+            "" //это поле отображается только при выбранной категории брака
+        }
+    }
+
+    val checkBoxList: MutableLiveData<Boolean> = checkBoxListVisibility.map {
+        //https://trello.com/c/lqyZlYQu, Устанавливать чекбокс, когда F (кол-во в Отказать) = Q (свободные/необработанные короба);
+        processExciseAlcoBoxAccService.getCountUntreatedBoxes() == 0
+    }
+
+    val enabledApplyButton: MutableLiveData<Boolean> = countValue.combineLatest(checkBoxList).map {
+        if (qualityInfo.value?.get(spinQualitySelectedPosition.value ?: 0)?.code == "1") {
+            it!!.first != 0.0
+        } else {
+            ((processExciseAlcoBoxAccService.getCountUntreatedBoxes() - (countValue.value?.toInt() ?: 0) == 0)  || it!!.second) && ((countValue.value?.toInt() ?: 0) > 0)
+        }
+    }
 
     init {
         viewModelScope.launch {
@@ -181,9 +207,7 @@ class ExciseAlcoBoxAccInfoViewModel : CoreViewModel(), OnPositionClickListener {
             spinQuality.value = qualityInfo.value?.map {
                 it.name
             }
-            batchInfo.value = taskManager.getReceivingTask()!!.taskRepository.getBatches().findBatchOfProduct(productInfo.value!!)
-            //todo временно закоментированно planQuantityBatch.value = batchInfo.value?.planQuantityBatch + " " + batchInfo.value?.uom?.name + "."
-            if (processExciseAlcoBoxAccService.newProcessNonExciseAlcoProductService(productInfo.value!!) == null){
+            if (processExciseAlcoBoxAccService.newProcessExciseAlcoBoxService(productInfo.value!!) == null){
                 screenNavigator.goBack()
                 screenNavigator.openAlertWrongProductType()
             }
@@ -196,40 +220,53 @@ class ExciseAlcoBoxAccInfoViewModel : CoreViewModel(), OnPositionClickListener {
     }
 
     fun onClickBoxes() {
-        screenNavigator.openExciseAlcoBoxListScreen(productInfo.value!!)
+        if ( (countValue.value ?: 0.0) <= 0.0 ) {
+            screenNavigator.openAlertMustEnterQuantityScreen()
+            return
+        }
+
+        screenNavigator.openExciseAlcoBoxListScreen(
+                productInfo = productInfo.value!!,
+                selectQualityCode = qualityInfo.value!![spinQualitySelectedPosition.value!!].code,
+                selectReasonRejectionCode = reasonRejectionInfo.value!![spinReasonRejectionSelectedPosition.value!!].code,
+                initialCount = countValue.value.toStringFormatted()
+        )
     }
 
     fun onClickDetails(){
-        onScanResult("03000042907513119000438453")
-        //screenNavigator.openGoodsDetailsScreen(productInfo.value!!)
+        screenNavigator.openGoodsDetailsScreen(productInfo.value!!)
     }
 
-    fun onClickAdd() : Boolean {
-        count.value = "0"
+    fun onClickAdd() {
         return if (processExciseAlcoBoxAccService.overLimit(countValue.value!!)) {
             screenNavigator.openAlertOverLimit()
-            false
+            count.value = "0"
         } else {
             if (qualityInfo.value?.get(spinQualitySelectedPosition.value ?: 0)?.code == "1") {
-                processExciseAlcoBoxAccService.add(acceptTotalCount.value!!.toString(), "1")
+                processExciseAlcoBoxAccService.addProduct(acceptTotalCount.value!!.toString(), "1")
+                if (isClickApply.value == true) screenNavigator.goBack()
             } else {
-                processExciseAlcoBoxAccService.add(count.value!!, reasonRejectionInfo.value!![spinReasonRejectionSelectedPosition.value!!].code)
+                if (processExciseAlcoBoxAccService.getCountUntreatedBoxes() - (countValue.value?.toInt() ?: 0) == 0) { //https://trello.com/c/lqyZlYQu, Массовая обработка брака
+                    screenNavigator.openAlertGoodsNotInInvoiceScreen(productInfo.value!!.getMaterialLastSix(), productInfo.value!!.description) {
+                        processExciseAlcoBoxAccService.massProcessingRejectBoxes(reasonRejectionInfo.value!![spinReasonRejectionSelectedPosition.value!!].code)
+                        processExciseAlcoBoxAccService.addProduct(count.value!!, reasonRejectionInfo.value!![spinReasonRejectionSelectedPosition.value!!].code)
+                        if (isClickApply.value == true) screenNavigator.goBack()
+                    }
+                } else {
+                    processExciseAlcoBoxAccService.addProduct(count.value!!, reasonRejectionInfo.value!![spinReasonRejectionSelectedPosition.value!!].code)
+                    if (isClickApply.value == true) screenNavigator.goBack()
+                }
             }
-            true
+            count.value = "0"
         }
     }
 
     fun onClickApply() {
-        if (onClickAdd()) {
-            screenNavigator.goBack()
-        }
+        isClickApply.value = true
+        onClickAdd()
     }
 
     fun onScanResult(data: String) {
-        /**if (onClickAdd()) {
-            searchProductDelegate.searchCode(code = data, fromScan = true, isBarCode = true)
-        }*/
-
         if ( (countValue.value ?: 0.0) <= 0.0 ) {
             screenNavigator.openAlertMustEnterQuantityScreen()
             return
@@ -237,25 +274,27 @@ class ExciseAlcoBoxAccInfoViewModel : CoreViewModel(), OnPositionClickListener {
 
         when (data.length) {
             68, 150 -> {
-                val exciseStampInfo = processExciseAlcoBoxAccService.searchExciseStamp(data)
-                if (exciseStampInfo == null) {
-                    screenNavigator.openAlertScannedStampNotFoundScreen() //Отсканированная марка не числится в текущей поставке. Перейдите к коробу, в которой находится эта марка и отсканируйте ее снова.
-                } else {
-                    if (exciseStampInfo.materialNumber != productInfo.value!!.materialNumber) {
-                        //Отсканированная марка принадлежит товару <SAP-код> <Название>"
-                        screenNavigator.openAlertScannedStampBelongsAnotherProductScreen(exciseStampInfo.materialNumber, ZfmpUtz48V001.getProductInfoByMaterial(exciseStampInfo.materialNumber)?.name ?: "")
+                if (isDefect.value == false) {//сканирование марок доступно только при категории Норма https://trello.com/c/Wr4xe6L8
+                    val exciseStampInfo = processExciseAlcoBoxAccService.searchExciseStamp(data)
+                    if (exciseStampInfo == null) {
+                        screenNavigator.openAlertScannedStampNotFoundScreen() //Отсканированная марка не числится в текущей поставке. Перейдите к коробу, в которой находится эта марка и отсканируйте ее снова.
                     } else {
-                        if (qualityInfo.value?.get(spinQualitySelectedPosition.value ?: 0)?.code == "1") {
-                            if (processExciseAlcoBoxAccService.getCountBoxOfProductOfDiscrepancies(productInfo.value!!.materialNumber, exciseStampInfo.boxNumber, "1") >= acceptTotalCount.value!!.toInt()) {
-                                screenNavigator.openAlertRequiredQuantityBoxesAlreadyProcessedScreen() //Необходимое количество коробок уже обработано
-                            } else {
-                                screenNavigator.openExciseAlcoBoxCardScreen(productInfo.value!!)
-                            }
+                        if (exciseStampInfo.materialNumber != productInfo.value!!.materialNumber) {
+                            //Отсканированная марка принадлежит товару <SAP-код> <Название>"
+                            screenNavigator.openAlertScannedStampBelongsAnotherProductScreen(exciseStampInfo.materialNumber, zfmpUtz48V001.getProductInfoByMaterial(exciseStampInfo.materialNumber)?.name ?: "")
                         } else {
-                            if (checkBoxList.value == true) {
+                            if (processExciseAlcoBoxAccService.getCountBoxOfProductOfDiscrepancies(exciseStampInfo.boxNumber, "1") >= acceptTotalCount.value!!.toInt()) {
                                 screenNavigator.openAlertRequiredQuantityBoxesAlreadyProcessedScreen() //Необходимое количество коробок уже обработано
                             } else {
-                                screenNavigator.openExciseAlcoBoxCardScreen(productInfo.value!!)
+                                screenNavigator.openExciseAlcoBoxCardScreen(
+                                        productInfo = productInfo.value!!,
+                                        boxInfo = null,
+                                        massProcessingBoxesNumber = null,
+                                        exciseStampInfo = exciseStampInfo,
+                                        selectQualityCode = qualityInfo.value!![spinQualitySelectedPosition.value!!].code,
+                                        selectReasonRejectionCode = null,
+                                        initialCount = "1"
+                                )
                             }
                         }
                     }
@@ -268,25 +307,47 @@ class ExciseAlcoBoxAccInfoViewModel : CoreViewModel(), OnPositionClickListener {
                 } else {
                     if (boxInfo.materialNumber != productInfo.value!!.materialNumber) {
                         //Отсканированная коробка принадлежит товару <SAP-код> <Название>
-                        screenNavigator.openAlertScannedBoxBelongsAnotherProductScreen(materialNumber = boxInfo.materialNumber, materialName = ZfmpUtz48V001.getProductInfoByMaterial(boxInfo.materialNumber)?.name ?: "")
+                        screenNavigator.openAlertScannedBoxBelongsAnotherProductScreen(materialNumber = boxInfo.materialNumber, materialName = zfmpUtz48V001.getProductInfoByMaterial(boxInfo.materialNumber)?.name ?: "")
                     } else {
                         if (qualityInfo.value?.get(spinQualitySelectedPosition.value ?: 0)?.code == "1") {
-                            if (processExciseAlcoBoxAccService.getCountBoxOfProductOfDiscrepancies(productInfo.value!!.materialNumber, boxInfo.boxNumber, "1") >= acceptTotalCount.value!!.toInt()) {
+                            if (processExciseAlcoBoxAccService.getCountBoxOfProductOfDiscrepancies(boxInfo.boxNumber, "1") >= acceptTotalCount.value!!.toInt()) {
                                 screenNavigator.openAlertRequiredQuantityBoxesAlreadyProcessedScreen() //Необходимое количество коробок уже обработано
                             } else {
-                                screenNavigator.openExciseAlcoBoxCardScreen(productInfo.value!!)
+                                screenNavigator.openExciseAlcoBoxCardScreen(
+                                        productInfo = productInfo.value!!,
+                                        boxInfo = boxInfo,
+                                        massProcessingBoxesNumber = null,
+                                        exciseStampInfo = null,
+                                        selectQualityCode = qualityInfo.value!![spinQualitySelectedPosition.value!!].code,
+                                        selectReasonRejectionCode = null,
+                                        initialCount = "1"
+                                )
                             }
                         } else {
                             if (checkBoxList.value == true) {
                                 screenNavigator.openAlertRequiredQuantityBoxesAlreadyProcessedScreen() //Необходимое количество коробок уже обработано
                             } else {
-                                screenNavigator.openExciseAlcoBoxCardScreen(productInfo.value!!)
+                                screenNavigator.openExciseAlcoBoxCardScreen(
+                                        productInfo = productInfo.value!!,
+                                        boxInfo = boxInfo,
+                                        massProcessingBoxesNumber = null,
+                                        exciseStampInfo = null,
+                                        selectQualityCode = qualityInfo.value!![spinQualitySelectedPosition.value!!].code,
+                                        selectReasonRejectionCode = reasonRejectionInfo.value!![spinReasonRejectionSelectedPosition.value!!].code,
+                                        initialCount = countValue.value.toStringFormatted()
+                                )
                             }
                         }
                     }
                 }
             }
-            else -> searchProductDelegate.searchCode(code = data, fromScan = true)
+            else -> {
+                if (enabledApplyButton.value == true) { //Функция доступна только при условии, что доступна кнопка "Применить". https://trello.com/c/KbBbXj2t
+                    searchProductDelegate.searchCode(code = data, fromScan = true)
+                } else {
+                    screenNavigator.openAlertInvalidBarcodeFormatScannedScreen()
+                }
+            }
         }
     }
 

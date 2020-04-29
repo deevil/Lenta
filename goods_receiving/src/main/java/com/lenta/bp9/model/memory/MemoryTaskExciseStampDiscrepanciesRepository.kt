@@ -1,6 +1,7 @@
 package com.lenta.bp9.model.memory
 
 import com.lenta.bp9.model.repositories.ITaskExciseStampDiscrepanciesRepository
+import com.lenta.bp9.model.task.TaskBoxInfo
 import com.lenta.bp9.model.task.TaskProductInfo
 import com.lenta.bp9.model.task.TaskExciseStampDiscrepancies
 
@@ -82,6 +83,19 @@ class MemoryTaskExciseStampDiscrepanciesRepository : ITaskExciseStampDiscrepanci
             deleteExciseStampDiscrepancy(it)
         }
         return true
+    }
+
+    override fun deleteExciseStampDiscrepancyOfProductOfBoxOfDiscrepancy(materialNumber: String, boxNumber: String, typeDiscrepancies: String): Boolean {
+        stampsDiscrepancies.map { it }.filter {discrepancies ->
+            if (materialNumber == discrepancies.materialNumber && boxNumber == discrepancies.boxNumber && typeDiscrepancies == discrepancies.typeDiscrepancies) {
+                stampsDiscrepancies.remove(discrepancies)
+                return@filter true
+            }
+            return@filter false
+
+        }.let {
+            return it.isNotEmpty()
+        }
     }
 
     override fun clear() {

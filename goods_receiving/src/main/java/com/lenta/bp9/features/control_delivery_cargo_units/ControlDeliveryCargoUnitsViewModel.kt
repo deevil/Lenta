@@ -86,8 +86,7 @@ class ControlDeliveryCargoUnitsViewModel : CoreViewModel(), PageSelectionListene
     }
 
     val enabledMissingBtn: MutableLiveData<Boolean> = notProcessedSelectionsHelper.selectedPositions.map {
-        val selectedComponentsPositions = notProcessedSelectionsHelper.selectedPositions.value
-        !selectedComponentsPositions.isNullOrEmpty()
+        !it.isNullOrEmpty()
     }
 
     val saveEnabled = listNotProcessedHolder.map {
