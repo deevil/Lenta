@@ -180,7 +180,7 @@ class ScreenNavigator @Inject constructor(
             getFragmentStack()?.push(AlertFragment.create(
                     pageNumber = "5",
                     message = context.getString(R.string.unsent_data_found_on_device),
-                    iconRes = R.drawable.ic_question_80dp,
+                    iconRes = R.drawable.ic_question_yellow_80dp,
                     codeConfirmForButton3 = backFragmentResultHelper.setFuncForResult(deleteCallback),
                     codeConfirmForRight = backFragmentResultHelper.setFuncForResult(goOverCallback),
                     buttonDecorationInfo3 = ButtonDecorationInfo.delete,
@@ -207,7 +207,7 @@ class ScreenNavigator @Inject constructor(
             getFragmentStack()?.push(AlertFragment.create(
                     pageNumber = "92",
                     message = context.getString(R.string.unsaved_data_will_be_lost),
-                    iconRes = R.drawable.ic_question_80dp,
+                    iconRes = R.drawable.ic_question_yellow_80dp,
                     codeConfirmForRight = backFragmentResultHelper.setFuncForResult(proceedCallback),
                     rightButtonDecorationInfo = ButtonDecorationInfo.proceed
             ))
@@ -219,7 +219,7 @@ class ScreenNavigator @Inject constructor(
             getFragmentStack()?.push(AlertFragment.create(
                     pageNumber = "19",
                     message = context.getString(R.string.make_task_counted_and_close),
-                    iconRes = R.drawable.ic_question_80dp,
+                    iconRes = R.drawable.ic_question_yellow_80dp,
                     codeConfirmForRight = backFragmentResultHelper.setFuncForResult(yesCallback),
                     rightButtonDecorationInfo = ButtonDecorationInfo.yes
             ))
@@ -243,7 +243,7 @@ class ScreenNavigator @Inject constructor(
             getFragmentStack()?.push(AlertFragment.create(
                     pageNumber = "85",
                     message = context.getString(R.string.scanned_mark_belongs_to_product, productName),
-                    iconRes = R.drawable.is_warning_red_80dp
+                    iconRes = R.drawable.ic_warning_red_80dp
             ))
         }
     }
@@ -264,7 +264,7 @@ class ScreenNavigator @Inject constructor(
             getFragmentStack()?.push(AlertFragment.create(
                     pageNumber = "36",
                     message = context.getString(R.string.raw_goods_remained_in_task),
-                    iconRes = R.drawable.ic_question_80dp,
+                    iconRes = R.drawable.ic_question_yellow_80dp,
                     codeConfirmForRight = backFragmentResultHelper.setFuncForResult(yesCallback),
                     rightButtonDecorationInfo = ButtonDecorationInfo.yes
             ))
@@ -276,7 +276,7 @@ class ScreenNavigator @Inject constructor(
             getFragmentStack()?.push(AlertFragment.create(
                     pageNumber = "59",
                     message = context.getString(R.string.box_was_last_scanned),
-                    iconRes = R.drawable.is_warning_red_80dp,
+                    iconRes = R.drawable.ic_warning_red_80dp,
                     codeConfirmForExit = backFragmentResultHelper.setFuncForResult(afterShowCallback),
                     timeAutoExitInMillis = 2000
             ))
@@ -288,7 +288,7 @@ class ScreenNavigator @Inject constructor(
             getFragmentStack()?.push(AlertFragment.create(
                     pageNumber = "65",
                     message = context.getString(R.string.do_you_really_want_set_zero_quantity, counted),
-                    iconRes = R.drawable.ic_question_80dp,
+                    iconRes = R.drawable.ic_question_yellow_80dp,
                     codeConfirmForRight = backFragmentResultHelper.setFuncForResult(yesCallback),
                     rightButtonDecorationInfo = ButtonDecorationInfo.yes
             ))
@@ -300,7 +300,7 @@ class ScreenNavigator @Inject constructor(
             getFragmentStack()?.push(AlertFragment.create(
                     pageNumber = "73",
                     message = context.getString(R.string.not_match_task_settings_adding_not_possible),
-                    iconRes = R.drawable.is_warning_red_80dp,
+                    iconRes = R.drawable.ic_warning_red_80dp,
                     codeConfirmForLeft = backFragmentResultHelper.setFuncForResult(backCallback)
             ))
         }
@@ -311,7 +311,7 @@ class ScreenNavigator @Inject constructor(
             getFragmentStack()?.push(AlertFragment.create(
                     pageNumber = "84",
                     message = context.getString(R.string.scanned_mark_is_not_on_balance_in_current_store),
-                    iconRes = R.drawable.is_warning_red_80dp,
+                    iconRes = R.drawable.ic_warning_red_80dp,
                     codeConfirmForRight = backFragmentResultHelper.setFuncForResult(proceedCallback),
                     leftButtonDecorationInfo = ButtonDecorationInfo.cancelBack,
                     rightButtonDecorationInfo = ButtonDecorationInfo.proceed
@@ -324,7 +324,7 @@ class ScreenNavigator @Inject constructor(
             getFragmentStack()?.push(AlertFragment.create(
                     pageNumber = "89",
                     message = context.getString(R.string.scanned_box_is_not_whole),
-                    iconRes = R.drawable.is_warning_red_80dp
+                    iconRes = R.drawable.ic_warning_red_80dp
             ))
         }
     }
@@ -334,7 +334,7 @@ class ScreenNavigator @Inject constructor(
             getFragmentStack()?.push(AlertFragment.create(
                     pageNumber = "91",
                     message = context.getString(R.string.marks_in_box_are_not_on_balance_in_current_store),
-                    iconRes = R.drawable.is_warning_red_80dp
+                    iconRes = R.drawable.ic_warning_red_80dp
             ))
         }
     }
@@ -344,7 +344,7 @@ class ScreenNavigator @Inject constructor(
             getFragmentStack()?.push(AlertFragment.create(
                     pageNumber = "115",
                     message = context.getString(R.string.finish_processing_box),
-                    iconRes = R.drawable.is_warning_red_80dp
+                    iconRes = R.drawable.ic_warning_red_80dp
             ))
         }
     }
@@ -354,7 +354,7 @@ class ScreenNavigator @Inject constructor(
             getFragmentStack()?.push(AlertFragment.create(
                     pageNumber = "117",
                     message = context.getString(R.string.finish_processing_current_box),
-                    iconRes = R.drawable.is_warning_red_80dp
+                    iconRes = R.drawable.ic_warning_red_80dp
             ))
         }
     }

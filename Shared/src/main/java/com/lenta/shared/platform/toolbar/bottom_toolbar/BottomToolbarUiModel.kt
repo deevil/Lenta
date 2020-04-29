@@ -249,7 +249,7 @@ data class ButtonDecorationInfo(
         }
 
         val cancelBack: ButtonDecorationInfo by lazy {
-            ButtonDecorationInfo(R.drawable.ic_arrow_back_white_24dp, R.string.cancel)
+            ButtonDecorationInfo(R.drawable.ic_arrow_left_white_24dp, R.string.cancel)
         }
 
         val framed: ButtonDecorationInfo by lazy {
@@ -370,15 +370,6 @@ data class ButtonDecorationInfo(
 
         val selectAll: ButtonDecorationInfo by lazy {
             ButtonDecorationInfo(R.drawable.ic_entirely_white_24dp, R.string.select_all)
-            ButtonDecorationInfo(R.drawable.ic_entirely_24dp, R.string.select_all)
-        }
-
-        val cancellation: ButtonDecorationInfo by lazy {
-            ButtonDecorationInfo(R.drawable.ic_arrow_verify_white_24dp, R.string.cancellation)
-        }
-
-        val inStock: ButtonDecorationInfo by lazy {
-            ButtonDecorationInfo(R.drawable.ic_done_white_24dp, R.string.inStock)
         }
 
         val proceed: ButtonDecorationInfo by lazy {
@@ -387,18 +378,6 @@ data class ButtonDecorationInfo(
 
         val properties: ButtonDecorationInfo by lazy {
             ButtonDecorationInfo(R.drawable.ic_basket_info_24dp, R.string.properties)
-        }
-
-        val label: ButtonDecorationInfo by lazy {
-            ButtonDecorationInfo(R.drawable.ic_print_white_24dp, R.string.label)
-        }
-
-        val labels: ButtonDecorationInfo by lazy {
-            ButtonDecorationInfo(R.drawable.ic_print_white_24dp, R.string.labels)
-        }
-
-        val defect: ButtonDecorationInfo by lazy {
-            ButtonDecorationInfo(R.drawable.ic_delete_white_24dp, R.string.defect)
         }
 
         val boxes: ButtonDecorationInfo by lazy {
