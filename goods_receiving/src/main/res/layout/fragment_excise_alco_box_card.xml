@@ -359,7 +359,7 @@
             android:onClick="@{(v) -> vm.screenNavigator.openESInfoScreen()}"
             android:padding="4dp"
             android:visibility="@{!vm.isDefect}"
-            android:src="@drawable/is_scan_barcode_es"
+            android:src="@drawable/ic_scan_barcode_es_32dp"
             app:layout_constraintBottom_toBottomOf="@+id/tv_section"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="@+id/tv_section"

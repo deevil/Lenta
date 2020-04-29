@@ -47,7 +47,7 @@
 
         </androidx.viewpager.widget.ViewPager>
 
-        <!-- Блок с кнопками -->
+        <!-- Блок с иконками -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -96,7 +96,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 app:goodTypeIcon="@{vm.options.goodType}"
-                tools:src="@drawable/ic_kandy_32dp" />
+                tools:src="@drawable/ic_kandy_white_32dp" />
 
             <ImageView
                 android:layout_width="0dp"

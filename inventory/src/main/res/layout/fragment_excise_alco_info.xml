@@ -258,7 +258,7 @@
             android:background="?selectableItemBackground"
             android:onClick="@{(v) -> vm.screenNavigator.openESInfoScreen()}"
             android:padding="4dp"
-            android:src="@drawable/is_scan_barcode_es"
+            android:src="@drawable/ic_scan_barcode_es_32dp"
             app:layout_constraintBottom_toBottomOf="@+id/b_scan"
             app:layout_constraintEnd_toStartOf="@+id/b_scan"
             app:layout_constraintTop_toTopOf="@+id/b_scan"
