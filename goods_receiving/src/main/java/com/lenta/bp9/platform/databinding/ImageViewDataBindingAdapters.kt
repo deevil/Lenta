@@ -96,8 +96,8 @@ fun TaskPostponedStatus.getIconRes(): Int? {
 
 fun TaskLockStatus.getIconRes(): Int? {
     return when (this) {
-        TaskLockStatus.LockedByMe -> R.drawable.ic_lock_open_dark_24dp
-        TaskLockStatus.LockedByOthers -> R.drawable.ic_lock_dark_24dp
+        TaskLockStatus.LockedByMe -> R.drawable.ic_self_lock_status_dark_24dp
+        TaskLockStatus.LockedByOthers -> R.drawable.ic_lock_status_dark_24dp
         else -> null
     }
 }

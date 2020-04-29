@@ -1,12 +1,18 @@
 <resources>
 
     <!-- № / Наименование -->
-    <integer name="number_name_1">30</integer>
-    <integer name="number_name_2">70</integer>
+    <integer name="number_name_1">15</integer>
+    <integer name="number_name_2">75</integer>
 
     <!-- № / Наименование / Количество -->
     <integer name="number_name_quantity_1">15</integer>
     <integer name="number_name_quantity_2">58</integer>
     <integer name="number_name_quantity_3">27</integer>
+
+    <!-- № / Наименование / Статус / Количество -->
+    <integer name="number_name_status_quantity_1">10</integer>
+    <integer name="number_name_status_quantity_2">50</integer>
+    <integer name="number_name_status_quantity_3">20</integer>
+    <integer name="number_name_status_quantity_4">20</integer>
 
 </resources>

@@ -156,15 +156,15 @@ class StoragesListFragment : CoreFragment<FragmentStoragesListBinding, StoragesL
 
                     layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
                             layoutId = R.layout.item_tile_processed_storages,
-                            itemId = BR.vm,
+                            itemId = BR.item,
                             realisation = object : DataBindingAdapter<ItemTileProcessedStoragesBinding> {
                                 override fun onCreate(binding: ItemTileProcessedStoragesBinding) {
                                 }
 
                                 override fun onBind(binding: ItemTileProcessedStoragesBinding, position: Int) {
-                                    binding.tvCounter.tag = position
+                                    binding.tvItemNumber.tag = position
                                     if (vm.processedStorages.value?.get(position)?.selectable == true) {
-                                        binding.tvCounter.setOnClickListener(onClickSelectionListener)
+                                        binding.tvItemNumber.setOnClickListener(onClickSelectionListener)
                                     }
                                     binding.selectedForDelete = vm.processedSelectionHelper.isSelected(position)
                                     processedRecyclerViewKeyHandler?.let {
