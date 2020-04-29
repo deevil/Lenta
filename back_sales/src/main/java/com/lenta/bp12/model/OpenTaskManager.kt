@@ -2,9 +2,9 @@ package com.lenta.bp12.model
 
 import androidx.lifecycle.MutableLiveData
 import com.lenta.bp12.model.pojo.Block
-import com.lenta.bp12.model.pojo.open_task.Position
 import com.lenta.bp12.model.pojo.Properties
 import com.lenta.bp12.model.pojo.open_task.Good
+import com.lenta.bp12.model.pojo.open_task.Position
 import com.lenta.bp12.model.pojo.open_task.Task
 import com.lenta.bp12.platform.extention.*
 import com.lenta.bp12.repository.IDatabaseRepository
@@ -326,7 +326,7 @@ class OpenTaskManager @Inject constructor(
         }
     }
 
-    override fun clearCurrentGoodPosition() {
+    override fun clearCurrentGoodAndPosition() {
         currentGood.value = null
         currentPosition.value = null
     }
@@ -368,7 +368,7 @@ interface IOpenTaskManager {
     fun markPositionsDelete(items: List<SimplePosition>)
     fun markPositionsUncounted(items: List<SimplePosition>)
     fun markPositionsMissing(items: List<SimplePosition>)
-    fun clearCurrentGoodPosition()
+    fun clearCurrentGoodAndPosition()
 
 }
 
