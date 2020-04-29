@@ -8,82 +8,357 @@ import javax.inject.Inject
 @AppScope
 class ProcessExciseAlcoBoxAccService
 @Inject constructor() {
+
     @Inject
     lateinit var taskManager: IReceivingTaskManager
 
     private lateinit var productInfo: TaskProductInfo
-    private var productDiscrepancyInfo: ArrayList<TaskProductDiscrepancies> = ArrayList()
-    private lateinit var batchInfo: TaskBatchInfo
-    private var batchDiscrepancyInfo: ArrayList<TaskBatchesDiscrepancies> = ArrayList()
-    private val currentExciseStamps: ArrayList<TaskExciseStampInfo> = ArrayList()
+    private val boxes: ArrayList<TaskBoxInfo> = ArrayList()
+    private val currentBoxDiscrepancies: ArrayList<TaskBoxDiscrepancies> = ArrayList()
+    private val exciseStamps: ArrayList<TaskExciseStampInfo> = ArrayList()
+    private val currentExciseStampsDiscrepancies: ArrayList<TaskExciseStampDiscrepancies> = ArrayList()
+    private val currentExciseStampsBad: ArrayList<TaskExciseStampBad> = ArrayList()
 
-    fun newProcessNonExciseAlcoProductService(productInfo: TaskProductInfo) : ProcessExciseAlcoBoxAccService? {
+    fun newProcessExciseAlcoBoxService(productInfo: TaskProductInfo) : ProcessExciseAlcoBoxAccService? {
         return if (productInfo.type == ProductType.ExciseAlcohol && productInfo.isBoxFl){ //алкоголь, коробочный учет https://trello.com/c/KbBbXj2t
             this.productInfo = productInfo.copy()
-            this.batchInfo = taskManager.getReceivingTask()!!.taskRepository.getBatches().findBatchOfProduct(productInfo)!!.copy()
-            productDiscrepancyInfo.clear()
-            batchDiscrepancyInfo.clear()
-            currentExciseStamps.clear()
+            boxes.clear()
+            taskManager.getReceivingTask()?.taskRepository?.getBoxes()?.getBoxes()?.map {
+                boxes.add(it.copy())
+            }
+            currentBoxDiscrepancies.clear()
+            taskManager.getReceivingTask()?.taskRepository?.getBoxesDiscrepancies()?.findBoxesDiscrepanciesOfProduct(productInfo)?.map {
+                currentBoxDiscrepancies.add(it.copy())
+            }
+            exciseStamps.clear()
+            taskManager.getReceivingTask()?.taskRepository?.getExciseStamps()?.getExciseStamps()?.map {
+                exciseStamps.add(it.copy())
+            }
+            currentExciseStampsDiscrepancies.clear()
+            taskManager.getReceivingTask()?.taskRepository?.getExciseStampsDiscrepancies()?.findExciseStampsDiscrepanciesOfProduct(productInfo)?.map {
+                currentExciseStampsDiscrepancies.add(it.copy())
+            }
+            currentExciseStampsBad.clear()
+            taskManager.getReceivingTask()?.taskRepository?.getExciseStampsBad()?.getExciseStampsBad()?.map {
+                currentExciseStampsBad.add(it.copy())
+            }
             this
         }
         else null
     }
 
-    private fun getCountOfDiscrepancies(typeDiscrepancies: String) : Double {
-        return taskManager.getReceivingTask()!!.taskRepository.getProductsDiscrepancies().getCountOfDiscrepanciesOfProduct(productInfo, typeDiscrepancies)
+    fun applyBoxCard(box: TaskBoxInfo, typeDiscrepancies: String) {
+        addBoxDiscrepancy(box.boxNumber, typeDiscrepancies)
+        //отмечаем все марки из короба
+        exciseStamps.filter {stamp ->
+            stamp.boxNumber == box.boxNumber
+        }.map {stamp ->
+            val isScan = currentExciseStampsDiscrepancies.findLast { it.code == stamp.code }?.isScan ?: false //если марки были ранее отсканированы, то с этим признаком их и сохраняем, а иначе ставим false
+            addExciseStampDiscrepancy(stamp, typeDiscrepancies, isScan)
+        }
+
+        if (currentBoxDiscrepancies.isNotEmpty()) {
+            currentBoxDiscrepancies.map {
+                taskManager.getReceivingTask()?.
+                        taskRepository?.
+                        getBoxesDiscrepancies()?.
+                        changeBoxDiscrepancy(it)
+            }
+        }
+
+        if (currentExciseStampsDiscrepancies.isNotEmpty()) {
+            currentExciseStampsDiscrepancies.map {
+                taskManager.getReceivingTask()?.
+                        taskRepository?.
+                        getExciseStampsDiscrepancies()?.
+                        changeExciseStampDiscrepancy(it)
+            }
+        }
+
+        if (currentExciseStampsBad.isNotEmpty()) {
+            currentExciseStampsBad.map {
+                taskManager.getReceivingTask()?.
+                        taskRepository?.
+                        getExciseStampsBad()?.
+                        changeExciseStampBad(it)
+            }
+        }
     }
 
-    fun add(count: String, typeDiscrepancies: String){
-        val countAdd = if (typeDiscrepancies == "1") count.toDouble() else getCountOfDiscrepancies(typeDiscrepancies) + count.toDouble()
-        val foundDiscrepancy = taskManager.getReceivingTask()?.taskRepository?.getProductsDiscrepancies()?.findProductDiscrepanciesOfProduct(productInfo)?.findLast {
-            it.materialNumber == productInfo.materialNumber && it.typeDiscrepancies == typeDiscrepancies
+    fun addProduct(count: String, typeDiscrepancies: String){
+        val countAdd = if (typeDiscrepancies == "1") count.toDouble() else getCountOfDiscrepanciesOfProduct(typeDiscrepancies) + count.toDouble()
+
+        //добавляем кол-во по расхождению для продукта
+        taskManager.getReceivingTask()!!.taskRepository.getProductsDiscrepancies().findProductDiscrepanciesOfProduct(productInfo).filter {productDiscrepancies ->
+            productDiscrepancies.typeDiscrepancies == typeDiscrepancies
+        }.sumByDouble {
+            it.numberDiscrepancies.toDouble()
         }
 
-        if (foundDiscrepancy == null) {
-            taskManager.getReceivingTask()?.
-                    taskRepository?.
-                    getProductsDiscrepancies()?.
-                    changeProductDiscrepancy(TaskProductDiscrepancies(
-                            materialNumber = productInfo.materialNumber,
-                            processingUnitNumber = "",
-                            numberDiscrepancies = countAdd.toString(),
-                            uom = productInfo.uom,
-                            typeDiscrepancies = typeDiscrepancies,
-                            isNotEdit = false,
-                            isNew = false,
-                            notEditNumberDiscrepancies = ""
-                    ))
-        } else {
-            taskManager.getReceivingTask()?.
-                    taskRepository?.
-                    getProductsDiscrepancies()?.
-                    changeProductDiscrepancy(foundDiscrepancy.copy(numberDiscrepancies = countAdd.toString()))
+        var foundDiscrepancy = taskManager.getReceivingTask()!!.taskRepository.getProductsDiscrepancies().findProductDiscrepanciesOfProduct(productInfo).findLast {
+            it.typeDiscrepancies == typeDiscrepancies
         }
 
+        foundDiscrepancy = foundDiscrepancy?.copy(numberDiscrepancies = countAdd.toString(), processingUnitNumber = productInfo.processingUnit)
+                ?: TaskProductDiscrepancies(
+                        materialNumber = productInfo.materialNumber,
+                        processingUnitNumber = productInfo.processingUnit,
+                        numberDiscrepancies = countAdd.toString(),
+                        uom = productInfo.uom,
+                        typeDiscrepancies = typeDiscrepancies,
+                        isNotEdit = false,
+                        isNew = false,
+                        notEditNumberDiscrepancies = ""
+                )
+
+        taskManager.getReceivingTask()?.
+                taskRepository?.
+                getProductsDiscrepancies()?.
+                changeProductDiscrepancy(foundDiscrepancy)
+    }
+
+    fun addExciseStampDiscrepancy(exciseStamp: TaskExciseStampInfo, typeDiscrepancies: String, isScan: Boolean) {
+        var foundBoxDiscrepancy = currentExciseStampsDiscrepancies.findLast {
+            it.code == exciseStamp.code
+        }
+
+        foundBoxDiscrepancy = foundBoxDiscrepancy?.copy(typeDiscrepancies = typeDiscrepancies, isScan = isScan)
+                ?: TaskExciseStampDiscrepancies(
+                        materialNumber = exciseStamp.materialNumber,
+                        code = exciseStamp.code,
+                        processingUnitNumber = exciseStamp.processingUnitNumber,
+                        typeDiscrepancies = typeDiscrepancies,
+                        isScan = isScan,
+                        boxNumber = exciseStamp.boxNumber,
+                        packNumber = "",
+                        isMSC = false,
+                        organizationCodeEGAIS = exciseStamp.organizationCodeEGAIS,
+                        bottlingDate = exciseStamp.bottlingDate,
+                        isUnknown = false
+                )
+
+        currentExciseStampsDiscrepancies.map { it }.filter {unitInfo ->
+            if (unitInfo.code == exciseStamp.code) {
+                currentExciseStampsDiscrepancies.remove(unitInfo)
+                return@filter true
+            }
+            return@filter false
+        }
+
+        currentExciseStampsDiscrepancies.add(foundBoxDiscrepancy)
+    }
+
+    fun addExciseStampBad(exciseStampCode: String) {
+        var index = -1
+        for (i in currentExciseStampsBad.indices) {
+            if (exciseStampCode == currentExciseStampsBad[i].exciseStampCode) {
+                index = i
+            }
+        }
+
+        if (index == -1) {
+            currentExciseStampsBad.add(TaskExciseStampBad(
+                    materialNumber = "",
+                    exciseStampCode = exciseStampCode,
+                    processingUnitNumber = "",
+                    typeDiscrepancies = "",
+                    isScan = true,
+                    boxNumber = ""
+            ))
+        }
+    }
+
+    fun addBoxDiscrepancy(boxNumber: String, typeDiscrepancies: String) {
+        val box = boxes.findLast {
+            it.boxNumber == boxNumber
+        }
+
+        var foundBoxDiscrepancy = currentBoxDiscrepancies.findLast {
+            it.boxNumber == boxNumber
+        }
+
+        foundBoxDiscrepancy = foundBoxDiscrepancy?.copy(typeDiscrepancies = typeDiscrepancies, isScan = true)
+                ?: TaskBoxDiscrepancies(
+                        processingUnitNumber = box?.processingUnitNumber ?: "",
+                        materialNumber = box?.materialNumber ?: "",
+                        boxNumber = boxNumber,
+                        typeDiscrepancies = typeDiscrepancies,
+                        isScan = true
+                )
+
+        currentBoxDiscrepancies.map { it }.filter {unitInfo ->
+            if (unitInfo.boxNumber == boxNumber) {
+                currentBoxDiscrepancies.remove(unitInfo)
+                return@filter true
+            }
+            return@filter false
+        }
+
+        currentBoxDiscrepancies.add(foundBoxDiscrepancy)
+    }
+
+    fun addDiscrepancyScannedMarkCurrentBox(currentBoxNumber: String, realBoxNumber: String, scannedExciseStampInfo: TaskExciseStampInfo, typeDiscrepancies: String) {
+        //https://trello.com/c/Wr4xe6L8 - отмечаем текущий короб и короб, в котором числится отсканированная марка, и все марки из этих коробов, категорией для брака из параметра GRZ_CR_GRUNDCAT
+        //удаляем все ранее отсканированные марки для этих коробв
+        currentExciseStampsDiscrepancies.map { it }.filter {unitInfo ->
+            if (unitInfo.boxNumber == currentBoxNumber || unitInfo.boxNumber == realBoxNumber) {
+                currentExciseStampsDiscrepancies.remove(unitInfo)
+                return@filter true
+            }
+            return@filter false
+        }
+
+        //отмечаем текущий короб и короб, в котором числится отсканированная марка, категорией для брака из параметра GRZ_CR_GRUNDCAT
+        addBoxDiscrepancy(currentBoxNumber, typeDiscrepancies)
+        addBoxDiscrepancy(realBoxNumber, typeDiscrepancies)
+
+        //отмечаем все марки из этих коробов признаком IS_SCAN=false (в карточке трелло не было указано ставить true для этих марок) и категорией для брака из параметра GRZ_CR_GRUNDCAT
+        exciseStamps.filter {stamp ->
+            stamp.boxNumber == currentBoxNumber || stamp.boxNumber ==realBoxNumber
+        }.map {
+            if (it.code == scannedExciseStampInfo.code) {
+                //отмечаем отсканированную марку признаком IS_SCAN=true (так указано в карточке трелло) и категорией для брака из параметра GRZ_CR_GRUNDCAT
+                addExciseStampDiscrepancy(it, typeDiscrepancies, true)
+            } else {
+                //отмечаем все марки, кроме отсканированной, из этих коробов признаком IS_SCAN=false (в карточке трелло не было указано ставить true для этих марок) и категорией для брака из параметра GRZ_CR_GRUNDCAT
+                addExciseStampDiscrepancy(it, typeDiscrepancies, false)
+            }
+        }
+    }
+
+    fun massProcessingRejectBoxes (typeDiscrepancies: String) {
+        boxes.filter {box ->
+            box.materialNumber == productInfo.materialNumber && currentBoxDiscrepancies.findLast { it.boxNumber == box.boxNumber }?.boxNumber.isNullOrEmpty()
+        }.map {unitInfo ->
+            addBoxDiscrepancy(unitInfo.boxNumber, typeDiscrepancies)
+            currentBoxDiscrepancies.filter {boxDiscrepancies ->
+                boxDiscrepancies.boxNumber == unitInfo.boxNumber
+            }.map {addBoxDiscrepancies ->
+                taskManager.getReceivingTask()?.
+                        taskRepository?.
+                        getBoxesDiscrepancies()?.
+                        changeBoxDiscrepancy(addBoxDiscrepancies)
+            }
+        }
     }
 
     fun overLimit(count: Double) : Boolean {
-        return productInfo.origQuantity.toDouble() < ((taskManager.getReceivingTask()?.taskRepository?.getProductsDiscrepancies()?.getCountAcceptOfProduct(productInfo) ?: 0.0)
-                + (taskManager.getReceivingTask()?.taskRepository?.getProductsDiscrepancies()?.getCountRefusalOfProduct(productInfo) ?: 0.0) + count)
-
+        return productInfo.origQuantity.toDouble() < (getCountAcceptOfProduct() + getCountRefusalOfProduct() + count)
     }
 
     fun searchExciseStamp(code: String) : TaskExciseStampInfo? {
-        return taskManager.getReceivingTask()?.taskRepository?.getExciseStamps()?.getExciseStamps()?.findLast {
+        return exciseStamps.findLast {
             it.code == code
         }
     }
 
+    fun exciseStampIsAlreadyProcessed(code: String) : Boolean {
+        return currentExciseStampsDiscrepancies.any {
+            it.code == code && it.isScan
+        }
+    }
+
     fun searchBox(boxNumber: String) : TaskBoxInfo? {
-        return taskManager.getReceivingTask()?.taskRepository?.getBoxes()?.getBoxes()?.findLast {
+        return boxes.findLast {
             it.boxNumber == boxNumber
         }
     }
 
-    fun getCountBoxOfProductOfDiscrepancies(materialNumber: String, boxNumber: String, typeDiscrepancies: String) : Int {
-        return taskManager.getReceivingTask()?.taskRepository?.getBoxesDiscrepancies()?.getBoxesDiscrepancies()?.filter {
-            it.boxNumber == boxNumber && it.materialNumber == materialNumber && it.typeDiscrepancies == typeDiscrepancies
-        }?.size ?: 0
+    fun getCountBoxOfProductOfDiscrepancies(boxNumber: String, typeDiscrepancies: String) : Int {
+        return currentBoxDiscrepancies.filter {
+            it.boxNumber == boxNumber && it.typeDiscrepancies == typeDiscrepancies
+        }.size
+    }
+
+    private fun getCountOfDiscrepanciesOfProduct(typeDiscrepancies: String) : Double {
+        return taskManager.getReceivingTask()!!.taskRepository.getProductsDiscrepancies().findProductDiscrepanciesOfProduct(productInfo).filter {productDiscrepancies ->
+            productDiscrepancies.typeDiscrepancies == typeDiscrepancies
+        }.sumByDouble {
+            it.numberDiscrepancies.toDouble()
+        }
+    }
+
+    fun getCountAcceptOfProduct() : Double {
+        return taskManager.getReceivingTask()!!.taskRepository.getProductsDiscrepancies().findProductDiscrepanciesOfProduct(productInfo).filter {productDiscrepancies ->
+            productDiscrepancies.typeDiscrepancies == "1"
+        }.sumByDouble {
+            it.numberDiscrepancies.toDouble()
+        }
+    }
+
+    fun getCountRefusalOfProduct() : Double {
+        return taskManager.getReceivingTask()!!.taskRepository.getProductsDiscrepancies().findProductDiscrepanciesOfProduct(productInfo).filter {productDiscrepancies ->
+            productDiscrepancies.typeDiscrepancies != "1"
+        }.sumByDouble {
+            it.numberDiscrepancies.toDouble()
+        }
+    }
+
+    fun getCountExciseStampDiscrepanciesOfBox(boxNumber: String, typeDiscrepancies: String) : Int {
+        return currentExciseStampsDiscrepancies.filter {
+            it.boxNumber == boxNumber && it.typeDiscrepancies == typeDiscrepancies && it.isScan
+        }.size
+    }
+
+    fun stampControlOfBox(box: TaskBoxInfo) : Boolean {
+        val countExciseStampsDiscrepanciesOfBox = currentExciseStampsDiscrepancies.filter {
+            it.boxNumber == box.boxNumber && it.typeDiscrepancies == "1" && it.isScan
+        }.size
+
+        return countExciseStampsDiscrepanciesOfBox >= productInfo.numberStampsControl.toInt()
+    }
+
+    fun boxControl(box: TaskBoxInfo) : Boolean {
+        val countScannedBox = currentBoxDiscrepancies.filter {
+            it.boxNumber == box.boxNumber && it.isScan
+        }.size
+        val countScannedExciseStamp = currentExciseStampsDiscrepancies.filter {
+            it.boxNumber == box.boxNumber && it.isScan
+        }.size
+
+        return (countScannedBox >=1 && countScannedExciseStamp >=1) || (countScannedExciseStamp >= 2) || (countScannedExciseStamp >= productInfo.numberStampsControl.toInt())
+    }
+
+    fun rollbackScannedExciseStamp() {
+        val stamp = currentExciseStampsDiscrepancies.last {
+            it.isScan
+        }
+        currentExciseStampsDiscrepancies.remove(stamp)
+    }
+
+    fun getCountUntreatedBoxes() : Int {
+        val countTotalBoxes = boxes.filter { it.materialNumber == productInfo.materialNumber }.size
+        val countProcessedBoxes = currentBoxDiscrepancies.filter { it.materialNumber == productInfo.materialNumber }.size
+        return countTotalBoxes - countProcessedBoxes
+    }
+
+    fun getCountDefectBoxes() : Int {
+        return currentBoxDiscrepancies.filter { it.materialNumber == productInfo.materialNumber && it.typeDiscrepancies != "1"}.size
+    }
+
+    fun modifications() : Boolean {
+        return currentExciseStampsDiscrepancies != taskManager.getReceivingTask()?.taskRepository?.getExciseStampsDiscrepancies()?.getExciseStampDiscrepancies()
+    }
+
+    fun clearModifications() {
+        currentBoxDiscrepancies.clear()
+        taskManager.getReceivingTask()?.taskRepository?.getBoxesDiscrepancies()?.findBoxesDiscrepanciesOfProduct(productInfo)?.map {
+            currentBoxDiscrepancies.add(it.copy())
+        }
+        currentExciseStampsDiscrepancies.clear()
+        taskManager.getReceivingTask()?.taskRepository?.getExciseStampsDiscrepancies()?.findExciseStampsDiscrepanciesOfProduct(productInfo)?.map {
+            currentExciseStampsDiscrepancies.add(it.copy())
+        }
+        currentExciseStampsBad.clear()
+        taskManager.getReceivingTask()?.taskRepository?.getExciseStampsBad()?.getExciseStampsBad()?.map {
+            currentExciseStampsBad.add(it.copy())
+        }
+    }
+
+    fun defectiveBox (boxNumber: String) : Boolean {
+        return currentBoxDiscrepancies.none {
+            it.boxNumber == boxNumber && it.typeDiscrepancies == "1"
+        }
     }
 
 }

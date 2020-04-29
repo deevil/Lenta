@@ -146,14 +146,14 @@ class SetsFragment :
 
                     layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
                             layoutId = R.layout.item_tile_sets,
-                            itemId = BR.vm,
+                            itemId = BR.item,
                             realisation = object : DataBindingAdapter<ItemTileSetsBinding> {
                                 override fun onCreate(binding: ItemTileSetsBinding) {
                                 }
 
                                 override fun onBind(binding: ItemTileSetsBinding, position: Int) {
-                                    binding.tvCounter.tag = position
-                                    binding.tvCounter.setOnClickListener(onClickSelectionListener)
+                                    binding.tvItemNumber.tag = position
+                                    binding.tvItemNumber.setOnClickListener(onClickSelectionListener)
                                     binding.selectedForDelete = vm.componentsSelectionsHelper.isSelected(position)
                                     recyclerViewKeyHandler?.let {
                                         binding.root.isSelected = it.isSelected(position)
@@ -182,7 +182,6 @@ class SetsFragment :
                     )
                     return layoutBinding.root
                 }
-
     }
 
     override fun getTextTitle(position: Int): String = getString(if (position == 0) R.string.quantity else R.string.components)

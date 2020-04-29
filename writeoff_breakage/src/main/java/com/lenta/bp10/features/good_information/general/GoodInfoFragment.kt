@@ -38,7 +38,8 @@ open class GoodInfoFragment : CoreFragment<FragmentGoodInfoBinding, BaseProductI
                 viewModel.setProductInfo(it)
             }
             initCount?.let {
-                viewModel.count.value = it.toStringFormatted()
+                viewModel.initCount(it)
+                initCount = null
             }
             return viewModel
         }

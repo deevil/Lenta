@@ -51,7 +51,7 @@
             android:layout_marginStart="8dp"
             android:layout_marginEnd="8dp"
             android:digits="0123456789"
-            android:drawableEnd="@drawable/ic_search_white_24dp"
+            android:drawableEnd="@drawable/ic_loupe_white_24dp"
             android:ellipsize="end"
             android:hint="@string/enter_item_number_or_barcode"
             android:imeOptions="actionSearch"

@@ -206,7 +206,7 @@ class ScreenNavigator @Inject constructor(
         runOrPostpone {
             getFragmentStack()?.push(AlertFragment.create(message = context.getString(R.string.confirm_price_tags_printing, priceTagNumber),
                     pageNumber = "10",
-                    iconRes = R.drawable.ic_question_80dp,
+                    iconRes = R.drawable.ic_question_yellow_80dp,
                     codeConfirmForRight = backFragmentResultHelper.setFuncForResult(confirmCallback),
                     rightButtonDecorationInfo = ButtonDecorationInfo.confirm))
         }
@@ -250,7 +250,7 @@ class ScreenNavigator @Inject constructor(
         runOrPostpone {
             getFragmentStack()?.push(AlertFragment.create(message = context.getString(R.string.set_task_to_status_calculated),
                     pageNumber = "24",
-                    iconRes = R.drawable.ic_question_80dp,
+                    iconRes = R.drawable.ic_question_yellow_80dp,
                     codeConfirmForRight = backFragmentResultHelper.setFuncForResult(yesCallback),
                     rightButtonDecorationInfo = ButtonDecorationInfo.yes))
         }
@@ -260,7 +260,7 @@ class ScreenNavigator @Inject constructor(
         runOrPostpone {
             getFragmentStack()?.push(AlertFragment.create(message = context.getString(R.string.raw_goods_remained_in_task),
                     pageNumber = "37",
-                    iconRes = R.drawable.ic_question_80dp,
+                    iconRes = R.drawable.ic_question_yellow_80dp,
                     codeConfirmForRight = backFragmentResultHelper.setFuncForResult(yesCallback),
                     rightButtonDecorationInfo = ButtonDecorationInfo.yes))
         }
@@ -271,7 +271,7 @@ class ScreenNavigator @Inject constructor(
             getFragmentStack()?.push(AlertFragment.create(
                     message = context.getString(R.string.print_price_tag_for_good, goodName),
                     pageNumber = "43",
-                    iconRes = R.drawable.ic_question_80dp,
+                    iconRes = R.drawable.ic_question_yellow_80dp,
                     codeConfirmForLeft = backFragmentResultHelper.setFuncForResult(noCallback),
                     codeConfirmForRight = backFragmentResultHelper.setFuncForResult(yesCallback),
                     leftButtonDecorationInfo = ButtonDecorationInfo.no,
@@ -284,7 +284,7 @@ class ScreenNavigator @Inject constructor(
         runOrPostpone {
             getFragmentStack()?.push(AlertFragment.create(message = context.getString(R.string.unsaved_data_found_on_device),
                     pageNumber = "92",
-                    iconRes = R.drawable.ic_question_80dp,
+                    iconRes = R.drawable.ic_question_yellow_80dp,
                     codeConfirmForButton3 = backFragmentResultHelper.setFuncForResult(deleteCallback),
                     codeConfirmForRight = backFragmentResultHelper.setFuncForResult(goOverCallback),
                     buttonDecorationInfo3 = ButtonDecorationInfo.delete,
@@ -296,7 +296,7 @@ class ScreenNavigator @Inject constructor(
         runOrPostpone {
             getFragmentStack()?.push(AlertFragment.create(message = context.getString(R.string.unsaved_task_found_on_device),
                     pageNumber = "92",
-                    iconRes = R.drawable.ic_question_80dp,
+                    iconRes = R.drawable.ic_question_yellow_80dp,
                     isVisibleLeftButton = false,
                     codeConfirmForButton3 = backFragmentResultHelper.setFuncForResult(deleteCallback),
                     codeConfirmForRight = backFragmentResultHelper.setFuncForResult(goOverCallback),
@@ -309,7 +309,7 @@ class ScreenNavigator @Inject constructor(
         runOrPostpone {
             getFragmentStack()?.push(AlertFragment.create(message = context.getString(R.string.good_is_not_part_of_task),
                     pageNumber = "109",
-                    iconRes = R.drawable.is_warning_red_80dp))
+                    iconRes = R.drawable.ic_warning_red_80dp))
         }
     }
 
@@ -317,7 +317,7 @@ class ScreenNavigator @Inject constructor(
         runOrPostpone {
             getFragmentStack()?.push(AlertFragment.create(message = context.getString(R.string.scanned_good_not_listed_in_lenta),
                     pageNumber = "112",
-                    iconRes = R.drawable.is_warning_yellow_80dp,
+                    iconRes = R.drawable.ic_warning_yellow_80dp,
                     codeConfirmForRight = backFragmentResultHelper.setFuncForResult(nextCallback),
                     rightButtonDecorationInfo = ButtonDecorationInfo.next))
         }
@@ -327,7 +327,7 @@ class ScreenNavigator @Inject constructor(
         runOrPostpone {
             getFragmentStack()?.push(AlertFragment.create(message = context.getString(R.string.scanned_good_not_listed_in_tk, marketNumber),
                     pageNumber = "114",
-                    iconRes = R.drawable.is_warning_red_80dp))
+                    iconRes = R.drawable.ic_warning_red_80dp))
         }
     }
 
@@ -335,7 +335,7 @@ class ScreenNavigator @Inject constructor(
         runOrPostpone {
             getFragmentStack()?.push(AlertFragment.create(message = context.getString(R.string.scanned_good_already_added_to_task),
                     pageNumber = "116",
-                    iconRes = R.drawable.ic_question_80dp,
+                    iconRes = R.drawable.ic_question_yellow_80dp,
                     codeConfirmForRight = backFragmentResultHelper.setFuncForResult(yesCallback),
                     rightButtonDecorationInfo = ButtonDecorationInfo.yes))
         }
@@ -345,7 +345,7 @@ class ScreenNavigator @Inject constructor(
         runOrPostpone {
             getFragmentStack()?.push(AlertFragment.create(message = context.getString(R.string.number_of_positions_exceeded_in_task),
                     pageNumber = "118",
-                    iconRes = R.drawable.is_warning_red_80dp))
+                    iconRes = R.drawable.ic_warning_red_80dp))
         }
     }
 
@@ -353,7 +353,7 @@ class ScreenNavigator @Inject constructor(
         runOrPostpone {
             getFragmentStack()?.push(AlertFragment.create(message = context.getString(R.string.no_network_to_save_task),
                     pageNumber = "119",
-                    iconRes = R.drawable.is_warning_yellow_80dp,
+                    iconRes = R.drawable.ic_warning_yellow_80dp,
                     isVisibleLeftButton = false,
                     codeConfirmForRight = backFragmentResultHelper.setFuncForResult(nextCallback),
                     rightButtonDecorationInfo = ButtonDecorationInfo.next))
@@ -433,7 +433,7 @@ class ScreenNavigator @Inject constructor(
         runOrPostpone {
             getFragmentStack()?.push(AlertFragment.create(
                     message = context.getString(R.string.confirmation_not_save_changes),
-                    iconRes = R.drawable.ic_question_80dp,
+                    iconRes = R.drawable.ic_question_yellow_80dp,
                     codeConfirmForRight = backFragmentResultHelper.setFuncForResult(yesCallback),
                     pageNumber = "94",
                     leftButtonDecorationInfo = ButtonDecorationInfo.back,
@@ -481,7 +481,7 @@ class ScreenNavigator @Inject constructor(
         runOrPostpone {
             getFragmentStack()?.push(AlertFragment.create(
                     message = context.getString(R.string.set_zero_quantity, quantity),
-                    iconRes = R.drawable.ic_question_80dp,
+                    iconRes = R.drawable.ic_question_yellow_80dp,
                     codeConfirmForRight = backFragmentResultHelper.setFuncForResult(yesCallback),
                     pageNumber = "65",
                     rightButtonDecorationInfo = ButtonDecorationInfo.yes

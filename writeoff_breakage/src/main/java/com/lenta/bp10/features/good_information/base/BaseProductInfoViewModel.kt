@@ -18,7 +18,9 @@ import com.lenta.shared.requests.combined.scan_info.ScanInfoResult
 import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.extentions.combineLatest
 import com.lenta.shared.utilities.extentions.map
+import com.lenta.shared.utilities.extentions.toStringFormatted
 import com.lenta.shared.view.OnPositionClickListener
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -178,5 +180,13 @@ abstract class BaseProductInfoViewModel : CoreViewModel(), OnPositionClickListen
     abstract fun onBackPressed(): Boolean
 
     abstract fun onScanResult(data: String)
+
+    fun initCount(it: Double) {
+        viewModelScope.launch {
+            delay(100)
+            count.postValue(it.toStringFormatted())
+        }
+
+    }
 
 }

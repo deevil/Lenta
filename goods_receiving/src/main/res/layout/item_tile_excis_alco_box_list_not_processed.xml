@@ -10,7 +10,7 @@
             type="com.lenta.bp9.features.goods_information.excise_alco_box_acc.excise_alco_box_list.BoxListItem" />
 
         <variable
-            name="selectedForDelete"
+            name="selectedItem"
             type="Boolean" />
 
     </data>
@@ -56,7 +56,7 @@
             app:layout_constraintEnd_toStartOf="@+id/div_vert1"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:selected="@{selectedForDelete}"
+            app:selected="@{selectedItem}"
             tools:text="2" />
 
         <TextView

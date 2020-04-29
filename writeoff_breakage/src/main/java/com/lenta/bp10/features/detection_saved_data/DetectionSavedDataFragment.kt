@@ -10,6 +10,7 @@ import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.utilities.extentions.provideViewModel
 
 class DetectionSavedDataFragment : CoreMessageFragment() {
+
     override fun getPageNumber(): String {
         return "10/91"
     }
@@ -18,7 +19,7 @@ class DetectionSavedDataFragment : CoreMessageFragment() {
         provideViewModel(DetectionSavedDataViewModel::class.java).let { vm ->
             getAppComponent()?.inject(vm)
             vm.message = getString(R.string.saved_data_detect_message)
-            vm.iconRes = R.drawable.ic_question_80dp
+            vm.iconRes = R.drawable.ic_question_yellow_80dp
             vm.codeConfirmForRight = 1
             return vm
         }
@@ -39,7 +40,5 @@ class DetectionSavedDataFragment : CoreMessageFragment() {
         bottomToolbarUiModel.uiModelButton3.show(ButtonDecorationInfo.delete)
         bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.goOver)
     }
-
-
 
 }

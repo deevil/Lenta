@@ -128,6 +128,10 @@ fun ZmpUtz14V001.getParamGrzRoundHeapRatio(): String? {
     return getParams("GRZ_ROUND_HEAP_RATIO").firstOrNull()
 }
 
+fun ZmpUtz14V001.getGrzCrGrundcat(): String? {
+    return getParams("GRZ_CR_GRUNDCAT").firstOrNull()
+}
+
 private fun ZmpUtz14V001.getParams(paramName: String): List<String> {
     @Suppress("INACCESSIBLE_TYPE")
     return localHelper_ET_PARAMS.getWhere("PARAMNAME = \"$paramName\"").map { it.paramvalue }
