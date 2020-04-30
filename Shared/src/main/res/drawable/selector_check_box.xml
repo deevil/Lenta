@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:drawable="@drawable/ic_checkbox_green_disabled_32dp" android:state_checked="true"  android:state_enabled="false"/>
-    <item android:drawable="@drawable/ic_checkbox_green_32dp" android:state_checked="true" />
+    <item android:drawable="@drawable/ic_checkbox_green_disabled_24dp" android:state_checked="true" android:state_enabled="false" />
+    <item android:drawable="@drawable/ic_checkbox_green_24dp" android:state_checked="true" />
     <item>
         <shape android:shape="rectangle">
 
-            <size android:width="32dp" android:height="32dp" />
+            <size android:width="24dp" android:height="24dp" />
 
             <solid android:color="#00FFFFFF" />
         </shape>

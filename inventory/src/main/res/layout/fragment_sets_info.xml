@@ -17,6 +17,7 @@
         <variable
             name="viewPagerSettings"
             type="com.lenta.shared.utilities.databinding.ViewPagerSettings" />
+
     </data>
 
     <androidx.viewpager.widget.ViewPager
