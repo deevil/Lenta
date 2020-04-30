@@ -15,4 +15,10 @@
     <integer name="number_name_status_quantity_3">20</integer>
     <integer name="number_name_status_quantity_4">20</integer>
 
+    <!-- № / Инфо / Статус / Количество -->
+    <integer name="number_info_status_quantity_1">10</integer>
+    <integer name="number_info_status_quantity_2">44</integer>
+    <integer name="number_info_status_quantity_3">23</integer>
+    <integer name="number_info_status_quantity_4">23</integer>
+
 </resources>

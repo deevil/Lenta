@@ -157,25 +157,23 @@ class SetsInfoFragment : CoreFragment<FragmentSetsInfoBinding, SetsInfoViewModel
                     layoutBinding.lifecycleOwner = viewLifecycleOwner
                     layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
                             layoutId = R.layout.item_tile_sets_info,
-                            itemId = BR.vm,
+                            itemId = BR.item,
                             realisation = object : DataBindingAdapter<ItemTileSetsInfoBinding> {
                                 override fun onCreate(binding: ItemTileSetsInfoBinding) {
                                 }
 
                                 override fun onBind(binding: ItemTileSetsInfoBinding, position: Int) {
-                                    binding.tvCounter.tag = position
-                                    binding.tvCounter.setOnClickListener(onClickSelectionListener)
+                                    binding.tvItemNumber.tag = position
+                                    binding.tvItemNumber.setOnClickListener(onClickSelectionListener)
                                     binding.tvComponentTitle.tag = position
                                     binding.tvComponentTitle.setOnClickListener(onClickComponentTitle)
                                     binding.selectedForDelete = vm.componentsSelectionsHelper.isSelected(position)
                                 }
-
                             }
                     )
                     layoutBinding.vm = vm
                     return layoutBinding.root
                 }
-
     }
 
     override fun getTextTitle(position: Int): String = getString(if (position == 0) R.string.quantity else R.string.components)
@@ -199,6 +197,5 @@ class SetsInfoFragment : CoreFragment<FragmentSetsInfoBinding, SetsInfoViewModel
         vm.onBackPressed()
         return true
     }
-
 
 }

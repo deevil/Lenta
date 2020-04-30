@@ -104,13 +104,13 @@ class StoragesListFragment : CoreFragment<FragmentStoragesListBinding, StoragesL
 
                         layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
                                 layoutId = R.layout.item_tile_unprocessed_storages,
-                                itemId = BR.vm,
+                                itemId = BR.item,
                                 realisation = object : DataBindingAdapter<ItemTileUnprocessedStoragesBinding> {
                                     override fun onCreate(binding: ItemTileUnprocessedStoragesBinding) {
                                     }
 
                                     override fun onBind(binding: ItemTileUnprocessedStoragesBinding, position: Int) {
-                                        binding.tvCounter.tag = position
+                                        binding.tvItemNumber.tag = position
                                         unprocessedRecyclerViewKeyHandler?.let {
                                             binding.root.isSelected = it.isSelected(position)
                                         }
