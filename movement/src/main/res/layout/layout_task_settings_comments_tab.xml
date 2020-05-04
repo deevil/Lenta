@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="vm"
+            type="com.lenta.movement.features.task.settings.pages.TaskSettingsCommentsViewModel" />
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <TableLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:stretchColumns="*"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <com.lenta.movement.view.TableRowBordered
+                android:gravity="center_vertical"
+                android:minHeight="74dp">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="16dp"
+                    android:text="@string/task_settings_comments_description_title" />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="16dp"
+                    android:text="@{vm.description}"
+                    tools:text="Перемещение с ТК на ТК для дальнейшей продажи" />
+            </com.lenta.movement.view.TableRowBordered>
+
+            <com.lenta.movement.view.TableRowBordered
+                android:gravity="center_vertical"
+                android:minHeight="74dp">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="16dp"
+                    android:text="@string/task_settings_comments_comments_title" />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="16dp"
+                    android:text="@{vm.comments}" />
+            </com.lenta.movement.view.TableRowBordered>
+
+        </TableLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</layout>

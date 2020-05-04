@@ -27,4 +27,19 @@
     <string name="save_to_sap_erp_msg">Сохранение в SAP ERP</string>
 
 
+    <string name="task_settings_title">Карточка задания</string>
+
+    <string name="task_settings_task_type_tab_title">Тип задания</string>
+    <string name="task_settings_task_type_receiver_title">Получатель</string>
+
+    <string name="task_settings_properties_tab_title">Свойства</string>
+    <string name="task_settings_properties_piker_storage_title">Склад \nКомплектации</string>
+    <string name="task_settings_properties_shipment_storage_title">Склад \nОтгрузки</string>
+    <string name="task_settings_properties_shipment_date_title">Дата \nОтгрузки</string>
+
+    <string name="task_settings_comments_tab_title">Комментарий</string>
+    <string name="task_settings_comments_description_title">Описание</string>
+    <string name="task_settings_comments_comments_title">Комментарий</string>
+
+
 </resources>

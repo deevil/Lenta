@@ -1,12 +1,13 @@
 package com.lenta.movement.requests.network
 
+import com.lenta.movement.fmp.resources.fast.ZmpUtz47V001
+import com.lenta.movement.fmp.resources.fast.ZmpUtz48V001
+import com.lenta.movement.fmp.resources.fast.ZmpUtz49V001
+import com.lenta.movement.fmp.resources.fast.ZmpUtz79V001
 import com.lenta.shared.fmp.resources.fast.ZmpUtz26V001
-import com.lenta.shared.fmp.resources.fast.ZmpUtz07V001
 import com.lenta.shared.fmp.resources.fast.ZmpUtz14V001
 import com.lenta.shared.fmp.resources.fast.ZmpUtz38V001
-import com.lenta.shared.fmp.resources.slow.ZfmpUtz48V001
 import com.lenta.shared.fmp.resources.slow.ZmpUtz25V001
-import com.lenta.shared.fmp.resources.slow.ZmpUtz46V001
 import com.lenta.shared.requests.network.CoreResourcesMultiRequest
 import com.mobrun.plugin.api.HyperHive
 import com.mobrun.plugin.api.request_assistant.CustomParameter
@@ -26,11 +27,11 @@ class FastResourcesMultiRequest @Inject constructor(
             ZmpUtz26V001.NAME_RESOURCE to ZmpUtz26V001(hyperHive).newRequest(),
             ZmpUtz38V001.NAME_RESOURCE to ZmpUtz38V001(hyperHive).newRequest(),
             // TODO MB_S_45
-            // TODO MB_S_47
-            // TODO MB_S_48
-            // TODO MB_S_49
+            ZmpUtz47V001.NAME_RESOURCE to ZmpUtz47V001(hyperHive).newRequest(),
+            ZmpUtz48V001.NAME_RESOURCE to ZmpUtz48V001(hyperHive).newRequest(),
+            ZmpUtz49V001.NAME_RESOURCE to ZmpUtz49V001(hyperHive).newRequest(),
             // TODO MB_S_50
-            // TODO MB_S_51
+            ZmpUtz79V001.NAME_RESOURCE to ZmpUtz79V001(hyperHive).newRequest(),
 
             //TODO удалить загрузку SlowData после добавления в FMP sdk возможности обращения к базе во время синхронизации
 

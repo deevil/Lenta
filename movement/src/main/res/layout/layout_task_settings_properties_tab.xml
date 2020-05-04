@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+        <variable
+            name="vm"
+            type="com.lenta.movement.features.task.settings.pages.TaskSettingsPropertiesViewModel" />
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <TableLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:stretchColumns="*"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <com.lenta.movement.view.TableRowBordered android:gravity="center_vertical">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="16dp"
+                    android:text="@string/task_settings_properties_piker_storage_title" />
+
+                <com.lenta.shared.view.ClickableSpinner
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="16dp"
+                    app:items="@{vm.pikingStorageList}"
+                    app:onPositionClickListener="@{vm.pikingStorageSelectedPositionListener}"
+                    app:position="@{vm.pikingStorageSelectedPosition}" />
+            </com.lenta.movement.view.TableRowBordered>
+
+            <com.lenta.movement.view.TableRowBordered android:gravity="center_vertical">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="16dp"
+                    android:text="@string/task_settings_properties_shipment_storage_title" />
+
+                <com.lenta.shared.view.ClickableSpinner
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="16dp"
+                    app:items="@{vm.shipmentStorageList}"
+                    app:onPositionClickListener="@{vm.shipmentStorageSelectedPositionListener}"
+                    app:position="@{vm.shipmentStorageSelectedPosition}" />
+            </com.lenta.movement.view.TableRowBordered>
+
+            <com.lenta.movement.view.TableRowBordered android:gravity="center_vertical">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="16dp"
+                    android:text="@string/task_settings_properties_shipment_date_title" />
+
+                <EditText
+                    android:id="@+id/shipmentDateEditText"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="16dp"
+                    android:digits="1234567890."
+                    android:inputType="number"
+                    android:text="@{vm.shipmentDate}"
+                    app:maskPattern='@{"[00]{.}[00]{.}[00]"}' />
+
+            </com.lenta.movement.view.TableRowBordered>
+
+        </TableLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

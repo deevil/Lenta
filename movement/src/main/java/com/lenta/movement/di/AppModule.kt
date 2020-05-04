@@ -1,8 +1,12 @@
 package com.lenta.movement.di
 
 import android.content.Context
+import com.lenta.movement.models.ITaskManager
+import com.lenta.movement.models.TaskManager
 import com.lenta.movement.models.memory.MemoryBoxesRepository
 import com.lenta.movement.models.repositories.IBoxesRepository
+import com.lenta.movement.platform.Formatter
+import com.lenta.movement.platform.IFormatter
 import com.lenta.movement.platform.navigation.IScreenNavigator
 import com.lenta.movement.platform.navigation.ScreenNavigator
 import com.lenta.movement.progress.IWriteOffProgressUseCaseInformator
@@ -14,6 +18,7 @@ import com.lenta.shared.di.AppScope
 import com.lenta.shared.platform.activity.ForegroundActivityProvider
 import com.lenta.shared.platform.navigation.ICoreNavigator
 import com.lenta.shared.progress.IProgressUseCaseInformator
+import com.mobrun.plugin.api.HyperHive
 import dagger.Module
 import dagger.Provides
 
@@ -40,6 +45,18 @@ class AppModule {
 
     @Provides
     @AppScope
+    internal fun provideTaskManager(hyperHive: HyperHive): ITaskManager {
+        return TaskManager(hyperHive)
+    }
+
+    @Provides
+    @AppScope
+    internal fun provideFormatter(context: Context): IFormatter {
+        return Formatter(context)
+    }
+
+    @Provides
+    @AppScope
     internal fun provideIRepoInMemoryHolder(): IRepoInMemoryHolder {
         return RepoInMemoryHolder()
     }
@@ -49,7 +66,5 @@ class AppModule {
     internal fun provideIBoxesRepository(): IBoxesRepository {
         return MemoryBoxesRepository()
     }
-
-
 
 }

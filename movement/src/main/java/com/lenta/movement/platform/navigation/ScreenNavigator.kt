@@ -11,6 +11,7 @@ import com.lenta.movement.features.main.box.GoodsListFragment
 import com.lenta.movement.features.main.box.create.CreateBoxesFragment
 import com.lenta.movement.features.selectmarket.SelectMarketFragment
 import com.lenta.movement.features.selectpersonalnumber.SelectPersonnelNumberFragment
+import com.lenta.movement.features.task.settings.TaskSettingsFragment
 import com.lenta.movement.models.ExciseBox
 import com.lenta.movement.models.ExciseProductInfo
 import com.lenta.movement.progress.IWriteOffProgressUseCaseInformator
@@ -85,7 +86,9 @@ class ScreenNavigator(
     }
 
     override fun openCreateTask() {
-        openNotImplementedScreenAlert("Карточка задания")
+        runOrPostpone {
+            getFragmentStack()?.push(TaskSettingsFragment())
+        }
     }
 
     override fun openTaskList() {
@@ -208,6 +211,10 @@ class ScreenNavigator(
             )
         }
     }
+
+    override fun openTaskCompositionScreen() {
+        openNotImplementedScreenAlert("Состав задания")
+    }
 }
 
 interface IScreenNavigator : ICoreNavigator {
@@ -230,4 +237,5 @@ interface IScreenNavigator : ICoreNavigator {
     fun openBoxNumberWasUsedDialog()
     fun openEanInvalidDialog()
     fun openBoxSavedDialog(box: ExciseBox)
+    fun openTaskCompositionScreen()
 }
