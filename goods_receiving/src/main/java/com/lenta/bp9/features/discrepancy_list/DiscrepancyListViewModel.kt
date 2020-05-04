@@ -105,11 +105,15 @@ class DiscrepancyListViewModel : CoreViewModel(), PageSelectionListener {
                     )
                 }
             }
-            updateCountNotProcessed()
-            updateCountProcessed()
-            updateCountControl()
+            updateData()
             screenNavigator.hideProgress()
         }
+    }
+
+    private fun updateData() {
+        updateCountNotProcessed()
+        updateCountProcessed()
+        updateCountControl()
     }
 
     private fun updateCountNotProcessed() {
@@ -355,14 +359,12 @@ class DiscrepancyListViewModel : CoreViewModel(), PageSelectionListener {
             }*/
         }
 
-        updateCountNotProcessed()
-        updateCountProcessed()
+        updateData()
     }
 
     fun onClickBatches() {
         isBatches.value = !isBatches.value!!
-        updateCountNotProcessed()
-        updateCountProcessed()
+        updateData()
     }
 
     fun onClickSave() {
@@ -403,9 +405,8 @@ class DiscrepancyListViewModel : CoreViewModel(), PageSelectionListener {
         return if (taskManager.getReceivingTask()!!.taskRepository.getProductsDiscrepancies().getCountAcceptOfProduct(productInfo) <= 0 || taskManager.getReceivingTask()!!.controlBoxesOfProduct(productInfo)) {
             false
         } else {
-            !((taskManager.getReceivingTask()?.countBoxesPassedControlOfProduct(productInfo) ?: 0) > 0 &&
-                    ((taskManager.getReceivingTask()?.countBoxesPassedControlOfProduct(productInfo) ?: 0) +
-                            taskManager.getReceivingTask()!!.taskRepository.getProductsDiscrepancies().getCountRefusalOfProduct(productInfo)) >= productInfo.origQuantity.toInt())
+            ((taskManager.getReceivingTask()?.countBoxesPassedControlOfProduct(productInfo) ?: 0) +
+                    taskManager.getReceivingTask()!!.taskRepository.getProductsDiscrepancies().getCountRefusalOfProduct(productInfo)) < productInfo.origQuantity.toDouble()
         }
     }
 

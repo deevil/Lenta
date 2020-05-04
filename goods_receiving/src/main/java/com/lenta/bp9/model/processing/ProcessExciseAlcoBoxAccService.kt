@@ -89,12 +89,6 @@ class ProcessExciseAlcoBoxAccService
         val countAdd = if (typeDiscrepancies == "1") count.toDouble() else getCountOfDiscrepanciesOfProduct(typeDiscrepancies) + count.toDouble()
 
         //добавляем кол-во по расхождению для продукта
-        taskManager.getReceivingTask()!!.taskRepository.getProductsDiscrepancies().findProductDiscrepanciesOfProduct(productInfo).filter {productDiscrepancies ->
-            productDiscrepancies.typeDiscrepancies == typeDiscrepancies
-        }.sumByDouble {
-            it.numberDiscrepancies.toDouble()
-        }
-
         var foundDiscrepancy = taskManager.getReceivingTask()!!.taskRepository.getProductsDiscrepancies().findProductDiscrepanciesOfProduct(productInfo).findLast {
             it.typeDiscrepancies == typeDiscrepancies
         }
