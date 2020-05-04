@@ -47,14 +47,14 @@ class ProcessExciseAlcoBoxAccService
         else null
     }
 
-    fun applyBoxCard(box: TaskBoxInfo, typeDiscrepancies: String) {
-        addBoxDiscrepancy(box.boxNumber, typeDiscrepancies)
+    fun applyBoxCard(box: TaskBoxInfo, typeDiscrepancies: String, isScan: Boolean) {
+        addBoxDiscrepancy(box.boxNumber, typeDiscrepancies, isScan)
         //отмечаем все марки из короба
-        exciseStamps.filter {stamp ->
-            stamp.boxNumber == box.boxNumber
+        exciseStamps.filter {fstamp ->
+            fstamp.boxNumber == box.boxNumber
         }.map {stamp ->
-            val isScan = currentExciseStampsDiscrepancies.findLast { it.code == stamp.code }?.isScan ?: false //если марки были ранее отсканированы, то с этим признаком их и сохраняем, а иначе ставим false
-            addExciseStampDiscrepancy(stamp, typeDiscrepancies, isScan)
+            val isScanExciseStamp = currentExciseStampsDiscrepancies.findLast { it.code == stamp.code }?.isScan ?: false //если марки были ранее отсканированы, то с этим признаком их и сохраняем, а иначе ставим false
+            addExciseStampDiscrepancy(stamp, typeDiscrepancies, isScanExciseStamp)
         }
 
         if (currentBoxDiscrepancies.isNotEmpty()) {
@@ -168,7 +168,7 @@ class ProcessExciseAlcoBoxAccService
         }
     }
 
-    fun addBoxDiscrepancy(boxNumber: String, typeDiscrepancies: String) {
+    fun addBoxDiscrepancy(boxNumber: String, typeDiscrepancies: String, isScan: Boolean) {
         val box = boxes.findLast {
             it.boxNumber == boxNumber
         }
@@ -177,13 +177,13 @@ class ProcessExciseAlcoBoxAccService
             it.boxNumber == boxNumber
         }
 
-        foundBoxDiscrepancy = foundBoxDiscrepancy?.copy(typeDiscrepancies = typeDiscrepancies, isScan = true)
+        foundBoxDiscrepancy = foundBoxDiscrepancy?.copy(typeDiscrepancies = typeDiscrepancies, isScan = isScan)
                 ?: TaskBoxDiscrepancies(
                         processingUnitNumber = box?.processingUnitNumber ?: "",
                         materialNumber = box?.materialNumber ?: "",
                         boxNumber = boxNumber,
                         typeDiscrepancies = typeDiscrepancies,
-                        isScan = true
+                        isScan = isScan
                 )
 
         currentBoxDiscrepancies.map { it }.filter {unitInfo ->
@@ -209,8 +209,8 @@ class ProcessExciseAlcoBoxAccService
         }
 
         //отмечаем текущий короб и короб, в котором числится отсканированная марка, категорией для брака из параметра GRZ_CR_GRUNDCAT
-        addBoxDiscrepancy(currentBoxNumber, typeDiscrepancies)
-        addBoxDiscrepancy(realBoxNumber, typeDiscrepancies)
+        addBoxDiscrepancy(currentBoxNumber, typeDiscrepancies, false) //передаем false, т.к. эта ф-ция (addDiscrepancyScannedMarkCurrentBox) вызывается только при скане марки, а не короба
+        addBoxDiscrepancy(realBoxNumber, typeDiscrepancies, false) //передаем false, т.к. эта ф-ция (addDiscrepancyScannedMarkCurrentBox) вызывается только при скане марки, а не короба
 
         //отмечаем все марки из этих коробов признаком IS_SCAN=false (в карточке трелло не было указано ставить true для этих марок) и категорией для брака из параметра GRZ_CR_GRUNDCAT
         exciseStamps.filter {stamp ->
@@ -226,11 +226,43 @@ class ProcessExciseAlcoBoxAccService
         }
     }
 
+    fun denialOfFullProductAcceptance(typeDiscrepancies: String) {
+        //https://trello.com/c/WeGFSdAW
+        //отмечаем все короба и марки для продукта категорией для брака из параметра GRZ_CR_GRUNDCAT
+        boxes.filter {box ->
+            box.materialNumber == productInfo.materialNumber
+        }.map {
+            applyBoxCard(it, typeDiscrepancies, false) //передаем false, т.к. эта ф-ция (denialOfFullProductAcceptance) вызывается с экрана Оюнаружены расхождения по клику на короб на вкладке Не обработаны
+        }
+
+        //отмечаем продукт
+        addProduct(productInfo.origQuantity, typeDiscrepancies)
+    }
+
+    fun refusalToAcceptPartlyByProduct(typeDiscrepancies: String) {
+        //https://trello.com/c/WeGFSdAW
+        //отмечаем все не обработанные короба для продукта категорией для брака из параметра GRZ_CR_GRUNDCAT
+        boxes.filter {box ->
+            box.materialNumber == productInfo.materialNumber && currentBoxDiscrepancies.findLast { it.boxNumber == box.boxNumber }?.boxNumber == null
+        }.map {
+            addBoxDiscrepancy(it.boxNumber, typeDiscrepancies, false) //передаем false, т.к. эта ф-ция (refusalToAcceptPartlyByProduct) вызывается с экрана Оюнаружены расхождения по клику на короб на вкладке Не обработаны
+        }
+
+        //отмечаем все не обработанные марки для продукта категорией для брака из параметра GRZ_CR_GRUNDCAT
+        exciseStamps.filter {fstamp ->
+            fstamp.materialNumber == productInfo.materialNumber && currentExciseStampsDiscrepancies.findLast { it.code == fstamp.code }?.code == null
+        }.map {stamp ->
+            addExciseStampDiscrepancy(stamp, typeDiscrepancies, false)//передаем false, т.к. эта ф-ция (refusalToAcceptPartlyByProduct) вызывается с экрана Оюнаружены расхождения по клику на короб на вкладке Не обработаны
+        }
+        //отмечаем продукт
+        addProduct((productInfo.origQuantity.toDouble() - getCountAcceptOfProduct() - getCountRefusalOfProduct()).toString(), typeDiscrepancies)
+    }
+
     fun massProcessingRejectBoxes (typeDiscrepancies: String) {
         boxes.filter {box ->
             box.materialNumber == productInfo.materialNumber && currentBoxDiscrepancies.findLast { it.boxNumber == box.boxNumber }?.boxNumber.isNullOrEmpty()
         }.map {unitInfo ->
-            addBoxDiscrepancy(unitInfo.boxNumber, typeDiscrepancies)
+            addBoxDiscrepancy(unitInfo.boxNumber, typeDiscrepancies, false) //передаем  false, т.к. эта ф-ция (massProcessingRejectBoxes) вызыывается только на экране Информация о товаре и только при нажатии на кнопку Применить и только для массовой обработки брака
             currentBoxDiscrepancies.filter {boxDiscrepancies ->
                 boxDiscrepancies.boxNumber == unitInfo.boxNumber
             }.map {addBoxDiscrepancies ->
@@ -300,23 +332,25 @@ class ProcessExciseAlcoBoxAccService
         }.size
     }
 
+    //https://trello.com/c/Hve509E5 контроль марки для короба
     fun stampControlOfBox(box: TaskBoxInfo) : Boolean {
-        val countExciseStampsDiscrepanciesOfBox = currentExciseStampsDiscrepancies.filter {
+        val countScannedExciseStampsDiscrepanciesOfBox = currentExciseStampsDiscrepancies.filter {
             it.boxNumber == box.boxNumber && it.typeDiscrepancies == "1" && it.isScan
         }.size
 
-        return countExciseStampsDiscrepanciesOfBox >= productInfo.numberStampsControl.toInt()
+        return countScannedExciseStampsDiscrepanciesOfBox >= productInfo.numberStampsControl.toInt()
     }
 
+    // https://trello.com/c/Hve509E5 контроль короба
     fun boxControl(box: TaskBoxInfo) : Boolean {
-        val countScannedBox = currentBoxDiscrepancies.filter {
-            it.boxNumber == box.boxNumber && it.isScan
+        val countProcessedBox = currentBoxDiscrepancies.filter {
+            it.boxNumber == box.boxNumber
         }.size
-        val countScannedExciseStamp = currentExciseStampsDiscrepancies.filter {
-            it.boxNumber == box.boxNumber && it.isScan
+        val countScannedExciseStampOfBox = currentExciseStampsDiscrepancies.filter {
+            it.boxNumber == box.boxNumber && it.isScan && it.typeDiscrepancies == "1"
         }.size
 
-        return (countScannedBox >=1 && countScannedExciseStamp >=1) || (countScannedExciseStamp >= 2) || (countScannedExciseStamp >= productInfo.numberStampsControl.toInt())
+        return (countProcessedBox >=1 && countScannedExciseStampOfBox >=1) || (countScannedExciseStampOfBox >= 2) || (countScannedExciseStampOfBox >= productInfo.numberStampsControl.toInt())
     }
 
     fun rollbackScannedExciseStamp() {
@@ -359,6 +393,12 @@ class ProcessExciseAlcoBoxAccService
         return currentBoxDiscrepancies.none {
             it.boxNumber == boxNumber && it.typeDiscrepancies == "1"
         }
+    }
+
+    fun getCountBoxesProcessedOfProduct() : Int {
+        return currentBoxDiscrepancies.filter {
+            it.materialNumber == productInfo.materialNumber
+        }.size
     }
 
 }

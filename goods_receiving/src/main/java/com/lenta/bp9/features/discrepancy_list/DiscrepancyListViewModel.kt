@@ -77,7 +77,7 @@ class DiscrepancyListViewModel : CoreViewModel(), PageSelectionListener {
     }
 
     val visibilityBatchesButton: MutableLiveData<Boolean> by lazy {
-        MutableLiveData(taskManager.getReceivingTask()?.taskDescription?.isAlco ?: false)
+        MutableLiveData(taskManager.getReceivingTask()?.taskDescription?.isAlco == true && !(taskManager.getReceivingTask()?.taskHeader?.taskType == TaskType.ShipmentPP || taskManager.getReceivingTask()?.taskHeader?.taskType == TaskType.ShipmentRC)) //для хаданий ОПП и ОРЦ не показываем кнопку Партия, уточнил у Артема
     }
 
     init {
@@ -123,6 +123,8 @@ class DiscrepancyListViewModel : CoreViewModel(), PageSelectionListener {
                                     } else {
                                         task.taskRepository.getProductsDiscrepancies().getCountProductNotProcessedOfProduct(it) > 0.0
                                     }
+                                }.sortedByDescending {sorted ->
+                                    sorted.materialNumber
                                 }
                                 .mapIndexed { index, productInfo ->
                                     val uom = if (task.taskHeader.taskType == TaskType.DirectSupplier) {
@@ -149,7 +151,8 @@ class DiscrepancyListViewModel : CoreViewModel(), PageSelectionListener {
                                             checkStampControl = false,
                                             even = index % 2 == 0)
                                 }
-                                .reversed())
+                                .reversed()
+                )
             } else {
                 /**countNotProcessed.postValue(
                         task.getProcessedBatches()
@@ -180,6 +183,9 @@ class DiscrepancyListViewModel : CoreViewModel(), PageSelectionListener {
                         task.taskRepository.getProductsDiscrepancies().getProductsDiscrepancies()
                                 .filter {
                                     it.typeDiscrepancies != "1"
+                                }
+                                .sortedByDescending {
+                                    it.materialNumber
                                 }
                                 .mapIndexed { index, productDiscrepancies ->
                                     val productInfo = task.taskRepository.getProducts().findProduct(productDiscrepancies.materialNumber)
@@ -250,20 +256,12 @@ class DiscrepancyListViewModel : CoreViewModel(), PageSelectionListener {
                 countControl.postValue( //https://trello.com/c/9K1FZnUU, отображать перечень маркированных товаров, по которым не пройден хотя бы один из видов контроля
                         task.getProcessedProducts()
                                 .filter {goodsInfo ->
-                                    taskManager.getReceivingTask()!!.taskRepository.getBoxesDiscrepancies().findBoxesDiscrepanciesOfProduct(goodsInfo).filter {
-                                        it.isScan
-                                    }.size < (goodsInfo.numberBoxesControl.toInt()) ||
-                                            taskManager.getReceivingTask()!!.taskRepository.getExciseStampsDiscrepancies().findExciseStampsDiscrepanciesOfProduct(goodsInfo).filter {
-                                                it.isScan
-                                            }.size < (goodsInfo.numberStampsControl.toInt())
+                                    normEnteredButControlNotPassed(goodsInfo)
+                                }
+                                .sortedByDescending {
+                                    it.materialNumber
                                 }
                                 .mapIndexed { index, productInfo ->
-                                    val checkBoxControl = taskManager.getReceivingTask()!!.taskRepository.getBoxesDiscrepancies().findBoxesDiscrepanciesOfProduct(productInfo).filter {
-                                        it.isScan
-                                    }.size >= (productInfo.numberBoxesControl.toInt())
-                                    val checkStampControl = taskManager.getReceivingTask()!!.taskRepository.getExciseStampsDiscrepancies().findExciseStampsDiscrepanciesOfProduct(productInfo).filter {
-                                        it.isScan
-                                    }.size >= (productInfo.numberStampsControl.toInt())
                                     GoodsDiscrepancyItem(
                                             number = index + 1,
                                             name = "${productInfo.getMaterialLastSix()} ${productInfo.description}",
@@ -274,8 +272,8 @@ class DiscrepancyListViewModel : CoreViewModel(), PageSelectionListener {
                                             productInfo = productInfo,
                                             productDiscrepancies = null,
                                             batchInfo = null,
-                                            checkBoxControl = checkBoxControl,
-                                            checkStampControl = checkStampControl,
+                                            checkBoxControl = taskManager.getReceivingTask()?.controlBoxesOfProduct(productInfo) ?: false,
+                                            checkStampControl = taskManager.getReceivingTask()?.controlExciseStampsOfProduct(productInfo) ?: false,
                                             even = index % 2 == 0)
                                 }
                                 .reversed())
@@ -320,7 +318,12 @@ class DiscrepancyListViewModel : CoreViewModel(), PageSelectionListener {
                 countControl.value?.get(position)?.productInfo?.materialNumber
             }
         }
-        searchProductDelegate.searchCode(code = matnr ?: "", fromScan = false, isDiscrepancy = true)
+
+        if (isAlco.value == true && selectedPage.value == 0) {
+            screenNavigator.openExciseAlcoBoxProductFailureScreen(countNotProcessed.value?.get(position)?.productInfo!!)
+        } else {
+            searchProductDelegate.searchCode(code = matnr ?: "", fromScan = false, isDiscrepancy = true)
+        }
     }
 
     fun onClickClean() {
@@ -388,6 +391,22 @@ class DiscrepancyListViewModel : CoreViewModel(), PageSelectionListener {
     override fun handleFailure(failure: Failure) {
         super.handleFailure(failure)
         screenNavigator.openAlertScreen(failure, pageNumber = "97")
+    }
+
+    private fun normEnteredButControlNotPassed(productInfo: TaskProductInfo) : Boolean {
+        /** Артем:
+          товар на вкладке Контроль появляется если по товару была введеная норма, но не был пройден контроль
+          Причем если по товару
+          10 шт
+          контроль 2 шт,
+          а по факту мы ввели 1 норму (и подтвердили сканированием) и 9 брака то контроль считается пройден*/
+        return if (taskManager.getReceivingTask()!!.taskRepository.getProductsDiscrepancies().getCountAcceptOfProduct(productInfo) <= 0 || taskManager.getReceivingTask()!!.controlBoxesOfProduct(productInfo)) {
+            false
+        } else {
+            !((taskManager.getReceivingTask()?.countBoxesPassedControlOfProduct(productInfo) ?: 0) > 0 &&
+                    ((taskManager.getReceivingTask()?.countBoxesPassedControlOfProduct(productInfo) ?: 0) +
+                            taskManager.getReceivingTask()!!.taskRepository.getProductsDiscrepancies().getCountRefusalOfProduct(productInfo)) >= productInfo.origQuantity.toInt())
+        }
     }
 
 }

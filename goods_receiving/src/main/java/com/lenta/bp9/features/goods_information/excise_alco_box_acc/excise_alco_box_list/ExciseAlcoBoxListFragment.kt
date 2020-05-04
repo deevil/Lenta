@@ -211,6 +211,7 @@ class ExciseAlcoBoxListFragment : CoreFragment<FragmentExciseAlcoBoxListBinding,
     }
 
     override fun onScanResult(data: String) {
+        vm.isScan.value = true
         vm.onScanResult(data)
     }
 

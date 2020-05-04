@@ -49,6 +49,7 @@ class ExciseAlcoBoxListViewModel : CoreViewModel(), PageSelectionListener, OnOkI
     val scanCode: MutableLiveData<String> = MutableLiveData()
     val requestFocusToScanCode: MutableLiveData<Boolean> = MutableLiveData()
     val isSelectAll: MutableLiveData<Boolean> = MutableLiveData(false)
+    val isScan: MutableLiveData<Boolean> = MutableLiveData(false)
 
     val visibilityCleanButton: MutableLiveData<Boolean> = selectedPage.map {
         it == 1
@@ -64,9 +65,7 @@ class ExciseAlcoBoxListViewModel : CoreViewModel(), PageSelectionListener, OnOkI
 
     fun getDescription() : String {
         return if (selectQualityCode.value == "1") {
-            if (taskManager.getReceivingTask()!!.taskRepository.getBoxesDiscrepancies().findBoxesDiscrepanciesOfProduct(productInfo.value!!).filter {
-                        it.isScan
-                    }.size >= (productInfo.value?.numberBoxesControl?.toInt() ?: 0)) {
+            if (taskManager.getReceivingTask()?.controlExciseStampsOfProduct(productInfo.value!!) == true && taskManager.getReceivingTask()?.controlBoxesOfProduct(productInfo.value!!) == true) { //https://trello.com/c/HjxtG4Ca
                 context.getString(R.string.norm_control_performed) //Контроль нормы выполнен
             } else {
                 "${context.getString(R.string.norm_control)} ${productInfo.value?.numberBoxesControl?.toDouble().toStringFormatted()} ${context.getString(R.string.box_abbreviated)}" //Контроль нормы. Z кор.
@@ -115,12 +114,6 @@ class ExciseAlcoBoxListViewModel : CoreViewModel(), PageSelectionListener, OnOkI
             countProcessed.postValue(
                     boxInfoList
                             .mapIndexed { index, boxInfo ->
-                                val checkBoxControl = taskManager.getReceivingTask()!!.taskRepository.getBoxesDiscrepancies().findBoxesDiscrepanciesOfProduct(productInfo.value!!).filter {
-                                    it.isScan
-                                }.size >= (productInfo.value!!.numberBoxesControl.toInt())
-                                val checkStampControl = taskManager.getReceivingTask()!!.taskRepository.getExciseStampsDiscrepancies().findExciseStampsDiscrepanciesOfProduct(productInfo.value!!).filter {
-                                    it.isScan
-                                }.size >= (productInfo.value!!.numberStampsControl.toInt())
                                 val isDefectiveBox = processExciseAlcoBoxAccService.defectiveBox(boxInfo.boxNumber)
                                 BoxListItem(
                                         number = index + 1,
@@ -128,8 +121,8 @@ class ExciseAlcoBoxListViewModel : CoreViewModel(), PageSelectionListener, OnOkI
                                         productInfo = productInfo.value,
                                         productDiscrepancies = null,
                                         boxInfo = boxInfo,
-                                        checkBoxControl = checkBoxControl,
-                                        checkStampControl = checkStampControl,
+                                        checkBoxControl = processExciseAlcoBoxAccService.boxControl(boxInfo),
+                                        checkStampControl = processExciseAlcoBoxAccService.stampControlOfBox(boxInfo),
                                         isDefectiveBox = isDefectiveBox,
                                         even = index % 2 == 0)
                             }
@@ -186,7 +179,8 @@ class ExciseAlcoBoxListViewModel : CoreViewModel(), PageSelectionListener, OnOkI
                     exciseStampInfo = null,
                     selectQualityCode = selectQualityCode.value!!,
                     selectReasonRejectionCode = selectReasonRejectionCode.value,
-                    initialCount = initialCount.value!!
+                    initialCount = initialCount.value!!,
+                    isScan = false
             )
         }
     }
@@ -205,13 +199,15 @@ class ExciseAlcoBoxListViewModel : CoreViewModel(), PageSelectionListener, OnOkI
                     exciseStampInfo = null,
                     selectQualityCode = selectQualityCode.value!!,
                     selectReasonRejectionCode = selectReasonRejectionCode.value,
-                    initialCount = initialCount.value!!
+                    initialCount = initialCount.value!!,
+                    isScan = false
             )
         }
     }
 
     override fun onOkInSoftKeyboard(): Boolean {
         scanCode.value?.let {
+            isScan.value = false
             onScanResult(it)
         }
         return true
@@ -238,7 +234,8 @@ class ExciseAlcoBoxListViewModel : CoreViewModel(), PageSelectionListener, OnOkI
                                     exciseStampInfo = exciseStampInfo,
                                     selectQualityCode = "1",
                                     selectReasonRejectionCode = null,
-                                    initialCount = "1"
+                                    initialCount = "1",
+                                    isScan = isScan.value!!
                             )
                         }
                     }
@@ -264,7 +261,8 @@ class ExciseAlcoBoxListViewModel : CoreViewModel(), PageSelectionListener, OnOkI
                                         exciseStampInfo = null,
                                         selectQualityCode = selectQualityCode.value!!,
                                         selectReasonRejectionCode = null,
-                                        initialCount = "1"
+                                        initialCount = "1",
+                                        isScan = isScan.value!!
                                 )
                             }
                         } else {
@@ -278,7 +276,8 @@ class ExciseAlcoBoxListViewModel : CoreViewModel(), PageSelectionListener, OnOkI
                                         exciseStampInfo = null,
                                         selectQualityCode = selectQualityCode.value!!,
                                         selectReasonRejectionCode = selectReasonRejectionCode.value,
-                                        initialCount = initialCount.value!!
+                                        initialCount = initialCount.value!!,
+                                        isScan = isScan.value!!
                                 )
                             }
                         }

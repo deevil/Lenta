@@ -288,4 +288,7 @@
     <string name="box_abbreviated">кор.</string>
     <string name="accounting_for_marriage">Учет брака.</string>
     <string name="accounting_of_marriage_completed">Учет брака выполнен</string>
+    <string name="product_rejection_dialogue">Не обработано!\nВозможные действия:\n ЧАСТИЧНЫЙ отказ по товару - будет принято только подтвержденное сканированием количество;\n ПОЛНЫЙ отказ по товару;\n НАЗАД - возврат к сканированию</string>
+    <string name="dialogue_complete_rejection_of_goods">По товару будет произведен отказ в приемке планового количества %1$s кор. ПОЛНОСТЬЮ с регистрацией расхождения \"%2$s\"</string>
+    <string name="dialogue_partial_refusal_on_goods">Подтверждено сканирование %1$s кор. Для неподтвержденного количества в %2$s кор. будет сформирован частичный акт о разногласии с причиной \"%3$s\"</string>
 </resources>
