@@ -57,6 +57,19 @@ class SearchTaskViewModel: CoreViewModel(), OnOkInSoftKeyboardListener {
 
     var loadingMode: TaskListLoadingMode = TaskListLoadingMode.None
 
+    val tvSupplierVisibility: MutableLiveData<Boolean> by lazy { //https://trello.com/c/dnRmf5iB
+        MutableLiveData(loadingMode == TaskListLoadingMode.Receiving || loadingMode == TaskListLoadingMode.Shipment)
+    }
+    val tvOrderVisibility: MutableLiveData<Boolean> by lazy { //https://trello.com/c/dnRmf5iB
+        MutableLiveData(loadingMode == TaskListLoadingMode.Receiving || loadingMode == TaskListLoadingMode.Shipment)
+    }
+    val tvInvoiceVisibility: MutableLiveData<Boolean> by lazy { //https://trello.com/c/dnRmf5iB
+        MutableLiveData(loadingMode == TaskListLoadingMode.Receiving)
+    }
+    val tvTransportationVisibility: MutableLiveData<Boolean> by lazy { //https://trello.com/c/dnRmf5iB
+        MutableLiveData(loadingMode == TaskListLoadingMode.Receiving || loadingMode == TaskListLoadingMode.PGE)
+    }
+
     fun getDescription() : String {
         return when (loadingMode) {
             TaskListLoadingMode.Shipment -> context.getString(R.string.shipment_task)

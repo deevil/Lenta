@@ -111,6 +111,7 @@ class ExciseAlcoBoxAccInfoViewModel : CoreViewModel(), OnPositionClickListener {
     val checkStampControlVisibility: MutableLiveData<Boolean> = MutableLiveData()
 
     val tvStampControlVal: MutableLiveData<String> = acceptTotalCount.combineLatest(spinQualitySelectedPosition).map {
+        //https://trello.com/c/Z1SPfmAJ
         if (qualityInfo.value?.get(it?.second ?: 0)?.code == "1") {
             if ( (productInfo.value?.numberBoxesControl?.toInt() == 0 && productInfo.value?.numberStampsControl?.toInt() == 0) ||
                     ((it?.first ?: 0.0) <= 0.0) ) {
@@ -131,14 +132,13 @@ class ExciseAlcoBoxAccInfoViewModel : CoreViewModel(), OnPositionClickListener {
 
     val checkStampControl: MutableLiveData<Boolean> = checkStampControlVisibility.map {
         //https://trello.com/c/Z1SPfmAJ, Проставлять чекбокс при прохождении контроля всех марок во всех коробах
-        taskManager.getReceivingTask()!!.taskRepository.getExciseStampsDiscrepancies().findExciseStampsDiscrepanciesOfProduct(productInfo.value!!).filter {
-            it.isScan
-        }.size >= (productInfo.value?.numberStampsControl?.toInt() ?: 0)
+        taskManager.getReceivingTask()?.controlExciseStampsOfProduct(productInfo.value!!)
     }
 
     val checkBoxControlVisibility: MutableLiveData<Boolean> = MutableLiveData()
 
     val tvBoxControlVal: MutableLiveData<String> = acceptTotalCount.combineLatest(spinQualitySelectedPosition).map {
+        //https://trello.com/c/Z1SPfmAJ
         if (qualityInfo.value?.get(it?.second ?: 0)?.code == "1") {
             if ( (productInfo.value?.numberBoxesControl?.toInt() == 0 && productInfo.value?.numberStampsControl?.toInt() == 0) ||
                     ((it?.first ?: 0.0) <= 0.0) ) {
@@ -146,10 +146,11 @@ class ExciseAlcoBoxAccInfoViewModel : CoreViewModel(), OnPositionClickListener {
                 context.getString(R.string.not_required)
             } else {
                 checkBoxControlVisibility.value = true
-                val countBoxProcessed = taskManager.getReceivingTask()!!.taskRepository.getBoxesDiscrepancies().findBoxesDiscrepanciesOfProduct(productInfo.value!!).filter {boxDiscrepancies ->
-                    boxDiscrepancies.isScan
-                }.size
-                "$countBoxProcessed из ${productInfo.value?.numberBoxesControl?.toDouble().toStringFormatted()}"
+                if ((it?.first ?: 0.0) < (productInfo.value?.numberBoxesControl?.toDouble() ?: 0.0) ) {
+                    "${taskManager.getReceivingTask()?.countBoxesPassedControlOfProduct(productInfo.value!!)} из ${it?.first.toStringFormatted()}"
+                } else {
+                    "${taskManager.getReceivingTask()?.countBoxesPassedControlOfProduct(productInfo.value!!)} из ${productInfo.value?.numberBoxesControl?.toDouble().toStringFormatted()}"
+                }
             }
         } else {
             "" //это поле отображается только при выбранной категории "Норма"
@@ -158,9 +159,7 @@ class ExciseAlcoBoxAccInfoViewModel : CoreViewModel(), OnPositionClickListener {
 
     val checkBoxControl: MutableLiveData<Boolean> = checkBoxControlVisibility.map {
         //https://trello.com/c/Z1SPfmAJ, 2.4. Устанавливать чекбокс, когда F=Z;
-        taskManager.getReceivingTask()!!.taskRepository.getBoxesDiscrepancies().findBoxesDiscrepanciesOfProduct(productInfo.value!!).filter {
-            it.isScan
-        }.size >= (productInfo.value?.numberBoxesControl?.toInt() ?: 0)
+        taskManager.getReceivingTask()?.controlBoxesOfProduct(productInfo.value!!)
     }
 
     val checkBoxListVisibility: MutableLiveData<Boolean> = MutableLiveData()
@@ -293,7 +292,8 @@ class ExciseAlcoBoxAccInfoViewModel : CoreViewModel(), OnPositionClickListener {
                                         exciseStampInfo = exciseStampInfo,
                                         selectQualityCode = qualityInfo.value!![spinQualitySelectedPosition.value!!].code,
                                         selectReasonRejectionCode = null,
-                                        initialCount = "1"
+                                        initialCount = "1",
+                                        isScan = true
                                 )
                             }
                         }
@@ -320,7 +320,8 @@ class ExciseAlcoBoxAccInfoViewModel : CoreViewModel(), OnPositionClickListener {
                                         exciseStampInfo = null,
                                         selectQualityCode = qualityInfo.value!![spinQualitySelectedPosition.value!!].code,
                                         selectReasonRejectionCode = null,
-                                        initialCount = "1"
+                                        initialCount = "1",
+                                        isScan = true
                                 )
                             }
                         } else {
@@ -334,7 +335,8 @@ class ExciseAlcoBoxAccInfoViewModel : CoreViewModel(), OnPositionClickListener {
                                         exciseStampInfo = null,
                                         selectQualityCode = qualityInfo.value!![spinQualitySelectedPosition.value!!].code,
                                         selectReasonRejectionCode = reasonRejectionInfo.value!![spinReasonRejectionSelectedPosition.value!!].code,
-                                        initialCount = countValue.value.toStringFormatted()
+                                        initialCount = countValue.value.toStringFormatted(),
+                                        isScan = true
                                 )
                             }
                         }

@@ -224,7 +224,7 @@ class SearchProductDelegate @Inject constructor(
                             !taskManager.getReceivingTask()?.taskRepository?.getMercuryDiscrepancies()?.getMercuryInfo().isNullOrEmpty()) {
                         screenNavigator.openGoodsMercuryInfoScreen(taskProductInfo, isDiscrepancy)
                     } else {
-                        screenNavigator.openGoodsInfoScreen(productInfo = taskProductInfo, isDiscrepancy = isDiscrepancy)
+                        screenNavigator.openGoodsInfoScreen(productInfo = taskProductInfo, isDiscrepancy = isDiscrepancy, taskType = taskManager.getReceivingTask()?.taskHeader?.taskType ?: TaskType.None)
                     }
                 }
                 ProductType.ExciseAlcohol -> {

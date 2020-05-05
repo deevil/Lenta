@@ -375,6 +375,14 @@ data class ButtonDecorationInfo(
         val handleGoods: ButtonDecorationInfo by lazy {
             ButtonDecorationInfo(R.drawable.ic_handle_goods_white_24dp, R.string.handle_goods)
         }
+
+        val completeRejection: ButtonDecorationInfo by lazy {
+            ButtonDecorationInfo(R.drawable.ic_full, R.string.complete_rejection)
+        }
+
+        val partialFailure: ButtonDecorationInfo by lazy {
+            ButtonDecorationInfo(R.drawable.ic_partial, R.string.partial_failure)
+        }
     }
 
 }

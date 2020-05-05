@@ -856,4 +856,16 @@ class GoodsInfoViewModel : CoreViewModel(), OnPositionClickListener {
         }
     }
 
+    fun onBackPressed() {
+        if (enabledApplyButton.value == true) {
+            screenNavigator.openUnsavedDataDialog(
+                    yesCallbackFunc = {
+                        screenNavigator.goBack()
+                    }
+            )
+        } else {
+            screenNavigator.goBack()
+        }
+    }
+
 }
