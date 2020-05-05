@@ -101,6 +101,7 @@ class ExciseAlcoBoxListViewModel : CoreViewModel(), PageSelectionListener, OnOkI
                                         productInfo = productInfo.value,
                                         productDiscrepancies = null,
                                         boxInfo = boxInfo,
+                                        typeDiscrepancies = null,
                                         checkBoxControl = false,
                                         checkStampControl = false,
                                         isDefectiveBox = false,
@@ -115,12 +116,14 @@ class ExciseAlcoBoxListViewModel : CoreViewModel(), PageSelectionListener, OnOkI
                     boxInfoList
                             .mapIndexed { index, boxInfo ->
                                 val isDefectiveBox = processExciseAlcoBoxAccService.defectiveBox(boxInfo.boxNumber)
+                                val typeDiscrepancies = taskManager.getReceivingTask()?.taskRepository?.getBoxesDiscrepancies()?.findBoxesDiscrepanciesOfProduct(productInfo.value!!)?.findLast { it.boxNumber == boxInfo.boxNumber }?.typeDiscrepancies ?: ""
                                 BoxListItem(
                                         number = index + 1,
                                         name = "${boxInfo.boxNumber.substring(0,10)} ${boxInfo.boxNumber.substring(10,20)} ${boxInfo.boxNumber.substring(20,26)}",
                                         productInfo = productInfo.value,
                                         productDiscrepancies = null,
                                         boxInfo = boxInfo,
+                                        typeDiscrepancies = typeDiscrepancies,
                                         checkBoxControl = processExciseAlcoBoxAccService.boxControl(boxInfo),
                                         checkStampControl = processExciseAlcoBoxAccService.stampControlOfBox(boxInfo),
                                         isDefectiveBox = isDefectiveBox,
@@ -140,23 +143,9 @@ class ExciseAlcoBoxListViewModel : CoreViewModel(), PageSelectionListener, OnOkI
 
     fun onClickClean(){
         processedSelectionsHelper.selectedPositions.value?.map { position ->
-            taskManager.getReceivingTask()?.
-                    taskRepository?.
-                    getExciseStampsDiscrepancies()?.
-                    deleteExciseStampDiscrepancyOfProductOfBoxOfDiscrepancy(
-                            materialNumber = productInfo.value!!.materialNumber,
-                            boxNumber = countProcessed.value?.get(position)?.boxInfo?.boxNumber ?: "",
-                            typeDiscrepancies = if (selectReasonRejectionCode.value == null) selectQualityCode.value ?: "" else selectReasonRejectionCode.value ?: ""
-                    )
-
-            taskManager.getReceivingTask()?.
-                    taskRepository?.
-                    getBoxesDiscrepancies()?.
-                    deleteBoxDiscrepancies(
-                            materialNumber = productInfo.value!!.materialNumber,
-                            boxNumber = countProcessed.value?.get(position)?.boxInfo?.boxNumber ?: "",
-                            typeDiscrepancies = if (selectReasonRejectionCode.value == null) selectQualityCode.value!! else selectReasonRejectionCode.value ?: ""
-                    )
+            processExciseAlcoBoxAccService.cleanBoxInfo(
+                    boxNumber = countProcessed.value?.get(position)?.boxInfo?.boxNumber ?: "",
+                    typeDiscrepancies = countProcessed.value?.get(position)?.typeDiscrepancies ?: "")
         }
 
         updateData()
@@ -305,6 +294,7 @@ data class BoxListItem(
         val productInfo: TaskProductInfo?,
         val productDiscrepancies: TaskProductDiscrepancies?,
         val boxInfo: TaskBoxInfo,
+        val typeDiscrepancies: String?,
         val checkBoxControl: Boolean,
         val checkStampControl: Boolean,
         val isDefectiveBox: Boolean,

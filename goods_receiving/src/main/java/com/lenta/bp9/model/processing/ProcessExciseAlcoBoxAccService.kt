@@ -208,7 +208,7 @@ class ProcessExciseAlcoBoxAccService
 
         //отмечаем все марки из этих коробов признаком IS_SCAN=false (в карточке трелло не было указано ставить true для этих марок) и категорией для брака из параметра GRZ_CR_GRUNDCAT
         exciseStamps.filter {stamp ->
-            stamp.boxNumber == currentBoxNumber || stamp.boxNumber ==realBoxNumber
+            stamp.boxNumber == currentBoxNumber || stamp.boxNumber == realBoxNumber
         }.map {
             if (it.code == scannedExciseStampInfo.code) {
                 //отмечаем отсканированную марку признаком IS_SCAN=true (так указано в карточке трелло) и категорией для брака из параметра GRZ_CR_GRUNDCAT
@@ -393,6 +393,48 @@ class ProcessExciseAlcoBoxAccService
         return currentBoxDiscrepancies.filter {
             it.materialNumber == productInfo.materialNumber
         }.size
+    }
+
+    fun cleanBoxInfo(boxNumber: String, typeDiscrepancies: String) {
+        currentExciseStampsDiscrepancies.map { it }.filter {unitInfo ->
+            if (unitInfo.materialNumber == productInfo.materialNumber && unitInfo.boxNumber == boxNumber && unitInfo.typeDiscrepancies == typeDiscrepancies) {
+                currentExciseStampsDiscrepancies.remove(unitInfo)
+                return@filter true
+            }
+            return@filter false
+        }
+
+        taskManager.getReceivingTask()?.
+                taskRepository?.
+                getExciseStampsDiscrepancies()?.
+                deleteExciseStampDiscrepancyOfProductOfBoxOfDiscrepancy(
+                        materialNumber = productInfo.materialNumber,
+                        boxNumber = boxNumber,
+                        typeDiscrepancies = typeDiscrepancies
+                )
+
+        currentBoxDiscrepancies.map { it }.filter {unitInfo ->
+            if (unitInfo.materialNumber == productInfo.materialNumber && unitInfo.boxNumber == boxNumber && unitInfo.typeDiscrepancies == typeDiscrepancies) {
+                currentBoxDiscrepancies.remove(unitInfo)
+                return@filter true
+            }
+            return@filter false
+        }
+
+        taskManager.getReceivingTask()?.
+                taskRepository?.
+                getBoxesDiscrepancies()?.
+                deleteBoxDiscrepancies(
+                        materialNumber = productInfo.materialNumber,
+                        boxNumber = boxNumber,
+                        typeDiscrepancies = typeDiscrepancies
+                )
+
+        taskManager
+                .getReceivingTask()
+                ?.taskRepository
+                ?.getProductsDiscrepancies()
+                ?.deleteProductDiscrepancy(productInfo.materialNumber, typeDiscrepancies)
     }
 
 }
