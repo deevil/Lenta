@@ -224,7 +224,11 @@ class SearchProductDelegate @Inject constructor(
                             !taskManager.getReceivingTask()?.taskRepository?.getMercuryDiscrepancies()?.getMercuryInfo().isNullOrEmpty()) {
                         screenNavigator.openGoodsMercuryInfoScreen(taskProductInfo, isDiscrepancy)
                     } else {
-                        screenNavigator.openGoodsInfoScreen(productInfo = taskProductInfo, isDiscrepancy = isDiscrepancy, taskType = taskManager.getReceivingTask()?.taskHeader?.taskType ?: TaskType.None)
+                        if (taskManager.getReceivingTask()?.taskHeader?.taskType == TaskType.ShipmentPP) {
+                            screenNavigator.openGoodsInfoShipmentPPScreen(productInfo = taskProductInfo, isDiscrepancy = isDiscrepancy)
+                        } else {
+                            screenNavigator.openGoodsInfoScreen(productInfo = taskProductInfo, isDiscrepancy = isDiscrepancy)
+                        }
                     }
                 }
                 ProductType.ExciseAlcohol -> {
