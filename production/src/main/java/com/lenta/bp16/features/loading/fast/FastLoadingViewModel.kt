@@ -55,7 +55,7 @@ class FastLoadingViewModel : CoreLoadingViewModel() {
                 navigator.openLoginScreen()
                 navigator.openNeedUpdateScreen()
             } else {
-                navigator.openSelectMarketScreen()
+                navigator.openSelectionPersonnelNumberScreen()
             }
         }
     }

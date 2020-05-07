@@ -104,7 +104,7 @@ class SelectMarketViewModel : CoreViewModel(), OnPositionClickListener {
         navigator.hideProgress()
         timeMonitor.setServerTime(time = serverTime.time, date = serverTime.date)
 
-        navigator.openMainMenuScreen()
+        navigator.openFastDataLoadingScreen()
     }
 
     override fun onClickPosition(position: Int) {

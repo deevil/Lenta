@@ -57,7 +57,10 @@ data class PackCodeParams(
         val categoryCode: String = "",
         /** Код причины брака */
         @SerializedName("IV_GRUND")
-        val defectCode: String = ""
+        val defectCode: String = "",
+        /** Табельный номер */
+        @SerializedName("IV_PERNR")
+        val personnelNumber: String
 )
 
 class PackCodeStatus : ObjectRawStatus<PackCodeResult>()

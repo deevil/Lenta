@@ -152,7 +152,7 @@ data class LabelInfo(
         val dateExpir: String,
         /** Наименование продукта */
         val goodsName: String,
-        /** Номер весов */
+        /** Табельный номер */
         val weigher: String,
         /** Изготовлено */
         val productTime: String,
