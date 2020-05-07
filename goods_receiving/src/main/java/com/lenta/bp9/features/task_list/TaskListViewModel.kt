@@ -141,7 +141,7 @@ class TaskListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
     }
 
     override fun onOkInSoftKeyboard(): Boolean {
-        if (filterSearch.value?.length!! >= 18 && taskListLoadingMode == TaskListLoadingMode.Receiving) { //https://trello.com/c/zM0vlI9H
+        if (filterSearch.value?.length!! >= 18 && (taskListLoadingMode == TaskListLoadingMode.Receiving || taskListLoadingMode == TaskListLoadingMode.PGE)) { //https://trello.com/c/zM0vlI9H - приемка, https://trello.com/c/KlGPXY74 - ПГЕ
             selectedPage.value = 1
             screenNavigator.openTaskListLoadingScreen(taskListLoadingMode,
                     TaskListSearchParams(taskNumber = null,
