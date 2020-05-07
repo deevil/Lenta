@@ -78,7 +78,7 @@ class AuthViewModel : CoreAuthViewModel() {
 
     private fun onAuthSuccess(login: String) {
         progress.value = false
-        navigator.openFastDataLoadingScreen()
+        navigator.openSelectMarketScreen()
     }
 
     override fun handleFailure(failure: Failure) {
