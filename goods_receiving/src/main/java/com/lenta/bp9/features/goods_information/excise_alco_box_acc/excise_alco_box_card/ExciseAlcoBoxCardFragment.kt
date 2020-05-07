@@ -33,7 +33,8 @@ class ExciseAlcoBoxCardFragment : CoreFragment<FragmentExciseAlcoBoxCardBinding,
                 exciseStampInfo: TaskExciseStampInfo?,
                 selectQualityCode: String,
                 selectReasonRejectionCode: String?,
-                initialCount: String): ExciseAlcoBoxCardFragment {
+                initialCount: String,
+                isScan: Boolean): ExciseAlcoBoxCardFragment {
             ExciseAlcoBoxCardFragment().let {
                 it.productInfo = productInfo
                 it.boxInfo = boxInfo
@@ -42,6 +43,7 @@ class ExciseAlcoBoxCardFragment : CoreFragment<FragmentExciseAlcoBoxCardBinding,
                 it.selectQualityCode = selectQualityCode
                 it.selectReasonRejectionCode = selectReasonRejectionCode
                 it.initialCount = initialCount
+                it.isScan = isScan
                 return it
             }
         }
@@ -54,6 +56,7 @@ class ExciseAlcoBoxCardFragment : CoreFragment<FragmentExciseAlcoBoxCardBinding,
     private var selectQualityCode by state<String?>(null)
     private var selectReasonRejectionCode by state<String?>(null)
     private var initialCount by state<String?>(null)
+    private var isScan by state<Boolean?>(null)
 
     override fun getLayoutId(): Int = R.layout.fragment_excise_alco_box_card
 
@@ -65,6 +68,7 @@ class ExciseAlcoBoxCardFragment : CoreFragment<FragmentExciseAlcoBoxCardBinding,
             vm.productInfo.value = this.productInfo
             vm.selectQualityCode.value = this.selectQualityCode
             vm.initialCount.value = this.initialCount
+            vm.isScan.value = this.isScan
             selectReasonRejectionCode?.let {
                 vm.selectReasonRejectionCode.value = it
             }

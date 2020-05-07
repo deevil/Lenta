@@ -17,7 +17,9 @@ import com.lenta.bp9.features.goods_information.excise_alco_stamp_acc.ExciseAlco
 import com.lenta.bp9.features.goods_information.excise_alco_box_acc.ExciseAlcoBoxAccInfoFragment
 import com.lenta.bp9.features.goods_information.excise_alco_box_acc.excise_alco_box_card.ExciseAlcoBoxCardFragment
 import com.lenta.bp9.features.goods_information.excise_alco_box_acc.excise_alco_box_list.ExciseAlcoBoxListFragment
+import com.lenta.bp9.features.goods_information.excise_alco_box_acc.excise_alco_box_product_failure.ExciseAlcoBoxProductFailureFragment
 import com.lenta.bp9.features.goods_information.general.GoodsInfoFragment
+import com.lenta.bp9.features.goods_information.general_opp.GoodsInfoShipmentPPFragment
 import com.lenta.bp9.features.goods_information.mercury.GoodsMercuryInfoFragment
 import com.lenta.bp9.features.goods_information.non_excise_alco.NonExciseAlcoInfoFragment
 import com.lenta.bp9.features.goods_list.GoodsListFragment
@@ -1080,9 +1082,9 @@ class ScreenNavigator(
         }
     }
 
-    override fun openExciseAlcoBoxCardScreen(productInfo: TaskProductInfo, boxInfo: TaskBoxInfo?, massProcessingBoxesNumber: List<String>?, exciseStampInfo: TaskExciseStampInfo?, selectQualityCode: String, selectReasonRejectionCode: String?, initialCount: String) {
+    override fun openExciseAlcoBoxCardScreen(productInfo: TaskProductInfo, boxInfo: TaskBoxInfo?, massProcessingBoxesNumber: List<String>?, exciseStampInfo: TaskExciseStampInfo?, selectQualityCode: String, selectReasonRejectionCode: String?, initialCount: String, isScan: Boolean) {
         runOrPostpone {
-            getFragmentStack()?.push(ExciseAlcoBoxCardFragment.create(productInfo, boxInfo, massProcessingBoxesNumber, exciseStampInfo, selectQualityCode, selectReasonRejectionCode, initialCount))
+            getFragmentStack()?.push(ExciseAlcoBoxCardFragment.create(productInfo, boxInfo, massProcessingBoxesNumber, exciseStampInfo, selectQualityCode, selectReasonRejectionCode, initialCount, isScan))
         }
     }
 
@@ -1235,6 +1237,46 @@ class ScreenNavigator(
         }
     }
 
+    override fun openExciseAlcoBoxProductFailureScreen(productInfo: TaskProductInfo) {
+        runOrPostpone {
+            getFragmentStack()?.push(ExciseAlcoBoxProductFailureFragment.create(productInfo))
+        }
+    }
+
+    override fun openCompleteRejectionOfGoodsDialog(applyCallbackFunc: () -> Unit, title: String, countBoxes: String, paramGrzCrGrundcatName: String) {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    message = context.getString(R.string.dialogue_complete_rejection_of_goods, countBoxes, paramGrzCrGrundcatName),
+                    title = title,
+                    description = context.getString(R.string.complete_rejection),
+                    iconRes = R.drawable.ic_complete_rejection,
+                    codeConfirmForRight = backFragmentResultHelper.setFuncForResult(applyCallbackFunc),
+                    rightButtonDecorationInfo = ButtonDecorationInfo.apply,
+                    pageNumber = "94")
+            )
+        }
+    }
+
+    override fun openPartialRefusalOnGoodsDialog(applyCallbackFunc: () -> Unit, title: String, countScanBoxes: String, unconfirmedQuantity: String, paramGrzCrGrundcatName: String) {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    message = context.getString(R.string.dialogue_partial_refusal_on_goods, countScanBoxes, unconfirmedQuantity, paramGrzCrGrundcatName),
+                    title = title,
+                    description = context.getString(R.string.partial_failure),
+                    iconRes = R.drawable.ic_complete_rejection,
+                    codeConfirmForRight = backFragmentResultHelper.setFuncForResult(applyCallbackFunc),
+                    rightButtonDecorationInfo = ButtonDecorationInfo.apply,
+                    pageNumber = "94")
+            )
+        }
+    }
+
+    override fun openGoodsInfoShipmentPPScreen(productInfo: TaskProductInfo, isDiscrepancy: Boolean, initialCount: Double) {
+        runOrPostpone {
+            getFragmentStack()?.push(GoodsInfoShipmentPPFragment.create(productInfo, isDiscrepancy, initialCount))
+        }
+    }
+
     private fun getFragmentStack() = foregroundActivityProvider.getActivity()?.fragmentStack
 }
 
@@ -1363,7 +1405,7 @@ interface IScreenNavigator : ICoreNavigator {
     fun openCreateInboundDeliveryDialog(yesCallbackFunc: () -> Unit)
     fun openAlertUnableSaveNegativeQuantity()
     fun openExciseAlcoBoxListScreen(productInfo: TaskProductInfo, selectQualityCode: String, selectReasonRejectionCode: String?, initialCount: String)
-    fun openExciseAlcoBoxCardScreen(productInfo: TaskProductInfo, boxInfo: TaskBoxInfo?, massProcessingBoxesNumber: List<String>?, exciseStampInfo: TaskExciseStampInfo?, selectQualityCode: String, selectReasonRejectionCode: String?, initialCount: String)
+    fun openExciseAlcoBoxCardScreen(productInfo: TaskProductInfo, boxInfo: TaskBoxInfo?, massProcessingBoxesNumber: List<String>?, exciseStampInfo: TaskExciseStampInfo?, selectQualityCode: String, selectReasonRejectionCode: String?, initialCount: String, isScan: Boolean)
     fun openAlertScannedStampNotFoundScreen()
     fun openAlertScannedStampBelongsAnotherProductScreen(materialNumber: String, materialName: String)
     fun openAlertRequiredQuantityBoxesAlreadyProcessedScreen()
@@ -1377,4 +1419,8 @@ interface IScreenNavigator : ICoreNavigator {
     fun openAlertScannedBoxNotFoundInDeliveryScreen()
     fun openAlertGoodsNotInInvoiceScreen(materialNumber: String, materialName: String, callbackFunc: () -> Unit)
     fun openAlertMoreBoxesSelectedThanSnteredScreen()
+    fun openExciseAlcoBoxProductFailureScreen(productInfo: TaskProductInfo)
+    fun openCompleteRejectionOfGoodsDialog(applyCallbackFunc: () -> Unit, title: String, countBoxes: String, paramGrzCrGrundcatName: String)
+    fun openPartialRefusalOnGoodsDialog(applyCallbackFunc: () -> Unit, title: String, countScanBoxes: String, unconfirmedQuantity: String, paramGrzCrGrundcatName: String)
+    fun openGoodsInfoShipmentPPScreen(productInfo: TaskProductInfo, isDiscrepancy: Boolean, initialCount: Double = 0.0)
 }

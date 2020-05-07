@@ -195,7 +195,8 @@ class DefectInfoViewModel : CoreViewModel() {
                             order = raw.value!!.order,
                             quantity = total.value!!,
                             categoryCode = categories.value!![categoryPosition.value!!].code,
-                            defectCode = defects.value!![defectPosition.value!!].code
+                            defectCode = defects.value!![defectPosition.value!!].code,
+                            personnelNumber = sessionInfo.personnelNumber ?: ""
                     )
             ).also {
                 navigator.hideProgress()
@@ -255,7 +256,7 @@ class DefectInfoViewModel : CoreViewModel() {
                             dateExpir = dateExpir?.let { SimpleDateFormat(Constants.DATE_FORMAT_dd_mm_yyyy_hh_mm, Locale.getDefault()).format(it.time) }
                                     ?: "",
                             goodsName = "***БРАК*** ${packCodeResult.dataLabel.materialName}",
-                            weigher = appSettings.weightEquipmentName ?: "",
+                            weigher = sessionInfo.personnelNumber ?: "",
                             productTime = SimpleDateFormat(Constants.DATE_FORMAT_dd_mm_yyyy_hh_mm, Locale.getDefault()).format(productTime.time),
                             nameDone = packCodeResult.dataLabel.materialNameDone,
                             goodsCode = packCodeResult.dataLabel.material.takeLast(6),

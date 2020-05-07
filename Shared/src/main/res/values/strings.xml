@@ -194,4 +194,6 @@
     <string name="boxes">Короба</string>
     <string name="handle_goods">Обработать</string>
     <string name="select_all">Выбрать все</string>
+    <string name="complete_rejection">Полный</string>
+    <string name="partial_failure">Частичный</string>
 </resources>

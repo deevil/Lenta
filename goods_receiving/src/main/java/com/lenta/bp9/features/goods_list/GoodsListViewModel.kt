@@ -39,8 +39,6 @@ class GoodsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKey
     @Inject
     lateinit var searchProductDelegate: SearchProductDelegate
     @Inject
-    lateinit var skipRecountNetRequest: SkipRecountNetRequest
-    @Inject
     lateinit var hyperHive: HyperHive
 
     val selectedPage = MutableLiveData(0)
@@ -65,7 +63,7 @@ class GoodsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKey
     }
 
     val visibilityBatchesButton: MutableLiveData<Boolean> by lazy {
-        MutableLiveData(taskManager.getReceivingTask()?.taskDescription?.isAlco == true && taskManager.getReceivingTask()?.taskHeader?.taskType == TaskType.RecalculationCargoUnit)
+        MutableLiveData(taskManager.getReceivingTask()?.taskDescription?.isAlco == true && !(taskManager.getReceivingTask()?.taskHeader?.taskType == TaskType.ShipmentPP || taskManager.getReceivingTask()?.taskHeader?.taskType == TaskType.ShipmentRC)) //для заданий ОПП и ОРЦ не показываем кнопку Партия, уточнил у Артема
     }
 
     val enabledBtnSaveForShipmentPP: MutableLiveData<Boolean> = listToProcessing.map {
@@ -333,7 +331,7 @@ class GoodsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKey
 
     fun onClickThirdBtn() {
         if (taskType.value == TaskType.ShipmentPP) {//https://trello.com/c/3WVovfmE
-            shipmentSkipRecount()
+            screenNavigator.openSkipRecountScreen()
         } else {
             if (!isBatches.value!!) {
                 countedSelectionsHelper.selectedPositions.value?.map { position ->
@@ -365,32 +363,6 @@ class GoodsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKey
                 }
             }
             updateData()
-        }
-    }
-
-    private fun shipmentSkipRecount() {
-        viewModelScope.launch {
-            screenNavigator.showProgress(context.getString(R.string.skipping_recount))
-            val params = SkipRecountParameters(
-                    taskNumber = taskManager.getReceivingTask()?.taskHeader?.taskNumber ?: "",
-                    deviceIP = context.getDeviceIp(),
-                    personalNumber = sessionInfo.personnelNumber ?: "",
-                    comment = ""
-            )
-            skipRecountNetRequest(params).either(::handleFailure, ::handleSuccessSkipRecount)
-            screenNavigator.hideProgress()
-        }
-    }
-
-    private fun handleSuccessSkipRecount(result: SkipRecountResult) {
-        viewModelScope.launch {
-            val notifications = result.notifications.map { TaskNotification.from(it) }
-            val sectionInfo = result.sectionsInfo.map { TaskSectionInfo.from(it) }
-            val sectionProducts = result.sectionProducts.map { TaskSectionProducts.from(hyperHive, it) }
-            taskManager.updateTaskDescription(TaskDescription.from(result.taskDescription))
-            taskManager.getReceivingTask()?.taskRepository?.getNotifications()?.updateWithNotifications(notifications, null, null, null)
-            taskManager.getReceivingTask()?.taskRepository?.getSections()?.updateSections(sectionInfo, sectionProducts)
-            screenNavigator.openTaskCardScreen(TaskCardMode.Full, taskManager.getReceivingTask()?.taskHeader?.taskType ?: TaskType.None)
         }
     }
 
@@ -461,7 +433,7 @@ class GoodsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKey
                 it
             } ?: 0.0
 
-            if (countProductNotProcessed > 0.0 && taskType.value != TaskType.ShipmentPP) { //https://trello.com/c/3WVovfmE если это ОПП, то мы сразу переходим к сохранению (условию else)
+            if (countProductNotProcessed > 0.0) {
                 screenNavigator.openDiscrepancyListScreen()
             } else {
                 screenNavigator.showProgressLoadingData()

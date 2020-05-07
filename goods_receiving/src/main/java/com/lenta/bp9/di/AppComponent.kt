@@ -14,7 +14,9 @@ import com.lenta.bp9.features.goods_information.excise_alco_stamp_acc.ExciseAlco
 import com.lenta.bp9.features.goods_information.excise_alco_box_acc.ExciseAlcoBoxAccInfoViewModel
 import com.lenta.bp9.features.goods_information.excise_alco_box_acc.excise_alco_box_card.ExciseAlcoBoxCardViewModel
 import com.lenta.bp9.features.goods_information.excise_alco_box_acc.excise_alco_box_list.ExciseAlcoBoxListViewModel
+import com.lenta.bp9.features.goods_information.excise_alco_box_acc.excise_alco_box_product_failure.ExciseAlcoBoxProductFailureViewModel
 import com.lenta.bp9.features.goods_information.general.GoodsInfoViewModel
+import com.lenta.bp9.features.goods_information.general_opp.GoodsInfoShipmentPPViewModel
 import com.lenta.bp9.features.goods_information.mercury.GoodsMercuryInfoViewModel
 import com.lenta.bp9.features.goods_information.non_excise_alco.NonExciseAlcoInfoViewModel
 import com.lenta.bp9.features.goods_list.GoodsListViewModel
@@ -123,4 +125,6 @@ interface AppComponent {
     fun inject(it: ExciseAlcoBoxAccInfoViewModel)
     fun inject(it: ExciseAlcoBoxListViewModel)
     fun inject(it: ExciseAlcoBoxCardViewModel)
+    fun inject(it: ExciseAlcoBoxProductFailureViewModel)
+    fun inject(it: GoodsInfoShipmentPPViewModel)
 }

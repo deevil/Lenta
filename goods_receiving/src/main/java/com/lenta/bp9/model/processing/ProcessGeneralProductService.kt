@@ -155,7 +155,12 @@ class ProcessGeneralProductService
     }
 
     private fun getCountOfDiscrepancies(typeDiscrepancies: String) : Double {
-        return taskManager.getReceivingTask()!!.taskRepository.getProductsDiscrepancies().getCountOfDiscrepanciesOfProduct(productInfo, typeDiscrepancies)
+        return taskManager.getReceivingTask()?.taskRepository?.getProductsDiscrepancies()?.getCountOfDiscrepanciesOfProduct(productInfo, typeDiscrepancies) ?: 0.0
+    }
+
+    fun overLimit(count: Double) : Boolean {
+        return productInfo.origQuantity.toDouble() < ((taskManager.getReceivingTask()?.taskRepository?.getProductsDiscrepancies()?.getCountAcceptOfProduct(productInfo) ?: 0.0)
+                + (taskManager.getReceivingTask()?.taskRepository?.getProductsDiscrepancies()?.getCountRefusalOfProduct(productInfo) ?: 0.0) + count)
     }
 
     fun add(count: String, typeDiscrepancies: String){
@@ -168,7 +173,7 @@ class ProcessGeneralProductService
             it.materialNumber == productInfo.materialNumber && it.typeDiscrepancies == typeDiscrepancies
         }
 
-        if (countAdd == 0.0) {
+        if (countAdd == 0.0 && taskManager.getReceivingTask()?.taskHeader?.taskType != TaskType.ShipmentPP) {
             taskManager.getReceivingTask()?.taskRepository?.getProductsDiscrepancies()?.deleteProductDiscrepancy(productInfo.materialNumber, typeDiscrepancies)
         } else {
             if (foundDiscrepancy == null) {

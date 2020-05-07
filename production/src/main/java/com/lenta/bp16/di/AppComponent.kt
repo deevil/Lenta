@@ -19,6 +19,7 @@ import com.lenta.bp16.features.processing_unit_task_list.ProcessingUnitTaskListV
 import com.lenta.bp16.features.raw_list.RawListViewModel
 import com.lenta.bp16.features.reprint_label.ReprintLabelViewModel
 import com.lenta.bp16.features.select_market.SelectMarketViewModel
+import com.lenta.bp16.features.select_personnel_number.SelectPersonnelNumberViewModel
 import com.lenta.bp16.main.MainActivity
 import com.lenta.bp16.main.MainViewModel
 import com.lenta.bp16.model.ITaskManager
@@ -60,5 +61,5 @@ interface AppComponent : CoreComponent {
     fun inject(it: ReprintLabelViewModel)
     fun inject(it: DefectInfoViewModel)
     fun inject(it: DefectListViewModel)
-
+    fun inject(it: SelectPersonnelNumberViewModel)
 }

@@ -5,6 +5,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
+import android.widget.ImageView
+import android.widget.LinearLayout
+import android.widget.TextView
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
@@ -64,6 +67,22 @@ class DiscrepancyListFragment : CoreFragment<FragmentDiscrepancyListBinding, Dis
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding?.viewPagerSettings = this
+
+        viewLifecycleOwner.apply {
+            vm.countControl.observe(this, Observer {
+                val tabItemLayout = (binding?.tabStrip?.getChildAt(0) as LinearLayout).getChildAt(1) as LinearLayout
+                tabItemLayout.orientation = LinearLayout.HORIZONTAL
+                val iconView = if (tabItemLayout.getChildAt(0) is ImageView) tabItemLayout.getChildAt(0) as ImageView else null
+                val textView = if (tabItemLayout.getChildAt(0) is TextView) tabItemLayout.getChildAt(0) as TextView else tabItemLayout.getChildAt(1) as TextView
+                if (iconView != null) tabItemLayout.removeView(iconView)
+                if (it.isNotEmpty()) {
+                    textView.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_indicator_red_tablayout, 0)
+                    textView.compoundDrawablePadding = 5
+                } else {
+                    textView.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0)
+                }
+            })
+        }
     }
 
     override fun onToolbarButtonClick(view: View) {

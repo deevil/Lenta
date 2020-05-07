@@ -49,12 +49,12 @@ class SelectPersonnelNumberDelegate @Inject constructor(
     private fun initWithViewModel() {
         viewModelScope().launch {
             when {
-                sessionInfo.personnelNumber != null -> {
+                sessionInfo.personnelNumber != null && !isAppGoodsReceiving.value!! -> { //https://trello.com/c/Z0wRVpjQ !isAppGoodsReceiving.value!!-это условие добавлено для приложения Приемка (goods_receiving)
                     personnelNumber.value = sessionInfo.personnelNumber
                     fullName.value = sessionInfo.personnelFullName
                     searchPersonnelNumber()
                 }
-                appSettings.lastPersonnelNumber != null -> {
+                appSettings.lastPersonnelNumber != null && !isAppGoodsReceiving.value!! -> { //https://trello.com/c/Z0wRVpjQ !isAppGoodsReceiving.value!!-это условие добавлено для приложения Приемка (goods_receiving)
                     personnelNumber.value = appSettings.lastPersonnelNumber
                     searchPersonnelNumber()
                 }

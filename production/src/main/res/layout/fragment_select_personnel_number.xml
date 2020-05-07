@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".features.select_personnel_number.SelectPersonnelNumberFragment">
+
+    <data>
+
+        <variable
+            name="vm"
+            type="com.lenta.bp16.features.select_personnel_number.SelectPersonnelNumberViewModel" />
+
+
+    </data>
+
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <TextView
+            android:id="@+id/tv_choose_tab_description"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="32dp"
+            android:layout_marginEnd="32dp"
+            android:layout_marginBottom="32dp"
+            android:gravity="center"
+            android:text="@string/choose_tabnumber_description"
+            app:layout_constraintBottom_toTopOf="@+id/et_search"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <EditText
+            android:id="@+id/et_search"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:digits="0123456789"
+            android:drawableEnd="@drawable/ic_search_white_16dp"
+            android:imeOptions="actionSearch"
+            android:importantForAutofill="no"
+            android:inputType="numberDecimal"
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp"
+            android:text="@={vm.personnelNumber}"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:onOkInSoftKeyboard="@{vm}"
+            app:requestFocus="@{vm.editTextFocus}"
+            tools:ignore="LabelFor"
+            tools:targetApi="o" />
+
+        <TextView
+            android:id="@+id/tv_fio"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="32dp"
+            android:layout_marginTop="32dp"
+            android:layout_marginEnd="32dp"
+            android:gravity="center"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/et_search"
+            app:prefix='@{@string/fio + ": "}'
+            app:setTextWithVisibilities="@{vm.fullName}"
+            tools:text="ФИО: Петров А.А." />
+
+        <TextView
+            android:id="@+id/tv_empl_position"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="32dp"
+            android:layout_marginEnd="32dp"
+            android:gravity="center"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tv_fio"
+            app:prefix='@{@string/employees_position + ": "}'
+            app:setTextWithVisibilities="@{vm.employeesPosition}"
+            tools:text="Должность: Ст. кладовщик" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+</layout>
