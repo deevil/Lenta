@@ -28,6 +28,8 @@ class SettingsViewModel : CoreViewModel(){
 
     var changeWeightEquipmentButtonVisibility = MutableLiveData(false)
 
+    var updateAppButtonVisibility = MutableLiveData(true)
+
     init {
         viewModelScope.launch {
             when (sessionInfo.packageName) {
@@ -63,6 +65,10 @@ class SettingsViewModel : CoreViewModel(){
 
     fun onClickTechLog() {
         screenNavigator.openTechLoginScreen()
+    }
+
+    fun onClickUpdateApp() {
+        screenNavigator.openUpdateAppScreen()
     }
 
 }

@@ -13,6 +13,7 @@ import com.lenta.shared.analytics.db.RoomAppDatabase
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.exception.IFailureInterpreter
 import com.lenta.shared.features.alert.AlertFragment
+import com.lenta.shared.features.app_updates.AppUpdateFragment
 import com.lenta.shared.features.auxiliary_menu.AuxiliaryMenuFragment
 import com.lenta.shared.features.exit.ExitWithConfirmationFragment
 import com.lenta.shared.features.fmp_settings.FmpSettingsFragment
@@ -293,6 +294,13 @@ class CoreNavigator @Inject constructor(
         }
     }
 
+
+    override fun openUpdateAppScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(AppUpdateFragment())
+        }
+    }
+
     override fun openBoxInfoScreen() {
         runOrPostpone {
             getFragmentStack()?.push(AlertFragment.create(message = iconDescriptionHelper.getDescription(IconCode.BOX_SCAN)
@@ -512,6 +520,7 @@ interface ICoreNavigator {
     fun showAlertBlockedTaskAnotherUser(userName: String, deviceIp: String)
     fun showAlertBlockedTaskByMe(userName: String, yesCallback: () -> Unit)
     fun openGS128InfoScreen()
+    fun openUpdateAppScreen()
 }
 
 class FunctionsCollector(private val needCollectLiveData: LiveData<Boolean>) {

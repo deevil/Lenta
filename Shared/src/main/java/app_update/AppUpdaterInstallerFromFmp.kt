@@ -27,13 +27,13 @@ class AppUpdaterInstallerFromFmp @Inject constructor(
         private val hyperHive: HyperHive,
         private val coreNavigator: CoreNavigator
 ) : AppUpdateInstaller {
-    override suspend fun checkNeedAndHaveUpdate(codeVersion: Int): Either<Failure, String> {
+    override suspend fun checkNeedAndHaveUpdate(codeVersion: Int?): Either<Failure, String> {
         @Suppress("DEPRECATION") val currentCodeVersion = context.packageManager
                 .getPackageInfo(context.packageName, 0)?.versionCode ?: 0
 
         Logg.d { "currentCodeVersion: $currentCodeVersion" }
 
-        if (currentCodeVersion >= codeVersion) {
+        if (codeVersion != null && currentCodeVersion >= codeVersion) {
             return Either.Right("")
         }
 
@@ -43,6 +43,11 @@ class AppUpdaterInstallerFromFmp @Inject constructor(
         Logg.d { "status result files: ${status?.result?.raw?.files}" }
         if (status.isNotBad()) {
             val files = status?.result?.raw?.files ?: emptyList()
+            if (codeVersion == null) {
+                return Either.Right(files.maxBy {
+                    it.split("-").lastOrNull()?.replace(".apk", "")?.toIntOrNull() ?: 0
+                } ?: "")
+            }
             return files.find { it.endsWith("-$codeVersion.apk") }.let { fileName ->
                 if (fileName.isNullOrBlank()) {
                     Either.Left(NotFoundAppUpdateFileError(codeVersion))
@@ -56,12 +61,14 @@ class AppUpdaterInstallerFromFmp @Inject constructor(
 
     override suspend fun installUpdate(fileName: String): Either<Failure, Unit> {
         val serverPath: String = dirName() + fileName
-        val localFilePath: String = createFile("${config.folderName}_update.apk") ?: return Either.Left(Failure.FileReadingError)
+        val localFilePath: String = createFile("${config.folderName}_update.apk")
+                ?: return Either.Left(Failure.FileReadingError)
         var status = hyperHive.fileConnectorApi.fileGet(localFilePath, serverPath, storageName).execute()
         return status.toEitherBoolean().map {
             sendInstallUpdateIntentAndCloseApp(File(localFilePath))
         }
     }
+
 
     private fun sendInstallUpdateIntentAndCloseApp(localFile: File) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
