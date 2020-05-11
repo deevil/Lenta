@@ -16,6 +16,16 @@
         tools:ignore="GoogleAppIndexingWarning"
         tools:replace="android:appComponentFactory, android:allowBackup, android:supportsRtl"
         tools:targetApi="p">
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.provider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/provider_paths" />
+        </provider>
+
         <meta-data
             android:name="io.fabric.ApiKey"
             android:value="c9e0b6b582d5dcd9003ee56a70c75fa689ef0939" />

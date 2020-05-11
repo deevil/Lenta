@@ -2,6 +2,8 @@ package com.lenta.shared.platform.navigation
 
 import android.content.Context
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.LiveData
 import com.lenta.shared.R
@@ -517,11 +519,13 @@ class FunctionsCollector(private val needCollectLiveData: LiveData<Boolean>) {
     private val functions: MutableList<() -> Unit> = mutableListOf()
 
     init {
-        needCollectLiveData.observeForever { needCollect ->
-            if (!needCollect) {
-                functions.map { it }.forEach {
-                    it()
-                    functions.remove(it)
+        Handler(Looper.getMainLooper()).post {
+            needCollectLiveData.observeForever { needCollect ->
+                if (!needCollect) {
+                    functions.map { it }.forEach {
+                        it()
+                        functions.remove(it)
+                    }
                 }
             }
         }

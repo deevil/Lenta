@@ -196,4 +196,6 @@
     <string name="select_all">Выбрать все</string>
     <string name="complete_rejection">Полный</string>
     <string name="partial_failure">Частичный</string>
+    <string name="not_found_app_file_update">Обновление приложения №%s не найдено на сервере FMP</string>
+    <string name="loading_new_app_version">Загрузка новой версии</string>
 </resources>
