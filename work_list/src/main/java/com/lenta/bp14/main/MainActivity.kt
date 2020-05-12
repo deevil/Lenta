@@ -11,6 +11,7 @@ import com.lenta.bp14.platform.extentions.getAppComponent
 import com.lenta.shared.platform.activity.main_activity.CoreMainActivity
 import com.crashlytics.android.Crashlytics
 import com.lenta.bp14.di.AppComponent
+import com.lenta.shared.di.FromParentToCoreProvider
 import com.lenta.shared.platform.fragment.CoreFragment
 import com.lenta.shared.utilities.runIfRelease
 import io.fabric.sdk.android.Fabric
@@ -69,6 +70,10 @@ class MainActivity : CoreMainActivity() {
 
     override fun getAdditionalListOfRequiredPermissions(): List<String> {
         return listOf(Manifest.permission.CAMERA)
+    }
+
+    override fun provideFromParentToCoreProvider(): FromParentToCoreProvider? {
+        return getAppComponent(coreComponent)
     }
 
 }
