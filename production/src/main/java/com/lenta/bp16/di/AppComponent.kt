@@ -28,11 +28,12 @@ import com.lenta.bp16.platform.resource.IResourceManager
 import com.lenta.bp16.repository.IDatabaseRepository
 import com.lenta.shared.di.AppScope
 import com.lenta.shared.di.CoreComponent
+import com.lenta.shared.di.FromParentToCoreProvider
 import dagger.Component
 
 @Component(modules = [AppModule::class], dependencies = [CoreComponent::class])
 @AppScope
-interface AppComponent : CoreComponent {
+interface AppComponent : CoreComponent, FromParentToCoreProvider {
 
     fun getScreenNavigator(): IScreenNavigator
     fun getGeneralRepository(): IDatabaseRepository
