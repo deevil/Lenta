@@ -34,5 +34,10 @@ data class Market(
         @SerializedName("ADDRES")
         val address: String,
         @SerializedName("RETAIL_TYPE")
-        val retailType: String
+        val retailType: String,
+        /**
+         * Версия приложения для обновления через FMP
+         */
+        @SerializedName("VERSION")
+        val version: String
 )
