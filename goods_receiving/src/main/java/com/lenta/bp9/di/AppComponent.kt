@@ -50,11 +50,12 @@ import com.lenta.bp9.main.MainActivity
 import com.lenta.bp9.main.MainViewModel
 import com.lenta.shared.di.AppScope
 import com.lenta.shared.di.CoreComponent
+import com.lenta.shared.di.FromParentToCoreProvider
 import dagger.Component
 
 @Component(modules = [AppModule::class], dependencies = [CoreComponent::class])
 @AppScope
-interface AppComponent {
+interface AppComponent : FromParentToCoreProvider {
     fun inject(mainActivity: MainActivity)
     fun inject(mainViewModel: MainViewModel)
     fun inject(it: ExceptionHandler)

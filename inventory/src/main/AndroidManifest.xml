@@ -16,6 +16,15 @@
         tools:ignore="GoogleAppIndexingWarning"
         tools:replace="android:appComponentFactory, android:allowBackup, android:supportsRtl"
         tools:targetApi="p">
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.provider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/provider_paths" />
+        </provider>
         <activity
             android:name=".main.MainActivity"
             android:excludeFromRecents="true"

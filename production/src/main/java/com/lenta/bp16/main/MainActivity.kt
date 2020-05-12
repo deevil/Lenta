@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModelProviders
 import com.crashlytics.android.Crashlytics
 import com.lenta.bp16.di.AppComponent
 import com.lenta.bp16.platform.extention.getAppComponent
+import com.lenta.shared.di.FromParentToCoreProvider
 import com.lenta.shared.platform.activity.main_activity.CoreMainActivity
 import com.lenta.shared.platform.fragment.CoreFragment
 import com.lenta.shared.utilities.runIfRelease
@@ -56,6 +57,10 @@ class MainActivity : CoreMainActivity() {
 
     override fun getAdditionalListOfRequiredPermissions(): List<String> {
         return emptyList()
+    }
+
+    override fun provideFromParentToCoreProvider(): FromParentToCoreProvider? {
+        return getAppComponent(coreComponent)
     }
 
 }
