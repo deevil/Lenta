@@ -10,6 +10,7 @@ import com.lenta.shared.analytics.IAnalytics
 import com.lenta.shared.analytics.db.RoomAppDatabase
 import com.lenta.shared.analytics.db.dao.LogDao
 import com.lenta.shared.exception.IFailureInterpreter
+import com.lenta.shared.features.app_updates.AppUpdateViewModel
 import com.lenta.shared.features.auxiliary_menu.AuxiliaryMenuViewModel
 import com.lenta.shared.features.fmp_settings.FmpSettingsViewModel
 import com.lenta.shared.features.login.CoreLoginFragment
@@ -103,4 +104,5 @@ interface CoreComponent {
     fun inject(coreLoginFragment: CoreLoginFragment)
     fun inject(fragmentStack: FragmentStack)
     fun inject(mainService: MainService)
+    fun inject(it: AppUpdateViewModel)
 }

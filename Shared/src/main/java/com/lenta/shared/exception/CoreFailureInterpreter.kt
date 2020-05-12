@@ -31,6 +31,8 @@ class CoreFailureInterpreter
 
             Failure.NotValidEnterNumber -> FailureDescription(message = context.getString(R.string.not_valid_format_ean))
 
+            is NotFoundAppUpdateFileError -> FailureDescription(message = context.getString(R.string.not_found_app_file_update, "${failure.codeVersion}"), iconRes = R.drawable.is_warning_red_80dp)
+
             is Failure.SapError -> FailureDescription(
                     iconRes = R.drawable.ic_warning_yellow_80dp,
                     message = failure.message)
