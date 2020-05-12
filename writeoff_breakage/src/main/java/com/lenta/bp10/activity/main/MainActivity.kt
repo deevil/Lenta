@@ -6,6 +6,7 @@ import com.lenta.bp10.di.AppComponent
 import com.lenta.bp10.platform.extentions.getAppComponent
 import com.lenta.shared.platform.activity.main_activity.CoreMainActivity
 import com.crashlytics.android.Crashlytics
+import com.lenta.shared.di.FromParentToCoreProvider
 import com.lenta.shared.platform.fragment.CoreFragment
 import com.lenta.shared.utilities.runIfRelease
 import io.fabric.sdk.android.Fabric
@@ -62,6 +63,10 @@ class MainActivity : CoreMainActivity() {
 
     override fun getPrefixScreen(fragment: CoreFragment<*, *>): String {
         return numberScreenGenerator.getPrefixScreen(fragment)
+    }
+
+    override fun provideFromParentToCoreProvider(): FromParentToCoreProvider? {
+        return getAppComponent(coreComponent)
     }
 
 }

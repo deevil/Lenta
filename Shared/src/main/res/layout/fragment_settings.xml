@@ -31,56 +31,73 @@
             app:layout_constraintTop_toTopOf="parent"
             tools:ignore="ContentDescription" />
 
-        <LinearLayout
+        <ScrollView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginEnd="16dp"
-            android:layout_marginBottom="16dp"
-            android:orientation="vertical"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent">
 
-            <Button
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:enabled="@{vm.isMainMenu}"
-                android:focusable="@{vm.isMainMenu}"
-                android:onClick="@{(view) -> vm.onClickChangeWeightEquipment()}"
-                android:text="@string/change_weight_equipment"
-                android:textAllCaps="false"
-                android:visibility="@{vm.changeWeightEquipmentButtonVisibility}" />
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginBottom="16dp"
+                android:orientation="vertical">
 
-            <Button
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:enabled="@{vm.isMainMenu}"
-                android:focusable="@{vm.isMainMenu}"
-                android:onClick="@{(view) -> vm.onClickPrinter()}"
-                android:text="@string/printer_change"
-                android:textAllCaps="false"
-                android:visibility="@{vm.selectPrinterButtonVisibility}" />
+                <Button
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:enabled="@{vm.isMainMenu}"
+                    android:focusable="@{vm.isMainMenu}"
+                    android:onClick="@{(view) -> vm.onClickUpdateApp()}"
+                    android:visibility="@{vm.updateAppButtonVisibility}"
+                    android:text="@string/app_update"
+                    android:textAllCaps="false" />
 
-            <Button
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:enabled="@{!vm.isMainMenu}"
-                android:focusable="@{!vm.isMainMenu}"
-                android:onClick="@{(view) -> vm.onClickWork()}"
-                android:text="@string/select_oper_mode"
-                android:visibility="@{vm.selectOperModeButtonVisibility}" />
+                <Button
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:enabled="@{vm.isMainMenu}"
+                    android:focusable="@{vm.isMainMenu}"
+                    android:onClick="@{(view) -> vm.onClickChangeWeightEquipment()}"
+                    android:text="@string/change_weight_equipment"
+                    android:textAllCaps="false"
+                    android:visibility="@{vm.changeWeightEquipmentButtonVisibility}" />
 
-            <Button
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:enabled="@{!vm.isMainMenu}"
-                android:focusable="@{!vm.isMainMenu}"
-                android:onClick="@{(view) -> vm.onClickTechLog()}"
-                android:text="@string/tech_login"
-                android:textAllCaps="false" />
+                <Button
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:enabled="@{vm.isMainMenu}"
+                    android:focusable="@{vm.isMainMenu}"
+                    android:onClick="@{(view) -> vm.onClickPrinter()}"
+                    android:text="@string/printer_change"
+                    android:textAllCaps="false"
+                    android:visibility="@{vm.selectPrinterButtonVisibility}" />
 
-        </LinearLayout>
+                <Button
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:enabled="@{!vm.isMainMenu}"
+                    android:focusable="@{!vm.isMainMenu}"
+                    android:onClick="@{(view) -> vm.onClickWork()}"
+                    android:text="@string/select_oper_mode"
+                    android:visibility="@{vm.selectOperModeButtonVisibility}" />
+
+                <Button
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:enabled="@{!vm.isMainMenu}"
+                    android:focusable="@{!vm.isMainMenu}"
+                    android:onClick="@{(view) -> vm.onClickTechLog()}"
+                    android:text="@string/tech_login"
+                    android:textAllCaps="false" />
+
+            </LinearLayout>
+
+        </ScrollView>
+
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

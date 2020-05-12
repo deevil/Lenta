@@ -13,9 +13,11 @@ import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.Observer
+import app_update.AppUpdateInstaller
 import com.lenta.shared.R
 import com.lenta.shared.analytics.AnalyticsHelper
 import com.lenta.shared.databinding.ActivityMainBinding
+import com.lenta.shared.di.FromParentToCoreProvider
 import com.lenta.shared.keys.KeyCode
 import com.lenta.shared.keys.OnKeyDownListener
 import com.lenta.shared.keys.OnKeyUpListener
@@ -24,6 +26,7 @@ import com.lenta.shared.platform.activity.CoreActivity
 import com.lenta.shared.platform.activity.ForegroundActivityProvider
 import com.lenta.shared.platform.activity.INumberScreenGenerator
 import com.lenta.shared.platform.activity.OnBackPresserListener
+import com.lenta.shared.platform.app_update.AppUpdateChecker
 import com.lenta.shared.platform.battery_state.BatteryStateMonitor
 import com.lenta.shared.platform.fragment.CoreFragment
 import com.lenta.shared.platform.navigation.FragmentStack
@@ -293,6 +296,10 @@ abstract class CoreMainActivity : CoreActivity<ActivityMainBinding>(), ToolbarBu
 
     fun hideProgress() {
         vm.hideProgress()
+    }
+
+    open fun provideFromParentToCoreProvider(): FromParentToCoreProvider? {
+        return null
     }
 
     protected abstract fun getViewModel(): CoreMainViewModel
