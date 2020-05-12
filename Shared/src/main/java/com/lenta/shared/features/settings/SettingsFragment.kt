@@ -48,6 +48,7 @@ class SettingsFragment : CoreFragment<com.lenta.shared.databinding.FragmentSetti
     override fun getViewModel(): SettingsViewModel {
         provideViewModel(SettingsViewModel::class.java).let {
             coreComponent.inject(it)
+            it.updateAppButtonVisibility.value = provideFromParentToCoreProvider()?.getAppUpdateInstaller() != null
             return it
         }
     }

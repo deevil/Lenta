@@ -8,6 +8,7 @@ import androidx.databinding.ViewDataBinding
 import androidx.fragment.app.Fragment
 import com.lenta.shared.BR
 import com.lenta.shared.di.CoreComponent
+import com.lenta.shared.di.FromParentToCoreProvider
 import com.lenta.shared.platform.activity.CoreActivity
 import com.lenta.shared.platform.activity.main_activity.CoreMainActivity
 import com.lenta.shared.platform.navigation.FragmentStack
@@ -107,6 +108,10 @@ abstract class CoreFragment<T : ViewDataBinding, S : CoreViewModel> : Fragment()
             it.cleanAll()
             setupBottomToolBar(it)
         }
+    }
+
+    protected fun provideFromParentToCoreProvider(): FromParentToCoreProvider? {
+        return getCoreMainActivity()?.provideFromParentToCoreProvider()
     }
 
     protected fun isAllowHandleKeyCode(): Boolean {

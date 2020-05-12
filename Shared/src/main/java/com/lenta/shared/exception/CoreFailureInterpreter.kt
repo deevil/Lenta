@@ -1,5 +1,6 @@
 package com.lenta.shared.exception
 
+import android.annotation.SuppressLint
 import android.content.Context
 import androidx.core.content.ContextCompat
 import com.lenta.shared.R
@@ -7,6 +8,7 @@ import javax.inject.Inject
 
 class CoreFailureInterpreter
 @Inject constructor(val context: Context) : IFailureInterpreter {
+    @SuppressLint("StringFormatMatches")
     override fun getFailureDescription(failure: Failure): FailureDescription {
         return when (failure) {
             Failure.ServerError -> FailureDescription(message = context.getString(R.string.error_server))
@@ -29,6 +31,8 @@ class CoreFailureInterpreter
                     iconRes = R.drawable.is_warning_red_80dp)
 
             Failure.NotValidEnterNumber -> FailureDescription(message = context.getString(R.string.not_valid_format_ean))
+
+            is NotFoundAppUpdateFileError -> FailureDescription(message = context.getString(R.string.not_found_app_file_update, "${failure.codeVersion}"), iconRes = R.drawable.is_warning_red_80dp)
 
             is Failure.SapError -> FailureDescription(
                     iconRes = R.drawable.is_warning_yellow_80dp,

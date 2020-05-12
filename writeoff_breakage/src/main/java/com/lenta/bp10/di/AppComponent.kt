@@ -1,5 +1,6 @@
 package com.lenta.bp10.di
 
+import app_update.AppUpdateInstaller
 import com.lenta.bp10.ExceptionHandler
 import com.lenta.bp10.activity.main.MainActivity
 import com.lenta.bp10.activity.main.MainViewModel
@@ -24,13 +25,14 @@ import com.lenta.shared.features.settings.SettingsViewModel
 import com.lenta.bp10.features.write_off_details.WriteOffDetailsViewModel
 import com.lenta.shared.di.AppScope
 import com.lenta.shared.di.CoreComponent
+import com.lenta.shared.di.FromParentToCoreProvider
 import com.lenta.shared.features.message.MessageViewModel
 import com.lenta.shared.features.printer_change.PrinterChangeViewModel
 import dagger.Component
 
 @Component(modules = [AppModule::class], dependencies = [CoreComponent::class])
 @AppScope
-interface AppComponent {
+interface AppComponent : FromParentToCoreProvider {
     fun inject(mainActivity: MainActivity)
     fun inject(mainViewModel: MainViewModel)
     fun inject(it: AuthViewModel)
