@@ -1,6 +1,10 @@
 package com.lenta.bp9.di
 
 import android.content.Context
+import app_update.AppUpdateInstaller
+import app_update.AppUpdaterConfig
+import app_update.AppUpdaterInstallerFromFmp
+import com.lenta.bp9.BuildConfig.APPLICATION_ID
 import com.lenta.bp9.model.task.IReceivingTaskManager
 import com.lenta.bp9.model.task.ReceivingTaskManager
 import com.lenta.bp9.platform.navigation.IScreenNavigator
@@ -15,12 +19,19 @@ import com.lenta.shared.platform.activity.ForegroundActivityProvider
 import com.lenta.shared.platform.navigation.ICoreNavigator
 import com.lenta.shared.progress.IProgressUseCaseInformator
 import com.mobrun.plugin.api.HyperHive
+import dagger.Binds
 import dagger.Module
 import dagger.Provides
 
-@Module
+@Module(includes = [AppModule.Declarations::class])
 class AppModule {
 
+    @Module
+    internal interface Declarations {
+        @Binds
+        @AppScope
+        fun bindAppUpdateInstaller(realisation: AppUpdaterInstallerFromFmp): AppUpdateInstaller
+    }
 
     @Provides
     @AppScope
@@ -51,6 +62,12 @@ class AppModule {
     @AppScope
     internal fun provideIDataBaseRepo(hyperHive: HyperHive): IDataBaseRepo {
         return DataBaseRepo(hyperHive)
+    }
+
+    @Provides
+    @AppScope
+    internal fun provideAppUpdaterConfig(): AppUpdaterConfig {
+        return AppUpdaterConfig(folderName = "bp9", applicationId = APPLICATION_ID)
     }
 
 }

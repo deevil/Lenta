@@ -1,5 +1,9 @@
 package com.lenta.bp16.di
 
+import app_update.AppUpdateInstaller
+import app_update.AppUpdaterConfig
+import app_update.AppUpdaterInstallerFromFmp
+import com.lenta.bp16.BuildConfig.APPLICATION_ID
 import com.lenta.bp16.data.IPrinter
 import com.lenta.bp16.data.IScales
 import com.lenta.bp16.data.Printer
@@ -19,12 +23,17 @@ import com.lenta.bp16.repository.RepoInMemoryHolder
 import com.lenta.shared.di.AppScope
 import dagger.Binds
 import dagger.Module
+import dagger.Provides
 
 @Module(includes = [AppModule.Declarations::class])
 class AppModule {
 
     @Module
     internal interface Declarations {
+
+        @Binds
+        @AppScope
+        fun bindAppUpdateInstaller(realisation: AppUpdaterInstallerFromFmp): AppUpdateInstaller
 
         @Binds
         @AppScope
@@ -58,6 +67,12 @@ class AppModule {
         @AppScope
         fun bindPersistTaskData(realisation: PersistLabelList): IPersistLabelList
 
+    }
+
+    @Provides
+    @AppScope
+    internal fun provideAppUpdaterConfig(): AppUpdaterConfig {
+        return AppUpdaterConfig(folderName = "bp16", applicationId = APPLICATION_ID)
     }
 
 }
