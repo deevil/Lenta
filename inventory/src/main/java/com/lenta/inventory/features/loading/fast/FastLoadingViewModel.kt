@@ -111,7 +111,7 @@ class FastLoadingViewModel : CoreLoadingViewModel() {
 
     private fun handleSuccess(@Suppress("UNUSED_PARAMETER") b: Boolean) {
         //resourceLoader.startLoadSlowResources()
-        screenNavigator.openSelectionPersonnelNumberScreen()
+        screenNavigator.openSelectionPersonnelNumberScreen(false)
         progress.value = false
     }
 

@@ -109,7 +109,7 @@ class FastDataLoadingViewModel : CoreLoadingViewModel() {
     }
 
     private fun handleSuccess(@Suppress("UNUSED_PARAMETER") b: Boolean) {
-        screenNavigator.openSelectionPersonnelNumberScreen()
+        screenNavigator.openSelectionPersonnelNumberScreen(isScreenMainMenu = false)
         progress.value = false
     }
 

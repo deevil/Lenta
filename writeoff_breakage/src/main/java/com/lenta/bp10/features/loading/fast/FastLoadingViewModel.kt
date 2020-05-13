@@ -159,7 +159,7 @@ class FastLoadingViewModel : CoreLoadingViewModel() {
             } else {
                 //TODO Вернуть загрузку в фоне slow data после доработки SDK
                 //resourceLoader.startLoadSlowResources()
-                screenNavigator.openSelectionPersonnelNumberScreen()
+                screenNavigator.openSelectionPersonnelNumberScreen(codeConfirmation = null, isScreenMainMenu = false)
             }
             progress.value = false
         }
