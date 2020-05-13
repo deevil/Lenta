@@ -26,7 +26,10 @@ class SelectPersonnelNumberViewModel : CoreViewModel(), OnOkInSoftKeyboardListen
     val personnelNumber = MutableLiveData("")
     val fullName = MutableLiveData("")
     val employeesPosition = MutableLiveData("")
-
+    val isScreenMainMenu: MutableLiveData<Boolean> = MutableLiveData()
+    val enabledBackButton by lazy {
+        isScreenMainMenu
+    }
 
     val editTextFocus = MutableLiveData<Boolean>()
     val nextButtonFocus = MutableLiveData<Boolean>()
@@ -84,6 +87,14 @@ class SelectPersonnelNumberViewModel : CoreViewModel(), OnOkInSoftKeyboardListen
 
     fun onScanResult(data: String) {
         selectPersonnelNumberDelegate.onScanResult(data)
+    }
+
+    fun onBackPressed() {
+        codeConfirm?.let {
+            screenNavigator.goBackWithResultCode(it)
+            return
+        }
+        screenNavigator.goBack()
     }
 
 }

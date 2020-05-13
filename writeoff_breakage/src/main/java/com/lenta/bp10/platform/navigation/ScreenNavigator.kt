@@ -72,13 +72,9 @@ class ScreenNavigator(
 
     }
 
-    override fun openSelectionPersonnelNumberScreen(codeConfirmation: Int?) {
+    override fun openSelectionPersonnelNumberScreen(codeConfirmation: Int?, isScreenMainMenu: Boolean) {
         runOrPostpone {
-            if (codeConfirmation == null) {
-                getFragmentStack()?.replace(SelectPersonnelNumberFragment())
-            } else {
-                getFragmentStack()?.push(SelectPersonnelNumberFragment.create(codeConfirmation = codeConfirmation))
-            }
+            getFragmentStack()?.push(SelectPersonnelNumberFragment.create(codeConfirmation = codeConfirmation, isScreenMainMenu = isScreenMainMenu))
         }
     }
 
@@ -300,7 +296,7 @@ interface IScreenNavigator : ICoreNavigator {
     fun openLoginScreen()
     fun openSelectMarketScreen()
     fun openFastDataLoadingScreen()
-    fun openSelectionPersonnelNumberScreen(codeConfirmation: Int? = null)
+    fun openSelectionPersonnelNumberScreen(codeConfirmation: Int? = null, isScreenMainMenu: Boolean)
     fun openMainMenuScreen()
     fun openJobCardScreen()
     fun openLoadingTaskSettingsScreen()

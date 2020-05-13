@@ -149,13 +149,28 @@ class TransportConditionsReviseViewModel : CoreViewModel(), PageSelectionListene
     }
 
     fun finishedInput(position: Int) {
-        val conditionsToCheckSize = conditionsToCheck.value?.size ?: 0
-        if (conditionsToCheckSize-1 >= position) {
-            val condition = conditionsToCheck.value?.get(position)
-            condition?.let {
-                if (it.value.value?.isNotEmpty()!!) {
-                    taskManager.getReceivingTask()?.taskRepository?.getReviseDocuments()?.changeTransportConditionValue(it.id, it.value.value ?: "")
-                    updateVMs()
+        if (selectedPage.value == 0) {
+            val conditionsToCheckSize = conditionsToCheck.value?.size ?: 0
+            if (conditionsToCheckSize-1 >= position) {
+                val condition = conditionsToCheck.value?.get(position)
+                condition?.let {
+                    if (it.value.value?.isNotEmpty()!!) {
+                        taskManager.getReceivingTask()?.taskRepository?.getReviseDocuments()?.changeTransportConditionValue(it.id, it.value.value ?: "")
+                        updateVMs()
+                    }
+                }
+            }
+        } else {
+            val conditionsSize = if (selectedPage.value == 0) conditionsToCheck.value?.size ?: 0 else checkedConditions.value?.size ?: 0
+            if (conditionsSize-1 >= position) {
+                val condition = if (selectedPage.value == 0) conditionsToCheck.value?.get(position) else checkedConditions.value?.get(position)
+                condition?.let {
+                    taskManager.getReceivingTask()?.taskRepository?.getReviseDocuments()?.getTransportConditions()?.findLast {unit ->
+                        unit.conditionID == it.id && unit.value != it.value.value
+                    }?.let {findUnit ->
+                        taskManager.getReceivingTask()?.taskRepository?.getReviseDocuments()?.changeTransportConditionValue(it.id, it.value.value ?: "")
+                        updateVMs()
+                    }
                 }
             }
         }

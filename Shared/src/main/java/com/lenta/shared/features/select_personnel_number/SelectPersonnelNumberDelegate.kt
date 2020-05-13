@@ -31,9 +31,6 @@ class SelectPersonnelNumberDelegate @Inject constructor(
 
     var codeConfirm: Int? = null
 
-    val isAppGoodsReceiving: MutableLiveData<Boolean> = MutableLiveData(false)
-
-
     fun init(
             viewModelScope: () -> CoroutineScope,
             onNextScreenOpen: () -> Unit
@@ -48,18 +45,7 @@ class SelectPersonnelNumberDelegate @Inject constructor(
 
     private fun initWithViewModel() {
         viewModelScope().launch {
-            when {
-                sessionInfo.personnelNumber != null && !isAppGoodsReceiving.value!! -> { //https://trello.com/c/Z0wRVpjQ !isAppGoodsReceiving.value!!-это условие добавлено для приложения Приемка (goods_receiving)
-                    personnelNumber.value = sessionInfo.personnelNumber
-                    fullName.value = sessionInfo.personnelFullName
-                    searchPersonnelNumber()
-                }
-                appSettings.lastPersonnelNumber != null && !isAppGoodsReceiving.value!! -> { //https://trello.com/c/Z0wRVpjQ !isAppGoodsReceiving.value!!-это условие добавлено для приложения Приемка (goods_receiving)
-                    personnelNumber.value = appSettings.lastPersonnelNumber
-                    searchPersonnelNumber()
-                }
-                else -> editTextFocus.postValue(true)
-            }
+           editTextFocus.postValue(true)
         }
 
     }
@@ -87,13 +73,7 @@ class SelectPersonnelNumberDelegate @Inject constructor(
     }
 
     fun handleFailure(failure: Failure) {
-        if (isAppGoodsReceiving.value!!) {
-            fullName.value = ""
-            employeesPosition.value = ""
-            coreNavigator.openAlertScreen(failure, timeAutoExitInMillis = 3000)
-        } else {
-            coreNavigator.openAlertScreen(failure)
-        }
+        coreNavigator.openAlertScreen(failure)
     }
 
     fun onOkInSoftKeyboard(): Boolean {

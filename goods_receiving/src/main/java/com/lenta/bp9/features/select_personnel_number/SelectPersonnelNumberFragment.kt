@@ -5,6 +5,7 @@ import androidx.lifecycle.Observer
 import com.lenta.bp9.R
 import com.lenta.bp9.databinding.FragmentSelectPersonnelNumberBinding
 import com.lenta.bp9.platform.extentions.getAppComponent
+import com.lenta.shared.platform.activity.OnBackPresserListener
 import com.lenta.shared.platform.fragment.CoreFragment
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
@@ -14,18 +15,31 @@ import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
 import com.lenta.shared.scan.OnScanResultListener
 import com.lenta.shared.utilities.extentions.connectLiveData
 import com.lenta.shared.utilities.extentions.provideViewModel
+import com.lenta.shared.utilities.state.state
 
 class SelectPersonnelNumberFragment : CoreFragment<FragmentSelectPersonnelNumberBinding, SelectPersonnelNumberViewModel>(),
-        ToolbarButtonsClickListener, OnScanResultListener {
+        ToolbarButtonsClickListener, OnScanResultListener, OnBackPresserListener {
+
+    companion object {
+        fun create(isScreenMainMenu: Boolean): SelectPersonnelNumberFragment {
+            SelectPersonnelNumberFragment().let {
+                it.isScreenMainMenu = isScreenMainMenu
+                return it
+            }
+        }
+    }
+
+    private var isScreenMainMenu by state<Boolean?>(null)
 
     override fun getLayoutId(): Int = R.layout.fragment_select_personnel_number
 
     override fun getPageNumber(): String = "09/35"
 
     override fun getViewModel(): SelectPersonnelNumberViewModel {
-        provideViewModel(SelectPersonnelNumberViewModel::class.java).let {
-            getAppComponent()?.inject(it)
-            return it
+        provideViewModel(SelectPersonnelNumberViewModel::class.java).let {vm ->
+            getAppComponent()?.inject(vm)
+            vm.isScreenMainMenu.value = this.isScreenMainMenu
+            return vm
         }
     }
 
@@ -35,14 +49,12 @@ class SelectPersonnelNumberFragment : CoreFragment<FragmentSelectPersonnelNumber
     }
 
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
-        bottomToolbarUiModel
-                .uiModelButton5.show(ButtonDecorationInfo.next)
-        bottomToolbarUiModel
-                .uiModelButton1.show(ButtonDecorationInfo.back, enabled = false)
+        bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.next)
+        bottomToolbarUiModel.uiModelButton1.show(ButtonDecorationInfo.back)
         vm.fullName.observe(viewLifecycleOwner, Observer {
-            bottomToolbarUiModel
-                    .uiModelButton5.requestFocus()
+            bottomToolbarUiModel.uiModelButton5.requestFocus()
         })
+        connectLiveData(vm.enabledBackButton, bottomToolbarUiModel.uiModelButton1.enabled)
         connectLiveData(vm.enabledNextButton, bottomToolbarUiModel.uiModelButton5.enabled)
     }
 
@@ -59,6 +71,11 @@ class SelectPersonnelNumberFragment : CoreFragment<FragmentSelectPersonnelNumber
     override fun onResume() {
         super.onResume()
         vm.onResume()
+    }
+
+    override fun onBackPressed(): Boolean {
+        vm.onBackPressed()
+        return false
     }
 
 }

@@ -162,13 +162,31 @@ class TransportConditionsReviseFragment : CoreFragment<FragmentTransportConditio
                                         val cb = view as? CheckBox
                                         cb?.let { vm.checkedChanged(position, it.isChecked) }
                                     }
-                                    binding.cbChecked.visibility = when (vm.checkedConditions.value?.get(position)?.conditionType) {
-                                        ConditionType.Checkbox -> View.VISIBLE
-                                        else -> View.INVISIBLE
+                                    if ((vm.checkedConditions.value?.size ?: 0) - 1 >= position) {
+                                        binding.cbChecked.visibility = when (vm.checkedConditions.value?.get(position)?.conditionType) {
+                                            ConditionType.Checkbox -> View.VISIBLE
+                                            else -> View.INVISIBLE
+                                        }
                                     }
-                                    binding.tvConditionValue.visibility = when (vm.checkedConditions.value?.get(position)?.conditionType) {
-                                        ConditionType.Input -> View.VISIBLE
-                                        else -> View.INVISIBLE
+                                    if ((vm.checkedConditions.value?.size ?: 0) - 1 >= position) {
+                                        binding.etConditionValue.visibility = when (vm.checkedConditions.value?.get(position)?.conditionType) {
+                                                ConditionType.Input -> View.VISIBLE
+                                                else -> View.INVISIBLE
+                                        }
+                                    }
+                                    binding.etConditionValue.setOnFocusChangeListener { v, hasFocus ->
+                                        if (!hasFocus) {
+                                            vm.finishedInput(position)
+                                        }
+                                    }
+                                    binding.etConditionValue.setOnEditorActionListener { v, actionId, event ->
+                                        when(actionId) {
+                                            EditorInfo.IME_ACTION_DONE -> {
+                                                vm.finishedInput(position)
+                                                return@setOnEditorActionListener false
+                                            }
+                                            else -> return@setOnEditorActionListener false
+                                        }
                                     }
                                 }
                             }

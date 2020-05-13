@@ -134,7 +134,8 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
     fun onClickSave() {
         if (sessionInfo.personnelNumber.isNullOrEmpty()) {
             screenNavigator.openSelectionPersonnelNumberScreen(
-                    codeConfirmation = requestCodeSelectPersonnelNumber
+                    codeConfirmation = requestCodeSelectPersonnelNumber,
+                    isScreenMainMenu = true
             )
         } else {
             saveData()

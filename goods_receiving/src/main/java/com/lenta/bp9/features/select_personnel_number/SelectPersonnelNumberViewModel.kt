@@ -31,9 +31,13 @@ class SelectPersonnelNumberViewModel : CoreViewModel(), OnOkInSoftKeyboardListen
     val editTextFocus = MutableLiveData<Boolean>()
     private val nextButtonFocus = MutableLiveData<Boolean>()
 
+    val isScreenMainMenu: MutableLiveData<Boolean> = MutableLiveData()
     val personnelNumber = MutableLiveData("")
     val fullName = MutableLiveData("")
     val employeesPosition = MutableLiveData("")
+    val enabledBackButton by lazy {
+        isScreenMainMenu
+    }
     val enabledNextButton = fullName.map { !it.isNullOrBlank() }
 
     init {
@@ -41,7 +45,6 @@ class SelectPersonnelNumberViewModel : CoreViewModel(), OnOkInSoftKeyboardListen
             if (dataBase.getParamGrzWerksOwnpr()?.findLast {it == sessionInfo.market}?.isNotEmpty() == true) { //https://trello.com/c/KccNFbXR
                 screenNavigator.openMainMenuScreen()
             } else {
-                selectPersonnelNumberDelegate.isAppGoodsReceiving.value = true
                 selectPersonnelNumberDelegate.personnelNumber = personnelNumber
                 selectPersonnelNumberDelegate.fullName = fullName
                 selectPersonnelNumberDelegate.employeesPosition = employeesPosition
@@ -73,5 +76,9 @@ class SelectPersonnelNumberViewModel : CoreViewModel(), OnOkInSoftKeyboardListen
 
     fun onScanResult(data: String) {
         selectPersonnelNumberDelegate.onScanResult(data)
+    }
+
+    fun onBackPressed() {
+        screenNavigator.openMainMenuScreen()
     }
 }

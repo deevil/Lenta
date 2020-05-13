@@ -81,9 +81,9 @@ class ScreenNavigator(
         }
     }
 
-    override fun openSelectionPersonnelNumberScreen() {
+    override fun openSelectionPersonnelNumberScreen(isScreenMainMenu: Boolean) {
         runOrPostpone {
-            getFragmentStack()?.replace(SelectPersonnelNumberFragment())
+            getFragmentStack()?.replace(SelectPersonnelNumberFragment.create(isScreenMainMenu))
         }
     }
 
@@ -400,7 +400,7 @@ interface IScreenNavigator : ICoreNavigator {
     fun openLoginScreen()
     fun openSelectMarketScreen()
     fun openFastDataLoadingScreen()
-    fun openSelectionPersonnelNumberScreen()
+    fun openSelectionPersonnelNumberScreen(isScreenMainMenu: Boolean)
     fun openMainMenuScreen()
     fun openGoodsInfoScreen(productInfo: TaskProductInfo, initialCount: Double = 0.0)
     fun openGoodsDetailsStorageScreen(productInfo: TaskProductInfo)
