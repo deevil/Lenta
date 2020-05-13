@@ -247,7 +247,7 @@ class SearchProductDelegate @Inject constructor(
                         else -> screenNavigator.openAlertUnknownGoodsTypeScreen() //сообщение о неизвестном типе товара
                     }
                 }
-                ProductType.NonExciseAlcohol -> screenNavigator.openNonExciseAlcoInfoScreen(taskProductInfo)
+                ProductType.NonExciseAlcohol -> screenNavigator.openNotImplementedScreenAlert("Информация о не акцизном алкоголе") //screenNavigator.openNonExciseAlcoInfoScreen(taskProductInfo)
                 else -> {
                     screenNavigator.openAlertUnknownGoodsTypeScreen() //сообщение о неизвестном типе товара
                 }

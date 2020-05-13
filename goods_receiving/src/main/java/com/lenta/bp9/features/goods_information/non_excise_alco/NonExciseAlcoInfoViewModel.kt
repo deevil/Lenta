@@ -1,5 +1,6 @@
 package com.lenta.bp9.features.goods_information.non_excise_alco
 
+import android.annotation.SuppressLint
 import android.content.Context
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
@@ -19,6 +20,7 @@ import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.utilities.extentions.toStringFormatted
 import com.lenta.shared.view.OnPositionClickListener
 import kotlinx.coroutines.launch
+import java.text.SimpleDateFormat
 import javax.inject.Inject
 
 class NonExciseAlcoInfoViewModel : CoreViewModel(), OnPositionClickListener {
@@ -60,6 +62,11 @@ class NonExciseAlcoInfoViewModel : CoreViewModel(), OnPositionClickListener {
     private val qualityInfo: MutableLiveData<List<QualityInfo>> = MutableLiveData()
     private val reasonRejectionInfo: MutableLiveData<List<ReasonRejectionInfo>> = MutableLiveData()
 
+    @SuppressLint("SimpleDateFormat")
+    private val formatterRU = SimpleDateFormat("dd.MM.yyyy")
+    @SuppressLint("SimpleDateFormat")
+    private val formatterEN = SimpleDateFormat("yyyy-MM-dd")
+
     val count: MutableLiveData<String> = MutableLiveData("0")
     private val countValue: MutableLiveData<Double> = count.map { it?.toDoubleOrNull() ?: 0.0 }
 
@@ -98,7 +105,7 @@ class NonExciseAlcoInfoViewModel : CoreViewModel(), OnPositionClickListener {
                 it.name
             }
             //todo временно закоментированно spinManufacturers.value = listOf(taskManager.getReceivingTask()!!.taskRepository.getBatches().findBatchOfProduct(productInfo.value!!)?.manufacturer ?: "")
-            spinBottlingDate.value = listOf(taskManager.getReceivingTask()!!.taskRepository.getBatches().findBatchOfProduct(productInfo.value!!)?.bottlingDate ?: "")
+            spinBottlingDate.value = listOf(formatterRU.format(formatterEN.parse(taskManager.getReceivingTask()!!.taskRepository.getBatches().findBatchOfProduct(productInfo.value!!)?.bottlingDate)) ?: "")
             batchInfo.value = taskManager.getReceivingTask()!!.taskRepository.getBatches().findBatchOfProduct(productInfo.value!!)
             //todo временно закоментированно planQuantityBatch.value = batchInfo.value?.planQuantityBatch + " " + batchInfo.value?.uom?.name + "."
             if (processNonExciseAlcoProductService.newProcessNonExciseAlcoProductService(productInfo.value!!) == null){
