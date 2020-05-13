@@ -164,22 +164,30 @@
             app:layout_constraintTop_toTopOf="@+id/tv_counter"
             tools:checked="true" />
 
-        <TextView
-            android:id="@+id/tv_condition_value"
+        <com.lenta.shared.view.EditTextWithSuffix
+            android:id="@+id/et_condition_value"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:ellipsize="end"
+            android:imeOptions="actionDone"
+            android:inputType="textNoSuggestions|numberDecimal"
+            android:maxLines="1"
+            android:maxLength="3"
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp"
+            app:maxLengthForScanProtect="@{10}"
+            android:textSize="18sp"
+            android:text="@={vm.value}"
             android:layout_marginStart="8dp"
             android:layout_marginEnd="8dp"
-            android:ellipsize="end"
-            android:gravity="start|center_vertical"
-            android:maxLines="2"
-            android:text='@{vm.value + " " + vm.suffix}'
-            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toEndOf="@+id/div_vert3"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_chainStyle="packed"
-            tools:text="1244" />
+            app:layout_constraintTop_toTopOf="@+id/tv_counter"
+            app:layout_constraintBottom_toBottomOf="@+id/tv_counter"
+            app:suffix="@{vm.suffix}"
+            tools:ignore="Autofill"
+            tools:text="12" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
