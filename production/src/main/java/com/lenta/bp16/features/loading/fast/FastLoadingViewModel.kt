@@ -110,7 +110,7 @@ class FastLoadingViewModel : CoreLoadingViewModel() {
                 navigator.openLoginScreen()
                 navigator.openNeedUpdateScreen()
             } else {
-                navigator.openSelectionPersonnelNumberScreen()
+                navigator.openSelectionPersonnelNumberScreen(false)
             }
             progress.value = false
         }
