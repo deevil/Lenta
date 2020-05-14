@@ -3,7 +3,21 @@ package com.lenta.bp14.features.loading.fast
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import app_update.AppUpdateInstaller
+import com.google.gson.Gson
+import com.lenta.bp14.models.IGeneralTaskManager
+import com.lenta.bp14.models.ITask
+import com.lenta.bp14.models.ITaskDescription
+import com.lenta.bp14.models.ITaskManager
+import com.lenta.bp14.models.check_list.CheckListData
+import com.lenta.bp14.models.check_list.CheckListTaskManager
+import com.lenta.bp14.models.check_price.CheckPriceData
+import com.lenta.bp14.models.check_price.CheckPriceTaskManager
+import com.lenta.bp14.models.general.AppTaskTypes
 import com.lenta.bp14.models.general.IGeneralRepo
+import com.lenta.bp14.models.not_exposed.NotExposedData
+import com.lenta.bp14.models.not_exposed.NotExposedTaskManager
+import com.lenta.bp14.models.work_list.WorkListData
+import com.lenta.bp14.models.work_list.WorkListTaskManager
 import com.lenta.bp14.platform.navigation.IScreenNavigator
 import com.lenta.bp14.repos.IRepoInMemoryHolder
 import com.lenta.bp14.requests.FastResourcesMultiRequest
@@ -14,7 +28,11 @@ import com.lenta.shared.features.loading.CoreLoadingViewModel
 import com.lenta.shared.functional.Either
 import com.lenta.shared.platform.app_update.AppUpdateChecker
 import com.lenta.shared.platform.resources.ISharedStringResourceManager
+import com.lenta.shared.platform.time.ITimeMonitor
 import com.lenta.shared.requests.network.Auth
+import com.lenta.shared.requests.network.ServerTime
+import com.lenta.shared.requests.network.ServerTimeRequest
+import com.lenta.shared.requests.network.ServerTimeRequestParam
 import com.lenta.shared.utilities.Logg
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -43,6 +61,22 @@ class FastLoadingViewModel : CoreLoadingViewModel() {
     lateinit var repoInMemoryHolder: IRepoInMemoryHolder
     @Inject
     lateinit var sessionInfo: ISessionInfo
+    @Inject
+    lateinit var generalTaskManager: IGeneralTaskManager
+    @Inject
+    lateinit var gson: Gson
+    @Inject
+    lateinit var checkListTaskManager: CheckListTaskManager
+    @Inject
+    lateinit var workListTaskManager: WorkListTaskManager
+    @Inject
+    lateinit var checkPriceTaskManager: CheckPriceTaskManager
+    @Inject
+    lateinit var notExposedTaskManager: NotExposedTaskManager
+    @Inject
+    lateinit var serverTimeRequest: ServerTimeRequest
+    @Inject
+    lateinit var timeMonitor: ITimeMonitor
 
 
     override val title: MutableLiveData<String> = MutableLiveData()
@@ -69,7 +103,7 @@ class FastLoadingViewModel : CoreLoadingViewModel() {
             }) { updateFileName ->
                 Logg.d { "update fileName: $updateFileName" }
                 if (updateFileName.isBlank()) {
-                    getFastResources()
+                    getServerTime()
                 } else {
                     installUpdate(updateFileName)
                 }
@@ -90,7 +124,15 @@ class FastLoadingViewModel : CoreLoadingViewModel() {
 
     }
 
-    private fun getFastResources() {
+    private fun getServerTime() {
+        viewModelScope.launch {
+            serverTimeRequest(ServerTimeRequestParam(sessionInfo.market
+                    ?: "")).either(::handleFailure, ::handleSuccessServerTime)
+        }
+    }
+
+    private fun handleSuccessServerTime(serverTime: ServerTime) {
+        timeMonitor.setServerTime(time = serverTime.time, date = serverTime.date)
         viewModelScope.launch {
             fastResourcesNetRequest(null).either(::handleFailure, ::handleSuccess)
         }
@@ -104,14 +146,19 @@ class FastLoadingViewModel : CoreLoadingViewModel() {
 
     private fun handleSuccess(notUsed: Boolean) {
         viewModelScope.launch {
-            if (appUpdateChecker.isNeedUpdate(generalRepo.getAllowedAppVersion())) {
-                auth.cancelAuthorization()
-                navigator.closeAllScreen()
-                navigator.openLoginScreen()
-                navigator.openNeedUpdateScreen()
+            generalRepo.onDbReady()
+            if (generalTaskManager.isExistSavedTaskData()) {
+                navigator.showUnsavedDataFoundOnDevice(
+                        deleteCallback = {
+                            generalTaskManager.clearSavedTaskData()
+                            navigator.openMainMenuScreen()
+                        },
+                        goOverCallback = {
+                            restoreSavedTask()
+                        }
+                )
             } else {
-                generalRepo.onDbReady()
-                navigator.openSelectMarketScreen()
+                navigator.openMainMenuScreen()
             }
             progress.value = false
         }
@@ -119,6 +166,72 @@ class FastLoadingViewModel : CoreLoadingViewModel() {
 
     override fun clean() {
         progress.postValue(false)
+    }
+
+    private fun restoreSavedTask() {
+        generalTaskManager.getSavedData()?.let { taskData ->
+            when (taskData.taskType) {
+                AppTaskTypes.CheckPrice.taskType -> {
+                    val data = gson.fromJson(taskData.data, CheckPriceData::class.java)
+                    newTask(
+                            taskName = data.taskDescription.taskName,
+                            taskManager = checkPriceTaskManager,
+                            taskDescription = data.taskDescription
+                    )
+                }
+
+                AppTaskTypes.CheckList.taskType -> {
+                    val data = gson.fromJson(taskData.data, CheckListData::class.java)
+                    newTask(
+                            taskName = data.taskDescription.taskName,
+                            taskManager = checkListTaskManager,
+                            taskDescription = data.taskDescription
+                    )
+                }
+
+                AppTaskTypes.WorkList.taskType -> {
+                    val data = gson.fromJson(taskData.data, WorkListData::class.java)
+                    newTask(
+                            taskName = data.taskDescription.taskName,
+                            taskManager = workListTaskManager,
+                            taskDescription = data.taskDescription
+                    )
+                }
+
+                AppTaskTypes.NotExposedProducts.taskType -> {
+                    val data = gson.fromJson(taskData.data, NotExposedData::class.java)
+                    newTask(
+                            taskName = data.taskDescription.taskName,
+                            taskManager = notExposedTaskManager,
+                            taskDescription = data.taskDescription
+                    )
+                }
+
+                else -> navigator.openNotImplementedScreenAlert("")
+            }
+        }
+
+    }
+
+    private fun <S : ITask, D : ITaskDescription> newTask(taskName: String, taskManager: ITaskManager<S, D>, taskDescription: D) {
+        if (taskManager.getTask() == null) {
+            taskManager.clearTask()
+            taskManager.newTask(
+                    taskDescription = taskDescription
+            )
+        } else {
+            taskManager.getTask()?.getDescription()?.taskName = taskName
+        }
+
+        generalTaskManager.restoreSavedData()
+
+        navigator.openMainMenuScreen()
+
+        if (taskManager.getTask()?.isFreeMode() == false) {
+            navigator.openTaskListScreen()
+        }
+
+        navigator.openJobCardScreen()
     }
 
 }
