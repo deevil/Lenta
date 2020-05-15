@@ -105,6 +105,7 @@ class FastLoadingViewModel : CoreLoadingViewModel() {
 
 
     override fun handleFailure(failure: Failure) {
+        screenNavigator.openLoginScreen()
         screenNavigator.openAlertScreen(failureInterpreter.getFailureDescription(failure).message)
         progress.postValue(false)
     }

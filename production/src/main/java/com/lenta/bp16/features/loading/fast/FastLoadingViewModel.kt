@@ -103,17 +103,8 @@ class FastLoadingViewModel : CoreLoadingViewModel() {
     }
 
     private fun handleSuccess(notUsed: Boolean) {
-        viewModelScope.launch {
-            if (appUpdateChecker.isNeedUpdate(database.getAllowedAppVersion())) {
-                auth.cancelAuthorization()
-                navigator.closeAllScreen()
-                navigator.openLoginScreen()
-                navigator.openNeedUpdateScreen()
-            } else {
-                navigator.openSelectionPersonnelNumberScreen(false)
-            }
-            progress.value = false
-        }
+        navigator.openSelectionPersonnelNumberScreen(false)
+        progress.value = false
     }
 
     override fun clean() {

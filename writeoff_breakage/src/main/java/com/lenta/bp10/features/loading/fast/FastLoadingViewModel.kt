@@ -147,23 +147,8 @@ class FastLoadingViewModel : CoreLoadingViewModel() {
 
     private fun handleSuccess(stockLockRequestResult: StockLockRequestResult) {
         repoInMemoryHolder.stockLockRequestResult = stockLockRequestResult
-        viewModelScope.launch {
-            if (appUpdateChecker.isNeedUpdate(withContext(Dispatchers.IO) {
-                        return@withContext zmpUtz14V001.getAllowedWobAppVersion()
-                    })) {
-
-                hyperHive.authAPI.unAuth()
-                screenNavigator.closeAllScreen()
-                screenNavigator.openLoginScreen()
-                screenNavigator.openNeedUpdateScreen()
-            } else {
-                //TODO Вернуть загрузку в фоне slow data после доработки SDK
-                //resourceLoader.startLoadSlowResources()
-                screenNavigator.openSelectionPersonnelNumberScreen(codeConfirmation = null, isScreenMainMenu = false)
-            }
-            progress.value = false
-        }
-
+        screenNavigator.openSelectionPersonnelNumberScreen(codeConfirmation = null, isScreenMainMenu = false)
+        progress.value = false
     }
 
     override fun clean() {
