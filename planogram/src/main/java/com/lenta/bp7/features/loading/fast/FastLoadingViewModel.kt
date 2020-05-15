@@ -106,17 +106,8 @@ class FastLoadingViewModel : CoreLoadingViewModel() {
     }
 
     private fun handleSuccess(@Suppress("UNUSED_PARAMETER") b: Boolean) {
-        viewModelScope.launch {
-            if (appUpdateChecker.isNeedUpdate(database.getAllowedAppVersion())) {
-                auth.cancelAuthorization()
-                navigator.closeAllScreen()
-                navigator.openLoginScreen()
-                navigator.openNeedUpdateScreen()
-            } else {
-                navigator.openSelectMarketScreen()
-            }
-            progress.value = false
-        }
+        navigator.openSelectMarketScreen()
+        progress.value = false
     }
 
     override fun clean() {

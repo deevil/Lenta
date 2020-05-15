@@ -76,7 +76,7 @@
             app:layout_constraintStart_toEndOf="@+id/div_vert"
             app:layout_constraintTop_toTopOf="@+id/div_vert"
             app:suffix="@{vm.suffix}"
-            tools:text="1" />
+            tools:text="1 шт" />
 
         <View
             android:id="@+id/div_hor2"
@@ -214,7 +214,8 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@+id/view"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toTopOf="parent"
+                tools:text="Дата производства"/>
 
             <View
                 android:id="@+id/div_hor5"
