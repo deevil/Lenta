@@ -28,12 +28,6 @@ class SelectMarketViewModel : CoreViewModel(), OnPositionClickListener {
     @Inject
     lateinit var appSettings: IAppSettings
     @Inject
-    lateinit var timeMonitor: ITimeMonitor
-    @Inject
-    lateinit var serverTimeRequest: ServerTimeRequest
-    @Inject
-    lateinit var checkData: CheckData
-    @Inject
     lateinit var database: IDatabaseRepo
 
 
@@ -78,42 +72,11 @@ class SelectMarketViewModel : CoreViewModel(), OnPositionClickListener {
             sessionInfo.printer = appSettings.printer
             sessionInfo.market = it
             appSettings.lastTK = it
-
-            viewModelScope.launch {
-                navigator.showProgress(serverTimeRequest)
-                serverTimeRequest(ServerTimeRequestParam(sessionInfo.market
-                        ?: "")).either(::handleFailure, ::handleSuccessServerTime)
-                navigator.hideProgress()
-            }
         }
+        navigator.openFastDataLoadingScreen()
     }
 
-    private fun handleSuccessServerTime(serverTime: ServerTime) {
-        timeMonitor.setServerTime(time = serverTime.time, date = serverTime.date)
-        checkData.marketNumber = sessionInfo.market ?: "Not found!"
 
-        // Раскомментировать для удаление сохраненных данных
-        //checkData.clearSavedData()
-
-        if (checkData.isExistUnsentData()) {
-            when (checkData.checkType) {
-                CheckType.SELF_CONTROL -> {
-                    // Подтверждение - На устройстве обнаружены несохраненные данные в режиме "Самоконтроль ТК" - Назад / Перейти
-                    navigator.showUnsavedSelfControlDataDetected {
-                        navigator.openSelectCheckTypeScreen()
-                    }
-                }
-                CheckType.EXTERNAL_AUDIT -> {
-                    // Подтверждение - На устройстве обнаружены несохраненные данные в режиме "Внешний аудит" - Назад / Перейти
-                    navigator.showUnsavedExternalAuditDataDetected {
-                        navigator.openSelectCheckTypeScreen()
-                    }
-                }
-            }
-        } else {
-            navigator.openSelectCheckTypeScreen()
-        }
-    }
 
     private fun clearPrinters() {
         appSettings.printer = null
