@@ -3,6 +3,8 @@ package com.lenta.bp7.features.loading.fast
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import app_update.AppUpdateInstaller
+import com.lenta.bp7.data.CheckType
+import com.lenta.bp7.data.model.CheckData
 import com.lenta.bp7.platform.navigation.IScreenNavigator
 import com.lenta.bp7.repos.IDatabaseRepo
 import com.lenta.bp7.repos.IRepoInMemoryHolder
@@ -14,10 +16,8 @@ import com.lenta.shared.features.loading.CoreLoadingViewModel
 import com.lenta.shared.functional.Either
 import com.lenta.shared.platform.app_update.AppUpdateChecker
 import com.lenta.shared.platform.resources.ISharedStringResourceManager
-import com.lenta.shared.requests.network.Auth
-import com.lenta.shared.requests.network.ServerTimeRequestParam
-import com.lenta.shared.requests.network.StoresRequest
-import com.lenta.shared.requests.network.StoresRequestResult
+import com.lenta.shared.platform.time.ITimeMonitor
+import com.lenta.shared.requests.network.*
 import com.lenta.shared.utilities.Logg
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -46,6 +46,12 @@ class FastLoadingViewModel : CoreLoadingViewModel() {
     lateinit var repoInMemoryHolder: IRepoInMemoryHolder
     @Inject
     lateinit var sessionInfo: ISessionInfo
+    @Inject
+    lateinit var serverTimeRequest: ServerTimeRequest
+    @Inject
+    lateinit var timeMonitor: ITimeMonitor
+    @Inject
+    lateinit var checkData: CheckData
 
 
     override val title: MutableLiveData<String> = MutableLiveData()
@@ -57,7 +63,7 @@ class FastLoadingViewModel : CoreLoadingViewModel() {
         viewModelScope.launch {
             progress.value = true
             withContext(Dispatchers.IO) {
-                repoInMemoryHolder.storesRequestResult?.markets?.find { it.number == sessionInfo.market }.let { market ->
+                database.getAllMarkets().find { it.number == sessionInfo.market }.let { market ->
                     val codeVersion = market?.version?.toIntOrNull()
                     Logg.d { "codeVersion for update: $codeVersion" }
                     if (codeVersion == null) {
@@ -72,7 +78,7 @@ class FastLoadingViewModel : CoreLoadingViewModel() {
             }) { updateFileName ->
                 Logg.d { "update fileName: $updateFileName" }
                 if (updateFileName.isBlank()) {
-                    getFastResources()
+                    getServerTime()
                 } else {
                     installUpdate(updateFileName)
                 }
@@ -93,7 +99,16 @@ class FastLoadingViewModel : CoreLoadingViewModel() {
 
     }
 
-    private fun getFastResources() {
+    private fun getServerTime() {
+        viewModelScope.launch {
+            serverTimeRequest(ServerTimeRequestParam(sessionInfo.market
+                    ?: "")).either(::handleFailure, ::handleSuccessServerTime)
+        }
+    }
+
+    private fun handleSuccessServerTime(serverTime: ServerTime) {
+        timeMonitor.setServerTime(time = serverTime.time, date = serverTime.date)
+        checkData.marketNumber = sessionInfo.market ?: "Not found!"
         viewModelScope.launch {
             fastResourcesNetRequest(null).either(::handleFailure, ::handleSuccess)
         }
@@ -106,7 +121,27 @@ class FastLoadingViewModel : CoreLoadingViewModel() {
     }
 
     private fun handleSuccess(@Suppress("UNUSED_PARAMETER") b: Boolean) {
-        navigator.openSelectMarketScreen()
+        // Раскомментировать для удаление сохраненных данных
+        //checkData.clearSavedData()
+
+        if (checkData.isExistUnsentData()) {
+            when (checkData.checkType) {
+                CheckType.SELF_CONTROL -> {
+                    // Подтверждение - На устройстве обнаружены несохраненные данные в режиме "Самоконтроль ТК" - Назад / Перейти
+                    navigator.showUnsavedSelfControlDataDetected {
+                        navigator.openSelectCheckTypeScreen()
+                    }
+                }
+                CheckType.EXTERNAL_AUDIT -> {
+                    // Подтверждение - На устройстве обнаружены несохраненные данные в режиме "Внешний аудит" - Назад / Перейти
+                    navigator.showUnsavedExternalAuditDataDetected {
+                        navigator.openSelectCheckTypeScreen()
+                    }
+                }
+            }
+        } else {
+            navigator.openSelectCheckTypeScreen()
+        }
         progress.value = false
     }
 
