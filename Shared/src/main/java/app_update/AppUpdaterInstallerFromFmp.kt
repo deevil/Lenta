@@ -105,7 +105,7 @@ class AppUpdaterInstallerFromFmp @Inject constructor(
     }
 
     companion object {
-        private const val storageName = "local_storage"
+        private const val storageName = "updates"
         private const val rootFolderNameForUpdates = "app_updates"
     }
 }
