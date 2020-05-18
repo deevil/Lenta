@@ -9,6 +9,7 @@ import com.lenta.bp9.model.processing.ProcessGeneralProductService
 import com.lenta.bp9.model.task.IReceivingTaskManager
 import com.lenta.bp9.model.task.TaskProductInfo
 import com.lenta.bp9.platform.navigation.IScreenNavigator
+import com.lenta.shared.models.core.Uom
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.requests.combined.scan_info.ScanInfoResult
 import com.lenta.shared.utilities.extentions.combineLatest
@@ -40,6 +41,13 @@ class GoodsInfoShipmentPPViewModel : CoreViewModel(), OnPositionClickListener {
     val isEizUnit: MutableLiveData<Boolean> by lazy {
         MutableLiveData(productInfo.value?.purchaseOrderUnits?.code != productInfo.value?.uom?.code)
     }
+    val uom: MutableLiveData<Uom?> by lazy {
+        if (isEizUnit.value == true) {
+            MutableLiveData(productInfo.value?.purchaseOrderUnits)
+        } else {
+            MutableLiveData(productInfo.value?.uom)
+        }
+    }
     val tvTotal: MutableLiveData<String> by lazy {
         if (isEizUnit.value == true) {
             MutableLiveData(context.getString(R.string.total_param, "${productInfo.value?.purchaseOrderUnits?.name}=${productInfo.value?.quantityInvest?.toDouble().toStringFormatted()} ${productInfo.value?.uom?.name}"))
@@ -49,10 +57,10 @@ class GoodsInfoShipmentPPViewModel : CoreViewModel(), OnPositionClickListener {
 
     }
     val ipPlanWithUom: MutableLiveData<String> by lazy {
-        MutableLiveData("${productInfo.value!!.origQuantity.toDouble().toStringFormatted()} ${productInfo.value!!.uom.name}")
+        MutableLiveData("${productInfo.value!!.origQuantity.toDouble().toStringFormatted()} ${uom.value?.name}")
     }
     val orderPlanWithUom: MutableLiveData<String> by lazy {
-        MutableLiveData("${productInfo.value!!.orderQuantity.toDouble().toStringFormatted()} ${productInfo.value!!.uom.name}")
+        MutableLiveData("${productInfo.value!!.orderQuantity.toDouble().toStringFormatted()} ${uom.value?.name}")
     }
 
     private val countValue: MutableLiveData<Double> = count.map { it?.toDoubleOrNull() ?: 0.0 }
@@ -65,7 +73,7 @@ class GoodsInfoShipmentPPViewModel : CoreViewModel(), OnPositionClickListener {
             taskManager.getReceivingTask()!!.taskRepository.getProductsDiscrepancies().getCountAcceptOfProduct(productInfo.value!!)
         }
     }
-    val totalCountWithUom: MutableLiveData<String> = totalCount.map { "${it.toStringFormatted()} ${productInfo.value!!.uom.name}" }
+    val totalCountWithUom: MutableLiveData<String> = totalCount.map { "${it.toStringFormatted()} ${uom.value?.name}" }
 
     val enabledMissingButton: MutableLiveData<Boolean> = countValue.map {
         (it ?: 0.0) <= 0.0
@@ -80,7 +88,7 @@ class GoodsInfoShipmentPPViewModel : CoreViewModel(), OnPositionClickListener {
             searchProductDelegate.init(viewModelScope = this@GoodsInfoShipmentPPViewModel::viewModelScope,
                     scanResultHandler = this@GoodsInfoShipmentPPViewModel::handleProductSearchResult)
 
-            suffix.value = productInfo.value?.uom?.name
+            suffix.value = uom.value?.name
 
             if (isDiscrepancy.value!!) {
                 count.value = taskManager.getReceivingTask()?.taskRepository?.getProductsDiscrepancies()?.getCountProductNotProcessedOfProduct(productInfo.value!!).toStringFormatted()

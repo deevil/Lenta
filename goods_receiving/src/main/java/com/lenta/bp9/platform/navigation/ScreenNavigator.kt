@@ -160,6 +160,7 @@ class ScreenNavigator(
         runOrPostpone {
             getFragmentStack()?.push(AlertFragment.create(message = context.getString(R.string.unlock_confirmation),
                     codeConfirmForRight = backFragmentResultHelper.setFuncForResult(callbackFunc),
+                    iconRes = R.drawable.ic_question_80dp,
                     pageNumber = "93",
                     rightButtonDecorationInfo = ButtonDecorationInfo.yes))
         }
@@ -169,6 +170,7 @@ class ScreenNavigator(
         runOrPostpone {
             getFragmentStack()?.push(AlertFragment.create(message = context.getString(R.string.view_confirmation),
                     codeConfirmForRight = backFragmentResultHelper.setFuncForResult(callbackFunc),
+                    iconRes = R.drawable.ic_question_80dp,
                     pageNumber = "93",
                     rightButtonDecorationInfo = ButtonDecorationInfo.yes))
         }
@@ -178,6 +180,7 @@ class ScreenNavigator(
         runOrPostpone {
             getFragmentStack()?.push(AlertFragment.create(message = context.getString(R.string.unsaved_data_confirmation),
                     codeConfirmForRight = backFragmentResultHelper.setFuncForResult(callbackFunc),
+                    iconRes = R.drawable.ic_question_80dp,
                     pageNumber = "93",
                     rightButtonDecorationInfo = ButtonDecorationInfo.yes))
         }
@@ -187,6 +190,7 @@ class ScreenNavigator(
         runOrPostpone {
             getFragmentStack()?.push(AlertFragment.create(message = context.getString(R.string.process_as_discrepancy_confirmation),
                     codeConfirmForRight = backFragmentResultHelper.setFuncForResult(callbackFunc),
+                    iconRes = R.drawable.ic_question_80dp,
                     pageNumber = "93",
                     rightButtonDecorationInfo = ButtonDecorationInfo.process))
         }

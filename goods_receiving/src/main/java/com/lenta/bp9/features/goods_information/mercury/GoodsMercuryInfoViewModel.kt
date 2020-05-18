@@ -26,6 +26,7 @@ import com.lenta.shared.view.OnPositionClickListener
 import kotlinx.coroutines.launch
 import org.joda.time.DateTime
 import org.joda.time.Days
+import java.text.DecimalFormat
 import java.text.SimpleDateFormat
 import java.util.*
 import javax.inject.Inject
@@ -443,19 +444,28 @@ class GoodsMercuryInfoViewModel : CoreViewModel(), OnPositionClickListener {
             reasonRejectionInfo.value!![spinReasonRejectionSelectedPosition.value!!].code
         }
 
-        when (processMercuryProductService.checkConditionsOfPreservationOfProduct(
-                                            count = count.value ?: "0",
-                                            typeDiscrepancies = reasonRejectionCode,
-                                            manufacturer = spinManufacturers!![spinManufacturersSelectedPosition.value!!],
-                                            productionDate = formatterEN.format(formatterRU.parse(spinProductionDate.value!![spinProductionDateSelectedPosition.value!!])),
-                                            paramGrzRoundLackRatio = paramGrzRoundLackRatio.value?.replace(",", ".")?.toDouble() ?: 0.0,
-                                            paramGrzRoundLackUnit = paramGrzRoundLackUnit.value?.replace(",", ".")?.toDouble() ?: 0.0,
-                                            paramGrzRoundHeapRatio = paramGrzRoundHeapRatio.value?.replace(",", ".")?.toDouble() ?: 0.0)) {
+        processingAddProductDiscrepancies(
+                processing = processMercuryProductService.checkConditionsOfPreservationOfProduct(
+                                count = count.value ?: "0",
+                                typeDiscrepancies = reasonRejectionCode,
+                                manufacturer = spinManufacturers!![spinManufacturersSelectedPosition.value!!],
+                                productionDate = formatterEN.format(formatterRU.parse(spinProductionDate.value!![spinProductionDateSelectedPosition.value!!])),
+                                paramGrzRoundLackRatio = paramGrzRoundLackRatio.value?.replace(",", ".")?.toDouble() ?: 0.0,
+                                paramGrzRoundLackUnit = paramGrzRoundLackUnit.value?.replace(",", ".")?.toDouble() ?: 0.0,
+                                paramGrzRoundHeapRatio = paramGrzRoundHeapRatio.value?.replace(",", ".")?.toDouble() ?: 0.0),
+                addCount = DecimalFormat("0.0000").format(count.value?.toDouble() ?: "0"),
+                reasonRejectionCode = reasonRejectionCode
+        )
+    }
+
+    private fun processingAddProductDiscrepancies(processing: Int, addCount: String, reasonRejectionCode: String) {
+        //меркурий для ППП
+        when (processing) {
             PROCESSING_MERCURY_SAVED -> {
                 if (qualityInfo.value?.get(spinQualitySelectedPosition.value ?: 0)?.code == "1") {
-                    processMercuryProductService.add(count.value ?: "0", false,"1", spinManufacturers!![spinManufacturersSelectedPosition.value!!], formatterEN.format(formatterRU.parse(spinProductionDate.value!![spinProductionDateSelectedPosition.value!!])))
+                    processMercuryProductService.add(addCount, false,"1", spinManufacturers!![spinManufacturersSelectedPosition.value!!], formatterEN.format(formatterRU.parse(spinProductionDate.value!![spinProductionDateSelectedPosition.value!!])))
                 } else {
-                    processMercuryProductService.add(count.value ?: "0", false, reasonRejectionInfo.value!![spinReasonRejectionSelectedPosition.value!!].code, spinManufacturers!![spinManufacturersSelectedPosition.value!!], formatterEN.format(formatterRU.parse(spinProductionDate.value!![spinProductionDateSelectedPosition.value!!])))
+                    processMercuryProductService.add(addCount, false, reasonRejectionInfo.value!![spinReasonRejectionSelectedPosition.value!!].code, spinManufacturers!![spinManufacturersSelectedPosition.value!!], formatterEN.format(formatterRU.parse(spinProductionDate.value!![spinProductionDateSelectedPosition.value!!])))
                 }
                 count.value = "0"
                 addGoods.value = true
@@ -476,23 +486,30 @@ class GoodsMercuryInfoViewModel : CoreViewModel(), OnPositionClickListener {
                 screenNavigator.openRoundingIssueDialog(
                         noCallbackFunc = {
                             //- В случае, если пользователь отказался округлить, то переходим к п.2 (проверка по ВСД)
-                            processMercuryProductService.checkConditionsOfPreservationOfVSD(
-                                    count = count.value ?: "0",
-                                    typeDiscrepancies = reasonRejectionCode,
-                                    manufacturer = spinManufacturers!![spinManufacturersSelectedPosition.value!!],
-                                    productionDate = formatterEN.format(formatterRU.parse(spinProductionDate.value!![spinProductionDateSelectedPosition.value!!]))
+                            processingAddProductDiscrepancies(
+                                    processing = processMercuryProductService.checkConditionsOfPreservationOfVSD(
+                                                    count = addCount,
+                                                    typeDiscrepancies = reasonRejectionCode,
+                                                    manufacturer = spinManufacturers!![spinManufacturersSelectedPosition.value!!],
+                                                    productionDate = formatterEN.format(formatterRU.parse(spinProductionDate.value!![spinProductionDateSelectedPosition.value!!]))),
+                                    addCount = addCount,
+                                    reasonRejectionCode = reasonRejectionCode
                             )
+
                         },
                         yesCallbackFunc = {
                             //- В случае, если пользователь согласился округлить, то фактическое значение приравнивается к плановому
-                            val enteredCount = processMercuryProductService.getRoundingQuantityPPP(count = count.value ?: "0", reasonRejectionCode = reasonRejectionCode)
+                            val enteredCount = processMercuryProductService.getRoundingQuantityPPP(count = addCount, reasonRejectionCode = reasonRejectionCode)
                             //и переходим к п.2 (проверка по ВСД)
-                            processMercuryProductService.checkConditionsOfPreservationOfVSD(
-                                                            count = enteredCount.toString(),
-                                                            typeDiscrepancies = reasonRejectionCode,
-                                                            manufacturer = spinManufacturers!![spinManufacturersSelectedPosition.value!!],
-                                                            productionDate = formatterEN.format(formatterRU.parse(spinProductionDate.value!![spinProductionDateSelectedPosition.value!!]))
-                            )
+                            processingAddProductDiscrepancies(
+                                    processing = processMercuryProductService.checkConditionsOfPreservationOfVSD(
+                                                        count = enteredCount.toString(),
+                                                        typeDiscrepancies = reasonRejectionCode,
+                                                        manufacturer = spinManufacturers!![spinManufacturersSelectedPosition.value!!],
+                                                        productionDate = formatterEN.format(formatterRU.parse(spinProductionDate.value!![spinProductionDateSelectedPosition.value!!]))),
+                                    addCount = enteredCount.toString(),
+                                    reasonRejectionCode = reasonRejectionCode)
+
                         }
                 )
             }
@@ -501,10 +518,10 @@ class GoodsMercuryInfoViewModel : CoreViewModel(), OnPositionClickListener {
                 screenNavigator.openAlertUnableSaveNegativeQuantity()
             }
             PROCESSING_MERCURY_OVERDELIVERY_MORE_EQUAL_NOT_ORDER -> {
-                processMercuryProductService.overDeliveryMoreEqualNotOrder(count.value ?: "0", false, reasonRejectionInfo.value!![spinReasonRejectionSelectedPosition.value!!].code, spinManufacturers!![spinManufacturersSelectedPosition.value!!], formatterEN.format(formatterRU.parse(spinProductionDate.value!![spinProductionDateSelectedPosition.value!!])))
+                processMercuryProductService.overDeliveryMoreEqualNotOrder(addCount, false, reasonRejectionInfo.value!![spinReasonRejectionSelectedPosition.value!!].code, spinManufacturers!![spinManufacturersSelectedPosition.value!!], formatterEN.format(formatterRU.parse(spinProductionDate.value!![spinProductionDateSelectedPosition.value!!])))
             }
             PROCESSING_MERCURY_OVERDELIVERY_LESS_NOT_ORDER -> {
-                processMercuryProductService.overDeliveryLessNotOrder(count.value ?: "0", false, reasonRejectionInfo.value!![spinReasonRejectionSelectedPosition.value!!].code, spinManufacturers!![spinManufacturersSelectedPosition.value!!], formatterEN.format(formatterRU.parse(spinProductionDate.value!![spinProductionDateSelectedPosition.value!!])))
+                processMercuryProductService.overDeliveryLessNotOrder(addCount, false, reasonRejectionInfo.value!![spinReasonRejectionSelectedPosition.value!!].code, spinManufacturers!![spinManufacturersSelectedPosition.value!!], formatterEN.format(formatterRU.parse(spinProductionDate.value!![spinProductionDateSelectedPosition.value!!])))
             }
             PROCESSING_MERCURY_UNKNOWN -> {
                 //на Windows Mobile нет действия

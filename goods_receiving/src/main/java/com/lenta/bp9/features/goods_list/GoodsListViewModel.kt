@@ -11,6 +11,7 @@ import com.lenta.bp9.requests.network.*
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.models.core.ProductType
+import com.lenta.shared.models.core.Uom
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.requests.combined.scan_info.ScanInfoResult
 import com.lenta.shared.utilities.Logg
@@ -245,10 +246,16 @@ class GoodsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKey
                             .filter {
                                 task.taskRepository.getProductsDiscrepancies().getQuantityDiscrepanciesOfProduct(it) == 0
                             }.mapIndexed { index, productInfo ->
+                                val isEizUnit = productInfo.purchaseOrderUnits.code != productInfo.uom.code
+                                val uom = if (isEizUnit) {
+                                    productInfo.purchaseOrderUnits
+                                } else {
+                                    productInfo.uom
+                                }
                                 ListShipmentPPItem(
                                         number = index + 1,
                                         name = "${productInfo.getMaterialLastSix()} ${productInfo.description}",
-                                        countWithUom = "${productInfo.origQuantity.toDouble().toStringFormatted()} ${productInfo.uom.name}",
+                                        countWithUom = "${productInfo.origQuantity.toDouble().toStringFormatted()} ${uom.name}",
                                         productInfo = productInfo,
                                         even = index % 2 == 0)
                             }
@@ -265,10 +272,16 @@ class GoodsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKey
                             .filter {
                                 task.taskRepository.getProductsDiscrepancies().getQuantityDiscrepanciesOfProduct(it) > 0
                             }.mapIndexed { index, productInfo ->
+                                val isEizUnit = productInfo.purchaseOrderUnits.code != productInfo.uom.code
+                                val uom = if (isEizUnit) {
+                                    productInfo.purchaseOrderUnits
+                                } else {
+                                    productInfo.uom
+                                }
                                 ListShipmentPPItem(
                                         number = index + 1,
                                         name = "${productInfo.getMaterialLastSix()} ${productInfo.description}",
-                                        countWithUom = "${task.taskRepository.getProductsDiscrepancies().getAllCountDiscrepanciesOfProduct(productInfo).toStringFormatted()} ${productInfo.uom.name}",
+                                        countWithUom = "${task.taskRepository.getProductsDiscrepancies().getAllCountDiscrepanciesOfProduct(productInfo).toStringFormatted()} ${uom.name}",
                                         productInfo = productInfo,
                                         even = index % 2 == 0)
                             }

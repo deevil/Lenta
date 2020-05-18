@@ -208,7 +208,7 @@ class ProductDocumentsReviseViewModel : CoreViewModel(), PageSelectionListener {
             return
         }
 
-        if (docsToCheck.value?.findLast { it.isObligatory } != null) {
+        if (docsToCheck.value?.findLast { it.isObligatory && it.type != ProductDocumentType.Mercury} != null) { //https://trello.com/c/mVRK8Uok проверяем все документы, кроме меркурия, т.к. по меркурию будет позже проверено в saveData()
             screenNavigator.openConfirmationProcessAsDiscrepancy {
                 saveData()
             }
