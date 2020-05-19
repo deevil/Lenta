@@ -2,7 +2,7 @@
 
     <!-- № / Наименование -->
     <integer name="number_name_1">15</integer>
-    <integer name="number_name_2">75</integer>
+    <integer name="number_name_2">85</integer>
 
     <!-- № / Наименование / Количество -->
     <integer name="number_name_quantity_1">15</integer>

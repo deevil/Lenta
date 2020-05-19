@@ -47,7 +47,7 @@ fun setDocumentTypeIcon(imageView: ImageView, docType: DocumentType?, isEDO: Boo
     docType?.getIconRes()?.let {
         imageView.setVisible()
         if (docType == DocumentType.Invoice && isEDO!!) {
-            imageView.setImageResource(R.drawable.ic_einvoice)
+            imageView.setImageResource(R.drawable.ic_einvoice_gray_24dp)
         } else {
             imageView.setImageResource(it)
         }
@@ -112,9 +112,9 @@ fun NotificationIndicatorType.getIconRes(): Int? {
 
 fun DocumentType.getIconRes(): Int? {
     return when (this) {
-        DocumentType.Simple -> R.drawable.ic_simple_delivery_doc
-        DocumentType.Invoice -> R.drawable.ic_invoice
-        DocumentType.CompositeDoc -> R.drawable.ic_composite_doc
+        DocumentType.Simple -> R.drawable.ic_simple_delivery_gray_24dp
+        DocumentType.Invoice -> R.drawable.ic_invoice_gray_24dp
+        DocumentType.CompositeDoc -> R.drawable.ic_composite_doc_gray_24dp
         else -> null
     }
 }
@@ -130,8 +130,8 @@ fun ProductDocumentType.getIconRes(): Int? {
 
 fun ConditionViewType.getIconRes(): Int? {
     return when (this) {
-        ConditionViewType.Temperature -> R.drawable.ic_temperature
-        ConditionViewType.Simple -> R.drawable.ic_simple_delivery_doc
+        ConditionViewType.Temperature -> R.drawable.ic_temperature_gray_24dp
+        ConditionViewType.Simple -> R.drawable.ic_simple_delivery_gray_24dp
         ConditionViewType.Seal -> R.drawable.ic_seal_white_24dp
         else -> null
     }

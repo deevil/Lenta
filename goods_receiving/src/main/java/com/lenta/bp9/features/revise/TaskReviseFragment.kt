@@ -127,13 +127,13 @@ class TaskReviseFragment : CoreFragment<FragmentTaskReviseBinding, TaskReviseVie
 
                     layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
                             layoutId = R.layout.item_tile_delivery_documents,
-                            itemId = BR.vm,
+                            itemId = BR.item,
                             realisation = object : DataBindingAdapter<ItemTileDeliveryDocumentsBinding> {
                                 override fun onCreate(binding: ItemTileDeliveryDocumentsBinding) {
                                 }
 
                                 override fun onBind(binding: ItemTileDeliveryDocumentsBinding, position: Int) {
-                                    binding.tvCounter.tag = position
+                                    binding.tvItemNumber.tag = position
                                     binding.cbChecked.setOnClickListener { view ->
                                         val cb = view as? CheckBox
                                         cb?.let { vm.checkedChanged(position, it.isChecked) }
@@ -176,13 +176,13 @@ class TaskReviseFragment : CoreFragment<FragmentTaskReviseBinding, TaskReviseVie
 
                     layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
                             layoutId = R.layout.item_tile_delivery_documents,
-                            itemId = BR.vm,
+                            itemId = BR.item,
                             realisation = object : DataBindingAdapter<ItemTileDeliveryDocumentsBinding> {
                                 override fun onCreate(binding: ItemTileDeliveryDocumentsBinding) {
                                 }
 
                                 override fun onBind(binding: ItemTileDeliveryDocumentsBinding, position: Int) {
-                                    binding.tvCounter.tag = position
+                                    binding.tvItemNumber.tag = position
                                     binding.cbChecked.setOnClickListener { view ->
                                         val cb = view as? CheckBox
                                         cb?.let { vm.checkedChanged(position, it.isChecked) }

@@ -119,7 +119,7 @@ class DiscrepancyListFragment : CoreFragment<FragmentDiscrepancyListBinding, Dis
 
                     layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
                             layoutId = R.layout.item_tile_discrepancy_list_not_processed,
-                            itemId = BR.vm,
+                            itemId = BR.item,
                             realisation = object : DataBindingAdapter<ItemTileDiscrepancyListNotProcessedBinding> {
                                 override fun onCreate(binding: ItemTileDiscrepancyListNotProcessedBinding) {
                                 }
@@ -171,14 +171,14 @@ class DiscrepancyListFragment : CoreFragment<FragmentDiscrepancyListBinding, Dis
 
                     layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
                             layoutId = R.layout.item_tile_discrepancy_list_processed,
-                            itemId = BR.vm,
+                            itemId = BR.item,
                             realisation = object : DataBindingAdapter<ItemTileDiscrepancyListProcessedBinding> {
                                 override fun onCreate(binding: ItemTileDiscrepancyListProcessedBinding) {
                                 }
 
                                 override fun onBind(binding: ItemTileDiscrepancyListProcessedBinding, position: Int) {
-                                    binding.tvCounter.tag = position
-                                    binding.tvCounter.setOnClickListener(onClickSelectionListener)
+                                    binding.tvItemNumber.tag = position
+                                    binding.tvItemNumber.setOnClickListener(onClickSelectionListener)
                                     binding.selectedForDelete = vm.processedSelectionsHelper.isSelected(position)
                                 }
 
@@ -200,7 +200,7 @@ class DiscrepancyListFragment : CoreFragment<FragmentDiscrepancyListBinding, Dis
 
                     layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
                             layoutId = R.layout.item_tile_discrepancy_list_control,
-                            itemId = BR.vm,
+                            itemId = BR.item,
                             realisation = object : DataBindingAdapter<ItemTileDiscrepancyListControlBinding> {
                                 override fun onCreate(binding: ItemTileDiscrepancyListControlBinding) {
                                 }
