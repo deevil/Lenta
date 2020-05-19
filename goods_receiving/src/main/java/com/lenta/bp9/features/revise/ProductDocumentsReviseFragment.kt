@@ -75,13 +75,13 @@ class ProductDocumentsReviseFragment : CoreFragment<FragmentProductDocumentsRevi
 
                     layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
                             layoutId = R.layout.item_tile_notifications,
-                            itemId = BR.vm,
+                            itemId = BR.item,
                             realisation = object : DataBindingAdapter<ItemTileNotificationsBinding> {
                                 override fun onCreate(binding: ItemTileNotificationsBinding) {
                                 }
 
                                 override fun onBind(binding: ItemTileNotificationsBinding, position: Int) {
-                                    binding.tvCounter.tag = position
+                                    binding.tvItemNumber.tag = position
                                 }
                             }
                     )
@@ -107,13 +107,13 @@ class ProductDocumentsReviseFragment : CoreFragment<FragmentProductDocumentsRevi
 
                     layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
                             layoutId = R.layout.item_tile_product_documents,
-                            itemId = BR.vm,
+                            itemId = BR.item,
                             realisation = object : DataBindingAdapter<ItemTileProductDocumentsBinding> {
                                 override fun onCreate(binding: ItemTileProductDocumentsBinding) {
                                 }
 
                                 override fun onBind(binding: ItemTileProductDocumentsBinding, position: Int) {
-                                    binding.tvCounter.tag = position
+                                    binding.tvItemNumber.tag = position
                                     binding.cbChecked.setOnClickListener { view ->
                                         val cb = view as? CheckBox
                                         cb?.let { vm.checkedChanged(position, it.isChecked) }
@@ -156,13 +156,13 @@ class ProductDocumentsReviseFragment : CoreFragment<FragmentProductDocumentsRevi
 
                     layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
                             layoutId = R.layout.item_tile_product_documents,
-                            itemId = BR.vm,
+                            itemId = BR.item,
                             realisation = object : DataBindingAdapter<ItemTileProductDocumentsBinding> {
                                 override fun onCreate(binding: ItemTileProductDocumentsBinding) {
                                 }
 
                                 override fun onBind(binding: ItemTileProductDocumentsBinding, position: Int) {
-                                    binding.tvCounter.tag = position
+                                    binding.tvItemNumber.tag = position
                                     binding.cbChecked.setOnClickListener { view ->
                                         val cb = view as? CheckBox
                                         cb?.let { vm.checkedChanged(position, it.isChecked) }

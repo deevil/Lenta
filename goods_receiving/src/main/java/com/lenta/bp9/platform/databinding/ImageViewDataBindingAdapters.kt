@@ -104,8 +104,8 @@ fun TaskLockStatus.getIconRes(): Int? {
 
 fun NotificationIndicatorType.getIconRes(): Int? {
     return when (this) {
-        NotificationIndicatorType.Yellow -> R.drawable.ic_indicator_orange
-        NotificationIndicatorType.Red -> R.drawable.ic_indicator_red
+        NotificationIndicatorType.Yellow -> R.drawable.ic_indicator_orange_16dp
+        NotificationIndicatorType.Red -> R.drawable.ic_indicator_red_16dp
         else -> null
     }
 }
@@ -121,7 +121,7 @@ fun DocumentType.getIconRes(): Int? {
 
 fun ProductDocumentType.getIconRes(): Int? {
     return when (this) {
-        ProductDocumentType.Simple -> R.drawable.ic_simple_product_doc
+        ProductDocumentType.Simple -> R.drawable.ic_simple_product_doc_gray_24dp
         ProductDocumentType.AlcoRus, ProductDocumentType.AlcoImport -> R.drawable.ic_alco_task_icon
         ProductDocumentType.Mercury -> R.drawable.ic_mercury
         else -> null

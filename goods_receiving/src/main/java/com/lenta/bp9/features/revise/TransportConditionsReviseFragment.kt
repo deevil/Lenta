@@ -214,13 +214,13 @@ class TransportConditionsReviseFragment : CoreFragment<FragmentTransportConditio
 
                     layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
                             layoutId = R.layout.item_tile_notifications,
-                            itemId = BR.vm,
+                            itemId = BR.item,
                             realisation = object : DataBindingAdapter<ItemTileNotificationsBinding> {
                                 override fun onCreate(binding: ItemTileNotificationsBinding) {
                                 }
 
                                 override fun onBind(binding: ItemTileNotificationsBinding, position: Int) {
-                                    binding.tvCounter.tag = position
+                                    binding.tvItemNumber.tag = position
                                 }
                             }
                     )
