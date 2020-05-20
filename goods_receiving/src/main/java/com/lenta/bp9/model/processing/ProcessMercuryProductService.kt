@@ -649,7 +649,7 @@ class ProcessMercuryProductService
     //В случае, если пользователь согласился округлить, то фактическое значение приравнивается к плановому.
     fun getRoundingQuantityPPP (count: String, reasonRejectionCode: String) : Double {
         val residue = productInfo.origQuantity.toDouble() - getQuantityAllCategoryExceptNonOrderOfProduct(if (reasonRejectionCode != "41") count.toDouble() else 0.0)
-        return DecimalFormat("0.0000").format(count.toDouble() + residue).toDouble()
+        return count.toDouble() + residue
     }
 
 }
