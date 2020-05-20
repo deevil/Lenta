@@ -10,6 +10,9 @@ import com.mobrun.plugin.api.request_assistant.RequestBuilder;
 import com.mobrun.plugin.api.request_assistant.ScalarParameter;
 import com.mobrun.plugin.models.StatusSelectTable;
 
+/**
+ * Таблица настройки разрешенных товаров
+ */
 public class ZmpUtz49V001 {
 
     public static final String NAME_RESOURCE = "ZMP_UTZ_49_V001";

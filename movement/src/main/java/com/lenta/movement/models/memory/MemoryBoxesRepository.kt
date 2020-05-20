@@ -1,14 +1,14 @@
 package com.lenta.movement.models.memory
 
 import com.lenta.movement.models.ExciseBox
-import com.lenta.movement.models.ExciseProductInfo
+import com.lenta.movement.models.ProductInfo
 import com.lenta.movement.models.repositories.IBoxesRepository
 
 class MemoryBoxesRepository: IBoxesRepository {
 
     private val boxes: MutableList<ExciseBox> = mutableListOf()
 
-    override fun getBoxesGroupByProduct(): Map<ExciseProductInfo, List<ExciseBox>> {
+    override fun getBoxesGroupByProduct(): Map<ProductInfo, List<ExciseBox>> {
         return boxes.groupBy { it.productInfo }
     }
 
@@ -16,9 +16,9 @@ class MemoryBoxesRepository: IBoxesRepository {
         return boxes
     }
 
-    override fun getBoxesByProduct(exciseProductInfo: ExciseProductInfo): List<ExciseBox> {
+    override fun getBoxesByProduct(productInfo: ProductInfo): List<ExciseBox> {
         return boxes.filter { box ->
-            box.productInfo.materialNumber == exciseProductInfo.materialNumber
+            box.productInfo.materialNumber == productInfo.materialNumber
         }
     }
 

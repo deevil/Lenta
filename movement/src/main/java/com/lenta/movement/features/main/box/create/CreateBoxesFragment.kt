@@ -13,7 +13,7 @@ import com.lenta.movement.databinding.FragmentCreateBoxesBinding
 import com.lenta.movement.databinding.LayoutBoxCreateBoxListTabBinding
 import com.lenta.movement.databinding.LayoutBoxCreatePuckerTabBinding
 import com.lenta.movement.databinding.LayoutItemBoxListBinding
-import com.lenta.movement.models.ExciseProductInfo
+import com.lenta.movement.models.ProductInfo
 import com.lenta.movement.platform.extensions.getAppComponent
 import com.lenta.shared.platform.activity.OnBackPresserListener
 import com.lenta.shared.platform.fragment.CoreFragment
@@ -34,7 +34,7 @@ class CreateBoxesFragment : CoreFragment<FragmentCreateBoxesBinding, CreateBoxes
     OnBackPresserListener {
 
     companion object {
-        fun newInstance(productInfo: ExciseProductInfo): CreateBoxesFragment {
+        fun newInstance(productInfo: ProductInfo): CreateBoxesFragment {
             return CreateBoxesFragment().apply {
                 this.productInfo = productInfo
             }
@@ -43,7 +43,7 @@ class CreateBoxesFragment : CoreFragment<FragmentCreateBoxesBinding, CreateBoxes
 
     private var recyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
 
-    private var productInfo: ExciseProductInfo? by state(null)
+    private var productInfo: ProductInfo? by state(null)
 
     override fun getLayoutId() = R.layout.fragment_create_boxes
 

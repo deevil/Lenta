@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="vm"
+            type="com.lenta.movement.features.task.goods.info.TaskGoodsInfoViewModel" />
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <TableLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:stretchColumns="*"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <com.lenta.movement.view.TableRowBordered>
+
+                <com.lenta.shared.view.ClickableSpinner
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="16dp"
+                    app:items="@{vm.quantityList}" />
+
+                <com.lenta.shared.view.EditTextWithSuffix
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="16dp"
+                    android:ellipsize="end"
+                    android:inputType="numberDecimal"
+                    android:maxLength="6"
+                    android:maxLines="1"
+                    android:text="@={vm.quantity}"
+                    app:digitsForUom="@{vm.quantityUom}"
+                    app:suffix="@{vm.quantityUom.name}"
+                    tools:text="50 шт." />
+            </com.lenta.movement.view.TableRowBordered>
+
+            <com.lenta.movement.view.TableRowBordered android:gravity="center_vertical">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="16dp"
+                    android:text="Итого\nПо корзине" />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="16dp"
+                    android:text="@{@string/task_goods_quantities_format(vm.totalQuantity, vm.currentBasket.size, vm.quantityUom.name)}"
+                    tools:text="50 шт.\n50 шт." />
+            </com.lenta.movement.view.TableRowBordered>
+
+            <com.lenta.movement.view.TableRowBordered android:visibility="@{vm.supplierListVisible}">
+
+                <com.lenta.shared.view.ClickableSpinner
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="16dp"
+                    android:layout_span="2"
+                    app:items="@{vm.supplierList}"
+                    app:onPositionClickListener="@{vm.supplierSelectedListener}" />
+
+            </com.lenta.movement.view.TableRowBordered>
+
+
+        </TableLayout>
+
+        <FrameLayout
+            android:id="@+id/matrixLayout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:foreground="?selectableItemBackground"
+            android:onClick="@{(v) -> vm.screenNavigator.openMatrixInfoScreen(vm.productInfo.matrixType)}"
+            android:padding="8dp"
+            app:layout_constraintBottom_toBottomOf="@+id/b_scan"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/b_scan">
+
+            <TextView
+                android:id="@+id/tv_matrix"
+                android:layout_width="36sp"
+                android:layout_height="36sp"
+                android:autoSizeTextType="uniform"
+                android:fontFamily="@font/tahoma_bold"
+                android:gravity="center"
+                android:textSize="18sp"
+                app:matrixType="@{vm.productInfo.matrixType}"
+                tools:background="@drawable/bg_white_circle"
+                tools:text="A" />
+        </FrameLayout>
+
+        <FrameLayout
+            android:id="@+id/sectionLayout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:foreground="?selectableItemBackground"
+            android:onClick="@{(v) -> vm.screenNavigator.openSectionInfoScreen(vm.productInfo.sectionId)}"
+            android:padding="8dp"
+            app:layout_constraintBottom_toBottomOf="@+id/b_scan"
+            app:layout_constraintStart_toEndOf="@+id/matrixLayout"
+            app:layout_constraintTop_toTopOf="@+id/b_scan">
+
+            <TextView
+                android:id="@+id/sectionText"
+                style="@style/NumberSectionTxt"
+                android:layout_width="36sp"
+                android:layout_height="36sp"
+                android:autoSizeTextType="uniform"
+                android:gravity="center"
+                android:text='@{"" + vm.productInfo.sectionId}'
+                tools:text="02" />
+        </FrameLayout>
+
+        <FrameLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="8dp"
+            android:layout_marginStart="8dp"
+            android:foreground="?selectableItemBackground"
+            app:layout_constraintBottom_toBottomOf="@+id/b_scan"
+            app:layout_constraintStart_toEndOf="@+id/sectionLayout"
+            app:layout_constraintTop_toTopOf="@+id/b_scan">
+
+            <ImageView
+                android:layout_width="34dp"
+                android:layout_height="34dp"
+                android:src="@drawable/ic_basket_24dp"
+                android:tint="@color/color_white"
+                android:layout_gravity="center_horizontal"/>
+
+            <TextView
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:textColor="@color/color_background"
+                android:fontFamily="@font/tahoma_bold"
+                android:textSize="16sp"
+                android:gravity="center"
+                android:text="@{@string/task_goods_basket_number_format(vm.currentBasket.number)}"
+                tools:text="01" />
+        </FrameLayout>
+
+        <ImageButton
+            android:id="@+id/b_scan"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:layout_marginBottom="8dp"
+            android:background="?selectableItemBackground"
+            android:onClick="@{(v) -> vm.screenNavigator.openEanInfoScreen()}"
+            android:padding="4dp"
+            android:src="@drawable/ic_scan_barcode_48dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

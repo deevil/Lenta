@@ -41,5 +41,17 @@
     <string name="task_settings_comments_description_title">Описание</string>
     <string name="task_settings_comments_comments_title">Комментарий</string>
 
+    <string name="task_goods_title">Состав задания</string>
+    <string name="task_goods_processed_tab_title">Обработанные</string>
+    <string name="task_goods_buckets_tab_title">Корзины</string>
+    <string name="task_goods_info_title">Информация о товаре</string>
+    <string name="task_goods_quantities_format">%1$d %3$s\n%2$d %3$s</string>
+    <string name="task_goods_basket_number_format">%1$02d</string>
+    <string name="task_basket_title">Список товаров корзины</string>
+    <string name="task_basket_characteristics_title">Свойства</string>
+    <string name="baskets">Корзины</string>
+    <string name="pu">ЕО</string>
+    <string name="boxes">Коробки</string>
+
 
 </resources>

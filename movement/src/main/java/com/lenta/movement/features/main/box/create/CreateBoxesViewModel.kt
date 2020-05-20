@@ -4,8 +4,8 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.lenta.movement.exception.InfoFailure
 import com.lenta.movement.models.ExciseBox
-import com.lenta.movement.models.ExciseProductInfo
 import com.lenta.movement.models.ExciseStamp
+import com.lenta.movement.models.ProductInfo
 import com.lenta.movement.models.repositories.IBoxesRepository
 import com.lenta.movement.platform.navigation.IScreenNavigator
 import com.lenta.movement.requests.network.*
@@ -49,7 +49,7 @@ class CreateBoxesViewModel : CoreViewModel(),
     val selectedPagePosition = MutableLiveData(0)
     val selectedPage = MutableLiveData(CreateBoxesPage.FILLING)
 
-    val productInfo: MutableLiveData<ExciseProductInfo> = MutableLiveData()
+    val productInfo: MutableLiveData<ProductInfo> = MutableLiveData()
     val stamps: MutableLiveData<List<ExciseStamp>> = MutableLiveData(emptyList())
     val boxNumber: MutableLiveData<String> = MutableLiveData()
 

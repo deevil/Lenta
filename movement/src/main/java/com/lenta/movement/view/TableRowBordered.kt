@@ -7,7 +7,9 @@ import android.util.AttributeSet
 import android.widget.TableLayout
 import android.widget.TableRow
 import androidx.core.content.res.ResourcesCompat
+import androidx.core.view.children
 import androidx.core.view.forEachIndexed
+import androidx.core.view.isVisible
 import com.lenta.movement.R
 
 class TableRowBordered : TableRow {
@@ -53,9 +55,15 @@ class TableRowBordered : TableRow {
                 )
             }
         }
+        val tableLayout = parent as TableLayout
 
-        // if this row is last
-        if ((parent as TableLayout).childCount - 1 == (parent as TableLayout).indexOfChild(this)) {
+        val isAllNextViewInvisible = tableLayout.children
+            .drop(tableLayout.indexOfChild(this))
+            .all { it.isVisible.not() }
+
+        val isThisRowLast = tableLayout.indexOfChild(this) == tableLayout.childCount - 1
+
+        if (isThisRowLast || isAllNextViewInvisible) {
             // bottom border
             canvas.drawLine(
                 0F,

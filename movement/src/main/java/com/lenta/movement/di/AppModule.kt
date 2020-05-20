@@ -4,7 +4,9 @@ import android.content.Context
 import com.lenta.movement.models.ITaskManager
 import com.lenta.movement.models.TaskManager
 import com.lenta.movement.models.memory.MemoryBoxesRepository
+import com.lenta.movement.models.memory.MemoryTaskBasketsRepository
 import com.lenta.movement.models.repositories.IBoxesRepository
+import com.lenta.movement.models.repositories.ITaskBasketsRepository
 import com.lenta.movement.platform.Formatter
 import com.lenta.movement.platform.IFormatter
 import com.lenta.movement.platform.navigation.IScreenNavigator
@@ -47,6 +49,12 @@ class AppModule {
     @AppScope
     internal fun provideTaskManager(hyperHive: HyperHive): ITaskManager {
         return TaskManager(hyperHive)
+    }
+
+    @Provides
+    @AppScope
+    internal fun provideTaskBasketRepository(taskManager: ITaskManager): ITaskBasketsRepository {
+        return MemoryTaskBasketsRepository(taskManager)
     }
 
     @Provides

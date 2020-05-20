@@ -1,28 +1,30 @@
 package com.lenta.movement.requests.network
 
 import com.google.gson.annotations.SerializedName
-import com.lenta.movement.models.ExciseProductInfo
+import com.lenta.movement.models.ProductInfo
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.fmp.ObjectRawStatus
 import com.lenta.shared.fmp.resources.dao_ext.getUomInfo
 import com.lenta.shared.fmp.resources.fast.ZmpUtz07V001
 import com.lenta.shared.functional.Either
 import com.lenta.shared.interactor.UseCase
+import com.lenta.shared.models.core.Supplier
 import com.lenta.shared.models.core.Uom
 import com.lenta.shared.models.core.getMatrixType
 import com.lenta.shared.models.core.getProductType
 import com.lenta.shared.requests.FmpRequestsHelper
+import com.lenta.shared.utilities.extentions.isSapTrue
 import com.mobrun.plugin.api.HyperHive
 import javax.inject.Inject
 
 class ScanInfoNetRequest @Inject constructor(
     private val hyperHive: HyperHive,
     private val fmpRequestsHelper: FmpRequestsHelper
-) : UseCase<ExciseProductInfo, ScanInfoParams> {
+) : UseCase<ProductInfo, ScanInfoParams> {
 
     private val units: ZmpUtz07V001 by lazy { ZmpUtz07V001(hyperHive) }
 
-    override suspend fun run(params: ScanInfoParams): Either<Failure, ExciseProductInfo> {
+    override suspend fun run(params: ScanInfoParams): Either<Failure, ProductInfo> {
         val result = fmpRequestsHelper.restRequest(
             resourceName = "ZMP_UTZ_BKS_05_V001",
             data = params,
@@ -46,12 +48,12 @@ class ScanInfoNetRequest @Inject constructor(
 
 }
 
-private fun ScanInfoResult.getProductInfo(uomInfo: ZmpUtz07V001.ItemLocal_ET_UOMS?): ExciseProductInfo? {
+private fun ScanInfoResult.getProductInfo(uomInfo: ZmpUtz07V001.ItemLocal_ET_UOMS?): ProductInfo? {
     if (this.material?.material == null || uomInfo == null) {
         return null
     }
 
-    return ExciseProductInfo(
+    return ProductInfo(
         materialNumber = material.material,
         description = material.name,
         uom = Uom(code = uomInfo.uom, name = uomInfo.name),
@@ -63,8 +65,11 @@ private fun ScanInfoResult.getProductInfo(uomInfo: ZmpUtz07V001.ItemLocal_ET_UOM
         sectionId = material.abtnr,
         matrixType = getMatrixType(material.matrixType),
         materialType = material.materialType,
+        suppliers = this.suppliers,
         quantityInvestments = material.quantityInvestments.toDoubleOrNull()?.toInt() ?: 0,
-        isRus = material.isRus.isNotEmpty()
+        isRus = material.isRus.isSapTrue(),
+        isVet = material.isVet.isSapTrue(),
+        isFood = material.isFood.isSapTrue()
     )
 
 }
@@ -87,6 +92,8 @@ data class ScanInfoResult(
     val ean: Ean?,
     @SerializedName("ES_MATERIAL")
     val material: Material?,
+    @SerializedName("ET_LIFNR")
+    val suppliers: List<Supplier>,
     @SerializedName("ET_SET")
     val set: List<Set>?,
     @SerializedName("EV_ERROR_TEXT")
@@ -102,12 +109,6 @@ data class Material(
     val buom: String,
     @SerializedName("EKGRP")
     val ekgrp: String,
-    @SerializedName("IS_ALCO")
-    val isAlco: String,
-    @SerializedName("IS_EXC")
-    val isExcise: String,
-    @SerializedName("IS_RETURN")
-    val isReturn: String,
     @SerializedName("MATERIAL")
     val material: String,
     @SerializedName("MATKL")
@@ -121,7 +122,17 @@ data class Material(
     @SerializedName("QNTINCL")
     val quantityInvestments: String,
     @SerializedName("IS_RUS")
-    val isRus: String
+    val isRus: String,
+    @SerializedName("IS_ALCO")
+    val isAlco: String,
+    @SerializedName("IS_EXC")
+    val isExcise: String,
+    @SerializedName("IS_RETURN")
+    val isReturn: String,
+    @SerializedName("IS_VET")
+    val isVet: String,
+    @SerializedName("IS_FOOD")
+    val isFood: String
 )
 
 data class Ean(

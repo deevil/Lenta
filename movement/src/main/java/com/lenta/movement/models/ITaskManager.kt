@@ -16,4 +16,5 @@ interface ITaskManager {
 
     fun getTaskAnnotation(): String
 
+    fun clear()
 }

@@ -10,6 +10,9 @@ import com.mobrun.plugin.api.request_assistant.RequestBuilder;
 import com.mobrun.plugin.api.request_assistant.ScalarParameter;
 import com.mobrun.plugin.models.StatusSelectTable;
 
+/**
+ * Настройки типов заданий
+ */
 public class ZmpUtz47V001 {
 
     public static final String NAME_RESOURCE = "ZMP_UTZ_47_V001";
@@ -43,9 +46,6 @@ public class ZmpUtz47V001 {
     public static class Item_Local_ET_TASK_TPS {
         @SerializedName("TASK_TYPE")
         public TaskType taskType;
-
-        @SerializedName("TASK_CNTRL")
-        public String taskCntrl;
 
         @SerializedName("TYPE_MVM")
         public MovementType mvmType;

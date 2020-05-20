@@ -1,6 +1,6 @@
 package com.lenta.movement.features.main.box
 
-import com.lenta.movement.models.ExciseProductInfo
+import com.lenta.movement.models.ProductInfo
 import com.lenta.movement.platform.navigation.IScreenNavigator
 import com.lenta.movement.requests.network.ScanInfoNetRequest
 import com.lenta.movement.requests.network.ScanInfoParams
@@ -42,7 +42,7 @@ class ScanInfoHelper @Inject constructor(
         code: String,
         fromScan: Boolean,
         isBarCode: Boolean? = null,
-        onResult: ((ExciseProductInfo) -> Unit)? = null
+        onResult: ((ProductInfo) -> Unit)? = null
     ) {
         val codeType = if (isBarCode == null && code.length == 12) {
             selectCodeType()

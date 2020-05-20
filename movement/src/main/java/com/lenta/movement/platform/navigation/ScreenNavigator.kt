@@ -11,9 +11,13 @@ import com.lenta.movement.features.main.box.GoodsListFragment
 import com.lenta.movement.features.main.box.create.CreateBoxesFragment
 import com.lenta.movement.features.selectmarket.SelectMarketFragment
 import com.lenta.movement.features.selectpersonalnumber.SelectPersonnelNumberFragment
+import com.lenta.movement.features.task.basket.TaskBasketFragment
+import com.lenta.movement.features.task.goods.TaskGoodsFragment
+import com.lenta.movement.features.task.goods.details.TaskGoodsDetailsFragment
+import com.lenta.movement.features.task.goods.info.TaskGoodsInfoFragment
 import com.lenta.movement.features.task.settings.TaskSettingsFragment
 import com.lenta.movement.models.ExciseBox
-import com.lenta.movement.models.ExciseProductInfo
+import com.lenta.movement.models.ProductInfo
 import com.lenta.movement.progress.IWriteOffProgressUseCaseInformator
 import com.lenta.shared.account.IAuthenticator
 import com.lenta.shared.exception.Failure
@@ -129,7 +133,7 @@ class ScreenNavigator(
         }
     }
 
-    override fun openProductIncorrectForCreateBox(productInfo: ExciseProductInfo) {
+    override fun openProductIncorrectForCreateBox(productInfo: ProductInfo) {
         openAlertScreen(
             message = context.getString(
                 R.string.alert_product_incorrect_for_create_box,
@@ -139,7 +143,7 @@ class ScreenNavigator(
         )
     }
 
-    override fun openCreateBoxByProduct(productInfo: ExciseProductInfo) {
+    override fun openCreateBoxByProduct(productInfo: ProductInfo) {
         runOrPostpone {
             getFragmentStack()?.push(CreateBoxesFragment.newInstance(productInfo))
         }
@@ -213,7 +217,31 @@ class ScreenNavigator(
     }
 
     override fun openTaskCompositionScreen() {
-        openNotImplementedScreenAlert("Состав задания")
+        runOrPostpone {
+            getFragmentStack()?.push(TaskGoodsFragment())
+        }
+    }
+
+    override fun openTaskGoodsInfoScreen(productInfo: ProductInfo) {
+        runOrPostpone {
+            getFragmentStack()?.push(TaskGoodsInfoFragment.newInstance(productInfo))
+        }
+    }
+
+    override fun openTaskGoodsDetailsScreen(productInfo: ProductInfo) {
+        runOrPostpone {
+            getFragmentStack()?.push(TaskGoodsDetailsFragment.newInstance(productInfo))
+        }
+    }
+
+    override fun openTaskBasketScreen(basketIndex: Int) {
+        runOrPostpone {
+            getFragmentStack()?.push(TaskBasketFragment.newInstance(basketIndex))
+        }
+    }
+
+    override fun openTaskBasketCharacteristicsScreen(basketIndex: Int) {
+        openNotImplementedScreenAlert("Свойства корзины")
     }
 }
 
@@ -229,8 +257,8 @@ interface IScreenNavigator : ICoreNavigator {
     fun openCreateTask()
     fun openTaskList()
     fun openSelectTypeCodeScreen(codeConfirmationForSap: Int, codeConfirmationForBarCode: Int)
-    fun openProductIncorrectForCreateBox(productInfo: ExciseProductInfo)
-    fun openCreateBoxByProduct(productInfo: ExciseProductInfo)
+    fun openProductIncorrectForCreateBox(productInfo: ProductInfo)
+    fun openCreateBoxByProduct(productInfo: ProductInfo)
     fun openBoxRewriteDialog(msg: String, yesCallbackFunc: () -> Unit)
     fun openStampMaxCountDialog()
     fun openStampWasAddedDialog(exciseBox: ExciseBox? = null)
@@ -238,4 +266,8 @@ interface IScreenNavigator : ICoreNavigator {
     fun openEanInvalidDialog()
     fun openBoxSavedDialog(box: ExciseBox)
     fun openTaskCompositionScreen()
+    fun openTaskGoodsInfoScreen(productInfo: ProductInfo)
+    fun openTaskGoodsDetailsScreen(productInfo: ProductInfo)
+    fun openTaskBasketScreen(basketIndex: Int)
+    fun openTaskBasketCharacteristicsScreen(basketIndex: Int)
 }

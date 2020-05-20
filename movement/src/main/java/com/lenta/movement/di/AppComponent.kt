@@ -7,6 +7,10 @@ import com.lenta.movement.features.main.box.GoodsListViewModel
 import com.lenta.movement.features.main.box.create.CreateBoxesViewModel
 import com.lenta.movement.features.selectmarket.SelectMarketViewModel
 import com.lenta.movement.features.selectpersonalnumber.SelectPersonnelNumberViewModel
+import com.lenta.movement.features.task.basket.TaskBasketViewModel
+import com.lenta.movement.features.task.goods.TaskGoodsViewModel
+import com.lenta.movement.features.task.goods.details.TaskGoodsDetailsViewModel
+import com.lenta.movement.features.task.goods.info.TaskGoodsInfoViewModel
 import com.lenta.movement.features.task.settings.pages.TaskSettingsCommentsViewModel
 import com.lenta.movement.features.task.settings.pages.TaskSettingsPropertiesViewModel
 import com.lenta.movement.features.task.settings.pages.TaskSettingsTaskTypeViewModel
@@ -33,4 +37,8 @@ interface AppComponent {
     fun inject(vm: TaskSettingsTaskTypeViewModel)
     fun inject(vm: TaskSettingsPropertiesViewModel)
     fun inject(vm: TaskSettingsCommentsViewModel)
+    fun inject(it: TaskGoodsViewModel)
+    fun inject(it: TaskGoodsInfoViewModel)
+    fun inject(it: TaskGoodsDetailsViewModel)
+    fun inject(it: TaskBasketViewModel)
 }
