@@ -37,22 +37,7 @@ class FastLoadingViewModel : CoreLoadingViewModel() {
     @Inject
     lateinit var auth: Auth
     @Inject
-    lateinit var database: IDatabaseRepo
-    @Inject
-    lateinit var appUpdateInstaller: AppUpdateInstaller
-    @Inject
-    lateinit var resourceManager: ISharedStringResourceManager
-    @Inject
-    lateinit var repoInMemoryHolder: IRepoInMemoryHolder
-    @Inject
     lateinit var sessionInfo: ISessionInfo
-    @Inject
-    lateinit var serverTimeRequest: ServerTimeRequest
-    @Inject
-    lateinit var timeMonitor: ITimeMonitor
-    @Inject
-    lateinit var checkData: CheckData
-
 
     override val title: MutableLiveData<String> = MutableLiveData()
     override val progress: MutableLiveData<Boolean> = MutableLiveData(true)
@@ -62,54 +47,6 @@ class FastLoadingViewModel : CoreLoadingViewModel() {
     init {
         viewModelScope.launch {
             progress.value = true
-            withContext(Dispatchers.IO) {
-                database.getAllMarkets().find { it.number == sessionInfo.market }.let { market ->
-                    val codeVersion = market?.version?.toIntOrNull()
-                    Logg.d { "codeVersion for update: $codeVersion" }
-                    if (codeVersion == null) {
-                        Either.Right("")
-                    } else {
-                        appUpdateInstaller.checkNeedAndHaveUpdate(codeVersion)
-                    }
-                }
-            }.either({
-                Logg.e { "checkNeedAndHaveUpdate failure: $it" }
-                handleFailure(failure = it)
-            }) { updateFileName ->
-                Logg.d { "update fileName: $updateFileName" }
-                if (updateFileName.isBlank()) {
-                    getServerTime()
-                } else {
-                    installUpdate(updateFileName)
-                }
-            }
-        }
-    }
-
-    private fun installUpdate(updateFileName: String) {
-        viewModelScope.launch {
-            title.value = resourceManager.loadingNewAppVersion()
-            progress.value = true
-            withContext(Dispatchers.IO) {
-                appUpdateInstaller.installUpdate(updateFileName)
-            }.either(::handleFailure) {
-                // do nothing. App is finished
-            }
-        }
-
-    }
-
-    private fun getServerTime() {
-        viewModelScope.launch {
-            serverTimeRequest(ServerTimeRequestParam(sessionInfo.market
-                    ?: "")).either(::handleFailure, ::handleSuccessServerTime)
-        }
-    }
-
-    private fun handleSuccessServerTime(serverTime: ServerTime) {
-        timeMonitor.setServerTime(time = serverTime.time, date = serverTime.date)
-        checkData.marketNumber = sessionInfo.market ?: "Not found!"
-        viewModelScope.launch {
             fastResourcesNetRequest(null).either(::handleFailure, ::handleSuccess)
         }
     }
@@ -121,27 +58,7 @@ class FastLoadingViewModel : CoreLoadingViewModel() {
     }
 
     private fun handleSuccess(@Suppress("UNUSED_PARAMETER") b: Boolean) {
-        // Раскомментировать для удаление сохраненных данных
-        //checkData.clearSavedData()
-
-        if (checkData.isExistUnsentData()) {
-            when (checkData.checkType) {
-                CheckType.SELF_CONTROL -> {
-                    // Подтверждение - На устройстве обнаружены несохраненные данные в режиме "Самоконтроль ТК" - Назад / Перейти
-                    navigator.showUnsavedSelfControlDataDetected {
-                        navigator.openSelectCheckTypeScreen()
-                    }
-                }
-                CheckType.EXTERNAL_AUDIT -> {
-                    // Подтверждение - На устройстве обнаружены несохраненные данные в режиме "Внешний аудит" - Назад / Перейти
-                    navigator.showUnsavedExternalAuditDataDetected {
-                        navigator.openSelectCheckTypeScreen()
-                    }
-                }
-            }
-        } else {
-            navigator.openSelectCheckTypeScreen()
-        }
+        navigator.openSelectMarketScreen()
         progress.value = false
     }
 
