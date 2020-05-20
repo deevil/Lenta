@@ -66,6 +66,7 @@ class SelectMarketViewModel : CoreViewModel(), OnPositionClickListener {
     val selectedAddress: MutableLiveData<String> = selectedPosition.map {
         it?.let { position -> markets.value?.getOrNull(position)?.address }
     }
+    val title: MutableLiveData<String> = MutableLiveData()
 
     init {
         viewModelScope.launch {
@@ -93,6 +94,7 @@ class SelectMarketViewModel : CoreViewModel(), OnPositionClickListener {
 
     fun onClickNext() {
         viewModelScope.launch {
+            navigator.showProgressLoadingData()
             markets.value?.getOrNull(selectedPosition.value ?: -1)?.number?.let { tkNumber ->
                 if (appSettings.lastTK != tkNumber) {
                     clearPrinters()
@@ -127,7 +129,6 @@ class SelectMarketViewModel : CoreViewModel(), OnPositionClickListener {
 
     private fun getServerTime() {
         viewModelScope.launch {
-            navigator.showProgress(serverTimeRequest)
             serverTimeRequest(ServerTimeRequestParam(sessionInfo.market
                     ?: "")).either(::handleFailure, ::handleSuccessServerTime)
         }
@@ -169,8 +170,7 @@ class SelectMarketViewModel : CoreViewModel(), OnPositionClickListener {
 
     private fun installUpdate(updateFileName: String) {
         viewModelScope.launch {
-            //title.value = resourceManager.loadingNewAppVersion()
-            //progress.value = true
+            navigator.showProgress(resourceManager.loadingNewAppVersion())
             withContext(Dispatchers.IO) {
                 appUpdateInstaller.installUpdate(updateFileName)
             }.either(::handleFailure) {
