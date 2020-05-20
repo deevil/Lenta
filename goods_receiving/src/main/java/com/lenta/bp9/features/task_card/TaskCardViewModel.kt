@@ -459,7 +459,7 @@ class TaskCardViewModel : CoreViewModel(), PageSelectionListener {
                 }
             }
             TaskStatus.Arrived -> {
-                if (isEdo && taskManager.getReceivingTask()?.taskHeader?.taskType == TaskType.DirectSupplier) {
+                if (isEdo && taskManager.getReceivingTask()?.taskHeader?.taskType == TaskType.DirectSupplier && incomingDelivery.isEmpty()) {
                     screenNavigator.openCreateInboundDeliveryDialog(
                             yesCallbackFunc = {
                                 screenNavigator.openStartReviseLoadingScreen()

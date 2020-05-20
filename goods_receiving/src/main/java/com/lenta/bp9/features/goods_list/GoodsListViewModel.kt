@@ -435,22 +435,28 @@ class GoodsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKey
         viewModelScope.launch {
             val countProductNotProcessed = taskManager.getReceivingTask()?.let { task ->
                 task.getProcessedProducts()
-                        .map {productInfo ->
+                        .filter { productInfo ->
                             if (task.taskHeader.taskType == TaskType.RecalculationCargoUnit) {
-                                task.taskRepository.getProductsDiscrepancies().getCountProductNotProcessedOfProductPGE(productInfo)
+                                task.taskRepository.getProductsDiscrepancies().getCountProductNotProcessedOfProductPGE(productInfo) > 0.0
                             } else {
-                                task.taskRepository.getProductsDiscrepancies().getCountProductNotProcessedOfProduct(productInfo)
+                                task.taskRepository.getProductsDiscrepancies().getCountProductNotProcessedOfProduct(productInfo) > 0.0
                             }
+                        }.map {
+                            if (task.taskHeader.taskType == TaskType.RecalculationCargoUnit) {
+                                task.taskRepository.getProductsDiscrepancies().getCountProductNotProcessedOfProductPGE(it)
+                            } else {
+                                task.taskRepository.getProductsDiscrepancies().getCountProductNotProcessedOfProduct(it)
+                            }
+                        }.sumByDouble {
+                            it
                         }
-            }?.sumByDouble {
-                it
             } ?: 0.0
 
             if (countProductNotProcessed > 0.0) {
                 screenNavigator.openDiscrepancyListScreen()
             } else {
                 screenNavigator.showProgressLoadingData()
-                endRecountDirectDeliveries(EndRecountDDParameters(
+                /**endRecountDirectDeliveries(EndRecountDDParameters(
                         taskNumber = taskManager.getReceivingTask()!!.taskHeader.taskNumber,
                         deviceIP = context.getDeviceIp(),
                         personalNumber = sessionInfo.personnelNumber ?: "",
@@ -460,7 +466,7 @@ class GoodsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKey
                         discrepanciesExciseStamp = taskManager.getReceivingTask()!!.taskRepository.getExciseStampsDiscrepancies().getExciseStampDiscrepancies().map { TaskExciseStampDiscrepanciesRestData.from(it) },
                         exciseStampBad = taskManager.getReceivingTask()!!.taskRepository.getExciseStampsBad().getExciseStampsBad().map { TaskExciseStampBadRestData.from(it) },
                         discrepanciesMercury = taskManager.getReceivingTask()!!.taskRepository.getMercuryDiscrepancies().getMercuryDiscrepancies().map { TaskMercuryDiscrepanciesRestData.from(it) }
-                )).either(::handleFailure, ::handleSuccess)
+                )).either(::handleFailure, ::handleSuccess)*/
                 screenNavigator.hideProgress()
             }
         }

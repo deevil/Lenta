@@ -453,7 +453,7 @@ class GoodsMercuryInfoViewModel : CoreViewModel(), OnPositionClickListener {
                                 paramGrzRoundLackRatio = paramGrzRoundLackRatio.value?.replace(",", ".")?.toDouble() ?: 0.0,
                                 paramGrzRoundLackUnit = paramGrzRoundLackUnit.value?.replace(",", ".")?.toDouble() ?: 0.0,
                                 paramGrzRoundHeapRatio = paramGrzRoundHeapRatio.value?.replace(",", ".")?.toDouble() ?: 0.0),
-                addCount = DecimalFormat("0.0000").format(count.value?.toDouble() ?: "0"),
+                addCount = count.value ?: "0",
                 reasonRejectionCode = reasonRejectionCode
         )
     }
