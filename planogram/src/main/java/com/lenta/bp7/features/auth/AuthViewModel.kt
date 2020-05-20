@@ -60,7 +60,7 @@ class AuthViewModel : CoreAuthViewModel() {
 
             progress.value = false
 
-            navigator.openSelectMarketScreen()
+            navigator.openFastDataLoadingScreen()
         }
     }
 
