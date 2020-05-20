@@ -19,14 +19,11 @@
     <integer name="four_one_3">20</integer>
     <integer name="four_one_4">20</integer>
 
-
-
-
-
-
-
-
-
+    <!-- Четыре колонки / Тип 2 -->
+    <integer name="four_two_1">15</integer>
+    <integer name="four_two_2">40</integer>
+    <integer name="four_two_3">30</integer>
+    <integer name="four_two_4">15</integer>
 
 
 

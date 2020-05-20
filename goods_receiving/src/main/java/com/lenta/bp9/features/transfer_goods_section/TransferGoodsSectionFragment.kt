@@ -80,14 +80,14 @@ class TransferGoodsSectionFragment : CoreFragment<FragmentTransferGoodsSectionBi
 
                     layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
                             layoutId = R.layout.item_tile_transfer_goods_section,
-                            itemId = BR.vm,
+                            itemId = BR.item,
                             realisation = object : DataBindingAdapter<ItemTileTransferGoodsSectionBinding> {
                                 override fun onCreate(binding: ItemTileTransferGoodsSectionBinding) {
                                 }
 
                                 override fun onBind(binding: ItemTileTransferGoodsSectionBinding, position: Int) {
-                                    binding.tvCondition.tag = position
-                                    binding.tvCondition.setOnClickListener(onClickConditionTitle)
+                                    binding.tvItemNumber.tag = position
+                                    binding.tvItemNumber.setOnClickListener(onClickConditionTitle)
                                 }
 
                             }

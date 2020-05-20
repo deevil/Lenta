@@ -76,7 +76,7 @@ class TransportMarriageFragment : CoreFragment<FragmentTransportMarriageBinding,
 
                         layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
                                 layoutId = R.layout.item_tile_transport_marriage_cargo_units,
-                                itemId = BR.vm,
+                                itemId = BR.item,
                                 realisation = object : DataBindingAdapter<ItemTileTransportMarriageCargoUnitsBinding> {
                                     override fun onCreate(binding: ItemTileTransportMarriageCargoUnitsBinding) {
                                     }
@@ -127,14 +127,14 @@ class TransportMarriageFragment : CoreFragment<FragmentTransportMarriageBinding,
 
                     layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
                             layoutId = R.layout.item_tile_transport_marriage_act,
-                            itemId = BR.vm,
+                            itemId = BR.item,
                             realisation = object : DataBindingAdapter<ItemTileTransportMarriageActBinding> {
                                 override fun onCreate(binding: ItemTileTransportMarriageActBinding) {
                                 }
 
                                 override fun onBind(binding: ItemTileTransportMarriageActBinding, position: Int) {
-                                    binding.tvCounter.tag = position
-                                    binding.tvCounter.setOnClickListener(onClickSelectionListener)
+                                    binding.tvItemNumber.tag = position
+                                    binding.tvItemNumber.setOnClickListener(onClickSelectionListener)
                                     binding.selectedForDelete = vm.actSelectionsHelper.isSelected(position)
                                     actRecyclerViewKeyHandler?.let {
                                         binding.root.isSelected = it.isSelected(position)
