@@ -16,11 +16,9 @@
 
     </data>
 
-
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
-
 
         <include
             android:id="@+id/layout_titles"
@@ -43,8 +41,6 @@
             app:rv_config="@{rvConfig}"
             tools:listitem="@layout/item_tile_goods_details" />
 
-
     </androidx.constraintlayout.widget.ConstraintLayout>
-
 
 </layout>

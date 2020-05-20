@@ -122,8 +122,8 @@ fun DocumentType.getIconRes(): Int? {
 fun ProductDocumentType.getIconRes(): Int? {
     return when (this) {
         ProductDocumentType.Simple -> R.drawable.ic_simple_product_doc_gray_24dp
-        ProductDocumentType.AlcoRus, ProductDocumentType.AlcoImport -> R.drawable.ic_alco_task_icon
-        ProductDocumentType.Mercury -> R.drawable.ic_mercury
+        ProductDocumentType.AlcoRus, ProductDocumentType.AlcoImport -> R.drawable.ic_alco_task_icon_gray_24dp
+        ProductDocumentType.Mercury -> R.drawable.ic_mercury_gray_24dp
         else -> null
     }
 }

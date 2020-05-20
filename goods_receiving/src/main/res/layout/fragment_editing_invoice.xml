@@ -38,6 +38,7 @@
             app:tabTextAppearance="@style/TabLayoutStyle"
             app:tabTextColor="@color/colorWhite"
             tools:targetApi="lollipop" />
+
     </androidx.viewpager.widget.ViewPager>
 
 </layout>
