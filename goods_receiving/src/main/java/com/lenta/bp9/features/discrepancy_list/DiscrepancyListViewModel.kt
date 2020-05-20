@@ -137,7 +137,17 @@ class DiscrepancyListViewModel : CoreViewModel(), PageSelectionListener {
                                         productInfo.uom
                                     }
                                     val quantityNotProcessedProduct = if (task.taskHeader.taskType == TaskType.RecalculationCargoUnit) {
-                                        task.taskRepository.getProductsDiscrepancies().getCountProductNotProcessedOfProductPGE(productInfo).toStringFormatted()
+                                        val processingUnitsOfProduct = task.taskRepository.getProducts().getProcessingUnitsOfProduct(productInfo.materialNumber)
+                                        if (processingUnitsOfProduct.size > 1) { //если у товара две ЕО
+                                            val countOrderQuantity = processingUnitsOfProduct.map {unitInfo ->
+                                                unitInfo.orderQuantity.toDouble()
+                                            }.sumByDouble {
+                                                it
+                                            }
+                                            task.taskRepository.getProductsDiscrepancies().getCountProductNotProcessedOfProductPGEOfProcessingUnits(productInfo, countOrderQuantity).toStringFormatted()
+                                        } else {
+                                            task.taskRepository.getProductsDiscrepancies().getCountProductNotProcessedOfProductPGE(productInfo).toStringFormatted()
+                                        }
                                     } else {
                                         task.taskRepository.getProductsDiscrepancies().getCountProductNotProcessedOfProduct(productInfo).toStringFormatted()
                                     }

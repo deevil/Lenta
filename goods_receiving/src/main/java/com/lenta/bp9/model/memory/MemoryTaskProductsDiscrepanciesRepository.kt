@@ -200,6 +200,10 @@ class MemoryTaskProductsDiscrepanciesRepository : ITaskProductsDiscrepanciesRepo
         return product.orderQuantity.toDouble() - getCountAcceptOfProductPGE(product) - getCountRefusalOfProductPGE(product)
     }
 
+    override fun getCountProductNotProcessedOfProductPGEOfProcessingUnits(product: TaskProductInfo, orderQuantity: Double) : Double {
+        return orderQuantity - getCountAcceptOfProductPGE(product) - getCountRefusalOfProductPGE(product)
+    }
+
     override fun getCountOfDiscrepanciesOfProduct(product: TaskProductInfo, typeDiscrepancies: String?): Double {
         var countDiscrepancies = 0.0
         typeDiscrepancies?.let {
