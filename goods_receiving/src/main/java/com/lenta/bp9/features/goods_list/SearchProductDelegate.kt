@@ -1,6 +1,7 @@
 package com.lenta.bp9.features.goods_list
 
 import android.content.Context
+import com.lenta.bp9.features.loading.tasks.TaskListLoadingMode
 import com.lenta.bp9.model.task.IReceivingTaskManager
 import com.lenta.bp9.model.task.TaskProductInfo
 import com.lenta.bp9.model.task.TaskType
@@ -238,11 +239,21 @@ class SearchProductDelegate @Inject constructor(
                             //screenNavigator.openSetsInfoScreen(taskProductInfo)
                         }
                         taskProductInfo.isBoxFl -> { //алкоголь, коробочный учет ППП https://trello.com/c/KbBbXj2t; коробочный учет ПГЕ https://trello.com/c/TzUSGIH7
-                            screenNavigator.openExciseAlcoBoxAccInfoScreen(taskProductInfo)
+                            when (repoInMemoryHolder.taskList.value?.taskListLoadingMode) {
+                                TaskListLoadingMode.Receiving -> screenNavigator.openExciseAlcoBoxAccInfoScreen(taskProductInfo)
+                                TaskListLoadingMode.PGE -> screenNavigator.openExciseAlcoBoxAccInfoPGEScreen(taskProductInfo)
+                                TaskListLoadingMode.Shipment -> screenNavigator.openNotImplementedScreenAlert("Информация о коробочном учете")
+                                else -> screenNavigator.openAlertUnknownTaskTypeScreen() //сообщение о неизвестном типе задания
+                            }
                         }
                         taskProductInfo.isMarkFl -> { //алкоголь, марочный учет
-                            screenNavigator.openNotImplementedScreenAlert("Информация о марочном учете")
-                            //screenNavigator.openExciseAlcoStampAccInfoScreen(taskProductInfo)
+                            when (repoInMemoryHolder.taskList.value?.taskListLoadingMode) {
+                                TaskListLoadingMode.Receiving -> screenNavigator.openNotImplementedScreenAlert("Информация о коробочном учете")
+                                TaskListLoadingMode.PGE -> screenNavigator.openNotImplementedScreenAlert("Информация о коробочном учете")
+                                TaskListLoadingMode.Shipment -> screenNavigator.openNotImplementedScreenAlert("Информация о коробочном учете")
+                                else -> screenNavigator.openAlertUnknownTaskTypeScreen() //сообщение о неизвестном типе задания
+                            }
+                            //screenNavigator.openExciseAlcoStampAccInfoScreen(taskProductInfo) это экран для марочного учета
                         }
                         else -> screenNavigator.openAlertUnknownGoodsTypeScreen() //сообщение о неизвестном типе товара
                     }

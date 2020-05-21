@@ -52,15 +52,15 @@
             android:layout_marginStart="8dp"
             android:layout_marginEnd="8dp"
             app:items="@{vm.spinQuality}"
-            app:layout_constraintBottom_toBottomOf="@+id/et_inventory"
+            app:layout_constraintBottom_toBottomOf="@+id/et_quantity"
             app:layout_constraintEnd_toStartOf="@+id/div_vert"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/et_inventory"
+            app:layout_constraintTop_toTopOf="@+id/et_quantity"
             app:onPositionClickListener="@{vm}"
             app:position="@{vm.spinQualitySelectedPosition}"/>
 
         <com.lenta.shared.view.EditTextWithSuffix
-            android:id="@+id/et_inventory"
+            android:id="@+id/et_quantity"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
@@ -88,7 +88,7 @@
             android:background="@color/color_divider"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/et_inventory" />
+            app:layout_constraintTop_toBottomOf="@+id/et_quantity" />
 
         <TextView
             android:id="@+id/tv_total"
@@ -257,11 +257,11 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="8dp"
-            android:src="@{vm.isEizUnit ? @drawable/ic_eiz_disabled_24dp : @drawable/ic_bei_24dp}"
+            android:src="@{vm.isEizUnit ? @drawable/ic_eiz_disabled_24dp : @drawable/ic_bei_disabled_24dp}"
             android:enabled="false"
-            app:layout_constraintBottom_toBottomOf="@+id/et_inventory"
-            app:layout_constraintEnd_toEndOf="@+id/et_inventory"
-            app:layout_constraintTop_toTopOf="@+id/et_inventory"
+            app:layout_constraintBottom_toBottomOf="@+id/et_quantity"
+            app:layout_constraintEnd_toEndOf="@+id/et_quantity"
+            app:layout_constraintTop_toTopOf="@+id/et_quantity"
             tools:src="@drawable/ic_eiz_disabled_24dp"/>
 
 

@@ -13,6 +13,7 @@ import com.lenta.bp9.features.driver_data.DriverDataFragment
 import com.lenta.bp9.features.editing_invoice.EditingInvoiceFragment
 import com.lenta.bp9.features.formed_docs.FormedDocsFragment
 import com.lenta.bp9.features.goods_details.GoodsDetailsFragment
+import com.lenta.bp9.features.goods_information.excise_alco_pge.excise_alco_box_acc_pge.ExciseAlcoBoxAccInfoPGEFragment
 import com.lenta.bp9.features.goods_information.excise_alco_receiving.excise_alco_stamp_acc.ExciseAlcoStampAccInfoFragment
 import com.lenta.bp9.features.goods_information.excise_alco_receiving.excise_alco_box_acc.ExciseAlcoBoxAccInfoFragment
 import com.lenta.bp9.features.goods_information.excise_alco_receiving.excise_alco_box_acc.excise_alco_box_card.ExciseAlcoBoxCardFragment
@@ -1281,6 +1282,16 @@ class ScreenNavigator(
         }
     }
 
+    override fun openAlertUnknownTaskTypeScreen() {
+        openInfoScreen(context.getString(R.string.unknown_task_type))
+    }
+
+    override fun openExciseAlcoBoxAccInfoPGEScreen(productInfo: TaskProductInfo) {
+        runOrPostpone {
+            getFragmentStack()?.push(ExciseAlcoBoxAccInfoPGEFragment.create(productInfo))
+        }
+    }
+
     private fun getFragmentStack() = foregroundActivityProvider.getActivity()?.fragmentStack
 }
 
@@ -1427,4 +1438,6 @@ interface IScreenNavigator : ICoreNavigator {
     fun openCompleteRejectionOfGoodsDialog(applyCallbackFunc: () -> Unit, title: String, countBoxes: String, paramGrzCrGrundcatName: String)
     fun openPartialRefusalOnGoodsDialog(applyCallbackFunc: () -> Unit, title: String, countScanBoxes: String, unconfirmedQuantity: String, paramGrzCrGrundcatName: String)
     fun openGoodsInfoShipmentPPScreen(productInfo: TaskProductInfo, isDiscrepancy: Boolean, initialCount: Double = 0.0)
+    fun openAlertUnknownTaskTypeScreen()
+    fun openExciseAlcoBoxAccInfoPGEScreen(productInfo: TaskProductInfo)
 }

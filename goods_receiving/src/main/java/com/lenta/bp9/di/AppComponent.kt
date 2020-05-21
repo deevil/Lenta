@@ -10,6 +10,7 @@ import com.lenta.bp9.features.driver_data.DriverDataViewModel
 import com.lenta.bp9.features.editing_invoice.EditingInvoiceViewModel
 import com.lenta.bp9.features.formed_docs.FormedDocsViewModel
 import com.lenta.bp9.features.goods_details.GoodsDetailsViewModel
+import com.lenta.bp9.features.goods_information.excise_alco_pge.excise_alco_box_acc_pge.ExciseAlcoBoxAccInfoPGEViewModel
 import com.lenta.bp9.features.goods_information.excise_alco_receiving.excise_alco_stamp_acc.ExciseAlcoStampAccInfoViewModel
 import com.lenta.bp9.features.goods_information.excise_alco_receiving.excise_alco_box_acc.ExciseAlcoBoxAccInfoViewModel
 import com.lenta.bp9.features.goods_information.excise_alco_receiving.excise_alco_box_acc.excise_alco_box_card.ExciseAlcoBoxCardViewModel
@@ -128,4 +129,5 @@ interface AppComponent : FromParentToCoreProvider {
     fun inject(it: ExciseAlcoBoxCardViewModel)
     fun inject(it: ExciseAlcoBoxProductFailureViewModel)
     fun inject(it: GoodsInfoShipmentPPViewModel)
+    fun inject(it: ExciseAlcoBoxAccInfoPGEViewModel)
 }

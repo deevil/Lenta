@@ -1,10 +1,10 @@
-package com.lenta.bp9.features.goods_information.excise_alco_receiving.excise_alco_box_acc
+package com.lenta.bp9.features.goods_information.excise_alco_pge.excise_alco_box_acc_pge
 
 import android.os.Bundle
 import android.view.View
 import android.widget.AdapterView
 import com.lenta.bp9.R
-import com.lenta.bp9.databinding.FragmentExciseAlcoBoxAccInfoBinding
+import com.lenta.bp9.databinding.FragmentExciseAlcoBoxAccInfoPgeBinding
 import com.lenta.bp9.model.task.TaskProductInfo
 import com.lenta.bp9.platform.extentions.getAppComponent
 import com.lenta.shared.platform.fragment.CoreFragment
@@ -17,13 +17,13 @@ import com.lenta.shared.utilities.extentions.connectLiveData
 import com.lenta.shared.utilities.extentions.provideViewModel
 import com.lenta.shared.utilities.state.state
 
-class ExciseAlcoBoxAccInfoFragment : CoreFragment<FragmentExciseAlcoBoxAccInfoBinding, ExciseAlcoBoxAccInfoViewModel>(),
+class ExciseAlcoBoxAccInfoPGEFragment : CoreFragment<FragmentExciseAlcoBoxAccInfoPgeBinding, ExciseAlcoBoxAccInfoPGEViewModel>(),
         ToolbarButtonsClickListener,
         OnScanResultListener {
 
     companion object {
-        fun create(productInfo: TaskProductInfo): ExciseAlcoBoxAccInfoFragment {
-            ExciseAlcoBoxAccInfoFragment().let {
+        fun create(productInfo: TaskProductInfo): ExciseAlcoBoxAccInfoPGEFragment {
+            ExciseAlcoBoxAccInfoPGEFragment().let {
                 it.productInfo = productInfo
                 return it
             }
@@ -32,12 +32,12 @@ class ExciseAlcoBoxAccInfoFragment : CoreFragment<FragmentExciseAlcoBoxAccInfoBi
 
     private var productInfo by state<TaskProductInfo?>(null)
 
-    override fun getLayoutId(): Int = R.layout.fragment_excise_alco_box_acc_info
+    override fun getLayoutId(): Int = R.layout.fragment_excise_alco_box_acc_info_pge
 
-    override fun getPageNumber(): String = "09/18"
+    override fun getPageNumber(): String = "09/41"
 
-    override fun getViewModel(): ExciseAlcoBoxAccInfoViewModel {
-        provideViewModel(ExciseAlcoBoxAccInfoViewModel::class.java).let {vm ->
+    override fun getViewModel(): ExciseAlcoBoxAccInfoPGEViewModel {
+        provideViewModel(ExciseAlcoBoxAccInfoPGEViewModel::class.java).let {vm ->
             getAppComponent()?.inject(vm)
             vm.productInfo.value = productInfo
             return vm
@@ -84,5 +84,6 @@ class ExciseAlcoBoxAccInfoFragment : CoreFragment<FragmentExciseAlcoBoxAccInfoBi
     override fun onScanResult(data: String) {
         vm.onScanResult(data)
     }
+
 
 }
