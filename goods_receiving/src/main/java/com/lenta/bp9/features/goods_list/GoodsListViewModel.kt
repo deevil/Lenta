@@ -456,7 +456,7 @@ class GoodsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKey
                 screenNavigator.openDiscrepancyListScreen()
             } else {
                 screenNavigator.showProgressLoadingData()
-                /**endRecountDirectDeliveries(EndRecountDDParameters(
+                endRecountDirectDeliveries(EndRecountDDParameters(
                         taskNumber = taskManager.getReceivingTask()!!.taskHeader.taskNumber,
                         deviceIP = context.getDeviceIp(),
                         personalNumber = sessionInfo.personnelNumber ?: "",
@@ -466,7 +466,7 @@ class GoodsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKey
                         discrepanciesExciseStamp = taskManager.getReceivingTask()!!.taskRepository.getExciseStampsDiscrepancies().getExciseStampDiscrepancies().map { TaskExciseStampDiscrepanciesRestData.from(it) },
                         exciseStampBad = taskManager.getReceivingTask()!!.taskRepository.getExciseStampsBad().getExciseStampsBad().map { TaskExciseStampBadRestData.from(it) },
                         discrepanciesMercury = taskManager.getReceivingTask()!!.taskRepository.getMercuryDiscrepancies().getMercuryDiscrepancies().map { TaskMercuryDiscrepanciesRestData.from(it) }
-                )).either(::handleFailure, ::handleSuccess)*/
+                )).either(::handleFailure, ::handleSuccess)
                 screenNavigator.hideProgress()
             }
         }
