@@ -209,9 +209,9 @@
             android:layout_marginEnd="8dp"
             android:src="@{vm.isEizUnit ? @drawable/ic_eiz_disabled_24dp : @drawable/ic_bei_white_24dp}"
             android:enabled="false"
-            app:layout_constraintBottom_toBottomOf="@+id/et_inventory"
-            app:layout_constraintEnd_toEndOf="@+id/et_inventory"
-            app:layout_constraintTop_toTopOf="@+id/et_inventory"
+            app:layout_constraintBottom_toBottomOf="@+id/et_quantity"
+            app:layout_constraintEnd_toEndOf="@+id/et_quantity"
+            app:layout_constraintTop_toTopOf="@+id/et_quantity"
             tools:src="@drawable/ic_eiz_disabled_24dp"/>
 
 
