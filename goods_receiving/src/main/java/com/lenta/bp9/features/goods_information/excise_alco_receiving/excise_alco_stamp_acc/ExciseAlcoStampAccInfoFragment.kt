@@ -1,4 +1,4 @@
-package com.lenta.bp9.features.goods_information.excise_alco_stamp_acc
+package com.lenta.bp9.features.goods_information.excise_alco_receiving.excise_alco_stamp_acc
 
 import android.os.Bundle
 import android.view.View

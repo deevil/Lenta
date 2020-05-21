@@ -1,4 +1,4 @@
-package com.lenta.bp9.features.goods_information.excise_alco_box_acc.excise_alco_box_product_failure
+package com.lenta.bp9.features.goods_information.excise_alco_receiving.excise_alco_box_acc.excise_alco_box_product_failure
 
 import android.view.View
 import com.lenta.bp9.R
