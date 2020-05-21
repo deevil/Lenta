@@ -31,7 +31,7 @@
                     android:id="@+id/tv_item_number"
                     style="@style/CellTextStyle"
                     android:layout_width="wrap_content"
-                    android:text='@{item.position}'
+                    android:text='@{item.position + ""}'
                     tools:text="1" />
 
             </LinearLayout>
