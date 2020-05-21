@@ -265,7 +265,7 @@ class CoreNavigator @Inject constructor(
         runOrPostpone {
             getFragmentStack()?.push(AlertFragment.create(message = iconDescriptionHelper.getDescription(IconCode.EAN)
                     ?: context.getString(R.string.ean_info),
-                    iconRes = R.drawable.ic_scan_barcode_80dp), CustomAnimation.vertical)
+                    iconRes = R.drawable.ic_scan_barcode_white_80dp), CustomAnimation.vertical)
         }
     }
 
@@ -282,7 +282,7 @@ class CoreNavigator @Inject constructor(
         runOrPostpone {
             getFragmentStack()?.push(AlertFragment.create(message = iconDescriptionHelper.getDescription(IconCode.EXCISE_STAMP)
                     ?: context.getString(R.string.es_info),
-                    iconRes = R.drawable.ic_scan_barcode_es_80dp), CustomAnimation.vertical)
+                    iconRes = R.drawable.ic_scan_barcode_es_white_80dp), CustomAnimation.vertical)
         }
     }
 
@@ -290,7 +290,7 @@ class CoreNavigator @Inject constructor(
         runOrPostpone {
             getFragmentStack()?.push(AlertFragment.create(
                     message = context.getString(R.string.gs128_info),
-                    iconRes = R.drawable.ic_scan_barcode_vet_80dp), CustomAnimation.vertical)
+                    iconRes = R.drawable.ic_scan_barcode_vet_white_80dp), CustomAnimation.vertical)
         }
     }
 

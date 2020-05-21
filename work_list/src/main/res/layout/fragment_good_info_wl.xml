@@ -120,7 +120,7 @@
                 android:layout_weight="1"
                 android:background="?selectableItemBackground"
                 android:onClick="@{(v) -> vm.navigator.openESInfoScreen()}"
-                android:src="@drawable/ic_scan_barcode_es_32dp" />
+                android:src="@drawable/ic_scan_barcode_es_white_32dp" />
 
             <ImageView
                 android:layout_width="0dp"

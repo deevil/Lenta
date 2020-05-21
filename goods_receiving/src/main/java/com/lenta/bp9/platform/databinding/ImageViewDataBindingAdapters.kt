@@ -87,8 +87,8 @@ fun setVisibleOrGone(imageView: ImageView, isVisible: Boolean?) {
 
 fun TaskPostponedStatus.getIconRes(): Int? {
     return when (this) {
-        TaskPostponedStatus.PauseSign -> R.drawable.ic_pause_dark_24dp
-        TaskPostponedStatus.PlaySign -> R.drawable.ic_play_arrow_dark_24dp
+        TaskPostponedStatus.PauseSign -> R.drawable.ic_pause_gray_24dp
+        TaskPostponedStatus.PlaySign -> R.drawable.ic_play_arrow_gray_24dp
         TaskPostponedStatus.Breaking -> R.drawable.ic_seal_white_24dp
         else -> null
     }

@@ -380,7 +380,7 @@
                 android:layout_weight="1"
                 android:background="?selectableItemBackground"
                 android:onClick="@{(v) -> vm.screenNavigator.openESInfoScreen()}"
-                android:src="@drawable/ic_scan_barcode_es_32dp"
+                android:src="@drawable/ic_scan_barcode_es_white_32dp"
                 android:visibility="@{!vm.isDefect}" />
 
         </LinearLayout>

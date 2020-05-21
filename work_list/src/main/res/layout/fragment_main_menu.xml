@@ -48,7 +48,7 @@
                 android:onClick="@{(view) -> vm.onClickPrint()}"
                 android:text="@string/print_labels"
                 android:textAllCaps="false"
-                app:icon="@drawable/ic_print_price_tag_32dp"
+                app:icon="@drawable/ic_print_price_tag_white_32dp"
                 app:iconGravity="end" />
 
 

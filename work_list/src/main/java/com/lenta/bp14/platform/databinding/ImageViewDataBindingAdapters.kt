@@ -45,11 +45,11 @@ fun setPrintStatusIcon(imageView: ImageView, isPrinted: Boolean?) {
     when (isPrinted) {
         true -> {
             imageView.setVisible(true)
-            imageView.setImageResource(R.drawable.ic_print_dark_24dp)
+            imageView.setImageResource(R.drawable.ic_print_gray_24dp)
         }
         false -> {
             imageView.setVisible(true)
-            imageView.setImageResource(R.drawable.ic_print_no_dark_24dp)
+            imageView.setImageResource(R.drawable.ic_print_no_gray_24dp)
         }
         null -> imageView.setVisible(false)
     }
