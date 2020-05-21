@@ -56,7 +56,6 @@ import com.lenta.bp9.model.task.revise.ProductDocumentType
 import com.lenta.bp9.model.task.revise.ProductVetDocumentRevise
 import com.lenta.bp9.requests.network.TaskListSearchParams
 import com.lenta.shared.account.IAuthenticator
-import com.lenta.shared.exception.Failure
 import com.lenta.shared.features.alert.AlertFragment
 import com.lenta.shared.platform.activity.ForegroundActivityProvider
 import com.lenta.shared.platform.navigation.CustomAnimation
@@ -1254,7 +1253,7 @@ class ScreenNavigator(
                     message = context.getString(R.string.dialogue_complete_rejection_of_goods, countBoxes, paramGrzCrGrundcatName),
                     title = title,
                     description = context.getString(R.string.complete_rejection),
-                    iconRes = R.drawable.ic_complete_rejection,
+                    iconRes = R.drawable.ic_complete_rejection_yellow_80dp,
                     codeConfirmForRight = backFragmentResultHelper.setFuncForResult(applyCallbackFunc),
                     rightButtonDecorationInfo = ButtonDecorationInfo.apply,
                     pageNumber = "94")
@@ -1268,7 +1267,7 @@ class ScreenNavigator(
                     message = context.getString(R.string.dialogue_partial_refusal_on_goods, countScanBoxes, unconfirmedQuantity, paramGrzCrGrundcatName),
                     title = title,
                     description = context.getString(R.string.partial_failure),
-                    iconRes = R.drawable.ic_complete_rejection,
+                    iconRes = R.drawable.ic_complete_rejection_yellow_80dp,
                     codeConfirmForRight = backFragmentResultHelper.setFuncForResult(applyCallbackFunc),
                     rightButtonDecorationInfo = ButtonDecorationInfo.apply,
                     pageNumber = "94")

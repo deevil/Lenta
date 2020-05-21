@@ -9,25 +9,19 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.databinding.DataBindingUtil
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import com.lenta.bp9.BR
 import com.lenta.bp9.R
 import com.lenta.bp9.databinding.*
-import com.lenta.bp9.model.task.TaskType
 import com.lenta.bp9.platform.extentions.getAppComponent
-import com.lenta.shared.keys.KeyCode
-import com.lenta.shared.keys.OnKeyDownListener
 import com.lenta.shared.platform.fragment.CoreFragment
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListener
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
-import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.databinding.*
 import com.lenta.shared.utilities.extentions.connectLiveData
 import com.lenta.shared.utilities.extentions.provideViewModel
-import com.lenta.shared.utilities.state.state
 
 class DiscrepancyListFragment : CoreFragment<FragmentDiscrepancyListBinding, DiscrepancyListViewModel>(),
         ViewPagerSettings,
@@ -76,7 +70,7 @@ class DiscrepancyListFragment : CoreFragment<FragmentDiscrepancyListBinding, Dis
                 val textView = if (tabItemLayout.getChildAt(0) is TextView) tabItemLayout.getChildAt(0) as TextView else tabItemLayout.getChildAt(1) as TextView
                 if (iconView != null) tabItemLayout.removeView(iconView)
                 if (it.isNotEmpty()) {
-                    textView.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_indicator_red_tablayout, 0)
+                    textView.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_indicator_tablayout_red_10dp, 0)
                     textView.compoundDrawablePadding = 5
                 } else {
                     textView.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0)

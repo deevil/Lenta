@@ -28,7 +28,6 @@ import com.lenta.shared.utilities.databinding.RecyclerViewKeyHandler
 import com.lenta.shared.utilities.databinding.ViewPagerSettings
 import com.lenta.shared.utilities.extentions.connectLiveData
 import com.lenta.shared.utilities.extentions.provideViewModel
-import com.lenta.shared.utilities.state.state
 
 class TaskCardFragment : CoreFragment<FragmentTaskCardBinding, TaskCardViewModel>(), ViewPagerSettings, ToolbarButtonsClickListener, OnBackPresserListener {
 
@@ -166,9 +165,9 @@ class TaskCardFragment : CoreFragment<FragmentTaskCardBinding, TaskCardViewModel
             val textView = tabItemLayout.getChildAt(1) as TextView
             tabItemLayout.removeView(iconView)
             if (vm.bookmarkIndicator == NotificationIndicatorType.Red) {
-                textView.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_indicator_red_tablayout, 0)
+                textView.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_indicator_tablayout_red_10dp, 0)
             } else {
-                textView.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_indicator_yellow_tablayout, 0)
+                textView.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_indicator_tablayout_yellow_10dp, 0)
             }
             textView.compoundDrawablePadding = 5
         }
