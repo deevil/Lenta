@@ -4,191 +4,110 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
+
         <variable
-            name="vm"
+            name="item"
             type="com.lenta.bp9.features.revise.TransportConditionVM" />
 
     </data>
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@drawable/bg_selectable">
+        android:background="@drawable/bg_selectable"
+        android:orientation="vertical">
 
-
-        <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/vertical_guidline_1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            app:layout_constraintGuide_percent="0.12" />
-
-        <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/vertical_guidline_2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            app:layout_constraintGuide_percent="0.53" />
-
-        <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/vertical_guidline_3"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            app:layout_constraintGuide_percent="0.77" />
-
-        <View
-            android:id="@+id/div_vert1"
-            android:layout_width="1dp"
-            android:layout_height="0dp"
-            android:background="@color/color_divider"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toStartOf="@+id/vertical_guidline_1"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <View
-            android:id="@+id/div_vert2"
-            android:layout_width="1dp"
-            android:layout_height="0dp"
-            android:background="@color/color_divider"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toStartOf="@+id/vertical_guidline_2"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <View
-            android:id="@+id/div_vert3"
-            android:layout_width="1dp"
-            android:layout_height="0dp"
-            android:background="@color/color_divider"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toStartOf="@+id/vertical_guidline_3"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <TextView
-            android:id="@+id/tv_counter"
-            android:layout_width="32dp"
-            android:layout_height="32dp"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="16dp"
-            android:layout_marginEnd="8dp"
-            android:layout_marginBottom="16dp"
-            android:ellipsize="end"
-            android:gravity="center"
-            android:maxLines="1"
-            android:text='@{vm.position}'
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/div_vert1"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:ignore="UnusedAttribute"
-            tools:text="2" />
-
-
-        <TextView
-            android:id="@+id/tv_condition_name"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_marginEnd="8dp"
-            android:ellipsize="end"
-            android:gravity="start|center_vertical"
-            android:maxLines="2"
-            android:text="@{vm.name}"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/div_vert2"
-            app:layout_constraintStart_toEndOf="@+id/div_vert1"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_chainStyle="packed"
-            tools:text="Температура 1" />
-
-        <View
-            android:id="@+id/div_hor_bottom"
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="@color/color_divider"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
+            android:layout_height="@dimen/common_row_height"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
 
+            <LinearLayout
+                style="@style/LinearCellStyle"
+                android:layout_weight="@integer/four_one_1">
 
-        <ImageView
-            android:id="@+id/imageView2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:layout_marginEnd="4dp"
-            android:layout_marginBottom="8dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/imageView3"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toEndOf="@+id/vertical_guidline_2"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_goneMarginStart="8dp"
-            app:conditionViewTypeIcon='@{vm.conditionViewType}'
-            tools:src="@drawable/ic_temperature" />
+                <TextView
+                    android:id="@+id/tv_item_number"
+                    style="@style/CellTextStyle"
+                    android:layout_width="wrap_content"
+                    android:text='@{item.position}'
+                    tools:text="1" />
 
-        <ImageView
-            android:id="@+id/imageView3"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:layout_marginEnd="4dp"
-            android:layout_marginBottom="8dp"
-            android:src="@drawable/ic_obligatory"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/vertical_guidline_3"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toEndOf="@+id/imageView2"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_goneMarginStart="8dp"
-            app:visibleOrGone='@{vm.isObligatory}'
-            tools:src="@drawable/ic_obligatory" />
+            </LinearLayout>
 
-        <CheckBox
-            android:id="@+id/cb_checked"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginEnd="8dp"
-            android:checked="@{vm.isChecked}"
-            app:layout_constraintBottom_toBottomOf="@+id/tv_counter"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toEndOf="@+id/div_vert3"
-            app:layout_constraintTop_toTopOf="@+id/tv_counter"
-            tools:checked="true" />
+            <View style="@style/VerticalDivider" />
 
-        <com.lenta.shared.view.EditTextWithSuffix
-            android:id="@+id/et_condition_value"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
-            android:ellipsize="end"
-            android:imeOptions="actionDone"
-            android:inputType="textNoSuggestions|numberDecimal"
-            android:maxLines="1"
-            android:maxLength="3"
-            android:paddingTop="8dp"
-            android:paddingBottom="8dp"
-            app:maxLengthForScanProtect="@{10}"
-            android:textSize="18sp"
-            android:text="@={vm.value}"
-            android:layout_marginStart="8dp"
-            android:layout_marginEnd="8dp"
-            app:layout_constraintStart_toEndOf="@+id/div_vert3"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/tv_counter"
-            app:layout_constraintBottom_toBottomOf="@+id/tv_counter"
-            app:suffix="@{vm.suffix}"
-            tools:ignore="Autofill"
-            tools:text="12" />
+            <LinearLayout
+                style="@style/LinearCellStyle"
+                android:layout_weight="@integer/four_one_2">
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+                <TextView
+                    style="@style/CellTextStyle"
+                    android:maxLines="2"
+                    android:text="@{item.name}"
+                    tools:text="Температура 1" />
+
+            </LinearLayout>
+
+            <View style="@style/VerticalDivider" />
+
+            <LinearLayout
+                style="@style/LinearCellStyle"
+                android:layout_weight="@integer/four_one_3"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:conditionViewTypeIcon='@{item.conditionViewType}'
+                    tools:src="@drawable/ic_temperature_gray_24dp" />
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_star_gray_24dp"
+                    app:visibleOrGone='@{item.isObligatory}' />
+
+            </LinearLayout>
+
+            <View style="@style/VerticalDivider" />
+
+            <LinearLayout
+                style="@style/LinearCellStyle"
+                android:layout_weight="@integer/four_one_4">
+
+                <FrameLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                    <com.lenta.shared.view.EditTextWithSuffix
+                        android:id="@+id/et_condition_value"
+                        style="@style/CellEditTextStyle"
+                        android:imeOptions="actionDone"
+                        android:inputType="textNoSuggestions|numberDecimal"
+                        android:maxLines="1"
+                        android:text="@={item.value}"
+                        app:maxLengthForScanProtect="@{10}"
+                        app:suffix="@{item.suffix}"
+                        tools:text="12" />
+
+                    <CheckBox
+                        android:id="@+id/cb_checked"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:checked="@{item.isChecked}"
+                        tools:checked="true" />
+
+                </FrameLayout>
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <View style="@style/HorizontalDivider" />
+
+    </LinearLayout>
 
 </layout>

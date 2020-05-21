@@ -37,10 +37,10 @@
 
                 <LinearLayout
                     style="@style/LinearCellStyle"
-                    android:layout_weight="@integer/pack_type_cause_quantity_column_1">
+                    android:layout_weight="@integer/three_two_1">
 
                     <TextView
-                        style="@style/ColumnTitleStyle"
+                        style="@style/FirstRowTextStyle"
                         android:layout_width="wrap_content"
                         android:layout_marginStart="0dp"
                         android:text="@string/number" />
@@ -49,20 +49,20 @@
 
                 <LinearLayout
                     style="@style/LinearCellStyle"
-                    android:layout_weight="@integer/pack_type_cause_quantity_column_2">
+                    android:layout_weight="@integer/three_two_2">
 
                     <TextView
-                        style="@style/ColumnTitleStyle"
+                        style="@style/FirstRowTextStyle"
                         android:text="@string/pack_type_cause" />
 
                 </LinearLayout>
 
                 <LinearLayout
                     style="@style/LinearCellStyle"
-                    android:layout_weight="@integer/pack_type_cause_quantity_column_3">
+                    android:layout_weight="@integer/three_two_3">
 
                     <TextView
-                        style="@style/ColumnTitleStyle"
+                        style="@style/FirstRowTextStyle"
                         android:text="@string/quantity" />
 
                 </LinearLayout>

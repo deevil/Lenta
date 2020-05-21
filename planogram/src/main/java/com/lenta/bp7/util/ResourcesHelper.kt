@@ -14,7 +14,7 @@ fun setSegmentStatusIcon(imageView: ImageView, segmentStatus: SegmentStatus) {
     segmentStatus.let {
         val icon = when (it) {
             SegmentStatus.UNFINISHED -> R.drawable.ic_created_status_white_24dp
-            SegmentStatus.PROCESSED -> R.drawable.ic_processed_status_dark_24dp
+            SegmentStatus.PROCESSED -> R.drawable.ic_lock_status_gray_24dp
             SegmentStatus.DELETED -> R.drawable.ic_deleted_status_white_24dp
         }
         imageView.setImageResource(icon)
@@ -26,7 +26,7 @@ fun setShelfStatusIcon(imageView: ImageView, shelfStatus: ShelfStatus) {
     shelfStatus.let {
         val icon = when (it) {
             ShelfStatus.UNFINISHED -> R.drawable.ic_created_status_white_24dp
-            ShelfStatus.PROCESSED -> R.drawable.ic_processed_status_dark_24dp
+            ShelfStatus.PROCESSED -> R.drawable.ic_lock_status_gray_24dp
             ShelfStatus.DELETED -> R.drawable.ic_deleted_status_white_24dp
         }
         imageView.setImageResource(icon)

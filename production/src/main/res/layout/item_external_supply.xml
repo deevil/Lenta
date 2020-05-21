@@ -24,7 +24,7 @@
 
             <LinearLayout
                 style="@style/LinearCellStyle"
-                android:layout_weight="@integer/sku_arrived_column_1">
+                android:layout_weight="@integer/three_two_1">
 
                 <TextView
                     android:id="@+id/tv_item_number"
@@ -39,7 +39,7 @@
 
             <LinearLayout
                 style="@style/LinearCellStyle"
-                android:layout_weight="@integer/sku_arrived_column_2"
+                android:layout_weight="@integer/three_two_2"
                 android:orientation="horizontal">
 
                 <TextView
@@ -55,7 +55,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:padding="5dp"
-                    android:src="@drawable/ic_keyboard_arrow_right_white_24dp"
+                    android:src="@drawable/ic_keyboard_arrow_right_white_16dp"
                     tools:ignore="ContentDescription" />
 
             </LinearLayout>
@@ -64,7 +64,7 @@
 
             <LinearLayout
                 style="@style/LinearCellStyle"
-                android:layout_weight="@integer/sku_arrived_column_3"
+                android:layout_weight="@integer/three_two_3"
                 android:orientation="horizontal">
 
                 <TextView

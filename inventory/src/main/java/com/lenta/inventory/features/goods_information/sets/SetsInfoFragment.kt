@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
@@ -62,7 +61,7 @@ class SetsInfoFragment : CoreFragment<FragmentSetsInfoBinding, SetsInfoViewModel
             vm.stampAnotherProduct.value = getString(R.string.stamp_another_product)
             vm.alcocodeNotFound.value = getString(R.string.alcocode_not_found)
             vm.limitExceeded.value = getString(R.string.limit_exceeded)
-            vm.iconRes.value = R.drawable.ic_info_pink
+            vm.iconRes.value = R.drawable.ic_info_pink_80dp
             vm.textColor.value = ContextCompat.getColor(context!!, com.lenta.shared.R.color.color_text_dialogWarning)
             vm.msgWrongProducType.value = getString(R.string.wrong_product_type)
             return vm
@@ -158,25 +157,23 @@ class SetsInfoFragment : CoreFragment<FragmentSetsInfoBinding, SetsInfoViewModel
                     layoutBinding.lifecycleOwner = viewLifecycleOwner
                     layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
                             layoutId = R.layout.item_tile_sets_info,
-                            itemId = BR.vm,
+                            itemId = BR.item,
                             realisation = object : DataBindingAdapter<ItemTileSetsInfoBinding> {
                                 override fun onCreate(binding: ItemTileSetsInfoBinding) {
                                 }
 
                                 override fun onBind(binding: ItemTileSetsInfoBinding, position: Int) {
-                                    binding.tvCounter.tag = position
-                                    binding.tvCounter.setOnClickListener(onClickSelectionListener)
+                                    binding.tvItemNumber.tag = position
+                                    binding.tvItemNumber.setOnClickListener(onClickSelectionListener)
                                     binding.tvComponentTitle.tag = position
                                     binding.tvComponentTitle.setOnClickListener(onClickComponentTitle)
                                     binding.selectedForDelete = vm.componentsSelectionsHelper.isSelected(position)
                                 }
-
                             }
                     )
                     layoutBinding.vm = vm
                     return layoutBinding.root
                 }
-
     }
 
     override fun getTextTitle(position: Int): String = getString(if (position == 0) R.string.quantity else R.string.components)
@@ -200,6 +197,5 @@ class SetsInfoFragment : CoreFragment<FragmentSetsInfoBinding, SetsInfoViewModel
         vm.onBackPressed()
         return true
     }
-
 
 }

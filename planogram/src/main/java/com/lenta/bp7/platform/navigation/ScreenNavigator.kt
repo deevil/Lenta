@@ -277,7 +277,7 @@ class ScreenNavigator(
         runOrPostpone {
             getFragmentStack()?.push(AlertFragment.create(message = context.getString(R.string.error_saving_to_lua),
                     pageNumber = "61",
-                    iconRes = R.drawable.ic_info_pink,
+                    iconRes = R.drawable.ic_info_pink_80dp,
                     codeConfirmForExit = backFragmentResultHelper.setFuncForResult(afterShowCallback),
                     timeAutoExitInMillis = 2000))
         }

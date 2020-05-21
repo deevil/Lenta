@@ -67,7 +67,7 @@ class CompositeDocReviseFragment : CoreFragment<FragmentCompositeDocReviseBindin
         binding?.let { layoutBinding ->
             layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
                     layoutId = R.layout.item_tile_list_composite_doc_revise,
-                    itemId = BR.vm,
+                    itemId = BR.item,
                     realisation = object : DataBindingAdapter<ItemTileListCompositeDocReviseBinding> {
                         override fun onCreate(binding: ItemTileListCompositeDocReviseBinding) {
                         }

@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:tools="http://schemas.android.com/tools"
-        tools:context=".features.search_filter.SearchFilterFragment">
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".features.search_filter.SearchFilterFragment">
 
     <data>
 
         <variable
             name="vm"
-            type="com.lenta.bp14.features.search_filter.SearchFilterViewModel"/>
+            type="com.lenta.bp14.features.search_filter.SearchFilterViewModel" />
 
     </data>
 
@@ -17,8 +17,7 @@
         android:orientation="vertical">
 
         <!-- Секция -->
-        <LinearLayout
-            style="@style/LinearRowStyle">
+        <LinearLayout style="@style/LinearRowStyle">
 
             <LinearLayout
                 style="@style/LinearCellStyle"
@@ -26,12 +25,11 @@
 
                 <TextView
                     style="@style/CellTextStyle"
-                    android:text="@string/section"/>
+                    android:text="@string/section" />
 
             </LinearLayout>
 
-            <View
-                style="@style/VerticalDivider"/>
+            <View style="@style/VerticalDivider" />
 
             <LinearLayout
                 style="@style/LinearCellStyle"
@@ -39,21 +37,19 @@
 
                 <EditText
                     style="@style/CellEditTextStyle"
-                    android:text="@={vm.section}"
                     android:digits="0123456789"
                     android:inputType="number"
-                    tools:text="02"/>
+                    android:text="@={vm.section}"
+                    tools:text="02" />
 
             </LinearLayout>
 
         </LinearLayout>
 
-        <View
-            style="@style/HorizontalDivider"/>
+        <View style="@style/HorizontalDivider" />
 
         <!-- Группа товаров -->
-        <LinearLayout
-            style="@style/LinearRowStyle">
+        <LinearLayout style="@style/LinearRowStyle">
 
             <LinearLayout
                 style="@style/LinearCellStyle"
@@ -61,12 +57,11 @@
 
                 <TextView
                     style="@style/CellTextStyle"
-                    android:text="@string/group_of_goods"/>
+                    android:text="@string/group_of_goods" />
 
             </LinearLayout>
 
-            <View
-                style="@style/VerticalDivider"/>
+            <View style="@style/VerticalDivider" />
 
             <LinearLayout
                 style="@style/LinearCellStyle"
@@ -76,19 +71,18 @@
                     style="@style/CellEditTextStyle"
                     android:digits="0123456789"
                     android:inputType="number"
-                    android:text="@={vm.groupOfGoods}"/>
+                    android:text="@={vm.groupOfGoods}" />
 
             </LinearLayout>
 
         </LinearLayout>
 
-        <View
-            style="@style/HorizontalDivider"/>
+        <View style="@style/HorizontalDivider" />
 
         <!-- Место хранения -->
         <LinearLayout
-            android:visibility="@{vm.placeStorageVisibility}"
-            style="@style/LinearRowStyle">
+            style="@style/LinearRowStyle"
+            android:visibility="@{vm.placeStorageVisibility}">
 
             <LinearLayout
                 style="@style/LinearCellStyle"
@@ -96,12 +90,11 @@
 
                 <TextView
                     style="@style/CellTextStyle"
-                    android:text="@string/storage_place"/>
+                    android:text="@string/storage_place" />
 
             </LinearLayout>
 
-            <View
-                style="@style/VerticalDivider"/>
+            <View style="@style/VerticalDivider" />
 
             <LinearLayout
                 style="@style/LinearCellStyle"
@@ -109,20 +102,20 @@
 
                 <EditText
                     style="@style/CellEditTextStyle"
-                    android:text="@={vm.storagePlace}"/>
+                    android:text="@={vm.storagePlace}" />
 
             </LinearLayout>
 
         </LinearLayout>
 
         <View
-            android:visibility="@{vm.placeStorageVisibility}"
-            style="@style/HorizontalDivider"/>
+            style="@style/HorizontalDivider"
+            android:visibility="@{vm.placeStorageVisibility}" />
 
         <!-- Комментарий -->
         <LinearLayout
-            android:visibility="@{vm.commentVisibility}"
-            style="@style/LinearRowStyle">
+            style="@style/LinearRowStyle"
+            android:visibility="@{vm.commentVisibility}">
 
             <LinearLayout
                 style="@style/LinearCellStyle"
@@ -130,12 +123,11 @@
 
                 <TextView
                     style="@style/CellTextStyle"
-                    android:text="@string/comment"/>
+                    android:text="@string/comment" />
 
             </LinearLayout>
 
-            <View
-                style="@style/VerticalDivider"/>
+            <View style="@style/VerticalDivider" />
 
             <LinearLayout
                 style="@style/LinearCellStyle"
@@ -143,15 +135,15 @@
 
                 <EditText
                     style="@style/CellEditTextStyle"
-                    android:text="@={vm.comment}"/>
+                    android:text="@={vm.comment}" />
 
             </LinearLayout>
 
         </LinearLayout>
 
         <View
-            android:visibility="@{vm.commentVisibility}"
-            style="@style/HorizontalDivider"/>
+            style="@style/HorizontalDivider"
+            android:visibility="@{vm.commentVisibility}" />
 
     </LinearLayout>
 

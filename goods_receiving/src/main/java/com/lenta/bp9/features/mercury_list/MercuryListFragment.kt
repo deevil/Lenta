@@ -108,14 +108,14 @@ class MercuryListFragment : CoreFragment<FragmentMercuryListBinding, MercuryList
 
                         layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
                                 layoutId = R.layout.item_tile_mercury_list,
-                                itemId = BR.vm,
+                                itemId = BR.item,
                                 realisation = object : DataBindingAdapter<ItemTileMercuryListBinding> {
                                     override fun onCreate(binding: ItemTileMercuryListBinding) {
                                     }
 
                                     override fun onBind(binding: ItemTileMercuryListBinding, position: Int) {
-                                        binding.tvCounter.tag = position
-                                        binding.tvCounter.setOnClickListener(onClickSelectionListener)
+                                        binding.tvItemNumber.tag = position
+                                        binding.tvItemNumber.setOnClickListener(onClickSelectionListener)
                                         binding.selectedForDelete = vm.tiedSelectionsHelper.isSelected(position)
                                         tiedRecyclerViewKeyHandler?.let {
                                             binding.root.isSelected = it.isSelected(position)
@@ -162,14 +162,14 @@ class MercuryListFragment : CoreFragment<FragmentMercuryListBinding, MercuryList
 
                     layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
                             layoutId = R.layout.item_tile_mercury_list,
-                            itemId = BR.vm,
+                            itemId = BR.item,
                             realisation = object : DataBindingAdapter<ItemTileMercuryListBinding> {
                                 override fun onCreate(binding: ItemTileMercuryListBinding) {
                                 }
 
                                 override fun onBind(binding: ItemTileMercuryListBinding, position: Int) {
-                                    binding.tvCounter.tag = position
-                                    binding.tvCounter.setOnClickListener(onClickSelectionListener)
+                                    binding.tvItemNumber.tag = position
+                                    binding.tvItemNumber.setOnClickListener(onClickSelectionListener)
                                     binding.selectedForDelete = vm.untiedSelectionsHelper.isSelected(position)
                                     untiedRecyclerViewKeyHandler?.let {
                                         binding.root.isSelected = it.isSelected(position)

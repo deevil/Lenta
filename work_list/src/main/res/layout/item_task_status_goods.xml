@@ -25,7 +25,7 @@
 
             <LinearLayout
                 style="@style/LinearCellStyle"
-                android:layout_weight="@integer/number_task_status_goods_column_1">
+                android:layout_weight="@integer/four_one_1">
 
                 <TextView
                     android:id="@+id/tv_item_number"
@@ -40,7 +40,7 @@
 
             <LinearLayout
                 style="@style/LinearCellStyle"
-                android:layout_weight="@integer/number_task_status_goods_column_2"
+                android:layout_weight="@integer/four_one_2"
                 android:orientation="horizontal">
 
                 <LinearLayout
@@ -67,7 +67,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:padding="5dp"
-                    android:src="@drawable/ic_keyboard_arrow_right_white_24dp" />
+                    android:src="@drawable/ic_keyboard_arrow_right_white_16dp" />
 
             </LinearLayout>
 
@@ -75,14 +75,14 @@
 
             <LinearLayout
                 style="@style/LinearCellStyle"
-                android:layout_weight="@integer/number_task_status_goods_column_3"
+                android:layout_weight="@integer/four_one_3"
                 android:orientation="horizontal">
 
                 <ImageView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="4dp"
-                    android:src="@drawable/ic_play_arrow_dark_24dp"
+                    android:src="@drawable/ic_play_arrow_gray_24dp"
                     android:visibility="@{task.processed == true}" />
 
                 <ImageView
@@ -97,7 +97,7 @@
 
             <LinearLayout
                 style="@style/LinearCellStyle"
-                android:layout_weight="@integer/number_task_status_goods_column_4">
+                android:layout_weight="@integer/four_one_4">
 
                 <TextView
                     style="@style/CellTextStyle"

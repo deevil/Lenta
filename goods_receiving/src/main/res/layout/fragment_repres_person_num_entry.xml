@@ -10,7 +10,6 @@
             name="vm"
             type="com.lenta.bp9.features.repres_person_num_entry.RepresPersonNumEntryViewModel" />
 
-
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -39,7 +38,7 @@
             android:layout_marginStart="16dp"
             android:layout_marginEnd="16dp"
             android:digits="0123456789"
-            android:drawableEnd="@drawable/ic_search_white_16dp"
+            android:drawableEnd="@drawable/ic_loupe_white_16dp"
             android:imeOptions="actionSearch"
             android:importantForAutofill="no"
             android:inputType="numberDecimal"

@@ -50,13 +50,12 @@ class TaskListFragment : CoreFragment<FragmentTaskListBinding, TaskListViewModel
         bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.update)
     }
 
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding?.apply {
             rvConfig = DataBindingRecyclerViewConfig(
                     layoutId = R.layout.item_tile_tasks,
-                    itemId = BR.vm,
+                    itemId = BR.item,
                     realisation = object : DataBindingAdapter<ItemTileTasksBinding> {
                         override fun onCreate(binding: ItemTileTasksBinding) {
                         }
@@ -66,7 +65,6 @@ class TaskListFragment : CoreFragment<FragmentTaskListBinding, TaskListViewModel
                                 binding.root.isSelected = it.isSelected(position)
                             }
                         }
-
                     },
                     onItemClickListener = AdapterView.OnItemClickListener { _, _, position, _ ->
                         recyclerViewKeyHandler?.let {
@@ -76,9 +74,7 @@ class TaskListFragment : CoreFragment<FragmentTaskListBinding, TaskListViewModel
                                 it.selectPosition(position)
                             }
                         }
-
                     }
-
             )
             recyclerViewKeyHandler = RecyclerViewKeyHandler(
                     rv = rv,
@@ -87,7 +83,6 @@ class TaskListFragment : CoreFragment<FragmentTaskListBinding, TaskListViewModel
                     initPosInfo = recyclerViewKeyHandler?.posInfo?.value
             )
         }
-
     }
 
     override fun onResume() {
@@ -105,6 +100,5 @@ class TaskListFragment : CoreFragment<FragmentTaskListBinding, TaskListViewModel
     override fun onKeyDown(keyCode: KeyCode): Boolean {
         return recyclerViewKeyHandler?.onKeyDown(keyCode) ?: false
     }
-
 
 }

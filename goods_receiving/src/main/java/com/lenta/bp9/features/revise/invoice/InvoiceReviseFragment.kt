@@ -119,13 +119,13 @@ class InvoiceReviseFragment : CoreFragment<FragmentInvoiceReviseBinding, Invoice
 
                     layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
                             layoutId = R.layout.item_tile_notes,
-                            itemId = BR.vm,
+                            itemId = BR.item,
                             realisation = object : DataBindingAdapter<ItemTileNotesBinding> {
                                 override fun onCreate(binding: ItemTileNotesBinding) {
                                 }
 
                                 override fun onBind(binding: ItemTileNotesBinding, position: Int) {
-                                    binding.tvCounter.tag = position
+                                    binding.tvItemNumber.tag = position
                                 }
                             }
                     )

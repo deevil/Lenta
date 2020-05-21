@@ -124,11 +124,11 @@
                 android:orientation="horizontal">
 
                 <TextView
-                    android:layout_width="36dp"
-                    android:layout_height="36dp"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
                     android:background="@drawable/bg_white_circle"
                     android:gravity="center"
-                    android:textSize="16sp"
+                    android:textSize="12sp"
                     app:matrixType="@{vm.options.matrixType}"
                     tools:text="A" />
 
@@ -142,11 +142,11 @@
                 android:orientation="horizontal">
 
                 <TextView
-                    android:layout_width="36dp"
-                    android:layout_height="36dp"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
                     android:background="@drawable/bg_white_circle"
                     android:gravity="center"
-                    android:textSize="16sp"
+                    android:textSize="12sp"
                     app:section="@{vm.options.section}"
                     tools:text="02" />
 
@@ -157,7 +157,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 app:goodTypeIcon="@{vm.options.goodType}"
-                tools:src="@drawable/ic_kandy_48dp" />
+                tools:src="@drawable/ic_kandy_white_32dp" />
 
             <ImageView
                 android:layout_width="0dp"
@@ -165,7 +165,7 @@
                 android:layout_weight="1"
                 android:onClick="@{(v) -> vm.navigator.openPictogrammInfoNova()}"
                 app:invisible="@{!vm.options.novelty}"
-                tools:src="@drawable/ic_new_48dp" />
+                tools:src="@drawable/ic_new_white_32dp" />
 
             <ImageView
                 android:layout_width="0dp"
@@ -173,7 +173,7 @@
                 android:layout_weight="1"
                 android:onClick="@{(v) -> vm.navigator.openPictogrammInfoHealthyFood()}"
                 app:invisible="@{!vm.options.healthFood}"
-                tools:src="@drawable/ic_natural_48dp" />
+                tools:src="@drawable/ic_natural_white_32dp" />
 
             <ImageView
                 android:layout_width="0dp"
@@ -181,7 +181,7 @@
                 android:layout_weight="1"
                 android:background="?selectableItemBackground"
                 android:onClick="@{(v) -> vm.navigator.openQrCodeInfoScreen()}"
-                android:src="@drawable/ic_scan_qrcode_48dp" />
+                android:src="@drawable/ic_scan_qrcode_white_32dp" />
 
             <ImageView
                 android:layout_width="0dp"
@@ -189,10 +189,9 @@
                 android:layout_weight="1"
                 android:background="?selectableItemBackground"
                 android:onClick="@{(v) -> vm.navigator.openEanInfoScreen()}"
-                android:src="@drawable/ic_scan_barcode_48dp" />
+                android:src="@drawable/ic_scan_barcode_white_32dp" />
 
         </LinearLayout>
-
 
 
     </LinearLayout>

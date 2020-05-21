@@ -52,7 +52,7 @@ class SetComponentsFragment : CoreFragment<FragmentSetComponentsBinding, SetComp
             vm.stampAnotherProduct.value = getString(R.string.stamp_another_product)
             vm.alcocodeNotFound.value = getString(R.string.alcocode_not_found)
             vm.componentNotFound.value = getString(R.string.component_not_found)
-            vm.iconRes.value = R.drawable.ic_info_pink
+            vm.iconRes.value = R.drawable.ic_info_pink_80dp
             vm.textColor.value = ContextCompat.getColor(context!!, com.lenta.shared.R.color.color_text_dialogWarning)
             return vm
         }

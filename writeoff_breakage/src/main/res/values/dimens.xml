@@ -1,0 +1,12 @@
+<resources>
+
+    <!-- Две колонки / Тип 1  -->
+    <integer name="two_one_1">30</integer>
+    <integer name="two_one_2">70</integer>
+
+    <!-- Три колонки / Тип 1 -->
+    <integer name="three_one_1">15</integer>
+    <integer name="three_one_2">60</integer>
+    <integer name="three_one_3">25</integer>
+
+</resources>

@@ -14,7 +14,7 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="16dp">
 
         <TextView
             android:id="@+id/tv_page_number"
@@ -24,7 +24,7 @@
             android:layout_marginTop="4dp"
             android:layout_marginBottom="4dp"
             android:text="@{vm.pageNumber}"
-            android:textSize="14sp"
+            android:textSize="9.3sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintHorizontal_chainStyle="spread_inside"
             app:layout_constraintStart_toStartOf="parent"
@@ -35,7 +35,7 @@
             android:id="@+id/iv_auth_skip"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/ic_incognito_mode"
+            android:src="@drawable/ic_incognito_mode_red_20dp"
             android:visibility="@{vm.isAuthSkipped()}"
             app:layout_constraintBottom_toBottomOf="@+id/tv_page_number"
             app:layout_constraintStart_toEndOf="@+id/tv_page_number"
@@ -47,7 +47,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="4dp"
-            android:textSize="14sp"
+            android:textSize="9.3sp"
             app:layout_constraintBottom_toBottomOf="@+id/tv_page_number"
             app:layout_constraintStart_toEndOf="@+id/iv_auth_skip"
             app:layout_constraintTop_toTopOf="@+id/tv_page_number"
@@ -63,7 +63,7 @@
             android:layout_marginEnd="4dp"
             android:drawableStart="@drawable/ic_print_white_16dp"
             android:drawablePadding="4dp"
-            android:textSize="14sp"
+            android:textSize="9.3sp"
             app:layout_constraintBottom_toBottomOf="@+id/tv_page_number"
             app:layout_constraintEnd_toStartOf="@+id/tv_battery_status"
             app:layout_constraintHorizontal_chainStyle="spread_inside"
@@ -76,7 +76,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="4dp"
-            android:textSize="14sp"
+            android:textSize="9.3sp"
             app:batteryLevel="@{vm.batteryLevel}"
             app:isCharging="@{vm.batteryIsCharging}"
             app:layout_constraintBottom_toBottomOf="@+id/tv_page_number"
@@ -92,7 +92,7 @@
             android:layout_marginEnd="4dp"
             android:drawableEnd="@drawable/ic_wifi_white_16dp"
             android:drawablePadding="2dp"
-            android:textSize="14sp"
+            android:textSize="9.3sp"
             app:layout_constraintBottom_toBottomOf="@+id/tv_page_number"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="@+id/tv_page_number"

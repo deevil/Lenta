@@ -37,10 +37,10 @@
 
                 <LinearLayout
                     style="@style/LinearCellStyle"
-                    android:layout_weight="@integer/reprint_label_column_1">
+                    android:layout_weight="@integer/four_two_1">
 
                     <TextView
-                        style="@style/ColumnTitleStyle"
+                        style="@style/FirstRowTextStyle"
                         android:layout_width="wrap_content"
                         android:layout_marginStart="0dp"
                         android:text="@string/number" />
@@ -49,30 +49,30 @@
 
                 <LinearLayout
                     style="@style/LinearCellStyle"
-                    android:layout_weight="@integer/reprint_label_column_2">
+                    android:layout_weight="@integer/four_two_2">
 
                     <TextView
-                        style="@style/ColumnTitleStyle"
+                        style="@style/FirstRowTextStyle"
                         android:text="@string/sf" />
 
                 </LinearLayout>
 
                 <LinearLayout
                     style="@style/LinearCellStyle"
-                    android:layout_weight="@integer/reprint_label_column_3">
+                    android:layout_weight="@integer/four_two_3">
 
                     <TextView
-                        style="@style/ColumnTitleStyle"
+                        style="@style/FirstRowTextStyle"
                         android:text="@string/pack_print" />
 
                 </LinearLayout>
 
                 <LinearLayout
                     style="@style/LinearCellStyle"
-                    android:layout_weight="@integer/reprint_label_column_4">
+                    android:layout_weight="@integer/four_two_4">
 
                     <TextView
-                        style="@style/ColumnTitleStyle"
+                        style="@style/FirstRowTextStyle"
                         android:text="@string/short_quantity" />
 
                 </LinearLayout>

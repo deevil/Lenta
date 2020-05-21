@@ -12,62 +12,55 @@
         <variable
             name="rvConfig"
             type="com.lenta.shared.utilities.databinding.DataBindingRecyclerViewConfig" />
+
     </data>
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:orientation="vertical">
 
+        <!-- Наименования колонок -->
         <include
-            android:id="@+id/layout_titles"
             layout="@layout/item_title_editing_invoice"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            android:layout_height="wrap_content" />
 
-
+        <!-- Список элементов -->
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rv"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_marginBottom="8dp"
+            android:layout_weight="1"
             app:items="@{vm.listTotal}"
-            app:layout_constraintBottom_toTopOf="@+id/et_search"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/layout_titles"
             app:rv_config="@{rvConfig}"
             tools:listitem="@layout/item_tile_editing_invoice_total" />
 
-        <EditText
-            android:id="@+id/et_search"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
-            android:layout_marginStart="16dp"
-            android:layout_marginEnd="16dp"
-            android:layout_marginBottom="8dp"
-            android:digits="0123456789"
-            android:drawableEnd="@drawable/ic_search_white_24dp"
-            android:ellipsize="end"
-            android:enabled="@{vm.editingAvailable}"
-            android:hint="@string/enter_item_number_goods"
-            android:imeOptions="actionSearch"
-            android:inputType="numberDecimal"
-            android:maxLines="1"
-            android:paddingTop="8dp"
-            android:paddingBottom="8dp"
-            android:text="@={vm.filterTotal}"
-            app:onOkInSoftKeyboard="@{vm}"
-            app:requestFocus="@{vm.requestFocusToNumberField}"
-            app:cursorToLastPos="@{true}"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            tools:ignore="Autofill" />
+        <!-- Ввод номера -->
+        <LinearLayout style="@style/EnterNumberFieldLayout">
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="8dp"
+                android:digits="0123456789"
+                android:drawableEnd="@drawable/ic_loupe_white_16dp"
+                android:ellipsize="end"
+                android:enabled="@{vm.editingAvailable}"
+                android:hint="@string/enter_item_number_goods"
+                android:imeOptions="actionSearch"
+                android:inputType="numberDecimal"
+                android:maxLength="20"
+                android:maxLines="1"
+                android:text="@={vm.filterTotal}"
+                app:cursorToLastPos="@{true}"
+                app:onOkInSoftKeyboard="@{vm}"
+                app:requestFocus="@{vm.requestFocusToNumberField}"
+                tools:ignore="Autofill" />
+
+        </LinearLayout>
+
+    </LinearLayout>
 
 </layout>

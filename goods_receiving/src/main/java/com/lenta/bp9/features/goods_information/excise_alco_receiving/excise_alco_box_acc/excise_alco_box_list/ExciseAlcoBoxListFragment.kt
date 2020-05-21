@@ -113,14 +113,14 @@ class ExciseAlcoBoxListFragment : CoreFragment<FragmentExciseAlcoBoxListBinding,
 
                         layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
                                 layoutId = R.layout.item_tile_excis_alco_box_list_not_processed,
-                                itemId = BR.vm,
+                                itemId = BR.item,
                                 realisation = object : DataBindingAdapter<ItemTileExcisAlcoBoxListNotProcessedBinding> {
                                     override fun onCreate(binding: ItemTileExcisAlcoBoxListNotProcessedBinding) {
                                     }
 
                                     override fun onBind(binding: ItemTileExcisAlcoBoxListNotProcessedBinding, position: Int) {
-                                        binding.tvCounter.tag = position
-                                        binding.tvCounter.setOnClickListener(onClickSelectionListener)
+                                        binding.tvItemNumber.tag = position
+                                        binding.tvItemNumber.setOnClickListener(onClickSelectionListener)
                                         binding.selectedItem = if (vm.isSelectAll.value == true) true else vm.notProcessedSelectionsHelper.isSelected(position)
                                         notProcessedRecyclerViewKeyHandler?.let {
                                             binding.root.isSelected = it.isSelected(position)
@@ -167,14 +167,14 @@ class ExciseAlcoBoxListFragment : CoreFragment<FragmentExciseAlcoBoxListBinding,
 
                     layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
                             layoutId = R.layout.item_tile_excise_alco_box_list_processed,
-                            itemId = BR.vm,
+                            itemId = BR.item,
                             realisation = object : DataBindingAdapter<ItemTileExciseAlcoBoxListProcessedBinding> {
                                 override fun onCreate(binding: ItemTileExciseAlcoBoxListProcessedBinding) {
                                 }
 
                                 override fun onBind(binding: ItemTileExciseAlcoBoxListProcessedBinding, position: Int) {
-                                    binding.tvCounter.tag = position
-                                    binding.tvCounter.setOnClickListener(onClickSelectionListener)
+                                    binding.tvItemNumber.tag = position
+                                    binding.tvItemNumber.setOnClickListener(onClickSelectionListener)
                                     binding.selectedForDelete = vm.processedSelectionsHelper.isSelected(position)
                                 }
 

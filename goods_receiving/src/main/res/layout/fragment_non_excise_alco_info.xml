@@ -47,15 +47,16 @@
         <com.lenta.shared.view.ClickableSpinner
             android:id="@+id/spinner_quality"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="32dp"
             android:layout_marginStart="8dp"
             android:layout_marginEnd="8dp"
             app:items="@{vm.spinQuality}"
-            app:position="@{vm.spinQualitySelectedPosition}"
             app:layout_constraintBottom_toBottomOf="@+id/et_inventory"
             app:layout_constraintEnd_toStartOf="@+id/div_vert"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/et_inventory"/>
+            app:layout_constraintTop_toTopOf="@+id/et_inventory"
+            app:position="@{vm.spinQualitySelectedPosition}"
+            tools:entries="@array/test_list" />
 
         <com.lenta.shared.view.EditTextWithSuffix
             android:id="@+id/et_inventory"
@@ -66,15 +67,15 @@
             android:layout_marginEnd="8dp"
             android:ellipsize="end"
             android:inputType="numberDecimal"
-            android:maxLines="1"
             android:maxLength="6"
-            app:maxLengthForScanProtect="@{6}"
-            app:requestFocus="@{true}"
+            android:maxLines="1"
             android:text="@={vm.count}"
             app:digitsForUom="@{vm.productInfo.uom}"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/div_vert"
             app:layout_constraintTop_toTopOf="@+id/div_vert"
+            app:maxLengthForScanProtect="@{6}"
+            app:requestFocus="@{true}"
             app:suffix="@{vm.suffix}"
             tools:text="1 шт" />
 
@@ -102,7 +103,7 @@
             app:layout_constraintEnd_toStartOf="@+id/div_vert"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="@+id/tv_accept_val"
-            tools:text="Принять (кор=3 шт)"/>
+            tools:text="Принять (кор=3 шт)" />
 
         <TextView
             android:id="@+id/tv_accept_val"
@@ -112,8 +113,8 @@
             android:layout_marginTop="8dp"
             android:layout_marginEnd="8dp"
             android:ellipsize="end"
-            android:maxLines="1"
             android:gravity="start|center_vertical"
+            android:maxLines="1"
             android:text='@{vm.acceptTotalCount != 0.0 ? "+ " + vm.acceptTotalCount + " " + vm.productInfo.uom.name : "0 " + vm.productInfo.uom.name }'
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="@+id/guideline"
@@ -150,14 +151,14 @@
             android:layout_marginStart="8dp"
             android:layout_marginEnd="8dp"
             android:ellipsize="end"
-            android:maxLines="1"
             android:gravity="start|center_vertical"
-            android:textColor="@color/color_pressed_red"
+            android:maxLines="1"
             android:text='@{vm.refusalTotalCount != 0.0 ? "- " + vm.refusalTotalCount + " " + vm.productInfo.uom.name : "0 " + vm.productInfo.uom.name }'
+            android:textColor="@color/color_pressed_red"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="@+id/guideline"
             app:layout_constraintTop_toBottomOf="@+id/tv_accept_val"
-            tools:text="- 10 шт"/>
+            tools:text="- 10 шт" />
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/ConstraintManufacture"
@@ -181,15 +182,16 @@
             <com.lenta.shared.view.ClickableSpinner
                 android:id="@+id/spinner_manufacturers"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_height="32dp"
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="8dp"
                 android:layout_marginEnd="8dp"
                 app:items="@{vm.spinManufacturers}"
-                app:position="@{vm.spinManufacturersSelectedPosition}"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toTopOf="parent"
+                app:position="@{vm.spinManufacturersSelectedPosition}"
+                tools:entries="@array/test_list" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -215,7 +217,7 @@
                 app:layout_constraintEnd_toStartOf="@+id/view"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                tools:text="Дата производства"/>
+                tools:text="Дата производства" />
 
             <View
                 android:id="@+id/div_hor5"
@@ -230,15 +232,16 @@
             <com.lenta.shared.view.ClickableSpinner
                 android:id="@+id/spinner_bottling_date"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_height="32dp"
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="8dp"
                 android:layout_marginEnd="8dp"
                 app:items="@{vm.spinBottlingDate}"
-                app:position="@{vm.spinBottlingDateSelectedPosition}"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/view"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toTopOf="parent"
+                app:position="@{vm.spinBottlingDateSelectedPosition}"
+                tools:entries="@array/test_list" />
 
             <View
                 android:id="@+id/view"
@@ -275,7 +278,7 @@
             <com.lenta.shared.view.ClickableSpinner
                 android:id="@+id/spinner_reject_rejection"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_height="32dp"
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="8dp"
                 android:layout_marginEnd="8dp"
@@ -284,7 +287,8 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:onPositionClickListener="@{vm}"
-                app:position="@{vm.spinReasonRejectionSelectedPosition}" />
+                app:position="@{vm.spinReasonRejectionSelectedPosition}"
+                tools:entries="@array/test_list" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
