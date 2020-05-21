@@ -50,6 +50,7 @@ class GoodsInfoViewModel : CoreViewModel(), OnPositionClickListener {
     lateinit var timeMonitor: ITimeMonitor
 
     val productInfo: MutableLiveData<TaskProductInfo> = MutableLiveData()
+    private val processingUnitsOfProduct: MutableLiveData<List<TaskProductInfo>> = MutableLiveData()
     val uom: MutableLiveData<Uom?> by lazy {
         if (taskManager.getReceivingTask()?.taskHeader?.taskType == TaskType.DirectSupplier) {
             MutableLiveData(productInfo.value?.purchaseOrderUnits)
@@ -116,7 +117,6 @@ class GoodsInfoViewModel : CoreViewModel(), OnPositionClickListener {
         } else {
             MutableLiveData(context.getString(R.string.accept, "${productInfo.value?.purchaseOrderUnits?.name}=${productInfo.value?.quantityInvest?.toDouble().toStringFormatted()} ${productInfo.value?.uom?.name}"))
         }
-
     }
 
     val count: MutableLiveData<String> = MutableLiveData("0")
@@ -242,7 +242,17 @@ class GoodsInfoViewModel : CoreViewModel(), OnPositionClickListener {
                     }
                     isDiscrepancy.value!! -> {
                         suffix.value = uom.value?.name
-                        count.value = taskManager.getReceivingTask()?.taskRepository?.getProductsDiscrepancies()?.getCountProductNotProcessedOfProductPGE(productInfo.value!!).toStringFormatted()
+                        val processingUnitsOfProduct = taskManager.getReceivingTask()?.taskRepository?.getProducts()?.getProcessingUnitsOfProduct(productInfo.value!!.materialNumber)
+                        count.value = if ( (processingUnitsOfProduct?.size ?: 0) > 1) { //если у товара две ЕО
+                            val countOrderQuantity = processingUnitsOfProduct!!.map {unitInfo ->
+                                unitInfo.orderQuantity.toDouble()
+                            }.sumByDouble {
+                                it
+                            }
+                            taskManager.getReceivingTask()?.taskRepository?.getProductsDiscrepancies()?.getCountProductNotProcessedOfProductPGEOfProcessingUnits(productInfo.value!!, countOrderQuantity).toStringFormatted()
+                        } else {
+                            taskManager.getReceivingTask()?.taskRepository?.getProductsDiscrepancies()?.getCountProductNotProcessedOfProductPGE(productInfo.value!!).toStringFormatted()
+                        }
                         if (isNotRecountBreakingCargoUnit.value == true) {
                             qualityInfo.value = dataBase.getQualityInfoPGENotRecountBreaking()
                         } else {
@@ -321,6 +331,15 @@ class GoodsInfoViewModel : CoreViewModel(), OnPositionClickListener {
 
     override fun onClickPosition(position: Int) {
         spinReasonRejectionSelectedPosition.value = position
+        if (isTaskPGE.value == true) {
+            productInfo.value = processingUnitsOfProduct.value?.get(position)
+            tvAccept.value = context.getString(R.string.accept, "${productInfo.value?.purchaseOrderUnits?.name}=${productInfo.value?.quantityInvest?.toDouble().toStringFormatted()} ${productInfo.value?.uom?.name}")
+
+            if (processGeneralProductService.newProcessGeneralProductService(productInfo.value!!) == null) {
+                screenNavigator.goBack()
+                screenNavigator.openAlertWrongProductType()
+            }
+        }
     }
 
     fun onClickPositionSpinQuality(position: Int) {
@@ -338,7 +357,10 @@ class GoodsInfoViewModel : CoreViewModel(), OnPositionClickListener {
         viewModelScope.launch {
             if (isTaskPGE.value == true) {
                 spinReasonRejectionSelectedPosition.value = 0
-                spinReasonRejection.value = listOf("ЕО - " + productInfo.value!!.processingUnit)
+                processingUnitsOfProduct.value = taskManager.getReceivingTask()?.taskRepository?.getProducts()?.getProcessingUnitsOfProduct(productInfo.value!!.materialNumber)
+                spinReasonRejection.value = processingUnitsOfProduct.value?.map {
+                    "ЕО - " + it.processingUnit
+                }
             } else {
                 screenNavigator.showProgressLoadingData()
                 reasonRejectionInfo.value = dataBase.getReasonRejectionInfoOfQuality(selectedQuality)
@@ -393,13 +415,13 @@ class GoodsInfoViewModel : CoreViewModel(), OnPositionClickListener {
         if (isTaskPGE.value == true) {
             if (isGoodsAddedAsSurplus.value == true) { //GRZ. ПГЕ. Добавление товара, который не числится в задании https://trello.com/c/im9rJqrU
                 processGeneralProductService.setProcessingUnitNumber(enteredProcessingUnitNumber.value!!)
-                processGeneralProductService.add(convertEizToBei().toString(), qualityInfo.value!![spinQualitySelectedPosition.value!!].code)
+                processGeneralProductService.add(convertEizToBei().toString(), qualityInfo.value!![spinQualitySelectedPosition.value!!].code, enteredProcessingUnitNumber.value!!)
                 clickBtnApply()
             } else if (isNotRecountBreakingCargoUnit.value == true) { //https://trello.com/c/PRTAVnUP
                 if ((convertEizToBei() +
                                 acceptTotalCount.value!! +
                                 taskManager.getReceivingTask()!!.taskRepository.getProductsDiscrepancies().getCountRefusalOfProductPGE(productInfo.value!!)) <= productInfo.value!!.orderQuantity.toDouble()) {
-                    processGeneralProductService.addNotRecountPGE(acceptTotalCount.value.toString(), convertEizToBei().toString(), qualityInfo.value!![spinQualitySelectedPosition.value!!].code)
+                    processGeneralProductService.addNotRecountPGE(acceptTotalCount.value.toString(), convertEizToBei().toString(), qualityInfo.value!![spinQualitySelectedPosition.value!!].code, spinReasonRejection.value!![spinReasonRejectionSelectedPosition.value!!].substring(5))
                     clickBtnApply()
                 } else {
                     screenNavigator.openAlertUnableSaveNegativeQuantity()
@@ -547,7 +569,7 @@ class GoodsInfoViewModel : CoreViewModel(), OnPositionClickListener {
                 //блок 6.147
                 if (countWithoutParamGrsGrundNeg > 0.0) {//блок 6.147 (да)
                     //блок 6.145
-                    processGeneralProductService.addWithoutUnderload(paramGrsGrundNeg.value!!, countWithoutParamGrsGrundNeg.toString())
+                    processGeneralProductService.addWithoutUnderload(paramGrsGrundNeg.value!!, countWithoutParamGrsGrundNeg.toString(), productInfo.value!!.processingUnit)
                     //блок 6.172
                     saveCategory()
                 } else {//блок 6.147 (нет)
@@ -596,9 +618,9 @@ class GoodsInfoViewModel : CoreViewModel(), OnPositionClickListener {
     //ППП блок 6.172
     private fun saveCategory() {
         if (qualityInfo.value?.get(spinQualitySelectedPosition.value ?: 0)?.code == "1") {
-            processGeneralProductService.add(acceptTotalCount.value!!.toString(), "1")
+            processGeneralProductService.add(acceptTotalCount.value!!.toString(), "1", productInfo.value!!.processingUnit)
         } else {
-            processGeneralProductService.add(count.value!!, reasonRejectionInfo.value!![spinReasonRejectionSelectedPosition.value!!].code)
+            processGeneralProductService.add(count.value!!, reasonRejectionInfo.value!![spinReasonRejectionSelectedPosition.value!!].code, productInfo.value!!.processingUnit)
         }
 
         //ППП блок 6.176
@@ -629,7 +651,7 @@ class GoodsInfoViewModel : CoreViewModel(), OnPositionClickListener {
                 val calculationTwo = productInfo.value!!.origQuantity.toDouble() - processGeneralProductService.getQuantityAllCategoryPPP(countValue.value!!)
                 val calculation = if (calculationOne < calculationTwo) calculationOne else calculationTwo
                 if (calculation > 0.0) {
-                    processGeneralProductService.add(calculation.toString(), "41")
+                    processGeneralProductService.add(calculation.toString(), "41", productInfo.value!!.processingUnit)
                 }
             }
             //блок 6.196
@@ -759,10 +781,9 @@ class GoodsInfoViewModel : CoreViewModel(), OnPositionClickListener {
         //если checkCategoryType==true, значит перед сохранением (блок 7.185) делаем блок 7.177
         if (checkCategoryType && qualityInfo.value!![spinQualitySelectedPosition.value!!].code == paramGrwOlGrundcat.value) { //блок 7.177 (да)
             //блоки 7.181 и 7.185
-            processGeneralProductService.add((convertEizToBei() + processGeneralProductService.getCountCategoryNorm()).toString(), qualityInfo.value!![spinQualitySelectedPosition.value!!].code)
         } else {
             //блок 7.185
-            processGeneralProductService.add(convertEizToBei().toString(), qualityInfo.value!![spinQualitySelectedPosition.value!!].code)
+            processGeneralProductService.add(convertEizToBei().toString(), qualityInfo.value!![spinQualitySelectedPosition.value!!].code, spinReasonRejection.value!![spinReasonRejectionSelectedPosition.value!!].substring(5))
         }
 
         //ПГЕ блок 7.188
@@ -784,7 +805,7 @@ class GoodsInfoViewModel : CoreViewModel(), OnPositionClickListener {
                 //блок 7.157
                 if (countWithoutParamGrwUlGrundcat > 0.0) {//блок 7.157 (да)
                     //блок 7.155
-                    processGeneralProductService.addWithoutUnderload(paramGrwUlGrundcat.value!!, countWithoutParamGrwUlGrundcat.toString())
+                    processGeneralProductService.addWithoutUnderload(paramGrwUlGrundcat.value!!, countWithoutParamGrwUlGrundcat.toString(), spinReasonRejection.value!![spinReasonRejectionSelectedPosition.value!!].substring(5))
                     //блок 7.177
                     saveCategoryPGE(true)
                 } else {//блок 7.157 (нет)
@@ -841,7 +862,7 @@ class GoodsInfoViewModel : CoreViewModel(), OnPositionClickListener {
                         //блок 7.208
                         yesCallbackFunc = {
                             //блок 7.209
-                            processGeneralProductService.addCountMoreCargoUnit(paramGrwOlGrundcat.value!!, convertEizToBei())
+                            processGeneralProductService.addCountMoreCargoUnit(paramGrwOlGrundcat.value!!, convertEizToBei(), spinReasonRejection.value!![spinReasonRejectionSelectedPosition.value!!].substring(5))
                             //блок 7.188 (переходим минуя 7.177 и 7.185, т.к. мы уже сохранили данные в блоке 7.209)
                             clickBtnApply()
                         }

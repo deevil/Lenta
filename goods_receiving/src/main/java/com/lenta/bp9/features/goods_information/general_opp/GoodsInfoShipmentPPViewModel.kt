@@ -113,13 +113,13 @@ class GoodsInfoShipmentPPViewModel : CoreViewModel(), OnPositionClickListener {
             screenNavigator.openAlertOverLimit()
             count.value = "0"
         } else {
-            processGeneralProductService.add(totalCount.value!!.toString(), "1")
+            processGeneralProductService.add(totalCount.value!!.toString(), "1", productInfo.value!!.processingUnit)
             screenNavigator.goBack()
         }
     }
 
     fun onClickMissing() {
-        processGeneralProductService.add("0", "3")
+        processGeneralProductService.add("0", "3", productInfo.value!!.processingUnit)
         screenNavigator.goBack()
     }
 
