@@ -237,7 +237,7 @@ class SearchProductDelegate @Inject constructor(
                             screenNavigator.openNotImplementedScreenAlert("Информация о наборе")
                             //screenNavigator.openSetsInfoScreen(taskProductInfo)
                         }
-                        taskProductInfo.isBoxFl -> { //алкоголь, коробочный учет https://trello.com/c/KbBbXj2t
+                        taskProductInfo.isBoxFl -> { //алкоголь, коробочный учет ППП https://trello.com/c/KbBbXj2t; коробочный учет ПГЕ https://trello.com/c/TzUSGIH7
                             screenNavigator.openExciseAlcoBoxAccInfoScreen(taskProductInfo)
                         }
                         taskProductInfo.isMarkFl -> { //алкоголь, марочный учет

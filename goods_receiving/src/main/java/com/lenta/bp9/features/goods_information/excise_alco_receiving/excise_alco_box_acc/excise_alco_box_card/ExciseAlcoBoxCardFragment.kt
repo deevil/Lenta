@@ -1,4 +1,4 @@
-package com.lenta.bp9.features.goods_information.excise_alco_box_acc.excise_alco_box_card
+package com.lenta.bp9.features.goods_information.excise_alco_receiving.excise_alco_box_acc.excise_alco_box_card
 
 import android.os.Bundle
 import android.view.View
