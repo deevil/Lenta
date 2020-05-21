@@ -10,9 +10,7 @@
             name="vm"
             type="com.lenta.bp9.features.cargo_unit_card.CargoUnitCardViewModel" />
 
-
     </data>
-
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -64,7 +62,7 @@
         <com.lenta.shared.view.ClickableSpinner
             android:id="@+id/spinner_status"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="32dp"
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
             android:layout_marginEnd="8dp"
@@ -72,7 +70,8 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="@+id/guideline"
             app:layout_constraintTop_toBottomOf="@+id/div_hor1"
-            app:position="@{vm.spinStatusSelectedPosition}" />
+            app:position="@{vm.spinStatusSelectedPosition}"
+            tools:entries="@array/test_list" />
 
         <View
             android:id="@+id/div_hor2"
@@ -146,11 +145,11 @@
                 android:id="@+id/div_vert3"
                 android:layout_width="1dp"
                 android:layout_height="0dp"
-                app:layout_constraintHorizontal_bias="0.0"
                 android:background="@color/color_divider"
-                app:layout_constraintStart_toStartOf="@+id/guideline3"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="@+id/guideline3"
                 app:layout_constraintTop_toTopOf="parent" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
@@ -173,7 +172,7 @@
         <com.lenta.shared.view.ClickableSpinner
             android:id="@+id/spinner_type_pallet"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="32dp"
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
             android:layout_marginEnd="8dp"
@@ -182,7 +181,8 @@
             app:layout_constraintStart_toStartOf="@+id/guideline"
             app:layout_constraintTop_toBottomOf="@+id/ConstraintRecount"
             app:onPositionClickListener="@{vm}"
-            app:position="@{vm.spinTypePalletSelectedPosition}" />
+            app:position="@{vm.spinTypePalletSelectedPosition}"
+            tools:entries="@array/test_list" />
 
         <View
             android:id="@+id/div_hor4"
@@ -217,7 +217,7 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@+id/div_vert2"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"/>
+                app:layout_constraintTop_toTopOf="parent" />
 
             <View
                 android:id="@+id/div_hor5"
@@ -255,11 +255,11 @@
                 android:id="@+id/div_vert2"
                 android:layout_width="1dp"
                 android:layout_height="0dp"
-                app:layout_constraintHorizontal_bias="0.0"
                 android:background="@color/color_divider"
-                app:layout_constraintStart_toStartOf="@+id/guideline2"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="@+id/guideline2"
                 app:layout_constraintTop_toTopOf="parent" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
@@ -270,95 +270,95 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="6dp"
             android:layout_marginBottom="24dp"
-            android:src='@{vm.isRecount ? @drawable/ic_conversion_pallet : @drawable/ic_not_conversion_pallet}'
+            android:src='@{vm.isRecount ? @drawable/ic_conversion_pallet_gray_32dp : @drawable/ic_not_conversion_pallet_gray_32dp}'
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_goneMarginStart="0dp"
-            tools:src="@drawable/ic_conversion_pallet" />
+            tools:src="@drawable/ic_conversion_pallet_gray_32dp" />
 
         <ImageView
             android:id="@+id/imageViewIcon2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="24dp"
-            android:src="@drawable/ic_promo_task_icon"
+            android:src="@drawable/ic_promo_task_icon_gray_32dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toEndOf="@id/imageViewIcon1"
             app:layout_goneMarginStart="0dp"
             app:visibleOrGone='@{vm.isPromo}'
-            tools:src="@drawable/ic_promo_task_icon" />
+            tools:src="@drawable/ic_promo_task_icon_gray_32dp" />
 
         <ImageView
             android:id="@+id/imageViewIcon3"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="24dp"
-            android:src="@drawable/ic_alco_task_icon"
+            android:src="@drawable/ic_alco_task_icon_gray_32dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toEndOf="@id/imageViewIcon2"
             app:layout_goneMarginStart="0dp"
             app:visibleOrGone='@{vm.isAlco}'
-            tools:src="@drawable/ic_alco_task_icon" />
+            tools:src="@drawable/ic_alco_task_icon_gray_32dp" />
 
         <ImageView
             android:id="@+id/imageViewIcon4"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="24dp"
-            android:src="@drawable/ic_fruits_task_icon"
+            android:src="@drawable/ic_fruits_task_icon_gray_32dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toEndOf="@+id/imageViewIcon3"
             app:layout_goneMarginStart="0dp"
             app:visibleOrGone='@{vm.isFruit}'
-            tools:src="@drawable/ic_fruits_task_icon" />
+            tools:src="@drawable/ic_fruits_task_icon_gray_32dp" />
 
         <ImageView
             android:id="@+id/imageViewIcon5"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="24dp"
-            android:src="@drawable/ic_raw_task_icon"
+            android:src="@drawable/ic_raw_task_icon_gray_32dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toEndOf="@+id/imageViewIcon4"
             app:layout_goneMarginStart="0dp"
             app:visibleOrGone='@{vm.isRaw}'
-            tools:src="@drawable/ic_raw_task_icon" />
+            tools:src="@drawable/ic_raw_task_icon_gray_32dp" />
 
         <ImageView
             android:id="@+id/imageViewIcon6"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="24dp"
-            android:src="@drawable/ic_special_task_icon"
+            android:src="@drawable/ic_special_task_icon_gray_32dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toEndOf="@+id/imageViewIcon5"
             app:layout_goneMarginStart="0dp"
             app:visibleOrGone='@{vm.isSpecial}'
-            tools:src="@drawable/ic_special_task_icon" />
+            tools:src="@drawable/ic_special_task_icon_gray_32dp" />
 
         <ImageView
             android:id="@+id/imageViewIcon7"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="24dp"
-            android:src="@drawable/ic_mercury"
+            android:src="@drawable/ic_mercury_gray_32dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toEndOf="@+id/imageViewIcon6"
             app:layout_goneMarginStart="0dp"
             app:visibleOrGone='@{vm.isVet}'
-            tools:src="@drawable/ic_mercury" />
+            tools:src="@drawable/ic_mercury_gray_32dp" />
 
         <ImageView
             android:id="@+id/imageViewIcon8"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="24dp"
-            android:src="@drawable/ic_pack_24dp"
+            android:src="@drawable/ic_pack_gray_32dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toEndOf="@+id/imageViewIcon7"
             app:layout_goneMarginStart="0dp"
             app:visibleOrGone='@{vm.isGoodsForPackaging}'
-            tools:src="@drawable/ic_pack_24dp" />
+            tools:src="@drawable/ic_pack_gray_32dp" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

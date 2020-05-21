@@ -26,7 +26,7 @@
 
     // Заголовки списков
     <string name="sku">SKU</string>
-    <string name="sign">Признак</string>
+    <string name="sign">Признаки</string>
     <string name="pu">ЕО</string>
     <string name="es">ВП</string>
     <string name="remain">Остаток</string>

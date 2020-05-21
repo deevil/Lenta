@@ -57,13 +57,13 @@ class AlcoholBatchSelectFragment : CoreFragment<FragmentAlcoholBatchSelectBindin
         binding?.let { layoutBinding ->
             layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
                     layoutId = R.layout.item_tile_alcohol_batch,
-                    itemId = BR.vm,
+                    itemId = BR.item,
                     realisation = object : DataBindingAdapter<ItemTileAlcoholBatchBinding> {
                         override fun onCreate(binding: ItemTileAlcoholBatchBinding) {
                         }
 
                         override fun onBind(binding: ItemTileAlcoholBatchBinding, position: Int) {
-                            binding.tvCounter.tag = position
+                            binding.tvItemNumber.tag = position
                             recyclerViewKeyHandler?.let {
                                 binding.root.isSelected = it.isSelected(position)
                             }

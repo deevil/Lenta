@@ -16,7 +16,6 @@
 
     </data>
 
-
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
@@ -44,6 +43,5 @@
             tools:listitem="@layout/item_tile_list_composite_doc_revise" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
-
 
 </layout>

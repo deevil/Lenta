@@ -6,201 +6,114 @@
     <data>
 
         <variable
-            name="vm"
+            name="item"
             type="com.lenta.inventory.features.task_list.TaskItemVm" />
 
     </data>
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@drawable/bg_selectable">
+        android:background="@drawable/bg_selectable"
+        android:orientation="vertical">
 
-
-        <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/vertical_guidline_1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            app:layout_constraintGuide_percent="0.12" />
-
-        <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/vertical_guidline_2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            app:layout_constraintGuide_percent="0.52" />
-
-        <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/vertical_guidline_3"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            app:layout_constraintGuide_percent="0.78" />
-
-        <View
-            android:id="@+id/div_vert1"
-            android:layout_width="1dp"
-            android:layout_height="0dp"
-            android:background="@color/color_divider"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toStartOf="@+id/vertical_guidline_1"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <View
-            android:id="@+id/div_vert2"
-            android:layout_width="1dp"
-            android:layout_height="0dp"
-            android:background="@color/color_divider"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toStartOf="@+id/vertical_guidline_2"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <View
-            android:id="@+id/div_vert3"
-            android:layout_width="1dp"
-            android:layout_height="0dp"
-            android:background="@color/color_divider"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toStartOf="@+id/vertical_guidline_3"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <TextView
-            android:id="@+id/tv_counter"
-            android:layout_width="32dp"
-            android:layout_height="32dp"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="16dp"
-            android:layout_marginEnd="8dp"
-            android:layout_marginBottom="16dp"
-            android:ellipsize="end"
-            android:gravity="center"
-            android:maxLines="1"
-            android:text='@{vm.number}'
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/div_vert1"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:ignore="UnusedAttribute"
-            tools:text="2" />
-
-        <TextView
-            android:id="@+id/tv_name"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_marginEnd="8dp"
-            android:ellipsize="end"
-            android:gravity="start|center_vertical"
-            android:maxLines="1"
-            android:text="@{vm.title}"
-            app:layout_constraintBottom_toTopOf="@+id/tv_stock"
-            app:layout_constraintEnd_toStartOf="@+id/imageView2"
-            app:layout_constraintStart_toEndOf="@+id/div_vert1"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_chainStyle="packed"
-            tools:text="ВИ-304-Акционка" />
-
-        <TextView
-            android:id="@+id/tv_stock"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_marginEnd="8dp"
-            android:ellipsize="end"
-            android:gravity="start|center_vertical"
-            android:maxLines="1"
-            android:text="@{@string/stock_number(vm.stock)}"
-            app:layout_constraintBottom_toTopOf="@+id/div_hor_bottom"
-            app:layout_constraintEnd_toStartOf="@+id/imageView2"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toStartOf="@+id/vertical_guidline_1"
-            app:layout_constraintTop_toBottomOf="@+id/tv_name"
-            tools:text="Склад 0001" />
-
-        <ImageView
-            android:id="@+id/imageView2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:layout_marginBottom="8dp"
-            android:src="@drawable/ic_keyboard_arrow_right_white_16dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/vertical_guidline_2"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <View
-            android:id="@+id/div_hor_bottom"
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="@color/color_divider"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
+            android:layout_height="@dimen/common_row_height"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
 
+            <LinearLayout
+                style="@style/LinearCellStyle"
+                android:layout_weight="@integer/four_two_1">
 
-        <TextView
-            android:id="@+id/tv_recount_status"
-            android:layout_width="32dp"
-            android:layout_height="32dp"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="8dp"
-            android:layout_marginEnd="8dp"
-            android:layout_marginBottom="8dp"
-            android:background="@drawable/bg_border_circle_white"
-            android:ellipsize="end"
-            android:gravity="center"
-            android:maxLines="1"
-            android:text='@{vm.typeConversion}'
-            app:layout_constraintBottom_toBottomOf="@+id/tv_stock"
-            app:layout_constraintEnd_toStartOf="@+id/imageView3"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toEndOf="@+id/vertical_guidline_2"
-            app:layout_constraintStart_toStartOf="@+id/vertical_guidline_2"
-            app:layout_constraintTop_toTopOf="@+id/tv_name"
-            app:layout_goneMarginEnd="8dp"
-            app:layout_constraintHorizontal_chainStyle="packed"
-            tools:text="2" />
+                <TextView
+                    android:id="@+id/tv_item_number"
+                    style="@style/CellTextStyle"
+                    android:layout_width="wrap_content"
+                    android:text='@{item.number}'
+                    tools:text="1" />
 
+            </LinearLayout>
 
-        <ImageView
-            android:id="@+id/imageView3"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:layout_marginEnd="4dp"
-            android:layout_marginBottom="8dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/vertical_guidline_3"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toEndOf="@+id/tv_recount_status"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_goneMarginStart="8dp"
-            app:statusTaskIcon='@{vm.statusTask}'
-            tools:src="@drawable/ic_lock_close_white_32" />
+            <View style="@style/VerticalDivider" />
 
-        <TextView
-            android:id="@+id/tv_quantity"
-            android:layout_width="0dp"
-            android:layout_height="32dp"
-            android:layout_marginStart="8dp"
-            android:layout_marginEnd="8dp"
-            android:ellipsize="end"
-            android:gravity="start|center_vertical"
-            android:maxLines="1"
-            android:text='@{vm.count}'
-            app:layout_constraintBottom_toBottomOf="@+id/tv_counter"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/div_vert3"
-            app:layout_constraintTop_toTopOf="@+id/tv_counter"
-            tools:text="897" />
+            <LinearLayout
+                style="@style/LinearCellStyle"
+                android:layout_weight="@integer/four_two_2"
+                android:orientation="horizontal">
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        style="@style/CellTextStyle"
+                        android:layout_width="wrap_content"
+                        android:text="@{item.title}"
+                        tools:text="ВИ-304-Акционка" />
+
+                    <TextView
+                        style="@style/CellTextStyle"
+                        android:layout_width="wrap_content"
+                        android:text="@{@string/stock_number(item.stock)}"
+                        tools:text="Склад 0001" />
+
+                </LinearLayout>
+
+                <ImageView
+                    android:id="@+id/iv_open"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="5dp"
+                    android:src="@drawable/ic_keyboard_arrow_right_white_16dp" />
+
+            </LinearLayout>
+
+            <View style="@style/VerticalDivider" />
+
+            <LinearLayout
+                style="@style/LinearCellStyle"
+                android:layout_weight="@integer/four_two_3"
+                android:orientation="horizontal">
+
+                <TextView
+                    style="@style/CellTextStyle"
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:background="@drawable/bg_border_circle_white"
+                    android:gravity="center"
+                    android:text='@{item.typeConversion}'
+                    tools:text="2" />
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_lock_status_gray_24dp"
+                    app:statusTaskIcon='@{item.statusTask}' />
+
+            </LinearLayout>
+
+            <View style="@style/VerticalDivider" />
+
+            <LinearLayout
+                style="@style/LinearCellStyle"
+                android:layout_weight="@integer/four_two_4">
+
+                <TextView
+                    style="@style/CellTextStyle"
+                    android:gravity="center"
+                    android:text='@{item.count}'
+                    tools:text="897" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <View style="@style/HorizontalDivider" />
+
+    </LinearLayout>
 
 </layout>

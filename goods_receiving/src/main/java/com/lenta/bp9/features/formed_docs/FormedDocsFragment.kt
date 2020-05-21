@@ -70,14 +70,14 @@ class FormedDocsFragment : CoreFragment<FragmentFormedDocsBinding, FormedDocsVie
 
             layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
                     layoutId = R.layout.item_tile_formed_docs,
-                    itemId = BR.vm,
+                    itemId = BR.item,
                     realisation = object : DataBindingAdapter<ItemTileFormedDocsBinding> {
                         override fun onCreate(binding: ItemTileFormedDocsBinding) {
                         }
 
                         override fun onBind(binding: ItemTileFormedDocsBinding, position: Int) {
-                            binding.tvCounter.tag = position
-                            binding.tvCounter.setOnClickListener(onClickSelectionListener)
+                            binding.tvItemNumber.tag = position
+                            binding.tvItemNumber.setOnClickListener(onClickSelectionListener)
                             binding.selectedForDelete = vm.docsSelectionsHelper.isSelected(position)
                             recyclerViewKeyHandler?.let {
                                 binding.root.isSelected = it.isSelected(position)

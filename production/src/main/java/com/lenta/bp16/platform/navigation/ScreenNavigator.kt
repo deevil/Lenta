@@ -151,7 +151,7 @@ class ScreenNavigator @Inject constructor(
             getFragmentStack()?.push(AlertFragment.create(
                     pageNumber = "12",
                     message = context.getString(R.string.defrosting_phase_is_completed),
-                    iconRes = R.drawable.is_warning_yellow_80dp,
+                    iconRes = R.drawable.ic_warning_yellow_80dp,
                     isVisibleLeftButton = false,
                     codeConfirmForRight = backFragmentResultHelper.setFuncForResult(nextCallback),
                     rightButtonDecorationInfo = ButtonDecorationInfo.next
@@ -164,7 +164,7 @@ class ScreenNavigator @Inject constructor(
             getFragmentStack()?.push(AlertFragment.create(
                     pageNumber = "23",
                     message = context.getString(R.string.confirm_that_there_is_no_such_item_left, taskType),
-                    iconRes = R.drawable.is_warning_red_80dp,
+                    iconRes = R.drawable.ic_warning_red_80dp,
                     codeConfirmForRight = backFragmentResultHelper.setFuncForResult(confirmCallback),
                     rightButtonDecorationInfo = ButtonDecorationInfo.confirm
             ))
@@ -176,7 +176,7 @@ class ScreenNavigator @Inject constructor(
             getFragmentStack()?.push(AlertFragment.create(
                     pageNumber = "24",
                     message = context.getString(R.string.confirm_no_raw_items, taskType),
-                    iconRes = R.drawable.is_warning_red_80dp,
+                    iconRes = R.drawable.ic_warning_red_80dp,
                     codeConfirmForRight = backFragmentResultHelper.setFuncForResult(confirmCallback),
                     rightButtonDecorationInfo = ButtonDecorationInfo.confirm
             ))
@@ -188,7 +188,7 @@ class ScreenNavigator @Inject constructor(
             getFragmentStack()?.push(AlertFragment.create(
                     pageNumber = "35",
                     message = context.getString(R.string.fixing_beginning_of_packaging_phase_was_successful),
-                    iconRes = R.drawable.is_warning_yellow_80dp,
+                    iconRes = R.drawable.ic_warning_yellow_80dp,
                     isVisibleLeftButton = false,
                     codeConfirmForRight = backFragmentResultHelper.setFuncForResult(nextCallback),
                     rightButtonDecorationInfo = ButtonDecorationInfo.next
@@ -201,7 +201,7 @@ class ScreenNavigator @Inject constructor(
             getFragmentStack()?.push(AlertFragment.create(
                     pageNumber = "32.1",
                     message = context.getString(R.string.more_than_one_order_for_this_product),
-                    iconRes = R.drawable.is_warning_red_80dp,
+                    iconRes = R.drawable.ic_warning_red_80dp,
                     codeConfirmForLeft = backFragmentResultHelper.setFuncForResult(backCallback),
                     leftButtonDecorationInfo = ButtonDecorationInfo.back
             ))

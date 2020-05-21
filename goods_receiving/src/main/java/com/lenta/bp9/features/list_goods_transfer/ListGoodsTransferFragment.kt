@@ -69,7 +69,7 @@ class ListGoodsTransferFragment : CoreFragment<FragmentListGoodsTransferBinding,
         binding?.let { layoutBinding ->
             layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
                     layoutId = R.layout.item_tile_list_goods_transfer,
-                    itemId = BR.vm,
+                    itemId = BR.item,
                     realisation = object : DataBindingAdapter<ItemTileListGoodsTransferBinding> {
                         override fun onCreate(binding: ItemTileListGoodsTransferBinding) {
                         }

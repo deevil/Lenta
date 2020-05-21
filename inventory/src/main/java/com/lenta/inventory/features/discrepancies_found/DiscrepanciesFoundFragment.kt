@@ -111,19 +111,19 @@ class DiscrepanciesFoundFragment : CoreFragment<FragmentDiscrepanciesFoundBindin
 
                         layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
                                 layoutId = R.layout.item_tile_discrepancies,
-                                itemId = BR.vm,
+                                itemId = BR.item,
                                 realisation = object : DataBindingAdapter<ItemTileDiscrepanciesBinding> {
                                     override fun onCreate(binding: ItemTileDiscrepanciesBinding) {
                                     }
 
                                     override fun onBind(binding: ItemTileDiscrepanciesBinding, position: Int) {
-                                        binding.tvCounter.tag = position
+                                        binding.tvItemNumber.tag = position
                                         if (vm.isRecountByStorePlaces()) {
-                                            binding.imageView2.visibility = View.INVISIBLE
+                                            binding.ivOpen.visibility = View.INVISIBLE
                                         } else {
-                                            binding.imageView2.visibility = View.VISIBLE
+                                            binding.ivOpen.visibility = View.VISIBLE
                                         }
-                                        binding.tvCounter.setOnClickListener(onClickSelectionListener)
+                                        binding.tvItemNumber.setOnClickListener(onClickSelectionListener)
                                         binding.selectedForDelete = vm.byGoodsSelectionHelper.isSelected(position)
                                         byGoodsRecyclerViewKeyHandler?.let {
                                             binding.root.isSelected = it.isSelected(position)
@@ -170,14 +170,14 @@ class DiscrepanciesFoundFragment : CoreFragment<FragmentDiscrepanciesFoundBindin
 
                     layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
                             layoutId = R.layout.item_tile_discrepancies,
-                            itemId = BR.vm,
+                            itemId = BR.item,
                             realisation = object : DataBindingAdapter<ItemTileDiscrepanciesBinding> {
                                 override fun onCreate(binding: ItemTileDiscrepanciesBinding) {
                                 }
 
                                 override fun onBind(binding: ItemTileDiscrepanciesBinding, position: Int) {
-                                    binding.tvCounter.tag = position
-                                    binding.tvCounter.setOnClickListener(onClickSelectionListener)
+                                    binding.tvItemNumber.tag = position
+                                    binding.tvItemNumber.setOnClickListener(onClickSelectionListener)
                                     binding.selectedForDelete = vm.byStorageSelectionHelper.isSelected(position)
                                     byStoragePlaceRecyclerViewKeyHandler?.let {
                                         binding.root.isSelected = it.isSelected(position)
@@ -206,4 +206,5 @@ class DiscrepanciesFoundFragment : CoreFragment<FragmentDiscrepanciesFoundBindin
                     return layoutBinding.root
                 }
     }
+
 }

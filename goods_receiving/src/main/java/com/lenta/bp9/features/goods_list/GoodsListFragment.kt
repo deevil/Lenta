@@ -145,14 +145,14 @@ class GoodsListFragment : CoreFragment<FragmentGoodsListBinding, GoodsListViewMo
 
                     layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
                             layoutId = R.layout.item_tile_goods_list_counted,
-                            itemId = BR.vm,
+                            itemId = BR.item,
                             realisation = object : DataBindingAdapter<ItemTileGoodsListCountedBinding> {
                                 override fun onCreate(binding: ItemTileGoodsListCountedBinding) {
                                 }
 
                                 override fun onBind(binding: ItemTileGoodsListCountedBinding, position: Int) {
-                                    binding.tvCounter.tag = position
-                                    binding.tvCounter.setOnClickListener(onClickSelectionListener)
+                                    binding.tvItemNumber.tag = position
+                                    binding.tvItemNumber.setOnClickListener(onClickSelectionListener)
                                     binding.selectedForDelete = vm.countedSelectionsHelper.isSelected(position)
                                     countedRecyclerViewKeyHandler?.let {
                                         binding.root.isSelected = it.isSelected(position)
@@ -193,7 +193,7 @@ class GoodsListFragment : CoreFragment<FragmentGoodsListBinding, GoodsListViewMo
 
                     layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
                             layoutId = R.layout.item_tile_goods_list_without_barcode,
-                            itemId = BR.vm,
+                            itemId = BR.item,
                             realisation = object : DataBindingAdapter<ItemTileGoodsListWithoutBarcodeBinding> {
                                 override fun onCreate(binding: ItemTileGoodsListWithoutBarcodeBinding) {
                                 }
@@ -245,14 +245,14 @@ class GoodsListFragment : CoreFragment<FragmentGoodsListBinding, GoodsListViewMo
 
                     layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
                             layoutId = R.layout.item_tile_goods_list_to_processing,
-                            itemId = BR.vm,
+                            itemId = BR.item,
                             realisation = object : DataBindingAdapter<ItemTileGoodsListToProcessingBinding> {
                                 override fun onCreate(binding: ItemTileGoodsListToProcessingBinding) {
                                 }
 
                                 override fun onBind(binding: ItemTileGoodsListToProcessingBinding, position: Int) {
-                                    binding.tvCounter.tag = position
-                                    binding.tvCounter.setOnClickListener(onClickSelectionListener)
+                                    binding.tvItemNumber.tag = position
+                                    binding.tvItemNumber.setOnClickListener(onClickSelectionListener)
                                     binding.selectedForDelete = vm.toProcessingSelectionsHelper.isSelected(position)
                                     toProcessingRecyclerViewKeyHandler?.let {
                                         binding.root.isSelected = it.isSelected(position)
@@ -300,14 +300,14 @@ class GoodsListFragment : CoreFragment<FragmentGoodsListBinding, GoodsListViewMo
 
                     layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
                             layoutId = R.layout.item_tile_goods_list_processed,
-                            itemId = BR.vm,
+                            itemId = BR.item,
                             realisation = object : DataBindingAdapter<ItemTileGoodsListProcessedBinding> {
                                 override fun onCreate(binding: ItemTileGoodsListProcessedBinding) {
                                 }
 
                                 override fun onBind(binding: ItemTileGoodsListProcessedBinding, position: Int) {
-                                    binding.tvCounter.tag = position
-                                    binding.tvCounter.setOnClickListener(onClickSelectionListener)
+                                    binding.tvItemNumber.tag = position
+                                    binding.tvItemNumber.setOnClickListener(onClickSelectionListener)
                                     binding.selectedForDelete = vm.processedSelectionsHelper.isSelected(position)
                                     processedRecyclerViewKeyHandler?.let {
                                         binding.root.isSelected = it.isSelected(position)

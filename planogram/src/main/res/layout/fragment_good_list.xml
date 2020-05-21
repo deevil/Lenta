@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        xmlns:tools="http://schemas.android.com/tools"
-        tools:context=".features.good_list.GoodListFragment">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".features.good_list.GoodListFragment">
 
     <data>
 
         <variable
             name="vm"
-            type="com.lenta.bp7.features.good_list.GoodListViewModel"/>
+            type="com.lenta.bp7.features.good_list.GoodListViewModel" />
 
         <variable
             name="rvConfig"
-            type="com.lenta.shared.utilities.databinding.DataBindingRecyclerViewConfig"/>
+            type="com.lenta.shared.utilities.databinding.DataBindingRecyclerViewConfig" />
 
     </data>
 
@@ -27,60 +27,52 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center_vertical"
-                android:orientation="horizontal"
-                android:paddingTop="8dp"
-                android:paddingBottom="8dp">
+            <LinearLayout style="@style/FirstRowStyle">
 
                 <LinearLayout
                     style="@style/LinearCellStyle"
-                    android:layout_weight="@integer/size_column_1">
+                    android:layout_weight="@integer/four_one_1">
 
                     <TextView
-                        style="@style/ColumnTitleStyle"
+                        style="@style/FirstRowTextStyle"
                         android:layout_width="wrap_content"
-                        android:layout_marginStart="0dp"
-                        android:text="@string/column_title_item_number"/>
+                        android:text="@string/column_title_item_number" />
 
                 </LinearLayout>
 
                 <LinearLayout
                     style="@style/LinearCellStyle"
-                    android:layout_weight="@integer/size_column_2">
+                    android:layout_weight="@integer/four_one_2">
 
                     <TextView
-                        style="@style/ColumnTitleStyle"
-                        android:text="@string/column_title_good"/>
+                        style="@style/FirstRowTextStyle"
+                        android:text="@string/column_title_good" />
 
                 </LinearLayout>
 
                 <LinearLayout
                     style="@style/LinearCellStyle"
-                    android:layout_weight="@integer/size_column_3">
+                    android:layout_weight="@integer/four_one_3">
 
                     <TextView
-                        style="@style/ColumnTitleStyle"
-                        android:text="@string/column_title_sign"/>
+                        style="@style/FirstRowTextStyle"
+                        android:text="@string/column_title_sign" />
 
                 </LinearLayout>
 
                 <LinearLayout
                     style="@style/LinearCellStyle"
-                    android:layout_weight="@integer/size_column_4">
+                    android:layout_weight="@integer/four_one_4">
 
                     <TextView
-                        style="@style/ColumnTitleStyle"
-                        android:text="@string/column_title_facing"/>
+                        style="@style/FirstRowTextStyle"
+                        android:text="@string/column_title_facing" />
 
                 </LinearLayout>
 
             </LinearLayout>
 
-            <View
-                style="@style/HorizontalDivider"/>
+            <View style="@style/HorizontalDivider" />
 
         </LinearLayout>
 
@@ -92,25 +84,29 @@
             android:layout_weight="1"
             app:items="@{vm.goods}"
             app:rv_config="@{rvConfig}"
-            tools:listitem="@layout/item_good"/>
+            tools:listitem="@layout/item_good" />
 
         <!-- Поле ввода номера товара -->
-        <EditText
-            android:id="@+id/et_good_number"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="8dp"
-            android:digits="0123456789"
-            android:drawableEnd="@drawable/ic_add_white_24dp"
-            android:enabled="@{vm.numberFieldEnabled}"
-            android:hint="@string/enter_item_number_or_barcode"
-            android:imeOptions="actionGo"
-            android:inputType="number"
-            android:maxLength="14"
-            android:text="@={vm.goodNumber}"
-            app:onOkInSoftKeyboard="@{vm}"
-            app:requestFocus="@{vm.requestFocusToGoodNumber}"
-            tools:ignore="Autofill"/>
+        <LinearLayout style="@style/EnterNumberFieldLayout">
+
+            <EditText
+                android:id="@+id/et_good_number"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="8dp"
+                android:digits="0123456789"
+                android:drawableEnd="@drawable/ic_add_white_16dp"
+                android:enabled="@{vm.numberFieldEnabled}"
+                android:hint="@string/enter_item_number_or_barcode"
+                android:imeOptions="actionGo"
+                android:inputType="number"
+                android:maxLength="14"
+                android:text="@={vm.goodNumber}"
+                app:onOkInSoftKeyboard="@{vm}"
+                app:requestFocus="@{vm.requestFocusToGoodNumber}"
+                tools:ignore="Autofill" />
+
+        </LinearLayout>
 
     </LinearLayout>
 

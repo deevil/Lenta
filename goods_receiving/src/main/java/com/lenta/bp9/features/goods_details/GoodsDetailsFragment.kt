@@ -85,7 +85,7 @@ class GoodsDetailsFragment : CoreFragment<FragmentGoodsDetailsBinding, GoodsDeta
         binding?.let { layoutBinding ->
             layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
                     layoutId = R.layout.item_tile_goods_details,
-                    itemId = BR.vm,
+                    itemId = BR.item,
                     realisation = object : DataBindingAdapter<ItemTileGoodsDetailsBinding> {
                         override fun onCreate(binding: ItemTileGoodsDetailsBinding) {
                         }
@@ -112,14 +112,14 @@ class GoodsDetailsFragment : CoreFragment<FragmentGoodsDetailsBinding, GoodsDeta
 
             layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
                     layoutId = R.layout.item_tile_goods_details_del,
-                    itemId = BR.vm,
+                    itemId = BR.item,
                     realisation = object : DataBindingAdapter<ItemTileGoodsDetailsDelBinding> {
                         override fun onCreate(binding: ItemTileGoodsDetailsDelBinding) {
                         }
 
                         override fun onBind(binding: ItemTileGoodsDetailsDelBinding, position: Int) {
-                            binding.tvCounter.tag = position
-                            binding.tvCounter.setOnClickListener(onClickSelectionListener)
+                            binding.tvItemNumber.tag = position
+                            binding.tvItemNumber.setOnClickListener(onClickSelectionListener)
                             binding.selectedForDelete = vm.categoriesSelectionsHelper.isSelected(position)
                         }
 

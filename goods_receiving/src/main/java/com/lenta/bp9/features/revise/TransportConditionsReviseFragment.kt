@@ -89,13 +89,13 @@ class TransportConditionsReviseFragment : CoreFragment<FragmentTransportConditio
 
                     layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
                             layoutId = R.layout.item_tile_transport_condition,
-                            itemId = BR.vm,
+                            itemId = BR.item,
                             realisation = object : DataBindingAdapter<ItemTileTransportConditionBinding> {
                                 override fun onCreate(binding: ItemTileTransportConditionBinding) {
                                 }
 
                                 override fun onBind(binding: ItemTileTransportConditionBinding, position: Int) {
-                                    binding.tvCounter.tag = position
+                                    binding.tvItemNumber.tag = position
                                     binding.cbChecked.setOnClickListener { view ->
                                         val cb = view as? CheckBox
                                         cb?.let { vm.checkedChanged(position, it.isChecked) }
@@ -151,13 +151,13 @@ class TransportConditionsReviseFragment : CoreFragment<FragmentTransportConditio
 
                     layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
                             layoutId = R.layout.item_tile_transport_condition_checked,
-                            itemId = BR.vm,
+                            itemId = BR.item,
                             realisation = object : DataBindingAdapter<ItemTileTransportConditionCheckedBinding> {
                                 override fun onCreate(binding: ItemTileTransportConditionCheckedBinding) {
                                 }
 
                                 override fun onBind(binding: ItemTileTransportConditionCheckedBinding, position: Int) {
-                                    binding.tvCounter.tag = position
+                                    binding.tvItemNumber.tag = position
                                     binding.cbChecked.setOnClickListener { view ->
                                         val cb = view as? CheckBox
                                         cb?.let { vm.checkedChanged(position, it.isChecked) }
@@ -214,13 +214,13 @@ class TransportConditionsReviseFragment : CoreFragment<FragmentTransportConditio
 
                     layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
                             layoutId = R.layout.item_tile_notifications,
-                            itemId = BR.vm,
+                            itemId = BR.item,
                             realisation = object : DataBindingAdapter<ItemTileNotificationsBinding> {
                                 override fun onCreate(binding: ItemTileNotificationsBinding) {
                                 }
 
                                 override fun onBind(binding: ItemTileNotificationsBinding, position: Int) {
-                                    binding.tvCounter.tag = position
+                                    binding.tvItemNumber.tag = position
                                 }
                             }
                     )

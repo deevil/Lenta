@@ -93,51 +93,46 @@ class GoodsDetailsStorageFragment : CoreFragment<FragmentGoodsDetailsStorageBind
 
     override fun getPagerItemView(container: ViewGroup, position: Int): View {
         return if (vm.isGeneralProduct.value!! || vm.productInfo.value!!.isSet) {
-                    when (position) {
-                        0 -> createPagerItemNotProcessed(container)
-                        else -> createPagerItemProcessed(container)
-                    }
+            when (position) {
+                0 -> createPagerItemNotProcessed(container)
+                else -> createPagerItemProcessed(container)
+            }
+        } else {
+            if (vm.isStorePlace.value!!) {
+                when (position) {
+                    0 -> createPagerItemCategories(container)
+                    1 -> createPagerItemNotProcessed(container)
+                    else -> createPagerItemProcessed(container)
                 }
-                else {
-                    if (vm.isStorePlace.value!!) {
-                        when (position) {
-                            0 -> createPagerItemCategories(container)
-                            1 -> createPagerItemNotProcessed(container)
-                            else -> createPagerItemProcessed(container)
-                        }
-                    }
-                    else createPagerItemCategories(container)
-                }
+            } else createPagerItemCategories(container)
+        }
     }
 
     override fun getTextTitle(position: Int): String {
         return if (vm.isGeneralProduct.value!! || vm.productInfo.value!!.isSet) {
-                    getString(
-                            when (position) {
-                                0 -> R.string.not_processed
-                                else -> R.string.processed
-                            })
-                }
-                else {
-                    if (vm.isStorePlace.value!!) {
-                        getString(
-                                when (position) {
-                                    0 -> R.string.categories
-                                    1 -> R.string.not_processed
-                                    else -> R.string.processed
-                                })
-                    }
-                    else getString(R.string.categories)
-                }
+            getString(
+                    when (position) {
+                        0 -> R.string.not_processed
+                        else -> R.string.processed
+                    })
+        } else {
+            if (vm.isStorePlace.value!!) {
+                getString(
+                        when (position) {
+                            0 -> R.string.categories
+                            1 -> R.string.not_processed
+                            else -> R.string.processed
+                        })
+            } else getString(R.string.categories)
+        }
     }
 
     override fun countTab(): Int {
         return if (vm.isGeneralProduct.value!! || vm.productInfo.value!!.isSet) {
-                    2
-                }
-                else {
-                    if (vm.isStorePlace.value!!) 3 else 1
-                }
+            2
+        } else {
+            if (vm.isStorePlace.value!!) 3 else 1
+        }
     }
 
     override fun onResume() {
@@ -145,12 +140,12 @@ class GoodsDetailsStorageFragment : CoreFragment<FragmentGoodsDetailsStorageBind
         vm.onResume()
     }
 
-    private fun createPagerItemCategories(container: ViewGroup): View{
+    private fun createPagerItemCategories(container: ViewGroup): View {
         DataBindingUtil
                 .inflate<LayoutGoodsDetailsCategoriesBinding>(LayoutInflater.from(container.context),
                         R.layout.layout_goods_details_categories,
                         container,
-                        false).let {layoutBinding ->
+                        false).let { layoutBinding ->
 
                     val onClickSelectionListener = View.OnClickListener {
                         (it!!.tag as Int).let { position ->
@@ -161,20 +156,19 @@ class GoodsDetailsStorageFragment : CoreFragment<FragmentGoodsDetailsStorageBind
 
                     layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
                             layoutId = R.layout.item_tile_goods_details_categories,
-                            itemId = BR.vm,
+                            itemId = BR.item,
                             realisation = object : DataBindingAdapter<ItemTileGoodsDetailsCategoriesBinding> {
                                 override fun onCreate(binding: ItemTileGoodsDetailsCategoriesBinding) {
                                 }
 
                                 override fun onBind(binding: ItemTileGoodsDetailsCategoriesBinding, position: Int) {
-                                    binding.tvCounter.tag = position
-                                    binding.tvCounter.setOnClickListener(onClickSelectionListener)
+                                    binding.tvItemNumber.tag = position
+                                    binding.tvItemNumber.setOnClickListener(onClickSelectionListener)
                                     binding.selectedForDelete = vm.categoriesSelectionsHelper.isSelected(position)
                                     countedRecyclerViewKeyHandler?.let {
                                         binding.root.isSelected = it.isSelected(position)
                                     }
                                 }
-
                             }
                     )
 
@@ -184,13 +178,13 @@ class GoodsDetailsStorageFragment : CoreFragment<FragmentGoodsDetailsStorageBind
                             rv = layoutBinding.rv,
                             items = vm.countedCategories,
                             lifecycleOwner = layoutBinding.lifecycleOwner!!,
-                                    initPosInfo = countedRecyclerViewKeyHandler?.posInfo?.value
-                            )
-                            return layoutBinding.root
-                        }
-            }
+                            initPosInfo = countedRecyclerViewKeyHandler?.posInfo?.value
+                    )
+                    return layoutBinding.root
+                }
+    }
 
-    private fun createPagerItemNotProcessed(container: ViewGroup): View{
+    private fun createPagerItemNotProcessed(container: ViewGroup): View {
         DataBindingUtil
                 .inflate<LayoutGoodsDetailsNotProssedBinding>(LayoutInflater.from(container.context),
                         R.layout.layout_goods_details_not_prossed,
@@ -199,15 +193,14 @@ class GoodsDetailsStorageFragment : CoreFragment<FragmentGoodsDetailsStorageBind
 
                     layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
                             layoutId = R.layout.item_tile_goods_details_storage_not_prossed,
-                            itemId = BR.vm,
+                            itemId = BR.item,
                             realisation = object : DataBindingAdapter<ItemTileGoodsDetailsStorageNotProssedBinding> {
                                 override fun onCreate(binding: ItemTileGoodsDetailsStorageNotProssedBinding) {
                                 }
 
                                 override fun onBind(binding: ItemTileGoodsDetailsStorageNotProssedBinding, position: Int) {
-                                    binding.tvCounter.tag = position
+                                    binding.tvItemNumber.tag = position
                                 }
-
                             }
                     )
 
@@ -217,7 +210,7 @@ class GoodsDetailsStorageFragment : CoreFragment<FragmentGoodsDetailsStorageBind
                 }
     }
 
-    private fun createPagerItemProcessed(container: ViewGroup): View{
+    private fun createPagerItemProcessed(container: ViewGroup): View {
         DataBindingUtil
                 .inflate<LayoutGoodsDetailsProssedBinding>(LayoutInflater.from(container.context),
                         R.layout.layout_goods_details_prossed,
@@ -226,15 +219,14 @@ class GoodsDetailsStorageFragment : CoreFragment<FragmentGoodsDetailsStorageBind
 
                     layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
                             layoutId = R.layout.item_tile_goods_details_storage,
-                            itemId = BR.vm,
+                            itemId = BR.item,
                             realisation = object : DataBindingAdapter<ItemTileGoodsDetailsStorageBinding> {
                                 override fun onCreate(binding: ItemTileGoodsDetailsStorageBinding) {
                                 }
 
                                 override fun onBind(binding: ItemTileGoodsDetailsStorageBinding, position: Int) {
-                                    binding.tvCounter.tag = position
+                                    binding.tvItemNumber.tag = position
                                 }
-
                             }
                     )
 
