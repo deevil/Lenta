@@ -25,7 +25,7 @@
 
             <LinearLayout
                 style="@style/LinearCellStyle"
-                android:layout_weight="@integer/number_name_1">
+                android:layout_weight="@integer/two_one_1">
 
                 <TextView
                     style="@style/CellTextStyle"
@@ -39,7 +39,7 @@
 
             <LinearLayout
                 style="@style/LinearCellStyle"
-                android:layout_weight="@integer/number_name_2"
+                android:layout_weight="@integer/two_one_2"
                 android:orientation="horizontal">
 
                 <TextView

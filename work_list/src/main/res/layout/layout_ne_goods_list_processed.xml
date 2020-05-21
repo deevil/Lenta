@@ -29,7 +29,7 @@
 
                 <LinearLayout
                     style="@style/LinearCellStyle"
-                    android:layout_weight="@integer/number_good_quantity_column_1">
+                    android:layout_weight="@integer/three_three_1">
 
                     <TextView
                         style="@style/FirstRowTextStyle"
@@ -39,7 +39,7 @@
 
                 <LinearLayout
                     style="@style/LinearCellStyle"
-                    android:layout_weight="@integer/number_good_quantity_column_2">
+                    android:layout_weight="@integer/three_three_2">
 
                     <TextView
                         style="@style/FirstRowTextStyle"
@@ -49,7 +49,7 @@
 
                 <LinearLayout
                     style="@style/LinearCellStyle"
-                    android:layout_weight="@integer/number_good_quantity_column_3">
+                    android:layout_weight="@integer/three_three_3">
 
                     <TextView
                         style="@style/FirstRowTextStyle"
