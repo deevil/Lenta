@@ -35,7 +35,7 @@
             android:id="@+id/iv_auth_skip"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/ic_incognito_mode"
+            android:src="@drawable/ic_incognito_mode_red_20dp"
             android:visibility="@{vm.isAuthSkipped()}"
             app:layout_constraintBottom_toBottomOf="@+id/tv_page_number"
             app:layout_constraintStart_toEndOf="@+id/tv_page_number"

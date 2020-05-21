@@ -86,7 +86,7 @@
     </style>
 
     <style name="SpinnerItemStyleFilter" parent="SpinnerItemStyle">
-        <item name="android:drawableRight">@drawable/ic_filter_white_16</item>
+        <item name="android:drawableRight">@drawable/ic_filter_white_16dp</item>
     </style>
 
     <style name="DBManagerVisib">

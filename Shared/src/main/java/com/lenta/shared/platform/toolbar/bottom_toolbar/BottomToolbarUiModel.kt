@@ -377,7 +377,7 @@ data class ButtonDecorationInfo(
         }
 
         val completeRejection: ButtonDecorationInfo by lazy {
-            ButtonDecorationInfo(R.drawable.ic_full, R.string.complete_rejection)
+            ButtonDecorationInfo(R.drawable.ic_full_white_24dp, R.string.complete_rejection)
         }
 
         val partialFailure: ButtonDecorationInfo by lazy {

@@ -42,7 +42,7 @@
                 android:src="@{vm.uiModelButton3.buttonDecorationInfo.iconRes}"
                 app:focusable="@{false}"
                 app:isGone="@{!vm.uiModelButton3.visibility}"
-                tools:src="@drawable/ic_authorization_24dp" />
+                tools:src="@drawable/ic_authorization_white_24dp" />
 
             <ImageButton
                 android:id="@+id/b_topbar_1"
@@ -55,7 +55,7 @@
                 android:src="@{vm.uiModelButton1.buttonDecorationInfo.iconRes}"
                 app:focusable="@{false}"
                 app:isGone="@{!vm.uiModelButton1.visibility}"
-                tools:src="@drawable/ic_settings_white" />
+                tools:src="@drawable/ic_settings_white_24dp" />
 
             <ImageButton
                 android:id="@+id/b_topbar_2"
@@ -68,7 +68,7 @@
                 android:padding="16dp"
                 android:src="@{vm.uiModelButton2.buttonDecorationInfo.iconRes}"
                 app:isGone="@{!vm.uiModelButton2.visibility}"
-                tools:src="@drawable/ic_exit_from_app_white" />
+                tools:src="@drawable/ic_exit_from_app_white_24dp" />
 
         </LinearLayout>
 

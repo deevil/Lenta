@@ -371,7 +371,7 @@
                 android:layout_weight="1"
                 android:background="?selectableItemBackground"
                 android:onClick="@{(v) -> vm.screenNavigator.openBoxInfoScreen()}"
-                android:src="@drawable/ic_scan_box_32dp" />
+                android:src="@drawable/ic_scan_box_white_32dp" />
 
             <ImageView
                 android:id="@+id/b_scan_es"

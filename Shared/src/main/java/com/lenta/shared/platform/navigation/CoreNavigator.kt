@@ -274,7 +274,7 @@ class CoreNavigator @Inject constructor(
             getFragmentStack()?.push(
                     AlertFragment.create(message = iconDescriptionHelper.getDescription(IconCode.QR_CODE)
                             ?: context.getString(R.string.qr_code_info),
-                            iconRes = R.drawable.ic_scan_qrcode_80dp), CustomAnimation.vertical)
+                            iconRes = R.drawable.ic_scan_qrcode_white_80dp), CustomAnimation.vertical)
         }
     }
 
@@ -305,7 +305,7 @@ class CoreNavigator @Inject constructor(
         runOrPostpone {
             getFragmentStack()?.push(AlertFragment.create(message = iconDescriptionHelper.getDescription(IconCode.BOX_SCAN)
                     ?: context.getString(R.string.box_info),
-                    iconRes = R.drawable.ic_scan_box_80dp), CustomAnimation.vertical)
+                    iconRes = R.drawable.ic_scan_box_white_80dp), CustomAnimation.vertical)
         }
     }
 

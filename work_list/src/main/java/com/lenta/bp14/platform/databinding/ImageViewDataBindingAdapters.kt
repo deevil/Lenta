@@ -15,8 +15,8 @@ fun setTaskStatusIcon(imageView: ImageView, taskBlockingStatus: TaskBlockingStat
     taskBlockingStatus.let {
         when (it) {
             TaskBlockingStatus.NOT_BLOCKED -> imageView.setImageResource(R.drawable.ic_play_arrow_white_24dp)
-            TaskBlockingStatus.SELF_BLOCK -> imageView.setImageResource(R.drawable.ic_self_lock_status_dark_24dp)
-            TaskBlockingStatus.BLOCK -> imageView.setImageResource(R.drawable.ic_lock_status_dark_24dp)
+            TaskBlockingStatus.SELF_BLOCK -> imageView.setImageResource(R.drawable.ic_self_lock_status_gray_24dp)
+            TaskBlockingStatus.BLOCK -> imageView.setImageResource(R.drawable.ic_lock_status_gray_24dp)
         }
         imageView.setVisible(it != TaskBlockingStatus.NOT_BLOCKED)
     }

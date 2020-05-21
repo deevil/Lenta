@@ -13,8 +13,8 @@ fun setTaskStatusIcon(imageView: ImageView, taskStatus: TaskStatus) {
             setVisible(false)
         } else {
             setImageResource(when (taskStatus) {
-                TaskStatus.LOCK -> R.drawable.ic_lock_status_dark_24dp
-                TaskStatus.SELF_LOCK -> R.drawable.ic_self_lock_status_dark_24dp
+                TaskStatus.LOCK -> R.drawable.ic_lock_status_gray_24dp
+                TaskStatus.SELF_LOCK -> R.drawable.ic_self_lock_status_gray_24dp
                 else -> R.drawable.ic_play_arrow_dark_24dp
             })
             setVisible()

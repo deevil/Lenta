@@ -68,7 +68,7 @@
                 <ImageView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:src="@drawable/ic_lock_status_dark_24dp"
+                    android:src="@drawable/ic_lock_status_gray_24dp"
                     app:StorePlaceStatusIcon="@{item.status}" />
 
             </LinearLayout>

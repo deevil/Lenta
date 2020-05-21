@@ -31,9 +31,9 @@ fun setStorePlaceStatusIcon(imageView: ImageView, storePlaceStatus: StorePlaceSt
 
 fun StatusTask.getIconRes(): Int? {
     return when (this) {
-        StatusTask.BlockedMe -> com.lenta.inventory.R.drawable.ic_self_lock_status_dark_24dp
-        StatusTask.BlockedNotMe -> com.lenta.inventory.R.drawable.ic_lock_status_dark_24dp
-        StatusTask.Parallels -> com.lenta.inventory.R.drawable.ic_group_dark_24dp
+        StatusTask.BlockedMe -> com.lenta.inventory.R.drawable.ic_self_lock_status_gray_24dp
+        StatusTask.BlockedNotMe -> com.lenta.inventory.R.drawable.ic_lock_status_gray_24dp
+        StatusTask.Parallels -> com.lenta.inventory.R.drawable.ic_group_gray_24dp
         StatusTask.Processed -> com.lenta.inventory.R.drawable.ic_play_arrow_dark_24dp
         else -> null
     }
@@ -41,8 +41,8 @@ fun StatusTask.getIconRes(): Int? {
 
 fun StorePlaceStatus.getIconRes(): Int? {
     return when (this) {
-        StorePlaceStatus.LockedByMe -> com.lenta.inventory.R.drawable.ic_self_lock_status_dark_24dp
-        StorePlaceStatus.LockedByOthers -> com.lenta.inventory.R.drawable.ic_lock_status_dark_24dp
+        StorePlaceStatus.LockedByMe -> com.lenta.inventory.R.drawable.ic_self_lock_status_gray_24dp
+        StorePlaceStatus.LockedByOthers -> com.lenta.inventory.R.drawable.ic_lock_status_gray_24dp
         StorePlaceStatus.Finished -> com.lenta.inventory.R.drawable.ic_checkbox_green_24dp
         StorePlaceStatus.Started -> com.lenta.inventory.R.drawable.ic_play_arrow_dark_24dp
         else -> null

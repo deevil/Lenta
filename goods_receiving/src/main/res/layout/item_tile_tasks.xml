@@ -84,13 +84,13 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     app:postponedTaskStatusIcon='@{item.postponedStatus}'
-                    tools:src="@drawable/ic_checkbox_green_disabled_24dp" />
+                    tools:src="@drawable/ic_checkbox_disabled_green_24dp" />
 
                 <ImageView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     app:lockTaskStatusIcon='@{item.lockStatus}'
-                    tools:src="@drawable/ic_checkbox_green_disabled_24dp" />
+                    tools:src="@drawable/ic_checkbox_disabled_green_24dp" />
 
             </LinearLayout>
 

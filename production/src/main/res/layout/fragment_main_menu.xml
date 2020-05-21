@@ -68,7 +68,7 @@
                 android:layout_height="wrap_content"
                 android:onClick="@{(view) -> vm.onClickExternalSupply()}"
                 android:text="@string/processing_es"
-                app:icon="@drawable/ic_document_page_32dp"
+                app:icon="@drawable/ic_document_page_white_32dp"
                 app:iconGravity="end" />
 
             <Button

@@ -205,7 +205,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="8dp"
-            android:src="@{vm.isEizUnit ? @drawable/ic_eiz_disabled_24dp : @drawable/ic_bei_24dp}"
+            android:src="@{vm.isEizUnit ? @drawable/ic_eiz_disabled_24dp : @drawable/ic_bei_white_24dp}"
             android:enabled="false"
             app:layout_constraintBottom_toBottomOf="@+id/et_inventory"
             app:layout_constraintEnd_toEndOf="@+id/et_inventory"
@@ -289,7 +289,7 @@
                 android:layout_weight="1"
                 android:background="?selectableItemBackground"
                 android:onClick="@{(v) -> vm.screenNavigator.openEanInfoScreen()}"
-                android:src="@drawable/ic_scan_barcode_32dp" />
+                android:src="@drawable/ic_scan_barcode_white_32dp" />
 
         </LinearLayout>
 

@@ -46,7 +46,7 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="8dp"
                 android:digits="0123456789"
-                android:drawableEnd="@drawable/ic_filter_white_16"
+                android:drawableEnd="@drawable/ic_filter_white_16dp"
                 android:ellipsize="end"
                 android:imeOptions="actionSearch"
                 android:inputType="textNoSuggestions|textVisiblePassword"

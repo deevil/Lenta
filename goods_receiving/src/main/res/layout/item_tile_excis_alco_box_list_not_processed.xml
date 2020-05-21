@@ -7,7 +7,7 @@
 
         <variable
             name="item"
-            type="com.lenta.bp9.features.goods_information.excise_alco_box_acc.excise_alco_box_list.BoxListItem" />
+            type="com.lenta.bp9.features.goods_information.excise_alco_receiving.excise_alco_box_acc.excise_alco_box_list.BoxListItem" />
 
         <variable
             name="selectedItem"
