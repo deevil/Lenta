@@ -60,14 +60,14 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
-                android:src="@drawable/ic_not_strict_list_32dp" />
+                android:src="@drawable/ic_not_strict_list_white_32dp" />
 
             <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:visibility="@{vm.alcohol}"
-                android:src="@drawable/ic_alcohol_32dp" />
+                android:src="@drawable/ic_excise_alcohol_white_32dp" />
 
             <ImageView
                 android:layout_width="wrap_content"
