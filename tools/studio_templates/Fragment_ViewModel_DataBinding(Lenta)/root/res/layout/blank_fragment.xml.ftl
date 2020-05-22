@@ -14,8 +14,8 @@
         <variable
             name="viewPagerSettings"
             type="com.lenta.shared.utilities.databinding.ViewPagerSettings" />
-        </#if>
 
+        </#if>
     </data>
 
     <#if numberOfTabs == "0">
@@ -51,10 +51,6 @@
             tools:targetApi="lollipop" />
 
     </androidx.viewpager.widget.ViewPager>
-
     </#if>
-
-    
-    
 
 </layout>

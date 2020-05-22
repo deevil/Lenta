@@ -49,6 +49,7 @@ class GoodsListWlViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
     val good by lazy { task.currentGood }
 
     val numberField: MutableLiveData<String> = MutableLiveData("")
+
     val requestFocusToNumberField: MutableLiveData<Boolean> = MutableLiveData()
 
     private val toUiFunc = { products: List<Good>? ->
