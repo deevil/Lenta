@@ -48,28 +48,17 @@
 
             <LinearLayout
                 style="@style/LinearCellStyle"
-                android:layout_weight="@integer/name_quantity_column_2"
-                android:orientation="horizontal">
+                android:layout_weight="@integer/name_quantity_column_2">
 
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:orientation="vertical">
+                <TextView
+                    style="@style/CellTextStyle"
+                    android:text="@{item.name}"
+                    tools:text="Корзина 01" />
 
-                    <TextView
-                        style="@style/CellTextStyle"
-                        android:layout_width="wrap_content"
-                        android:text="@{item.name}"
-                        tools:text="Корзина 01" />
-
-                    <TextView
-                        style="@style/CellTextStyle"
-                        android:layout_width="wrap_content"
-                        android:text="@{item.description}"
-                        tools:text="С-02/1HAW/O/ПП-104653" />
-
-                </LinearLayout>
+                <TextView
+                    style="@style/CellTextStyle"
+                    android:text="@{item.description}"
+                    tools:text="С-02/1HAW/O/ПП-104653" />
 
             </LinearLayout>
 
@@ -81,7 +70,7 @@
 
                 <TextView
                     style="@style/CellTextStyle"
-                    android:gravity="center"
+                    android:layout_width="wrap_content"
                     android:text="@{item.quantity}"
                     tools:text="1" />
 

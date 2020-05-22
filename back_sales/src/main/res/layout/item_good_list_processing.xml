@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        xmlns:tools="http://schemas.android.com/tools">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <data>
 
@@ -51,19 +51,12 @@
                 android:layout_weight="@integer/number_name_column_2"
                 android:orientation="horizontal">
 
-                <LinearLayout
+                <TextView
+                    style="@style/CellTextStyle"
                     android:layout_width="0dp"
-                    android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:orientation="vertical">
-
-                    <TextView
-                        style="@style/CellTextStyle"
-                        android:layout_width="wrap_content"
-                        android:text="@{item.name}"
-                        tools:text="000021 Масло" />
-
-                </LinearLayout>
+                    android:text="@{item.name}"
+                    tools:text="000021 Масло" />
 
                 <ImageView
                     android:layout_width="wrap_content"

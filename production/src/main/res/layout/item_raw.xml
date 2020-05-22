@@ -45,7 +45,6 @@
                 <TextView
                     style="@style/CellTextStyle"
                     android:layout_width="0dp"
-                    android:layout_marginEnd="0dp"
                     android:layout_weight="1"
                     android:maxLines="2"
                     android:text="@{item.name}"
@@ -67,19 +66,11 @@
                 style="@style/LinearCellStyle"
                 android:layout_weight="@integer/three_one_3">
 
-                <FrameLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent">
-
-                    <TextView
-                        style="@style/CellTextStyle"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:text="@{item.processingStatus}"
-                        tools:text="10 кг из 25 кг" />
-
-                </FrameLayout>
+                <TextView
+                    style="@style/CellTextStyle"
+                    android:layout_width="wrap_content"
+                    android:text="@{item.processingStatus}"
+                    tools:text="10 кг из 25 кг" />
 
             </LinearLayout>
 

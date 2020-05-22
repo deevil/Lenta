@@ -54,7 +54,6 @@
                 <TextView
                     style="@style/CellTextStyle"
                     android:layout_width="0dp"
-                    android:layout_marginStart="8dp"
                     android:layout_weight="1"
                     android:maxLines="2"
                     android:text="@{good.name}"
@@ -75,20 +74,12 @@
                 style="@style/LinearCellStyle"
                 android:layout_weight="@integer/three_three_3">
 
-                <FrameLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent">
-
-                    <TextView
-                        style="@style/CellTextStyle"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:text="@{good.quantity}"
-                        tools:text="10 шт"
-                        tools:visibility="visible" />
-
-                </FrameLayout>
+                <TextView
+                    style="@style/CellTextStyle"
+                    android:layout_width="wrap_content"
+                    android:text="@{good.quantity}"
+                    tools:text="10 шт"
+                    tools:visibility="visible" />
 
             </LinearLayout>
 

@@ -59,13 +59,11 @@
 
                     <TextView
                         style="@style/CellTextStyle"
-                        android:layout_width="wrap_content"
                         android:text="@{item.name}"
                         tools:text="Корзина 01" />
 
                     <TextView
                         style="@style/CellTextStyle"
-                        android:layout_width="wrap_content"
                         android:text="@{item.description}"
                         tools:text="С-02/1HAW/O/ПП-104653" />
 
@@ -88,7 +86,7 @@
 
                 <TextView
                     style="@style/CellTextStyle"
-                    android:gravity="center"
+                    android:layout_width="wrap_content"
                     android:text="@{item.quantity}"
                     tools:text="1" />
 

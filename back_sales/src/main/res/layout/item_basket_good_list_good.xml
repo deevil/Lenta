@@ -59,7 +59,6 @@
 
                     <TextView
                         style="@style/CellTextStyle"
-                        android:layout_width="wrap_content"
                         android:text="@{item.name}"
                         tools:text="000021 Масло" />
 
@@ -82,7 +81,7 @@
 
                 <TextView
                     style="@style/CellTextStyle"
-                    android:gravity="center"
+                    android:layout_width="wrap_content"
                     android:text="@{item.quantity}"
                     tools:text="5 шт" />
 

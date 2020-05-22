@@ -55,13 +55,11 @@
 
                     <TextView
                         style="@style/CellTextStyle"
-                        android:layout_width="wrap_content"
                         android:text="@{item.name}"
                         tools:text="ВПП-289 // 30.11.2018" />
 
                     <TextView
                         style="@style/CellTextStyle"
-                        android:layout_width="wrap_content"
                         android:text="@{item.provider}"
                         tools:text="105648 ООО Мираторг" />
 
@@ -105,7 +103,7 @@
 
                 <TextView
                     style="@style/CellTextStyle"
-                    android:gravity="center"
+                    android:layout_width="wrap_content"
                     android:text="@{item.quantity}"
                     tools:text="55" />
 

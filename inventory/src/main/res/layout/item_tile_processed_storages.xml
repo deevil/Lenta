@@ -34,10 +34,8 @@
                 <TextView
                     android:id="@+id/tv_item_number"
                     style="@style/CellTextStyle"
-                    android:layout_width="32dp"
-                    android:layout_height="32dp"
+                    android:layout_width="wrap_content"
                     android:background="@{item.selectable ? @drawable/bg_border_circle_white_selectable_for_delete : null}"
-                    android:gravity="center"
                     android:text='@{item.number + ""}'
                     app:selected="@{selectedForDelete}"
                     tools:text="1" />
@@ -48,8 +46,7 @@
 
             <LinearLayout
                 style="@style/LinearCellStyle"
-                android:layout_weight="@integer/four_one_2"
-                android:orientation="horizontal">
+                android:layout_weight="@integer/four_one_2">
 
                 <TextView
                     style="@style/CellTextStyle"
@@ -81,7 +78,7 @@
 
                 <TextView
                     style="@style/CellTextStyle"
-                    android:gravity="center"
+                    android:layout_width="wrap_content"
                     android:text='@{item.productsQuantity + ""}'
                     tools:text="10" />
 

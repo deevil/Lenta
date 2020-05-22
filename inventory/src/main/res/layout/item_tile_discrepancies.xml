@@ -72,11 +72,11 @@
 
             <LinearLayout
                 style="@style/LinearCellStyle"
-                android:layout_weight="@integer/three_one_3"
-                android:orientation="horizontal">
+                android:layout_weight="@integer/three_one_3">
 
                 <TextView
                     style="@style/CellTextStyle"
+                    android:layout_width="wrap_content"
                     android:text="@{item.place}"
                     tools:text="МХ-12345" />
 

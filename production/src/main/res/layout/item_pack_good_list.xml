@@ -45,7 +45,6 @@
                 <TextView
                     style="@style/CellTextStyle"
                     android:layout_width="0dp"
-                    android:layout_marginEnd="0dp"
                     android:layout_weight="1"
                     android:maxLines="2"
                     android:text="@{item.name}"
@@ -65,12 +64,11 @@
 
             <LinearLayout
                 style="@style/LinearCellStyle"
-                android:layout_weight="@integer/four_one_3"
-                android:orientation="horizontal">
+                android:layout_weight="@integer/four_one_3">
 
                 <TextView
                     style="@style/CellTextStyle"
-                    android:gravity="center"
+                    android:layout_width="wrap_content"
                     android:text="@{item.arrived}"
                     tools:text="60 кг" />
 
@@ -84,7 +82,7 @@
 
                 <TextView
                     style="@style/CellTextStyle"
-                    android:gravity="center"
+                    android:layout_width="wrap_content"
                     android:text="@{item.remain}"
                     tools:text="20 кг" />
 
