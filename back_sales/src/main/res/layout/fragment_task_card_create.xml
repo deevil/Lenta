@@ -74,7 +74,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:visibility="@{vm.common}"
-                android:src="@drawable/ic_kandy_32dp" />
+                android:src="@drawable/ic_kandy_white_32dp" />
 
         </LinearLayout>
 

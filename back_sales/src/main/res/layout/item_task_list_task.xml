@@ -86,13 +86,13 @@
                 <ImageView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:src="@drawable/ic_pack_24dp"
+                    android:src="@drawable/ic_pack_gray_24dp"
                     app:taskStatusIcon="@{item.taskStatus}" />
 
                 <ImageView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:src="@drawable/ic_lock_open_dark_24dp"
+                    android:src="@drawable/ic_self_lock_status_gray_24dp"
                     app:blockTypeIcon="@{item.blockType}" />
 
             </LinearLayout>

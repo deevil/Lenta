@@ -18,8 +18,8 @@ fun setTaskStatusIcon(imageView: ImageView, taskStatus: TaskStatus) {
             setVisible(false)
         } else {
             setImageResource(when (taskStatus) {
-                TaskStatus.STARTED -> R.drawable.ic_play_arrow_dark_24dp
-                else -> R.drawable.ic_play_arrow_dark_24dp
+                TaskStatus.STARTED -> R.drawable.ic_play_arrow_gray_24dp
+                else -> R.drawable.ic_play_arrow_gray_24dp
             })
             setVisible()
         }
@@ -33,9 +33,9 @@ fun setBlockTypeIcon(imageView: ImageView, blockType: BlockType) {
             setVisible(false)
         } else {
             setImageResource(when (blockType) {
-                BlockType.SELF_LOCK -> R.drawable.ic_lock_open_dark_24dp
-                BlockType.LOCK -> R.drawable.ic_processed_status_dark_24dp
-                else -> R.drawable.ic_play_arrow_dark_24dp
+                BlockType.SELF_LOCK -> R.drawable.ic_self_lock_status_gray_24dp
+                BlockType.LOCK -> R.drawable.ic_lock_status_gray_24dp
+                else -> R.drawable.ic_play_arrow_gray_24dp
             })
             setVisible()
         }
@@ -46,8 +46,8 @@ fun setBlockTypeIcon(imageView: ImageView, blockType: BlockType) {
 fun setGoodKindIcon(imageView: ImageView, goodKind: GoodKind?) {
     imageView.setImageResource(when (goodKind) {
         GoodKind.ALCOHOL -> R.drawable.ic_no_excise_alco_32dp
-        GoodKind.EXCISE -> R.drawable.ic_alcohol_32dp
-        else -> R.drawable.ic_kandy_32dp
+        GoodKind.EXCISE -> R.drawable.ic_excise_alcohol_white_32dp
+        else -> R.drawable.ic_kandy_white_32dp
     }.also { iconRes ->
         imageView.setInvisible(goodKind == null)
 
