@@ -13,6 +13,7 @@ import com.lenta.bp9.platform.navigation.IScreenNavigator
 import com.lenta.bp9.repos.IDataBaseRepo
 import com.lenta.shared.fmp.resources.dao_ext.getProductInfoByMaterial
 import com.lenta.shared.fmp.resources.slow.ZfmpUtz48V001
+import com.lenta.shared.models.core.Uom
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.requests.combined.scan_info.ScanInfoResult
 import com.lenta.shared.requests.combined.scan_info.pojo.QualityInfo
@@ -83,10 +84,10 @@ class ExciseAlcoBoxAccInfoPGEViewModel : CoreViewModel(), OnPositionClickListene
         val countAccept = taskManager.getReceivingTask()!!.taskRepository.getProductsDiscrepancies().getCountAcceptOfProductPGE(productInfo.value!!)
         when {
             (it ?: 0.0) > 0.0 -> {
-                "+ ${it.toStringFormatted()} ${productInfo.value?.purchaseOrderUnits?.name}"
+                "+ ${it.toStringFormatted()} ${productInfo.value?.uom?.name}"
             }
             else -> { //если было введено отрицательное значение
-                "${if (countAccept > 0.0) "+ " + countAccept.toStringFormatted() else countAccept.toStringFormatted()} ${productInfo.value?.purchaseOrderUnits?.name}"
+                "${if (countAccept > 0.0) "+ " + countAccept.toStringFormatted() else countAccept.toStringFormatted()} ${productInfo.value?.uom?.name}"
             }
         }
     }
@@ -104,16 +105,16 @@ class ExciseAlcoBoxAccInfoPGEViewModel : CoreViewModel(), OnPositionClickListene
         val countRefusal = taskManager.getReceivingTask()!!.taskRepository.getProductsDiscrepancies().getCountAcceptOfProductPGE(productInfo.value!!)
 
         if ((it ?: 0.0) > 0.0) {
-            "- ${it.toStringFormatted()} ${productInfo.value?.purchaseOrderUnits?.name}"
+            "- ${it.toStringFormatted()} ${productInfo.value?.uom?.name}"
         } else { //если было введено отрицательное значение
-            "${if (countRefusal > 0.0) "- " + countRefusal.toStringFormatted() else countRefusal.toStringFormatted()} ${productInfo.value?.purchaseOrderUnits?.name}"
+            "${if (countRefusal > 0.0) "- " + countRefusal.toStringFormatted() else countRefusal.toStringFormatted()} ${productInfo.value?.uom?.name}"
         }
     }
 
     val checkStampControlVisibility: MutableLiveData<Boolean> = MutableLiveData()
 
-    val tvStampControlVal: MutableLiveData<String> = acceptTotalCount.combineLatest(spinQualitySelectedPosition).map {
-        //https://trello.com/c/Z1SPfmAJ
+    val tvStampControlVal: MutableLiveData<String> = countValue.combineLatest(spinQualitySelectedPosition).map {
+        //ПГЕ https://trello.com/c/TzUSGIH7
         if (qualityInfo.value?.get(it?.second ?: 0)?.code == "1") {
             if ( (productInfo.value?.numberBoxesControl?.toInt() == 0 && productInfo.value?.numberStampsControl?.toInt() == 0) ||
                     ((it?.first ?: 0.0) <= 0.0) ) {
@@ -121,7 +122,7 @@ class ExciseAlcoBoxAccInfoPGEViewModel : CoreViewModel(), OnPositionClickListene
                 context.getString(R.string.not_required)
             } else {
                 checkStampControlVisibility.value = true
-                if ((it?.first ?: 0.0) < (productInfo.value?.numberBoxesControl?.toDouble() ?: 0.0) ) {
+                if ( (it?.first ?: 0.0) < (productInfo.value?.numberBoxesControl?.toDouble() ?: 0.0) ) {
                     "${it?.first.toStringFormatted()} кор x ${productInfo.value?.numberStampsControl?.toDouble().toStringFormatted()}"
                 } else {
                     "${productInfo.value?.numberBoxesControl?.toDouble().toStringFormatted()} кор x ${productInfo.value?.numberStampsControl?.toDouble().toStringFormatted()}"
@@ -133,14 +134,14 @@ class ExciseAlcoBoxAccInfoPGEViewModel : CoreViewModel(), OnPositionClickListene
     }
 
     val checkStampControl: MutableLiveData<Boolean> = checkStampControlVisibility.map {
-        //https://trello.com/c/Z1SPfmAJ, Проставлять чекбокс при прохождении контроля всех марок во всех коробах
+        //ПГЕ https://trello.com/c/TzUSGIH7
         taskManager.getReceivingTask()?.controlExciseStampsOfProduct(productInfo.value!!)
     }
 
     val checkBoxControlVisibility: MutableLiveData<Boolean> = MutableLiveData()
 
-    val tvBoxControlVal: MutableLiveData<String> = acceptTotalCount.combineLatest(spinQualitySelectedPosition).map {
-        //https://trello.com/c/Z1SPfmAJ
+    val tvBoxControlVal: MutableLiveData<String> = countValue.combineLatest(spinQualitySelectedPosition).map {
+        //ПГЕ https://trello.com/c/TzUSGIH7
         if (qualityInfo.value?.get(it?.second ?: 0)?.code == "1") {
             if ( (productInfo.value?.numberBoxesControl?.toInt() == 0 && productInfo.value?.numberStampsControl?.toInt() == 0) ||
                     ((it?.first ?: 0.0) <= 0.0) ) {
@@ -160,42 +161,12 @@ class ExciseAlcoBoxAccInfoPGEViewModel : CoreViewModel(), OnPositionClickListene
     }
 
     val checkBoxControl: MutableLiveData<Boolean> = checkBoxControlVisibility.map {
-        //https://trello.com/c/Z1SPfmAJ, 2.4. Устанавливать чекбокс, когда F=Z;
+        //ПГЕ https://trello.com/c/TzUSGIH7
         taskManager.getReceivingTask()?.controlBoxesOfProduct(productInfo.value!!)
     }
 
-    val checkBoxListVisibility: MutableLiveData<Boolean> = MutableLiveData()
-
-    val tvBoxListVal: MutableLiveData<String> = refusalTotalCount.combineLatest(spinQualitySelectedPosition).map {
-        if (qualityInfo.value?.get(it?.second ?: 0)?.code != "1") {
-            if (processExciseAlcoBoxAccPGEService.getCountUntreatedBoxes() == 0) {
-                checkBoxListVisibility.value = true
-                "${processExciseAlcoBoxAccPGEService.getCountDefectBoxes()} из ${processExciseAlcoBoxAccPGEService.getCountDefectBoxes()}"
-            } else {
-                if ( it?.first?.toInt() == processExciseAlcoBoxAccPGEService.getCountUntreatedBoxes() ) {
-                    checkBoxListVisibility.value = false
-                    context.getString(R.string.not_required)
-                } else {
-                    checkBoxListVisibility.value = true
-                    "${it?.first.toStringFormatted()} из ${processExciseAlcoBoxAccPGEService.getCountUntreatedBoxes()}"
-                }
-            }
-        } else {
-            "" //это поле отображается только при выбранной категории брака
-        }
-    }
-
-    val checkBoxList: MutableLiveData<Boolean> = checkBoxListVisibility.map {
-        //https://trello.com/c/lqyZlYQu, Устанавливать чекбокс, когда F (кол-во в Отказать) = Q (свободные/необработанные короба);
-        processExciseAlcoBoxAccPGEService.getCountUntreatedBoxes() == 0
-    }
-
-    val enabledApplyButton: MutableLiveData<Boolean> = countValue.combineLatest(checkBoxList).map {
-        if (qualityInfo.value?.get(spinQualitySelectedPosition.value ?: 0)?.code == "1") {
-            it!!.first != 0.0
-        } else {
-            ((processExciseAlcoBoxAccPGEService.getCountUntreatedBoxes() - (countValue.value?.toInt() ?: 0) == 0)  || it!!.second) && ((countValue.value?.toInt() ?: 0) > 0)
-        }
+    val enabledApplyButton: MutableLiveData<Boolean> = countValue.map {
+        (it ?: 0.0) > 0.0
     }
 
     init {
@@ -204,7 +175,7 @@ class ExciseAlcoBoxAccInfoPGEViewModel : CoreViewModel(), OnPositionClickListene
                     scanResultHandler = this@ExciseAlcoBoxAccInfoPGEViewModel::handleProductSearchResult)
 
             suffix.value = productInfo.value?.purchaseOrderUnits?.name
-            qualityInfo.value = dataBase.getQualityInfo()
+            qualityInfo.value = dataBase.getQualityInfoNormPGE()
             spinQuality.value = qualityInfo.value?.map {
                 it.name
             }
@@ -221,12 +192,7 @@ class ExciseAlcoBoxAccInfoPGEViewModel : CoreViewModel(), OnPositionClickListene
     }
 
     fun onClickBoxes() {
-        if ( (countValue.value ?: 0.0) <= 0.0 ) {
-            screenNavigator.openAlertMustEnterQuantityScreen()
-            return
-        }
-
-        screenNavigator.openExciseAlcoBoxListScreen(
+        screenNavigator.openExciseAlcoBoxListPGEScreen(
                 productInfo = productInfo.value!!,
                 selectQualityCode = qualityInfo.value!![spinQualitySelectedPosition.value!!].code,
                 selectReasonRejectionCode = reasonRejectionInfo.value!![spinReasonRejectionSelectedPosition.value!!].code,
@@ -238,7 +204,7 @@ class ExciseAlcoBoxAccInfoPGEViewModel : CoreViewModel(), OnPositionClickListene
         screenNavigator.openGoodsDetailsScreen(productInfo.value!!)
     }
 
-    fun onClickAdd() {
+    private fun onClickAdd() {
         return if (processExciseAlcoBoxAccPGEService.overLimit(countValue.value!!)) {
             screenNavigator.openAlertOverLimit()
             count.value = "0"
@@ -327,20 +293,16 @@ class ExciseAlcoBoxAccInfoPGEViewModel : CoreViewModel(), OnPositionClickListene
                                 )
                             }
                         } else {
-                            if (checkBoxList.value == true) {
-                                screenNavigator.openAlertRequiredQuantityBoxesAlreadyProcessedScreen() //Необходимое количество коробок уже обработано
-                            } else {
-                                screenNavigator.openExciseAlcoBoxCardScreen(
-                                        productInfo = productInfo.value!!,
-                                        boxInfo = boxInfo,
-                                        massProcessingBoxesNumber = null,
-                                        exciseStampInfo = null,
-                                        selectQualityCode = qualityInfo.value!![spinQualitySelectedPosition.value!!].code,
-                                        selectReasonRejectionCode = reasonRejectionInfo.value!![spinReasonRejectionSelectedPosition.value!!].code,
-                                        initialCount = countValue.value.toStringFormatted(),
-                                        isScan = true
-                                )
-                            }
+                            screenNavigator.openExciseAlcoBoxCardScreen(
+                                    productInfo = productInfo.value!!,
+                                    boxInfo = boxInfo,
+                                    massProcessingBoxesNumber = null,
+                                    exciseStampInfo = null,
+                                    selectQualityCode = qualityInfo.value!![spinQualitySelectedPosition.value!!].code,
+                                    selectReasonRejectionCode = reasonRejectionInfo.value!![spinReasonRejectionSelectedPosition.value!!].code,
+                                    initialCount = countValue.value.toStringFormatted(),
+                                    isScan = true
+                            )
                         }
                     }
                 }

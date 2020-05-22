@@ -14,6 +14,8 @@ import com.lenta.bp9.features.editing_invoice.EditingInvoiceFragment
 import com.lenta.bp9.features.formed_docs.FormedDocsFragment
 import com.lenta.bp9.features.goods_details.GoodsDetailsFragment
 import com.lenta.bp9.features.goods_information.excise_alco_pge.excise_alco_box_acc_pge.ExciseAlcoBoxAccInfoPGEFragment
+import com.lenta.bp9.features.goods_information.excise_alco_pge.excise_alco_box_acc_pge.excise_alco_box_card.ExciseAlcoBoxCardPGEFragment
+import com.lenta.bp9.features.goods_information.excise_alco_pge.excise_alco_box_acc_pge.excise_alco_box_list.ExciseAlcoBoxListPGEFragment
 import com.lenta.bp9.features.goods_information.excise_alco_receiving.excise_alco_stamp_acc.ExciseAlcoStampAccInfoFragment
 import com.lenta.bp9.features.goods_information.excise_alco_receiving.excise_alco_box_acc.ExciseAlcoBoxAccInfoFragment
 import com.lenta.bp9.features.goods_information.excise_alco_receiving.excise_alco_box_acc.excise_alco_box_card.ExciseAlcoBoxCardFragment
@@ -1292,6 +1294,18 @@ class ScreenNavigator(
         }
     }
 
+    override fun openExciseAlcoBoxListPGEScreen(productInfo: TaskProductInfo, selectQualityCode: String, selectReasonRejectionCode: String?, initialCount: String) {
+        runOrPostpone {
+            getFragmentStack()?.push(ExciseAlcoBoxListPGEFragment.create(productInfo, selectQualityCode, selectReasonRejectionCode, initialCount))
+        }
+    }
+
+    override fun openExciseAlcoBoxCardPGEScreen(productInfo: TaskProductInfo, boxInfo: TaskBoxInfo?, massProcessingBoxesNumber: List<String>?, exciseStampInfo: TaskExciseStampInfo?, selectQualityCode: String, selectReasonRejectionCode: String?, initialCount: String, isScan: Boolean) {
+        runOrPostpone {
+            getFragmentStack()?.push(ExciseAlcoBoxCardPGEFragment.create(productInfo, boxInfo, massProcessingBoxesNumber, exciseStampInfo, selectQualityCode, selectReasonRejectionCode, initialCount, isScan))
+        }
+    }
+
     private fun getFragmentStack() = foregroundActivityProvider.getActivity()?.fragmentStack
 }
 
@@ -1440,4 +1454,6 @@ interface IScreenNavigator : ICoreNavigator {
     fun openGoodsInfoShipmentPPScreen(productInfo: TaskProductInfo, isDiscrepancy: Boolean, initialCount: Double = 0.0)
     fun openAlertUnknownTaskTypeScreen()
     fun openExciseAlcoBoxAccInfoPGEScreen(productInfo: TaskProductInfo)
+    fun openExciseAlcoBoxListPGEScreen(productInfo: TaskProductInfo, selectQualityCode: String, selectReasonRejectionCode: String?, initialCount: String)
+    fun openExciseAlcoBoxCardPGEScreen(productInfo: TaskProductInfo, boxInfo: TaskBoxInfo?, massProcessingBoxesNumber: List<String>?, exciseStampInfo: TaskExciseStampInfo?, selectQualityCode: String, selectReasonRejectionCode: String?, initialCount: String, isScan: Boolean)
 }

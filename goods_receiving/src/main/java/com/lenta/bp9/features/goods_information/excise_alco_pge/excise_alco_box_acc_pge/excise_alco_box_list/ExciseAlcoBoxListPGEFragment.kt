@@ -1,31 +1,31 @@
-package com.lenta.bp9.features.goods_information.excise_alco_receiving.excise_alco_box_acc.excise_alco_box_list
+package com.lenta.bp9.features.goods_information.excise_alco_pge.excise_alco_box_acc_pge.excise_alco_box_list
 
-import com.lenta.bp9.R
-import com.lenta.bp9.platform.extentions.getAppComponent
-import com.lenta.shared.platform.fragment.CoreFragment
-import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
-import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
-import com.lenta.shared.utilities.extentions.provideViewModel
 import android.os.Bundle
 import android.view.LayoutInflater
-import android.view.ViewGroup
 import android.view.View
+import android.view.ViewGroup
 import android.widget.AdapterView
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import com.lenta.bp9.BR
+import com.lenta.bp9.R
 import com.lenta.bp9.databinding.*
 import com.lenta.bp9.model.task.TaskProductInfo
+import com.lenta.bp9.platform.extentions.getAppComponent
 import com.lenta.shared.keys.KeyCode
 import com.lenta.shared.keys.OnKeyDownListener
+import com.lenta.shared.platform.fragment.CoreFragment
+import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListener
+import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
 import com.lenta.shared.scan.OnScanResultListener
 import com.lenta.shared.utilities.databinding.*
 import com.lenta.shared.utilities.extentions.connectLiveData
+import com.lenta.shared.utilities.extentions.provideViewModel
 import com.lenta.shared.utilities.state.state
 
-class ExciseAlcoBoxListFragment : CoreFragment<FragmentExciseAlcoBoxListBinding, ExciseAlcoBoxListViewModel>(),
+class ExciseAlcoBoxListPGEFragment : CoreFragment<FragmentExciseAlcoBoxListPgeBinding, ExciseAlcoBoxListPGEViewModel>(),
         ViewPagerSettings,
         PageSelectionListener,
         ToolbarButtonsClickListener,
@@ -33,8 +33,8 @@ class ExciseAlcoBoxListFragment : CoreFragment<FragmentExciseAlcoBoxListBinding,
         OnKeyDownListener {
 
     companion object {
-        fun create(productInfo: TaskProductInfo, selectQualityCode: String, selectReasonRejectionCode: String?, initialCount: String): ExciseAlcoBoxListFragment {
-            ExciseAlcoBoxListFragment().let {
+        fun create(productInfo: TaskProductInfo, selectQualityCode: String, selectReasonRejectionCode: String?, initialCount: String): ExciseAlcoBoxListPGEFragment {
+            ExciseAlcoBoxListPGEFragment().let {
                 it.productInfo = productInfo
                 it.selectQualityCode = selectQualityCode
                 it.selectReasonRejectionCode = selectReasonRejectionCode
@@ -51,12 +51,12 @@ class ExciseAlcoBoxListFragment : CoreFragment<FragmentExciseAlcoBoxListBinding,
 
     private var notProcessedRecyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
 
-    override fun getLayoutId(): Int = R.layout.fragment_excise_alco_box_list
+    override fun getLayoutId(): Int = R.layout.fragment_excise_alco_box_list_pge
 
     override fun getPageNumber(): String = "09/42"
 
-    override fun getViewModel(): ExciseAlcoBoxListViewModel {
-        provideViewModel(ExciseAlcoBoxListViewModel::class.java).let {vm ->
+    override fun getViewModel(): ExciseAlcoBoxListPGEViewModel {
+        provideViewModel(ExciseAlcoBoxListPGEViewModel::class.java).let {vm ->
             getAppComponent()?.inject(vm)
             vm.productInfo.value = productInfo
             vm.selectQualityCode.value = this.selectQualityCode
@@ -93,14 +93,13 @@ class ExciseAlcoBoxListFragment : CoreFragment<FragmentExciseAlcoBoxListBinding,
                 }
             })
         }
-
     }
 
     override fun getPagerItemView(container: ViewGroup, position: Int): View {
         if (position == 0) {
             DataBindingUtil
-                    .inflate<LayoutExciseAlcoBoxListNotProcessedBinding>(LayoutInflater.from(container.context),
-                            R.layout.layout_excise_alco_box_list_not_processed,
+                    .inflate<LayoutExciseAlcoBoxListNotProcessedPgeBinding>(LayoutInflater.from(container.context),
+                            R.layout.layout_excise_alco_box_list_not_processed_pge,
                             container,
                             false).let { layoutBinding ->
 
@@ -153,8 +152,8 @@ class ExciseAlcoBoxListFragment : CoreFragment<FragmentExciseAlcoBoxListBinding,
         }
 
         DataBindingUtil
-                .inflate<LayoutExciseAlcoBoxListProcessedBinding>(LayoutInflater.from(container.context),
-                        R.layout.layout_excise_alco_box_list_processed,
+                .inflate<LayoutExciseAlcoBoxListProcessedPgeBinding>(LayoutInflater.from(container.context),
+                        R.layout.layout_excise_alco_box_list_processed_pge,
                         container,
                         false).let { layoutBinding ->
 
