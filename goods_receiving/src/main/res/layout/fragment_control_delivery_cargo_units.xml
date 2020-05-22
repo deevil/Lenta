@@ -16,7 +16,6 @@
 
     </data>
 
-
     <androidx.viewpager.widget.ViewPager
         android:id="@+id/view_pager"
         android:layout_width="wrap_content"
@@ -39,6 +38,7 @@
             app:tabTextAppearance="@style/TabLayoutStyle"
             app:tabTextColor="@color/colorWhite"
             tools:targetApi="lollipop" />
+
     </androidx.viewpager.widget.ViewPager>
 
 </layout>

@@ -131,7 +131,7 @@ class ControlDeliveryCargoUnitsFragment : CoreFragment<FragmentControlDeliveryCa
 
                     layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
                             layoutId = R.layout.item_tile_control_delivery_cu,
-                            itemId = BR.vm,
+                            itemId = BR.item,
                             realisation = object : DataBindingAdapter<ItemTileControlDeliveryCuBinding> {
                                 override fun onCreate(binding: ItemTileControlDeliveryCuBinding) {
                                 }
@@ -274,14 +274,14 @@ class ControlDeliveryCargoUnitsFragment : CoreFragment<FragmentControlDeliveryCa
 
                         layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
                                 layoutId = R.layout.item_tile_control_delivery_shipment_cu,
-                                itemId = BR.vm,
+                                itemId = BR.item,
                                 realisation = object : DataBindingAdapter<ItemTileControlDeliveryShipmentCuBinding> {
                                     override fun onCreate(binding: ItemTileControlDeliveryShipmentCuBinding) {
                                     }
 
                                     override fun onBind(binding: ItemTileControlDeliveryShipmentCuBinding, position: Int) {
-                                        binding.tvCounter.tag = position
-                                        binding.tvCounter.setOnClickListener(onClickSelectionListener)
+                                        binding.tvItemNumber.tag = position
+                                        binding.tvItemNumber.setOnClickListener(onClickSelectionListener)
                                         binding.selectedForDelete = vm.notProcessedSelectionsHelper.isSelected(position)
                                         notProcessedRecyclerViewKeyHandler?.let {
                                             binding.root.isSelected = it.isSelected(position)

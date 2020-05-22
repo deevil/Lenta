@@ -12,6 +12,7 @@
         <variable
             name="rvConfig"
             type="com.lenta.shared.utilities.databinding.DataBindingRecyclerViewConfig" />
+
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -26,7 +27,6 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
-
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rv"

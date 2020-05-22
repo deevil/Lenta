@@ -15,6 +15,28 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
+        <TextView
+            android:id="@+id/tv_user"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="16dp"
+            android:background="?selectableItemBackground"
+            android:clickable="true"
+            android:drawableEnd="@drawable/ic_keyboard_arrow_right_white_16dp"
+            android:ellipsize="end"
+            android:focusable="true"
+            android:gravity="center"
+            android:maxLines="1"
+            android:onClick="@{(v) -> vm.onClickUser()}"
+            android:padding="8dp"
+            android:text='@{vm.fio}'
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="Приемов Тест Тестович" />
+
         <ImageView
             android:id="@+id/iv_logo"
             android:layout_width="wrap_content"
@@ -22,7 +44,7 @@
             android:layout_alignParentTop="true"
             android:layout_centerHorizontal="true"
             android:layout_marginStart="8dp"
-            android:layout_marginTop="68dp"
+            android:layout_marginTop="98dp"
             android:layout_marginEnd="8dp"
             android:src="@drawable/logo_lenta"
             app:layout_constraintEnd_toEndOf="parent"
@@ -46,7 +68,7 @@
                 android:layout_height="wrap_content"
                 android:onClick="@{(view) -> vm.onClickExternalSupply()}"
                 android:text="@string/processing_es"
-                app:icon="@drawable/ic_document_page_32dp"
+                app:icon="@drawable/ic_document_page_white_32dp"
                 app:iconGravity="end" />
 
             <Button

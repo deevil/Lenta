@@ -29,7 +29,7 @@
 
             <LinearLayout
                 style="@style/LinearCellStyle"
-                android:layout_weight="@integer/number_good_check_column_1">
+                android:layout_weight="@integer/three_three_1">
 
                 <TextView
                     android:id="@+id/tv_item_number"
@@ -48,7 +48,7 @@
 
             <LinearLayout
                 style="@style/LinearCellStyle"
-                android:layout_weight="@integer/number_good_check_column_2"
+                android:layout_weight="@integer/three_three_2"
                 android:orientation="horizontal">
 
                 <TextView
@@ -72,7 +72,7 @@
 
             <LinearLayout
                 style="@style/LinearCellStyle"
-                android:layout_weight="@integer/number_good_check_column_3"
+                android:layout_weight="@integer/three_three_3"
                 android:orientation="horizontal">
 
                 <ImageView

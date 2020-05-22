@@ -66,19 +66,19 @@ data class ImageButtonDecorationInfo(
         }
 
         val exitFromApp: ImageButtonDecorationInfo by lazy {
-            ImageButtonDecorationInfo(R.drawable.ic_exit_from_app_white)
+            ImageButtonDecorationInfo(R.drawable.ic_exit_from_app_white_24dp)
         }
 
         val exitFromPleApp: ImageButtonDecorationInfo by lazy {
-            ImageButtonDecorationInfo(R.drawable.ic_exit_from_app_white)
+            ImageButtonDecorationInfo(R.drawable.ic_exit_from_app_white_24dp)
         }
 
         val settings: ImageButtonDecorationInfo by lazy {
-            ImageButtonDecorationInfo(R.drawable.ic_settings_white)
+            ImageButtonDecorationInfo(R.drawable.ic_settings_white_24dp)
         }
 
         val authorization: ImageButtonDecorationInfo by lazy {
-            ImageButtonDecorationInfo(R.drawable.ic_authorization_24dp)
+            ImageButtonDecorationInfo(R.drawable.ic_authorization_white_24dp)
         }
     }
 

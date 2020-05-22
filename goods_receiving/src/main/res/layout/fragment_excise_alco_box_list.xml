@@ -2,20 +2,19 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context=".features.goods_information.excise_alco_box_acc.excise_alco_box_list.ExciseAlcoBoxListFragment">
+    tools:context=".features.goods_information.excise_alco_receiving.excise_alco_box_acc.excise_alco_box_list.ExciseAlcoBoxListFragment">
 
     <data>
 
         <variable
             name="vm"
-            type="com.lenta.bp9.features.goods_information.excise_alco_box_acc.excise_alco_box_list.ExciseAlcoBoxListViewModel" />
+            type="com.lenta.bp9.features.goods_information.excise_alco_receiving.excise_alco_box_acc.excise_alco_box_list.ExciseAlcoBoxListViewModel" />
 
         <variable
             name="viewPagerSettings"
             type="com.lenta.shared.utilities.databinding.ViewPagerSettings" />
 
     </data>
-
 
     <androidx.viewpager.widget.ViewPager
         android:id="@+id/view_pager"
@@ -40,7 +39,7 @@
             app:tabTextAppearance="@style/TabLayoutStyle"
             app:tabTextColor="@color/colorWhite"
             tools:targetApi="lollipop" />
-    </androidx.viewpager.widget.ViewPager>
 
+    </androidx.viewpager.widget.ViewPager>
 
 </layout>

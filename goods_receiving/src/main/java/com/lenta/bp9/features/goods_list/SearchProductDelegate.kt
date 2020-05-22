@@ -224,7 +224,11 @@ class SearchProductDelegate @Inject constructor(
                             !taskManager.getReceivingTask()?.taskRepository?.getMercuryDiscrepancies()?.getMercuryInfo().isNullOrEmpty()) {
                         screenNavigator.openGoodsMercuryInfoScreen(taskProductInfo, isDiscrepancy)
                     } else {
-                        screenNavigator.openGoodsInfoScreen(productInfo = taskProductInfo, isDiscrepancy = isDiscrepancy)
+                        if (taskManager.getReceivingTask()?.taskHeader?.taskType == TaskType.ShipmentPP) {
+                            screenNavigator.openGoodsInfoShipmentPPScreen(productInfo = taskProductInfo, isDiscrepancy = isDiscrepancy)
+                        } else {
+                            screenNavigator.openGoodsInfoScreen(productInfo = taskProductInfo, isDiscrepancy = isDiscrepancy)
+                        }
                     }
                 }
                 ProductType.ExciseAlcohol -> {
@@ -233,7 +237,7 @@ class SearchProductDelegate @Inject constructor(
                             screenNavigator.openNotImplementedScreenAlert("Информация о наборе")
                             //screenNavigator.openSetsInfoScreen(taskProductInfo)
                         }
-                        taskProductInfo.isBoxFl -> { //алкоголь, коробочный учет https://trello.com/c/KbBbXj2t
+                        taskProductInfo.isBoxFl -> { //алкоголь, коробочный учет ППП https://trello.com/c/KbBbXj2t; коробочный учет ПГЕ https://trello.com/c/TzUSGIH7
                             screenNavigator.openExciseAlcoBoxAccInfoScreen(taskProductInfo)
                         }
                         taskProductInfo.isMarkFl -> { //алкоголь, марочный учет
@@ -243,7 +247,7 @@ class SearchProductDelegate @Inject constructor(
                         else -> screenNavigator.openAlertUnknownGoodsTypeScreen() //сообщение о неизвестном типе товара
                     }
                 }
-                ProductType.NonExciseAlcohol -> screenNavigator.openNonExciseAlcoInfoScreen(taskProductInfo)
+                ProductType.NonExciseAlcohol -> screenNavigator.openNotImplementedScreenAlert("Информация о не акцизном алкоголе") //screenNavigator.openNonExciseAlcoInfoScreen(taskProductInfo)
                 else -> {
                     screenNavigator.openAlertUnknownGoodsTypeScreen() //сообщение о неизвестном типе товара
                 }

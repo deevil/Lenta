@@ -10,7 +10,6 @@
             name="vm"
             type="com.lenta.bp9.features.repres_person_num_entry.RepresPersonNumEntryViewModel" />
 
-
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout

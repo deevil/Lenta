@@ -10,11 +10,13 @@ import com.lenta.bp9.features.driver_data.DriverDataViewModel
 import com.lenta.bp9.features.editing_invoice.EditingInvoiceViewModel
 import com.lenta.bp9.features.formed_docs.FormedDocsViewModel
 import com.lenta.bp9.features.goods_details.GoodsDetailsViewModel
-import com.lenta.bp9.features.goods_information.excise_alco_stamp_acc.ExciseAlcoStampAccInfoViewModel
-import com.lenta.bp9.features.goods_information.excise_alco_box_acc.ExciseAlcoBoxAccInfoViewModel
-import com.lenta.bp9.features.goods_information.excise_alco_box_acc.excise_alco_box_card.ExciseAlcoBoxCardViewModel
-import com.lenta.bp9.features.goods_information.excise_alco_box_acc.excise_alco_box_list.ExciseAlcoBoxListViewModel
+import com.lenta.bp9.features.goods_information.excise_alco_receiving.excise_alco_stamp_acc.ExciseAlcoStampAccInfoViewModel
+import com.lenta.bp9.features.goods_information.excise_alco_receiving.excise_alco_box_acc.ExciseAlcoBoxAccInfoViewModel
+import com.lenta.bp9.features.goods_information.excise_alco_receiving.excise_alco_box_acc.excise_alco_box_card.ExciseAlcoBoxCardViewModel
+import com.lenta.bp9.features.goods_information.excise_alco_receiving.excise_alco_box_acc.excise_alco_box_list.ExciseAlcoBoxListViewModel
+import com.lenta.bp9.features.goods_information.excise_alco_receiving.excise_alco_box_acc.excise_alco_box_product_failure.ExciseAlcoBoxProductFailureViewModel
 import com.lenta.bp9.features.goods_information.general.GoodsInfoViewModel
+import com.lenta.bp9.features.goods_information.general_opp.GoodsInfoShipmentPPViewModel
 import com.lenta.bp9.features.goods_information.mercury.GoodsMercuryInfoViewModel
 import com.lenta.bp9.features.goods_information.non_excise_alco.NonExciseAlcoInfoViewModel
 import com.lenta.bp9.features.goods_list.GoodsListViewModel
@@ -48,11 +50,12 @@ import com.lenta.bp9.main.MainActivity
 import com.lenta.bp9.main.MainViewModel
 import com.lenta.shared.di.AppScope
 import com.lenta.shared.di.CoreComponent
+import com.lenta.shared.di.FromParentToCoreProvider
 import dagger.Component
 
 @Component(modules = [AppModule::class], dependencies = [CoreComponent::class])
 @AppScope
-interface AppComponent {
+interface AppComponent : FromParentToCoreProvider {
     fun inject(mainActivity: MainActivity)
     fun inject(mainViewModel: MainViewModel)
     fun inject(it: ExceptionHandler)
@@ -123,4 +126,6 @@ interface AppComponent {
     fun inject(it: ExciseAlcoBoxAccInfoViewModel)
     fun inject(it: ExciseAlcoBoxListViewModel)
     fun inject(it: ExciseAlcoBoxCardViewModel)
+    fun inject(it: ExciseAlcoBoxProductFailureViewModel)
+    fun inject(it: GoodsInfoShipmentPPViewModel)
 }

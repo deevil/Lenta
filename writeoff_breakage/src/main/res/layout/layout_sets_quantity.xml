@@ -130,7 +130,7 @@
         <com.lenta.shared.view.ClickableSpinner
             android:id="@+id/spinner_write_off_type"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="32dp"
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
             android:layout_marginEnd="8dp"
@@ -139,7 +139,8 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/div_vert"
             app:onPositionClickListener="@{vm}"
-            app:position="@{vm.selectedPosition}" />
+            app:position="@{vm.selectedPosition}"
+            tools:entries="@array/test_list" />
 
         <View
             android:id="@+id/div_hor4"
@@ -151,80 +152,92 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/spinner_write_off_type" />
 
-        <TextView
-            android:id="@+id/tv_matrix"
-            android:layout_width="36sp"
-            android:layout_height="36sp"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="8dp"
-            android:layout_marginBottom="24dp"
-            android:fontFamily="@font/tahoma_bold"
-            android:gravity="center"
-            android:onClick="@{(v) -> vm.screenNavigator.openMatrixInfoScreen(vm.setProductInfo.matrixType)}"
-            android:textSize="18sp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/div_hor4"
-            app:layout_constraintVertical_bias="1.0"
-            app:matrixType="@{vm.setProductInfo.matrixType}"
-            tools:background="@drawable/bg_white_circle"
-            tools:text="A" />
-
-        <TextView
-            android:id="@+id/tv_section"
-            style="@style/NumberSectionTxt"
-            android:layout_width="36sp"
-            android:layout_height="36sp"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="8dp"
-            android:layout_marginBottom="24dp"
-            android:gravity="center"
-            android:onClick="@{(v) -> vm.screenNavigator.openSectionInfoScreen(vm.setProductInfo.sectionId)}"
-            android:text='@{"" + vm.setProductInfo.sectionId}'
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/tv_matrix"
-            app:layout_constraintTop_toTopOf="@+id/div_hor4"
-            app:layout_constraintVertical_bias="1.0"
-            tools:text="02" />
-
-        <ImageButton
-            android:id="@+id/b_excise_alco"
-            android:layout_width="wrap_content"
+        <!-- Блок с иконками -->
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginBottom="18dp"
-            android:background="?selectableItemBackground"
-            app:alcoIcon="@{vm.setProductInfo.type}"
+            android:layout_marginBottom="8dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/tv_section"
-            tools:src="@drawable/ic_excise_white_48dp" />
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent">
 
-        <ImageButton
-            android:id="@+id/b_scan_es"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="8dp"
-            android:background="?selectableItemBackground"
-            android:onClick="@{(v) -> vm.screenNavigator.openESInfoScreen()}"
-            android:padding="8dp"
-            android:src="@drawable/is_scan_barcode_es"
-            app:layout_constraintBottom_toBottomOf="@+id/b_scan"
-            app:layout_constraintEnd_toStartOf="@+id/b_scan"
-            app:layout_constraintTop_toTopOf="@+id/b_scan"
-            tools:visibility="visible" />
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:orientation="horizontal">
 
-        <ImageButton
-            android:id="@+id/b_scan"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="8dp"
-            android:layout_marginBottom="16dp"
-            android:background="?selectableItemBackground"
-            android:onClick="@{(v) -> vm.screenNavigator.openEanInfoScreen()}"
-            android:padding="8dp"
-            android:src="@drawable/ic_scan_barcode_32dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
+                <TextView
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:background="@drawable/bg_white_circle"
+                    android:gravity="center"
+                    android:onClick="@{(v) -> vm.screenNavigator.openMatrixInfoScreen(vm.setProductInfo.matrixType)}"
+                    android:textSize="12sp"
+                    app:matrixType="@{vm.setProductInfo.matrixType}"
+                    tools:text="A" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:background="@drawable/bg_white_circle"
+                    android:gravity="center"
+                    android:onClick="@{(v) -> vm.screenNavigator.openSectionInfoScreen(vm.setProductInfo.sectionId)}"
+                    android:text='@{"" + vm.setProductInfo.sectionId}'
+                    android:textSize="12sp"
+                    tools:text="02" />
+
+            </LinearLayout>
+
+            <ImageView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                app:alcoIcon="@{vm.setProductInfo.type}"
+                tools:src="@drawable/ic_excise_alcohol_white_32dp" />
+
+            <View
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1" />
+
+            <View
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1" />
+
+            <ImageView
+                android:id="@+id/b_scan_es"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="?selectableItemBackground"
+                android:onClick="@{(v) -> vm.screenNavigator.openESInfoScreen()}"
+                android:src="@drawable/ic_scan_barcode_es_white_32dp" />
+
+            <ImageView
+                android:id="@+id/b_scan"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="?selectableItemBackground"
+                android:onClick="@{(v) -> vm.screenNavigator.openEanInfoScreen()}"
+                android:src="@drawable/ic_scan_barcode_white_32dp" />
+
+        </LinearLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
+
 </layout>

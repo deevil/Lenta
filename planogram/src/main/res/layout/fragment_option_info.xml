@@ -69,8 +69,8 @@
                         android:id="@+id/facings_icon"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:src="@{vm.isFacings ? @drawable/ic_options_on_40dp : @drawable/ic_options_off_40dp}"
-                        tools:src="@drawable/ic_options_off_40dp"/>
+                        android:src="@{vm.isFacings ? @drawable/ic_options_on_gray_40dp : @drawable/ic_options_off_red_40dp}"
+                        tools:src="@drawable/ic_options_off_red_40dp"/>
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -95,8 +95,8 @@
                         android:id="@+id/places_icon"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:src="@{vm.isPlaces ? @drawable/ic_options_on_40dp : @drawable/ic_options_off_40dp}"
-                        tools:src="@drawable/ic_options_off_40dp"/>
+                        android:src="@{vm.isPlaces ? @drawable/ic_options_on_gray_40dp : @drawable/ic_options_off_red_40dp}"
+                        tools:src="@drawable/ic_options_off_red_40dp"/>
 
                     <TextView
                         android:layout_width="wrap_content"

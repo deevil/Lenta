@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     tools:context=".features.loading.fast.FastDataLoadingFragment">
 
@@ -9,6 +8,7 @@
         <variable
             name="vm"
             type="com.lenta.bp9.features.loading.fast.FastDataLoadingViewModel" />
+
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout

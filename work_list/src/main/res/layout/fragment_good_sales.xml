@@ -24,7 +24,7 @@
 
             <LinearLayout
                 style="@style/LinearCellStyle"
-                android:layout_weight="@integer/sales_of_good_column_1">
+                android:layout_weight="@integer/two_four_1">
 
                 <TextView
                     style="@style/CellTextStyle"
@@ -38,7 +38,7 @@
 
             <LinearLayout
                 style="@style/LinearCellStyle"
-                android:layout_weight="@integer/sales_of_good_column_2">
+                android:layout_weight="@integer/two_four_2">
 
                 <TextView
                     android:id="@+id/tv_storage_places"
@@ -66,7 +66,7 @@
 
             <LinearLayout
                 style="@style/LinearCellStyle"
-                android:layout_weight="@integer/sales_of_good_column_1">
+                android:layout_weight="@integer/two_four_1">
 
                 <TextView
                     style="@style/CellTextStyle"
@@ -80,7 +80,7 @@
 
             <LinearLayout
                 style="@style/LinearCellStyle"
-                android:layout_weight="@integer/sales_of_good_column_2">
+                android:layout_weight="@integer/two_four_2">
 
                 <TextView
                     android:id="@+id/tv_removed_good"
@@ -102,7 +102,7 @@
 
             <LinearLayout
                 style="@style/LinearCellStyle"
-                android:layout_weight="@integer/sales_of_good_column_1">
+                android:layout_weight="@integer/two_four_1">
 
                 <TextView
                     style="@style/CellTextStyle"
@@ -116,7 +116,7 @@
 
             <LinearLayout
                 style="@style/LinearCellStyle"
-                android:layout_weight="@integer/sales_of_good_column_2">
+                android:layout_weight="@integer/two_four_2">
 
                 <TextView
                     android:id="@+id/tv_price_with_dk"

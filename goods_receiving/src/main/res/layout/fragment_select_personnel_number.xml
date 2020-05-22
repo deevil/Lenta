@@ -9,6 +9,7 @@
         <variable
             name="vm"
             type="com.lenta.bp9.features.select_personnel_number.SelectPersonnelNumberViewModel" />
+
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout

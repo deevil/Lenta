@@ -7,7 +7,9 @@ import com.lenta.bp9.model.task.TaskProductInfo
 import com.lenta.bp9.repos.IDataBaseRepo
 import com.lenta.bp9.repos.IRepoInMemoryHolder
 import com.lenta.shared.di.AppScope
+import java.text.DecimalFormat
 import javax.inject.Inject
+import kotlin.math.roundToLong
 
 const val PROCESSING_MERCURY_UNKNOWN = 0
 const val PROCESSING_MERCURY_SAVED = 1
@@ -646,7 +648,8 @@ class ProcessMercuryProductService
 
     //В случае, если пользователь согласился округлить, то фактическое значение приравнивается к плановому.
     fun getRoundingQuantityPPP (count: String, reasonRejectionCode: String) : Double {
-        return productInfo.origQuantity.toDouble() - getQuantityAllCategoryExceptNonOrderOfProduct(if (reasonRejectionCode != "41") count.toDouble() else 0.0)
+        val residue = productInfo.origQuantity.toDouble() - getQuantityAllCategoryExceptNonOrderOfProduct(if (reasonRejectionCode != "41") count.toDouble() else 0.0)
+        return count.toDouble() + residue
     }
 
 }

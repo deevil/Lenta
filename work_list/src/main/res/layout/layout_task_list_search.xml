@@ -31,7 +31,7 @@
 
                 <LinearLayout
                     style="@style/LinearCellStyle"
-                    android:layout_weight="@integer/number_task_status_goods_column_1">
+                    android:layout_weight="@integer/four_one_1">
 
                     <TextView
                         style="@style/FirstRowTextStyle"
@@ -41,7 +41,7 @@
 
                 <LinearLayout
                     style="@style/LinearCellStyle"
-                    android:layout_weight="@integer/number_task_status_goods_column_2">
+                    android:layout_weight="@integer/four_one_2">
 
                     <TextView
                         style="@style/FirstRowTextStyle"
@@ -51,7 +51,7 @@
 
                 <LinearLayout
                     style="@style/LinearCellStyle"
-                    android:layout_weight="@integer/number_task_status_goods_column_3">
+                    android:layout_weight="@integer/four_one_3">
 
                     <TextView
                         style="@style/FirstRowTextStyle"
@@ -61,7 +61,7 @@
 
                 <LinearLayout
                     style="@style/LinearCellStyle"
-                    android:layout_weight="@integer/number_task_status_goods_column_4">
+                    android:layout_weight="@integer/four_one_4">
 
                     <TextView
                         style="@style/FirstRowTextStyle"
@@ -94,7 +94,7 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="8dp"
                 android:layout_weight="1"
-                android:drawableEnd="@drawable/ic_filter_white_16"
+                android:drawableEnd="@drawable/ic_filter_white_16dp"
                 android:ellipsize="end"
                 android:hint="@string/enter_task_number"
                 android:imeOptions="actionGo"

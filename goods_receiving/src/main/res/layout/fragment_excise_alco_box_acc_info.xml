@@ -2,13 +2,13 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context=".features.goods_information.excise_alco_box_acc.ExciseAlcoBoxAccInfoFragment">
+    tools:context=".features.goods_information.excise_alco_receiving.excise_alco_box_acc.ExciseAlcoBoxAccInfoFragment">
 
     <data>
 
         <variable
             name="vm"
-            type="com.lenta.bp9.features.goods_information.excise_alco_box_acc.ExciseAlcoBoxAccInfoViewModel" />
+            type="com.lenta.bp9.features.goods_information.excise_alco_receiving.excise_alco_box_acc.ExciseAlcoBoxAccInfoViewModel" />
 
     </data>
 
@@ -47,15 +47,16 @@
         <com.lenta.shared.view.ClickableSpinner
             android:id="@+id/spinner_quality"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="32dp"
             android:layout_marginStart="8dp"
             android:layout_marginEnd="8dp"
             app:items="@{vm.spinQuality}"
-            app:position="@{vm.spinQualitySelectedPosition}"
             app:layout_constraintBottom_toBottomOf="@+id/et_inventory"
             app:layout_constraintEnd_toStartOf="@+id/div_vert1"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/et_inventory"/>
+            app:layout_constraintTop_toTopOf="@+id/et_inventory"
+            app:position="@{vm.spinQualitySelectedPosition}"
+            tools:entries="@array/test_list" />
 
         <com.lenta.shared.view.EditTextWithSuffix
             android:id="@+id/et_inventory"
@@ -66,14 +67,14 @@
             android:layout_marginEnd="8dp"
             android:ellipsize="end"
             android:inputType="numberDecimal"
-            android:maxLines="1"
             android:maxLength="6"
-            app:maxLengthForScanProtect="@{6}"
+            android:maxLines="1"
             android:text="@={vm.count}"
             app:digitsForUom="@{vm.productInfo.uom}"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/div_vert1"
             app:layout_constraintTop_toTopOf="@+id/div_vert1"
+            app:maxLengthForScanProtect="@{6}"
             app:suffix="@{vm.suffix}"
             tools:text="1 шт" />
 
@@ -101,7 +102,7 @@
             app:layout_constraintEnd_toStartOf="@+id/div_vert1"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="@+id/tv_accept_val"
-            tools:text="Принять (кор=3 шт)"/>
+            tools:text="Принять (кор=3 шт)" />
 
         <TextView
             android:id="@+id/tv_accept_val"
@@ -111,8 +112,8 @@
             android:layout_marginTop="8dp"
             android:layout_marginEnd="8dp"
             android:ellipsize="end"
-            android:maxLines="1"
             android:gravity="start|center_vertical"
+            android:maxLines="1"
             android:text='@{vm.acceptTotalCountWithUom}'
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="@+id/guideline"
@@ -138,14 +139,14 @@
             android:layout_marginStart="8dp"
             android:layout_marginEnd="8dp"
             android:ellipsize="end"
-            android:maxLines="1"
             android:gravity="start|center_vertical"
-            android:textColor="@color/color_pressed_red"
+            android:maxLines="1"
             android:text='@{vm.refusalTotalCountWithUom}'
+            android:textColor="@color/color_pressed_red"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="@+id/guideline"
             app:layout_constraintTop_toBottomOf="@+id/tv_accept_val"
-            tools:text="- 10 шт"/>
+            tools:text="- 10 шт" />
 
         <View
             android:id="@+id/div_hor3"
@@ -265,9 +266,9 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="8dp"
+                android:checked="@{vm.checkBoxControl}"
                 android:enabled="false"
                 android:visibility="@{vm.checkBoxControlVisibility}"
-                android:checked="@{vm.checkBoxControl}"
                 app:layout_constraintStart_toEndOf="@+id/div_vert2"
                 app:layout_constraintTop_toBottomOf="@+id/div_hor5" />
 
@@ -337,9 +338,9 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="8dp"
+                android:checked="@{vm.checkBoxList}"
                 android:enabled="false"
                 android:visibility="@{vm.checkBoxListVisibility}"
-                android:checked="@{vm.checkBoxList}"
                 app:layout_constraintStart_toEndOf="@+id/div_vert3"
                 app:layout_constraintTop_toTopOf="parent" />
 
@@ -356,7 +357,7 @@
             <com.lenta.shared.view.ClickableSpinner
                 android:id="@+id/spinner_reject_rejection"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_height="32dp"
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="8dp"
                 android:layout_marginEnd="8dp"
@@ -365,7 +366,8 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/div_vert3"
                 app:onPositionClickListener="@{vm}"
-                app:position="@{vm.spinReasonRejectionSelectedPosition}" />
+                app:position="@{vm.spinReasonRejectionSelectedPosition}"
+                tools:entries="@array/test_list" />
 
             <View
                 android:id="@+id/div_hor8"
@@ -379,75 +381,82 @@
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
-        <TextView
-            android:id="@+id/tv_section"
-            style="@style/NumberSectionTxt"
-            android:layout_width="36sp"
-            android:layout_height="36sp"
-            android:layout_marginStart="8dp"
-            android:layout_marginBottom="16dp"
-            android:clickable="true"
-            android:focusable="true"
-            android:foreground="?selectableItemBackground"
-            android:gravity="center"
-            android:onClick="@{(v) -> vm.screenNavigator.openSectionInfoScreen(vm.productInfo.sectionId)}"
-            android:text='@{"" + vm.productInfo.sectionId}'
+        <!-- Блок с иконками -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            tools:text="02" />
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent">
 
-        <ImageButton
-            android:id="@+id/b_excise_alco"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="?selectableItemBackground"
-            app:alcoIcon="@{vm.productInfo.type}"
-            app:layout_constraintBottom_toBottomOf="@+id/tv_section"
-            app:layout_constraintStart_toEndOf="@+id/tv_section"
-            app:layout_constraintTop_toTopOf="@+id/tv_section"
-            tools:src="@drawable/ic_excise_white_48dp" />
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:orientation="horizontal">
 
-        <ImageButton
-            android:id="@+id/b_scan_box"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="5dp"
-            android:layout_marginBottom="4dp"
-            android:background="?selectableItemBackground"
-            android:onClick="@{(v) -> vm.screenNavigator.openBoxInfoScreen()}"
-            android:padding="4dp"
-            android:src="@drawable/ic_scan_box_32dp"
-            app:layout_constraintBottom_toBottomOf="@+id/b_scan"
-            app:layout_constraintEnd_toStartOf="@+id/b_scan_es"
-            app:layout_constraintTop_toTopOf="@+id/b_excise_alco"
-            tools:visibility="visible" />
+                <TextView
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:background="@drawable/bg_white_circle"
+                    android:gravity="center"
+                    android:onClick="@{(v) -> vm.screenNavigator.openSectionInfoScreen(vm.productInfo.sectionId)}"
+                    android:text='@{"" + vm.productInfo.sectionId}'
+                    android:textSize="12sp"
+                    tools:text="02" />
 
-        <ImageButton
-            android:id="@+id/b_scan_es"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="4dp"
-            android:background="?selectableItemBackground"
-            android:onClick="@{(v) -> vm.screenNavigator.openESInfoScreen()}"
-            android:padding="4dp"
-            android:src="@drawable/is_scan_barcode_es"
-            android:visibility="@{!vm.isDefect}"
-            app:layout_constraintBottom_toBottomOf="@+id/b_excise_alco"
-            app:layout_constraintEnd_toStartOf="@+id/b_scan"
-            app:layout_constraintTop_toTopOf="@+id/b_excise_alco"
-            tools:visibility="visible" />
+            </LinearLayout>
 
-        <ImageButton
-            android:id="@+id/b_scan"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="4dp"
-            android:background="?selectableItemBackground"
-            android:onClick="@{(v) -> vm.screenNavigator.openEanInfoScreen()}"
-            android:padding="8dp"
-            android:src="@drawable/ic_scan_barcode_32dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
+            <ImageView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                app:alcoIcon="@{vm.productInfo.type}"
+                tools:src="@drawable/ic_excise_alcohol_white_32dp" />
+
+            <View
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1" />
+
+            <View
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1" />
+
+            <ImageView
+                android:id="@+id/b_scan_box"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="?selectableItemBackground"
+                android:onClick="@{(v) -> vm.screenNavigator.openBoxInfoScreen()}"
+                android:src="@drawable/ic_scan_box_white_32dp" />
+
+            <ImageView
+                android:id="@+id/b_scan_es"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="?selectableItemBackground"
+                android:onClick="@{(v) -> vm.screenNavigator.openESInfoScreen()}"
+                android:src="@drawable/ic_scan_barcode_es_white_32dp"
+                android:visibility="@{!vm.isDefect}" />
+
+            <ImageView
+                android:id="@+id/b_scan"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="?selectableItemBackground"
+                android:onClick="@{(v) -> vm.screenNavigator.openEanInfoScreen()}"
+                android:src="@drawable/ic_scan_barcode_white_32dp" />
+
+        </LinearLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

@@ -17,11 +17,12 @@ import com.lenta.bp7.features.select_market.SelectMarketViewModel
 import com.lenta.bp7.features.shelf_list.ShelfListViewModel
 import com.lenta.shared.di.AppScope
 import com.lenta.shared.di.CoreComponent
+import com.lenta.shared.di.FromParentToCoreProvider
 import dagger.Component
 
 @Component(modules = [AppModule::class], dependencies = [CoreComponent::class])
 @AppScope
-interface AppComponent {
+interface AppComponent : FromParentToCoreProvider {
 
     fun getCheckStoreData(): CheckData
 

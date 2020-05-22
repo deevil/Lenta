@@ -29,7 +29,7 @@ class MainMenuViewModel : CoreViewModel() {
     }
 
     fun onClickUser() {
-        screenNavigator.openSelectionPersonnelNumberScreen(null)
+        screenNavigator.openSelectionPersonnelNumberScreen(codeConfirmation = null, isScreenMainMenu = true)
 
     }
 

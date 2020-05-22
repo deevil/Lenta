@@ -16,11 +16,9 @@
 
     </data>
 
-
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-
 
         <TextView
             android:id="@+id/tv_header"
@@ -58,8 +56,6 @@
             app:rv_config="@{rvConfig}"
             tools:listitem="@layout/item_tile_input_outgoing_fillings" />
 
-
     </androidx.constraintlayout.widget.ConstraintLayout>
-
 
 </layout>

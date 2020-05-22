@@ -1,61 +1,46 @@
 <resources>
 
-    <!-- Колонки - № / Поставщик / Период -->
-    <integer name="number_provider_period_column_1">10</integer>
-    <integer name="number_provider_period_column_2">20</integer>
-    <integer name="number_provider_period_column_3">30</integer>
+    <!-- Две колонки / Тип 1  -->
+    <integer name="two_one_1">20</integer>
+    <integer name="two_one_2">80</integer>
 
-    <!-- Колонки - № / Склад / Количество -->
-    <integer name="number_storage_quantity_column_1">10</integer>
-    <integer name="number_storage_quantity_column_2">25</integer>
-    <integer name="number_storage_quantity_column_3">25</integer>
+    <!-- Две колонки / Тип 2  -->
+    <integer name="two_two_1">15</integer>
+    <integer name="two_two_2">85</integer>
 
-    <!-- Колонки - № / Товары -->
-    <integer name="number_good_column_1">10</integer>
-    <integer name="number_good_column_2">50</integer>
+    <!-- Две колонки / Тип 3  -->
+    <integer name="two_three_1">35</integer>
+    <integer name="two_three_2">65</integer>
 
-    <!-- Колонки - № / Задание -->
-    <integer name="number_task_column_1">20</integer>
-    <integer name="number_task_column_2">80</integer>
+    <!-- Две колонки / Тип 4 -->
+    <integer name="two_four_1">65</integer>
+    <integer name="two_four_2">35</integer>
 
-    <!-- Колонки - № / Товары / Сверка -->
-    <integer name="number_good_check_column_1">10</integer>
-    <integer name="number_good_check_column_2">35</integer>
-    <integer name="number_good_check_column_3">15</integer>
+    <!-- Три колонки / Тип 1 -->
+    <integer name="three_one_1">15</integer>
+    <integer name="three_one_2">40</integer>
+    <integer name="three_one_3">45</integer>
 
-    <!-- Колонки - № / Товары / Количество -->
-    <integer name="number_good_quantity_column_1">10</integer>
-    <integer name="number_good_quantity_column_2">35</integer>
-    <integer name="number_good_quantity_column_3">15</integer>
+    <!-- Три колонки / Тип 2 -->
+    <integer name="three_two_1">15</integer>
+    <integer name="three_two_2">45</integer>
+    <integer name="three_two_3">40</integer>
 
-    <!-- Колонки - № / СГ / Количество -->
-    <integer name="number_shelf_life_quantity_column_1">10</integer>
-    <integer name="number_shelf_life_quantity_column_2">35</integer>
-    <integer name="number_shelf_life_quantity_column_3">15</integer>
+    <!-- Три колонки / Тип 3 -->
+    <integer name="three_three_1">15</integer>
+    <integer name="three_three_2">60</integer>
+    <integer name="three_three_3">25</integer>
 
-    <!-- Колонки - № / Комментарий / Количество -->
-    <integer name="number_comment_quantity_column_1">10</integer>
-    <integer name="number_comment_quantity_column_2">35</integer>
-    <integer name="number_comment_quantity_column_3">15</integer>
+    <!-- Четыре колонки / Тип 1 -->
+    <integer name="four_one_1">15</integer>
+    <integer name="four_one_2">49</integer>
+    <integer name="four_one_3">18</integer>
+    <integer name="four_one_4">18</integer>
 
-    <!-- Колонки - № / Задание / Признак / Товаров -->
-    <integer name="number_task_status_goods_column_1">8</integer>
-    <integer name="number_task_status_goods_column_2">30</integer>
-    <integer name="number_task_status_goods_column_3">11</integer>
-    <integer name="number_task_status_goods_column_4">11</integer>
-
-    <!-- Колонки - № / Статус / Количество / Дата -->
-    <integer name="number_status_quantity_date_column_1">8</integer>
-    <integer name="number_status_quantity_date_column_2">22</integer>
-    <integer name="number_status_quantity_date_column_3">15</integer>
-    <integer name="number_status_quantity_date_column_4">15</integer>
-
-    <!-- Таблица - Фильтр поиска -->
-    <integer name="search_filter_column_1">10</integer>
-    <integer name="search_filter_column_2">20</integer>
-
-    <!-- Таблица - Продажи товара -->
-    <integer name="sales_of_good_column_1">20</integer>
-    <integer name="sales_of_good_column_2">10</integer>
+    <!-- Четыре колонки / Тип 2 -->
+    <integer name="four_two_1">15</integer>
+    <integer name="four_two_2">41</integer>
+    <integer name="four_two_3">22</integer>
+    <integer name="four_two_4">22</integer>
 
 </resources>

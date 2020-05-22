@@ -5,26 +5,23 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
+import android.widget.ImageView
+import android.widget.LinearLayout
+import android.widget.TextView
 import androidx.databinding.DataBindingUtil
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import com.lenta.bp9.BR
 import com.lenta.bp9.R
 import com.lenta.bp9.databinding.*
-import com.lenta.bp9.model.task.TaskType
 import com.lenta.bp9.platform.extentions.getAppComponent
-import com.lenta.shared.keys.KeyCode
-import com.lenta.shared.keys.OnKeyDownListener
 import com.lenta.shared.platform.fragment.CoreFragment
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListener
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
-import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.databinding.*
 import com.lenta.shared.utilities.extentions.connectLiveData
 import com.lenta.shared.utilities.extentions.provideViewModel
-import com.lenta.shared.utilities.state.state
 
 class DiscrepancyListFragment : CoreFragment<FragmentDiscrepancyListBinding, DiscrepancyListViewModel>(),
         ViewPagerSettings,
@@ -64,6 +61,22 @@ class DiscrepancyListFragment : CoreFragment<FragmentDiscrepancyListBinding, Dis
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding?.viewPagerSettings = this
+
+        viewLifecycleOwner.apply {
+            vm.countControl.observe(this, Observer {
+                val tabItemLayout = (binding?.tabStrip?.getChildAt(0) as LinearLayout).getChildAt(1) as LinearLayout
+                tabItemLayout.orientation = LinearLayout.HORIZONTAL
+                val iconView = if (tabItemLayout.getChildAt(0) is ImageView) tabItemLayout.getChildAt(0) as ImageView else null
+                val textView = if (tabItemLayout.getChildAt(0) is TextView) tabItemLayout.getChildAt(0) as TextView else tabItemLayout.getChildAt(1) as TextView
+                if (iconView != null) tabItemLayout.removeView(iconView)
+                if (it.isNotEmpty()) {
+                    textView.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_indicator_tablayout_red_10dp, 0)
+                    textView.compoundDrawablePadding = 5
+                } else {
+                    textView.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0)
+                }
+            })
+        }
     }
 
     override fun onToolbarButtonClick(view: View) {
@@ -100,7 +113,7 @@ class DiscrepancyListFragment : CoreFragment<FragmentDiscrepancyListBinding, Dis
 
                     layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
                             layoutId = R.layout.item_tile_discrepancy_list_not_processed,
-                            itemId = BR.vm,
+                            itemId = BR.item,
                             realisation = object : DataBindingAdapter<ItemTileDiscrepancyListNotProcessedBinding> {
                                 override fun onCreate(binding: ItemTileDiscrepancyListNotProcessedBinding) {
                                 }
@@ -152,14 +165,14 @@ class DiscrepancyListFragment : CoreFragment<FragmentDiscrepancyListBinding, Dis
 
                     layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
                             layoutId = R.layout.item_tile_discrepancy_list_processed,
-                            itemId = BR.vm,
+                            itemId = BR.item,
                             realisation = object : DataBindingAdapter<ItemTileDiscrepancyListProcessedBinding> {
                                 override fun onCreate(binding: ItemTileDiscrepancyListProcessedBinding) {
                                 }
 
                                 override fun onBind(binding: ItemTileDiscrepancyListProcessedBinding, position: Int) {
-                                    binding.tvCounter.tag = position
-                                    binding.tvCounter.setOnClickListener(onClickSelectionListener)
+                                    binding.tvItemNumber.tag = position
+                                    binding.tvItemNumber.setOnClickListener(onClickSelectionListener)
                                     binding.selectedForDelete = vm.processedSelectionsHelper.isSelected(position)
                                 }
 
@@ -181,7 +194,7 @@ class DiscrepancyListFragment : CoreFragment<FragmentDiscrepancyListBinding, Dis
 
                     layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
                             layoutId = R.layout.item_tile_discrepancy_list_control,
-                            itemId = BR.vm,
+                            itemId = BR.item,
                             realisation = object : DataBindingAdapter<ItemTileDiscrepancyListControlBinding> {
                                 override fun onCreate(binding: ItemTileDiscrepancyListControlBinding) {
                                 }

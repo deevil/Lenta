@@ -50,6 +50,10 @@ public class ZmpUtz23V001 {
         @SerializedName("RETAIL_TYPE")
         public String retailType;
 
+        //  type: TEXT, source: {'name': 'SAP', 'type': 'C'}
+        @SerializedName("VERSION")
+        public String version;
+
 
     }
 

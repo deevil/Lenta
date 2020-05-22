@@ -18,8 +18,8 @@ fun setImageSrc(imageView: ImageView, imageRes: Int) {
 @BindingAdapter("alcoIcon")
 fun setAlcoIcon(imageView: ImageView, productType: ProductType?) {
     (when (productType) {
-        ProductType.NonExciseAlcohol -> R.drawable.ic_no_excise_alco
-        ProductType.ExciseAlcohol -> R.drawable.ic_excise_white_48dp
+        ProductType.NonExciseAlcohol -> R.drawable.ic_no_excise_alcohol_white_32dp
+        ProductType.ExciseAlcohol -> R.drawable.ic_excise_alcohol_white_32dp
         else -> 0
     }).let { iconRes ->
         imageView.setImageResource(iconRes)
@@ -44,7 +44,7 @@ fun setAlcoIcon(imageView: ImageView, productType: ProductType?) {
 @BindingAdapter("isStrictList")
 fun setStrictListIcon(imageView: ImageView, isStrictList: Boolean?) {
     (when (isStrictList) {
-        true -> R.drawable.ic_strict_list_32dp
+        true -> R.drawable.ic_strict_list_white_32dp
         false -> R.drawable.ic_not_strict_list_white_32dp
         else -> 0
     }).let { iconRes ->

@@ -4,6 +4,18 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context=".features.revise.AlcoholBatchSelectFragment">
 
+    <data>
+
+        <variable
+            name="vm"
+            type="com.lenta.bp9.features.revise.AlcoholBatchSelectViewModel" />
+
+        <variable
+            name="rvConfig"
+            type="com.lenta.shared.utilities.databinding.DataBindingRecyclerViewConfig" />
+
+    </data>
+
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
@@ -31,19 +43,5 @@
             tools:listitem="@layout/item_tile_alcohol_batch" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
-
-
-    <data>
-
-        <variable
-            name="vm"
-            type="com.lenta.bp9.features.revise.AlcoholBatchSelectViewModel" />
-
-        <variable
-            name="rvConfig"
-            type="com.lenta.shared.utilities.databinding.DataBindingRecyclerViewConfig" />
-
-    </data>
-
 
 </layout>

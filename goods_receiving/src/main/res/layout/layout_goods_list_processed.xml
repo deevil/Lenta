@@ -12,75 +12,63 @@
         <variable
             name="rvConfig"
             type="com.lenta.shared.utilities.databinding.DataBindingRecyclerViewConfig" />
+
     </data>
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:orientation="vertical">
 
+        <!-- Наименования колонок -->
         <include
-            android:id="@+id/layout_titles"
             layout="@layout/item_title_goods_list_processed"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            android:layout_height="wrap_content" />
 
-
+        <!-- Список элементов -->
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rv"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_marginBottom="8dp"
+            android:layout_weight="1"
             app:items="@{vm.listProcessed}"
-            app:layout_constraintBottom_toTopOf="@+id/b_scan"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/layout_titles"
-            app:layout_constraintVertical_bias="1.0"
             app:rv_config="@{rvConfig}"
             tools:listitem="@layout/item_tile_goods_list_processed" />
 
-        <EditText
-            android:id="@+id/et_search"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
-            android:layout_marginStart="8dp"
-            android:layout_marginEnd="8dp"
-            android:digits="0123456789"
-            android:drawableEnd="@drawable/ic_loupe_white_24dp"
-            android:ellipsize="end"
-            android:hint="@string/enter_item_number_or_barcode"
-            android:imeOptions="actionSearch"
-            android:inputType="numberDecimal"
-            android:maxLines="1"
-            android:paddingTop="8dp"
-            android:paddingBottom="8dp"
-            android:text="@={vm.eanCode}"
-            app:cursorToLastPos="@{true}"
-            app:layout_constraintBottom_toBottomOf="@+id/b_scan"
-            app:layout_constraintEnd_toStartOf="@+id/b_scan"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/b_scan"
-            app:onOkInSoftKeyboard="@{vm}"
-            app:requestFocus="@{vm.requestFocusToEan}"
-            tools:ignore="Autofill" />
+        <!-- Ввод номера -->
+        <LinearLayout style="@style/EnterNumberFieldLayout">
 
-        <ImageButton
-            android:id="@+id/b_scan"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="4dp"
-            android:background="?selectableItemBackground"
-            android:onClick="@{(v) -> vm.screenNavigator.openEanInfoScreen()}"
-            android:padding="8dp"
-            android:src="@drawable/ic_scan_barcode_32dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
+            <EditText
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="8dp"
+                android:layout_weight="1"
+                android:digits="0123456789"
+                android:drawableEnd="@drawable/ic_loupe_white_16dp"
+                android:ellipsize="end"
+                android:hint="@string/enter_item_number_or_barcode"
+                android:imeOptions="actionSearch"
+                android:inputType="numberDecimal"
+                android:maxLength="20"
+                android:maxLines="1"
+                android:text="@={vm.eanCode}"
+                app:cursorToLastPos="@{true}"
+                app:onOkInSoftKeyboard="@{vm}"
+                app:requestFocus="@{vm.requestFocusToEan}"
+                tools:ignore="Autofill" />
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+            <ImageButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:background="?selectableItemBackground"
+                android:onClick="@{(v) -> vm.screenNavigator.openEanInfoScreen()}"
+                android:src="@drawable/ic_scan_barcode_white_32dp" />
+
+        </LinearLayout>
+
+    </LinearLayout>
 
 </layout>

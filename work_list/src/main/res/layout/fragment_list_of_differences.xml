@@ -31,7 +31,7 @@
 
                 <LinearLayout
                     style="@style/LinearCellStyle"
-                    android:layout_weight="@integer/number_good_column_1">
+                    android:layout_weight="@integer/two_two_1">
 
                     <TextView
                         style="@style/FirstRowTextStyle"
@@ -41,7 +41,7 @@
 
                 <LinearLayout
                     style="@style/LinearCellStyle"
-                    android:layout_weight="@integer/number_good_column_2">
+                    android:layout_weight="@integer/two_two_2">
 
                     <TextView
                         style="@style/FirstRowTextStyle"

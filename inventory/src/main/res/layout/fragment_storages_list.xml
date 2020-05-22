@@ -19,6 +19,7 @@
             type="com.lenta.shared.utilities.databinding.PageSelectionListener" />
 
     </data>
+
     <androidx.viewpager.widget.ViewPager
         android:id="@+id/view_pager"
         android:layout_width="wrap_content"

@@ -1,9 +1,9 @@
 <resources>
 
-    <!-- Пропорции колонок для списков -->
-    <integer name="size_column_1">12</integer>
-    <integer name="size_column_2">40</integer>
-    <integer name="size_column_3">15</integer>
-    <integer name="size_column_4">15</integer>
+    <!-- Четыре колонки / Тип 1 -->
+    <integer name="four_one_1">12</integer>
+    <integer name="four_one_2">40</integer>
+    <integer name="four_one_3">15</integer>
+    <integer name="four_one_4">15</integer>
 
 </resources>

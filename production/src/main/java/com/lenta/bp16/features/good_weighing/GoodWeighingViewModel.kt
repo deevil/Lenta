@@ -129,7 +129,8 @@ class GoodWeighingViewModel : CoreViewModel() {
                             deviceIp = deviceIp.value ?: "Not found!",
                             material = good.value!!.material,
                             order = raw.value!!.order,
-                            quantity = total.value!!
+                            quantity = total.value!!,
+                            personnelNumber = sessionInfo.personnelNumber ?: ""
                     )
             ).also {
                 navigator.hideProgress()
@@ -186,7 +187,7 @@ class GoodWeighingViewModel : CoreViewModel() {
                             dateExpir = dateExpir?.let { SimpleDateFormat(Constants.DATE_FORMAT_dd_mm_yyyy_hh_mm, Locale.getDefault()).format(it.time) }
                                     ?: "",
                             goodsName = packCodeResult.dataLabel.materialName,
-                            weigher = appSettings.weightEquipmentName ?: "",
+                            weigher = sessionInfo.personnelNumber ?: "",
                             productTime = SimpleDateFormat(Constants.DATE_FORMAT_dd_mm_yyyy_hh_mm, Locale.getDefault()).format(productTime.time),
                             nameDone = packCodeResult.dataLabel.materialNameDone,
                             goodsCode = packCodeResult.dataLabel.material.takeLast(6),

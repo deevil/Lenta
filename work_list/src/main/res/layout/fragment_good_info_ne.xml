@@ -97,7 +97,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 app:goodTypeIcon="@{vm.productParamsUi.type}"
-                tools:src="@drawable/ic_excise_white_32dp" />
+                tools:src="@drawable/ic_excise_alcohol_white_32dp" />
 
             <ImageView
                 android:layout_width="0dp"
@@ -105,7 +105,7 @@
                 android:layout_weight="1"
                 android:onClick="@{(v) -> vm.navigator.openPictogrammInfoNova()}"
                 app:invisible="@{!vm.productParamsUi.new}"
-                tools:src="@drawable/ic_new_32dp" />
+                tools:src="@drawable/ic_new_white_32dp" />
 
             <ImageView
                 android:layout_width="0dp"
@@ -113,7 +113,7 @@
                 android:layout_weight="1"
                 android:onClick="@{(v) -> vm.navigator.openPictogrammInfoHealthyFood()}"
                 app:invisible="@{!vm.productParamsUi.healthyFood}"
-                tools:src="@drawable/ic_natural_32dp" />
+                tools:src="@drawable/ic_natural_white_32dp" />
 
             <ImageView
                 android:layout_width="0dp"
@@ -121,7 +121,7 @@
                 android:layout_weight="1"
                 android:background="?selectableItemBackground"
                 android:onClick="@{(v) -> vm.navigator.openESInfoScreen()}"
-                android:src="@drawable/ic_scan_barcode_es_32dp"
+                android:src="@drawable/ic_scan_barcode_es_white_32dp"
                 android:visibility="invisible" />
 
             <ImageView
@@ -130,7 +130,7 @@
                 android:layout_weight="1"
                 android:background="?selectableItemBackground"
                 android:onClick="@{(v) -> vm.navigator.openEanInfoScreen()}"
-                android:src="@drawable/ic_scan_barcode_32dp" />
+                android:src="@drawable/ic_scan_barcode_white_32dp" />
 
         </LinearLayout>
 

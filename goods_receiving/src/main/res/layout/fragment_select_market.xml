@@ -9,6 +9,7 @@
         <variable
             name="vm"
             type="com.lenta.bp9.features.select_market.SelectMarketViewModel" />
+
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -39,7 +40,8 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:onPositionClickListener="@{vm}"
-            app:position="@{vm.selectedPosition}" />
+            app:position="@{vm.selectedPosition}"
+            tools:entries="@array/test_list" />
 
         <TextView
             android:id="@+id/tv_address"

@@ -18,6 +18,7 @@ import com.lenta.bp16.features.raw_list.RawListFragment
 import com.lenta.bp16.features.select_market.SelectMarketFragment
 import com.lenta.bp16.features.processing_unit_task_list.ProcessingUnitTaskListFragment
 import com.lenta.bp16.features.reprint_label.ReprintLabelFragment
+import com.lenta.bp16.features.select_personnel_number.SelectPersonnelNumberFragment
 import com.lenta.shared.account.IAuthenticator
 import com.lenta.shared.features.alert.AlertFragment
 import com.lenta.shared.platform.activity.ForegroundActivityProvider
@@ -241,6 +242,12 @@ class ScreenNavigator @Inject constructor(
         }
     }
 
+    override fun openSelectionPersonnelNumberScreen(isScreenMainMenu: Boolean) {
+        runOrPostpone {
+            getFragmentStack()?.replace(SelectPersonnelNumberFragment.create(isScreenMainMenu))
+        }
+    }
+
 }
 
 interface IScreenNavigator : ICoreNavigator {
@@ -270,4 +277,5 @@ interface IScreenNavigator : ICoreNavigator {
     fun showNotSavedDataWillBeLost(yesCallback: () -> Unit)
     fun showAlertNoIpPrinter()
     fun showLabelSentToPrint(nextCallback: () -> Unit)
+    fun openSelectionPersonnelNumberScreen(isScreenMainMenu: Boolean)
 }

@@ -139,7 +139,7 @@
             android:layout_marginBottom="19dp"
             app:isStrictList="@{vm.isStrictList()}"
             tools:ignore="ContentDescription"
-            tools:src="@drawable/ic_strict_list_32dp" />
+            tools:src="@drawable/ic_strict_list_white_32dp" />
 
     </FrameLayout>
 

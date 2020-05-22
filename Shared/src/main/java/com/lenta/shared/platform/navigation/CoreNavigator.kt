@@ -2,6 +2,8 @@ package com.lenta.shared.platform.navigation
 
 import android.content.Context
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.LiveData
 import com.lenta.shared.R
@@ -11,6 +13,7 @@ import com.lenta.shared.analytics.db.RoomAppDatabase
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.exception.IFailureInterpreter
 import com.lenta.shared.features.alert.AlertFragment
+import com.lenta.shared.features.app_updates.AppUpdateFragment
 import com.lenta.shared.features.auxiliary_menu.AuxiliaryMenuFragment
 import com.lenta.shared.features.exit.ExitWithConfirmationFragment
 import com.lenta.shared.features.fmp_settings.FmpSettingsFragment
@@ -269,7 +272,7 @@ class CoreNavigator @Inject constructor(
         runOrPostpone {
             getFragmentStack()?.push(AlertFragment.create(message = iconDescriptionHelper.getDescription(IconCode.EAN)
                     ?: context.getString(R.string.ean_info),
-                    iconRes = R.drawable.ic_scan_barcode_80dp), CustomAnimation.vertical)
+                    iconRes = R.drawable.ic_scan_barcode_white_80dp), CustomAnimation.vertical)
         }
     }
 
@@ -278,7 +281,7 @@ class CoreNavigator @Inject constructor(
             getFragmentStack()?.push(
                     AlertFragment.create(message = iconDescriptionHelper.getDescription(IconCode.QR_CODE)
                             ?: context.getString(R.string.qr_code_info),
-                            iconRes = R.drawable.ic_scan_qrcode_80dp), CustomAnimation.vertical)
+                            iconRes = R.drawable.ic_scan_qrcode_white_80dp), CustomAnimation.vertical)
         }
     }
 
@@ -286,7 +289,7 @@ class CoreNavigator @Inject constructor(
         runOrPostpone {
             getFragmentStack()?.push(AlertFragment.create(message = iconDescriptionHelper.getDescription(IconCode.EXCISE_STAMP)
                     ?: context.getString(R.string.es_info),
-                    iconRes = R.drawable.ic_scan_barcode_es_80dp), CustomAnimation.vertical)
+                    iconRes = R.drawable.ic_scan_barcode_es_white_80dp), CustomAnimation.vertical)
         }
     }
 
@@ -294,7 +297,14 @@ class CoreNavigator @Inject constructor(
         runOrPostpone {
             getFragmentStack()?.push(AlertFragment.create(
                     message = context.getString(R.string.gs128_info),
-                    iconRes = R.drawable.ic_scan_barcode_vet_80dp), CustomAnimation.vertical)
+                    iconRes = R.drawable.ic_scan_barcode_vet_white_80dp), CustomAnimation.vertical)
+        }
+    }
+
+
+    override fun openUpdateAppScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(AppUpdateFragment())
         }
     }
 
@@ -302,7 +312,7 @@ class CoreNavigator @Inject constructor(
         runOrPostpone {
             getFragmentStack()?.push(AlertFragment.create(message = iconDescriptionHelper.getDescription(IconCode.BOX_SCAN)
                     ?: context.getString(R.string.box_info),
-                    iconRes = R.drawable.ic_scan_box_80dp), CustomAnimation.vertical)
+                    iconRes = R.drawable.ic_scan_box_white_80dp), CustomAnimation.vertical)
         }
     }
 
@@ -518,6 +528,7 @@ interface ICoreNavigator {
     fun showAlertBlockedTaskAnotherUser(userName: String, deviceIp: String)
     fun showAlertBlockedTaskByMe(userName: String, yesCallback: () -> Unit)
     fun openGS128InfoScreen()
+    fun openUpdateAppScreen()
 }
 
 class FunctionsCollector(private val needCollectLiveData: LiveData<Boolean>) {
@@ -525,11 +536,13 @@ class FunctionsCollector(private val needCollectLiveData: LiveData<Boolean>) {
     private val functions: MutableList<() -> Unit> = mutableListOf()
 
     init {
-        needCollectLiveData.observeForever { needCollect ->
-            if (!needCollect) {
-                functions.map { it }.forEach {
-                    it()
-                    functions.remove(it)
+        Handler(Looper.getMainLooper()).post {
+            needCollectLiveData.observeForever { needCollect ->
+                if (!needCollect) {
+                    functions.map { it }.forEach {
+                        it()
+                        functions.remove(it)
+                    }
                 }
             }
         }

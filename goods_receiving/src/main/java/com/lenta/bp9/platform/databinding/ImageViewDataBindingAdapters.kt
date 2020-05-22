@@ -47,7 +47,7 @@ fun setDocumentTypeIcon(imageView: ImageView, docType: DocumentType?, isEDO: Boo
     docType?.getIconRes()?.let {
         imageView.setVisible()
         if (docType == DocumentType.Invoice && isEDO!!) {
-            imageView.setImageResource(R.drawable.ic_einvoice)
+            imageView.setImageResource(R.drawable.ic_einvoice_gray_24dp)
         } else {
             imageView.setImageResource(it)
         }
@@ -87,8 +87,8 @@ fun setVisibleOrGone(imageView: ImageView, isVisible: Boolean?) {
 
 fun TaskPostponedStatus.getIconRes(): Int? {
     return when (this) {
-        TaskPostponedStatus.PauseSign -> R.drawable.ic_pause_dark_24dp
-        TaskPostponedStatus.PlaySign -> R.drawable.ic_play_arrow_dark_24dp
+        TaskPostponedStatus.PauseSign -> R.drawable.ic_pause_gray_24dp
+        TaskPostponedStatus.PlaySign -> R.drawable.ic_play_arrow_gray_24dp
         TaskPostponedStatus.Breaking -> R.drawable.ic_seal_white_24dp
         else -> null
     }
@@ -96,42 +96,42 @@ fun TaskPostponedStatus.getIconRes(): Int? {
 
 fun TaskLockStatus.getIconRes(): Int? {
     return when (this) {
-        TaskLockStatus.LockedByMe -> R.drawable.ic_lock_open_dark_24dp
-        TaskLockStatus.LockedByOthers -> R.drawable.ic_lock_dark_24dp
+        TaskLockStatus.LockedByMe -> R.drawable.ic_self_lock_status_gray_24dp
+        TaskLockStatus.LockedByOthers -> R.drawable.ic_lock_status_gray_24dp
         else -> null
     }
 }
 
 fun NotificationIndicatorType.getIconRes(): Int? {
     return when (this) {
-        NotificationIndicatorType.Yellow -> R.drawable.ic_indicator_orange
-        NotificationIndicatorType.Red -> R.drawable.ic_indicator_red
+        NotificationIndicatorType.Yellow -> R.drawable.ic_indicator_orange_16dp
+        NotificationIndicatorType.Red -> R.drawable.ic_indicator_red_16dp
         else -> null
     }
 }
 
 fun DocumentType.getIconRes(): Int? {
     return when (this) {
-        DocumentType.Simple -> R.drawable.ic_simple_delivery_doc
-        DocumentType.Invoice -> R.drawable.ic_invoice
-        DocumentType.CompositeDoc -> R.drawable.ic_composite_doc
+        DocumentType.Simple -> R.drawable.ic_simple_delivery_gray_24dp
+        DocumentType.Invoice -> R.drawable.ic_invoice_gray_24dp
+        DocumentType.CompositeDoc -> R.drawable.ic_composite_doc_gray_24dp
         else -> null
     }
 }
 
 fun ProductDocumentType.getIconRes(): Int? {
     return when (this) {
-        ProductDocumentType.Simple -> R.drawable.ic_simple_product_doc
-        ProductDocumentType.AlcoRus, ProductDocumentType.AlcoImport -> R.drawable.ic_alco_task_icon
-        ProductDocumentType.Mercury -> R.drawable.ic_mercury
+        ProductDocumentType.Simple -> R.drawable.ic_simple_product_doc_gray_24dp
+        ProductDocumentType.AlcoRus, ProductDocumentType.AlcoImport -> R.drawable.ic_alco_task_icon_gray_24dp
+        ProductDocumentType.Mercury -> R.drawable.ic_mercury_gray_24dp
         else -> null
     }
 }
 
 fun ConditionViewType.getIconRes(): Int? {
     return when (this) {
-        ConditionViewType.Temperature -> R.drawable.ic_temperature
-        ConditionViewType.Simple -> R.drawable.ic_simple_delivery_doc
+        ConditionViewType.Temperature -> R.drawable.ic_temperature_gray_24dp
+        ConditionViewType.Simple -> R.drawable.ic_simple_delivery_gray_24dp
         ConditionViewType.Seal -> R.drawable.ic_seal_white_24dp
         else -> null
     }
