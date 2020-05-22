@@ -86,7 +86,7 @@ class ProcessExciseAlcoBoxAccPGEService
     }
 
     fun addProduct(count: String, typeDiscrepancies: String){
-        val countAdd = if (typeDiscrepancies == "1") count.toDouble() else getCountOfDiscrepanciesOfProduct(typeDiscrepancies) + count.toDouble()
+        val countAdd = getCountOfDiscrepanciesOfProduct(typeDiscrepancies) + count.toDouble()
 
         //добавляем кол-во по расхождению для продукта
         var foundDiscrepancy = taskManager.getReceivingTask()!!.taskRepository.getProductsDiscrepancies().findProductDiscrepanciesOfProduct(productInfo).findLast {
@@ -192,7 +192,7 @@ class ProcessExciseAlcoBoxAccPGEService
     }
 
     fun addDiscrepancyScannedMarkCurrentBox(currentBoxNumber: String, realBoxNumber: String, scannedExciseStampInfo: TaskExciseStampInfo, typeDiscrepancies: String) {
-        //https://trello.com/c/Wr4xe6L8 - отмечаем текущий короб и короб, в котором числится отсканированная марка, и все марки из этих коробов, категорией для брака из параметра GRZ_CR_GRUNDCAT
+        //отмечаем текущий короб и короб, в котором числится отсканированная марка, и все марки из этих коробов, категорией для брака из параметра GRZ_CR_GRUNDCAT
         //удаляем все ранее отсканированные марки для этих коробв
         currentExciseStampsDiscrepancies.map { it }.filter {unitInfo ->
             if (unitInfo.boxNumber == currentBoxNumber || unitInfo.boxNumber == realBoxNumber) {
@@ -221,7 +221,6 @@ class ProcessExciseAlcoBoxAccPGEService
     }
 
     fun denialOfFullProductAcceptance(typeDiscrepancies: String) {
-        //https://trello.com/c/WeGFSdAW
         //отмечаем все короба и марки для продукта категорией для брака из параметра GRZ_CR_GRUNDCAT
         boxes.filter {box ->
             box.materialNumber == productInfo.materialNumber
@@ -234,7 +233,6 @@ class ProcessExciseAlcoBoxAccPGEService
     }
 
     fun refusalToAcceptPartlyByProduct(typeDiscrepancies: String) {
-        //https://trello.com/c/WeGFSdAW
         //отмечаем все не обработанные короба для продукта категорией для брака из параметра GRZ_CR_GRUNDCAT
         boxes.filter {box ->
             box.materialNumber == productInfo.materialNumber && currentBoxDiscrepancies.findLast { it.boxNumber == box.boxNumber }?.boxNumber == null
@@ -269,7 +267,7 @@ class ProcessExciseAlcoBoxAccPGEService
     }
 
     fun overLimit(count: Double) : Boolean {
-        return productInfo.origQuantity.toDouble() < (getCountAcceptOfProduct() + getCountRefusalOfProduct() + count)
+        return productInfo.orderQuantity.toDouble() < (getCountAcceptOfProduct() + getCountRefusalOfProduct() + count)
     }
 
     fun searchExciseStamp(code: String) : TaskExciseStampInfo? {
@@ -306,7 +304,7 @@ class ProcessExciseAlcoBoxAccPGEService
 
     fun getCountAcceptOfProduct() : Double {
         return taskManager.getReceivingTask()!!.taskRepository.getProductsDiscrepancies().findProductDiscrepanciesOfProduct(productInfo).filter {productDiscrepancies ->
-            productDiscrepancies.typeDiscrepancies == "1"
+            productDiscrepancies.typeDiscrepancies == "1" || productDiscrepancies.typeDiscrepancies == "2"
         }.sumByDouble {
             it.numberDiscrepancies.toDouble()
         }
@@ -314,7 +312,7 @@ class ProcessExciseAlcoBoxAccPGEService
 
     fun getCountRefusalOfProduct() : Double {
         return taskManager.getReceivingTask()!!.taskRepository.getProductsDiscrepancies().findProductDiscrepanciesOfProduct(productInfo).filter {productDiscrepancies ->
-            productDiscrepancies.typeDiscrepancies != "1"
+            productDiscrepancies.typeDiscrepancies == "3" || productDiscrepancies.typeDiscrepancies == "4" || productDiscrepancies.typeDiscrepancies == "5"
         }.sumByDouble {
             it.numberDiscrepancies.toDouble()
         }
@@ -326,22 +324,22 @@ class ProcessExciseAlcoBoxAccPGEService
         }.size
     }
 
-    //https://trello.com/c/Hve509E5 контроль марки для короба
+    //контроль марки для короба
     fun stampControlOfBox(box: TaskBoxInfo) : Boolean {
         val countScannedExciseStampsDiscrepanciesOfBox = currentExciseStampsDiscrepancies.filter {
-            it.boxNumber == box.boxNumber && it.typeDiscrepancies == "1" && it.isScan
+            it.boxNumber == box.boxNumber && (it.typeDiscrepancies == "1" || it.typeDiscrepancies == "2") && it.isScan
         }.size
 
         return countScannedExciseStampsDiscrepanciesOfBox >= productInfo.numberStampsControl.toInt()
     }
 
-    // https://trello.com/c/Hve509E5 контроль короба
+    // контроль короба
     fun boxControl(box: TaskBoxInfo) : Boolean {
         val countProcessedBox = currentBoxDiscrepancies.filter {
             it.boxNumber == box.boxNumber
         }.size
         val countScannedExciseStampOfBox = currentExciseStampsDiscrepancies.filter {
-            it.boxNumber == box.boxNumber && it.isScan && it.typeDiscrepancies == "1"
+            it.boxNumber == box.boxNumber && it.isScan && (it.typeDiscrepancies == "1" || it.typeDiscrepancies == "2")
         }.size
 
         return (countProcessedBox >=1 && countScannedExciseStampOfBox >=1) || (countScannedExciseStampOfBox >= 2) || (countScannedExciseStampOfBox >= productInfo.numberStampsControl.toInt())
@@ -361,7 +359,7 @@ class ProcessExciseAlcoBoxAccPGEService
     }
 
     fun getCountDefectBoxes() : Int {
-        return currentBoxDiscrepancies.filter { it.materialNumber == productInfo.materialNumber && it.typeDiscrepancies != "1"}.size
+        return currentBoxDiscrepancies.filter { it.materialNumber == productInfo.materialNumber && !(it.typeDiscrepancies == "1" || it.typeDiscrepancies == "2")}.size
     }
 
     fun modifications() : Boolean {
@@ -385,7 +383,7 @@ class ProcessExciseAlcoBoxAccPGEService
 
     fun defectiveBox (boxNumber: String) : Boolean {
         return currentBoxDiscrepancies.none {
-            it.boxNumber == boxNumber && it.typeDiscrepancies == "1"
+            it.boxNumber == boxNumber && (it.typeDiscrepancies == "1" || it.typeDiscrepancies == "2")
         }
     }
 

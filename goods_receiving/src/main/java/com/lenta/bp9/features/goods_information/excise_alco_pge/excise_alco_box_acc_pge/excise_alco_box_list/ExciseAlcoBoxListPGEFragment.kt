@@ -33,11 +33,11 @@ class ExciseAlcoBoxListPGEFragment : CoreFragment<FragmentExciseAlcoBoxListPgeBi
         OnKeyDownListener {
 
     companion object {
-        fun create(productInfo: TaskProductInfo, selectQualityCode: String, selectReasonRejectionCode: String?, initialCount: String): ExciseAlcoBoxListPGEFragment {
+        fun create(productInfo: TaskProductInfo, selectQualityCode: String, processingUnit: String?, initialCount: String): ExciseAlcoBoxListPGEFragment {
             ExciseAlcoBoxListPGEFragment().let {
                 it.productInfo = productInfo
                 it.selectQualityCode = selectQualityCode
-                it.selectReasonRejectionCode = selectReasonRejectionCode
+                it.processingUnit = processingUnit
                 it.initialCount = initialCount
                 return it
             }
@@ -46,7 +46,7 @@ class ExciseAlcoBoxListPGEFragment : CoreFragment<FragmentExciseAlcoBoxListPgeBi
 
     private var productInfo by state<TaskProductInfo?>(null)
     private var selectQualityCode by state<String?>(null)
-    private var selectReasonRejectionCode by state<String?>(null)
+    private var processingUnit by state<String?>(null)
     private var initialCount by state<String?>(null)
 
     private var notProcessedRecyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
@@ -61,8 +61,8 @@ class ExciseAlcoBoxListPGEFragment : CoreFragment<FragmentExciseAlcoBoxListPgeBi
             vm.productInfo.value = productInfo
             vm.selectQualityCode.value = this.selectQualityCode
             vm.initialCount.value = this.initialCount
-            selectReasonRejectionCode?.let {
-                vm.selectReasonRejectionCode.value = it
+            processingUnit?.let {
+                vm.processingUnit.value = it
             }
             return vm
         }

@@ -235,7 +235,7 @@ class ExciseAlcoBoxAccInfoViewModel : CoreViewModel(), OnPositionClickListener {
     }
 
     fun onClickAdd() {
-        return if (processExciseAlcoBoxAccService.overLimit(countValue.value!!)) {
+        if (processExciseAlcoBoxAccService.overLimit(countValue.value!!)) {
             screenNavigator.openAlertOverLimit()
             count.value = "0"
         } else {
@@ -343,7 +343,7 @@ class ExciseAlcoBoxAccInfoViewModel : CoreViewModel(), OnPositionClickListener {
             }
             else -> {
                 if (enabledApplyButton.value == true) { //Функция доступна только при условии, что доступна кнопка "Применить". https://trello.com/c/KbBbXj2t
-                    searchProductDelegate.searchCode(code = data, fromScan = true)
+                    searchProductDelegate.searchCode(code = data, fromScan = true, isBarCode = true)
                 } else {
                     screenNavigator.openAlertInvalidBarcodeFormatScannedScreen()
                 }

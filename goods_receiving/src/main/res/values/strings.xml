@@ -297,4 +297,5 @@
     <string name="total_param">Итого (%1$s)</string>
     <string name="quantity">Количество</string>
     <string name="unknown_task_type">Неизвестный тип задания</string>
+    <string name="alert_overlimit_alco_pge">Превышено плановое количество. Найдите излишек.</string>
 </resources>

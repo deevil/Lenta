@@ -53,7 +53,7 @@ class ExciseAlcoBoxCardPGEViewModel : CoreViewModel(), OnPositionClickListener {
     val massProcessingBoxesNumber: MutableLiveData<List<String>> = MutableLiveData()
     val exciseStampInfo: MutableLiveData<TaskExciseStampInfo> = MutableLiveData()
     val selectQualityCode: MutableLiveData<String> = MutableLiveData()
-    val selectReasonRejectionCode: MutableLiveData<String> = MutableLiveData()
+    val processingUnit: MutableLiveData<String> = MutableLiveData()
     val initialCount: MutableLiveData<String> = MutableLiveData()
     val isScan: MutableLiveData<Boolean> = MutableLiveData()
     val enabledSpinCategorySubcategory: MutableLiveData<Boolean> = MutableLiveData()
@@ -132,7 +132,7 @@ class ExciseAlcoBoxCardPGEViewModel : CoreViewModel(), OnPositionClickListener {
             paramGrzCrGrundcatCode.value = dataBase.getParamGrzCrGrundcat() ?: ""
             paramGrzCrGrundcatName.value = dataBase.getGrzCrGrundcatName(paramGrzCrGrundcatCode.value!!) ?: ""
 
-            if (selectReasonRejectionCode.value != null) {
+            if (processingUnit.value != null) {
                 qualityInfo.value = dataBase.getQualityBoxesDefectInfo()
                 enabledSpinCategorySubcategory.value = false
             } else {
@@ -149,12 +149,12 @@ class ExciseAlcoBoxCardPGEViewModel : CoreViewModel(), OnPositionClickListener {
             } else {
                 positionQuality
             }
-            if (selectReasonRejectionCode.value != null) {
+            if (processingUnit.value != null) {
                 reasonRejectionInfo.value = dataBase.getReasonRejectionInfoOfQuality(selectQualityCode.value.toString())
                 spinReasonRejection.value = reasonRejectionInfo.value?.map {
                     it.name
                 }
-                val positionReasonRejection = reasonRejectionInfo.value?.indexOfLast {it.code == selectReasonRejectionCode.value} ?: 0
+                val positionReasonRejection = reasonRejectionInfo.value?.indexOfLast {it.code == processingUnit.value} ?: 0
                 spinReasonRejectionSelectedPosition.value = if (positionReasonRejection == -1) {
                     0
                 } else {
@@ -236,7 +236,7 @@ class ExciseAlcoBoxCardPGEViewModel : CoreViewModel(), OnPositionClickListener {
                 screenNavigator.openExciseAlcoBoxListPGEScreen(
                         productInfo = productInfo.value!!,
                         selectQualityCode = qualityInfo.value?.get(spinQualitySelectedPosition.value ?: 0)?.code ?: "1",
-                        selectReasonRejectionCode = reasonRejectionInfo.value!![spinReasonRejectionSelectedPosition.value!!].code,
+                        processingUnit = reasonRejectionInfo.value!![spinReasonRejectionSelectedPosition.value!!].code,
                         initialCount = initialCount.value!!
                 )
             }
@@ -311,7 +311,7 @@ class ExciseAlcoBoxCardPGEViewModel : CoreViewModel(), OnPositionClickListener {
                                     massProcessingBoxesNumber = null,
                                     exciseStampInfo = null,
                                     selectQualityCode = "1",
-                                    selectReasonRejectionCode = null,
+                                    processingUnit = null,
                                     initialCount = "1",
                                     isScan = true
                             )
@@ -330,8 +330,8 @@ class ExciseAlcoBoxCardPGEViewModel : CoreViewModel(), OnPositionClickListener {
     fun onClickPositionSpinQuality(position: Int){
         viewModelScope.launch {
             spinQualitySelectedPosition.value = position
-            if (selectReasonRejectionCode.value != null) { //если это первый вход на экран, то в ф-ции init мы установили значение для spinReasonRejectionSelectedPosition, которое пришло
-                selectReasonRejectionCode.value = null //делаем, чтобы в последствии при выборе другого qualityInfo устанавливался первый элемент из списка spinReasonRejection
+            if (processingUnit.value != null) { //если это первый вход на экран, то в ф-ции init мы установили значение для spinReasonRejectionSelectedPosition, которое пришло
+                processingUnit.value = null //делаем, чтобы в последствии при выборе другого qualityInfo устанавливался первый элемент из списка spinReasonRejection
             } else {
                 updateDataSpinReasonRejection(qualityInfo.value!![position].code)
             }
@@ -357,7 +357,7 @@ class ExciseAlcoBoxCardPGEViewModel : CoreViewModel(), OnPositionClickListener {
                     yesCallbackFunc = {
                         processExciseAlcoBoxAccPGEService.clearModifications()
                         screenNavigator.goBack()
-                        screenNavigator.openExciseAlcoBoxListPGEScreen(productInfo.value!!, selectQualityCode.value!!, selectReasonRejectionCode.value, initialCount.value!!)
+                        screenNavigator.openExciseAlcoBoxListPGEScreen(productInfo.value!!, selectQualityCode.value!!, processingUnit.value, initialCount.value!!)
                     }
             )
             return
