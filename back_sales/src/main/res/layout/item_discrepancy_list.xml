@@ -51,19 +51,12 @@
                 android:layout_weight="@integer/good_column_2"
                 android:orientation="horizontal">
 
-                <LinearLayout
+                <TextView
+                    style="@style/CellTextStyle"
                     android:layout_width="0dp"
-                    android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:orientation="vertical">
-
-                    <TextView
-                        style="@style/CellTextStyle"
-                        android:layout_width="wrap_content"
-                        android:text="@{item.name}"
-                        tools:text="003298 Арбалет" />
-
-                </LinearLayout>
+                    android:text="@{item.name}"
+                    tools:text="003298 Арбалет" />
 
                 <ImageView
                     android:layout_width="wrap_content"

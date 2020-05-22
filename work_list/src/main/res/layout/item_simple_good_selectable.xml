@@ -55,7 +55,6 @@
                     android:id="@+id/tv_good_number_name"
                     style="@style/CellTextStyle"
                     android:layout_width="0dp"
-                    android:layout_marginStart="8dp"
                     android:layout_weight="1"
                     android:maxLines="2"
                     android:text="@{vm.name}"

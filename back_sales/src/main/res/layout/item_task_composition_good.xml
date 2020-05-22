@@ -51,19 +51,12 @@
                 android:layout_weight="@integer/name_quantity_column_2"
                 android:orientation="horizontal">
 
-                <LinearLayout
+                <TextView
+                    style="@style/CellTextStyle"
                     android:layout_width="0dp"
-                    android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:orientation="vertical">
-
-                    <TextView
-                        style="@style/CellTextStyle"
-                        android:layout_width="wrap_content"
-                        android:text="@{item.name}"
-                        tools:text="000021 Масло" />
-
-                </LinearLayout>
+                    android:text="@{item.name}"
+                    tools:text="000021 Масло" />
 
                 <ImageView
                     android:layout_width="wrap_content"
@@ -82,7 +75,7 @@
 
                 <TextView
                     style="@style/CellTextStyle"
-                    android:gravity="center"
+                    android:layout_width="wrap_content"
                     android:text="@{item.quantity}"
                     tools:text="5 шт" />
 

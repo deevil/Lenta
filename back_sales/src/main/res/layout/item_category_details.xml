@@ -48,8 +48,7 @@
 
             <LinearLayout
                 style="@style/LinearCellStyle"
-                android:layout_weight="@integer/name_quantity_column_2"
-                android:orientation="horizontal">
+                android:layout_weight="@integer/name_quantity_column_2">
 
                 <TextView
                     style="@style/CellTextStyle"
@@ -66,7 +65,7 @@
 
                 <TextView
                     style="@style/CellTextStyle"
-                    android:gravity="center"
+                    android:layout_width="wrap_content"
                     android:text="@{item.quantity}"
                     tools:text="3 шт" />
 
