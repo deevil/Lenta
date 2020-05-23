@@ -66,6 +66,7 @@ private fun ScanInfoResult.getProductInfo(uomInfo: ZmpUtz07V001.ItemLocal_ET_UOM
         matrixType = getMatrixType(material.matrixType),
         materialType = material.materialType,
         suppliers = suppliers,
+        ekGroup = material.ekgrp,
         volume = material.volume.toDoubleOrNull() ?: 0.0,
         quantityInvestments = material.quantityInvestments.toDoubleOrNull()?.toInt() ?: 0,
         isRus = material.isRus.isSapTrue(),

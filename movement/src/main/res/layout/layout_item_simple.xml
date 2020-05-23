@@ -5,6 +5,8 @@
 
     <data>
 
+        <import type="android.view.View"/>
+
         <variable
             name="item"
             type="com.lenta.movement.models.SimpleListItem" />
@@ -77,7 +79,7 @@
             tools:text="2" />
 
         <TextView
-            android:id="@+id/tv_goods_title"
+            android:id="@+id/titleText"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
@@ -86,11 +88,26 @@
             android:gravity="start|center_vertical"
             android:maxLines="2"
             android:text="@{item.title}"
-            app:layout_constraintBottom_toBottomOf="@+id/tv_counter"
+            app:layout_constraintVertical_chainStyle="packed"
+            app:layout_constraintBottom_toTopOf="@+id/subtitleText"
             app:layout_constraintEnd_toStartOf="@+id/vertical_guidline_2"
             app:layout_constraintStart_toEndOf="@+id/div_vert1"
-            app:layout_constraintTop_toTopOf="@+id/tv_counter"
-            tools:text="Корзина 01\n0/ПП-123456" />
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="Корзина 01" />
+
+        <TextView
+            android:id="@+id/subtitleText"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
+            android:text="@{item.subtitle}"
+            android:visibility='@{item.subtitle.equals("") ? View.GONE : View.VISIBLE}'
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/vertical_guidline_2"
+            app:layout_constraintStart_toEndOf="@+id/div_vert1"
+            app:layout_constraintTop_toBottomOf="@+id/titleText"
+            tools:text="0/ПП-123456"/>
 
         <View
             android:id="@+id/div_hor_bottom"
@@ -111,10 +128,10 @@
             android:gravity="start|center_vertical"
             android:maxLines="1"
             android:text='@{item.countWithUom}'
-            app:layout_constraintBottom_toBottomOf="@+id/tv_goods_title"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/div_vert2"
-            app:layout_constraintTop_toTopOf="@+id/tv_goods_title"
+            app:layout_constraintTop_toTopOf="parent"
             tools:text="2" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>

@@ -14,11 +14,8 @@ class Basket(
     val number: Int
         get() = index + 1
 
-    val filledVolume: Double
-        get() = map { (product, count) -> product.volume * count }.sum()
-
     val freeVolume: Double
-        get() = volume - filledVolume
+        get() = volume - map { (product, count) -> product.volume * count }.sum()
 
     fun getByIndex(index: Int): ProductInfo {
         return keys.toList()[index]

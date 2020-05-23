@@ -1,9 +1,11 @@
 package com.lenta.movement.features.task.goods.details
 
 import androidx.lifecycle.MutableLiveData
+import com.lenta.movement.models.ITaskManager
 import com.lenta.movement.models.ProductInfo
 import com.lenta.movement.models.SimpleListItem
 import com.lenta.movement.models.repositories.ITaskBasketsRepository
+import com.lenta.movement.platform.IFormatter
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.SelectionItemsHelper
 import com.lenta.shared.utilities.databinding.PageSelectionListener
@@ -16,7 +18,13 @@ class TaskGoodsDetailsViewModel : CoreViewModel(), PageSelectionListener {
     var product: ProductInfo? = null
 
     @Inject
+    lateinit var taskManager: ITaskManager
+
+    @Inject
     lateinit var taskBasketsRepository: ITaskBasketsRepository
+
+    @Inject
+    lateinit var formatter: IFormatter
 
     val basketSelectionHelper = SelectionItemsHelper()
 
@@ -86,8 +94,8 @@ class TaskGoodsDetailsViewModel : CoreViewModel(), PageSelectionListener {
             .mapIndexed { index, basket ->
                 SimpleListItem(
                     number = index + 1,
-                    title = "Корзина ${basket.index}",
-                    subtitle = "",
+                    title = formatter.getBasketName(basket),
+                    subtitle = formatter.getBasketDescription(basket, taskManager.getTask()),
                     countWithUom = "${basket[product!!]}"
                 )
             }

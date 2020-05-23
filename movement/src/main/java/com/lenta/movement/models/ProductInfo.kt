@@ -12,6 +12,7 @@ open class ProductInfo(
     sectionId: String,
     matrixType: MatrixType,
     materialType: String,
+    val ekGroup: String,
     val volume: Double,
     val quantityInvestments: Int,
     val suppliers: List<Supplier>,
@@ -25,5 +26,8 @@ open class ProductInfo(
 
     val isExcise: Boolean
         get() = type == ProductType.ExciseAlcohol
+
+    val isUsual: Boolean
+        get() = isVet.not() && isAlco.not()
 
 }

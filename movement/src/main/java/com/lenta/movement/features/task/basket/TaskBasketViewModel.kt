@@ -4,7 +4,9 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.lenta.movement.features.main.box.GoodListItem
 import com.lenta.movement.features.main.box.ScanInfoHelper
+import com.lenta.movement.models.ITaskManager
 import com.lenta.movement.models.repositories.ITaskBasketsRepository
+import com.lenta.movement.platform.IFormatter
 import com.lenta.movement.platform.navigation.IScreenNavigator
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.SelectionItemsHelper
@@ -20,12 +22,20 @@ class TaskBasketViewModel : CoreViewModel(),
     lateinit var screenNavigator: IScreenNavigator
 
     @Inject
+    lateinit var taskManager: ITaskManager
+
+    @Inject
     lateinit var taskBasketsRepository: ITaskBasketsRepository
 
     @Inject
     lateinit var scanInfoHelper: ScanInfoHelper
 
+    @Inject
+    lateinit var formatter: IFormatter
+
     var basketIndex: Int? = null
+
+    val basket by lazy { taskBasketsRepository.getBasketByIndex(basketIndex!!) }
 
     val selectionsHelper = SelectionItemsHelper()
 
@@ -39,7 +49,7 @@ class TaskBasketViewModel : CoreViewModel(),
     }
 
     fun getTitle(): String {
-        return "Корзина"
+        return "${formatter.getBasketName(basket)}: ${formatter.getBasketDescription(basket, taskManager.getTask())}"
     }
 
     fun onDeleteClick() {

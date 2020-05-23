@@ -6,6 +6,7 @@ import com.lenta.movement.features.main.box.ScanInfoHelper
 import com.lenta.movement.models.ITaskManager
 import com.lenta.movement.models.SimpleListItem
 import com.lenta.movement.models.repositories.ITaskBasketsRepository
+import com.lenta.movement.platform.IFormatter
 import com.lenta.movement.platform.navigation.IScreenNavigator
 import com.lenta.shared.models.core.Uom
 import com.lenta.shared.platform.viewmodel.CoreViewModel
@@ -32,6 +33,9 @@ class TaskGoodsViewModel : CoreViewModel(),
 
     @Inject
     lateinit var scanInfoHelper: ScanInfoHelper
+
+    @Inject
+    lateinit var formatter: IFormatter
 
     val processedSelectionHelper = SelectionItemsHelper()
     val basketSelectionHelper = SelectionItemsHelper()
@@ -141,7 +145,7 @@ class TaskGoodsViewModel : CoreViewModel(),
             .mapIndexed { index, (productInfo, count) ->
                 SimpleListItem(
                     number = index + 1,
-                    title = "${productInfo.getMaterialLastSix()} ${productInfo.description}",
+                    title = formatter.getProductName(productInfo),
                     countWithUom = "$count ${Uom.DEFAULT.name}"
                 )
             }
@@ -152,7 +156,8 @@ class TaskGoodsViewModel : CoreViewModel(),
             .map { basket ->
                 SimpleListItem(
                     number = basket.number,
-                    title = "Корзина ${basket.index}", // TODO
+                    title = formatter.getBasketName(basket),
+                    subtitle = formatter.getBasketDescription(basket, taskManager.getTask()),
                     countWithUom = basket.keys.size.toString()
                 )
             }
