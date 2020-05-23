@@ -55,7 +55,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_margin="16dp"
-                    android:text="@{@string/task_goods_quantities_format(vm.totalQuantity, vm.currentBasket.size, vm.quantityUom.name)}"
+                    android:text="@{@string/task_goods_quantities_format(vm.totalQuantity, vm.forBasketQuantity, vm.quantityUom.name)}"
                     tools:text="50 шт.\n50 шт." />
             </com.lenta.movement.view.TableRowBordered>
 

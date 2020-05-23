@@ -28,7 +28,7 @@ class TaskManager(
                 description = "",
                 pikingStorage = "",
                 shipmentStorage = "",
-                shipmentDate = "",
+                shipmentDate = DateTimeUtil.formatDate(Date(), Constants.DATE_FORMAT_ddmmyy),
                 settings = settings
             )
         }

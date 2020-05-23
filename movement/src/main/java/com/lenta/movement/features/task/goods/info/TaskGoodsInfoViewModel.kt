@@ -36,7 +36,8 @@ class TaskGoodsInfoViewModel : CoreViewModel() {
     val supplierList by lazy { productInfo.suppliers.map { it.name } }
     val supplierSelectedListener = object : OnPositionClickListener {
         override fun onClickPosition(position: Int) {
-            supplierSelected.value = Optional.fromNullable(productInfo.suppliers.getOrNull(position))
+            supplierSelected.value =
+                Optional.fromNullable(productInfo.suppliers.getOrNull(position))
         }
     }
     val supplierListVisible by lazy {
@@ -44,29 +45,31 @@ class TaskGoodsInfoViewModel : CoreViewModel() {
     }
 
     val currentBasket: LiveData<Basket> by lazy {
-        supplierSelected.combineLatest(quantity).mapSkipNulls { (selectedSupplier, quantityString) ->
-            val targetBasket = taskBasketsRepository.getSuitableBasketOrCreate(productInfo, selectedSupplier.orNull())
+        supplierSelected.mapSkipNulls { selectedSupplier ->
+            taskBasketsRepository.getSuitableBasketOrCreate(productInfo, selectedSupplier.orNull())
+        }
+    }
 
-            targetBasket.apply {
-                if (quantityString.isNotEmpty()) {
-                    put(productInfo, quantityString.toInt())
-                }
-            }
+    val forBasketQuantity: LiveData<Int> by lazy {
+        currentBasket.combineLatest(quantity).mapSkipNulls { (currentBasket, quantityString) ->
+            (currentBasket[productInfo] ?: 0) + (quantityString.toIntOrNull() ?: 0)
         }
     }
 
     val totalQuantity: LiveData<Int> by lazy {
-        currentBasket.mapSkipNulls { currentBasket ->
-            val otherBasketsQuantity = taskBasketsRepository.getAll()
-                .filter { basket ->
-                    basket != currentBasket
-                }
-                .sumBy { basket ->
-                    basket.size
-                }
-
-            currentBasket.size + otherBasketsQuantity
-        }
+        forBasketQuantity.combineLatest(currentBasket)
+            .mapSkipNulls { (forBasketQuantity, currentBasket) ->
+                taskBasketsRepository.getAll()
+                    .filter { basket ->
+                        basket.index != currentBasket.index
+                    }
+                    .flatMap { basket ->
+                        basket.filterKeys { basketEntity ->
+                            basketEntity.materialNumber == productInfo.materialNumber
+                        }.values
+                    }
+                    .sum() + forBasketQuantity
+            }
     }
 
     val applyEnabled: LiveData<Boolean> by lazy {
@@ -81,6 +84,8 @@ class TaskGoodsInfoViewModel : CoreViewModel() {
 
     fun onApplyClick() {
         currentBasket.value?.also { currentBasket ->
+            currentBasket[productInfo] =
+                (currentBasket[productInfo] ?: 0) + (quantity.value?.toIntOrNull() ?: 0)
             taskBasketsRepository.addOrReplaceIfExist(currentBasket)
         }
 
