@@ -32,6 +32,8 @@ class Formatter(
     }
 
     override fun getBasketDescription(basket: Basket, task: Task): String {
+        if (basket.keys.isEmpty()) return ""
+
         val descriptionBuilder = StringBuilder()
 
         val signsOfDiv = task.settings.signsOfDiv

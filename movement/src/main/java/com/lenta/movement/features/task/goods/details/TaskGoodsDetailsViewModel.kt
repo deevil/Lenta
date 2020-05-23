@@ -75,10 +75,11 @@ class TaskGoodsDetailsViewModel : CoreViewModel(), PageSelectionListener {
                 }
 
                 doRemoveBaskets.forEach { doRemoveBasket ->
-                    taskBasketsRepository.removeProduct(doRemoveBasket.index, product!!)
+                    taskBasketsRepository.removeProductFromBasket(doRemoveBasket.index, product!!)
                 }
 
                 basketList.postValue(getBasketSimpleList())
+                basketSelectionHelper.clearPositions()
             }
             TaskGoodsDetailsPage.BOXES -> {
                 // TODO

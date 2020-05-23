@@ -148,6 +148,7 @@ class TaskGoodsViewModel : CoreViewModel(),
 
                 processed.postValue(getProcessed())
                 baskets.postValue(getBaskets())
+                processedSelectionHelper.clearPositions()
             }
             TaskGoodsPage.BASKETS -> {
                 taskBasketsRepository.getAll()
@@ -160,6 +161,7 @@ class TaskGoodsViewModel : CoreViewModel(),
 
                 processed.postValue(getProcessed())
                 baskets.postValue(getBaskets())
+                basketSelectionHelper.clearPositions()
             }
         }
     }

@@ -41,8 +41,8 @@ class MemoryTaskBasketsRepository(
         }
     }
 
-    override fun removeProduct(basketIndex: Int, product: ProductInfo) {
-       basketList[basketIndex]
+    override fun removeProductFromBasket(basketIndex: Int, product: ProductInfo) {
+        basketList[basketIndex].remove(product)
     }
 
     override fun addProduct(product: ProductInfo, supplier: Supplier?, count: Int) {

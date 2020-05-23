@@ -14,7 +14,7 @@ interface ITaskBasketsRepository {
 
     fun removeProductFromAllBaskets(product: ProductInfo)
 
-    fun removeProduct(basketIndex: Int, product: ProductInfo)
+    fun removeProductFromBasket(basketIndex: Int, product: ProductInfo)
 
     fun addProduct(product: ProductInfo, supplier: Supplier? = null, count: Int)
 
