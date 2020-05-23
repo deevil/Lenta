@@ -96,6 +96,10 @@ class TaskGoodsViewModel : CoreViewModel(),
         return "${taskManager.getTask().taskType.shortName} // ${taskManager.getTask().name}"
     }
 
+    override fun handleFragmentResult(code: Int?): Boolean {
+        return scanInfoHelper.handleFragmentResult(code) || super.handleFragmentResult(code)
+    }
+
     override fun onOkInSoftKeyboard(): Boolean {
         searchCode(eanCode.value.orEmpty(), fromScan = false)
 
