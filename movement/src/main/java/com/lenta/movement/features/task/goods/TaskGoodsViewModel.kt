@@ -3,7 +3,9 @@ package com.lenta.movement.features.task.goods
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.lenta.movement.features.main.box.ScanInfoHelper
+import com.lenta.movement.models.Basket
 import com.lenta.movement.models.ITaskManager
+import com.lenta.movement.models.ProductInfo
 import com.lenta.movement.models.SimpleListItem
 import com.lenta.movement.models.repositories.ITaskBasketsRepository
 import com.lenta.movement.platform.IFormatter
@@ -43,8 +45,28 @@ class TaskGoodsViewModel : CoreViewModel(),
     val eanCode: MutableLiveData<String> = MutableLiveData()
     val requestFocusToEan: MutableLiveData<Boolean> = MutableLiveData()
 
-    val processedList = MutableLiveData<List<SimpleListItem>>()
-    val basketList = MutableLiveData<List<SimpleListItem>>()
+    private val processed = MutableLiveData<List<Pair<ProductInfo, Int>>>()
+    val processedList = processed.mapSkipNulls { processed ->
+        processed.mapIndexed { index, (productInfo, count) ->
+            SimpleListItem(
+                number = index + 1,
+                title = formatter.getProductName(productInfo),
+                countWithUom = "$count ${Uom.DEFAULT.name}"
+            )
+        }
+    }
+
+    private val baskets = MutableLiveData<List<Basket>>()
+    val basketList = baskets.mapSkipNulls { baskets ->
+        baskets.map { basket ->
+            SimpleListItem(
+                number = basket.number,
+                title = formatter.getBasketName(basket),
+                subtitle = formatter.getBasketDescription(basket, taskManager.getTask()),
+                countWithUom = basket.keys.size.toString()
+            )
+        }
+    }
 
     val selectedPagePosition = MutableLiveData(0)
     val currentPage = selectedPagePosition.mapSkipNulls { TaskGoodsPage.values()[it] }
@@ -62,8 +84,8 @@ class TaskGoodsViewModel : CoreViewModel(),
         }
 
     fun onResume() {
-        processedList.postValue(getProcessedSimpleList())
-        basketList.postValue(getBasketSimpleList())
+        processed.postValue(getProcessed())
+        baskets.postValue(getBaskets())
     }
 
     override fun onPageSelected(position: Int) {
@@ -94,6 +116,18 @@ class TaskGoodsViewModel : CoreViewModel(),
         screenNavigator.goBack()
     }
 
+    fun onClickProcessedItem(position: Int) {
+        processed.value.orEmpty().getOrNull(position)?.also { (product, _) ->
+            screenNavigator.openTaskGoodsDetailsScreen(product)
+        }
+    }
+
+    fun onClickBasketItem(position: Int) {
+        baskets.value.orEmpty().getOrNull(position)?.also { basket ->
+            screenNavigator.openTaskBasketScreen(basket.index)
+        }
+    }
+
     fun onDeleteClick() {
         when (currentPage.value) {
             TaskGoodsPage.PROCESSED -> {
@@ -106,8 +140,8 @@ class TaskGoodsViewModel : CoreViewModel(),
                         taskBasketsRepository.removeProductFromAllBaskets(doRemoveProduct)
                     }
 
-                processedList.postValue(getProcessedSimpleList())
-                basketList.postValue(getBasketSimpleList())
+                processed.postValue(getProcessed())
+                baskets.postValue(getBaskets())
             }
             TaskGoodsPage.BASKETS -> {
                 taskBasketsRepository.getAll()
@@ -118,8 +152,8 @@ class TaskGoodsViewModel : CoreViewModel(),
                         taskBasketsRepository.removeBasket(doRemoveBasket)
                     }
 
-                processedList.postValue(getProcessedSimpleList())
-                basketList.postValue(getBasketSimpleList())
+                processed.postValue(getProcessed())
+                baskets.postValue(getBaskets())
             }
         }
     }
@@ -136,30 +170,15 @@ class TaskGoodsViewModel : CoreViewModel(),
         }
     }
 
-    private fun getProcessedSimpleList(): List<SimpleListItem> {
+    private fun getProcessed(): List<Pair<ProductInfo, Int>> {
         return taskBasketsRepository.getAll()
             .flatMap { it.entries }
             .groupBy { (productInfo, _) -> productInfo }
             .mapValues { it.value.sumBy { it.value } }
             .toList()
-            .mapIndexed { index, (productInfo, count) ->
-                SimpleListItem(
-                    number = index + 1,
-                    title = formatter.getProductName(productInfo),
-                    countWithUom = "$count ${Uom.DEFAULT.name}"
-                )
-            }
     }
 
-    private fun getBasketSimpleList(): List<SimpleListItem> {
+    private fun getBaskets(): List<Basket> {
         return taskBasketsRepository.getAll()
-            .map { basket ->
-                SimpleListItem(
-                    number = basket.number,
-                    title = formatter.getBasketName(basket),
-                    subtitle = formatter.getBasketDescription(basket, taskManager.getTask()),
-                    countWithUom = basket.keys.size.toString()
-                )
-            }
     }
 }

@@ -89,6 +89,7 @@ class TaskGoodsInfoViewModel : CoreViewModel() {
             count = quantity.value?.toIntOrNull() ?: 0
         )
 
+        screenNavigator.goBack()
         screenNavigator.openTaskBasketScreen(currentBasket.value!!.index)
     }
 

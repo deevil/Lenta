@@ -112,7 +112,9 @@ class TaskGoodsFragment: CoreFragment<FragmentTaskGoodsBinding, TaskGoodsViewMod
                         },
                         onItemClickListener = AdapterView.OnItemClickListener { _, _, position, _ ->
                             processedRecyclerViewKeyHandler?.let {
-                                if (it.isSelected(position).not()) {
+                                if (it.isSelected(position)) {
+                                    vm.onClickProcessedItem(position)
+                                } else {
                                     it.selectPosition(position)
                                 }
                             }
@@ -164,7 +166,9 @@ class TaskGoodsFragment: CoreFragment<FragmentTaskGoodsBinding, TaskGoodsViewMod
                         },
                         onItemClickListener = AdapterView.OnItemClickListener { _, _, position, _ ->
                             basketRecyclerViewKeyHandler?.let {
-                                if (it.isSelected(position).not()) {
+                                if (it.isSelected(position)) {
+                                    vm.onClickBasketItem(position)
+                                } else {
                                     it.selectPosition(position)
                                 }
                             }
@@ -174,7 +178,7 @@ class TaskGoodsFragment: CoreFragment<FragmentTaskGoodsBinding, TaskGoodsViewMod
                     dataBinding.vm = vm
                     dataBinding.lifecycleOwner = binding?.lifecycleOwner
 
-                    processedRecyclerViewKeyHandler = RecyclerViewKeyHandler(
+                    basketRecyclerViewKeyHandler = RecyclerViewKeyHandler(
                         dataBinding?.basketRecyclerView!!,
                         vm.basketList,
                         binding?.lifecycleOwner!!,

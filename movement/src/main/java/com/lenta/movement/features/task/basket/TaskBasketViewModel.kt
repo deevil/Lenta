@@ -72,7 +72,6 @@ class TaskBasketViewModel : CoreViewModel(),
 
     fun onNextClick() {
         screenNavigator.goBack()
-        screenNavigator.goBack()
     }
 
     override fun onOkInSoftKeyboard(): Boolean {
