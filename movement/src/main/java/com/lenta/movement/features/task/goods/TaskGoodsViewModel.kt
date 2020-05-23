@@ -135,6 +135,9 @@ class TaskGoodsViewModel : CoreViewModel(),
     private fun getProcessedSimpleList(): List<SimpleListItem> {
         return taskBasketsRepository.getAll()
             .flatMap { it.entries }
+            .groupBy { (productInfo, _) -> productInfo }
+            .mapValues { it.value.sumBy { it.value } }
+            .toList()
             .mapIndexed { index, (productInfo, count) ->
                 SimpleListItem(
                     number = index + 1,
