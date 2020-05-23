@@ -2,12 +2,10 @@ package com.lenta.movement.features.task.basket
 
 import android.os.Bundle
 import android.view.View
-import android.widget.AdapterView
-import com.lenta.movement.BR
 import com.lenta.movement.R
 import com.lenta.movement.databinding.FragmentTaskBasketBinding
-import com.lenta.movement.databinding.LayoutItemGoodsListBinding
 import com.lenta.movement.platform.extensions.getAppComponent
+import com.lenta.movement.view.simpleListRecyclerViewConfig
 import com.lenta.shared.keys.KeyCode
 import com.lenta.shared.keys.OnKeyDownListener
 import com.lenta.shared.platform.fragment.CoreFragment
@@ -16,8 +14,6 @@ import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListener
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
 import com.lenta.shared.scan.OnScanResultListener
-import com.lenta.shared.utilities.databinding.DataBindingAdapter
-import com.lenta.shared.utilities.databinding.DataBindingRecyclerViewConfig
 import com.lenta.shared.utilities.databinding.RecyclerViewKeyHandler
 import com.lenta.shared.utilities.extentions.connectLiveData
 import com.lenta.shared.utilities.extentions.provideViewModel
@@ -54,37 +50,10 @@ class TaskBasketFragment: CoreFragment<FragmentTaskBasketBinding, TaskBasketView
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val onClickSelectionListener = View.OnClickListener {
-            (it!!.tag as Int).let { position ->
-                vm.selectionsHelper.revert(position = position)
-                binding?.recyclerView?.adapter?.notifyItemChanged(position)
-            }
-        }
-
-        binding?.rvConfig = DataBindingRecyclerViewConfig(
-            layoutId = R.layout.layout_item_goods_list,
-            itemId = BR.vm,
-            realisation = object : DataBindingAdapter<LayoutItemGoodsListBinding> {
-                override fun onCreate(binding: LayoutItemGoodsListBinding) {
-                    // do nothing
-                }
-
-                override fun onBind(binding: LayoutItemGoodsListBinding, position: Int) {
-                    binding.tvCounter.tag = position
-                    binding.tvCounter.setOnClickListener(onClickSelectionListener)
-                    binding.selectedForDelete = vm.selectionsHelper.isSelected(position)
-                    recyclerViewKeyHandler?.let {
-                        binding.root.isSelected = it.isSelected(position)
-                    }
-                }
-            },
-            onItemClickListener = AdapterView.OnItemClickListener { _, _, position, _ ->
-                recyclerViewKeyHandler?.let {
-                    if (it.isSelected(position).not()) {
-                        it.selectPosition(position)
-                    }
-                }
-            }
+        binding?.rvConfig = simpleListRecyclerViewConfig(
+            binding?.recyclerView,
+            vm.selectionsHelper,
+            recyclerViewKeyHandler
         )
 
         recyclerViewKeyHandler = RecyclerViewKeyHandler(

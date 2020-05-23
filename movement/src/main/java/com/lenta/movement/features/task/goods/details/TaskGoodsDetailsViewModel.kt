@@ -96,7 +96,8 @@ class TaskGoodsDetailsViewModel : CoreViewModel(), PageSelectionListener {
                     number = index + 1,
                     title = formatter.getBasketName(basket),
                     subtitle = formatter.getBasketDescription(basket, taskManager.getTask()),
-                    countWithUom = "${basket[product!!]}"
+                    countWithUom = "${basket[product!!]}",
+                    isClickable = false
                 )
             }
     }

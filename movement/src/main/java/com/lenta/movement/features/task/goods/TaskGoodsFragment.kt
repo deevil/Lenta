@@ -4,12 +4,11 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.AdapterView
 import androidx.databinding.DataBindingUtil
-import com.lenta.movement.BR
 import com.lenta.movement.R
 import com.lenta.movement.databinding.*
 import com.lenta.movement.platform.extensions.getAppComponent
+import com.lenta.movement.view.simpleListRecyclerViewConfig
 import com.lenta.shared.keys.KeyCode
 import com.lenta.shared.keys.OnKeyDownListener
 import com.lenta.shared.platform.activity.OnBackPresserListener
@@ -84,41 +83,11 @@ class TaskGoodsFragment: CoreFragment<FragmentTaskGoodsBinding, TaskGoodsViewMod
                     container,
                     false
                 ).also { dataBinding ->
-
-                    val onClickSelectionListener = View.OnClickListener {
-                        (it!!.tag as Int).let { position ->
-                            vm.processedSelectionHelper.revert(position = position)
-                            dataBinding?.processedRecyclerView?.adapter?.notifyItemChanged(position)
-                        }
-                    }
-
-                    dataBinding?.rvConfig = DataBindingRecyclerViewConfig(
-                        layoutId = R.layout.layout_item_simple,
-                        itemId = BR.item,
-                        realisation = object : DataBindingAdapter<LayoutItemSimpleBinding> {
-                            override fun onCreate(binding: LayoutItemSimpleBinding) {
-                                // do nothing
-                            }
-
-                            override fun onBind(binding: LayoutItemSimpleBinding, position: Int) {
-                                binding.tvCounter.tag = position
-                                binding.tvCounter.setOnClickListener(onClickSelectionListener)
-                                binding.selectedForDelete = vm.processedSelectionHelper.isSelected(position)
-                                binding.selectedForDelete = false
-                                processedRecyclerViewKeyHandler?.let {
-                                    binding.root.isSelected = it.isSelected(position)
-                                }
-                            }
-                        },
-                        onItemClickListener = AdapterView.OnItemClickListener { _, _, position, _ ->
-                            processedRecyclerViewKeyHandler?.let {
-                                if (it.isSelected(position)) {
-                                    vm.onClickProcessedItem(position)
-                                } else {
-                                    it.selectPosition(position)
-                                }
-                            }
-                        }
+                    dataBinding?.rvConfig = simpleListRecyclerViewConfig(
+                        recyclerView = dataBinding?.processedRecyclerView,
+                        selectionItemsHelper = vm.processedSelectionHelper,
+                        recyclerViewKeyHandler = processedRecyclerViewKeyHandler,
+                        onClickItem = { position -> vm.onClickProcessedItem(position) }
                     )
 
                     dataBinding.vm = vm
@@ -139,40 +108,11 @@ class TaskGoodsFragment: CoreFragment<FragmentTaskGoodsBinding, TaskGoodsViewMod
                     container,
                     false
                 ).also { dataBinding ->
-                    val onClickSelectionListener = View.OnClickListener {
-                        (it!!.tag as Int).let { position ->
-                            vm.basketSelectionHelper.revert(position = position)
-                            dataBinding?.basketRecyclerView?.adapter?.notifyItemChanged(position)
-                        }
-                    }
-
-                    dataBinding?.rvConfig = DataBindingRecyclerViewConfig(
-                        layoutId = R.layout.layout_item_simple,
-                        itemId = BR.item,
-                        realisation = object : DataBindingAdapter<LayoutItemSimpleBinding> {
-                            override fun onCreate(binding: LayoutItemSimpleBinding) {
-                                // do nothing
-                            }
-
-                            override fun onBind(binding: LayoutItemSimpleBinding, position: Int) {
-                                binding.tvCounter.tag = position
-                                binding.tvCounter.setOnClickListener(onClickSelectionListener)
-                                binding.selectedForDelete = vm.basketSelectionHelper.isSelected(position)
-                                binding.selectedForDelete = false
-                                basketRecyclerViewKeyHandler?.let {
-                                    binding.root.isSelected = it.isSelected(position)
-                                }
-                            }
-                        },
-                        onItemClickListener = AdapterView.OnItemClickListener { _, _, position, _ ->
-                            basketRecyclerViewKeyHandler?.let {
-                                if (it.isSelected(position)) {
-                                    vm.onClickBasketItem(position)
-                                } else {
-                                    it.selectPosition(position)
-                                }
-                            }
-                        }
+                    dataBinding?.rvConfig = simpleListRecyclerViewConfig(
+                        recyclerView = dataBinding?.basketRecyclerView,
+                        selectionItemsHelper = vm.basketSelectionHelper,
+                        recyclerViewKeyHandler = basketRecyclerViewKeyHandler,
+                        onClickItem = { position -> vm.onClickBasketItem(position) }
                     )
 
                     dataBinding.vm = vm

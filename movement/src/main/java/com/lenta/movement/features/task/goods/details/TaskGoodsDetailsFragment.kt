@@ -5,20 +5,20 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
-import com.lenta.movement.BR
 import com.lenta.movement.R
 import com.lenta.movement.databinding.FragmentTaskGoodsDetailsBinding
-import com.lenta.movement.databinding.LayoutItemSimpleBinding
 import com.lenta.movement.databinding.LayoutTaskGoodsDetailsBucketsTabBinding
 import com.lenta.movement.models.ProductInfo
 import com.lenta.movement.platform.extensions.getAppComponent
+import com.lenta.movement.view.simpleListRecyclerViewConfig
+import com.lenta.shared.keys.KeyCode
+import com.lenta.shared.keys.OnKeyDownListener
 import com.lenta.shared.platform.fragment.CoreFragment
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListener
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
-import com.lenta.shared.utilities.databinding.DataBindingAdapter
-import com.lenta.shared.utilities.databinding.DataBindingRecyclerViewConfig
+import com.lenta.shared.utilities.databinding.RecyclerViewKeyHandler
 import com.lenta.shared.utilities.databinding.ViewPagerSettings
 import com.lenta.shared.utilities.extentions.connectLiveData
 import com.lenta.shared.utilities.extentions.provideViewModel
@@ -27,7 +27,8 @@ import com.lenta.shared.utilities.state.state
 class TaskGoodsDetailsFragment :
     CoreFragment<FragmentTaskGoodsDetailsBinding, TaskGoodsDetailsViewModel>(),
     ViewPagerSettings,
-    ToolbarButtonsClickListener {
+    ToolbarButtonsClickListener,
+    OnKeyDownListener {
 
     private var productInfo: ProductInfo? by state(null)
 
@@ -38,6 +39,8 @@ class TaskGoodsDetailsFragment :
             }
         }
     }
+
+    private var basketRecyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
 
     override fun getLayoutId() = R.layout.fragment_task_goods_details
 
@@ -82,30 +85,21 @@ class TaskGoodsDetailsFragment :
                     container,
                     false
                 ).also { layoutBinding ->
-                    val onClickSelectionListener = View.OnClickListener {
-                        (it!!.tag as Int).let { position ->
-                            vm.basketSelectionHelper.revert(position = position)
-                            layoutBinding.basketRecyclerView.adapter?.notifyItemChanged(position)
-                        }
-                    }
-
-                    layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
-                        layoutId = R.layout.layout_item_simple,
-                        itemId = BR.item,
-                        realisation = object : DataBindingAdapter<LayoutItemSimpleBinding> {
-                            override fun onCreate(binding: LayoutItemSimpleBinding) {
-                            }
-
-                            override fun onBind(binding: LayoutItemSimpleBinding, position: Int) {
-                                binding.tvCounter.tag = position
-                                binding.tvCounter.setOnClickListener(onClickSelectionListener)
-                                binding.selectedForDelete = vm.basketSelectionHelper.isSelected(position)
-                            }
-                        }
+                    layoutBinding?.rvConfig = simpleListRecyclerViewConfig(
+                        recyclerView = layoutBinding?.basketRecyclerView,
+                        selectionItemsHelper = vm.basketSelectionHelper,
+                        recyclerViewKeyHandler = basketRecyclerViewKeyHandler
                     )
 
                     layoutBinding.vm = vm
                     layoutBinding.lifecycleOwner = viewLifecycleOwner
+
+                    basketRecyclerViewKeyHandler = RecyclerViewKeyHandler(
+                        layoutBinding?.basketRecyclerView!!,
+                        vm.basketList,
+                        binding?.lifecycleOwner!!,
+                        basketRecyclerViewKeyHandler?.posInfo?.value
+                    )
                 }.root
             }
             TaskGoodsDetailsPage.BOXES -> View(context) // TODO
@@ -120,4 +114,17 @@ class TaskGoodsDetailsFragment :
     }
 
     override fun countTab() = vm.getAvailablePages().size
+
+    override fun onKeyDown(keyCode: KeyCode): Boolean {
+        when (vm.currentPage.value) {
+            TaskGoodsDetailsPage.BASKETS -> basketRecyclerViewKeyHandler
+            else -> null
+        }?.let {
+            if (!it.onKeyDown(keyCode)) {
+                return false
+            }
+            return true
+        }
+        return false
+    }
 }

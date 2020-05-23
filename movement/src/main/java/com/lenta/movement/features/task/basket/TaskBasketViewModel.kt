@@ -2,9 +2,10 @@ package com.lenta.movement.features.task.basket
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import com.lenta.movement.features.main.box.GoodListItem
 import com.lenta.movement.features.main.box.ScanInfoHelper
 import com.lenta.movement.models.ITaskManager
+import com.lenta.movement.models.ProductInfo
+import com.lenta.movement.models.SimpleListItem
 import com.lenta.movement.models.repositories.ITaskBasketsRepository
 import com.lenta.movement.platform.IFormatter
 import com.lenta.movement.platform.navigation.IScreenNavigator
@@ -12,6 +13,7 @@ import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.SelectionItemsHelper
 import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
 import com.lenta.shared.utilities.extentions.map
+import com.lenta.shared.utilities.extentions.mapSkipNulls
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -39,7 +41,19 @@ class TaskBasketViewModel : CoreViewModel(),
 
     val selectionsHelper = SelectionItemsHelper()
 
-    val goodsItemList by lazy { MutableLiveData(getGoodList()) }
+    val goods by lazy { MutableLiveData(getGoods()) }
+    val goodsItemList by lazy {
+        goods.mapSkipNulls { goods ->
+            goods.mapIndexed { index, (product, count) ->
+                SimpleListItem(
+                    number = index + 1,
+                    title = formatter.getProductName(product),
+                    countWithUom = "$count шт.", // TODO
+                    isClickable = false
+                )
+            }
+        }
+    }
 
     val eanCode: MutableLiveData<String> = MutableLiveData()
     val requestFocusToEan: MutableLiveData<Boolean> = MutableLiveData()
@@ -49,13 +63,17 @@ class TaskBasketViewModel : CoreViewModel(),
     }
 
     fun getTitle(): String {
-        return "${formatter.getBasketName(basket)}: ${formatter.getBasketDescription(basket, taskManager.getTask())}"
+        return "${formatter.getBasketName(basket)}: ${formatter.getBasketDescription(
+            basket,
+            taskManager.getTask()
+        )}"
     }
 
     fun onDeleteClick() {
         selectionsHelper.selectedPositions.value.orEmpty()
             .map { doRemoveProductIndex ->
-                taskBasketsRepository.getBasketByIndex(basketIndex!!).getByIndex(doRemoveProductIndex)
+                taskBasketsRepository.getBasketByIndex(basketIndex!!)
+                    .getByIndex(doRemoveProductIndex)
             }
             .forEach { doRemoveProduct ->
                 taskBasketsRepository.getBasketByIndex(basketIndex!!).remove(doRemoveProduct)
@@ -63,7 +81,7 @@ class TaskBasketViewModel : CoreViewModel(),
 
         selectionsHelper.clearPositions()
 
-        goodsItemList.postValue(getGoodList())
+        goods.postValue(getGoods())
     }
 
     fun onCharacteristicsClick() {
@@ -88,15 +106,8 @@ class TaskBasketViewModel : CoreViewModel(),
         eanCode.value = eanCode.value ?: "" + digit
     }
 
-    private fun getGoodList(): List<GoodListItem> {
+    private fun getGoods(): List<Pair<ProductInfo, Int>> {
         return taskBasketsRepository.getBasketByIndex(basketIndex!!).toList()
-            .mapIndexed { index, (product, count) ->
-                GoodListItem(
-                    number = index + 1,
-                    name = "${product.getMaterialLastSix()} ${product.description}",
-                    countWithUom = "$count шт."
-                )
-            }
     }
 
     private fun searchCode(code: String, fromScan: Boolean, isBarCode: Boolean? = null) {

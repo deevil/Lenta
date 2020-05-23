@@ -113,6 +113,7 @@
             android:layout_height="wrap_content"
             android:padding="8dp"
             android:src="@drawable/ic_keyboard_arrow_right_white_16dp"
+            android:visibility="@{item.isClickable ? View.VISIBLE : View.GONE}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/vertical_guidline_2"
             app:layout_constraintTop_toTopOf="parent"

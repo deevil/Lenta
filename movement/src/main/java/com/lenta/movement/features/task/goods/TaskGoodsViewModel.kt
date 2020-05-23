@@ -51,7 +51,8 @@ class TaskGoodsViewModel : CoreViewModel(),
             SimpleListItem(
                 number = index + 1,
                 title = formatter.getProductName(productInfo),
-                countWithUom = "$count ${Uom.DEFAULT.name}"
+                countWithUom = "$count ${Uom.DEFAULT.name}",
+                isClickable = true
             )
         }
     }
@@ -63,7 +64,8 @@ class TaskGoodsViewModel : CoreViewModel(),
                 number = basket.number,
                 title = formatter.getBasketName(basket),
                 subtitle = formatter.getBasketDescription(basket, taskManager.getTask()),
-                countWithUom = basket.keys.size.toString()
+                countWithUom = basket.keys.size.toString(),
+                isClickable = true
             )
         }
     }
