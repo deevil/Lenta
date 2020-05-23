@@ -83,11 +83,11 @@ class TaskGoodsInfoViewModel : CoreViewModel() {
     }
 
     fun onApplyClick() {
-        currentBasket.value?.also { currentBasket ->
-            currentBasket[productInfo] =
-                (currentBasket[productInfo] ?: 0) + (quantity.value?.toIntOrNull() ?: 0)
-            taskBasketsRepository.addOrReplaceIfExist(currentBasket)
-        }
+        taskBasketsRepository.addProduct(
+            product = productInfo,
+            supplier = supplierSelected.value?.orNull(),
+            count = quantity.value?.toIntOrNull() ?: 0
+        )
 
         screenNavigator.openTaskBasketScreen(currentBasket.value!!.index)
     }

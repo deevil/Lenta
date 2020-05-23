@@ -65,7 +65,8 @@ private fun ScanInfoResult.getProductInfo(uomInfo: ZmpUtz07V001.ItemLocal_ET_UOM
         sectionId = material.abtnr,
         matrixType = getMatrixType(material.matrixType),
         materialType = material.materialType,
-        suppliers = this.suppliers,
+        suppliers = suppliers,
+        volume = material.volume.toDoubleOrNull() ?: 0.0,
         quantityInvestments = material.quantityInvestments.toDoubleOrNull()?.toInt() ?: 0,
         isRus = material.isRus.isSapTrue(),
         isVet = material.isVet.isSapTrue(),
@@ -121,6 +122,8 @@ data class Material(
     val name: String,
     @SerializedName("QNTINCL")
     val quantityInvestments: String,
+    @SerializedName("VOLUM")
+    val volume: String,
     @SerializedName("IS_RUS")
     val isRus: String,
     @SerializedName("IS_ALCO")

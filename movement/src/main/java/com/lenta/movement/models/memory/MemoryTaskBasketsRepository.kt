@@ -5,11 +5,17 @@ import com.lenta.movement.models.GoodsSignOfDivision
 import com.lenta.movement.models.ITaskManager
 import com.lenta.movement.models.ProductInfo
 import com.lenta.movement.models.repositories.ITaskBasketsRepository
+import com.lenta.shared.fmp.resources.dao_ext.getEoVolume
+import com.lenta.shared.fmp.resources.fast.ZmpUtz14V001
 import com.lenta.shared.models.core.Supplier
+import com.mobrun.plugin.api.HyperHive
 
 class MemoryTaskBasketsRepository(
+    hyperHive: HyperHive,
     private val taskManager: ITaskManager
 ): ITaskBasketsRepository {
+
+    private val zmpUtz14V001 = ZmpUtz14V001(hyperHive)
 
     private val basketList = mutableListOf<Basket>()
 
@@ -39,12 +45,16 @@ class MemoryTaskBasketsRepository(
        basketList[basketIndex]
     }
 
-    override fun addOrReplaceIfExist(basket: Basket) {
-        if (basketList.contains(basket)) {
-            basketList[basket.index] = basket
-        } else {
-            basketList.add(basket.index, basket)
-        }
+    override fun addProduct(product: ProductInfo, supplier: Supplier?, count: Int) {
+        if (count == 0) return
+
+        val suitableBasket = getSuitableBasketOrCreate(product, supplier)
+
+        suitableBasket[product] = (suitableBasket[product] ?: 0) + 1
+
+        addOrReplaceIfExist(suitableBasket)
+
+        addProduct(product, supplier, count - 1)
     }
 
     override fun getSuitableBasketOrCreate(
@@ -55,6 +65,7 @@ class MemoryTaskBasketsRepository(
             basket.isSuitableForProduct(productInfo, supplier)
         } ?: Basket(
             index = basketList.size,
+            volume = zmpUtz14V001.getEoVolume() ?: error("Объем корзины отсутствует"),
             supplier = supplier
         )
     }
@@ -64,6 +75,8 @@ class MemoryTaskBasketsRepository(
         selectedSupplier: Supplier?
     ): Boolean {
         if (isEmpty()) return true
+
+        if (productInfo.volume > freeVolume) return false
 
         return taskManager.getTask().settings.signsOfDiv.all { signOfDivision ->
             when (signOfDivision) {
@@ -87,6 +100,14 @@ class MemoryTaskBasketsRepository(
                 GoodsSignOfDivision.PARTS -> TODO()
                 GoodsSignOfDivision.MTART -> TODO()
             }
+        }
+    }
+
+    private fun addOrReplaceIfExist(basket: Basket) {
+        if (basketList.contains(basket)) {
+            basketList[basket.index] = basket
+        } else {
+            basketList.add(basket.index, basket)
         }
     }
 

@@ -12,6 +12,7 @@ open class ProductInfo(
     sectionId: String,
     matrixType: MatrixType,
     materialType: String,
+    val volume: Double,
     val quantityInvestments: Int,
     val suppliers: List<Supplier>,
     val isRus: Boolean,

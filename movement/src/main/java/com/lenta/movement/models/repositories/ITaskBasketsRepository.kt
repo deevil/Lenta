@@ -16,7 +16,7 @@ interface ITaskBasketsRepository {
 
     fun removeProduct(basketIndex: Int, product: ProductInfo)
 
-    fun addOrReplaceIfExist(basket: Basket)
+    fun addProduct(product: ProductInfo, supplier: Supplier? = null, count: Int)
 
     fun getSuitableBasketOrCreate(productInfo: ProductInfo, supplier: Supplier? = null): Basket
 }

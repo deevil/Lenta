@@ -53,8 +53,8 @@ class AppModule {
 
     @Provides
     @AppScope
-    internal fun provideTaskBasketRepository(taskManager: ITaskManager): ITaskBasketsRepository {
-        return MemoryTaskBasketsRepository(taskManager)
+    internal fun provideTaskBasketRepository(hyperHive: HyperHive, taskManager: ITaskManager): ITaskBasketsRepository {
+        return MemoryTaskBasketsRepository(hyperHive, taskManager)
     }
 
     @Provides
