@@ -63,13 +63,16 @@ class TaskManager(
     }
 
     override fun isDisallowProduct(product: ProductInfo): Boolean {
-        return excludeProductsTable.all.any {
-            it.taskType == task?.taskType &&
-                    it.taskCntrl == task?.movementType?.propertyName &&
-                    it.ekgrp == product.ekGroup &&
-                    it.matkl == product.matkl &&
-                    it.mtart == product.materialType
-        }
+        return excludeProductsTable.all
+            .filter {
+                it.taskType == task?.taskType
+            }
+            .any {
+                it.taskCntrl == (if (product.isAlco) "A" else "N") &&
+                        it.ekgrp == product.ekGroup &&
+                        it.matkl == product.matkl &&
+                        it.mtart == product.materialType
+            }
     }
 
     override fun clear() {
@@ -77,6 +80,17 @@ class TaskManager(
     }
 
     override fun getTaskSettings(taskType: TaskType, movementType: MovementType): TaskSettings {
+        val gisControls = allowProductsTable.all
+            .filter {
+                it.taskType == taskType
+            }
+            .map {
+                when (it.taskCntrl) {
+                    "A" -> GisControl.Alcohol
+                    else -> GisControl.GeneralProduct
+                }
+            }.toSet()
+
         val results = taskSettingsTable.all.filter {
             it.taskType == taskType && it.mvmType == movementType
         }
@@ -128,12 +142,7 @@ class TaskManager(
                 GoodsSignOfDivision.VET,
                 GoodsSignOfDivision.FOOD
             ),
-            gisControls = results.map {
-                when (it.taskControl) {
-                    "A" -> GisControl.Alcohol
-                    else -> GisControl.GeneralProduct
-                }
-            }.toSet()
+            gisControls = gisControls
         )
     }
 }
