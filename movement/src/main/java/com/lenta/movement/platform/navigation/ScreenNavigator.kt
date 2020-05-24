@@ -15,7 +15,7 @@ import com.lenta.movement.features.task.basket.TaskBasketFragment
 import com.lenta.movement.features.task.goods.TaskGoodsFragment
 import com.lenta.movement.features.task.goods.details.TaskGoodsDetailsFragment
 import com.lenta.movement.features.task.goods.info.TaskGoodsInfoFragment
-import com.lenta.movement.features.task.settings.TaskSettingsFragment
+import com.lenta.movement.features.task.TaskFragment
 import com.lenta.movement.models.ExciseBox
 import com.lenta.movement.models.ProductInfo
 import com.lenta.movement.progress.IWriteOffProgressUseCaseInformator
@@ -91,7 +91,7 @@ class ScreenNavigator(
 
     override fun openCreateTask() {
         runOrPostpone {
-            getFragmentStack()?.push(TaskSettingsFragment())
+            getFragmentStack()?.push(TaskFragment())
         }
     }
 

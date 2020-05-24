@@ -2,13 +2,13 @@ package com.lenta.movement.models
 
 import com.google.gson.annotations.SerializedName
 
-enum class MovementType {
+enum class MovementType(val propertyName: String) {
     @SerializedName("SS")
-    SS,
+    SS("SS"),
     @SerializedName("SCDS")
-    SCDS,
+    SCDS("SCDS"),
     @SerializedName("SCS")
-    SCS,
+    SCS("SCS"),
     @SerializedName("SCST")
-    SCST
+    SCST("SCST")
 }

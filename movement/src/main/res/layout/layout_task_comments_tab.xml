@@ -7,7 +7,7 @@
 
         <variable
             name="vm"
-            type="com.lenta.movement.features.task.settings.pages.TaskSettingsCommentsViewModel" />
+            type="com.lenta.movement.features.task.TaskViewModel" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout

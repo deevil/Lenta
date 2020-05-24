@@ -13,6 +13,7 @@ open class ProductInfo(
     matrixType: MatrixType,
     materialType: String,
     val ekGroup: String,
+    val matkl: String,
     val volume: Double,
     val quantityInvestments: Int,
     val suppliers: List<Supplier>,

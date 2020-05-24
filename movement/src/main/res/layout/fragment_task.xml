@@ -6,7 +6,7 @@
     <data>
         <variable
             name="vm"
-            type="com.lenta.movement.features.task.settings.TaskSettingsViewModel" />
+            type="com.lenta.movement.features.task.TaskViewModel" />
 
         <variable
             name="viewPagerSettings"

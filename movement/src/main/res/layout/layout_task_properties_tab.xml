@@ -5,7 +5,7 @@
     <data>
         <variable
             name="vm"
-            type="com.lenta.movement.features.task.settings.pages.TaskSettingsPropertiesViewModel" />
+            type="com.lenta.movement.features.task.TaskViewModel" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -31,6 +31,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_margin="16dp"
+                    android:enabled="@{vm.pikingStorageListEnabled}"
                     app:items="@{vm.pikingStorageList}"
                     app:onPositionClickListener="@{vm.pikingStorageSelectedPositionListener}"
                     app:position="@{vm.pikingStorageSelectedPosition}" />
@@ -48,6 +49,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_margin="16dp"
+                    android:enabled="@{vm.shipmentStorageListEnabled}"
                     app:items="@{vm.shipmentStorageList}"
                     app:onPositionClickListener="@{vm.shipmentStorageSelectedPositionListener}"
                     app:position="@{vm.shipmentStorageSelectedPosition}" />
@@ -68,7 +70,8 @@
                     android:layout_margin="16dp"
                     android:digits="1234567890."
                     android:inputType="number"
-                    android:text="@{vm.shipmentDate}"
+                    android:text="@={vm.shipmentDate}"
+                    android:enabled="@{vm.shipmentDateEnabled}"
                     app:maskPattern='@{"[00]{.}[00]{.}[00]"}' />
 
             </com.lenta.movement.view.TableRowBordered>

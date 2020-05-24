@@ -2,19 +2,21 @@ package com.lenta.movement.models
 
 interface ITaskManager {
 
+    fun getTaskSettings(taskType: TaskType, movementType: MovementType): TaskSettings
+
     fun getTask(): Task
+
+    fun getTaskOrNull(): Task?
 
     fun setTask(task: Task)
 
-    fun setOnTaskChanges(block: (Task) -> Unit)
-
     fun getAvailableReceivers(): List<String>
 
-    fun getAvailablePikingStorageList(): List<String>
+    fun getAvailablePikingStorageList(taskType: TaskType, movementType: MovementType): List<String>
 
-    fun getAvailableShipmentStorageList(): List<String>
+    fun isAllowProduct(product: ProductInfo): Boolean
 
-    fun getTaskAnnotation(): String
+    fun isDisallowProduct(product: ProductInfo): Boolean
 
     fun clear()
 }

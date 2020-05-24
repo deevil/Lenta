@@ -5,7 +5,7 @@
     <data>
         <variable
             name="vm"
-            type="com.lenta.movement.features.task.settings.pages.TaskSettingsTaskTypeViewModel" />
+            type="com.lenta.movement.features.task.TaskViewModel" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -53,7 +53,8 @@
                     android:layout_height="wrap_content"
                     android:layout_margin="16dp"
                     android:layout_span="2"
-                    android:text="@{vm.taskName}"/>
+                    android:text="@={vm.taskName}"
+                    android:enabled="@{vm.taskNameEnabled}"/>
 
             </com.lenta.movement.view.TableRowBordered>
 
@@ -70,6 +71,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_margin="16dp"
+                    android:enabled="@{vm.receiversEnabled}"
                     app:items="@{vm.receivers}"
                     app:position="@{vm.receiverSelectedPosition}"
                     app:onPositionClickListener="@{vm.receiverSelectedPositionListener}"/>

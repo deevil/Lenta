@@ -124,7 +124,7 @@ class TaskGoodsViewModel : CoreViewModel(),
 
     fun onClickProcessedItem(position: Int) {
         processed.value.orEmpty().getOrNull(position)?.also { (product, _) ->
-            screenNavigator.openTaskGoodsDetailsScreen(product)
+            screenNavigator.openTaskGoodsInfoScreen(product)
         }
     }
 
