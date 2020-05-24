@@ -50,6 +50,9 @@ public class ZmpUtz47V001 {
         @SerializedName("TYPE_MVM")
         public MovementType mvmType;
 
+        @SerializedName("TASK_CNTRL")
+        public String taskControl;
+
         @SerializedName("ANNOTATION")
         public String annotation;
 

@@ -1,6 +1,7 @@
 package com.lenta.movement.models
 
 import com.lenta.movement.fmp.resources.fast.*
+import com.lenta.shared.models.core.GisControl
 import com.lenta.shared.utilities.extentions.isSapTrue
 import com.mobrun.plugin.api.HyperHive
 
@@ -126,7 +127,13 @@ class TaskManager(
                 GoodsSignOfDivision.ALCO,
                 GoodsSignOfDivision.VET,
                 GoodsSignOfDivision.FOOD
-            )
+            ),
+            gisControls = results.map {
+                when (it.taskControl) {
+                    "A" -> GisControl.Alcohol
+                    else -> GisControl.GeneralProduct
+                }
+            }.toSet()
         )
     }
 }

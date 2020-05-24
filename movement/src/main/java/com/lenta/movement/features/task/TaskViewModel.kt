@@ -7,6 +7,7 @@ import com.lenta.movement.models.*
 import com.lenta.movement.platform.IFormatter
 import com.lenta.movement.platform.navigation.IScreenNavigator
 import com.lenta.shared.account.ISessionInfo
+import com.lenta.shared.models.core.GisControl
 import com.lenta.shared.platform.constants.Constants
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.databinding.PageSelectionListener
@@ -111,6 +112,13 @@ class TaskViewModel : CoreViewModel(), PageSelectionListener {
 
     val description by lazy { MutableLiveData(setting.description) }
     val comments by lazy { MutableLiveData(task.value?.comment.orEmpty()) }
+
+    val alcoVisible by lazy {
+        MutableLiveData(setting.gisControls.contains(GisControl.Alcohol))
+    }
+    val generalVisible by lazy {
+        MutableLiveData(setting.gisControls.contains(GisControl.GeneralProduct))
+    }
 
     val nextEnabled by lazy {
         MediatorLiveData<Boolean>().apply {
