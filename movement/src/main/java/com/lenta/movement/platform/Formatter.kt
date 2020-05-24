@@ -7,6 +7,10 @@ class Formatter(
     val context: Context
 ) : IFormatter {
 
+    override fun formatMarketName(market: String): String {
+        return "ТК - $market"
+    }
+
     override fun getProductName(product: ProductInfo): String {
         return "${product.getMaterialLastSix()} ${product.description}"
     }

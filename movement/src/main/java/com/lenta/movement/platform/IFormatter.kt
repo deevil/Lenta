@@ -4,6 +4,8 @@ import com.lenta.movement.models.*
 
 interface IFormatter {
 
+    fun formatMarketName(market: String): String
+
     fun getProductName(product: ProductInfo): String
 
     fun getTaskTypeNameDescription(taskType: TaskType): String

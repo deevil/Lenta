@@ -131,7 +131,7 @@ class TaskViewModel : CoreViewModel(), PageSelectionListener {
     }
 
     fun getTitle(): String {
-        return sessionInfo.market.orEmpty()
+        return formatter.formatMarketName(sessionInfo.market.orEmpty())
     }
 
     override fun onPageSelected(position: Int) {
