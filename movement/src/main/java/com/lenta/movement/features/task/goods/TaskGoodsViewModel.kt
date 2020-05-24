@@ -1,5 +1,6 @@
 package com.lenta.movement.features.task.goods
 
+import android.content.Context
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.lenta.movement.features.main.box.ScanInfoHelper
@@ -10,13 +11,18 @@ import com.lenta.movement.models.SimpleListItem
 import com.lenta.movement.models.repositories.ITaskBasketsRepository
 import com.lenta.movement.platform.IFormatter
 import com.lenta.movement.platform.navigation.IScreenNavigator
+import com.lenta.movement.requests.network.SaveTaskNetRequest
+import com.lenta.movement.requests.network.SaveTaskParams
+import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.models.core.Uom
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.SelectionItemsHelper
 import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
 import com.lenta.shared.utilities.databinding.PageSelectionListener
 import com.lenta.shared.utilities.extentions.combineLatest
+import com.lenta.shared.utilities.extentions.getDeviceIp
 import com.lenta.shared.utilities.extentions.mapSkipNulls
+import com.lenta.shared.utilities.extentions.toSapBooleanString
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -25,7 +31,13 @@ class TaskGoodsViewModel : CoreViewModel(),
     OnOkInSoftKeyboardListener {
 
     @Inject
+    lateinit var context: Context
+
+    @Inject
     lateinit var screenNavigator: IScreenNavigator
+
+    @Inject
+    lateinit var sessionInfo: ISessionInfo
 
     @Inject
     lateinit var taskManager: ITaskManager
@@ -35,6 +47,9 @@ class TaskGoodsViewModel : CoreViewModel(),
 
     @Inject
     lateinit var scanInfoHelper: ScanInfoHelper
+
+    @Inject
+    lateinit var saveTaskNetRequest: SaveTaskNetRequest
 
     @Inject
     lateinit var formatter: IFormatter
@@ -84,6 +99,10 @@ class TaskGoodsViewModel : CoreViewModel(),
                 TaskGoodsPage.BASKETS -> basketSelectedPositions.orEmpty().isNotEmpty()
             }
         }
+
+    val saveEnabled = processed.mapSkipNulls {
+        it.isNotEmpty()
+    }
 
     fun onResume() {
         processed.postValue(getProcessed())
@@ -167,7 +186,61 @@ class TaskGoodsViewModel : CoreViewModel(),
     }
 
     fun onSaveClick() {
-        // TODO
+        viewModelScope.launch {
+            screenNavigator.showProgress(saveTaskNetRequest)
+
+            val task = taskManager.getTask()
+            saveTaskNetRequest(SaveTaskParams(
+                userNumber = sessionInfo.personnelNumber.orEmpty(),
+                deviceIp = context.getDeviceIp(),
+                tkNumber = sessionInfo.market.orEmpty(),
+                taskNumber = task.number,
+                taskName = task.name,
+                taskType = task.taskType,
+                movementType = task.movementType,
+                lgortSource = task.pikingStorage,
+                lgortTarget = task.shipmentStorage,
+                shipmentDate = task.shipmentDate,
+                isNotFinish = task.isCreated.toSapBooleanString(),
+                destination = task.receiver,
+                materials = getProcessed().map { (product, count) ->
+                    SaveTaskParams.TaskMaterial(
+                        number = product.materialNumber,
+                        quantity = count.toString(),
+                        xzael = "", // TODO
+                        isDeleted = false.toSapBooleanString(), // TODO
+                        uom = Uom.ST.code
+                    )
+                },
+                baskets = getBaskets().map { basket ->
+                    SaveTaskParams.TaskBasket(
+                        basketNumber = basket.number.toString(),
+                        materialNumber = "", // TODO
+                        quantity = basket.values.sum().toString(),
+                        uom = Uom.ST.code,  // TODO
+                        materialType = "",
+                        lifNr = basket.supplier?.code.orEmpty(),
+                        zcharg = "", // TODO
+                        isAlco = false.toSapBooleanString(), // TODO
+                        isExcise = false.toSapBooleanString(), // TODO
+                        isNotExcise = false.toSapBooleanString(), // TODO
+                        isUsual = false.toSapBooleanString(), // TODO
+                        isVet = false.toSapBooleanString(), // TODO
+                        isFood = false.toSapBooleanString() // TODO
+                    )
+                }
+            )).either(
+                fnL = { failure ->
+                    screenNavigator.openAlertScreen(failure)
+                },
+                fnR = {
+                    taskBasketsRepository.clear()
+                    screenNavigator.openTaskSaveScreen(it.tasks.map { it.title })
+                }
+            )
+
+            screenNavigator.hideProgress()
+        }
     }
 
     private fun searchCode(code: String, fromScan: Boolean, isBarCode: Boolean? = null) {

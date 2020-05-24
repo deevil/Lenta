@@ -70,6 +70,10 @@ class MemoryTaskBasketsRepository(
         )
     }
 
+    override fun clear() {
+        basketList.clear()
+    }
+
     private fun Basket.isSuitableForProduct(
         productInfo: ProductInfo,
         selectedSupplier: Supplier?

@@ -52,6 +52,7 @@
     <string name="baskets">Корзины</string>
     <string name="pu">ЕО</string>
     <string name="boxes">Коробки</string>
+    <string name="task_save_description">Сохранение данных</string>
 
 
 </resources>

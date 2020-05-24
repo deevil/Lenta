@@ -164,6 +164,7 @@ class TaskViewModel : CoreViewModel(), PageSelectionListener {
     private fun buildTask(): Task {
         return Task(
             isCreated = false,
+            number = "",
             name = taskName.value.orEmpty(),
             comment = comments.value.orEmpty(),
             taskType = taskType,
