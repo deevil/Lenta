@@ -28,14 +28,19 @@ class ProcessingUnitTaskListViewModel : CoreViewModel(), PageSelectionListener, 
 
     @Inject
     lateinit var navigator: IScreenNavigator
+
     @Inject
     lateinit var sessionInfo: ISessionInfo
+
     @Inject
     lateinit var manager: ITaskManager
+
     @Inject
     lateinit var taskListNetRequest: TaskListNetRequest
+
     @Inject
     lateinit var taskInfoNetRequest: TaskInfoNetRequest
+
     @Inject
     lateinit var resourceManager: IResourceManager
 

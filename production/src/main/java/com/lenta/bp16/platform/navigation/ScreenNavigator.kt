@@ -208,6 +208,18 @@ class ScreenNavigator @Inject constructor(
         }
     }
 
+    override fun showProcessOrderNotFound(backCallback: () -> Unit) {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    pageNumber = "32.2",
+                    message = context.getString(R.string.process_order_not_found),
+                    iconRes = R.drawable.ic_warning_red_80dp,
+                    codeConfirmForLeft = backFragmentResultHelper.setFuncForResult(backCallback),
+                    leftButtonDecorationInfo = ButtonDecorationInfo.back
+            ))
+        }
+    }
+
     override fun showNotSavedDataWillBeLost(yesCallback: () -> Unit) {
         runOrPostpone {
             getFragmentStack()?.push(AlertFragment.create(
@@ -274,6 +286,7 @@ interface IScreenNavigator : ICoreNavigator {
     fun showConfirmNoRawItem(taskType: String, confirmCallback: () -> Unit)
     fun showFixingPackagingPhaseSuccessful(nextCallback: () -> Unit)
     fun showMoreThanOneOrderForThisProduct(backCallback: () -> Unit)
+    fun showProcessOrderNotFound(backCallback: () -> Unit)
     fun showNotSavedDataWillBeLost(yesCallback: () -> Unit)
     fun showAlertNoIpPrinter()
     fun showLabelSentToPrint(nextCallback: () -> Unit)

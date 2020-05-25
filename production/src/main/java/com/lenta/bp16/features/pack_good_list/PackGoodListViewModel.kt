@@ -75,6 +75,10 @@ class PackGoodListViewModel : CoreViewModel() {
                 navigator.showMoreThanOneOrderForThisProduct {
                     onBackPressed()
                 }
+            } else if (task.goods.any { it.raws.isEmpty() }) {
+                navigator.showProcessOrderNotFound {
+                    onBackPressed()
+                }
             }
         }
     }
