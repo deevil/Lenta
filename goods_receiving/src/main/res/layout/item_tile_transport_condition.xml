@@ -79,14 +79,13 @@
 
                 <FrameLayout
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent">
+                    android:layout_height="wrap_content">
 
                     <com.lenta.shared.view.EditTextWithSuffix
                         android:id="@+id/et_edit_text"
                         style="@style/CellEditTextStyle"
                         android:imeOptions="actionDone"
                         android:inputType="textNoSuggestions|numberDecimal"
-                        android:maxLines="1"
                         android:text="@={item.value}"
                         app:maxLengthForScanProtect="@{10}"
                         app:suffix="@{item.suffix}"

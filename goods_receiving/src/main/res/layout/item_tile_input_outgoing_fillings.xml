@@ -45,7 +45,6 @@
                     android:id="@+id/et_quantity"
                     style="@style/CellEditTextStyle"
                     android:inputType="textNoSuggestions|numberDecimal"
-                    android:maxLines="1"
                     android:text="@={item.outgoingFillingNumber}"
                     app:maxLengthForScanProtect="@{11}"
                     tools:text="1234567890" />

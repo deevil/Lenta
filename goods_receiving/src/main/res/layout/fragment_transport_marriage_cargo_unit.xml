@@ -52,7 +52,6 @@
                 android:imeOptions="actionSearch"
                 android:inputType="numberDecimal"
                 android:maxLength="20"
-                android:maxLines="1"
                 android:text="@={vm.eanCode}"
                 app:cursorToLastPos="@{true}"
                 app:onOkInSoftKeyboard="@{vm}"

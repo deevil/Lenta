@@ -70,7 +70,6 @@
                     android:enabled="@{item.enabled}"
                     android:inputType="numberDecimal"
                     android:maxLength="6"
-                    android:maxLines="1"
                     android:text="@={item.quantity}"
                     app:digitsForUom="@{item.uom}"
                     app:maxLengthForScanProtect="@{6}"
