@@ -132,13 +132,7 @@ class ExciseAlcoBoxCardPGEViewModel : CoreViewModel(), OnPositionClickListener {
             paramGrzCrGrundcatCode.value = dataBase.getParamGrzCrGrundcat() ?: ""
             paramGrzCrGrundcatName.value = dataBase.getGrzCrGrundcatName(paramGrzCrGrundcatCode.value!!) ?: ""
 
-            if (processingUnit.value != null) {
-                qualityInfo.value = dataBase.getQualityBoxesDefectInfo()
-                enabledSpinCategorySubcategory.value = false
-            } else {
-                qualityInfo.value = dataBase.getQualityInfo()
-                enabledSpinCategorySubcategory.value = true
-            }
+            qualityInfo.value = dataBase.getQualityInfo()
             spinQuality.value = qualityInfo.value?.map {
                 it.name
             }
@@ -236,7 +230,6 @@ class ExciseAlcoBoxCardPGEViewModel : CoreViewModel(), OnPositionClickListener {
                 screenNavigator.openExciseAlcoBoxListPGEScreen(
                         productInfo = productInfo.value!!,
                         selectQualityCode = qualityInfo.value?.get(spinQualitySelectedPosition.value ?: 0)?.code ?: "1",
-                        processingUnit = reasonRejectionInfo.value!![spinReasonRejectionSelectedPosition.value!!].code,
                         initialCount = initialCount.value!!
                 )
             }
@@ -311,7 +304,6 @@ class ExciseAlcoBoxCardPGEViewModel : CoreViewModel(), OnPositionClickListener {
                                     massProcessingBoxesNumber = null,
                                     exciseStampInfo = null,
                                     selectQualityCode = "1",
-                                    processingUnit = null,
                                     initialCount = "1",
                                     isScan = true
                             )
@@ -357,7 +349,7 @@ class ExciseAlcoBoxCardPGEViewModel : CoreViewModel(), OnPositionClickListener {
                     yesCallbackFunc = {
                         processExciseAlcoBoxAccPGEService.clearModifications()
                         screenNavigator.goBack()
-                        screenNavigator.openExciseAlcoBoxListPGEScreen(productInfo.value!!, selectQualityCode.value!!, processingUnit.value, initialCount.value!!)
+                        screenNavigator.openExciseAlcoBoxListPGEScreen(productInfo.value!!, selectQualityCode.value!!, initialCount.value!!)
                     }
             )
             return

@@ -676,6 +676,7 @@ class ScreenNavigator(
                     message = context.getString(R.string.dialog_seal_damage),
                     codeConfirmForRight = backFragmentResultHelper.setFuncForResult(nextCallbackFunc),
                     description = context.getString(R.string.seal_damage),
+                    iconRes = R.drawable.ic_question_yellow_80dp,
                     pageNumber = "95",
                     rightButtonDecorationInfo = ButtonDecorationInfo.nextAlternate))
         }
@@ -711,6 +712,7 @@ class ScreenNavigator(
                     message = context.getString(R.string.dialog_new_cargo_unit_another_transportation, cargoUnitNumber, marketNumber),
                     codeConfirmForRight = backFragmentResultHelper.setFuncForResult(nextCallbackFunc),
                     pageNumber = "95",
+                    iconRes = R.drawable.ic_question_yellow_80dp,
                     rightButtonDecorationInfo = ButtonDecorationInfo.nextAlternate))
         }
     }
@@ -721,6 +723,7 @@ class ScreenNavigator(
                     message = context.getString(R.string.dialog_new_cargo_unit_current_transportation, cargoUnitNumber, marketNumber),
                     codeConfirmForRight = backFragmentResultHelper.setFuncForResult(nextCallbackFunc),
                     pageNumber = "95",
+                    iconRes = R.drawable.ic_question_yellow_80dp,
                     rightButtonDecorationInfo = ButtonDecorationInfo.nextAlternate))
         }
     }
@@ -1294,15 +1297,15 @@ class ScreenNavigator(
         }
     }
 
-    override fun openExciseAlcoBoxListPGEScreen(productInfo: TaskProductInfo, selectQualityCode: String, processingUnit: String?, initialCount: String) {
+    override fun openExciseAlcoBoxListPGEScreen(productInfo: TaskProductInfo, selectQualityCode: String, initialCount: String) {
         runOrPostpone {
-            getFragmentStack()?.push(ExciseAlcoBoxListPGEFragment.create(productInfo, selectQualityCode, processingUnit, initialCount))
+            getFragmentStack()?.push(ExciseAlcoBoxListPGEFragment.create(productInfo, selectQualityCode, initialCount))
         }
     }
 
-    override fun openExciseAlcoBoxCardPGEScreen(productInfo: TaskProductInfo, boxInfo: TaskBoxInfo?, massProcessingBoxesNumber: List<String>?, exciseStampInfo: TaskExciseStampInfo?, selectQualityCode: String, processingUnit: String?, initialCount: String, isScan: Boolean) {
+    override fun openExciseAlcoBoxCardPGEScreen(productInfo: TaskProductInfo, boxInfo: TaskBoxInfo?, massProcessingBoxesNumber: List<String>?, exciseStampInfo: TaskExciseStampInfo?, selectQualityCode: String, initialCount: String, isScan: Boolean) {
         runOrPostpone {
-            getFragmentStack()?.push(ExciseAlcoBoxCardPGEFragment.create(productInfo, boxInfo, massProcessingBoxesNumber, exciseStampInfo, selectQualityCode, processingUnit, initialCount, isScan))
+            getFragmentStack()?.push(ExciseAlcoBoxCardPGEFragment.create(productInfo, boxInfo, massProcessingBoxesNumber, exciseStampInfo, selectQualityCode, initialCount, isScan))
         }
     }
 
@@ -1314,6 +1317,50 @@ class ScreenNavigator(
                     iconRes = R.drawable.ic_warning_yellow_80dp,
                     pageNumber = "95",
                     rightButtonDecorationInfo = ButtonDecorationInfo.next))
+        }
+    }
+
+    override fun openAlertScannedStampNotFoundTaskPGEScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    message = context.getString(R.string.scanned_stamp_not_in_task_pge),
+                    iconRes = R.drawable.ic_info_pink_80dp,
+                    textColor = ContextCompat.getColor(context, R.color.color_text_dialogWarning),
+                    pageNumber = "97")
+            )
+        }
+    }
+
+    override fun openScannedBoxListedInCargoUnitDialog(cargoUnitNumber: String, nextCallbackFunc: () -> Unit) {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    message = context.getString(R.string.scanned_box_is_listed_in_cargo_unit, cargoUnitNumber),
+                    codeConfirmForRight = backFragmentResultHelper.setFuncForResult(nextCallbackFunc),
+                    iconRes = R.drawable.ic_question_yellow_80dp,
+                    pageNumber = "97",
+                    rightButtonDecorationInfo = ButtonDecorationInfo.nextAlternate))
+        }
+    }
+
+    override fun openScannedBoxNotIncludedInDeliveryDialog(nextCallbackFunc: () -> Unit) {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    message = context.getString(R.string.scanned_box_not_included_in_delivery),
+                    codeConfirmForRight = backFragmentResultHelper.setFuncForResult(nextCallbackFunc),
+                    iconRes = R.drawable.ic_question_yellow_80dp,
+                    pageNumber = "97",
+                    rightButtonDecorationInfo = ButtonDecorationInfo.nextAlternate))
+        }
+    }
+
+    override fun openScannedBoxNotIncludedInNetworkLentaDialog(nextCallbackFunc: () -> Unit) {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    message = context.getString(R.string.scanned_box_is_not_in_network_lenta),
+                    codeConfirmForRight = backFragmentResultHelper.setFuncForResult(nextCallbackFunc),
+                    iconRes = R.drawable.ic_question_yellow_80dp,
+                    pageNumber = "97",
+                    rightButtonDecorationInfo = ButtonDecorationInfo.nextAlternate))
         }
     }
 
@@ -1465,7 +1512,11 @@ interface IScreenNavigator : ICoreNavigator {
     fun openGoodsInfoShipmentPPScreen(productInfo: TaskProductInfo, isDiscrepancy: Boolean, initialCount: Double = 0.0)
     fun openAlertUnknownTaskTypeScreen()
     fun openExciseAlcoBoxAccInfoPGEScreen(productInfo: TaskProductInfo)
-    fun openExciseAlcoBoxListPGEScreen(productInfo: TaskProductInfo, selectQualityCode: String, processingUnit: String?, initialCount: String)
-    fun openExciseAlcoBoxCardPGEScreen(productInfo: TaskProductInfo, boxInfo: TaskBoxInfo?, massProcessingBoxesNumber: List<String>?, exciseStampInfo: TaskExciseStampInfo?, selectQualityCode: String, processingUnit: String?, initialCount: String, isScan: Boolean)
+    fun openExciseAlcoBoxListPGEScreen(productInfo: TaskProductInfo, selectQualityCode: String, initialCount: String)
+    fun openExciseAlcoBoxCardPGEScreen(productInfo: TaskProductInfo, boxInfo: TaskBoxInfo?, massProcessingBoxesNumber: List<String>?, exciseStampInfo: TaskExciseStampInfo?, selectQualityCode: String, initialCount: String, isScan: Boolean)
     fun openAlertOverLimitAlcoPGEScreen(nextCallbackFunc: () -> Unit)
+    fun openAlertScannedStampNotFoundTaskPGEScreen()
+    fun openScannedBoxListedInCargoUnitDialog(cargoUnitNumber: String, nextCallbackFunc: () -> Unit)
+    fun openScannedBoxNotIncludedInDeliveryDialog(nextCallbackFunc: () -> Unit)
+    fun openScannedBoxNotIncludedInNetworkLentaDialog(nextCallbackFunc: () -> Unit)
 }

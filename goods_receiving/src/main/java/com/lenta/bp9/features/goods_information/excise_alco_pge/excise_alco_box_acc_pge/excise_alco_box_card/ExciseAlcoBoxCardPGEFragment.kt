@@ -32,7 +32,6 @@ class ExciseAlcoBoxCardPGEFragment : CoreFragment<FragmentExciseAlcoBoxCardPgeBi
                 massProcessingBoxesNumber: List<String>?,
                 exciseStampInfo: TaskExciseStampInfo?,
                 selectQualityCode: String,
-                processingUnit: String?,
                 initialCount: String,
                 isScan: Boolean): ExciseAlcoBoxCardPGEFragment {
             ExciseAlcoBoxCardPGEFragment().let {
@@ -41,7 +40,6 @@ class ExciseAlcoBoxCardPGEFragment : CoreFragment<FragmentExciseAlcoBoxCardPgeBi
                 it.massProcessingBoxesNumber = massProcessingBoxesNumber
                 it.exciseStampInfo = exciseStampInfo
                 it.selectQualityCode = selectQualityCode
-                it.processingUnit = processingUnit
                 it.initialCount = initialCount
                 it.isScan = isScan
                 return it
@@ -54,7 +52,6 @@ class ExciseAlcoBoxCardPGEFragment : CoreFragment<FragmentExciseAlcoBoxCardPgeBi
     private var massProcessingBoxesNumber by state<List<String>?>(null)
     private var exciseStampInfo by state<TaskExciseStampInfo?>(null)
     private var selectQualityCode by state<String?>(null)
-    private var processingUnit by state<String?>(null)
     private var initialCount by state<String?>(null)
     private var isScan by state<Boolean?>(null)
 
@@ -69,9 +66,6 @@ class ExciseAlcoBoxCardPGEFragment : CoreFragment<FragmentExciseAlcoBoxCardPgeBi
             vm.selectQualityCode.value = this.selectQualityCode
             vm.initialCount.value = this.initialCount
             vm.isScan.value = this.isScan
-            processingUnit?.let {
-                vm.processingUnit.value = it
-            }
             boxInfo?.let {
                 vm.boxInfo.value = it
             }

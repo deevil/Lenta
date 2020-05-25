@@ -298,4 +298,8 @@
     <string name="quantity">Количество</string>
     <string name="unknown_task_type">Неизвестный тип задания</string>
     <string name="alert_overlimit_alco_pge">Превышено плановое количество. Найдите излишек.</string>
+    <string name="scanned_stamp_not_in_task_pge">Отсканированная марка отсутвует в задании. Отсканируйте номер коробки, а затем номер марки для заявления излишка.</string>
+    <string name="scanned_box_is_listed_in_cargo_unit">Отсканированная коробка числится в ГЕ-%1$s текущей транспортировки. Коробка будет помечена как излишек в текущей ГЕ.</string>
+    <string name="scanned_box_not_included_in_delivery">Отсканированная коробка не числится в поставке. Пометить весь товар в данной коробке как излишек?.</string>
+    <string name="scanned_box_is_not_in_network_lenta">Отсканированная коробка не числится в сети "ЛЕНТА". Товар будет помечен как излишек. Необходимо отсканировать все марки в коробке.</string>
 </resources>

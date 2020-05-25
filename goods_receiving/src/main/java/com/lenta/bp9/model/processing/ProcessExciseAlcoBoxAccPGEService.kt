@@ -112,11 +112,11 @@ class ProcessExciseAlcoBoxAccPGEService
     }
 
     fun addExciseStampDiscrepancy(exciseStamp: TaskExciseStampInfo, typeDiscrepancies: String, isScan: Boolean) {
-        var foundBoxDiscrepancy = currentExciseStampsDiscrepancies.findLast {
+        var foundExciseStampDiscrepancy = currentExciseStampsDiscrepancies.findLast {
             it.code == exciseStamp.code
         }
 
-        foundBoxDiscrepancy = foundBoxDiscrepancy?.copy(typeDiscrepancies = typeDiscrepancies, isScan = isScan)
+        foundExciseStampDiscrepancy = foundExciseStampDiscrepancy?.copy(typeDiscrepancies = typeDiscrepancies, isScan = isScan)
                 ?: TaskExciseStampDiscrepancies(
                         materialNumber = exciseStamp.materialNumber,
                         code = exciseStamp.code,
@@ -139,7 +139,7 @@ class ProcessExciseAlcoBoxAccPGEService
             return@filter false
         }
 
-        currentExciseStampsDiscrepancies.add(foundBoxDiscrepancy)
+        currentExciseStampsDiscrepancies.add(foundExciseStampDiscrepancy)
     }
 
     fun addExciseStampBad(exciseStampCode: String) {
@@ -189,6 +189,18 @@ class ProcessExciseAlcoBoxAccPGEService
         }
 
         currentBoxDiscrepancies.add(foundBoxDiscrepancy)
+    }
+
+    fun addAllAsSurplusForBox(count: String, boxNumber: String, typeDiscrepancies: String, isScan: Boolean) { //https://trello.com/c/TzUSGIH7
+        addProduct(count, typeDiscrepancies)
+        addBoxDiscrepancy(boxNumber, typeDiscrepancies, isScan)
+        //отмечаем все марки из коробки признаком IS_SCAN=false (в карточке трелло не было указано ставить true для этих марок и мы отсканировали коробку, а не марки) и категорией Излишек
+        exciseStamps.filter {stamp ->
+            stamp.boxNumber == boxNumber
+        }.map {
+            addExciseStampDiscrepancy(it, typeDiscrepancies, false)
+        }
+
     }
 
     fun addDiscrepancyScannedMarkCurrentBox(currentBoxNumber: String, realBoxNumber: String, scannedExciseStampInfo: TaskExciseStampInfo, typeDiscrepancies: String) {

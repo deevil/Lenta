@@ -39,7 +39,6 @@ class ExciseAlcoBoxListPGEViewModel : CoreViewModel(), PageSelectionListener, On
     val selectedPage = MutableLiveData(0)
     val productInfo: MutableLiveData<TaskProductInfo> = MutableLiveData()
     val selectQualityCode: MutableLiveData<String> = MutableLiveData()
-    val processingUnit: MutableLiveData<String> = MutableLiveData()
     val initialCount: MutableLiveData<String> = MutableLiveData()
     val countNotProcessed: MutableLiveData<List<BoxListItem>> = MutableLiveData()
     val countProcessed: MutableLiveData<List<BoxListItem>> = MutableLiveData()
@@ -166,7 +165,6 @@ class ExciseAlcoBoxListPGEViewModel : CoreViewModel(), PageSelectionListener, On
                     } else null,
                     exciseStampInfo = null,
                     selectQualityCode = selectQualityCode.value!!,
-                    processingUnit = processingUnit.value,
                     initialCount = initialCount.value!!,
                     isScan = false
             )
@@ -186,7 +184,6 @@ class ExciseAlcoBoxListPGEViewModel : CoreViewModel(), PageSelectionListener, On
                     massProcessingBoxesNumber = null,
                     exciseStampInfo = null,
                     selectQualityCode = selectQualityCode.value!!,
-                    processingUnit = processingUnit.value,
                     initialCount = initialCount.value!!,
                     isScan = false
             )
@@ -221,7 +218,6 @@ class ExciseAlcoBoxListPGEViewModel : CoreViewModel(), PageSelectionListener, On
                                     massProcessingBoxesNumber = null,
                                     exciseStampInfo = exciseStampInfo,
                                     selectQualityCode = "1",
-                                    processingUnit = null,
                                     initialCount = "1",
                                     isScan = isScan.value!!
                             )
@@ -248,7 +244,6 @@ class ExciseAlcoBoxListPGEViewModel : CoreViewModel(), PageSelectionListener, On
                                         massProcessingBoxesNumber = null,
                                         exciseStampInfo = null,
                                         selectQualityCode = selectQualityCode.value!!,
-                                        processingUnit = null,
                                         initialCount = "1",
                                         isScan = isScan.value!!
                                 )
@@ -263,7 +258,6 @@ class ExciseAlcoBoxListPGEViewModel : CoreViewModel(), PageSelectionListener, On
                                         massProcessingBoxesNumber = null,
                                         exciseStampInfo = null,
                                         selectQualityCode = selectQualityCode.value!!,
-                                        processingUnit = processingUnit.value,
                                         initialCount = initialCount.value!!,
                                         isScan = isScan.value!!
                                 )

@@ -11,6 +11,10 @@ import com.lenta.bp9.model.task.IReceivingTaskManager
 import com.lenta.bp9.model.task.TaskProductInfo
 import com.lenta.bp9.platform.navigation.IScreenNavigator
 import com.lenta.bp9.repos.IDataBaseRepo
+import com.lenta.bp9.requests.network.ZmpUtzGrz31V001NetRequest
+import com.lenta.bp9.requests.network.ZmpUtzGrz31V001Params
+import com.lenta.bp9.requests.network.ZmpUtzGrz31V001Result
+import com.lenta.shared.exception.Failure
 import com.lenta.shared.fmp.resources.dao_ext.getProductInfoByMaterial
 import com.lenta.shared.fmp.resources.slow.ZfmpUtz48V001
 import com.lenta.shared.models.core.Uom
@@ -49,6 +53,9 @@ class ExciseAlcoBoxAccInfoPGEViewModel : CoreViewModel(), OnPositionClickListene
     @Inject
     lateinit var hyperHive: HyperHive
 
+    @Inject
+    lateinit var zmpUtzGrz31V001NetRequest: ZmpUtzGrz31V001NetRequest
+
     private val zfmpUtz48V001: ZfmpUtz48V001 by lazy {
         ZfmpUtz48V001(hyperHive)
     }
@@ -62,15 +69,12 @@ class ExciseAlcoBoxAccInfoPGEViewModel : CoreViewModel(), OnPositionClickListene
     }
     val spinQuality: MutableLiveData<List<String>> = MutableLiveData()
     val spinQualitySelectedPosition: MutableLiveData<Int> = MutableLiveData(0)
-    val spinProcessingUnits: MutableLiveData<List<String>> = MutableLiveData()
-    val spinProcessingUnitsSelectedPosition: MutableLiveData<Int> = MutableLiveData(0)
     val suffix: MutableLiveData<String> = MutableLiveData()
     val isDefect: MutableLiveData<Boolean> = spinQualitySelectedPosition.map {
         it != 0
     }
 
     private val qualityInfo: MutableLiveData<List<QualityInfo>> = MutableLiveData()
-    private val reasonRejectionInfo: MutableLiveData<List<ReasonRejectionInfo>> = MutableLiveData()
 
     val count: MutableLiveData<String> = MutableLiveData("0")
     private val countValue: MutableLiveData<Double> = count.map { it?.toDoubleOrNull() ?: 0.0 }
@@ -176,9 +180,7 @@ class ExciseAlcoBoxAccInfoPGEViewModel : CoreViewModel(), OnPositionClickListene
         (it ?: 0.0) > 0.0
     }
 
-    val visibilityAddButton: MutableLiveData<Boolean> = qualityInfo.map {
-        qualityInfo.value?.get(0)?.code != "1"
-    }
+    private val scannedBoxNumber: MutableLiveData<String> = MutableLiveData("")
 
     init {
         viewModelScope.launch {
@@ -211,7 +213,6 @@ class ExciseAlcoBoxAccInfoPGEViewModel : CoreViewModel(), OnPositionClickListene
         screenNavigator.openExciseAlcoBoxListPGEScreen(
                 productInfo = productInfo.value!!,
                 selectQualityCode = qualityInfo.value!![spinQualitySelectedPosition.value!!].code,
-                processingUnit = reasonRejectionInfo.value!![spinProcessingUnitsSelectedPosition.value!!].code,
                 initialCount = countValue.value.toStringFormatted()
         )
     }
@@ -221,21 +222,20 @@ class ExciseAlcoBoxAccInfoPGEViewModel : CoreViewModel(), OnPositionClickListene
     }
 
     fun onClickAdd(): Boolean {
-        if (processExciseAlcoBoxAccPGEService.overLimit(countValue.value!!)) {
-            screenNavigator.openAlertOverLimitAlcoPGEScreen(
-                    nextCallbackFunc = {
+        return if (processExciseAlcoBoxAccPGEService.overLimit(countValue.value!!)) {
+            screenNavigator.openAlertOverLimitAlcoPGEScreen( //https://trello.com/c/TzUSGIH7
+                    nextCallbackFunc = { //todo https://trello.com/c/HiTBZHLJ карточка пока не готова
                         screenNavigator.openExciseAlcoBoxListPGEScreen(
                                 productInfo = productInfo.value!!,
                                 selectQualityCode = qualityInfo.value!![spinQualitySelectedPosition.value!!].code,
-                                processingUnit = reasonRejectionInfo.value!![spinProcessingUnitsSelectedPosition.value!!].code,
                                 initialCount = countValue.value.toStringFormatted()
                         )
                     }
             )
-            return false
+            false
         } else {
             processExciseAlcoBoxAccPGEService.addProduct(convertEizToBei().toString(), qualityInfo.value!![spinQualitySelectedPosition.value!!].code)
-            return true
+            true
         }
     }
 
@@ -250,73 +250,48 @@ class ExciseAlcoBoxAccInfoPGEViewModel : CoreViewModel(), OnPositionClickListene
         }
 
         when (data.length) {
-            68, 150 -> {
-                if (isDefect.value == false) {//todo это от ППП сканирование марок доступно только при категории Норма https://trello.com/c/Wr4xe6L8
-                    val exciseStampInfo = processExciseAlcoBoxAccPGEService.searchExciseStamp(data)
-                    if (exciseStampInfo == null) {
-                        screenNavigator.openAlertScannedStampNotFoundScreen() //Отсканированная марка не числится в текущей поставке. Перейдите к коробу, в которой находится эта марка и отсканируйте ее снова.
+            150 -> { //ПГЕ https://trello.com/c/TzUSGIH7, только марки 150 символов
+                val exciseStampInfo = processExciseAlcoBoxAccPGEService.searchExciseStamp(data)
+                if (exciseStampInfo == null) {
+                    screenNavigator.openAlertScannedStampNotFoundTaskPGEScreen() //Отсканированная марка отсутвует в задании. Отсканируйте номер коробки, а затем номер марки для заявления излишка.
+                } else {
+                    if (exciseStampInfo.materialNumber != productInfo.value!!.materialNumber) {
+                        //Отсканированная марка принадлежит товару <SAP-код> <Название>"
+                        screenNavigator.openAlertScannedStampBelongsAnotherProductScreen(exciseStampInfo.materialNumber, zfmpUtz48V001.getProductInfoByMaterial(exciseStampInfo.materialNumber)?.name
+                                ?: "")
                     } else {
-                        if (exciseStampInfo.materialNumber != productInfo.value!!.materialNumber) {
-                            //Отсканированная марка принадлежит товару <SAP-код> <Название>"
-                            screenNavigator.openAlertScannedStampBelongsAnotherProductScreen(exciseStampInfo.materialNumber, zfmpUtz48V001.getProductInfoByMaterial(exciseStampInfo.materialNumber)?.name
-                                    ?: "")
-                        } else {
-                            if (processExciseAlcoBoxAccPGEService.getCountBoxOfProductOfDiscrepancies(exciseStampInfo.boxNumber, "1") >= acceptTotalCount.value!!.toInt()) {
-                                screenNavigator.openAlertRequiredQuantityBoxesAlreadyProcessedScreen() //Необходимое количество коробок уже обработано
-                            } else {
-                                screenNavigator.openExciseAlcoBoxCardPGEScreen(
-                                        productInfo = productInfo.value!!,
-                                        boxInfo = null,
-                                        massProcessingBoxesNumber = null,
-                                        exciseStampInfo = exciseStampInfo,
-                                        selectQualityCode = qualityInfo.value!![spinQualitySelectedPosition.value!!].code,
-                                        processingUnit = null,
-                                        initialCount = "1",
-                                        isScan = true
-                                )
-                            }
-                        }
+                        screenNavigator.openExciseAlcoBoxCardPGEScreen(
+                                productInfo = productInfo.value!!,
+                                boxInfo = null,
+                                massProcessingBoxesNumber = null,
+                                exciseStampInfo = exciseStampInfo,
+                                selectQualityCode = qualityInfo.value!![spinQualitySelectedPosition.value!!].code,
+                                initialCount = "1",
+                                isScan = true
+                        )
                     }
                 }
             }
             26 -> {
                 val boxInfo = processExciseAlcoBoxAccPGEService.searchBox(boxNumber = data)
                 if (boxInfo == null) {
-                    screenNavigator.openAlertScannedBoxNotFoundScreen() //Отсканированная коробка не числится в задании. Отдайте коробку поставщику.
+                    scannedBoxNumber.value = data
+                    scannedBoxNotFound(data)
                 } else {
                     if (boxInfo.materialNumber != productInfo.value!!.materialNumber) {
                         //Отсканированная коробка принадлежит товару <SAP-код> <Название>
                         screenNavigator.openAlertScannedBoxBelongsAnotherProductScreen(materialNumber = boxInfo.materialNumber, materialName = zfmpUtz48V001.getProductInfoByMaterial(boxInfo.materialNumber)?.name
                                 ?: "")
                     } else {
-                        if (qualityInfo.value?.get(spinQualitySelectedPosition.value
-                                        ?: 0)?.code == "1") {
-                            if (processExciseAlcoBoxAccPGEService.getCountBoxOfProductOfDiscrepancies(boxInfo.boxNumber, "1") >= acceptTotalCount.value!!.toInt()) {
-                                screenNavigator.openAlertRequiredQuantityBoxesAlreadyProcessedScreen() //Необходимое количество коробок уже обработано
-                            } else {
-                                screenNavigator.openExciseAlcoBoxCardPGEScreen(
-                                        productInfo = productInfo.value!!,
-                                        boxInfo = boxInfo,
-                                        massProcessingBoxesNumber = null,
-                                        exciseStampInfo = null,
-                                        selectQualityCode = qualityInfo.value!![spinQualitySelectedPosition.value!!].code,
-                                        processingUnit = null,
-                                        initialCount = "1",
-                                        isScan = true
-                                )
-                            }
-                        } else {
-                            screenNavigator.openExciseAlcoBoxCardPGEScreen(
-                                    productInfo = productInfo.value!!,
-                                    boxInfo = boxInfo,
-                                    massProcessingBoxesNumber = null,
-                                    exciseStampInfo = null,
-                                    selectQualityCode = qualityInfo.value!![spinQualitySelectedPosition.value!!].code,
-                                    processingUnit = reasonRejectionInfo.value!![spinProcessingUnitsSelectedPosition.value!!].code,
-                                    initialCount = countValue.value.toStringFormatted(),
-                                    isScan = true
-                            )
-                        }
+                        screenNavigator.openExciseAlcoBoxCardPGEScreen(
+                                productInfo = productInfo.value!!,
+                                boxInfo = boxInfo,
+                                massProcessingBoxesNumber = null,
+                                exciseStampInfo = null,
+                                selectQualityCode = qualityInfo.value!![spinQualitySelectedPosition.value!!].code,
+                                initialCount = countValue.value.toStringFormatted(),
+                                isScan = true
+                        )
                     }
                 }
             }
@@ -330,28 +305,75 @@ class ExciseAlcoBoxAccInfoPGEViewModel : CoreViewModel(), OnPositionClickListene
         }
     }
 
-    override fun onClickPosition(position: Int) {
-        spinProcessingUnitsSelectedPosition.value = position
-    }
-
-    fun onClickPositionSpinQuality(position: Int) {
-        viewModelScope.launch {
-            spinQualitySelectedPosition.value = position
-            updateDataSpinReasonRejection(qualityInfo.value!![position].code)
-        }
-    }
-
-    private suspend fun updateDataSpinReasonRejection(selectedQuality: String) {
+    private fun scannedBoxNotFound(boxNumber: String) {
         viewModelScope.launch {
             screenNavigator.showProgressLoadingData()
-            spinProcessingUnitsSelectedPosition.value = 0
-            reasonRejectionInfo.value = dataBase.getReasonRejectionInfoOfQuality(selectedQuality)
-            spinProcessingUnits.value = reasonRejectionInfo.value?.map {
-                it.name
+            taskManager.getReceivingTask()?.let { task ->
+                val params = ZmpUtzGrz31V001Params(
+                        taskNumber = task.taskHeader.taskNumber,
+                        materialNumber = productInfo.value!!.materialNumber,
+                        boxNumber = boxNumber,
+                        stampCode = ""
+                )
+                zmpUtzGrz31V001NetRequest(params).either(::handleFailure, ::handleSuccessZmpUtzGrz31)
             }
-            count.value = count.value
             screenNavigator.hideProgress()
+
         }
+    }
+
+    private fun handleSuccessZmpUtzGrz31(result: ZmpUtzGrz31V001Result) {
+        when (result.indicatorOnePosition) {
+            "1" -> {
+                screenNavigator.openScannedBoxListedInCargoUnitDialog(
+                        cargoUnitNumber = result.cargoUnitNumber,
+                        nextCallbackFunc = {
+                            processExciseAlcoBoxAccPGEService.addAllAsSurplusForBox(count = convertEizToBei().toString(), boxNumber = scannedBoxNumber.value ?: "", typeDiscrepancies = "2", isScan = true)
+                            screenNavigator.openExciseAlcoBoxListPGEScreen(
+                                    productInfo = productInfo.value!!,
+                                    selectQualityCode = qualityInfo.value!![spinQualitySelectedPosition.value!!].code,
+                                    initialCount = countValue.value.toStringFormatted()
+                            )
+                        }
+                )
+            }
+            "2" -> {
+                screenNavigator.openScannedBoxNotIncludedInDeliveryDialog(
+                        nextCallbackFunc = {
+                            processExciseAlcoBoxAccPGEService.addAllAsSurplusForBox(count = convertEizToBei().toString(), boxNumber = scannedBoxNumber.value ?: "", typeDiscrepancies = "2", isScan = true)
+                            screenNavigator.openExciseAlcoBoxListPGEScreen(
+                                    productInfo = productInfo.value!!,
+                                    selectQualityCode = qualityInfo.value!![spinQualitySelectedPosition.value!!].code,
+                                    initialCount = countValue.value.toStringFormatted()
+                            )
+                        }
+                )
+            }
+            "3" -> {
+                screenNavigator.openScannedBoxNotIncludedInNetworkLentaDialog(
+                        nextCallbackFunc = { //https://trello.com/c/6NyHp2jB ПГЕ. Карточка короба-излишка
+                            val boxInfo = processExciseAlcoBoxAccPGEService.searchBox(boxNumber = scannedBoxNumber.value ?: "")
+                            screenNavigator.openExciseAlcoBoxCardPGEScreen(
+                                    productInfo = productInfo.value!!,
+                                    boxInfo = boxInfo,
+                                    massProcessingBoxesNumber = null,
+                                    exciseStampInfo = null,
+                                    selectQualityCode = qualityInfo.value!![spinQualitySelectedPosition.value!!].code,
+                                    initialCount = countValue.value.toStringFormatted(),
+                                    isScan = true
+                            )
+                        }
+                )
+            }
+        }
+    }
+
+    override fun handleFailure(failure: Failure) {
+        screenNavigator.openAlertScreen(failure, "97")
+    }
+
+    override fun onClickPosition(position: Int) {
+        spinQualitySelectedPosition.value = position
     }
 
     private fun convertEizToBei(): Double {

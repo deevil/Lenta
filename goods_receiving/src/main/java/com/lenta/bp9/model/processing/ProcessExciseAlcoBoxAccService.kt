@@ -112,11 +112,11 @@ class ProcessExciseAlcoBoxAccService
     }
 
     fun addExciseStampDiscrepancy(exciseStamp: TaskExciseStampInfo, typeDiscrepancies: String, isScan: Boolean) {
-        var foundBoxDiscrepancy = currentExciseStampsDiscrepancies.findLast {
+        var foundExciseStampDiscrepancy = currentExciseStampsDiscrepancies.findLast {
             it.code == exciseStamp.code
         }
 
-        foundBoxDiscrepancy = foundBoxDiscrepancy?.copy(typeDiscrepancies = typeDiscrepancies, isScan = isScan)
+        foundExciseStampDiscrepancy = foundExciseStampDiscrepancy?.copy(typeDiscrepancies = typeDiscrepancies, isScan = isScan)
                 ?: TaskExciseStampDiscrepancies(
                         materialNumber = exciseStamp.materialNumber,
                         code = exciseStamp.code,
@@ -139,7 +139,7 @@ class ProcessExciseAlcoBoxAccService
             return@filter false
         }
 
-        currentExciseStampsDiscrepancies.add(foundBoxDiscrepancy)
+        currentExciseStampsDiscrepancies.add(foundExciseStampDiscrepancy)
     }
 
     fun addExciseStampBad(exciseStampCode: String) {

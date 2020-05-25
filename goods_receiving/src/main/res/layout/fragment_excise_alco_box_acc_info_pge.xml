@@ -163,7 +163,6 @@
             android:id="@+id/ConstraintNorm"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:visibility="@{!vm.isDefect}"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="1.0"
             app:layout_constraintStart_toStartOf="parent"
@@ -286,92 +285,6 @@
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/ConstraintDefect"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:visibility="@{vm.isDefect}"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/ConstraintNorm">
-
-            <View
-                android:id="@+id/div_vert3"
-                android:layout_width="1dp"
-                android:layout_height="0dp"
-                android:layout_marginStart="1dp"
-                android:background="@color/color_divider"
-                app:layout_constraintBottom_toBottomOf="@+id/div_hor7"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <TextView
-                android:id="@+id/tv_box_list"
-                style="@style/TextTitle"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginEnd="8dp"
-                android:ellipsize="end"
-                android:text="@string/box_list"
-                app:layout_constraintBottom_toBottomOf="@+id/tv_box_list_val"
-                app:layout_constraintEnd_toStartOf="@+id/div_vert3"
-                app:layout_constraintStart_toStartOf="parent" />
-
-            <TextView
-                android:id="@+id/tv_box_list_val"
-                style="@style/TextTitle"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="14dp"
-                android:layout_marginEnd="8dp"
-                android:ellipsize="end"
-                android:maxLines="1"
-                android:text=""
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/div_vert3"
-                app:layout_constraintTop_toTopOf="parent"
-                tools:text="0 из 2" />
-
-            <View
-                android:id="@+id/div_hor7"
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:layout_marginTop="14dp"
-                android:background="@color/color_divider"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/tv_box_list_val" />
-
-            <com.lenta.shared.view.ClickableSpinner
-                android:id="@+id/spinner_reject_rejection"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginEnd="8dp"
-                app:items="@{vm.spinProcessingUnits}"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/div_vert3"
-                app:onPositionClickListener="@{vm}"
-                app:position="@{vm.spinProcessingUnitsSelectedPosition}"
-                tools:entries="@array/test_list"/>
-
-            <View
-                android:id="@+id/div_hor8"
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:layout_marginTop="8dp"
-                android:background="@color/color_divider"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/spinner_reject_rejection" />
-
-        </androidx.constraintlayout.widget.ConstraintLayout>
-
         <ImageView
             android:id="@+id/imageView6"
             android:layout_width="wrap_content"
@@ -446,8 +359,7 @@
                 android:layout_weight="1"
                 android:background="?selectableItemBackground"
                 android:onClick="@{(v) -> vm.screenNavigator.openESInfoScreen()}"
-                android:src="@drawable/ic_scan_barcode_es_white_32dp"
-                android:visibility="@{!vm.isDefect}" />
+                android:src="@drawable/ic_scan_barcode_es_white_32dp" />
 
             <ImageView
                 android:id="@+id/b_scan"

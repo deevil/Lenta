@@ -44,18 +44,6 @@ class ExciseAlcoBoxAccInfoPGEFragment : CoreFragment<FragmentExciseAlcoBoxAccInf
         }
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        binding?.spinnerQuality?.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-            override fun onItemSelected(adapterView: AdapterView<*>, view: View?, position: Int, l: Long) {
-                vm.onClickPositionSpinQuality(position)
-            }
-
-            override fun onNothingSelected(adapterView: AdapterView<*>) {
-            }
-        }
-    }
-
     override fun setupTopToolBar(topToolbarUiModel: TopToolbarUiModel) {
         topToolbarUiModel.title.value = "${vm.productInfo.value?.getMaterialLastSix()} ${vm.productInfo.value?.description}"
         topToolbarUiModel.description.value = getString(R.string.goods_info)
@@ -65,11 +53,8 @@ class ExciseAlcoBoxAccInfoPGEFragment : CoreFragment<FragmentExciseAlcoBoxAccInf
         bottomToolbarUiModel.uiModelButton1.show(ButtonDecorationInfo.back)
         bottomToolbarUiModel.uiModelButton2.show(ButtonDecorationInfo.boxes)
         bottomToolbarUiModel.uiModelButton3.show(ButtonDecorationInfo.details)
-        bottomToolbarUiModel.uiModelButton4.show(ButtonDecorationInfo.add)
         bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.apply)
 
-        connectLiveData(vm.visibilityAddButton, bottomToolbarUiModel.uiModelButton4.visibility)
-        connectLiveData(vm.enabledApplyButton, bottomToolbarUiModel.uiModelButton4.enabled)
         connectLiveData(vm.enabledApplyButton, bottomToolbarUiModel.uiModelButton5.enabled)
     }
 
@@ -77,7 +62,6 @@ class ExciseAlcoBoxAccInfoPGEFragment : CoreFragment<FragmentExciseAlcoBoxAccInf
         when (view.id) {
             R.id.b_2 -> vm.onClickBoxes()
             R.id.b_3 -> vm.onClickDetails()
-            R.id.b_4 -> vm.onClickAdd()
             R.id.b_5 -> vm.onClickApply()
         }
     }
