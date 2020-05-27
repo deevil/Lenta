@@ -150,17 +150,23 @@ class GoodInfoOpenViewModel : CoreViewModel() {
 
     val date = MutableLiveData("")
 
+    private val isCorrectDate = date.map { date ->
+        date?.length ?: 0 == 10
+    }
+
     val dateEnabled = MutableLiveData(true)
 
     val applyEnabled by lazy {
-        quantity.combineLatest(good).map {
-            val quantity = it!!.first
-            val good = it.second
+        quantity.combineLatest(isCorrectDate).map {
+            val quantity = it?.first?.toDoubleOrNull() ?: 0.0
+            val isCorrectDate = it?.second ?: false
 
-            when (good.kind) {
-                GoodKind.COMMON -> quantity?.toDoubleOrNull() ?: 0.0 > 0
-                GoodKind.ALCOHOL -> quantity?.toDoubleOrNull() ?: 0.0 > 0
-                GoodKind.EXCISE -> quantity?.toDoubleOrNull() ?: 0.0 > 0
+            good.value?.let { good ->
+                when (good.kind) {
+                    GoodKind.COMMON -> quantity > 0
+                    GoodKind.ALCOHOL -> quantity > 0 && isCorrectDate
+                    GoodKind.EXCISE -> quantity > 0 && isCorrectDate
+                }
             }
         }
     }
@@ -348,9 +354,9 @@ class GoodInfoOpenViewModel : CoreViewModel() {
             val quantity = quantity.value?.toDoubleOrNull() ?: 0.0
 
             if (position.value?.isCounted == true) {
-                good.replacePosition(quantity, task.value!!.provider, category.value!!)
+                good.replacePosition(quantity, task.value!!.provider, category.value!!, date.value)
             } else {
-                good.addPosition(quantity, task.value!!.provider, category.value!!)
+                good.addPosition(quantity, task.value!!.provider, category.value!!, date.value)
             }
 
             manager.updateCurrentGood(good)
