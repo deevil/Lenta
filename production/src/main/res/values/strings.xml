@@ -23,6 +23,7 @@
     <string name="more_than_one_good_for_this_task">По данной задаче активно более одного товара на упаковку</string>
     <string name="error_completing_object_processing">Ошибка завершения обработки объекта</string>
     <string name="label_sent_to_print">Этикетка отправлена на печать</string>
+    <string name="process_order_not_found">Не найден технологический заказ</string>
 
     // Заголовки списков
     <string name="sku">SKU</string>
