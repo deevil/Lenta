@@ -36,8 +36,8 @@ data class Good(
         return "${material.takeLast(6)}$delimiter$name"
     }
 
-    fun addPosition(quantity: Double, provider: ProviderInfo, category: Category) {
-        val position = positions.find { it.provider.code == provider.code }
+    fun addPosition(quantity: Double, provider: ProviderInfo, category: Category, date: String?) {
+        val position = positions.find { it.provider.code == provider.code && it.date == date }
         val oldQuantity = position?.quantity
 
         if (position != null) {
@@ -48,12 +48,13 @@ data class Good(
                 quantity = quantity.sumWith(oldQuantity),
                 provider = provider,
                 category = category,
+                date = date,
                 isCounted = true
         ))
     }
 
-    fun replacePosition(quantity: Double, provider: ProviderInfo, category: Category) {
-        val position = positions.find { it.provider.code == provider.code }
+    fun replacePosition(quantity: Double, provider: ProviderInfo, category: Category, date: String?) {
+        val position = positions.find { it.provider.code == provider.code && it.date == date }
 
         if (position != null) {
             positions.remove(position)
@@ -63,6 +64,7 @@ data class Good(
                 quantity = quantity,
                 provider = provider,
                 category = category,
+                date = date,
                 isCounted = true
         ))
     }

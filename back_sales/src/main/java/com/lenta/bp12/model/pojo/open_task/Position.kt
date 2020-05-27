@@ -10,6 +10,7 @@ data class Position(
         val units: Uom = Uom.ST,
         var category: Category = Category.QUANTITY,
         var provider: ProviderInfo,
+        var date: String? = null,
         var isCounted: Boolean = false,
         var isDelete: Boolean = false
 ) {
