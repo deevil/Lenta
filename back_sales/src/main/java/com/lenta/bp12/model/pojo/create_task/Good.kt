@@ -41,8 +41,8 @@ data class Good(
         return innerQuantity > 1 // По умолчанию всегда 1.0
     }
 
-    fun addPosition(quantity: Double, provider: ProviderInfo?) {
-        val position = positions.find { it.provider?.code == provider?.code }
+    fun addPosition(quantity: Double, provider: ProviderInfo?, date: String?) {
+        val position = positions.find { it.provider?.code == provider?.code && it.date == date }
         val oldQuantity = position?.quantity
 
         if (position != null) {
@@ -51,7 +51,8 @@ data class Good(
 
         positions.add(0, Position(
                 quantity = quantity.sumWith(oldQuantity),
-                provider = provider
+                provider = provider,
+                date = date
         ))
     }
 

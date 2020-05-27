@@ -104,7 +104,7 @@
                         android:drawableEnd="@drawable/spinner_arrow_down_disabled"
                         android:enabled="false"
                         android:text="@{vm.providerName}"
-                        tools:text="Количество" />
+                        tools:text="123123 ООО Поставщик" />
 
                 </LinearLayout>
 

@@ -208,15 +208,37 @@ class GoodInfoCreateViewModel : CoreViewModel() {
 
     val date = MutableLiveData("")
 
+    /*private val enteredDate = date.map {
+        val entered = it ?: ""
+        var parseDate: Date? = null
+
+        if (entered.isNotEmpty()) {
+            try {
+                parseDate = SimpleDateFormat("dd.MM.yyyy", Locale.getDefault()).parse(entered)
+            } catch (e: Exception) {
+                Logg.d { "Date parse exception!" }
+            }
+        }
+
+        parseDate
+    }*/
+
+    private val isCorrectDate = date.map { date ->
+        date?.length ?: 0 == 10
+    }
+
     val dateEnabled = MutableLiveData(true)
 
     val applyEnabled by lazy {
-        quantity.map { quantity ->
+        quantity.combineLatest(isCorrectDate).map {
+            val quantity = it?.first?.toDoubleOrNull() ?: 0.0
+            val isCorrectDate = it?.second ?: false
+
             good.value?.let { good ->
                 when (good.kind) {
-                    GoodKind.COMMON -> quantity?.toDoubleOrNull() ?: 0.0 > 0
-                    GoodKind.ALCOHOL -> quantity?.toDoubleOrNull() ?: 0.0 > 0
-                    GoodKind.EXCISE -> quantity?.toDoubleOrNull() ?: 0.0 > 0
+                    GoodKind.COMMON -> quantity > 0
+                    GoodKind.ALCOHOL -> quantity > 0 && isCorrectDate
+                    GoodKind.EXCISE -> quantity > 0 && isCorrectDate
                 }
             }
         }
@@ -360,7 +382,7 @@ class GoodInfoCreateViewModel : CoreViewModel() {
     private fun saveGoodInTask() {
         good.value?.let { good ->
             val quantity = quantity.value?.toDoubleOrNull() ?: 0.0
-            good.addPosition(quantity, getProvider())
+            good.addPosition(quantity, getProvider(), date.value)
 
             manager.updateCurrentGood(good)
 
