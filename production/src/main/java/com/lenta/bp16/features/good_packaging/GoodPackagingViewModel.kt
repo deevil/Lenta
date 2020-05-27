@@ -90,6 +90,7 @@ class GoodPackagingViewModel : CoreViewModel() {
                     PackGoodParams(
                             marketNumber = sessionInfo.market ?: "Not found!",
                             taskType = manager.getTaskTypeCode(),
+                            userNumber = sessionInfo.personnelNumber ?: "",
                             deviceIp = deviceIp.value ?: "Not found!",
                             material = good.value!!.material,
                             order = raw.value!!.order,
