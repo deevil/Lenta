@@ -33,11 +33,12 @@ class ExciseAlcoBoxListPGEFragment : CoreFragment<FragmentExciseAlcoBoxListPgeBi
         OnKeyDownListener {
 
     companion object {
-        fun create(productInfo: TaskProductInfo, selectQualityCode: String, initialCount: String): ExciseAlcoBoxListPGEFragment {
+        fun create(productInfo: TaskProductInfo, selectQualityCode: String, initialCount: String, countAcceptRefusal: Double): ExciseAlcoBoxListPGEFragment {
             ExciseAlcoBoxListPGEFragment().let {
                 it.productInfo = productInfo
                 it.selectQualityCode = selectQualityCode
                 it.initialCount = initialCount
+                it.countAcceptRefusal = countAcceptRefusal
                 return it
             }
         }
@@ -46,6 +47,7 @@ class ExciseAlcoBoxListPGEFragment : CoreFragment<FragmentExciseAlcoBoxListPgeBi
     private var productInfo by state<TaskProductInfo?>(null)
     private var selectQualityCode by state<String?>(null)
     private var initialCount by state<String?>(null)
+    private var countAcceptRefusal by state<Double?>(null)
 
     private var notProcessedRecyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
 
@@ -59,6 +61,7 @@ class ExciseAlcoBoxListPGEFragment : CoreFragment<FragmentExciseAlcoBoxListPgeBi
             vm.productInfo.value = productInfo
             vm.selectQualityCode.value = this.selectQualityCode
             vm.initialCount.value = this.initialCount
+            vm.countAcceptRefusal.value = this.countAcceptRefusal
             return vm
         }
     }

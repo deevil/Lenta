@@ -200,7 +200,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
-                android:layout_marginTop="14dp"
+                android:layout_marginTop="12dp"
                 android:layout_marginEnd="8dp"
                 android:ellipsize="end"
                 android:maxLines="1"
@@ -208,7 +208,7 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/checkBox_stamp_control"
                 app:layout_constraintTop_toTopOf="parent"
-                tools:text="1 кор х 2"/>
+                tools:text="1 кор х 2" />
 
             <CheckBox
                 android:id="@+id/checkBox_stamp_control"
@@ -252,7 +252,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
-                android:layout_marginTop="14dp"
+                android:layout_marginTop="12dp"
                 android:layout_marginEnd="8dp"
                 android:ellipsize="end"
                 android:maxLines="1"
@@ -260,7 +260,7 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/checkBox_box_control"
                 app:layout_constraintTop_toBottomOf="@+id/div_hor5"
-                tools:text="0 из 1"/>
+                tools:text="0 из 1" />
 
             <CheckBox
                 android:id="@+id/checkBox_box_control"

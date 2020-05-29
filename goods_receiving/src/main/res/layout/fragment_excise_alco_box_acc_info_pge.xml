@@ -52,6 +52,7 @@
             android:layout_marginEnd="8dp"
             app:items="@{vm.spinQuality}"
             app:position="@{vm.spinQualitySelectedPosition}"
+            app:onPositionClickListener="@{vm}"
             app:layout_constraintBottom_toBottomOf="@+id/et_quantity"
             app:layout_constraintEnd_toStartOf="@+id/div_vert1"
             app:layout_constraintStart_toStartOf="parent"

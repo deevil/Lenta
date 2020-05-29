@@ -302,4 +302,8 @@
     <string name="scanned_box_is_listed_in_cargo_unit">Отсканированная коробка числится в ГЕ-%1$s текущей транспортировки. Коробка будет помечена как излишек в текущей ГЕ.</string>
     <string name="scanned_box_not_included_in_delivery">Отсканированная коробка не числится в поставке. Пометить весь товар в данной коробке как излишек?.</string>
     <string name="scanned_box_is_not_in_network_lenta">Отсканированная коробка не числится в сети "ЛЕНТА". Товар будет помечен как излишек. Необходимо отсканировать все марки в коробке.</string>
+    <string name="list_stamp">Список марок</string>
+    <string name="box_total">Итого в коробе</string>
+    <string name="scanned_stamp_boxcard_not_in_task_pge">Отсканированная марка не найдена. Пометить ее как излишек? В случае согласия необходимо будет отсканировать все марки в текущей коробке.</string>
+    <string name="boxcard_unsaved_data_confirmation">Введенные данные будут удалены. Продолжить?</string>
 </resources>

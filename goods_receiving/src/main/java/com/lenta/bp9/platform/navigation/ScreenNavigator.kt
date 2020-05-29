@@ -1297,15 +1297,15 @@ class ScreenNavigator(
         }
     }
 
-    override fun openExciseAlcoBoxListPGEScreen(productInfo: TaskProductInfo, selectQualityCode: String, initialCount: String) {
+    override fun openExciseAlcoBoxListPGEScreen(productInfo: TaskProductInfo, selectQualityCode: String, initialCount: String, countAcceptRefusal: Double) {
         runOrPostpone {
-            getFragmentStack()?.push(ExciseAlcoBoxListPGEFragment.create(productInfo, selectQualityCode, initialCount))
+            getFragmentStack()?.push(ExciseAlcoBoxListPGEFragment.create(productInfo, selectQualityCode, initialCount, countAcceptRefusal))
         }
     }
 
-    override fun openExciseAlcoBoxCardPGEScreen(productInfo: TaskProductInfo, boxInfo: TaskBoxInfo?, massProcessingBoxesNumber: List<String>?, exciseStampInfo: TaskExciseStampInfo?, selectQualityCode: String, initialCount: String, isScan: Boolean) {
+    override fun openExciseAlcoBoxCardPGEScreen(productInfo: TaskProductInfo, boxInfo: TaskBoxInfo?, massProcessingBoxesNumber: List<String>?, exciseStampInfo: TaskExciseStampInfo?, selectQualityCode: String, initialCount: String, isScan: Boolean, countAcceptRefusal: Double) {
         runOrPostpone {
-            getFragmentStack()?.push(ExciseAlcoBoxCardPGEFragment.create(productInfo, boxInfo, massProcessingBoxesNumber, exciseStampInfo, selectQualityCode, initialCount, isScan))
+            getFragmentStack()?.push(ExciseAlcoBoxCardPGEFragment.create(productInfo, boxInfo, massProcessingBoxesNumber, exciseStampInfo, selectQualityCode, initialCount, isScan, countAcceptRefusal))
         }
     }
 
@@ -1357,6 +1357,28 @@ class ScreenNavigator(
         runOrPostpone {
             getFragmentStack()?.push(AlertFragment.create(
                     message = context.getString(R.string.scanned_box_is_not_in_network_lenta),
+                    codeConfirmForRight = backFragmentResultHelper.setFuncForResult(nextCallbackFunc),
+                    iconRes = R.drawable.ic_question_yellow_80dp,
+                    pageNumber = "97",
+                    rightButtonDecorationInfo = ButtonDecorationInfo.nextAlternate))
+        }
+    }
+
+    override fun openScannedStampBoxPGENotFoundDialog(nextCallbackFunc: () -> Unit) {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    message = context.getString(R.string.scanned_stamp_boxcard_not_in_task_pge),
+                    codeConfirmForRight = backFragmentResultHelper.setFuncForResult(nextCallbackFunc),
+                    iconRes = R.drawable.ic_question_yellow_80dp,
+                    pageNumber = "97",
+                    rightButtonDecorationInfo = ButtonDecorationInfo.nextAlternate))
+        }
+    }
+
+    override fun openBoxCardUnsavedDataConfirmationDialog(nextCallbackFunc: () -> Unit) {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    message = context.getString(R.string.boxcard_unsaved_data_confirmation),
                     codeConfirmForRight = backFragmentResultHelper.setFuncForResult(nextCallbackFunc),
                     iconRes = R.drawable.ic_question_yellow_80dp,
                     pageNumber = "97",
@@ -1512,11 +1534,13 @@ interface IScreenNavigator : ICoreNavigator {
     fun openGoodsInfoShipmentPPScreen(productInfo: TaskProductInfo, isDiscrepancy: Boolean, initialCount: Double = 0.0)
     fun openAlertUnknownTaskTypeScreen()
     fun openExciseAlcoBoxAccInfoPGEScreen(productInfo: TaskProductInfo)
-    fun openExciseAlcoBoxListPGEScreen(productInfo: TaskProductInfo, selectQualityCode: String, initialCount: String)
-    fun openExciseAlcoBoxCardPGEScreen(productInfo: TaskProductInfo, boxInfo: TaskBoxInfo?, massProcessingBoxesNumber: List<String>?, exciseStampInfo: TaskExciseStampInfo?, selectQualityCode: String, initialCount: String, isScan: Boolean)
+    fun openExciseAlcoBoxListPGEScreen(productInfo: TaskProductInfo, selectQualityCode: String, initialCount: String, countAcceptRefusal: Double)
+    fun openExciseAlcoBoxCardPGEScreen(productInfo: TaskProductInfo, boxInfo: TaskBoxInfo?, massProcessingBoxesNumber: List<String>?, exciseStampInfo: TaskExciseStampInfo?, selectQualityCode: String, initialCount: String, isScan: Boolean, countAcceptRefusal: Double)
     fun openAlertOverLimitAlcoPGEScreen(nextCallbackFunc: () -> Unit)
     fun openAlertScannedStampNotFoundTaskPGEScreen()
     fun openScannedBoxListedInCargoUnitDialog(cargoUnitNumber: String, nextCallbackFunc: () -> Unit)
     fun openScannedBoxNotIncludedInDeliveryDialog(nextCallbackFunc: () -> Unit)
     fun openScannedBoxNotIncludedInNetworkLentaDialog(nextCallbackFunc: () -> Unit)
+    fun openScannedStampBoxPGENotFoundDialog(nextCallbackFunc: () -> Unit)
+    fun openBoxCardUnsavedDataConfirmationDialog(nextCallbackFunc: () -> Unit)
 }

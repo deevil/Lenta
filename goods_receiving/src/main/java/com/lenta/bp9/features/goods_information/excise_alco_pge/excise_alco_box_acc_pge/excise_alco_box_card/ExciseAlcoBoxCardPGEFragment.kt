@@ -1,8 +1,6 @@
 package com.lenta.bp9.features.goods_information.excise_alco_pge.excise_alco_box_acc_pge.excise_alco_box_card
 
-import android.os.Bundle
 import android.view.View
-import android.widget.AdapterView
 import com.lenta.bp9.R
 import com.lenta.bp9.databinding.FragmentExciseAlcoBoxCardPgeBinding
 import com.lenta.bp9.model.task.TaskBoxInfo
@@ -33,7 +31,8 @@ class ExciseAlcoBoxCardPGEFragment : CoreFragment<FragmentExciseAlcoBoxCardPgeBi
                 exciseStampInfo: TaskExciseStampInfo?,
                 selectQualityCode: String,
                 initialCount: String,
-                isScan: Boolean): ExciseAlcoBoxCardPGEFragment {
+                isScan: Boolean,
+                countAcceptRefusal: Double): ExciseAlcoBoxCardPGEFragment {
             ExciseAlcoBoxCardPGEFragment().let {
                 it.productInfo = productInfo
                 it.boxInfo = boxInfo
@@ -42,6 +41,7 @@ class ExciseAlcoBoxCardPGEFragment : CoreFragment<FragmentExciseAlcoBoxCardPgeBi
                 it.selectQualityCode = selectQualityCode
                 it.initialCount = initialCount
                 it.isScan = isScan
+                it.countAcceptRefusal = countAcceptRefusal
                 return it
             }
         }
@@ -54,6 +54,7 @@ class ExciseAlcoBoxCardPGEFragment : CoreFragment<FragmentExciseAlcoBoxCardPgeBi
     private var selectQualityCode by state<String?>(null)
     private var initialCount by state<String?>(null)
     private var isScan by state<Boolean?>(null)
+    private var countAcceptRefusal by state<Double?>(null)
 
     override fun getLayoutId(): Int = R.layout.fragment_excise_alco_box_card_pge
 
@@ -66,6 +67,7 @@ class ExciseAlcoBoxCardPGEFragment : CoreFragment<FragmentExciseAlcoBoxCardPgeBi
             vm.selectQualityCode.value = this.selectQualityCode
             vm.initialCount.value = this.initialCount
             vm.isScan.value = this.isScan
+            vm.countAcceptRefusal.value = this.countAcceptRefusal
             boxInfo?.let {
                 vm.boxInfo.value = it
             }
@@ -87,27 +89,18 @@ class ExciseAlcoBoxCardPGEFragment : CoreFragment<FragmentExciseAlcoBoxCardPgeBi
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
         bottomToolbarUiModel.uiModelButton1.show(ButtonDecorationInfo.back)
         bottomToolbarUiModel.uiModelButton2.show(ButtonDecorationInfo.rollback)
-        bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.apply)
+        bottomToolbarUiModel.uiModelButton3.show(ButtonDecorationInfo.details)
+        bottomToolbarUiModel.uiModelButton4.show(ButtonDecorationInfo.add) //в WM кнопка доступна всегда, хотя в https://trello.com/c/iOmIb6N7 для ситуации 2 прописаны условия
+        bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.apply)//в WM кнопка доступна всегда, хотя в https://trello.com/c/iOmIb6N7 для ситуации 2 прописаны условия
 
-        connectLiveData(vm.visibilityRollbackBtn, bottomToolbarUiModel.uiModelButton2.visibility)
         connectLiveData(vm.enabledRollbackBtn, bottomToolbarUiModel.uiModelButton2.enabled)
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        binding?.spinnerQuality?.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-            override fun onItemSelected(adapterView: AdapterView<*>, view: View?, position: Int, l: Long) {
-                vm.onClickPositionSpinQuality(position)
-            }
-
-            override fun onNothingSelected(adapterView: AdapterView<*>) {
-            }
-        }
     }
 
     override fun onToolbarButtonClick(view: View) {
         when (view.id) {
             R.id.b_2 -> vm.onClickRollback()
+            R.id.b_3 -> vm.onClickDetails()
+            R.id.b_4 -> vm.onClickAdd()
             R.id.b_5 -> vm.onClickApply()
         }
     }

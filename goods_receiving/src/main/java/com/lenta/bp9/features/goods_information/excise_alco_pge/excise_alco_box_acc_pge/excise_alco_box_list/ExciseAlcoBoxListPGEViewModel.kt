@@ -40,6 +40,7 @@ class ExciseAlcoBoxListPGEViewModel : CoreViewModel(), PageSelectionListener, On
     val productInfo: MutableLiveData<TaskProductInfo> = MutableLiveData()
     val selectQualityCode: MutableLiveData<String> = MutableLiveData()
     val initialCount: MutableLiveData<String> = MutableLiveData()
+    val countAcceptRefusal: MutableLiveData<Double> = MutableLiveData()
     val countNotProcessed: MutableLiveData<List<BoxListItem>> = MutableLiveData()
     val countProcessed: MutableLiveData<List<BoxListItem>> = MutableLiveData()
     val notProcessedSelectionsHelper = SelectionItemsHelper()
@@ -166,7 +167,8 @@ class ExciseAlcoBoxListPGEViewModel : CoreViewModel(), PageSelectionListener, On
                     exciseStampInfo = null,
                     selectQualityCode = selectQualityCode.value!!,
                     initialCount = initialCount.value!!,
-                    isScan = false
+                    isScan = false,
+                    countAcceptRefusal = countAcceptRefusal.value!!
             )
         }
     }
@@ -177,16 +179,21 @@ class ExciseAlcoBoxListPGEViewModel : CoreViewModel(), PageSelectionListener, On
 
     fun onClickItemPosition(position: Int) {
         if (selectedPage.value == 0) {
-            screenNavigator.goBack()
-            screenNavigator.openExciseAlcoBoxCardPGEScreen(
-                    productInfo = productInfo.value!!,
-                    boxInfo = countNotProcessed.value?.get(position)?.boxInfo,
-                    massProcessingBoxesNumber = null,
-                    exciseStampInfo = null,
-                    selectQualityCode = selectQualityCode.value!!,
-                    initialCount = initialCount.value!!,
-                    isScan = false
-            )
+            if (processExciseAlcoBoxAccPGEService.getCountBoxOfProductOfDiscrepancies(countNotProcessed.value?.get(position)?.boxInfo?.boxNumber ?: "") >= countAcceptRefusal.value!! ) {
+                screenNavigator.openAlertRequiredQuantityBoxesAlreadyProcessedScreen() //Необходимое количество коробок уже обработано
+            } else {
+                screenNavigator.goBack()
+                screenNavigator.openExciseAlcoBoxCardPGEScreen(
+                        productInfo = productInfo.value!!,
+                        boxInfo = countNotProcessed.value?.get(position)?.boxInfo,
+                        massProcessingBoxesNumber = null,
+                        exciseStampInfo = null,
+                        selectQualityCode = selectQualityCode.value!!,
+                        initialCount = "1",
+                        isScan = false,
+                        countAcceptRefusal = countAcceptRefusal.value!!
+                )
+            }
         }
     }
 
@@ -209,7 +216,7 @@ class ExciseAlcoBoxListPGEViewModel : CoreViewModel(), PageSelectionListener, On
                         //Отсканированная марка принадлежит товару <SAP-код> <Название>"
                         screenNavigator.openAlertScannedStampBelongsAnotherProductScreen(exciseStampInfo.materialNumber, zfmpUtz48V001.getProductInfoByMaterial(exciseStampInfo.materialNumber)?.name ?: "")
                     } else {
-                        if (processExciseAlcoBoxAccPGEService.getCountBoxOfProductOfDiscrepancies(exciseStampInfo.boxNumber, "1") >= taskManager.getReceivingTask()!!.taskRepository.getProductsDiscrepancies().getCountAcceptOfProduct(productInfo.value!!)) {
+                        if (processExciseAlcoBoxAccPGEService.getCountBoxOfProductOfDiscrepancies(exciseStampInfo.boxNumber) >= countAcceptRefusal.value!!) {
                             screenNavigator.openAlertRequiredQuantityBoxesAlreadyProcessedScreen() //Необходимое количество коробок уже обработано
                         } else {
                             screenNavigator.openExciseAlcoBoxCardPGEScreen(
@@ -219,7 +226,8 @@ class ExciseAlcoBoxListPGEViewModel : CoreViewModel(), PageSelectionListener, On
                                     exciseStampInfo = exciseStampInfo,
                                     selectQualityCode = "1",
                                     initialCount = "1",
-                                    isScan = isScan.value!!
+                                    isScan = isScan.value!!,
+                                    countAcceptRefusal = countAcceptRefusal.value!!
                             )
                         }
                     }
@@ -235,7 +243,7 @@ class ExciseAlcoBoxListPGEViewModel : CoreViewModel(), PageSelectionListener, On
                         screenNavigator.openAlertScannedBoxBelongsAnotherProductScreen(materialNumber = boxInfo.materialNumber, materialName = zfmpUtz48V001.getProductInfoByMaterial(boxInfo.materialNumber)?.name ?: "")
                     } else {
                         if (selectQualityCode.value == "1") {
-                            if (processExciseAlcoBoxAccPGEService.getCountBoxOfProductOfDiscrepancies(boxInfo.boxNumber, "1") >= taskManager.getReceivingTask()!!.taskRepository.getProductsDiscrepancies().getCountAcceptOfProduct(productInfo.value!!)) {
+                            if (processExciseAlcoBoxAccPGEService.getCountBoxOfProductOfDiscrepancies(boxInfo.boxNumber) >= countAcceptRefusal.value!!) {
                                 screenNavigator.openAlertRequiredQuantityBoxesAlreadyProcessedScreen() //Необходимое количество коробок уже обработано
                             } else {
                                 screenNavigator.openExciseAlcoBoxCardPGEScreen(
@@ -245,7 +253,8 @@ class ExciseAlcoBoxListPGEViewModel : CoreViewModel(), PageSelectionListener, On
                                         exciseStampInfo = null,
                                         selectQualityCode = selectQualityCode.value!!,
                                         initialCount = "1",
-                                        isScan = isScan.value!!
+                                        isScan = isScan.value!!,
+                                        countAcceptRefusal = countAcceptRefusal.value!!
                                 )
                             }
                         } else {
@@ -259,7 +268,8 @@ class ExciseAlcoBoxListPGEViewModel : CoreViewModel(), PageSelectionListener, On
                                         exciseStampInfo = null,
                                         selectQualityCode = selectQualityCode.value!!,
                                         initialCount = initialCount.value!!,
-                                        isScan = isScan.value!!
+                                        isScan = isScan.value!!,
+                                        countAcceptRefusal = countAcceptRefusal.value!!
                                 )
                             }
                         }

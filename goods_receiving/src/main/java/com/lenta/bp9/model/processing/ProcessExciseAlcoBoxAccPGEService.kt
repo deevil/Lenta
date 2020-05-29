@@ -300,9 +300,9 @@ class ProcessExciseAlcoBoxAccPGEService
         }
     }
 
-    fun getCountBoxOfProductOfDiscrepancies(boxNumber: String, typeDiscrepancies: String) : Int {
+    fun getCountBoxOfProductOfDiscrepancies(boxNumber: String) : Int {
         return currentBoxDiscrepancies.filter {
-            it.boxNumber == boxNumber && it.typeDiscrepancies == typeDiscrepancies
+            it.boxNumber == boxNumber
         }.size
     }
 
@@ -330,16 +330,16 @@ class ProcessExciseAlcoBoxAccPGEService
         }
     }
 
-    fun getCountExciseStampDiscrepanciesOfBox(boxNumber: String, typeDiscrepancies: String) : Int {
+    fun getCountExciseStampDiscrepanciesOfBox(boxNumber: String) : Int {
         return currentExciseStampsDiscrepancies.filter {
-            it.boxNumber == boxNumber && it.typeDiscrepancies == typeDiscrepancies && it.isScan
+            it.boxNumber == boxNumber && it.isScan
         }.size
     }
 
     //контроль марки для короба
     fun stampControlOfBox(box: TaskBoxInfo) : Boolean {
         val countScannedExciseStampsDiscrepanciesOfBox = currentExciseStampsDiscrepancies.filter {
-            it.boxNumber == box.boxNumber && (it.typeDiscrepancies == "1" || it.typeDiscrepancies == "2") && it.isScan
+            it.boxNumber == box.boxNumber && it.isScan
         }.size
 
         return countScannedExciseStampsDiscrepanciesOfBox >= productInfo.numberStampsControl.toInt()
@@ -351,7 +351,7 @@ class ProcessExciseAlcoBoxAccPGEService
             it.boxNumber == box.boxNumber
         }.size
         val countScannedExciseStampOfBox = currentExciseStampsDiscrepancies.filter {
-            it.boxNumber == box.boxNumber && it.isScan && (it.typeDiscrepancies == "1" || it.typeDiscrepancies == "2")
+            it.boxNumber == box.boxNumber && it.isScan
         }.size
 
         return (countProcessedBox >=1 && countScannedExciseStampOfBox >=1) || (countScannedExciseStampOfBox >= 2) || (countScannedExciseStampOfBox >= productInfo.numberStampsControl.toInt())
@@ -375,7 +375,12 @@ class ProcessExciseAlcoBoxAccPGEService
     }
 
     fun modifications() : Boolean {
-        return currentExciseStampsDiscrepancies != taskManager.getReceivingTask()?.taskRepository?.getExciseStampsDiscrepancies()?.getExciseStampDiscrepancies()
+        return currentExciseStampsDiscrepancies != taskManager.getReceivingTask()?.taskRepository?.getExciseStampsDiscrepancies()?.getExciseStampDiscrepancies() ||
+                currentBoxDiscrepancies != taskManager.getReceivingTask()?.taskRepository?.getBoxesDiscrepancies()?.getBoxesDiscrepancies()
+    }
+
+    fun boxProcessed(boxNumber: String) : Boolean {
+        return currentBoxDiscrepancies.any { it.boxNumber == boxNumber }
     }
 
     fun clearModifications() {
