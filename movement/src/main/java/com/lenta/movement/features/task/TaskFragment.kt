@@ -7,7 +7,9 @@ import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import com.lenta.movement.R
 import com.lenta.movement.databinding.*
+import com.lenta.movement.models.Task
 import com.lenta.movement.platform.extensions.getAppComponent
+import com.lenta.shared.platform.activity.OnBackPresserListener
 import com.lenta.shared.platform.fragment.CoreFragment
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
@@ -19,7 +21,19 @@ import com.lenta.shared.utilities.extentions.provideViewModel
 
 class TaskFragment : CoreFragment<FragmentTaskBinding, TaskViewModel>(),
     ViewPagerSettings,
-    ToolbarButtonsClickListener {
+    ToolbarButtonsClickListener,
+    OnBackPresserListener {
+
+    // TODO save to bundle. now it's impossible because this class is sealed, but GSON can't work with sealed classes
+    var task: Task? = null
+
+    companion object {
+        fun newInstance(task: Task?): TaskFragment {
+            return TaskFragment().apply {
+                this.task = task
+            }
+        }
+    }
 
     override fun getLayoutId() = R.layout.fragment_task
 
@@ -28,6 +42,9 @@ class TaskFragment : CoreFragment<FragmentTaskBinding, TaskViewModel>(),
     override fun getViewModel(): TaskViewModel {
         provideViewModel(TaskViewModel::class.java).let { vm ->
             getAppComponent()?.inject(vm)
+            if (task != null) {
+                vm.task.value = task
+            }
             return vm
         }
     }
@@ -115,5 +132,10 @@ class TaskFragment : CoreFragment<FragmentTaskBinding, TaskViewModel>(),
                 }.root
             }
         }
+    }
+
+    override fun onBackPressed(): Boolean {
+        vm.onBackPressed()
+        return false
     }
 }

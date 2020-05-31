@@ -1,0 +1,24 @@
+package com.lenta.movement.requests.network.models
+
+import com.lenta.movement.models.Task
+import com.lenta.shared.utilities.extentions.isSapTrue
+
+fun DbTaskListItem.toTask(): Task {
+    return Task(
+        number = taskNumber,
+        isCreated = notFinish.isSapTrue().not(),
+        currentStatus = when (currentStatusCode) {
+            "04" -> Task.Status.Published(currentStatusText)
+            else -> Task.Status.Unknown(currentStatusText)
+        },
+        nextStatus = Task.Status.Unknown(nextStatusText),
+        name = description,
+        comment = taskComment,
+        taskType = taskType,
+        movementType = movementType,
+        receiver = werksDstntnt,
+        pikingStorage = lgortSrc,
+        shipmentStorage = lgortTarget,
+        shipmentDate = dateShip
+    )
+}

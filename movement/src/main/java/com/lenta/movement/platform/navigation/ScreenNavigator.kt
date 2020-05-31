@@ -16,9 +16,9 @@ import com.lenta.movement.features.task.goods.TaskGoodsFragment
 import com.lenta.movement.features.task.goods.details.TaskGoodsDetailsFragment
 import com.lenta.movement.features.task.goods.info.TaskGoodsInfoFragment
 import com.lenta.movement.features.task.TaskFragment
-import com.lenta.movement.features.task.save.TaskSaveFragment
 import com.lenta.movement.models.ExciseBox
 import com.lenta.movement.models.ProductInfo
+import com.lenta.movement.models.Task
 import com.lenta.movement.progress.IWriteOffProgressUseCaseInformator
 import com.lenta.shared.account.IAuthenticator
 import com.lenta.shared.exception.Failure
@@ -87,12 +87,6 @@ class ScreenNavigator(
     override fun openGoodsList() {
         runOrPostpone {
             getFragmentStack()?.push(GoodsListFragment())
-        }
-    }
-
-    override fun openCreateTask() {
-        runOrPostpone {
-            getFragmentStack()?.push(TaskFragment())
         }
     }
 
@@ -217,6 +211,12 @@ class ScreenNavigator(
         }
     }
 
+    override fun openTaskScreen(task: Task?) {
+        runOrPostpone {
+            getFragmentStack()?.push(TaskFragment.newInstance(task))
+        }
+    }
+
     override fun openTaskCompositionScreen() {
         runOrPostpone {
             getFragmentStack()?.push(TaskGoodsFragment())
@@ -244,12 +244,6 @@ class ScreenNavigator(
     override fun openTaskBasketCharacteristicsScreen(basketIndex: Int) {
         openNotImplementedScreenAlert("Свойства корзины")
     }
-
-    override fun openTaskSaveScreen(tasks: List<String>) {
-        runOrPostpone {
-            getFragmentStack()?.push(TaskSaveFragment.newInstance(tasks))
-        }
-    }
 }
 
 interface IScreenNavigator : ICoreNavigator {
@@ -261,8 +255,6 @@ interface IScreenNavigator : ICoreNavigator {
     fun openMainMenuScreen()
     fun openGoodsList()
     fun openUnsavedDataDialog(yesCallbackFunc: () -> Unit)
-    fun openCreateTask()
-    fun openTaskList()
     fun openSelectTypeCodeScreen(codeConfirmationForSap: Int, codeConfirmationForBarCode: Int)
     fun openProductIncorrectForCreateBox(productInfo: ProductInfo)
     fun openCreateBoxByProduct(productInfo: ProductInfo)
@@ -272,10 +264,11 @@ interface IScreenNavigator : ICoreNavigator {
     fun openBoxNumberWasUsedDialog()
     fun openEanInvalidDialog()
     fun openBoxSavedDialog(box: ExciseBox)
+    fun openTaskScreen(task: Task?)
     fun openTaskCompositionScreen()
     fun openTaskGoodsInfoScreen(productInfo: ProductInfo)
     fun openTaskGoodsDetailsScreen(productInfo: ProductInfo)
     fun openTaskBasketScreen(basketIndex: Int)
     fun openTaskBasketCharacteristicsScreen(basketIndex: Int)
-    fun openTaskSaveScreen(tasks: List<String>)
+    fun openTaskList()
 }

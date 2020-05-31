@@ -82,7 +82,12 @@ class MemoryTaskBasketsRepository(
 
         if (productInfo.volume > freeVolume) return false
 
-        return taskManager.getTask().settings.signsOfDiv.all { signOfDivision ->
+        val settings = taskManager.getTaskSettings(
+            taskType = taskManager.getTask().taskType,
+            movementType = taskManager.getTask().movementType
+        )
+
+        return settings.signsOfDiv.all { signOfDivision ->
             when (signOfDivision) {
                 GoodsSignOfDivision.ALCO -> {
                     keys.first().isAlco == productInfo.isAlco

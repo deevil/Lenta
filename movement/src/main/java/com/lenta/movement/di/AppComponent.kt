@@ -12,7 +12,6 @@ import com.lenta.movement.features.task.goods.TaskGoodsViewModel
 import com.lenta.movement.features.task.goods.details.TaskGoodsDetailsViewModel
 import com.lenta.movement.features.task.goods.info.TaskGoodsInfoViewModel
 import com.lenta.movement.features.task.TaskViewModel
-import com.lenta.movement.features.task.save.TaskSaveViewModel
 import com.lenta.movement.main.MainActivity
 import com.lenta.movement.main.MainViewModel
 import com.lenta.shared.di.AppScope
@@ -36,5 +35,4 @@ interface AppComponent {
     fun inject(it: TaskGoodsInfoViewModel)
     fun inject(it: TaskGoodsDetailsViewModel)
     fun inject(it: TaskBasketViewModel)
-    fun inject(it: TaskSaveViewModel)
 }

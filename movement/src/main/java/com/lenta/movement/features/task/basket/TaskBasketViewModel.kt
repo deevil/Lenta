@@ -65,7 +65,8 @@ class TaskBasketViewModel : CoreViewModel(),
     fun getTitle(): String {
         return "${formatter.getBasketName(basket)}: ${formatter.getBasketDescription(
             basket,
-            taskManager.getTask()
+            taskManager.getTask(),
+            taskManager.getTaskSettings()
         )}"
     }
 

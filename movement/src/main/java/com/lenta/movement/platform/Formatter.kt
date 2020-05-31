@@ -28,6 +28,7 @@ class Formatter(
         return when (taskStatus) {
             is Task.Status.Created -> "Создано"
             is Task.Status.Counted -> "Посчитано"
+            is Task.Status.Published -> "Опубликованно"
             is Task.Status.Unknown -> "Неизвестно"
         }
     }
@@ -45,12 +46,12 @@ class Formatter(
         return "Корзина ${String.format("%02d", basket.number)}"
     }
 
-    override fun getBasketDescription(basket: Basket, task: Task): String {
+    override fun getBasketDescription(basket: Basket, task: Task, settings: TaskSettings): String {
         if (basket.keys.isEmpty()) return ""
 
         val descriptionBuilder = StringBuilder()
 
-        val signsOfDiv = task.settings.signsOfDiv
+        val signsOfDiv = settings.signsOfDiv
 
         if (signsOfDiv.contains(GoodsSignOfDivision.ALCO) && basket.keys.first().isAlco) {
             descriptionBuilder.append("A/")

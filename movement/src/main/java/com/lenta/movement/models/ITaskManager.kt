@@ -2,7 +2,10 @@ package com.lenta.movement.models
 
 interface ITaskManager {
 
-    fun getTaskSettings(taskType: TaskType, movementType: MovementType): TaskSettings
+    fun getTaskSettings(
+        taskType: TaskType = getTask().taskType,
+        movementType: MovementType = getTask().movementType
+    ): TaskSettings
 
     fun getTask(): Task
 

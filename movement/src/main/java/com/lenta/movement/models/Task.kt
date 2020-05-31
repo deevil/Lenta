@@ -1,5 +1,7 @@
 package com.lenta.movement.models
 
+import java.util.*
+
 data class Task(
     val number: String,
     val isCreated: Boolean,
@@ -12,17 +14,18 @@ data class Task(
     val receiver: String,
     val pikingStorage: String,
     val shipmentStorage: String,
-    val shipmentDate: String,
-    val settings: TaskSettings
+    val shipmentDate: Date
 ) {
 
     sealed class Status {
         abstract val text: String?
 
-        class Created(override val text: String? = null): Status()
+        data class Created(override val text: String? = null): Status()
 
-        class Counted(override val text: String? = null): Status()
+        data class Counted(override val text: String? = null): Status()
 
-        class Unknown(override val text: String): Status()
+        data class Published(override val text: String? = null): Status()
+
+        data class Unknown(override val text: String): Status()
     }
 }

@@ -32,7 +32,7 @@ class TaskViewModel : CoreViewModel(), PageSelectionListener {
     @Inject
     lateinit var formatter: IFormatter
 
-    private val task by lazy { MutableLiveData(taskManager.getTaskOrNull()) }
+    val task by lazy { MutableLiveData(taskManager.getTaskOrNull()) }
     private val currentStatus: Task.Status
         get() = task.value?.currentStatus ?: Task.Status.Created()
     private val nextStatus: Task.Status
@@ -42,7 +42,7 @@ class TaskViewModel : CoreViewModel(), PageSelectionListener {
     private val movementType: MovementType
         get() = task.value?.movementType ?: MovementType.SS
     private val setting: TaskSettings
-        get() = task.value?.settings ?: taskManager.getTaskSettings(taskType, movementType)
+        get() = taskManager.getTaskSettings(taskType, movementType)
 
     val selectedPagePosition = MutableLiveData(0)
 
@@ -113,8 +113,11 @@ class TaskViewModel : CoreViewModel(), PageSelectionListener {
 
     val shipmentDateEnabled by lazy { task.map { it == null } }
     val shipmentDate by lazy {
+        val date = task.value?.shipmentDate?.let {
+            DateTimeUtil.formatDate(it, Constants.DATE_FORMAT_ddmmyy)
+        }
         val defaultDate = DateTimeUtil.formatDate(Date(), Constants.DATE_FORMAT_ddmmyy)
-        MutableLiveData(task.value?.shipmentDate ?: defaultDate)
+        MutableLiveData(date ?: defaultDate)
     }
 
     val description by lazy { MutableLiveData(setting.description) }
@@ -147,11 +150,15 @@ class TaskViewModel : CoreViewModel(), PageSelectionListener {
 
     fun onNextClick() {
         if (task.value == null) {
-            val tempTask = buildTask()
-            task.value = tempTask
-            taskManager.setTask(tempTask)
+            taskManager.setTask(buildTask())
         }
         screenNavigator.openTaskCompositionScreen()
+    }
+
+    fun onBackPressed() {
+        taskManager.clear()
+
+        screenNavigator.goBack()
     }
 
     private fun validate(): Boolean {
@@ -164,7 +171,7 @@ class TaskViewModel : CoreViewModel(), PageSelectionListener {
                     task.receiver.isNotEmpty() &&
                     task.pikingStorage.isNotEmpty() &&
                     task.shipmentStorage.isNotEmpty() &&
-                    task.shipmentDate.isValidDate()
+                    task.shipmentDate.before(Date()).not()
         }
     }
 
@@ -181,17 +188,15 @@ class TaskViewModel : CoreViewModel(), PageSelectionListener {
             receiver = receivers.getSelectedValue(receiverSelectedPosition).orEmpty(),
             pikingStorage = pikingStorageList.getSelectedValue(pikingStorageSelectedPosition).orEmpty(),
             shipmentStorage = shipmentStorageList.getSelectedValue(shipmentStorageSelectedPosition).orEmpty(),
-            shipmentDate = shipmentDate.value.orEmpty(),
-            settings = setting
+            shipmentDate = shipmentDate.value?.toDate() ?: Date(0)
         )
     }
 
-    private fun String.isValidDate(): Boolean {
+    private fun String.toDate(): Date? {
         return try {
             DateTimeUtil.getDateFromString(this, Constants.DATE_FORMAT_ddmmyy)
-            true
         } catch (_: Exception) {
-            false
+            null
         }
     }
 

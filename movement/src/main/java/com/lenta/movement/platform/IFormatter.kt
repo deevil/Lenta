@@ -16,6 +16,6 @@ interface IFormatter {
 
     fun getBasketName(basket: Basket): String
 
-    fun getBasketDescription(basket: Basket, task: Task): String
+    fun getBasketDescription(basket: Basket, task: Task, settings: TaskSettings): String
 
 }

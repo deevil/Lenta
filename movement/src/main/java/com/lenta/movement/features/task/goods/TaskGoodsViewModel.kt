@@ -78,7 +78,11 @@ class TaskGoodsViewModel : CoreViewModel(),
             SimpleListItem(
                 number = basket.number,
                 title = formatter.getBasketName(basket),
-                subtitle = formatter.getBasketDescription(basket, taskManager.getTask()),
+                subtitle = formatter.getBasketDescription(
+                    basket,
+                    taskManager.getTask(),
+                    taskManager.getTaskSettings()
+                ),
                 countWithUom = basket.keys.size.toString(),
                 isClickable = true
             )
@@ -233,9 +237,11 @@ class TaskGoodsViewModel : CoreViewModel(),
                 fnL = { failure ->
                     screenNavigator.openAlertScreen(failure)
                 },
-                fnR = {
+                fnR = { savedTask ->
                     taskBasketsRepository.clear()
-                    screenNavigator.openTaskSaveScreen(it.tasks.map { it.title })
+                    screenNavigator.goBack()
+                    screenNavigator.goBack()
+                    screenNavigator.openTaskScreen(savedTask)
                 }
             )
 

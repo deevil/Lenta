@@ -41,7 +41,11 @@ class TaskGoodsInfoViewModel : CoreViewModel() {
         }
     }
     val supplierListVisible by lazy {
-        MutableLiveData(taskManager.getTask().settings.signsOfDiv.contains(GoodsSignOfDivision.LIF_NUMBER))
+        val settings = taskManager.getTaskSettings(
+            taskType = taskManager.getTask().taskType,
+            movementType = taskManager.getTask().movementType
+        )
+        MutableLiveData(settings.signsOfDiv.contains(GoodsSignOfDivision.LIF_NUMBER))
     }
 
     val currentBasket: LiveData<Basket> by lazy {
