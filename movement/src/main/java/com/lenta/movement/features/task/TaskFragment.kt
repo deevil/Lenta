@@ -6,10 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import com.lenta.movement.R
-import com.lenta.movement.databinding.FragmentTaskBinding
-import com.lenta.movement.databinding.LayoutTaskCommentsTabBinding
-import com.lenta.movement.databinding.LayoutTaskPropertiesTabBinding
-import com.lenta.movement.databinding.LayoutTaskTypeTabBinding
+import com.lenta.movement.databinding.*
 import com.lenta.movement.platform.extensions.getAppComponent
 import com.lenta.shared.platform.fragment.CoreFragment
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
@@ -64,6 +61,7 @@ class TaskFragment : CoreFragment<FragmentTaskBinding, TaskViewModel>(),
 
     override fun getTextTitle(position: Int): String {
         return when(TaskPage.values()[position]) {
+            TaskPage.STATUS -> getString(R.string.task_settings_status_title)
             TaskPage.TASK_TYPE -> getString(R.string.task_settings_task_type_tab_title)
             TaskPage.PROPERTIES -> getString(R.string.task_settings_properties_tab_title)
             TaskPage.COMMENTS -> getString(R.string.task_settings_comments_tab_title)
@@ -72,6 +70,17 @@ class TaskFragment : CoreFragment<FragmentTaskBinding, TaskViewModel>(),
 
     override fun getPagerItemView(container: ViewGroup, position: Int): View {
         return when (TaskPage.values()[position]) {
+            TaskPage.STATUS -> {
+                DataBindingUtil.inflate<LayoutTaskStatusBinding>(
+                    LayoutInflater.from(context),
+                    R.layout.layout_task_status,
+                    container,
+                    false
+                ).also { layoutBinding ->
+                    layoutBinding.vm = vm
+                    layoutBinding.lifecycleOwner = viewLifecycleOwner
+                }.root
+            }
             TaskPage.TASK_TYPE -> {
                 DataBindingUtil.inflate<LayoutTaskTypeTabBinding>(
                     LayoutInflater.from(context),

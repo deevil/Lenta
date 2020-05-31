@@ -10,6 +10,8 @@ interface IFormatter {
 
     fun getTaskTypeNameDescription(taskType: TaskType): String
 
+    fun getTaskStatusName(taskStatus: Task.Status): String
+
     fun getMovementTypeNameDescription(movementType: MovementType): String
 
     fun getBasketName(basket: Basket): String

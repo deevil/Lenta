@@ -33,6 +33,10 @@ class TaskViewModel : CoreViewModel(), PageSelectionListener {
     lateinit var formatter: IFormatter
 
     private val task by lazy { MutableLiveData(taskManager.getTaskOrNull()) }
+    private val currentStatus: Task.Status
+        get() = task.value?.currentStatus ?: Task.Status.Created()
+    private val nextStatus: Task.Status
+        get() = task.value?.nextStatus ?: Task.Status.Counted()
     private val taskType: TaskType
         get() = task.value?.taskType ?: TaskType.TransferWithoutOrder
     private val movementType: MovementType
@@ -41,6 +45,9 @@ class TaskViewModel : CoreViewModel(), PageSelectionListener {
         get() = task.value?.settings ?: taskManager.getTaskSettings(taskType, movementType)
 
     val selectedPagePosition = MutableLiveData(0)
+
+    val currentStatusText by lazy { formatter.getTaskStatusName(currentStatus) }
+    val nextStatusText by lazy { formatter.getTaskStatusName(nextStatus) }
 
     val taskTypeEnabled = MutableLiveData(false)
     val taskTypesFormatted by lazy {
@@ -165,6 +172,8 @@ class TaskViewModel : CoreViewModel(), PageSelectionListener {
         return Task(
             isCreated = false,
             number = "",
+            currentStatus = currentStatus,
+            nextStatus = nextStatus,
             name = taskName.value.orEmpty(),
             comment = comments.value.orEmpty(),
             taskType = taskType,

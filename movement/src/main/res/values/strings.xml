@@ -29,6 +29,10 @@
 
     <string name="task_settings_title">Карточка задания</string>
 
+    <string name="task_settings_status_title">Статус</string>
+    <string name="task_settings_status_current_state_title">Текущий статус</string>
+    <string name="task_settings_status_next_state_title">Следующий статус</string>
+
     <string name="task_settings_task_type_tab_title">Тип задания</string>
     <string name="task_settings_task_type_receiver_title">Получатель</string>
 

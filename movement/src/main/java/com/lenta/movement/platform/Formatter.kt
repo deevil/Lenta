@@ -22,6 +22,16 @@ class Formatter(
         }
     }
 
+    override fun getTaskStatusName(taskStatus: Task.Status): String {
+        if (taskStatus.text != null) return taskStatus.text!!
+
+        return when (taskStatus) {
+            is Task.Status.Created -> "Создано"
+            is Task.Status.Counted -> "Посчитано"
+            is Task.Status.Unknown -> "Неизвестно"
+        }
+    }
+
     override fun getMovementTypeNameDescription(movementType: MovementType): String {
         return when (movementType) {
             MovementType.SS -> "Для перемещения на ТК"
