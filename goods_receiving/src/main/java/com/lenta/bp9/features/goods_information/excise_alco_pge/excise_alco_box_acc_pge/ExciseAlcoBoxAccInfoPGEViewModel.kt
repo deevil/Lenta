@@ -264,25 +264,29 @@ class ExciseAlcoBoxAccInfoPGEViewModel : CoreViewModel(), OnPositionClickListene
     fun onScanResult(data: String) {
         when (data.length) {//ПГЕ https://trello.com/c/TzUSGIH7
             68, 150 -> {
-                val exciseStampInfo = processExciseAlcoBoxAccPGEService.searchExciseStamp(data)
-                if (exciseStampInfo == null) {
-                    screenNavigator.openAlertScannedStampNotFoundTaskPGEScreen() //Отсканированная марка отсутвует в задании. Отсканируйте номер коробки, а затем номер марки для заявления излишка.
+                if (processExciseAlcoBoxAccPGEService.getCountBoxOfProductOfDiscrepancies(data) >= ((acceptTotalCount.value ?: 0.0) + (refusalTotalCount.value ?: 0.0)) ) { //это условие добавлено здесь, т.к. на WM оно тоже есть
+                    screenNavigator.openAlertRequiredQuantityBoxesAlreadyProcessedScreen() //Необходимое количество коробок уже обработано
                 } else {
-                    if (exciseStampInfo.materialNumber != productInfo.value!!.materialNumber) {
-                        //Отсканированная марка принадлежит товару <SAP-код> <Название>"
-                        screenNavigator.openAlertScannedStampBelongsAnotherProductScreen(exciseStampInfo.materialNumber, zfmpUtz48V001.getProductInfoByMaterial(exciseStampInfo.materialNumber)?.name
-                                ?: "")
+                    val exciseStampInfo = processExciseAlcoBoxAccPGEService.searchExciseStamp(data)
+                    if (exciseStampInfo == null) {
+                        screenNavigator.openAlertScannedStampNotFoundTaskPGEScreen() //Отсканированная марка отсутвует в задании. Отсканируйте номер коробки, а затем номер марки для заявления излишка.
                     } else {
-                        screenNavigator.openExciseAlcoBoxCardPGEScreen(
-                                productInfo = productInfo.value!!,
-                                boxInfo = null,
-                                massProcessingBoxesNumber = null,
-                                exciseStampInfo = exciseStampInfo,
-                                selectQualityCode = qualityInfo.value!![spinQualitySelectedPosition.value!!].code,
-                                initialCount = "1",
-                                isScan = true,
-                                countAcceptRefusal = ((acceptTotalCount.value ?: 0.0) + (refusalTotalCount.value ?: 0.0))
-                        )
+                        if (exciseStampInfo.materialNumber != productInfo.value!!.materialNumber) {
+                            //Отсканированная марка принадлежит товару <SAP-код> <Название>"
+                            screenNavigator.openAlertScannedStampBelongsAnotherProductScreen(exciseStampInfo.materialNumber, zfmpUtz48V001.getProductInfoByMaterial(exciseStampInfo.materialNumber)?.name
+                                    ?: "")
+                        } else {
+                            screenNavigator.openExciseAlcoBoxCardPGEScreen(
+                                    productInfo = productInfo.value!!,
+                                    boxInfo = null,
+                                    massProcessingBoxesNumber = null,
+                                    exciseStampInfo = exciseStampInfo,
+                                    selectQualityCode = qualityInfo.value!![spinQualitySelectedPosition.value!!].code,
+                                    initialCount = "1",
+                                    isScan = true,
+                                    countAcceptRefusal = ((acceptTotalCount.value ?: 0.0) + (refusalTotalCount.value ?: 0.0))
+                            )
+                        }
                     }
                 }
             }

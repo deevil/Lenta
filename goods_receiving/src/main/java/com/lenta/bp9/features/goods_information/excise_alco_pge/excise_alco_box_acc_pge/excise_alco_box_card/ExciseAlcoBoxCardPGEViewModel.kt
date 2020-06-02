@@ -168,7 +168,18 @@ class ExciseAlcoBoxCardPGEViewModel : CoreViewModel(), OnPositionClickListener {
         (it ?: 0) > 0
     }
 
-    val enabledApplyButton: MutableLiveData<Boolean> = MutableLiveData(true) //в WM кнопка доступна всегда, хотя в https://trello.com/c/iOmIb6N7 для ситуации 2 прописаны условия
+    val enabledApplyButton: MutableLiveData<Boolean> = isEizUnit.combineLatest(checkBoxStampList).map {
+        /**https://trello.com/c/iOmIb6N7
+         * Кнопка становится доступной для нажатия, если:
+        • режим пересчета равен ЕИЗ
+        • режим пересчета равен БЕИ и установлен чекбокс в поле "Список марок"
+        • режим пересчета равен БЕИ + Если введенное значение в поле ввода равно всему свободному кол-ву (<свободное кол-во> = <MENGE> - <кол-во марок с не пустой категорией>) -> этот пункт не реализовывал, т.к. на WM такого поведения не наблдюдалось
+         */
+        it?.first == true || (it?.first == false && it.second == true)
+    }
+
+    val visibilityImgUnit: MutableLiveData<Boolean> = MutableLiveData(true)
+
 
     @SuppressLint("SimpleDateFormat")
     private val formatterRU = SimpleDateFormat("dd.MM.yyyy")
@@ -193,7 +204,7 @@ class ExciseAlcoBoxCardPGEViewModel : CoreViewModel(), OnPositionClickListener {
             }
 
             if (exciseStampInfo.value != null) { //значит была отсканирована марка
-                //https://trello.com/c/iOmIb6N7 ситуация 2 по карточке, но в WM работает иначе, здесь реализовано как на WM
+                //https://trello.com/c/iOmIb6N7 ситуация 2 по карточке, но в WM работает иначе, отображается ЕИЗ, а не БЕИ, здесь реализовано ка на WM
                 boxInfo.value = taskManager.getReceivingTask()?.taskRepository?.getBoxes()?.getBoxes()?.findLast {
                     it.boxNumber == exciseStampInfo.value!!.boxNumber
                 }
@@ -223,15 +234,14 @@ class ExciseAlcoBoxCardPGEViewModel : CoreViewModel(), OnPositionClickListener {
     }
 
     fun onClickDetails() {
-        screenNavigator.openGoodsDetailsScreen(productInfo.value!!)
+        // todo screenNavigator.openGoodsDetailsScreen(productInfo.value!!)
+        //onScanResult("147200299530481018001DUKYZGHUHYYAYWHLFLS3VOXAOIV2RPG3PNGJKLPEOJ7WG5N6DOPSSHHZEP6NUSWGYAVV4MQATDKYVMF6RZM2XMBS6FCFHNEVHDUXMU3GNYGXLPMUTVZFQZZ56EEH4N3OA")
 
     }
 
     fun onClickAdd() {
+        visibilityImgUnit.value = false //https://trello.com/c/iOmIb6N7  кнопка изменения ЕИ доступна, пока данная коробка не была сохранена в обработанные по кнопке "Добавить"/"Применить"
 
-    }
-
-    fun onClickApply() {
         //массовая обработка коробов, по постановке задачи может быть только для брака, можем сюда попасть только с экрана Список коробов ExciseAlcoBoxListFragment
         if (massProcessingBoxesNumber.value != null) {
             massProcessingBoxesNumber.value?.map {boxNumber ->
@@ -239,7 +249,6 @@ class ExciseAlcoBoxCardPGEViewModel : CoreViewModel(), OnPositionClickListener {
                     processExciseAlcoBoxAccPGEService.applyBoxCard(it, qualityInfo.value!![spinQualitySelectedPosition.value!!].code, isScan.value!!)
                 }
             }
-            screenNavigator.goBack()
             return
         }
 
@@ -248,17 +257,28 @@ class ExciseAlcoBoxCardPGEViewModel : CoreViewModel(), OnPositionClickListener {
             processExciseAlcoBoxAccPGEService.applyBoxCard(it, qualityInfo.value!![spinQualitySelectedPosition.value!!].code, isScan.value!!)
             //обнуляем кол-во отсканированных марок в текущей сессии
             countExciseStampsScanned.value = 0
-            if (checkStampControl.value == true) {
-                screenNavigator.openExciseAlcoBoxAccInfoPGEScreen(productInfo.value!!)
-            } else {
-                screenNavigator.goBack()
-                screenNavigator.openExciseAlcoBoxListPGEScreen(
-                        productInfo = productInfo.value!!,
-                        selectQualityCode = qualityInfo.value?.get(spinQualitySelectedPosition.value ?: 0)?.code ?: "1",
-                        initialCount = initialCount.value!!,
-                        countAcceptRefusal = countAcceptRefusal.value!!
-                )
-            }
+        }
+    }
+
+    fun onClickApply() {
+        onClickAdd()
+
+        //массовая обработка коробов, по постановке задачи может быть только для брака, можем сюда попасть только с экрана Список коробов ExciseAlcoBoxListFragment
+        if (massProcessingBoxesNumber.value != null) {
+            screenNavigator.goBack()
+            return
+        }
+
+        if (checkStampControl.value == true) {
+            screenNavigator.openExciseAlcoBoxAccInfoPGEScreen(productInfo.value!!)
+        } else {
+            screenNavigator.goBack()
+            screenNavigator.openExciseAlcoBoxListPGEScreen(
+                    productInfo = productInfo.value!!,
+                    selectQualityCode = qualityInfo.value?.get(spinQualitySelectedPosition.value ?: 0)?.code ?: "1",
+                    initialCount = initialCount.value!!,
+                    countAcceptRefusal = countAcceptRefusal.value!!
+            )
         }
     }
 
@@ -391,7 +411,7 @@ class ExciseAlcoBoxCardPGEViewModel : CoreViewModel(), OnPositionClickListener {
             }
             "3" -> {
                 screenNavigator.openScannedBoxNotIncludedInNetworkLentaDialog(
-                        nextCallbackFunc = { //todo доработать https://trello.com/c/6NyHp2jB ПГЕ. Карточка короба-излишка
+                        nextCallbackFunc = { //todo доработать https://trello.com/c/6NyHp2jB 11. ПГЕ. Излишки. Карточка короба-излишка (не числится в ленте)
                             val boxInfo = processExciseAlcoBoxAccPGEService.searchBox(boxNumber = scannedBoxNumber.value ?: "")
                             screenNavigator.goBack()
                             screenNavigator.openExciseAlcoBoxCardPGEScreen(

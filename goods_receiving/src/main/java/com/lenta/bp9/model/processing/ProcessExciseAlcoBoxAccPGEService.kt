@@ -49,14 +49,6 @@ class ProcessExciseAlcoBoxAccPGEService
 
     fun applyBoxCard(box: TaskBoxInfo, typeDiscrepancies: String, isScan: Boolean) {
         addBoxDiscrepancy(box.boxNumber, typeDiscrepancies, isScan)
-        //отмечаем все марки из короба
-        exciseStamps.filter {fstamp ->
-            fstamp.boxNumber == box.boxNumber
-        }.map {stamp ->
-            val isScanExciseStamp = currentExciseStampsDiscrepancies.findLast { it.code == stamp.code }?.isScan ?: false //если марки были ранее отсканированы, то с этим признаком их и сохраняем, а иначе ставим false
-            addExciseStampDiscrepancy(stamp, typeDiscrepancies, isScanExciseStamp)
-        }
-
         if (currentBoxDiscrepancies.isNotEmpty()) {
             currentBoxDiscrepancies.map {
                 taskManager.getReceivingTask()?.
