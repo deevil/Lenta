@@ -124,18 +124,18 @@ class DataBindingRecyclerAdapter<ItemType, BindingType : ViewDataBinding>(
         if (onItemClickListener != null || onItemDoubleClickListener != null) {
             binding.root.setOnClickListener(object : DoubleClickListener() {
                 override fun onSingleClick(view: View) {
-                    onItemClickListener?.onItemClick(null, view, result.adapterPosition, view.id.toLong())
+                    onItemClickListener?.onItemClick(null, view, result.absoluteAdapterPosition, view.id.toLong())
                 }
 
                 override fun onDoubleClick(view: View) {
-                    onItemDoubleClickListener?.onItemClick(null, view, result.adapterPosition, view.id.toLong())
+                    onItemDoubleClickListener?.onItemClick(null, view, result.absoluteAdapterPosition, view.id.toLong())
                 }
             })
         }
 
         onItemLongClickListener?.let {
             binding.root.setOnLongClickListener { view ->
-                it.onItemLongClick(null, view, result.adapterPosition, view.id.toLong())
+                it.onItemLongClick(null, view, result.absoluteAdapterPosition, view.id.toLong())
                 false
             }
         }
@@ -145,10 +145,10 @@ class DataBindingRecyclerAdapter<ItemType, BindingType : ViewDataBinding>(
 
     override fun onBindViewHolder(@NonNull holder: BindingViewHolder, @SuppressLint("RecyclerView") position: Int) {
         if (itemId != -1) {
-            holder.binding.setVariable(itemId, items!![holder.adapterPosition])
+            holder.binding.setVariable(itemId, items!![holder.absoluteAdapterPosition])
         }
         @Suppress("UNCHECKED_CAST")
-        onBind(holder.binding as BindingType, holder.adapterPosition)
+        onBind(holder.binding as BindingType, holder.absoluteAdapterPosition)
         holder.binding.executePendingBindings()
     }
 

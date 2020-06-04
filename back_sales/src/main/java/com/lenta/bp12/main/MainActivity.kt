@@ -1,7 +1,7 @@
 package com.lenta.bp12.main
 
 import android.os.Bundle
-import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.ViewModelProvider
 import com.crashlytics.android.Crashlytics
 import com.lenta.bp12.di.AppComponent
 import com.lenta.bp12.platform.extention.getAppComponent
@@ -30,7 +30,7 @@ class MainActivity : CoreMainActivity() {
         appComponent.let { component ->
             component.inject(this)
             foregroundActivityProvider.setActivity(this)
-            ViewModelProviders.of(this).get(MainViewModel::class.java).let {
+            ViewModelProvider(this).get(MainViewModel::class.java).let {
                 mainViewModel = it
                 component.inject(it)
             }

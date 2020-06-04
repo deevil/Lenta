@@ -3,7 +3,6 @@ package com.lenta.bp16.features.select_market
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.google.gson.Gson
-
 import com.lenta.bp16.platform.navigation.IScreenNavigator
 import com.lenta.bp16.repository.IRepoInMemoryHolder
 import com.lenta.shared.account.ISessionInfo

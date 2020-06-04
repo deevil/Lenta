@@ -3,12 +3,12 @@ package com.lenta.shared.utilities.extentions
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.ViewModelProvider
 import com.lenta.shared.platform.activity.main_activity.CoreMainActivity
 import com.lenta.shared.platform.fragment.CoreFragment
 
 fun <T : ViewModel> Fragment.provideViewModel(clazz: Class<T>): T {
-    return ViewModelProviders.of(this).get(clazz)
+    return ViewModelProvider(this).get(clazz)
 }
 
 fun CoreFragment<*, *>.generateScreenNumber(): String {
