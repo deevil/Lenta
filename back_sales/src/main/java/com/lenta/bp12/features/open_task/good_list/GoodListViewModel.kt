@@ -101,7 +101,7 @@ class GoodListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
                             name = good.getNameWithMaterial(),
                             quantity = position.quantity,
                             material = good.material,
-                            providerCode = position.provider.code ?: ""
+                            providerCode = position.provider.code
                     ))
                 }
             }

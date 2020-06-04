@@ -57,7 +57,7 @@ class GoodInfoCreateViewModel : CoreViewModel() {
         }
     }
 
-    val number = MutableLiveData("")
+    val lastScannedNumber = MutableLiveData("")
 
     val isCompactMode by lazy {
         good.map { good ->
@@ -69,7 +69,7 @@ class GoodInfoCreateViewModel : CoreViewModel() {
         good.map { good ->
             good?.kind?.let { type ->
                 when {
-                    type == GoodKind.EXCISE && number.value?.length == Constants.EXCISE_68 -> "Партионно"
+                    type == GoodKind.EXCISE && lastScannedNumber.value?.length == Constants.EXCISE_68 -> "Партионно"
                     type == GoodKind.EXCISE -> "Марочно"
                     type == GoodKind.ALCOHOL -> "Партионно"
                     else -> "Количество"
@@ -267,6 +267,8 @@ class GoodInfoCreateViewModel : CoreViewModel() {
     // -----------------------------
 
     private fun checkSearchNumber(number: String) {
+        lastScannedNumber.value = number
+
         number.length.let { length ->
             if (length >= Constants.SAP_6) {
                 when (length) {
@@ -282,7 +284,7 @@ class GoodInfoCreateViewModel : CoreViewModel() {
                         //loadMarkInfo(number)
                     }
                     Constants.EXCISE_150 -> {
-                        //loadMarkInfo(number)
+                        loadMarkInfo(number)
                     }
                     else -> getGoodByEan(number)
                 }
@@ -358,8 +360,20 @@ class GoodInfoCreateViewModel : CoreViewModel() {
                     // todo Логика сохранения марок
                     isExistUnsavedData = true
 
+                    lastScannedNumber.value?.let { number ->
+                        if (number.length == Constants.EXCISE_150) {
+                            saveExcise150()
+                        }
+                    }
+
                 }
             }
+        }
+    }
+
+    private fun saveExcise150() {
+        good.value?.let { good ->
+            
         }
     }
 

@@ -25,8 +25,9 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
-    dataBinding {
-        enabled = true
+
+    buildFeatures{
+        dataBinding = true
     }
 
     flavorDimensions "server"
@@ -73,10 +74,10 @@ dependencies {
     implementation project(':Shared')
     implementation 'com.android.support:multidex:1.0.3'
 
-    implementation 'com.google.firebase:firebase-ml-vision:23.0.0'
-    implementation 'com.google.firebase:firebase-core:17.2.0'
-    implementation "androidx.camera:camera-core:1.0.0-alpha04"
-    implementation "androidx.camera:camera-camera2:1.0.0-alpha04"
+    implementation 'com.google.firebase:firebase-ml-vision:24.0.3'
+    implementation 'com.google.firebase:firebase-core:17.4.2'
+    implementation "androidx.camera:camera-core:1.0.0-alpha04" // На версии 1.0.0-beta04 конфликты
+    implementation "androidx.camera:camera-camera2:1.0.0-alpha04" // На версии 1.0.0-beta04 конфликты
     implementation 'com.squareup.okhttp3:okhttp:3.10.0'
 
     // Dagger2
@@ -104,6 +105,6 @@ dependencies {
     testImplementation "io.mockk:mockk:1.9.3"
 
     // Firebase
-    implementation 'com.google.firebase:firebase-analytics:17.4.1'
+    implementation 'com.google.firebase:firebase-analytics:17.4.2'
 
 }

@@ -50,7 +50,7 @@ class AlcoFormReviseViewModel : CoreViewModel(), PageSelectionListener {
     val partTwoChecked: MutableLiveData<Boolean> = MutableLiveData(false)
 
     val nextEnabled: MutableLiveData<Boolean> = combineLatest(partABChecked, partOneChecked, partTwoChecked).map {
-        it?.first == true && it?.second == true && it?.third == true
+        it?.first == true && it.second == true && it.third == true
     }
 
     val taskCaption: String by lazy {
