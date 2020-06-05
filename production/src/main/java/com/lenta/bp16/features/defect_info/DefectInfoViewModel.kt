@@ -238,10 +238,6 @@ class DefectInfoViewModel : CoreViewModel() {
                     }
 
                     val barCodeText = "(01)${getFormattedEan(packCodeResult.dataLabel.ean, total.value!!)}" +
-                            //"(3103)${getFormattedWeight(weightField.value!!)}" +
-                            //"(8008)${SimpleDateFormat(Constants.DATE_FORMAT_yyMMddhhmm, Locale.getDefault()).format(productTime.time)}" +
-                            //"(10)${raw.value!!.orderNumber}" +
-                            //"(7003)${dateExpir?.let { SimpleDateFormat(Constants.DATE_FORMAT_yyMMddhhmm, Locale.getDefault()).format(it.time) }}" +
                             "(91)${packCodeResult.packCode}"
 
                     val barcode = barCodeText.replace("(", "").replace(")", "")
@@ -278,27 +274,7 @@ class DefectInfoViewModel : CoreViewModel() {
         }
     }
 
-    /*fun getFormattedWeight(weight: String): String {
-        if (weight.isEmpty()) {
-            return "000000"
-        }
-
-        val dividedWeight = weight.split(".")
-
-        var kilogram = dividedWeight[0]
-        while (kilogram.length < 3) {
-            kilogram = "0$kilogram"
-        }
-
-        var gram = if (dividedWeight.size == 1) "0" else dividedWeight[1]
-        while (gram.length < 3) {
-            gram = "${gram}0"
-        }
-
-        return "$kilogram$gram"
-    }*/
-
-    fun getFormattedEan(sourceEan: String, quantity: Double): String {
+    private fun getFormattedEan(sourceEan: String, quantity: Double): String {
         val ean = sourceEan.take(7)
         var weight = (quantity * 1000).toInt().toString()
 
