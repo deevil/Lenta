@@ -249,7 +249,6 @@ class DefectInfoViewModel : CoreViewModel() {
                     printLabel(LabelInfo(
                             quantity = "${total.value!!}  ${good.value?.units?.name}",
                             codeCont = packCodeResult.packCode,
-                            storCond = packCodeResult.dataLabel.storCondTime,
                             planAufFinish = SimpleDateFormat(Constants.DATE_FORMAT_dd_mm_yyyy_hh_mm, Locale.getDefault()).format(planAufFinish.time),
                             aufnr = raw.value!!.order,
                             nameOsn = raw.value!!.name,
@@ -258,7 +257,6 @@ class DefectInfoViewModel : CoreViewModel() {
                             goodsName = "***БРАК*** ${packCodeResult.dataLabel.materialName}",
                             weigher = sessionInfo.personnelNumber ?: "",
                             productTime = SimpleDateFormat(Constants.DATE_FORMAT_dd_mm_yyyy_hh_mm, Locale.getDefault()).format(productTime.time),
-                            nameDone = packCodeResult.dataLabel.materialNameDone,
                             goodsCode = packCodeResult.dataLabel.material.takeLast(6),
                             barcode = barcode,
                             barcodeText = barCodeText,
