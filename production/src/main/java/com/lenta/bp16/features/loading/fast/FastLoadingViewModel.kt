@@ -103,8 +103,9 @@ class FastLoadingViewModel : CoreLoadingViewModel() {
     }
 
     private fun handleSuccess(notUsed: Boolean) {
-        navigator.openSelectionPersonnelNumberScreen(false)
         progress.value = false
+        navigator.closeAllScreen()
+        navigator.openSelectPersonnelNumberScreen()
     }
 
     override fun clean() {

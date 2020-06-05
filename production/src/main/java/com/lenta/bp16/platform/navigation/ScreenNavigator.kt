@@ -66,6 +66,12 @@ class ScreenNavigator @Inject constructor(
         }
     }
 
+    override fun openSelectPersonnelNumberScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(SelectPersonnelNumberFragment())
+        }
+    }
+
     override fun openMainMenuScreen() {
         runOrPostpone {
             getFragmentStack()?.push(MainMenuFragment())
@@ -254,12 +260,6 @@ class ScreenNavigator @Inject constructor(
         }
     }
 
-    override fun openSelectionPersonnelNumberScreen(isScreenMainMenu: Boolean) {
-        runOrPostpone {
-            getFragmentStack()?.replace(SelectPersonnelNumberFragment.create(isScreenMainMenu))
-        }
-    }
-
 }
 
 interface IScreenNavigator : ICoreNavigator {
@@ -267,6 +267,7 @@ interface IScreenNavigator : ICoreNavigator {
     fun openLoginScreen()
     fun openFastDataLoadingScreen()
     fun openSelectMarketScreen()
+    fun openSelectPersonnelNumberScreen()
     fun openMainMenuScreen()
     fun openProcessingUnitTaskListScreen()
     fun openExternalSupplyTaskListScreen()
@@ -290,5 +291,4 @@ interface IScreenNavigator : ICoreNavigator {
     fun showNotSavedDataWillBeLost(yesCallback: () -> Unit)
     fun showAlertNoIpPrinter()
     fun showLabelSentToPrint(nextCallback: () -> Unit)
-    fun openSelectionPersonnelNumberScreen(isScreenMainMenu: Boolean)
 }

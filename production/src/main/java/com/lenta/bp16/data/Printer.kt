@@ -86,7 +86,6 @@ class Printer @Inject constructor(
         mutableMapOf<String, String>().apply {
             put("QUANTITY", labelInfo.quantity)
             put("CODECONT", labelInfo.codeCont)
-            put("STORCOND", labelInfo.storCond)
             put("PLANAUFFINISH", labelInfo.planAufFinish)
             put("AUFNR", labelInfo.aufnr)
             put("NAMEOSN", labelInfo.nameOsn)
@@ -94,7 +93,6 @@ class Printer @Inject constructor(
             put("GOODSNAME", labelInfo.goodsName)
             put("WEIGHER", labelInfo.weigher)
             put("PRODUCTTIME", labelInfo.productTime)
-            put("NAMEDONE", labelInfo.nameDone)
             put("GOODSCODE", labelInfo.goodsCode)
             put("BARCODE", labelInfo.barcode)
             put("TEXTBARCODE", labelInfo.barcodeText)
@@ -140,8 +138,6 @@ data class LabelInfo(
         val quantity: String,
         /** Номер тары **/
         val codeCont: String,
-        /** Условия хранения */
-        val storCond: String,
         /** Плановое окончание тех. процесса */
         val planAufFinish: String,
         /** Номер технологического заказа */
@@ -156,8 +152,6 @@ data class LabelInfo(
         val weigher: String,
         /** Изготовлено */
         val productTime: String,
-        /** Наименование готового продукта */
-        val nameDone: String,
         /** Код товара */
         val goodsCode: String,
         /** Штрихкод */
