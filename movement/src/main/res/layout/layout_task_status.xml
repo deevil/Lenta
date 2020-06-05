@@ -13,14 +13,14 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <TableLayout
+        <com.lenta.movement.view.BorderedTableLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
             android:stretchColumns="*"
             app:layout_constraintTop_toTopOf="parent">
 
-            <com.lenta.movement.view.TableRowBordered>
+            <TableRow>
 
                 <TextView
                     android:layout_width="0dp"
@@ -34,9 +34,9 @@
                     android:text="@{vm.currentStatusText}"
                     tools:text="Создано"
                     android:layout_margin="16dp"/>
-            </com.lenta.movement.view.TableRowBordered>
+            </TableRow>
 
-            <com.lenta.movement.view.TableRowBordered>
+            <TableRow>
 
                 <TextView
                     android:layout_width="0dp"
@@ -50,8 +50,8 @@
                     android:text="@{vm.nextStatusText}"
                     tools:text="Посчитано"
                     android:layout_margin="16dp"/>
-            </com.lenta.movement.view.TableRowBordered>
+            </TableRow>
 
-        </TableLayout>
+        </com.lenta.movement.view.BorderedTableLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

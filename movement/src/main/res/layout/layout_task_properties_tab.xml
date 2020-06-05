@@ -12,14 +12,14 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <TableLayout
+        <com.lenta.movement.view.BorderedTableLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
             android:stretchColumns="*"
             app:layout_constraintTop_toTopOf="parent">
 
-            <com.lenta.movement.view.TableRowBordered android:gravity="center_vertical">
+            <TableRow android:gravity="center_vertical">
 
                 <TextView
                     android:layout_width="0dp"
@@ -35,9 +35,9 @@
                     app:items="@{vm.pikingStorageList}"
                     app:onPositionClickListener="@{vm.pikingStorageSelectedPositionListener}"
                     app:position="@{vm.pikingStorageSelectedPosition}" />
-            </com.lenta.movement.view.TableRowBordered>
+            </TableRow>
 
-            <com.lenta.movement.view.TableRowBordered android:gravity="center_vertical">
+            <TableRow android:gravity="center_vertical">
 
                 <TextView
                     android:layout_width="0dp"
@@ -53,9 +53,9 @@
                     app:items="@{vm.shipmentStorageList}"
                     app:onPositionClickListener="@{vm.shipmentStorageSelectedPositionListener}"
                     app:position="@{vm.shipmentStorageSelectedPosition}" />
-            </com.lenta.movement.view.TableRowBordered>
+            </TableRow>
 
-            <com.lenta.movement.view.TableRowBordered android:gravity="center_vertical">
+            <TableRow android:gravity="center_vertical">
 
                 <TextView
                     android:layout_width="0dp"
@@ -74,9 +74,9 @@
                     android:enabled="@{vm.shipmentDateEnabled}"
                     app:maskPattern='@{"[00]{.}[00]{.}[00]"}' />
 
-            </com.lenta.movement.view.TableRowBordered>
+            </TableRow>
 
-        </TableLayout>
+        </com.lenta.movement.view.BorderedTableLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

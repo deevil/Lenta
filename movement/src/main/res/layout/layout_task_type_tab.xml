@@ -12,14 +12,14 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <TableLayout
+        <com.lenta.movement.view.BorderedTableLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
             android:stretchColumns="*"
             app:layout_constraintTop_toTopOf="parent">
 
-            <com.lenta.movement.view.TableRowBordered>
+            <TableRow>
 
                 <com.lenta.shared.view.ClickableSpinner
                     android:layout_width="wrap_content"
@@ -30,9 +30,9 @@
                     app:items="@{vm.taskTypesFormatted}"
                     app:position="@{vm.taskTypeSelectedPosition}"/>
 
-            </com.lenta.movement.view.TableRowBordered>
+            </TableRow>
 
-            <com.lenta.movement.view.TableRowBordered>
+            <TableRow>
 
                 <com.lenta.shared.view.ClickableSpinner
                     android:layout_width="wrap_content"
@@ -43,9 +43,9 @@
                     app:items="@{vm.movementTypesFormatted}"
                     app:position="@{vm.movementSelectedPosition}"/>
 
-            </com.lenta.movement.view.TableRowBordered>
+            </TableRow>
 
-            <com.lenta.movement.view.TableRowBordered>
+            <TableRow>
 
                 <EditText
                     android:id="@+id/taskNameEditText"
@@ -56,9 +56,9 @@
                     android:text="@={vm.taskName}"
                     android:enabled="@{vm.taskNameEnabled}"/>
 
-            </com.lenta.movement.view.TableRowBordered>
+            </TableRow>
 
-            <com.lenta.movement.view.TableRowBordered
+            <TableRow
                 android:gravity="center_vertical">
 
                 <TextView
@@ -76,8 +76,8 @@
                     app:position="@{vm.receiverSelectedPosition}"
                     app:onPositionClickListener="@{vm.receiverSelectedPositionListener}"/>
 
-            </com.lenta.movement.view.TableRowBordered>
+            </TableRow>
 
-        </TableLayout>
+        </com.lenta.movement.view.BorderedTableLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

@@ -14,14 +14,14 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <TableLayout
+        <com.lenta.movement.view.BorderedTableLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
             android:stretchColumns="*"
             app:layout_constraintTop_toTopOf="parent">
 
-            <com.lenta.movement.view.TableRowBordered>
+            <TableRow>
 
                 <com.lenta.shared.view.ClickableSpinner
                     android:layout_width="0dp"
@@ -41,9 +41,9 @@
                     app:digitsForUom="@{vm.quantityUom}"
                     app:suffix="@{vm.quantityUom.name}"
                     tools:text="50 шт." />
-            </com.lenta.movement.view.TableRowBordered>
+            </TableRow>
 
-            <com.lenta.movement.view.TableRowBordered android:gravity="center_vertical">
+            <TableRow android:gravity="center_vertical">
 
                 <TextView
                     android:layout_width="0dp"
@@ -57,9 +57,9 @@
                     android:layout_margin="16dp"
                     android:text="@{@string/task_goods_quantities_format(vm.totalQuantity, vm.forBasketQuantity, vm.quantityUom.name)}"
                     tools:text="50 шт.\n50 шт." />
-            </com.lenta.movement.view.TableRowBordered>
+            </TableRow>
 
-            <com.lenta.movement.view.TableRowBordered android:visibility="@{vm.supplierListVisible}">
+            <TableRow android:visibility="@{vm.supplierListVisible}">
 
                 <com.lenta.shared.view.ClickableSpinner
                     android:layout_width="wrap_content"
@@ -69,10 +69,10 @@
                     app:items="@{vm.supplierList}"
                     app:onPositionClickListener="@{vm.supplierSelectedListener}" />
 
-            </com.lenta.movement.view.TableRowBordered>
+            </TableRow>
 
 
-        </TableLayout>
+        </com.lenta.movement.view.BorderedTableLayout>
 
         <FrameLayout
             android:id="@+id/matrixLayout"
