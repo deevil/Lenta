@@ -50,7 +50,7 @@ class BorderedTableLayout(context: Context?, attrs: AttributeSet?) : TableLayout
                         sumWidth.toFloat(),
                         sumHeight.toFloat(),
                         sumWidth.toFloat(),
-                        sumHeight.toFloat() + measuredHeight.toFloat(),
+                        sumHeight.toFloat() + rowView.measuredHeight.toFloat(),
                         paint
                     )
                 }
