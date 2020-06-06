@@ -1,6 +1,8 @@
 package com.lenta.movement.requests.network.models
 
 import com.lenta.movement.models.Task
+import com.lenta.shared.platform.constants.Constants
+import com.lenta.shared.utilities.extentions.getSapDate
 import com.lenta.shared.utilities.extentions.isSapTrue
 
 fun DbTaskListItem.toTask(): Task {
@@ -19,6 +21,6 @@ fun DbTaskListItem.toTask(): Task {
         receiver = werksDstntnt,
         pikingStorage = lgortSrc,
         shipmentStorage = lgortTarget,
-        shipmentDate = dateShip
+        shipmentDate = dateShip.getSapDate(Constants.DATE_FORMAT_yyyy_mm_dd) ?: error("shipment date parse error (raw date: $dateShip)")
     )
 }

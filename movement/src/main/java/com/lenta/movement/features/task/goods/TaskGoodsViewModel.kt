@@ -15,14 +15,12 @@ import com.lenta.movement.requests.network.SaveTaskNetRequest
 import com.lenta.movement.requests.network.SaveTaskParams
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.models.core.Uom
+import com.lenta.shared.platform.constants.Constants
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.SelectionItemsHelper
 import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
 import com.lenta.shared.utilities.databinding.PageSelectionListener
-import com.lenta.shared.utilities.extentions.combineLatest
-import com.lenta.shared.utilities.extentions.getDeviceIp
-import com.lenta.shared.utilities.extentions.mapSkipNulls
-import com.lenta.shared.utilities.extentions.toSapBooleanString
+import com.lenta.shared.utilities.extentions.*
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -204,7 +202,7 @@ class TaskGoodsViewModel : CoreViewModel(),
                 movementType = task.movementType,
                 lgortSource = task.pikingStorage,
                 lgortTarget = task.shipmentStorage,
-                shipmentDate = task.shipmentDate,
+                shipmentDate = task.shipmentDate.getFormattedDate(Constants.DATE_FORMAT_yyyy_mm_dd),
                 isNotFinish = task.isCreated.toSapBooleanString(),
                 destination = task.receiver,
                 materials = getProcessed().map { (product, count) ->

@@ -3,7 +3,6 @@ package com.lenta.movement.requests.network.models
 import com.google.gson.annotations.SerializedName
 import com.lenta.movement.models.MovementType
 import com.lenta.movement.models.TaskType
-import java.util.*
 
 data class DbTaskListItem(
     @SerializedName("TASK_NUM")
@@ -37,7 +36,7 @@ data class DbTaskListItem(
     @SerializedName("TASK_COMMENT")
     val taskComment: String,
     @SerializedName("DATE_SHIP")
-    val dateShip: Date,
+    val dateShip: String,
     @SerializedName("CUR_STAT")
     val currentStatusCode: String,
     @SerializedName("CUR_STAT_TEXT")

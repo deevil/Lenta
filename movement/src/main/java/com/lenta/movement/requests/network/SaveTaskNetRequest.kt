@@ -11,7 +11,6 @@ import com.lenta.shared.fmp.ObjectRawStatus
 import com.lenta.shared.functional.Either
 import com.lenta.shared.interactor.UseCase
 import com.lenta.shared.requests.FmpRequestsHelper
-import java.util.*
 import javax.inject.Inject
 
 class SaveTaskNetRequest @Inject constructor(
@@ -58,13 +57,13 @@ data class SaveTaskParams(
     val movementType: MovementType,
     @SerializedName("IV_LGORT_SRC")
     val lgortSource: String,
-    @SerializedName("LGORT_TGT")
+    @SerializedName("IV_LGORT_TGT")
     val lgortTarget: String,
-    @SerializedName("DATE_SHIP")
-    val shipmentDate: Date,
+    @SerializedName("IV_DATE_SHIP")
+    val shipmentDate: String,
     @SerializedName("IV_NOT_FINISH")
     val isNotFinish: String,
-    @SerializedName("WERKS_DSTNTN")
+    @SerializedName("IV_WERKS_DSTNTN")
     val destination: String,
     @SerializedName("IT_TASK_POS")
     val materials: List<TaskMaterial>,

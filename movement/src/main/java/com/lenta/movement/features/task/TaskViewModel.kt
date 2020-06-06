@@ -74,7 +74,11 @@ class TaskViewModel : CoreViewModel(), PageSelectionListener {
             addSource(task) { value = it == null && receivers.value?.size != 1 }
         }
     }
-    val receivers by lazy { MutableLiveData(taskManager.getAvailableReceivers()) }
+    val receivers by lazy {
+        task.map { taskOrNull ->
+            taskOrNull?.receiver?.let { listOf(it) } ?: taskManager.getAvailableReceivers()
+        }
+    }
     val receiverSelectedPosition = MutableLiveData(0)
     val receiverSelectedPositionListener = object : OnPositionClickListener {
         override fun onClickPosition(position: Int) {
@@ -89,7 +93,9 @@ class TaskViewModel : CoreViewModel(), PageSelectionListener {
         }
     }
     val pikingStorageList by lazy {
-        MutableLiveData(taskManager.getAvailablePikingStorageList(taskType, movementType).addFirstEmptyIfNeeded())
+        task.map { taskOrNull ->
+            taskOrNull?.pikingStorage?.let { listOf(it) } ?: taskManager.getAvailablePikingStorageList(taskType, movementType).addFirstEmptyIfNeeded()
+        }
     }
     val pikingStorageSelectedPosition = MutableLiveData(0)
     val pikingStorageSelectedPositionListener = object : OnPositionClickListener {
@@ -104,7 +110,11 @@ class TaskViewModel : CoreViewModel(), PageSelectionListener {
             addSource(task) { value = it == null && shipmentStorageList.value?.size != 1 }
         }
     }
-    val shipmentStorageList by lazy { MutableLiveData(setting.shipmentStorageList.addFirstEmptyIfNeeded()) }
+    val shipmentStorageList by lazy {
+        task.map { taskOrNull ->
+            taskOrNull?.shipmentStorage?.let { listOf(it) } ?: setting.shipmentStorageList.addFirstEmptyIfNeeded()
+        }
+    }
     val shipmentStorageSelectedPosition = MutableLiveData(0)
     val shipmentStorageSelectedPositionListener = object : OnPositionClickListener {
         override fun onClickPosition(position: Int) {
