@@ -7,7 +7,7 @@ import javax.inject.Inject
 class NumberScreenGenerator @Inject constructor() : INumberScreenGenerator {
 
     companion object {
-        const val prefix = "10" // TODO уточнить номер, так как тот что в дизайне уже используется в writeoff breakage
+        const val prefix = "13"
     }
 
     override fun generateNumberScreenFromPostfix(postfix: String?): String? {
