@@ -162,6 +162,10 @@ class TaskViewModel : CoreViewModel(), PageSelectionListener {
     fun onNextClick() {
         if (task.value == null) {
             taskManager.setTask(buildTask())
+        } else {
+            // TODO remove when Task Screen is ready for work with saved task
+            screenNavigator.openNotImplementedScreenAlert("Состав сохраненного задания")
+            return
         }
         screenNavigator.openTaskCompositionScreen()
     }
