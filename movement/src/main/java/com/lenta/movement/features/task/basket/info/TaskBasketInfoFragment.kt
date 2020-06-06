@@ -2,7 +2,6 @@ package com.lenta.movement.features.task.basket.info
 
 import com.lenta.movement.R
 import com.lenta.movement.databinding.FragmentTaskBasketInfoBinding
-import com.lenta.movement.models.Basket
 import com.lenta.movement.platform.extensions.getAppComponent
 import com.lenta.shared.platform.fragment.CoreFragment
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel

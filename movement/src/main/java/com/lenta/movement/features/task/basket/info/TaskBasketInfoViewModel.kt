@@ -31,7 +31,11 @@ class TaskBasketInfoViewModel: CoreViewModel() {
     val supplier by lazy { MutableLiveData(basket.supplier?.name.orEmpty()) }
 
     fun getTitle(): String {
-        return formatter.getBasketDescription(basket, taskManager.getTask(), taskManager.getTaskSettings())
+        return "${formatter.getBasketName(basket)}: ${formatter.getBasketDescription(
+            basket,
+            taskManager.getTask(),
+            taskManager.getTaskSettings()
+        )}"
     }
 
 }
