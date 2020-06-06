@@ -14,6 +14,7 @@ import com.lenta.shared.utilities.databinding.PageSelectionListener
 import com.lenta.shared.utilities.date_time.DateTimeUtil
 import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.view.OnPositionClickListener
+import org.joda.time.DateTime
 import java.lang.Exception
 import java.util.*
 import javax.inject.Inject
@@ -171,7 +172,7 @@ class TaskViewModel : CoreViewModel(), PageSelectionListener {
                     task.receiver.isNotEmpty() &&
                     task.pikingStorage.isNotEmpty() &&
                     task.shipmentStorage.isNotEmpty() &&
-                    task.shipmentDate.before(Date()).not()
+                    task.shipmentDate.after(DateTime.now().minusDays(1).toDate())
         }
     }
 
@@ -211,4 +212,5 @@ class TaskViewModel : CoreViewModel(), PageSelectionListener {
     private fun <T> LiveData<List<T>>.getSelectedValue(position: LiveData<Int>): T? {
         return value?.getOrNull(position.value ?: -1)
     }
+
 }
