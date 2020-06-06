@@ -16,6 +16,7 @@ import com.lenta.movement.features.task.goods.TaskGoodsFragment
 import com.lenta.movement.features.task.goods.details.TaskGoodsDetailsFragment
 import com.lenta.movement.features.task.goods.info.TaskGoodsInfoFragment
 import com.lenta.movement.features.task.TaskFragment
+import com.lenta.movement.features.task.basket.info.TaskBasketInfoFragment
 import com.lenta.movement.models.ExciseBox
 import com.lenta.movement.models.ProductInfo
 import com.lenta.movement.models.Task
@@ -242,7 +243,9 @@ class ScreenNavigator(
     }
 
     override fun openTaskBasketCharacteristicsScreen(basketIndex: Int) {
-        openNotImplementedScreenAlert("Свойства корзины")
+        runOrPostpone {
+            getFragmentStack()?.push(TaskBasketInfoFragment.newInstance(basketIndex))
+        }
     }
 
     override fun openSaveTaskConfirmationDialog(yesCallbackFunc: () -> Unit) {
