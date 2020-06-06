@@ -188,6 +188,12 @@ class TaskGoodsViewModel : CoreViewModel(),
     }
 
     fun onSaveClick() {
+        screenNavigator.openSaveTaskConfirmationDialog {
+            saveTask()
+        }
+    }
+
+    private fun saveTask() {
         viewModelScope.launch {
             screenNavigator.showProgress(saveTaskNetRequest)
 

@@ -56,7 +56,7 @@
     <string name="baskets">Корзины</string>
     <string name="pu">ЕО</string>
     <string name="boxes">Коробки</string>
-    <string name="task_save_description">Сохранение данных</string>
+    <string name="task_save_confirmation_msg">Перевести задание в статус «Посчитано» и закрыть его для редактирования?</string>
 
 
 </resources>

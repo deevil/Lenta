@@ -244,6 +244,22 @@ class ScreenNavigator(
     override fun openTaskBasketCharacteristicsScreen(basketIndex: Int) {
         openNotImplementedScreenAlert("Свойства корзины")
     }
+
+    override fun openSaveTaskConfirmationDialog(yesCallbackFunc: () -> Unit) {
+        runOrPostpone {
+            getFragmentStack()?.push(
+                AlertFragment.create(
+                    description = context.getString(R.string.data_saving),
+                    message = context.getString(R.string.task_save_confirmation_msg),
+                    codeConfirmForRight = backFragmentResultHelper.setFuncForResult(yesCallbackFunc),
+                    iconRes = R.drawable.ic_question_80dp,
+                    pageNumber = "06",
+                    leftButtonDecorationInfo = ButtonDecorationInfo.back,
+                    rightButtonDecorationInfo = ButtonDecorationInfo.yes
+                )
+            )
+        }
+    }
 }
 
 interface IScreenNavigator : ICoreNavigator {
@@ -270,5 +286,6 @@ interface IScreenNavigator : ICoreNavigator {
     fun openTaskGoodsDetailsScreen(productInfo: ProductInfo)
     fun openTaskBasketScreen(basketIndex: Int)
     fun openTaskBasketCharacteristicsScreen(basketIndex: Int)
+    fun openSaveTaskConfirmationDialog(yesCallbackFunc: () -> Unit)
     fun openTaskList()
 }
