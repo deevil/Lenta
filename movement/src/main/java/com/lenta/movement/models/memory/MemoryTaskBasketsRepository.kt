@@ -52,72 +52,35 @@ class MemoryTaskBasketsRepository(
 
         suitableBasket[product] = (suitableBasket[product] ?: 0) + 1
 
-        addOrReplaceIfExist(suitableBasket)
+        if (basketList.contains(suitableBasket)) {
+            basketList[suitableBasket.index] = suitableBasket
+        } else {
+            basketList.add(suitableBasket.index, suitableBasket)
+        }
 
         addProduct(product, supplier, count - 1)
     }
 
-    override fun getSuitableBasketOrCreate(
-        productInfo: ProductInfo,
-        supplier: Supplier?
-    ): Basket {
+    override fun getSuitableBasketOrCreate(product: ProductInfo, supplier: Supplier?): Basket {
+        val signOfDiv = taskManager.getTaskSettings().signsOfDiv
+
         return basketList.lastOrNull { basket ->
-            basket.isSuitableForProduct(productInfo, supplier)
+            basket.checkSuitableProduct(product, supplier)
         } ?: Basket(
             index = basketList.size,
             volume = zmpUtz14V001.getEoVolume() ?: error("Объем корзины отсутствует"),
-            supplier = supplier
+            supplier = supplier.takeIf { signOfDiv.contains(GoodsSignOfDivision.LIF_NUMBER) },
+            isAlco = product.isAlco.takeIf { signOfDiv.contains(GoodsSignOfDivision.ALCO) },
+            isExciseAlco = product.isExcise.takeIf { signOfDiv.contains(GoodsSignOfDivision.MARK_PARTS) },
+            isNotExciseAlco = product.isNotExcise.takeIf { signOfDiv.contains(GoodsSignOfDivision.PARTS) },
+            isUsual = product.isUsual.takeIf { signOfDiv.contains(GoodsSignOfDivision.USUAL) },
+            isVet = product.isVet.takeIf { signOfDiv.contains(GoodsSignOfDivision.VET) },
+            isFood = product.isFood.takeIf { signOfDiv.contains(GoodsSignOfDivision.FOOD) }
         )
     }
 
     override fun clear() {
         basketList.clear()
-    }
-
-    private fun Basket.isSuitableForProduct(
-        productInfo: ProductInfo,
-        selectedSupplier: Supplier?
-    ): Boolean {
-        if (isEmpty()) return true
-
-        if (productInfo.volume > freeVolume) return false
-
-        val settings = taskManager.getTaskSettings(
-            taskType = taskManager.getTask().taskType,
-            movementType = taskManager.getTask().movementType
-        )
-
-        return settings.signsOfDiv.all { signOfDivision ->
-            when (signOfDivision) {
-                GoodsSignOfDivision.ALCO -> {
-                    keys.first().isAlco == productInfo.isAlco
-                }
-                GoodsSignOfDivision.LIF_NUMBER -> {
-                    supplier?.code == selectedSupplier?.code
-                }
-                GoodsSignOfDivision.MATERIAL_NUMBER -> {
-                    keys.first().materialNumber == productInfo.materialNumber
-                }
-                GoodsSignOfDivision.VET -> {
-                    keys.first().isVet == productInfo.isVet
-                }
-                GoodsSignOfDivision.FOOD -> {
-                    keys.first().isFood == productInfo.isFood
-                }
-                GoodsSignOfDivision.MARK_PARTS -> TODO()
-                GoodsSignOfDivision.USUAL -> TODO()
-                GoodsSignOfDivision.PARTS -> TODO()
-                GoodsSignOfDivision.MTART -> TODO()
-            }
-        }
-    }
-
-    private fun addOrReplaceIfExist(basket: Basket) {
-        if (basketList.contains(basket)) {
-            basketList[basket.index] = basket
-        } else {
-            basketList.add(basket.index, basket)
-        }
     }
 
 }

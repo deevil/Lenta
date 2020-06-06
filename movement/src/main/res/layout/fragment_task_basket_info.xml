@@ -35,7 +35,7 @@
 
             </TableRow>
 
-            <TableRow>
+            <TableRow android:visibility="@{vm.gisControlVisible}">
 
                 <TextView
                     android:layout_width="0dp"

@@ -86,4 +86,16 @@ class Formatter(
         return descriptionBuilder.toString()
     }
 
+    override fun basketGisControl(basket: Basket): String {
+        return when {
+            basket.isAlco ?: false -> "Алкоголь"
+            basket.isExciseAlco ?: false -> "Марочные остатки"
+            basket.isNotExciseAlco ?: false -> "Партионные остатки"
+            basket.isUsual ?: false -> "Обычный товар"
+            basket.isVet ?: false -> "Меркурианский товар"
+            basket.isFood ?: false -> "Еда"
+            else -> ""
+        }
+    }
+
 }

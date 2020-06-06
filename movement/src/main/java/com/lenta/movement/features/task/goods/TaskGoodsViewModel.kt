@@ -222,7 +222,7 @@ class TaskGoodsViewModel : CoreViewModel(),
                         number = product.materialNumber,
                         quantity = count.toString(),
                         xzael = "", // TODO
-                        isDeleted = false.toSapBooleanString(), // TODO
+                        isDeleted = false.toSapBooleanString(),
                         uom = Uom.ST.code
                     )
                 },
@@ -235,12 +235,12 @@ class TaskGoodsViewModel : CoreViewModel(),
                         materialType = "",
                         lifNr = basket.supplier?.code.orEmpty(),
                         zcharg = "", // TODO
-                        isAlco = false.toSapBooleanString(), // TODO
-                        isExcise = false.toSapBooleanString(), // TODO
-                        isNotExcise = false.toSapBooleanString(), // TODO
-                        isUsual = false.toSapBooleanString(), // TODO
-                        isVet = false.toSapBooleanString(), // TODO
-                        isFood = false.toSapBooleanString() // TODO
+                        isAlco = basket.isAlco.toSapBooleanString(),
+                        isExcise = basket.isExciseAlco.toSapBooleanString(),
+                        isNotExcise = basket.isNotExciseAlco.toSapBooleanString(),
+                        isUsual = basket.isUsual.toSapBooleanString(),
+                        isVet = basket.isVet.toSapBooleanString(),
+                        isFood = basket.isFood.toSapBooleanString()
                     )
                 }
             )).either(

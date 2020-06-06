@@ -18,4 +18,6 @@ interface IFormatter {
 
     fun getBasketDescription(basket: Basket, task: Task, settings: TaskSettings): String
 
+    fun basketGisControl(basket: Basket): String
+
 }

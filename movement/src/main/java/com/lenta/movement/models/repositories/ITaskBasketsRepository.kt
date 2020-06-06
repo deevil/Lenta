@@ -18,7 +18,7 @@ interface ITaskBasketsRepository {
 
     fun addProduct(product: ProductInfo, supplier: Supplier? = null, count: Int)
 
-    fun getSuitableBasketOrCreate(productInfo: ProductInfo, supplier: Supplier? = null): Basket
+    fun getSuitableBasketOrCreate(product: ProductInfo, supplier: Supplier? = null): Basket
 
     fun clear()
 }

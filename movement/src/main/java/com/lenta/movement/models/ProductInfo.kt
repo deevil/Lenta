@@ -28,6 +28,9 @@ open class ProductInfo(
     val isExcise: Boolean
         get() = type == ProductType.ExciseAlcohol
 
+    val isNotExcise: Boolean
+        get() = type == ProductType.NonExciseAlcohol
+
     val isUsual: Boolean
         get() = isVet.not() && isAlco.not()
 
