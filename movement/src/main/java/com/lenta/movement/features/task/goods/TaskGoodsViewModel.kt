@@ -139,8 +139,14 @@ class TaskGoodsViewModel : CoreViewModel(),
     }
 
     fun onBackPressed() {
-        // TODO
-        screenNavigator.goBack()
+        if (taskBasketsRepository.getAll().isNotEmpty()) {
+            screenNavigator.openUnsavedDataDialog {
+                taskBasketsRepository.clear()
+                screenNavigator.goBack()
+            }
+        } else {
+            screenNavigator.goBack()
+        }
     }
 
     fun onClickProcessedItem(position: Int) {
