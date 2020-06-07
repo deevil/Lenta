@@ -33,19 +33,16 @@ class TaskGoodsInfoViewModel : CoreViewModel() {
     val quantityUom = MutableLiveData(Uom.DEFAULT)
 
     private val supplierSelected = MutableLiveData(Optional.absent<Supplier>())
-    val supplierList by lazy { productInfo.suppliers.map { it.name } }
+    val supplierListVisible by lazy {
+        val settings = taskManager.getTaskSettings()
+        MutableLiveData(productInfo.suppliers.size > 1 && settings.signsOfDiv.contains(GoodsSignOfDivision.LIF_NUMBER))
+    }
+    val supplierList by lazy { MutableLiveData(productInfo.suppliers.map { it.name }) }
     val supplierSelectedListener = object : OnPositionClickListener {
         override fun onClickPosition(position: Int) {
             supplierSelected.value =
                 Optional.fromNullable(productInfo.suppliers.getOrNull(position))
         }
-    }
-    val supplierListVisible by lazy {
-        val settings = taskManager.getTaskSettings(
-            taskType = taskManager.getTask().taskType,
-            movementType = taskManager.getTask().movementType
-        )
-        MutableLiveData(settings.signsOfDiv.contains(GoodsSignOfDivision.LIF_NUMBER))
     }
 
     val currentBasket: LiveData<Basket> by lazy {
