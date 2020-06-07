@@ -226,22 +226,24 @@ class TaskGoodsViewModel : CoreViewModel(),
                         uom = Uom.ST.code
                     )
                 },
-                baskets = getBaskets().map { basket ->
-                    SaveTaskParams.TaskBasket(
-                        basketNumber = basket.number.toString(),
-                        materialNumber = "", // TODO
-                        quantity = basket.values.sum().toString(),
-                        uom = Uom.ST.code,  // TODO
-                        materialType = "",
-                        lifNr = basket.supplier?.code.orEmpty(),
-                        zcharg = "", // TODO
-                        isAlco = basket.isAlco.toSapBooleanString(),
-                        isExcise = basket.isExciseAlco.toSapBooleanString(),
-                        isNotExcise = basket.isNotExciseAlco.toSapBooleanString(),
-                        isUsual = basket.isUsual.toSapBooleanString(),
-                        isVet = basket.isVet.toSapBooleanString(),
-                        isFood = basket.isFood.toSapBooleanString()
-                    )
+                baskets = getBaskets().flatMap { basket ->
+                    basket.map { (product, count) ->
+                        SaveTaskParams.TaskBasket(
+                            basketNumber = basket.number.toString(),
+                            materialNumber = product.materialNumber,
+                            quantity = count.toString(),
+                            uom = Uom.ST.code,  // TODO
+                            materialType = "",
+                            lifNr = basket.supplier?.code.orEmpty(),
+                            zcharg = "", // TODO
+                            isAlco = basket.isAlco.toSapBooleanString(),
+                            isExcise = basket.isExciseAlco.toSapBooleanString(),
+                            isNotExcise = basket.isNotExciseAlco.toSapBooleanString(),
+                            isUsual = basket.isUsual.toSapBooleanString(),
+                            isVet = basket.isVet.toSapBooleanString(),
+                            isFood = basket.isFood.toSapBooleanString()
+                        )
+                    }
                 }
             )).either(
                 fnL = { failure ->

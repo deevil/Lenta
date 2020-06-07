@@ -32,12 +32,12 @@ class Basket(
 
         if (product.volume > freeVolume) return false
 
-        return isAlco?.and(product.isAlco) ?: true &&
-                isExciseAlco?.and(product.isExcise) ?: true &&
-                isNotExciseAlco?.and(product.isNotExcise) ?: true &&
-                isUsual?.and(product.isUsual) ?: true &&
-                isVet?.and(product.isVet) ?: true &&
-                isFood?.and(product.isFood) ?: true &&
+        return isAlco?.equals(product.isAlco) ?: true &&
+                isExciseAlco?.equals(product.isExcise) ?: true &&
+                isNotExciseAlco?.equals(product.isNotExcise) ?: true &&
+                isUsual?.equals(product.isUsual) ?: true &&
+                isVet?.equals(product.isVet) ?: true &&
+                isFood?.equals(product.isFood) ?: true &&
                 this.supplier?.equals(supplier) ?: true
     }
 }
