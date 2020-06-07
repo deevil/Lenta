@@ -34,15 +34,15 @@ class MemoryTaskBasketsRepository(
     override fun removeProductFromAllBaskets(product: ProductInfo) {
         basketList.forEach { basket ->
             basket.remove(product)
-
-            if (basket.isEmpty()) {
-                removeBasket(basket)
-            }
         }
+
+        basketList.removeAll { it.isEmpty() }
     }
 
     override fun removeProductFromBasket(basketIndex: Int, product: ProductInfo) {
         basketList[basketIndex].remove(product)
+
+        basketList.removeAll { it.isEmpty() }
     }
 
     override fun addProduct(product: ProductInfo, supplier: Supplier?, count: Int) {
