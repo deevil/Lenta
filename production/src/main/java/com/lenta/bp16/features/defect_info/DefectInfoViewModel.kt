@@ -251,7 +251,7 @@ class DefectInfoViewModel : CoreViewModel() {
                             dateExpir = dateExpir?.let { SimpleDateFormat(Constants.DATE_FORMAT_dd_mm_yyyy_hh_mm, Locale.getDefault()).format(it.time) }
                                     ?: "",
                             goodsName = "***БРАК*** ${packCodeResult.dataLabel.materialName}",
-                            weigher = sessionInfo.personnelNumber ?: "",
+                            weight = sessionInfo.personnelNumber ?: "",
                             productTime = SimpleDateFormat(Constants.DATE_FORMAT_dd_mm_yyyy_hh_mm, Locale.getDefault()).format(productTime.time),
                             goodsCode = packCodeResult.dataLabel.material.takeLast(6),
                             barcode = barcode,

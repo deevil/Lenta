@@ -3,11 +3,9 @@ package com.lenta.bp16.data
 import android.content.Context
 import androidx.annotation.WorkerThread
 import com.google.gson.Gson
-import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.analytics.AnalyticsHelper
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.functional.Either
-import com.lenta.shared.settings.IAppSettings
 import com.lenta.shared.utilities.Logg
 import java.io.BufferedReader
 import java.io.InputStreamReader
@@ -91,7 +89,7 @@ class Printer @Inject constructor(
             put("NAMEOSN", labelInfo.nameOsn)
             put("DATEEXPIR", labelInfo.dateExpir)
             put("GOODSNAME", labelInfo.goodsName)
-            put("WEIGHER", labelInfo.weigher)
+            put("WEIGHT", labelInfo.weight)
             put("PRODUCTTIME", labelInfo.productTime)
             put("GOODSCODE", labelInfo.goodsCode)
             put("BARCODE", labelInfo.barcode)
@@ -149,7 +147,7 @@ data class LabelInfo(
         /** Наименование продукта */
         val goodsName: String,
         /** Табельный номер */
-        val weigher: String,
+        val weight: String,
         /** Изготовлено */
         val productTime: String,
         /** Код товара */
