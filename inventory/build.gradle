@@ -83,7 +83,7 @@ dependencies {
     }
 
     // Firebase
-    implementation 'com.google.firebase:firebase-analytics:17.4.2'
+    implementation 'com.google.firebase:firebase-analytics:17.4.3'
 
 
 }
