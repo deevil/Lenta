@@ -265,6 +265,24 @@ class ExciseAlcoBoxCardPGEViewModel : CoreViewModel(), OnPositionClickListener {
         processExciseAlcoBoxAccPGEService.rollbackScannedExciseStamp()
         //уменьшаем кол-во отсканированных марок на единицу в текущей сессии
         countExciseStampsScanned.value = countExciseStampsScanned.value?.minus(1)
+        //возвращаем данные предыдущей остканированной марки, если таковая есть
+        val lastExciseStampInfo = processExciseAlcoBoxAccPGEService.getLastAddExciseStamp()
+        val manufacturerCode = taskManager.getReceivingTask()?.taskRepository?.getBatches()?.getBatches()?.findLast {
+            it.batchNumber == lastExciseStampInfo?.batchNumber
+        }?.egais ?: ""
+        val manufacturerName = repoInMemoryHolder.manufacturers.value?.findLast {
+            it.code == manufacturerCode
+        }?.name ?: ""
+        spinManufacturers.value = listOf(manufacturerName)
+
+        val dateOfPour = taskManager.getReceivingTask()?.taskRepository?.getBatches()?.getBatches()?.findLast {
+            it.batchNumber == lastExciseStampInfo?.batchNumber
+        }?.bottlingDate
+        if (!dateOfPour.isNullOrEmpty()) {
+            spinBottlingDate.value = listOf(formatterRU.format(formatterEN.parse(dateOfPour)))
+        } else {
+            spinBottlingDate.value = listOf("")
+        }
     }
 
     fun onClickDetails() {

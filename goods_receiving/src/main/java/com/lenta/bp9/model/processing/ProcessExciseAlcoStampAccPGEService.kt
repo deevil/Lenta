@@ -15,7 +15,6 @@ class ProcessExciseAlcoStampAccPGEService
     private lateinit var productInfo: TaskProductInfo
     private val exciseStamps: ArrayList<TaskExciseStampInfo> = ArrayList()
     private val currentExciseStampsDiscrepancies: ArrayList<TaskExciseStampDiscrepancies> = ArrayList()
-    private val currentExciseStampsBad: ArrayList<TaskExciseStampBad> = ArrayList()
 
     fun newProcessExciseAlcoStampPGEService(productInfo: TaskProductInfo) : ProcessExciseAlcoStampAccPGEService? {
         return if (productInfo.type == ProductType.ExciseAlcohol && productInfo.isMarkFl){ //алкоголь, марочный учет ПГЕ https://trello.com/c/Bx03dgxE
@@ -28,13 +27,20 @@ class ProcessExciseAlcoStampAccPGEService
             taskManager.getReceivingTask()?.taskRepository?.getExciseStampsDiscrepancies()?.findExciseStampsDiscrepanciesOfProduct(productInfo)?.map {
                 currentExciseStampsDiscrepancies.add(it.copy())
             }
-            currentExciseStampsBad.clear()
-            taskManager.getReceivingTask()?.taskRepository?.getExciseStampsBad()?.getExciseStampsBad()?.map {
-                currentExciseStampsBad.add(it.copy())
-            }
             this
         }
         else null
+    }
+
+    fun apply() {
+        if (currentExciseStampsDiscrepancies.isNotEmpty()) {
+            currentExciseStampsDiscrepancies.map {
+                taskManager.getReceivingTask()?.
+                taskRepository?.
+                getExciseStampsDiscrepancies()?.
+                changeExciseStampDiscrepancy(it)
+            }
+        }
     }
 
     fun addProduct(count: String, typeDiscrepancies: String){
@@ -94,26 +100,6 @@ class ProcessExciseAlcoStampAccPGEService
         currentExciseStampsDiscrepancies.add(foundExciseStampDiscrepancy)
     }
 
-    fun addExciseStampBad(exciseStampCode: String) {
-        var index = -1
-        for (i in currentExciseStampsBad.indices) {
-            if (exciseStampCode == currentExciseStampsBad[i].exciseStampCode) {
-                index = i
-            }
-        }
-
-        if (index == -1) {
-            currentExciseStampsBad.add(TaskExciseStampBad(
-                    materialNumber = "",
-                    exciseStampCode = exciseStampCode,
-                    processingUnitNumber = "",
-                    typeDiscrepancies = "",
-                    isScan = true,
-                    boxNumber = ""
-            ))
-        }
-    }
-
     fun overLimit(count: Double) : Boolean {
         return productInfo.orderQuantity.toDouble() < (getCountAcceptOfProduct() + getCountRefusalOfProduct() + count)
     }
@@ -128,6 +114,16 @@ class ProcessExciseAlcoStampAccPGEService
         return currentExciseStampsDiscrepancies.any {
             it.code == code && it.isScan
         }
+    }
+
+    fun getLastAddExciseStamp() : TaskExciseStampInfo? {
+        return if (currentExciseStampsDiscrepancies.isNotEmpty()) {
+            exciseStamps.findLast { stampInfo ->
+                stampInfo.code == currentExciseStampsDiscrepancies.last {
+                    it.isScan
+                }.code
+            }
+        } else null
     }
 
     private fun getCountOfDiscrepanciesOfProduct(typeDiscrepancies: String) : Double {
@@ -169,10 +165,6 @@ class ProcessExciseAlcoStampAccPGEService
         currentExciseStampsDiscrepancies.clear()
         taskManager.getReceivingTask()?.taskRepository?.getExciseStampsDiscrepancies()?.findExciseStampsDiscrepanciesOfProduct(productInfo)?.map {
             currentExciseStampsDiscrepancies.add(it.copy())
-        }
-        currentExciseStampsBad.clear()
-        taskManager.getReceivingTask()?.taskRepository?.getExciseStampsBad()?.getExciseStampsBad()?.map {
-            currentExciseStampsBad.add(it.copy())
         }
     }
 

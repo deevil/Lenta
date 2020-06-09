@@ -1424,6 +1424,28 @@ class ScreenNavigator(
         }
     }
 
+    override fun openScannedStampListedInCargoUnitDialog(cargoUnitNumber: String, nextCallbackFunc: () -> Unit) {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    message = context.getString(R.string.scanned_stamp_is_listed_in_cargo_unit, cargoUnitNumber),
+                    codeConfirmForRight = backFragmentResultHelper.setFuncForResult(nextCallbackFunc),
+                    iconRes = R.drawable.ic_question_yellow_80dp,
+                    pageNumber = "97",
+                    rightButtonDecorationInfo = ButtonDecorationInfo.nextAlternate))
+        }
+    }
+
+    override fun openScannedStampNotIncludedInDeliveryDialog(nextCallbackFunc: () -> Unit) {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    message = context.getString(R.string.scanned_stamp_not_included_in_delivery),
+                    codeConfirmForRight = backFragmentResultHelper.setFuncForResult(nextCallbackFunc),
+                    iconRes = R.drawable.ic_question_yellow_80dp,
+                    pageNumber = "97",
+                    rightButtonDecorationInfo = ButtonDecorationInfo.nextAlternate))
+        }
+    }
+
     private fun getFragmentStack() = foregroundActivityProvider.getActivity()?.fragmentStack
 }
 
@@ -1585,4 +1607,6 @@ interface IScreenNavigator : ICoreNavigator {
     fun openAlertExciseStampPresentInTask()
     fun openDiscrepancyScannedMarkCurrentBoxPGEDialog(nextCallbackFunc: () -> Unit, realBoxNumber: String)
     fun openExciseAlcoStampAccInfoPGEScreen(productInfo: TaskProductInfo)
+    fun openScannedStampListedInCargoUnitDialog(cargoUnitNumber: String, nextCallbackFunc: () -> Unit)
+    fun openScannedStampNotIncludedInDeliveryDialog(nextCallbackFunc: () -> Unit)
 }

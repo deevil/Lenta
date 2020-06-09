@@ -265,6 +265,7 @@
                 android:layout_marginTop="8dp"
                 android:checked="@{vm.checkBoxStampList}"
                 android:enabled="false"
+                android:visibility="@{vm.checkStampListVisibility}"
                 app:layout_constraintStart_toEndOf="@+id/div_vert4"
                 app:layout_constraintTop_toTopOf="@+id/div_vert4" />
 
@@ -277,10 +278,10 @@
                 android:layout_marginEnd="8dp"
                 android:ellipsize="end"
                 android:text="@string/list_stamp"
-                app:layout_constraintBottom_toBottomOf="@+id/checkBox_list_stamp"
+                app:layout_constraintBottom_toBottomOf="@+id/tv_list_stamp_val"
                 app:layout_constraintEnd_toStartOf="@+id/div_vert4"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="@+id/checkBox_list_stamp" />
+                app:layout_constraintTop_toTopOf="@+id/tv_list_stamp_val" />
 
             <TextView
                 android:id="@+id/tv_list_stamp_val"
@@ -288,17 +289,15 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
+                android:layout_marginTop="12dp"
                 android:layout_marginEnd="8dp"
                 android:ellipsize="end"
                 android:maxLines="1"
                 android:text="@{vm.tvListStampVal}"
-                app:layout_constraintBottom_toBottomOf="@+id/checkBox_list_stamp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/checkBox_list_stamp"
-                app:layout_constraintTop_toTopOf="@+id/checkBox_list_stamp"
+                app:layout_constraintTop_toTopOf="parent"
                 tools:text="0 из 0" />
-
-
 
             <View
                 android:id="@+id/div_vert4"
@@ -315,11 +314,11 @@
                 android:id="@+id/div_hor7"
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
-                android:layout_marginTop="8dp"
+                android:layout_marginTop="14dp"
                 android:background="@color/color_divider"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/checkBox_list_stamp" />
+                app:layout_constraintTop_toBottomOf="@+id/tv_list_stamp_val" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

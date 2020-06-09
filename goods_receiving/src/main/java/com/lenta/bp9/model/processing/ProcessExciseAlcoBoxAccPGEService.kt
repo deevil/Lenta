@@ -291,6 +291,16 @@ class ProcessExciseAlcoBoxAccPGEService
         currentExciseStampsDiscrepancies.remove(stamp)
     }
 
+    fun getLastAddExciseStamp() : TaskExciseStampInfo? {
+        return if (currentExciseStampsDiscrepancies.isNotEmpty()) {
+            exciseStamps.findLast { stampInfo ->
+                stampInfo.code == currentExciseStampsDiscrepancies.last {
+                    it.isScan
+                }.code
+            }
+        } else null
+    }
+
     fun getCountUntreatedBoxes() : Int {
         val countTotalBoxes = boxes.filter { it.materialNumber == productInfo.materialNumber }.size
         val countProcessedBoxes = currentBoxDiscrepancies.filter { it.materialNumber == productInfo.materialNumber }.size
