@@ -163,7 +163,6 @@ class ExciseAlcoStampAccInfoPGEViewModel : CoreViewModel(), OnPositionClickListe
                     scanResultHandler = this@ExciseAlcoStampAccInfoPGEViewModel::handleProductSearchResult)
 
             suffix.value = productInfo.value?.purchaseOrderUnits?.name
-            count.value = count.value //todo почему-то без этой строки не выводится в tvBoxControlVal Не требуется, если включить дебаггер, то все отрабатывается, а без дебаггера пришлось дописать эту строчку
 
             qualityInfo.value = dataBase.getQualityInfoPGENotSurplusNotUnderload()
             spinQuality.value = qualityInfo.value?.map {
@@ -175,6 +174,8 @@ class ExciseAlcoStampAccInfoPGEViewModel : CoreViewModel(), OnPositionClickListe
                 screenNavigator.openAlertWrongProductType()
                 return@launch
             }
+
+            count.value = count.value //почему-то без этой строки не выводится в tvBoxControlVal Не требуется, если включить дебаггер, то все отрабатывается, а без дебаггера пришлось дописать эту строчку
         }
     }
 

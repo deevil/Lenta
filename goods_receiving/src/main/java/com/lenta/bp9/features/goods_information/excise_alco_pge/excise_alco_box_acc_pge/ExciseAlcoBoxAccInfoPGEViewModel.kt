@@ -200,7 +200,7 @@ class ExciseAlcoBoxAccInfoPGEViewModel : CoreViewModel(), OnPositionClickListene
                 return@launch
             }
 
-            count.value = processExciseAlcoBoxAccPGEService.getInitialCount().toStringFormatted() //count.value //почему-то без этой строки не выводится в tvBoxControlVal Не требуется, если включить дебаггер, то все отрабатывается, а без дебаггера пришлось дописать эту строчку
+            count.value = processExciseAlcoBoxAccPGEService.getInitialCount().toStringFormatted()
 
         }
     }
