@@ -30,18 +30,16 @@ class ExciseAlcoBoxCardPGEFragment : CoreFragment<FragmentExciseAlcoBoxCardPgeBi
                 massProcessingBoxesNumber: List<String>?,
                 exciseStampInfo: TaskExciseStampInfo?,
                 selectQualityCode: String,
-                initialCount: String,
                 isScan: Boolean,
-                countAcceptRefusal: Double): ExciseAlcoBoxCardPGEFragment {
+                isBoxNotIncludedInNetworkLenta: Boolean): ExciseAlcoBoxCardPGEFragment {
             ExciseAlcoBoxCardPGEFragment().let {
                 it.productInfo = productInfo
                 it.boxInfo = boxInfo
                 it.massProcessingBoxesNumber = massProcessingBoxesNumber
                 it.exciseStampInfo = exciseStampInfo
                 it.selectQualityCode = selectQualityCode
-                it.initialCount = initialCount
                 it.isScan = isScan
-                it.countAcceptRefusal = countAcceptRefusal
+                it.isBoxNotIncludedInNetworkLenta = isBoxNotIncludedInNetworkLenta
                 return it
             }
         }
@@ -52,9 +50,8 @@ class ExciseAlcoBoxCardPGEFragment : CoreFragment<FragmentExciseAlcoBoxCardPgeBi
     private var massProcessingBoxesNumber by state<List<String>?>(null)
     private var exciseStampInfo by state<TaskExciseStampInfo?>(null)
     private var selectQualityCode by state<String?>(null)
-    private var initialCount by state<String?>(null)
     private var isScan by state<Boolean?>(null)
-    private var countAcceptRefusal by state<Double?>(null)
+    private var isBoxNotIncludedInNetworkLenta by state<Boolean?>(null)
 
     override fun getLayoutId(): Int = R.layout.fragment_excise_alco_box_card_pge
 
@@ -65,9 +62,8 @@ class ExciseAlcoBoxCardPGEFragment : CoreFragment<FragmentExciseAlcoBoxCardPgeBi
             getAppComponent()?.inject(vm)
             vm.productInfo.value = this.productInfo
             vm.selectQualityCode.value = this.selectQualityCode
-            vm.initialCount.value = this.initialCount
             vm.isScan.value = this.isScan
-            vm.countAcceptRefusal.value = this.countAcceptRefusal
+            vm.isBoxNotIncludedInNetworkLenta.value = this.isBoxNotIncludedInNetworkLenta
             boxInfo?.let {
                 vm.boxInfo.value = it
             }
@@ -90,10 +86,13 @@ class ExciseAlcoBoxCardPGEFragment : CoreFragment<FragmentExciseAlcoBoxCardPgeBi
         bottomToolbarUiModel.uiModelButton1.show(ButtonDecorationInfo.back)
         bottomToolbarUiModel.uiModelButton2.show(ButtonDecorationInfo.rollback)
         bottomToolbarUiModel.uiModelButton3.show(ButtonDecorationInfo.details)
-        bottomToolbarUiModel.uiModelButton4.show(ButtonDecorationInfo.add) //в WM кнопка доступна всегда, хотя в https://trello.com/c/iOmIb6N7 для ситуации 2 прописаны условия
-        bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.apply)//в WM кнопка доступна всегда, хотя в https://trello.com/c/iOmIb6N7 для ситуации 2 прописаны условия
+        bottomToolbarUiModel.uiModelButton4.show(ButtonDecorationInfo.add)
+        bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.apply)
 
         connectLiveData(vm.enabledRollbackBtn, bottomToolbarUiModel.uiModelButton2.enabled)
+        connectLiveData(vm.enabledDetailsBtn, bottomToolbarUiModel.uiModelButton3.enabled)
+        connectLiveData(vm.enabledAddBtn, bottomToolbarUiModel.uiModelButton4.enabled)
+        connectLiveData(vm.enabledApplyBtn, bottomToolbarUiModel.uiModelButton5.enabled)
     }
 
     override fun onToolbarButtonClick(view: View) {

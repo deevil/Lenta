@@ -47,8 +47,6 @@ class ExciseAlcoBoxListPGEViewModel : CoreViewModel(), PageSelectionListener, On
     val selectedPage = MutableLiveData(0)
     val productInfo: MutableLiveData<TaskProductInfo> = MutableLiveData()
     val selectQualityCode: MutableLiveData<String> = MutableLiveData()
-    val initialCount: MutableLiveData<String> = MutableLiveData()
-    val countAcceptRefusal: MutableLiveData<Double> = MutableLiveData()
     val countNotProcessed: MutableLiveData<List<BoxListItem>> = MutableLiveData()
     val countProcessed: MutableLiveData<List<BoxListItem>> = MutableLiveData()
     val notProcessedSelectionsHelper = SelectionItemsHelper()
@@ -83,7 +81,7 @@ class ExciseAlcoBoxListPGEViewModel : CoreViewModel(), PageSelectionListener, On
             if (processExciseAlcoBoxAccPGEService.getCountUntreatedBoxes() == 0) {
                 context.getString(R.string.accounting_of_marriage_completed) //Учет брака выполнен
             } else {
-                "${context.getString(R.string.accounting_for_marriage)} ${initialCount.value?.toDouble().toStringFormatted()} ${context.getString(R.string.box_abbreviated)}" //Учет брака. Q кор.
+                "${context.getString(R.string.accounting_for_marriage)} ${processExciseAlcoBoxAccPGEService.getInitialCount().toStringFormatted()} ${context.getString(R.string.box_abbreviated)}" //Учет брака. Q кор.
             }
         }
     }
@@ -165,7 +163,7 @@ class ExciseAlcoBoxListPGEViewModel : CoreViewModel(), PageSelectionListener, On
         -Если X<Y, то выводить экран с сообщением <Выбрано больше элементов, чем введено>.
         -Если X>=Y, то переходить на экран карточки короба*/
         val countSelectedBoxes = notProcessedSelectionsHelper.selectedPositions.value?.size ?: 0
-        if ( initialCount.value!!.toInt() < countSelectedBoxes ) {
+        if ( processExciseAlcoBoxAccPGEService.getInitialCount() < countSelectedBoxes ) {
             screenNavigator.openAlertMoreBoxesSelectedThanSnteredScreen()
         } else {
             screenNavigator.openExciseAlcoBoxCardPGEScreen(
@@ -176,9 +174,8 @@ class ExciseAlcoBoxListPGEViewModel : CoreViewModel(), PageSelectionListener, On
                     } else null,
                     exciseStampInfo = null,
                     selectQualityCode = selectQualityCode.value!!,
-                    initialCount = initialCount.value!!,
                     isScan = false,
-                    countAcceptRefusal = countAcceptRefusal.value!!
+                    isBoxNotIncludedInNetworkLenta = false
             )
         }
     }
@@ -189,7 +186,7 @@ class ExciseAlcoBoxListPGEViewModel : CoreViewModel(), PageSelectionListener, On
 
     fun onClickItemPosition(position: Int) {
         if (selectedPage.value == 0) {
-            if (processExciseAlcoBoxAccPGEService.getCountBoxOfProductOfDiscrepancies(countNotProcessed.value?.get(position)?.boxInfo?.boxNumber ?: "") >= countAcceptRefusal.value!! ) {
+            if (processExciseAlcoBoxAccPGEService.getCountBoxOfProductOfDiscrepancies(countNotProcessed.value?.get(position)?.boxInfo?.boxNumber ?: "") >= processExciseAlcoBoxAccPGEService.getCountAcceptRefusal() ) {
                 screenNavigator.openAlertRequiredQuantityBoxesAlreadyProcessedScreen() //Необходимое количество коробок уже обработано
             } else {
                 screenNavigator.goBack()
@@ -199,9 +196,8 @@ class ExciseAlcoBoxListPGEViewModel : CoreViewModel(), PageSelectionListener, On
                         massProcessingBoxesNumber = null,
                         exciseStampInfo = null,
                         selectQualityCode = selectQualityCode.value!!,
-                        initialCount = "1",
                         isScan = false,
-                        countAcceptRefusal = countAcceptRefusal.value!!
+                        isBoxNotIncludedInNetworkLenta = false
                 )
             }
         }
@@ -218,7 +214,7 @@ class ExciseAlcoBoxListPGEViewModel : CoreViewModel(), PageSelectionListener, On
     fun onScanResult(data: String) {
         when (data.length) {
             68, 150 -> {
-                if (processExciseAlcoBoxAccPGEService.getCountBoxOfProductOfDiscrepancies(data) >= (countAcceptRefusal.value ?: 0.0) ) { //это условие добавлено здесь, т.к. на WM оно тоже есть
+                if (processExciseAlcoBoxAccPGEService.getCountBoxOfProductOfDiscrepancies(data) >= processExciseAlcoBoxAccPGEService.getCountAcceptRefusal() ) { //это условие добавлено здесь, т.к. на WM оно тоже есть
                     screenNavigator.openAlertRequiredQuantityBoxesAlreadyProcessedScreen() //Необходимое количество коробок уже обработано
                 } else {
                     val exciseStampInfo = processExciseAlcoBoxAccPGEService.searchExciseStamp(data)
@@ -236,16 +232,15 @@ class ExciseAlcoBoxListPGEViewModel : CoreViewModel(), PageSelectionListener, On
                                     massProcessingBoxesNumber = null,
                                     exciseStampInfo = exciseStampInfo,
                                     selectQualityCode = selectQualityCode.value!!,
-                                    initialCount = "1",
                                     isScan = true,
-                                    countAcceptRefusal = countAcceptRefusal.value ?: 0.0
+                                    isBoxNotIncludedInNetworkLenta = false
                             )
                         }
                     }
                 }
             }
             26 -> {
-                if (processExciseAlcoBoxAccPGEService.getCountBoxOfProductOfDiscrepancies(data) >= (countAcceptRefusal.value ?: 0.0) ) {
+                if (processExciseAlcoBoxAccPGEService.getCountBoxOfProductOfDiscrepancies(data) >= processExciseAlcoBoxAccPGEService.getCountAcceptRefusal() ) {
                     screenNavigator.openAlertRequiredQuantityBoxesAlreadyProcessedScreen() //Необходимое количество коробок уже обработано
                 } else {
                     val boxInfo = processExciseAlcoBoxAccPGEService.searchBox(boxNumber = data)
@@ -264,9 +259,8 @@ class ExciseAlcoBoxListPGEViewModel : CoreViewModel(), PageSelectionListener, On
                                     massProcessingBoxesNumber = null,
                                     exciseStampInfo = null,
                                     selectQualityCode = selectQualityCode.value!!,
-                                    initialCount = "1",
                                     isScan = true,
-                                    countAcceptRefusal = countAcceptRefusal.value ?: 0.0
+                                    isBoxNotIncludedInNetworkLenta = false
                             )
                         }
                     }
@@ -302,9 +296,7 @@ class ExciseAlcoBoxListPGEViewModel : CoreViewModel(), PageSelectionListener, On
                             processExciseAlcoBoxAccPGEService.addAllAsSurplusForBox(count = convertEizToBei().toString(), boxNumber = scannedBoxNumber.value ?: "", typeDiscrepancies = "2", isScan = true)
                             screenNavigator.openExciseAlcoBoxListPGEScreen(
                                     productInfo = productInfo.value!!,
-                                    selectQualityCode = selectQualityCode.value!!,
-                                    initialCount = initialCount.value!!,
-                                    countAcceptRefusal = countAcceptRefusal.value ?: 0.0
+                                    selectQualityCode = selectQualityCode.value!!
                             )
                         }
                 )
@@ -315,16 +307,14 @@ class ExciseAlcoBoxListPGEViewModel : CoreViewModel(), PageSelectionListener, On
                             processExciseAlcoBoxAccPGEService.addAllAsSurplusForBox(count = convertEizToBei().toString(), boxNumber = scannedBoxNumber.value ?: "", typeDiscrepancies = "2", isScan = true)
                             screenNavigator.openExciseAlcoBoxListPGEScreen(
                                     productInfo = productInfo.value!!,
-                                    selectQualityCode = selectQualityCode.value!!,
-                                    initialCount = initialCount.value!!,
-                                    countAcceptRefusal = countAcceptRefusal.value ?: 0.0
+                                    selectQualityCode = selectQualityCode.value!!
                             )
                         }
                 )
             }
             "3" -> {
                 screenNavigator.openScannedBoxNotIncludedInNetworkLentaDialog(
-                        nextCallbackFunc = { //todo доработать https://trello.com/c/6NyHp2jB ПГЕ. Карточка короба-излишка
+                        nextCallbackFunc = { //https://trello.com/c/6NyHp2jB 11. ПГЕ. Излишки. Карточка короба-излишка (не числится в ленте)
                             val boxInfo = processExciseAlcoBoxAccPGEService.searchBox(boxNumber = scannedBoxNumber.value ?: "")
                             screenNavigator.openExciseAlcoBoxCardPGEScreen(
                                     productInfo = productInfo.value!!,
@@ -332,9 +322,8 @@ class ExciseAlcoBoxListPGEViewModel : CoreViewModel(), PageSelectionListener, On
                                     massProcessingBoxesNumber = null,
                                     exciseStampInfo = null,
                                     selectQualityCode = selectQualityCode.value!!,
-                                    initialCount = initialCount.value!!,
                                     isScan = true,
-                                    countAcceptRefusal = countAcceptRefusal.value ?: 0.0
+                                    isBoxNotIncludedInNetworkLenta = true
                             )
                         }
                 )
@@ -347,7 +336,7 @@ class ExciseAlcoBoxListPGEViewModel : CoreViewModel(), PageSelectionListener, On
     }
 
     private fun convertEizToBei(): Double {
-        var addNewCount = initialCount.value!!.toDouble()
+        var addNewCount = processExciseAlcoBoxAccPGEService.getInitialCount()
         if (productInfo.value?.purchaseOrderUnits?.code != productInfo.value?.uom?.code) { //так как у нас может с карточки товара прийти и в ЕИЗ и в БЕИ, то здесь делаем эту проверку (см. isEizUnit на карточке товара ExciseAlcoBoxAccInfoPGEViewModel, на карточке товара мы не можем изменить единицу измерения, она там формируется по условию, которое здесь и прописали)
             addNewCount *= productInfo.value?.quantityInvest?.toDouble() ?: 1.0
         }

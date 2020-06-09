@@ -306,4 +306,7 @@
     <string name="box_total">Итого в коробе</string>
     <string name="scanned_stamp_boxcard_not_in_task_pge">Отсканированная марка не найдена. Пометить ее как излишек? В случае согласия необходимо будет отсканировать все марки в текущей коробке.</string>
     <string name="boxcard_unsaved_data_confirmation">Введенные данные будут удалены. Продолжить?</string>
+    <string name="amount_of_norm_will_be_reduced">Количество нормы будет уменьшено</string>
+    <string name="excise_stamp_present_in_task">Марка присутствует в задании, добавление излишка недоступно</string>
+    <string name="discrepancy_scanned_mark_current_box_pge">Отсканированная(ый) марка/блок числится в другой коробке. Необходимо отсканировать все марки/блоки в текущей коробке и коробке №%1$s?</string>
 </resources>

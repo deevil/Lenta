@@ -1,12 +1,11 @@
-package com.lenta.bp9.features.goods_information.excise_alco_pge.excise_alco_box_acc_pge
+package com.lenta.bp9.features.goods_information.excise_alco_pge.excise_alco_stamp_acc_pge
 
-import android.os.Bundle
 import android.view.View
-import android.widget.AdapterView
 import com.lenta.bp9.R
-import com.lenta.bp9.databinding.FragmentExciseAlcoBoxAccInfoPgeBinding
+import com.lenta.bp9.databinding.FragmentExciseAlcoStampAccInfoBinding
 import com.lenta.bp9.model.task.TaskProductInfo
 import com.lenta.bp9.platform.extentions.getAppComponent
+import com.lenta.shared.platform.activity.OnBackPresserListener
 import com.lenta.shared.platform.fragment.CoreFragment
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
@@ -17,13 +16,14 @@ import com.lenta.shared.utilities.extentions.connectLiveData
 import com.lenta.shared.utilities.extentions.provideViewModel
 import com.lenta.shared.utilities.state.state
 
-class ExciseAlcoBoxAccInfoPGEFragment : CoreFragment<FragmentExciseAlcoBoxAccInfoPgeBinding, ExciseAlcoBoxAccInfoPGEViewModel>(),
+class ExciseAlcoStampAccInfoPGEFragment : CoreFragment<FragmentExciseAlcoStampAccInfoBinding, ExciseAlcoStampAccInfoPGEViewModel>(),
         ToolbarButtonsClickListener,
-        OnScanResultListener {
+        OnScanResultListener,
+        OnBackPresserListener {
 
     companion object {
-        fun create(productInfo: TaskProductInfo): ExciseAlcoBoxAccInfoPGEFragment {
-            ExciseAlcoBoxAccInfoPGEFragment().let {
+        fun create(productInfo: TaskProductInfo): ExciseAlcoStampAccInfoPGEFragment {
+            ExciseAlcoStampAccInfoPGEFragment().let {
                 it.productInfo = productInfo
                 return it
             }
@@ -32,12 +32,12 @@ class ExciseAlcoBoxAccInfoPGEFragment : CoreFragment<FragmentExciseAlcoBoxAccInf
 
     private var productInfo by state<TaskProductInfo?>(null)
 
-    override fun getLayoutId(): Int = R.layout.fragment_excise_alco_box_acc_info_pge
+    override fun getLayoutId(): Int = R.layout.fragment_excise_alco_stamp_acc_info_pge
 
-    override fun getPageNumber(): String = "09/41"
+    override fun getPageNumber(): String = "09/64"
 
-    override fun getViewModel(): ExciseAlcoBoxAccInfoPGEViewModel {
-        provideViewModel(ExciseAlcoBoxAccInfoPGEViewModel::class.java).let {vm ->
+    override fun getViewModel(): ExciseAlcoStampAccInfoPGEViewModel {
+        provideViewModel(ExciseAlcoStampAccInfoPGEViewModel::class.java).let { vm ->
             getAppComponent()?.inject(vm)
             vm.productInfo.value = productInfo
             return vm
@@ -51,17 +51,19 @@ class ExciseAlcoBoxAccInfoPGEFragment : CoreFragment<FragmentExciseAlcoBoxAccInf
 
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
         bottomToolbarUiModel.uiModelButton1.show(ButtonDecorationInfo.back)
-        bottomToolbarUiModel.uiModelButton2.show(ButtonDecorationInfo.boxes)
+        bottomToolbarUiModel.uiModelButton2.show(ButtonDecorationInfo.rollback)
         bottomToolbarUiModel.uiModelButton3.show(ButtonDecorationInfo.details)
+        bottomToolbarUiModel.uiModelButton4.show(ButtonDecorationInfo.add)
         bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.apply)
 
-        connectLiveData(vm.enabledApplyButton, bottomToolbarUiModel.uiModelButton5.enabled)
+        connectLiveData(vm.enabledRollbackBtn, bottomToolbarUiModel.uiModelButton2.enabled)
     }
 
     override fun onToolbarButtonClick(view: View) {
         when (view.id) {
-            R.id.b_2 -> vm.onClickBoxes()
+            R.id.b_2 -> vm.onClickRollback()
             R.id.b_3 -> vm.onClickDetails()
+            R.id.b_4 -> vm.onClickAdd()
             R.id.b_5 -> vm.onClickApply()
         }
     }
@@ -70,9 +72,10 @@ class ExciseAlcoBoxAccInfoPGEFragment : CoreFragment<FragmentExciseAlcoBoxAccInf
         vm.onScanResult(data)
     }
 
-    override fun onResume() {
-        super.onResume()
-        vm.onResume()
+    override fun onBackPressed(): Boolean {
+        vm.onBackPressed()
+        return false
     }
+
 
 }

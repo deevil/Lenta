@@ -246,14 +246,14 @@ class SearchProductDelegate @Inject constructor(
                                 else -> screenNavigator.openAlertUnknownTaskTypeScreen() //сообщение о неизвестном типе задания
                             }
                         }
-                        taskProductInfo.isMarkFl -> { //алкоголь, марочный учет
+                        taskProductInfo.isMarkFl -> { //алкоголь, марочный учет ПГЕ https://trello.com/c/Bx03dgxE
                             when (repoInMemoryHolder.taskList.value?.taskListLoadingMode) {
-                                TaskListLoadingMode.Receiving -> screenNavigator.openNotImplementedScreenAlert("Информация о коробочном учете")
-                                TaskListLoadingMode.PGE -> screenNavigator.openNotImplementedScreenAlert("Информация о коробочном учете")
-                                TaskListLoadingMode.Shipment -> screenNavigator.openNotImplementedScreenAlert("Информация о коробочном учете")
+                                TaskListLoadingMode.Receiving -> screenNavigator.openNotImplementedScreenAlert("Информация о марочном учете") //screenNavigator.openExciseAlcoStampAccInfoScreen(taskProductInfo) это экран для марочного учета ППП
+                                TaskListLoadingMode.PGE -> screenNavigator.openExciseAlcoStampAccInfoPGEScreen(taskProductInfo)
+                                TaskListLoadingMode.Shipment -> screenNavigator.openNotImplementedScreenAlert("Информация о марочном учете")
                                 else -> screenNavigator.openAlertUnknownTaskTypeScreen() //сообщение о неизвестном типе задания
                             }
-                            //screenNavigator.openExciseAlcoStampAccInfoScreen(taskProductInfo) это экран для марочного учета
+
                         }
                         else -> screenNavigator.openAlertUnknownGoodsTypeScreen() //сообщение о неизвестном типе товара
                     }
