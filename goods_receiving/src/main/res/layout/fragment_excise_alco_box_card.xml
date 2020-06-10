@@ -235,7 +235,8 @@
                 app:layout_constraintBottom_toBottomOf="@+id/spinner_bottling_date"
                 app:layout_constraintEnd_toStartOf="@+id/div_vert3"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="@+id/spinner_bottling_date" />
+                app:layout_constraintTop_toTopOf="@+id/spinner_bottling_date"
+                tools:text="Дата розлива"/>
 
             <View
                 android:id="@+id/div_hor6"

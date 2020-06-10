@@ -333,7 +333,9 @@ class DiscrepancyListViewModel : CoreViewModel(), PageSelectionListener {
             }
         }
 
-        if (isAlco.value == true && selectedPage.value == 0) {
+        if (repoInMemoryHolder.taskList.value?.taskListLoadingMode == TaskListLoadingMode.Receiving &&
+                countNotProcessed.value?.get(position)?.productInfo?.isBoxFl == true &&
+                selectedPage.value == 0) { //коробочный учет для ПРИЕМКИ https://trello.com/c/WeGFSdAW
             screenNavigator.openExciseAlcoBoxProductFailureScreen(countNotProcessed.value?.get(position)?.productInfo!!)
         } else {
             searchProductDelegate.searchCode(code = matnr ?: "", fromScan = false, isDiscrepancy = true)

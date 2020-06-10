@@ -2,13 +2,14 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context=".features.goods_information.excise_alco_receiving.excise_alco_box_acc.ExciseAlcoBoxAccInfoFragment">
+    tools:context=".features.goods_information.excise_alco_pge.excise_alco_box_acc_pge.excise_alco_box_card.ExciseAlcoBoxCardPGEFragment">
 
     <data>
 
         <variable
             name="vm"
-            type="com.lenta.bp9.features.goods_information.excise_alco_receiving.excise_alco_box_acc.ExciseAlcoBoxAccInfoViewModel" />
+            type="com.lenta.bp9.features.goods_information.excise_alco_pge.excise_alco_box_acc_pge.excise_alco_box_card.ExciseAlcoBoxCardPGEViewModel" />
+
 
     </data>
 
@@ -38,7 +39,7 @@
             android:layout_width="1dp"
             android:layout_height="0dp"
             android:background="@color/color_divider"
-            app:layout_constraintBottom_toBottomOf="@+id/div_hor3"
+            app:layout_constraintBottom_toBottomOf="@+id/div_hor2"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="@+id/guideline"
@@ -50,22 +51,25 @@
             android:layout_height="32dp"
             android:layout_marginStart="8dp"
             android:layout_marginEnd="8dp"
+            app:onPositionClickListener="@{vm}"
             app:items="@{vm.spinQuality}"
-            app:layout_constraintBottom_toBottomOf="@+id/et_inventory"
+            android:enabled="@{vm.enabledSpinQuality}"
+            app:layout_constraintBottom_toBottomOf="@+id/et_quantity"
             app:layout_constraintEnd_toStartOf="@+id/div_vert1"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/et_inventory"
+            app:layout_constraintTop_toTopOf="@+id/et_quantity"
             app:position="@{vm.spinQualitySelectedPosition}"
             tools:entries="@array/test_list" />
 
         <com.lenta.shared.view.EditTextWithSuffix
-            android:id="@+id/et_inventory"
+            android:id="@+id/et_quantity"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
             android:layout_marginEnd="8dp"
             android:ellipsize="end"
+            android:enabled="@{vm.enabledETQuantity}"
             android:inputType="numberDecimal"
             android:maxLength="6"
             android:maxLines="1"
@@ -76,7 +80,32 @@
             app:layout_constraintTop_toTopOf="@+id/div_vert1"
             app:maxLengthForScanProtect="@{6}"
             app:suffix="@{vm.suffix}"
-            tools:text="1 кор" />
+            tools:text="1 шт" />
+
+        <ImageView
+            android:id="@+id/imgUnit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:visibility="@{vm.visibilityImgUnit}"
+            android:onClick="@{(v) -> vm.onClickUnitChange()}"
+            android:src="@{vm.isEizUnit ? @drawable/ic_eiz_white_24dp : @drawable/ic_bei_white_24dp}"
+            app:layout_constraintBottom_toBottomOf="@+id/et_quantity"
+            app:layout_constraintEnd_toEndOf="@+id/et_quantity"
+            app:layout_constraintTop_toTopOf="@+id/et_quantity"
+            tools:src="@drawable/ic_eiz_white_24dp"/>
+
+        <ImageView
+            android:id="@+id/imgUnitDisabled"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:visibility="@{!vm.visibilityImgUnit}"
+            android:src="@{vm.isEizUnit ? @drawable/ic_eiz_disabled_24dp : @drawable/ic_bei_disabled_24dp}"
+            app:layout_constraintBottom_toBottomOf="@+id/et_quantity"
+            app:layout_constraintEnd_toEndOf="@+id/et_quantity"
+            app:layout_constraintTop_toTopOf="@+id/et_quantity"
+            tools:src="@drawable/ic_eiz_white_24dp"/>
 
         <View
             android:id="@+id/div_hor2"
@@ -86,88 +115,17 @@
             android:background="@color/color_divider"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/et_inventory" />
-
-        <TextView
-            android:id="@+id/tv_accept"
-            style="@style/TextTitle"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_marginEnd="8dp"
-            android:ellipsize="end"
-            android:maxLines="1"
-            android:text="@{vm.tvAccept}"
-            app:layout_constraintBottom_toBottomOf="@+id/tv_accept_val"
-            app:layout_constraintEnd_toStartOf="@+id/div_vert1"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/tv_accept_val"
-            tools:text="Принять (кор=3 шт)" />
-
-        <TextView
-            android:id="@+id/tv_accept_val"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="8dp"
-            android:layout_marginEnd="8dp"
-            android:ellipsize="end"
-            android:gravity="start|center_vertical"
-            android:maxLines="1"
-            android:text='@{vm.acceptTotalCountWithUom}'
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="@+id/guideline"
-            app:layout_constraintTop_toBottomOf="@+id/div_hor2"
-            tools:text="+ 10 кор" />
-
-        <TextView
-            android:id="@+id/tv_refusal"
-            style="@style/TextTitle"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_marginEnd="8dp"
-            android:text="@string/refusal"
-            app:layout_constraintEnd_toStartOf="@+id/guideline"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tv_accept" />
-
-        <TextView
-            android:id="@+id/tv_refusal_val"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_marginEnd="8dp"
-            android:ellipsize="end"
-            android:gravity="start|center_vertical"
-            android:maxLines="1"
-            android:text='@{vm.refusalTotalCountWithUom}'
-            android:textColor="@color/color_pressed_red"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="@+id/guideline"
-            app:layout_constraintTop_toBottomOf="@+id/tv_accept_val"
-            tools:text="- 10 кор" />
-
-        <View
-            android:id="@+id/div_hor3"
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:layout_marginTop="28dp"
-            android:background="@color/color_divider"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tv_accept_val" />
+            app:layout_constraintTop_toBottomOf="@+id/et_quantity" />
 
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/ConstraintNorm"
+            android:id="@+id/ConstraintEIZ"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:visibility="@{!vm.isDefect}"
+            android:visibility="@{vm.isEizUnit &amp;&amp; !vm.isDefect}"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="1.0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/div_hor3">
+            app:layout_constraintTop_toBottomOf="@+id/div_hor2">
 
             <View
                 android:id="@+id/div_vert2"
@@ -175,9 +133,9 @@
                 android:layout_height="0dp"
                 android:layout_marginStart="1dp"
                 android:background="@color/color_divider"
-                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintBottom_toBottomOf="@+id/div_hor4"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintStart_toStartOf="@+id/div_hor3"
                 app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
@@ -188,7 +146,7 @@
                 android:layout_marginStart="8dp"
                 android:layout_marginEnd="8dp"
                 android:ellipsize="end"
-                android:text="@string/stamp_control_in_box"
+                android:text="@string/stamps_control"
                 app:layout_constraintBottom_toBottomOf="@+id/tv_stamp_control_val"
                 app:layout_constraintEnd_toStartOf="@+id/div_vert2"
                 app:layout_constraintStart_toStartOf="parent"
@@ -223,7 +181,7 @@
                 app:layout_constraintTop_toTopOf="@+id/div_vert2" />
 
             <View
-                android:id="@+id/div_hor5"
+                android:id="@+id/div_hor3"
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
                 android:layout_marginTop="14dp"
@@ -240,11 +198,23 @@
                 android:layout_marginStart="8dp"
                 android:layout_marginEnd="8dp"
                 android:ellipsize="end"
-                android:text="@string/boxes_control"
+                android:text="@string/box_control"
                 app:layout_constraintBottom_toBottomOf="@+id/tv_box_control_val"
                 app:layout_constraintEnd_toStartOf="@+id/div_vert2"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="@+id/tv_box_control_val" />
+
+            <CheckBox
+                android:id="@+id/checkBox_box_control"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:checked="@{vm.checkBoxControl}"
+                android:enabled="false"
+                android:visibility="@{vm.checkBoxControlVisibility}"
+                app:layout_constraintStart_toEndOf="@+id/div_vert2"
+                app:layout_constraintTop_toBottomOf="@+id/div_hor3" />
 
             <TextView
                 android:id="@+id/tv_box_control_val"
@@ -259,23 +229,11 @@
                 android:text="@{vm.tvBoxControlVal}"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/checkBox_box_control"
-                app:layout_constraintTop_toBottomOf="@+id/div_hor5"
-                tools:text="0 из 1" />
-
-            <CheckBox
-                android:id="@+id/checkBox_box_control"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="8dp"
-                android:checked="@{vm.checkBoxControl}"
-                android:enabled="false"
-                android:visibility="@{vm.checkBoxControlVisibility}"
-                app:layout_constraintStart_toEndOf="@+id/div_vert2"
-                app:layout_constraintTop_toBottomOf="@+id/div_hor5" />
+                app:layout_constraintTop_toBottomOf="@+id/div_hor3"
+                tools:text="Не требуется" />
 
             <View
-                android:id="@+id/div_hor6"
+                android:id="@+id/div_hor4"
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
                 android:layout_marginTop="14dp"
@@ -287,90 +245,66 @@
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/ConstraintDefect"
+            android:id="@+id/ConstraintBEI"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:visibility="@{vm.isDefect}"
+            android:visibility="@{!vm.isEizUnit}"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="1.0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/ConstraintNorm">
+            app:layout_constraintTop_toBottomOf="@+id/ConstraintEIZ">
 
             <View
-                android:id="@+id/div_vert3"
+                android:id="@+id/div_vert4"
                 android:layout_width="1dp"
                 android:layout_height="0dp"
                 android:layout_marginStart="1dp"
                 android:background="@color/color_divider"
                 app:layout_constraintBottom_toBottomOf="@+id/div_hor7"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintStart_toStartOf="@+id/div_hor8"
                 app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
-                android:id="@+id/tv_box_list"
+                android:id="@+id/tv_list_stamp"
                 style="@style/TextTitle"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:layout_marginEnd="8dp"
                 android:ellipsize="end"
-                android:text="@string/box_list"
-                app:layout_constraintBottom_toBottomOf="@+id/tv_box_list_val"
-                app:layout_constraintEnd_toStartOf="@+id/div_vert3"
-                app:layout_constraintStart_toStartOf="parent" />
+                android:text="@string/list_stamp"
+                app:layout_constraintBottom_toBottomOf="@+id/checkBox_list_stamp"
+                app:layout_constraintEnd_toStartOf="@+id/div_vert4"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/checkBox_list_stamp" />
 
             <TextView
-                android:id="@+id/tv_box_list_val"
+                android:id="@+id/tv_list_stamp_val"
                 style="@style/TextTitle"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
-                android:layout_marginTop="14dp"
                 android:layout_marginEnd="8dp"
                 android:ellipsize="end"
                 android:maxLines="1"
-                android:text="@{vm.tvBoxListVal}"
+                android:text="@{vm.tvListStampVal}"
+                app:layout_constraintBottom_toBottomOf="@+id/checkBox_list_stamp"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/checkBox_box_list"
-                app:layout_constraintTop_toTopOf="parent"
-                tools:text="0 из 2"/>
+                app:layout_constraintStart_toEndOf="@+id/checkBox_list_stamp"
+                app:layout_constraintTop_toTopOf="@+id/checkBox_list_stamp"
+                tools:text="0 из 0"/>
 
             <CheckBox
-                android:id="@+id/checkBox_box_list"
+                android:id="@+id/checkBox_list_stamp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="8dp"
-                android:checked="@{vm.checkBoxList}"
+                android:checked="@{vm.checkBoxStampList}"
                 android:enabled="false"
-                android:visibility="@{vm.checkBoxListVisibility}"
-                app:layout_constraintStart_toEndOf="@+id/div_vert3"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <View
-                android:id="@+id/div_hor7"
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:layout_marginTop="14dp"
-                android:background="@color/color_divider"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/tv_box_list_val" />
-
-            <com.lenta.shared.view.ClickableSpinner
-                android:id="@+id/spinner_reject_rejection"
-                android:layout_width="0dp"
-                android:layout_height="32dp"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginEnd="8dp"
-                app:items="@{vm.spinReasonRejection}"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/div_vert3"
-                app:onPositionClickListener="@{vm}"
-                app:position="@{vm.spinReasonRejectionSelectedPosition}"
-                tools:entries="@array/test_list" />
+                app:layout_constraintStart_toEndOf="@+id/div_vert4"
+                app:layout_constraintTop_toTopOf="@+id/div_vert4" />
 
             <View
                 android:id="@+id/div_hor8"
@@ -380,7 +314,144 @@
                 android:background="@color/color_divider"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/spinner_reject_rejection" />
+                app:layout_constraintTop_toBottomOf="@+id/checkBox_list_stamp" />
+
+            <TextView
+                android:id="@+id/tv_box_total"
+                style="@style/TextTitle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="8dp"
+                android:ellipsize="end"
+                android:text="@string/box_total"
+                app:layout_constraintBottom_toBottomOf="@+id/checkBox_box_total"
+                app:layout_constraintEnd_toStartOf="@+id/div_vert4"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/checkBox_box_total" />
+
+            <TextView
+                android:id="@+id/tv_box_total_val"
+                style="@style/TextTitle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="8dp"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:text="@{vm.tvBoxTotalVal}"
+                app:layout_constraintBottom_toBottomOf="@+id/checkBox_box_total"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/checkBox_box_total"
+                app:layout_constraintTop_toTopOf="@+id/checkBox_box_total"
+                tools:text="0 из 6"/>
+
+            <CheckBox
+                android:id="@+id/checkBox_box_total"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:checked="@{vm.checkBoxTotal}"
+                android:enabled="false"
+                app:layout_constraintStart_toEndOf="@+id/div_vert4"
+                app:layout_constraintTop_toBottomOf="@+id/div_hor8" />
+
+            <View
+                android:id="@+id/div_hor7"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginTop="8dp"
+                android:background="@color/color_divider"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/checkBox_box_total" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/ConstraintNorm"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="@{!vm.isDefect}"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="1.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/ConstraintBEI">
+
+            <TextView
+                android:id="@+id/tv_bottling_date"
+                style="@style/TextTitle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="8dp"
+                android:ellipsize="end"
+                android:text="@{vm.tvBottlingDate}"
+                app:layout_constraintBottom_toBottomOf="@+id/spinner_bottling_date"
+                app:layout_constraintEnd_toStartOf="@+id/div_vert3"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/spinner_bottling_date"
+                tools:text="Дата розлива" />
+
+            <View
+                android:id="@+id/div_hor5"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginTop="8dp"
+                android:background="@color/color_divider"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="1.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/spinner_manufacturers" />
+
+            <View
+                android:id="@+id/div_hor6"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginTop="8dp"
+                android:background="@color/color_divider"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/spinner_bottling_date" />
+
+            <View
+                android:id="@+id/div_vert3"
+                android:layout_width="1dp"
+                android:layout_height="0dp"
+                android:background="@color/color_divider"
+                app:layout_constraintBottom_toBottomOf="@+id/div_hor6"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="@+id/div_hor5"
+                app:layout_constraintTop_toBottomOf="@+id/div_hor5" />
+
+            <com.lenta.shared.view.ClickableSpinner
+                android:id="@+id/spinner_bottling_date"
+                android:layout_width="0dp"
+                android:layout_height="32dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="8dp"
+                app:items="@{vm.spinBottlingDate}"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/div_vert3"
+                app:layout_constraintTop_toBottomOf="@+id/div_hor5"
+                app:position="@{vm.spinBottlingDateSelectedPosition}"
+                tools:entries="@array/test_list" />
+
+            <com.lenta.shared.view.ClickableSpinner
+                android:id="@+id/spinner_manufacturers"
+                android:layout_width="0dp"
+                android:layout_height="32dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="8dp"
+                app:items="@{vm.spinManufacturers}"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:position="@{vm.spinManufacturersSelectedPosition}"
+                tools:entries="@array/test_list" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -395,31 +466,20 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent">
 
-            <LinearLayout
+            <View
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:gravity="center"
-                android:orientation="horizontal">
+                android:layout_weight="1" />
 
-                <TextView
-                    android:layout_width="30dp"
-                    android:layout_height="30dp"
-                    android:background="@drawable/bg_white_circle"
-                    android:gravity="center"
-                    android:onClick="@{(v) -> vm.screenNavigator.openSectionInfoScreen(vm.productInfo.sectionId)}"
-                    android:text='@{"" + vm.productInfo.sectionId}'
-                    android:textSize="12sp"
-                    tools:text="02" />
-
-            </LinearLayout>
-
-            <ImageView
+            <View
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                app:alcoIcon="@{vm.productInfo.type}"
-                tools:src="@drawable/ic_excise_alcohol_white_32dp" />
+                android:layout_height="match_parent"
+                android:layout_weight="1" />
+
+            <View
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1" />
 
             <View
                 android:layout_width="0dp"
@@ -447,17 +507,7 @@
                 android:layout_weight="1"
                 android:background="?selectableItemBackground"
                 android:onClick="@{(v) -> vm.screenNavigator.openESInfoScreen()}"
-                android:src="@drawable/ic_scan_barcode_es_white_32dp"
-                android:visibility="@{!vm.isDefect}" />
-
-            <ImageView
-                android:id="@+id/b_scan"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:background="?selectableItemBackground"
-                android:onClick="@{(v) -> vm.screenNavigator.openEanInfoScreen()}"
-                android:src="@drawable/ic_scan_barcode_white_32dp" />
+                android:src="@drawable/ic_scan_barcode_es_white_32dp" />
 
         </LinearLayout>
 
