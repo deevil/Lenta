@@ -63,6 +63,15 @@ class CoreNavigator @Inject constructor(
 
     private fun getFragmentStack() = foregroundActivityProvider.getActivity()?.fragmentStack
 
+    private fun getFragmentStackSize(): Int {
+        return foregroundActivityProvider.getActivity()?.supportFragmentManager?.backStackEntryCount
+                ?: 0
+    }
+
+    override fun isOneScreenInStack(): Boolean {
+        return getFragmentStackSize() == 1
+    }
+
     override fun goBackWithArgs(args: Bundle) {
         runOrPostpone {
             getFragmentStack()?.popReturnArgs(args = args)
@@ -86,6 +95,13 @@ class CoreNavigator @Inject constructor(
         runOrPostpone {
             analyticsHelper.onGoBack()
             getFragmentStack()?.pop()
+        }
+    }
+
+    override fun goBackTo(fragmentName: String) {
+        runOrPostpone {
+            analyticsHelper.onGoBack()
+            getFragmentStack()?.pop(fragmentName)
         }
     }
 
@@ -469,9 +485,11 @@ fun ICoreNavigator.runOrPostpone(function: () -> Unit) {
 interface ICoreNavigator {
     val functionsCollector: FunctionsCollector
     val backFragmentResultHelper: BackFragmentResultHelper
+    fun isOneScreenInStack(): Boolean
     fun goBackWithArgs(args: Bundle)
     fun goBackWithResultCode(code: Int?)
     fun goBack()
+    fun goBackTo(fragmentName: String)
     fun finishApp(restart: Boolean = false)
     fun openAlertScreen(message: String,
                         iconRes: Int = 0,

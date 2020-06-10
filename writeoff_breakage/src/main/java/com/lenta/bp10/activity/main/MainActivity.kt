@@ -1,12 +1,12 @@
 package com.lenta.bp10.activity.main
 
 import android.os.Bundle
-import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.ViewModelProvider
+import com.crashlytics.android.Crashlytics
 import com.lenta.bp10.di.AppComponent
 import com.lenta.bp10.platform.extentions.getAppComponent
-import com.lenta.shared.platform.activity.main_activity.CoreMainActivity
-import com.crashlytics.android.Crashlytics
 import com.lenta.shared.di.FromParentToCoreProvider
+import com.lenta.shared.platform.activity.main_activity.CoreMainActivity
 import com.lenta.shared.platform.fragment.CoreFragment
 import com.lenta.shared.utilities.runIfRelease
 import io.fabric.sdk.android.Fabric
@@ -34,7 +34,7 @@ class MainActivity : CoreMainActivity() {
             component.inject(this)
             foregroundActivityProvider.setActivity(this)
 
-            ViewModelProviders.of(this).get(MainViewModel::class.java).let {
+            ViewModelProvider(this).get(MainViewModel::class.java).let {
                 mainViewModel = it
                 component.inject(it)
             }

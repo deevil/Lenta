@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        xmlns:tools="http://schemas.android.com/tools"
-        tools:context=".features.good_weighing.GoodWeighingFragment">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".features.good_weighing.GoodWeighingFragment">
 
     <data>
 
@@ -18,8 +18,7 @@
         android:orientation="vertical">
 
         <!-- Текущее количество -->
-        <LinearLayout
-            style="@style/LinearRowStyle">
+        <LinearLayout style="@style/LinearRowStyle">
 
             <LinearLayout
                 style="@style/LinearCellStyle"
@@ -31,8 +30,7 @@
 
             </LinearLayout>
 
-            <View
-                style="@style/VerticalDivider" />
+            <View style="@style/VerticalDivider" />
 
             <LinearLayout
                 style="@style/LinearCellStyle"
@@ -52,12 +50,10 @@
 
         </LinearLayout>
 
-        <View
-            style="@style/HorizontalDivider" />
+        <View style="@style/HorizontalDivider" />
 
         <!-- Общее количество -->
-        <LinearLayout
-            style="@style/LinearRowStyle">
+        <LinearLayout style="@style/LinearRowStyle">
 
             <LinearLayout
                 style="@style/LinearCellStyle"
@@ -69,8 +65,7 @@
 
             </LinearLayout>
 
-            <View
-                style="@style/VerticalDivider" />
+            <View style="@style/VerticalDivider" />
 
             <LinearLayout
                 style="@style/LinearCellStyle"
@@ -85,12 +80,12 @@
 
         </LinearLayout>
 
-        <View
-            style="@style/HorizontalDivider" />
+        <View style="@style/HorizontalDivider" />
 
         <!-- Общее количество брака -->
         <LinearLayout
-            style="@style/LinearRowStyle">
+            style="@style/LinearRowStyle"
+            app:isGone="@{!vm.defectVisibility}">
 
             <LinearLayout
                 style="@style/LinearCellStyle"
@@ -102,8 +97,7 @@
 
             </LinearLayout>
 
-            <View
-                style="@style/VerticalDivider" />
+            <View style="@style/VerticalDivider" />
 
             <LinearLayout
                 style="@style/LinearCellStyle"
@@ -119,11 +113,11 @@
         </LinearLayout>
 
         <View
-            style="@style/HorizontalDivider" />
+            style="@style/HorizontalDivider"
+            app:isGone="@{!vm.defectVisibility}" />
 
         <!-- Плановое количество -->
-        <LinearLayout
-            style="@style/LinearRowStyle">
+        <LinearLayout style="@style/LinearRowStyle">
 
             <LinearLayout
                 style="@style/LinearCellStyle"
@@ -135,8 +129,7 @@
 
             </LinearLayout>
 
-            <View
-                style="@style/VerticalDivider" />
+            <View style="@style/VerticalDivider" />
 
             <LinearLayout
                 style="@style/LinearCellStyle"
@@ -151,12 +144,10 @@
 
         </LinearLayout>
 
-        <View
-            style="@style/HorizontalDivider" />
+        <View style="@style/HorizontalDivider" />
 
         <!-- Продукт для обработки -->
-        <LinearLayout
-            style="@style/LinearRowStyle">
+        <LinearLayout style="@style/LinearRowStyle">
 
             <LinearLayout
                 style="@style/LinearCellStyle"
@@ -168,8 +159,7 @@
 
             </LinearLayout>
 
-            <View
-                style="@style/VerticalDivider" />
+            <View style="@style/VerticalDivider" />
 
             <LinearLayout
                 style="@style/LinearCellStyle"
@@ -185,8 +175,7 @@
 
         </LinearLayout>
 
-        <View
-            style="@style/HorizontalDivider" />
+        <View style="@style/HorizontalDivider" />
 
     </LinearLayout>
 

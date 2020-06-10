@@ -15,23 +15,32 @@ import javax.inject.Inject
 class SelectPersonnelNumberViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
 
     @Inject
-    lateinit var screenNavigator: IScreenNavigator
+    lateinit var navigator: IScreenNavigator
+
     @Inject
     lateinit var sessionInfo: ISessionInfo
+
     @Inject
     lateinit var appSettings: IAppSettings
+
     @Inject
     lateinit var selectPersonnelNumberDelegate: SelectPersonnelNumberDelegate
 
+
     val editTextFocus = MutableLiveData<Boolean>()
+
     private val nextButtonFocus = MutableLiveData<Boolean>()
-    val isScreenMainMenu: MutableLiveData<Boolean> = MutableLiveData()
+
     val personnelNumber = MutableLiveData("")
+
     val fullName = MutableLiveData("")
+
     val employeesPosition = MutableLiveData("")
+
     val enabledBackButton by lazy {
-        isScreenMainMenu
+        MutableLiveData(!navigator.isOneScreenInStack())
     }
+
     val enabledNextButton = fullName.map { !it.isNullOrBlank() }
 
     init {
@@ -44,7 +53,8 @@ class SelectPersonnelNumberViewModel : CoreViewModel(), OnOkInSoftKeyboardListen
             selectPersonnelNumberDelegate.init(
                     viewModelScope = this@SelectPersonnelNumberViewModel::viewModelScope,
                     onNextScreenOpen = {
-                        screenNavigator.openMainMenuScreen()
+                        navigator.closeAllScreen()
+                        navigator.openMainMenuScreen()
                     }
             )
         }
@@ -58,18 +68,16 @@ class SelectPersonnelNumberViewModel : CoreViewModel(), OnOkInSoftKeyboardListen
         selectPersonnelNumberDelegate.onClickNext()
     }
 
-
     fun onResume() {
         selectPersonnelNumberDelegate.onResume()
     }
-
 
     fun onScanResult(data: String) {
         selectPersonnelNumberDelegate.onScanResult(data)
     }
 
-    fun onBackPressed() {
-        screenNavigator.openMainMenuScreen()
+    fun onClickBack() {
+        navigator.goBack()
     }
 
 }

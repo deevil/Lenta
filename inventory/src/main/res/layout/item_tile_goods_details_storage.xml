@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
@@ -40,13 +39,10 @@
 
             <LinearLayout
                 style="@style/LinearCellStyle"
-                android:layout_weight="@integer/three_one_2"
-                android:orientation="horizontal">
+                android:layout_weight="@integer/three_one_2">
 
                 <TextView
                     style="@style/CellTextStyle"
-                    android:layout_width="0dp"
-                    android:layout_weight="1"
                     android:maxLines="2"
                     android:text="@{item.name}"
                     tools:text="000363 Салака" />
@@ -57,11 +53,11 @@
 
             <LinearLayout
                 style="@style/LinearCellStyle"
-                android:layout_weight="@integer/three_one_3"
-                android:orientation="horizontal">
+                android:layout_weight="@integer/three_one_3">
 
                 <TextView
                     style="@style/CellTextStyle"
+                    android:layout_width="wrap_content"
                     android:text="@{item.quantity}"
                     tools:text="5 шт" />
 

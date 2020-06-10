@@ -41,7 +41,6 @@ fun setAlcoIcon(imageView: ImageView, productType: ProductType?) {
     }
 }
 
-
 @BindingAdapter("isStrictList")
 fun setStrictListIcon(imageView: ImageView, isStrictList: Boolean?) {
     (when (isStrictList) {
@@ -75,4 +74,3 @@ fun setAlcoIcon(imageView: ImageView, focusable: Boolean?) {
         imageView.focusable = if (focusable == true) FOCUSABLE_AUTO else NOT_FOCUSABLE
     }
 }
-

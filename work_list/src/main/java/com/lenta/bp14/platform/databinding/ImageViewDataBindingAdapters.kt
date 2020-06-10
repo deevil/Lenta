@@ -58,7 +58,7 @@ fun setPrintStatusIcon(imageView: ImageView, isPrinted: Boolean?) {
 @BindingAdapter("goodTypeIcon")
 fun setGoodTypeIcon(imageView: ImageView, goodType: GoodType?) {
     imageView.setImageResource(when (goodType) {
-        GoodType.ALCOHOL -> R.drawable.ic_excise_alcohol_white_32dp
+        GoodType.ALCOHOL -> R.drawable.ic_no_excise_alcohol_white_32dp
         GoodType.EXCISE -> R.drawable.ic_excise_alcohol_white_32dp
         GoodType.MARKED -> R.drawable.ic_marked_white_32dp
         else -> R.drawable.ic_kandy_white_32dp

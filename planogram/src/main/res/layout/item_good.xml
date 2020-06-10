@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        xmlns:tools="http://schemas.android.com/tools">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <data>
 
         <variable
             name="good"
-            type="com.lenta.bp7.data.model.Good"/>
+            type="com.lenta.bp7.data.model.Good" />
 
     </data>
 
@@ -32,12 +32,11 @@
                     style="@style/CellTextStyle"
                     android:layout_width="wrap_content"
                     android:text="@{String.valueOf(good.id)}"
-                    tools:text="1"/>
+                    tools:text="1" />
 
             </LinearLayout>
 
-            <View
-                style="@style/VerticalDivider"/>
+            <View style="@style/VerticalDivider" />
 
             <LinearLayout
                 style="@style/LinearCellStyle"
@@ -48,23 +47,21 @@
                     android:id="@+id/tv_good_number_name"
                     style="@style/CellTextStyle"
                     android:layout_width="0dp"
-                    android:layout_marginStart="8dp"
                     android:layout_weight="1"
                     android:maxLines="2"
                     android:text="@{@string/one_space_two(good.formattedMaterial, good.name)}"
-                    tools:text="000021 Масло"/>
+                    tools:text="000021 Масло" />
 
                 <ImageView
                     android:id="@+id/iv_open"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:padding="5dp"
-                    android:src="@drawable/ic_keyboard_arrow_right_white_16dp"/>
+                    android:src="@drawable/ic_keyboard_arrow_right_white_16dp" />
 
             </LinearLayout>
 
-            <View
-                style="@style/VerticalDivider"/>
+            <View style="@style/VerticalDivider" />
 
             <LinearLayout
                 style="@style/LinearCellStyle"
@@ -75,12 +72,11 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     app:goodStatusIcon="@{good.status}"
-                    tools:src="@drawable/ic_close_white_24dp"/>
+                    tools:src="@drawable/ic_close_white_24dp" />
 
             </LinearLayout>
 
-            <View
-                style="@style/VerticalDivider"/>
+            <View style="@style/VerticalDivider" />
 
             <LinearLayout
                 style="@style/LinearCellStyle"
@@ -89,9 +85,9 @@
                 <TextView
                     android:id="@+id/tv_goods_count"
                     style="@style/CellTextStyle"
-                    android:layout_marginStart="8dp"
+                    android:layout_width="wrap_content"
                     android:text="@{good.facingOrPlus}"
-                    tools:text="0"/>
+                    tools:text="0" />
 
             </LinearLayout>
 
@@ -100,7 +96,7 @@
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:background="@color/color_divider"/>
+            android:background="@color/color_divider" />
 
     </LinearLayout>
 

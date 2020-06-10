@@ -3,11 +3,9 @@ package com.lenta.bp16.data
 import android.content.Context
 import androidx.annotation.WorkerThread
 import com.google.gson.Gson
-import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.analytics.AnalyticsHelper
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.functional.Either
-import com.lenta.shared.settings.IAppSettings
 import com.lenta.shared.utilities.Logg
 import java.io.BufferedReader
 import java.io.InputStreamReader
@@ -86,15 +84,13 @@ class Printer @Inject constructor(
         mutableMapOf<String, String>().apply {
             put("QUANTITY", labelInfo.quantity)
             put("CODECONT", labelInfo.codeCont)
-            put("STORCOND", labelInfo.storCond)
             put("PLANAUFFINISH", labelInfo.planAufFinish)
             put("AUFNR", labelInfo.aufnr)
             put("NAMEOSN", labelInfo.nameOsn)
             put("DATEEXPIR", labelInfo.dateExpir)
             put("GOODSNAME", labelInfo.goodsName)
-            put("WEIGHER", labelInfo.weigher)
+            put("WEIGHT", labelInfo.weight)
             put("PRODUCTTIME", labelInfo.productTime)
-            put("NAMEDONE", labelInfo.nameDone)
             put("GOODSCODE", labelInfo.goodsCode)
             put("BARCODE", labelInfo.barcode)
             put("TEXTBARCODE", labelInfo.barcodeText)
@@ -140,8 +136,6 @@ data class LabelInfo(
         val quantity: String,
         /** Номер тары **/
         val codeCont: String,
-        /** Условия хранения */
-        val storCond: String,
         /** Плановое окончание тех. процесса */
         val planAufFinish: String,
         /** Номер технологического заказа */
@@ -153,11 +147,9 @@ data class LabelInfo(
         /** Наименование продукта */
         val goodsName: String,
         /** Табельный номер */
-        val weigher: String,
+        val weight: String,
         /** Изготовлено */
         val productTime: String,
-        /** Наименование готового продукта */
-        val nameDone: String,
         /** Код товара */
         val goodsCode: String,
         /** Штрихкод */

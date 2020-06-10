@@ -102,7 +102,6 @@
                 <TextView
                     style="@style/CellTextStyle"
                     android:layout_width="wrap_content"
-                    android:layout_gravity="center"
                     android:text="@{task.quantity}"
                     tools:text="10" />
 

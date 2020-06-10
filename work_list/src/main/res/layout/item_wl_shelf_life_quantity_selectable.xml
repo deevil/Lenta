@@ -73,7 +73,6 @@
                 <TextView
                     style="@style/CellTextStyle"
                     android:layout_width="wrap_content"
-                    android:layout_gravity="center"
                     android:text="@{shelfLife.quantity}"
                     tools:text="10 шт" />
 
