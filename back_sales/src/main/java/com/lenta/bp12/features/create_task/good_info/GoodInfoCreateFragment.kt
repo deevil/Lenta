@@ -49,8 +49,8 @@ class GoodInfoCreateFragment : CoreFragment<FragmentGoodInfoCreateBinding, GoodI
 
     override fun onToolbarButtonClick(view: View) {
         when (view.id) {
-            R.id.b_2 -> vm.onClickRollback()
-            //R.id.b_2 -> vm.onScanResult("147300249826851018001FZSIZAB5I6KZKWEQKPKZJHW6MYKVGAETXLPV7M5AIF7OXTQFIM347EWQGXAK65QGJFKTR7EQDHJQTJFSW5DNWTBU3BRLKVM7D6YZMYRBV6IOQY5ZXLPKLBHUZPBTRFTLQ")
+            //R.id.b_2 -> vm.onClickRollback()
+            R.id.b_2 -> vm.onScanResult("173400178492621018001HYVYVBDETMEF6Z4USZB5ZRX55Q3QYU5L3DNCOB5RZBEM7QYLWD33KD4TKDSXDW6CTC24D6527Y7UXR347DI3AIUWF4UJWA7AAWOI5X7OFD6QPBZ7EIVOEWBKDGDT3X4WI")
             R.id.b_3 -> vm.onClickDetails()
             R.id.b_5 -> vm.onClickApply()
         }

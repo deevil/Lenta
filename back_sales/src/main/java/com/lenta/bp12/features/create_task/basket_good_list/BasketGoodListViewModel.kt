@@ -42,7 +42,7 @@ class BasketGoodListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
         basket.map { basket ->
             task.value?.let { task ->
                 task.goods.filter {
-                    it.section == basket?.section && it.type == basket.type && it.control == basket.control
+                    it.section == basket?.section && it.matype == basket.matype && it.control == basket.control
                 }.mapIndexed { index, good ->
                     ItemGoodUi(
                             position = "${index + 1}",

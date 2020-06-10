@@ -11,7 +11,6 @@ import com.lenta.bp12.request.ExciseInfoParams
 import com.lenta.bp12.request.GoodInfoNetRequest
 import com.lenta.bp12.request.GoodInfoParams
 import com.lenta.bp12.request.pojo.ProducerInfo
-import com.lenta.bp12.request.pojo.ProviderInfo
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.exception.Failure
@@ -62,7 +61,7 @@ class GoodInfoOpenViewModel : CoreViewModel() {
 
     val isCompactMode by lazy {
         good.map { good ->
-            good?.kind == GoodKind.COMMON
+            good?.type == GoodKind.COMMON
         }
     }
 
@@ -70,7 +69,7 @@ class GoodInfoOpenViewModel : CoreViewModel() {
 
     val markScanEnabled by lazy {
         good.map { good ->
-            good?.kind == GoodKind.EXCISE
+            good?.type == GoodKind.EXCISE
         }
     }
 
@@ -162,7 +161,7 @@ class GoodInfoOpenViewModel : CoreViewModel() {
             val isCorrectDate = it?.second ?: false
 
             good.value?.let { good ->
-                when (good.kind) {
+                when (good.type) {
                     GoodKind.COMMON -> quantity > 0
                     GoodKind.ALCOHOL -> quantity > 0 && isCorrectDate
                     GoodKind.EXCISE -> quantity > 0 && isCorrectDate
@@ -173,13 +172,13 @@ class GoodInfoOpenViewModel : CoreViewModel() {
 
     val detailsVisibility by lazy {
         good.map { good ->
-            good?.kind == GoodKind.ALCOHOL || good?.kind == GoodKind.EXCISE
+            good?.type == GoodKind.ALCOHOL || good?.type == GoodKind.EXCISE
         }
     }
 
     val rollbackVisibility by lazy {
         good.map { good ->
-            good?.kind == GoodKind.EXCISE
+            good?.type == GoodKind.EXCISE
         }
     }
 

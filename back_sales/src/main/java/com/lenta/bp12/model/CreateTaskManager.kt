@@ -5,7 +5,7 @@ import com.lenta.bp12.model.pojo.create_task.Basket
 import com.lenta.bp12.model.pojo.create_task.Good
 import com.lenta.bp12.model.pojo.create_task.Task
 import com.lenta.bp12.platform.extention.getControlType
-import com.lenta.bp12.platform.extention.getGoodKind
+import com.lenta.bp12.platform.extention.getGoodType
 import com.lenta.bp12.repository.IDatabaseRepository
 import com.lenta.bp12.request.GoodInfoResult
 import com.lenta.bp12.request.SendTaskDataParams
@@ -54,12 +54,11 @@ class CreateTaskManager @Inject constructor(
                 material = goodInfo.materialInfo.material,
                 name = goodInfo.materialInfo.name,
                 units = database.getUnitsByCode(goodInfo.materialInfo.unitsCode),
-                kind = goodInfo.getGoodKind(),
-                type = goodInfo.materialInfo.goodType,
+                type = goodInfo.getGoodType(),
+                matype = goodInfo.materialInfo.matype,
                 control = goodInfo.getControlType(),
                 section = goodInfo.materialInfo.section,
                 matrix = getMatrixType(goodInfo.materialInfo.matrix),
-                isFullData = true,
                 innerQuantity = goodInfo.materialInfo.innerQuantity.toDoubleOrNull() ?: 0.0,
                 orderUnits = database.getUnitsByCode(goodInfo.materialInfo.orderUnitCode),
                 providers = goodInfo.providers.toMutableList(),
@@ -84,6 +83,17 @@ class CreateTaskManager @Inject constructor(
         }
     }
 
+    override fun addOrUpdateGood(good: Good) {
+        currentTask.value?.let { task ->
+            task.goods.find { it.material == good.material }?.let { good ->
+                task.goods.remove(good)
+            }
+
+            task.goods.add(0, good)
+            updateCurrentTask(task)
+        }
+    }
+
     override fun findGoodByEan(ean: String): Good? {
         return currentTask.value?.goods?.find { it.ean == ean }
     }
@@ -103,7 +113,7 @@ class CreateTaskManager @Inject constructor(
             updateCurrentTask(task)
         }
 
-        updateCurrentBasket(basket)
+        //updateCurrentBasket(basket)
     }
 
     override fun getBasketPosition(basket: Basket?): Int {
@@ -249,5 +259,6 @@ interface ICreateTaskManager {
     fun finishCurrentTask()
     fun addProviderInCurrentGood(providerInfo: ProviderInfo)
     fun prepareSendTaskDataParams(deviceIp: String, tkNumber: String, userNumber: String)
+    fun addOrUpdateGood(good: Good)
 
 }

@@ -48,7 +48,7 @@ class DatabaseRepository @Inject constructor(
                         material = material,
                         name = goodInfo.name,
                         units = getUnitsByCode(goodInfo.buom),
-                        kind = goodInfo.getGoodKind(),
+                        type = goodInfo.getGoodType(),
                         section = goodInfo.abtnr,
                         matrix = getMatrixType(goodInfo.matrType)
                 )
@@ -141,7 +141,7 @@ class DatabaseRepository @Inject constructor(
 
             // Параметры товара
             val controlType = goodInfo.getControlType().code
-            val goodType = goodInfo.materialInfo.goodType
+            val goodType = goodInfo.materialInfo.matype
             val goodGroup = goodInfo.materialInfo.goodGroup
             val purchaseGroup = goodInfo.materialInfo.purchaseGroup
 

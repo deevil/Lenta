@@ -28,6 +28,9 @@ data class ExciseInfoParams(
         /** Номер товара */
         @SerializedName("IV_MATNR")
         val material: String,
+        /** Номер товара */
+        @SerializedName("IV_MATNR_COMP")
+        val materialComp: String = "",
         /** Код акцизной марки */
         @SerializedName("IV_MARK_NUM")
         val markNumber: String,
@@ -44,8 +47,11 @@ data class ExciseInfoParams(
         @SerializedName("IV_MODE")
         val mode: Int,
         /** Фактическое количество */
-        @SerializedName("IV_WIV_FACT_QNTERKS")
-        val quantity: Double
+        @SerializedName("IV_FACT_QNT")
+        val quantity: Double,
+        /** Фактическое количество */
+        @SerializedName("IV_CODEBP")
+        val codeBp: String = "BKS"
 )
 
 class ExciseInfoStatus : ObjectRawStatus<ExciseInfoResult>()
@@ -69,6 +75,9 @@ data class ExciseInfoResult(
         /** Таблица ЕГАИС производителей */
         @SerializedName("ET_PROD_TEXT")
         val producers: List<ProducerInfo>,
+        /** Номер партии */
+        @SerializedName("EV_ZCHARG")
+        val partNumber: String,
         /** Код возврата */
         @SerializedName("EV_RETCODE")
         override val retCode: Int,

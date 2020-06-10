@@ -28,3 +28,10 @@ enum class Category(val description: String) {
     CONSIGNMENT("Партионно"),
     MARK("Марочно")
 }
+
+enum class MarkStatus(val code: String){
+    OK("01"),
+    BAD("02"),
+    OTHER("03"),
+    UNKNOWN("04")
+}

@@ -29,7 +29,7 @@ class BasketPropertiesViewModel : CoreViewModel() {
         basket.map { basket ->
             BasketPropertiesUi(
                     section = basket?.section ?: "",
-                    type = basket?.type ?: "",
+                    type = basket?.matype ?: "",
                     gisControl = basket?.control?.description ?: "",
                     provider = "${basket?.provider?.code} ${basket?.provider?.name}"
             )

@@ -4,6 +4,8 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.lenta.bp12.model.GoodKind
 import com.lenta.bp12.model.ICreateTaskManager
+import com.lenta.bp12.model.MarkStatus
+import com.lenta.bp12.model.pojo.Mark
 import com.lenta.bp12.model.pojo.create_task.Basket
 import com.lenta.bp12.platform.navigation.IScreenNavigator
 import com.lenta.bp12.request.ExciseInfoNetRequest
@@ -17,10 +19,7 @@ import com.lenta.shared.exception.Failure
 import com.lenta.shared.platform.constants.Constants
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.Logg
-import com.lenta.shared.utilities.extentions.combineLatest
-import com.lenta.shared.utilities.extentions.dropZeros
-import com.lenta.shared.utilities.extentions.map
-import com.lenta.shared.utilities.extentions.sumWith
+import com.lenta.shared.utilities.extentions.*
 import com.lenta.shared.view.OnPositionClickListener
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -59,15 +58,17 @@ class GoodInfoCreateViewModel : CoreViewModel() {
 
     val lastScannedNumber = MutableLiveData("")
 
+    val marks = MutableLiveData(mutableListOf<Mark>())
+
     val isCompactMode by lazy {
         good.map { good ->
-            good?.kind == GoodKind.COMMON
+            good?.type == GoodKind.COMMON
         }
     }
 
     val quantityType by lazy {
         good.map { good ->
-            good?.kind?.let { type ->
+            good?.type?.let { type ->
                 when {
                     type == GoodKind.EXCISE && lastScannedNumber.value?.length == Constants.EXCISE_68 -> "Партионно"
                     type == GoodKind.EXCISE -> "Марочно"
@@ -80,7 +81,7 @@ class GoodInfoCreateViewModel : CoreViewModel() {
 
     val markScanEnabled by lazy {
         good.map { good ->
-            good?.kind == GoodKind.EXCISE
+            good?.type == GoodKind.EXCISE
         }
     }
 
@@ -114,7 +115,7 @@ class GoodInfoCreateViewModel : CoreViewModel() {
             it?.first?.let { good ->
                 task.value?.let { task ->
                     task.baskets.find {basket ->
-                        basket.section == good.section && basket.type == good.type && basket.control == good.control && basket.provider == getProvider()
+                        basket.section == good.section && basket.matype == good.matype && basket.control == good.control && basket.provider == getProvider()
                     }
                 }
             }
@@ -235,7 +236,7 @@ class GoodInfoCreateViewModel : CoreViewModel() {
             val isCorrectDate = it?.second ?: false
 
             good.value?.let { good ->
-                when (good.kind) {
+                when (good.type) {
                     GoodKind.COMMON -> quantity > 0
                     GoodKind.ALCOHOL -> quantity > 0 && isCorrectDate
                     GoodKind.EXCISE -> quantity > 0 && isCorrectDate
@@ -246,15 +247,19 @@ class GoodInfoCreateViewModel : CoreViewModel() {
 
     val detailsVisibility = MutableLiveData(true)
 
-    val rollbackVisibility by lazy {
+    /*val rollbackVisibility by lazy {
         good.map { good ->
             good?.kind == GoodKind.EXCISE
         }
-    }
+    }*/
 
-    val rollbackEnabled = MutableLiveData(false)
+    val rollbackVisibility = MutableLiveData(true)
+
+    val rollbackEnabled = MutableLiveData(true)
 
     var isExistUnsavedData = false
+
+    var lastScannedMark: Mark? = null
 
     // -----------------------------
 
@@ -284,6 +289,7 @@ class GoodInfoCreateViewModel : CoreViewModel() {
                         //loadMarkInfo(number)
                     }
                     Constants.EXCISE_150 -> {
+                        Logg.d { "--> EXCISE_150 scanned!" }
                         loadMarkInfo(number)
                     }
                     else -> getGoodByEan(number)
@@ -342,6 +348,8 @@ class GoodInfoCreateViewModel : CoreViewModel() {
     }
 
     private fun loadMarkInfo(number: String) {
+        Logg.d { "--> loadMarkInfo started!" }
+
         viewModelScope.launch {
             navigator.showProgressLoadingData()
 
@@ -357,18 +365,53 @@ class GoodInfoCreateViewModel : CoreViewModel() {
                 viewModelScope.launch {
                     Logg.d { "--> exciseInfo = $exciseInfo" }
 
-                    // todo Логика сохранения марок
-                    isExistUnsavedData = true
-
-                    lastScannedNumber.value?.let { number ->
-                        if (number.length == Constants.EXCISE_150) {
-                            saveExcise150()
+                    when (exciseInfo.status) {
+                        MarkStatus.OK.code -> {
+                            addScannedMark()
                         }
+                        MarkStatus.BAD.code -> {
+                            addScannedMark(true)
+                        }
+                        else -> navigator.openAlertScreen(exciseInfo.statusDescription)
                     }
 
+
+
+                    /*if (exciseInfo.marks.isEmpty()) {
+                        Logg.d { "--> Марка найдена, но список пустой" }
+                    } else {
+                        isExistUnsavedData = true
+                        exciseInfo.marks[0].let { markInfo ->
+                            lastScannedMark = Mark(
+                                    material = markInfo.material,
+                                    markNumber = markInfo.markNumber,
+                                    boxNumber = markInfo.boxNumber,
+                                    isBadMark = markInfo.isBadMark.isSapTrue(),
+                                    providerCode = markInfo.providerCode
+                            )
+                        }
+
+                        lastScannedNumber.value?.let { number ->
+                            if (number.length == Constants.EXCISE_150) {
+                                saveExcise150()
+                            }
+                        }
+                    }*/
                 }
             }
         }
+    }
+
+    private fun addScannedMark(isBadMark: Boolean = false) {
+        good.value?.let { good ->
+            /*marks.value?.add(Mark(
+                    material = good.material,
+                    markNumber = lastScannedNumber.value!!,
+
+            ))*/
+        }
+
+
     }
 
     private fun saveExcise150() {
@@ -384,9 +427,13 @@ class GoodInfoCreateViewModel : CoreViewModel() {
     }
 
     fun onScanResult(number: String) {
+        Logg.d { "--> onScanResult number length: ${number.length}" }
+
         if (applyEnabled.value!! && number.length >= Constants.SAP_6) {
             saveGoodInTask()
+        }
 
+        if (number.length >= Constants.SAP_6) {
             manager.openGoodFromList = false
             manager.searchNumber = number
             checkSearchNumber(number)
@@ -403,7 +450,7 @@ class GoodInfoCreateViewModel : CoreViewModel() {
             if (basket.value == null) {
                 manager.addBasket(Basket(
                         section = good.section,
-                        type = good.type,
+                        matype = good.matype,
                         control = good.control,
                         provider = getProvider()
                 ))

@@ -22,7 +22,7 @@ data class Task(
         var quantity = 0.0
 
         goods.filter {
-            it.section == basket?.section && it.type == basket.type && it.control == basket.control
+            it.section == basket?.section && it.matype == basket.matype && it.control == basket.control
         }.forEach { good ->
             val positionQuantity = good.positions.filter {
                 it.provider?.code == basket?.provider?.code
@@ -40,7 +40,7 @@ data class Task(
 
     fun deleteGoodFromBasket(basket: Basket) {
         goods.filter {
-            it.section == basket.section && it.type == basket.type && it.control == basket.control
+            it.section == basket.section && it.matype == basket.matype && it.control == basket.control
         }.forEach { good ->
             val positionList = good.positions.filter {
                 it.provider?.code == basket.provider?.code

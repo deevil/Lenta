@@ -261,7 +261,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                app:goodKindIcon="@{vm.good.kind}"
+                app:goodKindIcon="@{vm.good.type}"
                 tools:src="@drawable/ic_excise_alcohol_white_32dp" />
 
             <FrameLayout

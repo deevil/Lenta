@@ -65,8 +65,8 @@ class OpenTaskManager @Inject constructor(
                 material = goodInfo.materialInfo.material,
                 name = goodInfo.materialInfo.name,
                 units = database.getUnitsByCode(goodInfo.materialInfo.unitsCode),
-                kind = goodInfo.getGoodKind(),
-                type = goodInfo.materialInfo.goodType,
+                type = goodInfo.getGoodType(),
+                matype = goodInfo.materialInfo.matype,
                 control = goodInfo.getControlType(),
                 section = goodInfo.materialInfo.section,
                 matrix = getMatrixType(goodInfo.materialInfo.matrix),
@@ -175,7 +175,7 @@ class OpenTaskManager @Inject constructor(
                                     code = positionInfo.providerCode.addZerosToStart(10)
                             ),
                             units = database.getUnitsByCode(positionInfo.unitsCode),
-                            category = positionInfo.getCategory(good.kind),
+                            category = positionInfo.getCategory(good.type),
                             isCounted = positionInfo.isCounted.isSapTrue(),
                             isDelete = positionInfo.isDeleted.isSapTrue()
                     )

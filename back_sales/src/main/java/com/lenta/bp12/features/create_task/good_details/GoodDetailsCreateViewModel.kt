@@ -45,7 +45,7 @@ class GoodDetailsCreateViewModel : CoreViewModel(), PageSelectionListener {
         good.map { good ->
             task.value?.let { task ->
                 val list = task.baskets.filter {
-                    it.section == good?.section && it.type == good.type && it.control == good.control
+                    it.section == good?.section && it.matype == good.matype && it.control == good.control
                 }
 
                 list.mapIndexed { index, basket ->

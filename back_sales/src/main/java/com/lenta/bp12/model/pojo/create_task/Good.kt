@@ -16,14 +16,12 @@ data class Good(
         val material: String,
         val name: String,
         val units: Uom = Uom.ST,
-        val kind: GoodKind,
-        val type: String = "",
+        val type: GoodKind,
+        val matype: String = "",
         val control: ControlType = ControlType.COMMON,
         val section: String,
         val matrix: MatrixType,
         var positions: MutableList<Position> = mutableListOf(),
-
-        var isFullData: Boolean = false,
 
         val innerQuantity: Double = 0.0,
         val orderUnits: Uom= Uom.ST,
