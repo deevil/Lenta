@@ -463,9 +463,9 @@ class GoodsInfoViewModel : CoreViewModel(), OnPositionClickListener {
                 checkParamGrsGrundNeg()
             } else {//блок 6.22 (нет)
                 //блок 6.26
-                if (productInfo.value!!.uom.name == "г") {//блок 6.26 (да)
+                if (productInfo.value!!.uom.code == "G") {//блок 6.26 (да)
                     //блок 6.49
-                    val roundingQuantity = processGeneralProductService.getRoundingQuantityPPP()
+                    val roundingQuantity = processGeneralProductService.getRoundingQuantityPPP() - countValue.value!! // "- countValue.value!!" -> этого в блок-схеме нету, но без этого не правильно расчитывается необходимость округления, добавлено при отработке карточки https://trello.com/c/hElr3cn3
                     //блок 6.90
                     if (roundingQuantity <= productInfo.value!!.roundingShortages.toDouble()) {//блок 6.90 (да)
                         //блок 6.109
@@ -585,9 +585,9 @@ class GoodsInfoViewModel : CoreViewModel(), OnPositionClickListener {
 
     //ППП блок 6.163
     private fun noParamGrsGrundNeg() {
-        if (productInfo.value!!.uom.name == "г") {//блок 6.163 (да)
+        if (productInfo.value!!.uom.code == "G") {//блок 6.163 (да)
             //блок 6.167
-            val roundingQuantity = processGeneralProductService.getRoundingQuantityPPP()
+            val roundingQuantity = processGeneralProductService.getRoundingQuantityPPP() - countValue.value!! // "- countValue.value!!" -> этого в блок-схеме нету, но без этого не правильно расчитывается необходимость округления, добавлено при доработке карточки https://trello.com/c/hElr3cn3
             //блок 6.173
             if (roundingQuantity <= productInfo.value!!.roundingSurplus.toDouble()) {//блок 6.173 (да)
                 //блок 6.175
@@ -683,9 +683,9 @@ class GoodsInfoViewModel : CoreViewModel(), OnPositionClickListener {
                 checkParamGrwUlGrundcat()
             } else {
                 //блок 7.43
-                if (productInfo.value!!.uom.name == "г") {
+                if (productInfo.value!!.uom.code == "G") {
                     //блок 7.63
-                    val roundingQuantity = processGeneralProductService.getRoundingQuantityPGE()
+                    val roundingQuantity = processGeneralProductService.getRoundingQuantityPGE() - countValue.value!! // "- countValue.value!!" -> этого в блок-схеме нету, но без этого не правильно расчитывается необходимость округления, добавлено при доработке карточки https://trello.com/c/hElr3cn3
                     //блок 7.110
                     if (roundingQuantity <= productInfo.value!!.roundingShortages.toDouble()) {//блок 7.110 (да)
                         //блок 7.156
@@ -821,9 +821,9 @@ class GoodsInfoViewModel : CoreViewModel(), OnPositionClickListener {
 
     //ПГЕ блок 7.174
     private fun noParamGrwUlGrundcat() {
-        if (productInfo.value!!.uom.name == "г") {//блок 7.174 (да)
+        if (productInfo.value!!.uom.code == "G") {//блок 7.174 (да)
             //блок 7.178
-            val roundingQuantity = processGeneralProductService.getRoundingQuantityPGE()
+            val roundingQuantity = processGeneralProductService.getRoundingQuantityPGE() - countValue.value!! // "- countValue.value!!" -> этого в блок-схеме нету, но без этого не правильно расчитывается необходимость округления, добавлено при доработке карточки https://trello.com/c/hElr3cn3
             //блок 7.184
             if (roundingQuantity <= productInfo.value!!.roundingSurplus.toDouble()) {//блок 7.184 (да)
                 //блок 7.186
