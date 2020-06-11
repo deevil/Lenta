@@ -10,6 +10,7 @@ import com.lenta.bp9.model.task.TaskProductInfo
 import com.lenta.bp9.model.task.TaskType
 import com.lenta.bp9.repos.IDataBaseRepo
 import com.lenta.bp9.repos.IRepoInMemoryHolder
+import com.lenta.shared.models.core.ProductType
 import com.lenta.shared.models.core.Uom
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.requests.combined.scan_info.pojo.ReasonRejectionInfo
@@ -39,11 +40,13 @@ class GoodsDetailsViewModel : CoreViewModel() {
             MutableLiveData(productInfo.value?.uom)
         }
     }
-    val batchInfo: MutableLiveData<TaskBatchInfo> = MutableLiveData()
     val goodsDetails: MutableLiveData<List<GoodsDetailsCategoriesItem>> = MutableLiveData()
     private val reasonRejectionInfo: MutableLiveData<List<ReasonRejectionInfo>> = MutableLiveData()
     private val isVetProduct: MutableLiveData<Boolean> by lazy {
         MutableLiveData(productInfo.value?.isVet ?: false)
+    }
+    private val isNonExciseAlcoProduct: MutableLiveData<Boolean> by lazy {
+        MutableLiveData(productInfo.value?.type == ProductType.NonExciseAlcohol)
     }
     val categoriesSelectionsHelper = SelectionItemsHelper()
     val enabledDelBtn: MutableLiveData<Boolean> = categoriesSelectionsHelper.selectedPositions.map {
@@ -64,13 +67,8 @@ class GoodsDetailsViewModel : CoreViewModel() {
             } else {
                 dataBase.getAllReasonRejectionInfo()
             }
-            if (productInfo.value != null) {
-                updateProduct()
-            } else {
-                if (batchInfo.value != null) {
-                    updateBatch()
-                }
-            }
+
+            updateProduct()
         }
 
     }
@@ -118,28 +116,6 @@ class GoodsDetailsViewModel : CoreViewModel() {
         categoriesSelectionsHelper.clearPositions()
     }
 
-    private fun updateBatch() {
-        goodsDetails.postValue(
-                taskManager.getReceivingTask()?.taskRepository?.getBatchesDiscrepancies()?.findBatchDiscrepanciesOfBatch(batchInfo.value!!)?.mapIndexed { index, discrepancy ->
-                    val isNormDiscrepancies = when (repoInMemoryHolder.taskList.value?.taskListLoadingMode) {
-                        TaskListLoadingMode.PGE -> discrepancy.typeDiscrepancies == "1" || discrepancy.typeDiscrepancies == "2"
-                        else -> discrepancy.typeDiscrepancies == "1"
-                    }
-                    GoodsDetailsCategoriesItem(
-                            number = index + 1,
-                            name = "${reasonRejectionInfo.value?.firstOrNull {it.code == discrepancy.typeDiscrepancies}?.name}",
-                            quantityWithUom = "${discrepancy.numberDiscrepancies.toDouble().toStringFormatted()} ${discrepancy.uom.name}",
-                            isNormDiscrepancies = isNormDiscrepancies,
-                            typeDiscrepancies = discrepancy.typeDiscrepancies,
-                            materialNumber = "",
-                            batchNumber = batchInfo.value?.batchNumber ?: "",
-                            even = index % 2 == 0
-                    )
-                }?.reversed()
-        )
-        categoriesSelectionsHelper.clearPositions()
-    }
-
     fun onClickDelete() {
         if (taskManager.getReceivingTask()?.taskHeader?.taskType == TaskType.RecalculationCargoUnit && taskManager.getReceivingTask()!!.taskHeader.isCracked && productInfo.value!!.isWithoutRecount) { //если это не пересчетная ГЕ //https://trello.com/c/PRTAVnUP
             categoriesSelectionsHelper.selectedPositions.value?.map { position ->
@@ -156,6 +132,14 @@ class GoodsDetailsViewModel : CoreViewModel() {
 
                     if (isVetProduct.value!!) {
                         processMercuryProductService.delDiscrepancy(goodsDetails.value?.get(position)!!.typeDiscrepancies)
+                    }
+
+                    if (isNonExciseAlcoProduct.value!!) {
+                        taskManager
+                                .getReceivingTask()
+                                ?.taskRepository
+                                ?.getBatchesDiscrepancies()
+                                ?.deleteBatchesDiscrepanciesForProductAndDiscrepancies(goodsDetails.value?.get(position)!!.materialNumber, goodsDetails.value?.get(position)!!.typeDiscrepancies)
                     }
                 }
             }

@@ -3,6 +3,7 @@ package com.lenta.bp9.model.memory
 import com.lenta.bp9.model.repositories.ITaskBatchesDiscrepanciesRepository
 import com.lenta.bp9.model.task.TaskBatchInfo
 import com.lenta.bp9.model.task.TaskBatchesDiscrepancies
+import com.lenta.bp9.model.task.TaskProductInfo
 
 class MemoryTaskBatchesDiscrepanciesRepository : ITaskBatchesDiscrepanciesRepository {
 
@@ -16,9 +17,18 @@ class MemoryTaskBatchesDiscrepanciesRepository : ITaskBatchesDiscrepanciesReposi
         val foundDiscrepancies = ArrayList<TaskBatchesDiscrepancies>()
         for (i in batchesDiscrepancies.indices) {
             if (batch.materialNumber == batchesDiscrepancies[i].materialNumber &&
-                    batch.setMaterialNumber == batchesDiscrepancies[i].setMaterialNumber &&
                     batch.processingUnitNumber == batchesDiscrepancies[i].processingUnitNumber &&
                     batch.batchNumber == batchesDiscrepancies[i].batchNumber) {
+                foundDiscrepancies.add(batchesDiscrepancies[i])
+            }
+        }
+        return foundDiscrepancies
+    }
+
+    override fun findBatchDiscrepanciesOfProduct(materialNumber: String): List<TaskBatchesDiscrepancies> {
+        val foundDiscrepancies = ArrayList<TaskBatchesDiscrepancies>()
+        for (i in batchesDiscrepancies.indices) {
+            if (materialNumber == batchesDiscrepancies[i].materialNumber) {
                 foundDiscrepancies.add(batchesDiscrepancies[i])
             }
         }
@@ -29,7 +39,6 @@ class MemoryTaskBatchesDiscrepanciesRepository : ITaskBatchesDiscrepanciesReposi
         var index = -1
         for (i in batchesDiscrepancies.indices) {
             if (discrepancies.materialNumber == batchesDiscrepancies[i].materialNumber &&
-                    discrepancies.setMaterialNumber == batchesDiscrepancies[i].setMaterialNumber &&
                     discrepancies.processingUnitNumber == batchesDiscrepancies[i].processingUnitNumber &&
                     discrepancies.batchNumber == batchesDiscrepancies[i].batchNumber &&
                     discrepancies.typeDiscrepancies == batchesDiscrepancies[i].typeDiscrepancies) {
@@ -59,7 +68,6 @@ class MemoryTaskBatchesDiscrepanciesRepository : ITaskBatchesDiscrepanciesReposi
     override fun deleteBatchDiscrepancies(discrepancies: TaskBatchesDiscrepancies): Boolean {
         batchesDiscrepancies.map { it }.filter {batchDiscrepancies ->
             if (discrepancies.materialNumber == batchDiscrepancies.materialNumber &&
-                    discrepancies.setMaterialNumber == batchDiscrepancies.setMaterialNumber &&
                     discrepancies.processingUnitNumber == batchDiscrepancies.processingUnitNumber &&
                     discrepancies.batchNumber == batchDiscrepancies.batchNumber &&
                     discrepancies.typeDiscrepancies == batchDiscrepancies.typeDiscrepancies) {
@@ -77,9 +85,63 @@ class MemoryTaskBatchesDiscrepanciesRepository : ITaskBatchesDiscrepanciesReposi
         val delDiscrepancies = ArrayList<TaskBatchesDiscrepancies>()
         for (i in batchesDiscrepancies.indices) {
             if (batch.materialNumber == batchesDiscrepancies[i].materialNumber &&
-                    batch.setMaterialNumber == batchesDiscrepancies[i].setMaterialNumber &&
                     batch.processingUnitNumber == batchesDiscrepancies[i].processingUnitNumber &&
                     batch.batchNumber == batchesDiscrepancies[i].batchNumber) {
+                delDiscrepancies.add(batchesDiscrepancies[i])
+            }
+        }
+
+        if (delDiscrepancies.isEmpty()) {
+            return false
+        }
+
+        delDiscrepancies.map {
+            deleteBatchDiscrepancies(it)
+        }
+        return true
+    }
+
+    override fun deleteBatchesDiscrepanciesForProduct(materialNumber: String): Boolean {
+        val delDiscrepancies = ArrayList<TaskBatchesDiscrepancies>()
+        for (i in batchesDiscrepancies.indices) {
+            if (materialNumber == batchesDiscrepancies[i].materialNumber) {
+                delDiscrepancies.add(batchesDiscrepancies[i])
+            }
+        }
+
+        if (delDiscrepancies.isEmpty()) {
+            return false
+        }
+
+        delDiscrepancies.map {
+            deleteBatchDiscrepancies(it)
+        }
+        return true
+    }
+
+    override fun deleteBatchesDiscrepanciesNotNormForProduct(materialNumber: String): Boolean {
+        val delDiscrepancies = ArrayList<TaskBatchesDiscrepancies>()
+        for (i in batchesDiscrepancies.indices) {
+            if (materialNumber == batchesDiscrepancies[i].materialNumber && batchesDiscrepancies[i].typeDiscrepancies != "1") {
+                delDiscrepancies.add(batchesDiscrepancies[i])
+            }
+        }
+
+        if (delDiscrepancies.isEmpty()) {
+            return false
+        }
+
+        delDiscrepancies.map {
+            deleteBatchDiscrepancies(it)
+        }
+        return true
+    }
+
+    override fun deleteBatchesDiscrepanciesForProductAndDiscrepancies(materialNumber: String, typeDiscrepancies: String): Boolean {
+        val delDiscrepancies = ArrayList<TaskBatchesDiscrepancies>()
+        for (i in batchesDiscrepancies.indices) {
+            if (materialNumber == batchesDiscrepancies[i].materialNumber &&
+                    typeDiscrepancies == batchesDiscrepancies[i].typeDiscrepancies) {
                 delDiscrepancies.add(batchesDiscrepancies[i])
             }
         }
@@ -115,7 +177,31 @@ class MemoryTaskBatchesDiscrepanciesRepository : ITaskBatchesDiscrepanciesReposi
     }
 
     override fun getCountBatchNotProcessedOfBatch(batch: TaskBatchInfo): Double {
-        return 0.0 //batch.planQuantityBatch.toDouble() - getCountAcceptOfBatch(batch) - getCountRefusalOfBatch(batch)
+        return batch.purchaseOrderScope - getCountAcceptOfBatch(batch) - getCountRefusalOfBatch(batch)
+    }
+
+    override fun getCountAcceptOfBatchPGE(batch: TaskBatchInfo): Double {
+        var countAccept = 0.0
+        findBatchDiscrepanciesOfBatch(batch).filter {
+            it.typeDiscrepancies == "1" || it.typeDiscrepancies == "2"
+        }.map {discrepancies ->
+            countAccept += discrepancies.numberDiscrepancies.toDouble()
+        }
+        return countAccept
+    }
+
+    override fun getCountRefusalOfBatchPGE(batch: TaskBatchInfo): Double {
+        var countRefusal = 0.0
+        findBatchDiscrepanciesOfBatch(batch).filter {
+            it.typeDiscrepancies == "3" || it.typeDiscrepancies == "4" || it.typeDiscrepancies == "5"
+        }.map {discrepancies ->
+            countRefusal += discrepancies.numberDiscrepancies.toDouble()
+        }
+        return countRefusal
+    }
+
+    override fun getCountBatchNotProcessedOfBatchPGE(batch: TaskBatchInfo): Double {
+        return batch.purchaseOrderScope - getCountAcceptOfBatchPGE(batch) - getCountRefusalOfBatchPGE(batch)
     }
 
     override fun clear() {

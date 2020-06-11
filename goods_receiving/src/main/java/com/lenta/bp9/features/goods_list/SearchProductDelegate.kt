@@ -240,13 +240,13 @@ class SearchProductDelegate @Inject constructor(
                         }
                         taskProductInfo.isBoxFl -> { //алкоголь, коробочный учет ППП https://trello.com/c/KbBbXj2t; коробочный учет ПГЕ https://trello.com/c/TzUSGIH7
                             when (repoInMemoryHolder.taskList.value?.taskListLoadingMode) {
-                                TaskListLoadingMode.Receiving -> screenNavigator.openExciseAlcoBoxAccInfoScreen(taskProductInfo)
+                                TaskListLoadingMode.Receiving -> screenNavigator.openExciseAlcoBoxAccInfoReceivingScreen(taskProductInfo)
                                 TaskListLoadingMode.PGE -> screenNavigator.openExciseAlcoBoxAccInfoPGEScreen(taskProductInfo)
                                 TaskListLoadingMode.Shipment -> screenNavigator.openNotImplementedScreenAlert("Информация о коробочном учете")
                                 else -> screenNavigator.openAlertUnknownTaskTypeScreen() //сообщение о неизвестном типе задания
                             }
                         }
-                        taskProductInfo.isMarkFl -> { //алкоголь, марочный учет ПГЕ https://trello.com/c/Bx03dgxE
+                        taskProductInfo.isMarkFl -> { //алкоголь, марочный учет ПГЕ https://trello.com/c/Bx03dgxE;
                             when (repoInMemoryHolder.taskList.value?.taskListLoadingMode) {
                                 TaskListLoadingMode.Receiving -> screenNavigator.openNotImplementedScreenAlert("Информация о марочном учете") //screenNavigator.openExciseAlcoStampAccInfoScreen(taskProductInfo) это экран для марочного учета ППП
                                 TaskListLoadingMode.PGE -> screenNavigator.openExciseAlcoStampAccInfoPGEScreen(taskProductInfo)
@@ -258,7 +258,15 @@ class SearchProductDelegate @Inject constructor(
                         else -> screenNavigator.openAlertUnknownGoodsTypeScreen() //сообщение о неизвестном типе товара
                     }
                 }
-                ProductType.NonExciseAlcohol -> screenNavigator.openNotImplementedScreenAlert("Информация о не акцизном алкоголе") //screenNavigator.openNonExciseAlcoInfoScreen(taskProductInfo)
+                ProductType.NonExciseAlcohol -> { //не акцизный алкоголь ППП https://trello.com/c/rmn2WFMD;
+                    when (repoInMemoryHolder.taskList.value?.taskListLoadingMode) {
+                        TaskListLoadingMode.Receiving -> screenNavigator.openNonExciseAlcoInfoReceivingScreen(productInfo = taskProductInfo, isDiscrepancy = isDiscrepancy)
+                        TaskListLoadingMode.PGE -> screenNavigator.openNotImplementedScreenAlert("Информация о не акцизном алкоголе")
+                        TaskListLoadingMode.Shipment -> screenNavigator.openNotImplementedScreenAlert("Информация о не акцизном алкоголе")
+                        else -> screenNavigator.openAlertUnknownTaskTypeScreen() //сообщение о неизвестном типе задания
+                    }
+
+                }
                 else -> {
                     screenNavigator.openAlertUnknownGoodsTypeScreen() //сообщение о неизвестном типе товара
                 }

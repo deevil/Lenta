@@ -227,7 +227,7 @@ class ExciseAlcoBoxCardViewModel : CoreViewModel(), OnPositionClickListener {
             //обновляем кол-во отсканированных марок с категорией норма для отображения на экране
             countExciseStampsScanned.value = processExciseAlcoBoxAccService.getCountExciseStampDiscrepanciesOfBox(boxInfo.value?.boxNumber ?: "", "1")
             if (checkStampControl.value == true) {
-                screenNavigator.openExciseAlcoBoxAccInfoScreen(productInfo.value!!)
+                screenNavigator.openExciseAlcoBoxAccInfoReceivingScreen(productInfo.value!!)
             } else {
                 screenNavigator.goBack()
                 screenNavigator.openExciseAlcoBoxListScreen(
