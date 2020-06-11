@@ -17,5 +17,5 @@ data class MarkInfo(
         var isBadMark: String,
         /** Код поставщика */
         @SerializedName("LIFNR")
-        var providerCode: String
+        var producerCode: String
 )

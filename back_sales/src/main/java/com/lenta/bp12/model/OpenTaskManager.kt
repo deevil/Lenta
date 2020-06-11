@@ -257,7 +257,7 @@ class OpenTaskManager @Inject constructor(
                                     markNumber = mark.markNumber,
                                     boxNumber = mark.boxNumber,
                                     isBadMark = mark.isBadMark.toSapBooleanString(),
-                                    providerCode = mark.providerCode
+                                    producerCode = mark.producerInfo.code
                             )
                     )
                 }

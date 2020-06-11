@@ -35,3 +35,13 @@ enum class MarkStatus(val code: String){
     OTHER("03"),
     UNKNOWN("04")
 }
+
+enum class ScanNumberType(val description: String){
+    DEFAULT("Состояние до сканирование первого номера"),
+    COMMON("Обычный товар"),
+    ALCOHOL("Алкогольный немаркированный товар"),
+    MARK_150("Марка 150 символов"),
+    MARK_68("Марка 68 символов"),
+    PART("Партия"),
+    BOX("Коробка")
+}
