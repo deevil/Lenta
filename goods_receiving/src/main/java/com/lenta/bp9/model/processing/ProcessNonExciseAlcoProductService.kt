@@ -36,68 +36,67 @@ class ProcessNonExciseAlcoProductService
 
         if (foundDiscrepancy == null) {
             taskManager.getReceivingTask()?.
-                    taskRepository?.
-                    getProductsDiscrepancies()?.
-                    changeProductDiscrepancy(TaskProductDiscrepancies(
-                            materialNumber = productInfo.materialNumber,
-                            processingUnitNumber = productInfo.processingUnit,
-                            numberDiscrepancies = countAdd.toString(),
-                            uom = productInfo.uom,
-                            typeDiscrepancies = typeDiscrepancies,
-                            isNotEdit = false,
-                            isNew = false,
-                            notEditNumberDiscrepancies = ""
-                    ))
+            taskRepository?.
+            getProductsDiscrepancies()?.
+            changeProductDiscrepancy(TaskProductDiscrepancies(
+                    materialNumber = productInfo.materialNumber,
+                    processingUnitNumber = productInfo.processingUnit,
+                    numberDiscrepancies = countAdd.toString(),
+                    uom = productInfo.uom,
+                    typeDiscrepancies = typeDiscrepancies,
+                    isNotEdit = false,
+                    isNew = false,
+                    notEditNumberDiscrepancies = ""
+            ))
         } else {
             taskManager.getReceivingTask()?.
-                    taskRepository?.
-                    getProductsDiscrepancies()?.
-                    changeProductDiscrepancy(foundDiscrepancy.copy(numberDiscrepancies = countAdd.toString(), processingUnitNumber = productInfo.processingUnit))
+            taskRepository?.
+            getProductsDiscrepancies()?.
+            changeProductDiscrepancy(foundDiscrepancy.copy(numberDiscrepancies = countAdd.toString(), processingUnitNumber = productInfo.processingUnit))
         }
 
         taskManager.getReceivingTask()?.
-                taskRepository?.
-                getProducts()?.
-                changeProduct(productInfo.copy(isNoEAN = false))
+        taskRepository?.
+        getProducts()?.
+        changeProduct(productInfo.copy(isNoEAN = false))
 
         addBatch(countAdd.toString(), typeDiscrepancies)
     }
 
     private fun addBatch(count: String, typeDiscrepancies: String){
         val foundBatchDiscrepancy = taskManager.getReceivingTask()?.taskRepository?.getBatchesDiscrepancies()?.findBatchDiscrepanciesOfBatch(batchInfo)?.findLast {
-            it.materialNumber == batchInfo.materialNumber /**&& it.batchNumber == batchInfo.batchNumber*/ && it.typeDiscrepancies == typeDiscrepancies
+            it.materialNumber == batchInfo.materialNumber && it.batchNumber == batchInfo.batchNumber && it.typeDiscrepancies == typeDiscrepancies
         }
 
-        /**if (foundBatchDiscrepancy == null) {
+        if (foundBatchDiscrepancy == null) {
             taskManager.getReceivingTask()?.
-                    taskRepository?.
-                    getBatchesDiscrepancies()?.
-                    changeBatchDiscrepancy(TaskBatchesDiscrepancies(
-                            materialNumber = batchInfo.materialNumber,
-                            batchNumber = batchInfo.batchNumber,
-                            numberDiscrepancies = count,
-                            uom = batchInfo.uom,
-                            typeDiscrepancies = typeDiscrepancies,
-                            isNotEdit = false,
-                            exciseStampCode = "",
-                            fullDM = ""
-                    ))
+            taskRepository?.
+            getBatchesDiscrepancies()?.
+            changeBatchDiscrepancy(TaskBatchesDiscrepancies(
+                    materialNumber = batchInfo.materialNumber,
+                    processingUnitNumber = batchInfo.processingUnitNumber,
+                    batchNumber = batchInfo.batchNumber,
+                    numberDiscrepancies = count,
+                    uom = productInfo.uom,
+                    typeDiscrepancies = typeDiscrepancies,
+                    isNotEdit = false,
+                    isNew = false,
+                    setMaterialNumber = batchInfo.setMaterialNumber,
+                    egais = batchInfo.egais,
+                    bottlingDate = batchInfo.bottlingDate,
+                    notEditNumberDiscrepancies = ""
+            ))
         } else {
             taskManager.getReceivingTask()?.
-                    taskRepository?.
-                    getBatchesDiscrepancies()?.
-                    changeBatchDiscrepancy(foundBatchDiscrepancy.copy(numberDiscrepancies = count))
+            taskRepository?.
+            getBatchesDiscrepancies()?.
+            changeBatchDiscrepancy(foundBatchDiscrepancy.copy(numberDiscrepancies = count))
         }
-
-        taskManager.getReceivingTask()?.
-                taskRepository?.
-                getBatches()?.
-                changeBatch(batchInfo.copy(isNoEAN = false))*/
     }
 
     fun overlimit(count: Double) : Boolean {
-        return false /**batchInfo.planQuantityBatch.toDouble() < ((taskManager.getReceivingTask()?.taskRepository?.getProductsDiscrepancies()?.getCountAcceptOfProduct(productInfo) ?: 0.0)
-                + (taskManager.getReceivingTask()?.taskRepository?.getProductsDiscrepancies()?.getCountRefusalOfProduct(productInfo) ?: 0.0) + count)*/
+        return batchInfo.purchaseOrderScope < ((taskManager.getReceivingTask()?.taskRepository?.getBatchesDiscrepancies()?.getCountAcceptOfBatch(batchInfo) ?: 0.0)
+                + (taskManager.getReceivingTask()?.taskRepository?.getBatchesDiscrepancies()?.getCountRefusalOfBatch(batchInfo) ?: 0.0) + count)
 
     }
 }

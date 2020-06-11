@@ -677,7 +677,9 @@ class GoodsInfoViewModel : CoreViewModel(), OnPositionClickListener {
             //блок 7.177
             saveCategoryPGE(true)
         } else {//блок 7.15 (нет)
-            //блок 7.21
+            //блок 7.21 (processGeneralProductService.getOpenQuantityPGE - блок 7.11)
+            //Logg.d { "processGeneralProductService.getQuantityAllCategoryPGE ${processGeneralProductService.getQuantityAllCategoryPGE(convertEizToBei())} " }
+            //Logg.d { "processGeneralProductService.getOpenQuantityPGE ${processGeneralProductService.getOpenQuantityPGE(paramGrwOlGrundcat.value!!, paramGrwUlGrundcat.value!!)} " }
             if (processGeneralProductService.getQuantityAllCategoryPGE(convertEizToBei()) > processGeneralProductService.getOpenQuantityPGE(paramGrwOlGrundcat.value!!, paramGrwUlGrundcat.value!!)) {
                 //блок 7.55
                 checkParamGrwUlGrundcat()

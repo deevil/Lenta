@@ -124,6 +124,24 @@ class MemoryTaskMercuryDiscrepanciesRepository : ITaskMercuryDiscrepanciesReposi
         return true
     }
 
+    override fun deleteMercuryDiscrepanciesNotNormForProduct(product: TaskProductInfo): Boolean {
+        val delDiscrepancies = ArrayList<TaskMercuryDiscrepancies>()
+        for (i in mercuryDiscrepancies.indices) {
+            if (product.materialNumber == mercuryDiscrepancies[i].materialNumber && mercuryDiscrepancies[i].typeDiscrepancies != "1") {
+                delDiscrepancies.add(mercuryDiscrepancies[i])
+            }
+        }
+
+        if (delDiscrepancies.isEmpty()) {
+            return false
+        }
+
+        delDiscrepancies.map {
+            deleteMercuryDiscrepancy(it)
+        }
+        return true
+    }
+
     override fun getMercuryCountAcceptOfProduct(product: TaskProductInfo): Double {
         var countAccept = 0.0
         findMercuryDiscrepanciesOfProduct(product).filter {

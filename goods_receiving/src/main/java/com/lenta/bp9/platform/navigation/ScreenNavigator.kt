@@ -25,7 +25,7 @@ import com.lenta.bp9.features.goods_information.excise_alco_receiving.excise_alc
 import com.lenta.bp9.features.goods_information.general.GoodsInfoFragment
 import com.lenta.bp9.features.goods_information.general_opp.GoodsInfoShipmentPPFragment
 import com.lenta.bp9.features.goods_information.mercury.GoodsMercuryInfoFragment
-import com.lenta.bp9.features.goods_information.non_excise_alco.NonExciseAlcoInfoFragment
+import com.lenta.bp9.features.goods_information.non_excise_alco_receiving.NonExciseAlcoInfoFragment
 import com.lenta.bp9.features.goods_list.GoodsListFragment
 import com.lenta.bp9.features.input_outgoing_fillings.InputOutgoingFillingsFragment
 import com.lenta.bp9.features.list_goods_transfer.ListGoodsTransferFragment
@@ -235,9 +235,9 @@ class ScreenNavigator(
         )
     }
 
-    override fun openGoodsDetailsScreen(productInfo: TaskProductInfo?, batch: TaskBatchInfo?) {
+    override fun openGoodsDetailsScreen(productInfo: TaskProductInfo) {
         runOrPostpone {
-            getFragmentStack()?.push(GoodsDetailsFragment.create(productInfo, batch))
+            getFragmentStack()?.push(GoodsDetailsFragment.create(productInfo))
         }
     }
 
@@ -313,9 +313,9 @@ class ScreenNavigator(
         openInfoScreen(context.getString(R.string.goods_not_in_order))
     }
 
-    override fun openNonExciseAlcoInfoScreen(productInfo: TaskProductInfo) {
+    override fun openNonExciseAlcoInfoReceivingScreen(productInfo: TaskProductInfo, isDiscrepancy: Boolean) {
         runOrPostpone {
-            getFragmentStack()?.push(NonExciseAlcoInfoFragment.create(productInfo))
+            getFragmentStack()?.push(NonExciseAlcoInfoFragment.create(productInfo, isDiscrepancy))
         }
     }
 
@@ -1053,7 +1053,7 @@ class ScreenNavigator(
         }
     }
 
-    override fun openExciseAlcoBoxAccInfoScreen(productInfo: TaskProductInfo) {
+    override fun openExciseAlcoBoxAccInfoReceivingScreen(productInfo: TaskProductInfo) {
         runOrPostpone {
             getFragmentStack()?.push(ExciseAlcoBoxAccInfoFragment.create(productInfo))
         }
@@ -1473,7 +1473,7 @@ interface IScreenNavigator : ICoreNavigator {
     fun openTaskReviseScreen()
     fun openGoodsInfoScreen(productInfo: TaskProductInfo, isDiscrepancy: Boolean, initialCount: Double = 0.0)
     fun openAlertWrongProductType()
-    fun openGoodsDetailsScreen(productInfo: TaskProductInfo? = null, batch: TaskBatchInfo? = null)
+    fun openGoodsDetailsScreen(productInfo: TaskProductInfo)
     fun openInvoiceReviseScreen()
     fun openRejectScreen()
     fun openProductDocumentsReviseScreen()
@@ -1483,7 +1483,7 @@ interface IScreenNavigator : ICoreNavigator {
     fun openDiscrepancyListScreen()
     fun openSelectTypeCodeScreen(codeConfirmationForSap: Int, codeConfirmationForBarCode: Int)
     fun openAlertGoodsNotInOrderScreen()
-    fun openNonExciseAlcoInfoScreen(productInfo: TaskProductInfo)
+    fun openNonExciseAlcoInfoReceivingScreen(productInfo: TaskProductInfo, isDiscrepancy: Boolean)
     fun openSupplyResultsErrorDialog(numberSupply: String, userName: String)
     fun openSupplyResultsSuccessDialog(numberSupply: String, leftCallbackFunc: () -> Unit, rightCallbackFunc: () -> Unit)
     fun openSupplyResultsAutomaticChargeErrorDialog()
@@ -1569,7 +1569,7 @@ interface IScreenNavigator : ICoreNavigator {
     fun openAlertCountMoreCargoUnitDialog(yesCallbackFunc: () -> Unit)
     fun openShelfLifeExpiresDialog(noCallbackFunc: () -> Unit, yesCallbackFunc: () -> Unit, expiresThrough: String)
     fun openSupplyResultsActDisagreementTransportationDialog(transportationNumber: String, docCallbackFunc: () -> Unit, nextCallbackFunc: () -> Unit)
-    fun openExciseAlcoBoxAccInfoScreen(productInfo: TaskProductInfo)
+    fun openExciseAlcoBoxAccInfoReceivingScreen(productInfo: TaskProductInfo)
     fun openAlertUnknownGoodsTypeScreen()
     fun openCreateInboundDeliveryDialog(yesCallbackFunc: () -> Unit)
     fun openAlertUnableSaveNegativeQuantity()
