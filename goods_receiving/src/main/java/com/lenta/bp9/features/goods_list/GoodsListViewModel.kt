@@ -11,8 +11,11 @@ import com.lenta.bp9.repos.IRepoInMemoryHolder
 import com.lenta.bp9.requests.network.*
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.exception.Failure
+import com.lenta.shared.fmp.resources.dao_ext.getProductInfoByMaterial
+import com.lenta.shared.fmp.resources.slow.ZfmpUtz48V001
 import com.lenta.shared.models.core.ProductType
 import com.lenta.shared.models.core.Uom
+import com.lenta.shared.models.core.getProductType
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.requests.combined.scan_info.ScanInfoResult
 import com.lenta.shared.utilities.Logg
@@ -44,6 +47,10 @@ class GoodsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKey
     lateinit var hyperHive: HyperHive
     @Inject
     lateinit var repoInMemoryHolder: IRepoInMemoryHolder
+
+    private val zfmpUtz48V001: ZfmpUtz48V001 by lazy {
+        ZfmpUtz48V001(hyperHive)
+    }
 
     val selectedPage = MutableLiveData(0)
     val countedSelectionsHelper = SelectionItemsHelper()
@@ -458,6 +465,15 @@ class GoodsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKey
                 screenNavigator.openDiscrepancyListScreen()
             } else {
                 screenNavigator.showProgressLoadingData()
+                //очищаем таблицу ET_TASK_DIFF от не акцизного алкоголя, т.к. для этих товаров необходимо передавать только данные из таблицы ET_PARTS_DIFF
+                taskManager.getReceivingTask()!!.taskRepository.getProductsDiscrepancies().getProductsDiscrepancies().map {
+                    val materialInfo = zfmpUtz48V001.getProductInfoByMaterial(it.materialNumber)
+                    val productType = getProductType(isAlco = materialInfo?.isAlco == "X", isExcise = materialInfo?.isExc == "X")
+                    if (productType == ProductType.NonExciseAlcohol) {
+                        taskManager.getReceivingTask()!!.taskRepository.getProductsDiscrepancies().deleteProductsDiscrepanciesForProduct(it.materialNumber)
+                    }
+                }
+
                 endRecountDirectDeliveries(EndRecountDDParameters(
                         taskNumber = taskManager.getReceivingTask()!!.taskHeader.taskNumber,
                         deviceIP = context.getDeviceIp(),

@@ -16,7 +16,10 @@ import com.lenta.bp9.requests.network.EndRecountDDResult
 import com.lenta.bp9.requests.network.EndRecountDirectDeliveriesNetRequest
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.exception.Failure
+import com.lenta.shared.fmp.resources.dao_ext.getProductInfoByMaterial
+import com.lenta.shared.fmp.resources.slow.ZfmpUtz48V001
 import com.lenta.shared.models.core.ProductType
+import com.lenta.shared.models.core.getProductType
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.requests.combined.scan_info.ScanInfoResult
 import com.lenta.shared.requests.combined.scan_info.pojo.QualityInfo
@@ -27,6 +30,7 @@ import com.lenta.shared.utilities.extentions.combineLatest
 import com.lenta.shared.utilities.extentions.getDeviceIp
 import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.utilities.extentions.toStringFormatted
+import com.mobrun.plugin.api.HyperHive
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -48,6 +52,12 @@ class DiscrepancyListViewModel : CoreViewModel(), PageSelectionListener {
     lateinit var repoInMemoryHolder: IRepoInMemoryHolder
     @Inject
     lateinit var dataBase: IDataBaseRepo
+    @Inject
+    lateinit var hyperHive: HyperHive
+
+    private val zfmpUtz48V001: ZfmpUtz48V001 by lazy {
+        ZfmpUtz48V001(hyperHive)
+    }
 
     val selectedPage = MutableLiveData(0)
     val processedSelectionsHelper = SelectionItemsHelper()
@@ -81,7 +91,7 @@ class DiscrepancyListViewModel : CoreViewModel(), PageSelectionListener {
     }
 
     val visibilityBatchesButton: MutableLiveData<Boolean> by lazy {
-        MutableLiveData(taskManager.getReceivingTask()?.taskDescription?.isAlco == true && !(taskManager.getReceivingTask()?.taskHeader?.taskType == TaskType.ShipmentPP || taskManager.getReceivingTask()?.taskHeader?.taskType == TaskType.ShipmentRC)) //для хаданий ОПП и ОРЦ не показываем кнопку Партия, уточнил у Артема
+        MutableLiveData(taskManager.getReceivingTask()?.taskDescription?.isAlco == true && !(taskManager.getReceivingTask()?.taskHeader?.taskType == TaskType.ShipmentPP || taskManager.getReceivingTask()?.taskHeader?.taskType == TaskType.ShipmentRC)) //для заданий ОПП и ОРЦ не показываем кнопку Партия, уточнил у Артема
     }
 
     init {
@@ -425,6 +435,15 @@ class DiscrepancyListViewModel : CoreViewModel(), PageSelectionListener {
     fun onClickSave() {
         viewModelScope.launch {
             screenNavigator.showProgressLoadingData()
+            //очищаем таблицу ET_TASK_DIFF от не акцизного алкоголя, т.к. для этих товаров необходимо передавать только данные из таблицы ET_PARTS_DIFF
+            taskManager.getReceivingTask()!!.taskRepository.getProductsDiscrepancies().getProductsDiscrepancies().map {
+                val materialInfo = zfmpUtz48V001.getProductInfoByMaterial(it.materialNumber)
+                val productType = getProductType(isAlco = materialInfo?.isAlco == "X", isExcise = materialInfo?.isExc == "X")
+                if (productType == ProductType.NonExciseAlcohol) {
+                    taskManager.getReceivingTask()!!.taskRepository.getProductsDiscrepancies().deleteProductsDiscrepanciesForProduct(it.materialNumber)
+                }
+            }
+
             endRecountDirectDeliveries(EndRecountDDParameters(
                     taskNumber = taskManager.getReceivingTask()!!.taskHeader.taskNumber,
                     deviceIP = context.getDeviceIp(),
