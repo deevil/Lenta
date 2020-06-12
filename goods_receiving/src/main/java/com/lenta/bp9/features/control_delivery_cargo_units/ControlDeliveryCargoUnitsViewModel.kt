@@ -107,11 +107,15 @@ class ControlDeliveryCargoUnitsViewModel : CoreViewModel(), PageSelectionListene
 
             statusCodeSurplus.value = dataBase.getSurplusInfoForPRC()?.first()?.code
 
-            onResume()
+            updateData()
         }
     }
 
     fun onResume() {
+        updateData()
+    }
+
+    private fun updateData() {
         updateNotProcessed()
         updateProcessed()
     }
@@ -139,8 +143,7 @@ class ControlDeliveryCargoUnitsViewModel : CoreViewModel(), PageSelectionListene
             }
         }
 
-        updateNotProcessed()
-        updateProcessed()
+        updateData()
     }
 
     fun onClickSave() {
