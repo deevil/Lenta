@@ -201,7 +201,11 @@ class NonExciseAlcoInfoViewModel : CoreViewModel(), OnPositionClickListener {
     }
 
     fun onScanResult(data: String) {
-        if (onClickAdd()) {
+        if (enabledApplyButton.value == true) {
+            if (onClickAdd()) {
+                searchProductDelegate.searchCode(code = data, fromScan = true, isBarCode = true)
+            }
+        } else {
             searchProductDelegate.searchCode(code = data, fromScan = true, isBarCode = true)
         }
     }

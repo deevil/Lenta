@@ -170,6 +170,12 @@ class DataBaseRepo(
         }
     }
 
+    override suspend fun getQualityInfoPGENotSurplus(): List<QualityInfo>? = withContext(Dispatchers.IO) {
+        zmpUtz17V001.getAllQuality()?.toQualityInfoList()?.filter {
+            it.id == "013" && it.code != "2"
+        }
+    }
+
     override suspend fun getFailureReasons(): List<QualityInfo>? = withContext(Dispatchers.IO) {
         zmpUtz17V001.getAllQuality()?.toQualityInfoList()?.filter {
             it.id == "011"
@@ -231,6 +237,7 @@ interface IDataBaseRepo {
     suspend fun getSurplusInfoForPGE(): List<QualityInfo>?
     suspend fun getQualityInfoPGEForDiscrepancy(): List<QualityInfo>?
     suspend fun getQualityInfoPGENotSurplusNotUnderload(): List<QualityInfo>?
+    suspend fun getQualityInfoPGENotSurplus(): List<QualityInfo>?
     suspend fun getFailureReasons(): List<QualityInfo>?
     suspend fun getStatusInfoShipmentRC(): List<QualityInfo>?
     suspend fun getQualityInfoTransportMarriage(): List<QualityInfo>?
