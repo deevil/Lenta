@@ -13,12 +13,10 @@ class ProcessNonExciseAlcoProductPGEService
     lateinit var taskManager: IReceivingTaskManager
 
     private lateinit var productInfo: TaskProductInfo
-    private lateinit var batchInfo: TaskBatchInfo
 
     fun newProcessNonExciseAlcoProductPGEService(productInfo: TaskProductInfo) : ProcessNonExciseAlcoProductPGEService? {
         return if (productInfo.type == ProductType.NonExciseAlcohol){
             this.productInfo = productInfo.copy()
-            this.batchInfo = taskManager.getReceivingTask()!!.taskRepository.getBatches().findBatchOfProduct(productInfo)!!.copy()
             this
         }
         else null
@@ -28,7 +26,7 @@ class ProcessNonExciseAlcoProductPGEService
         return taskManager.getReceivingTask()!!.taskRepository.getProductsDiscrepancies().getCountOfDiscrepanciesOfProduct(productInfo, typeDiscrepancies)
     }
 
-    fun add(count: String, typeDiscrepancies: String, processingUnit: String){
+    fun add(count: String, typeDiscrepancies: String, processingUnit: String, batchInfo: TaskBatchInfo){
         val countAdd = getCountOfDiscrepancies(typeDiscrepancies) + count.toDouble()
         val foundDiscrepancy = taskManager.getReceivingTask()?.taskRepository?.getProductsDiscrepancies()?.findProductDiscrepanciesOfProduct(productInfo)?.findLast {
             it.materialNumber == productInfo.materialNumber && it.typeDiscrepancies == typeDiscrepancies
@@ -60,10 +58,10 @@ class ProcessNonExciseAlcoProductPGEService
         getProducts()?.
         changeProduct(productInfo.copy(isNoEAN = false))
 
-        addBatch(countAdd.toString(), typeDiscrepancies, processingUnit)
+        addBatch(countAdd.toString(), typeDiscrepancies, processingUnit, batchInfo)
     }
 
-    private fun addBatch(count: String, typeDiscrepancies: String, processingUnit: String) {
+    private fun addBatch(count: String, typeDiscrepancies: String, processingUnit: String, batchInfo: TaskBatchInfo) {
         val foundBatchDiscrepancy = taskManager.getReceivingTask()?.taskRepository?.getBatchesDiscrepancies()?.findBatchDiscrepanciesOfBatch(batchInfo)?.findLast {
             it.materialNumber == batchInfo.materialNumber && it.batchNumber == batchInfo.batchNumber && it.typeDiscrepancies == typeDiscrepancies
         }
@@ -94,19 +92,19 @@ class ProcessNonExciseAlcoProductPGEService
         }
     }
 
-    fun addSurplus(count: String, typeDiscrepancies: String, processingUnit: String) { //https://trello.com/c/P9KBZcNB
-        val countAdd = batchInfo.purchaseOrderScope - getQuantityAllCategoryProductPGE()
-        add(countAdd.toString(), typeDiscrepancies, processingUnit)
+    fun addSurplus(count: String, typeDiscrepancies: String, processingUnit: String, batchInfo: TaskBatchInfo) { //https://trello.com/c/P9KBZcNB
+        val countAdd = batchInfo.purchaseOrderScope - getQuantityAllCategoryProductPGE(batchInfo)
+        add(countAdd.toString(), typeDiscrepancies, processingUnit, batchInfo)
         val countAddSurplus = count.toDouble() - countAdd
-        add(countAddSurplus.toString(), "2", processingUnit)
+        add(countAddSurplus.toString(), "2", processingUnit, batchInfo)
     }
 
-    private fun getQuantityAllCategoryProductPGE() : Double {
-        return (taskManager.getReceivingTask()?.taskRepository?.getBatchesDiscrepancies()?.getCountAcceptOfBatchPGE(batchInfo) ?: 0.0 )+
+    private fun getQuantityAllCategoryProductPGE(batchInfo: TaskBatchInfo) : Double {
+        return (taskManager.getReceivingTask()?.taskRepository?.getBatchesDiscrepancies()?.getCountAcceptOfBatchPGE(batchInfo) ?: 0.0 ) +
                 (taskManager.getReceivingTask()?.taskRepository?.getBatchesDiscrepancies()?.getCountRefusalOfBatchPGE(batchInfo) ?: 0.0 )
     }
 
-    fun overlimit(count: Double) : Boolean {
+    fun overlimit(count: Double, batchInfo: TaskBatchInfo) : Boolean {
         return batchInfo.purchaseOrderScope < ((taskManager.getReceivingTask()?.taskRepository?.getBatchesDiscrepancies()?.getCountAcceptOfBatchPGE(batchInfo) ?: 0.0)
                 + (taskManager.getReceivingTask()?.taskRepository?.getBatchesDiscrepancies()?.getCountRefusalOfBatchPGE(batchInfo) ?: 0.0) + count)
 

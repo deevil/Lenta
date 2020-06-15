@@ -143,8 +143,8 @@ class GoodsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKey
                         }
 
                         if (isBatches.value == true && productInfo.type == ProductType.NonExciseAlcohol && !productInfo.isBoxFl && !productInfo.isMarkFl) {
-                            val batchesOfProduct = task.taskRepository.getBatchesDiscrepancies().findBatchDiscrepanciesOfProduct(productInfo.materialNumber)
-                            batchesOfProduct.map {batchDiscrepancies ->
+                            val batchesDiscrepanciesOfProduct = task.taskRepository.getBatchesDiscrepancies().findBatchDiscrepanciesOfProduct(productInfo.materialNumber)
+                            batchesDiscrepanciesOfProduct.map {batchDiscrepancies ->
                                 val batchInfo = task.taskRepository.getBatches().findBatch(
                                         batchNumber = batchDiscrepancies.batchNumber,
                                         materialNumber = batchDiscrepancies.materialNumber,
@@ -155,7 +155,7 @@ class GoodsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKey
                                             number = index + 1,
                                             name = "${productInfo.getMaterialLastSix()} ${productInfo.description}",
                                             nameMaxLines = 1,
-                                            nameBatch = "ДР-${batchInfo?.bottlingDate} // ${getManufacturerName(productInfo)}",
+                                            nameBatch = "ДР-${batchInfo?.bottlingDate} // ${getManufacturerName(batchInfo)}",
                                             visibilityNameBatch = true,
                                             countAcceptWithUom = getAcceptTotalCountWithUomBatch(batchInfo, uom),
                                             countRefusalWithUom = getRefusalTotalCountWithUomBatch(batchInfo, uom),
@@ -212,8 +212,8 @@ class GoodsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKey
                     }
                     .map { productInfo ->
                         if (isBatches.value == true && productInfo.type == ProductType.NonExciseAlcohol && !productInfo.isBoxFl && !productInfo.isMarkFl) {
-                            val batchesOfProduct = task.taskRepository.getBatchesDiscrepancies().findBatchDiscrepanciesOfProduct(productInfo.materialNumber)
-                            batchesOfProduct.map {batchDiscrepancies ->
+                            val batchesDiscrepanciesOfProduct = task.taskRepository.getBatchesDiscrepancies().findBatchDiscrepanciesOfProduct(productInfo.materialNumber)
+                            batchesDiscrepanciesOfProduct.map {batchDiscrepancies ->
                                 val batchInfo = task.taskRepository.getBatches().findBatch(
                                         batchNumber = batchDiscrepancies.batchNumber,
                                         materialNumber = batchDiscrepancies.materialNumber,
@@ -223,7 +223,7 @@ class GoodsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKey
                                         number = index + 1,
                                         name = "${productInfo.getMaterialLastSix()} ${productInfo.description}",
                                         nameMaxLines = 1,
-                                        nameBatch = "ДР-${batchInfo?.bottlingDate} // ${getManufacturerName(productInfo)}",
+                                        nameBatch = "ДР-${batchInfo?.bottlingDate} // ${getManufacturerName(batchInfo)}",
                                         visibilityNameBatch = true,
                                         productInfo = productInfo,
                                         even = index % 2 == 0
@@ -513,9 +513,9 @@ class GoodsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKey
         eanCode.value = eanCode.value ?: "" + digit
     }
 
-    private fun getManufacturerName(productInfo: TaskProductInfo) : String {
+    private fun getManufacturerName(batchInfo: TaskBatchInfo?) : String {
         return repoInMemoryHolder.manufacturers.value?.findLast {manufacture ->
-            manufacture.code == taskManager.getReceivingTask()!!.taskRepository.getBatches().findBatchOfProduct(productInfo)?.egais ?: ""
+            manufacture.code == batchInfo?.egais
         }?.name ?: ""
     }
 

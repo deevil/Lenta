@@ -20,8 +20,12 @@ class MemoryTaskBatchesRepository : ITaskBatchesRepository {
         return batchesInfo.firstOrNull { it.batchNumber == batchNumber && it.materialNumber == materialNumber && it.processingUnitNumber == processingUnitNumber}
     }
 
-    override fun findBatchOfProduct(productInfo: TaskProductInfo): TaskBatchInfo? {
-        return batchesInfo.firstOrNull { it.materialNumber == productInfo.materialNumber}
+    override fun findBatchOfProduct(productInfo: TaskProductInfo): List<TaskBatchInfo>? {
+        return findBatchOfProduct(productInfo.materialNumber)
+    }
+
+    override fun findBatchOfProduct(materialNumber: String): List<TaskBatchInfo>? {
+        return batchesInfo.filter { it.materialNumber == materialNumber}
     }
 
     override fun addBatch(batch: TaskBatchInfo): Boolean {
