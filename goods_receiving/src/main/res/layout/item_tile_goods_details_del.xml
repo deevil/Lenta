@@ -56,6 +56,12 @@
                     android:text="@{item.name}"
                     tools:text="Норма" />
 
+                <TextView
+                    style="@style/CellTextStyle"
+                    app:visibleOrGone="@{item.visibilityNameBatch}"
+                    android:text="@{item.nameBatch}"
+                    tools:text="ДР-01.01.07//Водяра" />
+
             </LinearLayout>
 
             <View style="@style/VerticalDivider" />

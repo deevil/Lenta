@@ -48,6 +48,9 @@ class GoodsDetailsViewModel : CoreViewModel() {
     private val isNonExciseAlcoProduct: MutableLiveData<Boolean> by lazy {
         MutableLiveData(productInfo.value?.type == ProductType.NonExciseAlcohol)
     }
+    private val isBatchProduct: MutableLiveData<Boolean> by lazy {
+        MutableLiveData(productInfo.value!!.type == ProductType.NonExciseAlcohol && !productInfo.value!!.isBoxFl && !productInfo.value!!.isMarkFl)
+    }
     val categoriesSelectionsHelper = SelectionItemsHelper()
     val enabledDelBtn: MutableLiveData<Boolean> = categoriesSelectionsHelper.selectedPositions.map {
         !categoriesSelectionsHelper.selectedPositions.value.isNullOrEmpty()
@@ -73,6 +76,14 @@ class GoodsDetailsViewModel : CoreViewModel() {
 
     }
 
+    fun getTitle(): String {
+        return if (isBatchProduct.value == true) {
+            taskManager.getReceivingTask()?.taskHeader?.caption ?: ""
+        } else {
+            "${productInfo.value!!.getMaterialLastSix()} ${productInfo.value!!.description}"
+        }
+    }
+
     private fun updateProduct() {
         if (isVetProduct.value!! && !productInfo.value!!.isNotEdit) {
             goodsDetails.postValue(
@@ -84,33 +95,58 @@ class GoodsDetailsViewModel : CoreViewModel() {
                         GoodsDetailsCategoriesItem(
                                 number = index + 1,
                                 name = "${reasonRejectionInfo.value?.firstOrNull {it.code == discrepancy.typeDiscrepancies}?.name}",
+                                nameBatch = "",
+                                visibilityNameBatch = false,
                                 quantityWithUom = "${discrepancy.numberDiscrepancies.toDouble().toStringFormatted()} ${uom.value?.name}",
                                 isNormDiscrepancies = isNormDiscrepancies,
                                 typeDiscrepancies = discrepancy.typeDiscrepancies,
                                 materialNumber = productInfo.value?.materialNumber ?: "",
-                                batchNumber = "",
+                                batchDiscrepancies = null,
                                 even = index % 2 == 0
                         )
                     }?.reversed()
             )
         } else {
             goodsDetails.postValue(
-                    taskManager.getReceivingTask()?.taskRepository?.getProductsDiscrepancies()?.findProductDiscrepanciesOfProduct(productInfo.value!!)?.mapIndexed { index, discrepancy ->
-                        val isNormDiscrepancies = when (repoInMemoryHolder.taskList.value?.taskListLoadingMode) {
-                            TaskListLoadingMode.PGE -> discrepancy.typeDiscrepancies == "1" || discrepancy.typeDiscrepancies == "2"
-                            else -> discrepancy.typeDiscrepancies == "1"
-                        }
-                        GoodsDetailsCategoriesItem(
-                                number = index + 1,
-                                name = "${reasonRejectionInfo.value?.firstOrNull {it.code == discrepancy.typeDiscrepancies}?.name}",
-                                quantityWithUom = "${discrepancy.numberDiscrepancies.toDouble().toStringFormatted()} ${uom.value?.name}",
-                                isNormDiscrepancies = isNormDiscrepancies,
-                                typeDiscrepancies = discrepancy.typeDiscrepancies,
-                                materialNumber = productInfo.value?.materialNumber ?: "",
-                                batchNumber = "",
-                                even = index % 2 == 0
-                        )
-                    }?.reversed()
+                    if (isBatchProduct.value == true) {
+                        taskManager.getReceivingTask()?.taskRepository?.getBatchesDiscrepancies()?.findBatchDiscrepanciesOfProduct(productInfo.value!!.materialNumber)?.mapIndexed { index, discrepancy ->
+                            val isNormDiscrepancies = when (repoInMemoryHolder.taskList.value?.taskListLoadingMode) {
+                                TaskListLoadingMode.PGE -> discrepancy.typeDiscrepancies == "1" || discrepancy.typeDiscrepancies == "2"
+                                else -> discrepancy.typeDiscrepancies == "1"
+                            }
+                            GoodsDetailsCategoriesItem(
+                                    number = index + 1,
+                                    name = "${reasonRejectionInfo.value?.firstOrNull {it.code == discrepancy.typeDiscrepancies}?.name}",
+                                    nameBatch = "ДР-${discrepancy.bottlingDate} // ${getManufacturerName(discrepancy.egais)}",
+                                    visibilityNameBatch = true,
+                                    quantityWithUom = "${discrepancy.numberDiscrepancies.toDouble().toStringFormatted()} ${uom.value?.name}",
+                                    isNormDiscrepancies = isNormDiscrepancies,
+                                    typeDiscrepancies = discrepancy.typeDiscrepancies,
+                                    materialNumber = productInfo.value?.materialNumber ?: "",
+                                    batchDiscrepancies = discrepancy,
+                                    even = index % 2 == 0
+                            )
+                        }?.reversed()
+                    } else {
+                        taskManager.getReceivingTask()?.taskRepository?.getProductsDiscrepancies()?.findProductDiscrepanciesOfProduct(productInfo.value!!)?.mapIndexed { index, discrepancy ->
+                            val isNormDiscrepancies = when (repoInMemoryHolder.taskList.value?.taskListLoadingMode) {
+                                TaskListLoadingMode.PGE -> discrepancy.typeDiscrepancies == "1" || discrepancy.typeDiscrepancies == "2"
+                                else -> discrepancy.typeDiscrepancies == "1"
+                            }
+                            GoodsDetailsCategoriesItem(
+                                    number = index + 1,
+                                    name = "${reasonRejectionInfo.value?.firstOrNull {it.code == discrepancy.typeDiscrepancies}?.name}",
+                                    nameBatch = "",
+                                    visibilityNameBatch = false,
+                                    quantityWithUom = "${discrepancy.numberDiscrepancies.toDouble().toStringFormatted()} ${uom.value?.name}",
+                                    isNormDiscrepancies = isNormDiscrepancies,
+                                    typeDiscrepancies = discrepancy.typeDiscrepancies,
+                                    materialNumber = productInfo.value?.materialNumber ?: "",
+                                    batchDiscrepancies = null,
+                                    even = index % 2 == 0
+                            )
+                        }?.reversed()
+                    }
             )
         }
         categoriesSelectionsHelper.clearPositions()
@@ -135,15 +171,24 @@ class GoodsDetailsViewModel : CoreViewModel() {
                     }
 
                     if (isNonExciseAlcoProduct.value!!) {
-                        taskManager
-                                .getReceivingTask()
-                                ?.taskRepository
-                                ?.getBatchesDiscrepancies()
-                                ?.deleteBatchesDiscrepanciesForProductAndDiscrepancies(goodsDetails.value?.get(position)!!.materialNumber, goodsDetails.value?.get(position)!!.typeDiscrepancies)
+                        goodsDetails.value?.get(position)!!.batchDiscrepancies?.let {
+                            taskManager
+                                    .getReceivingTask()
+                                    ?.taskRepository
+                                    ?.getBatchesDiscrepancies()
+                                    ?.deleteBatchDiscrepancies(it)
+                        }
                     }
                 }
             }
         }
         updateProduct()
     }
+
+    private fun getManufacturerName(manufactureCode: String?) : String {
+        return repoInMemoryHolder.manufacturers.value?.findLast {manufacture ->
+            manufacture.code == manufactureCode
+        }?.name ?: ""
+    }
+
 }

@@ -31,7 +31,7 @@ class ProcessNonExciseAlcoProductService
     }
 
     fun add(count: String, typeDiscrepancies: String, batchInfo: TaskBatchInfo){
-        val countAdd = if (typeDiscrepancies == "1") count.toDouble() else getCountOfDiscrepancies(typeDiscrepancies) + count.toDouble()
+        val countAdd = getCountOfDiscrepancies(typeDiscrepancies) + count.toDouble()
         val foundDiscrepancy = taskManager.getReceivingTask()?.taskRepository?.getProductsDiscrepancies()?.findProductDiscrepanciesOfProduct(productInfo)?.findLast {
             it.materialNumber == productInfo.materialNumber && it.typeDiscrepancies == typeDiscrepancies
         }
@@ -66,7 +66,7 @@ class ProcessNonExciseAlcoProductService
     }
 
     private fun addBatch(count: String, typeDiscrepancies: String, batchInfo: TaskBatchInfo){
-        val countAdd = if (typeDiscrepancies == "1") count.toDouble() else getCountOfDiscrepanciesOfBatch(batchInfo, typeDiscrepancies) + count.toDouble()
+        val countAdd = getCountOfDiscrepanciesOfBatch(batchInfo, typeDiscrepancies) + count.toDouble()
         val foundBatchDiscrepancy = taskManager.getReceivingTask()?.taskRepository?.getBatchesDiscrepancies()?.findBatchDiscrepanciesOfBatch(batchInfo)?.findLast {
             it.materialNumber == batchInfo.materialNumber && it.batchNumber == batchInfo.batchNumber && it.typeDiscrepancies == typeDiscrepancies
         }

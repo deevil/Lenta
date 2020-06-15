@@ -214,7 +214,7 @@ class NonExciseAlcoInfoViewModel : CoreViewModel(), OnPositionClickListener {
             false
         } else {
             if (qualityInfo.value?.get(spinQualitySelectedPosition.value ?: 0)?.code == "1") {
-                processNonExciseAlcoProductService.add(acceptTotalCount.value!!.toString(), "1", batchSelected)
+                processNonExciseAlcoProductService.add(count.value!!, "1", batchSelected)
             } else {
                 processNonExciseAlcoProductService.add(count.value!!, reasonRejectionInfo.value!![spinReasonRejectionSelectedPosition.value!!].code, batchSelected)
             }
