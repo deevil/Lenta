@@ -45,9 +45,6 @@ class GoodInfoCreateViewModel : CoreViewModel() {
     @Inject
     lateinit var database: IDatabaseRepository
 
-    @Inject
-    lateinit var alcoCodeNetRequest: AlcoCodeNetRequest
-
 
     /**
     Переменные
@@ -477,9 +474,10 @@ class GoodInfoCreateViewModel : CoreViewModel() {
                         if (status == MarkStatus.OK.code || status == MarkStatus.BAD.code) {
                             addMarkInfo(number, markInfoResult)
                         } else if (status == MarkStatus.UNKNOWN.code) {
-                            loadAlcoCodeInfo(number)
 
-                            /* if (isCorrectPartAlcoCode(markInfoResult)) {
+                            // todo Брать данные из 22 справочника с алкокодами
+
+                             if (isCorrectPartAlcoCode(markInfoResult)) {
                                  if (isAlcoCodeBelongToCurrentGood(markInfoResult)) {
                                      addPartInfo(number, markInfoResult)
                                  } else {
@@ -487,7 +485,7 @@ class GoodInfoCreateViewModel : CoreViewModel() {
                                  }
                              } else {
                                  navigator.openAlertScreen("Неизвестный алкокод")
-                             }*/
+                             }
                         } else {
                             navigator.openAlertScreen(markInfoResult.statusDescription)
                         }
@@ -497,31 +495,17 @@ class GoodInfoCreateViewModel : CoreViewModel() {
         }
     }
 
-    private fun loadAlcoCodeInfo(number: String) {
-        viewModelScope.launch {
-            navigator.showProgressLoadingData()
-
-            alcoCodeNetRequest(null)
-                    .also { navigator.hideProgress() }
-                    .either(::handleAlcoCodeLoadFailure) { alcoCodeList ->
-
-                    }
-        }
-    }
-
-    private fun handleAlcoCodeLoadFailure(failure: Failure) {
-        Logg.d { "--> handleAlcoCodeLoadFailure: $failure" }
-        navigator.openAlertScreen(failure)
-    }
+    private fun isCorrectPartAlcoCode(markInfoResult: MarkInfoResult): Boolean {
 
 
-    /*private fun isCorrectPartAlcoCode(markInfoResult: MarkInfoResult): Boolean {
-
+        return false
     }
 
     private fun isAlcoCodeBelongToCurrentGood(markInfoResult: MarkInfoResult): Boolean {
 
-    }*/
+
+        return false
+    }
 
     private fun handleMarkLoadFailure(failure: Failure) {
         Logg.d { "--> handleMarkLoadFailure: $failure" }
