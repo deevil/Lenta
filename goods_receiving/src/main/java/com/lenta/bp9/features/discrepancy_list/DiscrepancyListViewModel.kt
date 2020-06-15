@@ -87,7 +87,7 @@ class DiscrepancyListViewModel : CoreViewModel(), PageSelectionListener {
     }
 
     val enabledSaveButton: MutableLiveData<Boolean> = countProcessed.map {
-        taskManager.getReceivingTask()!!.taskRepository.getProducts().getProducts().size <= (it?.size ?: 0)
+        it.isNullOrEmpty()
     }
 
     val visibilityBatchesButton: MutableLiveData<Boolean> by lazy {

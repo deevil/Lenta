@@ -259,13 +259,19 @@ class SearchProductDelegate @Inject constructor(
                     }
                 }
                 ProductType.NonExciseAlcohol -> { //не акцизный алкоголь ППП https://trello.com/c/rmn2WFMD; ПГЕ https://trello.com/c/P9KBZcNB;
-                    when (repoInMemoryHolder.taskList.value?.taskListLoadingMode) {
-                        TaskListLoadingMode.Receiving -> screenNavigator.openNonExciseAlcoInfoReceivingScreen(productInfo = taskProductInfo, isDiscrepancy = isDiscrepancy)
-                        TaskListLoadingMode.PGE -> screenNavigator.openNonExciseAlcoInfoPGEScreen(productInfo = taskProductInfo, isDiscrepancy = isDiscrepancy)
-                        TaskListLoadingMode.Shipment -> screenNavigator.openNotImplementedScreenAlert("Информация о не акцизном алкоголе")
-                        else -> screenNavigator.openAlertUnknownTaskTypeScreen() //сообщение о неизвестном типе задания
+                    when {
+                        taskProductInfo.isSet -> {
+                            screenNavigator.openNotImplementedScreenAlert("Информация о наборе")
+                        }
+                        else -> {
+                            when (repoInMemoryHolder.taskList.value?.taskListLoadingMode) {
+                                TaskListLoadingMode.Receiving -> screenNavigator.openNonExciseAlcoInfoReceivingScreen(productInfo = taskProductInfo, isDiscrepancy = isDiscrepancy)
+                                TaskListLoadingMode.PGE -> screenNavigator.openNonExciseAlcoInfoPGEScreen(productInfo = taskProductInfo, isDiscrepancy = isDiscrepancy)
+                                TaskListLoadingMode.Shipment -> screenNavigator.openNotImplementedScreenAlert("Информация о не акцизном алкоголе")
+                                else -> screenNavigator.openAlertUnknownTaskTypeScreen() //сообщение о неизвестном типе задания
+                            }
+                        }
                     }
-
                 }
                 else -> {
                     screenNavigator.openAlertUnknownGoodsTypeScreen() //сообщение о неизвестном типе товара
