@@ -2,13 +2,13 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context=".features.goods_information.non_excise_alco_receiving.NonExciseAlcoInfoFragment">
+    tools:context=".features.goods_information.non_excise_alco_pge.NonExciseAlcoInfoPGEFragment">
 
     <data>
 
         <variable
             name="vm"
-            type="com.lenta.bp9.features.goods_information.non_excise_alco_receiving.NonExciseAlcoInfoViewModel" />
+            type="com.lenta.bp9.features.goods_information.non_excise_alco_pge.NonExciseAlcoInfoPGEViewModel" />
 
     </data>
 
@@ -98,12 +98,11 @@
             android:layout_marginEnd="8dp"
             android:ellipsize="end"
             android:maxLines="1"
-            android:text="@{vm.tvAccept}"
+            android:text="@string/accept_txt"
             app:layout_constraintBottom_toBottomOf="@+id/tv_accept_val"
             app:layout_constraintEnd_toStartOf="@+id/div_vert"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/tv_accept_val"
-            tools:text="Принять (кор=3 шт)" />
+            app:layout_constraintTop_toTopOf="@+id/tv_accept_val" />
 
         <TextView
             android:id="@+id/tv_accept_val"
@@ -257,10 +256,9 @@
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/ConstraintDefect"
+            android:id="@+id/ConstraintProcessingUnit"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:visibility="@{vm.isDefect}"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/ConstraintBottlingDate">
@@ -273,21 +271,21 @@
                 android:background="@color/color_divider"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/spinner_reject_rejection" />
+                app:layout_constraintTop_toBottomOf="@+id/spinner_processing_unit" />
 
             <com.lenta.shared.view.ClickableSpinner
-                android:id="@+id/spinner_reject_rejection"
+                android:id="@+id/spinner_processing_unit"
                 android:layout_width="0dp"
                 android:layout_height="32dp"
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="8dp"
                 android:layout_marginEnd="8dp"
-                app:items="@{vm.spinReasonRejection}"
+                app:items="@{vm.spinProcessingUnit}"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:onPositionClickListener="@{vm}"
-                app:position="@{vm.spinReasonRejectionSelectedPosition}"
+                app:position="@{vm.spinProcessingUnitSelectedPosition}"
                 tools:entries="@array/test_list" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>

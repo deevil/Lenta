@@ -25,6 +25,7 @@ import com.lenta.bp9.features.goods_information.excise_alco_receiving.excise_alc
 import com.lenta.bp9.features.goods_information.general.GoodsInfoFragment
 import com.lenta.bp9.features.goods_information.general_opp.GoodsInfoShipmentPPFragment
 import com.lenta.bp9.features.goods_information.mercury.GoodsMercuryInfoFragment
+import com.lenta.bp9.features.goods_information.non_excise_alco_pge.NonExciseAlcoInfoPGEFragment
 import com.lenta.bp9.features.goods_information.non_excise_alco_receiving.NonExciseAlcoInfoFragment
 import com.lenta.bp9.features.goods_list.GoodsListFragment
 import com.lenta.bp9.features.input_outgoing_fillings.InputOutgoingFillingsFragment
@@ -1446,6 +1447,23 @@ class ScreenNavigator(
         }
     }
 
+    override fun openNonExciseAlcoInfoPGEScreen(productInfo: TaskProductInfo, isDiscrepancy: Boolean) {
+        runOrPostpone {
+            getFragmentStack()?.push(NonExciseAlcoInfoPGEFragment.create(productInfo, isDiscrepancy))
+        }
+    }
+
+    override fun openExceededPlannedQuantityBatchPGEDialog(nextCallbackFunc: () -> Unit) {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    message = context.getString(R.string.exceeded_planned_quantity_batch_pge_dialog),
+                    codeConfirmForRight = backFragmentResultHelper.setFuncForResult(nextCallbackFunc),
+                    iconRes = R.drawable.ic_question_yellow_80dp,
+                    pageNumber = "97",
+                    rightButtonDecorationInfo = ButtonDecorationInfo.nextAlternate))
+        }
+    }
+
     private fun getFragmentStack() = foregroundActivityProvider.getActivity()?.fragmentStack
 }
 
@@ -1609,4 +1627,6 @@ interface IScreenNavigator : ICoreNavigator {
     fun openExciseAlcoStampAccInfoPGEScreen(productInfo: TaskProductInfo)
     fun openScannedStampListedInCargoUnitDialog(cargoUnitNumber: String, nextCallbackFunc: () -> Unit)
     fun openScannedStampNotIncludedInDeliveryDialog(nextCallbackFunc: () -> Unit)
+    fun openNonExciseAlcoInfoPGEScreen(productInfo: TaskProductInfo, isDiscrepancy: Boolean)
+    fun openExceededPlannedQuantityBatchPGEDialog(nextCallbackFunc: () -> Unit)
 }

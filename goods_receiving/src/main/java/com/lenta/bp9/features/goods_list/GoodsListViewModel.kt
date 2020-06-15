@@ -142,7 +142,7 @@ class GoodsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKey
                             productInfo.uom
                         }
 
-                        if (isBatches.value == true && !productInfo.isBoxFl && !productInfo.isMarkFl) {
+                        if (isBatches.value == true && productInfo.type == ProductType.NonExciseAlcohol && !productInfo.isBoxFl && !productInfo.isMarkFl) {
                             val batchesOfProduct = task.taskRepository.getBatchesDiscrepancies().findBatchDiscrepanciesOfProduct(productInfo.materialNumber)
                             batchesOfProduct.map {batchDiscrepancies ->
                                 val batchInfo = task.taskRepository.getBatches().findBatch(
@@ -211,7 +211,7 @@ class GoodsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKey
                         sorted.materialNumber
                     }
                     .map { productInfo ->
-                        if (isBatches.value == true && !productInfo.isBoxFl && !productInfo.isMarkFl) {
+                        if (isBatches.value == true && productInfo.type == ProductType.NonExciseAlcohol && !productInfo.isBoxFl && !productInfo.isMarkFl) {
                             val batchesOfProduct = task.taskRepository.getBatchesDiscrepancies().findBatchDiscrepanciesOfProduct(productInfo.materialNumber)
                             batchesOfProduct.map {batchDiscrepancies ->
                                 val batchInfo = task.taskRepository.getBatches().findBatch(
