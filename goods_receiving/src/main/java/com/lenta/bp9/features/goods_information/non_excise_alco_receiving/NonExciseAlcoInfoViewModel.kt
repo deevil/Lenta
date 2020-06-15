@@ -78,23 +78,29 @@ class NonExciseAlcoInfoViewModel : CoreViewModel(), OnPositionClickListener {
     val count: MutableLiveData<String> = MutableLiveData("0")
     private val countValue: MutableLiveData<Double> = count.map { it?.toDoubleOrNull() ?: 0.0 }
 
-    val acceptTotalCount: MutableLiveData<Double> = countValue.combineLatest(spinQualitySelectedPosition).combineLatest(spinManufacturersSelectedPosition).map{
-            if (qualityInfo.value?.get(it!!.first.second)?.code == "1") {
-                (it?.first?.first ?: 0.0).plus(
-                        batchInfo.value?.get(it!!.second)?.let {batch ->
-                            taskManager.getReceivingTask()?.taskRepository?.getBatchesDiscrepancies()?.getCountAcceptOfBatchPGE(batch)
+    val acceptTotalCount: MutableLiveData<Double> = countValue.combineLatest(spinQualitySelectedPosition).map{
+            if (qualityInfo.value?.get(it!!.second)?.code == "1") {
+                (it?.first ?: 0.0).plus(
+                        batchInfo.value?.map {batch ->
+                            taskManager.getReceivingTask()?.taskRepository?.getBatchesDiscrepancies()?.getCountAcceptOfBatch(batch)
+                        }?.sumByDouble {count ->
+                            count ?: 0.0
                         } ?: 0.0
                 )
             } else {
-                batchInfo.value?.get(it!!.second)?.let {batch ->
-                    taskManager.getReceivingTask()?.taskRepository?.getBatchesDiscrepancies()?.getCountAcceptOfBatchPGE(batch)
+                batchInfo.value?.map {batch ->
+                    taskManager.getReceivingTask()?.taskRepository?.getBatchesDiscrepancies()?.getCountAcceptOfBatch(batch)
+                }?.sumByDouble {count ->
+                    count ?: 0.0
                 } ?: 0.0
             }
     }
 
     val acceptTotalCountWithUom: MutableLiveData<String> = acceptTotalCount.map {
-        val countAccept = batchInfo.value?.get(spinManufacturersSelectedPosition.value!!)?.let {batch ->
-            taskManager.getReceivingTask()?.taskRepository?.getBatchesDiscrepancies()?.getCountAcceptOfBatchPGE(batch)
+        val countAccept = batchInfo.value?.map {batch ->
+            taskManager.getReceivingTask()?.taskRepository?.getBatchesDiscrepancies()?.getCountAcceptOfBatch(batch)
+        }?.sumByDouble {count ->
+            count ?: 0.0
         } ?: 0.0
         when {
             (it ?: 0.0) > 0.0 -> {
@@ -106,23 +112,29 @@ class NonExciseAlcoInfoViewModel : CoreViewModel(), OnPositionClickListener {
         }
     }
 
-    val refusalTotalCount: MutableLiveData<Double> = countValue.combineLatest(spinQualitySelectedPosition).combineLatest(spinManufacturersSelectedPosition).map{
-                    if (qualityInfo.value?.get(it?.first?.second ?: 0)?.code != "1") {
-                        (it?.first?.first ?: 0.0).plus(
-                                batchInfo.value?.get(it!!.second)?.let {batch ->
-                                    taskManager.getReceivingTask()?.taskRepository?.getBatchesDiscrepancies()?.getCountRefusalOfBatchPGE(batch)
+    val refusalTotalCount: MutableLiveData<Double> = countValue.combineLatest(spinQualitySelectedPosition).map{
+                    if (qualityInfo.value?.get(it?.second ?: 0)?.code != "1") {
+                        (it?.first ?: 0.0).plus(
+                                batchInfo.value?.map {batch ->
+                                    taskManager.getReceivingTask()?.taskRepository?.getBatchesDiscrepancies()?.getCountRefusalOfBatch(batch)
+                                }?.sumByDouble {count ->
+                                    count ?: 0.0
                                 } ?: 0.0
                         )
                     } else {
-                        batchInfo.value?.get(it!!.second)?.let {batch ->
-                            taskManager.getReceivingTask()?.taskRepository?.getBatchesDiscrepancies()?.getCountRefusalOfBatchPGE(batch)
+                        batchInfo.value?.map {batch ->
+                            taskManager.getReceivingTask()?.taskRepository?.getBatchesDiscrepancies()?.getCountRefusalOfBatch(batch)
+                        }?.sumByDouble {count ->
+                            count ?: 0.0
                         } ?: 0.0
                     }
     }
 
     val refusalTotalCountWithUom: MutableLiveData<String> = refusalTotalCount.map {
-        val countRefusal = batchInfo.value?.get(spinManufacturersSelectedPosition.value!!)?.let {batch ->
-            taskManager.getReceivingTask()?.taskRepository?.getBatchesDiscrepancies()?.getCountRefusalOfBatchPGE(batch)
+        val countRefusal = batchInfo.value?.map {batch ->
+            taskManager.getReceivingTask()?.taskRepository?.getBatchesDiscrepancies()?.getCountRefusalOfBatch(batch)
+        }?.sumByDouble {count ->
+            count ?: 0.0
         } ?: 0.0
 
         if ((it ?: 0.0) > 0.0) {
@@ -202,7 +214,7 @@ class NonExciseAlcoInfoViewModel : CoreViewModel(), OnPositionClickListener {
             false
         } else {
             if (qualityInfo.value?.get(spinQualitySelectedPosition.value ?: 0)?.code == "1") {
-                processNonExciseAlcoProductService.add(acceptTotalCount.value!!.toString(), "1", batchSelected)
+                processNonExciseAlcoProductService.add(count.value!!, "1", batchSelected)
             } else {
                 processNonExciseAlcoProductService.add(count.value!!, reasonRejectionInfo.value!![spinReasonRejectionSelectedPosition.value!!].code, batchSelected)
             }

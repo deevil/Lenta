@@ -26,8 +26,12 @@ class ProcessNonExciseAlcoProductService
         return taskManager.getReceivingTask()!!.taskRepository.getProductsDiscrepancies().getCountOfDiscrepanciesOfProduct(productInfo, typeDiscrepancies)
     }
 
+    private fun getCountOfDiscrepanciesOfBatch(batchInfo: TaskBatchInfo, typeDiscrepancies: String) : Double {
+        return taskManager.getReceivingTask()!!.taskRepository.getBatchesDiscrepancies().getCountOfDiscrepanciesOfBatch(batchInfo, typeDiscrepancies)
+    }
+
     fun add(count: String, typeDiscrepancies: String, batchInfo: TaskBatchInfo){
-        val countAdd = if (typeDiscrepancies == "1") count.toDouble() else getCountOfDiscrepancies(typeDiscrepancies) + count.toDouble()
+        val countAdd = getCountOfDiscrepancies(typeDiscrepancies) + count.toDouble()
         val foundDiscrepancy = taskManager.getReceivingTask()?.taskRepository?.getProductsDiscrepancies()?.findProductDiscrepanciesOfProduct(productInfo)?.findLast {
             it.materialNumber == productInfo.materialNumber && it.typeDiscrepancies == typeDiscrepancies
         }
@@ -58,10 +62,11 @@ class ProcessNonExciseAlcoProductService
         getProducts()?.
         changeProduct(productInfo.copy(isNoEAN = false))
 
-        addBatch(countAdd.toString(), typeDiscrepancies, batchInfo)
+        addBatch(count, typeDiscrepancies, batchInfo)
     }
 
     private fun addBatch(count: String, typeDiscrepancies: String, batchInfo: TaskBatchInfo){
+        val countAdd = getCountOfDiscrepanciesOfBatch(batchInfo, typeDiscrepancies) + count.toDouble()
         val foundBatchDiscrepancy = taskManager.getReceivingTask()?.taskRepository?.getBatchesDiscrepancies()?.findBatchDiscrepanciesOfBatch(batchInfo)?.findLast {
             it.materialNumber == batchInfo.materialNumber && it.batchNumber == batchInfo.batchNumber && it.typeDiscrepancies == typeDiscrepancies
         }
@@ -74,7 +79,7 @@ class ProcessNonExciseAlcoProductService
                     materialNumber = batchInfo.materialNumber,
                     processingUnitNumber = batchInfo.processingUnitNumber,
                     batchNumber = batchInfo.batchNumber,
-                    numberDiscrepancies = count,
+                    numberDiscrepancies = countAdd.toString(),
                     uom = productInfo.uom,
                     typeDiscrepancies = typeDiscrepancies,
                     isNotEdit = false,
@@ -88,7 +93,7 @@ class ProcessNonExciseAlcoProductService
             taskManager.getReceivingTask()?.
             taskRepository?.
             getBatchesDiscrepancies()?.
-            changeBatchDiscrepancy(foundBatchDiscrepancy.copy(numberDiscrepancies = count))
+            changeBatchDiscrepancy(foundBatchDiscrepancy.copy(numberDiscrepancies = countAdd.toString()))
         }
     }
 

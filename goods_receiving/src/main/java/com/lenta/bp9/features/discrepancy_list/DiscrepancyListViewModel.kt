@@ -19,6 +19,7 @@ import com.lenta.shared.exception.Failure
 import com.lenta.shared.fmp.resources.dao_ext.getProductInfoByMaterial
 import com.lenta.shared.fmp.resources.slow.ZfmpUtz48V001
 import com.lenta.shared.models.core.ProductType
+import com.lenta.shared.models.core.Uom
 import com.lenta.shared.models.core.getProductType
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.requests.combined.scan_info.ScanInfoResult
@@ -150,22 +151,6 @@ class DiscrepancyListViewModel : CoreViewModel(), PageSelectionListener {
                         } else {
                             productInfo.uom
                         }
-                        val quantityNotProcessedProduct = if (task.taskHeader.taskType == TaskType.RecalculationCargoUnit) {
-                            val processingUnitsOfProduct = task.taskRepository.getProducts().getProcessingUnitsOfProduct(productInfo.materialNumber)
-                            if (processingUnitsOfProduct.size > 1) { //если у товара две ЕО
-                                val countOrderQuantity = processingUnitsOfProduct.map {unitInfo ->
-                                    unitInfo.orderQuantity.toDouble()
-                                }.sumByDouble {
-                                    it
-                                }
-                                task.taskRepository.getProductsDiscrepancies().getCountProductNotProcessedOfProductPGEOfProcessingUnits(productInfo, countOrderQuantity).toStringFormatted()
-                            } else {
-                                task.taskRepository.getProductsDiscrepancies().getCountProductNotProcessedOfProductPGE(productInfo).toStringFormatted()
-                            }
-                        } else {
-                            task.taskRepository.getProductsDiscrepancies().getCountProductNotProcessedOfProduct(productInfo).toStringFormatted()
-
-                        }
                         if (isBatches.value == true && productInfo.type == ProductType.NonExciseAlcohol && !productInfo.isBoxFl && !productInfo.isMarkFl) {
                             val batchesInfoOfProduct = task.taskRepository.getBatches().findBatchOfProduct(productInfo)
                             batchesInfoOfProduct?.map {batch ->
@@ -185,7 +170,6 @@ class DiscrepancyListViewModel : CoreViewModel(), PageSelectionListener {
                                                 countRefusalWithUom = "",
                                                 quantityNotProcessedWithUom = "? $quantityNotProcessedProductBatch ${uom.name}",
                                                 discrepanciesName = "",
-                                                isNormDiscrepancies = false,
                                                 productInfo = productInfo,
                                                 productDiscrepancies = null,
                                                 batchInfo = null,
@@ -197,6 +181,22 @@ class DiscrepancyListViewModel : CoreViewModel(), PageSelectionListener {
                                 index += 1
                             }
                         } else {
+                            val quantityNotProcessedProduct = if (task.taskHeader.taskType == TaskType.RecalculationCargoUnit) {
+                                val processingUnitsOfProduct = task.taskRepository.getProducts().getProcessingUnitsOfProduct(productInfo.materialNumber)
+                                if (processingUnitsOfProduct.size > 1) { //если у товара две ЕО
+                                    val countOrderQuantity = processingUnitsOfProduct.map {unitInfo ->
+                                        unitInfo.orderQuantity.toDouble()
+                                    }.sumByDouble {
+                                        it
+                                    }
+                                    task.taskRepository.getProductsDiscrepancies().getCountProductNotProcessedOfProductPGEOfProcessingUnits(productInfo, countOrderQuantity).toStringFormatted()
+                                } else {
+                                    task.taskRepository.getProductsDiscrepancies().getCountProductNotProcessedOfProductPGE(productInfo).toStringFormatted()
+                                }
+                            } else {
+                                task.taskRepository.getProductsDiscrepancies().getCountProductNotProcessedOfProduct(productInfo).toStringFormatted()
+
+                            }
                             arrayNotCounted.add(
                                     GoodsDiscrepancyItem(
                                             number = index + 1,
@@ -207,7 +207,6 @@ class DiscrepancyListViewModel : CoreViewModel(), PageSelectionListener {
                                             countRefusalWithUom = "",
                                             quantityNotProcessedWithUom = "? $quantityNotProcessedProduct ${uom.name}",
                                             discrepanciesName = "",
-                                            isNormDiscrepancies = false,
                                             productInfo = productInfo,
                                             productDiscrepancies = null,
                                             batchInfo = null,
@@ -234,7 +233,11 @@ class DiscrepancyListViewModel : CoreViewModel(), PageSelectionListener {
         taskManager.getReceivingTask()?.let { task ->
             task.taskRepository.getProductsDiscrepancies().getProductsDiscrepancies()
                     .filter {
-                        it.typeDiscrepancies != "1"
+                        if (repoInMemoryHolder.taskList.value?.taskListLoadingMode == TaskListLoadingMode.PGE) {
+                            !(it.typeDiscrepancies == "1" || it.typeDiscrepancies == "2")
+                        } else {
+                            it.typeDiscrepancies != "1"
+                        }
                     }
                     .sortedByDescending {
                         it.materialNumber
@@ -249,27 +252,26 @@ class DiscrepancyListViewModel : CoreViewModel(), PageSelectionListener {
                         val discrepanciesName = qualityInfo.value?.findLast {
                             it.code == productDiscrepancies.typeDiscrepancies
                         }?.name
-                        val isNormDiscrepancies = when (repoInMemoryHolder.taskList.value?.taskListLoadingMode) {
-                            TaskListLoadingMode.PGE -> productDiscrepancies.typeDiscrepancies == "1" || productDiscrepancies.typeDiscrepancies == "2"
-                            else -> productDiscrepancies.typeDiscrepancies == "1"
-                        }
                         if (isBatches.value == true && productInfo?.type == ProductType.NonExciseAlcohol && !productInfo.isBoxFl && !productInfo.isMarkFl) {
                             if (addeBatchProduct != productInfo.materialNumber) { //показываем партии без разбивки по расхождениям
                                 addeBatchProduct = productInfo.materialNumber
-                                val batchesInfoOfProduct = task.taskRepository.getBatches().findBatchOfProduct(productInfo)
+                                val batchesInfoOfProduct = task.taskRepository.getBatches().findBatchOfProduct(productInfo)?.filter {findBatch ->
+                                    if (repoInMemoryHolder.taskList.value?.taskListLoadingMode == TaskListLoadingMode.PGE) {
+                                        task.taskRepository.getBatchesDiscrepancies().findBatchDiscrepanciesOfBatch(findBatch).filter {findBatchDiscrPGE ->
+                                            !(findBatchDiscrPGE.typeDiscrepancies == "1" || findBatchDiscrPGE.typeDiscrepancies == "2")
+                                        }.any()
+                                    } else {
+                                        task.taskRepository.getBatchesDiscrepancies().findBatchDiscrepanciesOfBatch(findBatch).filter {findBatchDiscr ->
+                                            findBatchDiscr.typeDiscrepancies != "1"
+                                        }.any()
+                                    }
+                                }
                                 batchesInfoOfProduct?.map {batch ->
                                     val batchInfo = task.taskRepository.getBatches().findBatch(
                                             batchNumber = batch.batchNumber,
                                             materialNumber = batch.materialNumber,
                                             processingUnitNumber = batch.processingUnitNumber
                                     )
-                                    val countRefusal = task.taskRepository.getBatchesDiscrepancies().findBatchDiscrepanciesOfBatch(batch).filter {fIt ->
-                                        fIt.typeDiscrepancies != "1"
-                                    }.map {mIt ->
-                                        mIt.numberDiscrepancies
-                                    }.sumByDouble {
-                                        it.toDouble()
-                                    }
                                     arrayCounted.add(
                                             GoodsDiscrepancyItem(
                                                     number = index + 1,
@@ -277,10 +279,9 @@ class DiscrepancyListViewModel : CoreViewModel(), PageSelectionListener {
                                                     nameMaxLines = 1,
                                                     nameBatch = "",
                                                     visibilityNameBatch = true,
-                                                    countRefusalWithUom = "${countRefusal.toStringFormatted()} ${uom?.name}",
+                                                    countRefusalWithUom = getRefusalTotalCountWithUomBatch(batchInfo, uom),
                                                     quantityNotProcessedWithUom = "",
                                                     discrepanciesName = "ДР-${batchInfo?.bottlingDate} // ${getManufacturerName(batchInfo)}",
-                                                    isNormDiscrepancies = isNormDiscrepancies,
                                                     productInfo = productInfo,
                                                     productDiscrepancies = productDiscrepancies,
                                                     batchInfo = null,
@@ -300,10 +301,9 @@ class DiscrepancyListViewModel : CoreViewModel(), PageSelectionListener {
                                             nameMaxLines = 2,
                                             nameBatch = "",
                                             visibilityNameBatch = false,
-                                            countRefusalWithUom = "${productDiscrepancies.numberDiscrepancies.toDouble().toStringFormatted()} ${uom?.name}",
+                                            countRefusalWithUom = "- ${productDiscrepancies.numberDiscrepancies.toDouble().toStringFormatted()} ${uom?.name}",
                                             quantityNotProcessedWithUom = "",
                                             discrepanciesName = discrepanciesName ?: "",
-                                            isNormDiscrepancies = isNormDiscrepancies,
                                             productInfo = productInfo,
                                             productDiscrepancies = productDiscrepancies,
                                             batchInfo = null,
@@ -344,7 +344,6 @@ class DiscrepancyListViewModel : CoreViewModel(), PageSelectionListener {
                                         countRefusalWithUom = "",
                                         quantityNotProcessedWithUom = "",
                                         discrepanciesName = "",
-                                        isNormDiscrepancies = false,
                                         productInfo = productInfo,
                                         productDiscrepancies = null,
                                         batchInfo = null,
@@ -496,6 +495,17 @@ class DiscrepancyListViewModel : CoreViewModel(), PageSelectionListener {
         return repoInMemoryHolder.manufacturers.value?.findLast {manufacture ->
             manufacture.code == batchInfo?.egais
         }?.name ?: ""
+    }
+
+    private fun getRefusalTotalCountWithUomBatch(batchInfo: TaskBatchInfo?, uom: Uom?) : String {
+        val refusalTotalCountBatch = batchInfo?.let {
+            if (taskManager.getReceivingTask()?.taskHeader?.taskType == TaskType.RecalculationCargoUnit) {
+                taskManager.getReceivingTask()?.taskRepository?.getBatchesDiscrepancies()?.getCountRefusalOfBatchPGE(batchInfo)
+            } else {
+                taskManager.getReceivingTask()?.taskRepository?.getBatchesDiscrepancies()?.getCountRefusalOfBatch(batchInfo)
+            }
+        }
+        return "- ${refusalTotalCountBatch.toStringFormatted()} ${uom?.name}"
     }
 
 }

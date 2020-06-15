@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.lenta.bp9.R
+import com.lenta.bp9.features.discrepancy_list.GoodsDiscrepancyItem
 import com.lenta.bp9.features.loading.tasks.TaskCardMode
 import com.lenta.bp9.model.task.*
 import com.lenta.bp9.platform.navigation.IScreenNavigator
@@ -121,6 +122,7 @@ class GoodsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKey
     private fun updateListCounted() {
         val arrayCounted: ArrayList<ListCountedItem> = ArrayList()
         var index = 0
+        var addeBatchProduct = ""
         taskManager.getReceivingTask()?.let {task ->
             task.getProcessedProducts()
                     .filter {
@@ -143,28 +145,31 @@ class GoodsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKey
                         }
 
                         if (isBatches.value == true && productInfo.type == ProductType.NonExciseAlcohol && !productInfo.isBoxFl && !productInfo.isMarkFl) {
-                            val batchesDiscrepanciesOfProduct = task.taskRepository.getBatchesDiscrepancies().findBatchDiscrepanciesOfProduct(productInfo.materialNumber)
-                            batchesDiscrepanciesOfProduct.map {batchDiscrepancies ->
-                                val batchInfo = task.taskRepository.getBatches().findBatch(
-                                        batchNumber = batchDiscrepancies.batchNumber,
-                                        materialNumber = batchDiscrepancies.materialNumber,
-                                        processingUnitNumber = batchDiscrepancies.processingUnitNumber
-                                )
-                                arrayCounted.add(
-                                        ListCountedItem(
-                                            number = index + 1,
-                                            name = "${productInfo.getMaterialLastSix()} ${productInfo.description}",
-                                            nameMaxLines = 1,
-                                            nameBatch = "ДР-${batchInfo?.bottlingDate} // ${getManufacturerName(batchInfo)}",
-                                            visibilityNameBatch = true,
-                                            countAcceptWithUom = getAcceptTotalCountWithUomBatch(batchInfo, uom),
-                                            countRefusalWithUom = getRefusalTotalCountWithUomBatch(batchInfo, uom),
-                                            isNotEdit = productInfo.isNotEdit,
-                                            productInfo = productInfo,
-                                            even = index % 2 == 0
-                                        )
-                                )
-                                index += 1
+                            if (addeBatchProduct != productInfo.materialNumber) { //показываем партии без разбивки по расхождениям
+                                addeBatchProduct = productInfo.materialNumber
+                                val batchesInfoOfProduct = task.taskRepository.getBatches().findBatchOfProduct(productInfo)
+                                batchesInfoOfProduct?.map {batch ->
+                                    val batchInfo = task.taskRepository.getBatches().findBatch(
+                                            batchNumber = batch.batchNumber,
+                                            materialNumber = batch.materialNumber,
+                                            processingUnitNumber = batch.processingUnitNumber
+                                    )
+                                    arrayCounted.add(
+                                            ListCountedItem(
+                                                    number = index + 1,
+                                                    name = "${productInfo.getMaterialLastSix()} ${productInfo.description}",
+                                                    nameMaxLines = 1,
+                                                    nameBatch = "ДР-${batchInfo?.bottlingDate} // ${getManufacturerName(batchInfo)}",
+                                                    visibilityNameBatch = true,
+                                                    countAcceptWithUom = getAcceptTotalCountWithUomBatch(batchInfo, uom),
+                                                    countRefusalWithUom = getRefusalTotalCountWithUomBatch(batchInfo, uom),
+                                                    isNotEdit = productInfo.isNotEdit,
+                                                    productInfo = productInfo,
+                                                    even = index % 2 == 0
+                                            )
+                                    )
+                                    index += 1
+                                }
                             }
                         } else {
                             arrayCounted.add(

@@ -26,7 +26,7 @@ interface ITaskProductsDiscrepanciesRepository {
     fun getCountRefusalOfProductPGE(product: TaskProductInfo): Double
     fun getCountProductNotProcessedOfProductPGE(product: TaskProductInfo): Double
     fun getCountProductNotProcessedOfProductPGEOfProcessingUnits(product: TaskProductInfo, orderQuantity: Double) : Double
-    fun getCountOfDiscrepanciesOfProduct(product: TaskProductInfo, typeDiscrepancies: String?): Double
+    fun getCountOfDiscrepanciesOfProduct(product: TaskProductInfo, typeDiscrepancies: String): Double
     fun getQuantityDiscrepanciesOfProduct(product: TaskProductInfo): Int
     fun getAllCountDiscrepanciesOfProduct(product: TaskProductInfo): Double
     fun clear()

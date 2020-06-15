@@ -71,8 +71,8 @@
                 <TextView
                     style="@style/CellTextStyle"
                     android:layout_width="wrap_content"
-                    android:text='@{item.isNormDiscrepancies == true ? "+ " + item.countRefusalWithUom : "- " + item.countRefusalWithUom }'
-                    android:textColor='@{item.isNormDiscrepancies == true ? @color/colorAccent : @color/color_pressed_red}'
+                    android:text='@{item.countRefusalWithUom}'
+                    android:textColor="@color/color_pressed_red"
                     tools:text="- 10 шт" />
 
             </LinearLayout>

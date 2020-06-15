@@ -71,7 +71,7 @@ class MemoryTaskBatchesDiscrepanciesRepository : ITaskBatchesDiscrepanciesReposi
                     discrepancies.processingUnitNumber == batchDiscrepancies.processingUnitNumber &&
                     discrepancies.batchNumber == batchDiscrepancies.batchNumber &&
                     discrepancies.typeDiscrepancies == batchDiscrepancies.typeDiscrepancies) {
-                batchesDiscrepancies.remove(discrepancies)
+                batchesDiscrepancies.remove(batchDiscrepancies)
                 return@filter true
             }
             return@filter false
@@ -202,6 +202,16 @@ class MemoryTaskBatchesDiscrepanciesRepository : ITaskBatchesDiscrepanciesReposi
 
     override fun getCountBatchNotProcessedOfBatchPGE(batch: TaskBatchInfo): Double {
         return batch.purchaseOrderScope - getCountAcceptOfBatchPGE(batch) - getCountRefusalOfBatchPGE(batch)
+    }
+
+    override fun getCountOfDiscrepanciesOfBatch(batch: TaskBatchInfo, typeDiscrepancies: String): Double {
+        var countDiscrepancies = 0.0
+        findBatchDiscrepanciesOfBatch(batch).filter {
+            it.typeDiscrepancies == typeDiscrepancies
+        }.map {discrepancies ->
+            countDiscrepancies += discrepancies.numberDiscrepancies.toDouble()
+        }
+        return countDiscrepancies
     }
 
     override fun clear() {
