@@ -166,7 +166,7 @@ class DiscrepancyListViewModel : CoreViewModel(), PageSelectionListener {
                             task.taskRepository.getProductsDiscrepancies().getCountProductNotProcessedOfProduct(productInfo).toStringFormatted()
 
                         }
-                        if (isBatches.value == true && !productInfo.isBoxFl && !productInfo.isMarkFl) {
+                        if (isBatches.value == true && productInfo.type == ProductType.NonExciseAlcohol && !productInfo.isBoxFl && !productInfo.isMarkFl) {
                             //todo здесь не учитывается ПГЕ и несколько партий для товара, только одна партия
                             val batchInfo = task.taskRepository.getBatches().findBatchOfProduct(productInfo)
                             val quantityNotProcessedProductBatch = batchInfo?.let {batch ->
