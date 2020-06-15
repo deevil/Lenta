@@ -21,5 +21,6 @@ interface ITaskBatchesDiscrepanciesRepository {
     fun getCountAcceptOfBatchPGE(batch: TaskBatchInfo): Double
     fun getCountRefusalOfBatchPGE(batch: TaskBatchInfo): Double
     fun getCountBatchNotProcessedOfBatchPGE(batch: TaskBatchInfo): Double
+    fun getCountOfDiscrepanciesOfBatch(batch: TaskBatchInfo, typeDiscrepancies: String): Double
     fun clear()
 }
