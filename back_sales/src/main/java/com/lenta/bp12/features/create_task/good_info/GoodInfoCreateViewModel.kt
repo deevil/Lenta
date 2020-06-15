@@ -2,11 +2,9 @@ package com.lenta.bp12.features.create_task.good_info
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import com.lenta.bp12.model.GoodType
-import com.lenta.bp12.model.ICreateTaskManager
-import com.lenta.bp12.model.MarkStatus
-import com.lenta.bp12.model.ScanNumberType
+import com.lenta.bp12.model.*
 import com.lenta.bp12.model.pojo.Mark
+import com.lenta.bp12.model.pojo.Part
 import com.lenta.bp12.model.pojo.create_task.Basket
 import com.lenta.bp12.model.pojo.create_task.Good
 import com.lenta.bp12.platform.extention.getControlType
@@ -42,10 +40,13 @@ class GoodInfoCreateViewModel : CoreViewModel() {
     lateinit var goodInfoNetRequest: GoodInfoNetRequest
 
     @Inject
-    lateinit var exciseInfoNetRequest: ExciseInfoNetRequest
+    lateinit var markInfoNetRequest: MarkInfoNetRequest
 
     @Inject
     lateinit var database: IDatabaseRepository
+
+    @Inject
+    lateinit var alcoCodeNetRequest: AlcoCodeNetRequest
 
 
     /**
@@ -68,7 +69,6 @@ class GoodInfoCreateViewModel : CoreViewModel() {
 
     private val lastSuccessSearchNumber = MutableLiveData("")
 
-    var exciseInfo: ExciseInfoResult? = null
 
     val isCompactMode by lazy {
         good.map { good ->
@@ -98,8 +98,11 @@ class GoodInfoCreateViewModel : CoreViewModel() {
 
     val basketTitle = MutableLiveData("По корзине")
 
+    var markInfoResult: MarkInfoResult? = null
 
-    var lastScannedMark: Mark? = null
+    var mark: Mark? = null
+
+    var part: Part? = null
 
 
     /**
@@ -345,6 +348,9 @@ class GoodInfoCreateViewModel : CoreViewModel() {
                     Constants.EXCISE_68 -> {
                         loadMarkInfo(number)
                     }
+                    Constants.BOX -> {
+                        loadBoxInfo(number)
+                    }
                     else -> getGoodByEan(number)
                 }
             }
@@ -456,7 +462,7 @@ class GoodInfoCreateViewModel : CoreViewModel() {
         viewModelScope.launch {
             navigator.showProgressLoadingData()
 
-            exciseInfoNetRequest(ExciseInfoParams(
+            markInfoNetRequest(MarkInfoParams(
                     tkNumber = sessionInfo.market ?: "Not found!",
                     material = good.value!!.material,
                     markNumber = number,
@@ -464,19 +470,26 @@ class GoodInfoCreateViewModel : CoreViewModel() {
                     quantity = 0.0
             )).also {
                 navigator.hideProgress()
-            }.either(::handleMarkLoadFailure) { exciseInfoResult ->
-                Logg.d { "--> exciseInfoResult: $exciseInfoResult" }
+            }.either(::handleMarkLoadFailure) { markInfoResult ->
+                Logg.d { "--> markInfoResult: $markInfoResult" }
                 viewModelScope.launch {
-                    exciseInfoResult.status.let { status ->
+                    markInfoResult.status.let { status ->
                         if (status == MarkStatus.OK.code || status == MarkStatus.BAD.code) {
-                            lastSuccessSearchNumber.value = manager.searchNumber
-                            exciseInfo = exciseInfoResult
+                            addMarkInfo(number, markInfoResult)
+                        } else if (status == MarkStatus.UNKNOWN.code) {
+                            loadAlcoCodeInfo(number)
 
-                            // todo Наверно здесь лучше всего обновить количество, дату и список производителей
-                            // ...
-
+                            /* if (isCorrectPartAlcoCode(markInfoResult)) {
+                                 if (isAlcoCodeBelongToCurrentGood(markInfoResult)) {
+                                     addPartInfo(number, markInfoResult)
+                                 } else {
+                                     navigator.openAlertScreen("Алкокод не относится к этому товару")
+                                 }
+                             } else {
+                                 navigator.openAlertScreen("Неизвестный алкокод")
+                             }*/
                         } else {
-                            navigator.openAlertScreen(exciseInfoResult.statusDescription)
+                            navigator.openAlertScreen(markInfoResult.statusDescription)
                         }
                     }
                 }
@@ -484,16 +497,66 @@ class GoodInfoCreateViewModel : CoreViewModel() {
         }
     }
 
+    private fun loadAlcoCodeInfo(number: String) {
+        viewModelScope.launch {
+            navigator.showProgressLoadingData()
+
+            alcoCodeNetRequest(null)
+                    .also { navigator.hideProgress() }
+                    .either(::handleAlcoCodeLoadFailure) { alcoCodeList ->
+
+                    }
+        }
+    }
+
+    private fun handleAlcoCodeLoadFailure(failure: Failure) {
+        Logg.d { "--> handleAlcoCodeLoadFailure: $failure" }
+        navigator.openAlertScreen(failure)
+    }
+
+
+    /*private fun isCorrectPartAlcoCode(markInfoResult: MarkInfoResult): Boolean {
+
+    }
+
+    private fun isAlcoCodeBelongToCurrentGood(markInfoResult: MarkInfoResult): Boolean {
+
+    }*/
+
     private fun handleMarkLoadFailure(failure: Failure) {
         Logg.d { "--> handleMarkLoadFailure: $failure" }
         navigator.openAlertScreen(failure)
+    }
+
+    private fun addMarkInfo(number: String, markInfo: MarkInfoResult) {
+        lastSuccessSearchNumber.value = number
+        isExistUnsavedData = true
+        markInfoResult = markInfo
+
+        when (number.length) {
+            Constants.EXCISE_150 -> {
+                scanModeType.value = ScanNumberType.MARK_150
+                updateProducers(markInfo.producers.toMutableList())
+                date.value = markInfo.producedDate
+            }
+            Constants.EXCISE_68 -> {
+                scanModeType.value = ScanNumberType.MARK_68
+            }
+        }
+    }
+
+    private fun addPartInfo(number: String, markInfo: MarkInfoResult) {
+        lastSuccessSearchNumber.value = number
+        isExistUnsavedData = true
+        markInfoResult = markInfo
+        scanModeType.value = ScanNumberType.PART
     }
 
     private fun loadBoxInfo(number: String) {
         viewModelScope.launch {
             navigator.showProgressLoadingData()
 
-            exciseInfoNetRequest(ExciseInfoParams(
+            markInfoNetRequest(MarkInfoParams(
                     tkNumber = sessionInfo.market ?: "Not found!",
                     material = good.value!!.material,
                     markNumber = number,
@@ -501,20 +564,15 @@ class GoodInfoCreateViewModel : CoreViewModel() {
                     quantity = 0.0
             )).also {
                 navigator.hideProgress()
-            }.either(::handleBoxLoadFailure) { exciseInfoResult ->
-                Logg.d { "--> exciseInfoResult: $exciseInfoResult" }
+            }.either(::handleBoxLoadFailure) { markInfoResult ->
+                Logg.d { "--> exciseInfoResult: $markInfoResult" }
                 viewModelScope.launch {
-                    exciseInfoResult.status.let { status ->
-                        /*if (status == MarkStatus.OK.code || status == MarkStatus.BAD.code) {
-                            lastSuccessSearchNumber.value = manager.searchNumber
-                            exciseInfo = exciseInfoResult
-
-                            // todo Наверно здесь лучше всего обновить количество, дату и список производителей
-                            // ...
-
+                    markInfoResult.status.let { status ->
+                        if (status == BoxStatus.OK.code) {
+                            addBoxInfo(number, markInfoResult)
                         } else {
-                            navigator.openAlertScreen(exciseInfoResult.statusDescription)
-                        }*/
+                            navigator.openAlertScreen(markInfoResult.statusDescription)
+                        }
                     }
                 }
             }
@@ -526,7 +584,12 @@ class GoodInfoCreateViewModel : CoreViewModel() {
         navigator.openAlertScreen(failure)
     }
 
-
+    private fun addBoxInfo(number: String, markInfo: MarkInfoResult) {
+        lastSuccessSearchNumber.value = number
+        isExistUnsavedData = true
+        markInfoResult = markInfo
+        scanModeType.value = ScanNumberType.BOX
+    }
 
 
     private fun updateProviders(providers: MutableList<ProviderInfo>) {
@@ -539,11 +602,7 @@ class GoodInfoCreateViewModel : CoreViewModel() {
 
     private fun saveChanges() {
         if (applyEnabled.value!!) {
-            if (isPosition()) {
-                addCommonPosition()
-            } else if (isMark()) {
-                addMarkPosition()
-            }
+
         }
     }
 
@@ -555,17 +614,6 @@ class GoodInfoCreateViewModel : CoreViewModel() {
                 addBasket()
             }
         }
-    }
-
-    private fun addMarkPosition() {
-        /*good.value?.let { good ->
-            val quantity = quantity.value?.toDoubleOrNull() ?: 0.0
-            good.addPosition(quantity, getProvider(), date.value)
-
-            if (basket.value == null) {
-                addBasket()
-            }
-        }*/
     }
 
     private fun addBasket() {
@@ -602,25 +650,6 @@ class GoodInfoCreateViewModel : CoreViewModel() {
     private fun isMark(): Boolean {
         manager.searchNumber.length.let { length ->
             return length == Constants.EXCISE_68 || length == Constants.EXCISE_150
-        }
-    }
-
-
-    private fun addScannedMark(isBadMark: Boolean = false) {
-        good.value?.let { good ->
-            /*marks.value?.add(Mark(
-                    material = good.material,
-                    markNumber = lastScannedNumber.value!!,
-
-            ))*/
-        }
-
-
-    }
-
-    private fun saveExcise150() {
-        good.value?.let { good ->
-
         }
     }
 

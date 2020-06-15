@@ -36,6 +36,11 @@ enum class MarkStatus(val code: String){
     UNKNOWN("04")
 }
 
+enum class BoxStatus(val code: String){
+    OK("100"),
+    ERROR("101")
+}
+
 enum class ScanNumberType(val description: String){
     DEFAULT("Состояние до сканирование первого номера"),
     COMMON("Обычный товар"),

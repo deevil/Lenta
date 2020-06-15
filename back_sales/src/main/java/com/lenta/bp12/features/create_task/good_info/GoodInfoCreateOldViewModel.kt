@@ -8,8 +8,8 @@ import com.lenta.bp12.model.MarkStatus
 import com.lenta.bp12.model.pojo.Mark
 import com.lenta.bp12.model.pojo.create_task.Basket
 import com.lenta.bp12.platform.navigation.IScreenNavigator
-import com.lenta.bp12.request.ExciseInfoNetRequest
-import com.lenta.bp12.request.ExciseInfoParams
+import com.lenta.bp12.request.MarkInfoNetRequest
+import com.lenta.bp12.request.MarkInfoParams
 import com.lenta.bp12.request.GoodInfoNetRequest
 import com.lenta.bp12.request.GoodInfoParams
 import com.lenta.bp12.request.pojo.ProducerInfo
@@ -39,7 +39,7 @@ class GoodInfoCreateOldViewModel : CoreViewModel() {
     lateinit var goodInfoNetRequest: GoodInfoNetRequest
 
     @Inject
-    lateinit var exciseInfoNetRequest: ExciseInfoNetRequest
+    lateinit var markInfoNetRequest: MarkInfoNetRequest
 
 
     val task by lazy {
@@ -353,7 +353,7 @@ class GoodInfoCreateOldViewModel : CoreViewModel() {
         viewModelScope.launch {
             navigator.showProgressLoadingData()
 
-            exciseInfoNetRequest(ExciseInfoParams(
+            markInfoNetRequest(MarkInfoParams(
                     tkNumber = sessionInfo.market ?: "Not found!",
                     material = good.value!!.material,
                     markNumber = number,
