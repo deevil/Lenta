@@ -264,13 +264,6 @@ class DiscrepancyListViewModel : CoreViewModel(), PageSelectionListener {
                                             materialNumber = batch.materialNumber,
                                             processingUnitNumber = batch.processingUnitNumber
                                     )
-                                    val countRefusal = task.taskRepository.getBatchesDiscrepancies().findBatchDiscrepanciesOfBatch(batch).filter {fIt ->
-                                        fIt.typeDiscrepancies != "1"
-                                    }.map {mIt ->
-                                        mIt.numberDiscrepancies
-                                    }.sumByDouble {
-                                        it.toDouble()
-                                    }
                                     arrayCounted.add(
                                             GoodsDiscrepancyItem(
                                                     number = index + 1,
