@@ -2,7 +2,7 @@ package com.lenta.bp12.model.pojo.open_task
 
 import com.lenta.bp12.model.Category
 import com.lenta.bp12.model.ControlType
-import com.lenta.bp12.model.GoodKind
+import com.lenta.bp12.model.GoodType
 import com.lenta.bp12.model.pojo.Mark
 import com.lenta.bp12.model.pojo.Part
 import com.lenta.bp12.request.pojo.ProducerInfo
@@ -17,7 +17,7 @@ data class Good(
         val material: String,
         val name: String,
         val units: Uom = Uom.ST,
-        val type: GoodKind,
+        val type: GoodType,
         val matype: String = "",
         val control: ControlType = ControlType.COMMON,
         val section: String,

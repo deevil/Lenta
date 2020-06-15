@@ -11,7 +11,7 @@ enum class BlockType {
     LOCK
 }
 
-enum class GoodKind {
+enum class GoodType {
     COMMON,
     ALCOHOL,
     EXCISE
@@ -40,6 +40,7 @@ enum class ScanNumberType(val description: String){
     DEFAULT("Состояние до сканирование первого номера"),
     COMMON("Обычный товар"),
     ALCOHOL("Алкогольный немаркированный товар"),
+    EXCISE("Акцизный алкоголь"),
     MARK_150("Марка 150 символов"),
     MARK_68("Марка 68 символов"),
     PART("Партия"),

@@ -2,7 +2,7 @@ package com.lenta.bp12.features.create_task.good_info
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import com.lenta.bp12.model.GoodKind
+import com.lenta.bp12.model.GoodType
 import com.lenta.bp12.model.ICreateTaskManager
 import com.lenta.bp12.model.MarkStatus
 import com.lenta.bp12.model.pojo.Mark
@@ -62,7 +62,7 @@ class GoodInfoCreateOldViewModel : CoreViewModel() {
 
     val isCompactMode by lazy {
         good.map { good ->
-            good?.type == GoodKind.COMMON
+            good?.type == GoodType.COMMON
         }
     }
 
@@ -70,9 +70,9 @@ class GoodInfoCreateOldViewModel : CoreViewModel() {
         good.map { good ->
             good?.type?.let { type ->
                 when {
-                    type == GoodKind.EXCISE && lastScannedNumber.value?.length == Constants.EXCISE_68 -> "Партионно"
-                    type == GoodKind.EXCISE -> "Марочно"
-                    type == GoodKind.ALCOHOL -> "Партионно"
+                    type == GoodType.EXCISE && lastScannedNumber.value?.length == Constants.EXCISE_68 -> "Партионно"
+                    type == GoodType.EXCISE -> "Марочно"
+                    type == GoodType.ALCOHOL -> "Партионно"
                     else -> "Количество"
                 }
             }
@@ -81,7 +81,7 @@ class GoodInfoCreateOldViewModel : CoreViewModel() {
 
     val markScanEnabled by lazy {
         good.map { good ->
-            good?.type == GoodKind.EXCISE
+            good?.type == GoodType.EXCISE
         }
     }
 
@@ -237,9 +237,9 @@ class GoodInfoCreateOldViewModel : CoreViewModel() {
 
             good.value?.let { good ->
                 when (good.type) {
-                    GoodKind.COMMON -> quantity > 0
-                    GoodKind.ALCOHOL -> quantity > 0 && isCorrectDate
-                    GoodKind.EXCISE -> quantity > 0 && isCorrectDate
+                    GoodType.COMMON -> quantity > 0
+                    GoodType.ALCOHOL -> quantity > 0 && isCorrectDate
+                    GoodType.EXCISE -> quantity > 0 && isCorrectDate
                 }
             }
         }

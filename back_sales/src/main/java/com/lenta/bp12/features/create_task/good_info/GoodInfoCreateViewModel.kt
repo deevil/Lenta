@@ -2,7 +2,7 @@ package com.lenta.bp12.features.create_task.good_info
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import com.lenta.bp12.model.GoodKind
+import com.lenta.bp12.model.GoodType
 import com.lenta.bp12.model.ICreateTaskManager
 import com.lenta.bp12.model.MarkStatus
 import com.lenta.bp12.model.ScanNumberType
@@ -72,7 +72,7 @@ class GoodInfoCreateViewModel : CoreViewModel() {
 
     val isCompactMode by lazy {
         good.map { good ->
-            good?.type == GoodKind.COMMON
+            good?.type == GoodType.COMMON
         }
     }
 
@@ -90,7 +90,7 @@ class GoodInfoCreateViewModel : CoreViewModel() {
 
     val markScanEnabled by lazy {
         good.map { good ->
-            good?.type == GoodKind.EXCISE
+            good?.type == GoodType.EXCISE
         }
     }
 
@@ -285,6 +285,7 @@ class GoodInfoCreateViewModel : CoreViewModel() {
                 when (type) {
                     ScanNumberType.COMMON -> quantity > 0.0 && isProviderSelected
                     ScanNumberType.ALCOHOL -> quantity > 0.0 && isProviderSelected && isProducerSelected && isDateEntered
+                    ScanNumberType.EXCISE -> quantity > 0.0 && isProviderSelected && isProducerSelected && isDateEntered
                     ScanNumberType.MARK_150 -> isProviderSelected
                     ScanNumberType.MARK_68 -> isProviderSelected && isProducerSelected && isDateEntered
                     ScanNumberType.PART -> isProviderSelected && isProducerSelected
@@ -294,8 +295,6 @@ class GoodInfoCreateViewModel : CoreViewModel() {
             } ?: false
         }
     }
-
-    val detailsVisibility = MutableLiveData(true)
 
     val rollbackVisibility = MutableLiveData(true)
 
@@ -354,16 +353,28 @@ class GoodInfoCreateViewModel : CoreViewModel() {
 
     private fun getGoodByEan(ean: String) {
         manager.findGoodByEan(ean)?.let { foundGood ->
-            good.value = foundGood
-            lastSuccessSearchNumber.value = foundGood.material
+            setFoundGood(foundGood)
         } ?: loadGoodInfo(ean = ean)
     }
 
     private fun getGoodByMaterial(material: String) {
         manager.findGoodByMaterial(material)?.let { foundGood ->
-            good.value = foundGood
-            lastSuccessSearchNumber.value = foundGood.material
+            setFoundGood(foundGood)
         } ?: loadGoodInfo(material = material)
+    }
+
+    private fun setFoundGood(foundGood: Good) {
+        good.value = foundGood
+        lastSuccessSearchNumber.value = foundGood.material
+        setScanModeFromGoodType(foundGood.type)
+    }
+
+    private fun setScanModeFromGoodType(goodType: GoodType) {
+        scanModeType.value = when (goodType) {
+            GoodType.COMMON -> ScanNumberType.COMMON
+            GoodType.ALCOHOL -> ScanNumberType.ALCOHOL
+            GoodType.EXCISE -> ScanNumberType.EXCISE
+        }
     }
 
     private fun loadGoodInfo(ean: String? = null, material: String? = null) {
@@ -436,6 +447,7 @@ class GoodInfoCreateViewModel : CoreViewModel() {
                 lastSuccessSearchNumber.value = good.material
                 updateProviders(good.providers)
                 updateProducers(good.producers)
+                setScanModeFromGoodType(good.type)
             }
         }
     }
@@ -474,7 +486,48 @@ class GoodInfoCreateViewModel : CoreViewModel() {
 
     private fun handleMarkLoadFailure(failure: Failure) {
         Logg.d { "--> handleMarkLoadFailure: $failure" }
+        navigator.openAlertScreen(failure)
     }
+
+    private fun loadBoxInfo(number: String) {
+        viewModelScope.launch {
+            navigator.showProgressLoadingData()
+
+            exciseInfoNetRequest(ExciseInfoParams(
+                    tkNumber = sessionInfo.market ?: "Not found!",
+                    material = good.value!!.material,
+                    markNumber = number,
+                    mode = 2,
+                    quantity = 0.0
+            )).also {
+                navigator.hideProgress()
+            }.either(::handleBoxLoadFailure) { exciseInfoResult ->
+                Logg.d { "--> exciseInfoResult: $exciseInfoResult" }
+                viewModelScope.launch {
+                    exciseInfoResult.status.let { status ->
+                        /*if (status == MarkStatus.OK.code || status == MarkStatus.BAD.code) {
+                            lastSuccessSearchNumber.value = manager.searchNumber
+                            exciseInfo = exciseInfoResult
+
+                            // todo Наверно здесь лучше всего обновить количество, дату и список производителей
+                            // ...
+
+                        } else {
+                            navigator.openAlertScreen(exciseInfoResult.statusDescription)
+                        }*/
+                    }
+                }
+            }
+        }
+    }
+
+    private fun handleBoxLoadFailure(failure: Failure) {
+        Logg.d { "--> handleMarkLoadFailure: $failure" }
+        navigator.openAlertScreen(failure)
+    }
+
+
+
 
     private fun updateProviders(providers: MutableList<ProviderInfo>) {
         sourceProviders.value = providers

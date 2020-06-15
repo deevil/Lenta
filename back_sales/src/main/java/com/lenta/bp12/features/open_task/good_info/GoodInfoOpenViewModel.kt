@@ -3,7 +3,7 @@ package com.lenta.bp12.features.open_task.good_info
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.lenta.bp12.model.Category
-import com.lenta.bp12.model.GoodKind
+import com.lenta.bp12.model.GoodType
 import com.lenta.bp12.model.IOpenTaskManager
 import com.lenta.bp12.platform.navigation.IScreenNavigator
 import com.lenta.bp12.request.ExciseInfoNetRequest
@@ -61,7 +61,7 @@ class GoodInfoOpenViewModel : CoreViewModel() {
 
     val isCompactMode by lazy {
         good.map { good ->
-            good?.type == GoodKind.COMMON
+            good?.type == GoodType.COMMON
         }
     }
 
@@ -69,7 +69,7 @@ class GoodInfoOpenViewModel : CoreViewModel() {
 
     val markScanEnabled by lazy {
         good.map { good ->
-            good?.type == GoodKind.EXCISE
+            good?.type == GoodType.EXCISE
         }
     }
 
@@ -162,9 +162,9 @@ class GoodInfoOpenViewModel : CoreViewModel() {
 
             good.value?.let { good ->
                 when (good.type) {
-                    GoodKind.COMMON -> quantity > 0
-                    GoodKind.ALCOHOL -> quantity > 0 && isCorrectDate
-                    GoodKind.EXCISE -> quantity > 0 && isCorrectDate
+                    GoodType.COMMON -> quantity > 0
+                    GoodType.ALCOHOL -> quantity > 0 && isCorrectDate
+                    GoodType.EXCISE -> quantity > 0 && isCorrectDate
                 }
             }
         }
@@ -172,13 +172,13 @@ class GoodInfoOpenViewModel : CoreViewModel() {
 
     val detailsVisibility by lazy {
         good.map { good ->
-            good?.type == GoodKind.ALCOHOL || good?.type == GoodKind.EXCISE
+            good?.type == GoodType.ALCOHOL || good?.type == GoodType.EXCISE
         }
     }
 
     val rollbackVisibility by lazy {
         good.map { good ->
-            good?.type == GoodKind.EXCISE
+            good?.type == GoodType.EXCISE
         }
     }
 
