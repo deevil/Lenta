@@ -167,31 +167,35 @@ class DiscrepancyListViewModel : CoreViewModel(), PageSelectionListener {
 
                         }
                         if (isBatches.value == true && productInfo.type == ProductType.NonExciseAlcohol && !productInfo.isBoxFl && !productInfo.isMarkFl) {
-                            //todo здесь не учитывается ПГЕ и несколько партий для товара, только одна партия
-                            val batchInfo = task.taskRepository.getBatches().findBatchOfProduct(productInfo)
-                            val quantityNotProcessedProductBatch = batchInfo?.let {batch ->
-                                task.taskRepository.getBatchesDiscrepancies().getCountBatchNotProcessedOfBatch(batch).toStringFormatted()
+                            val batchesInfoOfProduct = task.taskRepository.getBatches().findBatchOfProduct(productInfo)
+                            batchesInfoOfProduct?.map {batch ->
+                                val batchInfo = task.taskRepository.getBatches().findBatch(
+                                        batchNumber = batch.batchNumber,
+                                        materialNumber = batch.materialNumber,
+                                        processingUnitNumber = batch.processingUnitNumber
+                                )
+                                val quantityNotProcessedProductBatch = task.taskRepository.getBatchesDiscrepancies().getCountBatchNotProcessedOfBatch(batch).toStringFormatted()
+                                arrayNotCounted.add(
+                                        GoodsDiscrepancyItem(
+                                                number = index + 1,
+                                                name = "${productInfo.getMaterialLastSix()} ${productInfo.description}",
+                                                nameMaxLines = 1,
+                                                nameBatch = "ДР-${batchInfo?.bottlingDate} // ${getManufacturerName(batchInfo)}",
+                                                visibilityNameBatch = true,
+                                                countRefusalWithUom = "",
+                                                quantityNotProcessedWithUom = "? $quantityNotProcessedProductBatch ${uom.name}",
+                                                discrepanciesName = "",
+                                                isNormDiscrepancies = false,
+                                                productInfo = productInfo,
+                                                productDiscrepancies = null,
+                                                batchInfo = null,
+                                                checkBoxControl = false,
+                                                checkStampControl = false,
+                                                even = index % 2 == 0
+                                        )
+                                )
+                                index += 1
                             }
-                            arrayNotCounted.add(
-                                    GoodsDiscrepancyItem(
-                                            number = index + 1,
-                                            name = "${productInfo.getMaterialLastSix()} ${productInfo.description}",
-                                            nameMaxLines = 1,
-                                            nameBatch = "ДР-${batchInfo?.bottlingDate} // ${getManufacturerName(productInfo)}",
-                                            visibilityNameBatch = true,
-                                            countRefusalWithUom = "",
-                                            quantityNotProcessedWithUom = "? $quantityNotProcessedProductBatch ${uom.name}",
-                                            discrepanciesName = "",
-                                            isNormDiscrepancies = false,
-                                            productInfo = productInfo,
-                                            productDiscrepancies = null,
-                                            batchInfo = null,
-                                            checkBoxControl = false,
-                                            checkStampControl = false,
-                                            even = index % 2 == 0
-                                    )
-                            )
-                            index += 1
                         } else {
                             arrayNotCounted.add(
                                     GoodsDiscrepancyItem(
@@ -249,40 +253,44 @@ class DiscrepancyListViewModel : CoreViewModel(), PageSelectionListener {
                             TaskListLoadingMode.PGE -> productDiscrepancies.typeDiscrepancies == "1" || productDiscrepancies.typeDiscrepancies == "2"
                             else -> productDiscrepancies.typeDiscrepancies == "1"
                         }
-                        if (isBatches.value == true && productInfo?.isBoxFl == false && !productInfo.isMarkFl) {
-                            //todo здесь не учитывается ПГЕ и несколько партий для товара, только одна партия
+                        if (isBatches.value == true && productInfo?.type == ProductType.NonExciseAlcohol && !productInfo.isBoxFl && !productInfo.isMarkFl) {
                             if (addeBatchProduct != productInfo.materialNumber) { //показываем партии без разбивки по расхождениям
                                 addeBatchProduct = productInfo.materialNumber
-                                val batchInfo = task.taskRepository.getBatches().findBatchOfProduct(productInfo)
-                                val countRefusal = batchInfo?.let {batch ->
-                                    task.taskRepository.getBatchesDiscrepancies().findBatchDiscrepanciesOfBatch(batch).filter {fIt ->
+                                val batchesInfoOfProduct = task.taskRepository.getBatches().findBatchOfProduct(productInfo)
+                                batchesInfoOfProduct?.map {batch ->
+                                    val batchInfo = task.taskRepository.getBatches().findBatch(
+                                            batchNumber = batch.batchNumber,
+                                            materialNumber = batch.materialNumber,
+                                            processingUnitNumber = batch.processingUnitNumber
+                                    )
+                                    val countRefusal = task.taskRepository.getBatchesDiscrepancies().findBatchDiscrepanciesOfBatch(batch).filter {fIt ->
                                         fIt.typeDiscrepancies != "1"
                                     }.map {mIt ->
                                         mIt.numberDiscrepancies
                                     }.sumByDouble {
                                         it.toDouble()
                                     }
+                                    arrayCounted.add(
+                                            GoodsDiscrepancyItem(
+                                                    number = index + 1,
+                                                    name = "${productInfo.getMaterialLastSix()} ${productInfo.description}",
+                                                    nameMaxLines = 1,
+                                                    nameBatch = "",
+                                                    visibilityNameBatch = true,
+                                                    countRefusalWithUom = "${countRefusal.toStringFormatted()} ${uom?.name}",
+                                                    quantityNotProcessedWithUom = "",
+                                                    discrepanciesName = "ДР-${batchInfo?.bottlingDate} // ${getManufacturerName(batchInfo)}",
+                                                    isNormDiscrepancies = isNormDiscrepancies,
+                                                    productInfo = productInfo,
+                                                    productDiscrepancies = productDiscrepancies,
+                                                    batchInfo = null,
+                                                    checkBoxControl = false,
+                                                    checkStampControl = false,
+                                                    even = index % 2 == 0
+                                            )
+                                    )
+                                    index += 1
                                 }
-                                arrayCounted.add(
-                                        GoodsDiscrepancyItem(
-                                                number = index + 1,
-                                                name = "${productInfo.getMaterialLastSix()} ${productInfo.description}",
-                                                nameMaxLines = 1,
-                                                nameBatch = "",
-                                                visibilityNameBatch = true,
-                                                countRefusalWithUom = "${countRefusal.toStringFormatted()} ${uom?.name}",
-                                                quantityNotProcessedWithUom = "",
-                                                discrepanciesName = "ДР-${batchInfo?.bottlingDate} // ${getManufacturerName(productInfo)}",
-                                                isNormDiscrepancies = isNormDiscrepancies,
-                                                productInfo = productInfo,
-                                                productDiscrepancies = productDiscrepancies,
-                                                batchInfo = null,
-                                                checkBoxControl = false,
-                                                checkStampControl = false,
-                                                even = index % 2 == 0
-                                        )
-                                )
-                                index += 1
                             }
                         } else {
                             arrayCounted.add(
@@ -484,9 +492,9 @@ class DiscrepancyListViewModel : CoreViewModel(), PageSelectionListener {
         }
     }
 
-    private fun getManufacturerName(productInfo: TaskProductInfo) : String {
+    private fun getManufacturerName(batchInfo: TaskBatchInfo?) : String {
         return repoInMemoryHolder.manufacturers.value?.findLast {manufacture ->
-            manufacture.code == taskManager.getReceivingTask()!!.taskRepository.getBatches().findBatchOfProduct(productInfo)?.egais ?: ""
+            manufacture.code == batchInfo?.egais
         }?.name ?: ""
     }
 

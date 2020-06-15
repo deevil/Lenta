@@ -37,7 +37,7 @@ class ExciseAlcoStampAccInfoViewModel : CoreViewModel(), OnPositionClickListener
     lateinit var context: Context
 
     val productInfo: MutableLiveData<TaskProductInfo> = MutableLiveData()
-    val batchInfo: MutableLiveData<TaskBatchInfo> = productInfo.map {
+    val batchInfo: MutableLiveData<List<TaskBatchInfo>> = productInfo.map {
         taskManager.getReceivingTask()!!.taskRepository.getBatches().findBatchOfProduct(it!!)
     }
     val tvAccept: MutableLiveData<String> by lazy {
@@ -120,8 +120,8 @@ class ExciseAlcoStampAccInfoViewModel : CoreViewModel(), OnPositionClickListener
                 it.name
             }
             //todo временно закоментированно spinManufacturers.value = listOf(taskManager.getReceivingTask()!!.taskRepository.getBatches().findBatchOfProduct(productInfo.value!!)?.manufacturer ?: "")
-            spinBottlingDate.value = listOf(taskManager.getReceivingTask()!!.taskRepository.getBatches().findBatchOfProduct(productInfo.value!!)?.bottlingDate ?: "")
-            batchInfo.value = taskManager.getReceivingTask()!!.taskRepository.getBatches().findBatchOfProduct(productInfo.value!!)
+            //todo временно закоментированно spinBottlingDate.value = listOf(taskManager.getReceivingTask()!!.taskRepository.getBatches().findBatchOfProduct(productInfo.value!!)?.bottlingDate ?: "")
+            //todo временно закоментированно batchInfo.value = taskManager.getReceivingTask()!!.taskRepository.getBatches().findBatchOfProduct(productInfo.value!!)
             //todo временно закоментированно planQuantityBatch.value = batchInfo.value?.planQuantityBatch + " " + batchInfo.value?.uom?.name + "."
             /**if (processExciseAlcoProductService.newProcessNonExciseAlcoProductService(productInfo.value!!) == null){
                 screenNavigator.goBack()

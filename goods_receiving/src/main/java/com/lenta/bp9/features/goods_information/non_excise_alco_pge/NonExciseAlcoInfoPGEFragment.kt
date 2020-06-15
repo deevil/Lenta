@@ -71,7 +71,7 @@ class NonExciseAlcoInfoPGEFragment : CoreFragment<FragmentNonExciseAlcoInfoPgeBi
 
         binding?.spinnerBottlingDate?.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(adapterView: AdapterView<*>, view: View?, position: Int, l: Long) {
-                vm.onClickPositionSpinottlingDate(position)
+                vm.onClickPositionBottlingDate(position)
             }
 
             override fun onNothingSelected(adapterView: AdapterView<*>) {

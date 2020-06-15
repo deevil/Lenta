@@ -13,12 +13,10 @@ class ProcessNonExciseAlcoProductService
     lateinit var taskManager: IReceivingTaskManager
 
     private lateinit var productInfo: TaskProductInfo
-    private lateinit var batchInfo: TaskBatchInfo
 
     fun newProcessNonExciseAlcoProductService(productInfo: TaskProductInfo) : ProcessNonExciseAlcoProductService? {
         return if (productInfo.type == ProductType.NonExciseAlcohol){
             this.productInfo = productInfo.copy()
-            this.batchInfo = taskManager.getReceivingTask()!!.taskRepository.getBatches().findBatchOfProduct(productInfo)!!.copy()
             this
         }
         else null
@@ -28,7 +26,7 @@ class ProcessNonExciseAlcoProductService
         return taskManager.getReceivingTask()!!.taskRepository.getProductsDiscrepancies().getCountOfDiscrepanciesOfProduct(productInfo, typeDiscrepancies)
     }
 
-    fun add(count: String, typeDiscrepancies: String){
+    fun add(count: String, typeDiscrepancies: String, batchInfo: TaskBatchInfo){
         val countAdd = if (typeDiscrepancies == "1") count.toDouble() else getCountOfDiscrepancies(typeDiscrepancies) + count.toDouble()
         val foundDiscrepancy = taskManager.getReceivingTask()?.taskRepository?.getProductsDiscrepancies()?.findProductDiscrepanciesOfProduct(productInfo)?.findLast {
             it.materialNumber == productInfo.materialNumber && it.typeDiscrepancies == typeDiscrepancies
@@ -60,10 +58,10 @@ class ProcessNonExciseAlcoProductService
         getProducts()?.
         changeProduct(productInfo.copy(isNoEAN = false))
 
-        addBatch(countAdd.toString(), typeDiscrepancies)
+        addBatch(countAdd.toString(), typeDiscrepancies, batchInfo)
     }
 
-    private fun addBatch(count: String, typeDiscrepancies: String){
+    private fun addBatch(count: String, typeDiscrepancies: String, batchInfo: TaskBatchInfo){
         val foundBatchDiscrepancy = taskManager.getReceivingTask()?.taskRepository?.getBatchesDiscrepancies()?.findBatchDiscrepanciesOfBatch(batchInfo)?.findLast {
             it.materialNumber == batchInfo.materialNumber && it.batchNumber == batchInfo.batchNumber && it.typeDiscrepancies == typeDiscrepancies
         }
@@ -94,7 +92,7 @@ class ProcessNonExciseAlcoProductService
         }
     }
 
-    fun overlimit(count: Double) : Boolean {
+    fun overlimit(count: Double, batchInfo: TaskBatchInfo) : Boolean {
         return batchInfo.purchaseOrderScope < ((taskManager.getReceivingTask()?.taskRepository?.getBatchesDiscrepancies()?.getCountAcceptOfBatch(batchInfo) ?: 0.0)
                 + (taskManager.getReceivingTask()?.taskRepository?.getBatchesDiscrepancies()?.getCountRefusalOfBatch(batchInfo) ?: 0.0) + count)
 
