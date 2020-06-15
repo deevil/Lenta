@@ -47,13 +47,16 @@
                     style="@style/CellTextStyle"
                     android:layout_width="0dp"
                     android:layout_weight="1"
+                    android:layout_marginEnd="0dp"
                     android:text="@{item.text1}"
                     tools:text="523168921485236748" />
 
                 <ImageView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:padding="5dp"
+                    android:paddingEnd="5dp"
+                    android:paddingTop="5dp"
+                    android:paddingBottom="5dp"
                     android:src="@drawable/ic_keyboard_arrow_right_white_16dp"
                     tools:ignore="ContentDescription" />
 
