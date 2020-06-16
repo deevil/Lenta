@@ -6,6 +6,7 @@ import com.lenta.bp9.model.task.TaskProductInfo
 interface ITaskProductsDiscrepanciesRepository {
     fun getProductsDiscrepancies(): List<TaskProductDiscrepancies>
     fun findProductDiscrepanciesOfProduct(product: TaskProductInfo): List<TaskProductDiscrepancies>
+    fun findProductDiscrepanciesOfProduct(materialNumber: String): List<TaskProductDiscrepancies>
     fun addProductDiscrepancy(discrepancy: TaskProductDiscrepancies): Boolean
     fun updateProductsDiscrepancy(newProductsDiscrepancies: List<TaskProductDiscrepancies>)
     fun changeProductDiscrepancy(discrepancy: TaskProductDiscrepancies): Boolean

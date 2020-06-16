@@ -13,9 +13,13 @@ class MemoryTaskProductsDiscrepanciesRepository : ITaskProductsDiscrepanciesRepo
     }
 
     override fun findProductDiscrepanciesOfProduct(product: TaskProductInfo): List<TaskProductDiscrepancies> {
+        return findProductDiscrepanciesOfProduct(product.materialNumber)
+    }
+
+    override fun findProductDiscrepanciesOfProduct(materialNumber: String): List<TaskProductDiscrepancies> {
         val foundDiscrepancies = ArrayList<TaskProductDiscrepancies>()
         for (i in productsDiscrepancies.indices) {
-            if (product.materialNumber == productsDiscrepancies[i].materialNumber) {
+            if (materialNumber == productsDiscrepancies[i].materialNumber) {
                 foundDiscrepancies.add(productsDiscrepancies[i])
             }
         }
@@ -245,7 +249,6 @@ class MemoryTaskProductsDiscrepanciesRepository : ITaskProductsDiscrepanciesRepo
             it.numberDiscrepancies.toDouble()
         }
     }
-
 
     override fun clear() {
         productsDiscrepancies.clear()
