@@ -53,12 +53,6 @@ class DiscrepancyListViewModel : CoreViewModel(), PageSelectionListener {
     lateinit var repoInMemoryHolder: IRepoInMemoryHolder
     @Inject
     lateinit var dataBase: IDataBaseRepo
-    @Inject
-    lateinit var hyperHive: HyperHive
-
-    private val zfmpUtz48V001: ZfmpUtz48V001 by lazy {
-        ZfmpUtz48V001(hyperHive)
-    }
 
     val selectedPage = MutableLiveData(0)
     val processedSelectionsHelper = SelectionItemsHelper()
@@ -224,6 +218,9 @@ class DiscrepancyListViewModel : CoreViewModel(), PageSelectionListener {
                 arrayNotCounted.reversed()
         )
 
+        viewModelScope.launch {
+            moveToProcessedPageIfNeeded()
+        }
     }
 
     private fun updateCountProcessed() {
@@ -444,9 +441,9 @@ class DiscrepancyListViewModel : CoreViewModel(), PageSelectionListener {
             screenNavigator.showProgressLoadingData()
             //очищаем таблицу ET_TASK_DIFF от не акцизного алкоголя, т.к. для этих товаров необходимо передавать только данные из таблицы ET_PARTS_DIFF
             taskManager.getReceivingTask()!!.taskRepository.getProductsDiscrepancies().getProductsDiscrepancies().map {
-                val materialInfo = zfmpUtz48V001.getProductInfoByMaterial(it.materialNumber)
-                val productType = getProductType(isAlco = materialInfo?.isAlco == "X", isExcise = materialInfo?.isExc == "X")
-                if (productType == ProductType.NonExciseAlcohol) {
+                taskManager.getReceivingTask()!!.taskRepository.getProducts().findProduct(it.materialNumber)
+            }.map {
+                it?.let {
                     taskManager.getReceivingTask()!!.taskRepository.getProductsDiscrepancies().deleteProductsDiscrepanciesForProduct(it.materialNumber)
                 }
             }
@@ -506,6 +503,12 @@ class DiscrepancyListViewModel : CoreViewModel(), PageSelectionListener {
             }
         }
         return "- ${refusalTotalCountBatch.toStringFormatted()} ${uom?.name}"
+    }
+
+    private fun moveToProcessedPageIfNeeded() {
+        selectedPage.value = if (countNotProcessed.value?.size == 0) {
+            if (isAlco.value == true) 2 else 1
+        } else 0
     }
 
 }
