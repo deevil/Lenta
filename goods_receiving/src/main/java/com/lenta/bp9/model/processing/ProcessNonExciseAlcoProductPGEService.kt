@@ -42,7 +42,7 @@ class ProcessNonExciseAlcoProductPGEService
             getProductsDiscrepancies()?.
             changeProductDiscrepancy(TaskProductDiscrepancies(
                     materialNumber = productInfo.materialNumber,
-                    processingUnitNumber = processingUnit,
+                    processingUnitNumber = productInfo.processingUnit,
                     numberDiscrepancies = countAdd.toString(),
                     uom = productInfo.uom,
                     typeDiscrepancies = typeDiscrepancies,
@@ -54,7 +54,7 @@ class ProcessNonExciseAlcoProductPGEService
             taskManager.getReceivingTask()?.
             taskRepository?.
             getProductsDiscrepancies()?.
-            changeProductDiscrepancy(foundDiscrepancy.copy(numberDiscrepancies = countAdd.toString(), processingUnitNumber = processingUnit))
+            changeProductDiscrepancy(foundDiscrepancy.copy(numberDiscrepancies = countAdd.toString()))
         }
 
         taskManager.getReceivingTask()?.

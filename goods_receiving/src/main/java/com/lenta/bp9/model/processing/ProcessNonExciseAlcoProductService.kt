@@ -54,7 +54,7 @@ class ProcessNonExciseAlcoProductService
             taskManager.getReceivingTask()?.
             taskRepository?.
             getProductsDiscrepancies()?.
-            changeProductDiscrepancy(foundDiscrepancy.copy(numberDiscrepancies = countAdd.toString(), processingUnitNumber = productInfo.processingUnit))
+            changeProductDiscrepancy(foundDiscrepancy.copy(numberDiscrepancies = countAdd.toString()))
         }
 
         taskManager.getReceivingTask()?.

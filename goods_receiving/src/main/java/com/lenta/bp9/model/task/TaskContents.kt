@@ -102,7 +102,7 @@ class TaskContents
                     TaskBatchesDiscrepancies.from(hyperHive, it)
                 },
 
-                //это условие прописано временно, т.к. на продакшене для ПГЕ и ПРЦ не реализована таблица ET_VET_DIFF, она приходит пустой в 28 и 30 рестах, поэтому обрабатываем данные товары не как вет, а как обычные
+                //todo это условие прописано временно, т.к. на продакшене для ПГЕ и ПРЦ не реализована таблица ET_VET_DIFF, она приходит пустой в 28 и 30 рестах, поэтому обрабатываем данные товары не как вет, а как обычные
                 if (startRecountRestInfo.taskMercuryInfoRestData != null) {
                     startRecountRestInfo.taskMercuryInfoRestData.map {
                         TaskMercuryInfo.from(hyperHive, it)
@@ -140,7 +140,7 @@ class TaskContents
                     TaskBatchesDiscrepancies.from(hyperHive, it)
                 },
 
-                //это условие прописано временно, т.к. на продакшене для ПГЕ и ПРЦ не реализована таблица ET_VET_DIFF, она приходит пустой в 28 и 30 рестах, поэтому обрабатываем данные товары не как вет, а как обычные
+                //todo это условие прописано временно, т.к. на продакшене для ПГЕ и ПРЦ не реализована таблица ET_VET_DIFF, она приходит пустой в 28 и 30 рестах, поэтому обрабатываем данные товары не как вет, а как обычные
                 if (startRecountRestInfo.taskMercuryInfoRestData != null) {
                     startRecountRestInfo.taskMercuryInfoRestData.map {
                         TaskMercuryInfo.from(hyperHive, it)
