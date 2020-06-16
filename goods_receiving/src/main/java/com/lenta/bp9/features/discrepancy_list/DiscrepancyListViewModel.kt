@@ -87,7 +87,7 @@ class DiscrepancyListViewModel : CoreViewModel(), PageSelectionListener {
         !it.isNullOrEmpty()
     }
 
-    val enabledSaveButton: MutableLiveData<Boolean> = countProcessed.map {
+    val enabledSaveButton: MutableLiveData<Boolean> = countNotProcessed.map {
         it.isNullOrEmpty()
     }
 
@@ -98,7 +98,7 @@ class DiscrepancyListViewModel : CoreViewModel(), PageSelectionListener {
     init {
         viewModelScope.launch {
             searchProductDelegate.init(viewModelScope = this@DiscrepancyListViewModel::viewModelScope,
-                    scanResultHandler = this@DiscrepancyListViewModel::handleProductSearchResult)
+                    scanResultHandler = this@DiscrepancyListViewModel::handleProductSearchResult)├
         }
     }
 
