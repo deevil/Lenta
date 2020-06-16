@@ -92,15 +92,7 @@ class GoodInfoCreateViewModel : CoreViewModel() {
         }
     }
 
-    val totalTitle = MutableLiveData("Итого")
-
-    val basketTitle = MutableLiveData("По корзине")
-
     var markInfoResult: MarkInfoResult? = null
-
-    var mark: Mark? = null
-
-    var part: Part? = null
 
 
     /**
@@ -116,7 +108,7 @@ class GoodInfoCreateViewModel : CoreViewModel() {
     val quantityFieldEnabled by lazy {
         scanModeType.map { type ->
             when (type) {
-                ScanNumberType.MARK_150, ScanNumberType.MARK_68 -> false
+                ScanNumberType.MARK_150, ScanNumberType.MARK_68, ScanNumberType.BOX -> false
                 else -> true
             }
         }
@@ -159,7 +151,7 @@ class GoodInfoCreateViewModel : CoreViewModel() {
         }
     }
 
-    val isProviderSelected = providerEnabled.combineLatest(providerPosition).map {
+    private val isProviderSelected = providerEnabled.combineLatest(providerPosition).map {
         val isEnabled = it?.first ?: false
         val position = it?.second ?: 0
 
@@ -203,7 +195,7 @@ class GoodInfoCreateViewModel : CoreViewModel() {
         }
     }
 
-    val isProducerSelected = producerEnabled.combineLatest(producerPosition).map {
+    private val isProducerSelected = producerEnabled.combineLatest(producerPosition).map {
         val isEnabled = it?.first ?: false
         val position = it?.second ?: 0
 
@@ -213,6 +205,10 @@ class GoodInfoCreateViewModel : CoreViewModel() {
     /**
     Количество товара итого и по корзинам
      */
+
+    val totalTitle = MutableLiveData("Итого")
+
+    val basketTitle = MutableLiveData("По корзине")
 
     private val totalQuantity by lazy {
         quantityField.map { quantity ->
@@ -319,11 +315,11 @@ class GoodInfoCreateViewModel : CoreViewModel() {
         if (number.length >= Constants.SAP_6) {
             if (applyEnabled.value!!) {
                 saveChanges()
-            }
 
-            manager.openGoodFromList = false
-            manager.searchNumber = number
-            checkSearchNumber(number)
+                manager.openGoodFromList = false
+                manager.searchNumber = number
+                checkSearchNumber(number)
+            }
         }
     }
 
@@ -452,6 +448,7 @@ class GoodInfoCreateViewModel : CoreViewModel() {
                 updateProviders(good.providers)
                 updateProducers(good.producers)
                 setScanModeFromGoodType(good.type)
+                quantityField.value = "1"
             }
         }
     }
@@ -468,7 +465,7 @@ class GoodInfoCreateViewModel : CoreViewModel() {
                     quantity = 0.0
             )).also {
                 navigator.hideProgress()
-            }.either(::handleMarkLoadFailure) { markInfoResult ->
+            }.either(::handleMarkInfoLoadFailure) { markInfoResult ->
                 Logg.d { "--> markInfoResult: $markInfoResult" }
                 viewModelScope.launch {
                     markInfoResult.status.let { status ->
@@ -498,15 +495,11 @@ class GoodInfoCreateViewModel : CoreViewModel() {
         }
     }
 
-    private fun handleMarkLoadFailure(failure: Failure) {
-        Logg.d { "--> handleMarkLoadFailure: $failure" }
-        navigator.openAlertScreen(failure)
-    }
-
     private fun addMarkInfo(number: String, markInfo: MarkInfoResult) {
         lastSuccessSearchNumber.value = number
         isExistUnsavedData = true
         markInfoResult = markInfo
+        quantityField.value = "1"
 
         when (number.length) {
             Constants.EXCISE_150 -> {
@@ -524,6 +517,7 @@ class GoodInfoCreateViewModel : CoreViewModel() {
         lastSuccessSearchNumber.value = number
         isExistUnsavedData = true
         markInfoResult = markInfo
+        quantityField.value = "1"
         scanModeType.value = ScanNumberType.PART
         updateProducers(markInfo.producers.toMutableList())
     }
@@ -540,7 +534,7 @@ class GoodInfoCreateViewModel : CoreViewModel() {
                     quantity = 0.0
             )).also {
                 navigator.hideProgress()
-            }.either(::handleBoxLoadFailure) { markInfoResult ->
+            }.either(::handleMarkInfoLoadFailure) { markInfoResult ->
                 Logg.d { "--> exciseInfoResult: $markInfoResult" }
                 viewModelScope.launch {
                     markInfoResult.status.let { status ->
@@ -555,16 +549,17 @@ class GoodInfoCreateViewModel : CoreViewModel() {
         }
     }
 
-    private fun handleBoxLoadFailure(failure: Failure) {
-        Logg.d { "--> handleMarkLoadFailure: $failure" }
+    private fun handleMarkInfoLoadFailure(failure: Failure) {
+        Logg.d { "--> handleMarkInfoLoadFailure: $failure" }
         navigator.openAlertScreen(failure)
     }
 
     private fun addBoxInfo(number: String, markInfo: MarkInfoResult) {
+        scanModeType.value = ScanNumberType.BOX
         lastSuccessSearchNumber.value = number
         isExistUnsavedData = true
         markInfoResult = markInfo
-        scanModeType.value = ScanNumberType.BOX
+        quantityField.value = markInfo.marks.size.toString()
     }
 
 
@@ -577,12 +572,12 @@ class GoodInfoCreateViewModel : CoreViewModel() {
     }
 
     private fun saveChanges() {
-        if (applyEnabled.value!!) {
+        // todo Сохранять введенное количество и отсканированные марки/партии/коробки
 
-        }
+
     }
 
-    private fun addCommonPosition() {
+    /*private fun addCommonPosition() {
         good.value?.let { good ->
             good.addPosition(quantity.value!!, getProvider(), date.value)
 
@@ -590,7 +585,7 @@ class GoodInfoCreateViewModel : CoreViewModel() {
                 addBasket()
             }
         }
-    }
+    }*/
 
     private fun addBasket() {
         good.value?.let { good ->
@@ -619,7 +614,7 @@ class GoodInfoCreateViewModel : CoreViewModel() {
     Различные проверки
      */
 
-    private fun isPosition(): Boolean {
+    /*private fun isPosition(): Boolean {
         return manager.searchNumber.length < Constants.EXCISE_68
     }
 
@@ -627,12 +622,7 @@ class GoodInfoCreateViewModel : CoreViewModel() {
         manager.searchNumber.length.let { length ->
             return length == Constants.EXCISE_68 || length == Constants.EXCISE_150
         }
-    }
-
-
-    fun updateData() {
-        manager.updateCurrentGood(good.value)
-    }
+    }*/
 
 
     /**
@@ -652,6 +642,8 @@ class GoodInfoCreateViewModel : CoreViewModel() {
     }
 
     fun onClickApply() {
+        // todo Добавлять товар и все изменения в список только по нажатию этой кнопки
+
         saveChanges()
         manager.addOrUpdateGood(good.value!!)
         isExistUnsavedData = false
