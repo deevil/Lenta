@@ -189,10 +189,10 @@ class CreateTaskManager @Inject constructor(
                     marks.add(
                             MarkInfo(
                                     material = good.material,
-                                    markNumber = mark.markNumber,
+                                    markNumber = mark.number,
                                     boxNumber = mark.boxNumber,
                                     isBadMark = mark.isBadMark.toSapBooleanString(),
-                                    producerCode = mark.producerInfo.code
+                                    producerCode = mark.producerCode
                             )
                     )
                 }
@@ -201,11 +201,11 @@ class CreateTaskManager @Inject constructor(
                     parts.add(
                             PartInfo(
                                     material = good.material,
-                                    producer = part.producer,
-                                    productionDate = part.productionDate,
+                                    producerCode = part.producerCode,
+                                    productionDate = part.date,
                                     unitsCode = part.units.code,
                                     quantity = part.quantity.dropZeros(),
-                                    partNumber = part.partNumber,
+                                    partNumber = part.number,
                                     providerCode = part.providerCode
                             )
                     )

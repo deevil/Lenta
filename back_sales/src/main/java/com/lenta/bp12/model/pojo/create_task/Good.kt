@@ -72,4 +72,16 @@ data class Good(
         return this.material.takeLast(6) == material.takeLast(6)
     }
 
+    fun addMark(mark: Mark) {
+        if (marks.find { it.number == mark.number } == null) {
+            marks.add(mark)
+        }
+    }
+
+    fun addPart(part: Part) {
+        if (parts.find { it.number == part.number } == null) {
+            parts.add(part)
+        }
+    }
+
 }

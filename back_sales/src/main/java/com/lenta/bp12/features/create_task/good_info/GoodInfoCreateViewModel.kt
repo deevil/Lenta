@@ -514,11 +514,11 @@ class GoodInfoCreateViewModel : CoreViewModel() {
     }
 
     private fun addPartInfo(number: String, markInfo: MarkInfoResult) {
+        scanModeType.value = ScanNumberType.PART
         lastSuccessSearchNumber.value = number
         isExistUnsavedData = true
         markInfoResult = markInfo
         quantityField.value = "1"
-        scanModeType.value = ScanNumberType.PART
         updateProducers(markInfo.producers.toMutableList())
     }
 
@@ -573,40 +573,100 @@ class GoodInfoCreateViewModel : CoreViewModel() {
 
     private fun saveChanges() {
         // todo Сохранять введенное количество и отсканированные марки/партии/коробки
-
-
-    }
-
-    /*private fun addCommonPosition() {
-        good.value?.let { good ->
-            good.addPosition(quantity.value!!, getProvider(), date.value)
-
-            if (basket.value == null) {
-                addBasket()
+        scanModeType.value?.let { type ->
+            when (type) {
+                ScanNumberType.COMMON, ScanNumberType.ALCOHOL, ScanNumberType.EXCISE -> addPosition()
+                ScanNumberType.MARK_150, ScanNumberType.MARK_68 -> addMark()
+                ScanNumberType.PART -> addPart()
+                ScanNumberType.BOX -> addBox()
             }
         }
-    }*/
+    }
 
-    private fun addBasket() {
-        good.value?.let { good ->
-            manager.addBasket(Basket(
-                    section = good.section,
-                    matype = good.matype,
-                    control = good.control,
-                    provider = getProvider()
+    private fun addPosition() {
+        good.value?.let { changedGood ->
+            changedGood.addPosition(quantity.value!!, getProvider(), date.value)
+
+            if (basket.value == null) {
+                manager.addBasket(Basket(
+                        section = changedGood.section,
+                        matype = changedGood.matype,
+                        control = changedGood.control,
+                        provider = getProvider()
+                ))
+            }
+
+            updateGood(changedGood)
+        }
+    }
+
+    private fun addMark() {
+        good.value?.let { changedGood ->
+            changedGood.addMark(Mark(
+                    number = lastSuccessSearchNumber.value!!,
+                    material = changedGood.material,
+                    isBadMark = markInfoResult?.status == MarkStatus.BAD.code,
+                    producerCode = getProducer()?.code ?: ""
             ))
+
+            updateGood(changedGood)
+        }
+    }
+
+    private fun addPart() {
+        good.value?.let { changedGood ->
+            changedGood.addPart(Part(
+                    number = lastSuccessSearchNumber.value!!,
+                    material = changedGood.material,
+                    quantity = quantity.value!!,
+                    units = changedGood.units,
+                    providerCode = getProvider()?.code ?: "",
+                    producerCode = getProducer()?.code ?: "",
+                    date = date.value!!
+            ))
+
+            updateGood(changedGood)
+        }
+    }
+
+    private fun addBox() {
+        good.value?.let { changedGood ->
+            markInfoResult?.marks?.let { marks ->
+                marks.forEach { mark ->
+                    changedGood.addMark(Mark(
+                            number = mark.markNumber,
+                            material = changedGood.material,
+                            boxNumber = lastSuccessSearchNumber.value!!,
+                            isBadMark = mark.isBadMark.isNotEmpty(),
+                            producerCode = getProducer()?.code ?: ""
+                    ))
+                }
+            }
+
+            updateGood(changedGood)
         }
     }
 
     private fun getProvider(): ProviderInfo? {
-        val position = providerPosition.value!!
         return providers.value?.let { providers ->
             when (providers.size) {
-                0 -> null
                 1 -> providers[0]
-                else -> if (position != 0) providers[position] else null
+                else -> providers[providerPosition.value!!]
             }
         }
+    }
+
+    private fun getProducer(): ProducerInfo? {
+        return producers.value?.let { producers ->
+            when (producers.size) {
+                1 -> producers[0]
+                else -> producers[producerPosition.value!!]
+            }
+        }
+    }
+
+    private fun updateGood(changedGood: Good) {
+        good.value = changedGood
     }
 
 
