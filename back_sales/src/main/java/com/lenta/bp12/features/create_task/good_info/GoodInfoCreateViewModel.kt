@@ -23,6 +23,7 @@ import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.extentions.*
 import com.lenta.shared.view.OnPositionClickListener
 import kotlinx.coroutines.launch
+import java.math.BigInteger
 import javax.inject.Inject
 
 class GoodInfoCreateViewModel : CoreViewModel() {
@@ -474,18 +475,20 @@ class GoodInfoCreateViewModel : CoreViewModel() {
                         if (status == MarkStatus.OK.code || status == MarkStatus.BAD.code) {
                             addMarkInfo(number, markInfoResult)
                         } else if (status == MarkStatus.UNKNOWN.code) {
+                            val alcoCode = BigInteger(number.substring(7, 19), 36).toString().padStart(19, '0')
+                            Logg.d { "--> alcoCode = $alcoCode" }
 
-                            // todo Брать данные из 22 справочника с алкокодами
-
-                             if (isCorrectPartAlcoCode(markInfoResult)) {
-                                 if (isAlcoCodeBelongToCurrentGood(markInfoResult)) {
-                                     addPartInfo(number, markInfoResult)
-                                 } else {
-                                     navigator.openAlertScreen("Алкокод не относится к этому товару")
-                                 }
-                             } else {
-                                 navigator.openAlertScreen("Неизвестный алкокод")
-                             }
+                            database.getAlcoCodeInfoList(alcoCode).let { alcoCodeInfoList ->
+                                if (alcoCodeInfoList.isNotEmpty()) {
+                                    if (alcoCodeInfoList.find { it.material == good.value!!.material } != null) {
+                                        addPartInfo(number, markInfoResult)
+                                    } else {
+                                        navigator.openAlertScreen("Алкокод не относится к этому товару")
+                                    }
+                                } else {
+                                    navigator.openAlertScreen("Неизвестный алкокод")
+                                }
+                            }
                         } else {
                             navigator.openAlertScreen(markInfoResult.statusDescription)
                         }
@@ -493,18 +496,6 @@ class GoodInfoCreateViewModel : CoreViewModel() {
                 }
             }
         }
-    }
-
-    private fun isCorrectPartAlcoCode(markInfoResult: MarkInfoResult): Boolean {
-
-
-        return false
-    }
-
-    private fun isAlcoCodeBelongToCurrentGood(markInfoResult: MarkInfoResult): Boolean {
-
-
-        return false
     }
 
     private fun handleMarkLoadFailure(failure: Failure) {
@@ -534,6 +525,7 @@ class GoodInfoCreateViewModel : CoreViewModel() {
         isExistUnsavedData = true
         markInfoResult = markInfo
         scanModeType.value = ScanNumberType.PART
+        updateProducers(markInfo.producers.toMutableList())
     }
 
     private fun loadBoxInfo(number: String) {

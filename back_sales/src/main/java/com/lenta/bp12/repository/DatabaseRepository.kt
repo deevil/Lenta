@@ -1,5 +1,6 @@
 package com.lenta.bp12.repository
 
+import com.lenta.bp12.model.pojo.AlcoCodeInfo
 import com.lenta.bp12.model.pojo.open_task.Good
 import com.lenta.bp12.model.pojo.ReturnReason
 import com.lenta.bp12.model.pojo.Properties
@@ -35,7 +36,7 @@ class DatabaseRepository @Inject constructor(
     private val forbidden: ZmpUtz42V001 by lazy { ZmpUtz42V001(hyperHive) } // Запрещенные товары
     private val returnReasons: ZmpUtz44V001 by lazy { ZmpUtz44V001(hyperHive) } // Причины возврата
     private val providers: ZmpUtz09V001 by lazy { ZmpUtz09V001(hyperHive) } // Поставщики
-    private val alcohol: ZmpUtz22V001 by lazy { ZmpUtz22V001(hyperHive) } // Алкогольные товары
+    private val alcoCodes: ZmpUtz22V001 by lazy { ZmpUtz22V001(hyperHive) } // Алкокоды
     private val goods: ZmpUtz30V001 by lazy { ZmpUtz30V001(hyperHive) } // Товары
     private val producers: ZmpUtz43V001 by lazy { ZmpUtz43V001(hyperHive) } // Производители
 
@@ -181,6 +182,12 @@ class DatabaseRepository @Inject constructor(
         }
     }
 
+    override suspend fun getAlcoCodeInfoList(alcoCode: String): List<AlcoCodeInfo> {
+        return withContext(Dispatchers.IO) {
+            return@withContext alcoCodes.getAlcoCodeInfoList(alcoCode)
+        }
+    }
+
 }
 
 interface IDatabaseRepository {
@@ -197,5 +204,6 @@ interface IDatabaseRepository {
     suspend fun getTaskAttributes(taskType: String): Set<String>
     suspend fun isGoodCanBeAdded(goodInfo: GoodInfoResult, taskType: String): Boolean
     suspend fun getProviderInfo(code: String): ProviderInfo?
+    suspend fun getAlcoCodeInfoList(alcoCode: String): List<AlcoCodeInfo>
 
 }

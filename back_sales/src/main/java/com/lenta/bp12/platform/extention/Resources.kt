@@ -1,11 +1,13 @@
 package com.lenta.bp12.platform.extention
 
+import com.lenta.bp12.model.pojo.AlcoCodeInfo
 import com.lenta.bp12.model.pojo.ReturnReason
 import com.lenta.bp12.model.pojo.Properties
 import com.lenta.bp12.request.pojo.ProviderInfo
 import com.lenta.shared.fmp.resources.fast.ZmpUtz39V001
 import com.lenta.shared.fmp.resources.fast.ZmpUtz44V001
 import com.lenta.shared.fmp.resources.slow.ZmpUtz09V001
+import com.lenta.shared.fmp.resources.slow.ZmpUtz22V001
 
 
 fun ZmpUtz09V001.getProviderInfo(code: String): ProviderInfo? {
@@ -50,6 +52,16 @@ fun ZmpUtz44V001.getReturnReasonList(taskType: String): List<ReturnReason> {
         ReturnReason(
                 code = it.reason,
                 description = it.grtxt
+        )
+    }
+}
+
+fun ZmpUtz22V001.getAlcoCodeInfoList(alcoCode: String): List<AlcoCodeInfo> {
+    @Suppress("INACCESSIBLE_TYPE")
+    return localHelper_ET_ALCOD_LIST.getWhere("ZALCCOD = \"$alcoCode\"").map {
+        AlcoCodeInfo(
+                material = it.matnr,
+                code = it.zalccod
         )
     }
 }
