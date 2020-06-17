@@ -231,14 +231,13 @@ class ExciseAlcoBoxAccInfoPGEViewModel : CoreViewModel(), OnPositionClickListene
         return if (processExciseAlcoBoxAccPGEService.overLimit(countValue.value!!)) {
             screenNavigator.openAlertOverLimitAlcoPGEScreen( //ПГЕ https://trello.com/c/TzUSGIH7
                     nextCallbackFunc = {
-                        //todo https://trello.com/c/HiTBZHLJ карточка пока не готова (см. тикет 12. ПГЕ. Излишки. Превышено кол-во. Режим поиска излишка на списке коробок и карточки товара (КОР учет))
-                        screenNavigator.openNotImplementedScreenAlert("ПГЕ. Излишки. Превышено кол-во. Режим поиска излишка на списке коробок и карточки товара (КОР учет)")
-                        /**processExciseAlcoBoxAccPGEService.setInitialCount(countValue.value ?: 0.0)
+                        //https://trello.com/c/HiTBZHLJ (12. ПГЕ. Излишки. Превышено кол-во. Режим поиска излишка на списке коробок и карточки товара (КОР учет))
+                        processExciseAlcoBoxAccPGEService.setInitialCount(countValue.value ?: 0.0)
                         processExciseAlcoBoxAccPGEService.setCountAcceptRefusal((acceptTotalCount.value ?: 0.0) + (refusalTotalCount.value ?: 0.0))
                         screenNavigator.openExciseAlcoBoxListPGEScreen(
                                 productInfo = productInfo.value!!,
                                 selectQualityCode = qualityInfo.value!![spinQualitySelectedPosition.value!!].code
-                        )*/
+                        )
                     }
             )
             false

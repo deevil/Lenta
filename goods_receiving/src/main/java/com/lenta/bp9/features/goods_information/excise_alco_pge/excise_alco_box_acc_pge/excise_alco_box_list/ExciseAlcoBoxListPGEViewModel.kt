@@ -71,11 +71,13 @@ class ExciseAlcoBoxListPGEViewModel : CoreViewModel(), PageSelectionListener, On
     }
 
     fun getDescription() : String {
+        val countBoxesOfProductForSearchSurplus = processExciseAlcoBoxAccPGEService.getCountBoxesOfProductForSearchSurplus(processExciseAlcoBoxAccPGEService.getInitialCount())
+        val descriptionSurplus = if (countBoxesOfProductForSearchSurplus > 0) "${context.getString(R.string.surplus)} ${countBoxesOfProductForSearchSurplus.toStringFormatted()} ${context.getString(R.string.box_abbreviated)}"  else ""
         return if (selectQualityCode.value == "1") {
             if (taskManager.getReceivingTask()?.controlExciseStampsOfProduct(productInfo.value!!) == true && taskManager.getReceivingTask()?.controlBoxesOfProduct(productInfo.value!!) == true) { //https://trello.com/c/HjxtG4Ca
-                context.getString(R.string.norm_control_performed) //Контроль нормы выполнен
+                "${context.getString(R.string.norm_control_performed)} $descriptionSurplus" //Контроль нормы выполнен. Излишек. Y кор.
             } else {
-                "${context.getString(R.string.norm_control)} ${productInfo.value?.numberBoxesControl?.toDouble().toStringFormatted()} ${context.getString(R.string.box_abbreviated)}" //Контроль нормы. Z кор.
+                "${context.getString(R.string.norm_control)} ${productInfo.value?.numberBoxesControl?.toDouble().toStringFormatted()} ${context.getString(R.string.box_abbreviated)} $descriptionSurplus" //Контроль нормы. Z кор. Излишек. Y кор.
             }
         } else {
             if (processExciseAlcoBoxAccPGEService.getCountUntreatedBoxes() == 0) {
@@ -181,6 +183,7 @@ class ExciseAlcoBoxListPGEViewModel : CoreViewModel(), PageSelectionListener, On
     }
 
     fun onClickApply() {
+        //https://trello.com/c/3WNRaO2C По кнопкам "Назад" и "Применить" переходить на карточку товара.
         screenNavigator.goBack()
     }
 
