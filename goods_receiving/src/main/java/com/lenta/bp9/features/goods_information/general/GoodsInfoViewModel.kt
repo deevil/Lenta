@@ -102,8 +102,8 @@ class GoodsInfoViewModel : CoreViewModel(), OnPositionClickListener {
     val isGoodsAddedAsSurplus: MutableLiveData<Boolean> by lazy {
         MutableLiveData(productInfo.value?.isGoodsAddedAsSurplus == true )
     }
-    private val isNotRecountBreakingCargoUnit: MutableLiveData<Boolean> by lazy { //https://trello.com/c/PRTAVnUP
-        MutableLiveData(isTaskPGE.value == true && taskManager.getReceivingTask()!!.taskHeader.isCracked && productInfo.value!!.isWithoutRecount)
+    private val isNotRecountCargoUnit: MutableLiveData<Boolean> by lazy { //https://trello.com/c/PRTAVnUP только без признака ВЗЛОМ (обсудили с Колей 17.06.2020)
+        MutableLiveData(isTaskPGE.value == true && productInfo.value!!.isWithoutRecount)
     }
     val isTaskPGE: MutableLiveData<Boolean> by lazy {
         if (taskManager.getReceivingTask()!!.taskHeader.taskType == TaskType.RecalculationCargoUnit) MutableLiveData(true) else MutableLiveData(false)
@@ -134,7 +134,7 @@ class GoodsInfoViewModel : CoreViewModel(), OnPositionClickListener {
                 if (qualityInfo.value?.get(it!!.second)?.code == "1" || qualityInfo.value?.get(it!!.second)?.code == "2") {
                     convertEizToBei() + countAccept
                 } else {
-                    if (isNotRecountBreakingCargoUnit.value == true && convertEizToBei() >= 0.0) {//Не пересчётная ГЕ https://trello.com/c/PRTAVnUP, convertEizToBei() >= 0.0 это условие, чтобы не счиатать, если пользователь ввел отрицательное значение
+                    if (isNotRecountCargoUnit.value == true && convertEizToBei() >= 0.0) {//Не пересчётная ГЕ, convertEizToBei() >= 0.0 это условие, чтобы не счиатать, если пользователь ввел отрицательное значение
                         if ((countAccept - convertEizToBei()) >= 0.0 ) countAccept - convertEizToBei() else 0.0
                     } else {
                         countAccept
@@ -215,7 +215,7 @@ class GoodsInfoViewModel : CoreViewModel(), OnPositionClickListener {
 
         if (isTaskPGE.value!! && isGoodsAddedAsSurplus.value!!) {
             (countAccept + (it?.first ?: 0.0)) >= 0.0 && it?.first != 0.0 && it?.second?.length == 18
-        } else if (isNotRecountBreakingCargoUnit.value == true) {//Не пересчётная ГЕ https://trello.com/c/PRTAVnUP
+        } else if (isNotRecountCargoUnit.value == true) {//Не пересчётная ГЕ
             val quantityAdded = convertEizToBei() + acceptTotalCount.value!! + taskManager.getReceivingTask()!!.taskRepository.getProductsDiscrepancies().getCountRefusalOfProductPGE(productInfo.value!!)
             convertEizToBei() > 0.0 && quantityAdded <= productInfo.value!!.orderQuantity.toDouble()
         } else {
@@ -253,7 +253,7 @@ class GoodsInfoViewModel : CoreViewModel(), OnPositionClickListener {
                         } else {
                             taskManager.getReceivingTask()?.taskRepository?.getProductsDiscrepancies()?.getCountProductNotProcessedOfProductPGE(productInfo.value!!).toStringFormatted()
                         }
-                        if (isNotRecountBreakingCargoUnit.value == true) {
+                        if (isNotRecountCargoUnit.value == true) {
                             qualityInfo.value = dataBase.getQualityInfoPGENotRecountBreaking()
                         } else {
                             qualityInfo.value = dataBase.getQualityInfoPGEForDiscrepancy()
@@ -261,7 +261,7 @@ class GoodsInfoViewModel : CoreViewModel(), OnPositionClickListener {
                     }
                     else -> {// обычный товар https://trello.com/c/OMjrZPhg
                         suffix.value = productInfo.value?.purchaseOrderUnits?.name
-                        if (isNotRecountBreakingCargoUnit.value == true) {
+                        if (isNotRecountCargoUnit.value == true) {
                             qualityInfo.value = dataBase.getQualityInfoPGENotRecountBreaking()
                         } else {
                             qualityInfo.value = dataBase.getQualityInfoPGE()
@@ -417,7 +417,7 @@ class GoodsInfoViewModel : CoreViewModel(), OnPositionClickListener {
                 processGeneralProductService.setProcessingUnitNumber(enteredProcessingUnitNumber.value!!)
                 processGeneralProductService.add(convertEizToBei().toString(), qualityInfo.value!![spinQualitySelectedPosition.value!!].code, enteredProcessingUnitNumber.value!!)
                 clickBtnApply()
-            } else if (isNotRecountBreakingCargoUnit.value == true) { //https://trello.com/c/PRTAVnUP
+            } else if (isNotRecountCargoUnit.value == true) { //не пересчетная ГЕ
                 if ((convertEizToBei() +
                                 acceptTotalCount.value!! +
                                 taskManager.getReceivingTask()!!.taskRepository.getProductsDiscrepancies().getCountRefusalOfProductPGE(productInfo.value!!)) <= productInfo.value!!.orderQuantity.toDouble()) {
