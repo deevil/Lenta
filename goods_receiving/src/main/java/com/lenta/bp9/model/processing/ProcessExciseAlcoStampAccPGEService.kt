@@ -161,6 +161,12 @@ class ProcessExciseAlcoStampAccPGEService
         return currentExciseStampsDiscrepancies != taskManager.getReceivingTask()?.taskRepository?.getExciseStampsDiscrepancies()?.getExciseStampDiscrepancies()
     }
 
+    fun getCountExciseStampsSurplusScanned() : Int {
+        return currentExciseStampsDiscrepancies.filter {
+            it.isScan && it.typeDiscrepancies == "2"
+        }.size
+    }
+
     fun clearModifications() {
         currentExciseStampsDiscrepancies.clear()
         taskManager.getReceivingTask()?.taskRepository?.getExciseStampsDiscrepancies()?.findExciseStampsDiscrepanciesOfProduct(productInfo)?.map {

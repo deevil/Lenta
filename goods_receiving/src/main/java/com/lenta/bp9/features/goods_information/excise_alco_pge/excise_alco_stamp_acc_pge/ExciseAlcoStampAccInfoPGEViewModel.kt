@@ -91,6 +91,7 @@ class ExciseAlcoStampAccInfoPGEViewModel : CoreViewModel(), OnPositionClickListe
     private val countValue: MutableLiveData<Double> = count.map { it?.toDoubleOrNull() ?: 0.0 }
     private val countExciseStampsScanned: MutableLiveData<Int> = MutableLiveData(0)
     private val isExciseStampSurplus: MutableLiveData<Boolean> = MutableLiveData(false)
+    val isSurplus: MutableLiveData<Boolean> = MutableLiveData(false)
 
     val isDefect: MutableLiveData<Boolean> = spinQualitySelectedPosition.map {
         it != 0
@@ -158,6 +159,22 @@ class ExciseAlcoStampAccInfoPGEViewModel : CoreViewModel(), OnPositionClickListe
         (countExciseStampsScanned.value ?: 0) >= (productInfo.value?.numberStampsControl?.toDouble() ?: 0.0)
     }
 
+    val checkSurplusControlVisibility: MutableLiveData<Boolean> = MutableLiveData()
+
+    val tvSurplusControlVal: MutableLiveData<String> = countValue.combineLatest(countExciseStampsScanned).map {
+        if ((it?.first ?: 0.0) <= 0.0) {
+            checkSurplusControlVisibility.value = false
+            context.getString(R.string.not_required)
+        } else {
+            checkSurplusControlVisibility.value = true
+            "${processExciseAlcoStampAccPGEService.getCountExciseStampsSurplusScanned().toDouble().toStringFormatted()} из ${it?.first.toStringFormatted()}"
+        }
+    }
+
+    val checkBoxSurplusControl: MutableLiveData<Boolean> = checkSurplusControlVisibility.map {
+        (countValue.value ?: 0.0) > 0.0 && processExciseAlcoStampAccPGEService.getCountExciseStampsSurplusScanned() >= (countValue.value ?: 0.0)
+    }
+
     val checkStampListVisibility: MutableLiveData<Boolean> = MutableLiveData()
 
     val tvListStampVal: MutableLiveData<String> = countValue.combineLatest(countExciseStampsScanned).map {
@@ -168,7 +185,6 @@ class ExciseAlcoStampAccInfoPGEViewModel : CoreViewModel(), OnPositionClickListe
             checkStampListVisibility.value = true
             "${it?.second} из ${it?.first.toStringFormatted()}"
         }
-
     }
 
     val checkBoxStampList: MutableLiveData<Boolean> = checkStampListVisibility.map {
@@ -180,10 +196,16 @@ class ExciseAlcoStampAccInfoPGEViewModel : CoreViewModel(), OnPositionClickListe
     }
 
     val enabledApplyBtn: MutableLiveData<Boolean> = countValue.combineLatest(spinQualitySelectedPosition).map {
-        if (qualityInfo.value?.get(it?.second ?: 0)?.code  == "1") {
-            (it?.first ?: 0.0) > 0.0
-        } else {
-            checkBoxStampList.value
+        when (qualityInfo.value?.get(it?.second ?: 0)?.code) {
+            "1" -> {
+                (it?.first ?: 0.0) > 0.0
+            }
+            "2" -> {
+                checkBoxSurplusControl.value
+            }
+            else -> {
+                checkBoxStampList.value
+            }
         }
     }
 
@@ -251,8 +273,8 @@ class ExciseAlcoStampAccInfoPGEViewModel : CoreViewModel(), OnPositionClickListe
         return if (processExciseAlcoStampAccPGEService.overLimit(countValue.value!!)) {
             screenNavigator.openAlertOverLimitAlcoPGEScreen(
                     nextCallbackFunc = {
-                        //todo По товару ХХХХХХ было превышено количество. Необходимо найти излишек" с кнопками "Назад" и "Далее", по кнопке далее переходить к режиму поиска излишка (14. ПГЕ. Мар.учет. Режим поиска излишка.https://trello.com/c/Axf3evBC). эта карточка еще в разработке у аналитика, выводим здесь сообщение о доработке данного пункта
-                        screenNavigator.openNotImplementedScreenAlert("ПГЕ. Мар.учет. Режим поиска излишка")
+                        //По товару ХХХХХХ было превышено количество. Необходимо найти излишек" с кнопками "Назад" и "Далее", по кнопке далее переходить к режиму поиска излишка (14. ПГЕ. Мар.учет. Режим поиска излишка.https://trello.com/c/Axf3evBC)
+                        setSurplusSearchMode()
                     }
             )
             false
@@ -265,6 +287,17 @@ class ExciseAlcoStampAccInfoPGEViewModel : CoreViewModel(), OnPositionClickListe
 
     fun onClickApply() {
         if (onClickAdd()) screenNavigator.goBack()
+    }
+
+    private fun setSurplusSearchMode() {
+        viewModelScope.launch {
+            qualityInfo.value = dataBase.getSurplusInfoForPGE()
+            spinQuality.value = qualityInfo.value?.map {
+                it.name
+            }
+            count.value = (acceptTotalCount.value!!.plus(refusalTotalCount.value!!) - productInfo.value!!.orderQuantity.toDouble()).toStringFormatted()
+            isSurplus.value = true
+        }
     }
 
     fun onScanResult(data: String) {
