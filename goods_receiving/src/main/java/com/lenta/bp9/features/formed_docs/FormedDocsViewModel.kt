@@ -65,25 +65,28 @@ class FormedDocsViewModel : CoreViewModel() {
                             number = index + 1,
                             name = taskDocumentsPrinting.name,
                             supplyNumber = taskDocumentsPrinting.productDocNumber,
+                            taskDocumentsPrinting = taskDocumentsPrinting,
                             even = index % 2 == 0
                     )
                 }?.reversed()
         )
+
+        docsSelectionsHelper.clearPositions()
     }
 
     fun onClickPrint() {
         viewModelScope.launch {
             screenNavigator.showProgressLoadingData()
-            taskManager.getReceivingTask()?.let { task ->
-                val params = PrintingDocsParams(
-                        listDocumentsPrinting = taskManager.getReceivingTask()!!.taskRepository.getDocumentsPrinting().getDocumentsPrinting(),
-                        printerName = sessionInfo.printer ?: ""
-                )
-                printingDocsNetRequest(params).either(::handleFailure) {
-                    docsSelectionsHelper.clearPositions()
-                    updateDocs()
-                    screenNavigator.openInfoDocsSentPrintScreen()
-                }
+            val params = PrintingDocsParams(
+                    listDocumentsPrinting = docsSelectionsHelper.selectedPositions.value?.map { position ->
+                        listDocs.value?.get(position)!!.taskDocumentsPrinting
+                    } ?: emptyList(),
+                    printerName = sessionInfo.printer ?: ""
+            )
+            printingDocsNetRequest(params).either(::handleFailure) {
+                docsSelectionsHelper.clearPositions()
+                updateDocs()
+                screenNavigator.openInfoDocsSentPrintScreen()
             }
             screenNavigator.hideProgress()
         }
