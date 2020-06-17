@@ -360,11 +360,11 @@ class GoodsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKey
             screenNavigator.openSkipRecountScreen()
         } else {
             countedSelectionsHelper.selectedPositions.value?.map { position ->
-                val isNotRecountBreakingCargoUnit = isTaskPGE.value == true && taskManager.getReceivingTask()!!.taskHeader.isCracked && listCounted.value?.get(position)!!.productInfo!!.isWithoutRecount
-                if (isNotRecountBreakingCargoUnit) { //если это не пересчетная ГЕ //https://trello.com/c/PRTAVnUP
+                val isNotRecountCargoUnit = isTaskPGE.value == true && listCounted.value?.get(position)!!.productInfo!!.isWithoutRecount
+                if (isNotRecountCargoUnit) { //если это не пересчетная ГЕ //https://trello.com/c/PRTAVnUP только без признака ВЗЛОМ (обсудили с Колей 17.06.2020)
                     taskManager.getReceivingTask()?.taskRepository?.getProductsDiscrepancies()?.deleteProductsDiscrepanciesForProductNotRecountPGE(listCounted.value?.get(position)!!.productInfo!!)
                 }
-                if (!listCounted.value?.get(position)!!.productInfo!!.isNotEdit && !isNotRecountBreakingCargoUnit) {
+                if (!listCounted.value?.get(position)!!.productInfo!!.isNotEdit && !isNotRecountCargoUnit) {
                     taskManager
                             .getReceivingTask()
                             ?.taskRepository
