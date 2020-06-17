@@ -74,20 +74,26 @@ class NonExciseAlcoInfoPGEViewModel : CoreViewModel(), OnPositionClickListener {
     val acceptTotalCount: MutableLiveData<Double> = countValue.combineLatest(spinQualitySelectedPosition).combineLatest(spinManufacturersSelectedPosition).map {
         if (qualityInfo.value?.get(it!!.first.second)?.code == "1") {
             (it?.first?.first ?: 0.0).plus(
-                    batchInfo.value?.get(it!!.second)?.let {batch ->
+                    batchInfo.value?.map {batch ->
                         taskManager.getReceivingTask()?.taskRepository?.getBatchesDiscrepancies()?.getCountAcceptOfBatchPGE(batch)
+                    }?.sumByDouble {count ->
+                        count ?: 0.0
                     } ?: 0.0
             )
         } else {
-            batchInfo.value?.get(it!!.second)?.let {batch ->
+            batchInfo.value?.map {batch ->
                 taskManager.getReceivingTask()?.taskRepository?.getBatchesDiscrepancies()?.getCountAcceptOfBatchPGE(batch)
+            }?.sumByDouble {count ->
+                count ?: 0.0
             } ?: 0.0
         }
     }
 
     val acceptTotalCountWithUom: MutableLiveData<String> = acceptTotalCount.map {
-        val countAccept = batchInfo.value?.get(spinManufacturersSelectedPosition.value!!)?.let {batch ->
+        val countAccept = batchInfo.value?.map {batch ->
             taskManager.getReceivingTask()?.taskRepository?.getBatchesDiscrepancies()?.getCountAcceptOfBatchPGE(batch)
+        }?.sumByDouble {count ->
+            count ?: 0.0
         } ?: 0.0
         when {
             (it ?: 0.0) > 0.0 -> {
@@ -102,20 +108,26 @@ class NonExciseAlcoInfoPGEViewModel : CoreViewModel(), OnPositionClickListener {
     val refusalTotalCount: MutableLiveData<Double> = countValue.combineLatest(spinQualitySelectedPosition).combineLatest(spinManufacturersSelectedPosition).map {
         if (qualityInfo.value?.get(it?.first?.second ?: 0)?.code != "1") {
             (it?.first?.first ?: 0.0).plus(
-                    batchInfo.value?.get(it!!.second)?.let {batch ->
+                    batchInfo.value?.map {batch ->
                         taskManager.getReceivingTask()?.taskRepository?.getBatchesDiscrepancies()?.getCountRefusalOfBatchPGE(batch)
+                    }?.sumByDouble {count ->
+                        count ?: 0.0
                     } ?: 0.0
             )
         } else {
-            batchInfo.value?.get(it!!.second)?.let {batch ->
+            batchInfo.value?.map {batch ->
                 taskManager.getReceivingTask()?.taskRepository?.getBatchesDiscrepancies()?.getCountRefusalOfBatchPGE(batch)
+            }?.sumByDouble {count ->
+                count ?: 0.0
             } ?: 0.0
         }
     }
 
     val refusalTotalCountWithUom: MutableLiveData<String> = refusalTotalCount.map {
-        val countRefusal = batchInfo.value?.get(spinManufacturersSelectedPosition.value!!)?.let {batch ->
+        val countRefusal = batchInfo.value?.map {batch ->
             taskManager.getReceivingTask()?.taskRepository?.getBatchesDiscrepancies()?.getCountRefusalOfBatchPGE(batch)
+        }?.sumByDouble {count ->
+            count ?: 0.0
         } ?: 0.0
 
         if ((it ?: 0.0) > 0.0) {
