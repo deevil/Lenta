@@ -254,7 +254,7 @@ class OpenTaskManager @Inject constructor(
                     marks.add(
                             MarkInfo(
                                     material = good.material,
-                                    markNumber = mark.number,
+                                    number = mark.number,
                                     boxNumber = mark.boxNumber,
                                     isBadMark = mark.isBadMark.toSapBooleanString(),
                                     producerCode = mark.producerCode

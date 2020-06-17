@@ -35,10 +35,6 @@ data class Good(
         return "${material.takeLast(6)}$delimiter$name"
     }
 
-    fun isBox(): Boolean {
-        return innerQuantity > 1 // По умолчанию всегда 1.0
-    }
-
     fun addPosition(quantity: Double, provider: ProviderInfo?, date: String?) {
         val position = positions.find { it.provider?.code == provider?.code && it.date == date }
         val oldQuantity = position?.quantity
@@ -55,7 +51,19 @@ data class Good(
     }
 
     fun getTotalQuantity(): Double {
+        return getPositionQuantity() + getMarkQuantity() + getPartQuantity()
+    }
+
+    fun getPositionQuantity(): Double {
         return positions.map { it.quantity }.sumList()
+    }
+
+    fun getMarkQuantity(): Double {
+        return marks.size.toDouble()
+    }
+
+    fun getPartQuantity(): Double {
+        return parts.map { it.quantity }.sumList()
     }
 
     fun getQuantityByProvider(provider: ProviderInfo?): Double {
@@ -81,6 +89,12 @@ data class Good(
     fun addPart(part: Part) {
         if (parts.find { it.number == part.number } == null) {
             parts.add(part)
+        }
+    }
+
+    fun removeMark(number: String) {
+        marks.find { it.number == number }?.let { mark ->
+            marks.remove(mark)
         }
     }
 
