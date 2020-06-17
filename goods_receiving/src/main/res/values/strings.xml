@@ -312,5 +312,6 @@
     <string name="scanned_stamp_is_listed_in_cargo_unit">Отсканированная марка числится в ГЕ-%1$s текущей транспортировки. Пометить марку как излишек в текущей ГЕ? В случае согласия необходимо будет отсканировать все марки по данному товару.</string>
     <string name="scanned_stamp_not_included_in_delivery">Отсканированная марка не найдена. Пометить ее как излишек? В случае согласия необходимо будет отсканировать все марки по данному товару.</string>
     <string name="exceeded_planned_quantity_batch_pge_dialog">Превышено количество по партии. Добавить превышающее количество в излишек по текущей партии?</string>
-    <string name="surplus">Излишек.</string>
+    <string name="surplus_dot">Излишек.</string>
+    <string name="surplus">Излишек</string>
 </resources>
