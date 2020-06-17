@@ -84,7 +84,6 @@ class FormedDocsViewModel : CoreViewModel() {
                     printerName = sessionInfo.printer ?: ""
             )
             printingDocsNetRequest(params).either(::handleFailure) {
-                docsSelectionsHelper.clearPositions()
                 updateDocs()
                 screenNavigator.openInfoDocsSentPrintScreen()
             }
