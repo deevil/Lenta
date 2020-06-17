@@ -3,6 +3,7 @@ package com.lenta.bp9.model.processing
 import com.lenta.bp9.model.task.*
 import com.lenta.shared.di.AppScope
 import com.lenta.shared.models.core.ProductType
+import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.extentions.toStringFormatted
 import javax.inject.Inject
 
@@ -206,7 +207,17 @@ class ProcessExciseAlcoBoxAccPGEService
     }
 
     fun overLimit(count: Double) : Boolean {
-        return productInfo.orderQuantity.toDouble() < (getCountAcceptOfProduct() + getCountRefusalOfProduct() + count)
+        return (getCountAcceptOfProduct() + getCountRefusalOfProduct() + count) > (productInfo.orderQuantity.toDouble() + getCountBoxesOfProductWithCategorySurplus())
+    }
+
+    private fun getCountBoxesOfProductWithCategorySurplus() : Double {
+        return currentBoxDiscrepancies.filter {
+            it.typeDiscrepancies == "2"
+        }.size.toDouble()
+    }
+
+    fun getCountBoxesOfProductForSearchSurplus(count: Double) : Double {
+        return (getCountAcceptOfProduct() + getCountRefusalOfProduct() + count) - (productInfo.orderQuantity.toDouble() - getCountBoxesOfProductWithCategorySurplus())
     }
 
     fun searchExciseStamp(code: String) : TaskExciseStampInfo? {
