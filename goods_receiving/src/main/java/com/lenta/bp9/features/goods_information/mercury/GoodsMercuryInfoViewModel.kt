@@ -75,8 +75,6 @@ class GoodsMercuryInfoViewModel : CoreViewModel(), OnPositionClickListener {
         }
     }
     val productionDate: MutableLiveData<String> = MutableLiveData("")
-    //@SuppressLint("SimpleDateFormat")
-    //private val formatter = SimpleDateFormat("dd.MM.yyyy")
 
     @SuppressLint("SimpleDateFormat")
     private val formatterRU = SimpleDateFormat("dd.MM.yyyy")

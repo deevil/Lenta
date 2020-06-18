@@ -97,7 +97,7 @@ class ProcessNonExciseAlcoProductService
         }
     }
 
-    fun overlimit(count: Double, batchInfo: TaskBatchInfo) : Boolean {
+    fun overLimit(count: Double, batchInfo: TaskBatchInfo) : Boolean {
         return batchInfo.purchaseOrderScope < ((taskManager.getReceivingTask()?.taskRepository?.getBatchesDiscrepancies()?.getCountAcceptOfBatch(batchInfo) ?: 0.0)
                 + (taskManager.getReceivingTask()?.taskRepository?.getBatchesDiscrepancies()?.getCountRefusalOfBatch(batchInfo) ?: 0.0) + count)
 
