@@ -212,10 +212,10 @@ class GoodInfoOpenViewModel : CoreViewModel() {
                                 barCallback = { getGoodByEan(number) }
                         )
                     }
-                    Constants.EXCISE_68 -> {
+                    Constants.MARK_68 -> {
                         //loadMarkInfo(number)
                     }
-                    Constants.EXCISE_150 -> {
+                    Constants.MARK_150 -> {
                         //loadMarkInfo(number)
                     }
                     else -> getGoodByEan(number)

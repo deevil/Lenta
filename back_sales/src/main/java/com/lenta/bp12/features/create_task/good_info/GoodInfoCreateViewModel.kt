@@ -294,7 +294,7 @@ class GoodInfoCreateViewModel : CoreViewModel() {
                 when (type) {
                     ScanNumberType.COMMON -> quantity > 0.0 && isProviderSelected
                     ScanNumberType.ALCOHOL -> quantity > 0.0 && isProviderSelected && isProducerSelected && isDateEntered
-                    ScanNumberType.EXCISE -> true
+                    ScanNumberType.EXCISE -> false
                     ScanNumberType.MARK_150 -> isProviderSelected
                     ScanNumberType.MARK_68 -> isProviderSelected && isProducerSelected && isDateEntered
                     ScanNumberType.PART -> isProviderSelected && isProducerSelected
@@ -330,7 +330,7 @@ class GoodInfoCreateViewModel : CoreViewModel() {
 
     fun onScanResult(number: String) {
         if (number.length >= Constants.SAP_6) {
-            if (applyEnabled.value!!) {
+            if (applyEnabled.value!! || good.value!!.type == GoodType.EXCISE && (number.length == Constants.MARK_150 || number.length == Constants.MARK_68 || number.length == Constants.BOX_26)) {
                 saveChanges()
 
                 manager.openGoodFromList = false
@@ -353,13 +353,13 @@ class GoodInfoCreateViewModel : CoreViewModel() {
                                 barCallback = { getGoodByEan(number) }
                         )
                     }
-                    Constants.EXCISE_150 -> {
+                    Constants.MARK_150 -> {
                         loadMarkInfo(number)
                     }
-                    Constants.EXCISE_68 -> {
+                    Constants.MARK_68 -> {
                         loadMarkInfo(number)
                     }
-                    Constants.BOX -> {
+                    Constants.BOX_26 -> {
                         loadBoxInfo(number)
                     }
                     else -> getGoodByEan(number)
@@ -473,6 +473,10 @@ class GoodInfoCreateViewModel : CoreViewModel() {
                 updateProducers(good.producers)
                 setScanModeFromGoodType(good.type)
                 setDefaultQuantity(good)
+
+                if (good.type == GoodType.EXCISE) {
+                    navigator.showForExciseGoodNeedScanFirstMark()
+                }
             }
         }
     }
@@ -526,12 +530,12 @@ class GoodInfoCreateViewModel : CoreViewModel() {
         quantityField.value = "1"
 
         when (number.length) {
-            Constants.EXCISE_150 -> {
+            Constants.MARK_150 -> {
                 scanModeType.value = ScanNumberType.MARK_150
                 updateProducers(markInfo.producers.toMutableList())
                 date.value = markInfo.producedDate
             }
-            Constants.EXCISE_68 -> {
+            Constants.MARK_68 -> {
                 scanModeType.value = ScanNumberType.MARK_68
             }
         }
