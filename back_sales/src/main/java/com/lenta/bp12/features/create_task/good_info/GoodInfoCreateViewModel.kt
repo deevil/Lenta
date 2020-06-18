@@ -386,6 +386,11 @@ class GoodInfoCreateViewModel : CoreViewModel() {
         setScanModeFromGoodType(foundGood.type)
         updateProviders(foundGood.providers)
         updateProducers(foundGood.producers)
+        setDefaultQuantity(foundGood)
+    }
+
+    private fun setDefaultQuantity(good: Good) {
+        quantityField.value = if (good.type == GoodType.COMMON) "1" else "0"
     }
 
     private fun setScanModeFromGoodType(goodType: GoodType) {
@@ -467,7 +472,7 @@ class GoodInfoCreateViewModel : CoreViewModel() {
                 updateProviders(good.providers)
                 updateProducers(good.producers)
                 setScanModeFromGoodType(good.type)
-                quantityField.value = "1"
+                setDefaultQuantity(good)
             }
         }
     }
@@ -593,9 +598,9 @@ class GoodInfoCreateViewModel : CoreViewModel() {
     private fun saveChanges() {
         scanModeType.value?.let { type ->
             when (type) {
-                ScanNumberType.COMMON, ScanNumberType.ALCOHOL -> addPosition()
+                ScanNumberType.COMMON -> addPosition()
                 ScanNumberType.MARK_150, ScanNumberType.MARK_68 -> addMark()
-                ScanNumberType.PART -> addPart()
+                ScanNumberType.ALCOHOL, ScanNumberType.PART -> addPart()
                 ScanNumberType.BOX -> addBox()
             }
         }

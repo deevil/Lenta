@@ -61,7 +61,7 @@ class TaskCompositionViewModel : CoreViewModel(), PageSelectionListener, OnOkInS
                         material = good.material,
                         position = "${task.goods.size - index}",
                         name = good.getNameWithMaterial(),
-                        quantity = "${good.getPositionQuantity().dropZeros()} ${good.units.name}"
+                        quantity = "${good.getTotalQuantity().dropZeros()} ${good.units.name}"
                 )
             }
         }

@@ -54,15 +54,15 @@ data class Good(
         return getPositionQuantity() + getMarkQuantity() + getPartQuantity()
     }
 
-    fun getPositionQuantity(): Double {
+    private fun getPositionQuantity(): Double {
         return positions.map { it.quantity }.sumList()
     }
 
-    fun getMarkQuantity(): Double {
+    private fun getMarkQuantity(): Double {
         return marks.size.toDouble()
     }
 
-    fun getPartQuantity(): Double {
+    private fun getPartQuantity(): Double {
         return parts.map { it.quantity }.sumList()
     }
 
