@@ -124,10 +124,12 @@ class GoodInfoCreateViewModel : CoreViewModel() {
 
     private val totalQuantity by lazy {
         good.combineLatest(quantity).map {
-            val total = it!!.first.getTotalQuantity()
-            val current = it.second
+            it?.let {
+                val total = it.first.getTotalQuantity()
+                val current = it.second
 
-            total.sumWith(current)
+                total.sumWith(current)
+            }
         }
     }
 

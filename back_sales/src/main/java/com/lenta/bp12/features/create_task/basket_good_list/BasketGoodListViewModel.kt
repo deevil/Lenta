@@ -88,6 +88,7 @@ class BasketGoodListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
     fun onClickItemPosition(position: Int) {
         manager.searchNumber = goods.value!![position].material
         manager.openGoodFromList = true
+        navigator.goBack()
         navigator.openGoodInfoCreateScreen()
     }
 
