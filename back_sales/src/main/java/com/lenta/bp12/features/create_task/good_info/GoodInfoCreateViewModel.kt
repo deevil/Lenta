@@ -162,10 +162,12 @@ class GoodInfoCreateViewModel : CoreViewModel() {
 
     val basketQuantity by lazy {
         quantity.combineLatest(basket).map {
-            val quantity = it!!.first
-            val basket = it.second
+            it?.let {
+                val quantity = it.first
+                val basket = it.second
 
-            "${task.value?.getQuantityByBasket(basket).sumWith(quantity).dropZeros()} ${good.value?.units?.name}"
+                "${task.value?.getQuantityByBasket(basket).sumWith(quantity).dropZeros()} ${good.value?.units?.name}"
+            }
         }
     }
 
@@ -685,6 +687,13 @@ class GoodInfoCreateViewModel : CoreViewModel() {
 
     private fun updateGood(changedGood: Good) {
         good.value = changedGood
+    }
+
+    fun updateData() {
+        if (manager.isNeedUpdateProviders) {
+            updateProviders(good.value!!.providers)
+            manager.isNeedUpdateProviders = false
+        }
     }
 
 

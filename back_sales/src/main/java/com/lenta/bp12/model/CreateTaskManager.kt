@@ -29,6 +29,8 @@ class CreateTaskManager @Inject constructor(
 
     override var openGoodFromList = false
 
+    override var isNeedUpdateProviders = false
+
     override val currentTask = MutableLiveData<Task>()
 
     override val currentGood = MutableLiveData<Good>()
@@ -159,6 +161,7 @@ class CreateTaskManager @Inject constructor(
     override fun addProviderInCurrentGood(providerInfo: ProviderInfo) {
         currentGood.value?.let { good ->
             good.providers.add(0, providerInfo)
+            isNeedUpdateProviders = true
 
             updateCurrentGood(good)
         }
@@ -238,6 +241,7 @@ interface ICreateTaskManager {
 
     var searchNumber: String
     var openGoodFromList: Boolean
+    var isNeedUpdateProviders: Boolean
 
     val currentTask: MutableLiveData<Task>
     val currentGood: MutableLiveData<Good>

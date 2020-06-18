@@ -14,7 +14,7 @@ fun ZmpUtz09V001.getProviderInfo(code: String): ProviderInfo? {
     val formattedCode = code.addZerosToStart(10)
 
     @Suppress("INACCESSIBLE_TYPE")
-    return localHelper_ET_VENDORS.getWhere("VENDOR = \"$formattedCode\" LIMIT 1").first()?.let { provider ->
+    return localHelper_ET_VENDORS.getWhere("VENDOR = \"$formattedCode\" LIMIT 1").firstOrNull()?.let { provider ->
         ProviderInfo(
                 code = formattedCode,
                 name = provider.vendorname
@@ -36,7 +36,7 @@ fun ZmpUtz39V001.getTaskTypeList(): List<Properties> {
 
 fun ZmpUtz39V001.getTaskType(code: String): Properties? {
     @Suppress("INACCESSIBLE_TYPE")
-    return localHelper_ET_TASK_TPS.getWhere("TASK_TYPE = \"$code\" LIMIT 1").first()?.let {
+    return localHelper_ET_TASK_TPS.getWhere("TASK_TYPE = \"$code\" LIMIT 1").firstOrNull()?.let {
         Properties(
                 type = it.taskType,
                 description = it.annotation,

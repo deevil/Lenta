@@ -68,6 +68,6 @@ class GoodInfoCreateFragment : CoreFragment<FragmentGoodInfoCreateBinding, GoodI
 
     override fun onResume() {
         super.onResume()
-        //vm.updateData()
+        vm.updateData()
     }
 }
