@@ -121,7 +121,7 @@ class TaskCompositionViewModel : CoreViewModel(), PageSelectionListener, OnOkInS
                 }
                 1 -> {
                     manager.updateCurrentBasket(baskets.value!![position].basket)
-                    navigator.openBasketPropertiesScreen()
+                    navigator.openBasketGoodListScreen()
                 }
                 else -> throw IllegalArgumentException("Wrong pager position!")
             }

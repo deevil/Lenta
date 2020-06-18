@@ -329,14 +329,15 @@ class GoodInfoCreateViewModel : CoreViewModel() {
      */
 
     fun onScanResult(number: String) {
-        if (number.length >= Constants.SAP_6) {
-            if (applyEnabled.value!! || good.value!!.type == GoodType.EXCISE && (number.length == Constants.MARK_150 || number.length == Constants.MARK_68 || number.length == Constants.BOX_26)) {
-                saveChanges()
-
-                manager.openGoodFromList = false
-                manager.searchNumber = number
-                checkSearchNumber(number)
-            }
+        if (number.length < Constants.SAP_6 || number.length > Constants.MARK_150) {
+            return
+        }
+        
+        if (applyEnabled.value!! || good.value!!.type == GoodType.EXCISE && (number.length == Constants.MARK_150 || number.length == Constants.MARK_68 || number.length == Constants.BOX_26)) {
+            saveChanges()
+            manager.openGoodFromList = false
+            manager.searchNumber = number
+            checkSearchNumber(number)
         }
     }
 
