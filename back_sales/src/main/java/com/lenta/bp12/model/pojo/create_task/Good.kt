@@ -66,8 +66,8 @@ data class Good(
         return parts.map { it.quantity }.sumList()
     }
 
-    fun getQuantityByProvider(provider: ProviderInfo?): Double {
-        return positions.filter { it.provider?.code == provider?.code }.map { it.quantity }.sumList()
+    fun getQuantityByProvider(providerCode: String?): Double {
+        return positions.filter { it.provider?.code == providerCode }.map { it.quantity }.sumList()
     }
 
     fun deletePositions(positionList: List<Position>) {

@@ -55,7 +55,9 @@ class GoodInfoCreateViewModel : CoreViewModel() {
         manager.currentTask
     }
 
-    val good = MutableLiveData<Good>()
+    val good by lazy {
+        manager.currentGood
+    }
 
     val title by lazy {
         good.map { good ->
@@ -111,6 +113,59 @@ class GoodInfoCreateViewModel : CoreViewModel() {
                 ScanNumberType.EXCISE, ScanNumberType.MARK_150, ScanNumberType.MARK_68, ScanNumberType.BOX -> false
                 else -> true
             }
+        }
+    }
+
+    /**
+    Количество товара итого
+     */
+
+    val totalTitle = MutableLiveData("Итого")
+
+    private val totalQuantity by lazy {
+        good.combineLatest(quantity).map {
+            val total = it!!.first.getTotalQuantity()
+            val current = it.second
+
+            total.sumWith(current)
+        }
+    }
+
+    val totalWithUnits by lazy {
+        totalQuantity.map { quantity ->
+            "${quantity.dropZeros()} ${good.value?.units?.name}"
+        }
+    }
+
+    /**
+    Количество товара по корзинам
+     */
+
+    val basketTitle = MutableLiveData("По корзине")
+
+    private val basket by lazy {
+        good.combineLatest(providerPosition).map {
+            val good = it!!.first
+
+            task.value?.baskets?.find { basket ->
+                basket.section == good.section && basket.matype == good.matype && basket.control == good.control && basket.provider?.code == getProvider()?.code
+            }
+        }
+    }
+
+    val basketNumber by lazy {
+        basket.map { basket ->
+            val number = task.value?.baskets?.indexOf(basket) ?: -1
+            if (number >= 0) "${number + 1}" else ""
+        }
+    }
+
+    val basketQuantity by lazy {
+        quantity.combineLatest(basket).map {
+            val quantity = it!!.first
+            val basket = it.second
+
+            "${task.value?.getQuantityByBasket(basket).sumWith(quantity).dropZeros()} ${good.value?.units?.name}"
         }
     }
 
@@ -203,55 +258,6 @@ class GoodInfoCreateViewModel : CoreViewModel() {
     }
 
     /**
-    Количество товара итого и по корзинам
-     */
-
-    val totalTitle = MutableLiveData("Итого")
-
-    val basketTitle = MutableLiveData("По корзине")
-
-    private val totalQuantity by lazy {
-        good.combineLatest(quantity).map {
-            val total = it!!.first.getTotalQuantity()
-            val current = it.second
-
-            total.subWith(current)
-        }
-    }
-
-    val totalWithUnits by lazy {
-        totalQuantity.map { quantity ->
-            "${quantity.dropZeros()} ${good.value?.units?.name}"
-        }
-    }
-
-    private val basket by lazy {
-        good.combineLatest(providerPosition).map {
-            it?.first?.let { good ->
-                task.value?.baskets?.find { basket ->
-                    basket.section == good.section && basket.matype == good.matype && basket.control == good.control && basket.provider == getProvider()
-                }
-            }
-        }
-    }
-
-    val basketNumber by lazy {
-        basket.map { basket ->
-            val number = task.value?.baskets?.indexOf(basket) ?: -1
-            if (number >= 0) "${number + 1}" else ""
-        }
-    }
-
-    val basketQuantity by lazy {
-        quantity.combineLatest(basket).map {
-            val quantity = it!!.first
-            val basket = it.second
-
-            "${task.value?.getQuantityByBasket(basket).sumWith(quantity).dropZeros()} ${good.value?.units?.name}"
-        }
-    }
-
-    /**
     Дата производства
      */
 
@@ -310,6 +316,7 @@ class GoodInfoCreateViewModel : CoreViewModel() {
     init {
         viewModelScope.launch {
             checkSearchNumber(manager.searchNumber)
+            Logg.d { "--> init baskets: ${task.value?.baskets}" }
         }
     }
 
@@ -373,6 +380,8 @@ class GoodInfoCreateViewModel : CoreViewModel() {
         good.value = foundGood
         lastSuccessSearchNumber.value = foundGood.material
         setScanModeFromGoodType(foundGood.type)
+        updateProviders(foundGood.providers)
+        updateProducers(foundGood.producers)
     }
 
     private fun setScanModeFromGoodType(goodType: GoodType) {
@@ -599,6 +608,8 @@ class GoodInfoCreateViewModel : CoreViewModel() {
                         control = changedGood.control,
                         provider = getProvider()
                 ))
+
+                Logg.d { "--> add baskets: ${task.value?.baskets}" }
             }
 
             updateGood(changedGood)
@@ -695,7 +706,7 @@ class GoodInfoCreateViewModel : CoreViewModel() {
 
     fun onClickApply() {
         saveChanges()
-        manager.addOrUpdateGood(good.value!!)
+        manager.saveGoodInTask(good.value!!)
         isExistUnsavedData = false
 
         navigator.goBack()
@@ -703,6 +714,7 @@ class GoodInfoCreateViewModel : CoreViewModel() {
     }
 
     fun onClickDetails() {
+        manager.currentGood.value = good.value
         navigator.openGoodDetailsCreateScreen()
     }
 

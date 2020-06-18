@@ -47,7 +47,7 @@ class BasketGoodListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
                     ItemGoodUi(
                             position = "${index + 1}",
                             name = good.getNameWithMaterial(),
-                            quantity = good.getQuantityByProvider(basket?.provider).dropZeros(),
+                            quantity = good.getQuantityByProvider(basket?.provider?.code).dropZeros(),
                             material = good.material
                     )
                 }

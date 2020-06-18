@@ -48,7 +48,7 @@ class CreateTaskManager @Inject constructor(
         currentBasket.value = basket
     }
 
-    override suspend fun putInCurrentGood(goodInfo: GoodInfoResult) {
+    /*override suspend fun putInCurrentGood(goodInfo: GoodInfoResult) {
         val newGood = Good(
                 ean = goodInfo.eanInfo.ean,
                 material = goodInfo.materialInfo.material,
@@ -69,7 +69,7 @@ class CreateTaskManager @Inject constructor(
             newGood.positions = good.positions
         }
 
-        currentGood.value = newGood
+        //currentGood.value = newGood
     }
 
     override fun addCurrentGoodInTask() {
@@ -81,9 +81,9 @@ class CreateTaskManager @Inject constructor(
             task.goods.add(0, currentGood.value!!)
             updateCurrentTask(task)
         }
-    }
+    }*/
 
-    override fun addOrUpdateGood(good: Good) {
+    override fun saveGoodInTask(good: Good) {
         currentTask.value?.let { task ->
             task.goods.find { it.material == good.material }?.let { good ->
                 task.goods.remove(good)
@@ -113,7 +113,7 @@ class CreateTaskManager @Inject constructor(
             updateCurrentTask(task)
         }
 
-        //updateCurrentBasket(basket)
+        updateCurrentBasket(basket)
     }
 
     override fun getBasketPosition(basket: Basket?): Int {
@@ -247,8 +247,8 @@ interface ICreateTaskManager {
     fun updateCurrentGood(good: Good?)
     fun updateCurrentBasket(basket: Basket?)
 
-    suspend fun putInCurrentGood(goodInfo: GoodInfoResult)
-    fun addCurrentGoodInTask()
+    //suspend fun putInCurrentGood(goodInfo: GoodInfoResult)
+    //fun addCurrentGoodInTask()
     fun findGoodByEan(ean: String): Good?
     fun findGoodByMaterial(material: String): Good?
     suspend fun isGoodCanBeAdded(goodInfo: GoodInfoResult): Boolean
@@ -259,6 +259,6 @@ interface ICreateTaskManager {
     fun finishCurrentTask()
     fun addProviderInCurrentGood(providerInfo: ProviderInfo)
     fun prepareSendTaskDataParams(deviceIp: String, tkNumber: String, userNumber: String)
-    fun addOrUpdateGood(good: Good)
+    fun saveGoodInTask(good: Good)
 
 }
