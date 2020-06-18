@@ -8,7 +8,7 @@ import com.lenta.shared.utilities.extentions.sumWith
 data class Task(
         val number: String = "",
         val name: String,
-        val properties: Properties?,
+        val properties: Properties,
         val storage: String,
         val reason: ReturnReason,
         val goods: MutableList<Good> = mutableListOf(),

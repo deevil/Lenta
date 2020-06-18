@@ -101,9 +101,8 @@ class OpenTaskManager @Inject constructor(
                     properties = Properties(
                             type = taskInfo.type,
                             description = taskInfo.name,
-                            section = taskInfo.section,
-                            purchaseGroup = taskInfo.purchaseGroup,
-                            goodGroup = taskInfo.goodGroup
+                            isDivBySection = taskInfo.section.isSapTrue(),
+                            isDivByPurchaseGroup = taskInfo.purchaseGroup.isSapTrue()
                     ),
                     storage = taskInfo.storage,
                     isStrict = taskInfo.isStrict.isSapTrue(),
@@ -120,6 +119,7 @@ class OpenTaskManager @Inject constructor(
                             name = taskInfo.providerName
                     ),
                     quantity = taskInfo.quantity.toIntOrNull() ?: 0,
+                    goodGroup = taskInfo.goodGroup,
                     reason = database.getReturnReasonList(taskInfo.type).first { it.code == taskInfo.reasonCode }
             )
         }
@@ -135,9 +135,8 @@ class OpenTaskManager @Inject constructor(
                     properties = Properties(
                             type = taskInfo.type,
                             description = taskInfo.name,
-                            section = taskInfo.section,
-                            purchaseGroup = taskInfo.purchaseGroup,
-                            goodGroup = taskInfo.goodGroup
+                            isDivBySection = taskInfo.section.isSapTrue(),
+                            isDivByPurchaseGroup = taskInfo.purchaseGroup.isSapTrue()
                     ),
                     storage = taskInfo.storage,
                     isStrict = taskInfo.isStrict.isSapTrue(),
@@ -154,6 +153,7 @@ class OpenTaskManager @Inject constructor(
                             name = taskInfo.providerName
                     ),
                     quantity = taskInfo.quantity.toIntOrNull() ?: 0,
+                    goodGroup = taskInfo.goodGroup,
                     reason = database.getReturnReasonList(taskInfo.type).first { it.code == taskInfo.reasonCode }
             )
         }

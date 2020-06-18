@@ -10,8 +10,9 @@ data class Basket(
         val provider: ProviderInfo? = null
 ) {
 
-    fun getDescription(): String {
-        return "C-${section}/${matype}/${control.code}/ПП-${provider?.code}"
+    fun getDescription(isDivBySection: Boolean = true): String {
+        val sectionBlock = if (isDivBySection) "C-${section}/" else ""
+        return "$sectionBlock${matype}/${control.code}/ПП-${provider?.code}"
     }
 
 }

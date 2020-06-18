@@ -4,8 +4,6 @@ import androidx.lifecycle.MutableLiveData
 import com.lenta.bp12.model.pojo.create_task.Basket
 import com.lenta.bp12.model.pojo.create_task.Good
 import com.lenta.bp12.model.pojo.create_task.Task
-import com.lenta.bp12.platform.extention.getControlType
-import com.lenta.bp12.platform.extention.getGoodType
 import com.lenta.bp12.repository.IDatabaseRepository
 import com.lenta.bp12.request.GoodInfoResult
 import com.lenta.bp12.request.SendTaskDataParams
@@ -13,7 +11,6 @@ import com.lenta.bp12.request.pojo.MarkInfo
 import com.lenta.bp12.request.pojo.PartInfo
 import com.lenta.bp12.request.pojo.PositionInfo
 import com.lenta.bp12.request.pojo.ProviderInfo
-import com.lenta.shared.models.core.getMatrixType
 import com.lenta.shared.platform.constants.Constants
 import com.lenta.shared.utilities.extentions.dropZeros
 import com.lenta.shared.utilities.extentions.toSapBooleanString

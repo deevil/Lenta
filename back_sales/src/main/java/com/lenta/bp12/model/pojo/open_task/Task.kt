@@ -6,12 +6,11 @@ import com.lenta.bp12.model.pojo.Block
 import com.lenta.bp12.model.pojo.Properties
 import com.lenta.bp12.model.pojo.ReturnReason
 import com.lenta.bp12.request.pojo.ProviderInfo
-import com.lenta.shared.utilities.Logg
 
 data class Task(
         val number: String = "",
         val name: String,
-        val properties: Properties?,
+        val properties: Properties,
         val storage: String,
         val reason: ReturnReason,
         val goods: MutableList<Good> = mutableListOf(),
@@ -22,7 +21,8 @@ data class Task(
         val control: ControlType = ControlType.UNKNOWN,
         var comment: String = "",
         val provider: ProviderInfo,
-        val quantity: Int = 0
+        val quantity: Int = 0,
+        val goodGroup: String = ""
 ) {
 
     fun getProviderCodeWithName(): String {

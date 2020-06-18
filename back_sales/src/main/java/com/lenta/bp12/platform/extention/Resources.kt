@@ -1,13 +1,14 @@
 package com.lenta.bp12.platform.extention
 
 import com.lenta.bp12.model.pojo.AlcoCodeInfo
-import com.lenta.bp12.model.pojo.ReturnReason
 import com.lenta.bp12.model.pojo.Properties
+import com.lenta.bp12.model.pojo.ReturnReason
 import com.lenta.bp12.request.pojo.ProviderInfo
 import com.lenta.shared.fmp.resources.fast.ZmpUtz39V001
 import com.lenta.shared.fmp.resources.fast.ZmpUtz44V001
 import com.lenta.shared.fmp.resources.slow.ZmpUtz09V001
 import com.lenta.shared.fmp.resources.slow.ZmpUtz22V001
+import com.lenta.shared.utilities.extentions.isSapTrue
 
 
 fun ZmpUtz09V001.getProviderInfo(code: String): ProviderInfo? {
@@ -28,8 +29,8 @@ fun ZmpUtz39V001.getTaskTypeList(): List<Properties> {
         Properties(
                 type = it.taskType,
                 description = it.annotation,
-                section = it.divAbtnr,
-                purchaseGroup = it.divEkgrp
+                isDivBySection = it.divAbtnr.isSapTrue(),
+                isDivByPurchaseGroup = it.divEkgrp.isSapTrue()
         )
     }
 }
@@ -40,8 +41,8 @@ fun ZmpUtz39V001.getTaskType(code: String): Properties? {
         Properties(
                 type = it.taskType,
                 description = it.annotation,
-                section = it.divAbtnr,
-                purchaseGroup = it.divEkgrp
+                isDivBySection = it.divAbtnr.isSapTrue(),
+                isDivByPurchaseGroup = it.divEkgrp.isSapTrue()
         )
     }
 }

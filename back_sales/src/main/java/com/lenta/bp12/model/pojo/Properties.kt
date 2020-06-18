@@ -1,9 +1,8 @@
 package com.lenta.bp12.model.pojo
 
 data class Properties(
-        val type: String = "",
-        val description: String = "",
-        val section: String = "",
-        val purchaseGroup: String = "",
-        val goodGroup: String = ""
+        val type: String, // Сокращенное название типа задачи
+        val description: String, // Полное название задачи
+        val isDivBySection: Boolean, // Деление по секциям
+        val isDivByPurchaseGroup: Boolean // Деление по группе закупок
 )

@@ -1,9 +1,9 @@
 package com.lenta.bp12.repository
 
 import com.lenta.bp12.model.pojo.AlcoCodeInfo
-import com.lenta.bp12.model.pojo.open_task.Good
-import com.lenta.bp12.model.pojo.ReturnReason
 import com.lenta.bp12.model.pojo.Properties
+import com.lenta.bp12.model.pojo.ReturnReason
+import com.lenta.bp12.model.pojo.open_task.Good
 import com.lenta.bp12.platform.extention.*
 import com.lenta.bp12.request.GoodInfoResult
 import com.lenta.bp12.request.pojo.ProviderInfo
@@ -79,12 +79,7 @@ class DatabaseRepository @Inject constructor(
 
     override suspend fun getTaskTypeList(): List<Properties> {
         return withContext(Dispatchers.IO) {
-            val taskTypeList = taskTypes.getTaskTypeList().toMutableList()
-            if (taskTypeList.size > 1) {
-                taskTypeList.add(0, Properties())
-            }
-
-            return@withContext taskTypeList
+            return@withContext taskTypes.getTaskTypeList()
         }
     }
 
@@ -96,23 +91,13 @@ class DatabaseRepository @Inject constructor(
 
     override suspend fun getStorageList(taskType: String): List<String> {
         return withContext(Dispatchers.IO) {
-            val storageList = storages.getStorageList(taskType).toMutableList()
-            if (storageList.size > 1) {
-                storageList.add(0, "")
-            }
-
-            return@withContext storageList
+            return@withContext storages.getStorageList(taskType)
         }
     }
 
     override suspend fun getReturnReasonList(taskType: String): List<ReturnReason> {
         return withContext(Dispatchers.IO) {
-            val returnReasonList = returnReasons.getReturnReasonList(taskType).toMutableList()
-            if (returnReasonList.size > 1) {
-                returnReasonList.add(0, ReturnReason())
-            }
-
-            return@withContext returnReasonList
+            return@withContext returnReasons.getReturnReasonList(taskType)
         }
     }
 

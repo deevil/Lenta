@@ -32,7 +32,7 @@ class BasketGoodListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
 
     val title by lazy {
         basket.map { basket ->
-            "Корзина ${manager.getBasketPosition(basket)}: ${basket?.getDescription()}"
+            "Корзина ${manager.getBasketPosition(basket)}: ${basket?.getDescription(task.value!!.properties.isDivBySection)}"
         }
     }
 
