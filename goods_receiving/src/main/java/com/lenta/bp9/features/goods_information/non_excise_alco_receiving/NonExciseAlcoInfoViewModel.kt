@@ -14,11 +14,13 @@ import com.lenta.bp9.model.task.TaskType
 import com.lenta.bp9.platform.navigation.IScreenNavigator
 import com.lenta.bp9.repos.IDataBaseRepo
 import com.lenta.bp9.repos.IRepoInMemoryHolder
+import com.lenta.shared.models.core.Manufacturer
 import com.lenta.shared.platform.activity.OnBackPresserListener
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.requests.combined.scan_info.ScanInfoResult
 import com.lenta.shared.requests.combined.scan_info.pojo.QualityInfo
 import com.lenta.shared.requests.combined.scan_info.pojo.ReasonRejectionInfo
+import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.extentions.combineLatest
 import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.utilities.extentions.toStringFormatted
@@ -69,6 +71,7 @@ class NonExciseAlcoInfoViewModel : CoreViewModel(), OnPositionClickListener {
     private val qualityInfo: MutableLiveData<List<QualityInfo>> = MutableLiveData()
     private val reasonRejectionInfo: MutableLiveData<List<ReasonRejectionInfo>> = MutableLiveData()
     private val batchInfo: MutableLiveData<List<TaskBatchInfo>> = MutableLiveData()
+    private val manufacturer: MutableLiveData<List<Manufacturer>> = MutableLiveData()
 
     @SuppressLint("SimpleDateFormat")
     private val formatterRU = SimpleDateFormat("dd.MM.yyyy")
@@ -174,22 +177,16 @@ class NonExciseAlcoInfoViewModel : CoreViewModel(), OnPositionClickListener {
                 it.name
             }
 
-            batchInfo.value?.let {
-                planQuantityBatch.value = "${it[0].purchaseOrderScope.toStringFormatted()} ${productInfo.value!!.purchaseOrderUnits.name}"
-            }
-
-            val manufacturersName = batchInfo.value?.map {batch ->
+            manufacturer.value = batchInfo.value?.mapNotNull { batch ->
                 repoInMemoryHolder.manufacturers.value?.findLast {
                     it.code == batch.egais
-                }?.name ?: ""
+                }
             }
-            spinManufacturers.value = manufacturersName
-
-            val bottlingDates = batchInfo.value?.map {batch ->
-                formatterRU.format(formatterEN.parse(batch.bottlingDate))
+            spinManufacturers.value = manufacturer.value?.groupBy {
+                it.name
+            }?.map {
+                it.key
             }
-            spinBottlingDate.value = bottlingDates
-
 
             if (processNonExciseAlcoProductService.newProcessNonExciseAlcoProductService(productInfo.value!!) == null) {
                 screenNavigator.goBack()
@@ -208,19 +205,27 @@ class NonExciseAlcoInfoViewModel : CoreViewModel(), OnPositionClickListener {
     }
 
     fun onClickAdd() : Boolean {
-        val batchSelected = batchInfo.value!![spinManufacturersSelectedPosition.value!!]
-        return if (processNonExciseAlcoProductService.overlimit(countValue.value!!, batchSelected)) {
-            screenNavigator.openAlertOverLimit()
-            false
-        } else {
-            if (qualityInfo.value?.get(spinQualitySelectedPosition.value ?: 0)?.code == "1") {
-                processNonExciseAlcoProductService.add(count.value!!, "1", batchSelected)
-            } else {
-                processNonExciseAlcoProductService.add(count.value!!, reasonRejectionInfo.value!![spinReasonRejectionSelectedPosition.value!!].code, batchSelected)
-            }
-            count.value = "0"
-            true
+        val manufactureCode = manufacturer.value?.findLast {
+            it.name == spinManufacturers.value?.get(spinManufacturersSelectedPosition.value ?: 0)
+        }?.code
+        val batchSelected = batchInfo.value?.findLast {batch ->
+            batch.egais == manufactureCode && batch.bottlingDate == formatterEN.format(formatterRU.parse(spinBottlingDate.value?.get(spinBottlingDateSelectedPosition.value ?: 0)))
         }
+
+        return if (batchSelected != null) {
+            if (processNonExciseAlcoProductService.overLimit(countValue.value!!, batchSelected)) {
+                screenNavigator.openAlertOverLimit()
+                false
+            } else {
+                if (qualityInfo.value?.get(spinQualitySelectedPosition.value ?: 0)?.code == "1") {
+                    processNonExciseAlcoProductService.add(count.value!!, "1", batchSelected)
+                } else {
+                    processNonExciseAlcoProductService.add(count.value!!, reasonRejectionInfo.value!![spinReasonRejectionSelectedPosition.value!!].code, batchSelected)
+                }
+                count.value = "0"
+                true
+            }
+        } else false
     }
 
     fun onClickApply() {
@@ -243,19 +248,35 @@ class NonExciseAlcoInfoViewModel : CoreViewModel(), OnPositionClickListener {
         spinReasonRejectionSelectedPosition.value = position
     }
 
-    fun onClickPositionSpinManufacturers(position: Int){
-        setBatchSpin(position)
-    }
-
-    fun onClickPositionBottlingDate(position: Int){
-        setBatchSpin(position)
-    }
-
-    private fun setBatchSpin(position: Int) {
+    fun onClickPositionSpinManufacturers(position: Int) {
         spinManufacturersSelectedPosition.value = position
+        updateDataSpinBottlingDate(position)
+    }
+
+    fun onClickPositionBottlingDate(position: Int) {
         spinBottlingDateSelectedPosition.value = position
         batchInfo.value?.let {
             planQuantityBatch.value = "${it[position].purchaseOrderScope.toStringFormatted()} ${productInfo.value!!.purchaseOrderUnits.name}"
+        }
+    }
+
+    private fun updateDataSpinBottlingDate(position: Int) {
+        val manufactureCode = manufacturer.value?.findLast {
+            it.name == spinManufacturers.value?.get(position)
+        }?.code
+
+        val bottlingDates = batchInfo.value?.filter {
+            it.egais == manufactureCode
+        }?.map {batch ->
+            formatterRU.format(formatterEN.parse(batch.bottlingDate))
+        }
+        spinBottlingDateSelectedPosition.value = 0
+        spinBottlingDate.value = bottlingDates
+
+        batchInfo.value?.findLast {batch ->
+            batch.egais == manufactureCode && batch.bottlingDate == formatterEN.format(formatterRU.parse(spinBottlingDate.value?.get(spinBottlingDateSelectedPosition.value!!)))
+        }?.let {
+            planQuantityBatch.value = "${it.purchaseOrderScope.toStringFormatted()} ${productInfo.value!!.purchaseOrderUnits.name}"
         }
     }
 
