@@ -332,7 +332,7 @@ class GoodInfoCreateViewModel : CoreViewModel() {
         if (number.length < Constants.SAP_6 || number.length > Constants.MARK_150) {
             return
         }
-        
+
         if (applyEnabled.value!! || good.value!!.type == GoodType.EXCISE && (number.length == Constants.MARK_150 || number.length == Constants.MARK_68 || number.length == Constants.BOX_26)) {
             saveChanges()
             manager.openGoodFromList = false
@@ -704,6 +704,7 @@ class GoodInfoCreateViewModel : CoreViewModel() {
     fun updateData() {
         if (manager.isNeedUpdateProviders) {
             updateProviders(good.value!!.providers)
+            providerPosition.value = 1
             manager.isNeedUpdateProviders = false
         }
     }
