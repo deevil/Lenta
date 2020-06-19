@@ -16,17 +16,17 @@ data class Good(
         val material: String,
         val name: String,
         val units: Uom = Uom.ST,
+        val orderUnits: Uom= Uom.ST,
         val type: GoodType,
         val matype: String = "",
         val control: ControlType = ControlType.COMMON,
         val section: String,
         val matrix: MatrixType,
-        var positions: MutableList<Position> = mutableListOf(),
-
         val innerQuantity: Double = 0.0,
-        val orderUnits: Uom= Uom.ST,
         val providers: MutableList<ProviderInfo> = mutableListOf(),
         val producers: MutableList<ProducerInfo> = mutableListOf(),
+
+        var positions: MutableList<Position> = mutableListOf(),
         val marks: MutableList<Mark> = mutableListOf(),
         val parts: MutableList<Part> = mutableListOf()
 ) {
@@ -50,6 +50,30 @@ data class Good(
         ))
     }
 
+    fun addMark(mark: Mark) {
+        if (marks.find { it.number == mark.number } == null) {
+            marks.add(mark)
+        }
+    }
+
+    fun addPart(part: Part) {
+        if (parts.find { it.number == part.number } == null) {
+            parts.add(part)
+        }
+    }
+
+    fun removePositions(positionList: List<Position>) {
+        positionList.forEach { position ->
+            positions.remove(position)
+        }
+    }
+
+    fun removeMark(number: String) {
+        marks.find { it.number == number }?.let { mark ->
+            marks.remove(mark)
+        }
+    }
+
     fun getTotalQuantity(): Double {
         return getPositionQuantity() + getMarkQuantity() + getPartQuantity()
     }
@@ -70,32 +94,8 @@ data class Good(
         return positions.filter { it.provider?.code == providerCode }.map { it.quantity }.sumList()
     }
 
-    fun deletePositions(positionList: List<Position>) {
-        positionList.forEach { position ->
-            positions.remove(position)
-        }
-    }
-
-    fun isSameMaterial(material: String): Boolean {
+    /*fun isSameMaterial(material: String): Boolean {
         return this.material.takeLast(6) == material.takeLast(6)
-    }
-
-    fun addMark(mark: Mark) {
-        if (marks.find { it.number == mark.number } == null) {
-            marks.add(mark)
-        }
-    }
-
-    fun addPart(part: Part) {
-        if (parts.find { it.number == part.number } == null) {
-            parts.add(part)
-        }
-    }
-
-    fun removeMark(number: String) {
-        marks.find { it.number == number }?.let { mark ->
-            marks.remove(mark)
-        }
-    }
+    }*/
 
 }

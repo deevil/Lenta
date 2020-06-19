@@ -46,7 +46,7 @@ data class Task(
                 it.provider?.code == basket.provider?.code
             }
 
-            good.deletePositions(positionList)
+            good.removePositions(positionList)
         }
     }
 
@@ -58,6 +58,13 @@ data class Task(
             }
 
             goods.add(0, goodUpdate)
+        }
+    }
+
+    fun getGoodListByBasket(basket: Basket): List<Good> {
+        return goods.filter { good ->
+            good.section == basket.section && good.matype == basket.matype && good.control == basket.control &&
+                    good.positions.find { it.provider == basket.provider } != null
         }
     }
 

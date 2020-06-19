@@ -39,17 +39,17 @@ class BasketGoodListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
     val numberField: MutableLiveData<String> = MutableLiveData("")
 
     val goods by lazy {
-        basket.map { basket ->
-            task.value?.let { task ->
-                task.goods.filter {
-                    it.section == basket?.section && it.matype == basket.matype && it.control == basket.control
-                }.mapIndexed { index, good ->
-                    ItemGoodUi(
-                            position = "${index + 1}",
-                            name = good.getNameWithMaterial(),
-                            quantity = "${good.getQuantityByProvider(basket?.provider?.code).dropZeros()} ${good.units.name}",
-                            material = good.material
-                    )
+        basket.map {
+            it?.let { basket ->
+                task.value?.let { task ->
+                    task.getGoodListByBasket(basket).mapIndexed { index, good ->
+                        ItemGoodUi(
+                                position = "${index + 1}",
+                                name = good.getNameWithMaterial(),
+                                quantity = "${good.getQuantityByProvider(basket.provider?.code).dropZeros()} ${good.units.name}",
+                                material = good.material
+                        )
+                    }
                 }
             }
         }
