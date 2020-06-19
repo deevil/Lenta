@@ -15,13 +15,17 @@ class BasketPropertiesViewModel : CoreViewModel() {
     lateinit var manager: ICreateTaskManager
 
 
+    private val task by lazy {
+        manager.currentTask
+    }
+
     val basket by lazy {
         manager.currentBasket
     }
 
     val title by lazy {
         basket.map { basket ->
-            "Корзина ${manager.getBasketPosition(basket)}: ${basket?.getDescription()}"
+            "Корзина ${manager.getBasketPosition(basket)}: ${basket?.getDescription(task.value!!.properties.isDivBySection)}"
         }
     }
 

@@ -75,7 +75,7 @@ class TaskCompositionViewModel : CoreViewModel(), PageSelectionListener, OnOkInS
                         basket = basket,
                         position = "$position",
                         name = "Корзина $position",
-                        description = basket.getDescription(),
+                        description = basket.getDescription(task.properties.isDivBySection),
                         quantity = task.getQuantityByBasket(basket).dropZeros()
                 )
             }
