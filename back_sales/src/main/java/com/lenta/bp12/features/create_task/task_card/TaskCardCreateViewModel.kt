@@ -201,9 +201,13 @@ class TaskCardCreateViewModel : CoreViewModel(), PageSelectionListener {
 
     private fun updateLists() {
         viewModelScope.launch {
-            sourceStorages.value = database.getStorageList(sourceTypes.value!![taskTypePosition.value!!].type)
-            sourceReasons.value = database.getReturnReasonList(sourceTypes.value!![taskTypePosition.value!!].type)
-            taskAttributes.value = database.getTaskAttributes(sourceTypes.value!![taskTypePosition.value!!].type)
+            types.value?.let { types ->
+                taskTypePosition.value?.let { position ->
+                    sourceStorages.value = database.getStorageList(types[position].type)
+                    sourceReasons.value = database.getReturnReasonList(types[position].type)
+                    taskAttributes.value = database.getTaskAttributes(types[position].type)
+                }
+            }
         }
     }
 
@@ -214,9 +218,9 @@ class TaskCardCreateViewModel : CoreViewModel(), PageSelectionListener {
     fun onClickNext() {
         manager.updateCurrentTask(Task(
                 name = taskName.value!!,
-                properties = sourceTypes.value!![taskTypePosition.value!!],
+                properties = types.value!![taskTypePosition.value!!],
                 storage = storageList.value!![storagePosition.value!!],
-                reason = sourceReasons.value!![returnReasonPosition.value!!]
+                reason = reasons.value!![returnReasonPosition.value!!]
         ))
 
         navigator.openTaskCompositionScreen()

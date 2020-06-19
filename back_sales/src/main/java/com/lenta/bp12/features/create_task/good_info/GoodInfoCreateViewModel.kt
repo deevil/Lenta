@@ -702,10 +702,10 @@ class GoodInfoCreateViewModel : CoreViewModel() {
     }
 
     fun updateData() {
-        if (manager.isNeedUpdateProviders) {
+        if (manager.isWasAddedProvider) {
             updateProviders(good.value!!.providers)
             providerPosition.value = 1
-            manager.isNeedUpdateProviders = false
+            manager.isWasAddedProvider = false
         }
     }
 
