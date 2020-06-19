@@ -196,7 +196,7 @@ class ExciseAlcoBoxListFragment : CoreFragment<FragmentExciseAlcoBoxListBinding,
         }
     }
 
-    override fun getTextTitle(position: Int): String = getString(if (position == 0) R.string.not_processed else R.string.processed)
+    override fun getTextTitle(position: Int): String = getString(if (position == 0) R.string.to_processing else R.string.processed)
 
     override fun countTab(): Int = 2
 

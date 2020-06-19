@@ -1,5 +1,6 @@
 package com.lenta.shared.utilities.databinding
 
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.databinding.BindingAdapter
@@ -151,4 +152,13 @@ fun setTextWithVisibilities(textView: TextView, @Suppress("UNUSED_PARAMETER") sc
         dataBindingHelpHolder.coreNavigator.openAlertScreen(message = textView.text.toString(), onlyIfFirstAlert = true)
     }
     textView.setBackgroundResource(textView.context.selectableItemBackgroundResId())
+}
+
+@BindingAdapter("visibleOrGone")
+fun setVisibleOrGone(textView: TextView, isVisible: Boolean?) {
+    if (isVisible == true) {
+        textView.setVisible()
+    } else {
+        textView.setVisibleGone()
+    }
 }

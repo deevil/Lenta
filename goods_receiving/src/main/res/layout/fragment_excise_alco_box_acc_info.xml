@@ -76,7 +76,7 @@
             app:layout_constraintTop_toTopOf="@+id/div_vert1"
             app:maxLengthForScanProtect="@{6}"
             app:suffix="@{vm.suffix}"
-            tools:text="1 шт" />
+            tools:text="1 кор" />
 
         <View
             android:id="@+id/div_hor2"
@@ -118,7 +118,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="@+id/guideline"
             app:layout_constraintTop_toBottomOf="@+id/div_hor2"
-            tools:text="+ 10 шт" />
+            tools:text="+ 10 кор" />
 
         <TextView
             android:id="@+id/tv_refusal"
@@ -146,7 +146,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="@+id/guideline"
             app:layout_constraintTop_toBottomOf="@+id/tv_accept_val"
-            tools:text="- 10 шт" />
+            tools:text="- 10 кор" />
 
         <View
             android:id="@+id/div_hor3"
@@ -200,14 +200,15 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
-                android:layout_marginTop="14dp"
+                android:layout_marginTop="12dp"
                 android:layout_marginEnd="8dp"
                 android:ellipsize="end"
                 android:maxLines="1"
                 android:text="@{vm.tvStampControlVal}"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/checkBox_stamp_control"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toTopOf="parent"
+                tools:text="1 кор х 2" />
 
             <CheckBox
                 android:id="@+id/checkBox_stamp_control"
@@ -251,14 +252,15 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
-                android:layout_marginTop="14dp"
+                android:layout_marginTop="12dp"
                 android:layout_marginEnd="8dp"
                 android:ellipsize="end"
                 android:maxLines="1"
                 android:text="@{vm.tvBoxControlVal}"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/checkBox_box_control"
-                app:layout_constraintTop_toBottomOf="@+id/div_hor5" />
+                app:layout_constraintTop_toBottomOf="@+id/div_hor5"
+                tools:text="0 из 1" />
 
             <CheckBox
                 android:id="@+id/checkBox_box_control"
@@ -330,7 +332,8 @@
                 android:text="@{vm.tvBoxListVal}"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/checkBox_box_list"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toTopOf="parent"
+                tools:text="0 из 2"/>
 
             <CheckBox
                 android:id="@+id/checkBox_box_list"

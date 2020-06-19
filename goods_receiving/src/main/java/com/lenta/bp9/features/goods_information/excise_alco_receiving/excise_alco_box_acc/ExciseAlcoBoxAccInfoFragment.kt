@@ -57,8 +57,8 @@ class ExciseAlcoBoxAccInfoFragment : CoreFragment<FragmentExciseAlcoBoxAccInfoBi
     }
 
     override fun setupTopToolBar(topToolbarUiModel: TopToolbarUiModel) {
-        topToolbarUiModel.description.value = getString(R.string.goods_info)
         topToolbarUiModel.title.value = "${vm.productInfo.value?.getMaterialLastSix()} ${vm.productInfo.value?.description}"
+        topToolbarUiModel.description.value = getString(R.string.goods_info)
     }
 
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {

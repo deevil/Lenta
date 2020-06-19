@@ -87,7 +87,7 @@ class ControlDeliveryCargoUnitsFragment : CoreFragment<FragmentControlDeliveryCa
 
                         layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
                                 layoutId = R.layout.item_tile_control_delivery_cu,
-                                itemId = BR.vm,
+                                itemId = BR.item,
                                 realisation = object : DataBindingAdapter<ItemTileControlDeliveryCuBinding> {
                                     override fun onCreate(binding: ItemTileControlDeliveryCuBinding) {
                                     }
@@ -177,7 +177,7 @@ class ControlDeliveryCargoUnitsFragment : CoreFragment<FragmentControlDeliveryCa
 
                         layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
                                 layoutId = R.layout.item_tile_control_delivery_cu,
-                                itemId = BR.vm,
+                                itemId = BR.item,
                                 realisation = object : DataBindingAdapter<ItemTileControlDeliveryCuBinding> {
                                     override fun onCreate(binding: ItemTileControlDeliveryCuBinding) {
                                     }
@@ -221,7 +221,7 @@ class ControlDeliveryCargoUnitsFragment : CoreFragment<FragmentControlDeliveryCa
 
                     layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
                             layoutId = R.layout.item_tile_control_delivery_cu,
-                            itemId = BR.vm,
+                            itemId = BR.item,
                             realisation = object : DataBindingAdapter<ItemTileControlDeliveryCuBinding> {
                                 override fun onCreate(binding: ItemTileControlDeliveryCuBinding) {
                                 }
@@ -321,7 +321,7 @@ class ControlDeliveryCargoUnitsFragment : CoreFragment<FragmentControlDeliveryCa
 
                     layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
                             layoutId = R.layout.item_tile_control_delivery_cu,
-                            itemId = BR.vm,
+                            itemId = BR.item,
                             realisation = object : DataBindingAdapter<ItemTileControlDeliveryCuBinding> {
                                 override fun onCreate(binding: ItemTileControlDeliveryCuBinding) {
                                 }

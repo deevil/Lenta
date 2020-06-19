@@ -24,17 +24,15 @@ import com.lenta.shared.utilities.state.state
 class GoodsDetailsFragment : CoreFragment<FragmentGoodsDetailsBinding, GoodsDetailsViewModel>(), ToolbarButtonsClickListener {
 
     companion object {
-        fun create(productInfo: TaskProductInfo?, batch: TaskBatchInfo?): GoodsDetailsFragment {
+        fun create(productInfo: TaskProductInfo): GoodsDetailsFragment {
             GoodsDetailsFragment().let {
                 it.productInfo = productInfo
-                it.batch = batch
                 return it
             }
         }
     }
 
     private var productInfo by state<TaskProductInfo?>(null)
-    private var batch by state<TaskBatchInfo?>(null)
 
     override fun getLayoutId(): Int = R.layout.fragment_goods_details
 
@@ -43,19 +41,14 @@ class GoodsDetailsFragment : CoreFragment<FragmentGoodsDetailsBinding, GoodsDeta
     override fun getViewModel(): GoodsDetailsViewModel {
         provideViewModel(GoodsDetailsViewModel::class.java).let {vm ->
             getAppComponent()?.inject(vm)
-            productInfo?.let {
-                vm.productInfo.value = it
-            }
-            batch?.let {
-                vm.batchInfo.value = it
-            }
+            vm.productInfo.value = this.productInfo
             return vm
         }
     }
 
     override fun setupTopToolBar(topToolbarUiModel: TopToolbarUiModel) {
         topToolbarUiModel.description.value = getString(R.string.details_quantities_entered)
-        topToolbarUiModel.title.value = "${vm.productInfo.value!!.getMaterialLastSix()} ${vm.productInfo.value!!.description}"
+        topToolbarUiModel.title.value = vm.getTitle()
     }
 
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {

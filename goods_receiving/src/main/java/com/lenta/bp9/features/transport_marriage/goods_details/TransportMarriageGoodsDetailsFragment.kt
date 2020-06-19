@@ -61,7 +61,7 @@ class TransportMarriageGoodsDetailsFragment : CoreFragment<FragmentTransportMarr
         binding?.let { layoutBinding ->
             layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
                     layoutId = R.layout.item_tile_goods_details,
-                    itemId = BR.vm,
+                    itemId = BR.item,
                     realisation = object : DataBindingAdapter<ItemTileGoodsDetailsBinding> {
                         override fun onCreate(binding: ItemTileGoodsDetailsBinding) {
                         }

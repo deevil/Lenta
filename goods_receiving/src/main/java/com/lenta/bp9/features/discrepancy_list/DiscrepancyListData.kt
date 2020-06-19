@@ -8,10 +8,12 @@ import com.lenta.shared.utilities.databinding.Evenable
 data class GoodsDiscrepancyItem(
         val number: Int,
         val name: String,
+        val nameMaxLines: Int,
+        val nameBatch: String,
+        val visibilityNameBatch: Boolean,
         val countRefusalWithUom: String,
         val quantityNotProcessedWithUom: String,
         val discrepanciesName: String,
-        val isNormDiscrepancies: Boolean,
         val productInfo: TaskProductInfo?,
         val productDiscrepancies: TaskProductDiscrepancies?,
         val batchInfo: TaskBatchInfo?,

@@ -13,14 +13,12 @@ class ProcessExciseAlcoStampAccService
 
     private lateinit var productInfo: TaskProductInfo
     private var productDiscrepancyInfo: ArrayList<TaskProductDiscrepancies> = ArrayList()
-    private lateinit var batchInfo: TaskBatchInfo
     private var batchDiscrepancyInfo: ArrayList<TaskBatchesDiscrepancies> = ArrayList()
     private val currentExciseStamps: ArrayList<TaskExciseStampInfo> = ArrayList()
 
-    fun newProcessNonExciseAlcoProductService(productInfo: TaskProductInfo) : ProcessExciseAlcoStampAccService? {
+    fun newProcessExciseAlcoStampAccService(productInfo: TaskProductInfo) : ProcessExciseAlcoStampAccService? {
         return if (productInfo.type == ProductType.ExciseAlcohol){
             this.productInfo = productInfo.copy()
-            this.batchInfo = taskManager.getReceivingTask()!!.taskRepository.getBatches().findBatchOfProduct(productInfo)!!.copy()
             productDiscrepancyInfo.clear()
             batchDiscrepancyInfo.clear()
             currentExciseStamps.clear()
@@ -65,39 +63,6 @@ class ProcessExciseAlcoStampAccService
                 getProducts()?.
                 changeProduct(productInfo.copy(isNoEAN = false))
 
-        addBatch(countAdd.toString(), typeDiscrepancies)
-    }
-
-    private fun addBatch(count: String, typeDiscrepancies: String){
-        val foundBatchDiscrepancy = taskManager.getReceivingTask()?.taskRepository?.getBatchesDiscrepancies()?.findBatchDiscrepanciesOfBatch(batchInfo)?.findLast {
-            it.materialNumber == batchInfo.materialNumber /**&& it.batchNumber == batchInfo.batchNumber*/ && it.typeDiscrepancies == typeDiscrepancies
-        }
-
-        /**if (foundBatchDiscrepancy == null) {
-            taskManager.getReceivingTask()?.
-                    taskRepository?.
-                    getBatchesDiscrepancies()?.
-                    changeBatchDiscrepancy(TaskBatchesDiscrepancies(
-                            materialNumber = batchInfo.materialNumber,
-                            batchNumber = batchInfo.batchNumber,
-                            numberDiscrepancies = count,
-                            uom = batchInfo.uom,
-                            typeDiscrepancies = reasonRejectionCode,
-                            isNotEdit = false,
-                            exciseStampCode = "",
-                            fullDM = ""
-                    ))
-        } else {
-            taskManager.getReceivingTask()?.
-                    taskRepository?.
-                    getBatchesDiscrepancies()?.
-                    changeBatchDiscrepancy(foundBatchDiscrepancy.copy(numberDiscrepancies = count))
-        }
-
-        taskManager.getReceivingTask()?.
-                taskRepository?.
-                getBatches()?.
-                changeBatch(batchInfo.copy(isNoEAN = false))*/
     }
 
     private fun addCuurentProduct(count: String, typeDiscrepancies: String){
@@ -131,7 +96,6 @@ class ProcessExciseAlcoStampAccService
                 getProducts()?.
                 changeProduct(productInfo.copy(isNoEAN = false))
 
-        addBatch(count, typeDiscrepancies)
     }
 
     /**private fun addCuurentBatch(batchNumber: String, count: String, typeDiscrepancies: String){

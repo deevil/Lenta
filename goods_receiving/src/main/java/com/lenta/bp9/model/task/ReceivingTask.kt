@@ -2,6 +2,7 @@ package com.lenta.bp9.model.task
 
 import com.lenta.bp9.model.repositories.ITaskRepository
 import com.lenta.bp9.model.task.revise.*
+import com.lenta.shared.models.core.ProductType
 import com.mobrun.plugin.api.HyperHive
 
 class ReceivingTask(val taskHeader: TaskInfo,
@@ -49,6 +50,19 @@ class ReceivingTask(val taskHeader: TaskInfo,
         taskRepository.getProductsDiscrepancies().updateProductsDiscrepancy(taskContentsInfo.productsDiscrepancies)
         taskRepository.getBatches().updateBatches(taskContentsInfo.taskBatches)
         taskRepository.getBatchesDiscrepancies().updateBatchesDiscrepancy(taskContentsInfo.taskBatchesDiscrepancies)
+
+        /**т.к. для не акцизного алкоголя (партионных товаров) инфа приходит в TaskBatchInfo и TaskBatchesDiscrepancies, а в TaskProductInfo и TaskProductDiscrepancies по этим товарам пусто,
+        а на экранах Списсок товаров и Обнаружены расхождения отображается инфа из TaskProductInfo и TaskProductDiscrepancies, то для корректного отображения,
+        необходимо добавить инфу из TaskBatchesDiscrepancies в TaskProductDiscrepancies, перед сохранением (вызов 12 реста) инфа по партионным товарам все равно удаляется из TaskProductDiscrepancies
+         */
+        taskContentsInfo.products.map {productInfo ->
+            if (productInfo.type == ProductType.NonExciseAlcohol && !productInfo.isBoxFl && !productInfo.isMarkFl) {
+                taskRepository.getBatchesDiscrepancies().findBatchDiscrepanciesOfProduct(productInfo.materialNumber).map {
+                    changeProductDiscrepancyToBatch(productInfo, it)
+                }
+            }
+        }
+
         taskContentsInfo.taskMercuryInfo?.let { taskRepository.getMercuryDiscrepancies().updateMercuryInfo(it) }
         taskRepository.getExciseStamps().updateExciseStamps(taskContentsInfo.taskExciseStampInfo)
         taskRepository.getExciseStampsDiscrepancies().updateExciseStampsDiscrepancy(taskContentsInfo.taskExciseStampDiscrepancies)
@@ -82,6 +96,33 @@ class ReceivingTask(val taskHeader: TaskInfo,
         }.size
 
         return controlBoxesOfProduct(productInfo) && countScannedExciseStampsDiscrepanciesOfProduct >= productInfo.numberStampsControl.toInt()
+    }
+
+    private fun changeProductDiscrepancyToBatch(productInfo: TaskProductInfo, batchDiscrepancies: TaskBatchesDiscrepancies) {
+        val countOfDiscrepanciesOfProduct = taskRepository.getProductsDiscrepancies().getCountOfDiscrepanciesOfProduct(productInfo, batchDiscrepancies.typeDiscrepancies)
+        val countAdd = countOfDiscrepanciesOfProduct + batchDiscrepancies.numberDiscrepancies.toDouble()
+        val foundDiscrepancy = taskRepository.getProductsDiscrepancies().findProductDiscrepanciesOfProduct(productInfo).findLast {
+            it.materialNumber == productInfo.materialNumber && it.typeDiscrepancies == batchDiscrepancies.typeDiscrepancies
+        }
+
+        if (foundDiscrepancy == null) {
+            taskRepository.
+            getProductsDiscrepancies().
+            changeProductDiscrepancy(TaskProductDiscrepancies(
+                    materialNumber = productInfo.materialNumber,
+                    processingUnitNumber = productInfo.processingUnit,
+                    numberDiscrepancies = countAdd.toString(),
+                    uom = productInfo.uom,
+                    typeDiscrepancies = batchDiscrepancies.typeDiscrepancies,
+                    isNotEdit = false,
+                    isNew = false,
+                    notEditNumberDiscrepancies = ""
+            ))
+        } else {
+            taskRepository.
+            getProductsDiscrepancies().
+            changeProductDiscrepancy(foundDiscrepancy.copy(numberDiscrepancies = countAdd.toString()))
+        }
     }
 }
 

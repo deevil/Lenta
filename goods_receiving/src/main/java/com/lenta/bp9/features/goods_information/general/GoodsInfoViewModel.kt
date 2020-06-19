@@ -102,8 +102,8 @@ class GoodsInfoViewModel : CoreViewModel(), OnPositionClickListener {
     val isGoodsAddedAsSurplus: MutableLiveData<Boolean> by lazy {
         MutableLiveData(productInfo.value?.isGoodsAddedAsSurplus == true )
     }
-    private val isNotRecountBreakingCargoUnit: MutableLiveData<Boolean> by lazy { //https://trello.com/c/PRTAVnUP
-        MutableLiveData(isTaskPGE.value == true && taskManager.getReceivingTask()!!.taskHeader.isCracked && productInfo.value!!.isWithoutRecount)
+    private val isNotRecountCargoUnit: MutableLiveData<Boolean> by lazy { //https://trello.com/c/PRTAVnUP только без признака ВЗЛОМ (обсудили с Колей 17.06.2020)
+        MutableLiveData(isTaskPGE.value == true && productInfo.value!!.isWithoutRecount)
     }
     val isTaskPGE: MutableLiveData<Boolean> by lazy {
         if (taskManager.getReceivingTask()!!.taskHeader.taskType == TaskType.RecalculationCargoUnit) MutableLiveData(true) else MutableLiveData(false)
@@ -134,7 +134,7 @@ class GoodsInfoViewModel : CoreViewModel(), OnPositionClickListener {
                 if (qualityInfo.value?.get(it!!.second)?.code == "1" || qualityInfo.value?.get(it!!.second)?.code == "2") {
                     convertEizToBei() + countAccept
                 } else {
-                    if (isNotRecountBreakingCargoUnit.value == true && convertEizToBei() >= 0.0) {//Не пересчётная ГЕ https://trello.com/c/PRTAVnUP, convertEizToBei() >= 0.0 это условие, чтобы не счиатать, если пользователь ввел отрицательное значение
+                    if (isNotRecountCargoUnit.value == true && convertEizToBei() >= 0.0) {//Не пересчётная ГЕ, convertEizToBei() >= 0.0 это условие, чтобы не счиатать, если пользователь ввел отрицательное значение
                         if ((countAccept - convertEizToBei()) >= 0.0 ) countAccept - convertEizToBei() else 0.0
                     } else {
                         countAccept
@@ -215,7 +215,7 @@ class GoodsInfoViewModel : CoreViewModel(), OnPositionClickListener {
 
         if (isTaskPGE.value!! && isGoodsAddedAsSurplus.value!!) {
             (countAccept + (it?.first ?: 0.0)) >= 0.0 && it?.first != 0.0 && it?.second?.length == 18
-        } else if (isNotRecountBreakingCargoUnit.value == true) {//Не пересчётная ГЕ https://trello.com/c/PRTAVnUP
+        } else if (isNotRecountCargoUnit.value == true) {//Не пересчётная ГЕ
             val quantityAdded = convertEizToBei() + acceptTotalCount.value!! + taskManager.getReceivingTask()!!.taskRepository.getProductsDiscrepancies().getCountRefusalOfProductPGE(productInfo.value!!)
             convertEizToBei() > 0.0 && quantityAdded <= productInfo.value!!.orderQuantity.toDouble()
         } else {
@@ -253,7 +253,7 @@ class GoodsInfoViewModel : CoreViewModel(), OnPositionClickListener {
                         } else {
                             taskManager.getReceivingTask()?.taskRepository?.getProductsDiscrepancies()?.getCountProductNotProcessedOfProductPGE(productInfo.value!!).toStringFormatted()
                         }
-                        if (isNotRecountBreakingCargoUnit.value == true) {
+                        if (isNotRecountCargoUnit.value == true) {
                             qualityInfo.value = dataBase.getQualityInfoPGENotRecountBreaking()
                         } else {
                             qualityInfo.value = dataBase.getQualityInfoPGEForDiscrepancy()
@@ -261,7 +261,7 @@ class GoodsInfoViewModel : CoreViewModel(), OnPositionClickListener {
                     }
                     else -> {// обычный товар https://trello.com/c/OMjrZPhg
                         suffix.value = productInfo.value?.purchaseOrderUnits?.name
-                        if (isNotRecountBreakingCargoUnit.value == true) {
+                        if (isNotRecountCargoUnit.value == true) {
                             qualityInfo.value = dataBase.getQualityInfoPGENotRecountBreaking()
                         } else {
                             qualityInfo.value = dataBase.getQualityInfoPGE()
@@ -417,7 +417,7 @@ class GoodsInfoViewModel : CoreViewModel(), OnPositionClickListener {
                 processGeneralProductService.setProcessingUnitNumber(enteredProcessingUnitNumber.value!!)
                 processGeneralProductService.add(convertEizToBei().toString(), qualityInfo.value!![spinQualitySelectedPosition.value!!].code, enteredProcessingUnitNumber.value!!)
                 clickBtnApply()
-            } else if (isNotRecountBreakingCargoUnit.value == true) { //https://trello.com/c/PRTAVnUP
+            } else if (isNotRecountCargoUnit.value == true) { //не пересчетная ГЕ
                 if ((convertEizToBei() +
                                 acceptTotalCount.value!! +
                                 taskManager.getReceivingTask()!!.taskRepository.getProductsDiscrepancies().getCountRefusalOfProductPGE(productInfo.value!!)) <= productInfo.value!!.orderQuantity.toDouble()) {
@@ -463,9 +463,9 @@ class GoodsInfoViewModel : CoreViewModel(), OnPositionClickListener {
                 checkParamGrsGrundNeg()
             } else {//блок 6.22 (нет)
                 //блок 6.26
-                if (productInfo.value!!.uom.name == "г") {//блок 6.26 (да)
+                if (productInfo.value!!.uom.code == "G") {//блок 6.26 (да)
                     //блок 6.49
-                    val roundingQuantity = processGeneralProductService.getRoundingQuantityPPP()
+                    val roundingQuantity = processGeneralProductService.getRoundingQuantityPPP() - countValue.value!! // "- countValue.value!!" -> этого в блок-схеме нету, но без этого не правильно расчитывается необходимость округления, добавлено при отработке карточки https://trello.com/c/hElr3cn3
                     //блок 6.90
                     if (roundingQuantity <= productInfo.value!!.roundingShortages.toDouble()) {//блок 6.90 (да)
                         //блок 6.109
@@ -585,9 +585,9 @@ class GoodsInfoViewModel : CoreViewModel(), OnPositionClickListener {
 
     //ППП блок 6.163
     private fun noParamGrsGrundNeg() {
-        if (productInfo.value!!.uom.name == "г") {//блок 6.163 (да)
+        if (productInfo.value!!.uom.code == "G") {//блок 6.163 (да)
             //блок 6.167
-            val roundingQuantity = processGeneralProductService.getRoundingQuantityPPP()
+            val roundingQuantity = processGeneralProductService.getRoundingQuantityPPP() - countValue.value!! // "- countValue.value!!" -> этого в блок-схеме нету, но без этого не правильно расчитывается необходимость округления, добавлено при доработке карточки https://trello.com/c/hElr3cn3
             //блок 6.173
             if (roundingQuantity <= productInfo.value!!.roundingSurplus.toDouble()) {//блок 6.173 (да)
                 //блок 6.175
@@ -677,15 +677,17 @@ class GoodsInfoViewModel : CoreViewModel(), OnPositionClickListener {
             //блок 7.177
             saveCategoryPGE(true)
         } else {//блок 7.15 (нет)
-            //блок 7.21
+            //блок 7.21 (processGeneralProductService.getOpenQuantityPGE - блок 7.11)
+            //Logg.d { "processGeneralProductService.getQuantityAllCategoryPGE ${processGeneralProductService.getQuantityAllCategoryPGE(convertEizToBei())} " }
+            //Logg.d { "processGeneralProductService.getOpenQuantityPGE ${processGeneralProductService.getOpenQuantityPGE(paramGrwOlGrundcat.value!!, paramGrwUlGrundcat.value!!)} " }
             if (processGeneralProductService.getQuantityAllCategoryPGE(convertEizToBei()) > processGeneralProductService.getOpenQuantityPGE(paramGrwOlGrundcat.value!!, paramGrwUlGrundcat.value!!)) {
                 //блок 7.55
                 checkParamGrwUlGrundcat()
             } else {
                 //блок 7.43
-                if (productInfo.value!!.uom.name == "г") {
+                if (productInfo.value!!.uom.code == "G") {
                     //блок 7.63
-                    val roundingQuantity = processGeneralProductService.getRoundingQuantityPGE()
+                    val roundingQuantity = processGeneralProductService.getRoundingQuantityPGE() - countValue.value!! // "- countValue.value!!" -> этого в блок-схеме нету, но без этого не правильно расчитывается необходимость округления, добавлено при доработке карточки https://trello.com/c/hElr3cn3
                     //блок 7.110
                     if (roundingQuantity <= productInfo.value!!.roundingShortages.toDouble()) {//блок 7.110 (да)
                         //блок 7.156
@@ -821,9 +823,9 @@ class GoodsInfoViewModel : CoreViewModel(), OnPositionClickListener {
 
     //ПГЕ блок 7.174
     private fun noParamGrwUlGrundcat() {
-        if (productInfo.value!!.uom.name == "г") {//блок 7.174 (да)
+        if (productInfo.value!!.uom.code == "G") {//блок 7.174 (да)
             //блок 7.178
-            val roundingQuantity = processGeneralProductService.getRoundingQuantityPGE()
+            val roundingQuantity = processGeneralProductService.getRoundingQuantityPGE() - countValue.value!! // "- countValue.value!!" -> этого в блок-схеме нету, но без этого не правильно расчитывается необходимость округления, добавлено при доработке карточки https://trello.com/c/hElr3cn3
             //блок 7.184
             if (roundingQuantity <= productInfo.value!!.roundingSurplus.toDouble()) {//блок 7.184 (да)
                 //блок 7.186

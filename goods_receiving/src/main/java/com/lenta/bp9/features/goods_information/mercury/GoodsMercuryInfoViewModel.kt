@@ -75,8 +75,6 @@ class GoodsMercuryInfoViewModel : CoreViewModel(), OnPositionClickListener {
         }
     }
     val productionDate: MutableLiveData<String> = MutableLiveData("")
-    //@SuppressLint("SimpleDateFormat")
-    //private val formatter = SimpleDateFormat("dd.MM.yyyy")
 
     @SuppressLint("SimpleDateFormat")
     private val formatterRU = SimpleDateFormat("dd.MM.yyyy")
@@ -233,8 +231,8 @@ class GoodsMercuryInfoViewModel : CoreViewModel(), OnPositionClickListener {
         }
     }
 
-    private val isNotRecountBreakingCargoUnit: MutableLiveData<Boolean> by lazy { //https://trello.com/c/PRTAVnUP
-        MutableLiveData(isTaskPGE.value == true && taskManager.getReceivingTask()!!.taskHeader.isCracked && !taskManager.getReceivingTask()!!.taskDescription.isRecount)
+    private val isNotRecountCargoUnit: MutableLiveData<Boolean> by lazy { //https://trello.com/c/PRTAVnUP только без признака ВЗЛОМ (обсудили с Колей 17.06.2020)
+        MutableLiveData(isTaskPGE.value == true && productInfo.value!!.isWithoutRecount)
     }
 
     val enabledApplyButton: MutableLiveData<Boolean> = countValue.map {
@@ -260,7 +258,7 @@ class GoodsMercuryInfoViewModel : CoreViewModel(), OnPositionClickListener {
                     isDiscrepancy.value!! -> {
                         suffix.value = uom.value?.name
                         count.value = taskManager.getReceivingTask()?.taskRepository?.getProductsDiscrepancies()?.getCountProductNotProcessedOfProductPGE(productInfo.value!!).toStringFormatted()
-                        if (isNotRecountBreakingCargoUnit.value == true) {
+                        if (isNotRecountCargoUnit.value == true) {
                             qualityInfo.value = dataBase.getQualityInfoPGENotRecountBreaking()
                         } else {
                             qualityInfo.value = dataBase.getQualityInfoPGEForDiscrepancy()
@@ -268,7 +266,7 @@ class GoodsMercuryInfoViewModel : CoreViewModel(), OnPositionClickListener {
                     }
                     else -> {
                         suffix.value = productInfo.value?.purchaseOrderUnits?.name
-                        if (isNotRecountBreakingCargoUnit.value == true) {
+                        if (isNotRecountCargoUnit.value == true) {
                             qualityInfo.value = dataBase.getQualityInfoPGENotRecountBreaking()
                         } else {
                             qualityInfo.value = dataBase.getQualityInfoPGE()

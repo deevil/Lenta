@@ -1,4 +1,4 @@
-package com.lenta.bp9.features.goods_information.non_excise_alco
+package com.lenta.bp9.features.goods_information.non_excise_alco_receiving
 
 import android.os.Bundle
 import android.view.View
@@ -7,6 +7,7 @@ import com.lenta.bp9.R
 import com.lenta.bp9.databinding.FragmentNonExciseAlcoInfoBinding
 import com.lenta.bp9.model.task.TaskProductInfo
 import com.lenta.bp9.platform.extentions.getAppComponent
+import com.lenta.shared.platform.activity.OnBackPresserListener
 import com.lenta.shared.platform.fragment.CoreFragment
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
@@ -19,18 +20,21 @@ import com.lenta.shared.utilities.state.state
 
 class NonExciseAlcoInfoFragment : CoreFragment<FragmentNonExciseAlcoInfoBinding, NonExciseAlcoInfoViewModel>(),
         ToolbarButtonsClickListener,
-        OnScanResultListener {
+        OnScanResultListener,
+        OnBackPresserListener {
 
     companion object {
-        fun create(productInfo: TaskProductInfo): NonExciseAlcoInfoFragment {
+        fun create(productInfo: TaskProductInfo, isDiscrepancy: Boolean): NonExciseAlcoInfoFragment {
             NonExciseAlcoInfoFragment().let {
                 it.productInfo = productInfo
+                it.isDiscrepancy = isDiscrepancy
                 return it
             }
         }
     }
 
     private var productInfo by state<TaskProductInfo?>(null)
+    private var isDiscrepancy by state<Boolean?>(null)
 
     override fun getLayoutId(): Int = R.layout.fragment_non_excise_alco_info
 
@@ -40,6 +44,7 @@ class NonExciseAlcoInfoFragment : CoreFragment<FragmentNonExciseAlcoInfoBinding,
         provideViewModel(NonExciseAlcoInfoViewModel::class.java).let {vm ->
             getAppComponent()?.inject(vm)
             vm.productInfo.value = this.productInfo
+            vm.isDiscrepancy.value = this.isDiscrepancy
             return vm
         }
     }
@@ -66,7 +71,7 @@ class NonExciseAlcoInfoFragment : CoreFragment<FragmentNonExciseAlcoInfoBinding,
 
         binding?.spinnerBottlingDate?.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(adapterView: AdapterView<*>, view: View?, position: Int, l: Long) {
-                vm.onClickPositionSpinottlingDate(position)
+                vm.onClickPositionBottlingDate(position)
             }
 
             override fun onNothingSelected(adapterView: AdapterView<*>) {
@@ -101,5 +106,9 @@ class NonExciseAlcoInfoFragment : CoreFragment<FragmentNonExciseAlcoInfoBinding,
         vm.onScanResult(data)
     }
 
+    override fun onBackPressed(): Boolean {
+        vm.onBackPressed()
+        return false
+    }
 
 }
