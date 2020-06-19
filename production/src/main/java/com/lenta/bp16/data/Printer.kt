@@ -89,7 +89,7 @@ class Printer @Inject constructor(
             put("NAMEOSN", labelInfo.nameOsn)
             put("DATEEXPIR", labelInfo.dateExpir)
             put("GOODSNAME", labelInfo.goodsName)
-            put("WEIGHT", labelInfo.weight)
+            put("WEIGHER", labelInfo.weigher)
             put("PRODUCTTIME", labelInfo.productTime)
             put("GOODSCODE", labelInfo.goodsCode)
             put("BARCODE", labelInfo.barcode)
@@ -147,7 +147,7 @@ data class LabelInfo(
         /** Наименование продукта */
         val goodsName: String,
         /** Табельный номер */
-        val weight: String,
+        val weigher: String,
         /** Изготовлено */
         val productTime: String,
         /** Код товара */
