@@ -1,12 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:tools="http://schemas.android.com/tools"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:android="http://schemas.android.com/apk/res/android">
+    xmlns:tools="http://schemas.android.com/tools">
 
     <data>
+
         <variable
             name="vm"
-            type="com.lenta.shared.features.auxiliary_menu.AuxiliaryMenuViewModel"/>
+            type="com.lenta.shared.features.auxiliary_menu.AuxiliaryMenuViewModel" />
+
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -28,41 +30,34 @@
             app:layout_constraintTop_toTopOf="parent"
             tools:ignore="ContentDescription" />
 
-        <Button
-            android:id="@+id/btn_settings"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:layout_marginEnd="16dp"
             android:layout_marginBottom="16dp"
-            android:layoutDirection="rtl"
-            android:onClick="@{(view) -> vm.onClickSettings()}"
-            android:text="@string/settings"
-            android:textAllCaps="false"
-            app:icon="@drawable/ic_sound_mix_white_48dp"
-            app:iconGravity="start"
-            app:layout_constraintBottom_toTopOf="@+id/btn_support"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toStartOf="parent" />
-
-        <Button
-            android:id="@+id/btn_support"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginEnd="16dp"
-            android:layout_marginBottom="16dp"
-            android:layoutDirection="rtl"
-            android:onClick="@{(view) -> vm.onClickSupport()}"
-            android:text="@string/support"
-            android:textAllCaps="false"
-            app:icon="@drawable/ic_detail_white_48dp"
-            app:iconGravity="start"
+            android:orientation="vertical"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
+            app:layout_constraintStart_toStartOf="parent">
 
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:onClick="@{(view) -> vm.onClickSettings()}"
+                android:text="@string/settings"
+                app:icon="@drawable/ic_sound_mix_white_32dp"
+                app:iconGravity="end" />
+
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:onClick="@{(view) -> vm.onClickSupport()}"
+                android:text="@string/support"
+                app:icon="@drawable/ic_lifebuoy_white_32dp"
+                app:iconGravity="end" />
+
+        </LinearLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
