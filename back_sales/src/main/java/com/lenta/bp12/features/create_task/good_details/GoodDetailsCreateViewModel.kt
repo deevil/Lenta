@@ -97,7 +97,7 @@ class GoodDetailsCreateViewModel : CoreViewModel(), PageSelectionListener {
                     }
 
                     basketSelectionsHelper.clearPositions()
-                    manager.deleteBaskets(basketList)
+                    manager.removeBaskets(basketList)
                 }
                 1 -> {
                     // todo Удаление категорий, когда они будут поноценно реализованы

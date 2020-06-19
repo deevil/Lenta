@@ -109,7 +109,7 @@ class BasketGoodListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
         }
 
         selectionsHelper.clearPositions()
-        manager.deleteGoodByMaterials(materialList)
+        manager.removeGoodByMaterials(materialList)
         manager.updateCurrentBasket(manager.currentBasket.value)
     }
 

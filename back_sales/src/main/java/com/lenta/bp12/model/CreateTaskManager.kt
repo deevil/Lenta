@@ -47,41 +47,6 @@ class CreateTaskManager @Inject constructor(
         currentBasket.value = basket
     }
 
-    /*override suspend fun putInCurrentGood(goodInfo: GoodInfoResult) {
-        val newGood = Good(
-                ean = goodInfo.eanInfo.ean,
-                material = goodInfo.materialInfo.material,
-                name = goodInfo.materialInfo.name,
-                units = database.getUnitsByCode(goodInfo.materialInfo.unitsCode),
-                type = goodInfo.getGoodType(),
-                matype = goodInfo.materialInfo.matype,
-                control = goodInfo.getControlType(),
-                section = goodInfo.materialInfo.section,
-                matrix = getMatrixType(goodInfo.materialInfo.matrix),
-                innerQuantity = goodInfo.materialInfo.innerQuantity.toDoubleOrNull() ?: 0.0,
-                orderUnits = database.getUnitsByCode(goodInfo.materialInfo.orderUnitCode),
-                providers = goodInfo.providers.toMutableList(),
-                producers = goodInfo.producers.toMutableList()
-        )
-
-        findGoodByMaterial(newGood.material)?.let { good ->
-            newGood.positions = good.positions
-        }
-
-        //currentGood.value = newGood
-    }
-
-    override fun addCurrentGoodInTask() {
-        currentTask.value?.let { task ->
-            task.goods.find { it.material == currentGood.value!!.material }?.let { good ->
-                task.goods.remove(good)
-            }
-
-            task.goods.add(0, currentGood.value!!)
-            updateCurrentTask(task)
-        }
-    }*/
-
     override fun saveGoodInTask(good: Good) {
         currentTask.value?.let { task ->
             task.goods.find { it.material == good.material }?.let { good ->
@@ -103,7 +68,7 @@ class CreateTaskManager @Inject constructor(
     }
 
     override suspend fun isGoodCanBeAdded(goodInfo: GoodInfoResult): Boolean {
-        return database.isGoodCanBeAdded(goodInfo, currentTask.value!!.properties!!.type)
+        return database.isGoodCanBeAdded(goodInfo, currentTask.value!!.properties.type)
     }
 
     override fun addBasket(basket: Basket) {
@@ -121,28 +86,16 @@ class CreateTaskManager @Inject constructor(
         return if (position != null) position + 1 else 0
     }
 
-    override fun deleteGoodByMaterials(materialList: List<String>) {
+    override fun removeGoodByMaterials(materialList: List<String>) {
         currentTask.value?.let { task ->
-            task.goods.let { goods ->
-                materialList.forEach { material ->
-                    goods.remove(goods.find { it.material == material })
-                }
-            }
-
-            task.deleteEmptyBaskets()
+            task.removeGoodByMaterials(materialList)
             updateCurrentTask(task)
         }
     }
 
-    override fun deleteBaskets(basketList: MutableList<Basket>) {
+    override fun removeBaskets(basketList: MutableList<Basket>) {
         currentTask.value?.let { task ->
-            task.baskets.let { baskets ->
-                basketList.forEach { basket ->
-                    task.deleteGoodFromBasket(basket)
-                    baskets.remove(basket)
-                }
-            }
-
+            task.removeBaskets(basketList)
             updateCurrentTask(task)
         }
     }
@@ -248,15 +201,13 @@ interface ICreateTaskManager {
     fun updateCurrentGood(good: Good?)
     fun updateCurrentBasket(basket: Basket?)
 
-    //suspend fun putInCurrentGood(goodInfo: GoodInfoResult)
-    //fun addCurrentGoodInTask()
     fun findGoodByEan(ean: String): Good?
     fun findGoodByMaterial(material: String): Good?
     suspend fun isGoodCanBeAdded(goodInfo: GoodInfoResult): Boolean
     fun addBasket(basket: Basket)
     fun getBasketPosition(basket: Basket?): Int
-    fun deleteGoodByMaterials(materialList: List<String>)
-    fun deleteBaskets(basketList: MutableList<Basket>)
+    fun removeGoodByMaterials(materialList: List<String>)
+    fun removeBaskets(basketList: MutableList<Basket>)
     fun finishCurrentTask()
     fun addProviderInCurrentGood(providerInfo: ProviderInfo)
     fun prepareSendTaskDataParams(deviceIp: String, tkNumber: String, userNumber: String)
