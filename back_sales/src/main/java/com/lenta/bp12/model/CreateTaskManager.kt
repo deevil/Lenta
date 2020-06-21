@@ -171,7 +171,7 @@ class CreateTaskManager @Inject constructor(
                             taskNumber = task.number,
                             userNumber = userNumber,
                             taskName = task.name,
-                            taskType = task.properties!!.type,
+                            taskType = task.properties.type,
                             tkNumber = tkNumber,
                             storage = task.storage,
                             reasonCode = task.reason.code,

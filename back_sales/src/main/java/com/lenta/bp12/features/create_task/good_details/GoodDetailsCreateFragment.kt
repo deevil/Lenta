@@ -14,6 +14,7 @@ import com.lenta.shared.utilities.databinding.ViewPagerSettings
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import com.lenta.bp12.databinding.*
+import com.lenta.bp12.model.GoodType
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListener
 import com.lenta.shared.utilities.databinding.DataBindingAdapter
@@ -163,7 +164,7 @@ class GoodDetailsCreateFragment : CoreFragment<FragmentGoodDetailsCreateBinding,
     }
 
     override fun countTab(): Int {
-        return 2
+        return if (vm.good.value?.type == GoodType.COMMON) 1 else 2
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

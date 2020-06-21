@@ -20,7 +20,10 @@ import com.lenta.shared.models.core.getMatrixType
 import com.lenta.shared.platform.constants.Constants
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.Logg
-import com.lenta.shared.utilities.extentions.*
+import com.lenta.shared.utilities.extentions.combineLatest
+import com.lenta.shared.utilities.extentions.dropZeros
+import com.lenta.shared.utilities.extentions.map
+import com.lenta.shared.utilities.extentions.sumWith
 import com.lenta.shared.view.OnPositionClickListener
 import kotlinx.coroutines.launch
 import java.math.BigInteger
@@ -615,16 +618,7 @@ class GoodInfoCreateViewModel : CoreViewModel() {
         good.value?.let { changedGood ->
             changedGood.addPosition(quantity.value!!, getProvider(), date.value)
 
-            if (basket.value == null) {
-                manager.addBasket(Basket(
-                        section = changedGood.section,
-                        matype = changedGood.matype,
-                        control = changedGood.control,
-                        provider = getProvider()
-                ))
-
-                Logg.d { "--> add baskets: ${task.value?.baskets}" }
-            }
+            createBasket(changedGood)
 
             updateGood(changedGood)
         }
@@ -655,6 +649,9 @@ class GoodInfoCreateViewModel : CoreViewModel() {
                     date = date.value!!
             ))
 
+            // todo Непонятно, нужно ли создавать карзины для алкогольного партионного товара?
+            //createBasket(changedGood)
+
             updateGood(changedGood)
         }
     }
@@ -674,6 +671,17 @@ class GoodInfoCreateViewModel : CoreViewModel() {
             }
 
             updateGood(changedGood)
+        }
+    }
+
+    private fun createBasket(changedGood: Good) {
+        if (basket.value == null) {
+            manager.addBasket(Basket(
+                    section = changedGood.section,
+                    matype = changedGood.matype,
+                    control = changedGood.control,
+                    provider = getProvider()
+            ))
         }
     }
 

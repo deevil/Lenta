@@ -1,6 +1,7 @@
 package com.lenta.bp12.features.create_task.good_details
 
 import androidx.lifecycle.MutableLiveData
+import com.lenta.bp12.model.CategoryType
 import com.lenta.bp12.model.ICreateTaskManager
 import com.lenta.bp12.model.pojo.create_task.Basket
 import com.lenta.bp12.platform.navigation.IScreenNavigator
@@ -24,6 +25,8 @@ class GoodDetailsCreateViewModel : CoreViewModel(), PageSelectionListener {
     val basketSelectionsHelper = SelectionItemsHelper()
 
     val categorySelectionsHelper = SelectionItemsHelper()
+
+    var countTab: Int? = null
 
     val task by lazy {
         manager.currentTask
@@ -62,21 +65,44 @@ class GoodDetailsCreateViewModel : CoreViewModel(), PageSelectionListener {
     }
 
     val categories by lazy {
-        MutableLiveData(List(3) {
-            ItemCategoryUi(
-                    position = "${it + 1}",
-                    type = "Test category ${it + 1}",
-                    quantity = (1..15).random().toString()
-            )
-        })
+        good.map { good ->
+            val categories = mutableListOf<ItemCategory>()
+            good?.getMarkQuantity()?.let { quantity ->
+                if (quantity > 0) {
+                    categories.add(ItemCategory(
+                            type = CategoryType.MARK,
+                            quantity = quantity
+                    ))
+                }
+            }
+
+            good?.getPartQuantity()?.let { quantity ->
+                if (quantity > 0) {
+                    categories.add(ItemCategory(
+                            type = CategoryType.PART,
+                            quantity = quantity
+                    ))
+                }
+            }
+
+            categories.mapIndexed { index, itemCategory ->
+                ItemCategoryUi(
+                        position = "${index + 1}",
+                        type = itemCategory.type.description,
+                        quantity = "${itemCategory.quantity.dropZeros()} ${good?.units?.name}"
+                )
+            }
+        }
     }
 
     val deleteEnabled = selectedPage.combineLatest(basketSelectionsHelper.selectedPositions).combineLatest(categorySelectionsHelper.selectedPositions).map {
-        val tab = it!!.first.first
-        val isBasketSelected = it.first.second.isNotEmpty()
-        val isCategorySelected = it.second.isNotEmpty()
+        it?.let {
+            val tab = it.first.first
+            val isBasketSelected = it.first.second.isNotEmpty()
+            val isCategorySelected = it.second.isNotEmpty()
 
-        tab == 0 && isBasketSelected || tab == 1 && isCategorySelected
+            tab == 0 && isBasketSelected || tab == 1 && isCategorySelected
+        }
     }
 
     // -----------------------------
@@ -100,10 +126,21 @@ class GoodDetailsCreateViewModel : CoreViewModel(), PageSelectionListener {
                     manager.removeBaskets(basketList)
                 }
                 1 -> {
-                    // todo Удаление категорий, когда они будут поноценно реализованы
-                    // ...
+                    good.value?.let { changedGood ->
+                        categorySelectionsHelper.selectedPositions.value?.map { position ->
+                            categories.value?.get(position)?.type?.let { category ->
+                                when (category) {
+                                    CategoryType.MARK.description -> changedGood.removeAllMark()
+                                    CategoryType.PART.description -> changedGood.removeAllPart()
+                                }
+                            }
+                        }
 
+                        manager.updateCurrentGood(changedGood)
+                        manager.saveGoodInTask(changedGood)
+                    }
                 }
+                else -> throw IllegalArgumentException("Wrong pager position!")
             }
         }
     }
@@ -117,6 +154,11 @@ data class ItemBasketUi(
         val name: String,
         val description: String,
         val quantity: String
+)
+
+data class ItemCategory(
+        val type: CategoryType,
+        val quantity: Double
 )
 
 data class ItemCategoryUi(

@@ -29,6 +29,11 @@ enum class Category(val description: String) {
     MARK("Марочно")
 }
 
+enum class CategoryType(val description: String){
+    MARK("Марочно"),
+    PART("Партионно")
+}
+
 enum class MarkStatus(val code: String){
     OK("01"),
     BAD("02"),

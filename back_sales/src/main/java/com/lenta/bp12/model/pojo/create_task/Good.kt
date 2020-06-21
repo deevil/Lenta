@@ -78,20 +78,31 @@ data class Good(
         return getPositionQuantity() + getMarkQuantity() + getPartQuantity()
     }
 
-    private fun getPositionQuantity(): Double {
+    fun getPositionQuantity(): Double {
         return positions.map { it.quantity }.sumList()
     }
 
-    private fun getMarkQuantity(): Double {
+    fun getMarkQuantity(): Double {
         return marks.size.toDouble()
     }
 
-    private fun getPartQuantity(): Double {
+    fun getPartQuantity(): Double {
         return parts.map { it.quantity }.sumList()
     }
 
     fun getQuantityByProvider(providerCode: String?): Double {
-        return positions.filter { it.provider?.code == providerCode }.map { it.quantity }.sumList()
+        val positionQuantity = positions.filter { it.provider?.code == providerCode }.map { it.quantity }.sumList()
+        val partQuantity = parts.filter { it.providerCode == providerCode }.map { it.quantity }.sumList()
+
+        return positionQuantity.sumWith(partQuantity)
+    }
+
+    fun removeAllMark() {
+        marks.clear()
+    }
+
+    fun removeAllPart() {
+        parts.clear()
     }
 
     /*fun isSameMaterial(material: String): Boolean {
