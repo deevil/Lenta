@@ -149,11 +149,14 @@ class GoodInfoCreateViewModel : CoreViewModel() {
     val basketTitle = MutableLiveData("По корзине")
 
     private val basket by lazy {
-        good.combineLatest(providerPosition).map {
-            val good = it!!.first
+        good.combineLatest(selectedProvider).map {
+            it?.let {
+                val good = it.first
+                val provider = it.second
 
-            task.value?.baskets?.find { basket ->
-                basket.section == good.section && basket.matype == good.matype && basket.control == good.control && basket.provider?.code == getProvider()?.code
+                task.value?.baskets?.find { basket ->
+                    basket.section == good.section && basket.matype == good.matype && basket.control == good.control && basket.provider.code == provider.code
+                }
             }
         }
     }
@@ -220,6 +223,16 @@ class GoodInfoCreateViewModel : CoreViewModel() {
         isEnabled && position > 0 || !isEnabled && position == 0
     }
 
+    private val selectedProvider by lazy {
+        providers.combineLatest(providerPosition).map {
+            it?.let {
+                val list = it.first
+                val position = it.second
+                if (list.isNotEmpty()) list[position] else null
+            }
+        }
+    }
+
     /**
     Список производителей
      */
@@ -262,6 +275,16 @@ class GoodInfoCreateViewModel : CoreViewModel() {
         val position = it?.second ?: 0
 
         isEnabled && position > 0 || !isEnabled && position == 0
+    }
+
+    private val selectedProducer by lazy {
+        producers.combineLatest(producerPosition).map {
+            it?.let {
+                val list = it.first
+                val position = it.second
+                if (list.isNotEmpty()) list[position] else null
+            }
+        }
     }
 
     /**
@@ -616,7 +639,7 @@ class GoodInfoCreateViewModel : CoreViewModel() {
 
     private fun addPosition() {
         good.value?.let { changedGood ->
-            changedGood.addPosition(quantity.value!!, getProvider(), date.value)
+            changedGood.addPosition(quantity.value!!, selectedProvider.value ?: ProviderInfo())
 
             createBasket(changedGood)
             updateGood(changedGood)
@@ -629,8 +652,8 @@ class GoodInfoCreateViewModel : CoreViewModel() {
                     number = lastSuccessSearchNumber.value!!,
                     material = changedGood.material,
                     isBadMark = markInfoResult.value?.status == MarkStatus.BAD.code,
-                    providerCode = getProvider()?.code ?: "",
-                    producerCode = getProducer()?.code ?: ""
+                    providerCode = selectedProvider.value?.code ?: "",
+                    producerCode = selectedProducer.value?.code ?: ""
             ))
 
             createBasket(changedGood)
@@ -645,8 +668,8 @@ class GoodInfoCreateViewModel : CoreViewModel() {
                     material = changedGood.material,
                     quantity = quantity.value!!,
                     units = changedGood.units,
-                    providerCode = getProvider()?.code ?: "",
-                    producerCode = getProducer()?.code ?: "",
+                    providerCode = selectedProvider.value?.code ?: "",
+                    producerCode = selectedProducer.value?.code ?: "",
                     date = date.value!!
             ))
 
@@ -664,8 +687,8 @@ class GoodInfoCreateViewModel : CoreViewModel() {
                             material = changedGood.material,
                             boxNumber = lastSuccessSearchNumber.value!!,
                             isBadMark = mark.isBadMark.isNotEmpty(),
-                            providerCode = getProvider()?.code ?: "",
-                            producerCode = getProducer()?.code ?: ""
+                            providerCode = selectedProvider.value?.code ?: "",
+                            producerCode = selectedProducer.value?.code ?: ""
                     ))
                 }
             }
@@ -681,28 +704,8 @@ class GoodInfoCreateViewModel : CoreViewModel() {
                     section = changedGood.section,
                     matype = changedGood.matype,
                     control = changedGood.control,
-                    provider = getProvider()
+                    provider = selectedProvider.value ?: ProviderInfo()
             ))
-        }
-    }
-
-    private fun getProvider(): ProviderInfo? {
-        return providers.value?.let { providers ->
-            when (providers.size) {
-                0 -> null
-                1 -> providers[0]
-                else -> providers[providerPosition.value!!]
-            }
-        }
-    }
-
-    private fun getProducer(): ProducerInfo? {
-        return producers.value?.let { producers ->
-            when (producers.size) {
-                0 -> null
-                1 -> producers[0]
-                else -> producers[producerPosition.value!!]
-            }
         }
     }
 

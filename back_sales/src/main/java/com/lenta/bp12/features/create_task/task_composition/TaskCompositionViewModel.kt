@@ -56,7 +56,7 @@ class TaskCompositionViewModel : CoreViewModel(), PageSelectionListener, OnOkInS
 
     val goods by lazy {
         task.map { task ->
-            task?.goods!!.reversed().mapIndexed { index, good ->
+            task?.goods!!.mapIndexed { index, good ->
                 ItemGoodUi(
                         material = good.material,
                         position = "${task.goods.size - index}",

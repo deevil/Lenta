@@ -21,9 +21,9 @@ data class Task(
 
     fun getQuantityByBasket(basket: Basket): Double {
         return getGoodListByBasket(basket).map { good ->
-            val positionQuantity = good.positions.filter { it.provider?.code == basket.provider?.code }.map { it.quantity }.sumList()
-            val markQuantity = good.marks.filter { it.providerCode == basket.provider?.code }.size.toDouble()
-            val partQuantity = good.parts.filter { it.providerCode == basket.provider?.code }.map { it.quantity }.sumList()
+            val positionQuantity = good.positions.filter { it.provider.code == basket.provider.code }.map { it.quantity }.sumList()
+            val markQuantity = good.marks.filter { it.providerCode == basket.provider.code }.size.toDouble()
+            val partQuantity = good.parts.filter { it.providerCode == basket.provider.code }.map { it.quantity }.sumList()
 
             positionQuantity.sumWith(markQuantity).sumWith(partQuantity)
         }.sumList()
@@ -33,8 +33,8 @@ data class Task(
         return goods.filter { good ->
             good.section == basket.section && good.matype == basket.matype && good.control == basket.control &&
                     (good.positions.find { it.provider == basket.provider } != null ||
-                            good.marks.find { it.providerCode == basket.provider?.code } != null ||
-                            good.parts.find { it.providerCode == basket.provider?.code } != null)
+                            good.marks.find { it.providerCode == basket.provider.code } != null ||
+                            good.parts.find { it.providerCode == basket.provider.code } != null)
         }
     }
 
@@ -49,9 +49,9 @@ data class Task(
     fun removeBaskets(basketList: MutableList<Basket>) {
         basketList.forEach { basket ->
             getGoodListByBasket(basket).forEach { good ->
-                good.positions.filter { it.provider?.code == basket.provider?.code }.let { positions -> good.removePositions(positions) }
-                good.marks.filter { it.providerCode == basket.provider?.code }.let { marks -> good.removeMarks(marks) }
-                good.parts.filter { it.providerCode == basket.provider?.code }.let { parts -> good.removeParts(parts) }
+                good.removePositionsByProvider(basket.provider.code)
+                good.removeMarksByProvider(basket.provider.code)
+                good.removePartsByProvider(basket.provider.code)
             }
 
             baskets.remove(basket)

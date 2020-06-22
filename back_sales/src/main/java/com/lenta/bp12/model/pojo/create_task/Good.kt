@@ -35,8 +35,8 @@ data class Good(
         return "${material.takeLast(6)}$delimiter$name"
     }
 
-    fun addPosition(quantity: Double, provider: ProviderInfo?, date: String?) {
-        val position = positions.find { it.provider?.code == provider?.code && it.date == date }
+    fun addPosition(quantity: Double, provider: ProviderInfo) {
+        val position = positions.find { it.provider.code == provider.code }
         val oldQuantity = position?.quantity
 
         if (position != null) {
@@ -45,8 +45,7 @@ data class Good(
 
         positions.add(0, Position(
                 quantity = quantity.sumWith(oldQuantity),
-                provider = provider,
-                date = date
+                provider = provider
         ))
     }
 
@@ -57,9 +56,9 @@ data class Good(
     }
 
     fun addPart(part: Part) {
-        if (parts.find { it.number == part.number } == null) {
-            parts.add(part)
-        }
+        parts.find { it.providerCode == part.providerCode && it.producerCode == part.producerCode && it.date == part.date}?.let { foundPart ->
+            foundPart.quantity = foundPart.quantity.sumWith(part.quantity)
+        } ?: parts.add(part)
     }
 
     fun removePositions(positionList: List<Position>) {
@@ -115,6 +114,18 @@ data class Good(
 
     fun removeAllPart() {
         parts.clear()
+    }
+
+    fun removePositionsByProvider(providerCode: String) {
+        removePositions(positions.filter { it.provider.code == providerCode })
+    }
+
+    fun removeMarksByProvider(providerCode: String) {
+        removeMarks(marks.filter { it.providerCode == providerCode })
+    }
+
+    fun removePartsByProvider(providerCode: String) {
+        removeParts(parts.filter { it.providerCode == providerCode })
     }
 
     /*fun isSameMaterial(material: String): Boolean {
