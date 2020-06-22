@@ -1,7 +1,7 @@
 package com.lenta.bp12.model.pojo.create_task
 
 import com.lenta.bp12.model.ControlType
-import com.lenta.bp12.model.GoodKind
+import com.lenta.bp12.model.GoodType
 import com.lenta.bp12.model.pojo.Mark
 import com.lenta.bp12.model.pojo.Part
 import com.lenta.bp12.request.pojo.ProducerInfo
@@ -16,19 +16,17 @@ data class Good(
         val material: String,
         val name: String,
         val units: Uom = Uom.ST,
-        val kind: GoodKind,
-        val type: String = "",
+        val orderUnits: Uom= Uom.ST,
+        val type: GoodType,
+        val matype: String = "",
         val control: ControlType = ControlType.COMMON,
         val section: String,
         val matrix: MatrixType,
-        var positions: MutableList<Position> = mutableListOf(),
-
-        var isFullData: Boolean = false,
-
         val innerQuantity: Double = 0.0,
-        val orderUnits: Uom= Uom.ST,
         val providers: MutableList<ProviderInfo> = mutableListOf(),
         val producers: MutableList<ProducerInfo> = mutableListOf(),
+
+        var positions: MutableList<Position> = mutableListOf(),
         val marks: MutableList<Mark> = mutableListOf(),
         val parts: MutableList<Part> = mutableListOf()
 ) {
@@ -37,12 +35,8 @@ data class Good(
         return "${material.takeLast(6)}$delimiter$name"
     }
 
-    fun isBox(): Boolean {
-        return innerQuantity > 1 // По умолчанию всегда 1.0
-    }
-
-    fun addPosition(quantity: Double, provider: ProviderInfo?, date: String?) {
-        val position = positions.find { it.provider?.code == provider?.code && it.date == date }
+    fun addPosition(quantity: Double, provider: ProviderInfo) {
+        val position = positions.find { it.provider.code == provider.code }
         val oldQuantity = position?.quantity
 
         if (position != null) {
@@ -51,27 +45,91 @@ data class Good(
 
         positions.add(0, Position(
                 quantity = quantity.sumWith(oldQuantity),
-                provider = provider,
-                date = date
+                provider = provider
         ))
     }
 
-    fun getTotalQuantity(): Double {
-        return positions.map { it.quantity }.sumList()
+    fun addMark(mark: Mark) {
+        if (marks.find { it.number == mark.number } == null) {
+            marks.add(mark)
+        }
     }
 
-    fun getQuantityByProvider(provider: ProviderInfo?): Double {
-        return positions.filter { it.provider?.code == provider?.code }.map { it.quantity }.sumList()
+    fun addPart(part: Part) {
+        parts.find { it.providerCode == part.providerCode && it.producerCode == part.producerCode && it.date == part.date}?.let { foundPart ->
+            foundPart.quantity = foundPart.quantity.sumWith(part.quantity)
+        } ?: parts.add(part)
     }
 
-    fun deletePositions(positionList: List<Position>) {
+    fun removePositions(positionList: List<Position>) {
         positionList.forEach { position ->
             positions.remove(position)
         }
     }
 
-    fun isSameMaterial(material: String): Boolean {
-        return this.material.takeLast(6) == material.takeLast(6)
+    fun removeMarks(markList: List<Mark>) {
+        markList.forEach { mark ->
+            marks.remove(mark)
+        }
     }
+
+    fun removeParts(partList: List<Part>) {
+        partList.forEach { part ->
+            parts.remove(part)
+        }
+    }
+
+    fun removeMark(number: String) {
+        marks.find { it.number == number }?.let { mark ->
+            marks.remove(mark)
+        }
+    }
+
+    fun getTotalQuantity(): Double {
+        return getPositionQuantity() + getMarkQuantity() + getPartQuantity()
+    }
+
+    fun getPositionQuantity(): Double {
+        return positions.map { it.quantity }.sumList()
+    }
+
+    fun getMarkQuantity(): Double {
+        return marks.size.toDouble()
+    }
+
+    fun getPartQuantity(): Double {
+        return parts.map { it.quantity }.sumList()
+    }
+
+    fun getQuantityByProvider(providerCode: String?): Double {
+        val positionQuantity = positions.filter { it.provider?.code == providerCode }.map { it.quantity }.sumList()
+        val partQuantity = parts.filter { it.providerCode == providerCode }.map { it.quantity }.sumList()
+
+        return positionQuantity.sumWith(partQuantity)
+    }
+
+    fun removeAllMark() {
+        marks.clear()
+    }
+
+    fun removeAllPart() {
+        parts.clear()
+    }
+
+    fun removePositionsByProvider(providerCode: String) {
+        removePositions(positions.filter { it.provider.code == providerCode })
+    }
+
+    fun removeMarksByProvider(providerCode: String) {
+        removeMarks(marks.filter { it.providerCode == providerCode })
+    }
+
+    fun removePartsByProvider(providerCode: String) {
+        removeParts(parts.filter { it.providerCode == providerCode })
+    }
+
+    /*fun isSameMaterial(material: String): Boolean {
+        return this.material.takeLast(6) == material.takeLast(6)
+    }*/
 
 }

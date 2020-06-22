@@ -42,7 +42,6 @@ class GoodInfoCreateFragment : CoreFragment<FragmentGoodInfoCreateBinding, GoodI
         bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.apply, enabled = false)
 
         connectLiveData(vm.rollbackVisibility, getBottomToolBarUIModel()!!.uiModelButton2.visibility)
-        connectLiveData(vm.detailsVisibility, getBottomToolBarUIModel()!!.uiModelButton3.visibility)
         connectLiveData(vm.rollbackEnabled, getBottomToolBarUIModel()!!.uiModelButton2.enabled)
         connectLiveData(vm.applyEnabled, getBottomToolBarUIModel()!!.uiModelButton5.enabled)
     }
@@ -50,7 +49,9 @@ class GoodInfoCreateFragment : CoreFragment<FragmentGoodInfoCreateBinding, GoodI
     override fun onToolbarButtonClick(view: View) {
         when (view.id) {
             R.id.b_2 -> vm.onClickRollback()
-            //R.id.b_2 -> vm.onScanResult("147300249826851018001FZSIZAB5I6KZKWEQKPKZJHW6MYKVGAETXLPV7M5AIF7OXTQFIM347EWQGXAK65QGJFKTR7EQDHJQTJFSW5DNWTBU3BRLKVM7D6YZMYRBV6IOQY5ZXLPKLBHUZPBTRFTLQ")
+            //R.id.b_2 -> vm.onScanResult("22N00000XOIJT87CH2W0123456789012345678901234567890123456789000000001") // Марка
+            //R.id.b_2 -> vm.onScanResult("22N00002NWKKIF6RWF30123456789012345678901234567890123456789000000004") // Партия
+            //R.id.b_2 -> vm.onScanResult("03000048752210319000100516") // Коробка
             R.id.b_3 -> vm.onClickDetails()
             R.id.b_5 -> vm.onClickApply()
         }

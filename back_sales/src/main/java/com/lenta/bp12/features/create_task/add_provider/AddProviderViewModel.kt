@@ -63,8 +63,12 @@ class AddProviderViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
         viewModelScope.launch {
             database.getProviderInfo(number)?.let { providerInfo ->
                 provider.value = providerInfo
-            }
+            } ?: resetProvider()
         }
+    }
+
+    private fun resetProvider() {
+        provider.value = null
     }
 
     fun onClickApply() {

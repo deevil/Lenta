@@ -32,7 +32,7 @@
                         style="@style/CellEditTextStyle"
                         android:drawableEnd="@drawable/spinner_arrow_down_disabled"
                         android:enabled="false"
-                        android:text="@{vm.quantityType}"
+                        android:text="@{vm.accountingType}"
                         tools:text="Количество" />
 
                 </LinearLayout>
@@ -45,8 +45,8 @@
 
                     <com.lenta.shared.view.EditTextWithSuffix
                         style="@style/CellEditTextStyle"
-                        android:enabled="@{vm.quantityEnabled}"
-                        android:text="@={vm.quantity}"
+                        android:enabled="@{vm.quantityFieldEnabled}"
+                        android:text="@={vm.quantityField}"
                         app:digitsForUom="@{vm.good.units}"
                         app:quantityTypeIcon="@{vm.good.orderUnits}"
                         app:suffix="@{vm.good.units.name}"
@@ -94,7 +94,6 @@
                     <TextView
                         style="@style/CellTextStyle"
                         android:text="@{vm.basketQuantity}"
-                        android:visibility="@{true}"
                         tools:text="1 шт" />
 
                 </LinearLayout>
@@ -261,7 +260,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                app:goodKindIcon="@{vm.good.kind}"
+                app:goodKindIcon="@{vm.good.type}"
                 tools:src="@drawable/ic_excise_alcohol_white_32dp" />
 
             <FrameLayout

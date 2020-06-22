@@ -8,7 +8,7 @@ data class MarkInfo(
         var material: String,
         /** Код акцизной марки */
         @SerializedName("MARK_NUM")
-        var markNumber: String,
+        var number: String,
         /** Номер коробки */
         @SerializedName("BOX_NUM")
         var boxNumber: String,
@@ -17,5 +17,5 @@ data class MarkInfo(
         var isBadMark: String,
         /** Код поставщика */
         @SerializedName("LIFNR")
-        var providerCode: String
+        var producerCode: String
 )

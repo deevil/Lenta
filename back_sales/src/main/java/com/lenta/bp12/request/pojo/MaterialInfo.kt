@@ -11,7 +11,7 @@ data class MaterialInfo(
         var name: String,
         /** Вид товара */
         @SerializedName("MATYPE")
-        var goodType: String,
+        var matype: String,
         /** Базовая единица измерения */
         @SerializedName("BUOM")
         var unitsCode: String,

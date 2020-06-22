@@ -32,24 +32,24 @@ class BasketGoodListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
 
     val title by lazy {
         basket.map { basket ->
-            "Корзина ${manager.getBasketPosition(basket)}: ${basket?.getDescription()}"
+            "Корзина ${manager.getBasketPosition(basket)}: ${basket?.getDescription(task.value!!.properties.isDivBySection)}"
         }
     }
 
     val numberField: MutableLiveData<String> = MutableLiveData("")
 
     val goods by lazy {
-        basket.map { basket ->
-            task.value?.let { task ->
-                task.goods.filter {
-                    it.section == basket?.section && it.type == basket.type && it.control == basket.control
-                }.mapIndexed { index, good ->
-                    ItemGoodUi(
-                            position = "${index + 1}",
-                            name = good.getNameWithMaterial(),
-                            quantity = good.getQuantityByProvider(basket?.provider).dropZeros(),
-                            material = good.material
-                    )
+        basket.map {
+            it?.let { basket ->
+                task.value?.let { task ->
+                    task.getGoodListByBasket(basket).mapIndexed { index, good ->
+                        ItemGoodUi(
+                                position = "${index + 1}",
+                                name = good.getNameWithMaterial(),
+                                quantity = "${good.getQuantityByProvider(basket.provider?.code).dropZeros()} ${good.units.name}",
+                                material = good.material
+                        )
+                    }
                 }
             }
         }
@@ -88,6 +88,7 @@ class BasketGoodListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
     fun onClickItemPosition(position: Int) {
         manager.searchNumber = goods.value!![position].material
         manager.openGoodFromList = true
+        navigator.goBack()
         navigator.openGoodInfoCreateScreen()
     }
 
@@ -108,7 +109,7 @@ class BasketGoodListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
         }
 
         selectionsHelper.clearPositions()
-        manager.deleteGoodByMaterials(materialList)
+        manager.removeGoodByMaterials(materialList)
         manager.updateCurrentBasket(manager.currentBasket.value)
     }
 

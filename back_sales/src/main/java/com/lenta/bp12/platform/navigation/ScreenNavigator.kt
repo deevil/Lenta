@@ -252,9 +252,9 @@ class ScreenNavigator @Inject constructor(
         runOrPostpone {
             getFragmentStack()?.push(AlertFragment.create(
                     pageNumber = "93",
-                    message = context.getString(R.string.for_excise_good_need_scan_first_mark),
+                    message = context.getString(R.string.for_excise_alcohol_need_scan_first_mark),
                     iconRes = R.drawable.ic_info_green_80dp,
-                    timeAutoExitInMillis = 2000
+                    timeAutoExitInMillis = 3000
             ))
         }
     }

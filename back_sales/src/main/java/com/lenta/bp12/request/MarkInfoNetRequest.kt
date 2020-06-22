@@ -11,23 +11,26 @@ import com.lenta.shared.requests.FmpRequestsHelper
 import com.lenta.shared.requests.SapResponse
 import javax.inject.Inject
 
-class ExciseInfoNetRequest @Inject constructor(
+class MarkInfoNetRequest @Inject constructor(
         private val fmpRequestsHelper: FmpRequestsHelper
-) : UseCase<ExciseInfoResult, ExciseInfoParams> {
+) : UseCase<MarkInfoResult, MarkInfoParams> {
 
-    override suspend fun run(params: ExciseInfoParams): Either<Failure, ExciseInfoResult> {
-        return fmpRequestsHelper.restRequest("ZMP_UTZ_100_V001", params, ExciseInfoStatus::class.java)
+    override suspend fun run(params: MarkInfoParams): Either<Failure, MarkInfoResult> {
+        return fmpRequestsHelper.restRequest("ZMP_UTZ_100_V001", params, MarkInfoStatus::class.java)
     }
 
 }
 
-data class ExciseInfoParams(
+data class MarkInfoParams(
         /** Номер ТК */
         @SerializedName("IV_WERKS")
         val tkNumber: String,
         /** Номер товара */
         @SerializedName("IV_MATNR")
         val material: String,
+        /** Номер товара */
+        @SerializedName("IV_MATNR_COMP")
+        val materialComp: String = "",
         /** Код акцизной марки */
         @SerializedName("IV_MARK_NUM")
         val markNumber: String,
@@ -44,13 +47,16 @@ data class ExciseInfoParams(
         @SerializedName("IV_MODE")
         val mode: Int,
         /** Фактическое количество */
-        @SerializedName("IV_WIV_FACT_QNTERKS")
-        val quantity: Double
+        @SerializedName("IV_FACT_QNT")
+        val quantity: Double,
+        /** Фактическое количество */
+        @SerializedName("IV_CODEBP")
+        val codeBp: String = "BKS"
 )
 
-class ExciseInfoStatus : ObjectRawStatus<ExciseInfoResult>()
+class MarkInfoStatus : ObjectRawStatus<MarkInfoResult>()
 
-data class ExciseInfoResult(
+data class MarkInfoResult(
         /** Дата производства */
         @SerializedName("EV_DATEOFPOUR")
         val producedDate: String,
@@ -69,6 +75,9 @@ data class ExciseInfoResult(
         /** Таблица ЕГАИС производителей */
         @SerializedName("ET_PROD_TEXT")
         val producers: List<ProducerInfo>,
+        /** Номер партии */
+        @SerializedName("EV_ZCHARG")
+        val partNumber: String,
         /** Код возврата */
         @SerializedName("EV_RETCODE")
         override val retCode: Int,

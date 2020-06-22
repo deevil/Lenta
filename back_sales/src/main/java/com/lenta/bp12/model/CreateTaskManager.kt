@@ -4,8 +4,6 @@ import androidx.lifecycle.MutableLiveData
 import com.lenta.bp12.model.pojo.create_task.Basket
 import com.lenta.bp12.model.pojo.create_task.Good
 import com.lenta.bp12.model.pojo.create_task.Task
-import com.lenta.bp12.platform.extention.getControlType
-import com.lenta.bp12.platform.extention.getGoodKind
 import com.lenta.bp12.repository.IDatabaseRepository
 import com.lenta.bp12.request.GoodInfoResult
 import com.lenta.bp12.request.SendTaskDataParams
@@ -13,7 +11,6 @@ import com.lenta.bp12.request.pojo.MarkInfo
 import com.lenta.bp12.request.pojo.PartInfo
 import com.lenta.bp12.request.pojo.PositionInfo
 import com.lenta.bp12.request.pojo.ProviderInfo
-import com.lenta.shared.models.core.getMatrixType
 import com.lenta.shared.platform.constants.Constants
 import com.lenta.shared.utilities.extentions.dropZeros
 import com.lenta.shared.utilities.extentions.toSapBooleanString
@@ -28,6 +25,8 @@ class CreateTaskManager @Inject constructor(
     override var searchNumber = ""
 
     override var openGoodFromList = false
+
+    override var isWasAddedProvider = false
 
     override val currentTask = MutableLiveData<Task>()
 
@@ -48,38 +47,13 @@ class CreateTaskManager @Inject constructor(
         currentBasket.value = basket
     }
 
-    override suspend fun putInCurrentGood(goodInfo: GoodInfoResult) {
-        val newGood = Good(
-                ean = goodInfo.eanInfo.ean,
-                material = goodInfo.materialInfo.material,
-                name = goodInfo.materialInfo.name,
-                units = database.getUnitsByCode(goodInfo.materialInfo.unitsCode),
-                kind = goodInfo.getGoodKind(),
-                type = goodInfo.materialInfo.goodType,
-                control = goodInfo.getControlType(),
-                section = goodInfo.materialInfo.section,
-                matrix = getMatrixType(goodInfo.materialInfo.matrix),
-                isFullData = true,
-                innerQuantity = goodInfo.materialInfo.innerQuantity.toDoubleOrNull() ?: 0.0,
-                orderUnits = database.getUnitsByCode(goodInfo.materialInfo.orderUnitCode),
-                providers = goodInfo.providers.toMutableList(),
-                producers = goodInfo.producers.toMutableList()
-        )
-
-        findGoodByMaterial(newGood.material)?.let { good ->
-            newGood.positions = good.positions
-        }
-
-        currentGood.value = newGood
-    }
-
-    override fun addCurrentGoodInTask() {
+    override fun saveGoodInTask(good: Good) {
         currentTask.value?.let { task ->
-            task.goods.find { it.material == currentGood.value!!.material }?.let { good ->
+            task.goods.find { it.material == good.material }?.let { good ->
                 task.goods.remove(good)
             }
 
-            task.goods.add(0, currentGood.value!!)
+            task.goods.add(0, good)
             updateCurrentTask(task)
         }
     }
@@ -94,7 +68,7 @@ class CreateTaskManager @Inject constructor(
     }
 
     override suspend fun isGoodCanBeAdded(goodInfo: GoodInfoResult): Boolean {
-        return database.isGoodCanBeAdded(goodInfo, currentTask.value!!.properties!!.type)
+        return database.isGoodCanBeAdded(goodInfo, currentTask.value!!.properties.type)
     }
 
     override fun addBasket(basket: Basket) {
@@ -112,28 +86,16 @@ class CreateTaskManager @Inject constructor(
         return if (position != null) position + 1 else 0
     }
 
-    override fun deleteGoodByMaterials(materialList: List<String>) {
+    override fun removeGoodByMaterials(materialList: List<String>) {
         currentTask.value?.let { task ->
-            task.goods.let { goods ->
-                materialList.forEach { material ->
-                    goods.remove(goods.find { it.material == material })
-                }
-            }
-
-            task.deleteEmptyBaskets()
+            task.removeGoodByMaterials(materialList)
             updateCurrentTask(task)
         }
     }
 
-    override fun deleteBaskets(basketList: MutableList<Basket>) {
+    override fun removeBaskets(basketList: MutableList<Basket>) {
         currentTask.value?.let { task ->
-            task.baskets.let { baskets ->
-                basketList.forEach { basket ->
-                    task.deleteGoodFromBasket(basket)
-                    baskets.remove(basket)
-                }
-            }
-
+            task.removeBaskets(basketList)
             updateCurrentTask(task)
         }
     }
@@ -149,6 +111,7 @@ class CreateTaskManager @Inject constructor(
     override fun addProviderInCurrentGood(providerInfo: ProviderInfo) {
         currentGood.value?.let { good ->
             good.providers.add(0, providerInfo)
+            isWasAddedProvider = true
 
             updateCurrentGood(good)
         }
@@ -179,10 +142,10 @@ class CreateTaskManager @Inject constructor(
                     marks.add(
                             MarkInfo(
                                     material = good.material,
-                                    markNumber = mark.markNumber,
+                                    number = mark.number,
                                     boxNumber = mark.boxNumber,
                                     isBadMark = mark.isBadMark.toSapBooleanString(),
-                                    providerCode = mark.providerCode
+                                    producerCode = mark.producerCode
                             )
                     )
                 }
@@ -191,11 +154,11 @@ class CreateTaskManager @Inject constructor(
                     parts.add(
                             PartInfo(
                                     material = good.material,
-                                    producer = part.producer,
-                                    productionDate = part.productionDate,
+                                    producerCode = part.producerCode,
+                                    productionDate = part.date,
                                     unitsCode = part.units.code,
                                     quantity = part.quantity.dropZeros(),
-                                    partNumber = part.partNumber,
+                                    partNumber = part.number,
                                     providerCode = part.providerCode
                             )
                     )
@@ -208,11 +171,11 @@ class CreateTaskManager @Inject constructor(
                             taskNumber = task.number,
                             userNumber = userNumber,
                             taskName = task.name,
-                            taskType = task.properties!!.type,
+                            taskType = task.properties.type,
                             tkNumber = tkNumber,
                             storage = task.storage,
                             reasonCode = task.reason.code,
-                            isNotFinish = (!task.isProcessed).toSapBooleanString(),
+                            isNotFinish = false.toSapBooleanString(),
                             positions = positions,
                             marks = marks,
                             parts = parts
@@ -228,6 +191,7 @@ interface ICreateTaskManager {
 
     var searchNumber: String
     var openGoodFromList: Boolean
+    var isWasAddedProvider: Boolean
 
     val currentTask: MutableLiveData<Task>
     val currentGood: MutableLiveData<Good>
@@ -237,17 +201,16 @@ interface ICreateTaskManager {
     fun updateCurrentGood(good: Good?)
     fun updateCurrentBasket(basket: Basket?)
 
-    suspend fun putInCurrentGood(goodInfo: GoodInfoResult)
-    fun addCurrentGoodInTask()
     fun findGoodByEan(ean: String): Good?
     fun findGoodByMaterial(material: String): Good?
     suspend fun isGoodCanBeAdded(goodInfo: GoodInfoResult): Boolean
     fun addBasket(basket: Basket)
     fun getBasketPosition(basket: Basket?): Int
-    fun deleteGoodByMaterials(materialList: List<String>)
-    fun deleteBaskets(basketList: MutableList<Basket>)
+    fun removeGoodByMaterials(materialList: List<String>)
+    fun removeBaskets(basketList: MutableList<Basket>)
     fun finishCurrentTask()
     fun addProviderInCurrentGood(providerInfo: ProviderInfo)
     fun prepareSendTaskDataParams(deviceIp: String, tkNumber: String, userNumber: String)
+    fun saveGoodInTask(good: Good)
 
 }

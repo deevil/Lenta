@@ -3,15 +3,14 @@ package com.lenta.bp12.features.open_task.good_info
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.lenta.bp12.model.Category
-import com.lenta.bp12.model.GoodKind
+import com.lenta.bp12.model.GoodType
 import com.lenta.bp12.model.IOpenTaskManager
 import com.lenta.bp12.platform.navigation.IScreenNavigator
-import com.lenta.bp12.request.ExciseInfoNetRequest
-import com.lenta.bp12.request.ExciseInfoParams
+import com.lenta.bp12.request.MarkInfoNetRequest
+import com.lenta.bp12.request.MarkInfoParams
 import com.lenta.bp12.request.GoodInfoNetRequest
 import com.lenta.bp12.request.GoodInfoParams
 import com.lenta.bp12.request.pojo.ProducerInfo
-import com.lenta.bp12.request.pojo.ProviderInfo
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.exception.Failure
@@ -37,7 +36,7 @@ class GoodInfoOpenViewModel : CoreViewModel() {
     lateinit var goodInfoNetRequest: GoodInfoNetRequest
 
     @Inject
-    lateinit var exciseInfoNetRequest: ExciseInfoNetRequest
+    lateinit var markInfoNetRequest: MarkInfoNetRequest
 
 
     val task by lazy {
@@ -62,7 +61,7 @@ class GoodInfoOpenViewModel : CoreViewModel() {
 
     val isCompactMode by lazy {
         good.map { good ->
-            good?.kind == GoodKind.COMMON
+            good?.type == GoodType.COMMON
         }
     }
 
@@ -70,7 +69,7 @@ class GoodInfoOpenViewModel : CoreViewModel() {
 
     val markScanEnabled by lazy {
         good.map { good ->
-            good?.kind == GoodKind.EXCISE
+            good?.type == GoodType.EXCISE
         }
     }
 
@@ -162,10 +161,10 @@ class GoodInfoOpenViewModel : CoreViewModel() {
             val isCorrectDate = it?.second ?: false
 
             good.value?.let { good ->
-                when (good.kind) {
-                    GoodKind.COMMON -> quantity > 0
-                    GoodKind.ALCOHOL -> quantity > 0 && isCorrectDate
-                    GoodKind.EXCISE -> quantity > 0 && isCorrectDate
+                when (good.type) {
+                    GoodType.COMMON -> quantity > 0
+                    GoodType.ALCOHOL -> quantity > 0 && isCorrectDate
+                    GoodType.EXCISE -> quantity > 0 && isCorrectDate
                 }
             }
         }
@@ -173,13 +172,13 @@ class GoodInfoOpenViewModel : CoreViewModel() {
 
     val detailsVisibility by lazy {
         good.map { good ->
-            good?.kind == GoodKind.ALCOHOL || good?.kind == GoodKind.EXCISE
+            good?.type == GoodType.ALCOHOL || good?.type == GoodType.EXCISE
         }
     }
 
     val rollbackVisibility by lazy {
         good.map { good ->
-            good?.kind == GoodKind.EXCISE
+            good?.type == GoodType.EXCISE
         }
     }
 
@@ -213,10 +212,10 @@ class GoodInfoOpenViewModel : CoreViewModel() {
                                 barCallback = { getGoodByEan(number) }
                         )
                     }
-                    Constants.EXCISE_68 -> {
+                    Constants.MARK_68 -> {
                         //loadMarkInfo(number)
                     }
-                    Constants.EXCISE_150 -> {
+                    Constants.MARK_150 -> {
                         //loadMarkInfo(number)
                     }
                     else -> getGoodByEan(number)
@@ -291,7 +290,7 @@ class GoodInfoOpenViewModel : CoreViewModel() {
         viewModelScope.launch {
             navigator.showProgressLoadingData()
 
-            exciseInfoNetRequest(ExciseInfoParams(
+            markInfoNetRequest(MarkInfoParams(
                     tkNumber = sessionInfo.market ?: "Not found!",
                     material = good.value!!.material,
                     markNumber = number,

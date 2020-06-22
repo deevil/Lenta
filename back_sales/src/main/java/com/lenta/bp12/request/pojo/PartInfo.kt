@@ -8,7 +8,7 @@ data class PartInfo(
         var material: String,
         /** Производитель товара */
         @SerializedName("ZPROD")
-        var producer: String,
+        var producerCode: String,
         /** Дата производства */
         @SerializedName("DATEOFPOUR")
         var productionDate: String,

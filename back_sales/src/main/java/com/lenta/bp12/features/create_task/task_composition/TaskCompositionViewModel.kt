@@ -56,12 +56,12 @@ class TaskCompositionViewModel : CoreViewModel(), PageSelectionListener, OnOkInS
 
     val goods by lazy {
         task.map { task ->
-            task?.goods!!.reversed().mapIndexed { index, good ->
+            task?.goods!!.mapIndexed { index, good ->
                 ItemGoodUi(
                         material = good.material,
                         position = "${task.goods.size - index}",
                         name = good.getNameWithMaterial(),
-                        quantity = good.getTotalQuantity().dropZeros()
+                        quantity = "${good.getTotalQuantity().dropZeros()} ${good.units.name}"
                 )
             }
         }
@@ -75,7 +75,7 @@ class TaskCompositionViewModel : CoreViewModel(), PageSelectionListener, OnOkInS
                         basket = basket,
                         position = "$position",
                         name = "Корзина $position",
-                        description = basket.getDescription(),
+                        description = basket.getDescription(task.properties.isDivBySection),
                         quantity = task.getQuantityByBasket(basket).dropZeros()
                 )
             }
@@ -121,7 +121,7 @@ class TaskCompositionViewModel : CoreViewModel(), PageSelectionListener, OnOkInS
                 }
                 1 -> {
                     manager.updateCurrentBasket(baskets.value!![position].basket)
-                    navigator.openBasketPropertiesScreen()
+                    navigator.openBasketGoodListScreen()
                 }
                 else -> throw IllegalArgumentException("Wrong pager position!")
             }
@@ -151,7 +151,7 @@ class TaskCompositionViewModel : CoreViewModel(), PageSelectionListener, OnOkInS
                     }
 
                     goodSelectionsHelper.clearPositions()
-                    manager.deleteGoodByMaterials(materialList)
+                    manager.removeGoodByMaterials(materialList)
                 }
                 1 -> {
                     val basketList = mutableListOf<Basket>()
@@ -162,7 +162,7 @@ class TaskCompositionViewModel : CoreViewModel(), PageSelectionListener, OnOkInS
                     }
 
                     basketSelectionsHelper.clearPositions()
-                    manager.deleteBaskets(basketList)
+                    manager.removeBaskets(basketList)
                 }
                 else -> throw IllegalArgumentException("Wrong pager position!")
             }

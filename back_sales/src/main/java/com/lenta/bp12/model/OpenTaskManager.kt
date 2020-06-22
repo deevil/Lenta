@@ -65,8 +65,8 @@ class OpenTaskManager @Inject constructor(
                 material = goodInfo.materialInfo.material,
                 name = goodInfo.materialInfo.name,
                 units = database.getUnitsByCode(goodInfo.materialInfo.unitsCode),
-                kind = goodInfo.getGoodKind(),
-                type = goodInfo.materialInfo.goodType,
+                type = goodInfo.getGoodType(),
+                matype = goodInfo.materialInfo.matype,
                 control = goodInfo.getControlType(),
                 section = goodInfo.materialInfo.section,
                 matrix = getMatrixType(goodInfo.materialInfo.matrix),
@@ -101,9 +101,8 @@ class OpenTaskManager @Inject constructor(
                     properties = Properties(
                             type = taskInfo.type,
                             description = taskInfo.name,
-                            section = taskInfo.section,
-                            purchaseGroup = taskInfo.purchaseGroup,
-                            goodGroup = taskInfo.goodGroup
+                            isDivBySection = taskInfo.section.isSapTrue(),
+                            isDivByPurchaseGroup = taskInfo.purchaseGroup.isSapTrue()
                     ),
                     storage = taskInfo.storage,
                     isStrict = taskInfo.isStrict.isSapTrue(),
@@ -120,6 +119,7 @@ class OpenTaskManager @Inject constructor(
                             name = taskInfo.providerName
                     ),
                     quantity = taskInfo.quantity.toIntOrNull() ?: 0,
+                    goodGroup = taskInfo.goodGroup,
                     reason = database.getReturnReasonList(taskInfo.type).first { it.code == taskInfo.reasonCode }
             )
         }
@@ -135,9 +135,8 @@ class OpenTaskManager @Inject constructor(
                     properties = Properties(
                             type = taskInfo.type,
                             description = taskInfo.name,
-                            section = taskInfo.section,
-                            purchaseGroup = taskInfo.purchaseGroup,
-                            goodGroup = taskInfo.goodGroup
+                            isDivBySection = taskInfo.section.isSapTrue(),
+                            isDivByPurchaseGroup = taskInfo.purchaseGroup.isSapTrue()
                     ),
                     storage = taskInfo.storage,
                     isStrict = taskInfo.isStrict.isSapTrue(),
@@ -154,6 +153,7 @@ class OpenTaskManager @Inject constructor(
                             name = taskInfo.providerName
                     ),
                     quantity = taskInfo.quantity.toIntOrNull() ?: 0,
+                    goodGroup = taskInfo.goodGroup,
                     reason = database.getReturnReasonList(taskInfo.type).first { it.code == taskInfo.reasonCode }
             )
         }
@@ -175,7 +175,7 @@ class OpenTaskManager @Inject constructor(
                                     code = positionInfo.providerCode.addZerosToStart(10)
                             ),
                             units = database.getUnitsByCode(positionInfo.unitsCode),
-                            category = positionInfo.getCategory(good.kind),
+                            category = positionInfo.getCategory(good.type),
                             isCounted = positionInfo.isCounted.isSapTrue(),
                             isDelete = positionInfo.isDeleted.isSapTrue()
                     )
@@ -254,10 +254,10 @@ class OpenTaskManager @Inject constructor(
                     marks.add(
                             MarkInfo(
                                     material = good.material,
-                                    markNumber = mark.markNumber,
+                                    number = mark.number,
                                     boxNumber = mark.boxNumber,
                                     isBadMark = mark.isBadMark.toSapBooleanString(),
-                                    providerCode = mark.providerCode
+                                    producerCode = mark.producerCode
                             )
                     )
                 }
@@ -266,11 +266,11 @@ class OpenTaskManager @Inject constructor(
                     parts.add(
                             PartInfo(
                                     material = good.material,
-                                    producer = part.producer,
-                                    productionDate = part.productionDate,
+                                    producerCode = part.producerCode,
+                                    productionDate = part.date,
                                     unitsCode = part.units.code,
                                     quantity = part.quantity.dropZeros(),
-                                    partNumber = part.partNumber,
+                                    partNumber = part.number,
                                     providerCode = part.providerCode
                             )
                     )

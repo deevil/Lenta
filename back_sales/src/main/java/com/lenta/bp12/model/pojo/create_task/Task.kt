@@ -3,12 +3,13 @@ package com.lenta.bp12.model.pojo.create_task
 import com.lenta.bp12.model.ControlType
 import com.lenta.bp12.model.pojo.Properties
 import com.lenta.bp12.model.pojo.ReturnReason
+import com.lenta.shared.utilities.extentions.sumList
 import com.lenta.shared.utilities.extentions.sumWith
 
 data class Task(
         val number: String = "",
         val name: String,
-        val properties: Properties?,
+        val properties: Properties,
         val storage: String,
         val reason: ReturnReason,
         val goods: MutableList<Good> = mutableListOf(),
@@ -18,47 +19,57 @@ data class Task(
         var comment: String = ""
 ) {
 
-    fun getQuantityByBasket(basket: Basket?): Double {
-        var quantity = 0.0
+    fun getQuantityByBasket(basket: Basket): Double {
+        return getGoodListByBasket(basket).map { good ->
+            val positionQuantity = good.positions.filter { it.provider.code == basket.provider.code }.map { it.quantity }.sumList()
+            val markQuantity = good.marks.filter { it.providerCode == basket.provider.code }.size.toDouble()
+            val partQuantity = good.parts.filter { it.providerCode == basket.provider.code }.map { it.quantity }.sumList()
 
-        goods.filter {
-            it.section == basket?.section && it.type == basket.type && it.control == basket.control
-        }.forEach { good ->
-            val positionQuantity = good.positions.filter {
-                it.provider?.code == basket?.provider?.code
-            }.map { it.quantity }.sum()
-
-            quantity = quantity.sumWith(positionQuantity)
-        }
-
-        return quantity
+            positionQuantity.sumWith(markQuantity).sumWith(partQuantity)
+        }.sumList()
     }
 
-    fun deleteEmptyBaskets() {
+    fun getGoodListByBasket(basket: Basket): List<Good> {
+        return goods.filter { good ->
+            good.section == basket.section && good.matype == basket.matype && good.control == basket.control &&
+                    (good.positions.find { it.provider == basket.provider } != null ||
+                            good.marks.find { it.providerCode == basket.provider.code } != null ||
+                            good.parts.find { it.providerCode == basket.provider.code } != null)
+        }
+    }
+
+    fun removeGoodByMaterials(materialList: List<String>) {
+        materialList.forEach { material ->
+            goods.remove(goods.find { it.material == material })
+        }
+
+        removeEmptyBaskets()
+    }
+
+    fun removeBaskets(basketList: MutableList<Basket>) {
+        basketList.forEach { basket ->
+            getGoodListByBasket(basket).forEach { good ->
+                good.removePositionsByProvider(basket.provider.code)
+                good.removeMarksByProvider(basket.provider.code)
+                good.removePartsByProvider(basket.provider.code)
+            }
+
+            baskets.remove(basket)
+        }
+
+        removeEmptyGoods()
+    }
+
+    private fun removeEmptyGoods() {
+        goods.filter { it.getTotalQuantity() == 0.0 }.let { goodsForRemove ->
+            goodsForRemove.forEach { good ->
+                goods.remove(good)
+            }
+        }
+    }
+
+    private fun removeEmptyBaskets() {
         baskets.removeAll(baskets.filter { getQuantityByBasket(it) == 0.0 })
-    }
-
-    fun deleteGoodFromBasket(basket: Basket) {
-        goods.filter {
-            it.section == basket.section && it.type == basket.type && it.control == basket.control
-        }.forEach { good ->
-            val positionList = good.positions.filter {
-                it.provider?.code == basket.provider?.code
-            }
-
-            good.deletePositions(positionList)
-        }
-    }
-
-    fun updateGood(good: Good?) {
-        good?.let { goodUpdate ->
-            val index = goods.indexOf(goods.find { it.material == goodUpdate.material })
-            if (index >= 0) {
-                goods.removeAt(index)
-            }
-
-            goods.add(0, goodUpdate)
-        }
     }
 
 }
