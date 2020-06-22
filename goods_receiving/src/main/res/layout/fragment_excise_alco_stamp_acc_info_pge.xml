@@ -71,6 +71,7 @@
             android:inputType="numberDecimal"
             android:maxLines="1"
             android:maxLength="6"
+            android:enabled="@{!vm.isGradeControl}"
             app:maxLengthForScanProtect="@{6}"
             android:text="@={vm.count}"
             app:digitsForUom="@{vm.productInfo.uom}"
