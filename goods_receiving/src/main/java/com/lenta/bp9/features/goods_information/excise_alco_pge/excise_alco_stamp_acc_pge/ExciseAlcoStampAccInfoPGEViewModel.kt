@@ -22,6 +22,7 @@ import com.lenta.shared.fmp.resources.slow.ZfmpUtz48V001
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.requests.combined.scan_info.ScanInfoResult
 import com.lenta.shared.requests.combined.scan_info.pojo.QualityInfo
+import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.extentions.combineLatest
 import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.utilities.extentions.toStringFormatted
@@ -86,6 +87,7 @@ class ExciseAlcoStampAccInfoPGEViewModel : CoreViewModel(), OnPositionClickListe
     }
 
     private val qualityInfo: MutableLiveData<List<QualityInfo>> = MutableLiveData()
+    val isGradeControl: MutableLiveData<Boolean> = MutableLiveData(false)
 
     val count: MutableLiveData<String> = MutableLiveData("0")
     private val countValue: MutableLiveData<Double> = count.map { it?.toDoubleOrNull() ?: 0.0 }
@@ -252,17 +254,21 @@ class ExciseAlcoStampAccInfoPGEViewModel : CoreViewModel(), OnPositionClickListe
         }?.egais ?: ""
         val manufacturerName = repoInMemoryHolder.manufacturers.value?.findLast {
             it.code == manufacturerCode
+        }?.name ?: repoInMemoryHolder.manufacturers.value?.findLast {manufacture -> //это в случае излишка
+            manufacture.code == lastExciseStampInfo?.organizationCodeEGAIS
         }?.name ?: ""
         spinManufacturers.value = listOf(manufacturerName)
 
         val dateOfPour = taskManager.getReceivingTask()?.taskRepository?.getBatches()?.getBatches()?.findLast {
             it.batchNumber == lastExciseStampInfo?.batchNumber
-        }?.bottlingDate
+        }?.bottlingDate ?: lastExciseStampInfo?.bottlingDate //exciseStampInfo.value!!.bottlingDate это в случае излишка
         if (!dateOfPour.isNullOrEmpty()) {
             spinBottlingDate.value = listOf(formatterRU.format(formatterEN.parse(dateOfPour)))
         } else {
             spinBottlingDate.value = listOf("")
         }
+
+        if (countExciseStampsScanned.value!! <= 0) isGradeControl.value = false //отключаем Режим 100% контроля грейда
     }
 
     fun onClickDetails() {
@@ -273,7 +279,8 @@ class ExciseAlcoStampAccInfoPGEViewModel : CoreViewModel(), OnPositionClickListe
         return if (processExciseAlcoStampAccPGEService.overLimit(countValue.value!!)) {
             screenNavigator.openAlertOverLimitAlcoPGEScreen(
                     nextCallbackFunc = {
-                        //По товару ХХХХХХ было превышено количество. Необходимо найти излишек" с кнопками "Назад" и "Далее", по кнопке далее переходить к режиму поиска излишка (14. ПГЕ. Мар.учет. Режим поиска излишка.https://trello.com/c/Axf3evBC)
+                        /**По товару ХХХХХХ было превышено количество. Необходимо найти излишек" с кнопками "Назад" и "Далее",
+                        по кнопке далее переходить к режиму поиска излишка (14. ПГЕ. Мар.учет. Режим поиска излишка.https://trello.com/c/Axf3evBC)*/
                         setSurplusSearchMode()
                     }
             )
@@ -330,23 +337,38 @@ class ExciseAlcoStampAccInfoPGEViewModel : CoreViewModel(), OnPositionClickListe
                 typeDiscrepancies = if (isExciseStampSurplus.value == true) "2" else qualityInfo.value!![spinQualitySelectedPosition.value!!].code, //(Марка-излишек) карточка об этом условии if (isExciseStampSurplus.value == true) "2"
                 isScan = true
         )
-        isExciseStampSurplus.value = false //(Марка-излишек), когда отсканированная марка была сохранена как излишек, сбрасываем эту переменную, чтобы остальные марки при скане не сохранялись как излишек
         //увеличиваем кол-во отсканированных марок на единицу для отображения на экране
         countExciseStampsScanned.value = countExciseStampsScanned.value?.plus(1)
-        val manufacturerCode = taskManager.getReceivingTask()?.taskRepository?.getBatches()?.getBatches()?.findLast {
-            it.batchNumber == exciseStampInfo.value!!.batchNumber
-        }?.egais ?: ""
-        val manufacturerName = repoInMemoryHolder.manufacturers.value?.findLast {
-            it.code == manufacturerCode
-        }?.name ?: ""
-        spinManufacturers.value = listOf(manufacturerName)
+        if (isExciseStampSurplus.value == false) {
+            val manufacturerCode = taskManager.getReceivingTask()?.taskRepository?.getBatches()?.getBatches()?.findLast {
+                it.batchNumber == exciseStampInfo.value!!.batchNumber
+            }?.egais ?: ""
+            val manufacturerName = repoInMemoryHolder.manufacturers.value?.findLast {
+                it.code == manufacturerCode
+            }?.name ?: repoInMemoryHolder.manufacturers.value?.findLast {manufacture ->
+                manufacture.code == exciseStampInfo.value!!.organizationCodeEGAIS
+            }?.name ?: ""
+            spinManufacturers.value = listOf(manufacturerName)
 
-        val dateOfPour = taskManager.getReceivingTask()?.taskRepository?.getBatches()?.getBatches()?.findLast {
-            it.batchNumber == exciseStampInfo.value!!.batchNumber
-        }?.bottlingDate
-        if (!dateOfPour.isNullOrEmpty()) {
-            spinBottlingDate.value = listOf(formatterRU.format(formatterEN.parse(dateOfPour)))
+            val dateOfPour = taskManager.getReceivingTask()?.taskRepository?.getBatches()?.getBatches()?.findLast {
+                it.batchNumber == exciseStampInfo.value!!.batchNumber
+            }?.bottlingDate
+            if (!dateOfPour.isNullOrEmpty()) {
+                spinBottlingDate.value = listOf(formatterRU.format(formatterEN.parse(dateOfPour)))
+            }
+        } else {
+            val manufacturerName = repoInMemoryHolder.manufacturers.value?.findLast {manufacture ->
+                manufacture.code == exciseStampInfo.value!!.organizationCodeEGAIS
+            }?.name ?: ""
+            spinManufacturers.value = listOf(manufacturerName)
+
+            val dateOfPour = exciseStampInfo.value!!.bottlingDate
+            if (dateOfPour.isNotEmpty()) {
+                spinBottlingDate.value = listOf(formatterRU.format(formatterEN.parse(dateOfPour)))
+            }
         }
+
+        isExciseStampSurplus.value = false //(Марка-излишек), когда отсканированная марка была сохранена как излишек, сбрасываем эту переменную, чтобы остальные марки при скане не сохранялись как излишек
     }
 
     private fun scannedStampNotFound(stampCode: String) {
@@ -367,15 +389,25 @@ class ExciseAlcoStampAccInfoPGEViewModel : CoreViewModel(), OnPositionClickListe
     }
 
     private fun handleSuccessZmpUtzGrz31(result: ZmpUtzGrz31V001Result) {
+        exciseStampInfo.value = TaskExciseStampInfo(
+                materialNumber = productInfo.value!!.materialNumber,
+                code = result.taskExciseStamps[0].code,
+                processingUnitNumber = result.taskExciseStamps[0].processingUnitNumber,
+                batchNumber = result.taskExciseStamps[0].batchNumber,
+                boxNumber = result.taskExciseStamps[0].boxNumber,
+                setMaterialNumber = result.taskExciseStamps[0].setMaterialNumber,
+                organizationCodeEGAIS = result.taskExciseStamps[0].organizationCodeEGAIS,
+                bottlingDate = result.taskExciseStamps[0].bottlingDate
+        )
         when (result.indicatorOnePosition) {
             "1" -> {
                 screenNavigator.openScannedStampListedInCargoUnitDialog(
                         cargoUnitNumber = result.cargoUnitNumber,
                         nextCallbackFunc = {
                             isExciseStampSurplus.value = true //чтобы сохранить данную марку как излишек
+                            isGradeControl.value = true //включаем Режим 100% контроля грейда
                             addExciseStampDiscrepancy()
                             //todo переходить на экран "Карточка товара" в режиме 100% контроля грейда (см. тикет 13. ПГЕ. Мар.учет. Режим 100% контроля грейда https://trello.com/c/Axf3evBC). эта карточка еще в разработке у аналитика, выводим здесь сообщение о доработке данного пункта
-                            screenNavigator.openNotImplementedScreenAlert("ПГЕ. Мар.учет. Режим 100% контроля грейда")
                         }
                 )
             }
@@ -383,9 +415,9 @@ class ExciseAlcoStampAccInfoPGEViewModel : CoreViewModel(), OnPositionClickListe
                 screenNavigator.openScannedStampNotIncludedInDeliveryDialog(
                         nextCallbackFunc = {
                             isExciseStampSurplus.value = true //чтобы сохранить данную марку как излишек
+                            isGradeControl.value = true //включаем Режим 100% контроля грейда
                             addExciseStampDiscrepancy()
                             //todo переходить на экран "Карточка товара" в режиме 100% контроля грейда (см. тикет 13. ПГЕ. Мар.учет. Режим 100% контроля грейда https://trello.com/c/Axf3evBC). эта карточка еще в разработке у аналитика, выводим здесь сообщение о доработке данного пункта
-                            screenNavigator.openNotImplementedScreenAlert("ПГЕ. Мар.учет. Режим 100% контроля грейда")
                         }
                 )
             }
