@@ -48,10 +48,10 @@ class GoodInfoCreateFragment : CoreFragment<FragmentGoodInfoCreateBinding, GoodI
 
     override fun onToolbarButtonClick(view: View) {
         when (view.id) {
-            //R.id.b_2 -> vm.onClickRollback()
+            R.id.b_2 -> vm.onClickRollback()
             //R.id.b_2 -> vm.onScanResult("22N00000XOIJT87CH2W0123456789012345678901234567890123456789000000001") // Марка
             //R.id.b_2 -> vm.onScanResult("22N00002NWKKIF6RWF30123456789012345678901234567890123456789000000004") // Партия
-            R.id.b_2 -> vm.onScanResult("03000048752210319000100516") // Коробка
+            //R.id.b_2 -> vm.onScanResult("03000048752210319000100516") // Коробка
             R.id.b_3 -> vm.onClickDetails()
             R.id.b_5 -> vm.onClickApply()
         }

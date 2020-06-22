@@ -619,7 +619,6 @@ class GoodInfoCreateViewModel : CoreViewModel() {
             changedGood.addPosition(quantity.value!!, getProvider(), date.value)
 
             createBasket(changedGood)
-
             updateGood(changedGood)
         }
     }
@@ -630,9 +629,11 @@ class GoodInfoCreateViewModel : CoreViewModel() {
                     number = lastSuccessSearchNumber.value!!,
                     material = changedGood.material,
                     isBadMark = markInfoResult.value?.status == MarkStatus.BAD.code,
+                    providerCode = getProvider()?.code ?: "",
                     producerCode = getProducer()?.code ?: ""
             ))
 
+            createBasket(changedGood)
             updateGood(changedGood)
         }
     }
@@ -649,9 +650,7 @@ class GoodInfoCreateViewModel : CoreViewModel() {
                     date = date.value!!
             ))
 
-            // todo Непонятно, нужно ли создавать карзины для алкогольного партионного товара?
-            //createBasket(changedGood)
-
+            createBasket(changedGood)
             updateGood(changedGood)
         }
     }
@@ -665,11 +664,13 @@ class GoodInfoCreateViewModel : CoreViewModel() {
                             material = changedGood.material,
                             boxNumber = lastSuccessSearchNumber.value!!,
                             isBadMark = mark.isBadMark.isNotEmpty(),
+                            providerCode = getProvider()?.code ?: "",
                             producerCode = getProducer()?.code ?: ""
                     ))
                 }
             }
 
+            createBasket(changedGood)
             updateGood(changedGood)
         }
     }

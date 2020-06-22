@@ -68,6 +68,18 @@ data class Good(
         }
     }
 
+    fun removeMarks(markList: List<Mark>) {
+        markList.forEach { mark ->
+            marks.remove(mark)
+        }
+    }
+
+    fun removeParts(partList: List<Part>) {
+        partList.forEach { part ->
+            parts.remove(part)
+        }
+    }
+
     fun removeMark(number: String) {
         marks.find { it.number == number }?.let { mark ->
             marks.remove(mark)

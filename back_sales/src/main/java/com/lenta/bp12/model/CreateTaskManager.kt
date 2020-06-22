@@ -175,7 +175,7 @@ class CreateTaskManager @Inject constructor(
                             tkNumber = tkNumber,
                             storage = task.storage,
                             reasonCode = task.reason.code,
-                            isNotFinish = (!task.isProcessed).toSapBooleanString(),
+                            isNotFinish = false.toSapBooleanString(),
                             positions = positions,
                             marks = marks,
                             parts = parts
