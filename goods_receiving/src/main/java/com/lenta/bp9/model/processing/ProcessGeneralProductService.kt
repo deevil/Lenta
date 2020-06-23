@@ -73,12 +73,6 @@ class ProcessGeneralProductService
         return productInfo.orderQuantity.toDouble() - countCategoryUnderload - countAllCategory + countCategorySurplus
     }
 
-    fun getCountCategoryNorm() : Double {
-        return taskManager.getReceivingTask()?.taskRepository?.getProductsDiscrepancies()?.findProductDiscrepanciesOfProduct(productInfo)?.findLast {
-            it.typeDiscrepancies == "1"
-        }?.numberDiscrepancies?.toDouble() ?: 0.0
-    }
-
     fun getRoundingQuantityPPP () : Double {
         return productInfo.origQuantity.toDouble() - ((taskManager.getReceivingTask()?.taskRepository?.getProductsDiscrepancies()?.getCountAcceptOfProduct(productInfo) ?: 0.0)
                 + (taskManager.getReceivingTask()?.taskRepository?.getProductsDiscrepancies()?.getCountRefusalOfProduct(productInfo) ?: 0.0))

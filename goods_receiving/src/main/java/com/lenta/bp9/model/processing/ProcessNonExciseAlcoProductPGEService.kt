@@ -104,6 +104,40 @@ class ProcessNonExciseAlcoProductPGEService
         add(countAddSurplus.toString(), "2", processingUnit, batchInfo)
     }
 
+    fun addGoodsAddedAsSurplus(count: String, typeDiscrepancies: String, processingUnit: String){
+        val countAdd = getCountOfDiscrepancies(typeDiscrepancies) + count.toDouble()
+        val foundDiscrepancy = taskManager.getReceivingTask()?.taskRepository?.getProductsDiscrepancies()?.findProductDiscrepanciesOfProduct(productInfo)?.findLast {
+            it.materialNumber == productInfo.materialNumber && it.typeDiscrepancies == typeDiscrepancies
+        }
+
+        if (foundDiscrepancy == null) {
+            taskManager.getReceivingTask()?.
+            taskRepository?.
+            getProductsDiscrepancies()?.
+            changeProductDiscrepancy(TaskProductDiscrepancies(
+                    materialNumber = productInfo.materialNumber,
+                    processingUnitNumber = processingUnit,
+                    numberDiscrepancies = countAdd.toString(),
+                    uom = productInfo.uom,
+                    typeDiscrepancies = typeDiscrepancies,
+                    isNotEdit = false,
+                    isNew = false,
+                    notEditNumberDiscrepancies = ""
+            ))
+        } else {
+            taskManager.getReceivingTask()?.
+            taskRepository?.
+            getProductsDiscrepancies()?.
+            changeProductDiscrepancy(foundDiscrepancy.copy(numberDiscrepancies = countAdd.toString()))
+        }
+
+        taskManager.getReceivingTask()?.
+        taskRepository?.
+        getProducts()?.
+        changeProduct(productInfo.copy(isNoEAN = false))
+
+    }
+
     private fun getQuantityAllCategoryProductPGE(batchInfo: TaskBatchInfo) : Double {
         return (taskManager.getReceivingTask()?.taskRepository?.getBatchesDiscrepancies()?.getCountAcceptOfBatchPGE(batchInfo) ?: 0.0 ) +
                 (taskManager.getReceivingTask()?.taskRepository?.getBatchesDiscrepancies()?.getCountRefusalOfBatchPGE(batchInfo) ?: 0.0 )
