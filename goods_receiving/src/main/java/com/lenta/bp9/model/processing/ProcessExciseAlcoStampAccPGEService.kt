@@ -32,6 +32,11 @@ class ProcessExciseAlcoStampAccPGEService
         else null
     }
 
+    fun setProcessingUnitNumber(processingUnitNumber: String) {
+        productInfo = productInfo.copy(processingUnit = processingUnitNumber)
+        taskManager.getReceivingTask()?.taskRepository?.getProducts()?.changeProduct(productInfo)
+    }
+
     fun apply() {
         if (currentExciseStampsDiscrepancies.isNotEmpty()) {
             currentExciseStampsDiscrepancies.map {

@@ -2,6 +2,7 @@ package com.lenta.bp9.features.goods_information.excise_alco_pge.excise_alco_sta
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.os.Bundle
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.lenta.bp9.R
@@ -66,9 +67,6 @@ class ExciseAlcoStampAccInfoPGEViewModel : CoreViewModel(), OnPositionClickListe
     }
 
     val productInfo: MutableLiveData<TaskProductInfo> = MutableLiveData()
-    val isEizUnit: MutableLiveData<Boolean> by lazy {
-        MutableLiveData(productInfo.value?.purchaseOrderUnits?.code != productInfo.value?.uom?.code)
-    }
     val spinQuality: MutableLiveData<List<String>> = MutableLiveData()
     val spinQualitySelectedPosition: MutableLiveData<Int> = MutableLiveData(0)
     val spinManufacturers: MutableLiveData<List<String>> = MutableLiveData()
@@ -88,15 +86,22 @@ class ExciseAlcoStampAccInfoPGEViewModel : CoreViewModel(), OnPositionClickListe
 
     private val qualityInfo: MutableLiveData<List<QualityInfo>> = MutableLiveData()
     val isGradeControl: MutableLiveData<Boolean> = MutableLiveData(false)
+    val enteredProcessingUnitNumber: MutableLiveData<String> = MutableLiveData("")
+    private val scannedStampCode: MutableLiveData<String> = MutableLiveData("")
 
     val count: MutableLiveData<String> = MutableLiveData("0")
     private val countValue: MutableLiveData<Double> = count.map { it?.toDoubleOrNull() ?: 0.0 }
     private val countExciseStampsScanned: MutableLiveData<Int> = MutableLiveData(0)
     private val isExciseStampSurplus: MutableLiveData<Boolean> = MutableLiveData(false)
     val isSurplus: MutableLiveData<Boolean> = MutableLiveData(false)
-
     val isDefect: MutableLiveData<Boolean> = spinQualitySelectedPosition.map {
         it != 0
+    }
+    val isGoodsAddedAsSurplus: MutableLiveData<Boolean> by lazy { //https://trello.com/c/WQg659Ww
+        MutableLiveData(productInfo.value?.isGoodsAddedAsSurplus == true )
+    }
+    val isEizUnit: MutableLiveData<Boolean> by lazy {
+        MutableLiveData(productInfo.value?.purchaseOrderUnits?.code != productInfo.value?.uom?.code && isGoodsAddedAsSurplus.value == false)
     }
 
     val acceptTotalCount: MutableLiveData<Double> = countValue.combineLatest(spinQualitySelectedPosition).map {
@@ -197,17 +202,29 @@ class ExciseAlcoStampAccInfoPGEViewModel : CoreViewModel(), OnPositionClickListe
         (it ?: 0) > 0
     }
 
-    val enabledApplyBtn: MutableLiveData<Boolean> = countValue.combineLatest(spinQualitySelectedPosition).map {
-        when (qualityInfo.value?.get(it?.second ?: 0)?.code) {
+    val enabledApplyBtn: MutableLiveData<Boolean> = countValue.combineLatest(spinQualitySelectedPosition).combineLatest(enteredProcessingUnitNumber).map {
+        when (qualityInfo.value?.get(it?.first?.second ?: 0)?.code) {
             "1" -> {
-                (it?.first ?: 0.0) > 0.0
+                (it?.first?.first ?: 0.0) > 0.0
             }
             "2" -> {
-                checkBoxSurplusControl.value
+                if (isGoodsAddedAsSurplus.value == true) {
+                    checkBoxStampList.value == true && it?.second?.length == 18
+                } else {
+                    checkBoxSurplusControl.value
+                }
             }
             else -> {
                 checkBoxStampList.value
             }
+        }
+    }
+
+    val enabledAddBtn: MutableLiveData<Boolean> = enabledApplyBtn.map {
+        if (isGoodsAddedAsSurplus.value == true) {
+            false
+        } else {
+            it
         }
     }
 
@@ -221,9 +238,14 @@ class ExciseAlcoStampAccInfoPGEViewModel : CoreViewModel(), OnPositionClickListe
             searchProductDelegate.init(viewModelScope = this@ExciseAlcoStampAccInfoPGEViewModel::viewModelScope,
                     scanResultHandler = this@ExciseAlcoStampAccInfoPGEViewModel::handleProductSearchResult)
 
-            suffix.value = productInfo.value?.purchaseOrderUnits?.name
+            if (isGoodsAddedAsSurplus.value == true) {
+                suffix.value = productInfo.value?.uom?.name
+                qualityInfo.value = dataBase.getSurplusInfoForPGE()
+            } else {
+                suffix.value = productInfo.value?.purchaseOrderUnits?.name
+                qualityInfo.value = dataBase.getQualityInfoPGENotSurplusNotUnderload()
+            }
 
-            qualityInfo.value = dataBase.getQualityInfoPGENotSurplusNotUnderload()
             spinQuality.value = qualityInfo.value?.map {
                 it.name
             }
@@ -286,6 +308,9 @@ class ExciseAlcoStampAccInfoPGEViewModel : CoreViewModel(), OnPositionClickListe
             )
             false
         } else {
+            if (isGoodsAddedAsSurplus.value == true) { //GRZ. ПГЕ. Добавление товара, который не числится в задании https://trello.com/c/im9rJqrU
+                processExciseAlcoStampAccPGEService.setProcessingUnitNumber(enteredProcessingUnitNumber.value!!)
+            }
             processExciseAlcoStampAccPGEService.addProduct(convertEizToBei().toString(), qualityInfo.value!![spinQualitySelectedPosition.value!!].code)
             processExciseAlcoStampAccPGEService.apply()
             true
@@ -308,8 +333,10 @@ class ExciseAlcoStampAccInfoPGEViewModel : CoreViewModel(), OnPositionClickListe
     }
 
     fun onScanResult(data: String) {
+        scannedStampCode.value = ""
         when (data.length) {//ПГЕ https://trello.com/c/Bx03dgxE
             68, 150 -> {
+                scannedStampCode.value = data
                 if (processExciseAlcoStampAccPGEService.exciseStampIsAlreadyProcessed(data)) {
                     screenNavigator.openAlertScannedStampIsAlreadyProcessedScreen() //АМ уже обработана
                 } else {
@@ -327,7 +354,7 @@ class ExciseAlcoStampAccInfoPGEViewModel : CoreViewModel(), OnPositionClickListe
                     }
                 }
             }
-            else -> screenNavigator.openAlertInvalidBarcodeFormatScannedScreen()
+            else -> searchProductDelegate.searchCode(code = data, fromScan = true, isBarCode = true)
         }
     }
 
@@ -339,7 +366,17 @@ class ExciseAlcoStampAccInfoPGEViewModel : CoreViewModel(), OnPositionClickListe
         )
         //увеличиваем кол-во отсканированных марок на единицу для отображения на экране
         countExciseStampsScanned.value = countExciseStampsScanned.value?.plus(1)
-        if (isExciseStampSurplus.value == false) {
+        if (isExciseStampSurplus.value == true || isGoodsAddedAsSurplus.value == true) {
+            val manufacturerName = repoInMemoryHolder.manufacturers.value?.findLast {manufacture ->
+                manufacture.code == exciseStampInfo.value!!.organizationCodeEGAIS
+            }?.name ?: ""
+            spinManufacturers.value = listOf(manufacturerName)
+
+            val dateOfPour = exciseStampInfo.value!!.bottlingDate
+            if (dateOfPour.isNotEmpty()) {
+                spinBottlingDate.value = listOf(formatterRU.format(formatterEN.parse(dateOfPour)))
+            }
+        } else {
             val manufacturerCode = taskManager.getReceivingTask()?.taskRepository?.getBatches()?.getBatches()?.findLast {
                 it.batchNumber == exciseStampInfo.value!!.batchNumber
             }?.egais ?: ""
@@ -354,16 +391,6 @@ class ExciseAlcoStampAccInfoPGEViewModel : CoreViewModel(), OnPositionClickListe
                 it.batchNumber == exciseStampInfo.value!!.batchNumber
             }?.bottlingDate
             if (!dateOfPour.isNullOrEmpty()) {
-                spinBottlingDate.value = listOf(formatterRU.format(formatterEN.parse(dateOfPour)))
-            }
-        } else {
-            val manufacturerName = repoInMemoryHolder.manufacturers.value?.findLast {manufacture ->
-                manufacture.code == exciseStampInfo.value!!.organizationCodeEGAIS
-            }?.name ?: ""
-            spinManufacturers.value = listOf(manufacturerName)
-
-            val dateOfPour = exciseStampInfo.value!!.bottlingDate
-            if (dateOfPour.isNotEmpty()) {
                 spinBottlingDate.value = listOf(formatterRU.format(formatterEN.parse(dateOfPour)))
             }
         }
@@ -389,37 +416,50 @@ class ExciseAlcoStampAccInfoPGEViewModel : CoreViewModel(), OnPositionClickListe
     }
 
     private fun handleSuccessZmpUtzGrz31(result: ZmpUtzGrz31V001Result) {
-        exciseStampInfo.value = TaskExciseStampInfo(
-                materialNumber = productInfo.value!!.materialNumber,
-                code = result.taskExciseStamps[0].code,
-                processingUnitNumber = result.taskExciseStamps[0].processingUnitNumber,
-                batchNumber = result.taskExciseStamps[0].batchNumber,
-                boxNumber = result.taskExciseStamps[0].boxNumber,
-                setMaterialNumber = result.taskExciseStamps[0].setMaterialNumber,
-                organizationCodeEGAIS = result.taskExciseStamps[0].organizationCodeEGAIS,
-                bottlingDate = result.taskExciseStamps[0].bottlingDate
-        )
-        when (result.indicatorOnePosition) {
-            "1" -> {
-                screenNavigator.openScannedStampListedInCargoUnitDialog(
-                        cargoUnitNumber = result.cargoUnitNumber,
-                        nextCallbackFunc = {
-                            isExciseStampSurplus.value = true //чтобы сохранить данную марку как излишек
-                            isGradeControl.value = true //включаем Режим 100% контроля грейда
-                            addExciseStampDiscrepancy()
-                            //todo переходить на экран "Карточка товара" в режиме 100% контроля грейда (см. тикет 13. ПГЕ. Мар.учет. Режим 100% контроля грейда https://trello.com/c/Axf3evBC). эта карточка еще в разработке у аналитика, выводим здесь сообщение о доработке данного пункта
-                        }
-                )
+        if (result.taskExciseStamps.isNotEmpty()) {
+            exciseStampInfo.value = TaskExciseStampInfo(
+                    materialNumber = productInfo.value!!.materialNumber, //берем именно из продукта, уточнила Аюна в скайпе, https://trello.com/c/Axf3evBC
+                    code = result.taskExciseStamps[0].code,
+                    processingUnitNumber = productInfo.value!!.processingUnit, //берем именно из продукта, уточнила Аюна в скайпе, https://trello.com/c/Axf3evBC
+                    batchNumber = result.taskExciseStamps[0].batchNumber,
+                    boxNumber = result.taskExciseStamps[0].boxNumber,
+                    setMaterialNumber = result.taskExciseStamps[0].setMaterialNumber,
+                    organizationCodeEGAIS = result.taskExciseStamps[0].organizationCodeEGAIS,
+                    bottlingDate = result.taskExciseStamps[0].bottlingDate
+            )
+        }
+
+        if (isGoodsAddedAsSurplus.value == true) {
+            //https://trello.com/c/WQg659Ww
+            when (result.indicatorOnePosition) {
+                "1", "2" -> {
+                    addExciseStampDiscrepancy()
+                }
+                "3" -> {
+                    screenNavigator.openScannedStampNotIncludedInNetworkLentaDialog("${productInfo.value!!.getMaterialLastSix()} ${productInfo.value!!.description}")
+                }
             }
-            "2", "3" -> {
-                screenNavigator.openScannedStampNotIncludedInDeliveryDialog(
-                        nextCallbackFunc = {
-                            isExciseStampSurplus.value = true //чтобы сохранить данную марку как излишек
-                            isGradeControl.value = true //включаем Режим 100% контроля грейда
-                            addExciseStampDiscrepancy()
-                            //todo переходить на экран "Карточка товара" в режиме 100% контроля грейда (см. тикет 13. ПГЕ. Мар.учет. Режим 100% контроля грейда https://trello.com/c/Axf3evBC). эта карточка еще в разработке у аналитика, выводим здесь сообщение о доработке данного пункта
-                        }
-                )
+        } else {
+            when (result.indicatorOnePosition) {
+                "1" -> {
+                    screenNavigator.openScannedStampListedInCargoUnitDialog(
+                            cargoUnitNumber = result.cargoUnitNumber,
+                            nextCallbackFunc = {
+                                isExciseStampSurplus.value = true //чтобы сохранить данную марку как излишек
+                                isGradeControl.value = true //включаем Режим 100% контроля грейда
+                                addExciseStampDiscrepancy()
+                            }
+                    )
+                }
+                "2", "3" -> {
+                    screenNavigator.openScannedStampNotIncludedInDeliveryDialog(
+                            nextCallbackFunc = {
+                                isExciseStampSurplus.value = true //чтобы сохранить данную марку как излишек
+                                isGradeControl.value = true //включаем Режим 100% контроля грейда
+                                addExciseStampDiscrepancy()
+                            }
+                    )
+                }
             }
         }
     }
@@ -440,11 +480,29 @@ class ExciseAlcoStampAccInfoPGEViewModel : CoreViewModel(), OnPositionClickListe
         return addNewCount
     }
 
+    fun onBatchSignsResult(_manufacturerSelectedPosition: Int, _bottlingDate: String) {
+        val manufacturerCode = repoInMemoryHolder.manufacturers.value?.get(_manufacturerSelectedPosition)?.code
+        val bottlingDate = "${_bottlingDate.substring(6, 10)}-${_bottlingDate.substring(3, 5)}-${_bottlingDate.substring(0, 2)}"
+        exciseStampInfo.value = TaskExciseStampInfo(
+                materialNumber = productInfo.value!!.materialNumber,
+                code = scannedStampCode.value ?: "",
+                processingUnitNumber = enteredProcessingUnitNumber.value ?: "",
+                batchNumber = "",
+                boxNumber = "",
+                setMaterialNumber = "",
+                organizationCodeEGAIS = manufacturerCode ?: "",
+                bottlingDate = bottlingDate
+        )
+        addExciseStampDiscrepancy()
+    }
+
+
     fun onBackPressed() {
         if (processExciseAlcoStampAccPGEService.modifications()) {
             screenNavigator.openUnsavedDataDialog(
                     yesCallbackFunc = {
-
+                        processExciseAlcoStampAccPGEService.clearModifications()
+                        screenNavigator.goBack()
                     }
             )
             return

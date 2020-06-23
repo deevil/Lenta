@@ -180,7 +180,7 @@ class SearchProductDelegate @Inject constructor(
                 remainingShelfLife = "0",
                 isRus = result.productSurplusDataPGE.isRus == "X",
                 isBoxFl = false,
-                isMarkFl = false,
+                isMarkFl = getProductType(isAlco = result.productSurplusDataPGE.isAlco == "X", isExcise = result.productSurplusDataPGE.isExc == "X") == ProductType.ExciseAlcohol, //елси это алкоголльный акциз, то ставим признак марочного товара, чтобы обрабатывать как марочный для этих товаров из тикета https://trello.com/c/WQg659Ww
                 isVet = result.productSurplusDataPGE.isVet == "X",
                 numberBoxesControl = "0",
                 numberStampsControl = "0",
@@ -199,7 +199,7 @@ class SearchProductDelegate @Inject constructor(
             val taskProductInfo = taskManager.getReceivingTask()!!.taskRepository.getProducts().findProduct(infoResult.productInfo.materialNumber)
             if (taskProductInfo == null) {
                 if (taskManager.getReceivingTask()?.taskHeader?.taskType == TaskType.RecalculationCargoUnit) {
-                    screenNavigator.openAddGoodsSurplusDialog(requestCodeAddGoodsSurplus) //эта проверка только для ПГЕ, карточки трелло https://trello.com/c/8P4mPlGN и https://trello.com/c/im9rJqrU
+                    screenNavigator.openAddGoodsSurplusDialog(requestCodeAddGoodsSurplus) //эта проверка только для ПГЕ, карточки трелло https://trello.com/c/8P4mPlGN, https://trello.com/c/im9rJqrU, https://trello.com/c/WQg659Ww
                 } else {
                     screenNavigator.openAlertGoodsNotInOrderScreen()
                 }

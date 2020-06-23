@@ -17,6 +17,7 @@ import com.lenta.bp9.features.goods_information.excise_alco_pge.excise_alco_box_
 import com.lenta.bp9.features.goods_information.excise_alco_pge.excise_alco_box_acc_pge.excise_alco_box_card.ExciseAlcoBoxCardPGEFragment
 import com.lenta.bp9.features.goods_information.excise_alco_pge.excise_alco_box_acc_pge.excise_alco_box_list.ExciseAlcoBoxListPGEFragment
 import com.lenta.bp9.features.goods_information.excise_alco_pge.excise_alco_stamp_acc_pge.ExciseAlcoStampAccInfoPGEFragment
+import com.lenta.bp9.features.goods_information.excise_alco_pge.excise_alco_stamp_acc_pge.batch_signs.ExciseAlcoStampPGEBatchSignsFragment
 import com.lenta.bp9.features.goods_information.excise_alco_receiving.excise_alco_stamp_acc.ExciseAlcoStampAccInfoFragment
 import com.lenta.bp9.features.goods_information.excise_alco_receiving.excise_alco_box_acc.ExciseAlcoBoxAccInfoFragment
 import com.lenta.bp9.features.goods_information.excise_alco_receiving.excise_alco_box_acc.excise_alco_box_card.ExciseAlcoBoxCardFragment
@@ -1464,6 +1465,12 @@ class ScreenNavigator(
         }
     }
 
+    override fun openScannedStampNotIncludedInNetworkLentaDialog(title: String) {
+        runOrPostpone {
+            getFragmentStack()?.push(ExciseAlcoStampPGEBatchSignsFragment.create(title))
+        }
+    }
+
     private fun getFragmentStack() = foregroundActivityProvider.getActivity()?.fragmentStack
 }
 
@@ -1629,4 +1636,5 @@ interface IScreenNavigator : ICoreNavigator {
     fun openScannedStampNotIncludedInDeliveryDialog(nextCallbackFunc: () -> Unit)
     fun openNonExciseAlcoInfoPGEScreen(productInfo: TaskProductInfo, isDiscrepancy: Boolean)
     fun openExceededPlannedQuantityBatchPGEDialog(nextCallbackFunc: () -> Unit)
+    fun openScannedStampNotIncludedInNetworkLentaDialog(title: String)
 }
