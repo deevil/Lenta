@@ -7,27 +7,32 @@ import com.lenta.bp12.model.pojo.Mark
 import com.lenta.bp12.model.pojo.Part
 import com.lenta.bp12.request.pojo.ProducerInfo
 import com.lenta.bp12.request.pojo.ProviderInfo
+import com.lenta.bp12.request.pojo.TaskProducerInfo
 import com.lenta.shared.models.core.MatrixType
 import com.lenta.shared.models.core.Uom
 import com.lenta.shared.utilities.extentions.sumList
 import com.lenta.shared.utilities.extentions.sumWith
 
-data class Good(
+data class GoodOpen(
         val ean: String,
         val material: String,
         val name: String,
-        val units: Uom = Uom.ST,
-        val type: GoodType,
-        val matype: String = "",
-        val control: ControlType = ControlType.COMMON,
         val section: String,
         val matrix: MatrixType,
-        var positions: MutableList<Position> = mutableListOf(),
+        val type: GoodType,
 
-        var isFullData: Boolean = false,
+        var planQuantity: Double,
+        var factQuantity: Double,
+        val innerQuantity: Double,
+        val units: Uom,
 
-        val providers: MutableList<ProviderInfo> = mutableListOf(), // ?
-        val producers: MutableList<ProducerInfo> = mutableListOf(),
+        var isCounted: Boolean,
+        var isDeleted: Boolean,
+
+        val provider: ProviderInfo,
+        val producers: List<TaskProducerInfo> = emptyList(),
+
+        val positions: MutableList<Position> = mutableListOf(),
         val marks: MutableList<Mark> = mutableListOf(),
         val parts: MutableList<Part> = mutableListOf()
 ) {
@@ -35,6 +40,36 @@ data class Good(
     fun getNameWithMaterial(delimiter: String = " "): String {
         return "${material.takeLast(6)}$delimiter$name"
     }
+
+    fun getTotalQuantity(): Double {
+        return getPositionQuantity() + getMarkQuantity() + getPartQuantity()
+    }
+
+    fun getPositionQuantity(): Double {
+        return positions.map { it.quantity }.sumList()
+    }
+
+    fun getMarkQuantity(): Double {
+        return marks.size.toDouble()
+    }
+
+    fun getPartQuantity(): Double {
+        return parts.map { it.quantity }.sumList()
+    }
+
+    fun getQuantityByProvider(providerCode: String?): Double {
+        val positionQuantity = positions.filter { it.provider.code == providerCode }.map { it.quantity }.sumList()
+        val partQuantity = parts.filter { it.providerCode == providerCode }.map { it.quantity }.sumList()
+
+        return positionQuantity.sumWith(partQuantity)
+    }
+
+
+
+
+
+
+
 
     fun addPosition(quantity: Double, provider: ProviderInfo, category: Category, date: String?) {
         val position = positions.find { it.provider.code == provider.code && it.date == date }
@@ -69,10 +104,6 @@ data class Good(
         ))
     }
 
-    fun getTotalQuantity(): Double {
-        return positions.map { it.quantity }.sumList()
-    }
-
     fun deletePositions(positionList: List<Position>) {
         positionList.forEach { position ->
             positions.remove(position)
@@ -83,7 +114,7 @@ data class Good(
         return this.material.takeLast(6) == material.takeLast(6)
     }
 
-    fun markPositionDelete(providerCode: String) {
+    fun markGoodAsDeleted(providerCode: String) {
         positions.find { it.provider.code == providerCode }?.let {
             it.quantity = 0.0
             it.isDelete = true

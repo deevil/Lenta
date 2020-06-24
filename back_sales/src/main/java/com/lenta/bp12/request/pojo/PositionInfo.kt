@@ -12,9 +12,12 @@ data class PositionInfo(
         /** Наименование поставщика */
         @SerializedName("LIFNR_NAME")
         var providerName: String,
+        /** Плановое количество */
+        @SerializedName("PLAN_QNT")
+        var planQuantity: String = "",
         /** Фактическое количество */
         @SerializedName("FACT_QNT")
-        var quantity: String,
+        var factQuantity: String,
         /** Индикатор: Позиция посчитана */
         @SerializedName("XZAEL")
         var isCounted: String,
@@ -26,5 +29,11 @@ data class PositionInfo(
         var innerQuantity: String = "",
         /** Единица измерения заказа на поставку */
         @SerializedName("BSTME")
-        var unitsCode: String = ""
+        var unitsCode: String = "",
+        /** Объем */
+        @SerializedName("VOLUM")
+        var volume: String = "",
+        /** Максимальная розничная цена */
+        @SerializedName("MPR")
+        var maxRetailPrice: String = ""
 )

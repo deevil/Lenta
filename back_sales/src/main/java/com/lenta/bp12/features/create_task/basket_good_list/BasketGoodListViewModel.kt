@@ -32,7 +32,7 @@ class BasketGoodListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
 
     val title by lazy {
         basket.map { basket ->
-            "Корзина ${manager.getBasketPosition(basket)}: ${basket?.getDescription(task.value!!.properties.isDivBySection)}"
+            "Корзина ${manager.getBasketPosition(basket)}: ${basket?.getDescription(task.value!!.taskType.isDivBySection)}"
         }
     }
 
@@ -46,7 +46,7 @@ class BasketGoodListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
                         ItemGoodUi(
                                 position = "${index + 1}",
                                 name = good.getNameWithMaterial(),
-                                quantity = "${good.getQuantityByProvider(basket.provider?.code).dropZeros()} ${good.units.name}",
+                                quantity = "${good.getQuantityByProvider(basket.provider.code).dropZeros()} ${good.units.name}",
                                 material = good.material
                         )
                     }

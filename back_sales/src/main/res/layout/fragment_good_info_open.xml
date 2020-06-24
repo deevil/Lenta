@@ -48,7 +48,7 @@
                         android:enabled="@{vm.quantityEnabled}"
                         android:text="@={vm.quantity}"
                         app:digitsForUom="@{vm.good.units}"
-                        app:quantityTypeIcon="@{vm.position.units}"
+                        app:quantityTypeIcon="@{vm.good.units}"
                         app:suffix="@{vm.good.units.name}"
                         tools:drawableEnd="@drawable/ic_bei_12dp"
                         tools:text="1 шт" />

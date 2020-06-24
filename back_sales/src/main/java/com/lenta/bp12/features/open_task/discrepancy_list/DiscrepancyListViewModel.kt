@@ -34,7 +34,7 @@ class DiscrepancyListViewModel : CoreViewModel() {
 
     val title by lazy {
         task.map { task ->
-            "${task?.properties?.type}-${task?.number} // ${task?.name}"
+            "${task?.type}-${task?.number} // ${task?.name}"
         }
     }
 
@@ -66,10 +66,10 @@ class DiscrepancyListViewModel : CoreViewModel() {
     // -----------------------------
 
     fun onClickItemPosition(position: Int) {
-        goods.value?.get(position)?.let {
+        /*goods.value?.get(position)?.let {
             manager.preparePositionToOpen(it.material, it.providerCode)
             navigator.openGoodInfoOpenScreen()
-        }
+        }*/
     }
 
     private fun isNotEmptyList() = goods.value?.isNullOrEmpty() == false
@@ -103,7 +103,7 @@ class DiscrepancyListViewModel : CoreViewModel() {
 
     fun onClickDelete() {
         if (isNotEmptyList()) {
-            manager.markPositionsDelete(getSimplePositions())
+            //manager.markGoodsDeleted(getSimplePositions())
         }
     }
 

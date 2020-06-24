@@ -25,7 +25,7 @@ class BasketPropertiesViewModel : CoreViewModel() {
 
     val title by lazy {
         basket.map { basket ->
-            "Корзина ${manager.getBasketPosition(basket)}: ${basket?.getDescription(task.value!!.properties.isDivBySection)}"
+            "Корзина ${manager.getBasketPosition(basket)}: ${basket?.getDescription(task.value!!.taskType.isDivBySection)}"
         }
     }
 

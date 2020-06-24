@@ -6,7 +6,7 @@ import com.lenta.bp12.model.*
 import com.lenta.bp12.model.pojo.Mark
 import com.lenta.bp12.model.pojo.Part
 import com.lenta.bp12.model.pojo.create_task.Basket
-import com.lenta.bp12.model.pojo.create_task.Good
+import com.lenta.bp12.model.pojo.create_task.GoodCreate
 import com.lenta.bp12.platform.extention.getControlType
 import com.lenta.bp12.platform.extention.getGoodType
 import com.lenta.bp12.platform.navigation.IScreenNavigator
@@ -407,7 +407,7 @@ class GoodInfoCreateViewModel : CoreViewModel() {
         } ?: loadGoodInfo(material = material)
     }
 
-    private fun setFoundGood(foundGood: Good) {
+    private fun setFoundGood(foundGood: GoodCreate) {
         good.value = foundGood
         lastSuccessSearchNumber.value = foundGood.material
         setScanModeFromGoodType(foundGood.type)
@@ -416,7 +416,7 @@ class GoodInfoCreateViewModel : CoreViewModel() {
         setDefaultQuantity(foundGood)
     }
 
-    private fun setDefaultQuantity(good: Good) {
+    private fun setDefaultQuantity(good: GoodCreate) {
         quantityField.value = if (good.type == GoodType.COMMON) "1" else "0"
     }
 
@@ -440,7 +440,7 @@ class GoodInfoCreateViewModel : CoreViewModel() {
                     tkNumber = sessionInfo.market ?: "Not found!",
                     ean = ean ?: "",
                     material = material ?: "",
-                    taskType = task.value!!.properties.type
+                    taskType = task.value!!.taskType.code
             )).also {
                 navigator.hideProgress()
             }.either(::handleFailure) { goodInfo ->
@@ -478,7 +478,7 @@ class GoodInfoCreateViewModel : CoreViewModel() {
 
     private fun addGood(goodInfo: GoodInfoResult) {
         viewModelScope.launch {
-            good.value = Good(
+            good.value = GoodCreate(
                     ean = goodInfo.eanInfo.ean,
                     material = goodInfo.materialInfo.material,
                     name = goodInfo.materialInfo.name,
@@ -698,7 +698,7 @@ class GoodInfoCreateViewModel : CoreViewModel() {
         }
     }
 
-    private fun createBasket(changedGood: Good) {
+    private fun createBasket(changedGood: GoodCreate) {
         if (basket.value == null) {
             manager.addBasket(Basket(
                     section = changedGood.section,
@@ -709,7 +709,7 @@ class GoodInfoCreateViewModel : CoreViewModel() {
         }
     }
 
-    private fun updateGood(changedGood: Good) {
+    private fun updateGood(changedGood: GoodCreate) {
         good.value = changedGood
     }
 

@@ -3,9 +3,9 @@ package com.lenta.bp12.features.create_task.task_card
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.lenta.bp12.model.ICreateTaskManager
-import com.lenta.bp12.model.pojo.Properties
+import com.lenta.bp12.model.pojo.TaskType
 import com.lenta.bp12.model.pojo.ReturnReason
-import com.lenta.bp12.model.pojo.create_task.Task
+import com.lenta.bp12.model.pojo.create_task.TaskCreate
 import com.lenta.bp12.platform.navigation.IScreenNavigator
 import com.lenta.bp12.repository.IDatabaseRepository
 import com.lenta.shared.account.ISessionInfo
@@ -53,14 +53,14 @@ class TaskCardCreateViewModel : CoreViewModel(), PageSelectionListener {
     Список типов задачи
      */
 
-    private val sourceTypes = MutableLiveData(listOf<Properties>())
+    private val sourceTypes = MutableLiveData(listOf<TaskType>())
 
     private val types = sourceTypes.map {
         it?.let { types ->
             val list = types.toMutableList()
             if (list.size > 1) {
-                list.add(0, Properties(
-                        type = "",
+                list.add(0, TaskType(
+                        code = "",
                         description = "",
                         isDivBySection = false,
                         isDivByPurchaseGroup = false
@@ -203,9 +203,9 @@ class TaskCardCreateViewModel : CoreViewModel(), PageSelectionListener {
         viewModelScope.launch {
             types.value?.let { types ->
                 taskTypePosition.value?.let { position ->
-                    sourceStorages.value = database.getStorageList(types[position].type)
-                    sourceReasons.value = database.getReturnReasonList(types[position].type)
-                    taskAttributes.value = database.getTaskAttributes(types[position].type)
+                    sourceStorages.value = database.getStorageList(types[position].code)
+                    sourceReasons.value = database.getReturnReasonList(types[position].code)
+                    taskAttributes.value = database.getTaskAttributes(types[position].code)
                 }
             }
         }
@@ -216,9 +216,9 @@ class TaskCardCreateViewModel : CoreViewModel(), PageSelectionListener {
      */
 
     fun onClickNext() {
-        manager.updateCurrentTask(Task(
+        manager.updateCurrentTask(TaskCreate(
                 name = taskName.value!!,
-                properties = types.value!![taskTypePosition.value!!],
+                taskType = types.value!![taskTypePosition.value!!],
                 storage = storageList.value!![storagePosition.value!!],
                 reason = reasons.value!![returnReasonPosition.value!!]
         ))

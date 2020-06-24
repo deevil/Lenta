@@ -11,6 +11,7 @@ import com.lenta.bp12.request.MarkInfoParams
 import com.lenta.bp12.request.GoodInfoNetRequest
 import com.lenta.bp12.request.GoodInfoParams
 import com.lenta.bp12.request.pojo.ProducerInfo
+import com.lenta.bp12.request.pojo.TaskProducerInfo
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.exception.Failure
@@ -47,10 +48,6 @@ class GoodInfoOpenViewModel : CoreViewModel() {
         manager.currentGood
     }
 
-    val position by lazy {
-        manager.currentPosition
-    }
-
     val title by lazy {
         good.map { good ->
             good?.getNameWithMaterial()
@@ -73,15 +70,7 @@ class GoodInfoOpenViewModel : CoreViewModel() {
         }
     }
 
-    val quantity by lazy {
-        position.map { position ->
-            if (position?.isCounted == true) {
-                position.quantity.dropZeros()
-            } else {
-                if (position?.isBox() == true) position.innerQuantity.dropZeros() else "1"
-            }
-        }
-    }
+    val quantity = MutableLiveData("0")
 
     val quantityEnabled = MutableLiveData(true)
 
@@ -119,7 +108,7 @@ class GoodInfoOpenViewModel : CoreViewModel() {
             good?.producers?.let { producers ->
                 val list = producers.toMutableList()
                 if (list.size > 1) {
-                    list.add(0, ProducerInfo())
+                    list.add(0, TaskProducerInfo())
                 }
 
                 list.toList()
@@ -190,11 +179,11 @@ class GoodInfoOpenViewModel : CoreViewModel() {
 
     init {
         viewModelScope.launch {
-            if (position.value != null) {
+            /*if (position.value != null) {
                 category.value = position.value!!.category
             } else {
                 checkSearchNumber(manager.searchNumber)
-            }
+            }*/
         }
     }
 
@@ -225,7 +214,7 @@ class GoodInfoOpenViewModel : CoreViewModel() {
     }
 
     private fun getGoodByEan(ean: String) {
-        good.value?.let { good ->
+        /*good.value?.let { good ->
             if (good.ean == ean) {
                 return
             }
@@ -236,11 +225,11 @@ class GoodInfoOpenViewModel : CoreViewModel() {
             manager.updateCurrentGood(good)
         } else {
             loadGoodInfo(ean = ean)
-        }
+        }*/
     }
 
     private fun getGoodByMaterial(material: String) {
-        good.value?.let { good ->
+        /*good.value?.let { good ->
             if (good.isSameMaterial(material)) {
                 return
             }
@@ -251,7 +240,7 @@ class GoodInfoOpenViewModel : CoreViewModel() {
             manager.updateCurrentGood(good)
         } else {
             loadGoodInfo(material = material)
-        }
+        }*/
     }
 
     private fun loadGoodInfo(ean: String? = null, material: String? = null) {
@@ -259,7 +248,7 @@ class GoodInfoOpenViewModel : CoreViewModel() {
             "At least one param must be not null - ean: $ean, material: $material"
         }
 
-        viewModelScope.launch {
+        /*viewModelScope.launch {
             navigator.showProgressLoadingData()
 
             goodInfoNetRequest(GoodInfoParams(
@@ -283,7 +272,7 @@ class GoodInfoOpenViewModel : CoreViewModel() {
                     }
                 }
             }
-        }
+        }*/
     }
 
     private fun loadMarkInfo(number: String) {
@@ -349,7 +338,7 @@ class GoodInfoOpenViewModel : CoreViewModel() {
     }
 
     private fun saveGoodInTask() {
-        good.value?.let { good ->
+        /*good.value?.let { good ->
             val quantity = quantity.value?.toDoubleOrNull() ?: 0.0
 
             if (position.value?.isCounted == true) {
@@ -361,11 +350,11 @@ class GoodInfoOpenViewModel : CoreViewModel() {
             manager.updateCurrentGood(good)
         }
 
-        manager.addCurrentGoodInTask()
+        manager.addCurrentGoodInTask()*/
     }
 
     fun onBackPressed() {
-        if (isExistUnsavedData) {
+        /*if (isExistUnsavedData) {
             navigator.showUnsavedDataWillBeLost {
                 manager.currentPosition.value = null
                 manager.searchNumber = ""
@@ -375,7 +364,7 @@ class GoodInfoOpenViewModel : CoreViewModel() {
             manager.currentPosition.value = null
             manager.searchNumber = ""
             navigator.goBack()
-        }
+        }*/
     }
 
 }

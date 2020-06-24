@@ -5,7 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.lenta.bp12.model.BlockType
 import com.lenta.bp12.model.IOpenTaskManager
 import com.lenta.bp12.model.TaskStatus
-import com.lenta.bp12.model.pojo.open_task.Task
+import com.lenta.bp12.model.pojo.open_task.TaskOpen
 import com.lenta.bp12.platform.navigation.IScreenNavigator
 import com.lenta.bp12.request.TaskListNetRequest
 import com.lenta.bp12.request.TaskListParams
@@ -80,7 +80,7 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
                             provider = task.getProviderCodeWithName(),
                             taskStatus = task.status,
                             blockType = task.block.type,
-                            quantity = task.quantity.toString()
+                            quantity = task.numberOfGoods.toString()
                     )
                 }
             }
@@ -109,22 +109,16 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
                             provider = task.getProviderCodeWithName(),
                             taskStatus = task.status,
                             blockType = task.block.type,
-                            quantity = task.quantity.toString()
+                            quantity = task.numberOfGoods.toString()
                     )
                 }
             }
         }
     }
 
-    // -----------------------------
-
-    init {
-        viewModelScope.launch {
-            //loadTaskList()
-        }
-    }
-
-    // -----------------------------
+    /**
+    Методы
+     */
 
     override fun onPageSelected(position: Int) {
         selectedPage.value = position
@@ -185,6 +179,54 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
         navigator.openAlertScreen(failure)
     }
 
+    fun onClickItemPosition(position: Int) {
+        selectedPage.value?.let { page ->
+            when (page) {
+                0 -> {
+                    tasks.value?.let { tasks ->
+                        tasks.find { it.number == processing.value!![position].number }?.let { task ->
+                            prepareToOpenTask(task)
+                        }
+                    }
+                }
+                1 -> {
+                    tasks.value?.let { tasks ->
+                        tasks.find { it.number == found.value!![position].number }?.let { task ->
+                            prepareToOpenTask(task)
+                        }
+                    }
+                }
+                else -> throw IllegalArgumentException("Wrong pager position!")
+            }
+        }
+    }
+
+    private fun prepareToOpenTask(task: TaskOpen) {
+        task.apply {
+            when (block.type) {
+                BlockType.LOCK -> navigator.showAlertBlockedTaskAnotherUser(block.user, block.ip)
+                BlockType.SELF_LOCK -> navigator.showAlertBlockedTaskByMe(block.user) { openTask(task) }
+                else -> openTask(task)
+            }
+        }
+    }
+
+    private fun openTask(task: TaskOpen) {
+        manager.updateCurrentTask(task)
+        navigator.openTaskCardOpenScreen()
+    }
+
+    override fun onOkInSoftKeyboard(): Boolean {
+        // todo Что-то сделать при вводе номера/пользователя?
+        // ...
+
+        return true
+    }
+
+    /**
+    Обработка нажатий кнопок
+     */
+
     fun onClickMenu() {
         navigator.goBack()
     }
@@ -196,52 +238,6 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
 
     fun onClickFilter() {
         navigator.openTaskSearchScreen()
-    }
-
-    fun onClickItemPosition(position: Int) {
-        selectedPage.value?.let { page ->
-            when (page) {
-                0 -> {
-                    tasks.value?.let { tasks ->
-                        tasks.find { it.number == processing.value!![position].number }?.let { task ->
-                            task.apply {
-                                when (block.type) {
-                                    BlockType.LOCK -> navigator.showAlertBlockedTaskAnotherUser(block.user, block.ip)
-                                    BlockType.SELF_LOCK -> navigator.showAlertBlockedTaskByMe(block.user) { openTask(task) }
-                                    else -> openTask(task)
-                                }
-                            }
-                        }
-                    }
-                }
-                1 -> {
-                    tasks.value?.let { tasks ->
-                        tasks.find { it.number == found.value!![position].number }?.let { task ->
-                            task.apply {
-                                when (block.type) {
-                                    BlockType.LOCK -> navigator.showAlertBlockedTaskAnotherUser(block.user, block.ip)
-                                    BlockType.SELF_LOCK -> navigator.showAlertBlockedTaskByMe(block.user) { openTask(task) }
-                                    else -> openTask(task)
-                                }
-                            }
-                        }
-                    }
-                }
-                else -> throw IllegalArgumentException("Wrong pager position!")
-            }
-        }
-    }
-
-    private fun openTask(task: Task) {
-        manager.updateCurrentTask(task)
-        navigator.openTaskCardOpenScreen()
-    }
-
-    override fun onOkInSoftKeyboard(): Boolean {
-        // todo Что-то сделать при вводе номера/пользователя?
-        // ...
-
-        return true
     }
 
 }
