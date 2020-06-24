@@ -247,7 +247,7 @@ data class TaskCompositionResult(
 
             /** Базисная единица измерения */
             @SerializedName("BUOM")
-            val units: String, 
+            val units: String,
 
             /** Тип матрицы SKU */
             @SerializedName("MATR_TYPE")
