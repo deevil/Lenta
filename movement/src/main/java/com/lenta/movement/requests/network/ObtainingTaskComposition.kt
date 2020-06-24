@@ -134,7 +134,7 @@ data class TaskCompositionResult(
 
             /** Индикатор: позиция посчитана */
             @SerializedName("XZAEL")
-            val positionCounted: String, //УТЗ ТСД: Инв.: Позиция подсчитана (первый подсчет),
+            val positionCounted: String,
 
             /** Базисная единица измерения */
             @SerializedName("MEINS")
@@ -237,46 +237,55 @@ data class TaskCompositionResult(
             @SerializedName("MATNR")
             val materialNumber: String,
 
+            /** Длинное наименование */
             @SerializedName("NAME")
-            val name: String, //Длинное наименование
+            val name: String,
 
+            /** Вид товара */
             @SerializedName("MATYPE")
-            val productType: String, //Вид товара
+            val productType: String,
 
+            /** Базисная единица измерения */
             @SerializedName("BUOM")
-            val units: String, //Базисная единица измерения
+            val units: String, 
 
+            /** Тип матрицы SKU */
             @SerializedName("MATR_TYPE")
-            val matrixTypeSKU: String, //Тип матрицы SKU
+            val matrixTypeSKU: String,
 
+            /** Номер отдела (секция) */
             @SerializedName("ABTNR")
-            val departmentNumber: String, //Номер отдела
+            val departmentNumber: String,
 
+            /** Признак – товар акцизный */
             @SerializedName("IS_EXC")
-            val isExc: String, //Признак – товар акцизный
+            val isExc: String,
 
+            /** Признак - товар алкогольный */
             @SerializedName("IS_ALCO")
-            val isAlco: String, //Общий флаг
+            val isAlco: String,
 
+            /** Группа товаров */
             @SerializedName("MATKL")
-            val goodGroup: String, //Группа товаров
+            val goodGroup: String,
 
+            /** Группа закупок */
             @SerializedName("EKGRP")
-            val purchaseGroup: String, //Группа закупок
+            val purchaseGroup: String,
 
-            /** Единица измерения заказа на поставку */
+            /** Единица измерения заказа */
             @SerializedName("BSTME")
             val orderUnits: String,
 
-            /** Количество вложенного */
+            /** Количество вложений */
             @SerializedName("QNTINCL")
             val quantityInvestments: String,
 
-            //Признак: отечественный
+            /** Признак: отечественный */
             @SerializedName("IS_RUS")
             val isRus: String,
 
-            /** Флаг – «Меркурианский товар» */
+            /** Признак: ветеринарный контроль*/
             @SerializedName("IS_VET")
             val isVet: String,
 
