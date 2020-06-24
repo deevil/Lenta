@@ -92,7 +92,7 @@ class ScreenNavigator(
     }
 
     override fun openTaskList() {
-        openNotImplementedScreenAlert("Задания на перемещение")
+        openNotImplementedScreenAlert("Задания на перемещение")  //TODO Работа с заданиями
     }
 
     override fun openUnsavedDataDialog(yesCallbackFunc: () -> Unit) {
