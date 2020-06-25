@@ -1,13 +1,11 @@
 package com.lenta.bp12.model.pojo.open_task
 
-import com.lenta.bp12.model.Category
-import com.lenta.bp12.model.ControlType
 import com.lenta.bp12.model.GoodType
 import com.lenta.bp12.model.pojo.Mark
 import com.lenta.bp12.model.pojo.Part
+import com.lenta.bp12.model.pojo.Position
 import com.lenta.bp12.request.pojo.ProducerInfo
 import com.lenta.bp12.request.pojo.ProviderInfo
-import com.lenta.bp12.request.pojo.TaskProducerInfo
 import com.lenta.shared.models.core.MatrixType
 import com.lenta.shared.models.core.Uom
 import com.lenta.shared.utilities.extentions.sumList
@@ -21,16 +19,16 @@ data class GoodOpen(
         val matrix: MatrixType,
         val type: GoodType,
 
-        var planQuantity: Double,
-        var factQuantity: Double,
+        var planQuantity: Double = 0.0,
+        var factQuantity: Double = 0.0,
         val innerQuantity: Double,
         val units: Uom,
 
-        var isCounted: Boolean,
-        var isDeleted: Boolean,
+        var isCounted: Boolean = false,
+        var isDeleted: Boolean = false,
 
         val provider: ProviderInfo,
-        val producers: List<TaskProducerInfo> = emptyList(),
+        val producers: List<ProducerInfo> = emptyList(),
 
         val positions: MutableList<Position> = mutableListOf(),
         val marks: MutableList<Mark> = mutableListOf(),
@@ -64,15 +62,8 @@ data class GoodOpen(
         return positionQuantity.sumWith(partQuantity)
     }
 
-
-
-
-
-
-
-
-    fun addPosition(quantity: Double, provider: ProviderInfo, category: Category, date: String?) {
-        val position = positions.find { it.provider.code == provider.code && it.date == date }
+    fun addPosition(quantity: Double, provider: ProviderInfo) {
+        val position = positions.find { it.provider.code == provider.code }
         val oldQuantity = position?.quantity
 
         if (position != null) {
@@ -81,14 +72,40 @@ data class GoodOpen(
 
         positions.add(0, Position(
                 quantity = quantity.sumWith(oldQuantity),
-                provider = provider,
-                category = category,
-                date = date,
-                isCounted = true
+                provider = provider
         ))
     }
 
-    fun replacePosition(quantity: Double, provider: ProviderInfo, category: Category, date: String?) {
+    fun addMark(mark: Mark) {
+        if (marks.find { it.number == mark.number } == null) {
+            marks.add(mark)
+        }
+    }
+
+    fun addPart(part: Part) {
+        parts.find { it.providerCode == part.providerCode && it.producerCode == part.producerCode && it.date == part.date}?.let { foundPart ->
+            foundPart.quantity = foundPart.quantity.sumWith(part.quantity)
+        } ?: parts.add(part)
+    }
+
+
+
+    fun removeMark(number: String) {
+        marks.find { it.number == number }?.let { mark ->
+            marks.remove(mark)
+        }
+    }
+
+
+
+
+
+
+
+
+
+
+    /*fun replacePosition(quantity: Double, provider: ProviderInfo, category: Category, date: String?) {
         val position = positions.find { it.provider.code == provider.code && it.date == date }
 
         if (position != null) {
@@ -102,9 +119,9 @@ data class GoodOpen(
                 date = date,
                 isCounted = true
         ))
-    }
+    }*/
 
-    fun deletePositions(positionList: List<Position>) {
+    /*fun deletePositions(positionList: List<Position>) {
         positionList.forEach { position ->
             positions.remove(position)
         }
@@ -129,10 +146,8 @@ data class GoodOpen(
     }
 
     fun markPositionMissing(providerCode: String) {
-        positions.find { it.provider.code == providerCode }?.let {
-            it.quantity = 0.0
-            it.isCounted = true
-        }
-    }
+        quantity = 0.0
+        isCounted = true
+    }*/
 
 }

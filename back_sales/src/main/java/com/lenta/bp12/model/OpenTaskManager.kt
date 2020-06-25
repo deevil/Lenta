@@ -4,8 +4,11 @@ import androidx.lifecycle.MutableLiveData
 import com.lenta.bp12.model.pojo.Block
 import com.lenta.bp12.model.pojo.open_task.GoodOpen
 import com.lenta.bp12.model.pojo.open_task.TaskOpen
-import com.lenta.bp12.platform.extention.*
+import com.lenta.bp12.platform.extention.addZerosToStart
+import com.lenta.bp12.platform.extention.getBlockType
+import com.lenta.bp12.platform.extention.getControlType
 import com.lenta.bp12.repository.IDatabaseRepository
+import com.lenta.bp12.request.GoodInfoResult
 import com.lenta.bp12.request.SendTaskDataParams
 import com.lenta.bp12.request.TaskContentResult
 import com.lenta.bp12.request.pojo.*
@@ -21,6 +24,8 @@ class OpenTaskManager @Inject constructor(
 ) : IOpenTaskManager {
 
     override var searchNumber = ""
+
+    override var searchGoodFromList = false
 
     override val searchParams = MutableLiveData<TaskSearchParams>()
 
@@ -72,13 +77,24 @@ class OpenTaskManager @Inject constructor(
         currentGood.value = newGood
     }*/
 
-    override fun addCurrentGoodInTask() {
+    /*override fun addCurrentGoodInTask() {
         currentTask.value?.let { task ->
             task.goods.find { it.material == currentGood.value!!.material }?.let { good ->
                 task.goods.remove(good)
             }
 
             task.goods.add(0, currentGood.value!!)
+            updateCurrentTask(task)
+        }
+    }*/
+
+    override fun saveGoodInTask(good: GoodOpen) {
+        currentTask.value?.let { task ->
+            task.goods.find { it.material == good.material }?.let { good ->
+                task.goods.remove(good)
+            }
+
+            task.goods.add(0, good)
             updateCurrentTask(task)
         }
     }
@@ -139,7 +155,12 @@ class OpenTaskManager @Inject constructor(
                                 isCounted = isCounted.isSapTrue(),
                                 isDeleted = isDeleted.isSapTrue(),
                                 provider = ProviderInfo(providerCode, providerName),
-                                producers = taskContentResult.producers.filter { it.material == goodInfo.material }
+                                producers = taskContentResult.producers.filter { it.material == goodInfo.material }.map {
+                                    ProducerInfo(
+                                            code = it.code,
+                                            name = it.name
+                                    )
+                                }
                         ))
                     }
                 }
@@ -158,9 +179,9 @@ class OpenTaskManager @Inject constructor(
         return currentTask.value?.goods?.find { it.material == formattedMaterial }
     }
 
-    /*override suspend fun isGoodCanBeAdded(goodInfo: GoodInfoResult): Boolean {
-        return database.isGoodCanBeAdded(goodInfo, currentTask.value!!.type)
-    }*/
+    override suspend fun isGoodCanBeAdded(goodInfo: GoodInfoResult): Boolean {
+        return database.isGoodCanBeAdded(goodInfo, currentTask.value?.type?.code ?: "")
+    }
 
     override fun finishCurrentTask() {
         currentTask.value?.let { task ->
@@ -202,8 +223,8 @@ class OpenTaskManager @Inject constructor(
                                     providerCode = position.provider.code,
                                     providerName = position.provider.name,
                                     factQuantity = position.quantity.dropZeros(),
-                                    isCounted = position.isCounted.toSapBooleanString(),
-                                    isDeleted = position.isDelete.toSapBooleanString(),
+                                    isCounted = good.isCounted.toSapBooleanString(),
+                                    isDeleted = good.isDeleted.toSapBooleanString(),
                                     unitsCode = good.units.code
                             )
                     )
@@ -275,7 +296,7 @@ class OpenTaskManager @Inject constructor(
         }
     }
 
-    override fun markPositionsMissing(items: List<SimplePosition>) {
+    /*override fun markPositionsMissing(items: List<SimplePosition>) {
         currentTask.value?.let { task ->
             items.forEach { item ->
                 task.goods.find { it.material == item.material }?.markPositionMissing(item.providerCode)
@@ -283,12 +304,17 @@ class OpenTaskManager @Inject constructor(
 
             updateCurrentTask(task)
         }
-    }
+    }*/
 
     /*override fun clearCurrentGoodAndPosition() {
         currentGood.value = null
         currentPosition.value = null
     }*/
+
+    override fun clearSearchFromListParams() {
+        searchGoodFromList = false
+        searchNumber = ""
+    }
 
 }
 
@@ -296,6 +322,8 @@ class OpenTaskManager @Inject constructor(
 interface IOpenTaskManager {
 
     var searchNumber: String
+    var searchGoodFromList: Boolean
+
     val searchParams: MutableLiveData<TaskSearchParams>
     val tasks: MutableLiveData<List<TaskOpen>>
     val foundTasks: MutableLiveData<List<TaskOpen>>
@@ -307,11 +335,12 @@ interface IOpenTaskManager {
     fun updateCurrentTask(task: TaskOpen?)
     fun updateCurrentGood(good: GoodOpen?)
 
+    fun saveGoodInTask(good: GoodOpen)
     //suspend fun putInCurrentGood(goodInfo: GoodInfoResult)
-    fun addCurrentGoodInTask()
+    //fun addCurrentGoodInTask()
     fun findGoodByEan(ean: String): GoodOpen?
     fun findGoodByMaterial(material: String): GoodOpen?
-    //suspend fun isGoodCanBeAdded(goodInfo: GoodInfoResult): Boolean
+    suspend fun isGoodCanBeAdded(goodInfo: GoodInfoResult): Boolean
     fun finishCurrentTask()
     //fun addProviderInCurrentGood(providerInfo: ProviderInfo)
     suspend fun addTasks(tasksInfo: List<TaskInfo>)
@@ -321,7 +350,8 @@ interface IOpenTaskManager {
     fun prepareSendTaskDataParams(deviceIp: String, tkNumber: String, userNumber: String)
     fun markGoodsDeleted(materials: List<String>)
     fun markGoodsUncounted(materials: List<String>)
-    fun markPositionsMissing(items: List<SimplePosition>)
+    fun clearSearchFromListParams()
+    //fun markPositionsMissing(items: List<SimplePosition>)
     //fun clearCurrentGoodAndPosition()
 
 }

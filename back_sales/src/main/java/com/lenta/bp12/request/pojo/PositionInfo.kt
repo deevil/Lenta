@@ -20,10 +20,10 @@ data class PositionInfo(
         var factQuantity: String,
         /** Индикатор: Позиция посчитана */
         @SerializedName("XZAEL")
-        var isCounted: String,
+        var isCounted: String = "",
         /** Позиция удалена */
         @SerializedName("IS_DEL")
-        var isDeleted: String,
+        var isDeleted: String = "",
         /** Вложенное количество */
         @SerializedName("QNTINCL")
         var innerQuantity: String = "",

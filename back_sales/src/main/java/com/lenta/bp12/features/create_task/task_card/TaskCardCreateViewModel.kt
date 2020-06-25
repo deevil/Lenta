@@ -3,10 +3,11 @@ package com.lenta.bp12.features.create_task.task_card
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.lenta.bp12.model.ICreateTaskManager
-import com.lenta.bp12.model.pojo.TaskType
 import com.lenta.bp12.model.pojo.ReturnReason
+import com.lenta.bp12.model.pojo.TaskType
 import com.lenta.bp12.model.pojo.create_task.TaskCreate
 import com.lenta.bp12.platform.navigation.IScreenNavigator
+import com.lenta.bp12.platform.resource.IResourceManager
 import com.lenta.bp12.repository.IDatabaseRepository
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.platform.constants.Constants
@@ -34,19 +35,22 @@ class TaskCardCreateViewModel : CoreViewModel(), PageSelectionListener {
     @Inject
     lateinit var manager: ICreateTaskManager
 
+    @Inject
+    lateinit var resource: IResourceManager
+
 
     /**
     Переменные
      */
 
     val title by lazy {
-        "ТК - ${sessionInfo.market}"
+        resource.tkNumber(sessionInfo.market ?: "")
     }
 
     val selectedPage = MutableLiveData(0)
 
     val taskName = MutableLiveData(
-            "Возврат от ${SimpleDateFormat(Constants.DATE_FORMAT_dd_mm_yyyy_hh_mm, Locale.getDefault()).format(Date())}"
+            resource.backSalesFromDate(SimpleDateFormat(Constants.DATE_FORMAT_dd_mm_yyyy_hh_mm, Locale.getDefault()).format(Date()))
     )
 
     /**

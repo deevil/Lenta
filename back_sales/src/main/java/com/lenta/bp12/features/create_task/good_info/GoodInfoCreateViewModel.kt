@@ -299,7 +299,7 @@ class GoodInfoCreateViewModel : CoreViewModel() {
 
     val dateEnabled = scanModeType.map { type ->
         when (type) {
-            ScanNumberType.ALCOHOL, ScanNumberType.MARK_68 -> true
+            ScanNumberType.ALCOHOL, ScanNumberType.PART -> true
             else -> false
         }
     }
@@ -322,8 +322,8 @@ class GoodInfoCreateViewModel : CoreViewModel() {
                     ScanNumberType.ALCOHOL -> quantity > 0.0 && isProviderSelected && isProducerSelected && isDateEntered
                     ScanNumberType.EXCISE -> false
                     ScanNumberType.MARK_150 -> isProviderSelected
-                    ScanNumberType.MARK_68 -> isProviderSelected && isProducerSelected && isDateEntered
-                    ScanNumberType.PART -> isProviderSelected && isProducerSelected
+                    ScanNumberType.MARK_68 -> isProviderSelected && isProducerSelected
+                    ScanNumberType.PART -> isProviderSelected && isProducerSelected && isDateEntered
                     ScanNumberType.BOX -> isProviderSelected && isProducerSelected
                     else -> false
                 }
@@ -332,7 +332,10 @@ class GoodInfoCreateViewModel : CoreViewModel() {
     }
 
     val rollbackVisibility = scanModeType.map { type ->
-        type == ScanNumberType.MARK_150 || type == ScanNumberType.MARK_68 || type == ScanNumberType.BOX
+        when (type) {
+            ScanNumberType.MARK_150, ScanNumberType.MARK_68, ScanNumberType.BOX -> true
+            else -> false
+        }
     }
 
     val rollbackEnabled = markInfoResult.map { info ->
@@ -346,7 +349,6 @@ class GoodInfoCreateViewModel : CoreViewModel() {
     init {
         viewModelScope.launch {
             checkSearchNumber(manager.searchNumber)
-            Logg.d { "--> init baskets: ${task.value?.baskets}" }
         }
     }
 
@@ -408,7 +410,7 @@ class GoodInfoCreateViewModel : CoreViewModel() {
     }
 
     private fun setFoundGood(foundGood: GoodCreate) {
-        good.value = foundGood
+        manager.updateCurrentGood(foundGood)
         lastSuccessSearchNumber.value = foundGood.material
         setScanModeFromGoodType(foundGood.type)
         updateProviders(foundGood.providers)
@@ -488,7 +490,7 @@ class GoodInfoCreateViewModel : CoreViewModel() {
                     control = goodInfo.getControlType(),
                     section = goodInfo.materialInfo.section,
                     matrix = getMatrixType(goodInfo.materialInfo.matrix),
-                    innerQuantity = goodInfo.materialInfo.innerQuantity.toDoubleOrNull() ?: 0.0,
+                    innerQuantity = goodInfo.materialInfo.innerQuantity.toDoubleOrNull() ?: 1.0,
                     orderUnits = database.getUnitsByCode(goodInfo.materialInfo.orderUnitCode),
                     providers = goodInfo.providers.toMutableList(),
                     producers = goodInfo.producers.toMutableList()
@@ -521,15 +523,12 @@ class GoodInfoCreateViewModel : CoreViewModel() {
             )).also {
                 navigator.hideProgress()
             }.either(::handleMarkInfoLoadFailure) { markInfoResult ->
-                Logg.d { "--> markInfoResult: $markInfoResult" }
                 viewModelScope.launch {
                     markInfoResult.status.let { status ->
                         if (status == MarkStatus.OK.code || status == MarkStatus.BAD.code) {
                             addMarkInfo(number, markInfoResult)
                         } else if (status == MarkStatus.UNKNOWN.code) {
                             val alcoCode = BigInteger(number.substring(7, 19), 36).toString().padStart(19, '0')
-                            Logg.d { "--> alcoCode = $alcoCode" }
-
                             database.getAlcoCodeInfoList(alcoCode).let { alcoCodeInfoList ->
                                 if (alcoCodeInfoList.isNotEmpty()) {
                                     if (alcoCodeInfoList.find { it.material == good.value!!.material } != null) {
@@ -548,6 +547,10 @@ class GoodInfoCreateViewModel : CoreViewModel() {
                 }
             }
         }
+    }
+
+    private fun handleMarkInfoLoadFailure(failure: Failure) {
+        navigator.openAlertScreen(failure)
     }
 
     private fun addMarkInfo(number: String, markInfo: MarkInfoResult) {
@@ -604,11 +607,6 @@ class GoodInfoCreateViewModel : CoreViewModel() {
         }
     }
 
-    private fun handleMarkInfoLoadFailure(failure: Failure) {
-        Logg.d { "--> handleMarkInfoLoadFailure: $failure" }
-        navigator.openAlertScreen(failure)
-    }
-
     private fun addBoxInfo(number: String, markInfo: MarkInfoResult) {
         scanModeType.value = ScanNumberType.BOX
         lastSuccessSearchNumber.value = number
@@ -642,7 +640,7 @@ class GoodInfoCreateViewModel : CoreViewModel() {
             changedGood.addPosition(quantity.value!!, selectedProvider.value ?: ProviderInfo())
 
             createBasket(changedGood)
-            updateGood(changedGood)
+            manager.updateCurrentGood(changedGood)
         }
     }
 
@@ -657,7 +655,7 @@ class GoodInfoCreateViewModel : CoreViewModel() {
             ))
 
             createBasket(changedGood)
-            updateGood(changedGood)
+            manager.updateCurrentGood(changedGood)
         }
     }
 
@@ -674,7 +672,7 @@ class GoodInfoCreateViewModel : CoreViewModel() {
             ))
 
             createBasket(changedGood)
-            updateGood(changedGood)
+            manager.updateCurrentGood(changedGood)
         }
     }
 
@@ -694,7 +692,7 @@ class GoodInfoCreateViewModel : CoreViewModel() {
             }
 
             createBasket(changedGood)
-            updateGood(changedGood)
+            manager.updateCurrentGood(changedGood)
         }
     }
 
@@ -707,10 +705,6 @@ class GoodInfoCreateViewModel : CoreViewModel() {
                     provider = selectedProvider.value ?: ProviderInfo()
             ))
         }
-    }
-
-    private fun updateGood(changedGood: GoodCreate) {
-        good.value = changedGood
     }
 
     fun updateData() {
@@ -726,6 +720,10 @@ class GoodInfoCreateViewModel : CoreViewModel() {
     Обработка нажатий кнопок
      */
 
+    fun addProvider() {
+        navigator.openAddProviderScreen()
+    }
+
     fun onBackPressed() {
         if (isExistUnsavedData) {
             navigator.showUnsavedDataWillBeLost {
@@ -736,24 +734,6 @@ class GoodInfoCreateViewModel : CoreViewModel() {
         } else {
             navigator.goBack()
         }
-    }
-
-    fun onClickApply() {
-        saveChanges()
-        manager.saveGoodInTask(good.value!!)
-        isExistUnsavedData = false
-
-        navigator.goBack()
-        navigator.openBasketGoodListScreen()
-    }
-
-    fun onClickDetails() {
-        manager.currentGood.value = good.value
-        navigator.openGoodDetailsCreateScreen()
-    }
-
-    fun addProvider() {
-        navigator.openAddProviderScreen()
     }
 
     fun onClickRollback() {
@@ -772,8 +752,22 @@ class GoodInfoCreateViewModel : CoreViewModel() {
             quantityField.value = ""
             markInfoResult.value = null
 
-            updateGood(changedGood)
+            manager.updateCurrentGood(changedGood)
         }
+    }
+
+    fun onClickDetails() {
+        manager.updateCurrentGood(good.value)
+        navigator.openGoodDetailsCreateScreen()
+    }
+
+    fun onClickApply() {
+        saveChanges()
+        manager.saveGoodInTask(good.value!!)
+        isExistUnsavedData = false
+
+        navigator.goBack()
+        navigator.openBasketGoodListScreen()
     }
 
 }

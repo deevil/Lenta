@@ -4,6 +4,7 @@ import androidx.lifecycle.MutableLiveData
 import com.lenta.bp12.model.IOpenTaskManager
 import com.lenta.bp12.platform.navigation.IScreenNavigator
 import com.lenta.shared.account.ISessionInfo
+import com.lenta.shared.platform.constants.Constants
 import com.lenta.shared.platform.device_info.DeviceInfo
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.SelectionItemsHelper
@@ -113,19 +114,20 @@ class GoodListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
     fun onClickItemPosition(position: Int) {
         selectedPage.value?.let { page ->
             when (page) {
-                0 -> {
-                    processing.value?.get(position)?.let { position ->
-                        /*manager.preparePositionToOpen(position.material, position.providerCode)
-                        navigator.openGoodInfoOpenScreen()*/
-                    }
-                }
-                1 -> {
-                    processed.value?.get(position)?.let { position ->
-                        /*manager.preparePositionToOpen(position.material, position.providerCode)
-                        navigator.openGoodInfoOpenScreen()*/
-                    }
-                }
-                else -> throw IllegalArgumentException("Wrong pager position!")
+                0 -> processing.value?.get(position)?.material
+                1 -> processed.value?.get(position)?.material
+                else -> null
+            }?.let { material ->
+                openGoodByMaterial(material)
+            }
+        }
+    }
+
+    private fun openGoodByMaterial(material: String) {
+        task.value?.let { task ->
+            task.goods.find { it.material == material }?.let { good ->
+                manager.updateCurrentGood(good)
+                navigator.openGoodInfoOpenScreen()
             }
         }
     }
@@ -136,13 +138,14 @@ class GoodListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
     }
 
     private fun checkEnteredNumber(number: String) {
-        /*if (!task.value!!.isStrict && number.length >= Constants.SAP_6) {
-            manager.clearCurrentGoodAndPosition()
-            manager.searchNumber = number
-            numberField.value = ""
-
-            navigator.openGoodInfoOpenScreen()
-        }*/
+        number.length.let { length ->
+            if (task.value?.isStrict == false && length >= Constants.SAP_6) {
+                manager.searchNumber = number
+                manager.searchGoodFromList = true
+                numberField.value = ""
+                navigator.openGoodInfoOpenScreen()
+            }
+        }
     }
 
     fun onClickDelete() {

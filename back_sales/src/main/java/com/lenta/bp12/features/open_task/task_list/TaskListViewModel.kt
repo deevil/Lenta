@@ -38,6 +38,10 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
     lateinit var manager: IOpenTaskManager
 
 
+    /**
+    Переменные
+     */
+
     val title by lazy {
         "TK - ${sessionInfo.market}"
     }
