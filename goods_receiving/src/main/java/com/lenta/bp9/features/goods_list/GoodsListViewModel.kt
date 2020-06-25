@@ -464,12 +464,15 @@ class GoodsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKey
                 screenNavigator.openDiscrepancyListScreen()
             } else {
                 screenNavigator.showProgressLoadingData()
-                //очищаем таблицу ET_TASK_DIFF от не акцизного алкоголя, т.к. для этих товаров необходимо передавать только данные из таблицы ET_PARTS_DIFF
-                taskManager.getReceivingTask()!!.taskRepository.getProductsDiscrepancies().getProductsDiscrepancies().map {
-                    taskManager.getReceivingTask()!!.taskRepository.getProducts().findProduct(it.materialNumber)
-                }.map {
-                    it?.let {
-                        taskManager.getReceivingTask()!!.taskRepository.getProductsDiscrepancies().deleteProductsDiscrepanciesForProduct(it.materialNumber)
+                //очищаем таблицу ET_TASK_DIFF от не акцизного (партионного) алкоголя, т.к. для этих товаров необходимо передавать только данные из таблицы ET_PARTS_DIFF
+                taskManager.getReceivingTask()!!.taskRepository.getProductsDiscrepancies().getProductsDiscrepancies().map {productDiscr ->
+                    taskManager.getReceivingTask()!!.taskRepository.getProducts().findProduct(productDiscr.materialNumber)
+                }.filter {filterProduct ->
+                    //партионный - это помеченный IS_ALCO и не помеченный IS_BOX_FL, IS_MARK_FL (Артем)
+                    filterProduct?.type == ProductType.NonExciseAlcohol && !filterProduct.isBoxFl && !filterProduct.isMarkFl
+                }.map {mapProduct ->
+                    mapProduct?.let {productForDel ->
+                        taskManager.getReceivingTask()!!.taskRepository.getProductsDiscrepancies().deleteProductsDiscrepanciesForProduct(productForDel.materialNumber)
                     }
                 }
 

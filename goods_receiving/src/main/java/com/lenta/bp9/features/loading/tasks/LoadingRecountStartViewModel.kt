@@ -5,6 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.lenta.bp9.features.mercury_list_irrelevant.ZMP_UTZ_GRZ_11_V001
 import com.lenta.bp9.model.task.*
+import com.lenta.bp9.model.task.revise.InvoiceContentEntry
 import com.lenta.bp9.platform.navigation.IScreenNavigator
 import com.lenta.bp9.repos.IRepoInMemoryHolder
 import com.lenta.bp9.requests.network.DirectSupplierStartRecountNetRequest
@@ -76,6 +77,8 @@ class LoadingRecountStartViewModel : CoreLoadingViewModel() {
     private fun handleSuccess(result: DirectSupplierStartRecountRestInfo) {
         viewModelScope.launch {
             repoInMemoryHolder.manufacturers.value = result.manufacturers
+            //todo https://trello.com/c/LhzZRxzi данной таблицы (result.processOrderData) пока нет в 11 ресте
+            //repoInMemoryHolder.processOrderData.value = result.processOrderData.map { TaskProcessOrderDataInfo.from( it) }
             val mercuryNotActual = result.taskMercuryNotActualRestData.map {TaskMercuryNotActual.from(hyperHive,it)}
             if (mercuryNotActual.isNotEmpty()) {
                 screenNavigator.openMainMenuScreen()

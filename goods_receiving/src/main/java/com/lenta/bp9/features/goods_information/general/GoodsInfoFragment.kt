@@ -62,10 +62,13 @@ class GoodsInfoFragment : CoreFragment<FragmentGoodsInfoBinding, GoodsInfoViewMo
 
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
         bottomToolbarUiModel.uiModelButton1.show(ButtonDecorationInfo.back)
+        bottomToolbarUiModel.uiModelButton2.show(ButtonDecorationInfo.label) //https://trello.com/c/LhzZRxzi
         bottomToolbarUiModel.uiModelButton3.show(ButtonDecorationInfo.details)
         bottomToolbarUiModel.uiModelButton4.show(ButtonDecorationInfo.add)
         bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.apply)
 
+        connectLiveData(vm.visibilityLabelBtn, bottomToolbarUiModel.uiModelButton2.visibility)
+        connectLiveData(vm.enabledLabelBtn, bottomToolbarUiModel.uiModelButton2.enabled)
         connectLiveData(vm.enabledApplyButton, bottomToolbarUiModel.uiModelButton4.enabled)
         connectLiveData(vm.enabledApplyButton, bottomToolbarUiModel.uiModelButton5.enabled)
 
@@ -73,6 +76,7 @@ class GoodsInfoFragment : CoreFragment<FragmentGoodsInfoBinding, GoodsInfoViewMo
 
     override fun onToolbarButtonClick(view: View) {
         when (view.id) {
+            R.id.b_2 -> vm.onClickLabel()
             R.id.b_3 -> vm.onClickDetails()
             R.id.b_4 -> vm.onClickAdd()
             R.id.b_5 -> vm.onClickApply()
