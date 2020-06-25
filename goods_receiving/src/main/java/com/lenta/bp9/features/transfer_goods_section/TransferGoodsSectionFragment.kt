@@ -86,8 +86,8 @@ class TransferGoodsSectionFragment : CoreFragment<FragmentTransferGoodsSectionBi
                                 }
 
                                 override fun onBind(binding: ItemTileTransferGoodsSectionBinding, position: Int) {
-                                    binding.tvItemNumber.tag = position
-                                    binding.tvItemNumber.setOnClickListener(onClickConditionTitle)
+                                    binding.tvCondition.tag = position
+                                    binding.tvCondition.setOnClickListener(onClickConditionTitle)
                                 }
 
                             }
