@@ -133,8 +133,7 @@ class LoadingTaskCardViewModel : CoreLoadingViewModel() {
         //screenNavigator.goBack()
         viewModelScope.launch {
             repoInMemoryHolder.manufacturers.value = result.manufacturers
-            //todo https://trello.com/c/LhzZRxzi данной таблицы (result.processOrderData) пока нет в 15 ресте
-            //repoInMemoryHolder.processOrderData.value = result.processOrderData.map { TaskProcessOrderDataInfo.from( it) }
+            repoInMemoryHolder.processOrderData.value = result.processOrderData.map { TaskProcessOrderDataInfo.from( it) }
             val taskHeader = repoInMemoryHolder.taskList.value?.tasks?.findLast { it.taskNumber == taskNumber }
             taskHeader?.let {
                 val notifications = result.notifications.map { TaskNotification.from(it) }
