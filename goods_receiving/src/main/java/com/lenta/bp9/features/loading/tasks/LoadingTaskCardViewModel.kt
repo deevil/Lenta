@@ -133,7 +133,8 @@ class LoadingTaskCardViewModel : CoreLoadingViewModel() {
         //screenNavigator.goBack()
         viewModelScope.launch {
             repoInMemoryHolder.manufacturers.value = result.manufacturers
-            repoInMemoryHolder.processOrderData.value = result.processOrderData.map { TaskProcessOrderDataInfo.from( it) }
+            //todo временно закомичено, т.к. в 11 и 15 рестах будут менять название таблицы на ET_AUFNR_LIST (R вместо T)
+            //repoInMemoryHolder.processOrderData.value = result.processOrderData.map { TaskProcessOrderDataInfo.from( it) }
             val taskHeader = repoInMemoryHolder.taskList.value?.tasks?.findLast { it.taskNumber == taskNumber }
             taskHeader?.let {
                 val notifications = result.notifications.map { TaskNotification.from(it) }

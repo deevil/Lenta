@@ -9,6 +9,7 @@ import com.lenta.shared.fmp.ObjectRawStatus
 import com.lenta.shared.functional.Either
 import com.lenta.shared.interactor.UseCase
 import com.lenta.shared.requests.FmpRequestsHelper
+import com.lenta.shared.requests.SapResponse
 import javax.inject.Inject
 
 class TransmittedNetRequest
@@ -38,8 +39,8 @@ data class TransmittedRestInfo(
         val notifications: List<TaskNotificationRestInfo>, //Таблица уведомлений
         @SerializedName("ET_VET_NOT_ACTUAL") //Список не актуальных ВСД
         val taskMercuryNotActualRestData: List<TaskMercuryNotActualRestData>,
-        @SerializedName("EV_RETCODE")
-        val retcode: String,
         @SerializedName("EV_ERROR_TEXT")
-        val errorText: String
-)
+        override val errorText: String?,
+        @SerializedName("EV_RETCODE")
+        override val retCode: Int
+) : SapResponse

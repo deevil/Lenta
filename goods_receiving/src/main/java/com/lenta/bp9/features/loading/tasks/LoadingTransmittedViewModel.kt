@@ -13,6 +13,7 @@ import com.lenta.bp9.requests.network.TransmittedNetRequest
 import com.lenta.bp9.requests.network.TransmittedParams
 import com.lenta.bp9.requests.network.TransmittedRestInfo
 import com.lenta.shared.account.ISessionInfo
+import com.lenta.shared.exception.Failure
 import com.lenta.shared.features.loading.CoreLoadingViewModel
 import com.lenta.shared.utilities.extentions.getDeviceIp
 import com.mobrun.plugin.api.HyperHive
@@ -74,6 +75,12 @@ class LoadingTransmittedViewModel : CoreLoadingViewModel() {
                 screenNavigator.openTaskCardScreen(TaskCardMode.Full, taskManager.getReceivingTask()?.taskHeader?.taskType ?: TaskType.None)
             }
         }
+    }
+
+    override fun handleFailure(failure: Failure) {
+        super.handleFailure(failure)
+        screenNavigator.goBack()
+        screenNavigator.openAlertScreen(failure)
     }
 
     override fun clean() {

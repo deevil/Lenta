@@ -7,6 +7,7 @@ import com.lenta.shared.fmp.ObjectRawStatus
 import com.lenta.shared.functional.Either
 import com.lenta.shared.interactor.UseCase
 import com.lenta.shared.requests.FmpRequestsHelper
+import com.lenta.shared.requests.SapResponse
 import javax.inject.Inject
 
 class SubmittedNetRequest
@@ -34,8 +35,8 @@ data class SubmittedRestInfo(
         val taskDescription: TaskDescriptionRestInfo, //Структура карточки задания
         @SerializedName("ET_NOTIFY")
         val notifications: List<TaskNotificationRestInfo>, //Таблица уведомлений
-        @SerializedName("EV_RETCODE")
-        val retcode: String,
         @SerializedName("EV_ERROR_TEXT")
-        val errorText: String
-)
+        override val errorText: String?,
+        @SerializedName("EV_RETCODE")
+        override val retCode: Int
+) : SapResponse
