@@ -77,7 +77,8 @@ class LoadingRecountStartViewModel : CoreLoadingViewModel() {
     private fun handleSuccess(result: DirectSupplierStartRecountRestInfo) {
         viewModelScope.launch {
             repoInMemoryHolder.manufacturers.value = result.manufacturers
-            repoInMemoryHolder.processOrderData.value = result.processOrderData.map { TaskProcessOrderDataInfo.from( it) }
+            //todo https://trello.com/c/LhzZRxzi данной таблицы (result.processOrderData) пока нет в 11 ресте
+            //repoInMemoryHolder.processOrderData.value = result.processOrderData.map { TaskProcessOrderDataInfo.from( it) }
             val mercuryNotActual = result.taskMercuryNotActualRestData.map {TaskMercuryNotActual.from(hyperHive,it)}
             if (mercuryNotActual.isNotEmpty()) {
                 screenNavigator.openMainMenuScreen()

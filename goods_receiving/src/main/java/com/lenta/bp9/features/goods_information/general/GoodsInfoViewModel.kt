@@ -230,14 +230,16 @@ class GoodsInfoViewModel : CoreViewModel(), OnPositionClickListener {
         }
     }
 
-    val visibilityLabelBtn: MutableLiveData<Boolean> = countValue.combineLatest(enteredProcessingUnitNumber).map {
-        //todo
-        true
+    val visibilityLabelBtn: MutableLiveData<Boolean> by lazy {
+        //todo https://trello.com/c/LhzZRxzi
+        //MutableLiveData(repoInMemoryHolder.manufacturers.value != null)
+        MutableLiveData(false)
     }
 
-    val enabledLabelBtn: MutableLiveData<Boolean> = countValue.combineLatest(enteredProcessingUnitNumber).map {
-        //todo
-        true
+    val enabledLabelBtn: MutableLiveData<Boolean> by lazy {
+        //todo https://trello.com/c/LhzZRxzi
+        //MutableLiveData(repoInMemoryHolder.processOrderData.value != null)
+        MutableLiveData(false)
     }
 
     init {
