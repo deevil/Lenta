@@ -15,8 +15,10 @@ class SelectPersonnelNumberViewModel : CoreViewModel(), OnOkInSoftKeyboardListen
 
     @Inject
     lateinit var screenNavigator: IScreenNavigator
+
     @Inject
     lateinit var sessionInfo: ISessionInfo
+
     @Inject
     lateinit var selectPersonnelNumberDelegate: SelectPersonnelNumberDelegate
 
@@ -64,7 +66,10 @@ class SelectPersonnelNumberViewModel : CoreViewModel(), OnOkInSoftKeyboardListen
     }
 
     fun onClickNext() {
-        selectPersonnelNumberDelegate.onClickNext()
+        if (!selectPersonnelNumberDelegate.fullName.value.isNullOrBlank()) {
+            sessionInfo.personnelNumber = selectPersonnelNumberDelegate.personnelNumber.value
+            selectPersonnelNumberDelegate.onClickNext()
+        }
     }
 
 
@@ -75,6 +80,7 @@ class SelectPersonnelNumberViewModel : CoreViewModel(), OnOkInSoftKeyboardListen
 
     fun onScanResult(data: String) {
         selectPersonnelNumberDelegate.onScanResult(data)
+
     }
 
 }
