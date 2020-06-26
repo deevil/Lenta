@@ -77,8 +77,7 @@ class LoadingRecountStartViewModel : CoreLoadingViewModel() {
     private fun handleSuccess(result: DirectSupplierStartRecountRestInfo) {
         viewModelScope.launch {
             repoInMemoryHolder.manufacturers.value = result.manufacturers
-            //todo временно закомичено, т.к. в 11 и 15 рестах будут менять название таблицы на ET_AUFNR_LIST (R вместо T)
-            //repoInMemoryHolder.processOrderData.value = result.processOrderData.map { TaskProcessOrderDataInfo.from( it) }
+            repoInMemoryHolder.processOrderData.value = result.processOrderData.map { TaskProcessOrderDataInfo.from( it) }
             val mercuryNotActual = result.taskMercuryNotActualRestData.map {TaskMercuryNotActual.from(hyperHive,it)}
             if (mercuryNotActual.isNotEmpty()) {
                 screenNavigator.openMainMenuScreen()
