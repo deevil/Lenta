@@ -21,7 +21,6 @@ class CreateTaskManager @Inject constructor(
         private val generalTaskManager: IGeneralTaskManager
 ) : ICreateTaskManager {
 
-
     override var searchNumber = ""
 
     override var openGoodFromList = false

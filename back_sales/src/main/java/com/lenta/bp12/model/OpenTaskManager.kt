@@ -54,40 +54,6 @@ class OpenTaskManager @Inject constructor(
         currentGood.value = good
     }
 
-    /*override suspend fun putInCurrentGood(goodInfo: GoodInfoResult) {
-        val newGood = GoodOpen(
-                ean = goodInfo.eanInfo.ean,
-                material = goodInfo.materialInfo.material,
-                name = goodInfo.materialInfo.name,
-                units = database.getUnitsByCode(goodInfo.materialInfo.unitsCode),
-                type = goodInfo.getGoodType(),
-                matype = goodInfo.materialInfo.matype,
-                control = goodInfo.getControlType(),
-                section = goodInfo.materialInfo.section,
-                matrix = getMatrixType(goodInfo.materialInfo.matrix),
-                isFullData = true,
-                providers = goodInfo.providers.toMutableList(),
-                producers = goodInfo.producers.toMutableList()
-        )
-
-        findGoodByMaterial(newGood.material)?.let { good ->
-            newGood.positions = good.positions
-        }
-
-        currentGood.value = newGood
-    }*/
-
-    /*override fun addCurrentGoodInTask() {
-        currentTask.value?.let { task ->
-            task.goods.find { it.material == currentGood.value!!.material }?.let { good ->
-                task.goods.remove(good)
-            }
-
-            task.goods.add(0, currentGood.value!!)
-            updateCurrentTask(task)
-        }
-    }*/
-
     override fun saveGoodInTask(good: GoodOpen) {
         currentTask.value?.let { task ->
             task.goods.find { it.material == good.material }?.let { good ->
@@ -191,24 +157,6 @@ class OpenTaskManager @Inject constructor(
         }
     }
 
-    /*override fun addProviderInCurrentGood(providerInfo: ProviderInfo) {
-        currentGood.value?.let { good ->
-            good.providers.add(0, providerInfo)
-
-            updateCurrentGood(good)
-        }
-    }*/
-
-    /*override fun preparePositionToOpen(material: String, providerCode: String) {
-        findGoodByMaterial(material)?.let { good ->
-            updateCurrentGood(good)
-
-            good.positions.find { it.provider.code == providerCode }?.let { position ->
-                updateCurrentPosition(position)
-            }
-        }
-    }*/
-
     override fun prepareSendTaskDataParams(deviceIp: String, tkNumber: String, userNumber: String) {
         currentTask.value?.let { task ->
             val positions = mutableListOf<PositionInfo>()
@@ -296,21 +244,6 @@ class OpenTaskManager @Inject constructor(
         }
     }
 
-    /*override fun markPositionsMissing(items: List<SimplePosition>) {
-        currentTask.value?.let { task ->
-            items.forEach { item ->
-                task.goods.find { it.material == item.material }?.markPositionMissing(item.providerCode)
-            }
-
-            updateCurrentTask(task)
-        }
-    }*/
-
-    /*override fun clearCurrentGoodAndPosition() {
-        currentGood.value = null
-        currentPosition.value = null
-    }*/
-
     override fun clearSearchFromListParams() {
         searchGoodFromList = false
         searchNumber = ""
@@ -336,27 +269,16 @@ interface IOpenTaskManager {
     fun updateCurrentGood(good: GoodOpen?)
 
     fun saveGoodInTask(good: GoodOpen)
-    //suspend fun putInCurrentGood(goodInfo: GoodInfoResult)
-    //fun addCurrentGoodInTask()
     fun findGoodByEan(ean: String): GoodOpen?
     fun findGoodByMaterial(material: String): GoodOpen?
     suspend fun isGoodCanBeAdded(goodInfo: GoodInfoResult): Boolean
     fun finishCurrentTask()
-    //fun addProviderInCurrentGood(providerInfo: ProviderInfo)
     suspend fun addTasks(tasksInfo: List<TaskInfo>)
     suspend fun addFoundTasks(tasksInfo: List<TaskInfo>)
     suspend fun addGoodsInCurrentTask(taskContentResult: TaskContentResult)
-    //fun preparePositionToOpen(material: String, providerCode: String)
     fun prepareSendTaskDataParams(deviceIp: String, tkNumber: String, userNumber: String)
     fun markGoodsDeleted(materials: List<String>)
     fun markGoodsUncounted(materials: List<String>)
     fun clearSearchFromListParams()
-    //fun markPositionsMissing(items: List<SimplePosition>)
-    //fun clearCurrentGoodAndPosition()
 
 }
-
-data class SimplePosition(
-        val material: String,
-        val providerCode: String
-)
