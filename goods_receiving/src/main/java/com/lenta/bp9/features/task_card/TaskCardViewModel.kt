@@ -495,7 +495,7 @@ class TaskCardViewModel : CoreViewModel(), PageSelectionListener {
             }
             TaskStatus.Recounted -> screenNavigator.openTransmittedLoadingScreen()
             TaskStatus.Departure -> screenNavigator.openStartReviseLoadingScreen()
-            TaskStatus.Booked, TaskStatus.TransferringToSection -> screenNavigator.openTransferGoodsSectionScreen()
+            TaskStatus.Booked -> screenNavigator.openTransferGoodsSectionScreen()
             TaskStatus.Completed -> screenNavigator.openFormedDocsScreen()
         }
     }

@@ -123,9 +123,7 @@
     <string name="supply_results">Результаты проводки</string>
     <string name="supply_number">Номер проводки</string>
     <string name="supply_results_success_dialog">ВП №%1$s оприходована успешно, соответствующие документы были отправлены на печать</string>
-    <string name="supply_results_error_dialog">При проведении ВП №%1$s возникла ошибка: ВП №%1$s заблокирована пользователем %2$s</string>
     <string name="supply_results_automatic_charge_success">По ВП №%1$s выполнено автоматическое списание товаров не предназначенных для продажи согласно настройкам</string>
-    <string name="supply_results_automatic_charge_error">Автосписание не прошло, для дальнейшей обработки задания необходимо завершить автосписание через SAP ERP</string>
     <string name="batch_with_bottling_date">Партия (%1$s) с датой розлива</string>
     <string name="alert_overlimit">Введенное количество больше планового. Измените количество.</string>
     <string name="stamp_control_in_box">Контроль марок в кор.</string>
@@ -317,4 +315,6 @@
     <string name="scanned_stamp_pge_is_not_in_network_lenta">Отсканированная марка не числится в сети "Лента". Пометить ее как излишек? В случае согласия необходимо ввести дату розлива, выбрать производителя и повторно отсканировать марку.</string>
     <string name="et_batch_signs_bottling_date">дд.мм.гггг</string>
     <string name="bottling_of_entry_date">Дата розлива/ввоза</string>
+    <string name="delivery_data_was_sent_to_GIS">Данные по поставке были отправлены в ГИС. Водителю необходимо дождаться подтверждения</string>
+    <string name="current_provider_has_return_jobs_available">По текущему поставщику {%1$s} есть доступные задания на возврат. Перейти к заданиям на отгрузку?</string>
 </resources>

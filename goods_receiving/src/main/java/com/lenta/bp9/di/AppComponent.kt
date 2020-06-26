@@ -1,6 +1,7 @@
 package com.lenta.bp9.di
 
 import com.lenta.bp9.ExceptionHandler
+import com.lenta.bp9.features.supply_results.SupplyResultsViewModel
 import com.lenta.bp9.features.auth.AuthViewModel
 import com.lenta.bp9.features.cargo_unit_card.CargoUnitCardViewModel
 import com.lenta.bp9.features.change_datetime.ChangeDateTimeViewModel
@@ -140,4 +141,5 @@ interface AppComponent : FromParentToCoreProvider {
     fun inject(it: ExciseAlcoStampAccInfoPGEViewModel)
     fun inject(it: NonExciseAlcoInfoPGEViewModel)
     fun inject(it: ExciseAlcoStampPGEBatchSignsViewModel)
+    fun inject(it: SupplyResultsViewModel)
 }

@@ -46,8 +46,8 @@ class ExciseAlcoStampPGEBatchSignsFragment : CoreFragment<FragmentExciseAlcoStam
     }
 
     override fun setupTopToolBar(topToolbarUiModel: TopToolbarUiModel) {
-        topToolbarUiModel.description.value = getString(R.string.goods_info)
         topToolbarUiModel.title.value = title
+        topToolbarUiModel.description.value = getString(R.string.goods_info)
     }
 
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
