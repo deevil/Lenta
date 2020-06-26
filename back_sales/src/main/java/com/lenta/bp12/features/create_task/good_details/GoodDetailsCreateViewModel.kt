@@ -1,6 +1,9 @@
 package com.lenta.bp12.features.create_task.good_details
 
 import androidx.lifecycle.MutableLiveData
+import com.lenta.bp12.features.other.ItemBasketUi
+import com.lenta.bp12.features.other.ItemCategory
+import com.lenta.bp12.features.other.ItemCategoryUi
 import com.lenta.bp12.model.CategoryType
 import com.lenta.bp12.model.ICreateTaskManager
 import com.lenta.bp12.model.pojo.create_task.Basket
@@ -25,8 +28,6 @@ class GoodDetailsCreateViewModel : CoreViewModel(), PageSelectionListener {
     val basketSelectionsHelper = SelectionItemsHelper()
 
     val categorySelectionsHelper = SelectionItemsHelper()
-
-    var countTab: Int? = null
 
     val task by lazy {
         manager.currentTask
@@ -146,23 +147,3 @@ class GoodDetailsCreateViewModel : CoreViewModel(), PageSelectionListener {
     }
 
 }
-
-
-data class ItemBasketUi(
-        val basket: Basket,
-        val position: String,
-        val name: String,
-        val description: String,
-        val quantity: String
-)
-
-data class ItemCategory(
-        val type: CategoryType,
-        val quantity: Double
-)
-
-data class ItemCategoryUi(
-        val position: String,
-        val type: String,
-        val quantity: String
-)

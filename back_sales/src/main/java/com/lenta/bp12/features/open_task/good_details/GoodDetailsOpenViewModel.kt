@@ -1,23 +1,30 @@
 package com.lenta.bp12.features.open_task.good_details
 
 import androidx.lifecycle.MutableLiveData
-import com.lenta.bp12.model.ICreateTaskManager
+import com.lenta.bp12.features.other.ItemCategory
+import com.lenta.bp12.features.other.ItemCategoryUi
+import com.lenta.bp12.model.CategoryType
+import com.lenta.bp12.model.IOpenTaskManager
 import com.lenta.bp12.platform.navigation.IScreenNavigator
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.SelectionItemsHelper
+import com.lenta.shared.utilities.databinding.PageSelectionListener
+import com.lenta.shared.utilities.extentions.dropZeros
 import com.lenta.shared.utilities.extentions.map
 import javax.inject.Inject
 
-class GoodDetailsOpenViewModel : CoreViewModel() {
+class GoodDetailsOpenViewModel : CoreViewModel(), PageSelectionListener {
 
     @Inject
     lateinit var navigator: IScreenNavigator
 
     @Inject
-    lateinit var manager: ICreateTaskManager
+    lateinit var manager: IOpenTaskManager
 
 
     val selectionsHelper = SelectionItemsHelper()
+
+    val selectedPage = MutableLiveData(0)
 
     val task by lazy {
         manager.currentTask
@@ -33,15 +40,35 @@ class GoodDetailsOpenViewModel : CoreViewModel() {
         }
     }
 
-    val items by lazy {
-        MutableLiveData(List(3) {
-            ItemConsignmentUi(
-                    position = "${it + 1}",
-                    date = "Test date ${it + 1}",
-                    provider = "Test provider ${it + 1}",
-                    quantity = (1..15).random().toString()
-            )
-        })
+    val categories by lazy {
+        good.map { good ->
+            val categories = mutableListOf<ItemCategory>()
+            good?.getMarkQuantity()?.let { quantity ->
+                if (quantity > 0) {
+                    categories.add(ItemCategory(
+                            type = CategoryType.MARK,
+                            quantity = quantity
+                    ))
+                }
+            }
+
+            good?.getPartQuantity()?.let { quantity ->
+                if (quantity > 0) {
+                    categories.add(ItemCategory(
+                            type = CategoryType.PART,
+                            quantity = quantity
+                    ))
+                }
+            }
+
+            categories.mapIndexed { index, itemCategory ->
+                ItemCategoryUi(
+                        position = "${index + 1}",
+                        type = itemCategory.type.description,
+                        quantity = "${itemCategory.quantity.dropZeros()} ${good?.units?.name}"
+                )
+            }
+        }
     }
 
     val deleteEnabled = selectionsHelper.selectedPositions.map {
@@ -50,16 +77,24 @@ class GoodDetailsOpenViewModel : CoreViewModel() {
 
     // -----------------------------
 
-    fun onClickDelete() {
+    override fun onPageSelected(position: Int) {
+        selectedPage.value = position
+    }
 
+    fun onClickDelete() {
+        good.value?.let { changedGood ->
+            selectionsHelper.selectedPositions.value?.map { position ->
+                categories.value?.get(position)?.type?.let { category ->
+                    when (category) {
+                        CategoryType.MARK.description -> changedGood.removeAllMark()
+                        CategoryType.PART.description -> changedGood.removeAllPart()
+                    }
+                }
+            }
+
+            manager.updateCurrentGood(changedGood)
+            manager.saveGoodInTask(changedGood)
+        }
     }
 
 }
-
-
-data class ItemConsignmentUi(
-        val position: String,
-        val date: String,
-        val provider: String,
-        val quantity: String
-)

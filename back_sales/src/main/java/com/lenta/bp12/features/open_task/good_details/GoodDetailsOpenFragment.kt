@@ -1,11 +1,13 @@
 package com.lenta.bp12.features.open_task.good_details
 
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
+import androidx.databinding.DataBindingUtil
 import com.lenta.bp12.BR
 import com.lenta.bp12.R
-import com.lenta.bp12.databinding.FragmentGoodDetailsOpenBinding
-import com.lenta.bp12.databinding.ItemConsignmentDetailsBinding
+import com.lenta.bp12.databinding.*
 import com.lenta.bp12.platform.extention.getAppComponent
 import com.lenta.shared.platform.fragment.CoreFragment
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
@@ -15,12 +17,13 @@ import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
 import com.lenta.shared.utilities.databinding.DataBindingAdapter
 import com.lenta.shared.utilities.databinding.DataBindingRecyclerViewConfig
 import com.lenta.shared.utilities.databinding.RecyclerViewKeyHandler
+import com.lenta.shared.utilities.databinding.ViewPagerSettings
 import com.lenta.shared.utilities.extentions.connectLiveData
 import com.lenta.shared.utilities.extentions.generateScreenNumberFromPostfix
 import com.lenta.shared.utilities.extentions.provideViewModel
 
 class GoodDetailsOpenFragment : CoreFragment<FragmentGoodDetailsOpenBinding, GoodDetailsOpenViewModel>(),
-        ToolbarButtonsClickListener {
+        ViewPagerSettings, ToolbarButtonsClickListener {
 
     private var recyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
 
@@ -54,12 +57,19 @@ class GoodDetailsOpenFragment : CoreFragment<FragmentGoodDetailsOpenBinding, Goo
         }
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        initBasketDetailsList()
+    override fun getPagerItemView(container: ViewGroup, position: Int): View {
+        return when (position) {
+            0 -> initGoodDetailsCategories(container)
+            else -> View(context)
+        }
     }
 
-    private fun initBasketDetailsList() {
-        binding?.let { layoutBinding ->
+    private fun initGoodDetailsCategories(container: ViewGroup): View {
+        DataBindingUtil.inflate<LayoutGoodDetailsCategoryOpenBinding>(LayoutInflater.from(container.context),
+                R.layout.layout_good_details_category_open,
+                container,
+                false).let { layoutBinding ->
+
             val onClickSelectionListener = View.OnClickListener {
                 (it!!.tag as Int).let { position ->
                     vm.selectionsHelper.revert(position = position)
@@ -68,13 +78,13 @@ class GoodDetailsOpenFragment : CoreFragment<FragmentGoodDetailsOpenBinding, Goo
             }
 
             layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
-                    layoutId = R.layout.item_consignment_details,
+                    layoutId = R.layout.item_category,
                     itemId = BR.item,
-                    realisation = object : DataBindingAdapter<ItemConsignmentDetailsBinding> {
-                        override fun onCreate(binding: ItemConsignmentDetailsBinding) {
+                    realisation = object : DataBindingAdapter<ItemCategoryBinding> {
+                        override fun onCreate(binding: ItemCategoryBinding) {
                         }
 
-                        override fun onBind(binding: ItemConsignmentDetailsBinding, position: Int) {
+                        override fun onBind(binding: ItemCategoryBinding, position: Int) {
                             binding.tvItemNumber.tag = position
                             binding.tvItemNumber.setOnClickListener(onClickSelectionListener)
                             binding.selectedForDelete = vm.selectionsHelper.isSelected(position)
@@ -87,7 +97,31 @@ class GoodDetailsOpenFragment : CoreFragment<FragmentGoodDetailsOpenBinding, Goo
 
             layoutBinding.vm = vm
             layoutBinding.lifecycleOwner = viewLifecycleOwner
+            recyclerViewKeyHandler = RecyclerViewKeyHandler(
+                    rv = layoutBinding.rv,
+                    items = vm.categories,
+                    lifecycleOwner = layoutBinding.lifecycleOwner!!,
+                    initPosInfo = recyclerViewKeyHandler?.posInfo?.value
+            )
+
+            return layoutBinding.root
         }
+    }
+
+    override fun getTextTitle(position: Int): String {
+        return when (position) {
+            0 -> getString(R.string.categories)
+            else -> throw IllegalArgumentException("Wrong pager position!")
+        }
+    }
+
+    override fun countTab(): Int {
+        return 1
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        binding?.viewPagerSettings = this
     }
 
 }

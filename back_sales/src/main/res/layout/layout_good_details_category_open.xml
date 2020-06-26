@@ -8,7 +8,7 @@
 
         <variable
             name="vm"
-            type="com.lenta.bp12.features.create_task.good_details.GoodDetailsCreateViewModel" />
+            type="com.lenta.bp12.features.open_task.good_details.GoodDetailsOpenViewModel" />
 
         <variable
             name="rvConfig"
@@ -75,7 +75,7 @@
             android:layout_weight="1"
             app:items="@{vm.categories}"
             app:rv_config="@{rvConfig}"
-            tools:listitem="@layout/item_category_details" />
+            tools:listitem="@layout/item_category" />
 
     </LinearLayout>
 

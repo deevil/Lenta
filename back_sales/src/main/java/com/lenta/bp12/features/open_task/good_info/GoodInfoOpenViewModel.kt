@@ -637,8 +637,11 @@ class GoodInfoOpenViewModel : CoreViewModel() {
     }
 
     fun onClickMissing() {
-        quantityField.value = "0"
-        saveChanges()
+        good.value?.let { changedGood ->
+            changedGood.isMissing = true
+            manager.updateCurrentGood(changedGood)
+        }
+
         navigator.goBack()
     }
 

@@ -26,6 +26,7 @@ data class GoodOpen(
 
         var isCounted: Boolean = false,
         var isDeleted: Boolean = false,
+        var isMissing: Boolean = false,
 
         val provider: ProviderInfo,
         val producers: List<ProducerInfo> = emptyList(),
@@ -96,7 +97,13 @@ data class GoodOpen(
         }
     }
 
+    fun removeAllMark() {
+        marks.clear()
+    }
 
+    fun removeAllPart() {
+        parts.clear()
+    }
 
 
 

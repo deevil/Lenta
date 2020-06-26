@@ -1,27 +1,27 @@
 package com.lenta.bp12.features.create_task.good_details
 
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
+import androidx.databinding.DataBindingUtil
 import com.lenta.bp12.BR
 import com.lenta.bp12.R
+import com.lenta.bp12.databinding.*
+import com.lenta.bp12.model.GoodType
 import com.lenta.bp12.platform.extention.getAppComponent
 import com.lenta.shared.platform.fragment.CoreFragment
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
-import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
-import com.lenta.shared.utilities.extentions.provideViewModel
-import android.view.LayoutInflater
-import com.lenta.shared.utilities.databinding.ViewPagerSettings
-import android.view.ViewGroup
-import androidx.databinding.DataBindingUtil
-import com.lenta.bp12.databinding.*
-import com.lenta.bp12.model.GoodType
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListener
+import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
 import com.lenta.shared.utilities.databinding.DataBindingAdapter
 import com.lenta.shared.utilities.databinding.DataBindingRecyclerViewConfig
 import com.lenta.shared.utilities.databinding.RecyclerViewKeyHandler
+import com.lenta.shared.utilities.databinding.ViewPagerSettings
 import com.lenta.shared.utilities.extentions.connectLiveData
 import com.lenta.shared.utilities.extentions.generateScreenNumberFromPostfix
+import com.lenta.shared.utilities.extentions.provideViewModel
 
 class GoodDetailsCreateFragment : CoreFragment<FragmentGoodDetailsCreateBinding, GoodDetailsCreateViewModel>(),
         ViewPagerSettings, ToolbarButtonsClickListener {
@@ -50,7 +50,7 @@ class GoodDetailsCreateFragment : CoreFragment<FragmentGoodDetailsCreateBinding,
         bottomToolbarUiModel.uiModelButton1.show(ButtonDecorationInfo.back)
         bottomToolbarUiModel.uiModelButton3.show(ButtonDecorationInfo.delete, enabled = false)
 
-        connectLiveData(vm.deleteEnabled, getBottomToolBarUIModel()!!.uiModelButton3.enabled)
+        connectLiveData(vm.deleteEnabled, bottomToolbarUiModel.uiModelButton3.enabled)
     }
 
     override fun onToolbarButtonClick(view: View) {
@@ -68,8 +68,8 @@ class GoodDetailsCreateFragment : CoreFragment<FragmentGoodDetailsCreateBinding,
     }
 
     private fun initGoodDetailsBaskets(container: ViewGroup): View {
-        DataBindingUtil.inflate<LayoutGoodDetailsBasketBinding>(LayoutInflater.from(container.context),
-                R.layout.layout_good_details_basket,
+        DataBindingUtil.inflate<LayoutGoodDetailsBasketCreateBinding>(LayoutInflater.from(container.context),
+                R.layout.layout_good_details_basket_create,
                 container,
                 false).let { layoutBinding ->
 
@@ -112,8 +112,8 @@ class GoodDetailsCreateFragment : CoreFragment<FragmentGoodDetailsCreateBinding,
     }
 
     private fun initGoodDetailsCategories(container: ViewGroup): View {
-        DataBindingUtil.inflate<LayoutGoodDetailsCategoryBinding>(LayoutInflater.from(container.context),
-                R.layout.layout_good_details_category,
+        DataBindingUtil.inflate<LayoutGoodDetailsCategoryCreateBinding>(LayoutInflater.from(container.context),
+                R.layout.layout_good_details_category_create,
                 container,
                 false).let { layoutBinding ->
 
@@ -125,13 +125,13 @@ class GoodDetailsCreateFragment : CoreFragment<FragmentGoodDetailsCreateBinding,
             }
 
             layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
-                    layoutId = R.layout.item_category_details,
+                    layoutId = R.layout.item_category,
                     itemId = BR.item,
-                    realisation = object : DataBindingAdapter<ItemCategoryDetailsBinding> {
-                        override fun onCreate(binding: ItemCategoryDetailsBinding) {
+                    realisation = object : DataBindingAdapter<ItemCategoryBinding> {
+                        override fun onCreate(binding: ItemCategoryBinding) {
                         }
 
-                        override fun onBind(binding: ItemCategoryDetailsBinding, position: Int) {
+                        override fun onBind(binding: ItemCategoryBinding, position: Int) {
                             binding.tvItemNumber.tag = position
                             binding.tvItemNumber.setOnClickListener(onClickSelectionListener)
                             binding.selectedForDelete = vm.categorySelectionsHelper.isSelected(position)

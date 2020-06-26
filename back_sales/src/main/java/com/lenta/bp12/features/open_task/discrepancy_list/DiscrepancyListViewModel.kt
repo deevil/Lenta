@@ -26,6 +26,10 @@ class DiscrepancyListViewModel : CoreViewModel() {
     lateinit var deviceInfo: DeviceInfo
 
 
+    /**
+    Переменные
+     */
+
     val selectionsHelper = SelectionItemsHelper()
 
     val task by lazy {
@@ -40,87 +44,41 @@ class DiscrepancyListViewModel : CoreViewModel() {
 
     val goods by lazy {
         task.map { task ->
-            val positions = mutableListOf<SimpleItemGood>()
-            task?.goods?.forEach { good ->
-                good.positions.filter { !it.isDelete && !it.isCounted }.forEach { position ->
-                    Logg.d { "--> discrepancy item = $position" }
-                    positions.add(SimpleItemGood(
-                            name = good.getNameWithMaterial(),
-                            material = good.material,
-                            providerCode = position.provider.code
-                    ))
-                }
-            }
-
-            positions.mapIndexed { index, position ->
+            task?.goods?.filter { !it.isDeleted && !it.isCounted && !it.isMissing }?.mapIndexed { index, good ->
                 ItemGoodUi(
-                        position = "${positions.size - index}",
-                        name = position.name,
-                        material = position.material,
-                        providerCode = position.providerCode
+                        position = "${task.goods.size - index}",
+                        name = good.name,
+                        material = good.material,
+                        providerCode = good.provider.code
                 )
             }
         }
     }
 
-    // -----------------------------
+    /**
+    Кнопки нижнего тулбара
+     */
+
+    val deleteEnabled = selectionsHelper.selectedPositions.map {
+        it?.isNotEmpty() ?: false
+    }
+
+    val missingEnabled = selectionsHelper.selectedPositions.map {
+        it?.isNotEmpty() ?: false
+    }
+
+    /**
+    Методы
+     */
 
     fun onClickItemPosition(position: Int) {
-        /*goods.value?.get(position)?.let {
-            manager.preparePositionToOpen(it.material, it.providerCode)
-            navigator.openGoodInfoOpenScreen()
-        }*/
-    }
-
-    private fun isNotEmptyList() = goods.value?.isNullOrEmpty() == false
-
-    private fun getSimplePositions(): List<SimplePosition> {
-        val items = mutableListOf<SimplePosition>()
-        goods.value?.let { list ->
-            selectionsHelper.selectedPositions.value?.let { positions ->
-                if (positions.isEmpty()) {
-                    list.forEach {
-                        items.add(SimplePosition(
-                                material = it.material,
-                                providerCode = it.providerCode
-                        ))
-                    }
-                } else {
-                    positions.forEach { position ->
-                        list[position].let {
-                            items.add(SimplePosition(
-                                    material = it.material,
-                                    providerCode = it.providerCode
-                            ))
-                        }
-                    }
+        task.value?.let { task ->
+            goods.value?.get(position)?.material?.let { material ->
+                task.goods.find { it.material == material }?.let { good ->
+                    manager.updateCurrentGood(good)
+                    navigator.openGoodInfoOpenScreen()
                 }
             }
-        }
-
-        return items
-    }
-
-    fun onClickDelete() {
-        if (isNotEmptyList()) {
-            //manager.markGoodsDeleted(getSimplePositions())
-        }
-    }
-
-    fun onClickMissing() {
-        if (isNotEmptyList()) {
-            manager.markPositionsMissing(getSimplePositions())
-        }
-    }
-
-    fun onClickSkip() {
-        if (isNotEmptyList()) {
-            navigator.showRawGoodsRemainedInTask {
-                prepareToSaveAndOpenNextScreen()
-            }
-        } else {
-            manager.finishCurrentTask()
-            prepareToSaveAndOpenNextScreen()
         }
     }
 
@@ -133,14 +91,50 @@ class DiscrepancyListViewModel : CoreViewModel() {
         navigator.openSaveDataScreen()
     }
 
+    /**
+    Обработка нажатий кнопок
+     */
+
+    fun onClickDelete() {
+        task.value?.let { task ->
+            selectionsHelper.selectedPositions.value?.forEach { position ->
+                goods.value?.get(position)?.material?.let { material ->
+                    task.goods.find { it.material == material }?.let { good ->
+                        good.isDeleted = true
+                    }
+                }
+            }
+
+            manager.updateCurrentTask(task)
+        }
+    }
+
+    fun onClickMissing() {
+        task.value?.let { task ->
+            selectionsHelper.selectedPositions.value?.forEach { position ->
+                goods.value?.get(position)?.material?.let { material ->
+                    task.goods.find { it.material == material }?.let { good ->
+                        good.isMissing = true
+                    }
+                }
+            }
+
+            manager.updateCurrentTask(task)
+        }
+    }
+
+    fun onClickSkip() {
+        if (goods.value?.isNotEmpty() == true) {
+            navigator.showRawGoodsRemainedInTask {
+                prepareToSaveAndOpenNextScreen()
+            }
+        } else {
+            manager.finishCurrentTask()
+            prepareToSaveAndOpenNextScreen()
+        }
+    }
+
 }
-
-
-data class SimpleItemGood(
-        val name: String,
-        val material: String,
-        val providerCode: String
-)
 
 data class ItemGoodUi(
         val position: String,
