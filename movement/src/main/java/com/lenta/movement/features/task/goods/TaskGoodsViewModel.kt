@@ -17,6 +17,7 @@ import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.models.core.Uom
 import com.lenta.shared.platform.constants.Constants
 import com.lenta.shared.platform.viewmodel.CoreViewModel
+import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.SelectionItemsHelper
 import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
 import com.lenta.shared.utilities.databinding.PageSelectionListener
@@ -202,50 +203,50 @@ class TaskGoodsViewModel : CoreViewModel(),
     private fun saveTask() {
         viewModelScope.launch {
             screenNavigator.showProgress(saveTaskNetRequest)
-
             val task = taskManager.getTask()
-            saveTaskNetRequest(SaveTaskParams(
-                userNumber = sessionInfo.personnelNumber.orEmpty(),
-                deviceIp = context.getDeviceIp(),
-                tkNumber = sessionInfo.market.orEmpty(),
-                taskNumber = task.number,
-                taskName = task.name,
-                taskType = task.taskType,
-                movementType = task.movementType,
-                lgortSource = task.pikingStorage,
-                lgortTarget = task.shipmentStorage,
-                shipmentDate = task.shipmentDate.getFormattedDate(Constants.DATE_FORMAT_yyyy_mm_dd),
-                isNotFinish = task.isCreated.toSapBooleanString(),
-                destination = task.receiver,
-                materials = getProcessed().map { (product, count) ->
-                    SaveTaskParams.TaskMaterial(
-                        number = product.materialNumber,
-                        quantity = count.toString(),
-                        xzael = "", // TODO
-                        isDeleted = false.toSapBooleanString(),
-                        uom = Uom.ST.code
-                    )
-                },
-                baskets = getBaskets().flatMap { basket ->
-                    basket.map { (product, count) ->
-                        SaveTaskParams.TaskBasket(
-                            basketNumber = basket.number.toString(),
-                            materialNumber = product.materialNumber,
-                            quantity = count.toString(),
-                            uom = Uom.ST.code,  // TODO
-                            materialType = "",
-                            lifNr = basket.supplier?.code.orEmpty(),
-                            zcharg = "", // TODO
-                            isAlco = basket.isAlco.toSapBooleanString(),
-                            isExcise = basket.isExciseAlco.toSapBooleanString(),
-                            isNotExcise = basket.isNotExciseAlco.toSapBooleanString(),
-                            isUsual = basket.isUsual.toSapBooleanString(),
-                            isVet = basket.isVet.toSapBooleanString(),
-                            isFood = basket.isFood.toSapBooleanString()
+            val params = SaveTaskParams(
+                    userNumber = sessionInfo.personnelNumber.orEmpty(),
+                    deviceIp = context.getDeviceIp(),
+                    tkNumber = sessionInfo.market.orEmpty(),
+                    taskNumber = task.number,
+                    taskName = task.name,
+                    taskType = task.taskType,
+                    movementType = task.movementType,
+                    lgortSource = task.pikingStorage,
+                    lgortTarget = task.shipmentStorage,
+                    shipmentDate = task.shipmentDate.getFormattedDate(Constants.DATE_FORMAT_yyyy_mm_dd),
+                    isNotFinish = task.isCreated.toSapBooleanString(),
+                    destination = task.receiver,
+                    materials = getProcessed().map { (product, count) ->
+                        SaveTaskParams.TaskMaterial(
+                                number = product.materialNumber,
+                                quantity = count.toString(),
+                                xzael = "X", // TODO Индикатор: Позиция посчитана
+                                isDeleted = false.toSapBooleanString(),
+                                uom = Uom.ST.code
                         )
+                    },
+                    baskets = getBaskets().flatMap { basket ->
+                        basket.map { (product, count) ->
+                            SaveTaskParams.TaskBasket(
+                                    basketNumber = basket.number.toString(),
+                                    materialNumber = product.materialNumber,
+                                    quantity = count.toString(),
+                                    uom = Uom.ST.code,  // TODO Базисная единица измерения
+                                    materialType = "",
+                                    lifNr = basket.supplier?.code.orEmpty(),
+                                    zcharg = "", // TODO Номер партии
+                                    isAlco = basket.isAlco.toSapBooleanString(),
+                                    isExcise = basket.isExciseAlco.toSapBooleanString(),
+                                    isNotExcise = basket.isNotExciseAlco.toSapBooleanString(),
+                                    isUsual = basket.isUsual.toSapBooleanString(),
+                                    isVet = basket.isVet.toSapBooleanString(),
+                                    isFood = basket.isFood.toSapBooleanString()
+                            )
+                        }
                     }
-                }
-            )).either(
+            )
+            saveTaskNetRequest(params).either(
                 fnL = { failure ->
                     screenNavigator.openAlertScreen(failure)
                 },
