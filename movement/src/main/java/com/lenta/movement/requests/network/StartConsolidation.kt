@@ -16,22 +16,20 @@ class StartConsolidation @Inject constructor(
 
     override suspend fun run(params: StartConsolidationParams): Either<Failure, StartConsolidationResult> {
         return fmpRequestsHelper.restRequest(
-                resourceName = "ZMP_UTZ_MVM_08_V001",
+                resourceName = RESOURCE_NAME,
                 data = params,
                 clazz = StartConsolidationStatus::class.java
-        ).let {
-            if (it is Either.Left) {
-                return@let it
-            }
-
-            if (it is Either.Right && it.b.retCode != "0") {
-                return@let Either.Left(InfoFailure(it.b.errorTxt))
-            }
-
-            return@let it
+        ).let { result ->
+            if(result is Either.Right && result.b.retCode != NON_FAILURE_RET_CODE) {
+                Either.Left(InfoFailure(result.b.errorTxt))
+            } else result
         }
     }
 
+    companion object {
+        private const val RESOURCE_NAME = "ZMP_UTZ_MVM_08_V001"
+        private const val NON_FAILURE_RET_CODE = "0"
+    }
 }
 
 data class StartConsolidationParams(

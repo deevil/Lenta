@@ -17,14 +17,15 @@ class ObtainingTaskComposition @Inject constructor(
 
     override suspend fun run(params: TaskCompositionParams): Either<Failure, TaskCompositionResult> {
         return fmpRequestsHelper.restRequest(
-                resourceName = "ZMP_UTZ_MVM_03_V001",
+                resourceName = RESOURCE_NAME,
                 data = params,
                 clazz = TaskStatus::class.java
-        ).let {
-            return@let it
-        }
+        )
     }
 
+    companion object {
+        private const val RESOURCE_NAME = "ZMP_UTZ_MVM_03_V001"
+    }
 }
 
 data class TaskCompositionParams(

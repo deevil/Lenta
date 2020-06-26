@@ -11,29 +11,27 @@ import com.lenta.shared.interactor.UseCase
 import com.lenta.shared.requests.FmpRequestsHelper
 import javax.inject.Inject
 
-/** ZMP_UTZ_MVM_08_V001	«Начало консолидации» */
+/** ZMP_UTZ_MVM_13_V001 «Одобрение и передача на ГЗ задания» */
 class ApprovalAndTransferToTasksCargoUnit @Inject constructor(
         private val fmpRequestsHelper: FmpRequestsHelper
 ) : UseCase<ApprovalAndTransferToTasksCargoUnitResult, ApprovalAndTransferToTasksCargoUnitParams> {
 
     override suspend fun run(params: ApprovalAndTransferToTasksCargoUnitParams): Either<Failure, ApprovalAndTransferToTasksCargoUnitResult> {
         return fmpRequestsHelper.restRequest(
-                resourceName = "ZMP_UTZ_MVM_08_V001",
+                resourceName = RESOURCE_NAME,
                 data = params,
                 clazz = ApprovalAndTransferToTasksCargoUnitStatus::class.java
-        ).let {
-            if (it is Either.Left) {
-                return@let it
-            }
-
-            if (it is Either.Right && it.b.retCode != "0") {
-                return@let Either.Left(InfoFailure(it.b.errorTxt))
-            }
-
-            return@let it
+        ).let { result ->
+            if (result is Either.Right && result.b.retCode != NON_FAILURE_RET_CODE) {
+                Either.Left(InfoFailure(result.b.errorTxt))
+            } else result
         }
     }
 
+    companion object {
+        private const val RESOURCE_NAME = "ZMP_UTZ_MVM_13_V001"
+        private const val NON_FAILURE_RET_CODE = "0"
+    }
 }
 
 data class ApprovalAndTransferToTasksCargoUnitParams(

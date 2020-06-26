@@ -26,13 +26,13 @@ class Formatter(
         if (taskStatus.text != null) return taskStatus.text!!
 
         return when (taskStatus) {
-            is Task.Status.Created -> "Создано"
-            is Task.Status.Counted -> "Посчитано"
-            is Task.Status.Published -> "Опубликованно"
-            is Task.Status.Unknown -> "Неизвестно"
-            is Task.Status.ToConsolidation -> "К консолидации"
-            is Task.Status.Consolidation -> "Консолидация"
-            is Task.Status.Consolidated -> "Консолидировано"
+            is Task.Status.Created -> Task.Status.CREATED
+            is Task.Status.Counted -> Task.Status.COUNTED
+            is Task.Status.Published -> Task.Status.PUBLISHED
+            is Task.Status.Unknown -> Task.Status.UNKNOWN
+            is Task.Status.ToConsolidation -> Task.Status.TO_CONSOLIDATION
+            is Task.Status.Consolidation -> Task.Status.CONSOLIDATION
+            is Task.Status.Consolidated -> Task.Status.CONSOLIDATED
 
         }
     }

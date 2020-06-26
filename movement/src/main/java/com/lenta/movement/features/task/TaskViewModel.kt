@@ -7,6 +7,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.lenta.movement.models.*
 import com.lenta.movement.platform.IFormatter
+import com.lenta.movement.platform.extensions.unsafeLazy
 import com.lenta.movement.platform.navigation.IScreenNavigator
 import com.lenta.movement.requests.network.ApprovalAndTransferToTasksCargoUnit
 import com.lenta.movement.requests.network.ApprovalAndTransferToTasksCargoUnitParams
@@ -52,7 +53,7 @@ class TaskViewModel : CoreViewModel(), PageSelectionListener {
     @Inject
     lateinit var approvalAndTransferToTasksCargoUnit: ApprovalAndTransferToTasksCargoUnit
 
-    val task by lazy { MutableLiveData(taskManager.getTaskOrNull()) }
+    val task by unsafeLazy { MutableLiveData(taskManager.getTaskOrNull()) }
     private val currentStatus: Task.Status
         get() = task.value?.currentStatus ?: Task.Status.Created()
     private val nextStatus: Task.Status
@@ -132,10 +133,13 @@ class TaskViewModel : CoreViewModel(), PageSelectionListener {
     }
     val shipmentStorageList by lazy {
         task.map { taskOrNull ->
-            taskOrNull?.shipmentStorage?.let { listOf(it) }
-                    ?: setting.shipmentStorageList.addFirstEmptyIfNeeded()
+            taskOrNull?.shipmentStorage
+                    ?.let { listOf(it) }
+                    ?: setting.shipmentStorageList
+                            .addFirstEmptyIfNeeded()
         }
     }
+
     val shipmentStorageSelectedPosition = MutableLiveData(0)
     val shipmentStorageSelectedPositionListener = object : OnPositionClickListener {
         override fun onClickPosition(position: Int) {
@@ -188,10 +192,7 @@ class TaskViewModel : CoreViewModel(), PageSelectionListener {
                 currentStatus.toString()
             }
             when (currentStatus) {
-                Task.Status.ToConsolidation("К консолидации") -> {
-                    Logg.d {
-                        "status consolidated, im in"
-                    }
+                Task.Status.ToConsolidation(Task.Status.TO_CONSOLIDATION) -> {
                     viewModelScope.launch {
                         startConsolidation(
                                 StartConsolidationParams(
@@ -212,7 +213,7 @@ class TaskViewModel : CoreViewModel(), PageSelectionListener {
                     }
                 }
 
-                Task.Status.Consolidated("Консолидировано") -> {
+                Task.Status.Consolidated(Task.Status.CONSOLIDATED) -> {
                     viewModelScope.launch {
                         approvalAndTransferToTasksCargoUnit(
                                 ApprovalAndTransferToTasksCargoUnitParams(
@@ -229,7 +230,7 @@ class TaskViewModel : CoreViewModel(), PageSelectionListener {
                 }
             }
 
-            //screenNavigator.openNotImplementedScreenAlert("Состав сохраненного задания")
+            screenNavigator.openNotImplementedScreenAlert("Состав сохраненного задания")
             return
         }
         screenNavigator.openTaskCompositionScreen()

@@ -17,7 +17,6 @@ import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.models.core.Uom
 import com.lenta.shared.platform.constants.Constants
 import com.lenta.shared.platform.viewmodel.CoreViewModel
-import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.SelectionItemsHelper
 import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
 import com.lenta.shared.utilities.databinding.PageSelectionListener
@@ -221,7 +220,7 @@ class TaskGoodsViewModel : CoreViewModel(),
                         SaveTaskParams.TaskMaterial(
                                 number = product.materialNumber,
                                 quantity = count.toString(),
-                                xzael = "X", // TODO Индикатор: Позиция посчитана
+                                positionCounted = true.toSapBooleanString(),
                                 isDeleted = false.toSapBooleanString(),
                                 uom = Uom.ST.code
                         )
