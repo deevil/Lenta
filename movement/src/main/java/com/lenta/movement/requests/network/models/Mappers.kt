@@ -11,6 +11,9 @@ fun DbTaskListItem.toTask(): Task {
         isCreated = notFinish.isSapTrue().not(),
         currentStatus = when (currentStatusCode) {
             "04" -> Task.Status.Published(currentStatusText)
+            "10" -> Task.Status.Counted(currentStatusText)
+            "13" -> Task.Status.ToConsolidation(currentStatusText)
+            "19" -> Task.Status.Consolidated(currentStatusText)
             else -> Task.Status.Unknown(currentStatusText)
         },
         nextStatus = Task.Status.Unknown(nextStatusText),

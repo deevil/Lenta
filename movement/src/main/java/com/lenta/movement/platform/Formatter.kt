@@ -30,6 +30,10 @@ class Formatter(
             is Task.Status.Counted -> "Посчитано"
             is Task.Status.Published -> "Опубликованно"
             is Task.Status.Unknown -> "Неизвестно"
+            is Task.Status.ToConsolidation -> "К консолидации"
+            is Task.Status.Consolidation -> "Консолидация"
+            is Task.Status.Consolidated -> "Консолидировано"
+
         }
     }
 

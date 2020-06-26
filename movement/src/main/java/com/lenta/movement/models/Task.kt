@@ -27,5 +27,11 @@ data class Task(
         data class Published(override val text: String? = null): Status()
 
         data class Unknown(override val text: String): Status()
+
+        data class ToConsolidation(override val text: String? = null) : Status()
+
+        data class Consolidation(override val text: String? = null) : Status()
+
+        data class Consolidated(override val text: String? = null) : Status()
     }
 }
