@@ -1,25 +1,38 @@
 package com.lenta.movement.features.task
 
+import android.content.Context
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.viewModelScope
 import com.lenta.movement.models.*
 import com.lenta.movement.platform.IFormatter
 import com.lenta.movement.platform.navigation.IScreenNavigator
+import com.lenta.movement.requests.network.ApprovalAndTransferToTasksCargoUnit
+import com.lenta.movement.requests.network.ApprovalAndTransferToTasksCargoUnitParams
+import com.lenta.movement.requests.network.StartConsolidation
+import com.lenta.movement.requests.network.StartConsolidationParams
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.models.core.GisControl
 import com.lenta.shared.platform.constants.Constants
 import com.lenta.shared.platform.viewmodel.CoreViewModel
+import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.databinding.PageSelectionListener
 import com.lenta.shared.utilities.date_time.DateTimeUtil
+import com.lenta.shared.utilities.extentions.getDeviceIp
 import com.lenta.shared.utilities.extentions.map
+import com.lenta.shared.utilities.extentions.toSapBooleanString
 import com.lenta.shared.view.OnPositionClickListener
+import kotlinx.coroutines.launch
 import org.joda.time.DateTime
 import java.lang.Exception
 import java.util.*
 import javax.inject.Inject
 
 class TaskViewModel : CoreViewModel(), PageSelectionListener {
+
+    @Inject
+    lateinit var context: Context
 
     @Inject
     lateinit var screenNavigator: IScreenNavigator
@@ -32,6 +45,12 @@ class TaskViewModel : CoreViewModel(), PageSelectionListener {
 
     @Inject
     lateinit var formatter: IFormatter
+
+    @Inject
+    lateinit var startConsolidation: StartConsolidation
+
+    @Inject
+    lateinit var approvalAndTransferToTasksCargoUnit: ApprovalAndTransferToTasksCargoUnit
 
     val task by lazy { MutableLiveData(taskManager.getTaskOrNull()) }
     private val currentStatus: Task.Status
@@ -94,7 +113,8 @@ class TaskViewModel : CoreViewModel(), PageSelectionListener {
     }
     val pikingStorageList by lazy {
         task.map { taskOrNull ->
-            taskOrNull?.pikingStorage?.let { listOf(it) } ?: taskManager.getAvailablePikingStorageList(taskType, movementType).addFirstEmptyIfNeeded()
+            taskOrNull?.pikingStorage?.let { listOf(it) }
+                    ?: taskManager.getAvailablePikingStorageList(taskType, movementType).addFirstEmptyIfNeeded()
         }
     }
     val pikingStorageSelectedPosition = MutableLiveData(0)
@@ -112,7 +132,8 @@ class TaskViewModel : CoreViewModel(), PageSelectionListener {
     }
     val shipmentStorageList by lazy {
         task.map { taskOrNull ->
-            taskOrNull?.shipmentStorage?.let { listOf(it) } ?: setting.shipmentStorageList.addFirstEmptyIfNeeded()
+            taskOrNull?.shipmentStorage?.let { listOf(it) }
+                    ?: setting.shipmentStorageList.addFirstEmptyIfNeeded()
         }
     }
     val shipmentStorageSelectedPosition = MutableLiveData(0)
@@ -163,8 +184,52 @@ class TaskViewModel : CoreViewModel(), PageSelectionListener {
         if (task.value == null) {
             taskManager.setTask(buildTask())
         } else {
-            // TODO remove when Task Screen is ready for work with saved task
-            screenNavigator.openNotImplementedScreenAlert("Состав сохраненного задания")
+            Logg.d {
+                currentStatus.toString()
+            }
+            when (currentStatus) {
+                Task.Status.ToConsolidation("К консолидации") -> {
+                    Logg.d {
+                        "status consolidated, im in"
+                    }
+                    viewModelScope.launch {
+                        startConsolidation(
+                                StartConsolidationParams(
+                                        deviceIp = context.getDeviceIp(),
+                                        taskNumber = task.value!!.number,
+                                        mode = 1,
+                                        personnelNumber = sessionInfo.personnelNumber!!,
+                                        withProductInfo = true.toSapBooleanString()
+                                )
+                        ).either({
+                            screenNavigator.openAlertScreen(it)
+                        }, {
+                            Logg.d {
+                                "StartConsolidationResult: $it"
+                            }
+                        }
+                        )
+                    }
+                }
+
+                Task.Status.Consolidated("Консолидировано") -> {
+                    viewModelScope.launch {
+                        approvalAndTransferToTasksCargoUnit(
+                                ApprovalAndTransferToTasksCargoUnitParams(
+                                        deviceIp = context.getDeviceIp(),
+                                        taskNumber = task.value!!.number,
+                                        personnelNumber = sessionInfo.personnelNumber!!
+                                )
+                        ).either({
+                            screenNavigator.openAlertScreen(it)
+                        }, {
+                            Logg.d{"Approval and transfer to task cargo unit: $it"}
+                        })
+                    }
+                }
+            }
+
+            //screenNavigator.openNotImplementedScreenAlert("Состав сохраненного задания")
             return
         }
         screenNavigator.openTaskCompositionScreen()
@@ -172,7 +237,6 @@ class TaskViewModel : CoreViewModel(), PageSelectionListener {
 
     fun onBackPressed() {
         taskManager.clear()
-
         screenNavigator.goBack()
     }
 
@@ -192,18 +256,18 @@ class TaskViewModel : CoreViewModel(), PageSelectionListener {
 
     private fun buildTask(): Task {
         return Task(
-            isCreated = false,
-            number = "",
-            currentStatus = currentStatus,
-            nextStatus = nextStatus,
-            name = taskName.value.orEmpty(),
-            comment = comments.value.orEmpty(),
-            taskType = taskType,
-            movementType = movementType,
-            receiver = receivers.getSelectedValue(receiverSelectedPosition).orEmpty(),
-            pikingStorage = pikingStorageList.getSelectedValue(pikingStorageSelectedPosition).orEmpty(),
-            shipmentStorage = shipmentStorageList.getSelectedValue(shipmentStorageSelectedPosition).orEmpty(),
-            shipmentDate = shipmentDate.value?.toDate() ?: Date(0)
+                isCreated = false,
+                number = "",
+                currentStatus = currentStatus,
+                nextStatus = nextStatus,
+                name = taskName.value.orEmpty(),
+                comment = comments.value.orEmpty(),
+                taskType = taskType,
+                movementType = movementType,
+                receiver = receivers.getSelectedValue(receiverSelectedPosition).orEmpty(),
+                pikingStorage = pikingStorageList.getSelectedValue(pikingStorageSelectedPosition).orEmpty(),
+                shipmentStorage = shipmentStorageList.getSelectedValue(shipmentStorageSelectedPosition).orEmpty(),
+                shipmentDate = shipmentDate.value?.toDate() ?: Date(0)
         )
     }
 
