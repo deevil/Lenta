@@ -46,6 +46,11 @@ enum class BoxStatus(val code: String){
     ERROR("101")
 }
 
+enum class PartStatus(val code: String){
+    FOUND("200"),
+    NOT_FOUND("201")
+}
+
 enum class ScanNumberType(val description: String){
     DEFAULT("Состояние до сканирование первого номера"),
     COMMON("Обычный товар"),

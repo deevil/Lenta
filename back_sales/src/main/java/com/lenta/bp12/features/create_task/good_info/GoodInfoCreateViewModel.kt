@@ -522,17 +522,17 @@ class GoodInfoCreateViewModel : CoreViewModel() {
                     quantity = 0.0
             )).also {
                 navigator.hideProgress()
-            }.either(::handleMarkInfoLoadFailure) { markInfoResult ->
+            }.either(::handleFailure) { result ->
                 viewModelScope.launch {
-                    markInfoResult.status.let { status ->
+                    result.status.let { status ->
                         if (status == MarkStatus.OK.code || status == MarkStatus.BAD.code) {
-                            addMarkInfo(number, markInfoResult)
+                            addMarkInfo(number, result)
                         } else if (status == MarkStatus.UNKNOWN.code) {
                             val alcoCode = BigInteger(number.substring(7, 19), 36).toString().padStart(19, '0')
                             database.getAlcoCodeInfoList(alcoCode).let { alcoCodeInfoList ->
                                 if (alcoCodeInfoList.isNotEmpty()) {
                                     if (alcoCodeInfoList.find { it.material == good.value!!.material } != null) {
-                                        addPartInfo(number, markInfoResult)
+                                        addPartInfo(number, result)
                                     } else {
                                         navigator.openAlertScreen("Алкокод не относится к этому товару")
                                     }
@@ -541,16 +541,12 @@ class GoodInfoCreateViewModel : CoreViewModel() {
                                 }
                             }
                         } else {
-                            navigator.openAlertScreen(markInfoResult.statusDescription)
+                            navigator.openAlertScreen(result.statusDescription)
                         }
                     }
                 }
             }
         }
-    }
-
-    private fun handleMarkInfoLoadFailure(failure: Failure) {
-        navigator.openAlertScreen(failure)
     }
 
     private fun addMarkInfo(number: String, markInfo: MarkInfoResult) {
@@ -592,14 +588,13 @@ class GoodInfoCreateViewModel : CoreViewModel() {
                     quantity = 0.0
             )).also {
                 navigator.hideProgress()
-            }.either(::handleMarkInfoLoadFailure) { markInfoResult ->
-                Logg.d { "--> exciseInfoResult: $markInfoResult" }
+            }.either(::handleFailure) { result ->
                 viewModelScope.launch {
-                    markInfoResult.status.let { status ->
+                    result.status.let { status ->
                         if (status == BoxStatus.OK.code) {
-                            addBoxInfo(number, markInfoResult)
+                            addBoxInfo(number, result)
                         } else {
-                            navigator.openAlertScreen(markInfoResult.statusDescription)
+                            navigator.openAlertScreen(result.statusDescription)
                         }
                     }
                 }
@@ -615,6 +610,32 @@ class GoodInfoCreateViewModel : CoreViewModel() {
         quantityField.value = markInfo.marks.size.toString()
     }
 
+    private fun checkPart() {
+        viewModelScope.launch {
+            navigator.showProgressLoadingData()
+
+            markInfoNetRequest(MarkInfoParams(
+                    tkNumber = sessionInfo.market ?: "",
+                    material = good.value?.material ?: "",
+                    producerCode = selectedProducer.value?.code ?: "",
+                    bottledDate = date.value ?: "",
+                    mode = 3,
+                    quantity = quantity.value ?: 0.0
+            )).also {
+                navigator.hideProgress()
+            }.either(::handleFailure) { result ->
+                viewModelScope.launch {
+                    result.status.let { status ->
+                        if (status == PartStatus.FOUND.code) {
+                            addPart()
+                        } else {
+                            navigator.openAlertScreen(result.statusDescription)
+                        }
+                    }
+                }
+            }
+        }
+    }
 
     private fun updateProviders(providers: MutableList<ProviderInfo>) {
         sourceProviders.value = providers
@@ -629,7 +650,7 @@ class GoodInfoCreateViewModel : CoreViewModel() {
             when (type) {
                 ScanNumberType.COMMON -> addPosition()
                 ScanNumberType.MARK_150, ScanNumberType.MARK_68 -> addMark()
-                ScanNumberType.ALCOHOL, ScanNumberType.PART -> addPart()
+                ScanNumberType.ALCOHOL, ScanNumberType.PART -> checkPart()
                 ScanNumberType.BOX -> addBox()
             }
         }
@@ -706,6 +727,8 @@ class GoodInfoCreateViewModel : CoreViewModel() {
             ))
         }
     }
+
+    // ZMP_UTZ_100_V001
 
     fun updateData() {
         if (manager.isWasAddedProvider) {

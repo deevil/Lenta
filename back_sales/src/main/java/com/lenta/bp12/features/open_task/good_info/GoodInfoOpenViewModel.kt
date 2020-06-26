@@ -355,7 +355,7 @@ class GoodInfoOpenViewModel : CoreViewModel() {
             navigator.showProgressLoadingData()
 
             goodInfoNetRequest(GoodInfoParams(
-                    tkNumber = sessionInfo.market ?: "Not found!",
+                    tkNumber = sessionInfo.market ?: "",
                     ean = ean ?: "",
                     material = material ?: "",
                     taskType = task.value?.type?.code ?: ""
@@ -413,8 +413,8 @@ class GoodInfoOpenViewModel : CoreViewModel() {
             navigator.showProgressLoadingData()
 
             markInfoNetRequest(MarkInfoParams(
-                    tkNumber = sessionInfo.market ?: "Not found!",
-                    material = good.value!!.material,
+                    tkNumber = sessionInfo.market ?: "",
+                    material = good.value?.material ?: "",
                     markNumber = number,
                     mode = 1,
                     quantity = 0.0
@@ -480,8 +480,8 @@ class GoodInfoOpenViewModel : CoreViewModel() {
             navigator.showProgressLoadingData()
 
             markInfoNetRequest(MarkInfoParams(
-                    tkNumber = sessionInfo.market ?: "Not found!",
-                    material = good.value!!.material,
+                    tkNumber = sessionInfo.market ?: "",
+                    material = good.value?.material ?: "",
                     markNumber = number,
                     mode = 2,
                     quantity = 0.0
@@ -519,6 +519,33 @@ class GoodInfoOpenViewModel : CoreViewModel() {
         quantityField.value = markInfo.marks.size.toString()
     }
 
+    private fun checkPart() {
+        viewModelScope.launch {
+            navigator.showProgressLoadingData()
+
+            markInfoNetRequest(MarkInfoParams(
+                    tkNumber = sessionInfo.market ?: "",
+                    material = good.value?.material ?: "",
+                    producerCode = selectedProducer.value?.code ?: "",
+                    bottledDate = date.value ?: "",
+                    mode = 3,
+                    quantity = quantity.value ?: 0.0
+            )).also {
+                navigator.hideProgress()
+            }.either(::handleFailure) { result ->
+                viewModelScope.launch {
+                    result.status.let { status ->
+                        if (status == PartStatus.FOUND.code) {
+                            addPart()
+                        } else {
+                            navigator.openAlertScreen(result.statusDescription)
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     private fun updateProducers(producers: List<ProducerInfo>) {
         sourceProducers.value = producers
     }
@@ -528,7 +555,7 @@ class GoodInfoOpenViewModel : CoreViewModel() {
             when (type) {
                 ScanNumberType.COMMON -> addPosition()
                 ScanNumberType.MARK_150, ScanNumberType.MARK_68 -> addMark()
-                ScanNumberType.ALCOHOL, ScanNumberType.PART -> addPart()
+                ScanNumberType.ALCOHOL, ScanNumberType.PART -> checkPart()
                 ScanNumberType.BOX -> addBox()
             }
         }
