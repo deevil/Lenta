@@ -1,6 +1,8 @@
 package com.lenta.movement.requests.network.models
 
+import com.lenta.movement.models.ProcessingUnit
 import com.lenta.movement.models.Task
+import com.lenta.movement.requests.network.StartConsolidationResult
 import com.lenta.shared.platform.constants.Constants
 import com.lenta.shared.utilities.extentions.getSapDate
 import com.lenta.shared.utilities.extentions.isSapTrue
@@ -26,4 +28,21 @@ fun DbTaskListItem.toTask(): Task {
         shipmentStorage = lgortTarget,
         shipmentDate = dateShip.getSapDate(Constants.DATE_FORMAT_yyyy_mm_dd) ?: error("shipment date parse error (raw date: $dateShip)")
     )
+}
+
+fun StartConsolidationResult.ProcessingUnit.convertToModel() : ProcessingUnit {
+    return ProcessingUnit(
+            processingUnitNumber = processingUnitNumber,
+            basketNumber = basketNumber,
+            supplier = supplier.ifEmpty { null },
+            isAlco = isAlco.isSapTrue(),
+            isUsual = isUsual.isSapTrue(),
+            quantity = quantity
+    )
+}
+
+fun List<StartConsolidationResult.ProcessingUnit>.toModelList() : List<ProcessingUnit> {
+    return this.map {
+        it.convertToModel()
+    }
 }
