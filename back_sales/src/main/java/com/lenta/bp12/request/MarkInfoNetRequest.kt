@@ -33,7 +33,7 @@ data class MarkInfoParams(
         val materialComp: String = "",
         /** Код акцизной марки */
         @SerializedName("IV_MARK_NUM")
-        val markNumber: String,
+        val markNumber: String = "",
         /** Номер коробки */
         @SerializedName("IV_BOX_NUM")
         val boxNumber: String = "",

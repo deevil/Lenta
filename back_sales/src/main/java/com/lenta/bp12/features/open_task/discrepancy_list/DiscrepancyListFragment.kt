@@ -47,6 +47,9 @@ class DiscrepancyListFragment : CoreFragment<FragmentDiscrepancyListBinding, Dis
         bottomToolbarUiModel.uiModelButton3.show(ButtonDecorationInfo.delete)
         bottomToolbarUiModel.uiModelButton4.show(ButtonDecorationInfo.missing)
         bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.skip)
+
+        connectLiveData(vm.deleteEnabled, bottomToolbarUiModel.uiModelButton3.enabled)
+        connectLiveData(vm.missingEnabled, bottomToolbarUiModel.uiModelButton4.enabled)
     }
 
     override fun onToolbarButtonClick(view: View) {

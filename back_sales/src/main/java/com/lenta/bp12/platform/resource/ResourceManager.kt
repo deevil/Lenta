@@ -9,10 +9,13 @@ class ResourceManager @Inject constructor(
         val context: Context
 ) : IResourceManager {
 
-    //override fun workWith(taskType: String, quantity: Int): String = context.getString(R.string.work_with_pu_es_quantity, taskType, quantity)
+    override fun tkNumber(number: String): String = context.getString(R.string.tk_number, number)
+
+    override fun backSalesFromDate(date: String): String = context.getString(R.string.back_sales_from_date, date)
 
 }
 
 interface IResourceManager {
-    //fun workWith(taskType: String, quantity: Int): String
+    fun tkNumber(number: String): String
+    fun backSalesFromDate(date: String): String
 }

@@ -5,11 +5,15 @@ import androidx.lifecycle.viewModelScope
 import com.lenta.bp12.model.ControlType
 import com.lenta.bp12.model.IOpenTaskManager
 import com.lenta.bp12.platform.navigation.IScreenNavigator
+import com.lenta.bp12.request.TaskContentNetRequest
+import com.lenta.bp12.request.TaskContentParams
 import com.lenta.bp12.request.UnblockTaskNetRequest
 import com.lenta.bp12.request.UnblockTaskParams
 import com.lenta.shared.account.ISessionInfo
+import com.lenta.shared.exception.Failure
 import com.lenta.shared.platform.device_info.DeviceInfo
 import com.lenta.shared.platform.viewmodel.CoreViewModel
+import com.lenta.shared.settings.IAppSettings
 import com.lenta.shared.utilities.databinding.PageSelectionListener
 import com.lenta.shared.utilities.extentions.map
 import kotlinx.coroutines.launch
@@ -32,6 +36,12 @@ class TaskCardOpenViewModel : CoreViewModel(), PageSelectionListener {
     @Inject
     lateinit var deviceInfo: DeviceInfo
 
+    @Inject
+    lateinit var taskContentNetRequest: TaskContentNetRequest
+
+    @Inject
+    lateinit var appSettings: IAppSettings
+
 
     val title by lazy {
         "ТК - ${sessionInfo.market}"
@@ -47,12 +57,11 @@ class TaskCardOpenViewModel : CoreViewModel(), PageSelectionListener {
         task.map {
             it?.let { task ->
                 TaskCardOpenUi(
-                        type = task.properties?.description ?: "",
                         name = task.name,
                         provider = task.getProviderCodeWithName(),
                         storage = task.storage,
-                        reason = task.reason.description,
-                        description = task.properties?.description ?: "",
+                        reason = task.reason?.description ?: "",
+                        description = task.type?.description ?: "",
                         comment = task.comment,
                         isStrict = task.isStrict,
                         isAlcohol = task.control == ControlType.ALCOHOL,
@@ -62,14 +71,45 @@ class TaskCardOpenViewModel : CoreViewModel(), PageSelectionListener {
         }
     }
 
-    // -----------------------------
+    /**
+    Методы
+     */
 
     override fun onPageSelected(position: Int) {
         selectedPage.value = position
     }
 
+    private fun loadGoodList() {
+        viewModelScope.launch {
+            navigator.showProgressLoadingData()
+
+            taskContentNetRequest(TaskContentParams(
+                    deviceIp = deviceInfo.getDeviceIp(),
+                    taskNumber = task.value!!.number,
+                    mode = 1,
+                    userNumber = appSettings.lastPersonnelNumber ?: ""
+            )).also {
+                navigator.hideProgress()
+            }.either(::handleFailure) { taskContentResult ->
+                viewModelScope.launch {
+                    manager.addGoodsInCurrentTask(taskContentResult)
+                    navigator.openGoodListScreen()
+                }
+            }
+        }
+    }
+
+    override fun handleFailure(failure: Failure) {
+        super.handleFailure(failure)
+        navigator.openAlertScreen(failure)
+    }
+
+    /**
+    Обработка нажатий кнопок
+     */
+
     fun onClickNext() {
-        navigator.openGoodListScreen()
+        loadGoodList()
     }
 
     fun onBackPressed() {
@@ -93,7 +133,6 @@ class TaskCardOpenViewModel : CoreViewModel(), PageSelectionListener {
 }
 
 data class TaskCardOpenUi(
-        val type: String,
         val name: String,
         val provider: String,
         val storage: String,

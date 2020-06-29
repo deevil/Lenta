@@ -2,13 +2,13 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context="com.lenta.bp14.features.work_list.goods_list.GoodsListWlFragment">
+    tools:context=".features.create_task.good_details.GoodDetailsCreateFragment">
 
     <data>
 
         <variable
             name="vm"
-            type="com.lenta.bp12.features.open_task.task_list.TaskListViewModel" />
+            type="com.lenta.bp12.features.create_task.good_details.GoodDetailsCreateViewModel" />
 
         <variable
             name="rvConfig"
@@ -31,7 +31,7 @@
 
                 <LinearLayout
                     style="@style/LinearCellStyle"
-                    android:layout_weight="@integer/task_tag_quantity_column_1">
+                    android:layout_weight="@integer/name_quantity_column_1">
 
                     <TextView
                         style="@style/FirstRowTextStyle"
@@ -42,27 +42,17 @@
 
                 <LinearLayout
                     style="@style/LinearCellStyle"
-                    android:layout_weight="@integer/task_tag_quantity_column_2">
+                    android:layout_weight="@integer/name_quantity_column_2">
 
                     <TextView
                         style="@style/FirstRowTextStyle"
-                        android:text="@string/task" />
+                        android:text="@string/basket" />
 
                 </LinearLayout>
 
                 <LinearLayout
                     style="@style/LinearCellStyle"
-                    android:layout_weight="@integer/task_tag_quantity_column_3">
-
-                    <TextView
-                        style="@style/FirstRowTextStyle"
-                        android:text="@string/tags" />
-
-                </LinearLayout>
-
-                <LinearLayout
-                    style="@style/LinearCellStyle"
-                    android:layout_weight="@integer/task_tag_quantity_column_4">
+                    android:layout_weight="@integer/name_quantity_column_3">
 
                     <TextView
                         style="@style/FirstRowTextStyle"
@@ -76,16 +66,16 @@
 
         </LinearLayout>
 
-        <!-- Список корзин -->
+        <!-- Список категорий -->
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rv"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_marginBottom="8dp"
             android:layout_weight="1"
-            app:items="@{vm.processing}"
+            app:items="@{vm.categories}"
             app:rv_config="@{rvConfig}"
-            tools:listitem="@layout/item_task_list_task" />
+            tools:listitem="@layout/item_category" />
 
     </LinearLayout>
 
