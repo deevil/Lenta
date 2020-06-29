@@ -13,6 +13,7 @@ import com.lenta.movement.requests.network.ApprovalAndTransferToTasksCargoUnit
 import com.lenta.movement.requests.network.ApprovalAndTransferToTasksCargoUnitParams
 import com.lenta.movement.requests.network.StartConsolidation
 import com.lenta.movement.requests.network.StartConsolidationParams
+import com.lenta.movement.requests.network.models.toModelList
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.models.core.GisControl
 import com.lenta.shared.platform.constants.Constants
@@ -187,6 +188,7 @@ class TaskViewModel : CoreViewModel(), PageSelectionListener {
     fun onNextClick() {
         if (task.value == null) {
             taskManager.setTask(buildTask())
+            screenNavigator.openTaskCompositionScreen()
         } else {
             Logg.d {
                 currentStatus.toString()
@@ -198,16 +200,14 @@ class TaskViewModel : CoreViewModel(), PageSelectionListener {
                                 StartConsolidationParams(
                                         deviceIp = context.getDeviceIp(),
                                         taskNumber = task.value!!.number,
-                                        mode = 1,
+                                        mode = GET_TASK_COMP_CODE,
                                         personnelNumber = sessionInfo.personnelNumber!!,
                                         withProductInfo = true.toSapBooleanString()
                                 )
                         ).either({
                             screenNavigator.openAlertScreen(it)
                         }, {
-                            Logg.d {
-                                "StartConsolidationResult: $it"
-                            }
+                            screenNavigator.openTaskEoMergeScreen(it.eoList.toModelList(), it.geList)
                         }
                         )
                     }
@@ -233,7 +233,7 @@ class TaskViewModel : CoreViewModel(), PageSelectionListener {
             screenNavigator.openNotImplementedScreenAlert("Состав сохраненного задания")
             return
         }
-        screenNavigator.openTaskCompositionScreen()
+
     }
 
     fun onBackPressed() {
@@ -290,6 +290,11 @@ class TaskViewModel : CoreViewModel(), PageSelectionListener {
 
     private fun <T> LiveData<List<T>>.getSelectedValue(position: LiveData<Int>): T? {
         return value?.getOrNull(position.value ?: -1)
+    }
+
+    companion object {
+        private const val GET_TASK_COMP_CODE = 1
+        private const val GET_TASK_COMP_WITH_BLOCK = 2
     }
 
 }
