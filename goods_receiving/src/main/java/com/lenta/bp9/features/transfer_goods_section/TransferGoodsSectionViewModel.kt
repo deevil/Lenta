@@ -33,7 +33,7 @@ class TransferGoodsSectionViewModel : CoreViewModel(), PageSelectionListener {
                     it.personnelNumber.isEmpty()
                 }?.mapIndexed { index, taskSectionInfo ->
                     TransferGoodsSectionItem(
-                            number = index + 1,
+                            number = (index + 1).toString(),
                             condition = "${taskSectionInfo.sectionNumber}-${taskSectionInfo.sectionName}",
                             representative = "",
                             ofGoods = taskSectionInfo.quantitySectionProducts,
@@ -48,7 +48,7 @@ class TransferGoodsSectionViewModel : CoreViewModel(), PageSelectionListener {
                     it.personnelNumber.isNotEmpty()
                 }?.mapIndexed { index, taskSectionInfo ->
                     TransferGoodsSectionItem(
-                            number = index + 1,
+                            number = (index + 1).toString(),
                             condition = "${taskSectionInfo.sectionNumber}-${taskSectionInfo.sectionName}",
                             representative = taskSectionInfo.employeeName,
                             ofGoods = taskSectionInfo.quantitySectionProducts,

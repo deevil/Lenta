@@ -1,5 +1,6 @@
 package com.lenta.bp9.features.goods_information.excise_alco_pge.excise_alco_stamp_acc_pge
 
+import android.os.Bundle
 import android.view.View
 import com.lenta.bp9.R
 import com.lenta.bp9.databinding.FragmentExciseAlcoStampAccInfoBinding
@@ -57,7 +58,7 @@ class ExciseAlcoStampAccInfoPGEFragment : CoreFragment<FragmentExciseAlcoStampAc
         bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.apply)
 
         connectLiveData(vm.enabledRollbackBtn, bottomToolbarUiModel.uiModelButton2.enabled)
-        connectLiveData(vm.enabledApplyBtn, bottomToolbarUiModel.uiModelButton4.enabled)
+        connectLiveData(vm.enabledAddBtn, bottomToolbarUiModel.uiModelButton4.enabled)
         connectLiveData(vm.enabledApplyBtn, bottomToolbarUiModel.uiModelButton5.enabled)
     }
 
@@ -73,6 +74,12 @@ class ExciseAlcoStampAccInfoPGEFragment : CoreFragment<FragmentExciseAlcoStampAc
     override fun onScanResult(data: String) {
         vm.onScanResult(data)
     }
+
+    override fun onFragmentResult(arguments: Bundle) {
+        super.onFragmentResult(arguments)
+        vm.onBatchSignsResult(arguments.getInt("manufacturerSelectedPosition")!!, arguments.getString("bottlingDate")!!)
+    }
+
 
     override fun onBackPressed(): Boolean {
         vm.onBackPressed()

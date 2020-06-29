@@ -1,6 +1,7 @@
 package com.lenta.bp9.di
 
 import com.lenta.bp9.ExceptionHandler
+import com.lenta.bp9.features.supply_results.SupplyResultsViewModel
 import com.lenta.bp9.features.auth.AuthViewModel
 import com.lenta.bp9.features.cargo_unit_card.CargoUnitCardViewModel
 import com.lenta.bp9.features.change_datetime.ChangeDateTimeViewModel
@@ -14,6 +15,7 @@ import com.lenta.bp9.features.goods_information.excise_alco_pge.excise_alco_box_
 import com.lenta.bp9.features.goods_information.excise_alco_pge.excise_alco_box_acc_pge.excise_alco_box_card.ExciseAlcoBoxCardPGEViewModel
 import com.lenta.bp9.features.goods_information.excise_alco_pge.excise_alco_box_acc_pge.excise_alco_box_list.ExciseAlcoBoxListPGEViewModel
 import com.lenta.bp9.features.goods_information.excise_alco_pge.excise_alco_stamp_acc_pge.ExciseAlcoStampAccInfoPGEViewModel
+import com.lenta.bp9.features.goods_information.excise_alco_pge.excise_alco_stamp_acc_pge.batch_signs.ExciseAlcoStampPGEBatchSignsViewModel
 import com.lenta.bp9.features.goods_information.excise_alco_receiving.excise_alco_stamp_acc.ExciseAlcoStampAccInfoViewModel
 import com.lenta.bp9.features.goods_information.excise_alco_receiving.excise_alco_box_acc.ExciseAlcoBoxAccInfoViewModel
 import com.lenta.bp9.features.goods_information.excise_alco_receiving.excise_alco_box_acc.excise_alco_box_card.ExciseAlcoBoxCardViewModel
@@ -138,4 +140,6 @@ interface AppComponent : FromParentToCoreProvider {
     fun inject(it: ExciseAlcoBoxCardPGEViewModel)
     fun inject(it: ExciseAlcoStampAccInfoPGEViewModel)
     fun inject(it: NonExciseAlcoInfoPGEViewModel)
+    fun inject(it: ExciseAlcoStampPGEBatchSignsViewModel)
+    fun inject(it: SupplyResultsViewModel)
 }

@@ -14,6 +14,7 @@ import com.lenta.bp9.platform.navigation.IScreenNavigator
 import com.lenta.bp9.repos.IDataBaseRepo
 import com.lenta.bp9.repos.IRepoInMemoryHolder
 import com.lenta.shared.models.core.Uom
+import com.lenta.shared.platform.constants.Constants
 import com.lenta.shared.platform.time.ITimeMonitor
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo.Companion.add
 import com.lenta.shared.platform.viewmodel.CoreViewModel
@@ -48,6 +49,8 @@ class GoodsInfoViewModel : CoreViewModel(), OnPositionClickListener {
     lateinit var context: Context
     @Inject
     lateinit var timeMonitor: ITimeMonitor
+    @Inject
+    lateinit var repoInMemoryHolder: IRepoInMemoryHolder
 
     val productInfo: MutableLiveData<TaskProductInfo> = MutableLiveData()
     private val processingUnitsOfProduct: MutableLiveData<List<TaskProductInfo>> = MutableLiveData()
@@ -225,6 +228,18 @@ class GoodsInfoViewModel : CoreViewModel(), OnPositionClickListener {
                 (it?.first ?: 0.0) > 0.0
             }
         }
+    }
+
+    val visibilityLabelBtn: MutableLiveData<Boolean> by lazy {
+        //todo https://trello.com/c/LhzZRxzi
+        //MutableLiveData(repoInMemoryHolder.manufacturers.value != null)
+        MutableLiveData(false)
+    }
+
+    val enabledLabelBtn: MutableLiveData<Boolean> by lazy {
+        //todo https://trello.com/c/LhzZRxzi
+        //MutableLiveData(repoInMemoryHolder.processOrderData.value != null)
+        MutableLiveData(false)
     }
 
     init {
@@ -889,6 +904,95 @@ class GoodsInfoViewModel : CoreViewModel(), OnPositionClickListener {
         } else {
             screenNavigator.goBack()
         }
+    }
+
+    fun onClickLabel() { //https://trello.com/c/LhzZRxzi
+        repoInMemoryHolder.processOrderData.value?.map {
+            Logg.d { "testddi materialNumber ${it.materialNumber}" }
+            Logg.d { "testddi processOrderData ${it.processOrderData}" }
+        }
+        /**viewModelScope.launch {
+            navigator.showProgressLoadingData()
+
+            packCodeNetRequest(
+                    PackCodeParams(
+                            marketNumber = sessionInfo.market ?: "Not found!",
+                            taskType = manager.getTaskTypeCode(),
+                            parent = manager.currentTask.value!!.taskInfo.number,
+                            deviceIp = deviceIp.value ?: "Not found!",
+                            material = good.value!!.material,
+                            order = raw.value!!.order,
+                            quantity = total.value!!,
+                            categoryCode = categories.value!![categoryPosition.value!!].code,
+                            defectCode = defects.value!![defectPosition.value!!].code,
+                            personnelNumber = sessionInfo.personnelNumber ?: ""
+                    )
+            ).also {
+                navigator.hideProgress()
+            }.either(::handleFailure) { packCodeResult ->
+                good.value?.let {good ->
+                    good.packs.add(0,
+                            Pack(
+                                    material = good.material,
+                                    materialOsn = raw.value!!.materialOsn,
+                                    materialDef = raw.value!!.material,
+                                    code = packCodeResult.packCode,
+                                    order = raw.value!!.order,
+                                    quantity = total.value!!,
+                                    category = categories.value!![categoryPosition.value!!],
+                                    defect = defects.value!![defectPosition.value!!]
+                            )
+                    )
+
+                    manager.updateCurrentGood(good)
+                    manager.onTaskChanged()
+                }
+
+                viewModelScope.launch {
+                    val productTime = Calendar.getInstance()
+                    productTime.add(Calendar.MINUTE, database.getPcpExpirTimeMm())
+
+                    val planAufFinish = Calendar.getInstance()
+                    planAufFinish.add(Calendar.MINUTE, getTimeInMinutes(packCodeResult.dataLabel.planAufFinish, packCodeResult.dataLabel.planAufUnit))
+                    planAufFinish.add(Calendar.MINUTE, database.getPcpContTimeMm())
+
+                    val dateExpir = packCodeResult.dataLabel.time.toIntOrNull()?.let { time ->
+                        val dateExpiration = Calendar.getInstance()
+                        when (packCodeResult.dataLabel.timeType.toIntOrNull()) {
+                            1 -> dateExpiration.add(Calendar.HOUR_OF_DAY, time)
+                            2 -> dateExpiration.add(Calendar.DAY_OF_YEAR, time)
+                        }
+
+                        dateExpiration
+                    }
+
+                    val barCodeText = "(01)${getFormattedEan(packCodeResult.dataLabel.ean, total.value!!)}" +
+                            "(91)${packCodeResult.packCode}"
+
+                    val barcode = barCodeText.replace("(", "").replace(")", "")
+
+                    printLabel(LabelInfo(
+                            quantity = "${total.value!!}  ${good.value?.units?.name}",
+                            codeCont = packCodeResult.packCode,
+                            planAufFinish = SimpleDateFormat(Constants.DATE_FORMAT_dd_mm_yyyy_hh_mm, Locale.getDefault()).format(planAufFinish.time),
+                            aufnr = raw.value!!.order,
+                            nameOsn = raw.value!!.name,
+                            dateExpir = dateExpir?.let { SimpleDateFormat(Constants.DATE_FORMAT_dd_mm_yyyy_hh_mm, Locale.getDefault()).format(it.time) }
+                                    ?: "",
+                            goodsName = "***БРАК*** ${packCodeResult.dataLabel.materialName}",
+                            weigher = sessionInfo.personnelNumber ?: "",
+                            productTime = SimpleDateFormat(Constants.DATE_FORMAT_dd_mm_yyyy_hh_mm, Locale.getDefault()).format(productTime.time),
+                            goodsCode = packCodeResult.dataLabel.material.takeLast(6),
+                            barcode = barcode,
+                            barcodeText = barCodeText,
+                            printTime = Date()
+                    ))
+
+                    weighted.value = 0.0
+                    weightField.value = "0"
+                }
+            }
+        }*/
     }
 
 }

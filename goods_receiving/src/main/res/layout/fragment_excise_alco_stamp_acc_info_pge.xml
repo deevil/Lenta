@@ -71,6 +71,7 @@
             android:inputType="numberDecimal"
             android:maxLines="1"
             android:maxLength="6"
+            android:enabled="@{!vm.isGradeControl}"
             app:maxLengthForScanProtect="@{6}"
             android:text="@={vm.count}"
             app:digitsForUom="@{vm.productInfo.uom}"
@@ -94,7 +95,7 @@
             android:id="@+id/ConstraintAcceptRefusal"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:visibility="@{!vm.isSurplus}"
+            android:visibility="@{!vm.isSurplus &amp;&amp; !vm.isGoodsAddedAsSurplus}"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="1.0"
             app:layout_constraintStart_toStartOf="parent"
@@ -188,7 +189,7 @@
             android:id="@+id/ConstraintNorm"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:visibility="@{!vm.isDefect &amp;&amp; !vm.isSurplus}"
+            android:visibility="@{!vm.isDefect &amp;&amp; !vm.isSurplus &amp;&amp; !vm.isGradeControl &amp;&amp; !vm.isGoodsAddedAsSurplus}"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="1.0"
             app:layout_constraintStart_toStartOf="parent"
@@ -264,11 +265,12 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="8dp"
-            android:src="@drawable/ic_eiz_disabled_24dp"
+            android:src="@{vm.isGoodsAddedAsSurplus ? @drawable/ic_bei_disabled_24dp : @drawable/ic_eiz_disabled_24dp}"
             android:enabled="false"
             app:layout_constraintBottom_toBottomOf="@+id/et_quantity"
             app:layout_constraintEnd_toEndOf="@+id/et_quantity"
-            app:layout_constraintTop_toTopOf="@+id/et_quantity"/>
+            app:layout_constraintTop_toTopOf="@+id/et_quantity"
+            tools:src="@drawable/ic_eiz_disabled_24dp" />
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/ConstraintSurplus"
@@ -349,7 +351,7 @@
             android:id="@+id/ConstraintStampList"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:visibility="@{vm.isDefect || vm.isSurplus}"
+            android:visibility="@{vm.isDefect || vm.isSurplus || vm.isGradeControl || vm.isGoodsAddedAsSurplus}"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="1.0"
             app:layout_constraintStart_toStartOf="parent"
@@ -503,6 +505,49 @@
                 app:layout_constraintTop_toTopOf="parent"
                 app:position="@{vm.spinManufacturersSelectedPosition}"
                 tools:entries="@array/test_list" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/ConstraintGoodsAddedAsSurplus"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="1dp"
+            android:visibility="@{vm.isGoodsAddedAsSurplus}"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/ConstraintStampsControl">
+
+            <View
+                android:id="@+id/div_hor8"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginTop="8dp"
+                android:background="@color/color_divider"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/et_processing_unit_number" />
+
+            <EditText
+                android:id="@+id/et_processing_unit_number"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="8dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="8dp"
+                android:digits="1234567890"
+                android:hint="@string/enter_processing_unit_number"
+                android:imeOptions="actionDone"
+                android:inputType="numberDecimal"
+                android:maxLength="18"
+                android:maxLines="1"
+                android:text="@={vm.enteredProcessingUnitNumber}"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:ignore="Autofill" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
