@@ -49,9 +49,9 @@ class TaskCardCreateViewModel : CoreViewModel(), PageSelectionListener {
 
     val selectedPage = MutableLiveData(0)
 
-    val taskName = MutableLiveData(
-            resource.backSalesFromDate(SimpleDateFormat(Constants.DATE_FORMAT_dd_mm_yyyy_hh_mm, Locale.getDefault()).format(Date()))
-    )
+    val taskName by lazy {
+        MutableLiveData(resource.backSalesFromDate(SimpleDateFormat(Constants.DATE_FORMAT_dd_mm_yyyy_hh_mm, Locale.getDefault()).format(Date())))
+    }
 
     /**
     Список типов задачи
@@ -221,7 +221,7 @@ class TaskCardCreateViewModel : CoreViewModel(), PageSelectionListener {
 
     fun onClickNext() {
         manager.updateCurrentTask(TaskCreate(
-                name = taskName.value!!,
+                name = taskName.value ?: "",
                 taskType = types.value!![taskTypePosition.value!!],
                 storage = storageList.value!![storagePosition.value!!],
                 reason = reasons.value!![returnReasonPosition.value!!]
