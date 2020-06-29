@@ -121,6 +121,16 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
     }
 
     /**
+    Блок инициализации
+     */
+
+    init {
+        viewModelScope.launch {
+            onClickUpdate()
+        }
+    }
+
+    /**
     Методы
      */
 
