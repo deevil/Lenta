@@ -31,19 +31,13 @@ data class TaskOpen(
 ) {
 
     fun getProviderCodeWithName(): String {
-        return "${provider.code} ${provider.name}"
-    }
-
-    /*fun updateGood(good: GoodOpen?) {
-        good?.let { goodUpdate ->
-            val index = goods.indexOf(goods.find { it.material == goodUpdate.material })
-            if (index >= 0) {
-                goods.removeAt(index)
-            }
-
-            goods.add(0, goodUpdate)
+        var providerCode = provider.code
+        while (providerCode.startsWith("0")) {
+            providerCode = providerCode.substring(1)
         }
-    }*/
+
+        return "$providerCode ${provider.name}"
+    }
 
     fun isExistProcessedGood(): Boolean {
         return goods.any { it.isCounted || it.isDeleted  }

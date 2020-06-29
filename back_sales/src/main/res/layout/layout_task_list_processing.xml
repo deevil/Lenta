@@ -87,29 +87,6 @@
             app:rv_config="@{rvConfig}"
             tools:listitem="@layout/item_task_list_task" />
 
-        <!-- Ввод номера товара -->
-        <LinearLayout style="@style/EnterNumberFieldLayout">
-
-            <EditText
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_margin="8dp"
-                android:layout_weight="1"
-                android:digits="0123456789"
-                android:drawableEnd="@drawable/ic_filter_white_16dp"
-                android:ellipsize="end"
-                android:hint="@string/enter_task_or_supplier_number"
-                android:imeOptions="actionGo"
-                android:inputType="number"
-                android:maxLength="20"
-                android:maxLines="1"
-                android:text="@={vm.numberField}"
-                app:onOkInSoftKeyboard="@{vm}"
-                app:requestFocus="@{vm.requestFocusToNumberField}"
-                tools:ignore="Autofill" />
-
-        </LinearLayout>
-
     </LinearLayout>
 
 </layout>

@@ -1,12 +1,10 @@
 package com.lenta.bp12.features.open_task.discrepancy_list
 
 import com.lenta.bp12.model.IOpenTaskManager
-import com.lenta.bp12.model.SimplePosition
 import com.lenta.bp12.platform.navigation.IScreenNavigator
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.platform.device_info.DeviceInfo
 import com.lenta.shared.platform.viewmodel.CoreViewModel
-import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.SelectionItemsHelper
 import com.lenta.shared.utilities.extentions.map
 import javax.inject.Inject

@@ -28,12 +28,12 @@ data class TaskListParams(
         /** Адресат */
         @SerializedName("IV_EXEC_USER")
         val user: String,
-        /** Режим работы: 1 - обновление списка заданий, 2 - расширенный поиск заданий */
-        @SerializedName("IV_MODE")
-        val mode: Int,
         /** Табельный номер */
         @SerializedName("IV_PERNR")
         val userNumber: String,
+        /** Режим работы: 1 - обновление списка заданий, 2 - расширенный поиск заданий */
+        @SerializedName("IV_MODE")
+        val mode: Int,
         /** Структура для поиска заданий */
         @SerializedName("IS_SEARCH_TASK")
         val taskSearchParams: TaskSearchParams? = null
