@@ -66,11 +66,11 @@ data class StartConsolidationResult(
 
         /** Список ЕО */
         @SerializedName("ET_TASK_EXIDV")
-        val basketList: List<ProcessingUnit>,
+        val eoList: List<ProcessingUnit>,
 
         /** Список ГЕ */
         @SerializedName("ET_TASK_EXIDV_TOP")
-        val stampsList: List<CargoUnit>,
+        val geList: List<CargoUnit>,
 
         /** Код возврата */
         @SerializedName("EV_RETCODE")
@@ -98,7 +98,7 @@ data class StartConsolidationResult(
             @SerializedName("MENGE")
             val quantity: String)
 
-    /** ET_TASK_EXIDV */
+    /** ET_TASK_EXIDV Список ЕО*/
     data class ProcessingUnit(
             /** Номер ЕО */
             @SerializedName("EXIDV")
@@ -124,7 +124,7 @@ data class StartConsolidationResult(
             @SerializedName("QNT_SKU")
             val quantity: String)
 
-    /**"ET_TASK_EXIDV_TOP"*/
+    /**"ET_TASK_EXIDV_TOP" Список ГЕ*/
     data class CargoUnit(
             /** Номер ГЕ */
             @SerializedName("EXIDV_TOP")
