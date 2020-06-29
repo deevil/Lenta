@@ -76,7 +76,8 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:selected="@{selectedForDelete}"
-            tools:text="2" />
+            tools:text="2"
+            tools:ignore="UnusedAttribute" />
 
         <TextView
             android:id="@+id/titleText"
@@ -135,7 +136,7 @@
             android:layout_marginStart="@dimen/size_8dp"
             android:layout_marginEnd="@dimen/size_8dp"
             android:ellipsize="end"
-            android:gravity="start|center_vertical"
+            android:gravity="center|center_vertical"
             android:maxLines="1"
             android:text='@{item.countWithUom}'
             app:layout_constraintBottom_toBottomOf="parent"
