@@ -81,7 +81,7 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
                         ItemTaskUi(
                                 position = "${taskList.size - index}",
                                 number = task.number,
-                                name = task.name,
+                                name = task.getFormattedName(),
                                 provider = task.getProviderCodeWithName(),
                                 taskStatus = task.status,
                                 blockType = task.block.type,
@@ -216,13 +216,11 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
     }
 
     override fun onOkInSoftKeyboard(): Boolean {
-        val entered = numberField.value ?: ""
-        if (entered.isNotEmpty()) {
-            if (isNumber(entered)) {
-                taskNumber.value = entered
-            } else {
-                onClickUpdate()
-            }
+        if (isEnteredLogin()) {
+            taskNumber.value = ""
+            onClickUpdate()
+        } else {
+            taskNumber.value = numberField.value
         }
 
         return true
@@ -230,6 +228,11 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
 
     private fun isNumber(entered: String): Boolean {
         return entered.all { it.isDigit() }
+    }
+
+    private fun isEnteredLogin(): Boolean {
+        val entered = numberField.value ?: ""
+        return entered.isNotEmpty() && !entered.all { it.isDigit() }
     }
 
     /**
@@ -241,15 +244,11 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
     }
 
     fun onClickUpdate() {
-        numberField.value?.let { entered ->
-            val user = if (entered.isNotEmpty() && isNumber(entered)) sessionInfo.userName
-                    ?: "" else ""
-            val userNumber = if (entered.isNotEmpty() && isNumber(entered)) sessionInfo.personnelNumber
-                    ?: "" else ""
+        val user = if (isEnteredLogin()) sessionInfo.userName ?: "" else ""
+        val userNumber = if (isEnteredLogin()) sessionInfo.personnelNumber ?: "" else ""
 
-            loadTaskList(user, userNumber)
-            loadTaskListWithParams(user, userNumber)
-        }
+        loadTaskList(user, userNumber)
+        loadTaskListWithParams(user, userNumber)
     }
 
     fun onClickFilter() {
