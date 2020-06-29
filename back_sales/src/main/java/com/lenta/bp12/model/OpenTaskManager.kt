@@ -50,8 +50,9 @@ class OpenTaskManager @Inject constructor(
         currentTask.value = task
     }
 
-    override fun updateCurrentGood(good: GoodOpen?) {
+    override fun updateCurrentGood(good: GoodOpen) {
         currentGood.value = good
+        saveGoodInTask(good)
     }
 
     override fun saveGoodInTask(good: GoodOpen) {
@@ -266,7 +267,7 @@ interface IOpenTaskManager {
     fun updateTasks(taskList: List<TaskOpen>?)
     fun updateFoundTasks(taskList: List<TaskOpen>?)
     fun updateCurrentTask(task: TaskOpen?)
-    fun updateCurrentGood(good: GoodOpen?)
+    fun updateCurrentGood(good: GoodOpen)
 
     fun saveGoodInTask(good: GoodOpen)
     fun findGoodByEan(ean: String): GoodOpen?

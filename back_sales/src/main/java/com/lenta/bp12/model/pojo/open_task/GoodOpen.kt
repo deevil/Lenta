@@ -89,8 +89,6 @@ data class GoodOpen(
         } ?: parts.add(part)
     }
 
-
-
     fun removeMark(number: String) {
         marks.find { it.number == number }?.let { mark ->
             marks.remove(mark)
@@ -104,57 +102,5 @@ data class GoodOpen(
     fun removeAllPart() {
         parts.clear()
     }
-
-
-
-
-
-
-
-
-    /*fun replacePosition(quantity: Double, provider: ProviderInfo, category: Category, date: String?) {
-        val position = positions.find { it.provider.code == provider.code && it.date == date }
-
-        if (position != null) {
-            positions.remove(position)
-        }
-
-        positions.add(0, Position(
-                quantity = quantity,
-                provider = provider,
-                category = category,
-                date = date,
-                isCounted = true
-        ))
-    }*/
-
-    /*fun deletePositions(positionList: List<Position>) {
-        positionList.forEach { position ->
-            positions.remove(position)
-        }
-    }
-
-    fun isSameMaterial(material: String): Boolean {
-        return this.material.takeLast(6) == material.takeLast(6)
-    }
-
-    fun markGoodAsDeleted(providerCode: String) {
-        positions.find { it.provider.code == providerCode }?.let {
-            it.quantity = 0.0
-            it.isDelete = true
-        }
-    }
-
-    fun markPositionUncounted(providerCode: String) {
-        positions.find { it.provider.code == providerCode }?.let {
-            it.quantity = 0.0
-            it.isCounted = false
-        }
-    }
-
-    fun markPositionMissing(providerCode: String) {
-        quantity = 0.0
-        isCounted = true
-    }*/
 
 }

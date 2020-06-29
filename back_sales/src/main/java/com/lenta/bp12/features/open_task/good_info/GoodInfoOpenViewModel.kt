@@ -266,6 +266,9 @@ class GoodInfoOpenViewModel : CoreViewModel() {
     init {
         viewModelScope.launch {
             checkSearchNumber(manager.searchNumber)
+
+            // todo При открытии загруженного товара этот номер пустой
+            // Не отрабатывается блок загрузки и смены состояния экрана
         }
     }
 
@@ -327,6 +330,7 @@ class GoodInfoOpenViewModel : CoreViewModel() {
     }
 
     private fun setFoundGood(foundGood: GoodOpen) {
+        Logg.d { "--> good type = ${foundGood.type.name}" }
         manager.updateCurrentGood(foundGood)
         lastSuccessSearchNumber.value = foundGood.material
         setScanModeFromGoodType(foundGood.type)
@@ -563,6 +567,7 @@ class GoodInfoOpenViewModel : CoreViewModel() {
 
     private fun addPosition() {
         good.value?.let { changedGood ->
+            changedGood.isCounted = true
             changedGood.addPosition(quantity.value!!, changedGood.provider)
 
             manager.updateCurrentGood(changedGood)
@@ -571,6 +576,7 @@ class GoodInfoOpenViewModel : CoreViewModel() {
 
     private fun addMark() {
         good.value?.let { changedGood ->
+            changedGood.isCounted = true
             changedGood.addMark(Mark(
                     number = lastSuccessSearchNumber.value!!,
                     material = changedGood.material,
@@ -585,6 +591,7 @@ class GoodInfoOpenViewModel : CoreViewModel() {
 
     private fun addPart() {
         good.value?.let { changedGood ->
+            changedGood.isCounted = true
             changedGood.addPart(Part(
                     number = lastSuccessSearchNumber.value!!,
                     material = changedGood.material,
@@ -601,6 +608,7 @@ class GoodInfoOpenViewModel : CoreViewModel() {
 
     private fun addBox() {
         good.value?.let { changedGood ->
+            changedGood.isCounted = true
             markInfoResult.value?.marks?.let { marks ->
                 marks.forEach { mark ->
                     changedGood.addMark(Mark(
@@ -659,8 +667,10 @@ class GoodInfoOpenViewModel : CoreViewModel() {
     }
 
     fun onClickDetails() {
-        manager.updateCurrentGood(good.value)
-        navigator.openGoodDetailsOpenScreen()
+        good.value?.let {
+            manager.updateCurrentGood(it)
+            navigator.openGoodDetailsOpenScreen()
+        }
     }
 
     fun onClickMissing() {
@@ -674,7 +684,7 @@ class GoodInfoOpenViewModel : CoreViewModel() {
 
     fun onClickApply() {
         saveChanges()
-        manager.saveGoodInTask(good.value!!)
+        //manager.saveGoodInTask(good.value!!)
         isExistUnsavedData = false
         navigator.goBack()
     }

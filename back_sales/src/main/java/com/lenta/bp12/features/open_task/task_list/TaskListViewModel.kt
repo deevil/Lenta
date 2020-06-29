@@ -226,10 +226,6 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
         return true
     }
 
-    private fun isNumber(entered: String): Boolean {
-        return entered.all { it.isDigit() }
-    }
-
     private fun isEnteredLogin(): Boolean {
         val entered = numberField.value ?: ""
         return entered.isNotEmpty() && !entered.all { it.isDigit() }

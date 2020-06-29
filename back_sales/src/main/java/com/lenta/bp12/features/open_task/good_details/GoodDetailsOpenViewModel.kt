@@ -93,7 +93,6 @@ class GoodDetailsOpenViewModel : CoreViewModel(), PageSelectionListener {
             }
 
             manager.updateCurrentGood(changedGood)
-            manager.saveGoodInTask(changedGood)
         }
     }
 

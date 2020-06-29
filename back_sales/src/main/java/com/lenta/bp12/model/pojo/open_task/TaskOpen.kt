@@ -47,9 +47,9 @@ data class TaskOpen(
         return goods.any { !it.isCounted && !it.isDeleted }
     }
 
-    fun getFormattedName(): String {
-        val date = name.split(" ")[2]
-        return "${type?.code}-$number // $date"
+    fun getFormattedName(withFullName: Boolean = false): String {
+        val name = if (withFullName) name else name.split(" ")[2]
+        return "${type?.code}-$number // $name"
     }
 
 }

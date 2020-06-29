@@ -55,13 +55,15 @@ class GoodListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
     val processing by lazy {
         task.map { currentTask ->
             currentTask?.let { task ->
-                task.goods.filter { !it.isDeleted && !it.isCounted && !it.isMissing }.mapIndexed { index, good ->
-                    ItemGoodProcessingUi(
-                            position = "${task.goods.size - index}",
-                            name = good.name,
-                            material = good.material,
-                            providerCode = good.provider.code
-                    )
+                task.goods.filter { !it.isDeleted && !it.isCounted && !it.isMissing }.let { filtered ->
+                    filtered.mapIndexed { index, good ->
+                        ItemGoodProcessingUi(
+                                position = "${filtered.size - index}",
+                                name = good.name,
+                                material = good.material,
+                                providerCode = good.provider.code
+                        )
+                    }
                 }
             }
         }
@@ -70,14 +72,16 @@ class GoodListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
     val processed by lazy {
         task.map { currentTask ->
             currentTask?.let { task ->
-                task.goods.filter { !it.isDeleted && !it.isMissing && it.isCounted }.mapIndexed { index, good ->
-                    ItemGoodProcessedUi(
-                            position = "${task.goods.size - index}",
-                            name = good.name,
-                            quantity = good.getTotalQuantity().dropZeros(),
-                            material = good.material,
-                            providerCode = good.provider.code
-                    )
+                task.goods.filter { !it.isDeleted && (it.isMissing || it.isCounted) }.let { filtered ->
+                    filtered.mapIndexed { index, good ->
+                        ItemGoodProcessedUi(
+                                position = "${filtered.size - index}",
+                                name = good.name,
+                                quantity = good.getTotalQuantity().dropZeros(),
+                                material = good.material,
+                                providerCode = good.provider.code
+                        )
+                    }
                 }
             }
         }
@@ -126,6 +130,8 @@ class GoodListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
     private fun openGoodByMaterial(material: String) {
         task.value?.let { task ->
             task.goods.find { it.material == material }?.let { good ->
+                manager.searchNumber = material
+                manager.searchGoodFromList = true
                 manager.updateCurrentGood(good)
                 navigator.openGoodInfoOpenScreen()
             }

@@ -36,7 +36,7 @@ class DiscrepancyListViewModel : CoreViewModel() {
 
     val title by lazy {
         task.map { task ->
-            "${task?.type}-${task?.number} // ${task?.name}"
+            "${task?.getFormattedName(true)}"
         }
     }
 
