@@ -38,7 +38,7 @@
 
         <View
             android:id="@+id/div_vert1"
-            android:layout_width="1dp"
+            android:layout_width="@dimen/size_1dp"
             android:layout_height="0dp"
             android:background="@color/color_divider"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -49,7 +49,7 @@
 
         <View
             android:id="@+id/div_vert2"
-            android:layout_width="1dp"
+            android:layout_width="@dimen/size_1dp"
             android:layout_height="0dp"
             android:background="@color/color_divider"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -98,7 +98,7 @@
         <View
             android:id="@+id/div_hor_bottom"
             android:layout_width="match_parent"
-            android:layout_height="1dp"
+            android:layout_height="@dimen/size_1dp"
             android:background="@color/color_divider"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -108,8 +108,8 @@
             android:id="@+id/tv_accept"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_marginEnd="8dp"
+            android:layout_marginStart="@dimen/size_8dp"
+            android:layout_marginEnd="@dimen/size_8dp"
             android:ellipsize="end"
             android:gravity="start|center_vertical"
             android:maxLines="1"
