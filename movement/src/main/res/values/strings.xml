@@ -26,7 +26,6 @@
     <string name="box_saved_msg">Короб %s сохранен</string>
     <string name="save_to_sap_erp_msg">Сохранение в SAP ERP</string>
 
-
     <string name="task_settings_title">Карточка задания</string>
 
     <string name="task_settings_status_title">Статус</string>
@@ -58,5 +57,9 @@
     <string name="boxes">Коробки</string>
     <string name="task_save_confirmation_msg">Перевести задание в статус «Посчитано» и закрыть его для редактирования?</string>
 
-
+    <string name="process">Обработать</string>
+    <string name="task_eo_merge_title">Объединение ЕО</string>
+    <string name="task_eo_merge_eo_list">Список ЕО</string>
+    <string name="task_eo_merge_ge_list">Список ГЕ</string>
+    <string name="task_eo_merge_ge_eo">ГЕ/ЕО</string>
 </resources>
