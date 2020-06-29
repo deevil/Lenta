@@ -1,6 +1,7 @@
 package com.lenta.movement.platform
 
 import com.lenta.movement.models.*
+import com.lenta.movement.requests.network.StartConsolidationResult
 
 interface IFormatter {
 
@@ -20,4 +21,7 @@ interface IFormatter {
 
     fun basketGisControl(basket: Basket): String
 
+    fun getEOSubtitle(eo: ProcessingUnit) : String
+
+    fun getGETitle(ge: StartConsolidationResult.CargoUnit) : String
 }

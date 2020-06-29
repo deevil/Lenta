@@ -2,6 +2,7 @@ package com.lenta.movement.platform
 
 import android.content.Context
 import com.lenta.movement.models.*
+import com.lenta.movement.requests.network.StartConsolidationResult
 
 class Formatter(
     val context: Context
@@ -100,6 +101,34 @@ class Formatter(
             basket.isFood ?: false -> "Еда"
             else -> ""
         }
+    }
+
+    override fun getEOSubtitle(eo: ProcessingUnit) : String {
+        val builder = StringBuilder()
+        builder.append("№${eo.basketNumber}")
+        builder.append(
+                when {
+                    eo.isAlco -> "/A"
+                    eo.isUsual -> "/O"
+                    else -> ""
+                }
+        )
+        builder.append(
+                when (eo.supplier) {
+                    null -> ""
+                    else -> "/${eo.supplier}"
+                }
+        )
+        return builder.toString()
+    }
+
+    override fun getGETitle(ge: StartConsolidationResult.CargoUnit): String {
+        val builder = StringBuilder()
+        val cargoNum = ge.cargoUnitNumber
+        val processingUnit = ge.processingUnitNumber
+        if (cargoNum.isNotEmpty()) builder.append(cargoNum).append("/$processingUnit")
+        else builder.append(processingUnit)
+        return builder.toString()
     }
 
 }
