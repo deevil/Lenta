@@ -24,6 +24,7 @@
     <string name="error_completing_object_processing">Ошибка завершения обработки объекта</string>
     <string name="label_sent_to_print">Этикетка отправлена на печать</string>
     <string name="process_order_not_found">Не найден технологический заказ</string>
+    <string name="fix_start_next_stage_successful">Фиксация начала следующего этапа прошла успешно</string>
 
     // Заголовки списков
     <string name="sku">SKU</string>

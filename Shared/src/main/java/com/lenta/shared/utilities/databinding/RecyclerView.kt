@@ -197,7 +197,6 @@ class RecyclerViewKeyHandler<T>(private val rv: RecyclerView,
     }
 
     fun onKeyDown(keyCode: KeyCode): Boolean {
-
         if (!rv.isFocused) {
             return false
         }
