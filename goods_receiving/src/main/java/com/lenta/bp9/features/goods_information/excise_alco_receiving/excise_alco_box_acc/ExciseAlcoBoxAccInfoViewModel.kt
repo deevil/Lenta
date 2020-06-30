@@ -222,6 +222,7 @@ class ExciseAlcoBoxAccInfoViewModel : CoreViewModel(), OnPositionClickListener {
             return
         }
 
+        processExciseAlcoBoxAccService.setCountAccept((acceptTotalCount.value ?: 0.0))
         screenNavigator.openExciseAlcoBoxListScreen(
                 productInfo = productInfo.value!!,
                 selectQualityCode = qualityInfo.value!![spinQualitySelectedPosition.value!!].code,
@@ -281,6 +282,7 @@ class ExciseAlcoBoxAccInfoViewModel : CoreViewModel(), OnPositionClickListener {
                             if (processExciseAlcoBoxAccService.getCountBoxOfProductOfDiscrepancies(exciseStampInfo.boxNumber, "1") >= acceptTotalCount.value!!.toInt()) {
                                 screenNavigator.openAlertRequiredQuantityBoxesAlreadyProcessedScreen() //Необходимое количество коробок уже обработано
                             } else {
+                                processExciseAlcoBoxAccService.setCountAccept((acceptTotalCount.value ?: 0.0))
                                 screenNavigator.openExciseAlcoBoxCardScreen(
                                         productInfo = productInfo.value!!,
                                         boxInfo = null,
@@ -309,6 +311,7 @@ class ExciseAlcoBoxAccInfoViewModel : CoreViewModel(), OnPositionClickListener {
                             if (processExciseAlcoBoxAccService.getCountBoxOfProductOfDiscrepancies(boxInfo.boxNumber, "1") >= acceptTotalCount.value!!.toInt()) {
                                 screenNavigator.openAlertRequiredQuantityBoxesAlreadyProcessedScreen() //Необходимое количество коробок уже обработано
                             } else {
+                                processExciseAlcoBoxAccService.setCountAccept((acceptTotalCount.value ?: 0.0))
                                 screenNavigator.openExciseAlcoBoxCardScreen(
                                         productInfo = productInfo.value!!,
                                         boxInfo = boxInfo,
@@ -324,6 +327,7 @@ class ExciseAlcoBoxAccInfoViewModel : CoreViewModel(), OnPositionClickListener {
                             if (checkBoxList.value == true) {
                                 screenNavigator.openAlertRequiredQuantityBoxesAlreadyProcessedScreen() //Необходимое количество коробок уже обработано
                             } else {
+                                processExciseAlcoBoxAccService.setCountAccept((acceptTotalCount.value ?: 0.0))
                                 screenNavigator.openExciseAlcoBoxCardScreen(
                                         productInfo = productInfo.value!!,
                                         boxInfo = boxInfo,
