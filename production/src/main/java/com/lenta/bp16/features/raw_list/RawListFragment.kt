@@ -8,6 +8,8 @@ import com.lenta.bp16.R
 import com.lenta.bp16.databinding.FragmentRawListBinding
 import com.lenta.bp16.databinding.ItemRawBinding
 import com.lenta.bp16.platform.extention.getAppComponent
+import com.lenta.shared.keys.KeyCode
+import com.lenta.shared.keys.OnKeyDownListener
 import com.lenta.shared.platform.fragment.CoreFragment
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
@@ -21,7 +23,7 @@ import com.lenta.shared.utilities.extentions.generateScreenNumberFromPostfix
 import com.lenta.shared.utilities.extentions.provideViewModel
 
 class RawListFragment : CoreFragment<FragmentRawListBinding, RawListViewModel>(),
-        ToolbarButtonsClickListener {
+        ToolbarButtonsClickListener, OnKeyDownListener {
 
     private var recyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
 
@@ -96,8 +98,23 @@ class RawListFragment : CoreFragment<FragmentRawListBinding, RawListViewModel>()
         }
     }
 
-    /*override fun onResume() {
-        super.onResume()
-        vm.updateList()
-    }*/
+    override fun onKeyDown(keyCode: KeyCode): Boolean {
+        recyclerViewKeyHandler?.let {
+            if (!it.onKeyDown(keyCode)) {
+                if (keyCode.keyCode == KeyCode.KEYCODE_ENTER.keyCode) {
+                    it.posInfo.value?.currentPos?.let { position ->
+                        vm.onClickItemPosition(position)
+                        return true
+                    }
+                }
+
+                return false
+            }
+
+            return true
+        }
+
+        return false
+    }
+
 }

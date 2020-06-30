@@ -108,8 +108,7 @@ class DataBindingRecyclerAdapter<ItemType, BindingType : ViewDataBinding>(
         private val onItemClickListener: AdapterView.OnItemClickListener? = null,
         private val onItemLongClickListener: AdapterView.OnItemLongClickListener? = null,
         private val onItemDoubleClickListener: AdapterView.OnItemClickListener? = null
-) :
-        RecyclerView.Adapter<DataBindingRecyclerAdapter.BindingViewHolder>(), DataBindingAdapter<BindingType> {
+) : RecyclerView.Adapter<DataBindingRecyclerAdapter.BindingViewHolder>(), DataBindingAdapter<BindingType> {
 
 
     override fun getItemCount(): Int {
@@ -197,30 +196,40 @@ class RecyclerViewKeyHandler<T>(private val rv: RecyclerView,
     }
 
     fun onKeyDown(keyCode: KeyCode): Boolean {
-        if (!rv.isFocused) {
-            return false
-        }
-
-        var pos = posInfo.value!!.currentPos
-
         when (keyCode) {
-            KeyCode.KEYCODE_DPAD_DOWN -> pos++
-            KeyCode.KEYCODE_DPAD_UP -> pos--
-            else -> return false
-        }
-        if (pos < -1) {
-            return false
-        }
-        val itemsSize = items.value?.size ?: 0
-        if (pos > itemsSize) {
-            return false
+            KeyCode.KEYCODE_DPAD_DOWN, KeyCode.KEYCODE_DPAD_UP -> {
+                rv.requestFocus()
+
+
+
+                var pos = posInfo.value!!.currentPos
+
+                when (keyCode) {
+                    KeyCode.KEYCODE_DPAD_DOWN -> pos++
+                    KeyCode.KEYCODE_DPAD_UP -> pos--
+                    else -> return false
+                }
+
+                if (pos < -1 || pos > items.value?.size ?: 0) {
+                    return false
+                }
+
+                posInfo.value = PosInfo(currentPos = pos, lastPos = posInfo.value!!.currentPos)
+
+                return true
+            }
+            KeyCode.KEYCODE_ENTER -> {
+                if (rv.isFocused) {
+                    // todo Попробовать вызвать нажатии на элемент отсюда
+                    // ...
+
+                }
+
+                return false
+            }
         }
 
-        posInfo.value = PosInfo(currentPos = pos, lastPos = posInfo.value!!.currentPos)
-
-        rv.requestFocus()
-
-        return true
+        return false
     }
 
     fun selectPosition(position: Int) {

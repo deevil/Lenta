@@ -13,12 +13,15 @@ import com.lenta.bp16.databinding.ItemPuTaskBinding
 import com.lenta.bp16.databinding.LayoutPuTaskListProcessedBinding
 import com.lenta.bp16.databinding.LayoutPuTaskListProcessingBinding
 import com.lenta.bp16.platform.extention.getAppComponent
+import com.lenta.shared.keys.KeyCode
+import com.lenta.shared.keys.OnKeyDownListener
 import com.lenta.shared.platform.fragment.CoreFragment
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListener
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
 import com.lenta.shared.scan.OnScanResultListener
+import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.databinding.DataBindingAdapter
 import com.lenta.shared.utilities.databinding.DataBindingRecyclerViewConfig
 import com.lenta.shared.utilities.databinding.RecyclerViewKeyHandler
@@ -29,7 +32,7 @@ import com.lenta.shared.utilities.extentions.getDeviceIp
 import com.lenta.shared.utilities.extentions.provideViewModel
 
 class ProcessingUnitTaskListFragment : CoreFragment<FragmentProcessingUnitTaskListBinding, ProcessingUnitTaskListViewModel>(),
-        ViewPagerSettings, ToolbarButtonsClickListener, OnScanResultListener {
+        ViewPagerSettings, ToolbarButtonsClickListener, OnScanResultListener, OnKeyDownListener {
 
     private var processingRecyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
     private var processedRecyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
@@ -177,4 +180,28 @@ class ProcessingUnitTaskListFragment : CoreFragment<FragmentProcessingUnitTaskLi
         super.onResume()
         vm.loadTaskList()
     }
+
+    override fun onKeyDown(keyCode: KeyCode): Boolean {
+        when (vm.selectedPage.value) {
+            0 -> processingRecyclerViewKeyHandler
+            1 -> processedRecyclerViewKeyHandler
+            else -> null
+        }?.let {
+            if (!it.onKeyDown(keyCode)) {
+                if (keyCode.keyCode == KeyCode.KEYCODE_ENTER.keyCode) {
+                    it.posInfo.value?.currentPos?.let { position ->
+                        vm.onClickItemPosition(position)
+                        return true
+                    }
+                }
+
+                return false
+            }
+
+            return true
+        }
+
+        return false
+    }
+
 }

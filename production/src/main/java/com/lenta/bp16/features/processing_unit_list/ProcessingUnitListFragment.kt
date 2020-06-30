@@ -8,6 +8,8 @@ import com.lenta.bp16.platform.extention.getAppComponent
 import com.lenta.bp16.BR
 import com.lenta.bp16.databinding.FragmentProcessingUnitListBinding
 import com.lenta.bp16.databinding.ItemProcessingUnitBinding
+import com.lenta.shared.keys.KeyCode
+import com.lenta.shared.keys.OnKeyDownListener
 import com.lenta.shared.platform.activity.OnBackPresserListener
 import com.lenta.shared.platform.fragment.CoreFragment
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
@@ -22,7 +24,7 @@ import com.lenta.shared.utilities.extentions.generateScreenNumberFromPostfix
 import com.lenta.shared.utilities.extentions.provideViewModel
 
 class ProcessingUnitListFragment : CoreFragment<FragmentProcessingUnitListBinding, ProcessingUnitListViewModel>(),
-        OnBackPresserListener, ToolbarButtonsClickListener {
+        OnBackPresserListener, ToolbarButtonsClickListener, OnKeyDownListener {
 
     private var recyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
 
@@ -100,6 +102,25 @@ class ProcessingUnitListFragment : CoreFragment<FragmentProcessingUnitListBindin
 
     override fun onBackPressed(): Boolean {
         vm.onBackPressed()
+        return false
+    }
+
+    override fun onKeyDown(keyCode: KeyCode): Boolean {
+        recyclerViewKeyHandler?.let {
+            if (!it.onKeyDown(keyCode)) {
+                if (keyCode.keyCode == KeyCode.KEYCODE_ENTER.keyCode) {
+                    it.posInfo.value?.currentPos?.let { position ->
+                        vm.onClickItemPosition(position)
+                        return true
+                    }
+                }
+
+                return false
+            }
+
+            return true
+        }
+
         return false
     }
 

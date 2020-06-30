@@ -13,6 +13,8 @@ import com.lenta.bp16.databinding.ItemEsTaskBinding
 import com.lenta.bp16.databinding.LayoutEsTaskListProcessedBinding
 import com.lenta.bp16.databinding.LayoutEsTaskListProcessingBinding
 import com.lenta.bp16.platform.extention.getAppComponent
+import com.lenta.shared.keys.KeyCode
+import com.lenta.shared.keys.OnKeyDownListener
 import com.lenta.shared.platform.fragment.CoreFragment
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
@@ -28,7 +30,7 @@ import com.lenta.shared.utilities.extentions.getDeviceIp
 import com.lenta.shared.utilities.extentions.provideViewModel
 
 class ExternalSupplyTaskListFragment : CoreFragment<FragmentExternalSupplyTaskListBinding, ExternalSupplyTaskListViewModel>(),
-        ViewPagerSettings, ToolbarButtonsClickListener {
+        ViewPagerSettings, ToolbarButtonsClickListener, OnKeyDownListener {
 
     private var processingRecyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
     private var processedRecyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
@@ -171,6 +173,29 @@ class ExternalSupplyTaskListFragment : CoreFragment<FragmentExternalSupplyTaskLi
     override fun onResume() {
         super.onResume()
         vm.loadTaskList()
+    }
+
+    override fun onKeyDown(keyCode: KeyCode): Boolean {
+        when (vm.selectedPage.value) {
+            0 -> processingRecyclerViewKeyHandler
+            1 -> processedRecyclerViewKeyHandler
+            else -> null
+        }?.let {
+            if (!it.onKeyDown(keyCode)) {
+                if (keyCode.keyCode == KeyCode.KEYCODE_ENTER.keyCode) {
+                    it.posInfo.value?.currentPos?.let { position ->
+                        vm.onClickItemPosition(position)
+                        return true
+                    }
+                }
+
+                return false
+            }
+
+            return true
+        }
+
+        return false
     }
 
 }
