@@ -176,7 +176,7 @@ class RecyclerViewKeyHandler<T>(private val rv: RecyclerView,
                                 private val items: LiveData<List<T>>,
                                 lifecycleOwner: LifecycleOwner,
                                 initPosInfo: PosInfo? = null,
-                                val customKeyHandler: ((Int) -> Unit)? = null
+                                var customKeyHandler: ((Int) -> Unit)? = null
 ) {
 
     val posInfo = MutableLiveData(initPosInfo?.copy(isManualClick = false) ?: PosInfo(0, -1))

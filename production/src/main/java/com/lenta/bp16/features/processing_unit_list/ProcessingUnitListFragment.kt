@@ -100,4 +100,9 @@ class ProcessingUnitListFragment : CoreFragment<FragmentProcessingUnitListBindin
     override fun onKeyDown(keyCode: KeyCode): Boolean {
         return recyclerViewKeyHandler?.onFragmentKeyDownHandler(keyCode) ?: false
     }
+
+    override fun onDestroyView() {
+        recyclerViewKeyHandler?.customKeyHandler = null
+        super.onDestroyView()
+    }
 }
