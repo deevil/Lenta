@@ -248,28 +248,6 @@ class RecyclerViewKeyHandler<T>(private val rv: RecyclerView,
     }
 }
 
-fun RecyclerViewKeyHandler<*>.processItemClickHandler(position: Int) {
-        if (this.isSelected(position)) {
-            customKeyHandler?.invoke(position)
-        } else {
-            this.selectPosition(position)
-        }
-}
-
-fun RecyclerViewKeyHandler<*>.onFragmentKeyDownHandler(keyCode: KeyCode): Boolean {
-    var returnValue = false
-    if (!this.onKeyDown(keyCode)) {
-        if (keyCode.keyCode == KeyCode.KEYCODE_ENTER.keyCode) {
-            this.posInfo.value?.currentPos?.let { position ->
-                customKeyHandler?.invoke(position)
-                returnValue = true
-            }
-        }
-    }
-
-    return returnValue
-}
-
 abstract class DoubleClickListener : View.OnClickListener {
 
     private var lastClickTime: Long = 0

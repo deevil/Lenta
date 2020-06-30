@@ -3,11 +3,11 @@ package com.lenta.bp16.features.processing_unit_list
 import android.os.Bundle
 import android.view.View
 import android.widget.AdapterView
-import com.lenta.bp16.R
-import com.lenta.bp16.platform.extention.getAppComponent
 import com.lenta.bp16.BR
+import com.lenta.bp16.R
 import com.lenta.bp16.databinding.FragmentProcessingUnitListBinding
 import com.lenta.bp16.databinding.ItemProcessingUnitBinding
+import com.lenta.bp16.platform.extention.getAppComponent
 import com.lenta.shared.keys.KeyCode
 import com.lenta.shared.keys.OnKeyDownListener
 import com.lenta.shared.platform.activity.OnBackPresserListener
@@ -16,10 +16,10 @@ import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListener
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
-import com.lenta.shared.utilities.databinding.*
-import com.lenta.shared.utilities.extentions.connectLiveData
-import com.lenta.shared.utilities.extentions.generateScreenNumberFromPostfix
-import com.lenta.shared.utilities.extentions.provideViewModel
+import com.lenta.shared.utilities.databinding.DataBindingAdapter
+import com.lenta.shared.utilities.databinding.DataBindingRecyclerViewConfig
+import com.lenta.shared.utilities.databinding.RecyclerViewKeyHandler
+import com.lenta.shared.utilities.extentions.*
 
 class ProcessingUnitListFragment : CoreFragment<FragmentProcessingUnitListBinding, ProcessingUnitListViewModel>(),
         OnBackPresserListener, ToolbarButtonsClickListener, OnKeyDownListener {
