@@ -437,4 +437,14 @@ class ProcessExciseAlcoBoxAccService
                 ?.deleteProductDiscrepancy(productInfo.materialNumber, typeDiscrepancies)
     }
 
+    fun getLastAddExciseStamp() : TaskExciseStampInfo? {
+        return if (currentExciseStampsDiscrepancies.isNotEmpty()) {
+            exciseStamps.findLast { stampInfo ->
+                stampInfo.code == currentExciseStampsDiscrepancies.last {
+                    it.isScan
+                }.code
+            }
+        } else null
+    }
+
 }

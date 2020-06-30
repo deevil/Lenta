@@ -230,7 +230,7 @@ class ExciseAlcoBoxAccInfoViewModel : CoreViewModel(), OnPositionClickListener {
         )
     }
 
-    fun onClickDetails(){
+    fun onClickDetails() {
         screenNavigator.openGoodsDetailsScreen(productInfo.value!!)
     }
 
