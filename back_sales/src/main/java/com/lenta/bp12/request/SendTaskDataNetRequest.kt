@@ -1,7 +1,6 @@
 package com.lenta.bp12.request
 
 import com.google.gson.annotations.SerializedName
-import com.lenta.bp12.model.pojo.open_task.Task
 import com.lenta.bp12.request.pojo.SentTaskInfo
 import com.lenta.bp12.request.pojo.PositionInfo
 import com.lenta.bp12.request.pojo.MarkInfo
@@ -12,8 +11,6 @@ import com.lenta.shared.functional.Either
 import com.lenta.shared.interactor.UseCase
 import com.lenta.shared.requests.FmpRequestsHelper
 import com.lenta.shared.requests.SapResponse
-import com.lenta.shared.utilities.extentions.dropZeros
-import com.lenta.shared.utilities.extentions.toSapBooleanString
 import javax.inject.Inject
 
 class SendTaskDataNetRequest @Inject constructor(
@@ -32,7 +29,7 @@ data class SendTaskDataParams(
         val deviceIp: String,
         /** Номер задания */
         @SerializedName("IV_TASK_NUM")
-        val taskNumber: String,
+        val taskNumber: String = "",
         /** Табельный номер */
         @SerializedName("IV_PERNR")
         val userNumber: String,

@@ -1,22 +1,21 @@
 package com.lenta.bp12.model.pojo.create_task
 
 import com.lenta.bp12.model.ControlType
-import com.lenta.bp12.model.pojo.Properties
+import com.lenta.bp12.model.pojo.TaskType
 import com.lenta.bp12.model.pojo.ReturnReason
 import com.lenta.shared.utilities.extentions.sumList
 import com.lenta.shared.utilities.extentions.sumWith
 
-data class Task(
-        val number: String = "",
+data class TaskCreate(
         val name: String,
-        val properties: Properties,
         val storage: String,
         val reason: ReturnReason,
-        val goods: MutableList<Good> = mutableListOf(),
-        val baskets: MutableList<Basket> = mutableListOf(),
-        var isProcessed: Boolean = false,
+        val taskType: TaskType,
         val control: ControlType = ControlType.UNKNOWN,
-        var comment: String = ""
+        var isProcessed: Boolean = false,
+
+        val goods: MutableList<GoodCreate> = mutableListOf(),
+        val baskets: MutableList<Basket> = mutableListOf()
 ) {
 
     fun getQuantityByBasket(basket: Basket): Double {
@@ -29,7 +28,7 @@ data class Task(
         }.sumList()
     }
 
-    fun getGoodListByBasket(basket: Basket): List<Good> {
+    fun getGoodListByBasket(basket: Basket): List<GoodCreate> {
         return goods.filter { good ->
             good.section == basket.section && good.matype == basket.matype && good.control == basket.control &&
                     (good.positions.find { it.provider == basket.provider } != null ||

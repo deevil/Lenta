@@ -11,7 +11,7 @@ data class TaskInfo(
         var name: String,
         /** Тип задания */
         @SerializedName("TASK_TYPE")
-        var type: String,
+        var typeCode: String,
         /** Склад отправитель */
         @SerializedName("LGORT_SRC")
         var storage: String,
@@ -56,5 +56,11 @@ data class TaskInfo(
         var purchaseGroup: String,
         /** Товарная группа */
         @SerializedName("MTART")
-        var goodGroup: String
+        var goodGroup: String,
+        /** ??? */
+        @SerializedName("KUNNR")
+        var kunnr: String,
+        /** ??? */
+        @SerializedName("KUNNR_NAME")
+        var kunnrName: String
 )

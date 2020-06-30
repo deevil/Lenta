@@ -12,10 +12,13 @@ data class PartInfo(
         /** Дата производства */
         @SerializedName("DATEOFPOUR")
         var productionDate: String,
-        /** Фактическое количество в ЕИЗ */
+        /** Фактическое количество */
+        @SerializedName("PLAN_QNT")
+        var planQuantity: String = "",
+        /** Фактическое количество */
         @SerializedName("FACT_QNT")
-        var quantity: String,
-        /** Единица измерения заказа на поставку */
+        var factQuantity: String,
+        /** Единица измерения */
         @SerializedName("BSTME")
         var unitsCode: String,
         /** Номер партии */
@@ -23,5 +26,8 @@ data class PartInfo(
         var partNumber: String,
         /** Код поставщика */
         @SerializedName("LIFNR")
-        var providerCode: String
+        var providerCode: String,
+        /** Номер корзины */
+        @SerializedName("BASKET_NUM")
+        var basketNumber: String = ""
 )

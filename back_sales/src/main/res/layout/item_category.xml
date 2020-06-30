@@ -7,7 +7,7 @@
 
         <variable
             name="item"
-            type="com.lenta.bp12.features.open_task.good_details.ItemConsignmentUi" />
+            type="com.lenta.bp12.features.other.ItemCategoryUi" />
 
         <variable
             name="selectedForDelete"
@@ -52,13 +52,8 @@
 
                 <TextView
                     style="@style/CellTextStyle"
-                    android:text="@{item.date}"
-                    tools:text="28.08.2019" />
-
-                <TextView
-                    style="@style/CellTextStyle"
-                    android:text="@{item.provider}"
-                    tools:text="ООО Балтика Северо-запад" />
+                    android:text="@{item.type}"
+                    tools:text="Партионно" />
 
             </LinearLayout>
 
@@ -72,7 +67,7 @@
                     style="@style/CellTextStyle"
                     android:layout_width="wrap_content"
                     android:text="@{item.quantity}"
-                    tools:text="9 шт" />
+                    tools:text="3 шт" />
 
             </LinearLayout>
 

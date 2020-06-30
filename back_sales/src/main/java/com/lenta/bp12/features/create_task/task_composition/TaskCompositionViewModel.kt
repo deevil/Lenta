@@ -44,7 +44,7 @@ class TaskCompositionViewModel : CoreViewModel(), PageSelectionListener, OnOkInS
 
     val title by lazy {
         task.map { task ->
-            "${task?.properties?.type} // ${task?.name}"
+            "${task?.taskType?.code} // ${task?.name}"
         }
     }
 
@@ -75,7 +75,7 @@ class TaskCompositionViewModel : CoreViewModel(), PageSelectionListener, OnOkInS
                         basket = basket,
                         position = "$position",
                         name = "Корзина $position",
-                        description = basket.getDescription(task.properties.isDivBySection),
+                        description = basket.getDescription(task.taskType.isDivBySection),
                         quantity = task.getQuantityByBasket(basket).dropZeros()
                 )
             }

@@ -5,7 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.lenta.bp12.model.BlockType
 import com.lenta.bp12.model.IOpenTaskManager
 import com.lenta.bp12.model.TaskStatus
-import com.lenta.bp12.model.pojo.open_task.Task
+import com.lenta.bp12.model.pojo.open_task.TaskOpen
 import com.lenta.bp12.platform.navigation.IScreenNavigator
 import com.lenta.bp12.request.TaskListNetRequest
 import com.lenta.bp12.request.TaskListParams
@@ -38,13 +38,19 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
     lateinit var manager: IOpenTaskManager
 
 
+    /**
+    Переменные
+     */
+
     val title by lazy {
         "TK - ${sessionInfo.market}"
     }
 
     val selectedPage = MutableLiveData(0)
 
-    val numberField: MutableLiveData<String> = MutableLiveData("")
+    val numberField by lazy {
+        MutableLiveData(sessionInfo.userName)
+    }
 
     val requestFocusToNumberField by lazy {
         MutableLiveData(true)
@@ -58,87 +64,89 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
         manager.foundTasks
     }
 
-    val processing by lazy {
-        tasks.combineLatest(numberField).map { pair ->
-            val list = pair?.first
-            val number = pair?.second
+    val taskNumber = MutableLiveData("")
 
-            if (number.isNullOrEmpty()) {
-                list
-            } else {
-                if (number.all { it.isDigit() }) {
-                    list?.filter { it.number.contains(number) }
+    val processing by lazy {
+        tasks.combineLatest(taskNumber).map {
+            it?.let {
+                val tasks = it.first
+                val number = it.second
+
+                if (number.isNullOrEmpty()) {
+                    tasks
                 } else {
-                    list?.filter { it.block.user.contains(number) }
-                }
-            }?.let {taskList ->
-                taskList.mapIndexed { index, task ->
-                    ItemTaskUi(
-                            position = "${taskList.size - index}",
-                            number = task.number,
-                            name = task.name,
-                            provider = task.getProviderCodeWithName(),
-                            taskStatus = task.status,
-                            blockType = task.block.type,
-                            quantity = task.quantity.toString()
-                    )
+                    tasks?.filter { task -> task.number.contains(number) }
+                }?.let { taskList ->
+                    taskList.mapIndexed { index, task ->
+                        ItemTaskUi(
+                                position = "${taskList.size - index}",
+                                number = task.number,
+                                name = task.getFormattedName(),
+                                provider = task.getProviderCodeWithName(),
+                                taskStatus = task.status,
+                                blockType = task.block.type,
+                                quantity = task.numberOfGoods.toString()
+                        )
+                    }
                 }
             }
         }
     }
 
     val found by lazy {
-        foundTasks.combineLatest(numberField).map { pair ->
-            val list = pair?.first
-            val number = pair?.second
+        foundTasks.combineLatest(taskNumber).map {
+            it?.let {
+                val tasks = it.first
+                val number = it.second
 
-            if (number.isNullOrEmpty()) {
-                list
-            } else {
-                if (number.all { it.isDigit() }) {
-                    list?.filter { it.number.contains(number) }
+                if (number.isNullOrEmpty()) {
+                    tasks
                 } else {
-                    list?.filter { it.block.user.contains(number) }
-                }
-            }?.let {taskList ->
-                taskList.mapIndexed { index, task ->
-                    ItemTaskUi(
-                            position = "${taskList.size - index}",
-                            number = task.number,
-                            name = task.name,
-                            provider = task.getProviderCodeWithName(),
-                            taskStatus = task.status,
-                            blockType = task.block.type,
-                            quantity = task.quantity.toString()
-                    )
+                    tasks?.filter { task -> task.number.contains(number) }
+                }?.let { taskList ->
+                    taskList.mapIndexed { index, task ->
+                        ItemTaskUi(
+                                position = "${taskList.size - index}",
+                                number = task.number,
+                                name = task.name,
+                                provider = task.getProviderCodeWithName(),
+                                taskStatus = task.status,
+                                blockType = task.block.type,
+                                quantity = task.numberOfGoods.toString()
+                        )
+                    }
                 }
             }
         }
     }
 
-    // -----------------------------
+    /**
+    Блок инициализации
+     */
 
     init {
         viewModelScope.launch {
-            //loadTaskList()
+            onClickUpdate()
         }
     }
 
-    // -----------------------------
+    /**
+    Методы
+     */
 
     override fun onPageSelected(position: Int) {
         selectedPage.value = position
     }
 
-    private fun loadTaskList() {
+    private fun loadTaskList(user: String, userNumber: String) {
         viewModelScope.launch {
             navigator.showProgressLoadingData()
 
             taskListNetRequest(
                     TaskListParams(
                             tkNumber = sessionInfo.market ?: "",
-                            user = sessionInfo.userName!!,
-                            userNumber = appSettings.lastPersonnelNumber ?: "",
+                            user = user,
+                            userNumber = userNumber,
                             mode = 1
                     )
             ).also {
@@ -151,7 +159,7 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
         }
     }
 
-    private fun loadFoundTaskList() {
+    private fun loadTaskListWithParams(user: String, userNumber: String) {
         manager.searchParams.value?.let { params ->
             viewModelScope.launch {
                 navigator.showProgressLoadingData()
@@ -159,14 +167,14 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
                 taskListNetRequest(
                         TaskListParams(
                                 tkNumber = sessionInfo.market ?: "",
-                                user = sessionInfo.userName!!,
-                                userNumber = appSettings.lastPersonnelNumber ?: "",
+                                user = user,
+                                userNumber = userNumber,
                                 mode = 2,
                                 taskSearchParams = params
                         )
                 ).also {
                     navigator.hideProgress()
-                }.either(::handleLoadFoundTaskListFailure) { taskListResult ->
+                }.either(::handleFailure) { taskListResult ->
                     viewModelScope.launch {
                         manager.addFoundTasks(taskListResult.tasks)
                     }
@@ -180,50 +188,20 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
         navigator.openAlertScreen(failure)
     }
 
-    private fun handleLoadFoundTaskListFailure(failure: Failure) {
-        manager.searchParams.value = null
-        navigator.openAlertScreen(failure)
-    }
-
-    fun onClickMenu() {
-        navigator.goBack()
-    }
-
-    fun onClickUpdate() {
-        loadTaskList()
-        loadFoundTaskList()
-    }
-
-    fun onClickFilter() {
-        navigator.openTaskSearchScreen()
-    }
-
     fun onClickItemPosition(position: Int) {
         selectedPage.value?.let { page ->
             when (page) {
                 0 -> {
                     tasks.value?.let { tasks ->
                         tasks.find { it.number == processing.value!![position].number }?.let { task ->
-                            task.apply {
-                                when (block.type) {
-                                    BlockType.LOCK -> navigator.showAlertBlockedTaskAnotherUser(block.user, block.ip)
-                                    BlockType.SELF_LOCK -> navigator.showAlertBlockedTaskByMe(block.user) { openTask(task) }
-                                    else -> openTask(task)
-                                }
-                            }
+                            prepareToOpenTask(task)
                         }
                     }
                 }
                 1 -> {
                     tasks.value?.let { tasks ->
                         tasks.find { it.number == found.value!![position].number }?.let { task ->
-                            task.apply {
-                                when (block.type) {
-                                    BlockType.LOCK -> navigator.showAlertBlockedTaskAnotherUser(block.user, block.ip)
-                                    BlockType.SELF_LOCK -> navigator.showAlertBlockedTaskByMe(block.user) { openTask(task) }
-                                    else -> openTask(task)
-                                }
-                            }
+                            prepareToOpenTask(task)
                         }
                     }
                 }
@@ -232,16 +210,55 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
         }
     }
 
-    private fun openTask(task: Task) {
+    private fun prepareToOpenTask(task: TaskOpen) {
+        task.apply {
+            when (block.type) {
+                BlockType.LOCK -> navigator.showAlertBlockedTaskAnotherUser(block.user, block.ip)
+                BlockType.SELF_LOCK -> navigator.showAlertBlockedTaskByMe(block.user) { openTask(task) }
+                else -> openTask(task)
+            }
+        }
+    }
+
+    private fun openTask(task: TaskOpen) {
         manager.updateCurrentTask(task)
         navigator.openTaskCardOpenScreen()
     }
 
     override fun onOkInSoftKeyboard(): Boolean {
-        // todo Что-то сделать при вводе номера/пользователя?
-        // ...
+        if (isEnteredLogin()) {
+            taskNumber.value = ""
+            onClickUpdate()
+        } else {
+            taskNumber.value = numberField.value
+        }
 
         return true
+    }
+
+    private fun isEnteredLogin(): Boolean {
+        val entered = numberField.value ?: ""
+        return entered.isNotEmpty() && !entered.all { it.isDigit() }
+    }
+
+    /**
+    Обработка нажатий кнопок
+     */
+
+    fun onClickMenu() {
+        navigator.goBack()
+    }
+
+    fun onClickUpdate() {
+        val user = if (isEnteredLogin()) sessionInfo.userName ?: "" else ""
+        val userNumber = if (isEnteredLogin()) sessionInfo.personnelNumber ?: "" else ""
+
+        loadTaskList(user, userNumber)
+        loadTaskListWithParams(user, userNumber)
+    }
+
+    fun onClickFilter() {
+        navigator.openTaskSearchScreen()
     }
 
 }

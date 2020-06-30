@@ -4,6 +4,7 @@ import com.lenta.bp12.model.ControlType
 import com.lenta.bp12.model.GoodType
 import com.lenta.bp12.model.pojo.Mark
 import com.lenta.bp12.model.pojo.Part
+import com.lenta.bp12.model.pojo.Position
 import com.lenta.bp12.request.pojo.ProducerInfo
 import com.lenta.bp12.request.pojo.ProviderInfo
 import com.lenta.shared.models.core.MatrixType
@@ -11,7 +12,7 @@ import com.lenta.shared.models.core.Uom
 import com.lenta.shared.utilities.extentions.sumList
 import com.lenta.shared.utilities.extentions.sumWith
 
-data class Good(
+data class GoodCreate(
         val ean: String,
         val material: String,
         val name: String,
@@ -23,6 +24,7 @@ data class Good(
         val section: String,
         val matrix: MatrixType,
         val innerQuantity: Double = 0.0,
+
         val providers: MutableList<ProviderInfo> = mutableListOf(),
         val producers: MutableList<ProducerInfo> = mutableListOf(),
 
@@ -33,6 +35,29 @@ data class Good(
 
     fun getNameWithMaterial(delimiter: String = " "): String {
         return "${material.takeLast(6)}$delimiter$name"
+    }
+
+    fun getTotalQuantity(): Double {
+        return getPositionQuantity() + getMarkQuantity() + getPartQuantity()
+    }
+
+    fun getPositionQuantity(): Double {
+        return positions.map { it.quantity }.sumList()
+    }
+
+    fun getMarkQuantity(): Double {
+        return marks.size.toDouble()
+    }
+
+    fun getPartQuantity(): Double {
+        return parts.map { it.quantity }.sumList()
+    }
+
+    fun getQuantityByProvider(providerCode: String?): Double {
+        val positionQuantity = positions.filter { it.provider.code == providerCode }.map { it.quantity }.sumList()
+        val partQuantity = parts.filter { it.providerCode == providerCode }.map { it.quantity }.sumList()
+
+        return positionQuantity.sumWith(partQuantity)
     }
 
     fun addPosition(quantity: Double, provider: ProviderInfo) {
@@ -83,29 +108,6 @@ data class Good(
         marks.find { it.number == number }?.let { mark ->
             marks.remove(mark)
         }
-    }
-
-    fun getTotalQuantity(): Double {
-        return getPositionQuantity() + getMarkQuantity() + getPartQuantity()
-    }
-
-    fun getPositionQuantity(): Double {
-        return positions.map { it.quantity }.sumList()
-    }
-
-    fun getMarkQuantity(): Double {
-        return marks.size.toDouble()
-    }
-
-    fun getPartQuantity(): Double {
-        return parts.map { it.quantity }.sumList()
-    }
-
-    fun getQuantityByProvider(providerCode: String?): Double {
-        val positionQuantity = positions.filter { it.provider?.code == providerCode }.map { it.quantity }.sumList()
-        val partQuantity = parts.filter { it.providerCode == providerCode }.map { it.quantity }.sumList()
-
-        return positionQuantity.sumWith(partQuantity)
     }
 
     fun removeAllMark() {
