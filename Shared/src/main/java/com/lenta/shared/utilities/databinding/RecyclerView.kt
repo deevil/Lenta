@@ -16,8 +16,8 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
-import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.lenta.shared.keys.KeyCode
 import com.lenta.shared.utilities.Logg
 
@@ -175,7 +175,9 @@ interface Evenable {
 class RecyclerViewKeyHandler<T>(private val rv: RecyclerView,
                                 private val items: LiveData<List<T>>,
                                 lifecycleOwner: LifecycleOwner,
-                                initPosInfo: PosInfo? = null) {
+                                initPosInfo: PosInfo? = null,
+                                val customKeyHandler: ((Int) -> Unit)? = null
+) {
 
     val posInfo = MutableLiveData(initPosInfo?.copy(isManualClick = false) ?: PosInfo(0, -1))
 
@@ -244,8 +246,28 @@ class RecyclerViewKeyHandler<T>(private val rv: RecyclerView,
     fun resendPositions() {
         posInfo.value = posInfo.value
     }
+}
 
+fun RecyclerViewKeyHandler<*>.onKeyDownHandler(position: Int) {
+        if (this.isSelected(position)) {
+            customKeyHandler?.invoke(position)
+        } else {
+            this.selectPosition(position)
+        }
+}
 
+fun RecyclerViewKeyHandler<*>.onFragmentKeyHandler(keyCode: KeyCode): Boolean {
+    var returnValue = false
+    if (!this.onKeyDown(keyCode)) {
+        if (keyCode.keyCode == KeyCode.KEYCODE_ENTER.keyCode) {
+            this.posInfo.value?.currentPos?.let { position ->
+                customKeyHandler?.invoke(position)
+                returnValue = true
+            }
+        }
+    }
+
+    return returnValue
 }
 
 abstract class DoubleClickListener : View.OnClickListener {

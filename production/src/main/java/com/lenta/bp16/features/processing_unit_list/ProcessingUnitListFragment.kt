@@ -16,9 +16,7 @@ import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListener
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
-import com.lenta.shared.utilities.databinding.DataBindingAdapter
-import com.lenta.shared.utilities.databinding.DataBindingRecyclerViewConfig
-import com.lenta.shared.utilities.databinding.RecyclerViewKeyHandler
+import com.lenta.shared.utilities.databinding.*
 import com.lenta.shared.utilities.extentions.connectLiveData
 import com.lenta.shared.utilities.extentions.generateScreenNumberFromPostfix
 import com.lenta.shared.utilities.extentions.provideViewModel
@@ -78,14 +76,7 @@ class ProcessingUnitListFragment : CoreFragment<FragmentProcessingUnitListBindin
                         }
                     },
                     onItemClickListener = AdapterView.OnItemClickListener { _, _, position, _ ->
-                        recyclerViewKeyHandler?.let {
-                            if (it.isSelected(position)) {
-                                vm.onClickItemPosition(position)
-                            } else {
-                                it.selectPosition(position)
-                            }
-                        }
-
+                        recyclerViewKeyHandler?.onKeyDownHandler(position)
                     }
             )
 
@@ -95,7 +86,8 @@ class ProcessingUnitListFragment : CoreFragment<FragmentProcessingUnitListBindin
                     rv = layoutBinding.rv,
                     items = vm.goods,
                     lifecycleOwner = layoutBinding.lifecycleOwner!!,
-                    initPosInfo = recyclerViewKeyHandler?.posInfo?.value
+                    initPosInfo = recyclerViewKeyHandler?.posInfo?.value,
+                    customKeyHandler = vm::onClickItemPosition
             )
         }
     }
@@ -106,22 +98,6 @@ class ProcessingUnitListFragment : CoreFragment<FragmentProcessingUnitListBindin
     }
 
     override fun onKeyDown(keyCode: KeyCode): Boolean {
-        recyclerViewKeyHandler?.let {
-            if (!it.onKeyDown(keyCode)) {
-                if (keyCode.keyCode == KeyCode.KEYCODE_ENTER.keyCode) {
-                    it.posInfo.value?.currentPos?.let { position ->
-                        vm.onClickItemPosition(position)
-                        return true
-                    }
-                }
-
-                return false
-            }
-
-            return true
-        }
-
-        return false
+        return recyclerViewKeyHandler?.onFragmentKeyHandler(keyCode) ?: false
     }
-
 }
