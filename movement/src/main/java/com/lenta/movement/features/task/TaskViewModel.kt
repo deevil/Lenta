@@ -5,16 +5,21 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import com.lenta.movement.R
+import com.lenta.movement.exception.EmptyTaskFailure
+import com.lenta.movement.exception.PersonnelNumberFailure
 import com.lenta.movement.models.*
 import com.lenta.movement.platform.IFormatter
 import com.lenta.movement.platform.extensions.unsafeLazy
 import com.lenta.movement.platform.navigation.IScreenNavigator
 import com.lenta.movement.requests.network.ApprovalAndTransferToTasksCargoUnit
-import com.lenta.movement.requests.network.ApprovalAndTransferToTasksCargoUnitParams
 import com.lenta.movement.requests.network.StartConsolidation
-import com.lenta.movement.requests.network.StartConsolidationParams
+import com.lenta.movement.requests.network.models.approvalAndTransferToTasksCargoUnit.ApprovalAndTransferToTasksCargoUnitParams
+import com.lenta.movement.requests.network.models.startConsolidation.StartConsolidationParams
 import com.lenta.movement.requests.network.models.toModelList
 import com.lenta.shared.account.ISessionInfo
+import com.lenta.shared.exception.Failure
+import com.lenta.shared.functional.Either
 import com.lenta.shared.models.core.GisControl
 import com.lenta.shared.platform.constants.Constants
 import com.lenta.shared.platform.viewmodel.CoreViewModel
@@ -68,24 +73,24 @@ class TaskViewModel : CoreViewModel(), PageSelectionListener {
 
     val selectedPagePosition = MutableLiveData(0)
 
-    val currentStatusText by lazy { formatter.getTaskStatusName(currentStatus) }
-    val nextStatusText by lazy { formatter.getTaskStatusName(nextStatus) }
+    val currentStatusText by unsafeLazy { formatter.getTaskStatusName(currentStatus) }
+    val nextStatusText by unsafeLazy { formatter.getTaskStatusName(nextStatus) }
 
     val taskTypeEnabled = MutableLiveData(false)
-    val taskTypesFormatted by lazy {
+    val taskTypesFormatted by unsafeLazy {
         MutableLiveData(TaskType.values().map { formatter.getTaskTypeNameDescription(it) })
     }
-    val taskTypeSelectedPosition by lazy { MutableLiveData(taskType.ordinal) }
+    val taskTypeSelectedPosition by unsafeLazy { MutableLiveData(taskType.ordinal) }
 
     val movementTypeEnabled = MutableLiveData(false)
-    val movementTypesFormatted by lazy {
+    val movementTypesFormatted by unsafeLazy {
         MutableLiveData(MovementType.values().map { formatter.getMovementTypeNameDescription(it) })
     }
-    val movementSelectedPosition by lazy { MutableLiveData(movementType.ordinal) }
+    val movementSelectedPosition by unsafeLazy { MutableLiveData(movementType.ordinal) }
 
-    val taskNameEnabled by lazy { task.map { it == null } }
-    val taskName by lazy {
-        val defaultName = "Перемещение от ${DateTimeUtil.formatDate(Date(), Constants.DATE_FORMAT_dd_mm_yyyy_hh_mm)}"
+    val taskNameEnabled by unsafeLazy { task.map { it == null } }
+    val taskName by unsafeLazy {
+        val defaultName = context.getString(R.string.task_settings_name, DateTimeUtil.formatDate(Date(), Constants.DATE_FORMAT_dd_mm_yyyy_hh_mm))
         MutableLiveData(task.value?.name ?: defaultName)
     }
 
@@ -148,8 +153,8 @@ class TaskViewModel : CoreViewModel(), PageSelectionListener {
         }
     }
 
-    val shipmentDateEnabled by lazy { task.map { it == null } }
-    val shipmentDate by lazy {
+    val shipmentDateEnabled by unsafeLazy { task.map { it == null } }
+    val shipmentDate by unsafeLazy {
         val date = task.value?.shipmentDate?.let {
             DateTimeUtil.formatDate(it, Constants.DATE_FORMAT_ddmmyy)
         }
@@ -157,13 +162,13 @@ class TaskViewModel : CoreViewModel(), PageSelectionListener {
         MutableLiveData(date ?: defaultDate)
     }
 
-    val description by lazy { MutableLiveData(setting.description) }
-    val comments by lazy { MutableLiveData(task.value?.comment.orEmpty()) }
+    val description by unsafeLazy { MutableLiveData(setting.description) }
+    val comments by unsafeLazy { MutableLiveData(task.value?.comment.orEmpty()) }
 
-    val alcoVisible by lazy {
+    val alcoVisible by unsafeLazy {
         MutableLiveData(setting.gisControls.contains(GisControl.Alcohol))
     }
-    val generalVisible by lazy {
+    val generalVisible by unsafeLazy {
         MutableLiveData(setting.gisControls.contains(GisControl.GeneralProduct))
     }
 
@@ -196,44 +201,53 @@ class TaskViewModel : CoreViewModel(), PageSelectionListener {
             when (currentStatus) {
                 Task.Status.ToConsolidation(Task.Status.TO_CONSOLIDATION) -> {
                     viewModelScope.launch {
-                        startConsolidation(
-                                StartConsolidationParams(
-                                        deviceIp = context.getDeviceIp(),
-                                        taskNumber = task.value!!.number,
-                                        mode = GET_TASK_COMP_CODE,
-                                        personnelNumber = sessionInfo.personnelNumber!!,
-                                        withProductInfo = true.toSapBooleanString()
+                        val either = task.value?.let { taskValue ->
+                            sessionInfo.personnelNumber?.let { personnelNumber ->
+                                startConsolidation(
+                                        StartConsolidationParams(
+                                                deviceIp = context.getDeviceIp(),
+                                                taskNumber = taskValue.number,
+                                                mode = GET_TASK_COMP_CODE,
+                                                personnelNumber = personnelNumber,
+                                                withProductInfo = true.toSapBooleanString()
+                                        )
                                 )
-                        ).either({
+                            } ?: Either.Left(PersonnelNumberFailure(context.getString(R.string.alert_null_personnel_number)))
+
+                        } ?: Either.Left(EmptyTaskFailure(context.getString(R.string.alert_null_task)))
+
+                        either.either({
                             screenNavigator.openAlertScreen(it)
                         }, {
                             screenNavigator.openTaskEoMergeScreen(it.eoList.toModelList(), it.geList)
-                        }
-                        )
+                        })
                     }
                 }
 
                 Task.Status.Consolidated(Task.Status.CONSOLIDATED) -> {
                     viewModelScope.launch {
-                        approvalAndTransferToTasksCargoUnit(
-                                ApprovalAndTransferToTasksCargoUnitParams(
-                                        deviceIp = context.getDeviceIp(),
-                                        taskNumber = task.value!!.number,
-                                        personnelNumber = sessionInfo.personnelNumber!!
+                        val either = task.value?.let { taskValue ->
+                            sessionInfo.personnelNumber?.let { personnelNumber ->
+                                approvalAndTransferToTasksCargoUnit(
+                                        ApprovalAndTransferToTasksCargoUnitParams(
+                                                deviceIp = context.getDeviceIp(),
+                                                taskNumber = taskValue.number,
+                                                personnelNumber = personnelNumber
+                                        )
                                 )
-                        ).either({
+                            } ?: Either.Left(PersonnelNumberFailure(context.getString(R.string.alert_null_personnel_number)))
+                        } ?: Either.Left(EmptyTaskFailure(context.getString(R.string.alert_null_task)))
+                        either.either({
                             screenNavigator.openAlertScreen(it)
                         }, {
-                            Logg.d{"Approval and transfer to task cargo unit: $it"}
+                            // TODO screenNavigator.openApprovalScreen()
+                            Logg.d { "Approval and transfer to task cargo unit: $it" }
+                            screenNavigator.openNotImplementedScreenAlert("Одобрение и передача на ГЗ")
                         })
                     }
                 }
             }
-
-            screenNavigator.openNotImplementedScreenAlert("Состав сохраненного задания")
-            return
         }
-
     }
 
     fun onBackPressed() {
@@ -268,7 +282,7 @@ class TaskViewModel : CoreViewModel(), PageSelectionListener {
                 receiver = receivers.getSelectedValue(receiverSelectedPosition).orEmpty(),
                 pikingStorage = pikingStorageList.getSelectedValue(pikingStorageSelectedPosition).orEmpty(),
                 shipmentStorage = shipmentStorageList.getSelectedValue(shipmentStorageSelectedPosition).orEmpty(),
-                shipmentDate = shipmentDate.value?.toDate() ?: Date(0)
+                shipmentDate = shipmentDate.value?.toDate() ?: Date()
         )
     }
 

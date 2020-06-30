@@ -33,7 +33,7 @@ class GoodsListFragment : CoreFragment<FragmentGoodsListBinding, GoodsListViewMo
 
     override fun getLayoutId() = R.layout.fragment_goods_list
 
-    override fun getPageNumber() = "10/06"
+    override fun getPageNumber() = PAGE_NUMBER
 
     override fun getViewModel(): GoodsListViewModel {
         provideViewModel(GoodsListViewModel::class.java).let {
@@ -68,10 +68,12 @@ class GoodsListFragment : CoreFragment<FragmentGoodsListBinding, GoodsListViewMo
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val onClickSelectionListener = View.OnClickListener {
-            (it!!.tag as Int).let { position ->
-                vm.selectionsHelper.revert(position = position)
-                binding?.rv?.adapter?.notifyItemChanged(position)
+        val onClickSelectionListener = View.OnClickListener { view ->
+            view?.let {
+                (it.tag as Int).let { position ->
+                    vm.selectionsHelper.revert(position = position)
+                    binding?.rv?.adapter?.notifyItemChanged(position)
+                }
             }
         }
 
@@ -79,9 +81,7 @@ class GoodsListFragment : CoreFragment<FragmentGoodsListBinding, GoodsListViewMo
             layoutId = R.layout.layout_item_goods_list,
             itemId = BR.vm,
             realisation = object : DataBindingAdapter<LayoutItemGoodsListBinding> {
-                override fun onCreate(binding: LayoutItemGoodsListBinding) {
-                    // do nothing
-                }
+                override fun onCreate(binding: LayoutItemGoodsListBinding) = Unit
 
                 override fun onBind(binding: LayoutItemGoodsListBinding, position: Int) {
                     binding.tvCounter.tag = position
@@ -101,12 +101,16 @@ class GoodsListFragment : CoreFragment<FragmentGoodsListBinding, GoodsListViewMo
             }
         )
 
-        recyclerViewKeyHandler = RecyclerViewKeyHandler(
-            binding?.rv!!,
-            vm.goodsList,
-            binding?.lifecycleOwner!!,
-            recyclerViewKeyHandler?.posInfo?.value
-        )
+        binding?.rv?.let { recyclerView ->
+            binding?.lifecycleOwner?.let { lifecycleOwner ->
+                recyclerViewKeyHandler = RecyclerViewKeyHandler(
+                        recyclerView,
+                        vm.goodsList,
+                        lifecycleOwner,
+                        recyclerViewKeyHandler?.posInfo?.value
+                )
+            }
+        }
     }
 
     override fun onScanResult(data: String) {
@@ -135,5 +139,9 @@ class GoodsListFragment : CoreFragment<FragmentGoodsListBinding, GoodsListViewMo
             return true
         }
         return false
+    }
+
+    companion object {
+        private const val PAGE_NUMBER = "10/06"
     }
 }

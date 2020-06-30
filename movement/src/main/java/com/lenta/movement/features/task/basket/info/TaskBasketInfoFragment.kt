@@ -14,17 +14,9 @@ class TaskBasketInfoFragment: CoreFragment<FragmentTaskBasketInfoBinding, TaskBa
 
     private var basketIndex by state(-1)
 
-    companion object {
-        fun newInstance(basketIndex: Int): TaskBasketInfoFragment {
-            return TaskBasketInfoFragment().apply {
-                this.basketIndex = basketIndex
-            }
-        }
-    }
-
     override fun getLayoutId() = R.layout.fragment_task_basket_info
 
-    override fun getPageNumber() = "13/06"
+    override fun getPageNumber() = PAGE_NUMBER
 
     override fun getViewModel(): TaskBasketInfoViewModel {
         return provideViewModel(TaskBasketInfoViewModel::class.java).also { viewModel ->
@@ -35,12 +27,22 @@ class TaskBasketInfoFragment: CoreFragment<FragmentTaskBasketInfoBinding, TaskBa
 
     override fun setupTopToolBar(topToolbarUiModel: TopToolbarUiModel) {
         topToolbarUiModel.title.value = vm.getTitle()
-        topToolbarUiModel.description.value = "Свойства корзины"
+        topToolbarUiModel.description.value = getString(R.string.task_basket_info_title)
     }
 
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
         bottomToolbarUiModel.cleanAll()
 
         bottomToolbarUiModel.uiModelButton1.show(ButtonDecorationInfo.back)
+    }
+
+    companion object {
+        private const val PAGE_NUMBER = "10/06"
+
+        fun newInstance(basketIndex: Int): TaskBasketInfoFragment {
+            return TaskBasketInfoFragment().apply {
+                this.basketIndex = basketIndex
+            }
+        }
     }
 }

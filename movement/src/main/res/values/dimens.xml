@@ -32,6 +32,6 @@
     <dimen name="text_20sp">20sp</dimen>
     <dimen name="text_24sp">24sp</dimen>
 
-
     <dimen name="divider_stroke_width">1dp</dimen>
+    <dimen name="tab_strip_height">40dp</dimen>
 </resources>

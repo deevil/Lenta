@@ -26,19 +26,11 @@ class TaskBasketFragment: CoreFragment<FragmentTaskBasketBinding, TaskBasketView
 
     private var basketIndex: Int? by state(null)
 
-    companion object {
-        fun newInstance(basketIndex: Int): TaskBasketFragment {
-            return TaskBasketFragment().apply {
-                this.basketIndex = basketIndex
-            }
-        }
-    }
-
     private var recyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
 
     override fun getLayoutId() = R.layout.fragment_task_basket
 
-    override fun getPageNumber() = "13/06"
+    override fun getPageNumber() = PAGE_NUMBER
 
     override fun getViewModel(): TaskBasketViewModel {
         return provideViewModel(TaskBasketViewModel::class.java).also {
@@ -56,12 +48,16 @@ class TaskBasketFragment: CoreFragment<FragmentTaskBasketBinding, TaskBasketView
             recyclerViewKeyHandler
         )
 
-        recyclerViewKeyHandler = RecyclerViewKeyHandler(
-            binding?.recyclerView!!,
-            vm.goodsItemList,
-            binding?.lifecycleOwner!!,
-            recyclerViewKeyHandler?.posInfo?.value
-        )
+        binding?.recyclerView?.let{ recyclerView ->
+            binding?.lifecycleOwner?.let { lifecycleOwner ->
+                recyclerViewKeyHandler = RecyclerViewKeyHandler(
+                        recyclerView,
+                        vm.goodsItemList,
+                        lifecycleOwner,
+                        recyclerViewKeyHandler?.posInfo?.value
+                )
+            }
+        }
     }
 
     override fun setupTopToolBar(topToolbarUiModel: TopToolbarUiModel) {
@@ -104,6 +100,16 @@ class TaskBasketFragment: CoreFragment<FragmentTaskBasketBinding, TaskBasketView
             return true
         }
         return false
+    }
+
+    companion object {
+        private const val PAGE_NUMBER = "04/06"
+
+        fun newInstance(basketIndex: Int): TaskBasketFragment {
+            return TaskBasketFragment().apply {
+                this.basketIndex = basketIndex
+            }
+        }
     }
 
 }

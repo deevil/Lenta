@@ -13,7 +13,7 @@ import com.lenta.shared.utilities.extentions.provideViewModel
 
 class AuthFragment : CoreLoginFragment() {
 
-    override fun getPageNumber(): String = "10/01"
+    override fun getPageNumber() = PAGE_NUMBER
 
     override fun getViewModel(): CoreAuthViewModel {
         provideViewModel(AuthViewModel::class.java).let {
@@ -34,5 +34,7 @@ class AuthFragment : CoreLoginFragment() {
         vm.appTitle.value = context?.getAppInfo(withHash = false)
     }
 
-
+    companion object {
+        private const val PAGE_NUMBER = "10/01"
+    }
 }

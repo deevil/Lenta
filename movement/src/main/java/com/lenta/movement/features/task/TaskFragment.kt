@@ -27,17 +27,9 @@ class TaskFragment : CoreFragment<FragmentTaskBinding, TaskViewModel>(),
     // TODO save to bundle. now it's impossible because this class is sealed, but GSON can't work with sealed classes
     var task: Task? = null
 
-    companion object {
-        fun newInstance(task: Task?): TaskFragment {
-            return TaskFragment().apply {
-                this.task = task
-            }
-        }
-    }
-
     override fun getLayoutId() = R.layout.fragment_task
 
-    override fun getPageNumber() = "13/05"
+    override fun getPageNumber() = PAGE_NUMBER
 
     override fun getViewModel(): TaskViewModel {
         provideViewModel(TaskViewModel::class.java).let { vm ->
@@ -137,5 +129,15 @@ class TaskFragment : CoreFragment<FragmentTaskBinding, TaskViewModel>(),
     override fun onBackPressed(): Boolean {
         vm.onBackPressed()
         return false
+    }
+
+    companion object {
+        private const val PAGE_NUMBER = "10/05"
+
+        fun newInstance(task: Task?): TaskFragment {
+            return TaskFragment().apply {
+                this.task = task
+            }
+        }
     }
 }

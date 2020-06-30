@@ -31,7 +31,7 @@ class MainViewModel: CoreMainViewModel() {
                 startProgressTimer(
                     coroutineScope = this,
                     remainingTime = it.remainingTime,
-                    timeoutInSec = 60
+                    timeoutInSec = TIMEOUT_SEC
                 )
             }
 
@@ -49,7 +49,9 @@ class MainViewModel: CoreMainViewModel() {
         screenNavigator.openExitConfirmationScreen()
     }
 
-    override fun preparingForExit() {
+    override fun preparingForExit() = Unit
 
+    companion object {
+        private const val TIMEOUT_SEC = 60
     }
 }

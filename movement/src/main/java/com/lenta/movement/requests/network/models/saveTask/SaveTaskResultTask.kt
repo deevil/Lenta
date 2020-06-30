@@ -1,10 +1,10 @@
-package com.lenta.movement.requests.network.models
+package com.lenta.movement.requests.network.models.saveTask
 
 import com.google.gson.annotations.SerializedName
 import com.lenta.movement.models.MovementType
 import com.lenta.movement.models.TaskType
 
-data class DbTaskListItem(
+data class SaveTaskResultTask(
         /**Номер задания на перемещение*/
         @SerializedName("TASK_NUM")
         val taskNumber: String,

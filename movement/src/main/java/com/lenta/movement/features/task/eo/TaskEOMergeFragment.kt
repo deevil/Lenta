@@ -9,11 +9,9 @@ import com.lenta.movement.R
 import com.lenta.movement.databinding.FragmentTaskEoMergeBinding
 import com.lenta.movement.databinding.LayoutTaskEoMergeEoListTabBinding
 import com.lenta.movement.databinding.LayoutTaskEoMergeGeListTabBinding
-import com.lenta.movement.features.task.goods.TaskGoodsPage
-import com.lenta.movement.features.task.goods.TaskGoodsViewModel
 import com.lenta.movement.models.ProcessingUnit
 import com.lenta.movement.platform.extensions.getAppComponent
-import com.lenta.movement.requests.network.StartConsolidationResult
+import com.lenta.movement.requests.network.models.startConsolidation.CargoUnit
 import com.lenta.movement.view.simpleListRecyclerViewConfig
 import com.lenta.shared.keys.KeyCode
 import com.lenta.shared.keys.OnKeyDownListener
@@ -26,7 +24,6 @@ import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
 import com.lenta.shared.scan.OnScanResultListener
 import com.lenta.shared.utilities.databinding.RecyclerViewKeyHandler
 import com.lenta.shared.utilities.databinding.ViewPagerSettings
-import com.lenta.shared.utilities.extentions.connectLiveData
 import com.lenta.shared.utilities.extentions.provideViewModel
 
 class TaskEOMergeFragment : CoreFragment<FragmentTaskEoMergeBinding, TaskEOMergeViewModel>(),
@@ -39,11 +36,11 @@ class TaskEOMergeFragment : CoreFragment<FragmentTaskEoMergeBinding, TaskEOMerge
     private var eoListRecyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
     private var geListRecyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
     private var eoList: List<ProcessingUnit>? = null
-    private var geList: List<StartConsolidationResult.CargoUnit>? = null
+    private var geList: List<CargoUnit>? = null
 
     override fun getLayoutId() = R.layout.fragment_task_eo_merge
 
-    override fun getPageNumber() = "10/06"
+    override fun getPageNumber() = PAGE_NUMBER
 
     override fun getViewModel(): TaskEOMergeViewModel {
         provideViewModel(TaskEOMergeViewModel::class.java).let { vm ->
@@ -110,15 +107,19 @@ class TaskEOMergeFragment : CoreFragment<FragmentTaskEoMergeBinding, TaskEOMerge
 
                     dataBinding.vm = vm
                     dataBinding.lifecycleOwner = binding?.lifecycleOwner
-
-                    eoListRecyclerViewKeyHandler = RecyclerViewKeyHandler(
-                            dataBinding?.eoRecyclerView!!,
-                            vm.eoList,
-                            binding?.lifecycleOwner!!,
-                            eoListRecyclerViewKeyHandler?.posInfo?.value
-                    )
+                    dataBinding?.eoRecyclerView?.let { recyclerView ->
+                        binding?.lifecycleOwner?.let { lifecycleOwner ->
+                            eoListRecyclerViewKeyHandler = RecyclerViewKeyHandler(
+                                    recyclerView,
+                                    vm.eoList,
+                                    lifecycleOwner,
+                                    eoListRecyclerViewKeyHandler?.posInfo?.value
+                            )
+                        }
+                    }
                 }.root
             }
+
             TaskEOMergePage.GE_LIST -> {
                 DataBindingUtil.inflate<LayoutTaskEoMergeGeListTabBinding>(
                         LayoutInflater.from(context),
@@ -136,12 +137,16 @@ class TaskEOMergeFragment : CoreFragment<FragmentTaskEoMergeBinding, TaskEOMerge
                     dataBinding.vm = vm
                     dataBinding.lifecycleOwner = binding?.lifecycleOwner
 
-                    geListRecyclerViewKeyHandler = RecyclerViewKeyHandler(
-                            dataBinding?.geRecyclerView!!,
-                            vm.geList,
-                            binding?.lifecycleOwner!!,
-                            geListRecyclerViewKeyHandler?.posInfo?.value
-                    )
+                    dataBinding?.geRecyclerView?.let { recyclerView ->
+                        binding?.lifecycleOwner?.let { lifecycleOwner ->
+                            geListRecyclerViewKeyHandler = RecyclerViewKeyHandler(
+                                    recyclerView,
+                                    vm.geList,
+                                    lifecycleOwner,
+                                    geListRecyclerViewKeyHandler?.posInfo?.value
+                            )
+                        }
+                    }
                 }.root
             }
         }
@@ -184,7 +189,9 @@ class TaskEOMergeFragment : CoreFragment<FragmentTaskEoMergeBinding, TaskEOMerge
     }
 
     companion object {
-        fun newInstance(eoList: List<ProcessingUnit>, geList: List<StartConsolidationResult.CargoUnit>) : TaskEOMergeFragment{
+        private const val PAGE_NUMBER = "10/06"
+
+        fun newInstance(eoList: List<ProcessingUnit>, geList: List<CargoUnit>) : TaskEOMergeFragment{
             return TaskEOMergeFragment().apply {
                 this.eoList = eoList
                 this.geList = geList

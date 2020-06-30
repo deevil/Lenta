@@ -34,7 +34,7 @@ class TaskGoodsFragment: CoreFragment<FragmentTaskGoodsBinding, TaskGoodsViewMod
 
     override fun getLayoutId() = R.layout.fragment_task_goods
 
-    override fun getPageNumber() = "13/06"
+    override fun getPageNumber() = PAGE_NUMBER
 
     override fun getViewModel(): TaskGoodsViewModel {
         return provideViewModel(TaskGoodsViewModel::class.java).also {
@@ -94,12 +94,16 @@ class TaskGoodsFragment: CoreFragment<FragmentTaskGoodsBinding, TaskGoodsViewMod
                     dataBinding.vm = vm
                     dataBinding.lifecycleOwner = binding?.lifecycleOwner
 
-                    processedRecyclerViewKeyHandler = RecyclerViewKeyHandler(
-                        dataBinding?.processedRecyclerView!!,
-                        vm.processedList,
-                        binding?.lifecycleOwner!!,
-                        processedRecyclerViewKeyHandler?.posInfo?.value
-                    )
+                    dataBinding?.processedRecyclerView?.let { recyclerView ->
+                        binding?.lifecycleOwner?.let { lifecycleOwner ->
+                            processedRecyclerViewKeyHandler = RecyclerViewKeyHandler(
+                                    recyclerView,
+                                    vm.processedList,
+                                    lifecycleOwner,
+                                    processedRecyclerViewKeyHandler?.posInfo?.value
+                            )
+                        }
+                    }
                 }.root
             }
             TaskGoodsPage.BASKETS -> {
@@ -119,12 +123,17 @@ class TaskGoodsFragment: CoreFragment<FragmentTaskGoodsBinding, TaskGoodsViewMod
                     dataBinding.vm = vm
                     dataBinding.lifecycleOwner = binding?.lifecycleOwner
 
-                    basketRecyclerViewKeyHandler = RecyclerViewKeyHandler(
-                        dataBinding?.basketRecyclerView!!,
-                        vm.basketList,
-                        binding?.lifecycleOwner!!,
-                        basketRecyclerViewKeyHandler?.posInfo?.value
-                    )
+                    dataBinding?.basketRecyclerView?.let { recyclerView ->
+                        binding?.lifecycleOwner?.let { lifecycleOwner ->
+                            basketRecyclerViewKeyHandler = RecyclerViewKeyHandler(
+                                    recyclerView,
+                                    vm.basketList,
+                                    lifecycleOwner,
+                                    basketRecyclerViewKeyHandler?.posInfo?.value
+                            )
+                        }
+                    }
+
                 }.root
             }
         }
@@ -139,9 +148,7 @@ class TaskGoodsFragment: CoreFragment<FragmentTaskGoodsBinding, TaskGoodsViewMod
 
     override fun countTab() = TaskGoodsPage.values().size
 
-    override fun onScanResult(data: String) {
-        vm.onScanResult(data)
-    }
+    override fun onScanResult(data: String) = vm.onScanResult(data)
 
     override fun onBackPressed(): Boolean {
         vm.onBackPressed()
@@ -164,5 +171,9 @@ class TaskGoodsFragment: CoreFragment<FragmentTaskGoodsBinding, TaskGoodsViewMod
             return true
         }
         return false
+    }
+
+    companion object {
+        private const val PAGE_NUMBER = "13/06"
     }
 }

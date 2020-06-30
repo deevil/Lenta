@@ -5,6 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import com.google.common.base.Optional
 import com.lenta.movement.models.*
 import com.lenta.movement.models.repositories.ITaskBasketsRepository
+import com.lenta.movement.platform.extensions.unsafeLazy
 import com.lenta.movement.platform.navigation.IScreenNavigator
 import com.lenta.shared.models.core.Supplier
 import com.lenta.shared.models.core.Uom
@@ -37,7 +38,7 @@ class TaskGoodsInfoViewModel : CoreViewModel() {
         val settings = taskManager.getTaskSettings()
         MutableLiveData(productInfo.suppliers.size > 1 && settings.signsOfDiv.contains(GoodsSignOfDivision.LIF_NUMBER))
     }
-    val supplierList by lazy { MutableLiveData(productInfo.suppliers.map { it.name }) }
+    val supplierList by unsafeLazy { MutableLiveData(productInfo.suppliers.map { it.name }) }
     val supplierSelectedListener = object : OnPositionClickListener {
         override fun onClickPosition(position: Int) {
             supplierSelected.value =
@@ -51,7 +52,7 @@ class TaskGoodsInfoViewModel : CoreViewModel() {
         }
     }
 
-    val forBasketQuantity: LiveData<Int> by lazy {
+    val forBasketQuantity: LiveData<Int> by unsafeLazy {
         currentBasket.combineLatest(quantity).mapSkipNulls { (currentBasket, quantityString) ->
             (currentBasket[productInfo] ?: 0) + (quantityString.toIntOrNull() ?: 0)
         }
@@ -91,11 +92,12 @@ class TaskGoodsInfoViewModel : CoreViewModel() {
         )
 
         screenNavigator.goBack()
-        screenNavigator.openTaskBasketScreen(currentBasket.value!!.index)
+        currentBasket.value?.let { basketValue ->
+            screenNavigator.openTaskBasketScreen(basketValue.index)
+        }
     }
 
     fun onDetailsClick() {
         screenNavigator.openTaskGoodsDetailsScreen(productInfo)
     }
-
 }

@@ -1,7 +1,7 @@
 package com.lenta.movement.platform
 
 import com.lenta.movement.models.*
-import com.lenta.movement.requests.network.StartConsolidationResult
+import com.lenta.movement.requests.network.models.startConsolidation.CargoUnit
 
 interface IFormatter {
 
@@ -23,5 +23,5 @@ interface IFormatter {
 
     fun getEOSubtitle(eo: ProcessingUnit) : String
 
-    fun getGETitle(ge: StartConsolidationResult.CargoUnit) : String
+    fun getGETitle(ge: CargoUnit) : String
 }

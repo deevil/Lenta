@@ -23,7 +23,7 @@ import com.lenta.movement.models.ProcessingUnit
 import com.lenta.movement.models.ProductInfo
 import com.lenta.movement.models.Task
 import com.lenta.movement.progress.IWriteOffProgressUseCaseInformator
-import com.lenta.movement.requests.network.StartConsolidationResult
+import com.lenta.movement.requests.network.models.startConsolidation.CargoUnit
 import com.lenta.shared.account.IAuthenticator
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.features.alert.AlertFragment
@@ -95,8 +95,9 @@ class ScreenNavigator(
     }
 
     override fun openTaskList() {
-        openNotImplementedScreenAlert("Задания на перемещение")  //TODO Работа с заданиями
+        openNotImplementedScreenAlert(TASK_TO_MOVE)  //TODO Работа с заданиями
     }
+
     override fun openUnsavedDataDialog(yesCallbackFunc: () -> Unit) {
         runOrPostpone {
             getFragmentStack()?.push(
@@ -266,10 +267,14 @@ class ScreenNavigator(
         }
     }
 
-    override fun openTaskEoMergeScreen(eoList: List<ProcessingUnit>, geList: List<StartConsolidationResult.CargoUnit>) {
+    override fun openTaskEoMergeScreen(eoList: List<ProcessingUnit>, geList: List<CargoUnit>) {
         runOrPostpone {
             getFragmentStack()?.push(TaskEOMergeFragment.newInstance(eoList, geList))
         }
+    }
+
+    companion object {
+        private const val TASK_TO_MOVE = "Задания на перемещение"
     }
 }
 
@@ -299,5 +304,5 @@ interface IScreenNavigator : ICoreNavigator {
     fun openTaskBasketCharacteristicsScreen(basketIndex: Int)
     fun openSaveTaskConfirmationDialog(yesCallbackFunc: () -> Unit)
     fun openTaskList()
-    fun openTaskEoMergeScreen(eoList: List<ProcessingUnit>, geList: List<StartConsolidationResult.CargoUnit>)
+    fun openTaskEoMergeScreen(eoList: List<ProcessingUnit>, geList: List<CargoUnit>)
 }

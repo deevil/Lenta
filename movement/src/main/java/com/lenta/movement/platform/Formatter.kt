@@ -2,7 +2,7 @@ package com.lenta.movement.platform
 
 import android.content.Context
 import com.lenta.movement.models.*
-import com.lenta.movement.requests.network.StartConsolidationResult
+import com.lenta.movement.requests.network.models.startConsolidation.CargoUnit
 
 class Formatter(
     val context: Context
@@ -18,8 +18,8 @@ class Formatter(
 
     override fun getTaskTypeNameDescription(taskType: TaskType): String {
         return when (taskType) {
-            TaskType.TransferWithOrder -> "Трансфер с заказа"
-            TaskType.TransferWithoutOrder -> "Трансфер без заказа"
+            TaskType.TransferWithOrder -> TRANSFER_WITH_ORDER
+            TaskType.TransferWithoutOrder -> TRANSFER_WITHOUT_ORDER
         }
     }
 
@@ -40,15 +40,15 @@ class Formatter(
 
     override fun getMovementTypeNameDescription(movementType: MovementType): String {
         return when (movementType) {
-            MovementType.SS -> "Для перемещения на ТК"
-            MovementType.SCDS -> "Для перемещения на ТК" // TODO
-            MovementType.SCS -> "Для перемещения на ТК" // TODO
-            MovementType.SCST -> "Для перемещения на ТК" // TODO
+            MovementType.SS -> SS_MOVEMENT
+            MovementType.SCDS -> SCDS_MOVEMENT // TODO
+            MovementType.SCS -> SCS_MOVEMENT // TODO
+            MovementType.SCST -> SCST_MOVEMENT // TODO
         }
     }
 
     override fun getBasketName(basket: Basket): String {
-        return "Корзина ${String.format("%02d", basket.number)}"
+        return "$BASKET ${String.format("%02d", basket.number)}"
     }
 
     override fun getBasketDescription(basket: Basket, task: Task, settings: TaskSettings): String {
@@ -93,12 +93,12 @@ class Formatter(
 
     override fun basketGisControl(basket: Basket): String {
         return when {
-            basket.isAlco ?: false -> "Алкоголь"
-            basket.isExciseAlco ?: false -> "Марочные остатки"
-            basket.isNotExciseAlco ?: false -> "Партионные остатки"
-            basket.isUsual ?: false -> "Обычный товар"
-            basket.isVet ?: false -> "Меркурианский товар"
-            basket.isFood ?: false -> "Еда"
+            basket.isAlco ?: false -> ALCO
+            basket.isExciseAlco ?: false -> EXCISE_ALCO
+            basket.isNotExciseAlco ?: false -> NOT_EXCISE_ALCO
+            basket.isUsual ?: false -> USUAL
+            basket.isVet ?: false -> VET
+            basket.isFood ?: false -> FOOD
             else -> ""
         }
     }
@@ -122,7 +122,7 @@ class Formatter(
         return builder.toString()
     }
 
-    override fun getGETitle(ge: StartConsolidationResult.CargoUnit): String {
+    override fun getGETitle(ge: CargoUnit): String {
         val builder = StringBuilder()
         val cargoNum = ge.cargoUnitNumber
         val processingUnit = ge.processingUnitNumber
@@ -131,4 +131,22 @@ class Formatter(
         return builder.toString()
     }
 
+    companion object {
+        private const val SS_MOVEMENT = "Для перемещения на ТК"
+        private const val SCDS_MOVEMENT = "Для перемещения на ТК" //TODO
+        private const val SCS_MOVEMENT = "Для перемещения на ТК" // TODO
+        private const val SCST_MOVEMENT = "Для перемещения на ТК" // TODO
+
+        private const val BASKET = "Корзина"
+
+        private const val ALCO = "Алкоголь"
+        private const val EXCISE_ALCO = "Марочные остатки"
+        private const val NOT_EXCISE_ALCO = "Партионные остатки"
+        private const val USUAL = "Обычный товар"
+        private const val VET = "Меркурианский товар"
+        private const val FOOD = "Еда"
+
+        private const val TRANSFER_WITH_ORDER = "Трансфер с заказа"
+        private const val TRANSFER_WITHOUT_ORDER ="Трансфер без заказа"
+    }
 }

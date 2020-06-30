@@ -73,7 +73,6 @@ class FastLoadingViewModel : CoreLoadingViewModel() {
                         ?: ""
                 )
             ).either(::handleFailure, ::handleSuccessServerTime)
-
         }
     }
 
@@ -114,11 +113,9 @@ class FastLoadingViewModel : CoreLoadingViewModel() {
             }
             progress.value = false
         }
-
     }
 
     override fun clean() {
         progress.postValue(false)
     }
-
 }

@@ -2,12 +2,13 @@ package com.lenta.movement.requests.network.models
 
 import com.lenta.movement.models.ProcessingUnit
 import com.lenta.movement.models.Task
-import com.lenta.movement.requests.network.StartConsolidationResult
+import com.lenta.movement.requests.network.models.saveTask.SaveTaskResultTask
+import com.lenta.movement.requests.network.models.startConsolidation.StartConsolidationProcessingUnit
 import com.lenta.shared.platform.constants.Constants
 import com.lenta.shared.utilities.extentions.getSapDate
 import com.lenta.shared.utilities.extentions.isSapTrue
 
-fun DbTaskListItem.toTask(): Task {
+fun SaveTaskResultTask.toTask(): Task {
     return Task(
         number = taskNumber,
         isCreated = notFinish.isSapTrue().not(),
@@ -30,7 +31,7 @@ fun DbTaskListItem.toTask(): Task {
     )
 }
 
-fun StartConsolidationResult.ProcessingUnit.convertToModel() : ProcessingUnit {
+fun StartConsolidationProcessingUnit.convertToModel() : ProcessingUnit {
     return ProcessingUnit(
             processingUnitNumber = processingUnitNumber,
             basketNumber = basketNumber,
@@ -41,7 +42,7 @@ fun StartConsolidationResult.ProcessingUnit.convertToModel() : ProcessingUnit {
     )
 }
 
-fun List<StartConsolidationResult.ProcessingUnit>.toModelList() : List<ProcessingUnit> {
+fun List<StartConsolidationProcessingUnit>.toModelList() : List<ProcessingUnit> {
     return this.map {
         it.convertToModel()
     }

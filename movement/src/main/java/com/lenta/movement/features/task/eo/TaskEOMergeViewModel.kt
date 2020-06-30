@@ -8,7 +8,7 @@ import com.lenta.movement.models.SimpleListItem
 import com.lenta.movement.platform.IFormatter
 import com.lenta.movement.platform.extensions.unsafeLazy
 import com.lenta.movement.platform.navigation.IScreenNavigator
-import com.lenta.movement.requests.network.StartConsolidationResult
+import com.lenta.movement.requests.network.models.startConsolidation.CargoUnit
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.SelectionItemsHelper
@@ -53,7 +53,7 @@ class TaskEOMergeViewModel : CoreViewModel(), PageSelectionListener {
             }
         }
     }
-    val geList by unsafeLazy { MutableLiveData(listOf<StartConsolidationResult.CargoUnit>()) }
+    val geList by unsafeLazy { MutableLiveData(listOf<CargoUnit>()) }
 
     val processBtnIsVisible = unsafeLazy {
         when(currentPage) {
@@ -67,7 +67,7 @@ class TaskEOMergeViewModel : CoreViewModel(), PageSelectionListener {
     }
 
     fun onResume() {
-
+        // TODO
     }
 
     fun getTitle(): String {
@@ -75,7 +75,7 @@ class TaskEOMergeViewModel : CoreViewModel(), PageSelectionListener {
     }
 
     fun onPrintBtnClick() {
-
+        // TODO
     }
 
     fun onProcessBtnClick() {
@@ -87,6 +87,7 @@ class TaskEOMergeViewModel : CoreViewModel(), PageSelectionListener {
     }
 
     fun onExcludeBtnClick() {
+        // TODO
     }
 
     fun onSaveBtnClick() {
@@ -94,7 +95,7 @@ class TaskEOMergeViewModel : CoreViewModel(), PageSelectionListener {
     }
 
     fun onClickEOListItem(position: Int) {
-        // nothing
+        // TODO
     }
 
     fun onClickGEListItem(position: Int) {
@@ -106,10 +107,10 @@ class TaskEOMergeViewModel : CoreViewModel(), PageSelectionListener {
     }
 
     fun onScanResult(data: String) {
-
+        // TODO
     }
 
     fun onDigitPressed(digit: Int) {
-
+        // TODO
     }
 }

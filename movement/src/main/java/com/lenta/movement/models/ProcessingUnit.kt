@@ -1,9 +1,5 @@
 package com.lenta.movement.models
 
-import com.google.gson.annotations.SerializedName
-import com.lenta.movement.requests.network.StartConsolidation
-import com.lenta.movement.requests.network.StartConsolidationResult
-
 //EO item
 data class ProcessingUnit(
         /** Номер ЕО */

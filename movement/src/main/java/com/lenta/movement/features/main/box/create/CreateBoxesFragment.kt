@@ -33,21 +33,13 @@ class CreateBoxesFragment : CoreFragment<FragmentCreateBoxesBinding, CreateBoxes
     OnScanResultListener,
     OnBackPresserListener {
 
-    companion object {
-        fun newInstance(productInfo: ProductInfo): CreateBoxesFragment {
-            return CreateBoxesFragment().apply {
-                this.productInfo = productInfo
-            }
-        }
-    }
-
     private var recyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
 
     private var productInfo: ProductInfo? by state(null)
 
     override fun getLayoutId() = R.layout.fragment_create_boxes
 
-    override fun getPageNumber() = "13/18"
+    override fun getPageNumber() = PAGE_NUMBER
 
     override fun getViewModel(): CreateBoxesViewModel {
         provideViewModel(CreateBoxesViewModel::class.java).let { vm ->
@@ -155,9 +147,7 @@ class CreateBoxesFragment : CoreFragment<FragmentCreateBoxesBinding, CreateBoxes
                         layoutId = R.layout.layout_item_box_list,
                         itemId = BR.item,
                         realisation = object : DataBindingAdapter<LayoutItemBoxListBinding> {
-                            override fun onCreate(binding: LayoutItemBoxListBinding) {
-                                // do nothing
-                            }
+                            override fun onCreate(binding: LayoutItemBoxListBinding) = Unit
 
                             override fun onBind(binding: LayoutItemBoxListBinding, position: Int) {
                                 binding.counterText.tag = position
@@ -179,12 +169,14 @@ class CreateBoxesFragment : CoreFragment<FragmentCreateBoxesBinding, CreateBoxes
                         }
                     )
 
-                    recyclerViewKeyHandler = RecyclerViewKeyHandler(
-                        layoutBinding.recyclerView,
-                        vm.boxList,
-                        binding?.lifecycleOwner!!,
-                        recyclerViewKeyHandler?.posInfo?.value
-                    )
+                    binding?.lifecycleOwner?.let { lifecycleOwner ->
+                        recyclerViewKeyHandler = RecyclerViewKeyHandler(
+                                layoutBinding.recyclerView,
+                                vm.boxList,
+                                lifecycleOwner,
+                                recyclerViewKeyHandler?.posInfo?.value
+                        )
+                    }
                 }.root
             }
         }
@@ -208,4 +200,13 @@ class CreateBoxesFragment : CoreFragment<FragmentCreateBoxesBinding, CreateBoxes
         return false
     }
 
+    companion object {
+        private const val PAGE_NUMBER = "13/18"
+
+        fun newInstance(productInfo: ProductInfo): CreateBoxesFragment {
+            return CreateBoxesFragment().apply {
+                this.productInfo = productInfo
+            }
+        }
+    }
 }

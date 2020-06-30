@@ -18,7 +18,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class TaskBasketViewModel : CoreViewModel(),
-    OnOkInSoftKeyboardListener {
+        OnOkInSoftKeyboardListener {
 
     @Inject
     lateinit var screenNavigator: IScreenNavigator
@@ -46,10 +46,10 @@ class TaskBasketViewModel : CoreViewModel(),
         goods.mapSkipNulls { goods ->
             goods.mapIndexed { index, (product, count) ->
                 SimpleListItem(
-                    number = index + 1,
-                    title = formatter.getProductName(product),
-                    countWithUom = "$count шт.", // TODO
-                    isClickable = false
+                        number = index + 1,
+                        title = formatter.getProductName(product),
+                        countWithUom = "$count шт.", // TODO
+                        isClickable = false
                 )
             }
         }
@@ -64,21 +64,25 @@ class TaskBasketViewModel : CoreViewModel(),
 
     fun getTitle(): String {
         return "${formatter.getBasketName(basket)}: ${formatter.getBasketDescription(
-            basket,
-            taskManager.getTask(),
-            taskManager.getTaskSettings()
+                basket,
+                taskManager.getTask(),
+                taskManager.getTaskSettings()
         )}"
     }
 
     fun onDeleteClick() {
         selectionsHelper.selectedPositions.value.orEmpty()
-            .map { doRemoveProductIndex ->
-                taskBasketsRepository.getBasketByIndex(basketIndex!!)
-                    .getByIndex(doRemoveProductIndex)
-            }
-            .forEach { doRemoveProduct ->
-                taskBasketsRepository.getBasketByIndex(basketIndex!!).remove(doRemoveProduct)
-            }
+                .map { doRemoveProductIndex ->
+                    basketIndex?.let { basketIndex ->
+                        taskBasketsRepository.getBasketByIndex(basketIndex)
+                                .getByIndex(doRemoveProductIndex)
+                    }
+                }
+                .forEach { doRemoveProduct ->
+                    basketIndex?.let { basketIndex ->
+                        taskBasketsRepository.getBasketByIndex(basketIndex).remove(doRemoveProduct)
+                    }
+                }
 
         selectionsHelper.clearPositions()
 
@@ -86,7 +90,9 @@ class TaskBasketViewModel : CoreViewModel(),
     }
 
     fun onCharacteristicsClick() {
-        screenNavigator.openTaskBasketCharacteristicsScreen(basketIndex!!)
+        basketIndex?.let { basketIndex ->
+            screenNavigator.openTaskBasketCharacteristicsScreen(basketIndex)
+        }
     }
 
     fun onNextClick() {
@@ -108,7 +114,9 @@ class TaskBasketViewModel : CoreViewModel(),
     }
 
     private fun getGoods(): List<Pair<ProductInfo, Int>> {
-        return taskBasketsRepository.getBasketByIndex(basketIndex!!).toList()
+        basketIndex?.let { basketIndex ->
+            return taskBasketsRepository.getBasketByIndex(basketIndex).toList()
+        } ?: return listOf()
     }
 
     private fun searchCode(code: String, fromScan: Boolean, isBarCode: Boolean? = null) {
