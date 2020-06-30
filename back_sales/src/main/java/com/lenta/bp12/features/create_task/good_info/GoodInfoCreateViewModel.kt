@@ -151,12 +151,7 @@ class GoodInfoCreateViewModel : CoreViewModel() {
     private val basket by lazy {
         good.combineLatest(selectedProvider).map {
             it?.let {
-                val good = it.first
-                val provider = it.second
-
-                task.value?.baskets?.find { basket ->
-                    basket.section == good.section && basket.matype == good.matype && basket.control == good.control && basket.provider.code == provider.code
-                }
+                getBasket()
             }
         }
     }
@@ -169,12 +164,14 @@ class GoodInfoCreateViewModel : CoreViewModel() {
     }
 
     val basketQuantity by lazy {
-        quantity.combineLatest(basket).map {
+        good.combineLatest(quantity).combineLatest(selectedProvider).map {
             it?.let {
-                val quantity = it.first
-                val basket = it.second
+                val good = it.first.first
+                val quantity = it.first.second
 
-                "${task.value?.getQuantityByBasket(basket).sumWith(quantity).dropZeros()} ${good.value?.units?.name}"
+                getBasket()?.let { basket ->
+                    "${task.value?.getQuantityByBasket(basket).sumWith(quantity).dropZeros()} ${good.units.name}"
+                } ?: "${quantity.dropZeros()} ${good.units.name}"
             }
         }
     }
@@ -631,6 +628,18 @@ class GoodInfoCreateViewModel : CoreViewModel() {
                         } else {
                             navigator.openAlertScreen(result.statusDescription)
                         }
+                    }
+                }
+            }
+        }
+    }
+
+    private fun getBasket(): Basket? {
+        return task.value?.let { task ->
+            good.value?.let { good ->
+                selectedProvider.value?.let { provider ->
+                    task.baskets.find { basket ->
+                        basket.section == good.section && basket.matype == good.matype && basket.control == good.control && basket.provider.code == provider.code
                     }
                 }
             }
