@@ -76,7 +76,7 @@ class ProcessingUnitListFragment : CoreFragment<FragmentProcessingUnitListBindin
                         }
                     },
                     onItemClickListener = AdapterView.OnItemClickListener { _, _, position, _ ->
-                        recyclerViewKeyHandler?.onKeyDownHandler(position)
+                        recyclerViewKeyHandler?.processItemClickHandler(position)
                     }
             )
 
@@ -98,6 +98,6 @@ class ProcessingUnitListFragment : CoreFragment<FragmentProcessingUnitListBindin
     }
 
     override fun onKeyDown(keyCode: KeyCode): Boolean {
-        return recyclerViewKeyHandler?.onFragmentKeyHandler(keyCode) ?: false
+        return recyclerViewKeyHandler?.onFragmentKeyDownHandler(keyCode) ?: false
     }
 }
