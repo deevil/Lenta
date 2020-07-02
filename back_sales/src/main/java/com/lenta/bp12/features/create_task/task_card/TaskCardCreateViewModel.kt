@@ -57,23 +57,7 @@ class TaskCardCreateViewModel : CoreViewModel(), PageSelectionListener {
     Список типов задачи
      */
 
-    private val sourceTypes = MutableLiveData(listOf<TaskType>())
-
-    private val types = sourceTypes.map {
-        it?.let { types ->
-            val list = types.toMutableList()
-            if (list.size > 1) {
-                list.add(0, TaskType(
-                        code = "",
-                        description = "",
-                        isDivBySection = false,
-                        isDivByPurchaseGroup = false
-                ))
-            }
-
-            list.toList()
-        }
-    }
+    private val types = MutableLiveData(listOf<TaskType>())
 
     val taskTypeList = types.map { list ->
         list?.map { it.description }
@@ -95,18 +79,7 @@ class TaskCardCreateViewModel : CoreViewModel(), PageSelectionListener {
     Список складов
      */
 
-    private val sourceStorages = MutableLiveData(listOf<String>())
-
-    val storageList = sourceStorages.map {
-        it?.let { storages ->
-            val list = storages.toMutableList()
-            if (list.size > 1) {
-                list.add(0, "")
-            }
-
-            list.toList()
-        }
-    }
+    val storage = MutableLiveData(listOf<String>())
 
     val storagePosition = MutableLiveData(0)
 
@@ -120,21 +93,7 @@ class TaskCardCreateViewModel : CoreViewModel(), PageSelectionListener {
     Список причин возврата
      */
 
-    private val sourceReasons = MutableLiveData(emptyList<ReturnReason>())
-
-    private val reasons = sourceReasons.map {
-        it?.let { reasons ->
-            val list = reasons.toMutableList()
-            if (list.size > 1) {
-                list.add(0, ReturnReason(
-                        code = "",
-                        description = ""
-                ))
-            }
-
-            list.toList()
-        }
-    }
+    private val reasons = MutableLiveData(emptyList<ReturnReason>())
 
     val returnReasonList = reasons.map { list ->
         list?.map { it.description }
@@ -171,26 +130,12 @@ class TaskCardCreateViewModel : CoreViewModel(), PageSelectionListener {
     }
 
     /**
-    Кнопки нижнего тулбара
-     */
-
-    val nextEnabled = taskTypePosition.combineLatest(storagePosition).combineLatest(returnReasonPosition).map { positions ->
-        val taskType = positions!!.first.first
-        val storage = positions.first.second
-        val returnReason = positions.second
-
-        if (taskTypeList.value?.isNotEmpty() == true && storageList.value?.isNotEmpty() == true && returnReasonList.value?.isNotEmpty() == true) {
-            taskTypeList.value?.get(taskType)?.isNotEmpty() == true && storageList.value?.get(storage)?.isNotEmpty() == true && returnReasonList.value?.get(returnReason)?.isNotEmpty() == true
-        } else false
-    }
-
-    /**
     Блок инициализации
      */
 
     init {
         viewModelScope.launch {
-            sourceTypes.value = database.getTaskTypeList()
+            types.value = database.getTaskTypeList()
             updateLists()
         }
     }
@@ -207,8 +152,8 @@ class TaskCardCreateViewModel : CoreViewModel(), PageSelectionListener {
         viewModelScope.launch {
             types.value?.let { types ->
                 taskTypePosition.value?.let { position ->
-                    sourceStorages.value = database.getStorageList(types[position].code)
-                    sourceReasons.value = database.getReturnReasonList(types[position].code)
+                    storage.value = database.getStorageList(types[position].code)
+                    reasons.value = database.getReturnReasonList(types[position].code)
                     taskAttributes.value = database.getTaskAttributes(types[position].code)
                 }
             }
@@ -223,7 +168,7 @@ class TaskCardCreateViewModel : CoreViewModel(), PageSelectionListener {
         manager.updateCurrentTask(TaskCreate(
                 name = taskName.value ?: "",
                 taskType = types.value!![taskTypePosition.value!!],
-                storage = storageList.value!![storagePosition.value!!],
+                storage = storage.value!![storagePosition.value!!],
                 reason = reasons.value!![returnReasonPosition.value!!]
         ))
 

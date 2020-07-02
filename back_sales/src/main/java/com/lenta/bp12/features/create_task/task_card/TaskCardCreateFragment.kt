@@ -39,9 +39,7 @@ class TaskCardCreateFragment : CoreFragment<FragmentTaskCardCreateBinding, TaskC
 
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
         bottomToolbarUiModel.uiModelButton1.show(ButtonDecorationInfo.back)
-        bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.next, enabled = false)
-
-        connectLiveData(vm.nextEnabled, getBottomToolBarUIModel()!!.uiModelButton5.enabled)
+        bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.next)
     }
 
     override fun onToolbarButtonClick(view: View) {
