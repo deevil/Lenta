@@ -25,7 +25,7 @@ class TaskBasketFragment: CoreFragment<FragmentTaskBasketBinding, TaskBasketView
     OnScanResultListener,
     OnKeyDownListener {
 
-    private var basketIndex: Int by state( throw IllegalArgumentException("basket index cannot be null") )
+    private var basketIndex: Int by state( -1 )
 
     private var recyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
 

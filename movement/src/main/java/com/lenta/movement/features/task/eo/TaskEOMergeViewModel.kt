@@ -13,6 +13,7 @@ import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.SelectionItemsHelper
 import com.lenta.shared.utilities.databinding.PageSelectionListener
+import com.lenta.shared.utilities.extentions.combineLatest
 import com.lenta.shared.utilities.extentions.mapSkipNulls
 import javax.inject.Inject
 
@@ -54,6 +55,18 @@ class TaskEOMergeViewModel : CoreViewModel(), PageSelectionListener {
         }
     }
     val geList by unsafeLazy { MutableLiveData(listOf<CargoUnit>()) }
+    val geItemList by unsafeLazy {
+        geList.mapSkipNulls { list ->
+            list.mapIndexed { index, ge ->
+                SimpleListItem(
+                        number = index + 1,
+                        title = formatter.getGETitle(ge),
+                        countWithUom = 1.toString(),
+                        isClickable = true
+                )
+            }
+        }
+    }
 
     val processBtnIsVisible = unsafeLazy {
         when(currentPage) {

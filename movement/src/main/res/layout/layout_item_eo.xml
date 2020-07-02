@@ -176,7 +176,7 @@
             app:layout_constraintTop_toTopOf="parent"
             tools:text="2"
             android:contentDescription="@string/tag"
-            tools:src="@drawable/ic_detail"/>
+            android:src="@drawable/ic_detail"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

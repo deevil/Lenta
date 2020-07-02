@@ -62,6 +62,7 @@ class TaskEOMergeFragment : CoreFragment<FragmentTaskEoMergeBinding, TaskEOMerge
         super.onResume()
         vm.onResume()
     }
+
     override fun setupTopToolBar(topToolbarUiModel: TopToolbarUiModel) {
         topToolbarUiModel.title.value = vm.getTitle()
         topToolbarUiModel.description.value = getString(R.string.task_eo_merge_title)
@@ -97,21 +98,21 @@ class TaskEOMergeFragment : CoreFragment<FragmentTaskEoMergeBinding, TaskEOMerge
                         R.layout.layout_task_eo_merge_eo_list_tab,
                         container,
                         false
-                ).also { dataBinding ->
-                    dataBinding?.rvConfig = simpleListRecyclerViewConfig(
-                            recyclerView = dataBinding?.eoRecyclerView,
-                            selectionItemsHelper = vm.eoSelectionHelper,
-                            recyclerViewKeyHandler = eoListRecyclerViewKeyHandler,
-                            onClickItem = { position -> vm.onClickEOListItem(position) }
-                    )
+                ).also {
+                    it.apply {
+                        rvConfig = simpleListRecyclerViewConfig(
+                                recyclerView = eoRecyclerView,
+                                selectionItemsHelper = vm.eoSelectionHelper,
+                                recyclerViewKeyHandler = eoListRecyclerViewKeyHandler,
+                                onClickItem = { position -> vm.onClickEOListItem(position) })
 
-                    dataBinding.vm = vm
-                    dataBinding.lifecycleOwner = binding?.lifecycleOwner
-                    dataBinding?.eoRecyclerView?.let { recyclerView ->
-                        binding?.lifecycleOwner?.let { lifecycleOwner ->
+                        viewModel = vm
+                        lifecycleOwner = viewLifecycleOwner
+
+                        lifecycleOwner?.let { lifecycleOwner ->
                             eoListRecyclerViewKeyHandler = RecyclerViewKeyHandler(
-                                    recyclerView,
-                                    vm.eoList,
+                                    eoRecyclerView,
+                                    vm.eoItemList,
                                     lifecycleOwner,
                                     eoListRecyclerViewKeyHandler?.posInfo?.value
                             )
@@ -126,27 +127,28 @@ class TaskEOMergeFragment : CoreFragment<FragmentTaskEoMergeBinding, TaskEOMerge
                         R.layout.layout_task_eo_merge_ge_list_tab,
                         container,
                         false
-                ).also { dataBinding ->
-                    dataBinding?.rvConfig = simpleListRecyclerViewConfig(
-                            recyclerView = dataBinding?.geRecyclerView,
-                            selectionItemsHelper = vm.geSelectionHelper,
-                            recyclerViewKeyHandler = geListRecyclerViewKeyHandler,
-                            onClickItem = { position -> vm.onClickGEListItem(position) }
-                    )
+                ).also { layoutBinding ->
+                    layoutBinding.apply {
+                        rvConfig = simpleListRecyclerViewConfig(
+                                recyclerView = geRecyclerView,
+                                selectionItemsHelper = vm.geSelectionHelper,
+                                recyclerViewKeyHandler = geListRecyclerViewKeyHandler,
+                                onClickItem = { position -> vm.onClickGEListItem(position) }
+                        )
 
-                    dataBinding.vm = vm
-                    dataBinding.lifecycleOwner = binding?.lifecycleOwner
+                        viewModel = vm
+                        lifecycleOwner = viewLifecycleOwner
 
-                    dataBinding?.geRecyclerView?.let { recyclerView ->
-                        binding?.lifecycleOwner?.let { lifecycleOwner ->
+                        lifecycleOwner?.let { lifecycleOwner ->
                             geListRecyclerViewKeyHandler = RecyclerViewKeyHandler(
-                                    recyclerView,
-                                    vm.geList,
+                                    geRecyclerView,
+                                    vm.geItemList,
                                     lifecycleOwner,
                                     geListRecyclerViewKeyHandler?.posInfo?.value
                             )
                         }
                     }
+
                 }.root
             }
         }
@@ -188,10 +190,12 @@ class TaskEOMergeFragment : CoreFragment<FragmentTaskEoMergeBinding, TaskEOMerge
         return false
     }
 
+
+
     companion object {
         private const val PAGE_NUMBER = "10/06"
 
-        fun newInstance(eoList: List<ProcessingUnit>, geList: List<CargoUnit>) : TaskEOMergeFragment{
+        fun newInstance(eoList: List<ProcessingUnit>, geList: List<CargoUnit>): TaskEOMergeFragment {
             return TaskEOMergeFragment().apply {
                 this.eoList = eoList
                 this.geList = geList
