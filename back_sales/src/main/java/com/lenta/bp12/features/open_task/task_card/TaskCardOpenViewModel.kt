@@ -109,7 +109,11 @@ class TaskCardOpenViewModel : CoreViewModel(), PageSelectionListener {
      */
 
     fun onClickNext() {
-        loadGoodList()
+        if (task.value!!.goods.isEmpty()) {
+            loadGoodList()
+        } else {
+            navigator.openGoodListScreen()
+        }
     }
 
     fun onBackPressed() {
