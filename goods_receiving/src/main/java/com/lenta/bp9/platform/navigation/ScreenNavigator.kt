@@ -31,6 +31,7 @@ import com.lenta.bp9.features.goods_information.non_excise_alco_receiving.NonExc
 import com.lenta.bp9.features.goods_information.non_excise_sets_pge.NonExciseSetsPGEFragment
 import com.lenta.bp9.features.goods_information.non_excise_sets_pge.set_component_pge.NonExciseSetComponentInfoPGEFragment
 import com.lenta.bp9.features.goods_information.non_excise_sets_receiving.NonExciseSetsReceivingFragment
+import com.lenta.bp9.features.goods_information.non_excise_sets_receiving.set_component_receiving.NonExciseSetComponentInfoReceivingFragment
 import com.lenta.bp9.features.goods_list.GoodsListFragment
 import com.lenta.bp9.features.input_outgoing_fillings.InputOutgoingFillingsFragment
 import com.lenta.bp9.features.list_goods_transfer.ListGoodsTransferFragment
@@ -1446,9 +1447,9 @@ class ScreenNavigator(
         }
     }
 
-    override fun openNonExciseSetComponentInfoPGEScreen(setInfo: TaskSetsInfo) {
+    override fun openNonExciseSetComponentInfoPGEScreen(setInfo: TaskSetsInfo, typeDiscrepancies: String, productInfo: TaskProductInfo) {
         runOrPostpone {
-            getFragmentStack()?.push(NonExciseSetComponentInfoPGEFragment.create(setInfo))
+            getFragmentStack()?.push(NonExciseSetComponentInfoPGEFragment.create(setInfo, typeDiscrepancies, productInfo))
         }
     }
 
@@ -1458,10 +1459,49 @@ class ScreenNavigator(
         }
     }
 
+    override fun openNonExciseSetComponentInfoReceivingScreen(setInfo: TaskSetsInfo, typeDiscrepancies: String, productInfo: TaskProductInfo) {
+        runOrPostpone {
+            getFragmentStack()?.push(NonExciseSetComponentInfoReceivingFragment.create(setInfo, typeDiscrepancies, productInfo))
+        }
+    }
+
     override fun openAlertGoodsNotFoundTaskScreen() {
         runOrPostpone {
             getFragmentStack()?.push(AlertFragment.create(
                     message = context.getString(R.string.goods_not_found),
+                    iconRes = R.drawable.ic_info_pink_80dp,
+                    textColor = ContextCompat.getColor(context, R.color.color_text_dialogWarning),
+                    pageNumber = "97")
+            )
+        }
+    }
+
+    override fun openAlertAlcocodeNotFoundTaskScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    message = context.getString(R.string.alcocode_not_found),
+                    iconRes = R.drawable.ic_info_pink_80dp,
+                    textColor = ContextCompat.getColor(context, R.color.color_text_dialogWarning),
+                    pageNumber = "97")
+            )
+        }
+    }
+
+    override fun openAlertOverLimitPlannedScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    message = context.getString(R.string.over_limit_planned),
+                    iconRes = R.drawable.ic_info_pink_80dp,
+                    textColor = ContextCompat.getColor(context, R.color.color_text_dialogWarning),
+                    pageNumber = "97")
+            )
+        }
+    }
+
+    override fun openAlertOverLimitPlannedBatchScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    message = context.getString(R.string.over_limit_planned_batch),
                     iconRes = R.drawable.ic_info_pink_80dp,
                     textColor = ContextCompat.getColor(context, R.color.color_text_dialogWarning),
                     pageNumber = "97")
@@ -1635,7 +1675,11 @@ interface IScreenNavigator : ICoreNavigator {
     fun openCurrentProviderHasReturnJobsAvailableDialog(numberCurrentProvider: String, nextCallbackFunc: () -> Unit)
     fun openSupplyResultsScreen(pageNumber: String, numberSupply: String, isAutomaticWriteOff: Boolean)
     fun openNonExciseSetsInfoPGEScreen(productInfo: TaskProductInfo, isDiscrepancy: Boolean)
+    fun openNonExciseSetComponentInfoPGEScreen(setInfo: TaskSetsInfo, typeDiscrepancies: String, productInfo: TaskProductInfo)
     fun openNonExciseSetsInfoReceivingScreen(productInfo: TaskProductInfo, isDiscrepancy: Boolean)
-    fun openNonExciseSetComponentInfoPGEScreen(setInfo: TaskSetsInfo)
+    fun openNonExciseSetComponentInfoReceivingScreen(setInfo: TaskSetsInfo, typeDiscrepancies: String, productInfo: TaskProductInfo)
     fun openAlertGoodsNotFoundTaskScreen()
+    fun openAlertAlcocodeNotFoundTaskScreen()
+    fun openAlertOverLimitPlannedScreen()
+    fun openAlertOverLimitPlannedBatchScreen()
 }

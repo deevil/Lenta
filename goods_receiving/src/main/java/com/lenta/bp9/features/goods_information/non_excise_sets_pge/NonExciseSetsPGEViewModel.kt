@@ -208,7 +208,11 @@ class NonExciseSetsPGEViewModel : CoreViewModel(),
     }
 
     fun onClickAdd() {
-        processNonExciseSetsPGEProductService.addSet(count.value!!, qualityInfo.value!![spinQualitySelectedPosition.value!!].code, productInfo.value!!.processingUnit)
+        if (processNonExciseSetsPGEProductService.overLimit(countValue.value ?: 0.0)) {
+            screenNavigator.openAlertOverLimitPlannedScreen()
+        } else {
+            processNonExciseSetsPGEProductService.addSet(count.value!!, qualityInfo.value!![spinQualitySelectedPosition.value!!].code, productInfo.value!!.processingUnit)
+        }
     }
 
     fun onClickApply() {
@@ -217,7 +221,7 @@ class NonExciseSetsPGEViewModel : CoreViewModel(),
     }
 
     fun onClickItemPosition(position: Int) {
-        listComponents.value?.get(position)?.componentInfo?.let { screenNavigator.openNonExciseSetComponentInfoPGEScreen(it) }
+        listComponents.value?.get(position)?.componentInfo?.let { screenNavigator.openNonExciseSetComponentInfoPGEScreen(it, qualityInfo.value!![spinQualitySelectedPosition.value!!].code, productInfo.value!!) }
     }
 
     override fun onPageSelected(position: Int) {
@@ -247,7 +251,7 @@ class NonExciseSetsPGEViewModel : CoreViewModel(),
         if (componentNumber == null) {
             screenNavigator.openAlertGoodsNotFoundTaskScreen()
         } else {
-            screenNavigator.openNonExciseSetComponentInfoPGEScreen(componentNumber)
+            screenNavigator.openNonExciseSetComponentInfoPGEScreen(componentNumber, qualityInfo.value!![spinQualitySelectedPosition.value!!].code, productInfo.value!!)
         }
     }
 

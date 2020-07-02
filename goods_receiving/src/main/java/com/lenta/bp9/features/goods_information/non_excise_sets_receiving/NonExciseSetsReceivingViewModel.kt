@@ -200,7 +200,11 @@ class NonExciseSetsReceivingViewModel : CoreViewModel(),
     }
 
     fun onClickAdd() {
-        processNonExciseSetsReceivingProductService.addSet(count.value!!, qualityInfo.value!![spinQualitySelectedPosition.value!!].code)
+        if (processNonExciseSetsReceivingProductService.overLimit(countValue.value ?: 0.0)) {
+            screenNavigator.openAlertOverLimitPlannedScreen()
+        } else {
+            processNonExciseSetsReceivingProductService.addSet(count.value!!, qualityInfo.value!![spinQualitySelectedPosition.value!!].code)
+        }
     }
 
     fun onClickApply() {
@@ -209,7 +213,7 @@ class NonExciseSetsReceivingViewModel : CoreViewModel(),
     }
 
     fun onClickItemPosition(position: Int) {
-        listComponents.value?.get(position)?.componentInfo?.let { screenNavigator.openNonExciseSetComponentInfoPGEScreen(it) }
+        listComponents.value?.get(position)?.componentInfo?.let { screenNavigator.openNonExciseSetComponentInfoReceivingScreen(it, qualityInfo.value!![spinQualitySelectedPosition.value!!].code, productInfo.value!!) }
         updateListComponents()
     }
 
@@ -239,7 +243,7 @@ class NonExciseSetsReceivingViewModel : CoreViewModel(),
         if (componentNumber == null) {
             screenNavigator.openAlertGoodsNotFoundTaskScreen()
         } else {
-            screenNavigator.openNonExciseSetComponentInfoPGEScreen(componentNumber)
+            screenNavigator.openNonExciseSetComponentInfoReceivingScreen(componentNumber, qualityInfo.value!![spinQualitySelectedPosition.value!!].code, productInfo.value!!)
         }
     }
 

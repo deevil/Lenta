@@ -34,10 +34,10 @@ class ProcessNonExciseSetsReceivingProductService
         return taskManager.getReceivingTask()!!.taskRepository.getBatchesDiscrepancies().getCountOfDiscrepanciesOfBatch(batchInfo, typeDiscrepancies)
     }
 
-    /**fun overLimit(count: Double) : Boolean {
+    fun overLimit(count: Double) : Boolean {
     return productInfo.origQuantity.toDouble() < ((taskManager.getReceivingTask()?.taskRepository?.getProductsDiscrepancies()?.getCountAcceptOfProduct(productInfo) ?: 0.0)
     + (taskManager.getReceivingTask()?.taskRepository?.getProductsDiscrepancies()?.getCountRefusalOfProduct(productInfo) ?: 0.0) + count)
-    }*/
+    }
 
     fun overLimitBatch(count: Double, batchInfo: TaskBatchInfo) : Boolean {
         return batchInfo.purchaseOrderScope < ((taskManager.getReceivingTask()?.taskRepository?.getBatchesDiscrepancies()?.getCountAcceptOfBatchPGE(batchInfo) ?: 0.0)

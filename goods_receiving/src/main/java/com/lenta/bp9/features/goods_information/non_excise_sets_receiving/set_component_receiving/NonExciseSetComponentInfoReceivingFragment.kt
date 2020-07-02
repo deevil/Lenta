@@ -1,11 +1,12 @@
-package com.lenta.bp9.features.goods_information.non_excise_sets_pge.set_component_pge
+package com.lenta.bp9.features.goods_information.non_excise_sets_receiving.set_component_receiving
 
 import android.os.Bundle
 import android.view.View
 import android.widget.AdapterView
 import com.lenta.bp9.R
-import com.lenta.bp9.databinding.FragmentNonExciseSetComponentInfoPgeBinding
-import com.lenta.bp9.features.goods_information.non_excise_sets_pge.NonExciseSetsPGEFragment
+import com.lenta.bp9.databinding.FragmentNonExciseSetComponentInfoReceivingBinding
+import com.lenta.bp9.features.goods_information.non_excise_sets_pge.set_component_pge.NonExciseSetComponentInfoPGEFragment
+import com.lenta.bp9.features.goods_information.non_excise_sets_pge.set_component_pge.NonExciseSetComponentInfoPGEViewModel
 import com.lenta.bp9.model.task.TaskProductInfo
 import com.lenta.bp9.model.task.TaskSetsInfo
 import com.lenta.bp9.platform.extentions.getAppComponent
@@ -15,18 +16,17 @@ import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListener
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
 import com.lenta.shared.scan.OnScanResultListener
-import com.lenta.shared.utilities.DateInputMask
 import com.lenta.shared.utilities.extentions.connectLiveData
 import com.lenta.shared.utilities.extentions.provideViewModel
 import com.lenta.shared.utilities.state.state
 
-class NonExciseSetComponentInfoPGEFragment : CoreFragment<FragmentNonExciseSetComponentInfoPgeBinding, NonExciseSetComponentInfoPGEViewModel>(),
+class NonExciseSetComponentInfoReceivingFragment : CoreFragment<FragmentNonExciseSetComponentInfoReceivingBinding, NonExciseSetComponentInfoReceivingViewModel>(),
         OnScanResultListener,
         ToolbarButtonsClickListener {
 
     companion object {
-        fun create(setInfo: TaskSetsInfo, typeDiscrepancies: String, productInfo: TaskProductInfo): NonExciseSetComponentInfoPGEFragment {
-            NonExciseSetComponentInfoPGEFragment().let {
+        fun create(setInfo: TaskSetsInfo, typeDiscrepancies: String, productInfo: TaskProductInfo): NonExciseSetComponentInfoReceivingFragment {
+            NonExciseSetComponentInfoReceivingFragment().let {
                 it.setInfo = setInfo
                 it.typeDiscrepancies = typeDiscrepancies
                 it.productInfo = productInfo
@@ -43,8 +43,8 @@ class NonExciseSetComponentInfoPGEFragment : CoreFragment<FragmentNonExciseSetCo
 
     override fun getPageNumber(): String = "09/40"
 
-    override fun getViewModel(): NonExciseSetComponentInfoPGEViewModel {
-        provideViewModel(NonExciseSetComponentInfoPGEViewModel::class.java).let {vm ->
+    override fun getViewModel(): NonExciseSetComponentInfoReceivingViewModel {
+        provideViewModel(NonExciseSetComponentInfoReceivingViewModel::class.java).let { vm ->
             getAppComponent()?.inject(vm)
             vm.setInfo.value = this.setInfo
             vm.typeDiscrepancies.value = this.typeDiscrepancies
@@ -109,3 +109,4 @@ class NonExciseSetComponentInfoPGEFragment : CoreFragment<FragmentNonExciseSetCo
     }
 
 }
+

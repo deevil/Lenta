@@ -1,9 +1,9 @@
-package com.lenta.bp9.features.goods_information.non_excise_sets_pge.set_component_pge
+package com.lenta.bp9.features.goods_information.non_excise_sets_receiving.set_component_receiving
 
 import android.annotation.SuppressLint
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import com.lenta.bp9.model.processing.ProcessNonExciseSetsPGEProductService
+import com.lenta.bp9.model.processing.ProcessNonExciseSetsReceivingProductService
 import com.lenta.bp9.model.task.IReceivingTaskManager
 import com.lenta.bp9.model.task.TaskBatchInfo
 import com.lenta.bp9.model.task.TaskProductInfo
@@ -24,7 +24,7 @@ import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import javax.inject.Inject
 
-class NonExciseSetComponentInfoPGEViewModel : CoreViewModel(),
+class NonExciseSetComponentInfoReceivingViewModel : CoreViewModel(),
         OnPositionClickListener {
 
     @Inject
@@ -36,7 +36,7 @@ class NonExciseSetComponentInfoPGEViewModel : CoreViewModel(),
     @Inject
     lateinit var repoInMemoryHolder: IRepoInMemoryHolder
     @Inject
-    lateinit var processNonExciseSetsPGEProductService: ProcessNonExciseSetsPGEProductService
+    lateinit var processNonExciseSetsReceivingProductService: ProcessNonExciseSetsReceivingProductService
     @Inject
     lateinit var hyperHive: HyperHive
 
@@ -84,7 +84,7 @@ class NonExciseSetComponentInfoPGEViewModel : CoreViewModel(),
     init {
         viewModelScope.launch {
             suffix.value = setInfo.value?.uom?.name
-            qualityInfo.value = dataBase.getQualityInfoPGE()
+            qualityInfo.value = dataBase.getQualityInfo()
 
             spinQuality.value = listOf(qualityInfo.value?.findLast {find ->
                 find.code == typeDiscrepancies.value
@@ -125,10 +125,10 @@ class NonExciseSetComponentInfoPGEViewModel : CoreViewModel(),
         }
 
         if (batchSelected != null) {
-            if (processNonExciseSetsPGEProductService.overLimitBatch(countValue.value!!, batchSelected)) {
+            if (processNonExciseSetsReceivingProductService.overLimitBatch(countValue.value!!, batchSelected)) {
                 screenNavigator.openAlertOverLimitPlannedBatchScreen()
             } else {
-                processNonExciseSetsPGEProductService.addComponent(count.value!!, qualityInfo.value!![spinQualitySelectedPosition.value!!].code, spinProcessingUnit.value!![spinProcessingUnitSelectedPosition.value!!].substring(5), batchSelected)
+                processNonExciseSetsReceivingProductService.addComponent(count.value!!, qualityInfo.value!![spinQualitySelectedPosition.value!!].code, spinProcessingUnit.value!![spinProcessingUnitSelectedPosition.value!!].substring(5), batchSelected)
             }
         }
     }
