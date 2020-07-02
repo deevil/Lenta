@@ -260,8 +260,13 @@ class SearchProductDelegate @Inject constructor(
                 }
                 ProductType.NonExciseAlcohol -> { //не акцизный алкоголь ППП https://trello.com/c/rmn2WFMD; ПГЕ https://trello.com/c/P9KBZcNB;
                     when {
-                        taskProductInfo.isSet -> {
-                            screenNavigator.openInfoScreen("Ошибка получения данных") //openNotImplementedScreenAlert("Информация о наборе")
+                        taskProductInfo.isSet -> { //https://trello.com/c/yQ9jtjnZ
+                            when (repoInMemoryHolder.taskList.value?.taskListLoadingMode) {
+                                TaskListLoadingMode.Receiving -> screenNavigator.openInfoScreen("Ошибка получения данных") //openNotImplementedScreenAlert("Информация о не акцизном наборе")
+                                TaskListLoadingMode.PGE -> screenNavigator.openNonExciseSetsInfoPGEScreen(productInfo = taskProductInfo, isDiscrepancy = isDiscrepancy)
+                                TaskListLoadingMode.Shipment -> screenNavigator.openInfoScreen("Ошибка получения данных") //openNotImplementedScreenAlert("Информация о не акцизном наборе")
+                                else -> screenNavigator.openAlertUnknownTaskTypeScreen() //сообщение о неизвестном типе задания
+                            }
                         }
                         else -> {
                             when (repoInMemoryHolder.taskList.value?.taskListLoadingMode) {

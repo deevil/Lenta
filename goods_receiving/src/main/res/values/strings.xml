@@ -317,4 +317,6 @@
     <string name="bottling_of_entry_date">Дата розлива/ввоза</string>
     <string name="delivery_data_was_sent_to_GIS">Данные по поставке были отправлены в ГИС. Водителю необходимо дождаться подтверждения</string>
     <string name="current_provider_has_return_jobs_available">По текущему поставщику {%1$s} есть доступные задания на возврат. Перейти к заданиям на отгрузку?</string>
+    <string name="components">Компоненты</string>
+    <string name="scanned_ean">Отсканируйте штрихкод</string>
 </resources>
