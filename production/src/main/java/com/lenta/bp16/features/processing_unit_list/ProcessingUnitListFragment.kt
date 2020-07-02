@@ -24,11 +24,15 @@ import com.lenta.shared.utilities.extentions.*
 class ProcessingUnitListFragment : CoreFragment<FragmentProcessingUnitListBinding, ProcessingUnitListViewModel>(),
         OnBackPresserListener, ToolbarButtonsClickListener, OnKeyDownListener {
 
+    companion object {
+        const val SCREEN_NUMBER = "61"
+    }
+
     private var recyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
 
     override fun getLayoutId(): Int = R.layout.fragment_processing_unit_list
 
-    override fun getPageNumber(): String? = generateScreenNumberFromPostfix("61")
+    override fun getPageNumber(): String? = generateScreenNumberFromPostfix(SCREEN_NUMBER)
 
     override fun getViewModel(): ProcessingUnitListViewModel {
         provideViewModel(ProcessingUnitListViewModel::class.java).let {

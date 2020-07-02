@@ -26,11 +26,15 @@ import com.lenta.shared.utilities.extentions.provideViewModel
 class ExternalSupplyListFragment : CoreFragment<FragmentExternalSupplyListBinding, ExternalSupplyListViewModel>(),
         OnBackPresserListener, ToolbarButtonsClickListener, OnKeyDownListener {
 
+    companion object {
+        const val SCREEN_NUMBER = "62"
+    }
+
     private var recyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
 
     override fun getLayoutId(): Int = R.layout.fragment_external_supply_list
 
-    override fun getPageNumber(): String? = generateScreenNumberFromPostfix("62")
+    override fun getPageNumber(): String? = generateScreenNumberFromPostfix(SCREEN_NUMBER)
 
     override fun getViewModel(): ExternalSupplyListViewModel {
         provideViewModel(ExternalSupplyListViewModel::class.java).let {

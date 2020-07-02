@@ -17,9 +17,13 @@ import com.lenta.shared.utilities.extentions.provideViewModel
 class GoodPackagingFragment : CoreFragment<FragmentGoodWeighingBinding, GoodPackagingViewModel>(),
         ToolbarButtonsClickListener {
 
+    companion object {
+        const val SCREEN_NUMBER = "33"
+    }
+
     override fun getLayoutId(): Int = R.layout.fragment_good_packaging
 
-    override fun getPageNumber(): String? = generateScreenNumberFromPostfix("33")
+    override fun getPageNumber(): String? = generateScreenNumberFromPostfix(SCREEN_NUMBER)
 
     override fun getViewModel(): GoodPackagingViewModel {
         provideViewModel(GoodPackagingViewModel::class.java).let {

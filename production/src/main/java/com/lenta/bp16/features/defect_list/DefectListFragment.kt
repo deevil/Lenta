@@ -18,9 +18,13 @@ import com.lenta.shared.utilities.extentions.provideViewModel
 
 class DefectListFragment : CoreFragment<FragmentDefectListBinding, DefectListViewModel>() {
 
+    companion object {
+        const val SCREEN_NUMBER = "08"
+    }
+
     override fun getLayoutId(): Int = R.layout.fragment_defect_list
 
-    override fun getPageNumber(): String? = generateScreenNumberFromPostfix("08")
+    override fun getPageNumber(): String? = generateScreenNumberFromPostfix(SCREEN_NUMBER)
 
     override fun getViewModel(): DefectListViewModel {
         provideViewModel(DefectListViewModel::class.java).let {

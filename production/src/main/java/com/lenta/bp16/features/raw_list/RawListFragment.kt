@@ -25,11 +25,15 @@ import com.lenta.shared.utilities.extentions.provideViewModel
 class RawListFragment : CoreFragment<FragmentRawListBinding, RawListViewModel>(),
         ToolbarButtonsClickListener, OnKeyDownListener {
 
+    companion object {
+        const val SCREEN_NUMBER = "7"
+    }
+
     private var recyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
 
     override fun getLayoutId(): Int = R.layout.fragment_raw_list
 
-    override fun getPageNumber(): String? = generateScreenNumberFromPostfix("7")
+    override fun getPageNumber(): String? = generateScreenNumberFromPostfix(SCREEN_NUMBER)
 
     override fun getViewModel(): RawListViewModel {
         provideViewModel(RawListViewModel::class.java).let {

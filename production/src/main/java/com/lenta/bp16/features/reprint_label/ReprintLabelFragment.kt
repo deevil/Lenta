@@ -23,11 +23,15 @@ import com.lenta.shared.utilities.extentions.provideViewModel
 class ReprintLabelFragment : CoreFragment<FragmentReprintLabelBinding, ReprintLabelViewModel>(),
         ToolbarButtonsClickListener {
 
+    companion object {
+        const val SCREEN_NUMBER = "07"
+    }
+
     private var recyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
 
     override fun getLayoutId(): Int = R.layout.fragment_reprint_label
 
-    override fun getPageNumber(): String ? = generateScreenNumberFromPostfix("07")
+    override fun getPageNumber(): String ? = generateScreenNumberFromPostfix(SCREEN_NUMBER)
 
     override fun getViewModel(): ReprintLabelViewModel {
         provideViewModel(ReprintLabelViewModel::class.java).let {

@@ -32,12 +32,20 @@ import com.lenta.shared.utilities.extentions.provideViewModel
 class ExternalSupplyTaskListFragment : CoreFragment<FragmentExternalSupplyTaskListBinding, ExternalSupplyTaskListViewModel>(),
         ViewPagerSettings, ToolbarButtonsClickListener, OnKeyDownListener {
 
+    companion object {
+        const val SCREEN_NUMBER = "52"
+
+        private const val TABS = 2
+        private const val TAB_PROCESSING = 0
+        private const val TAB_PROCESSED = 1
+    }
+    
     private var processingRecyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
     private var processedRecyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
 
     override fun getLayoutId(): Int = R.layout.fragment_external_supply_task_list
 
-    override fun getPageNumber(): String? = generateScreenNumberFromPostfix("52")
+    override fun getPageNumber(): String? = generateScreenNumberFromPostfix(SCREEN_NUMBER)
 
     override fun getViewModel(): ExternalSupplyTaskListViewModel {
         provideViewModel(ExternalSupplyTaskListViewModel::class.java).let {
@@ -71,8 +79,8 @@ class ExternalSupplyTaskListFragment : CoreFragment<FragmentExternalSupplyTaskLi
 
     override fun getPagerItemView(container: ViewGroup, position: Int): View {
         return when (position) {
-            0 -> initTaskListProcessing(container)
-            1 -> initTaskListProcessed(container)
+            TAB_PROCESSING -> initTaskListProcessing(container)
+            TAB_PROCESSED -> initTaskListProcessed(container)
             else -> View(context)
         }
     }
@@ -165,14 +173,14 @@ class ExternalSupplyTaskListFragment : CoreFragment<FragmentExternalSupplyTaskLi
 
     override fun getTextTitle(position: Int): String {
         return when (position) {
-            0 -> getString(R.string.processing)
-            1 -> getString(R.string.processed)
+            TAB_PROCESSING -> getString(R.string.processing)
+            TAB_PROCESSED -> getString(R.string.processed)
             else -> throw IllegalArgumentException("Wrong pager position!")
         }
     }
 
     override fun countTab(): Int {
-        return 2
+        return TABS
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -187,8 +195,8 @@ class ExternalSupplyTaskListFragment : CoreFragment<FragmentExternalSupplyTaskLi
 
     override fun onKeyDown(keyCode: KeyCode): Boolean {
         return when (vm.selectedPage.value) {
-            0 -> processingRecyclerViewKeyHandler
-            1 -> processedRecyclerViewKeyHandler
+            TAB_PROCESSING -> processingRecyclerViewKeyHandler
+            TAB_PROCESSED -> processedRecyclerViewKeyHandler
             else -> null
         }?.onKeyDown(keyCode) ?: false
     }

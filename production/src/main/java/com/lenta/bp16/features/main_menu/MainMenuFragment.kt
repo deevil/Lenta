@@ -15,9 +15,13 @@ import com.lenta.shared.utilities.extentions.provideViewModel
 
 class MainMenuFragment : CoreFragment<FragmentMainMenuBinding, MainMenuViewModel>(), ToolbarButtonsClickListener {
 
+    companion object {
+        const val SCREEN_NUMBER = "4"
+    }
+
     override fun getLayoutId(): Int = R.layout.fragment_main_menu
 
-    override fun getPageNumber(): String? = generateScreenNumberFromPostfix("4")
+    override fun getPageNumber(): String? = generateScreenNumberFromPostfix(SCREEN_NUMBER)
 
     override fun getViewModel(): MainMenuViewModel {
         provideViewModel(MainMenuViewModel::class.java).let {
