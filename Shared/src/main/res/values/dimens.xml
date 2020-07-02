@@ -27,4 +27,8 @@
     // Высота строки в табличных макетах
     <dimen name="common_row_height">47dp</dimen> // 47dp - высота строки по умолчанию
 
+    // Табы
+    <dimen name="tab_height">32dp</dimen>
+    <dimen name="tab_indicator_height">3dp</dimen>
+
 </resources>
