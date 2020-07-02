@@ -1,11 +1,17 @@
 package com.lenta.shared.platform.fragment
 
 import android.os.Bundle
-import android.view.*
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.widget.AdapterView
 import androidx.annotation.LayoutRes
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.LiveData
+import androidx.recyclerview.widget.RecyclerView
+import androidx.viewbinding.ViewBinding
 import com.lenta.shared.BR
 import com.lenta.shared.di.CoreComponent
 import com.lenta.shared.di.FromParentToCoreProvider
@@ -16,17 +22,24 @@ import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.Logg
+import com.lenta.shared.utilities.databinding.DataBindingAdapter
+import com.lenta.shared.utilities.databinding.DataBindingRecyclerViewConfig
+import com.lenta.shared.utilities.databinding.RecyclerViewKeyHandler
 import com.lenta.shared.utilities.extentions.getFragmentResultCode
 import com.lenta.shared.utilities.extentions.implementationOf
 import com.lenta.shared.utilities.state.GsonBundle
 import com.lenta.shared.utilities.state.GsonBundleDelegate
-import java.lang.NullPointerException
 
 abstract class CoreFragment<T : ViewDataBinding, S : CoreViewModel> : Fragment(), GsonBundle by GsonBundleDelegate() {
     var binding: T? = null
-    lateinit var vm: S
+
+    open val vm: S by lazy {
+        getViewModel()
+    }
 
     private var timeForAllowHandleEnter = Long.MAX_VALUE
+
+    protected open var recyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
 
     val coreComponent: CoreComponent by lazy {
         (activity as CoreActivity<*>).coreComponent
@@ -35,14 +48,12 @@ abstract class CoreFragment<T : ViewDataBinding, S : CoreViewModel> : Fragment()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         restoreInstanceStateGsonBundle(savedInstanceState)
-        vm = getViewModel()
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         saveInstanceStateGsonBundle(outState)
     }
-
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         binding = DataBindingUtil.inflate(inflater, getLayoutId(), container, false)
@@ -63,10 +74,6 @@ abstract class CoreFragment<T : ViewDataBinding, S : CoreViewModel> : Fragment()
         return getCoreMainActivity()?.getTopToolbarUIModel()
     }
 
-    private fun getCoreMainActivity(): CoreMainActivity? {
-        return activity?.implementationOf(CoreMainActivity::class.java)
-    }
-
     override fun onResume() {
         super.onResume()
         timeForAllowHandleEnter = System.currentTimeMillis() + 500L
@@ -84,11 +91,6 @@ abstract class CoreFragment<T : ViewDataBinding, S : CoreViewModel> : Fragment()
     open fun onFragmentResult(arguments: Bundle) {
         Logg.d { "onFragmentResult arguments: $arguments" }
         vm.handleFragmentResult(arguments.getFragmentResultCode())
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        binding = null
     }
 
     fun invalidateTopToolBar() {
@@ -118,6 +120,54 @@ abstract class CoreFragment<T : ViewDataBinding, S : CoreViewModel> : Fragment()
         return System.currentTimeMillis() > timeForAllowHandleEnter
     }
 
+    protected open fun<T : ViewDataBinding> initRecycleAdapterDataBinding(
+            @LayoutRes layoutId: Int,
+            itemId: Int,
+            onAdapterItemCreate: ((T) -> Unit)? = null,
+            onAdapterItemBind: ((T, Int) -> Unit)? = ::onAdapterBindHandler
+    ): DataBindingRecyclerViewConfig<T> {
+        return DataBindingRecyclerViewConfig(
+                layoutId = layoutId,
+                itemId = itemId,
+                realisation = object : DataBindingAdapter<T> {
+                    override fun onCreate(binding: T) {
+                        onAdapterItemCreate?.invoke(binding)
+                    }
+                    override fun onBind(binding: T, position: Int) {
+                        onAdapterItemBind?.invoke(binding, position)
+                    }
+                },
+                onItemClickListener = AdapterView.OnItemClickListener { _, _, position, _ ->
+                    onAdapterItemClickHandler(position)
+                }
+        )
+    }
+    
+    protected open fun<Item : Any> initRecyclerViewKeyHandler(
+            recyclerView: RecyclerView,
+            items: LiveData<List<Item>>,
+            onClickHandler: ((Int) -> Unit)? = null
+    ) {
+        val previousPosInfo = recyclerViewKeyHandler?.posInfo?.value
+        recyclerViewKeyHandler = RecyclerViewKeyHandler(
+                rv = recyclerView,
+                items = items,
+                lifecycleOwner = viewLifecycleOwner,
+                initPosInfo = previousPosInfo,
+                onClickPositionFunc = onClickHandler
+        )
+    }
+
+    protected open fun onAdapterBindHandler(bindItem: ViewBinding, position: Int) {
+        recyclerViewKeyHandler?.let {
+            bindItem.root.isSelected = it.isSelected(position)
+        }
+    }
+
+    protected open fun onAdapterItemClickHandler(position: Int) {
+        recyclerViewKeyHandler?.onItemClicked(position)
+    }
+
     @LayoutRes
     abstract fun getLayoutId(): Int
 
@@ -129,5 +179,18 @@ abstract class CoreFragment<T : ViewDataBinding, S : CoreViewModel> : Fragment()
 
     abstract fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel)
 
+    override fun onDestroyView() {
+        recyclerViewKeyHandler?.onClickPositionFunc = null
+        super.onDestroyView()
+    }
 
+    override fun onDestroy() {
+        binding?.unbind()
+        binding = null
+        super.onDestroy()
+    }
+
+    private fun getCoreMainActivity(): CoreMainActivity? {
+        return activity?.implementationOf(CoreMainActivity::class.java)
+    }
 }

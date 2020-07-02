@@ -9,15 +9,15 @@ import com.lenta.bp16.features.external_supply_list.ExternalSupplyListFragment
 import com.lenta.bp16.features.external_supply_task_list.ExternalSupplyTaskListFragment
 import com.lenta.bp16.features.good_packaging.GoodPackagingFragment
 import com.lenta.bp16.features.good_weighing.GoodWeighingFragment
-import com.lenta.bp16.features.processing_unit_list.ProcessingUnitListFragment
 import com.lenta.bp16.features.loading.fast.FastDataLoadingFragment
 import com.lenta.bp16.features.main_menu.MainMenuFragment
 import com.lenta.bp16.features.pack_good_list.PackGoodListFragment
 import com.lenta.bp16.features.pack_list.PackListFragment
-import com.lenta.bp16.features.raw_list.RawListFragment
-import com.lenta.bp16.features.select_market.SelectMarketFragment
+import com.lenta.bp16.features.processing_unit_list.ProcessingUnitListFragment
 import com.lenta.bp16.features.processing_unit_task_list.ProcessingUnitTaskListFragment
+import com.lenta.bp16.features.raw_list.RawListFragment
 import com.lenta.bp16.features.reprint_label.ReprintLabelFragment
+import com.lenta.bp16.features.select_market.SelectMarketFragment
 import com.lenta.bp16.features.select_personnel_number.SelectPersonnelNumberFragment
 import com.lenta.shared.account.IAuthenticator
 import com.lenta.shared.features.alert.AlertFragment
@@ -92,7 +92,7 @@ class ScreenNavigator @Inject constructor(
 
     override fun openProcessingUnitListScreen() {
         runOrPostpone {
-            getFragmentStack()?.push(ProcessingUnitListFragment())
+            getFragmentStack()?.push(ProcessingUnitListFragment.newInstance())
         }
     }
 
