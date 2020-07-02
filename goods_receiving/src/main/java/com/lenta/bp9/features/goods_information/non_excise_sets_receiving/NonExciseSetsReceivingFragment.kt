@@ -198,4 +198,9 @@ class NonExciseSetsReceivingFragment : CoreFragment<FragmentNonExciseSetsReceivi
         return false
     }
 
+    override fun onResume() {
+        super.onResume()
+        vm.onResume()
+    }
+
 }

@@ -30,5 +30,6 @@ interface ITaskProductsDiscrepanciesRepository {
     fun getCountOfDiscrepanciesOfProduct(product: TaskProductInfo, typeDiscrepancies: String): Double
     fun getQuantityDiscrepanciesOfProduct(product: TaskProductInfo): Int
     fun getAllCountDiscrepanciesOfProduct(product: TaskProductInfo): Double
+    fun getAllCountDiscrepanciesOfProduct(materialNumber: String): Double
     fun clear()
 }

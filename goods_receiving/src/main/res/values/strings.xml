@@ -319,4 +319,5 @@
     <string name="current_provider_has_return_jobs_available">По текущему поставщику {%1$s} есть доступные задания на возврат. Перейти к заданиям на отгрузку?</string>
     <string name="components">Компоненты</string>
     <string name="scanned_ean">Отсканируйте штрихкод</string>
+    <string name="goods_not_found">Товар не найден</string>
 </resources>

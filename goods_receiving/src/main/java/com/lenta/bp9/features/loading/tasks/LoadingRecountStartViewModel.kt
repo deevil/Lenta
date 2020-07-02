@@ -78,6 +78,7 @@ class LoadingRecountStartViewModel : CoreLoadingViewModel() {
         viewModelScope.launch {
             repoInMemoryHolder.manufacturers.value = result.manufacturers
             repoInMemoryHolder.processOrderData.value = result.processOrderData.map { TaskProcessOrderDataInfo.from( it) }
+            repoInMemoryHolder.sets.value = result.setsInfo.map { TaskSetsInfo.from(hyperHive, it) }
             val mercuryNotActual = result.taskMercuryNotActualRestData.map {TaskMercuryNotActual.from(hyperHive,it)}
             if (mercuryNotActual.isNotEmpty()) {
                 screenNavigator.openMainMenuScreen()

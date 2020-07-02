@@ -2,14 +2,19 @@ package com.lenta.bp9.features.goods_information.non_excise_sets_receiving
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import com.lenta.bp9.features.goods_information.non_excise_sets_pge.ListComponentsItem
 import com.lenta.bp9.features.goods_list.ListWithoutBarcodeItem
 import com.lenta.bp9.features.goods_list.SearchProductDelegate
 import com.lenta.bp9.model.processing.ProcessNonExciseSetsPGEProductService
 import com.lenta.bp9.model.processing.ProcessNonExciseSetsReceivingProductService
 import com.lenta.bp9.model.task.IReceivingTaskManager
 import com.lenta.bp9.model.task.TaskProductInfo
+import com.lenta.bp9.model.task.TaskSetsInfo
 import com.lenta.bp9.platform.navigation.IScreenNavigator
 import com.lenta.bp9.repos.IDataBaseRepo
+import com.lenta.bp9.repos.IRepoInMemoryHolder
+import com.lenta.shared.fmp.resources.dao_ext.getProductInfoByMaterial
+import com.lenta.shared.fmp.resources.slow.ZfmpUtz48V001
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.requests.combined.scan_info.ScanInfoResult
 import com.lenta.shared.requests.combined.scan_info.pojo.QualityInfo
@@ -20,6 +25,7 @@ import com.lenta.shared.utilities.extentions.combineLatest
 import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.utilities.extentions.toStringFormatted
 import com.lenta.shared.view.OnPositionClickListener
+import com.mobrun.plugin.api.HyperHive
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -38,11 +44,19 @@ class NonExciseSetsReceivingViewModel : CoreViewModel(),
     lateinit var dataBase: IDataBaseRepo
     @Inject
     lateinit var processNonExciseSetsReceivingProductService: ProcessNonExciseSetsReceivingProductService
+    @Inject
+    lateinit var repoInMemoryHolder: IRepoInMemoryHolder
+    @Inject
+    lateinit var hyperHive: HyperHive
+
+    private val zfmpUtz48V001: ZfmpUtz48V001 by lazy {
+        ZfmpUtz48V001(hyperHive)
+    }
 
     val productInfo: MutableLiveData<TaskProductInfo> = MutableLiveData()
     val selectedPage = MutableLiveData(0)
     val componentsSelectionsHelper = SelectionItemsHelper()
-    val listComponents: MutableLiveData<List<ListWithoutBarcodeItem>> = MutableLiveData()
+    val listComponents: MutableLiveData<List<ListComponentsItem>> = MutableLiveData()
     val eanCode: MutableLiveData<String> = MutableLiveData()
     val requestFocusToEan: MutableLiveData<Boolean> = MutableLiveData()
     val spinQuality: MutableLiveData<List<String>> = MutableLiveData()
@@ -142,8 +156,43 @@ class NonExciseSetsReceivingViewModel : CoreViewModel(),
         return false
     }
 
-    fun onClickClean() {
+    fun onResume() {
+        updateListComponents()
+    }
 
+    private fun updateListComponents() {
+        repoInMemoryHolder.sets.value.let {setsInfoList ->
+            listComponents.postValue(
+                    setsInfoList?.filter {filterSetInfo ->
+                        filterSetInfo.setNumber == productInfo.value?.materialNumber
+                    }?.sortedByDescending {sorted ->
+                        sorted.componentNumber
+                    }?.mapIndexed { index, taskSetsInfo ->
+                        val componentDescription = zfmpUtz48V001.getProductInfoByMaterial(taskSetsInfo.componentNumber)?.name
+                        ListComponentsItem(
+                                number = index + 1,
+                                name = "${taskSetsInfo.componentNumber.substring(taskSetsInfo.componentNumber.length - 6)} $componentDescription",
+                                quantity = "${taskManager.getReceivingTask()!!.taskRepository.getProductsDiscrepancies().getAllCountDiscrepanciesOfProduct(taskSetsInfo.componentNumber).toStringFormatted()} из ${(taskSetsInfo.quantity * (countValue.value ?: 0.0)).toStringFormatted()}",
+                                componentInfo = taskSetsInfo,
+                                even = index % 2 == 0
+                        )
+                    }
+            )
+        }
+
+        componentsSelectionsHelper.clearPositions()
+    }
+
+    fun onClickClean() {
+        componentsSelectionsHelper.selectedPositions.value?.map { position ->
+            taskManager
+                    .getReceivingTask()
+                    ?.taskRepository
+                    ?.getProductsDiscrepancies()
+                    ?.deleteProductsDiscrepanciesForProduct(listComponents.value?.get(position)!!.componentInfo.componentNumber)
+        }
+
+        updateListComponents()
     }
 
     fun onClickDetails() {
@@ -151,28 +200,17 @@ class NonExciseSetsReceivingViewModel : CoreViewModel(),
     }
 
     fun onClickAdd() {
-
+        processNonExciseSetsReceivingProductService.addSet(count.value!!, qualityInfo.value!![spinQualitySelectedPosition.value!!].code)
     }
 
     fun onClickApply() {
-
+        onClickAdd()
+        screenNavigator.goBack()
     }
 
     fun onClickItemPosition(position: Int) {
-        /**val matnr: String? = if (selectedPage.value == 0) {
-        if (taskType.value == TaskType.ShipmentPP) {
-        listToProcessing.value?.get(position)?.productInfo?.materialNumber
-        } else {
-        listCounted.value?.get(position)?.productInfo?.materialNumber
-        }
-        } else {
-        if (taskType.value == TaskType.ShipmentPP) {
-        listProcessed.value?.get(position)?.productInfo?.materialNumber
-        } else {
-        listWithoutBarcode.value?.get(position)?.productInfo?.materialNumber
-        }
-        }
-        searchProductDelegate.searchCode(code = matnr ?: "", fromScan = false)*/
+        listComponents.value?.get(position)?.componentInfo?.let { screenNavigator.openNonExciseSetComponentInfoPGEScreen(it) }
+        updateListComponents()
     }
 
     override fun onPageSelected(position: Int) {
@@ -195,11 +233,14 @@ class NonExciseSetsReceivingViewModel : CoreViewModel(),
     }
 
     fun onScanResult(data: String) {
-        /**addGoods.value = false
-        onClickAdd()
-        if (addGoods.value == true) {
-        searchProductDelegate.searchCode(code = data, fromScan = true, isBarCode = true)
-        }*/
+        val componentNumber: TaskSetsInfo? = repoInMemoryHolder.sets.value?.findLast {
+            it.componentNumber == data
+        }
+        if (componentNumber == null) {
+            screenNavigator.openAlertGoodsNotFoundTaskScreen()
+        } else {
+            screenNavigator.openNonExciseSetComponentInfoPGEScreen(componentNumber)
+        }
     }
 
     fun onBackPressed() {

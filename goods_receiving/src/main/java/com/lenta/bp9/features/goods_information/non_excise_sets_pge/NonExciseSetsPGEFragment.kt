@@ -199,4 +199,9 @@ class NonExciseSetsPGEFragment : CoreFragment<FragmentNonExciseSetsPgeBinding, N
         vm.onBackPressed()
         return false
     }
+
+    override fun onResume() {
+        super.onResume()
+        vm.onResume()
+    }
 }

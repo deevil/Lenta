@@ -60,17 +60,10 @@
                     <TextView
                         style="@style/CellTextStyle"
                         android:layout_width="wrap_content"
-                        android:maxLines="@{item.nameMaxLines}"
+                        android:maxLines="2"
                         android:singleLine="false"
                         android:text="@{item.name}"
                         tools:text="000363 Салака" />
-
-                    <TextView
-                        style="@style/CellTextStyle"
-                        app:visibleOrGone="@{item.visibilityNameBatch}"
-                        android:layout_width="wrap_content"
-                        android:text="@{item.nameBatch}"
-                        tools:text="ДР-01.01.07//Водяра" />
 
                 </LinearLayout>
 
@@ -101,7 +94,7 @@
                         <TextView
                             style="@style/CellTextStyle"
                             android:layout_width="wrap_content"
-                            android:text='@{item.countAcceptWithUom }'
+                            android:text='@{item.quantity }'
                             tools:text="0 из 2" />
 
                     </LinearLayout>
