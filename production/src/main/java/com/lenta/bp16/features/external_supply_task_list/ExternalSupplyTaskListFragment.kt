@@ -185,4 +185,10 @@ class ExternalSupplyTaskListFragment : CoreFragment<FragmentExternalSupplyTaskLi
         }?.onKeyDown(keyCode) ?: false
     }
 
+    override fun onDestroyView() {
+        processingRecyclerViewKeyHandler?.onClickPositionFunc = null
+        processedRecyclerViewKeyHandler?.onClickPositionFunc = null
+        super.onDestroyView()
+    }
+
 }

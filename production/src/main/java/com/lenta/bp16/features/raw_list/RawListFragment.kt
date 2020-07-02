@@ -103,4 +103,9 @@ class RawListFragment : CoreFragment<FragmentRawListBinding, RawListViewModel>()
         return recyclerViewKeyHandler?.onKeyDown(keyCode) ?: false
     }
 
+    override fun onDestroyView() {
+        recyclerViewKeyHandler?.onClickPositionFunc = null
+        super.onDestroyView()
+    }
+
 }

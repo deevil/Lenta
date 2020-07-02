@@ -110,4 +110,9 @@ class ExternalSupplyListFragment : CoreFragment<FragmentExternalSupplyListBindin
         return recyclerViewKeyHandler?.onKeyDown(keyCode) ?: false
     }
 
+    override fun onDestroyView() {
+        recyclerViewKeyHandler?.onClickPositionFunc = null
+        super.onDestroyView()
+    }
+
 }

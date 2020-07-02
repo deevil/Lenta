@@ -110,4 +110,9 @@ class PackGoodListFragment : CoreFragment<FragmentPackGoodListBinding, PackGoodL
         return recyclerViewKeyHandler?.onKeyDown(keyCode) ?: false
     }
 
+    override fun onDestroyView() {
+        recyclerViewKeyHandler?.onClickPositionFunc = null
+        super.onDestroyView()
+    }
+
 }

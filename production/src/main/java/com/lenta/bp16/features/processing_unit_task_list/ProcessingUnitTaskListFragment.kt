@@ -191,4 +191,10 @@ class ProcessingUnitTaskListFragment : CoreFragment<FragmentProcessingUnitTaskLi
         }?.onKeyDown(keyCode) ?: false
     }
 
+    override fun onDestroyView() {
+        processingRecyclerViewKeyHandler?.onClickPositionFunc = null
+        processedRecyclerViewKeyHandler?.onClickPositionFunc = null
+        super.onDestroyView()
+    }
+
 }
