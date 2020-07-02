@@ -68,12 +68,11 @@ class GoodsListFragment : CoreFragment<FragmentGoodsListBinding, GoodsListViewMo
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val onClickSelectionListener = View.OnClickListener { view ->
-            view?.let {
-                (it.tag as Int).let { position ->
-                    vm.selectionsHelper.revert(position = position)
-                    binding?.rv?.adapter?.notifyItemChanged(position)
-                }
+        val onClickSelectionListener = View.OnClickListener { clickListener ->
+            clickListener?.let {
+                val position = it.tag as Int
+                vm.selectionsHelper.revert(position = position)
+                binding?.rv?.adapter?.notifyItemChanged(position)
             }
         }
 
@@ -101,14 +100,14 @@ class GoodsListFragment : CoreFragment<FragmentGoodsListBinding, GoodsListViewMo
             }
         )
 
-        binding?.rv?.let { recyclerView ->
-            binding?.lifecycleOwner?.let { lifecycleOwner ->
-                recyclerViewKeyHandler = RecyclerViewKeyHandler(
-                        recyclerView,
-                        vm.goodsList,
-                        lifecycleOwner,
-                        recyclerViewKeyHandler?.posInfo?.value
-                )
+        binding?.apply {
+            lifecycleOwner?.let{ lifecycleOwner ->
+                    recyclerViewKeyHandler = RecyclerViewKeyHandler(
+                            rv,
+                            vm.goodsList,
+                            lifecycleOwner,
+                            recyclerViewKeyHandler?.posInfo?.value
+                    )
             }
         }
     }

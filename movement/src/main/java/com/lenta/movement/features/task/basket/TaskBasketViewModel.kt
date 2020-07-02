@@ -16,8 +16,9 @@ import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.utilities.extentions.mapSkipNulls
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import kotlin.properties.Delegates
 
-class TaskBasketViewModel : CoreViewModel(),
+class TaskBasketViewModel() : CoreViewModel(),
         OnOkInSoftKeyboardListener {
 
     @Inject
@@ -35,9 +36,9 @@ class TaskBasketViewModel : CoreViewModel(),
     @Inject
     lateinit var formatter: IFormatter
 
-    var basketIndex: Int? = null
+    var basketIndex by Delegates.notNull<Int>()
 
-    val basket by lazy { taskBasketsRepository.getBasketByIndex(basketIndex!!) }
+    val basket by lazy { taskBasketsRepository.getBasketByIndex(basketIndex) }
 
     val selectionsHelper = SelectionItemsHelper()
 
@@ -48,7 +49,7 @@ class TaskBasketViewModel : CoreViewModel(),
                 SimpleListItem(
                         number = index + 1,
                         title = formatter.getProductName(product),
-                        countWithUom = "$count шт.", // TODO
+                        countWithUom = "$count $PCS_ABBREVIATION", // TODO
                         isClickable = false
                 )
             }
@@ -73,26 +74,19 @@ class TaskBasketViewModel : CoreViewModel(),
     fun onDeleteClick() {
         selectionsHelper.selectedPositions.value.orEmpty()
                 .map { doRemoveProductIndex ->
-                    basketIndex?.let { basketIndex ->
-                        taskBasketsRepository.getBasketByIndex(basketIndex)
-                                .getByIndex(doRemoveProductIndex)
-                    }
+                    taskBasketsRepository.getBasketByIndex(basketIndex)
+                            .getByIndex(doRemoveProductIndex)
                 }
                 .forEach { doRemoveProduct ->
-                    basketIndex?.let { basketIndex ->
-                        taskBasketsRepository.getBasketByIndex(basketIndex).remove(doRemoveProduct)
-                    }
+                    taskBasketsRepository.getBasketByIndex(basketIndex).remove(doRemoveProduct)
                 }
 
         selectionsHelper.clearPositions()
-
         goods.postValue(getGoods())
     }
 
     fun onCharacteristicsClick() {
-        basketIndex?.let { basketIndex ->
-            screenNavigator.openTaskBasketCharacteristicsScreen(basketIndex)
-        }
+        screenNavigator.openTaskBasketCharacteristicsScreen(basketIndex)
     }
 
     fun onNextClick() {
@@ -114,9 +108,7 @@ class TaskBasketViewModel : CoreViewModel(),
     }
 
     private fun getGoods(): List<Pair<ProductInfo, Int>> {
-        basketIndex?.let { basketIndex ->
-            return taskBasketsRepository.getBasketByIndex(basketIndex).toList()
-        } ?: return listOf()
+        return taskBasketsRepository.getBasketByIndex(basketIndex).toList()
     }
 
     private fun searchCode(code: String, fromScan: Boolean, isBarCode: Boolean? = null) {
@@ -127,4 +119,7 @@ class TaskBasketViewModel : CoreViewModel(),
         }
     }
 
+    companion object {
+        private const val PCS_ABBREVIATION = "шт."
+    }
 }

@@ -14,6 +14,7 @@ import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.models.core.ProductType
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.requests.combined.scan_info.ScanCodeInfo
+import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.SelectionItemsHelper
 import com.lenta.shared.utilities.databinding.PageSelectionListener
 import com.lenta.shared.utilities.extentions.combineLatest
@@ -278,6 +279,8 @@ class CreateBoxesViewModel : CoreViewModel(),
             updateBoxes()
 
             screenNavigator.openBoxSavedDialog(newBox)
+        } ?: Logg.e {
+            "productInfo is empty"
         }
     }
 

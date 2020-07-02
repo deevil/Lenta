@@ -18,13 +18,14 @@ import com.lenta.shared.utilities.databinding.RecyclerViewKeyHandler
 import com.lenta.shared.utilities.extentions.connectLiveData
 import com.lenta.shared.utilities.extentions.provideViewModel
 import com.lenta.shared.utilities.state.state
+import java.lang.IllegalArgumentException
 
 class TaskBasketFragment: CoreFragment<FragmentTaskBasketBinding, TaskBasketViewModel>(),
     ToolbarButtonsClickListener,
     OnScanResultListener,
     OnKeyDownListener {
 
-    private var basketIndex: Int? by state(null)
+    private var basketIndex: Int by state( throw IllegalArgumentException("basket index cannot be null") )
 
     private var recyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
 

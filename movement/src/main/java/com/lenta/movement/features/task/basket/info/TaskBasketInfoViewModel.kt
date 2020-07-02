@@ -9,10 +9,11 @@ import com.lenta.movement.platform.extensions.unsafeLazy
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.extentions.map
 import javax.inject.Inject
+import kotlin.properties.Delegates
 
 class TaskBasketInfoViewModel: CoreViewModel() {
 
-    var basketIndex: Int = -1
+    var basketIndex by Delegates.notNull<Int>()
 
     @Inject
     lateinit var taskManager: ITaskManager

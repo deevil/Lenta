@@ -9,7 +9,7 @@ class Formatter(
 ) : IFormatter {
 
     override fun formatMarketName(market: String): String {
-        return "ТК - $market"
+        return "$TK - $market"
     }
 
     override fun getProductName(product: ProductInfo): String {
@@ -24,7 +24,9 @@ class Formatter(
     }
 
     override fun getTaskStatusName(taskStatus: Task.Status): String {
-        if (taskStatus.text != null) return taskStatus.text!!
+        taskStatus.text?.let {
+            return it
+        }
 
         return when (taskStatus) {
             is Task.Status.Created -> Task.Status.CREATED
@@ -34,7 +36,6 @@ class Formatter(
             is Task.Status.ToConsolidation -> Task.Status.TO_CONSOLIDATION
             is Task.Status.Consolidation -> Task.Status.CONSOLIDATION
             is Task.Status.Consolidated -> Task.Status.CONSOLIDATED
-
         }
     }
 
@@ -54,41 +55,39 @@ class Formatter(
     override fun getBasketDescription(basket: Basket, task: Task, settings: TaskSettings): String {
         if (basket.keys.isEmpty()) return ""
 
-        val descriptionBuilder = StringBuilder()
+        return buildString {
+            val signsOfDiv = settings.signsOfDiv
 
-        val signsOfDiv = settings.signsOfDiv
+            if (signsOfDiv.contains(GoodsSignOfDivision.ALCO) && basket.keys.first().isAlco) {
+                append("A/")
+            } else if (signsOfDiv.contains(GoodsSignOfDivision.VET) && basket.keys.first().isVet) {
+                append("B/")
+            } else if (signsOfDiv.contains(GoodsSignOfDivision.USUAL) && basket.keys.first().isUsual) {
+                append("C/")
+            }
 
-        if (signsOfDiv.contains(GoodsSignOfDivision.ALCO) && basket.keys.first().isAlco) {
-            descriptionBuilder.append("A/")
-        } else if (signsOfDiv.contains(GoodsSignOfDivision.VET) && basket.keys.first().isVet) {
-            descriptionBuilder.append("B/")
-        } else if (signsOfDiv.contains(GoodsSignOfDivision.USUAL) && basket.keys.first().isUsual) {
-            descriptionBuilder.append("C/")
-        }
+            append("${basket.keys.first().materialType}/")
 
-        descriptionBuilder.append("${basket.keys.first().materialType}/")
+            if (task.isCreated) {
+                TODO("добавить 'ПП – <номер задания>/'")
+            }
 
-        if (task.isCreated) {
-            TODO("добавить 'ПП – <номер задания>/'")
-        }
+            append("C - ${basket.keys.first().sectionId}/")
 
-        descriptionBuilder.append("C - ${basket.keys.first().sectionId}/")
+            append("${basket.keys.first().ekGroup}/")
 
-        descriptionBuilder.append("${basket.keys.first().ekGroup}/")
+            if (signsOfDiv.contains(GoodsSignOfDivision.FOOD)) {
+                if (basket.keys.first().isFood) {
+                    append("F")
+                } else {
+                    append("NF")
+                }
+            }
 
-        if (signsOfDiv.contains(GoodsSignOfDivision.FOOD)) {
-            if (basket.keys.first().isFood) {
-                descriptionBuilder.append("F")
-            } else {
-                descriptionBuilder.append("NF")
+            if (signsOfDiv.contains(GoodsSignOfDivision.MATERIAL_NUMBER)) {
+                append(basket.keys.first().getMaterialLastSix())
             }
         }
-
-        if (signsOfDiv.contains(GoodsSignOfDivision.MATERIAL_NUMBER)) {
-            descriptionBuilder.append(basket.keys.first().getMaterialLastSix())
-        }
-
-        return descriptionBuilder.toString()
     }
 
     override fun basketGisControl(basket: Basket): String {
@@ -104,34 +103,30 @@ class Formatter(
     }
 
     override fun getEOSubtitle(eo: ProcessingUnit) : String {
-        val builder = StringBuilder()
-        builder.append("№${eo.basketNumber}")
-        builder.append(
+        return buildString {
+            append("№${eo.basketNumber}")
+            append(
                 when {
                     eo.isAlco -> "/A"
                     eo.isUsual -> "/O"
                     else -> ""
                 }
-        )
-        builder.append(
-                when (eo.supplier) {
-                    null -> ""
-                    else -> "/${eo.supplier}"
-                }
-        )
-        return builder.toString()
+            )
+            append(eo.supplier.orEmpty())
+        }
     }
 
     override fun getGETitle(ge: CargoUnit): String {
-        val builder = StringBuilder()
         val cargoNum = ge.cargoUnitNumber
-        val processingUnit = ge.processingUnitNumber
-        if (cargoNum.isNotEmpty()) builder.append(cargoNum).append("/$processingUnit")
-        else builder.append(processingUnit)
-        return builder.toString()
+        return buildString {
+            if (cargoNum.isNotEmpty()) append(cargoNum).append("/")
+            append(ge.processingUnitNumber)
+        }
     }
 
     companion object {
+        private const val TK = "ТК"
+
         private const val SS_MOVEMENT = "Для перемещения на ТК"
         private const val SCDS_MOVEMENT = "Для перемещения на ТК" //TODO
         private const val SCS_MOVEMENT = "Для перемещения на ТК" // TODO
