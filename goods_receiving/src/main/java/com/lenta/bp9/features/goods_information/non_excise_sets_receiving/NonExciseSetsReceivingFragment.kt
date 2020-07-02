@@ -1,4 +1,4 @@
-package com.lenta.bp9.features.goods_information.non_excise_sets_pge
+package com.lenta.bp9.features.goods_information.non_excise_sets_receiving
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -10,7 +10,6 @@ import androidx.lifecycle.Observer
 import com.lenta.bp9.BR
 import com.lenta.bp9.R
 import com.lenta.bp9.databinding.*
-import com.lenta.bp9.features.goods_information.general.GoodsInfoFragment
 import com.lenta.bp9.model.task.TaskProductInfo
 import com.lenta.bp9.platform.extentions.getAppComponent
 import com.lenta.shared.platform.activity.OnBackPresserListener
@@ -20,7 +19,6 @@ import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListener
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
 import com.lenta.shared.scan.OnScanResultListener
-import com.lenta.shared.utilities.DateInputMask
 import com.lenta.shared.utilities.databinding.DataBindingAdapter
 import com.lenta.shared.utilities.databinding.DataBindingRecyclerViewConfig
 import com.lenta.shared.utilities.databinding.RecyclerViewKeyHandler
@@ -29,15 +27,15 @@ import com.lenta.shared.utilities.extentions.connectLiveData
 import com.lenta.shared.utilities.extentions.provideViewModel
 import com.lenta.shared.utilities.state.state
 
-class NonExciseSetsPGEFragment : CoreFragment<FragmentNonExciseSetsPgeBinding, NonExciseSetsPGEViewModel>(),
+class NonExciseSetsReceivingFragment : CoreFragment<FragmentNonExciseSetsReceivingBinding, NonExciseSetsReceivingViewModel>(),
         ViewPagerSettings,
         OnScanResultListener,
         ToolbarButtonsClickListener,
         OnBackPresserListener {
 
     companion object {
-        fun create(productInfo: TaskProductInfo, isDiscrepancy: Boolean): NonExciseSetsPGEFragment {
-            NonExciseSetsPGEFragment().let {
+        fun create(productInfo: TaskProductInfo, isDiscrepancy: Boolean): NonExciseSetsReceivingFragment {
+            NonExciseSetsReceivingFragment().let {
                 it.productInfo = productInfo
                 it.isDiscrepancy = isDiscrepancy
                 return it
@@ -50,12 +48,12 @@ class NonExciseSetsPGEFragment : CoreFragment<FragmentNonExciseSetsPgeBinding, N
 
     private var componentsRecyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
 
-    override fun getLayoutId(): Int = R.layout.fragment_non_excise_sets_pge
+    override fun getLayoutId(): Int = R.layout.fragment_non_excise_sets_receiving
 
     override fun getPageNumber(): String = "09/39"
 
-    override fun getViewModel(): NonExciseSetsPGEViewModel {
-        provideViewModel(NonExciseSetsPGEViewModel::class.java).let {vm ->
+    override fun getViewModel(): NonExciseSetsReceivingViewModel {
+        provideViewModel(NonExciseSetsReceivingViewModel::class.java).let { vm ->
             getAppComponent()?.inject(vm)
             vm.productInfo.value = this.productInfo
             vm.isDiscrepancy.value = this.isDiscrepancy
@@ -99,8 +97,8 @@ class NonExciseSetsPGEFragment : CoreFragment<FragmentNonExciseSetsPgeBinding, N
         when (position) {
             0 -> {
                 DataBindingUtil
-                        .inflate<LayoutNonExciseSetsCountedPgeBinding>(LayoutInflater.from(container.context),
-                                R.layout.layout_non_excise_sets_counted_pge,
+                        .inflate<LayoutNonExciseSetsCountedReceivingBinding>(LayoutInflater.from(container.context),
+                                R.layout.layout_non_excise_sets_counted_receiving,
                                 container,
                                 false).let { layoutBinding ->
                             layoutBinding.vm = vm
@@ -118,8 +116,8 @@ class NonExciseSetsPGEFragment : CoreFragment<FragmentNonExciseSetsPgeBinding, N
             }
             else -> {
                 DataBindingUtil
-                        .inflate<LayoutNonExciseSetsComponentsPgeBinding>(LayoutInflater.from(container.context),
-                                R.layout.layout_non_excise_sets_components_pge,
+                        .inflate<LayoutNonExciseSetsComponentsReceivingBinding>(LayoutInflater.from(container.context),
+                                R.layout.layout_non_excise_sets_components_receiving,
                                 container,
                                 false).let { layoutBinding ->
 
@@ -199,4 +197,5 @@ class NonExciseSetsPGEFragment : CoreFragment<FragmentNonExciseSetsPgeBinding, N
         vm.onBackPressed()
         return false
     }
+
 }

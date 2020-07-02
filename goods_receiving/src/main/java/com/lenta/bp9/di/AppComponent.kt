@@ -27,6 +27,7 @@ import com.lenta.bp9.features.goods_information.mercury.GoodsMercuryInfoViewMode
 import com.lenta.bp9.features.goods_information.non_excise_alco_pge.NonExciseAlcoInfoPGEViewModel
 import com.lenta.bp9.features.goods_information.non_excise_alco_receiving.NonExciseAlcoInfoViewModel
 import com.lenta.bp9.features.goods_information.non_excise_sets_pge.NonExciseSetsPGEViewModel
+import com.lenta.bp9.features.goods_information.non_excise_sets_receiving.NonExciseSetsReceivingViewModel
 import com.lenta.bp9.features.goods_list.GoodsListViewModel
 import com.lenta.bp9.features.input_outgoing_fillings.InputOutgoingFillingsViewModel
 import com.lenta.bp9.features.list_goods_transfer.ListGoodsTransferViewModel
@@ -144,4 +145,5 @@ interface AppComponent : FromParentToCoreProvider {
     fun inject(it: ExciseAlcoStampPGEBatchSignsViewModel)
     fun inject(it: SupplyResultsViewModel)
     fun inject(it: NonExciseSetsPGEViewModel)
+    fun inject(it: NonExciseSetsReceivingViewModel)
 }

@@ -29,6 +29,7 @@ import com.lenta.bp9.features.goods_information.mercury.GoodsMercuryInfoFragment
 import com.lenta.bp9.features.goods_information.non_excise_alco_pge.NonExciseAlcoInfoPGEFragment
 import com.lenta.bp9.features.goods_information.non_excise_alco_receiving.NonExciseAlcoInfoFragment
 import com.lenta.bp9.features.goods_information.non_excise_sets_pge.NonExciseSetsPGEFragment
+import com.lenta.bp9.features.goods_information.non_excise_sets_receiving.NonExciseSetsReceivingFragment
 import com.lenta.bp9.features.goods_list.GoodsListFragment
 import com.lenta.bp9.features.input_outgoing_fillings.InputOutgoingFillingsFragment
 import com.lenta.bp9.features.list_goods_transfer.ListGoodsTransferFragment
@@ -1444,6 +1445,12 @@ class ScreenNavigator(
         }
     }
 
+    override fun openNonExciseSetsInfoReceivingScreen(productInfo: TaskProductInfo, isDiscrepancy: Boolean) {
+        runOrPostpone {
+            getFragmentStack()?.push(NonExciseSetsReceivingFragment.create(productInfo, isDiscrepancy))
+        }
+    }
+
     private fun getFragmentStack() = foregroundActivityProvider.getActivity()?.fragmentStack
 }
 
@@ -1610,4 +1617,5 @@ interface IScreenNavigator : ICoreNavigator {
     fun openCurrentProviderHasReturnJobsAvailableDialog(numberCurrentProvider: String, nextCallbackFunc: () -> Unit)
     fun openSupplyResultsScreen(pageNumber: String, numberSupply: String, isAutomaticWriteOff: Boolean)
     fun openNonExciseSetsInfoPGEScreen(productInfo: TaskProductInfo, isDiscrepancy: Boolean)
+    fun openNonExciseSetsInfoReceivingScreen(productInfo: TaskProductInfo, isDiscrepancy: Boolean)
 }
