@@ -17,6 +17,7 @@ import com.lenta.shared.fmp.resources.dao_ext.DictElement
 import com.lenta.shared.platform.constants.Constants
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.settings.IAppSettings
+import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.extentions.combineLatest
 import com.lenta.shared.utilities.extentions.dropZeros
 import com.lenta.shared.utilities.extentions.map
@@ -242,22 +243,26 @@ class DefectInfoViewModel : CoreViewModel() {
 
                     val barcode = barCodeText.replace("(", "").replace(")", "")
 
-                    printLabel(LabelInfo(
-                            quantity = "${total.value!!}  ${good.value?.units?.name}",
-                            codeCont = packCodeResult.packCode,
-                            planAufFinish = SimpleDateFormat(Constants.DATE_FORMAT_dd_mm_yyyy_hh_mm, Locale.getDefault()).format(planAufFinish.time),
-                            aufnr = raw.value!!.order,
-                            nameOsn = raw.value!!.name,
-                            dateExpir = dateExpir?.let { SimpleDateFormat(Constants.DATE_FORMAT_dd_mm_yyyy, Locale.getDefault()).format(it.time) }
-                                    ?: "",
-                            goodsName = "***БРАК*** ${packCodeResult.dataLabel.materialName}",
-                            weigher = sessionInfo.personnelNumber ?: "",
-                            productTime = SimpleDateFormat(Constants.DATE_FORMAT_dd_mm_yyyy, Locale.getDefault()).format(productTime.time),
-                            goodsCode = packCodeResult.dataLabel.material.takeLast(6),
-                            barcode = barcode,
-                            barcodeText = barCodeText,
-                            printTime = Date()
-                    ))
+                    try {
+                        printLabel(LabelInfo(
+                                quantity = "${total.value!!}  ${good.value?.units?.name}",
+                                codeCont = packCodeResult.packCode,
+                                planAufFinish = SimpleDateFormat(Constants.DATE_FORMAT_dd_mm_yyyy_hh_mm, Locale.getDefault()).format(planAufFinish.time),
+                                aufnr = raw.value!!.order,
+                                nameOsn = raw.value!!.name,
+                                dateExpir = dateExpir?.let { SimpleDateFormat(Constants.DATE_FORMAT_dd_mm_yyyy, Locale.getDefault()).format(it.time) }
+                                        ?: "",
+                                goodsName = "***БРАК*** ${packCodeResult.dataLabel.materialName}",
+                                weigher = sessionInfo.personnelNumber ?: "",
+                                productTime = SimpleDateFormat(Constants.DATE_FORMAT_dd_mm_yyyy, Locale.getDefault()).format(productTime.time),
+                                goodsCode = packCodeResult.dataLabel.material.takeLast(6),
+                                barcode = barcode,
+                                barcodeText = barCodeText,
+                                printTime = Date()
+                        ))
+                    } catch (e: Exception) {
+                        Logg.e { "Create print label exception: $e" }
+                    }
 
                     weighted.value = 0.0
                     weightField.value = "0"

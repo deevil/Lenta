@@ -20,6 +20,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.lenta.shared.keys.KeyCode
 import com.lenta.shared.utilities.Logg
+import java.lang.IllegalStateException
 
 
 @BindingAdapter(value = ["items", "rv_config"])
@@ -204,16 +205,17 @@ class RecyclerViewKeyHandler<T>(private val rv: RecyclerView,
 
         when (keyCode) {
             KeyCode.KEYCODE_DPAD_DOWN, KeyCode.KEYCODE_DPAD_UP -> {
-                var pos = posInfo.value!!.currentPos
+                val lastPos = posInfo.value?.currentPos ?: throw IllegalStateException("currentPos cannot be null")
+                var currentPos = lastPos
 
                 when (keyCode) {
-                    KeyCode.KEYCODE_DPAD_DOWN -> pos++
-                    KeyCode.KEYCODE_DPAD_UP -> pos--
+                    KeyCode.KEYCODE_DPAD_DOWN -> currentPos++
+                    KeyCode.KEYCODE_DPAD_UP -> currentPos--
                     else -> return false
                 }
 
-                if (isCorrectPosition(pos)) {
-                    posInfo.value = PosInfo(currentPos = pos, lastPos = posInfo.value!!.currentPos)
+                if (isCorrectPosition(currentPos)) {
+                    posInfo.value = PosInfo(currentPos = currentPos, lastPos = lastPos)
                     rv.requestFocus()
                     return true
                 }

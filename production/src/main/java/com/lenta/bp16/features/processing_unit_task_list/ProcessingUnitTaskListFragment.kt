@@ -21,7 +21,6 @@ import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListener
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
 import com.lenta.shared.scan.OnScanResultListener
-import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.databinding.DataBindingAdapter
 import com.lenta.shared.utilities.databinding.DataBindingRecyclerViewConfig
 import com.lenta.shared.utilities.databinding.RecyclerViewKeyHandler
@@ -34,12 +33,20 @@ import com.lenta.shared.utilities.extentions.provideViewModel
 class ProcessingUnitTaskListFragment : CoreFragment<FragmentProcessingUnitTaskListBinding, ProcessingUnitTaskListViewModel>(),
         ViewPagerSettings, ToolbarButtonsClickListener, OnScanResultListener, OnKeyDownListener {
 
+    companion object {
+        const val SCREEN_NUMBER = "51"
+
+        private const val TABS = 2
+        private const val TAB_PROCESSING = 0
+        private const val TAB_PROCESSED = 1
+    }
+
     private var processingRecyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
     private var processedRecyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
 
     override fun getLayoutId(): Int = R.layout.fragment_processing_unit_task_list
 
-    override fun getPageNumber(): String? = generateScreenNumberFromPostfix("51")
+    override fun getPageNumber(): String? = generateScreenNumberFromPostfix(SCREEN_NUMBER)
 
     override fun getViewModel(): ProcessingUnitTaskListViewModel {
         provideViewModel(ProcessingUnitTaskListViewModel::class.java).let {
@@ -73,8 +80,8 @@ class ProcessingUnitTaskListFragment : CoreFragment<FragmentProcessingUnitTaskLi
 
     override fun getPagerItemView(container: ViewGroup, position: Int): View {
         return when (position) {
-            0 -> initTaskListProcessing(container)
-            1 -> initTaskListProcessed(container)
+            TAB_PROCESSING -> initTaskListProcessing(container)
+            TAB_PROCESSED -> initTaskListProcessed(container)
             else -> View(context)
         }
     }
@@ -167,14 +174,14 @@ class ProcessingUnitTaskListFragment : CoreFragment<FragmentProcessingUnitTaskLi
 
     override fun getTextTitle(position: Int): String {
         return when (position) {
-            0 -> getString(R.string.processing)
-            1 -> getString(R.string.processed)
+            TAB_PROCESSING -> getString(R.string.processing)
+            TAB_PROCESSED -> getString(R.string.processed)
             else -> throw IllegalArgumentException("Wrong pager position!")
         }
     }
 
     override fun countTab(): Int {
-        return 2
+        return TABS
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -193,8 +200,8 @@ class ProcessingUnitTaskListFragment : CoreFragment<FragmentProcessingUnitTaskLi
 
     override fun onKeyDown(keyCode: KeyCode): Boolean {
         return when (vm.selectedPage.value) {
-            0 -> processingRecyclerViewKeyHandler
-            1 -> processedRecyclerViewKeyHandler
+            TAB_PROCESSING -> processingRecyclerViewKeyHandler
+            TAB_PROCESSED -> processedRecyclerViewKeyHandler
             else -> null
         }?.onKeyDown(keyCode) ?: false
     }
