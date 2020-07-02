@@ -16,20 +16,24 @@ class SavePackagedExciseBoxesNetRequest @Inject constructor(
 
     override suspend fun run(params: SavePackagedExciseBoxesParams): Either<Failure, Unit> {
         val status = fmpRequestsHelper.restRequest(
-            resourceName = "ZMP_UTZ_MVM_07_V001",
+            resourceName = RESOURCE_NAME,
             data = params,
             clazz = SavePackagedExciseBoxesStatus::class.java
         )
 
         if (status is Either.Left) return status
 
-        if (status is Either.Right && status.b.retCode == "1") {
+        if (status is Either.Right && status.b.retCode != NON_FAILURE_RET_CODE) {
             return Either.Left(InfoFailure(status.b.errorText))
         }
 
         return Either.Right(Unit)
     }
 
+    companion object {
+        private const val RESOURCE_NAME = "ZMP_UTZ_MVM_07_V001"
+        private const val NON_FAILURE_RET_CODE = "0"
+    }
 }
 
 data class SavePackagedExciseBoxesParams(

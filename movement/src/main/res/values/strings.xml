@@ -9,6 +9,8 @@
     <string name="unsaved_data_will_lost">Несохранённые данные будут утеряны. Всё равно выйти?</string>
     <string name="select_type_code_description">Введено 12 знаков. Какой код вы ввели?</string>
     <string name="alert_product_incorrect_for_create_box">Для товара %s не предусмотрено создание коробов</string>
+    <string name="alert_null_personnel_number">Не введен табельный номер</string>
+    <string name="alert_null_task">Задание не найдено</string>
 
     <string name="create_boxes_filling_tab_title">Количество</string>
     <string name="create_boxes_filling_tab_attachment_format">Вложение (кор = %d шт)</string>
@@ -26,8 +28,8 @@
     <string name="box_saved_msg">Короб %s сохранен</string>
     <string name="save_to_sap_erp_msg">Сохранение в SAP ERP</string>
 
-
     <string name="task_settings_title">Карточка задания</string>
+    <string name="task_settings_name">Перемещение от %1$s</string>
 
     <string name="task_settings_status_title">Статус</string>
     <string name="task_settings_status_current_state_title">Текущий статус</string>
@@ -52,11 +54,16 @@
     <string name="task_goods_quantities_format">%1$d %3$s\n%2$d %3$s</string>
     <string name="task_goods_basket_number_format">%1$02d</string>
     <string name="task_basket_title">Список товаров корзины</string>
+    <string name="task_basket_info_title">Свойства корзины</string>
     <string name="task_basket_characteristics_title">Свойства</string>
     <string name="baskets">Корзины</string>
     <string name="pu">ЕО</string>
     <string name="boxes">Коробки</string>
     <string name="task_save_confirmation_msg">Перевести задание в статус «Посчитано» и закрыть его для редактирования?</string>
 
-
+    <string name="process">Обработать</string>
+    <string name="task_eo_merge_title">Объединение ЕО</string>
+    <string name="task_eo_merge_eo_list">Список ЕО</string>
+    <string name="task_eo_merge_ge_list">Список ГЕ</string>
+    <string name="task_eo_merge_ge_eo">ГЕ/ЕО</string>
 </resources>

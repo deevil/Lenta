@@ -13,9 +13,7 @@ import com.lenta.shared.utilities.extentions.provideViewModel
 
 class FastDataLoadingFragment : CoreLoadingFragment() {
 
-    override fun getPageNumber(): String {
-        return "10/02"
-    }
+    override fun getPageNumber() = PAGE_NUMBER
 
     override fun getViewModel(): CoreLoadingViewModel {
         provideViewModel(FastLoadingViewModel::class.java).let {
@@ -37,12 +35,14 @@ class FastDataLoadingFragment : CoreLoadingFragment() {
         return false
     }
 
-    override fun onToolbarButtonClick(view: View) {
-
-    }
+    override fun onToolbarButtonClick(view: View) = Unit
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         vm.title.value = getString(R.string.sync_of_dictionary)
+    }
+
+    companion object {
+        private const val PAGE_NUMBER = "10/02"
     }
 }

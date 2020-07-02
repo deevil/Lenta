@@ -68,7 +68,7 @@ class MemoryTaskBasketsRepository(
             basket.checkSuitableProduct(product, supplier)
         } ?: Basket(
             index = basketList.size,
-            volume = zmpUtz14V001.getEoVolume() ?: error("Объем корзины отсутствует"),
+            volume = zmpUtz14V001.getEoVolume() ?: error(NULL_BASKET_VOLUME),
             supplier = supplier.takeIf { signOfDiv.contains(GoodsSignOfDivision.LIF_NUMBER) },
             isAlco = product.isAlco.takeIf { signOfDiv.contains(GoodsSignOfDivision.ALCO) },
             isExciseAlco = product.isExcise.takeIf { signOfDiv.contains(GoodsSignOfDivision.MARK_PARTS) },
@@ -81,6 +81,10 @@ class MemoryTaskBasketsRepository(
 
     override fun clear() {
         basketList.clear()
+    }
+
+    companion object {
+        private const val NULL_BASKET_VOLUME = "Объем корзины отсутствует"
     }
 
 }

@@ -16,20 +16,19 @@ class ObtainingDataExciseGoodsNetRequest @Inject constructor(
 
     override suspend fun run(params: ExciseGoodsParams): Either<Failure, ExciseGoodsRestInfo> {
         return fmpRequestsHelper.restRequest(
-            resourceName = "ZMP_UTZ_100_V001",
+            resourceName = RESOURCE_NAME,
             data = params,
             clazz = ExciseGoodsStatus::class.java
-        ).let {
-            if (it is Either.Left) {
-                return@let it
-            }
-
-            if (it is Either.Right && it.b.retCode != "0") {
-                return@let Either.Left(InfoFailure(it.b.errorTxt))
-            }
-
-            return@let it
+        ).let { result ->
+            if(result is Either.Right && result.b.retCode != NON_FAILURE_RET_CODE) {
+                Either.Left(InfoFailure(result.b.errorTxt))
+            } else result
         }
+    }
+
+    companion object {
+        private const val RESOURCE_NAME = "ZMP_UTZ_100_V001"
+        private const val NON_FAILURE_RET_CODE = "0"
     }
 }
 

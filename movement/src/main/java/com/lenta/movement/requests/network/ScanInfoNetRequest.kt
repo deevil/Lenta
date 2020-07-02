@@ -26,7 +26,7 @@ class ScanInfoNetRequest @Inject constructor(
 
     override suspend fun run(params: ScanInfoParams): Either<Failure, ProductInfo> {
         val result = fmpRequestsHelper.restRequest(
-            resourceName = "ZMP_UTZ_BKS_05_V001",
+            resourceName = RESOURCE_NAME,
             data = params,
             clazz = ScanInfoStatus::class.java
         )
@@ -45,7 +45,9 @@ class ScanInfoNetRequest @Inject constructor(
 
         }
     }
-
+    companion object {
+        private const val RESOURCE_NAME = "ZMP_UTZ_BKS_05_V001"
+    }
 }
 
 private fun ScanInfoResult.getProductInfo(uomInfo: ZmpUtz07V001.ItemLocal_ET_UOMS?): ProductInfo? {

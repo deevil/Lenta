@@ -15,11 +15,6 @@ class ScanInfoHelper @Inject constructor(
     private val scanInfoNetRequest: ScanInfoNetRequest
 ) {
 
-    companion object {
-        private const val SAP_RC = 160
-        private const val BAR_RC = 170
-    }
-
     private enum class CodeType {
         SAP,
         BAR
@@ -67,7 +62,7 @@ class ScanInfoHelper @Inject constructor(
                 ean = scanCodeInfo.eanNumberForSearch ?: "",
                 tk = sessionInfo.market.orEmpty(),
                 matNr = scanCodeInfo.materialNumberForSearch ?: "",
-                codeEBP = "MVM"
+                codeEBP = CODE_EBP
             )
         ).either(
             fnL = { failure ->
@@ -85,5 +80,11 @@ class ScanInfoHelper @Inject constructor(
         resultCodeTypeDeferred = CompletableDeferred()
 
         return resultCodeTypeDeferred?.await()
+    }
+
+    companion object {
+        private const val SAP_RC = 160
+        private const val BAR_RC = 170
+        private const val CODE_EBP = "MVM"
     }
 }

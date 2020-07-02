@@ -1,16 +1,22 @@
 package com.lenta.movement.requests.network.models
 
+import com.lenta.movement.models.ProcessingUnit
 import com.lenta.movement.models.Task
+import com.lenta.movement.requests.network.models.saveTask.SaveTaskResultTask
+import com.lenta.movement.requests.network.models.startConsolidation.StartConsolidationProcessingUnit
 import com.lenta.shared.platform.constants.Constants
 import com.lenta.shared.utilities.extentions.getSapDate
 import com.lenta.shared.utilities.extentions.isSapTrue
 
-fun DbTaskListItem.toTask(): Task {
+fun SaveTaskResultTask.toTask(): Task {
     return Task(
         number = taskNumber,
         isCreated = notFinish.isSapTrue().not(),
         currentStatus = when (currentStatusCode) {
-            "04" -> Task.Status.Published(currentStatusText)
+            Task.Status.PUBLISHED_CODE -> Task.Status.Published(currentStatusText)
+            Task.Status.COUNTED_CODE -> Task.Status.Counted(currentStatusText)
+            Task.Status.TO_CONSOLIDATION_CODE -> Task.Status.ToConsolidation(currentStatusText)
+            Task.Status.CONSOLIDATED_CODE -> Task.Status.Consolidated(currentStatusText)
             else -> Task.Status.Unknown(currentStatusText)
         },
         nextStatus = Task.Status.Unknown(nextStatusText),
@@ -23,4 +29,21 @@ fun DbTaskListItem.toTask(): Task {
         shipmentStorage = lgortTarget,
         shipmentDate = dateShip.getSapDate(Constants.DATE_FORMAT_yyyy_mm_dd) ?: error("shipment date parse error (raw date: $dateShip)")
     )
+}
+
+fun StartConsolidationProcessingUnit.convertToModel() : ProcessingUnit {
+    return ProcessingUnit(
+            processingUnitNumber = processingUnitNumber,
+            basketNumber = basketNumber,
+            supplier = supplier.ifEmpty { null },
+            isAlco = isAlco.isSapTrue(),
+            isUsual = isUsual.isSapTrue(),
+            quantity = quantity
+    )
+}
+
+fun List<StartConsolidationProcessingUnit>.toModelList() : List<ProcessingUnit> {
+    return this.map {
+        it.convertToModel()
+    }
 }

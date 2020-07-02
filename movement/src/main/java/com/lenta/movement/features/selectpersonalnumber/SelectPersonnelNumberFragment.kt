@@ -20,19 +20,9 @@ class SelectPersonnelNumberFragment : CoreFragment<FragmentSelectPersonnelNumber
 
     private var codeConfirmation: Int? by state<Int?>(null)
 
-    companion object {
-        fun create(codeConfirmation: Int): SelectPersonnelNumberFragment {
-            SelectPersonnelNumberFragment().let {
-                it.codeConfirmation = codeConfirmation
-                return it
-            }
-        }
-
-    }
-
     override fun getLayoutId(): Int = R.layout.fragment_select_personnel_number
 
-    override fun getPageNumber(): String = "10/12"
+    override fun getPageNumber() = PAGE_NUMBER
 
     override fun getViewModel(): SelectPersonnelNumberViewModel {
         provideViewModel(SelectPersonnelNumberViewModel::class.java).let {
@@ -70,5 +60,16 @@ class SelectPersonnelNumberFragment : CoreFragment<FragmentSelectPersonnelNumber
     override fun onResume() {
         super.onResume()
         vm.onResume()
+    }
+
+    companion object {
+        private const val PAGE_NUMBER = "10/12"
+
+        fun create(codeConfirmation: Int): SelectPersonnelNumberFragment {
+            SelectPersonnelNumberFragment().let {
+                it.codeConfirmation = codeConfirmation
+                return it
+            }
+        }
     }
 }

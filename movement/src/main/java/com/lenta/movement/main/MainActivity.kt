@@ -8,7 +8,7 @@ import com.lenta.shared.platform.fragment.CoreFragment
 
 class MainActivity: CoreMainActivity() {
 
-    var mainViewModel: MainViewModel? = null
+    private var mainViewModel: MainViewModel? = null
 
     private val numberScreenGenerator = NumberScreenGenerator()
 

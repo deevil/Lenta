@@ -157,11 +157,14 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
                 GoodListItem(
                     number = index + 1,
                     name = product.description,
-                    countWithUom = "${boxes.size} кор"
+                    countWithUom = "${boxes.size} $BOX_ABBREVIATION"
                 )
             }
 
         goodsList.postValue(goodsBoxesList)
     }
 
+    companion object {
+        private const val BOX_ABBREVIATION = "кор"
+    }
 }

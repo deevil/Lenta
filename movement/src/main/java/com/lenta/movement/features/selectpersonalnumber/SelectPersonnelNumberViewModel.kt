@@ -15,8 +15,10 @@ class SelectPersonnelNumberViewModel : CoreViewModel(), OnOkInSoftKeyboardListen
 
     @Inject
     lateinit var screenNavigator: IScreenNavigator
+
     @Inject
     lateinit var sessionInfo: ISessionInfo
+
     @Inject
     lateinit var selectPersonnelNumberDelegate: SelectPersonnelNumberDelegate
 
@@ -24,10 +26,8 @@ class SelectPersonnelNumberViewModel : CoreViewModel(), OnOkInSoftKeyboardListen
     val fullName = MutableLiveData("")
     val employeesPosition = MutableLiveData("")
 
-
     val editTextFocus = MutableLiveData<Boolean>()
     val nextButtonFocus = MutableLiveData<Boolean>()
-
 
     private var codeConfirm: Int? = null
 
@@ -50,9 +50,7 @@ class SelectPersonnelNumberViewModel : CoreViewModel(), OnOkInSoftKeyboardListen
             )
             selectPersonnelNumberDelegate.codeConfirm = codeConfirm
         }
-
     }
-
 
     override fun handleFailure(failure: Failure) {
         super.handleFailure(failure)
@@ -64,17 +62,13 @@ class SelectPersonnelNumberViewModel : CoreViewModel(), OnOkInSoftKeyboardListen
     }
 
     fun onClickNext() {
-        selectPersonnelNumberDelegate.onClickNext()
+        if (!selectPersonnelNumberDelegate.fullName.value.isNullOrBlank()) {
+            sessionInfo.personnelNumber = selectPersonnelNumberDelegate.personnelNumber.value
+            selectPersonnelNumberDelegate.onClickNext()
+        }
     }
 
+    fun onResume() = selectPersonnelNumberDelegate.onResume()
 
-    fun onResume() {
-        selectPersonnelNumberDelegate.onResume()
-    }
-
-
-    fun onScanResult(data: String) {
-        selectPersonnelNumberDelegate.onScanResult(data)
-    }
-
+    fun onScanResult(data: String) = selectPersonnelNumberDelegate.onScanResult(data)
 }

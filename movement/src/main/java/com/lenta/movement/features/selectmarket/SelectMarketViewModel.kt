@@ -39,29 +39,27 @@ class SelectMarketViewModel : CoreViewModel(), OnPositionClickListener {
 
     init {
         viewModelScope.launch {
-            markets.value = repoInMemoryHolder.storesRequestResult!!.markets.map { MarketUi(number = it.number, address = it.address) }.also {
-                if (selectedPosition.value == null) {
-                    if (appSettings.lastTK != null) {
-                        it.forEachIndexed { index, itemLocal_ET_WERKS ->
-                            if (itemLocal_ET_WERKS.number == appSettings.lastTK) {
-                                onClickPosition(index)
+            repoInMemoryHolder.storesRequestResult?.let { storesRequestResult ->
+                markets.value = storesRequestResult.markets.map { MarketUi(number = it.number, address = it.address) }.also {
+                    if (selectedPosition.value == null) {
+                        if (appSettings.lastTK != null) {
+                            it.forEachIndexed { index, itemLocal_ET_WERKS ->
+                                if (itemLocal_ET_WERKS.number == appSettings.lastTK) {
+                                    onClickPosition(index)
+                                }
                             }
+                        } else {
+                            onClickPosition(0)
                         }
-                    } else {
-                        onClickPosition(0)
+                    }
+
+                    if (it.size == 1) {
+                        onClickNext()
                     }
                 }
-
-
-
-                if (it.size == 1) {
-                    onClickNext()
-                }
             }
-
         }
     }
-
 
     fun onClickNext() {
         viewModelScope.launch {
@@ -74,18 +72,14 @@ class SelectMarketViewModel : CoreViewModel(), OnPositionClickListener {
             }
             screenNavigator.openFastDataLoadingScreen()
         }
-
     }
-
 
     override fun onClickPosition(position: Int) {
         selectedPosition.value = position
     }
-
 }
 
 data class MarketUi(
         val number: String,
         val address: String
-
 )

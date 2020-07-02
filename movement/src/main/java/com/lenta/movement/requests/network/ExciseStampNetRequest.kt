@@ -8,23 +8,23 @@ import com.lenta.shared.interactor.UseCase
 import javax.inject.Inject
 
 class ExciseStampNetRequest @Inject constructor(
-    private val obtainingDataExciseGoodsNetRequest: ObtainingDataExciseGoodsNetRequest
-): UseCase<ExciseStamp, ExciseStampParams> {
+        private val obtainingDataExciseGoodsNetRequest: ObtainingDataExciseGoodsNetRequest
+) : UseCase<ExciseStamp, ExciseStampParams> {
 
     override suspend fun run(params: ExciseStampParams): Either<Failure, ExciseStamp> {
         val baseResult = obtainingDataExciseGoodsNetRequest(
-            params = ExciseGoodsParams(
-                werks = params.tk,
-                materialNumber = params.materialNumber,
-                materialNumberComp = "",
-                stampCode = params.stampCode,
-                boxNumber = "",
-                manufacturerCode = "",
-                bottlingDate = "",
-                mode = "1",
-                codeEBP = "MVM",
-                factCount = ""
-            )
+                params = ExciseGoodsParams(
+                        werks = params.tk,
+                        materialNumber = params.materialNumber,
+                        materialNumberComp = "",
+                        stampCode = params.stampCode,
+                        boxNumber = "",
+                        manufacturerCode = "",
+                        bottlingDate = "",
+                        mode = "1",
+                        codeEBP = "MVM",
+                        factCount = ""
+                )
         )
 
         if (baseResult is Either.Left) return baseResult
@@ -35,10 +35,10 @@ class ExciseStampNetRequest @Inject constructor(
             }
 
             val exciseStamp = ExciseStamp(
-                code = params.stampCode,
-                materialNumber = params.materialNumber,
-                manufacturerName = baseResult.b.manufacturers.firstOrNull()?.name.orEmpty(),
-                dateOfPour = baseResult.b.dateManufacture
+                    code = params.stampCode,
+                    materialNumber = params.materialNumber,
+                    manufacturerName = baseResult.b.manufacturers.firstOrNull()?.name.orEmpty(),
+                    dateOfPour = baseResult.b.dateManufacture
             )
 
             return Either.Right(exciseStamp)
@@ -50,7 +50,7 @@ class ExciseStampNetRequest @Inject constructor(
 }
 
 data class ExciseStampParams(
-    val tk: String,
-    val materialNumber: String,
-    val stampCode: String
+        val tk: String,
+        val materialNumber: String,
+        val stampCode: String
 )

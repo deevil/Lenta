@@ -18,6 +18,7 @@ data class Task(
 ) {
 
     sealed class Status {
+
         abstract val text: String?
 
         data class Created(override val text: String? = null): Status()
@@ -27,5 +28,31 @@ data class Task(
         data class Published(override val text: String? = null): Status()
 
         data class Unknown(override val text: String): Status()
+
+        data class ToConsolidation(override val text: String? = null) : Status()
+
+        data class Consolidation(override val text: String? = null) : Status()
+
+        data class Consolidated(override val text: String? = null) : Status()
+
+        companion object {
+            const val CREATED = "Создано"
+
+            const val COUNTED = "Посчитано"
+            const val COUNTED_CODE = "10"
+
+            const val PUBLISHED = "Опубликованно"
+            const val PUBLISHED_CODE = "04"
+
+            const val UNKNOWN = "Неизвестно"
+
+            const val TO_CONSOLIDATION = "К консолидации"
+            const val TO_CONSOLIDATION_CODE = "13"
+
+            const val CONSOLIDATION = "Консолидация"
+
+            const val CONSOLIDATED = "Консолидировано"
+            const val CONSOLIDATED_CODE = "19"
+        }
     }
 }

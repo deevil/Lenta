@@ -20,7 +20,5 @@ class SlowResourcesMultiRequest @Inject constructor(private val hyperHive: Hyper
                 ZmpUtz46V001.NAME_RESOURCE to ZmpUtz46V001(hyperHive).newRequest()
         )
     }
-
-
 }
 
