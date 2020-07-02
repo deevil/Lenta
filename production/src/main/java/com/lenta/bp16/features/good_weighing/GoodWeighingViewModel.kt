@@ -198,7 +198,7 @@ class GoodWeighingViewModel : CoreViewModel() {
                     total.value = 0.0
                     weightField.value = "0"
 
-                    // 4942 - не все понятно по задаче
+                    // todo 4942 - Доделать когда будет больше информации по задаче
                     /*if (packCodeResult.isAutofix.isSapTrue()) {
                         navigator.showFixStartNextStageSuccessful {
                             navigator.openPackListScreen()

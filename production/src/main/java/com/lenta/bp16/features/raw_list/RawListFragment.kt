@@ -93,28 +93,14 @@ class RawListFragment : CoreFragment<FragmentRawListBinding, RawListViewModel>()
                     rv = layoutBinding.rv,
                     items = vm.raws,
                     lifecycleOwner = layoutBinding.lifecycleOwner!!,
-                    initPosInfo = recyclerViewKeyHandler?.posInfo?.value
+                    initPosInfo = recyclerViewKeyHandler?.posInfo?.value,
+                    onClickPositionFunc = vm::onClickItemPosition
             )
         }
     }
 
     override fun onKeyDown(keyCode: KeyCode): Boolean {
-        recyclerViewKeyHandler?.let {
-            if (!it.onKeyDown(keyCode)) {
-                if (keyCode.keyCode == KeyCode.KEYCODE_ENTER.keyCode) {
-                    it.posInfo.value?.currentPos?.let { position ->
-                        vm.onClickItemPosition(position)
-                        return true
-                    }
-                }
-
-                return false
-            }
-
-            return true
-        }
-
-        return false
+        return recyclerViewKeyHandler?.onKeyDown(keyCode) ?: false
     }
 
 }

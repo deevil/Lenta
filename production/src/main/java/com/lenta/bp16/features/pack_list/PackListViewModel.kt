@@ -82,7 +82,7 @@ class PackListViewModel : CoreViewModel() {
                 ).either({ failure ->
                     navigator.openAlertScreen(failure)
                 }) { result ->
-                    // 4942 - не все понятно по задаче
+                    // todo 4942 - Доделать когда будет больше информации по задаче
                     /*if (result.isAutofix.isSapTrue()) {
                         navigator.showFixStartNextStageSuccessful {
                             navigator.goBack()

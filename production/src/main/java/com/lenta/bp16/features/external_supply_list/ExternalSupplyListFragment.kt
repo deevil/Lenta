@@ -95,7 +95,8 @@ class ExternalSupplyListFragment : CoreFragment<FragmentExternalSupplyListBindin
                     rv = layoutBinding.rv,
                     items = vm.goods,
                     lifecycleOwner = layoutBinding.lifecycleOwner!!,
-                    initPosInfo = recyclerViewKeyHandler?.posInfo?.value
+                    initPosInfo = recyclerViewKeyHandler?.posInfo?.value,
+                    onClickPositionFunc = vm::onClickItemPosition
             )
         }
     }
@@ -106,22 +107,7 @@ class ExternalSupplyListFragment : CoreFragment<FragmentExternalSupplyListBindin
     }
 
     override fun onKeyDown(keyCode: KeyCode): Boolean {
-        recyclerViewKeyHandler?.let {
-            if (!it.onKeyDown(keyCode)) {
-                if (keyCode.keyCode == KeyCode.KEYCODE_ENTER.keyCode) {
-                    it.posInfo.value?.currentPos?.let { position ->
-                        vm.onClickItemPosition(position)
-                        return true
-                    }
-                }
-
-                return false
-            }
-
-            return true
-        }
-
-        return false
+        return recyclerViewKeyHandler?.onKeyDown(keyCode) ?: false
     }
 
 }

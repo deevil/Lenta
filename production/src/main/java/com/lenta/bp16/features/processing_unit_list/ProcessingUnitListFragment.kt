@@ -76,7 +76,13 @@ class ProcessingUnitListFragment : CoreFragment<FragmentProcessingUnitListBindin
                         }
                     },
                     onItemClickListener = AdapterView.OnItemClickListener { _, _, position, _ ->
-                        recyclerViewKeyHandler?.processItemClickHandler(position)
+                        recyclerViewKeyHandler?.let {
+                            if (it.isSelected(position)) {
+                                vm.onClickItemPosition(position)
+                            } else {
+                                it.selectPosition(position)
+                            }
+                        }
                     }
             )
 
@@ -87,7 +93,7 @@ class ProcessingUnitListFragment : CoreFragment<FragmentProcessingUnitListBindin
                     items = vm.goods,
                     lifecycleOwner = layoutBinding.lifecycleOwner!!,
                     initPosInfo = recyclerViewKeyHandler?.posInfo?.value,
-                    customKeyHandler = vm::onClickItemPosition
+                    onClickPositionFunc = vm::onClickItemPosition
             )
         }
     }
@@ -98,11 +104,12 @@ class ProcessingUnitListFragment : CoreFragment<FragmentProcessingUnitListBindin
     }
 
     override fun onKeyDown(keyCode: KeyCode): Boolean {
-        return recyclerViewKeyHandler?.onFragmentKeyDownHandler(keyCode) ?: false
+        return recyclerViewKeyHandler?.onKeyDown(keyCode) ?: false
     }
 
     override fun onDestroyView() {
-        recyclerViewKeyHandler?.customKeyHandler = null
+        recyclerViewKeyHandler?.onClickPositionFunc = null
         super.onDestroyView()
     }
+
 }

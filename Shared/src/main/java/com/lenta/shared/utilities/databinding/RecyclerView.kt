@@ -176,7 +176,7 @@ class RecyclerViewKeyHandler<T>(private val rv: RecyclerView,
                                 private val items: LiveData<List<T>>,
                                 lifecycleOwner: LifecycleOwner,
                                 initPosInfo: PosInfo? = null,
-                                var customKeyHandler: ((Int) -> Unit)? = null
+                                var onClickPositionFunc: ((Int) -> Unit)? = null
 ) {
 
     val posInfo = MutableLiveData(initPosInfo?.copy(isManualClick = false) ?: PosInfo(0, -1))
@@ -187,7 +187,7 @@ class RecyclerViewKeyHandler<T>(private val rv: RecyclerView,
             //rv.adapter?.notifyItemChanged(info.lastPos)
             //rv.adapter?.notifyItemChanged(info.currentPos)
             rv.adapter?.notifyDataSetChanged()
-            if (!info.isManualClick && info.currentPos > -1 && info.currentPos < items.value?.size ?: 0) {
+            if (!info.isManualClick && isCorrectPosition(info.currentPos)) {
                 rv.post { rv.scrollToPosition(info.currentPos) }
             }
 
@@ -198,12 +198,12 @@ class RecyclerViewKeyHandler<T>(private val rv: RecyclerView,
     }
 
     fun onKeyDown(keyCode: KeyCode): Boolean {
+        if (!rv.isFocused) {
+            return false
+        }
+
         when (keyCode) {
             KeyCode.KEYCODE_DPAD_DOWN, KeyCode.KEYCODE_DPAD_UP -> {
-                rv.requestFocus()
-
-
-
                 var pos = posInfo.value!!.currentPos
 
                 when (keyCode) {
@@ -212,26 +212,29 @@ class RecyclerViewKeyHandler<T>(private val rv: RecyclerView,
                     else -> return false
                 }
 
-                if (pos < -1 || pos > items.value?.size ?: 0) {
-                    return false
+                if (isCorrectPosition(pos)) {
+                    posInfo.value = PosInfo(currentPos = pos, lastPos = posInfo.value!!.currentPos)
+                    rv.requestFocus()
+                    return true
                 }
-
-                posInfo.value = PosInfo(currentPos = pos, lastPos = posInfo.value!!.currentPos)
-
-                return true
             }
             KeyCode.KEYCODE_ENTER -> {
-                if (rv.isFocused) {
-                    // todo Попробовать вызвать нажатии на элемент отсюда
-                    // ...
-
+                onClickPositionFunc?.let {
+                    posInfo.value?.currentPos?.let {position ->
+                        if (isCorrectPosition(position)) {
+                            it.invoke(position)
+                            return true
+                        }
+                    }
                 }
-
-                return false
             }
         }
 
         return false
+    }
+
+    private fun isCorrectPosition(position: Int): Boolean {
+        return position > -1 && position < items.value?.size ?: 0
     }
 
     fun selectPosition(position: Int) {

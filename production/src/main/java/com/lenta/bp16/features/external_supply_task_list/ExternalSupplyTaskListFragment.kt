@@ -105,7 +105,8 @@ class ExternalSupplyTaskListFragment : CoreFragment<FragmentExternalSupplyTaskLi
                         rv = layoutBinding.rv,
                         items = vm.processing,
                         lifecycleOwner = layoutBinding.lifecycleOwner!!,
-                        initPosInfo = processingRecyclerViewKeyHandler?.posInfo?.value
+                        initPosInfo = processingRecyclerViewKeyHandler?.posInfo?.value,
+                        onClickPositionFunc = vm::onClickItemPosition
                 )
 
                 return layoutBinding.root
@@ -146,7 +147,8 @@ class ExternalSupplyTaskListFragment : CoreFragment<FragmentExternalSupplyTaskLi
                     rv = layoutBinding.rv,
                     items = vm.processed,
                     lifecycleOwner = layoutBinding.lifecycleOwner!!,
-                    initPosInfo = processedRecyclerViewKeyHandler?.posInfo?.value
+                    initPosInfo = processedRecyclerViewKeyHandler?.posInfo?.value,
+                    onClickPositionFunc = vm::onClickItemPosition
             )
 
             return layoutBinding.root
@@ -176,26 +178,11 @@ class ExternalSupplyTaskListFragment : CoreFragment<FragmentExternalSupplyTaskLi
     }
 
     override fun onKeyDown(keyCode: KeyCode): Boolean {
-        when (vm.selectedPage.value) {
+        return when (vm.selectedPage.value) {
             0 -> processingRecyclerViewKeyHandler
             1 -> processedRecyclerViewKeyHandler
             else -> null
-        }?.let {
-            if (!it.onKeyDown(keyCode)) {
-                if (keyCode.keyCode == KeyCode.KEYCODE_ENTER.keyCode) {
-                    it.posInfo.value?.currentPos?.let { position ->
-                        vm.onClickItemPosition(position)
-                        return true
-                    }
-                }
-
-                return false
-            }
-
-            return true
-        }
-
-        return false
+        }?.onKeyDown(keyCode) ?: false
     }
 
 }
