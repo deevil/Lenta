@@ -32,19 +32,11 @@ class TaskGoodsDetailsFragment :
 
     private var productInfo: ProductInfo? by state(null)
 
-    companion object {
-        fun newInstance(productInfo: ProductInfo): TaskGoodsDetailsFragment {
-            return TaskGoodsDetailsFragment().apply {
-                this.productInfo = productInfo
-            }
-        }
-    }
-
     private var basketRecyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
 
     override fun getLayoutId() = R.layout.fragment_task_goods_details
 
-    override fun getPageNumber() = "13/06"
+    override fun getPageNumber() = PAGE_NUMBER
 
     override fun getViewModel(): TaskGoodsDetailsViewModel {
         return provideViewModel(TaskGoodsDetailsViewModel::class.java).also {
@@ -126,5 +118,15 @@ class TaskGoodsDetailsFragment :
             return true
         }
         return false
+    }
+
+    companion object {
+        fun newInstance(productInfo: ProductInfo): TaskGoodsDetailsFragment {
+            return TaskGoodsDetailsFragment().apply {
+                this.productInfo = productInfo
+            }
+        }
+
+        private const val PAGE_NUMBER = "10/06"
     }
 }

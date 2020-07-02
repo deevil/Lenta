@@ -12,7 +12,9 @@ import com.lenta.movement.models.repositories.ITaskBasketsRepository
 import com.lenta.movement.platform.IFormatter
 import com.lenta.movement.platform.navigation.IScreenNavigator
 import com.lenta.movement.requests.network.SaveTaskNetRequest
-import com.lenta.movement.requests.network.SaveTaskParams
+import com.lenta.movement.requests.network.models.saveTask.SaveTaskParams
+import com.lenta.movement.requests.network.models.saveTask.SaveTaskParamsTaskBasket
+import com.lenta.movement.requests.network.models.saveTask.SaveTaskParamsTaskMaterial
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.models.core.Uom
 import com.lenta.shared.platform.constants.Constants
@@ -217,7 +219,7 @@ class TaskGoodsViewModel : CoreViewModel(),
                     isNotFinish = task.isCreated.toSapBooleanString(),
                     destination = task.receiver,
                     materials = getProcessed().map { (product, count) ->
-                        SaveTaskParams.TaskMaterial(
+                        SaveTaskParamsTaskMaterial(
                                 number = product.materialNumber,
                                 quantity = count.toString(),
                                 positionCounted = true.toSapBooleanString(),
@@ -227,7 +229,7 @@ class TaskGoodsViewModel : CoreViewModel(),
                     },
                     baskets = getBaskets().flatMap { basket ->
                         basket.map { (product, count) ->
-                            SaveTaskParams.TaskBasket(
+                            SaveTaskParamsTaskBasket(
                                     basketNumber = basket.number.toString(),
                                     materialNumber = product.materialNumber,
                                     quantity = count.toString(),

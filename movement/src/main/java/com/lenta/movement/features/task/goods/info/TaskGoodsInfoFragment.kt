@@ -19,17 +19,9 @@ class TaskGoodsInfoFragment : CoreFragment<FragmentTaskGoodsInfoBinding, TaskGoo
 
     private var productInfo: ProductInfo? by state(null)
 
-    companion object {
-        fun newInstance(productInfo: ProductInfo): TaskGoodsInfoFragment {
-            return TaskGoodsInfoFragment().apply {
-                this.productInfo = productInfo
-            }
-        }
-    }
-
     override fun getLayoutId() = R.layout.fragment_task_goods_info
 
-    override fun getPageNumber() = "13/06"
+    override fun getPageNumber() = PAGE_NUMBER
 
     override fun getViewModel(): TaskGoodsInfoViewModel {
         return provideViewModel(TaskGoodsInfoViewModel::class.java).also { vm ->
@@ -64,5 +56,13 @@ class TaskGoodsInfoFragment : CoreFragment<FragmentTaskGoodsInfoBinding, TaskGoo
         }
     }
 
+    companion object {
+        private const val PAGE_NUMBER = "13/06"
 
+        fun newInstance(productInfo: ProductInfo): TaskGoodsInfoFragment {
+            return TaskGoodsInfoFragment().apply {
+                this.productInfo = productInfo
+            }
+        }
+    }
 }

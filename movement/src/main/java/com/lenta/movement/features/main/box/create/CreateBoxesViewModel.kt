@@ -9,10 +9,12 @@ import com.lenta.movement.models.ProductInfo
 import com.lenta.movement.models.repositories.IBoxesRepository
 import com.lenta.movement.platform.navigation.IScreenNavigator
 import com.lenta.movement.requests.network.*
+import com.lenta.movement.requests.network.models.checkExciseBox.CheckExciseBoxParams
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.models.core.ProductType
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.requests.combined.scan_info.ScanCodeInfo
+import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.SelectionItemsHelper
 import com.lenta.shared.utilities.databinding.PageSelectionListener
 import com.lenta.shared.utilities.extentions.combineLatest
@@ -90,8 +92,8 @@ class CreateBoxesViewModel : CoreViewModel(),
 
     fun onScanResult(data: String) {
         when (data.length) {
-            68, 150 -> scanStamp(data)
-            26 -> scanBox(data)
+            SCAN_LENGTH_STAMP1, SCAN_LENGTH_STAMP2 -> scanStamp(data)
+            SCAN_LENGTH_BOX -> scanBox(data)
             else -> scanGoods(data)
         }
     }
@@ -126,9 +128,10 @@ class CreateBoxesViewModel : CoreViewModel(),
     fun onDeleteClick() {
         selectionsHelper.selectedPositions.value.orEmpty()
             .forEach { doRemovePosition ->
-                val removeBoxTarget = boxesRepository.getBoxesByProduct(productInfo.value!!)[doRemovePosition]
-
-                boxesRepository.removeBox(removeBoxTarget)
+                productInfo.value?.let { productInfoValue ->
+                    val removeBoxTarget = boxesRepository.getBoxesByProduct(productInfoValue)[doRemovePosition]
+                    boxesRepository.removeBox(removeBoxTarget)
+                }
             }
         updateBoxes()
 
@@ -186,9 +189,11 @@ class CreateBoxesViewModel : CoreViewModel(),
     }
 
     private fun scanBox(boxCode: String) {
-        if (boxesRepository.getBoxesByProduct(productInfo.value!!).any { it.code == boxCode }) {
-            screenNavigator.openBoxNumberWasUsedDialog()
-            return
+        productInfo.value?.let { productInfoValue ->
+            if (boxesRepository.getBoxesByProduct(productInfoValue).any { it.code == boxCode }) {
+                screenNavigator.openBoxNumberWasUsedDialog()
+                return
+            }
         }
 
         viewModelScope.launch {
@@ -236,7 +241,7 @@ class CreateBoxesViewModel : CoreViewModel(),
                     ean = scanCodeInfo.eanNumberForSearch.orEmpty(),
                     tk = sessionInfo.market.orEmpty(),
                     matNr = scanCodeInfo.materialNumberForSearch.orEmpty(),
-                    codeEBP = "MVM"
+                    codeEBP = CODE_EBP
                 )
             ).either(
                 fnL = { failure ->
@@ -261,30 +266,42 @@ class CreateBoxesViewModel : CoreViewModel(),
     }
 
     private fun saveAndClearFields() {
-        val newBox = ExciseBox(
-            code = boxNumber.value.orEmpty(),
-            stamps = stamps.value.orEmpty(),
-            productInfo = productInfo.value!!
-        )
+        productInfo.value?.let { productInfoValue ->
+            val newBox = ExciseBox(
+                    code = boxNumber.value.orEmpty(),
+                    stamps = stamps.value.orEmpty(),
+                    productInfo = productInfoValue
+            )
 
-        boxesRepository.addBoxes(newBox)
-        stamps.postValue(emptyList())
-        boxNumber.postValue("")
-        updateBoxes()
+            boxesRepository.addBoxes(newBox)
+            stamps.postValue(emptyList())
+            boxNumber.postValue("")
+            updateBoxes()
 
-        screenNavigator.openBoxSavedDialog(newBox)
+            screenNavigator.openBoxSavedDialog(newBox)
+        } ?: Logg.e {
+            "productInfo is empty"
+        }
     }
 
     private fun updateBoxes() {
-        val boxes = boxesRepository.getBoxesByProduct(productInfo.value!!).mapIndexed { index, box ->
-            BoxListItem(
-                number = (index + 1).toString(),
-                title = "${box.code.take(5)}...${box.code.takeLast(5)} // ${box.stamps.first().dateOfPour}",
-                subtitle = box.stamps.first().manufacturerName
-            )
-        }
+        productInfo.value?.let { productInfoValue ->
+            val boxes = boxesRepository.getBoxesByProduct(productInfoValue).mapIndexed { index, box ->
+                BoxListItem(
+                        number = (index + 1).toString(),
+                        title = "${box.code.take(5)}...${box.code.takeLast(5)} // ${box.stamps.first().dateOfPour}",
+                        subtitle = box.stamps.first().manufacturerName
+                )
+            }
 
-        boxList.postValue(boxes)
+            boxList.postValue(boxes)
+        }
     }
 
+    companion object {
+        private const val SCAN_LENGTH_STAMP1 = 68
+        private const val SCAN_LENGTH_STAMP2 = 150
+        private const val SCAN_LENGTH_BOX = 26
+        private const val CODE_EBP = "MVM"
+    }
 }

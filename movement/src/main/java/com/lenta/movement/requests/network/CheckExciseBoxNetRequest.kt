@@ -1,6 +1,7 @@
 package com.lenta.movement.requests.network
 
-import com.google.gson.annotations.SerializedName
+import com.lenta.movement.requests.network.models.checkExciseBox.CheckExciseBoxParams
+import com.lenta.movement.requests.network.models.checkExciseBox.CheckExciseBoxRestInfo
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.fmp.ObjectRawStatus
 import com.lenta.shared.functional.Either
@@ -51,24 +52,3 @@ private fun CheckExciseBoxRestInfo.toStatus(): CheckExciseBoxStatus {
 }
 
 class CheckExciseBoxRestStatus : ObjectRawStatus<CheckExciseBoxRestInfo>()
-
-data class CheckExciseBoxParams(
-        @SerializedName("IV_WERKS")
-        val tk: String,
-        @SerializedName("IV_MATNR")
-        val materialNumber: String,
-        @SerializedName("IV_BOX_NUM")
-        val boxCode: String
-)
-
-data class CheckExciseBoxRestInfo(
-        @SerializedName("EV_STAT")
-        val statusCode: String,
-        @SerializedName("EV_STAT_TEXT")
-        val statText: String,
-        @SerializedName("EV_ERROR_TEXT")
-        val errorText: String
-
-)
-
-

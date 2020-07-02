@@ -19,7 +19,5 @@ class AndroidApplication: CoreApplication() {
         )
     }
 
-    override fun onHandleException() {
-
-    }
+    override fun onHandleException() = Unit
 }

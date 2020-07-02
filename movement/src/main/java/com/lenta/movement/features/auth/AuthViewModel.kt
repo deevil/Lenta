@@ -66,14 +66,13 @@ class AuthViewModel: CoreAuthViewModel() {
     override fun handleFailure(failure: Failure) {
         super.handleFailure(failure)
         progress.value = false
-        navigator.openAlertScreen(failure, pageNumber = "97")
+        navigator.openAlertScreen(failure, pageNumber = PAGE_NUMBER)
     }
 
 
     private fun handleAuthSuccess(storesRequestResult: StoresRequestResult) {
         repoInMemoryHolder.storesRequestResult = storesRequestResult
         navigator.openSelectMarketScreen()
-
     }
 
     override fun onClickAuxiliaryMenu() {
@@ -96,13 +95,18 @@ class AuthViewModel: CoreAuthViewModel() {
             runIfDebug {
                 Logg.d { "login.value ${login.value}" }
                 if (login.value.isNullOrEmpty()) {
-                    login.value = "MAKAROV"
+                    login.value = LOGIN
                 }
-                if (login.value == "MAKAROV" && getPassword().isEmpty()) {
-                    password.value = "1q2w3e4r"
+                if (login.value == LOGIN && getPassword().isEmpty()) {
+                    password.value = PASSWORD
                 }
-
             }
         }
+    }
+
+    companion object {
+        private const val PAGE_NUMBER = "93"
+        private const val LOGIN = "MAKAROV"
+        private const val PASSWORD = "1q2w3e4r"
     }
 }

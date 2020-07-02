@@ -17,7 +17,7 @@ class SelectMarketFragment : CoreFragment<FragmentSelectMarketBinding, SelectMar
 
     override fun getLayoutId(): Int = R.layout.fragment_select_market
 
-    override fun getPageNumber(): String = "10/03"
+    override fun getPageNumber() = PAGE_NUMBER
 
     override fun getViewModel(): SelectMarketViewModel {
         provideViewModel(SelectMarketViewModel::class.java).let {
@@ -46,5 +46,7 @@ class SelectMarketFragment : CoreFragment<FragmentSelectMarketBinding, SelectMar
         }
     }
 
-
+    companion object {
+        private const val PAGE_NUMBER = "10/03"
+    }
 }

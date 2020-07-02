@@ -17,7 +17,7 @@ class MainMenuFragment : CoreFragment<FragmentMainMenuBinding, MainMenuViewModel
 
     override fun getLayoutId() = R.layout.fragment_main_menu
 
-    override fun getPageNumber(): String = "10/04"
+    override fun getPageNumber() = PAGE_NUMBER
 
     override fun getViewModel(): MainMenuViewModel {
         provideViewModel(MainMenuViewModel::class.java).let {
@@ -41,5 +41,9 @@ class MainMenuFragment : CoreFragment<FragmentMainMenuBinding, MainMenuViewModel
         when (view.id) {
             com.lenta.shared.R.id.b_topbar_1 -> vm.onClickAuxiliaryMenu()
         }
+    }
+
+    companion object {
+        private const val PAGE_NUMBER = "10/04"
     }
 }

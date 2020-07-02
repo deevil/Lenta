@@ -37,7 +37,7 @@
 
         <View
             android:id="@+id/div_vert1"
-            android:layout_width="1dp"
+            android:layout_width="@dimen/size_1dp"
             android:layout_height="0dp"
             android:background="@color/color_divider"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -48,7 +48,7 @@
 
         <View
             android:id="@+id/div_vert2"
-            android:layout_width="1dp"
+            android:layout_width="@dimen/size_1dp"
             android:layout_height="0dp"
             android:background="@color/color_divider"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -59,12 +59,12 @@
 
         <TextView
             android:id="@+id/tv_counter"
-            android:layout_width="32dp"
-            android:layout_height="32dp"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="16dp"
-            android:layout_marginEnd="8dp"
-            android:layout_marginBottom="16dp"
+            android:layout_width="@dimen/size_32dp"
+            android:layout_height="@dimen/size_32dp"
+            android:layout_marginStart="@dimen/size_8dp"
+            android:layout_marginTop="@dimen/size_16dp"
+            android:layout_marginEnd="@dimen/size_8dp"
+            android:layout_marginBottom="@dimen/size_16dp"
             android:background="@drawable/bg_border_circle_white_selectable_for_delete"
             android:ellipsize="end"
             android:foreground="?selectableItemBackground"
@@ -76,13 +76,14 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:selected="@{selectedForDelete}"
-            tools:text="2" />
+            tools:text="2"
+            tools:ignore="UnusedAttribute" />
 
         <TextView
             android:id="@+id/titleText"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
+            android:layout_marginStart="@dimen/size_8dp"
             android:ellipsize="end"
             android:gravity="start|center_vertical"
             android:maxLines="2"
@@ -98,7 +99,7 @@
             android:id="@+id/subtitleText"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
+            android:layout_marginStart="@dimen/size_8dp"
             android:text="@{item.subtitle}"
             android:visibility='@{item.subtitle.equals("") ? View.GONE : View.VISIBLE}'
             app:layout_constraintBottom_toBottomOf="parent"
@@ -111,7 +112,7 @@
             android:id="@+id/arrowImage"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:padding="8dp"
+            android:padding="@dimen/size_8dp"
             android:src="@drawable/ic_keyboard_arrow_right_white_16dp"
             android:visibility="@{item.isClickable ? View.VISIBLE : View.GONE}"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -122,7 +123,7 @@
         <View
             android:id="@+id/div_hor_bottom"
             android:layout_width="match_parent"
-            android:layout_height="1dp"
+            android:layout_height="@dimen/size_1dp"
             android:background="@color/color_divider"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -132,10 +133,10 @@
             android:id="@+id/tv_accept"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_marginEnd="8dp"
+            android:layout_marginStart="@dimen/size_8dp"
+            android:layout_marginEnd="@dimen/size_8dp"
             android:ellipsize="end"
-            android:gravity="start|center_vertical"
+            android:gravity="center|center_vertical"
             android:maxLines="1"
             android:text='@{item.countWithUom}'
             app:layout_constraintBottom_toBottomOf="parent"
