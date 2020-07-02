@@ -191,6 +191,7 @@ class TaskViewModel : CoreViewModel(), PageSelectionListener {
     }
 
     fun onNextClick() {
+
         if (task.value == null) {
             taskManager.setTask(buildTask())
             screenNavigator.openTaskCompositionScreen()
@@ -200,6 +201,7 @@ class TaskViewModel : CoreViewModel(), PageSelectionListener {
             }
             when (currentStatus) {
                 Task.Status.ToConsolidation(Task.Status.TO_CONSOLIDATION) -> {
+                    screenNavigator.showProgress(startConsolidation)
                     viewModelScope.launch {
                         val either = task.value?.let { taskValue ->
                             sessionInfo.personnelNumber?.let { personnelNumber ->
@@ -219,12 +221,14 @@ class TaskViewModel : CoreViewModel(), PageSelectionListener {
                         either.either({
                             screenNavigator.openAlertScreen(it)
                         }, {
-                            screenNavigator.openTaskEoMergeScreen(it.eoList.toModelList(), it.geList)
+                            screenNavigator.openTaskEoMergeScreen(it.eoList.toModelList(), it.geList.toMutableList())
                         })
+
                     }
                 }
 
                 Task.Status.Consolidated(Task.Status.CONSOLIDATED) -> {
+                    screenNavigator.showProgress(approvalAndTransferToTasksCargoUnit)
                     viewModelScope.launch {
                         val either = task.value?.let { taskValue ->
                             sessionInfo.personnelNumber?.let { personnelNumber ->
@@ -247,6 +251,7 @@ class TaskViewModel : CoreViewModel(), PageSelectionListener {
                     }
                 }
             }
+            screenNavigator.hideProgress()
         }
     }
 

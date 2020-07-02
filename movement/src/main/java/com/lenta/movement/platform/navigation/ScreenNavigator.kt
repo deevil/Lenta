@@ -267,7 +267,7 @@ class ScreenNavigator(
         }
     }
 
-    override fun openTaskEoMergeScreen(eoList: List<ProcessingUnit>, geList: List<CargoUnit>) {
+    override fun openTaskEoMergeScreen(eoList: List<ProcessingUnit>, geList: MutableList<CargoUnit>) {
         runOrPostpone {
             getFragmentStack()?.push(TaskEOMergeFragment.newInstance(eoList, geList))
         }
@@ -304,5 +304,5 @@ interface IScreenNavigator : ICoreNavigator {
     fun openTaskBasketCharacteristicsScreen(basketIndex: Int)
     fun openSaveTaskConfirmationDialog(yesCallbackFunc: () -> Unit)
     fun openTaskList()
-    fun openTaskEoMergeScreen(eoList: List<ProcessingUnit>, geList: List<CargoUnit>)
+    fun openTaskEoMergeScreen(eoList: List<ProcessingUnit>, geList: MutableList<CargoUnit>)
 }

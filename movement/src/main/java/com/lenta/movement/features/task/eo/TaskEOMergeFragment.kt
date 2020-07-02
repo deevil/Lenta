@@ -4,11 +4,13 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.AdapterView
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import com.lenta.movement.BR
 import com.lenta.movement.R
 import com.lenta.movement.databinding.FragmentTaskEoMergeBinding
+import com.lenta.movement.databinding.LayoutItemEoBinding
 import com.lenta.movement.databinding.LayoutTaskEoMergeEoListTabBinding
 import com.lenta.movement.databinding.LayoutTaskEoMergeGeListTabBinding
 import com.lenta.movement.models.ProcessingUnit
@@ -25,9 +27,12 @@ import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListener
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
 import com.lenta.shared.scan.OnScanResultListener
+import com.lenta.shared.utilities.databinding.DataBindingAdapter
+import com.lenta.shared.utilities.databinding.DataBindingRecyclerViewConfig
 import com.lenta.shared.utilities.databinding.RecyclerViewKeyHandler
 import com.lenta.shared.utilities.databinding.ViewPagerSettings
 import com.lenta.shared.utilities.extentions.provideViewModel
+import com.lenta.shared.utilities.state.state
 
 class TaskEOMergeFragment : CoreFragment<FragmentTaskEoMergeBinding, TaskEOMergeViewModel>(),
         ViewPagerSettings,
@@ -104,13 +109,43 @@ class TaskEOMergeFragment : CoreFragment<FragmentTaskEoMergeBinding, TaskEOMerge
                         false
                 ).also {
                     it.apply {
-                        rvConfig = simpleListRecyclerViewConfig(
-                                recyclerView = eoRecyclerView,
-                                selectionItemsHelper = vm.eoSelectionHelper,
-                                recyclerViewKeyHandler = eoListRecyclerViewKeyHandler,
-                                onClickItem = { position -> vm.onClickEOListItem(position) })
 
-                        viewModel = vm
+                        val onClickSelectionListener = View.OnClickListener { clickListener ->
+                            clickListener?.let { view ->
+                                val itemPosition = view.tag as Int
+                                vm.eoSelectionHelper.revert(position = position)
+                                this.eoRecyclerView.adapter?.notifyItemChanged(itemPosition)
+                            }
+                        }
+
+                        rvConfig = DataBindingRecyclerViewConfig(
+                                layoutId = R.layout.layout_item_eo,
+                                itemId = BR.item,
+                                realisation = object : DataBindingAdapter<LayoutItemEoBinding> {
+                                    override fun onCreate(binding: LayoutItemEoBinding) = Unit
+
+                                    override fun onBind(binding: LayoutItemEoBinding, position: Int) {
+                                        binding.tvCounter.tag = position
+                                        binding.tvCounter.setOnClickListener(onClickSelectionListener)
+                                        vm.eoItemList.value?.let { list ->
+                                            binding.item = list[position]
+                                        }
+                                        binding.selectedToDelete = vm.eoSelectionHelper.isSelected(position)
+                                        eoListRecyclerViewKeyHandler?.let { eoListRecyclerViewKeyHandler ->
+                                            binding.root.isSelected = eoListRecyclerViewKeyHandler.isSelected(position)
+                                        }
+                                    }
+                                },
+                                onItemClickListener = AdapterView.OnItemClickListener { _, _, position, _ ->
+                                    eoListRecyclerViewKeyHandler?.let { eoListRecyclerViewKeyHandler ->
+                                        if (eoListRecyclerViewKeyHandler.isSelected(position).not()) {
+                                            eoListRecyclerViewKeyHandler.selectPosition(position)
+                                        }
+                                    }
+                                }
+                        )
+
+                        dataBindingViewModel = vm
                         lifecycleOwner = viewLifecycleOwner
 
                         lifecycleOwner?.let { lifecycleOwner ->
@@ -140,7 +175,7 @@ class TaskEOMergeFragment : CoreFragment<FragmentTaskEoMergeBinding, TaskEOMerge
                                 onClickItem = { position -> vm.onClickGEListItem(position) }
                         )
 
-                        viewModel = vm
+                        dataBindingViewModel = vm
                         lifecycleOwner = viewLifecycleOwner
 
                         lifecycleOwner?.let { lifecycleOwner ->
@@ -199,7 +234,6 @@ class TaskEOMergeFragment : CoreFragment<FragmentTaskEoMergeBinding, TaskEOMerge
         }
         return false
     }
-
 
 
     companion object {

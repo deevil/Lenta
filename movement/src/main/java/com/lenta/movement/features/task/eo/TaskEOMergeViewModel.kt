@@ -54,7 +54,7 @@ class TaskEOMergeViewModel : CoreViewModel(), PageSelectionListener {
             }
         }
     }
-    val geList by unsafeLazy { MutableLiveData(listOf<CargoUnit>()) }
+    val geList by unsafeLazy { MutableLiveData(mutableListOf<CargoUnit>()) }
     val geItemList by unsafeLazy {
         geList.mapSkipNulls { list ->
             list.mapIndexed { index, ge ->
@@ -94,7 +94,13 @@ class TaskEOMergeViewModel : CoreViewModel(), PageSelectionListener {
     fun onProcessBtnClick() {
         when (eoSelectionHelper.selectedPositions.value?.size) {
             0 -> screenNavigator.openNotImplementedScreenAlert("Open 86 screen")//TODO Open 86 screen
-            1 -> screenNavigator.openNotImplementedScreenAlert("Open GE LIST TAB and put eo in it")//TODO Open GE LIST TAB and put eo in it
+            1 -> {
+                eoSelectionHelper.selectedPositions.value?.first()?.let { selectedIndex ->
+                    eoList.value?.get(selectedIndex)?.let { eo ->
+                        geList.value?.add(CargoUnit("", eo.processingUnitNumber))
+                    }
+                }
+            }
             else -> screenNavigator.openNotImplementedScreenAlert("Send REST Call ZMP_UTZ_MVM_09_V001 Консолидация ЕО\\ГЕ")//TODO Send REST Call ZMP_UTZ_MVM_09_V001 Консолидация ЕО\ГЕ
         }
     }
