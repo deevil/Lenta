@@ -7,8 +7,6 @@ import com.lenta.bp16.R
 import com.lenta.bp16.databinding.FragmentRawListBinding
 import com.lenta.bp16.databinding.ItemRawBinding
 import com.lenta.bp16.platform.extention.getAppComponent
-import com.lenta.shared.keys.KeyCode
-import com.lenta.shared.keys.OnKeyDownListener
 import com.lenta.shared.platform.fragment.KeyDownCoreFragment
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
