@@ -60,9 +60,10 @@ class ProcessingUnitListFragment : KeyDownCoreFragment<FragmentProcessingUnitLis
                     layoutId = R.layout.item_processing_unit,
                     itemId = BR.item
             )
-            
-            initRecyclerViewKeyHandler(
+
+            recyclerViewKeyHandler = initRecyclerViewKeyHandler(
                     recyclerView = layoutBinding.rv,
+                    previousPosInfo = recyclerViewKeyHandler?.posInfo?.value,
                     items = vm.goods,
                     onClickHandler = vm::onClickItemPosition
             )

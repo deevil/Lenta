@@ -24,6 +24,7 @@ import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.databinding.DataBindingAdapter
 import com.lenta.shared.utilities.databinding.DataBindingRecyclerViewConfig
+import com.lenta.shared.utilities.databinding.PosInfo
 import com.lenta.shared.utilities.databinding.RecyclerViewKeyHandler
 import com.lenta.shared.utilities.extentions.getFragmentResultCode
 import com.lenta.shared.utilities.extentions.implementationOf
@@ -57,13 +58,12 @@ abstract class CoreFragment<T : ViewDataBinding, S : CoreViewModel> : Fragment()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         binding = DataBindingUtil.inflate(inflater, getLayoutId(), container, false)
-        binding?.let {
-            it.setVariable(BR.vm, vm)
-            it.lifecycleOwner = viewLifecycleOwner
-            it.executePendingBindings()
-            return it.root
-        }
-        throw NullPointerException("DataBinding is null")
+        return binding?.run {
+            setVariable(BR.vm, vm)
+            lifecycleOwner = viewLifecycleOwner
+            executePendingBindings()
+            root
+        } ?: throw NullPointerException("DataBinding is null")
     }
 
     fun getBottomToolBarUIModel(): BottomToolbarUiModel? {
@@ -124,7 +124,8 @@ abstract class CoreFragment<T : ViewDataBinding, S : CoreViewModel> : Fragment()
             @LayoutRes layoutId: Int,
             itemId: Int,
             onAdapterItemCreate: ((T) -> Unit)? = null,
-            onAdapterItemBind: ((T, Int) -> Unit)? = ::onAdapterBindHandler
+            onAdapterItemBind: ((T, Int) -> Unit)? = ::onAdapterBindHandler,
+            onAdapterItemClicked: ((Int) -> Unit)? = ::onAdapterItemClickHandler
     ): DataBindingRecyclerViewConfig<T> {
         return DataBindingRecyclerViewConfig(
                 layoutId = layoutId,
@@ -138,7 +139,7 @@ abstract class CoreFragment<T : ViewDataBinding, S : CoreViewModel> : Fragment()
                     }
                 },
                 onItemClickListener = AdapterView.OnItemClickListener { _, _, position, _ ->
-                    onAdapterItemClickHandler(position)
+                    onAdapterItemClicked?.invoke(position)
                 }
         )
     }
@@ -146,10 +147,10 @@ abstract class CoreFragment<T : ViewDataBinding, S : CoreViewModel> : Fragment()
     protected open fun<Item : Any> initRecyclerViewKeyHandler(
             recyclerView: RecyclerView,
             items: LiveData<List<Item>>,
+            previousPosInfo: PosInfo? = null,
             onClickHandler: ((Int) -> Unit)? = null
-    ) {
-        val previousPosInfo = recyclerViewKeyHandler?.posInfo?.value
-        recyclerViewKeyHandler = RecyclerViewKeyHandler(
+    ): RecyclerViewKeyHandler<Item> {
+        return RecyclerViewKeyHandler(
                 rv = recyclerView,
                 items = items,
                 lifecycleOwner = viewLifecycleOwner,
