@@ -1126,8 +1126,7 @@ class ScreenNavigator(
                     codeConfirmForRight = backFragmentResultHelper.setFuncForResult(yesCallbackFunc),
                     iconRes = R.drawable.ic_question_yellow_80dp,
                     pageNumber = "97",
-                    leftButtonDecorationInfo = ButtonDecorationInfo.no,
-                    rightButtonDecorationInfo = ButtonDecorationInfo.yes))
+                    rightButtonDecorationInfo = ButtonDecorationInfo.next))
         }
     }
 
