@@ -72,49 +72,57 @@ class ProcessingUnitTaskListFragment : CoreFragment<FragmentProcessingUnitTaskLi
     }
 
     override fun getPagerItemView(container: ViewGroup, position: Int): View {
-        if (position == 0) {
-            DataBindingUtil.inflate<LayoutPuTaskListProcessingBinding>(LayoutInflater.from(container.context),
-                    R.layout.layout_pu_task_list_processing,
-                    container,
-                    false).let { layoutBinding ->
-
-                layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
-                        layoutId = R.layout.item_pu_task,
-                        itemId = BR.item,
-                        realisation = object : DataBindingAdapter<ItemPuTaskBinding> {
-                            override fun onCreate(binding: ItemPuTaskBinding) {
-                            }
-
-                            override fun onBind(binding: ItemPuTaskBinding, position: Int) {
-                                processingRecyclerViewKeyHandler?.let {
-                                    binding.root.isSelected = it.isSelected(position)
-                                }
-                            }
-                        },
-                        onItemClickListener = AdapterView.OnItemClickListener { _, _, position, _ ->
-                            processingRecyclerViewKeyHandler?.let {
-                                if (it.isSelected(position)) {
-                                    vm.onClickItemPosition(position)
-                                } else {
-                                    it.selectPosition(position)
-                                }
-                            }
-                        })
-
-                layoutBinding.vm = vm
-                layoutBinding.lifecycleOwner = viewLifecycleOwner
-                processingRecyclerViewKeyHandler = RecyclerViewKeyHandler(
-                        rv = layoutBinding.rv,
-                        items = vm.processing,
-                        lifecycleOwner = layoutBinding.lifecycleOwner!!,
-                        initPosInfo = processingRecyclerViewKeyHandler?.posInfo?.value,
-                        onClickPositionFunc = vm::onClickItemPosition
-                )
-
-                return layoutBinding.root
-            }
+        return when (position) {
+            0 -> initTaskListProcessing(container)
+            1 -> initTaskListProcessed(container)
+            else -> View(context)
         }
+    }
 
+    private fun initTaskListProcessing(container: ViewGroup): View {
+        DataBindingUtil.inflate<LayoutPuTaskListProcessingBinding>(LayoutInflater.from(container.context),
+                R.layout.layout_pu_task_list_processing,
+                container,
+                false).let { layoutBinding ->
+
+            layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
+                    layoutId = R.layout.item_pu_task,
+                    itemId = BR.item,
+                    realisation = object : DataBindingAdapter<ItemPuTaskBinding> {
+                        override fun onCreate(binding: ItemPuTaskBinding) {
+                        }
+
+                        override fun onBind(binding: ItemPuTaskBinding, position: Int) {
+                            processingRecyclerViewKeyHandler?.let {
+                                binding.root.isSelected = it.isSelected(position)
+                            }
+                        }
+                    },
+                    onItemClickListener = AdapterView.OnItemClickListener { _, _, position, _ ->
+                        processingRecyclerViewKeyHandler?.let {
+                            if (it.isSelected(position)) {
+                                vm.onClickItemPosition(position)
+                            } else {
+                                it.selectPosition(position)
+                            }
+                        }
+                    })
+
+            layoutBinding.vm = vm
+            layoutBinding.lifecycleOwner = viewLifecycleOwner
+            processingRecyclerViewKeyHandler = RecyclerViewKeyHandler(
+                    rv = layoutBinding.rv,
+                    items = vm.processing,
+                    lifecycleOwner = layoutBinding.lifecycleOwner!!,
+                    initPosInfo = processingRecyclerViewKeyHandler?.posInfo?.value,
+                    onClickPositionFunc = vm::onClickItemPosition
+            )
+
+            return layoutBinding.root
+        }
+    }
+
+    private fun initTaskListProcessed(container: ViewGroup): View {
         DataBindingUtil.inflate<LayoutPuTaskListProcessedBinding>(LayoutInflater.from(container.context),
                 R.layout.layout_pu_task_list_processed,
                 container,
