@@ -5,12 +5,15 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.Observer
+import com.lenta.movement.BR
 import com.lenta.movement.R
 import com.lenta.movement.databinding.FragmentTaskEoMergeBinding
 import com.lenta.movement.databinding.LayoutTaskEoMergeEoListTabBinding
 import com.lenta.movement.databinding.LayoutTaskEoMergeGeListTabBinding
 import com.lenta.movement.models.ProcessingUnit
 import com.lenta.movement.platform.extensions.getAppComponent
+import com.lenta.movement.platform.extensions.unsafeLazy
 import com.lenta.movement.requests.network.models.startConsolidation.CargoUnit
 import com.lenta.movement.view.simpleListRecyclerViewConfig
 import com.lenta.shared.keys.KeyCode
@@ -36,7 +39,8 @@ class TaskEOMergeFragment : CoreFragment<FragmentTaskEoMergeBinding, TaskEOMerge
     private var eoListRecyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
     private var geListRecyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
     private var eoList: List<ProcessingUnit>? = null
-    private var geList: List<CargoUnit>? = null
+    private var geList: MutableList<CargoUnit>? = null
+
 
     override fun getLayoutId() = R.layout.fragment_task_eo_merge
 
@@ -163,6 +167,12 @@ class TaskEOMergeFragment : CoreFragment<FragmentTaskEoMergeBinding, TaskEOMerge
 
     override fun countTab() = TaskEOMergePage.values().size
 
+    fun changeTabToGE()  {
+        vm.geList.observe(viewLifecycleOwner, Observer {
+            binding?.viewPager?.currentItem = 1
+        })
+    }
+
     override fun onBackPressed(): Boolean {
         vm.onBackPressed()
         return false
@@ -195,7 +205,7 @@ class TaskEOMergeFragment : CoreFragment<FragmentTaskEoMergeBinding, TaskEOMerge
     companion object {
         private const val PAGE_NUMBER = "10/06"
 
-        fun newInstance(eoList: List<ProcessingUnit>, geList: List<CargoUnit>): TaskEOMergeFragment {
+        fun newInstance(eoList: List<ProcessingUnit>, geList: MutableList<CargoUnit>): TaskEOMergeFragment {
             return TaskEOMergeFragment().apply {
                 this.eoList = eoList
                 this.geList = geList

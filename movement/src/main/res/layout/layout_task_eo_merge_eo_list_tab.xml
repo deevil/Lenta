@@ -6,7 +6,7 @@
     <data>
 
         <variable
-            name="viewModel"
+            name="dataBindingViewModel"
             type="com.lenta.movement.features.task.eo.TaskEOMergeViewModel" />
 
         <variable
@@ -25,7 +25,7 @@
             android:id="@+id/eoRecyclerView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:items="@{viewModel.eoItemList}"
+            app:items="@{dataBindingViewModel.eoItemList}"
             app:rv_config="@{rvConfig}"
             tools:itemCount="3"
             tools:listitem="@layout/layout_item_eo" />
