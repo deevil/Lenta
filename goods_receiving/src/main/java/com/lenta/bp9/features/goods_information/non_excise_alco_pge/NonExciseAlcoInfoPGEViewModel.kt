@@ -242,7 +242,7 @@ class NonExciseAlcoInfoPGEViewModel : CoreViewModel(), OnPositionClickListener {
             true
         } else {
             if (batchSelected != null) {
-                if (processNonExciseAlcoProductPGEService.overlimit(countValue.value!!, batchSelected)) {
+                if (processNonExciseAlcoProductPGEService.overLimit(countValue.value!!, batchSelected)) {
                     screenNavigator.openExceededPlannedQuantityBatchPGEDialog(
                             nextCallbackFunc = {
                                 processNonExciseAlcoProductPGEService.addSurplus(count.value!!, qualityInfo.value!![spinQualitySelectedPosition.value!!].code, spinProcessingUnit.value!![spinProcessingUnitSelectedPosition.value!!].substring(5), batchSelected)

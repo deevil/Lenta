@@ -143,7 +143,7 @@ class ProcessNonExciseAlcoProductPGEService
                 (taskManager.getReceivingTask()?.taskRepository?.getBatchesDiscrepancies()?.getCountRefusalOfBatchPGE(batchInfo) ?: 0.0 )
     }
 
-    fun overlimit(count: Double, batchInfo: TaskBatchInfo) : Boolean {
+    fun overLimit(count: Double, batchInfo: TaskBatchInfo) : Boolean {
         return batchInfo.purchaseOrderScope < ((taskManager.getReceivingTask()?.taskRepository?.getBatchesDiscrepancies()?.getCountAcceptOfBatchPGE(batchInfo) ?: 0.0)
                 + (taskManager.getReceivingTask()?.taskRepository?.getBatchesDiscrepancies()?.getCountRefusalOfBatchPGE(batchInfo) ?: 0.0) + count)
 
