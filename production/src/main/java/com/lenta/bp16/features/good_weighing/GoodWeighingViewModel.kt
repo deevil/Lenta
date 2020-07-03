@@ -18,6 +18,7 @@ import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.settings.IAppSettings
 import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.extentions.dropZeros
+import com.lenta.shared.utilities.extentions.isSapTrue
 import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.utilities.extentions.sumWith
 import kotlinx.coroutines.Dispatchers.IO
@@ -202,16 +203,13 @@ class GoodWeighingViewModel : CoreViewModel() {
                     total.value = 0.0
                     weightField.value = "0"
 
-                    // todo 4942 - Доделать когда будет больше информации по задаче
-                    /*if (packCodeResult.isAutofix.isSapTrue()) {
+                    if (packCodeResult.isAutofix.isSapTrue()) {
                         navigator.showFixStartNextStageSuccessful {
                             navigator.openPackListScreen()
                         }
                     } else {
                         navigator.openPackListScreen()
-                    }*/
-
-                    navigator.openPackListScreen()
+                    }
                 }
             }
         }
