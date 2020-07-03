@@ -18,12 +18,8 @@ import com.lenta.movement.features.task.goods.info.TaskGoodsInfoFragment
 import com.lenta.movement.features.task.TaskFragment
 import com.lenta.movement.features.task.basket.info.TaskBasketInfoFragment
 import com.lenta.movement.features.task.eo.TaskEOMergeFragment
-import com.lenta.movement.models.ExciseBox
-import com.lenta.movement.models.ProcessingUnit
-import com.lenta.movement.models.ProductInfo
-import com.lenta.movement.models.Task
+import com.lenta.movement.models.*
 import com.lenta.movement.progress.IWriteOffProgressUseCaseInformator
-import com.lenta.movement.requests.network.models.startConsolidation.CargoUnit
 import com.lenta.shared.account.IAuthenticator
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.features.alert.AlertFragment
@@ -105,7 +101,7 @@ class ScreenNavigator(
                     message = context.getString(R.string.unsaved_data_will_lost),
                     codeConfirmForRight = backFragmentResultHelper.setFuncForResult(yesCallbackFunc),
                     iconRes = R.drawable.ic_delete_red_80dp,
-                    pageNumber = "80",
+                    pageNumber = OPEN_UNSAVED_DATA_DIALOG_PAGE_NUMBER,
                     leftButtonDecorationInfo = ButtonDecorationInfo.no,
                     rightButtonDecorationInfo = ButtonDecorationInfo.yes
                 )
@@ -124,7 +120,7 @@ class ScreenNavigator(
                     iconRes = 0,
                     codeConfirmForRight = codeConfirmationForBarCode,
                     codeConfirmForLeft = codeConfirmationForSap,
-                    pageNumber = "90",
+                    pageNumber = OPEN_SELECT_TYPE_CODE_SCREEN_PAGE_NUMBER,
                     leftButtonDecorationInfo = ButtonDecorationInfo.sap,
                     rightButtonDecorationInfo = ButtonDecorationInfo.barcode
                 )
@@ -160,7 +156,7 @@ class ScreenNavigator(
             message = message,
             iconRes = com.lenta.shared.R.drawable.ic_info_pink,
             textColor = ContextCompat.getColor(context, com.lenta.shared.R.color.color_text_white),
-            pageNumber = "97"
+            pageNumber = INFO_SCREEN_PAGE_NUMBER
         )
     }
 
@@ -171,7 +167,7 @@ class ScreenNavigator(
                     message = msg,
                     codeConfirmForRight = backFragmentResultHelper.setFuncForResult(yesCallbackFunc),
                     iconRes = R.drawable.ic_question_80dp,
-                    pageNumber = "80",
+                    pageNumber = OPEN_BOX_REWRITE_DIALOG_PAGE_NUMBER,
                     leftButtonDecorationInfo = ButtonDecorationInfo.no,
                     rightButtonDecorationInfo = ButtonDecorationInfo.yes
                 )
@@ -208,7 +204,7 @@ class ScreenNavigator(
                 AlertFragment.create(
                     message = context.getString(R.string.box_saved_msg, shortBoxCode),
                     iconRes = R.drawable.ic_checkbox_green_32dp,
-                    pageNumber = "02",
+                    pageNumber = BOX_SAVED_DIALOG_PAGE_NUMBER,
                     leftButtonDecorationInfo = ButtonDecorationInfo.back
                 )
             )
@@ -259,7 +255,7 @@ class ScreenNavigator(
                     message = context.getString(R.string.task_save_confirmation_msg),
                     codeConfirmForRight = backFragmentResultHelper.setFuncForResult(yesCallbackFunc),
                     iconRes = R.drawable.ic_question_80dp,
-                    pageNumber = "06",
+                    pageNumber = SAVE_TASK_CONFIRM_DIALOG_PAGE_NUMBER,
                     leftButtonDecorationInfo = ButtonDecorationInfo.back,
                     rightButtonDecorationInfo = ButtonDecorationInfo.yes
                 )
@@ -267,14 +263,45 @@ class ScreenNavigator(
         }
     }
 
-    override fun openTaskEoMergeScreen(eoList: List<ProcessingUnit>, geList: MutableList<CargoUnit>) {
+    override fun openTaskEoMergeScreen(eoList: List<ProcessingUnit>, geList: List<CargoUnit>) {
         runOrPostpone {
             getFragmentStack()?.push(TaskEOMergeFragment.newInstance(eoList, geList))
         }
     }
 
+    override fun openZeroSelectedEODialog(processCallbackFunc: () -> Unit, combineCallbackFunc: () -> Unit) {
+        runOrPostpone {
+            getFragmentStack()?.push(
+                    AlertFragment.create(
+                            description = context.getString(R.string.task_goods_title),
+                            message = context.getString(R.string.task_eo_merge_zero_selected_eo_message),
+                            iconRes = R.drawable.ic_question_80dp,
+                            pageNumber = ZERO_SELECTED_EO_PAGE_NUMBER,
+                            leftButtonDecorationInfo = ButtonDecorationInfo.back,
+                            buttonDecorationInfo3 = ButtonDecorationInfo(
+                                    iconRes = R.drawable.ic_process_48dp,
+                                    titleRes = R.string.process
+                            ),
+                            codeConfirmForButton3 = backFragmentResultHelper.setFuncForResult(processCallbackFunc),
+                            rightButtonDecorationInfo = ButtonDecorationInfo(
+                                    iconRes = R.drawable.ic_combine_48dp,
+                                    titleRes = R.string.combine
+                            ),
+                            codeConfirmForRight = backFragmentResultHelper.setFuncForResult(combineCallbackFunc)
+                    )
+            )
+        }
+    }
+
     companion object {
         private const val TASK_TO_MOVE = "Задания на перемещение"
+        private const val ZERO_SELECTED_EO_PAGE_NUMBER = "02"
+        private const val SAVE_TASK_CONFIRM_DIALOG_PAGE_NUMBER = "06"
+        private const val BOX_SAVED_DIALOG_PAGE_NUMBER = "02"
+        private const val OPEN_BOX_REWRITE_DIALOG_PAGE_NUMBER = "80"
+        private const val INFO_SCREEN_PAGE_NUMBER = "97"
+        private const val OPEN_SELECT_TYPE_CODE_SCREEN_PAGE_NUMBER = "90"
+        private const val OPEN_UNSAVED_DATA_DIALOG_PAGE_NUMBER = "80"
     }
 }
 
@@ -304,5 +331,6 @@ interface IScreenNavigator : ICoreNavigator {
     fun openTaskBasketCharacteristicsScreen(basketIndex: Int)
     fun openSaveTaskConfirmationDialog(yesCallbackFunc: () -> Unit)
     fun openTaskList()
-    fun openTaskEoMergeScreen(eoList: List<ProcessingUnit>, geList: MutableList<CargoUnit>)
+    fun openTaskEoMergeScreen(eoList: List<ProcessingUnit>, geList: List<CargoUnit>)
+    fun openZeroSelectedEODialog(processCallbackFunc: () -> Unit, combineCallbackFunc: () -> Unit)
 }
