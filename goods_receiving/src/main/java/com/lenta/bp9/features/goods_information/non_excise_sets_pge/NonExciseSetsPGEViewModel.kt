@@ -188,10 +188,12 @@ class NonExciseSetsPGEViewModel : CoreViewModel(),
                         sorted.componentNumber
                     }?.mapIndexed { index, taskSetsInfo ->
                         val componentDescription = zfmpUtz48V001.getProductInfoByMaterial(taskSetsInfo.componentNumber)?.name
+                        val countProcessedComponents = taskManager.getReceivingTask()!!.taskRepository.getProductsDiscrepancies().getAllCountDiscrepanciesOfProduct(taskSetsInfo.componentNumber).toStringFormatted()
+                        val howMuchProcessComponents = (taskSetsInfo.quantity * (countValue.value ?: 0.0)).toStringFormatted()
                         ListComponentsItem(
                                 number = index + 1,
                                 name = "${taskSetsInfo.componentNumber.substring(taskSetsInfo.componentNumber.length - 6)} $componentDescription",
-                                quantity = "${taskManager.getReceivingTask()!!.taskRepository.getProductsDiscrepancies().getAllCountDiscrepanciesOfProduct(taskSetsInfo.componentNumber).toStringFormatted()} из ${(taskSetsInfo.quantity * (countValue.value ?: 0.0)).toStringFormatted()}",
+                                quantity = "$countProcessedComponents из $howMuchProcessComponents",
                                 componentInfo = taskSetsInfo,
                                 even = index % 2 == 0
                         )

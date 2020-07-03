@@ -99,7 +99,7 @@
             android:layout_marginEnd="8dp"
             android:ellipsize="end"
             android:maxLines="1"
-            android:text="@string/accept_txt"
+            android:text="@{vm.tvAccept}"
             app:layout_constraintEnd_toStartOf="@+id/div_vert"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"

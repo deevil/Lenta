@@ -17,6 +17,7 @@ class ProcessNonExciseSetsReceivingProductService
     lateinit var dataBase: IDataBaseRepo
 
     private lateinit var productInfo: TaskProductInfo
+    private var countSet: Double = 0.0
 
     fun newProcessNonExciseSetsReceivingProductService(productInfo: TaskProductInfo) : ProcessNonExciseSetsReceivingProductService? {
         return if (productInfo.type == ProductType.NonExciseAlcohol && productInfo.isSet){
@@ -138,5 +139,13 @@ class ProcessNonExciseSetsReceivingProductService
             getBatchesDiscrepancies()?.
             changeBatchDiscrepancy(foundBatchDiscrepancy.copy(numberDiscrepancies = countAdd.toString()))
         }
+    }
+
+    fun setCountSet(count: Double) {
+        countSet = count
+    }
+
+    fun getCountSet() : Double {
+        return countSet
     }
 }

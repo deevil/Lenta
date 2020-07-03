@@ -1,7 +1,9 @@
 package com.lenta.bp9.features.goods_information.non_excise_sets_receiving
 
+import android.content.Context
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import com.lenta.bp9.R
 import com.lenta.bp9.features.goods_information.non_excise_sets_pge.ListComponentsItem
 import com.lenta.bp9.features.goods_list.ListWithoutBarcodeItem
 import com.lenta.bp9.features.goods_list.SearchProductDelegate
@@ -58,6 +60,9 @@ class NonExciseSetsReceivingViewModel : CoreViewModel(),
     @Inject
     lateinit var hyperHive: HyperHive
 
+    @Inject
+    lateinit var context: Context
+
     private val zmpUtz25V001: ZmpUtz25V001 by lazy {
         ZmpUtz25V001(hyperHive)
     }
@@ -83,6 +88,10 @@ class NonExciseSetsReceivingViewModel : CoreViewModel(),
     val count: MutableLiveData<String> = MutableLiveData("0")
     private val countValue: MutableLiveData<Double> = count.map { it?.toDoubleOrNull() ?: 0.0 }
 
+    val tvAccept: MutableLiveData<String> by lazy {
+        MutableLiveData(context.getString(R.string.accept, "${productInfo.value?.purchaseOrderUnits?.name}=${productInfo.value?.quantityInvest?.toDouble().toStringFormatted()} ${productInfo.value?.uom?.name}"))
+    }
+
     val acceptTotalCount: MutableLiveData<Double> by lazy {
         countValue.combineLatest(spinQualitySelectedPosition).map {
             val countAccept = taskManager.getReceivingTask()!!.taskRepository.getProductsDiscrepancies().getCountAcceptOfProduct(productInfo.value!!)
@@ -99,13 +108,13 @@ class NonExciseSetsReceivingViewModel : CoreViewModel(),
         val countAccept = taskManager.getReceivingTask()!!.taskRepository.getProductsDiscrepancies().getCountAcceptOfProduct(productInfo.value!!)
         when {
             (it ?: 0.0) > 0.0 -> {
-                "+ ${it.toStringFormatted()} ${productInfo.value?.uom?.name}"
+                "+ ${it.toStringFormatted()} ${productInfo.value?.purchaseOrderUnits?.name}"
             }
             it == 0.0 -> {
-                "0 ${productInfo.value?.uom?.name}"
+                "0 ${productInfo.value?.purchaseOrderUnits?.name}"
             }
             else -> { //если было введено отрицательное значение
-                "${if (countAccept > 0.0) "+ " + countAccept.toStringFormatted() else countAccept.toStringFormatted()} ${productInfo.value?.uom?.name}"
+                "${if (countAccept > 0.0) "+ " + countAccept.toStringFormatted() else countAccept.toStringFormatted()} ${productInfo.value?.purchaseOrderUnits?.name}"
             }
         }
     }
@@ -125,9 +134,9 @@ class NonExciseSetsReceivingViewModel : CoreViewModel(),
     val refusalTotalCountWithUom: MutableLiveData<String> = refusalTotalCount.map {
         val countRefusal = taskManager.getReceivingTask()!!.taskRepository.getProductsDiscrepancies().getCountRefusalOfProduct(productInfo.value!!)
         if ((it ?: 0.0) > 0.0) {
-            "- ${it.toStringFormatted()} ${productInfo.value?.uom?.name}"
+            "- ${it.toStringFormatted()} ${productInfo.value?.purchaseOrderUnits?.name}"
         } else { //если было введено отрицательное значение
-            "${if (countRefusal > 0.0) "- " + countRefusal.toStringFormatted() else countRefusal.toStringFormatted()} ${productInfo.value?.uom?.name}"
+            "${if (countRefusal > 0.0) "- " + countRefusal.toStringFormatted() else countRefusal.toStringFormatted()} ${productInfo.value?.purchaseOrderUnits?.name}"
         }
     }
 
@@ -144,11 +153,13 @@ class NonExciseSetsReceivingViewModel : CoreViewModel(),
             searchProductDelegate.init(viewModelScope = this@NonExciseSetsReceivingViewModel::viewModelScope,
                     scanResultHandler = this@NonExciseSetsReceivingViewModel::handleProductSearchResult)
 
-            suffix.value = productInfo.value?.uom?.name
-            if (isDiscrepancy.value!!) {
-                count.value = taskManager.getReceivingTask()?.taskRepository?.getProductsDiscrepancies()?.getCountProductNotProcessedOfProduct(productInfo.value!!).toStringFormatted()
+            suffix.value = productInfo.value?.purchaseOrderUnits?.name
+            if (isDiscrepancy.value == true) {
+                productInfo.value?.let {
+                    count.value = taskManager.getReceivingTask()?.taskRepository?.getProductsDiscrepancies()?.getCountProductNotProcessedOfProduct(it).toStringFormatted()
+                }
                 qualityInfo.value = dataBase.getQualityInfoForDiscrepancy()
-                spinQualitySelectedPosition.value = qualityInfo.value!!.indexOfLast { it.code == "4" }
+                spinQualitySelectedPosition.value = qualityInfo.value?.indexOfLast { it.code == "4" }
             } else {
                 qualityInfo.value = dataBase.getQualityInfo()
             }
@@ -157,10 +168,16 @@ class NonExciseSetsReceivingViewModel : CoreViewModel(),
                 it.name
             }
 
-            if (processNonExciseSetsReceivingProductService.newProcessNonExciseSetsReceivingProductService(productInfo.value!!) == null) {
-                screenNavigator.goBack()
-                screenNavigator.openAlertWrongProductType()
+            productInfo.value?.let {
+                if (processNonExciseSetsReceivingProductService.newProcessNonExciseSetsReceivingProductService(it) == null) {
+                    screenNavigator.goBack()
+                    screenNavigator.openAlertWrongProductType()
+                }
+                return@launch
             }
+
+            screenNavigator.goBack()
+
         }
     }
 
@@ -182,10 +199,19 @@ class NonExciseSetsReceivingViewModel : CoreViewModel(),
                         sorted.componentNumber
                     }?.mapIndexed { index, taskSetsInfo ->
                         val componentDescription = zfmpUtz48V001.getProductInfoByMaterial(taskSetsInfo.componentNumber)?.name
+                        val countProcessedComponents = taskManager
+                                .getReceivingTask()!!
+                                .taskRepository
+                                .getProductsDiscrepancies()
+                                .getAllCountDiscrepanciesOfProduct(taskSetsInfo.componentNumber)
+                                .toStringFormatted()
+                        val howMuchProcessComponents = ((productInfo.value?.quantityInvest?.toDouble()
+                                ?: 0.0) * (countValue.value
+                                ?: 0.0) * taskSetsInfo.quantity).toStringFormatted()
                         ListComponentsItem(
                                 number = index + 1,
                                 name = "${taskSetsInfo.componentNumber.substring(taskSetsInfo.componentNumber.length - 6)} $componentDescription",
-                                quantity = "${taskManager.getReceivingTask()!!.taskRepository.getProductsDiscrepancies().getAllCountDiscrepanciesOfProduct(taskSetsInfo.componentNumber).toStringFormatted()} из ${(taskSetsInfo.quantity * (countValue.value ?: 0.0)).toStringFormatted()}",
+                                quantity = "$countProcessedComponents из $howMuchProcessComponents",
                                 componentInfo = taskSetsInfo,
                                 even = index % 2 == 0
                         )
@@ -202,7 +228,7 @@ class NonExciseSetsReceivingViewModel : CoreViewModel(),
                     .getReceivingTask()
                     ?.taskRepository
                     ?.getProductsDiscrepancies()
-                    ?.deleteProductsDiscrepanciesForProduct(listComponents.value?.get(position)!!.componentInfo.componentNumber)
+                    ?.deleteProductsDiscrepanciesForProduct(listComponents.value!![position].componentInfo.componentNumber)
         }
 
         updateListComponents()
