@@ -41,14 +41,9 @@
         <LinearLayout style="@style/EnterNumberFieldLayout">
 
             <EditText
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="8dp"
-                android:ellipsize="end"
+                style="@style/EnterNumberField"
                 android:hint="@string/enter_cargo_unit"
-                android:imeOptions="actionSearch"
                 android:inputType="numberDecimal"
-                android:maxLines="1"
                 android:text="@={vm.cargoUnitNumber}"
                 app:cursorToLastPos="@{true}"
                 app:onOkInSoftKeyboard="@{vm}"

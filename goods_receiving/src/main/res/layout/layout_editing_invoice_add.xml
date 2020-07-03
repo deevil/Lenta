@@ -41,17 +41,12 @@
         <LinearLayout style="@style/EnterNumberFieldLayout">
 
             <EditText
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="8dp"
+                style="@style/EnterNumberField"
                 android:digits="0123456789"
                 android:drawableEnd="@drawable/ic_loupe_white_16dp"
-                android:ellipsize="end"
                 android:hint="@string/enter_item_number_goods"
-                android:imeOptions="actionSearch"
                 android:inputType="numberDecimal"
                 android:maxLength="20"
-                android:maxLines="1"
                 android:text="@={vm.filterAdd}"
                 app:cursorToLastPos="@{true}"
                 app:onOkInSoftKeyboard="@{vm}"
