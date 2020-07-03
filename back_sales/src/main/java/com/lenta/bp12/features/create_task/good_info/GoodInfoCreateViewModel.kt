@@ -161,9 +161,14 @@ class GoodInfoCreateViewModel : CoreViewModel() {
     }
 
     val basketNumber by lazy {
-        basket.map { basket ->
-            val number = task.value?.baskets?.indexOf(basket) ?: -1
-            if (number >= 0) "${number + 1}" else ""
+        good.combineLatest(quantity).combineLatest(selectedProvider).map {
+            it?.let {
+                task.value?.let { task ->
+                    getBasket()?.let { basket ->
+                        "${task.baskets.indexOf(basket) + 1}"
+                    } ?: "${task.baskets.size + 1}"
+                } ?: ""
+            }
         }
     }
 
@@ -727,8 +732,6 @@ class GoodInfoCreateViewModel : CoreViewModel() {
             ))
         }
     }
-
-    // ZMP_UTZ_100_V001
 
     fun updateData() {
         if (manager.isWasAddedProvider) {
