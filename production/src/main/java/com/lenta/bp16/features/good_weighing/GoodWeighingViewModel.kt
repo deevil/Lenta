@@ -217,8 +217,8 @@ class GoodWeighingViewModel : CoreViewModel() {
 
     private fun getTimeInMinutes(sourceTime: String, units: String): Int {
         return when (units.toLowerCase(Locale.getDefault())) {
-            "m" -> (sourceTime.toDoubleOrNull() ?: 0.0).toInt()
-            "h" -> (sourceTime.toDoubleOrNull() ?: 0.0 * 60).toInt()
+            MINUTE -> (sourceTime.toDoubleOrNull() ?: 0.0).toInt()
+            HOUR -> (sourceTime.toDoubleOrNull() ?: 0.0 * 60).toInt()
             else -> 0
         }
     }
@@ -346,6 +346,11 @@ class GoodWeighingViewModel : CoreViewModel() {
 
     fun onClickDefect() {
         navigator.openDefectInfoScreen()
+    }
+
+    companion object {
+        private const val MINUTE = "m"
+        private const val HOUR = "h"
     }
 
 }
