@@ -23,7 +23,7 @@ class CreateTaskManager @Inject constructor(
 
     override var searchNumber = ""
 
-    override var openGoodFromList = false
+    override var searchGoodFromList = false
 
     override var isWasAddedProvider = false
 
@@ -182,13 +182,18 @@ class CreateTaskManager @Inject constructor(
         }
     }
 
+    override fun clearSearchFromListParams() {
+        searchGoodFromList = false
+        searchNumber = ""
+    }
+
 }
 
 
 interface ICreateTaskManager {
 
     var searchNumber: String
-    var openGoodFromList: Boolean
+    var searchGoodFromList: Boolean
     var isWasAddedProvider: Boolean
 
     val currentTask: MutableLiveData<TaskCreate>
@@ -210,5 +215,6 @@ interface ICreateTaskManager {
     fun addProviderInCurrentGood(providerInfo: ProviderInfo)
     fun prepareSendTaskDataParams(deviceIp: String, tkNumber: String, userNumber: String)
     fun saveGoodInTask(good: GoodCreate)
+    fun clearSearchFromListParams()
 
 }

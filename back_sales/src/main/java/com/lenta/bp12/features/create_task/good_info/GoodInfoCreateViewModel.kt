@@ -10,6 +10,7 @@ import com.lenta.bp12.model.pojo.create_task.GoodCreate
 import com.lenta.bp12.platform.extention.getControlType
 import com.lenta.bp12.platform.extention.getGoodType
 import com.lenta.bp12.platform.navigation.IScreenNavigator
+import com.lenta.bp12.platform.resource.IResourceManager
 import com.lenta.bp12.repository.IDatabaseRepository
 import com.lenta.bp12.request.*
 import com.lenta.bp12.request.pojo.ProducerInfo
@@ -48,6 +49,9 @@ class GoodInfoCreateViewModel : CoreViewModel() {
 
     @Inject
     lateinit var database: IDatabaseRepository
+
+    @Inject
+    lateinit var resource: IResourceManager
 
 
     /**
@@ -98,7 +102,6 @@ class GoodInfoCreateViewModel : CoreViewModel() {
     }
 
     private val markInfoResult = MutableLiveData<MarkInfoResult>()
-
 
     /**
     Ввод количества
@@ -360,7 +363,7 @@ class GoodInfoCreateViewModel : CoreViewModel() {
 
         if (applyEnabled.value!! || good.value!!.type == GoodType.EXCISE && (number.length == Constants.MARK_150 || number.length == Constants.MARK_68 || number.length == Constants.BOX_26)) {
             saveChanges()
-            manager.openGoodFromList = false
+            manager.searchGoodFromList = false
             manager.searchNumber = number
             checkSearchNumber(number)
         }
@@ -436,7 +439,7 @@ class GoodInfoCreateViewModel : CoreViewModel() {
             navigator.showProgressLoadingData()
 
             goodInfoNetRequest(GoodInfoParams(
-                    tkNumber = sessionInfo.market ?: "Not found!",
+                    tkNumber = sessionInfo.market ?: "",
                     ean = ean ?: "",
                     material = material ?: "",
                     taskType = task.value!!.taskType.code
@@ -449,8 +452,8 @@ class GoodInfoCreateViewModel : CoreViewModel() {
                         addGood(goodInfo)
                     } else {
                         navigator.showNotMatchTaskSettingsAddingNotPossible {
-                            if (manager.openGoodFromList) {
-                                manager.openGoodFromList = false
+                            if (manager.searchGoodFromList) {
+                                manager.searchGoodFromList = false
                                 manager.searchNumber = ""
                                 navigator.goBack()
                                 navigator.goBack()
@@ -466,9 +469,8 @@ class GoodInfoCreateViewModel : CoreViewModel() {
 
     override fun handleFailure(failure: Failure) {
         super.handleFailure(failure)
-        if (manager.openGoodFromList) {
-            manager.openGoodFromList = false
-            manager.searchNumber = ""
+        if (manager.searchGoodFromList) {
+            manager.clearSearchFromListParams()
             navigator.goBack()
         }
 
@@ -512,7 +514,7 @@ class GoodInfoCreateViewModel : CoreViewModel() {
             navigator.showProgressLoadingData()
 
             markInfoNetRequest(MarkInfoParams(
-                    tkNumber = sessionInfo.market ?: "Not found!",
+                    tkNumber = sessionInfo.market ?: "",
                     material = good.value!!.material,
                     markNumber = number,
                     mode = 1,
@@ -531,10 +533,10 @@ class GoodInfoCreateViewModel : CoreViewModel() {
                                     if (alcoCodeInfoList.find { it.material == good.value!!.material } != null) {
                                         addPartInfo(number, result)
                                     } else {
-                                        navigator.openAlertScreen("Алкокод не относится к этому товару")
+                                        navigator.openAlertScreen(resource.alcocodeDoesNotApplyToThisGood())
                                     }
                                 } else {
-                                    navigator.openAlertScreen("Неизвестный алкокод")
+                                    navigator.openAlertScreen(resource.unknownAlcocode())
                                 }
                             }
                         } else {
@@ -759,7 +761,7 @@ class GoodInfoCreateViewModel : CoreViewModel() {
     fun onBackPressed() {
         if (isExistUnsavedData) {
             navigator.showUnsavedDataWillBeLost {
-                manager.openGoodFromList = false
+                manager.searchGoodFromList = false
                 manager.searchNumber = ""
                 navigator.goBack()
             }
