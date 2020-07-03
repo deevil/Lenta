@@ -613,14 +613,16 @@ class GoodInfoCreateViewModel : CoreViewModel() {
         viewModelScope.launch {
             navigator.showProgressLoadingData()
 
-            markInfoNetRequest(MarkInfoParams(
+            val result = markInfoNetRequest(MarkInfoParams(
                     tkNumber = sessionInfo.market ?: "",
                     material = good.value?.material ?: "",
                     producerCode = selectedProducer.value?.code ?: "",
                     bottledDate = date.value ?: "",
                     mode = 3,
                     quantity = quantity.value ?: 0.0
-            )).also {
+            ))
+
+            result.also {
                 navigator.hideProgress()
             }.either(::handleFailure) { result ->
                 viewModelScope.launch {
@@ -796,12 +798,25 @@ class GoodInfoCreateViewModel : CoreViewModel() {
     }
 
     fun onClickApply() {
-        saveChanges()
-        manager.saveGoodInTask(good.value!!)
-        isExistUnsavedData = false
+        when (scanModeType.value) {
+            ScanNumberType.ALCOHOL, ScanNumberType.PART -> {
+                checkPart()
+            }
+            else -> {
+                saveChanges()
+                manager.saveGoodInTask(good.value!!)
+                isExistUnsavedData = false
 
-        navigator.goBack()
-        navigator.openBasketGoodListScreen()
+                navigator.goBack()
+                navigator.openBasketGoodListScreen()
+            }
+        }
+
+       /* if (scanModeType.value == ScanNumberType.ALCOHOL) {
+
+        }*/
+
+
     }
 
 }
