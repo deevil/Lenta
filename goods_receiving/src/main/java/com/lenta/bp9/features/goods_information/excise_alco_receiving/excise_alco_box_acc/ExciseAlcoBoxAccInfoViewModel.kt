@@ -57,7 +57,7 @@ class ExciseAlcoBoxAccInfoViewModel : CoreViewModel(), OnPositionClickListener {
     val isDefect: MutableLiveData<Boolean> = spinQualitySelectedPosition.map {
         it != 0
     }
-    private val isClickApply: MutableLiveData<Boolean> = MutableLiveData(false)
+
 
     private val qualityInfo: MutableLiveData<List<QualityInfo>> = MutableLiveData()
     private val reasonRejectionInfo: MutableLiveData<List<ReasonRejectionInfo>> = MutableLiveData()
@@ -222,6 +222,7 @@ class ExciseAlcoBoxAccInfoViewModel : CoreViewModel(), OnPositionClickListener {
             return
         }
 
+        processExciseAlcoBoxAccService.setCountAccept((acceptTotalCount.value ?: 0.0))
         screenNavigator.openExciseAlcoBoxListScreen(
                 productInfo = productInfo.value!!,
                 selectQualityCode = qualityInfo.value!![spinQualitySelectedPosition.value!!].code,
@@ -230,37 +231,35 @@ class ExciseAlcoBoxAccInfoViewModel : CoreViewModel(), OnPositionClickListener {
         )
     }
 
-    fun onClickDetails(){
+    fun onClickDetails() {
         screenNavigator.openGoodsDetailsScreen(productInfo.value!!)
     }
 
-    fun onClickAdd() {
-        if (processExciseAlcoBoxAccService.overLimit(countValue.value!!)) {
+    fun onClickAdd() : Boolean {
+        return if (processExciseAlcoBoxAccService.overLimit(countValue.value!!)) {
             screenNavigator.openAlertOverLimit()
             count.value = "0"
+            false
         } else {
             if (qualityInfo.value?.get(spinQualitySelectedPosition.value ?: 0)?.code == "1") {
                 processExciseAlcoBoxAccService.addProduct(acceptTotalCount.value!!.toString(), "1")
-                if (isClickApply.value == true) screenNavigator.goBack()
             } else {
                 if (processExciseAlcoBoxAccService.getCountUntreatedBoxes() - (countValue.value?.toInt() ?: 0) == 0) { //https://trello.com/c/lqyZlYQu, Массовая обработка брака
                     screenNavigator.openAlertGoodsNotInInvoiceScreen(productInfo.value!!.getMaterialLastSix(), productInfo.value!!.description) {
                         processExciseAlcoBoxAccService.massProcessingRejectBoxes(reasonRejectionInfo.value!![spinReasonRejectionSelectedPosition.value!!].code)
                         processExciseAlcoBoxAccService.addProduct(count.value!!, reasonRejectionInfo.value!![spinReasonRejectionSelectedPosition.value!!].code)
-                        if (isClickApply.value == true) screenNavigator.goBack()
                     }
                 } else {
                     processExciseAlcoBoxAccService.addProduct(count.value!!, reasonRejectionInfo.value!![spinReasonRejectionSelectedPosition.value!!].code)
-                    if (isClickApply.value == true) screenNavigator.goBack()
                 }
             }
             count.value = "0"
+            true
         }
     }
 
     fun onClickApply() {
-        isClickApply.value = true
-        onClickAdd()
+        if (onClickAdd()) screenNavigator.goBack()
     }
 
     fun onScanResult(data: String) {
@@ -283,6 +282,7 @@ class ExciseAlcoBoxAccInfoViewModel : CoreViewModel(), OnPositionClickListener {
                             if (processExciseAlcoBoxAccService.getCountBoxOfProductOfDiscrepancies(exciseStampInfo.boxNumber, "1") >= acceptTotalCount.value!!.toInt()) {
                                 screenNavigator.openAlertRequiredQuantityBoxesAlreadyProcessedScreen() //Необходимое количество коробок уже обработано
                             } else {
+                                processExciseAlcoBoxAccService.setCountAccept((acceptTotalCount.value ?: 0.0))
                                 screenNavigator.openExciseAlcoBoxCardScreen(
                                         productInfo = productInfo.value!!,
                                         boxInfo = null,
@@ -311,6 +311,7 @@ class ExciseAlcoBoxAccInfoViewModel : CoreViewModel(), OnPositionClickListener {
                             if (processExciseAlcoBoxAccService.getCountBoxOfProductOfDiscrepancies(boxInfo.boxNumber, "1") >= acceptTotalCount.value!!.toInt()) {
                                 screenNavigator.openAlertRequiredQuantityBoxesAlreadyProcessedScreen() //Необходимое количество коробок уже обработано
                             } else {
+                                processExciseAlcoBoxAccService.setCountAccept((acceptTotalCount.value ?: 0.0))
                                 screenNavigator.openExciseAlcoBoxCardScreen(
                                         productInfo = productInfo.value!!,
                                         boxInfo = boxInfo,
@@ -326,6 +327,7 @@ class ExciseAlcoBoxAccInfoViewModel : CoreViewModel(), OnPositionClickListener {
                             if (checkBoxList.value == true) {
                                 screenNavigator.openAlertRequiredQuantityBoxesAlreadyProcessedScreen() //Необходимое количество коробок уже обработано
                             } else {
+                                processExciseAlcoBoxAccService.setCountAccept((acceptTotalCount.value ?: 0.0))
                                 screenNavigator.openExciseAlcoBoxCardScreen(
                                         productInfo = productInfo.value!!,
                                         boxInfo = boxInfo,
@@ -343,7 +345,10 @@ class ExciseAlcoBoxAccInfoViewModel : CoreViewModel(), OnPositionClickListener {
             }
             else -> {
                 if (enabledApplyButton.value == true) { //Функция доступна только при условии, что доступна кнопка "Применить". https://trello.com/c/KbBbXj2t
-                    searchProductDelegate.searchCode(code = data, fromScan = true, isBarCode = true)
+                    if (onClickAdd()) {
+                        screenNavigator.goBack()
+                        searchProductDelegate.searchCode(code = data, fromScan = true, isBarCode = true)
+                    }
                 } else {
                     screenNavigator.openAlertInvalidBarcodeFormatScannedScreen()
                 }

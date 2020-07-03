@@ -15,6 +15,7 @@ import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.extentions.getDeviceIp
 import com.lenta.shared.utilities.extentions.toStringFormatted
+import com.mobrun.plugin.api.HyperHive
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -41,6 +42,8 @@ class MercuryListIrrelevantViewModel : CoreViewModel() {
     lateinit var rejectRequest: RejectNetRequest
     @Inject
     lateinit var repoInMemoryHolder: IRepoInMemoryHolder
+    @Inject
+    lateinit var hyperHive: HyperHive
 
     val listIrrelevantMercury: MutableLiveData<List<MercuryListIrrelevantItem>> = MutableLiveData()
     val netRestNumber: MutableLiveData<Int> = MutableLiveData()
@@ -114,6 +117,7 @@ class MercuryListIrrelevantViewModel : CoreViewModel() {
         viewModelScope.launch {
             repoInMemoryHolder.manufacturers.value = result.manufacturers
             repoInMemoryHolder.processOrderData.value = result.processOrderData.map { TaskProcessOrderDataInfo.from( it) }
+            repoInMemoryHolder.sets.value = result.setsInfo.map { TaskSetsInfo.from(hyperHive, it) }
             taskManager.updateTaskDescription(TaskDescription.from(result.taskDescription))
             taskManager.getReceivingTask()?.updateTaskWithContents(taskContents.getTaskContentsInfo(result))
             screenNavigator.openGoodsListScreen(taskType = taskManager.getReceivingTask()?.taskHeader?.taskType ?: TaskType.None)

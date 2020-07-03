@@ -250,6 +250,12 @@ class MemoryTaskProductsDiscrepanciesRepository : ITaskProductsDiscrepanciesRepo
         }
     }
 
+    override fun getAllCountDiscrepanciesOfProduct(materialNumber: String): Double {
+        return findProductDiscrepanciesOfProduct(materialNumber).sumByDouble {
+            it.numberDiscrepancies.toDouble()
+        }
+    }
+
     override fun clear() {
         productsDiscrepancies.clear()
     }

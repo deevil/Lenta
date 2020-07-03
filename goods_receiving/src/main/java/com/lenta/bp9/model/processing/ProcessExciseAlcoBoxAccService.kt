@@ -18,6 +18,7 @@ class ProcessExciseAlcoBoxAccService
     private val exciseStamps: ArrayList<TaskExciseStampInfo> = ArrayList()
     private val currentExciseStampsDiscrepancies: ArrayList<TaskExciseStampDiscrepancies> = ArrayList()
     private val currentExciseStampsBad: ArrayList<TaskExciseStampBad> = ArrayList()
+    private var countAccept: Double = 0.0
 
     fun newProcessExciseAlcoBoxService(productInfo: TaskProductInfo) : ProcessExciseAlcoBoxAccService? {
         return if (productInfo.type == ProductType.ExciseAlcohol && productInfo.isBoxFl){ //алкоголь, коробочный учет https://trello.com/c/KbBbXj2t
@@ -435,6 +436,24 @@ class ProcessExciseAlcoBoxAccService
                 ?.taskRepository
                 ?.getProductsDiscrepancies()
                 ?.deleteProductDiscrepancy(productInfo.materialNumber, typeDiscrepancies)
+    }
+
+    fun getLastAddExciseStamp() : TaskExciseStampInfo? {
+        return if (currentExciseStampsDiscrepancies.isNotEmpty()) {
+            exciseStamps.findLast { stampInfo ->
+                stampInfo.code == currentExciseStampsDiscrepancies.last {
+                    it.isScan
+                }.code
+            }
+        } else null
+    }
+
+    fun setCountAccept(count: Double) {
+        countAccept = count
+    }
+
+    fun getCountAccept() : Double {
+        return countAccept
     }
 
 }
