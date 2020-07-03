@@ -39,16 +39,22 @@ class NonExciseSetsReceivingViewModel : CoreViewModel(),
 
     @Inject
     lateinit var screenNavigator: IScreenNavigator
+
     @Inject
     lateinit var taskManager: IReceivingTaskManager
+
     @Inject
     lateinit var searchProductDelegate: SearchProductDelegate
+
     @Inject
     lateinit var dataBase: IDataBaseRepo
+
     @Inject
     lateinit var processNonExciseSetsReceivingProductService: ProcessNonExciseSetsReceivingProductService
+
     @Inject
     lateinit var repoInMemoryHolder: IRepoInMemoryHolder
+
     @Inject
     lateinit var hyperHive: HyperHive
 
@@ -142,7 +148,7 @@ class NonExciseSetsReceivingViewModel : CoreViewModel(),
             if (isDiscrepancy.value!!) {
                 count.value = taskManager.getReceivingTask()?.taskRepository?.getProductsDiscrepancies()?.getCountProductNotProcessedOfProduct(productInfo.value!!).toStringFormatted()
                 qualityInfo.value = dataBase.getQualityInfoForDiscrepancy()
-                spinQualitySelectedPosition.value = qualityInfo.value!!.indexOfLast {it.code == "4"}
+                spinQualitySelectedPosition.value = qualityInfo.value!!.indexOfLast { it.code == "4" }
             } else {
                 qualityInfo.value = dataBase.getQualityInfo()
             }
@@ -168,11 +174,11 @@ class NonExciseSetsReceivingViewModel : CoreViewModel(),
     }
 
     private fun updateListComponents() {
-        repoInMemoryHolder.sets.value.let {setsInfoList ->
+        repoInMemoryHolder.sets.value.let { setsInfoList ->
             listComponents.postValue(
-                    setsInfoList?.filter {filterSetInfo ->
+                    setsInfoList?.filter { filterSetInfo ->
                         filterSetInfo.setNumber == productInfo.value?.materialNumber
-                    }?.sortedByDescending {sorted ->
+                    }?.sortedByDescending { sorted ->
                         sorted.componentNumber
                     }?.mapIndexed { index, taskSetsInfo ->
                         val componentDescription = zfmpUtz48V001.getProductInfoByMaterial(taskSetsInfo.componentNumber)?.name
@@ -220,12 +226,14 @@ class NonExciseSetsReceivingViewModel : CoreViewModel(),
     }
 
     fun onClickItemPosition(position: Int) {
-        listComponents.value?.get(position)?.componentInfo?.let { screenNavigator.openNonExciseSetComponentInfoReceivingScreen(it, qualityInfo.value!![spinQualitySelectedPosition.value!!].code, productInfo.value!!) }
-        updateListComponents()
+        listComponents.value?.get(position)?.componentInfo?.let {
+            screenNavigator.openNonExciseSetComponentInfoReceivingScreen(it, qualityInfo.value!![spinQualitySelectedPosition.value!!].code, productInfo.value!!)
+        }
     }
 
     override fun onPageSelected(position: Int) {
         selectedPage.value = position
+        updateListComponents()
     }
 
     fun onClickPositionSpinQuality(position: Int) {
@@ -253,7 +261,7 @@ class NonExciseSetsReceivingViewModel : CoreViewModel(),
         }
     }
 
-    private fun searchCode(data: String) : ZfmpUtz48V001.ItemLocal_ET_MATNR_LIST? {
+    private fun searchCode(data: String): ZfmpUtz48V001.ItemLocal_ET_MATNR_LIST? {
         val eanInfo = zmpUtz25V001.getEanInfo(ean = data)
         //не менять последовательность
         return zfmpUtz48V001.getProductInfoByMaterial(material = eanInfo?.material)

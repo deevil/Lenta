@@ -39,7 +39,7 @@ class NonExciseSetComponentInfoReceivingFragment : CoreFragment<FragmentNonExcis
     private var typeDiscrepancies by state<String?>(null)
     private var productInfo by state<TaskProductInfo?>(null)
 
-    override fun getLayoutId(): Int = R.layout.fragment_non_excise_set_component_info_pge
+    override fun getLayoutId(): Int = R.layout.fragment_non_excise_set_component_info_receiving
 
     override fun getPageNumber(): String = "09/40"
 

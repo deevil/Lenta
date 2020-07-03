@@ -232,7 +232,9 @@ class NonExciseSetsPGEViewModel : CoreViewModel(),
     }
 
     fun onClickItemPosition(position: Int) {
-        listComponents.value?.get(position)?.componentInfo?.let { screenNavigator.openNonExciseSetComponentInfoPGEScreen(it, qualityInfo.value!![spinQualitySelectedPosition.value!!].code, productInfo.value!!) }
+        listComponents.value?.get(position)?.componentInfo?.let {
+            screenNavigator.openNonExciseSetComponentInfoPGEScreen(it, qualityInfo.value!![spinQualitySelectedPosition.value!!].code, productInfo.value!!)
+        }
     }
 
     override fun onPageSelected(position: Int) {
