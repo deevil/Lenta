@@ -25,10 +25,6 @@ import com.lenta.shared.utilities.extentions.provideViewModel
 class RawListFragment : CoreFragment<FragmentRawListBinding, RawListViewModel>(),
         ToolbarButtonsClickListener, OnKeyDownListener {
 
-    companion object {
-        const val SCREEN_NUMBER = "7"
-    }
-
     private var recyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
 
     override fun getLayoutId(): Int = R.layout.fragment_raw_list
@@ -110,6 +106,10 @@ class RawListFragment : CoreFragment<FragmentRawListBinding, RawListViewModel>()
     override fun onDestroyView() {
         recyclerViewKeyHandler?.onClickPositionFunc = null
         super.onDestroyView()
+    }
+
+    companion object {
+        const val SCREEN_NUMBER = "7"
     }
 
 }

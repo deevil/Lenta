@@ -18,10 +18,6 @@ import com.lenta.shared.utilities.extentions.provideViewModel
 
 class DefectListFragment : CoreFragment<FragmentDefectListBinding, DefectListViewModel>() {
 
-    companion object {
-        const val SCREEN_NUMBER = "08"
-    }
-
     override fun getLayoutId(): Int = R.layout.fragment_defect_list
 
     override fun getPageNumber(): String? = generateScreenNumberFromPostfix(SCREEN_NUMBER)
@@ -53,6 +49,10 @@ class DefectListFragment : CoreFragment<FragmentDefectListBinding, DefectListVie
                 layoutId = R.layout.item_defect,
                 itemId = BR.item
         )
+    }
+
+    companion object {
+        const val SCREEN_NUMBER = "08"
     }
 
 }

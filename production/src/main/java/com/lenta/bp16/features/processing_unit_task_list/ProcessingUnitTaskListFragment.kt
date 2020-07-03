@@ -33,14 +33,6 @@ import com.lenta.shared.utilities.extentions.provideViewModel
 class ProcessingUnitTaskListFragment : CoreFragment<FragmentProcessingUnitTaskListBinding, ProcessingUnitTaskListViewModel>(),
         ViewPagerSettings, ToolbarButtonsClickListener, OnScanResultListener, OnKeyDownListener {
 
-    companion object {
-        const val SCREEN_NUMBER = "51"
-
-        private const val TABS = 2
-        private const val TAB_PROCESSING = 0
-        private const val TAB_PROCESSED = 1
-    }
-
     private var processingRecyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
     private var processedRecyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
 
@@ -210,6 +202,14 @@ class ProcessingUnitTaskListFragment : CoreFragment<FragmentProcessingUnitTaskLi
         processingRecyclerViewKeyHandler?.onClickPositionFunc = null
         processedRecyclerViewKeyHandler?.onClickPositionFunc = null
         super.onDestroyView()
+    }
+
+    companion object {
+        const val SCREEN_NUMBER = "51"
+
+        private const val TABS = 2
+        private const val TAB_PROCESSING = 0
+        private const val TAB_PROCESSED = 1
     }
 
 }

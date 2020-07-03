@@ -26,10 +26,6 @@ import com.lenta.shared.utilities.extentions.provideViewModel
 class ExternalSupplyListFragment : CoreFragment<FragmentExternalSupplyListBinding, ExternalSupplyListViewModel>(),
         OnBackPresserListener, ToolbarButtonsClickListener, OnKeyDownListener {
 
-    companion object {
-        const val SCREEN_NUMBER = "62"
-    }
-
     private var recyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
 
     override fun getLayoutId(): Int = R.layout.fragment_external_supply_list
@@ -117,6 +113,10 @@ class ExternalSupplyListFragment : CoreFragment<FragmentExternalSupplyListBindin
     override fun onDestroyView() {
         recyclerViewKeyHandler?.onClickPositionFunc = null
         super.onDestroyView()
+    }
+
+    companion object {
+        const val SCREEN_NUMBER = "62"
     }
 
 }

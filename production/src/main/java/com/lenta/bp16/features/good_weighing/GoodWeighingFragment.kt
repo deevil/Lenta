@@ -18,10 +18,6 @@ import com.lenta.shared.utilities.extentions.provideViewModel
 class GoodWeighingFragment : CoreFragment<FragmentGoodWeighingBinding, GoodWeighingViewModel>(),
         ToolbarButtonsClickListener, OnBackPresserListener {
 
-    companion object {
-        const val SCREEN_NUMBER = "9"
-    }
-
     override fun getLayoutId(): Int = R.layout.fragment_good_weighing
 
     override fun getPageNumber(): String? = generateScreenNumberFromPostfix(SCREEN_NUMBER)
@@ -66,6 +62,10 @@ class GoodWeighingFragment : CoreFragment<FragmentGoodWeighingBinding, GoodWeigh
     override fun onBackPressed(): Boolean {
         vm.onBackPressed()
         return false
+    }
+
+    companion object {
+        const val SCREEN_NUMBER = "9"
     }
 
 }

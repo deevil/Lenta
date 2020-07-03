@@ -21,10 +21,6 @@ import com.lenta.shared.utilities.state.state
 class SelectPersonnelNumberFragment : CoreFragment<FragmentSelectPersonnelNumberBinding, SelectPersonnelNumberViewModel>(),
         ToolbarButtonsClickListener, OnScanResultListener {
 
-    companion object {
-        const val SCREEN_NUMBER = "35"
-    }
-
     override fun getLayoutId(): Int = R.layout.fragment_select_personnel_number
 
     override fun getPageNumber(): String? = generateScreenNumberFromPostfix(SCREEN_NUMBER)
@@ -67,6 +63,10 @@ class SelectPersonnelNumberFragment : CoreFragment<FragmentSelectPersonnelNumber
     override fun onResume() {
         super.onResume()
         vm.onResume()
+    }
+
+    companion object {
+        const val SCREEN_NUMBER = "35"
     }
 
 }

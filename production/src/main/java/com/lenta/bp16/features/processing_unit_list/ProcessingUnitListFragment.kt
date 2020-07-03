@@ -24,10 +24,6 @@ import com.lenta.shared.utilities.extentions.*
 class ProcessingUnitListFragment : CoreFragment<FragmentProcessingUnitListBinding, ProcessingUnitListViewModel>(),
         OnBackPresserListener, ToolbarButtonsClickListener, OnKeyDownListener {
 
-    companion object {
-        const val SCREEN_NUMBER = "61"
-    }
-
     private var recyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
 
     override fun getLayoutId(): Int = R.layout.fragment_processing_unit_list
@@ -114,6 +110,10 @@ class ProcessingUnitListFragment : CoreFragment<FragmentProcessingUnitListBindin
     override fun onDestroyView() {
         recyclerViewKeyHandler?.onClickPositionFunc = null
         super.onDestroyView()
+    }
+
+    companion object {
+        const val SCREEN_NUMBER = "61"
     }
 
 }

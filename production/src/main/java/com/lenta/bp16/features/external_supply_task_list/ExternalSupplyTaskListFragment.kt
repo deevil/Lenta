@@ -31,14 +31,6 @@ import com.lenta.shared.utilities.extentions.provideViewModel
 
 class ExternalSupplyTaskListFragment : CoreFragment<FragmentExternalSupplyTaskListBinding, ExternalSupplyTaskListViewModel>(),
         ViewPagerSettings, ToolbarButtonsClickListener, OnKeyDownListener {
-
-    companion object {
-        const val SCREEN_NUMBER = "52"
-
-        private const val TABS = 2
-        private const val TAB_PROCESSING = 0
-        private const val TAB_PROCESSED = 1
-    }
     
     private var processingRecyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
     private var processedRecyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
@@ -205,6 +197,14 @@ class ExternalSupplyTaskListFragment : CoreFragment<FragmentExternalSupplyTaskLi
         processingRecyclerViewKeyHandler?.onClickPositionFunc = null
         processedRecyclerViewKeyHandler?.onClickPositionFunc = null
         super.onDestroyView()
+    }
+
+    companion object {
+        const val SCREEN_NUMBER = "52"
+
+        private const val TABS = 2
+        private const val TAB_PROCESSING = 0
+        private const val TAB_PROCESSED = 1
     }
 
 }

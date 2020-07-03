@@ -14,10 +14,6 @@ import com.lenta.shared.utilities.extentions.provideViewModel
 
 class FastDataLoadingFragment : CoreLoadingFragment() {
 
-    companion object {
-        const val SCREEN_NUMBER = "03"
-    }
-
     override fun getPageNumber(): String? = generateScreenNumberFromPostfix(SCREEN_NUMBER)
 
     override fun getViewModel(): CoreLoadingViewModel {
@@ -48,4 +44,9 @@ class FastDataLoadingFragment : CoreLoadingFragment() {
         super.onViewCreated(view, savedInstanceState)
         vm.title.value = getString(R.string.sync_of_dictionary)
     }
+
+    companion object {
+        const val SCREEN_NUMBER = "03"
+    }
+
 }
