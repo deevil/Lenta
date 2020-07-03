@@ -1,6 +1,7 @@
 package com.lenta.movement.requests.network.models.startConsolidation
 
 import com.google.gson.annotations.SerializedName
+import com.lenta.movement.requests.network.models.RestCargoUnit
 
 data class StartConsolidationResult(
         /** Таблица состава задания */
@@ -13,7 +14,7 @@ data class StartConsolidationResult(
 
         /** Список ГЕ */
         @SerializedName("ET_TASK_EXIDV_TOP")
-        val geList: List<CargoUnit>,
+        val geList: List<RestCargoUnit>,
 
         /** Код возврата */
         @SerializedName("EV_RETCODE")

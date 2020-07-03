@@ -31,9 +31,10 @@ class Consolidation @Inject constructor(
         private const val RESOURCE_NAME = "ZMP_UTZ_MVM_09_V001"
         private const val NON_FAILURE_RET_CODE = "0"
 
-        const val CONSOLIDATION_EO_IN_GE_MODE = 1
-        const val SEPARATION_GE_TO_EO_MODE = 2
-        const val COMPLETE_GE_MODE = 3
+        const val CONSOLIDATION_EO_IN_GE_MODE = "01" // Кнопка обработать (отправляешь ЕО)
+        const val SEPARATION_GE_TO_EO_MODE = "02" // Кнопка разобрать (отправляешь ГЕ)
+        const val ADD_EO_IN_GE_MODE = "03" // В карточке ГЕ, если хочешь добавить ЕО (напр отсканировать)
+        const val EXCLUDE_EO_FROM_GE_MODE = "04" // В карточке ГЕ, если хочешь исключить ЕО
     }
 }
 

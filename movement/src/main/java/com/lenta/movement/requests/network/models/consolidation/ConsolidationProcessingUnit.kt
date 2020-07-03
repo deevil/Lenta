@@ -1,3 +1,8 @@
 package com.lenta.movement.requests.network.models.consolidation
 
-data class ConsolidationProcessingUnit (val eoNumber : String)
+import com.google.gson.annotations.SerializedName
+
+data class ConsolidationProcessingUnit (
+        @SerializedName("EXIDV")
+        val eoNumber : String
+)

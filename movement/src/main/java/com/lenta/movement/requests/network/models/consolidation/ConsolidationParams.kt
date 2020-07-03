@@ -1,6 +1,7 @@
 package com.lenta.movement.requests.network.models.consolidation
 
 import com.google.gson.annotations.SerializedName
+import com.lenta.movement.requests.network.models.RestCargoUnit
 
 data class ConsolidationParams(
         /** IP адрес ТСД */
@@ -21,13 +22,13 @@ data class ConsolidationParams(
          * 03 – Докомплектовать ГЕ
          */
         @SerializedName("IV_MODE")
-        val mode: Int,
+        val mode: String,
 
         /** Список ЕО */
         @SerializedName("IT_TASK_EXIDV")
-        val eoList: List<ConsolidationProcessingUnit>,
+        val eoNumberList: List<String>? = listOf(),
 
         /** Список ГЕ */
         @SerializedName("IT_TASK_EXIDV_TOP")
-        val geList: List<ConsolidationCargoUnit>
+        val geNumberList: List<String>? = listOf()
 )
