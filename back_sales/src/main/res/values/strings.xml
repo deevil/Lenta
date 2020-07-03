@@ -56,6 +56,10 @@
     <string name="alcocode_does_not_apply_to_this_good">Алкокод не относится к этому товару</string>
     <string name="unknown_alcocode">Неизвестный алкокод</string>
 
+    // Описание иконок
+    <string name="alcohol_good">Алкогольный товар</string>
+    <string name="common_good">Обычный товар</string>
+
     // Наименование кнопок
     <string name="create_task">Создать задание</string>
     <string name="work_with_tasks">Работа с заданиями</string>
