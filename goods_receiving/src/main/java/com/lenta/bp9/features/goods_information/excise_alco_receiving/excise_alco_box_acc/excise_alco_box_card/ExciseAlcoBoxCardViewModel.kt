@@ -219,7 +219,7 @@ class ExciseAlcoBoxCardViewModel : CoreViewModel(), OnPositionClickListener {
             //обновляем кол-во отсканированных марок с категорией норма для отображения на экране
             countExciseStampsScanned.value = processExciseAlcoBoxAccService.getCountExciseStampDiscrepanciesOfBox(boxInfo.value?.boxNumber ?: "", "1")
             if (checkStampControl.value == true) {
-                screenNavigator.openExciseAlcoBoxAccInfoReceivingScreen(productInfo.value!!)
+                screenNavigator.goBack()
             } else {
                 screenNavigator.goBack()
                 screenNavigator.openExciseAlcoBoxListScreen(
@@ -377,4 +377,5 @@ class ExciseAlcoBoxCardViewModel : CoreViewModel(), OnPositionClickListener {
             spinBottlingDate.value = listOf("")
         }
     }
+
 }
