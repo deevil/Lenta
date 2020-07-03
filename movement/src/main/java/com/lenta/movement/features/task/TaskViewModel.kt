@@ -201,8 +201,8 @@ class TaskViewModel : CoreViewModel(), PageSelectionListener {
             }
             when (currentStatus) {
                 Task.Status.ToConsolidation(Task.Status.TO_CONSOLIDATION) -> {
-                    screenNavigator.showProgress(startConsolidation)
                     viewModelScope.launch {
+                        screenNavigator.showProgress(startConsolidation)
                         val either = task.value?.let { taskValue ->
                             sessionInfo.personnelNumber?.let { personnelNumber ->
                                 startConsolidation(
@@ -219,8 +219,10 @@ class TaskViewModel : CoreViewModel(), PageSelectionListener {
                         } ?: Either.Left(EmptyTaskFailure(context.getString(R.string.alert_null_task)))
 
                         either.either({
+                            screenNavigator.hideProgress()
                             screenNavigator.openAlertScreen(it)
                         }, {
+                            screenNavigator.hideProgress()
                             screenNavigator.openTaskEoMergeScreen(it.eoList.toModelList(), it.geList.toMutableList())
                         })
 
@@ -228,8 +230,8 @@ class TaskViewModel : CoreViewModel(), PageSelectionListener {
                 }
 
                 Task.Status.Consolidated(Task.Status.CONSOLIDATED) -> {
-                    screenNavigator.showProgress(approvalAndTransferToTasksCargoUnit)
                     viewModelScope.launch {
+                        screenNavigator.showProgress(approvalAndTransferToTasksCargoUnit)
                         val either = task.value?.let { taskValue ->
                             sessionInfo.personnelNumber?.let { personnelNumber ->
                                 approvalAndTransferToTasksCargoUnit(
@@ -242,8 +244,10 @@ class TaskViewModel : CoreViewModel(), PageSelectionListener {
                             } ?: Either.Left(PersonnelNumberFailure(context.getString(R.string.alert_null_personnel_number)))
                         } ?: Either.Left(EmptyTaskFailure(context.getString(R.string.alert_null_task)))
                         either.either({
+                            screenNavigator.hideProgress()
                             screenNavigator.openAlertScreen(it)
                         }, {
+                            screenNavigator.hideProgress()
                             // TODO screenNavigator.openApprovalScreen()
                             Logg.d { "Approval and transfer to task cargo unit: $it" }
                             screenNavigator.openNotImplementedScreenAlert("Одобрение и передача на ГЗ")
@@ -251,7 +255,7 @@ class TaskViewModel : CoreViewModel(), PageSelectionListener {
                     }
                 }
             }
-            screenNavigator.hideProgress()
+
         }
     }
 
