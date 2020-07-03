@@ -12,10 +12,16 @@ import com.lenta.bp9.model.task.TaskProductInfo
 import com.lenta.bp9.model.task.TaskSetsInfo
 import com.lenta.bp9.model.task.TaskType
 import com.lenta.bp9.platform.navigation.IScreenNavigator
+import com.lenta.bp9.platform.requestCodeTypeBarCode
+import com.lenta.bp9.platform.requestCodeTypeSap
 import com.lenta.bp9.repos.IDataBaseRepo
 import com.lenta.bp9.repos.IRepoInMemoryHolder
+import com.lenta.shared.fmp.resources.dao_ext.getEanInfo
+import com.lenta.shared.fmp.resources.dao_ext.getEansFromMaterial
+import com.lenta.shared.fmp.resources.dao_ext.getProductInfoByMatcode
 import com.lenta.shared.fmp.resources.dao_ext.getProductInfoByMaterial
 import com.lenta.shared.fmp.resources.slow.ZfmpUtz48V001
+import com.lenta.shared.fmp.resources.slow.ZmpUtz25V001
 import com.lenta.shared.models.core.MatrixType
 import com.lenta.shared.models.core.ProductType
 import com.lenta.shared.models.core.Uom
@@ -23,6 +29,7 @@ import com.lenta.shared.models.core.getProductType
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.requests.combined.scan_info.ScanInfoResult
 import com.lenta.shared.requests.combined.scan_info.pojo.QualityInfo
+import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.SelectionItemsHelper
 import com.lenta.shared.utilities.databinding.Evenable
 import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
@@ -54,6 +61,10 @@ class NonExciseSetsPGEViewModel : CoreViewModel(),
     lateinit var repoInMemoryHolder: IRepoInMemoryHolder
     @Inject
     lateinit var hyperHive: HyperHive
+
+    private val zmpUtz25V001: ZmpUtz25V001 by lazy {
+        ZmpUtz25V001(hyperHive)
+    }
 
     private val zfmpUtz48V001: ZfmpUtz48V001 by lazy {
         ZfmpUtz48V001(hyperHive)
@@ -234,9 +245,7 @@ class NonExciseSetsPGEViewModel : CoreViewModel(),
     }
 
     override fun onOkInSoftKeyboard(): Boolean {
-        eanCode.value?.let {
-            searchProductDelegate.searchCode(it, fromScan = false)
-        }
+        onScanResult(eanCode.value ?: "")
         return true
     }
 
@@ -245,14 +254,23 @@ class NonExciseSetsPGEViewModel : CoreViewModel(),
     }
 
     fun onScanResult(data: String) {
-        val componentNumber: TaskSetsInfo? = repoInMemoryHolder.sets.value?.findLast {
-            it.componentNumber == data
+        val componentNumber = searchCode(data)?.material
+        val componentInfo: TaskSetsInfo? = repoInMemoryHolder.sets.value?.findLast {
+            it.setNumber == productInfo.value?.materialNumber && it.componentNumber == componentNumber
         }
-        if (componentNumber == null) {
+        if (componentInfo == null) {
             screenNavigator.openAlertGoodsNotFoundTaskScreen()
         } else {
-            screenNavigator.openNonExciseSetComponentInfoPGEScreen(componentNumber, qualityInfo.value!![spinQualitySelectedPosition.value!!].code, productInfo.value!!)
+            screenNavigator.openNonExciseSetComponentInfoPGEScreen(componentInfo, qualityInfo.value!![spinQualitySelectedPosition.value!!].code, productInfo.value!!)
         }
+    }
+
+    private fun searchCode(data: String) : ZfmpUtz48V001.ItemLocal_ET_MATNR_LIST? {
+        val eanInfo = zmpUtz25V001.getEanInfo(ean = data)
+        //не менять последовательность
+        return zfmpUtz48V001.getProductInfoByMaterial(material = eanInfo?.material)
+                ?: zfmpUtz48V001.getProductInfoByMatcode(matcode = data)
+                ?: zfmpUtz48V001.getProductInfoByMaterial(material = "000000000000${data.takeLast(6)}")
     }
 
     fun onBackPressed() {
