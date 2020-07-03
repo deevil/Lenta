@@ -2,10 +2,9 @@ package com.lenta.movement.platform
 
 import android.content.Context
 import com.lenta.movement.models.*
-import com.lenta.movement.requests.network.models.startConsolidation.CargoUnit
 
 class Formatter(
-    val context: Context
+        val context: Context
 ) : IFormatter {
 
     override fun formatMarketName(market: String): String {
@@ -102,30 +101,43 @@ class Formatter(
         }
     }
 
-    override fun getEOSubtitle(eo: ProcessingUnit) : String {
-        return buildString {
-            append("№${eo.basketNumber}")
-            append(
-                when {
-                    eo.isAlco -> "/A"
-                    eo.isUsual -> "/O"
-                    else -> ""
-                }
-            )
-            append(eo.supplier.orEmpty())
+    override fun getEOSubtitle(eo: ProcessingUnit): String {
+        return if (eo.cargoUnitNumber == null) {
+            buildString {
+                append("№${eo.basketNumber}")
+                append(
+                        when {
+                            eo.isAlco ?: false -> "/A"
+                            eo.isUsual ?: false -> "/O"
+                            else -> ""
+                        }
+                )
+                append(eo.supplier.orEmpty())
+            }
+        } else {
+            "$GE-$eo.cargoUnit"
         }
     }
 
     override fun getGETitle(ge: CargoUnit): String {
-        val cargoNum = ge.cargoUnitNumber
-        return buildString {
-            if (cargoNum.isNotEmpty()) append(cargoNum).append("/")
-            append(ge.processingUnitNumber)
+        val eoList = ge.eoList
+        return if (ge.eoList.size == 1) {
+            eoList[0].processingUnitNumber
+        } else {
+            buildString {
+                append(ge.number)
+                eoList.takeIf { it.isNotEmpty() }
+                        ?.forEach { processingUnit ->
+                            append("/${processingUnit.processingUnitNumber}")
+                        }
+
+            }
         }
     }
 
     companion object {
         private const val TK = "ТК"
+        private const val GE = "ГЕ"
 
         private const val SS_MOVEMENT = "Для перемещения на ТК"
         private const val SCDS_MOVEMENT = "Для перемещения на ТК" //TODO
@@ -142,6 +154,6 @@ class Formatter(
         private const val FOOD = "Еда"
 
         private const val TRANSFER_WITH_ORDER = "Трансфер с заказа"
-        private const val TRANSFER_WITHOUT_ORDER ="Трансфер без заказа"
+        private const val TRANSFER_WITHOUT_ORDER = "Трансфер без заказа"
     }
 }

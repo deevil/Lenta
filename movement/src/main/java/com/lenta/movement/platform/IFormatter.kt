@@ -1,7 +1,6 @@
 package com.lenta.movement.platform
 
 import com.lenta.movement.models.*
-import com.lenta.movement.requests.network.models.startConsolidation.CargoUnit
 
 interface IFormatter {
 
