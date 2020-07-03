@@ -30,6 +30,9 @@ class StartConsolidation @Inject constructor(
     companion object {
         private const val RESOURCE_NAME = "ZMP_UTZ_MVM_08_V001"
         private const val NON_FAILURE_RET_CODE = "0"
+
+        const val MODE_GET_TASK_COMP_CODE = 1
+        const val MODE_GET_TASK_COMP_WITH_BLOCK_CODE = 2
     }
 }
 

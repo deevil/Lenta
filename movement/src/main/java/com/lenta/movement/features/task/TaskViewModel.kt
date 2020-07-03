@@ -209,7 +209,7 @@ class TaskViewModel : CoreViewModel(), PageSelectionListener {
                                         StartConsolidationParams(
                                                 deviceIp = context.getDeviceIp(),
                                                 taskNumber = taskValue.number,
-                                                mode = GET_TASK_COMP_CODE,
+                                                mode = StartConsolidation.MODE_GET_TASK_COMP_CODE,
                                                 personnelNumber = personnelNumber,
                                                 withProductInfo = true.toSapBooleanString()
                                         )
@@ -314,10 +314,4 @@ class TaskViewModel : CoreViewModel(), PageSelectionListener {
     private fun <T> LiveData<List<T>>.getSelectedValue(position: LiveData<Int>): T? {
         return value?.getOrNull(position.value ?: -1)
     }
-
-    companion object {
-        private const val GET_TASK_COMP_CODE = 1
-        private const val GET_TASK_COMP_WITH_BLOCK = 2
-    }
-
 }
