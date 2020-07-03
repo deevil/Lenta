@@ -72,7 +72,7 @@ class ProcessMercuryProductService
                         uom = productInfo.uom,
                         typeDiscrepancies = typeDiscrepancies,
                         isNotEdit = false,
-                        isNew = false,
+                        isNew = productInfo.isGoodsAddedAsSurplus,
                         notEditNumberDiscrepancies = ""
                 )
 

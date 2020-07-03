@@ -85,6 +85,8 @@ data class TaskContentsRequestResult(
         val manufacturers: List<Manufacturer>,
         @SerializedName("ET_AUFNR_LIST")//Таблица данных технологического заказа
         val processOrderData: List<TaskProcessOrderDataRestData>,
+        @SerializedName("ET_TASK_SETS")//Список наборов
+        val setsInfo: List<TaskSetsRestData>,
         @SerializedName("EV_RETCODE")
         override val retCode: Int,
         @SerializedName("EV_ERROR_TEXT")

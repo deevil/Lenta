@@ -202,4 +202,5 @@
     <string name="loading_new_app_version">Загрузка новой версии</string>
     <string name="check_app_updates">Проверка обновлений приложения</string>
     <string name="app_update">Обновление версии</string>
+    <string name="reset">Сбросить</string>
 </resources>
