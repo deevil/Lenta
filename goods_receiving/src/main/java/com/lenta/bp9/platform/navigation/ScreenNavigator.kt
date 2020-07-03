@@ -1129,7 +1129,7 @@ class ScreenNavigator(
                     message = context.getString(R.string.scanned_stamp_not_listed_in_current_delivery_box),
                     codeConfirmForRight = backFragmentResultHelper.setFuncForResult(yesCallbackFunc),
                     iconRes = R.drawable.ic_question_yellow_80dp,
-                    pageNumber = "97",
+                    pageNumber = "95",
                     rightButtonDecorationInfo = ButtonDecorationInfo.next))
         }
     }
