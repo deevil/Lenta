@@ -273,7 +273,11 @@ class ExciseAlcoBoxAccInfoViewModel : CoreViewModel(), OnPositionClickListener {
                 if (isDefect.value == false) {//сканирование марок доступно только при категории Норма https://trello.com/c/Wr4xe6L8
                     val exciseStampInfo = processExciseAlcoBoxAccService.searchExciseStamp(data)
                     if (exciseStampInfo == null) {
-                        screenNavigator.openAlertScannedStampNotFoundScreen() //Отсканированная марка не числится в текущей поставке. Перейдите к коробу, в которой находится эта марка и отсканируйте ее снова.
+                        screenNavigator.openScannedStampNotFoundDialog( //Марка не найдена в поставке. Верните товар поставщику. Отсканированная марка будет помечена как проблемная
+                                yesCallbackFunc = {
+                                    processExciseAlcoBoxAccService.addExciseStampBad(data)
+                                }
+                        )
                     } else {
                         if (exciseStampInfo.materialNumber != productInfo.value!!.materialNumber) {
                             //Отсканированная марка принадлежит товару <SAP-код> <Название>"
