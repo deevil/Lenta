@@ -345,10 +345,7 @@ class ExciseAlcoBoxAccInfoViewModel : CoreViewModel(), OnPositionClickListener {
             }
             else -> {
                 if (enabledApplyButton.value == true) { //Функция доступна только при условии, что доступна кнопка "Применить". https://trello.com/c/KbBbXj2t
-                    if (onClickAdd()) {
-                        screenNavigator.goBack()
-                        searchProductDelegate.searchCode(code = data, fromScan = true, isBarCode = true)
-                    }
+                    if (onClickAdd()) searchProductDelegate.searchCode(code = data, fromScan = true, isBarCode = true)
                 } else {
                     screenNavigator.openAlertInvalidBarcodeFormatScannedScreen()
                 }
