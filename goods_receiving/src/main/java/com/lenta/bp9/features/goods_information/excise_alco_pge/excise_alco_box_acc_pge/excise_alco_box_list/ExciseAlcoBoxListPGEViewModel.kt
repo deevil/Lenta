@@ -203,6 +203,17 @@ class ExciseAlcoBoxListPGEViewModel : CoreViewModel(), PageSelectionListener, On
                         isBoxNotIncludedInNetworkLenta = false
                 )
             }
+        } else {
+            screenNavigator.goBack()
+            screenNavigator.openExciseAlcoBoxCardPGEScreen(
+                    productInfo = productInfo.value!!,
+                    boxInfo = countProcessed.value?.get(position)?.boxInfo,
+                    massProcessingBoxesNumber = null,
+                    exciseStampInfo = null,
+                    selectQualityCode = selectQualityCode.value!!,
+                    isScan = false,
+                    isBoxNotIncludedInNetworkLenta = false
+            )
         }
     }
 
