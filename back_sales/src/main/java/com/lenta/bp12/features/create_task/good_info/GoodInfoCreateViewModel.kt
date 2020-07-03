@@ -17,6 +17,7 @@ import com.lenta.bp12.request.pojo.ProducerInfo
 import com.lenta.bp12.request.pojo.ProviderInfo
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.exception.Failure
+import com.lenta.shared.functional.Either
 import com.lenta.shared.models.core.getMatrixType
 import com.lenta.shared.platform.constants.Constants
 import com.lenta.shared.platform.viewmodel.CoreViewModel
@@ -609,32 +610,18 @@ class GoodInfoCreateViewModel : CoreViewModel() {
         quantityField.value = markInfo.marks.size.toString()
     }
 
-    private fun checkPart() {
-        viewModelScope.launch {
-            navigator.showProgressLoadingData()
+    private suspend fun checkPart(): Either<Failure, MarkInfoResult> {
+        navigator.showProgressLoadingData()
 
-            val result = markInfoNetRequest(MarkInfoParams(
-                    tkNumber = sessionInfo.market ?: "",
-                    material = good.value?.material ?: "",
-                    producerCode = selectedProducer.value?.code ?: "",
-                    bottledDate = date.value ?: "",
-                    mode = 3,
-                    quantity = quantity.value ?: 0.0
-            ))
-
-            result.also {
-                navigator.hideProgress()
-            }.either(::handleFailure) { result ->
-                viewModelScope.launch {
-                    result.status.let { status ->
-                        if (status == PartStatus.FOUND.code) {
-                            addPart()
-                        } else {
-                            navigator.openAlertScreen(result.statusDescription)
-                        }
-                    }
-                }
-            }
+        return markInfoNetRequest(MarkInfoParams(
+                tkNumber = sessionInfo.market ?: "",
+                material = good.value?.material ?: "",
+                producerCode = selectedProducer.value?.code ?: "",
+                bottledDate = date.value ?: "",
+                mode = 3,
+                quantity = quantity.value ?: 0.0
+        )).also {
+            navigator.hideProgress()
         }
     }
 
@@ -663,7 +650,7 @@ class GoodInfoCreateViewModel : CoreViewModel() {
             when (type) {
                 ScanNumberType.COMMON -> addPosition()
                 ScanNumberType.MARK_150, ScanNumberType.MARK_68 -> addMark()
-                ScanNumberType.ALCOHOL, ScanNumberType.PART -> checkPart()
+                ScanNumberType.ALCOHOL, ScanNumberType.PART -> addPart()
                 ScanNumberType.BOX -> addBox()
             }
         }
@@ -800,23 +787,29 @@ class GoodInfoCreateViewModel : CoreViewModel() {
     fun onClickApply() {
         when (scanModeType.value) {
             ScanNumberType.ALCOHOL, ScanNumberType.PART -> {
-                checkPart()
+                viewModelScope.launch {
+                    checkPart().either(::handleFailure) { result ->
+                        result.status.let { status ->
+                            if (status == PartStatus.FOUND.code) {
+                                saveChangesAndExit()
+                            } else {
+                                navigator.openAlertScreen(result.statusDescription)
+                            }
+                        }
+                    }
+                }
             }
-            else -> {
-                saveChanges()
-                manager.saveGoodInTask(good.value!!)
-                isExistUnsavedData = false
-
-                navigator.goBack()
-                navigator.openBasketGoodListScreen()
-            }
+            else -> saveChangesAndExit()
         }
+    }
 
-       /* if (scanModeType.value == ScanNumberType.ALCOHOL) {
+    private fun saveChangesAndExit() {
+        saveChanges()
+        manager.saveGoodInTask(good.value!!)
+        isExistUnsavedData = false
 
-        }*/
-
-
+        navigator.goBack()
+        navigator.openBasketGoodListScreen()
     }
 
 }
