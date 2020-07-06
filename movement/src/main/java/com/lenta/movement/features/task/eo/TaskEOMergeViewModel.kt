@@ -12,7 +12,9 @@ import com.lenta.movement.platform.IFormatter
 import com.lenta.movement.platform.extensions.unsafeLazy
 import com.lenta.movement.platform.navigation.IScreenNavigator
 import com.lenta.movement.requests.network.Consolidation
+import com.lenta.movement.requests.network.models.RestCargoUnit
 import com.lenta.movement.requests.network.models.consolidation.ConsolidationParams
+import com.lenta.movement.requests.network.models.consolidation.ConsolidationProcessingUnit
 import com.lenta.movement.requests.network.models.toCargoUnitList
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.functional.Either
@@ -121,15 +123,12 @@ class TaskEOMergeViewModel : CoreViewModel(), PageSelectionListener {
         return "${taskManager.getTask().taskType.shortName} // ${taskManager.getTask().name}"
     }
 
-    fun onPrintBtnClick() {
-        // TODO
-    }
 
     fun onProcessBtnClick() {
         eoSelectionHelper.selectedPositions.value?.let { listOfSelected ->
             eoList.value?.let { eoList ->
                 val numberOfSelectedItems = listOfSelected.size
-                val eoNumbersList = eoList.map { it.processingUnitNumber }
+                val eoNumbersList = eoList.map { ConsolidationProcessingUnit(it.processingUnitNumber) }
 
                 when (numberOfSelectedItems) {
 
@@ -147,14 +146,14 @@ class TaskEOMergeViewModel : CoreViewModel(), PageSelectionListener {
                         geList.value?.let {
                             val list = it
                             val eoListIndex = listOfSelected.first()
-                            val newCargoUnit = CargoUnit(eoNumbersList[eoListIndex], listOf())
+                            val newCargoUnit = CargoUnit(eoNumbersList[eoListIndex].eoNumber, listOf())
                             list.add(newCargoUnit)
                             geList.value = list
                         }
                     }
 
                     else -> {
-                        val selectedEO = mutableListOf<String>()
+                        val selectedEO = mutableListOf<ConsolidationProcessingUnit>()
                         listOfSelected.forEach { eoListIndex ->
                             selectedEO.add(eoNumbersList[eoListIndex])
                         }
@@ -165,7 +164,7 @@ class TaskEOMergeViewModel : CoreViewModel(), PageSelectionListener {
         }
     }
 
-    private fun consolidate(sendEOList: List<String>, sendGEList: List<String>, mode: String) {
+    private fun consolidate(sendEOList: List<ConsolidationProcessingUnit>, sendGEList: List<RestCargoUnit>, mode: String) {
 
         viewModelScope.launch {
             screenNavigator.showProgress(consolidation)
@@ -230,6 +229,11 @@ class TaskEOMergeViewModel : CoreViewModel(), PageSelectionListener {
     }
 
     fun onDigitPressed(digit: Int) {
+        // TODO
+    }
+
+
+    fun onPrintBtnClick() {
         // TODO
     }
 }
