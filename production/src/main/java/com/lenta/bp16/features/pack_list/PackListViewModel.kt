@@ -9,6 +9,7 @@ import com.lenta.bp16.request.pojo.PackCode
 import com.lenta.shared.platform.device_info.DeviceInfo
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.extentions.dropZeros
+import com.lenta.shared.utilities.extentions.isSapTrue
 import com.lenta.shared.utilities.extentions.map
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -17,10 +18,13 @@ class PackListViewModel : CoreViewModel() {
 
     @Inject
     lateinit var navigator: IScreenNavigator
+
     @Inject
     lateinit var manager: ITaskManager
+
     @Inject
     lateinit var endDefrostingNetRequest: EndDefrostingNetRequest
+
     @Inject
     lateinit var deviceInfo: DeviceInfo
 
@@ -77,10 +81,17 @@ class PackListViewModel : CoreViewModel() {
                 )
                 ).either({ failure ->
                     navigator.openAlertScreen(failure)
-                }) {
-                    navigator.showDefrostingPhaseIsCompleted {
-                        navigator.goBack()
-                        navigator.goBack()
+                }) { result ->
+                    if (result.isAutofix.isSapTrue()) {
+                        navigator.showFixStartNextStageSuccessful {
+                            navigator.goBack()
+                            navigator.goBack()
+                        }
+                    } else {
+                        navigator.showDefrostingPhaseIsCompleted {
+                            navigator.goBack()
+                            navigator.goBack()
+                        }
                     }
                 }
                 navigator.hideProgress()

@@ -16,10 +16,11 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
-import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.lenta.shared.keys.KeyCode
 import com.lenta.shared.utilities.Logg
+import java.lang.IllegalStateException
 
 
 @BindingAdapter(value = ["items", "rv_config"])
@@ -108,8 +109,7 @@ class DataBindingRecyclerAdapter<ItemType, BindingType : ViewDataBinding>(
         private val onItemClickListener: AdapterView.OnItemClickListener? = null,
         private val onItemLongClickListener: AdapterView.OnItemLongClickListener? = null,
         private val onItemDoubleClickListener: AdapterView.OnItemClickListener? = null
-) :
-        RecyclerView.Adapter<DataBindingRecyclerAdapter.BindingViewHolder>(), DataBindingAdapter<BindingType> {
+) : RecyclerView.Adapter<DataBindingRecyclerAdapter.BindingViewHolder>(), DataBindingAdapter<BindingType> {
 
 
     override fun getItemCount(): Int {
@@ -176,7 +176,9 @@ interface Evenable {
 class RecyclerViewKeyHandler<T>(private val rv: RecyclerView,
                                 private val items: LiveData<List<T>>,
                                 lifecycleOwner: LifecycleOwner,
-                                initPosInfo: PosInfo? = null) {
+                                initPosInfo: PosInfo? = null,
+                                var onClickPositionFunc: ((Int) -> Unit)? = null
+) {
 
     val posInfo = MutableLiveData(initPosInfo?.copy(isManualClick = false) ?: PosInfo(0, -1))
 
@@ -186,7 +188,7 @@ class RecyclerViewKeyHandler<T>(private val rv: RecyclerView,
             //rv.adapter?.notifyItemChanged(info.lastPos)
             //rv.adapter?.notifyItemChanged(info.currentPos)
             rv.adapter?.notifyDataSetChanged()
-            if (!info.isManualClick && info.currentPos > -1 && info.currentPos < items.value?.size ?: 0) {
+            if (!info.isManualClick && isCorrectPosition(info.currentPos)) {
                 rv.post { rv.scrollToPosition(info.currentPos) }
             }
 
@@ -197,31 +199,44 @@ class RecyclerViewKeyHandler<T>(private val rv: RecyclerView,
     }
 
     fun onKeyDown(keyCode: KeyCode): Boolean {
-
         if (!rv.isFocused) {
             return false
         }
 
-        var pos = posInfo.value!!.currentPos
-
         when (keyCode) {
-            KeyCode.KEYCODE_DPAD_DOWN -> pos++
-            KeyCode.KEYCODE_DPAD_UP -> pos--
-            else -> return false
-        }
-        if (pos < -1) {
-            return false
-        }
-        val itemsSize = items.value?.size ?: 0
-        if (pos > itemsSize) {
-            return false
+            KeyCode.KEYCODE_DPAD_DOWN, KeyCode.KEYCODE_DPAD_UP -> {
+                val lastPos = posInfo.value?.currentPos ?: throw IllegalStateException("currentPos cannot be null")
+                var currentPos = lastPos
+
+                when (keyCode) {
+                    KeyCode.KEYCODE_DPAD_DOWN -> currentPos++
+                    KeyCode.KEYCODE_DPAD_UP -> currentPos--
+                    else -> return false
+                }
+
+                if (isCorrectPosition(currentPos)) {
+                    posInfo.value = PosInfo(currentPos = currentPos, lastPos = lastPos)
+                    rv.requestFocus()
+                    return true
+                }
+            }
+            KeyCode.KEYCODE_ENTER -> {
+                onClickPositionFunc?.let {
+                    posInfo.value?.currentPos?.let {position ->
+                        if (isCorrectPosition(position)) {
+                            it.invoke(position)
+                            return true
+                        }
+                    }
+                }
+            }
         }
 
-        posInfo.value = PosInfo(currentPos = pos, lastPos = posInfo.value!!.currentPos)
+        return false
+    }
 
-        rv.requestFocus()
-
-        return true
+    private fun isCorrectPosition(position: Int): Boolean {
+        return position > -1 && position < items.value?.size ?: 0
     }
 
     fun selectPosition(position: Int) {
@@ -236,8 +251,6 @@ class RecyclerViewKeyHandler<T>(private val rv: RecyclerView,
     fun resendPositions() {
         posInfo.value = posInfo.value
     }
-
-
 }
 
 abstract class DoubleClickListener : View.OnClickListener {

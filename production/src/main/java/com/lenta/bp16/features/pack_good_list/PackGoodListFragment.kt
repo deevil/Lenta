@@ -8,6 +8,8 @@ import com.lenta.bp16.R
 import com.lenta.bp16.databinding.FragmentPackGoodListBinding
 import com.lenta.bp16.databinding.ItemPackGoodListBinding
 import com.lenta.bp16.platform.extention.getAppComponent
+import com.lenta.shared.keys.KeyCode
+import com.lenta.shared.keys.OnKeyDownListener
 import com.lenta.shared.platform.activity.OnBackPresserListener
 import com.lenta.shared.platform.fragment.CoreFragment
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
@@ -22,13 +24,13 @@ import com.lenta.shared.utilities.extentions.generateScreenNumberFromPostfix
 import com.lenta.shared.utilities.extentions.provideViewModel
 
 class PackGoodListFragment : CoreFragment<FragmentPackGoodListBinding, PackGoodListViewModel>(),
-        ToolbarButtonsClickListener, OnBackPresserListener {
+        ToolbarButtonsClickListener, OnBackPresserListener, OnKeyDownListener {
 
     private var recyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
 
     override fun getLayoutId(): Int = R.layout.fragment_pack_good_list
 
-    override fun getPageNumber(): String? = generateScreenNumberFromPostfix("32")
+    override fun getPageNumber(): String? = generateScreenNumberFromPostfix(SCREEN_NUMBER)
 
     override fun getViewModel(): PackGoodListViewModel {
         provideViewModel(PackGoodListViewModel::class.java).let {
@@ -93,7 +95,8 @@ class PackGoodListFragment : CoreFragment<FragmentPackGoodListBinding, PackGoodL
                     rv = layoutBinding.rv,
                     items = vm.packGoods,
                     lifecycleOwner = layoutBinding.lifecycleOwner!!,
-                    initPosInfo = recyclerViewKeyHandler?.posInfo?.value
+                    initPosInfo = recyclerViewKeyHandler?.posInfo?.value,
+                    onClickPositionFunc = vm::onClickItemPosition
             )
         }
     }
@@ -101,6 +104,19 @@ class PackGoodListFragment : CoreFragment<FragmentPackGoodListBinding, PackGoodL
     override fun onBackPressed(): Boolean {
         vm.onBackPressed()
         return false
+    }
+
+    override fun onKeyDown(keyCode: KeyCode): Boolean {
+        return recyclerViewKeyHandler?.onKeyDown(keyCode) ?: false
+    }
+
+    override fun onDestroyView() {
+        recyclerViewKeyHandler?.onClickPositionFunc = null
+        super.onDestroyView()
+    }
+
+    companion object {
+        const val SCREEN_NUMBER = "32"
     }
 
 }

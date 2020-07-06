@@ -165,6 +165,19 @@ class ScreenNavigator @Inject constructor(
         }
     }
 
+    override fun showFixStartNextStageSuccessful(nextCallback: () -> Unit) {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    pageNumber = "12.1",
+                    message = context.getString(R.string.fix_start_next_stage_successful),
+                    iconRes = R.drawable.ic_warning_yellow_80dp,
+                    isVisibleLeftButton = false,
+                    codeConfirmForRight = backFragmentResultHelper.setFuncForResult(nextCallback),
+                    rightButtonDecorationInfo = ButtonDecorationInfo.next
+            ))
+        }
+    }
+
     override fun showConfirmNoSuchItemLeft(taskType: String, confirmCallback: () -> Unit) {
         runOrPostpone {
             getFragmentStack()?.push(AlertFragment.create(
@@ -283,6 +296,7 @@ interface IScreenNavigator : ICoreNavigator {
     fun openDefectListScreen()
 
     fun showDefrostingPhaseIsCompleted(nextCallback: () -> Unit)
+    fun showFixStartNextStageSuccessful(nextCallback: () -> Unit)
     fun showConfirmNoSuchItemLeft(taskType: String, confirmCallback: () -> Unit)
     fun showConfirmNoRawItem(taskType: String, confirmCallback: () -> Unit)
     fun showFixingPackagingPhaseSuccessful(nextCallback: () -> Unit)

@@ -33,11 +33,11 @@
             <com.google.android.material.tabs.TabLayout
                 android:id="@+id/tab_strip"
                 android:layout_width="match_parent"
-                android:layout_height="32dp"
+                android:layout_height="@dimen/tab_height"
                 android:background="@color/colorBottomPanelBackground"
                 android:elevation="0dp"
                 app:tabIndicatorColor="@color/colorTabIndicator"
-                app:tabIndicatorHeight="3dp"
+                app:tabIndicatorHeight="@dimen/tab_indicator_height"
                 app:tabMode="scrollable"
                 app:tabSelectedTextColor="@color/colorTabIndicator"
                 app:tabTextAppearance="@style/TabLayoutStyle"
@@ -50,18 +50,12 @@
         <LinearLayout style="@style/EnterNumberFieldLayout">
 
             <EditText
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_margin="8dp"
-                android:layout_weight="1"
+                style="@style/EnterNumberField"
                 android:digits="0123456789"
                 android:drawableEnd="@drawable/ic_loupe_white_16dp"
-                android:ellipsize="end"
                 android:hint="@string/enter_sap_or_barcode"
-                android:imeOptions="actionGo"
                 android:inputType="number"
                 android:maxLength="20"
-                android:maxLines="1"
                 android:text="@={vm.numberField}"
                 app:onOkInSoftKeyboard="@{vm}"
                 app:requestFocus="@{vm.requestFocusToNumberField}"

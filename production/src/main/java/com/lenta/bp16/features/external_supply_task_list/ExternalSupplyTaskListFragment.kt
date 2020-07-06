@@ -13,6 +13,8 @@ import com.lenta.bp16.databinding.ItemEsTaskBinding
 import com.lenta.bp16.databinding.LayoutEsTaskListProcessedBinding
 import com.lenta.bp16.databinding.LayoutEsTaskListProcessingBinding
 import com.lenta.bp16.platform.extention.getAppComponent
+import com.lenta.shared.keys.KeyCode
+import com.lenta.shared.keys.OnKeyDownListener
 import com.lenta.shared.platform.fragment.CoreFragment
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
@@ -28,14 +30,14 @@ import com.lenta.shared.utilities.extentions.getDeviceIp
 import com.lenta.shared.utilities.extentions.provideViewModel
 
 class ExternalSupplyTaskListFragment : CoreFragment<FragmentExternalSupplyTaskListBinding, ExternalSupplyTaskListViewModel>(),
-        ViewPagerSettings, ToolbarButtonsClickListener {
-
+        ViewPagerSettings, ToolbarButtonsClickListener, OnKeyDownListener {
+    
     private var processingRecyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
     private var processedRecyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
 
     override fun getLayoutId(): Int = R.layout.fragment_external_supply_task_list
 
-    override fun getPageNumber(): String? = generateScreenNumberFromPostfix("52")
+    override fun getPageNumber(): String? = generateScreenNumberFromPostfix(SCREEN_NUMBER)
 
     override fun getViewModel(): ExternalSupplyTaskListViewModel {
         provideViewModel(ExternalSupplyTaskListViewModel::class.java).let {
@@ -68,48 +70,57 @@ class ExternalSupplyTaskListFragment : CoreFragment<FragmentExternalSupplyTaskLi
     }
 
     override fun getPagerItemView(container: ViewGroup, position: Int): View {
-        if (position == 0) {
-            DataBindingUtil.inflate<LayoutEsTaskListProcessingBinding>(LayoutInflater.from(container.context),
-                    R.layout.layout_es_task_list_processing,
-                    container,
-                    false).let { layoutBinding ->
-
-                layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
-                        layoutId = R.layout.item_es_task,
-                        itemId = BR.item,
-                        realisation = object : DataBindingAdapter<ItemEsTaskBinding> {
-                            override fun onCreate(binding: ItemEsTaskBinding) {
-                            }
-
-                            override fun onBind(binding: ItemEsTaskBinding, position: Int) {
-                                processingRecyclerViewKeyHandler?.let {
-                                    binding.root.isSelected = it.isSelected(position)
-                                }
-                            }
-                        },
-                        onItemClickListener = AdapterView.OnItemClickListener { _, _, position, _ ->
-                            processingRecyclerViewKeyHandler?.let {
-                                if (it.isSelected(position)) {
-                                    vm.onClickItemPosition(position)
-                                } else {
-                                    it.selectPosition(position)
-                                }
-                            }
-                        })
-
-                layoutBinding.vm = vm
-                layoutBinding.lifecycleOwner = viewLifecycleOwner
-                processingRecyclerViewKeyHandler = RecyclerViewKeyHandler(
-                        rv = layoutBinding.rv,
-                        items = vm.processing,
-                        lifecycleOwner = layoutBinding.lifecycleOwner!!,
-                        initPosInfo = processingRecyclerViewKeyHandler?.posInfo?.value
-                )
-
-                return layoutBinding.root
-            }
+        return when (position) {
+            TAB_PROCESSING -> initTaskListProcessing(container)
+            TAB_PROCESSED -> initTaskListProcessed(container)
+            else -> View(context)
         }
+    }
 
+    private fun initTaskListProcessing(container: ViewGroup): View {
+        DataBindingUtil.inflate<LayoutEsTaskListProcessingBinding>(LayoutInflater.from(container.context),
+                R.layout.layout_es_task_list_processing,
+                container,
+                false).let { layoutBinding ->
+
+            layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
+                    layoutId = R.layout.item_es_task,
+                    itemId = BR.item,
+                    realisation = object : DataBindingAdapter<ItemEsTaskBinding> {
+                        override fun onCreate(binding: ItemEsTaskBinding) {
+                        }
+
+                        override fun onBind(binding: ItemEsTaskBinding, position: Int) {
+                            processingRecyclerViewKeyHandler?.let {
+                                binding.root.isSelected = it.isSelected(position)
+                            }
+                        }
+                    },
+                    onItemClickListener = AdapterView.OnItemClickListener { _, _, position, _ ->
+                        processingRecyclerViewKeyHandler?.let {
+                            if (it.isSelected(position)) {
+                                vm.onClickItemPosition(position)
+                            } else {
+                                it.selectPosition(position)
+                            }
+                        }
+                    })
+
+            layoutBinding.vm = vm
+            layoutBinding.lifecycleOwner = viewLifecycleOwner
+            processingRecyclerViewKeyHandler = RecyclerViewKeyHandler(
+                    rv = layoutBinding.rv,
+                    items = vm.processing,
+                    lifecycleOwner = layoutBinding.lifecycleOwner!!,
+                    initPosInfo = processingRecyclerViewKeyHandler?.posInfo?.value,
+                    onClickPositionFunc = vm::onClickItemPosition
+            )
+
+            return layoutBinding.root
+        }
+    }
+
+    private fun initTaskListProcessed(container: ViewGroup): View {
         DataBindingUtil.inflate<LayoutEsTaskListProcessedBinding>(LayoutInflater.from(container.context),
                 R.layout.layout_es_task_list_processed,
                 container,
@@ -144,7 +155,8 @@ class ExternalSupplyTaskListFragment : CoreFragment<FragmentExternalSupplyTaskLi
                     rv = layoutBinding.rv,
                     items = vm.processed,
                     lifecycleOwner = layoutBinding.lifecycleOwner!!,
-                    initPosInfo = processedRecyclerViewKeyHandler?.posInfo?.value
+                    initPosInfo = processedRecyclerViewKeyHandler?.posInfo?.value,
+                    onClickPositionFunc = vm::onClickItemPosition
             )
 
             return layoutBinding.root
@@ -153,14 +165,14 @@ class ExternalSupplyTaskListFragment : CoreFragment<FragmentExternalSupplyTaskLi
 
     override fun getTextTitle(position: Int): String {
         return when (position) {
-            0 -> getString(R.string.processing)
-            1 -> getString(R.string.processed)
+            TAB_PROCESSING -> getString(R.string.processing)
+            TAB_PROCESSED -> getString(R.string.processed)
             else -> throw IllegalArgumentException("Wrong pager position!")
         }
     }
 
     override fun countTab(): Int {
-        return 2
+        return TABS
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -171,6 +183,28 @@ class ExternalSupplyTaskListFragment : CoreFragment<FragmentExternalSupplyTaskLi
     override fun onResume() {
         super.onResume()
         vm.loadTaskList()
+    }
+
+    override fun onKeyDown(keyCode: KeyCode): Boolean {
+        return when (vm.selectedPage.value) {
+            TAB_PROCESSING -> processingRecyclerViewKeyHandler
+            TAB_PROCESSED -> processedRecyclerViewKeyHandler
+            else -> null
+        }?.onKeyDown(keyCode) ?: false
+    }
+
+    override fun onDestroyView() {
+        processingRecyclerViewKeyHandler?.onClickPositionFunc = null
+        processedRecyclerViewKeyHandler?.onClickPositionFunc = null
+        super.onDestroyView()
+    }
+
+    companion object {
+        const val SCREEN_NUMBER = "52"
+
+        private const val TABS = 2
+        private const val TAB_PROCESSING = 0
+        private const val TAB_PROCESSED = 1
     }
 
 }
