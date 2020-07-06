@@ -16,6 +16,16 @@ class ResourceManager @Inject constructor(
     override fun alcocodeDoesNotApplyToThisGood(): String = context.getString(R.string.alcocode_does_not_apply_to_this_good)
 
     override fun unknownAlcocode(): String = context.getString(R.string.unknown_alcocode)
+
+    override fun typeQuantity(): String = context.getString(R.string.type_quantity)
+
+    override fun typeMark(): String = context.getString(R.string.type_mark)
+
+    override fun typePart(): String = context.getString(R.string.type_part)
+
+    override fun chooseProvider(): String = context.getString(R.string.choose_provider)
+
+    override fun chooseProducer(): String = context.getString(R.string.choose_producer)
 }
 
 interface IResourceManager {
@@ -25,5 +35,11 @@ interface IResourceManager {
 
     fun alcocodeDoesNotApplyToThisGood(): String
     fun unknownAlcocode(): String
+    fun typeQuantity(): String
+    fun typeMark(): String
+    fun typePart(): String
+    fun chooseProvider(): String
+    fun chooseProducer(): String
+
 
 }

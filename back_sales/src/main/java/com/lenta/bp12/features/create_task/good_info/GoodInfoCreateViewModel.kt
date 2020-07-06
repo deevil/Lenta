@@ -89,9 +89,9 @@ class GoodInfoCreateViewModel : CoreViewModel() {
     val accountingType by lazy {
         scanModeType.map { type ->
             when (type) {
-                ScanNumberType.MARK_150, ScanNumberType.MARK_68 -> "Марочно"
-                ScanNumberType.ALCOHOL, ScanNumberType.PART -> "Партионно"
-                else -> "Количество"
+                ScanNumberType.MARK_150, ScanNumberType.MARK_68 -> resource.typeMark()
+                ScanNumberType.ALCOHOL, ScanNumberType.PART -> resource.typePart()
+                else -> resource.typeQuantity()
             }
         }
     }
@@ -195,7 +195,7 @@ class GoodInfoCreateViewModel : CoreViewModel() {
         it?.let { providers ->
             val list = providers.toMutableList()
             if (list.size > 1) {
-                list.add(0, ProviderInfo())
+                list.add(0, ProviderInfo(name = resource.chooseProvider()))
             }
 
             list.toList()
@@ -249,7 +249,7 @@ class GoodInfoCreateViewModel : CoreViewModel() {
         it?.let { producers ->
             val list = producers.toMutableList()
             if (list.size > 1) {
-                list.add(0, ProducerInfo())
+                list.add(0, ProducerInfo(name = resource.chooseProducer()))
             }
 
             list.toList()
@@ -586,7 +586,7 @@ class GoodInfoCreateViewModel : CoreViewModel() {
             navigator.showProgressLoadingData()
 
             markInfoNetRequest(MarkInfoParams(
-                    tkNumber = sessionInfo.market ?: "Not found!",
+                    tkNumber = sessionInfo.market ?: "",
                     material = good.value!!.material,
                     markNumber = number,
                     mode = 2,

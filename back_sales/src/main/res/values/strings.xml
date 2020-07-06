@@ -71,6 +71,11 @@
     // Строки в коде
     <string name="tk_number">ТК - %1$s</string>
     <string name="back_sales_from_date">Возврат от %1$s</string>
+    <string name="choose_provider">Выберите поставщика (кредитора)</string>
+    <string name="choose_producer">Выберите производителя</string>
+    <string name="type_quantity">Количество</string>
+    <string name="type_mark">Марочно</string>
+    <string name="type_part">Партионно</string>
 
     // Разное
     <string name="provider">Поставщик</string>

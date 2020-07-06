@@ -8,11 +8,13 @@ import com.lenta.bp12.model.pojo.Part
 import com.lenta.bp12.model.pojo.open_task.GoodOpen
 import com.lenta.bp12.platform.extention.getGoodType
 import com.lenta.bp12.platform.navigation.IScreenNavigator
+import com.lenta.bp12.platform.resource.IResourceManager
 import com.lenta.bp12.repository.IDatabaseRepository
 import com.lenta.bp12.request.*
 import com.lenta.bp12.request.pojo.ProducerInfo
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.exception.Failure
+import com.lenta.shared.functional.Either
 import com.lenta.shared.models.core.getMatrixType
 import com.lenta.shared.platform.constants.Constants
 import com.lenta.shared.platform.viewmodel.CoreViewModel
@@ -45,6 +47,9 @@ class GoodInfoOpenViewModel : CoreViewModel() {
 
     @Inject
     lateinit var database: IDatabaseRepository
+
+    @Inject
+    lateinit var resource: IResourceManager
 
 
     /**
@@ -80,9 +85,9 @@ class GoodInfoOpenViewModel : CoreViewModel() {
     val accountingType by lazy {
         scanModeType.map { type ->
             when (type) {
-                ScanNumberType.MARK_150, ScanNumberType.MARK_68 -> "Марочно"
-                ScanNumberType.ALCOHOL, ScanNumberType.PART -> "Партионно"
-                else -> "Количество"
+                ScanNumberType.MARK_150, ScanNumberType.MARK_68 -> resource.typeMark()
+                ScanNumberType.ALCOHOL, ScanNumberType.PART -> resource.typePart()
+                else -> resource.typeQuantity()
             }
         }
     }
@@ -147,7 +152,7 @@ class GoodInfoOpenViewModel : CoreViewModel() {
         it?.let { producers ->
             val list = producers.toMutableList()
             if (list.size > 1) {
-                list.add(0, ProducerInfo())
+                list.add(0, ProducerInfo(name = resource.chooseProducer()))
             }
 
             list.toList()
@@ -436,10 +441,10 @@ class GoodInfoOpenViewModel : CoreViewModel() {
                                     if (alcoCodeInfoList.find { it.material == good.value!!.material } != null) {
                                         addPartInfo(number, markInfoResult)
                                     } else {
-                                        navigator.openAlertScreen("Алкокод не относится к этому товару")
+                                        navigator.openAlertScreen(resource.alcocodeDoesNotApplyToThisGood())
                                     }
                                 } else {
-                                    navigator.openAlertScreen("Неизвестный алкокод")
+                                    navigator.openAlertScreen(resource.unknownAlcocode())
                                 }
                             }
                         } else {
@@ -523,30 +528,18 @@ class GoodInfoOpenViewModel : CoreViewModel() {
         quantityField.value = markInfo.marks.size.toString()
     }
 
-    private fun checkPart() {
-        viewModelScope.launch {
-            navigator.showProgressLoadingData()
+    private suspend fun checkPart(): Either<Failure, MarkInfoResult> {
+        navigator.showProgressLoadingData()
 
-            markInfoNetRequest(MarkInfoParams(
-                    tkNumber = sessionInfo.market ?: "",
-                    material = good.value?.material ?: "",
-                    producerCode = selectedProducer.value?.code ?: "",
-                    bottledDate = date.value ?: "",
-                    mode = 3,
-                    quantity = quantity.value ?: 0.0
-            )).also {
-                navigator.hideProgress()
-            }.either(::handleFailure) { result ->
-                viewModelScope.launch {
-                    result.status.let { status ->
-                        if (status == PartStatus.FOUND.code) {
-                            addPart()
-                        } else {
-                            navigator.openAlertScreen(result.statusDescription)
-                        }
-                    }
-                }
-            }
+        return markInfoNetRequest(MarkInfoParams(
+                tkNumber = sessionInfo.market ?: "",
+                material = good.value?.material ?: "",
+                producerCode = selectedProducer.value?.code ?: "",
+                bottledDate = date.value ?: "",
+                mode = 3,
+                quantity = quantity.value ?: 0.0
+        )).also {
+            navigator.hideProgress()
         }
     }
 
@@ -559,7 +552,7 @@ class GoodInfoOpenViewModel : CoreViewModel() {
             when (type) {
                 ScanNumberType.COMMON -> addPosition()
                 ScanNumberType.MARK_150, ScanNumberType.MARK_68 -> addMark()
-                ScanNumberType.ALCOHOL, ScanNumberType.PART -> checkPart()
+                ScanNumberType.ALCOHOL, ScanNumberType.PART -> addPart()
                 ScanNumberType.BOX -> addBox()
             }
         }
@@ -683,8 +676,27 @@ class GoodInfoOpenViewModel : CoreViewModel() {
     }
 
     fun onClickApply() {
+        when (scanModeType.value) {
+            ScanNumberType.ALCOHOL, ScanNumberType.PART -> {
+                viewModelScope.launch {
+                    checkPart().either(::handleFailure) { result ->
+                        result.status.let { status ->
+                            if (status == PartStatus.FOUND.code) {
+                                saveChangesAndExit()
+                            } else {
+                                navigator.openAlertScreen(result.statusDescription)
+                            }
+                        }
+                    }
+                }
+            }
+            else -> saveChangesAndExit()
+        }
+    }
+
+    private fun saveChangesAndExit() {
         saveChanges()
-        //manager.saveGoodInTask(good.value!!)
+        manager.saveGoodInTask(good.value!!)
         isExistUnsavedData = false
         navigator.goBack()
     }
