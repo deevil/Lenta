@@ -16,10 +16,10 @@ data class DataLabel(
         @SerializedName("STOR_COND_TIME")
         val storCondTime: String,
         /** Срок годности */
-        @SerializedName("ZMD_REAL_TIME")
+        @SerializedName("DATE_EXPIR")
         val time: String,
         /** Тип срок годности (часы или дни) */
-        @SerializedName("ZMD_REAL_PER")
+        @SerializedName("DATE_EXPIR_PER")
         val timeType: String,
         /** Плановое время окончания этапа (из технологического заказа в часах) */
         @SerializedName("PLAN_AUF_FINISH")
