@@ -13,10 +13,9 @@ import com.lenta.movement.databinding.FragmentTaskEoMergeBinding
 import com.lenta.movement.databinding.LayoutItemEoBinding
 import com.lenta.movement.databinding.LayoutTaskEoMergeEoListTabBinding
 import com.lenta.movement.databinding.LayoutTaskEoMergeGeListTabBinding
+import com.lenta.movement.models.CargoUnit
 import com.lenta.movement.models.ProcessingUnit
 import com.lenta.movement.platform.extensions.getAppComponent
-import com.lenta.movement.platform.extensions.unsafeLazy
-import com.lenta.movement.requests.network.models.startConsolidation.CargoUnit
 import com.lenta.movement.view.simpleListRecyclerViewConfig
 import com.lenta.shared.keys.KeyCode
 import com.lenta.shared.keys.OnKeyDownListener
@@ -31,8 +30,8 @@ import com.lenta.shared.utilities.databinding.DataBindingAdapter
 import com.lenta.shared.utilities.databinding.DataBindingRecyclerViewConfig
 import com.lenta.shared.utilities.databinding.RecyclerViewKeyHandler
 import com.lenta.shared.utilities.databinding.ViewPagerSettings
+import com.lenta.shared.utilities.extentions.connectLiveData
 import com.lenta.shared.utilities.extentions.provideViewModel
-import com.lenta.shared.utilities.state.state
 
 class TaskEOMergeFragment : CoreFragment<FragmentTaskEoMergeBinding, TaskEOMergeViewModel>(),
         ViewPagerSettings,
@@ -83,11 +82,15 @@ class TaskEOMergeFragment : CoreFragment<FragmentTaskEoMergeBinding, TaskEOMerge
         bottomToolbarUiModel.uiModelButton1.show(ButtonDecorationInfo.back)
         bottomToolbarUiModel.uiModelButton2.show(ButtonDecorationInfo.print)
         bottomToolbarUiModel.uiModelButton3.show(ButtonDecorationInfo(
-                iconRes = R.drawable.ic_process,
+                iconRes = R.drawable.ic_process_48dp,
                 titleRes = R.string.process
         ))
+
         bottomToolbarUiModel.uiModelButton4.show(ButtonDecorationInfo.exclude)
         bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.save)
+
+        connectLiveData(vm.isProcessBtnVisible, bottomToolbarUiModel.uiModelButton3.visibility)
+        connectLiveData(vm.isExcludeBtnVisible, bottomToolbarUiModel.uiModelButton4.visibility)
     }
 
     override fun onToolbarButtonClick(view: View) {
@@ -239,10 +242,10 @@ class TaskEOMergeFragment : CoreFragment<FragmentTaskEoMergeBinding, TaskEOMerge
     companion object {
         private const val PAGE_NUMBER = "10/06"
 
-        fun newInstance(eoList: List<ProcessingUnit>, geList: MutableList<CargoUnit>): TaskEOMergeFragment {
+        fun newInstance(eoList: List<ProcessingUnit>, geList: List<CargoUnit>): TaskEOMergeFragment {
             return TaskEOMergeFragment().apply {
                 this.eoList = eoList
-                this.geList = geList
+                this.geList = geList.toMutableList()
             }
         }
     }
