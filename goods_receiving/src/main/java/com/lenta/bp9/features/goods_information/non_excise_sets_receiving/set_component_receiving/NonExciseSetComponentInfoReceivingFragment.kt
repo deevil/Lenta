@@ -25,6 +25,8 @@ class NonExciseSetComponentInfoReceivingFragment : CoreFragment<FragmentNonExcis
         ToolbarButtonsClickListener {
 
     companion object {
+        private const val PAGE_NUMBER = "09/40"
+
         fun create(setInfo: TaskSetsInfo, typeDiscrepancies: String, productInfo: TaskProductInfo): NonExciseSetComponentInfoReceivingFragment {
             NonExciseSetComponentInfoReceivingFragment().let {
                 it.setInfo = setInfo
@@ -41,7 +43,7 @@ class NonExciseSetComponentInfoReceivingFragment : CoreFragment<FragmentNonExcis
 
     override fun getLayoutId(): Int = R.layout.fragment_non_excise_set_component_info_receiving
 
-    override fun getPageNumber(): String = "09/40"
+    override fun getPageNumber(): String = PAGE_NUMBER
 
     override fun getViewModel(): NonExciseSetComponentInfoReceivingViewModel {
         provideViewModel(NonExciseSetComponentInfoReceivingViewModel::class.java).let { vm ->

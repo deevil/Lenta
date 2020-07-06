@@ -33,6 +33,9 @@ class ExciseAlcoBoxListPGEFragment : CoreFragment<FragmentExciseAlcoBoxListPgeBi
         OnKeyDownListener {
 
     companion object {
+        private const val SELECTED_PAGE_UNTREATED_BOXES = 0
+        private const val SELECTED_PAGE_PROCESSED_BOXES = 1
+
         fun create(productInfo: TaskProductInfo, selectQualityCode: String): ExciseAlcoBoxListPGEFragment {
             ExciseAlcoBoxListPGEFragment().let {
                 it.productInfo = productInfo
@@ -89,7 +92,7 @@ class ExciseAlcoBoxListPGEFragment : CoreFragment<FragmentExciseAlcoBoxListPgeBi
     }
 
     override fun getPagerItemView(container: ViewGroup, position: Int): View {
-        if (position == 0) {
+        if (position == SELECTED_PAGE_UNTREATED_BOXES) {
             DataBindingUtil
                     .inflate<LayoutExciseAlcoBoxListNotProcessedPgeBinding>(LayoutInflater.from(container.context),
                             R.layout.layout_excise_alco_box_list_not_processed_pge,
@@ -231,8 +234,8 @@ class ExciseAlcoBoxListPGEFragment : CoreFragment<FragmentExciseAlcoBoxListPgeBi
 
     override fun onKeyDown(keyCode: KeyCode): Boolean {
         when (vm.selectedPage.value) {
-            0 -> notProcessedRecyclerViewKeyHandler
-            1 -> processedRecyclerViewKeyHandler
+            SELECTED_PAGE_UNTREATED_BOXES -> notProcessedRecyclerViewKeyHandler
+            SELECTED_PAGE_PROCESSED_BOXES -> processedRecyclerViewKeyHandler
             else -> null
         }?.let {
             if (!it.onKeyDown(keyCode)) {

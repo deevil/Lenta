@@ -253,7 +253,11 @@ class NonExciseSetsReceivingViewModel : CoreViewModel(),
 
     fun onClickItemPosition(position: Int) {
         listComponents.value?.get(position)?.componentInfo?.let {
-            screenNavigator.openNonExciseSetComponentInfoReceivingScreen(it, qualityInfo.value!![spinQualitySelectedPosition.value!!].code, productInfo.value!!)
+            if (qualityInfo.value != null && spinQualitySelectedPosition.value != null && productInfo.value != null) {
+                screenNavigator.openNonExciseSetComponentInfoReceivingScreen(it, qualityInfo.value!![spinQualitySelectedPosition.value!!].code, productInfo.value!!)
+            } else {
+                screenNavigator.openAlertGoodsNotFoundTaskScreen()
+            }
         }
     }
 
@@ -292,7 +296,7 @@ class NonExciseSetsReceivingViewModel : CoreViewModel(),
         //не менять последовательность
         return zfmpUtz48V001.getProductInfoByMaterial(material = eanInfo?.material)
                 ?: zfmpUtz48V001.getProductInfoByMatcode(matcode = data)
-                ?: zfmpUtz48V001.getProductInfoByMaterial(material = "000000000000${data.takeLast(6)}")
+                ?: zfmpUtz48V001.getProductInfoByMaterial(material = "${context.getString(R.string.code_with_12_digits)}${data.takeLast(6)}")
     }
 
     fun onBackPressed() {

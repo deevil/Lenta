@@ -19,6 +19,7 @@ import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.SelectionItemsHelper
 import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
 import com.lenta.shared.utilities.databinding.PageSelectionListener
+import com.lenta.shared.utilities.extentions.combineLatest
 import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.utilities.extentions.toStringFormatted
 import com.mobrun.plugin.api.HyperHive
@@ -205,15 +206,17 @@ class ExciseAlcoBoxListPGEViewModel : CoreViewModel(), PageSelectionListener, On
             }
         } else {
             screenNavigator.goBack()
-            screenNavigator.openExciseAlcoBoxCardPGEScreen(
-                    productInfo = productInfo.value!!,
-                    boxInfo = countProcessed.value?.get(position)?.boxInfo,
-                    massProcessingBoxesNumber = null,
-                    exciseStampInfo = null,
-                    selectQualityCode = selectQualityCode.value!!,
-                    isScan = false,
-                    isBoxNotIncludedInNetworkLenta = false
-            )
+            if (productInfo.value != null && selectQualityCode.value != null) {
+                screenNavigator.openExciseAlcoBoxCardPGEScreen(
+                        productInfo = productInfo.value!!,
+                        boxInfo = countProcessed.value?.get(position)?.boxInfo,
+                        massProcessingBoxesNumber = null,
+                        exciseStampInfo = null,
+                        selectQualityCode = selectQualityCode.value!!,
+                        isScan = false,
+                        isBoxNotIncludedInNetworkLenta = false
+                )
+            }
         }
     }
 

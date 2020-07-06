@@ -235,7 +235,11 @@ class NonExciseSetsPGEViewModel : CoreViewModel(),
 
     fun onClickItemPosition(position: Int) {
         listComponents.value?.get(position)?.componentInfo?.let {
-            screenNavigator.openNonExciseSetComponentInfoPGEScreen(it, qualityInfo.value!![spinQualitySelectedPosition.value!!].code, productInfo.value!!)
+            if (qualityInfo.value != null && spinQualitySelectedPosition.value != null && productInfo.value != null) {
+                screenNavigator.openNonExciseSetComponentInfoPGEScreen(it, qualityInfo.value!![spinQualitySelectedPosition.value!!].code, productInfo.value!!)
+            } else {
+                screenNavigator.openAlertGoodsNotFoundTaskScreen()
+            }
         }
     }
 
