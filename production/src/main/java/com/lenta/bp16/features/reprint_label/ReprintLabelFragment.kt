@@ -27,7 +27,7 @@ class ReprintLabelFragment : CoreFragment<FragmentReprintLabelBinding, ReprintLa
 
     override fun getLayoutId(): Int = R.layout.fragment_reprint_label
 
-    override fun getPageNumber(): String ? = generateScreenNumberFromPostfix("07")
+    override fun getPageNumber(): String ? = generateScreenNumberFromPostfix(SCREEN_NUMBER)
 
     override fun getViewModel(): ReprintLabelViewModel {
         provideViewModel(ReprintLabelViewModel::class.java).let {
@@ -104,6 +104,10 @@ class ReprintLabelFragment : CoreFragment<FragmentReprintLabelBinding, ReprintLa
                     initPosInfo = recyclerViewKeyHandler?.posInfo?.value
             )
         }
+    }
+
+    companion object {
+        const val SCREEN_NUMBER = "07"
     }
 
 }

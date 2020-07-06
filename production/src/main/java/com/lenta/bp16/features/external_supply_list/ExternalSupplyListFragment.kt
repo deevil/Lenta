@@ -8,6 +8,8 @@ import com.lenta.bp16.R
 import com.lenta.bp16.databinding.FragmentExternalSupplyListBinding
 import com.lenta.bp16.databinding.ItemExternalSupplyBinding
 import com.lenta.bp16.platform.extention.getAppComponent
+import com.lenta.shared.keys.KeyCode
+import com.lenta.shared.keys.OnKeyDownListener
 import com.lenta.shared.platform.activity.OnBackPresserListener
 import com.lenta.shared.platform.fragment.CoreFragment
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
@@ -22,13 +24,13 @@ import com.lenta.shared.utilities.extentions.generateScreenNumberFromPostfix
 import com.lenta.shared.utilities.extentions.provideViewModel
 
 class ExternalSupplyListFragment : CoreFragment<FragmentExternalSupplyListBinding, ExternalSupplyListViewModel>(),
-        OnBackPresserListener, ToolbarButtonsClickListener {
+        OnBackPresserListener, ToolbarButtonsClickListener, OnKeyDownListener {
 
     private var recyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
 
     override fun getLayoutId(): Int = R.layout.fragment_external_supply_list
 
-    override fun getPageNumber(): String? = generateScreenNumberFromPostfix("62")
+    override fun getPageNumber(): String? = generateScreenNumberFromPostfix(SCREEN_NUMBER)
 
     override fun getViewModel(): ExternalSupplyListViewModel {
         provideViewModel(ExternalSupplyListViewModel::class.java).let {
@@ -93,7 +95,8 @@ class ExternalSupplyListFragment : CoreFragment<FragmentExternalSupplyListBindin
                     rv = layoutBinding.rv,
                     items = vm.goods,
                     lifecycleOwner = layoutBinding.lifecycleOwner!!,
-                    initPosInfo = recyclerViewKeyHandler?.posInfo?.value
+                    initPosInfo = recyclerViewKeyHandler?.posInfo?.value,
+                    onClickPositionFunc = vm::onClickItemPosition
             )
         }
     }
@@ -103,9 +106,17 @@ class ExternalSupplyListFragment : CoreFragment<FragmentExternalSupplyListBindin
         return false
     }
 
-    /*override fun onResume() {
-        super.onResume()
-        vm.updateList()
-    }*/
+    override fun onKeyDown(keyCode: KeyCode): Boolean {
+        return recyclerViewKeyHandler?.onKeyDown(keyCode) ?: false
+    }
+
+    override fun onDestroyView() {
+        recyclerViewKeyHandler?.onClickPositionFunc = null
+        super.onDestroyView()
+    }
+
+    companion object {
+        const val SCREEN_NUMBER = "62"
+    }
 
 }

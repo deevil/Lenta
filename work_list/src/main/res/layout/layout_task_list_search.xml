@@ -90,17 +90,11 @@
         <LinearLayout style="@style/EnterNumberFieldLayout">
 
             <EditText
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_margin="8dp"
-                android:layout_weight="1"
+                style="@style/EnterNumberField"
                 android:drawableEnd="@drawable/ic_filter_white_16dp"
-                android:ellipsize="end"
                 android:hint="@string/enter_task_number"
-                android:imeOptions="actionGo"
                 android:inputType="textNoSuggestions|textVisiblePassword"
                 android:maxLength="14"
-                android:maxLines="1"
                 android:text="@={vm.searchFieldFiltered}"
                 app:textAllCaps="@{true}"
                 app:onOkInSoftKeyboard="@{vm}"

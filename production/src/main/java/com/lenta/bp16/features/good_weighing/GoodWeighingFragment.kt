@@ -20,7 +20,7 @@ class GoodWeighingFragment : CoreFragment<FragmentGoodWeighingBinding, GoodWeigh
 
     override fun getLayoutId(): Int = R.layout.fragment_good_weighing
 
-    override fun getPageNumber(): String? = generateScreenNumberFromPostfix("9")
+    override fun getPageNumber(): String? = generateScreenNumberFromPostfix(SCREEN_NUMBER)
 
     override fun getViewModel(): GoodWeighingViewModel {
         provideViewModel(GoodWeighingViewModel::class.java).let {
@@ -62,6 +62,10 @@ class GoodWeighingFragment : CoreFragment<FragmentGoodWeighingBinding, GoodWeigh
     override fun onBackPressed(): Boolean {
         vm.onBackPressed()
         return false
+    }
+
+    companion object {
+        const val SCREEN_NUMBER = "9"
     }
 
 }

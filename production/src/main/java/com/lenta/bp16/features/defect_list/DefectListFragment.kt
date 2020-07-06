@@ -20,7 +20,7 @@ class DefectListFragment : CoreFragment<FragmentDefectListBinding, DefectListVie
 
     override fun getLayoutId(): Int = R.layout.fragment_defect_list
 
-    override fun getPageNumber(): String? = generateScreenNumberFromPostfix("08")
+    override fun getPageNumber(): String? = generateScreenNumberFromPostfix(SCREEN_NUMBER)
 
     override fun getViewModel(): DefectListViewModel {
         provideViewModel(DefectListViewModel::class.java).let {
@@ -49,6 +49,10 @@ class DefectListFragment : CoreFragment<FragmentDefectListBinding, DefectListVie
                 layoutId = R.layout.item_defect,
                 itemId = BR.item
         )
+    }
+
+    companion object {
+        const val SCREEN_NUMBER = "08"
     }
 
 }

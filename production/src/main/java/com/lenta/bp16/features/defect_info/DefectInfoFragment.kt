@@ -20,7 +20,7 @@ class DefectInfoFragment : CoreFragment<FragmentDefectInfoBinding, DefectInfoVie
 
     override fun getLayoutId(): Int = R.layout.fragment_defect_info
 
-    override fun getPageNumber(): String? = generateScreenNumberFromPostfix("07")
+    override fun getPageNumber(): String? = generateScreenNumberFromPostfix(SCREEN_NUMBER)
 
     override fun getViewModel(): DefectInfoViewModel {
         provideViewModel(DefectInfoViewModel::class.java).let {
@@ -61,6 +61,10 @@ class DefectInfoFragment : CoreFragment<FragmentDefectInfoBinding, DefectInfoVie
     override fun onBackPressed(): Boolean {
         vm.onBackPressed()
         return false
+    }
+
+    companion object {
+        const val SCREEN_NUMBER = "07"
     }
 
 }

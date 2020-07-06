@@ -24,7 +24,7 @@ class ${className} : CoreFragment<${underscoreToCamelCase(layoutName)}Binding, $
 
     override fun getLayoutId(): Int = R.layout.${layoutName}
 
-    override fun getPageNumber(): String? = generateScreenNumberFromPostfix("Specify screen number!")
+    override fun getPageNumber(): String? = generateScreenNumberFromPostfix(SCREEN_NUMBER)
 
     override fun getViewModel(): ${viewModelName} {
         provideViewModel(${viewModelName}::class.java).let {
@@ -72,7 +72,7 @@ class ${className} : CoreFragment<${underscoreToCamelCase(layoutName)}Binding, $
     }
 
     override fun countTab(): Int {
-        return ${numberOfTabs}
+        return TABS
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -86,5 +86,15 @@ class ${className} : CoreFragment<${underscoreToCamelCase(layoutName)}Binding, $
         vm.onBackPressed()
         return false
     }*/
+
+    companion object {
+        const val SCREEN_NUMBER = "Specify screen number!"
+
+        <#if numberOfTabs != "0">
+        private const val TABS = ${numberOfTabs}
+        private const val TAB_FIRST = 0
+        private const val TAB_SECOND = 1
+        </#if>
+    }
 
 }

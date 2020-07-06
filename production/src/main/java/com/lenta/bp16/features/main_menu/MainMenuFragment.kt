@@ -17,7 +17,7 @@ class MainMenuFragment : CoreFragment<FragmentMainMenuBinding, MainMenuViewModel
 
     override fun getLayoutId(): Int = R.layout.fragment_main_menu
 
-    override fun getPageNumber(): String? = generateScreenNumberFromPostfix("4")
+    override fun getPageNumber(): String? = generateScreenNumberFromPostfix(SCREEN_NUMBER)
 
     override fun getViewModel(): MainMenuViewModel {
         provideViewModel(MainMenuViewModel::class.java).let {
@@ -42,6 +42,10 @@ class MainMenuFragment : CoreFragment<FragmentMainMenuBinding, MainMenuViewModel
         when (view.id) {
             R.id.b_topbar_1 -> vm.onClickAuxiliaryMenu()
         }
+    }
+
+    companion object {
+        const val SCREEN_NUMBER = "4"
     }
 
 }

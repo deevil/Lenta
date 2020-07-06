@@ -41,17 +41,12 @@
         <LinearLayout style="@style/EnterNumberFieldLayout">
 
             <EditText
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="8dp"
+                style="@style/EnterNumberField"
                 android:digits="0123456789"
                 android:drawableEnd="@drawable/ic_add_white_16dp"
-                android:ellipsize="end"
                 android:enabled="@{vm.editingAvailable}"
                 android:hint="@string/enter_item_note"
-                android:imeOptions="actionGo"
                 android:inputType="textNoSuggestions|textVisiblePassword"
-                android:maxLines="1"
                 android:text="@={vm.notes}"
                 app:cursorToLastPos="@{true}"
                 app:onOkInSoftKeyboard="@{vm}"
