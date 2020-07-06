@@ -457,7 +457,7 @@ class GoodInfoCreateViewModel : CoreViewModel() {
                         isExistUnsavedData = true
                         addGood(goodInfo)
                     } else {
-                        navigator.showNotMatchTaskSettingsAddingNotPossible {
+                        navigator.showGoodCannotBeAdded {
                             if (manager.searchGoodFromList) {
                                 manager.searchGoodFromList = false
                                 manager.searchNumber = ""

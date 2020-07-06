@@ -308,6 +308,17 @@ class ScreenNavigator @Inject constructor(
         }
     }
 
+    override fun showGoodCannotBeAdded(backCallback: () -> Unit) {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    pageNumber = "73.1",
+                    message = context.getString(R.string.good_cannot_be_added),
+                    iconRes = R.drawable.ic_warning_red_80dp,
+                    codeConfirmForLeft = backFragmentResultHelper.setFuncForResult(backCallback)
+            ))
+        }
+    }
+
     override fun openScannedMarkIsNotOnBalanceInCurrentStore(proceedCallback: () -> Unit) {
         runOrPostpone {
             getFragmentStack()?.push(AlertFragment.create(
@@ -416,6 +427,7 @@ interface IScreenNavigator : ICoreNavigator {
     fun showBoxWasLastScanned(afterShowCallback: () -> Unit)
     fun showDoYouReallyWantSetZeroQuantity(yesCallback: () -> Unit, counted: Int)
     fun showNotMatchTaskSettingsAddingNotPossible(backCallback: () -> Unit)
+    fun showGoodCannotBeAdded(backCallback: () -> Unit)
     fun openScannedMarkIsNotOnBalanceInCurrentStore(proceedCallback: () -> Unit)
     fun showScannedBoxIsNotWhole()
     fun showMarksInBoxAreNotOnBalanceInCurrentStore()
