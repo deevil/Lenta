@@ -1,7 +1,6 @@
 package com.lenta.movement.requests.network.models.consolidation
 
 import com.google.gson.annotations.SerializedName
-import com.lenta.movement.requests.network.models.RestCargoUnit
 
 data class ConsolidationParams(
         /** IP адрес ТСД */

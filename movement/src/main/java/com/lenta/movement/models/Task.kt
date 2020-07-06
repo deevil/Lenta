@@ -41,7 +41,7 @@ data class Task(
             const val COUNTED = "Посчитано"
             const val COUNTED_CODE = "10"
 
-            const val PUBLISHED = "Опубликованно"
+            const val PUBLISHED = "Опубликовано"
             const val PUBLISHED_CODE = "04"
 
             const val UNKNOWN = "Неизвестно"
