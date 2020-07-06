@@ -255,6 +255,7 @@ class TaskGoodsViewModel : CoreViewModel(),
                     taskBasketsRepository.clear()
                     screenNavigator.goBack()
                     screenNavigator.goBack()
+                    taskManager.setTask(savedTask)
                     screenNavigator.openTaskScreen(savedTask)
                 }
             )
