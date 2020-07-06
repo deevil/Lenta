@@ -372,21 +372,31 @@ class GoodInfoOpenViewModel : CoreViewModel() {
                 navigator.hideProgress()
             }.either(::handleFailure) { goodInfo ->
                 viewModelScope.launch {
-                    if (manager.isGoodCanBeAdded(goodInfo)) {
-                        isExistUnsavedData = true
-                        addGood(goodInfo)
+                    if (manager.goodCorrespondToTask(goodInfo)) {
+                        if (manager.isGoodCanBeAdded(goodInfo)) {
+                            isExistUnsavedData = true
+                            addGood(goodInfo)
+                        } else {
+                            navigator.showGoodCannotBeAdded {
+                                goBackFromScreen()
+                            }
+                        }
                     } else {
                         navigator.showNotMatchTaskSettingsAddingNotPossible {
-                            if (manager.searchGoodFromList) {
-                                manager.clearSearchFromListParams()
-                            }
-
-                            navigator.goBack()
+                            goBackFromScreen()
                         }
                     }
                 }
             }
         }
+    }
+
+    private fun goBackFromScreen() {
+        if (manager.searchGoodFromList) {
+            manager.clearSearchFromListParams()
+        }
+
+        navigator.goBack()
     }
 
     private fun addGood(goodInfo: GoodInfoResult) {

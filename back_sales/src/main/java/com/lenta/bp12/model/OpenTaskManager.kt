@@ -146,6 +146,20 @@ class OpenTaskManager @Inject constructor(
         return currentTask.value?.goods?.find { it.material == formattedMaterial }
     }
 
+    override fun goodCorrespondToTask(goodInfo: GoodInfoResult): Boolean {
+        currentTask.value?.let { task ->
+            val control = task.control == goodInfo.getControlType()
+            val matype = "matype" == goodInfo.materialInfo.matype // todo Откуда в задаче взять тип товара???
+            val section = if (goodInfo.materialInfo.section.isNotEmpty()) task.section == goodInfo.materialInfo.section else true
+            val purchaseGroup = if (goodInfo.materialInfo.purchaseGroup.isNotEmpty()) task.purchaseGroup == goodInfo.materialInfo.purchaseGroup else true
+            val provider =  goodInfo.providers.find { it.code == task.provider.code } != null
+
+            return control && section && purchaseGroup && provider
+        }
+
+        return false
+    }
+
     override suspend fun isGoodCanBeAdded(goodInfo: GoodInfoResult): Boolean {
         return database.isGoodCanBeAdded(goodInfo, currentTask.value?.type?.code ?: "")
     }
@@ -272,6 +286,7 @@ interface IOpenTaskManager {
     fun saveGoodInTask(good: GoodOpen)
     fun findGoodByEan(ean: String): GoodOpen?
     fun findGoodByMaterial(material: String): GoodOpen?
+    fun goodCorrespondToTask(goodInfo: GoodInfoResult): Boolean
     suspend fun isGoodCanBeAdded(goodInfo: GoodInfoResult): Boolean
     fun finishCurrentTask()
     suspend fun addTasks(tasksInfo: List<TaskInfo>)
