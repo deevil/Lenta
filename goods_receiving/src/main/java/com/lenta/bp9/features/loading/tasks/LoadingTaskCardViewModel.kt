@@ -81,14 +81,18 @@ class LoadingTaskCardViewModel : CoreLoadingViewModel() {
                         if (taskHeader.status == TaskStatus.Traveling) {
                             taskCardNetRequest(params).either(::handleFailure, ::handleSuccess)
                         } else {
-                            val paramsRDS = TaskContentsReceptionDistrCenterParameters(
-                                    mode = mode.TaskCardModeString,
-                                    deviceIP = context.getDeviceIp(),
-                                    personalNumber = sessionInfo.personnelNumber ?: "",
-                                    taskNumber = taskNumber,
-                                    taskType = if (taskHeader.taskType == TaskType.ReceptionDistributionCenter) TaskType.ReceptionDistributionCenter.taskTypeString else TaskType.OwnProduction.taskTypeString
-                            )
-                            taskContentsReceptionDistrCenterNetRequest(paramsRDS).either(::handleFailure, ::handleSuccessRDS)
+                            if (taskHeader.taskType == TaskType.ReceptionDistributionCenter && taskHeader.status == TaskStatus.Cancel) { //https://trello.com/c/pBXnVYkp
+                                screenNavigator.goBack()
+                            } else {
+                                val paramsRDS = TaskContentsReceptionDistrCenterParameters(
+                                        mode = mode.TaskCardModeString,
+                                        deviceIP = context.getDeviceIp(),
+                                        personalNumber = sessionInfo.personnelNumber ?: "",
+                                        taskNumber = taskNumber,
+                                        taskType = if (taskHeader.taskType == TaskType.ReceptionDistributionCenter) TaskType.ReceptionDistributionCenter.taskTypeString else TaskType.OwnProduction.taskTypeString
+                                )
+                                taskContentsReceptionDistrCenterNetRequest(paramsRDS).either(::handleFailure, ::handleSuccessRDS)
+                            }
                         }
                     }
                     TaskType.RecalculationCargoUnit -> {
