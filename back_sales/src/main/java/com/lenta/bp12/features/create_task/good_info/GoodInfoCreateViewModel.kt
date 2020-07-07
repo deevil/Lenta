@@ -8,7 +8,7 @@ import com.lenta.bp12.model.pojo.Part
 import com.lenta.bp12.model.pojo.create_task.Basket
 import com.lenta.bp12.model.pojo.create_task.GoodCreate
 import com.lenta.bp12.platform.extention.getControlType
-import com.lenta.bp12.platform.extention.getGoodType
+import com.lenta.bp12.platform.extention.getGoodKind
 import com.lenta.bp12.platform.navigation.IScreenNavigator
 import com.lenta.bp12.platform.resource.IResourceManager
 import com.lenta.bp12.repository.IDatabaseRepository
@@ -79,7 +79,7 @@ class GoodInfoCreateViewModel : CoreViewModel() {
 
     val isCompactMode by lazy {
         good.map { good ->
-            good?.type == GoodType.COMMON
+            good?.kind == GoodKind.COMMON
         }
     }
 
@@ -97,7 +97,7 @@ class GoodInfoCreateViewModel : CoreViewModel() {
 
     val markScanEnabled by lazy {
         good.map { good ->
-            good?.type == GoodType.EXCISE
+            good?.kind == GoodKind.EXCISE
         }
     }
 
@@ -159,14 +159,6 @@ class GoodInfoCreateViewModel : CoreViewModel() {
 
     val basketTitle by lazy {
         MutableLiveData(resource.byBasket())
-    }
-
-    private val basket by lazy {
-        good.combineLatest(selectedProvider).map {
-            it?.let {
-                getBasket()
-            }
-        }
     }
 
     val basketNumber by lazy {
@@ -386,7 +378,7 @@ class GoodInfoCreateViewModel : CoreViewModel() {
             return
         }
 
-        if (applyEnabled.value!! || good.value!!.type == GoodType.EXCISE && (number.length == Constants.MARK_150 || number.length == Constants.MARK_68 || number.length == Constants.BOX_26)) {
+        if (applyEnabled.value!! || good.value!!.kind == GoodKind.EXCISE && (number.length == Constants.MARK_150 || number.length == Constants.MARK_68 || number.length == Constants.BOX_26)) {
             saveChanges()
             manager.searchGoodFromList = false
             manager.searchNumber = number
@@ -444,16 +436,16 @@ class GoodInfoCreateViewModel : CoreViewModel() {
 
     private fun setFoundGood(foundGood: GoodCreate) {
         manager.updateCurrentGood(foundGood)
-        setScanModeFromGoodType(foundGood.type)
+        setScanModeFromGoodType(foundGood.kind)
         updateProviders(foundGood.providers)
         updateProducers(foundGood.producers)
         setDefaultQuantity(foundGood)
     }
 
     private fun setDefaultQuantity(good: GoodCreate) {
-        if (good.type == GoodType.COMMON) {
+        if (good.kind == GoodKind.COMMON) {
             if (good.commonUnits == Uom.KG) {
-                quantityField.value = (scanCodeInfo?.getQuantity(good.convertingUnits) ?: 1.0).dropZeros()
+                quantityField.value = (scanCodeInfo?.getQuantity(good.convertingUnits) ?: 0.0).dropZeros()
             } else {
                 if (isEanLastScanned) {
                     quantityField.value = "1"
@@ -462,11 +454,11 @@ class GoodInfoCreateViewModel : CoreViewModel() {
         }
     }
 
-    private fun setScanModeFromGoodType(goodType: GoodType) {
-        scanModeType.value = when (goodType) {
-            GoodType.COMMON -> ScanNumberType.COMMON
-            GoodType.ALCOHOL -> ScanNumberType.ALCOHOL
-            GoodType.EXCISE -> ScanNumberType.EXCISE
+    private fun setScanModeFromGoodType(goodKind: GoodKind) {
+        scanModeType.value = when (goodKind) {
+            GoodKind.COMMON -> ScanNumberType.COMMON
+            GoodKind.ALCOHOL -> ScanNumberType.ALCOHOL
+            GoodKind.EXCISE -> ScanNumberType.EXCISE
         }
     }
 
@@ -530,8 +522,8 @@ class GoodInfoCreateViewModel : CoreViewModel() {
                         ean = eanInfo.ean,
                         material = materialInfo.material,
                         name = materialInfo.name,
-                        type = getGoodType(),
-                        matype = materialInfo.goodType,
+                        kind = getGoodKind(),
+                        type = materialInfo.goodType,
                         control = getControlType(),
                         section = materialInfo.section,
                         matrix = getMatrixType(materialInfo.matrix),
@@ -548,10 +540,10 @@ class GoodInfoCreateViewModel : CoreViewModel() {
                 lastSuccessSearchNumber.value = good.material
                 updateProviders(good.providers)
                 updateProducers(good.producers)
-                setScanModeFromGoodType(good.type)
+                setScanModeFromGoodType(good.kind)
                 setDefaultQuantity(good)
 
-                if (good.type == GoodType.EXCISE) {
+                if (good.kind == GoodKind.EXCISE) {
                     navigator.showForExciseGoodNeedScanFirstMark()
                 }
             }
@@ -678,7 +670,7 @@ class GoodInfoCreateViewModel : CoreViewModel() {
             good.value?.let { good ->
                 selectedProvider.value?.let { provider ->
                     task.baskets.find { basket ->
-                        basket.section == good.section && basket.matype == good.matype && basket.control == good.control && basket.provider.code == provider.code
+                        basket.section == good.section && basket.goodType == good.type && basket.control == good.control && basket.provider.code == provider.code
                     }
                 }
             }
@@ -766,10 +758,10 @@ class GoodInfoCreateViewModel : CoreViewModel() {
     }
 
     private fun createBasket(changedGood: GoodCreate) {
-        if (basket.value == null) {
+        if (getBasket() == null) {
             manager.addBasket(Basket(
                     section = changedGood.section,
-                    matype = changedGood.matype,
+                    goodType = changedGood.type,
                     control = changedGood.control,
                     provider = selectedProvider.value ?: ProviderInfo()
             ))

@@ -4,39 +4,39 @@ import com.lenta.bp12.R
 import com.lenta.bp12.model.BlockType
 import com.lenta.bp12.model.Category
 import com.lenta.bp12.model.ControlType
-import com.lenta.bp12.model.GoodType
+import com.lenta.bp12.model.GoodKind
 import com.lenta.bp12.request.GoodInfoResult
 import com.lenta.bp12.request.pojo.PositionInfo
 import com.lenta.shared.fmp.resources.slow.ZfmpUtz48V001
 import com.lenta.shared.utilities.extentions.isSapTrue
 
-fun GoodType.getDescriptionResId(): Int {
+fun GoodKind.getDescriptionResId(): Int {
     return when (this) {
-        GoodType.COMMON -> R.string.common_product
-        GoodType.ALCOHOL -> R.string.alcohol
-        GoodType.EXCISE -> R.string.excise_alcohol
+        GoodKind.COMMON -> R.string.common_product
+        GoodKind.ALCOHOL -> R.string.alcohol
+        GoodKind.EXCISE -> R.string.excise_alcohol
     }
 }
 
-fun GoodInfoResult.getGoodType(): GoodType {
+fun GoodInfoResult.getGoodKind(): GoodKind {
     val isAlcohol = this.materialInfo.isAlcohol.isSapTrue()
     val isExcise = this.materialInfo.isExcise.isSapTrue()
 
     return when {
-        isExcise -> GoodType.EXCISE
-        isAlcohol -> GoodType.ALCOHOL
-        else -> GoodType.COMMON
+        isExcise -> GoodKind.EXCISE
+        isAlcohol -> GoodKind.ALCOHOL
+        else -> GoodKind.COMMON
     }
 }
 
-fun ZfmpUtz48V001.ItemLocal_ET_MATNR_LIST.getGoodType(): GoodType {
+fun ZfmpUtz48V001.ItemLocal_ET_MATNR_LIST.getGoodKind(): GoodKind {
     val isAlcohol = this.isAlco.isSapTrue()
     val isExcise = this.isExc.isSapTrue()
 
     return when {
-        isExcise -> GoodType.EXCISE
-        isAlcohol -> GoodType.ALCOHOL
-        else -> GoodType.COMMON
+        isExcise -> GoodKind.EXCISE
+        isAlcohol -> GoodKind.ALCOHOL
+        else -> GoodKind.COMMON
     }
 }
 
@@ -48,17 +48,6 @@ fun GoodInfoResult.getControlType(): ControlType {
         !isAlcohol && !isVet -> ControlType.COMMON
         isAlcohol && !isVet -> ControlType.ALCOHOL
         else -> ControlType.UNKNOWN
-    }
-}
-
-fun PositionInfo.getCategory(goodType: GoodType): Category {
-    val isExcise = goodType == GoodType.EXCISE
-    val inner = this.innerQuantity.toDoubleOrNull() ?: 0.0
-
-    return when {
-        isExcise && inner <= 1 -> Category.MARK
-        isExcise && inner > 1 -> Category.CONSIGNMENT
-        else -> Category.QUANTITY
     }
 }
 

@@ -11,7 +11,7 @@ enum class BlockType {
     LOCK
 }
 
-enum class GoodType {
+enum class GoodKind {
     COMMON,
     ALCOHOL,
     EXCISE

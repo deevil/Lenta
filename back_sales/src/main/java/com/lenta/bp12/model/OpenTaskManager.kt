@@ -115,7 +115,7 @@ class OpenTaskManager @Inject constructor(
                                 name = goodInfo.name,
                                 section = goodInfo.section,
                                 matrix = goodInfo.matrix,
-                                type = goodInfo.type,
+                                kind = goodInfo.kind,
                                 planQuantity = planQuantity.toDoubleOrNull() ?: 0.0,
                                 factQuantity = factQuantity.toDoubleOrNull() ?: 0.0,
                                 innerQuantity = innerQuantity.toDoubleOrNull() ?: 1.0,

@@ -33,7 +33,7 @@ class BasketPropertiesViewModel : CoreViewModel() {
         basket.map { basket ->
             BasketPropertiesUi(
                     section = basket?.section ?: "",
-                    type = basket?.matype ?: "",
+                    goodType = basket?.goodType ?: "",
                     gisControl = basket?.control?.description ?: "",
                     provider = "${basket?.provider?.code} ${basket?.provider?.name}"
             )
@@ -44,7 +44,7 @@ class BasketPropertiesViewModel : CoreViewModel() {
 
 data class BasketPropertiesUi(
         val section: String,
-        val type: String,
+        val goodType: String,
         val gisControl: String,
         val provider: String
 )

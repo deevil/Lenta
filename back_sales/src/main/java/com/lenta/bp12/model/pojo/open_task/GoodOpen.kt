@@ -1,6 +1,6 @@
 package com.lenta.bp12.model.pojo.open_task
 
-import com.lenta.bp12.model.GoodType
+import com.lenta.bp12.model.GoodKind
 import com.lenta.bp12.model.pojo.Mark
 import com.lenta.bp12.model.pojo.Part
 import com.lenta.bp12.model.pojo.Position
@@ -17,7 +17,7 @@ data class GoodOpen(
         val name: String,
         val section: String,
         val matrix: MatrixType,
-        val type: GoodType,
+        val kind: GoodKind,
 
         var planQuantity: Double = 0.0,
         var factQuantity: Double = 0.0,

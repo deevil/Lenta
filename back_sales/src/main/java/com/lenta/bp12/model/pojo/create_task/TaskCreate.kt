@@ -30,7 +30,7 @@ data class TaskCreate(
 
     fun getGoodListByBasket(basket: Basket): List<GoodCreate> {
         return goods.filter { good ->
-            good.section == basket.section && good.matype == basket.matype && good.control == basket.control &&
+            good.section == basket.section && good.type == basket.goodType && good.control == basket.control &&
                     (good.positions.find { it.provider == basket.provider } != null ||
                             good.marks.find { it.providerCode == basket.provider.code } != null ||
                             good.parts.find { it.providerCode == basket.provider.code } != null)

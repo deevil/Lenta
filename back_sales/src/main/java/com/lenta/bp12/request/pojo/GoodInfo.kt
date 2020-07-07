@@ -1,6 +1,6 @@
 package com.lenta.bp12.request.pojo
 
-import com.lenta.bp12.model.GoodType
+import com.lenta.bp12.model.GoodKind
 import com.lenta.shared.models.core.MatrixType
 
 data class GoodInfo(
@@ -9,5 +9,5 @@ data class GoodInfo(
         val name: String,
         val section: String,
         val matrix: MatrixType,
-        val type: GoodType
+        val kind: GoodKind
 )

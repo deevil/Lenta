@@ -6,7 +6,7 @@ import com.lenta.bp12.model.*
 import com.lenta.bp12.model.pojo.Mark
 import com.lenta.bp12.model.pojo.Part
 import com.lenta.bp12.model.pojo.open_task.GoodOpen
-import com.lenta.bp12.platform.extention.getGoodType
+import com.lenta.bp12.platform.extention.getGoodKind
 import com.lenta.bp12.platform.navigation.IScreenNavigator
 import com.lenta.bp12.platform.resource.IResourceManager
 import com.lenta.bp12.repository.IDatabaseRepository
@@ -76,7 +76,7 @@ class GoodInfoOpenViewModel : CoreViewModel() {
 
     val isCompactMode by lazy {
         good.map { good ->
-            good?.type == GoodType.COMMON
+            good?.kind == GoodKind.COMMON
         }
     }
 
@@ -94,7 +94,7 @@ class GoodInfoOpenViewModel : CoreViewModel() {
 
     val markScanEnabled by lazy {
         good.map { good ->
-            good?.type == GoodType.EXCISE
+            good?.kind == GoodKind.EXCISE
         }
     }
 
@@ -286,7 +286,7 @@ class GoodInfoOpenViewModel : CoreViewModel() {
             return
         }
 
-        if (applyEnabled.value!! || good.value!!.type == GoodType.EXCISE && (number.length == Constants.MARK_150 || number.length == Constants.MARK_68 || number.length == Constants.BOX_26)) {
+        if (applyEnabled.value!! || good.value!!.kind == GoodKind.EXCISE && (number.length == Constants.MARK_150 || number.length == Constants.MARK_68 || number.length == Constants.BOX_26)) {
             saveChanges()
             manager.searchGoodFromList = false
             manager.searchNumber = number
@@ -335,23 +335,23 @@ class GoodInfoOpenViewModel : CoreViewModel() {
     }
 
     private fun setFoundGood(foundGood: GoodOpen) {
-        Logg.d { "--> good type = ${foundGood.type.name}" }
+        Logg.d { "--> good type = ${foundGood.kind.name}" }
         manager.updateCurrentGood(foundGood)
         lastSuccessSearchNumber.value = foundGood.material
-        setScanModeFromGoodType(foundGood.type)
+        setScanModeFromGoodType(foundGood.kind)
         updateProducers(foundGood.producers)
         setDefaultQuantity(foundGood)
     }
 
     private fun setDefaultQuantity(good: GoodOpen) {
-        quantityField.value = if (good.type == GoodType.COMMON) "1" else "0"
+        quantityField.value = if (good.kind == GoodKind.COMMON) "1" else "0"
     }
 
-    private fun setScanModeFromGoodType(goodType: GoodType) {
-        scanModeType.value = when (goodType) {
-            GoodType.COMMON -> ScanNumberType.COMMON
-            GoodType.ALCOHOL -> ScanNumberType.ALCOHOL
-            GoodType.EXCISE -> ScanNumberType.EXCISE
+    private fun setScanModeFromGoodType(goodKind: GoodKind) {
+        scanModeType.value = when (goodKind) {
+            GoodKind.COMMON -> ScanNumberType.COMMON
+            GoodKind.ALCOHOL -> ScanNumberType.ALCOHOL
+            GoodKind.EXCISE -> ScanNumberType.EXCISE
         }
     }
 
@@ -407,7 +407,7 @@ class GoodInfoOpenViewModel : CoreViewModel() {
                     name = goodInfo.materialInfo.name,
                     section = goodInfo.materialInfo.section,
                     matrix = getMatrixType(goodInfo.materialInfo.matrix),
-                    type = goodInfo.getGoodType(),
+                    kind = goodInfo.getGoodKind(),
                     innerQuantity = goodInfo.materialInfo.innerQuantity.toDoubleOrNull() ?: 1.0,
                     units = database.getUnitsByCode(goodInfo.materialInfo.convertingUnitsCode),
                     provider = task.value!!.provider,
@@ -417,10 +417,10 @@ class GoodInfoOpenViewModel : CoreViewModel() {
             good.value?.let { good ->
                 lastSuccessSearchNumber.value = good.material
                 updateProducers(good.producers)
-                setScanModeFromGoodType(good.type)
+                setScanModeFromGoodType(good.kind)
                 setDefaultQuantity(good)
 
-                if (good.type == GoodType.EXCISE) {
+                if (good.kind == GoodKind.EXCISE) {
                     navigator.showForExciseGoodNeedScanFirstMark()
                 }
             }

@@ -48,7 +48,7 @@ class DatabaseRepository @Inject constructor(
                         ean = getEanByMaterialUnits(material, goodInfo.buom),
                         material = material,
                         name = goodInfo.name,
-                        type = goodInfo.getGoodType(),
+                        kind = goodInfo.getGoodKind(),
                         section = goodInfo.abtnr,
                         matrix = getMatrixType(goodInfo.matrType)
                 )

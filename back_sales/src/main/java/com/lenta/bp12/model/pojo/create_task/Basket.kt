@@ -5,14 +5,14 @@ import com.lenta.bp12.request.pojo.ProviderInfo
 
 data class Basket(
         val section: String,
-        val matype: String,
+        val goodType: String,
         val control: ControlType,
         val provider: ProviderInfo
 ) {
 
     fun getDescription(isDivBySection: Boolean): String {
         val sectionBlock = if (isDivBySection) "C-${section}/" else ""
-        return "$sectionBlock${matype}/${control.code}/ПП-${provider?.code}"
+        return "$sectionBlock${goodType}/${control.code}/ПП-${provider?.code}"
     }
 
 }
