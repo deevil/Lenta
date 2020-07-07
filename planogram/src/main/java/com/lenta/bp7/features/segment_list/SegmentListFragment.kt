@@ -2,7 +2,6 @@ package com.lenta.bp7.features.segment_list
 
 import android.os.Bundle
 import android.view.View
-import android.widget.AdapterView
 import androidx.lifecycle.Observer
 import com.lenta.bp7.BR
 import com.lenta.bp7.R
@@ -15,15 +14,10 @@ import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListener
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
-import com.lenta.shared.utilities.databinding.DataBindingAdapter
-import com.lenta.shared.utilities.databinding.DataBindingRecyclerViewConfig
-import com.lenta.shared.utilities.databinding.RecyclerViewKeyHandler
 import com.lenta.shared.utilities.extentions.*
 
 class SegmentListFragment : CoreFragment<FragmentSegmentListBinding, SegmentListViewModel>(),
         ToolbarButtonsClickListener, OnBackPresserListener {
-
-    private var recyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
 
     override fun getLayoutId(): Int = R.layout.fragment_segment_list
 
@@ -74,38 +68,16 @@ class SegmentListFragment : CoreFragment<FragmentSegmentListBinding, SegmentList
 
     private fun initRvConfig() {
         binding?.let { layoutBinding ->
-            layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
+            layoutBinding.rvConfig = initRecycleAdapterDataBinding<ItemSegmentBinding>(
                     layoutId = R.layout.item_segment,
-                    itemId = BR.segment,
-                    realisation = object : DataBindingAdapter<ItemSegmentBinding> {
-                        override fun onCreate(binding: ItemSegmentBinding) {
-                        }
-
-                        override fun onBind(binding: ItemSegmentBinding, position: Int) {
-                            recyclerViewKeyHandler?.let {
-                                binding.root.isSelected = it.isSelected(position)
-                            }
-                        }
-                    },
-                    onItemClickListener = AdapterView.OnItemClickListener { _, _, position, _ ->
-                        recyclerViewKeyHandler?.let {
-                            if (it.isSelected(position)) {
-                                vm.onClickItemPosition(position)
-                            } else {
-                                it.selectPosition(position)
-                            }
-                        }
-
-                    }
+                    itemId = BR.segment
             )
 
-            layoutBinding.vm = vm
-            layoutBinding.lifecycleOwner = viewLifecycleOwner
-            recyclerViewKeyHandler = RecyclerViewKeyHandler(
-                    rv = layoutBinding.rv,
+            recyclerViewKeyHandler = initRecyclerViewKeyHandler(
+                    recyclerView = layoutBinding.rv,
                     items = vm.segments,
-                    lifecycleOwner = layoutBinding.lifecycleOwner!!,
-                    initPosInfo = recyclerViewKeyHandler?.posInfo?.value
+                    previousPosInfo = recyclerViewKeyHandler?.posInfo?.value,
+                    onClickHandler = vm::onClickItemPosition
             )
         }
     }
