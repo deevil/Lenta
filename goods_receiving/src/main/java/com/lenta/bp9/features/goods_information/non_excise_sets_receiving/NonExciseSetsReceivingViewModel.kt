@@ -223,7 +223,7 @@ class NonExciseSetsReceivingViewModel : CoreViewModel(),
     fun onClickClean() {
         componentsSelectionsHelper.selectedPositions.value?.map { position ->
             listComponents.value?.let {
-                processNonExciseSetsReceivingProductService.clearCurrentComponent(
+                processNonExciseSetsReceivingProductService.cleanCurrentComponent(
                         it[position].componentInfo.componentNumber
                 )
             }
@@ -240,6 +240,9 @@ class NonExciseSetsReceivingViewModel : CoreViewModel(),
         if (count.value != null && qualityInfo.value != null) {
             processNonExciseSetsReceivingProductService.apply(count.value!!, qualityInfo.value!![spinQualitySelectedPosition.value
                     ?: 0].code)
+            count.value = "0"
+            processNonExciseSetsReceivingProductService.clearCurrentComponent()
+            updateListComponents()
         }
     }
 

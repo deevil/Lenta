@@ -223,7 +223,7 @@ class NonExciseSetsPGEViewModel : CoreViewModel(),
     fun onClickClean() {
         componentsSelectionsHelper.selectedPositions.value?.map { position ->
             listComponents.value?.let {
-                processNonExciseSetsPGEProductService.clearCurrentComponent(
+                processNonExciseSetsPGEProductService.cleanCurrentComponent(
                         it[position].componentInfo.componentNumber
                 )
             }
@@ -240,6 +240,9 @@ class NonExciseSetsPGEViewModel : CoreViewModel(),
         if (count.value != null && qualityInfo.value != null) {
             processNonExciseSetsPGEProductService.apply(count.value!!, qualityInfo.value!![spinQualitySelectedPosition.value
                     ?: 0].code, productInfo.value!!.processingUnit)
+            count.value = "0"
+            processNonExciseSetsPGEProductService.clearCurrentComponent()
+            updateListComponents()
         }
     }
 

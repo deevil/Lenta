@@ -185,7 +185,7 @@ class ProcessNonExciseSetsReceivingProductService
 
     }
 
-    fun clearCurrentComponent(componentNumber: String) {
+    fun cleanCurrentComponent(componentNumber: String) {
         currentComponentsDiscrepancies.map { it }.filter { unitInfo ->
             if (unitInfo.materialNumber == componentNumber) {
                 currentComponentsDiscrepancies.remove(unitInfo)
@@ -193,6 +193,10 @@ class ProcessNonExciseSetsReceivingProductService
             }
             return@filter false
         }
+    }
+
+    fun clearCurrentComponent() {
+        currentComponentsDiscrepancies.clear()
     }
 
 }

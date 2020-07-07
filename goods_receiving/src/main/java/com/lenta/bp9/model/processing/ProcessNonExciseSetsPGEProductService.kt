@@ -163,7 +163,7 @@ class ProcessNonExciseSetsPGEProductService
         currentBatchesDiscrepancies.add(foundBatchDiscrepancy)
     }
 
-    fun clearCurrentComponent(componentNumber: String) {
+    fun cleanCurrentComponent(componentNumber: String) {
         currentComponentsDiscrepancies.map { it }.filter { unitInfo ->
             if (unitInfo.materialNumber == componentNumber) {
                 currentComponentsDiscrepancies.remove(unitInfo)
@@ -171,6 +171,10 @@ class ProcessNonExciseSetsPGEProductService
             }
             return@filter false
         }
+    }
+
+    fun clearCurrentComponent() {
+        currentComponentsDiscrepancies.clear()
     }
 
     fun setCountSet(count: Double) {

@@ -25,10 +25,13 @@ class GoodsDetailsViewModel : CoreViewModel() {
 
     @Inject
     lateinit var taskManager: IReceivingTaskManager
+
     @Inject
     lateinit var dataBase: IDataBaseRepo
+
     @Inject
     lateinit var processMercuryProductService: ProcessMercuryProductService
+
     @Inject
     lateinit var repoInMemoryHolder: IRepoInMemoryHolder
 
@@ -94,7 +97,7 @@ class GoodsDetailsViewModel : CoreViewModel() {
                         }
                         GoodsDetailsCategoriesItem(
                                 number = index + 1,
-                                name = "${reasonRejectionInfo.value?.firstOrNull {it.code == discrepancy.typeDiscrepancies}?.name}",
+                                name = "${reasonRejectionInfo.value?.firstOrNull { it.code == discrepancy.typeDiscrepancies }?.name}",
                                 nameBatch = "",
                                 visibilityNameBatch = false,
                                 quantityWithUom = "${discrepancy.numberDiscrepancies.toDouble().toStringFormatted()} ${uom.value?.name}",
@@ -109,25 +112,39 @@ class GoodsDetailsViewModel : CoreViewModel() {
         } else {
             goodsDetails.postValue(
                     if (isBatchProduct.value == true || productInfo.value?.isSet == true) {
+                        val productNumbers = if (productInfo.value?.isSet == true) {
+                            repoInMemoryHolder.sets.value?.filter {
+                                it.setNumber == productInfo.value?.materialNumber
+                            }?.map {
+                                it.componentNumber
+                            } ?: emptyList()
+                        } else {
+                            listOf(productInfo.value!!.materialNumber)
+                        }
                         taskManager
                                 .getReceivingTask()
                                 ?.taskRepository
                                 ?.getBatchesDiscrepancies()
-                                ?.findBatchDiscrepanciesOfProduct(productInfo.value?.materialNumber ?: "")
+                                ?.findBatchDiscrepanciesOfProducts(productNumbers)
                                 ?.mapIndexed { index, discrepancy ->
                                     val isNormDiscrepancies = when (repoInMemoryHolder.taskList.value?.taskListLoadingMode) {
                                         TaskListLoadingMode.PGE -> discrepancy.typeDiscrepancies == "1" || discrepancy.typeDiscrepancies == "2"
                                         else -> discrepancy.typeDiscrepancies == "1"
                                     }
+                                    val nameItem = if (productInfo.value?.isSet == true) {
+                                        "${discrepancy.getMaterialLastSix()} ${reasonRejectionInfo.value?.firstOrNull { it.code == discrepancy.typeDiscrepancies }?.name}"
+                                    } else {
+                                        "${reasonRejectionInfo.value?.firstOrNull { it.code == discrepancy.typeDiscrepancies }?.name}"
+                                    }
                                     GoodsDetailsCategoriesItem(
                                             number = index + 1,
-                                            name = "${reasonRejectionInfo.value?.firstOrNull {it.code == discrepancy.typeDiscrepancies}?.name}",
+                                            name = nameItem,
                                             nameBatch = "ДР-${discrepancy.bottlingDate} // ${getManufacturerName(discrepancy.egais)}",
                                             visibilityNameBatch = true,
                                             quantityWithUom = "${discrepancy.numberDiscrepancies.toDouble().toStringFormatted()} ${uom.value?.name}",
                                             isNormDiscrepancies = isNormDiscrepancies,
                                             typeDiscrepancies = discrepancy.typeDiscrepancies,
-                                            materialNumber = productInfo.value?.materialNumber ?: "",
+                                            materialNumber = discrepancy.materialNumber,
                                             batchDiscrepancies = discrepancy,
                                             even = index % 2 == 0
                                     )
@@ -142,20 +159,21 @@ class GoodsDetailsViewModel : CoreViewModel() {
                                     val isNormDiscrepancies = when (repoInMemoryHolder.taskList.value?.taskListLoadingMode) {
                                         TaskListLoadingMode.PGE -> discrepancy.typeDiscrepancies == "1" || discrepancy.typeDiscrepancies == "2"
                                         else -> discrepancy.typeDiscrepancies == "1"
-                            }
-                            GoodsDetailsCategoriesItem(
-                                    number = index + 1,
-                                    name = "${reasonRejectionInfo.value?.firstOrNull {it.code == discrepancy.typeDiscrepancies}?.name}",
-                                    nameBatch = "",
-                                    visibilityNameBatch = false,
-                                    quantityWithUom = "${discrepancy.numberDiscrepancies.toDouble().toStringFormatted()} ${uom.value?.name}",
-                                    isNormDiscrepancies = isNormDiscrepancies,
-                                    typeDiscrepancies = discrepancy.typeDiscrepancies,
-                                    materialNumber = productInfo.value?.materialNumber ?: "",
-                                    batchDiscrepancies = null,
-                                    even = index % 2 == 0
-                            )
-                        }?.reversed()
+                                    }
+                                    GoodsDetailsCategoriesItem(
+                                            number = index + 1,
+                                            name = "${reasonRejectionInfo.value?.firstOrNull { it.code == discrepancy.typeDiscrepancies }?.name}",
+                                            nameBatch = "",
+                                            visibilityNameBatch = false,
+                                            quantityWithUom = "${discrepancy.numberDiscrepancies.toDouble().toStringFormatted()} ${uom.value?.name}",
+                                            isNormDiscrepancies = isNormDiscrepancies,
+                                            typeDiscrepancies = discrepancy.typeDiscrepancies,
+                                            materialNumber = productInfo.value?.materialNumber
+                                                    ?: "",
+                                            batchDiscrepancies = null,
+                                            even = index % 2 == 0
+                                    )
+                                }?.reversed()
                     }
             )
         }
@@ -195,8 +213,8 @@ class GoodsDetailsViewModel : CoreViewModel() {
         updateProduct()
     }
 
-    private fun getManufacturerName(manufactureCode: String?) : String {
-        return repoInMemoryHolder.manufacturers.value?.findLast {manufacture ->
+    private fun getManufacturerName(manufactureCode: String?): String {
+        return repoInMemoryHolder.manufacturers.value?.findLast { manufacture ->
             manufacture.code == manufactureCode
         }?.name ?: ""
     }
