@@ -1,33 +1,39 @@
 package com.lenta.movement.features.task.eo
 
 import android.content.Context
-import androidx.lifecycle.*
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.liveData
+import androidx.lifecycle.switchMap
+import androidx.lifecycle.viewModelScope
 import com.lenta.movement.R
 import com.lenta.movement.exception.PersonnelNumberFailure
-import com.lenta.movement.models.CargoUnit
-import com.lenta.movement.models.ITaskManager
-import com.lenta.movement.models.ProcessingUnit
-import com.lenta.movement.models.SimpleListItem
+import com.lenta.movement.features.main.box.ScanInfoHelper
+import com.lenta.movement.models.*
 import com.lenta.movement.platform.IFormatter
 import com.lenta.movement.platform.extensions.unsafeLazy
 import com.lenta.movement.platform.navigation.IScreenNavigator
-import com.lenta.movement.requests.network.Consolidation
+import com.lenta.movement.requests.network.ConsolidationNetRequest
+import com.lenta.movement.requests.network.DocumentsToPrintNetRequest
+import com.lenta.movement.requests.network.DocumentsToPrintParams
+import com.lenta.movement.requests.network.EndConsolidationNetRequest
 import com.lenta.movement.requests.network.models.RestCargoUnit
 import com.lenta.movement.requests.network.models.consolidation.ConsolidationParams
 import com.lenta.movement.requests.network.models.consolidation.ConsolidationProcessingUnit
+import com.lenta.movement.requests.network.models.endConsolidation.EndConsolidationParams
 import com.lenta.movement.requests.network.models.toCargoUnitList
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.functional.Either
 import com.lenta.shared.platform.viewmodel.CoreViewModel
-import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.SelectionItemsHelper
+import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
 import com.lenta.shared.utilities.databinding.PageSelectionListener
 import com.lenta.shared.utilities.extentions.getDeviceIp
+import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.utilities.extentions.mapSkipNulls
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-class TaskEOMergeViewModel : CoreViewModel(), PageSelectionListener {
+class TaskEOMergeViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyboardListener {
 
     @Inject
     lateinit var context: Context
@@ -45,25 +51,46 @@ class TaskEOMergeViewModel : CoreViewModel(), PageSelectionListener {
     lateinit var formatter: IFormatter
 
     @Inject
-    lateinit var consolidation: Consolidation
+    lateinit var consolidationNetRequest: ConsolidationNetRequest
+
+    @Inject
+    lateinit var endConsolidationNetRequest: EndConsolidationNetRequest
+
+    @Inject
+    lateinit var documentsToPrintNetRequest: DocumentsToPrintNetRequest
+
+    @Inject
+    lateinit var scanInfoHelper: ScanInfoHelper
 
     val eoSelectionHelper = SelectionItemsHelper()
     val geSelectionHelper = SelectionItemsHelper()
 
-    val selectedPagePosition = MutableLiveData(0)
+    val selectedPagePosition = MutableLiveData(EO_LIST_TAB)
     val currentPage = selectedPagePosition.mapSkipNulls { TaskEOMergePage.values()[it] }
 
+    val eanCode: MutableLiveData<String> = MutableLiveData()
+    val requestFocusToEan: MutableLiveData<Boolean> = MutableLiveData()
+
     val eoList by unsafeLazy { MutableLiveData(listOf<ProcessingUnit>()) }
+
     val eoItemList by unsafeLazy {
-        eoList.mapSkipNulls { list ->
-            list.mapIndexed { index, eo ->
-                SimpleListItem(
-                        number = index + 1,
-                        title = eo.processingUnitNumber,
-                        subtitle = formatter.getEOSubtitle(eo),
-                        countWithUom = eo.quantity.orEmpty(),
-                        isClickable = true
-                )
+        eoList.switchMap { eoList ->
+            liveData {
+                emit(eoList.mapIndexed { index, eo ->
+                    EoListItem(
+                            number = index + 1,
+                            title = eo.processingUnitNumber,
+                            subtitle = formatter.getEOSubtitle(eo),
+                            quantity = eo.quantity.orEmpty(),
+                            isClickable = true,
+                            stateResId = when (eo.state) {
+                                ProcessingUnit.State.NOT_PROCESSED -> EMPTY_GE_STATE_RESOURCE_ID
+                                ProcessingUnit.State.TOP_LEVEL_EO -> R.drawable.ic_top_level_processing_unit_32dp
+                                ProcessingUnit.State.COMBINED -> R.drawable.ic_cargo_unit_32dp
+                            }
+                    )
+                })
+
             }
         }
     }
@@ -77,46 +104,43 @@ class TaskEOMergeViewModel : CoreViewModel(), PageSelectionListener {
                     SimpleListItem(
                             number = index + 1,
                             title = formatter.getGETitle(ge),
-                            countWithUom = 1.toString(),
+                            countWithUom = ge.eoList.size.toString(),
                             isClickable = true)
                 })
             }
         }
     }
 
-    private val geNumbersList by unsafeLazy {
-        geList.mapSkipNulls { list ->
-            list.map {
-                it.number
-            }
-        }
-    }
-
     val isProcessBtnVisible by unsafeLazy {
         currentPage.map { page ->
-            when (page) {
-                TaskEOMergePage.EO_LIST -> true
-                else -> false
-            }
+            page == TaskEOMergePage.EO_LIST
         }
     }
 
     val isExcludeBtnVisible by unsafeLazy {
         currentPage.map { page ->
-            when (page) {
-                TaskEOMergePage.EO_LIST -> false
-                else -> true
+            page == TaskEOMergePage.GE_LIST
+        }
+    }
+
+    val isSaveBtnEnabled by unsafeLazy {
+        eoList.map { eoList ->
+            eoList?.any {
+                it.state == ProcessingUnit.State.NOT_PROCESSED
+            }?.not()
+        }
+    }
+
+    val isExcludeBtnEnabled by unsafeLazy {
+        geSelectionHelper.selectedPositions.map { setOfSelectedItems ->
+            setOfSelectedItems?.size?.let {
+                it > 0
             }
         }
     }
 
-
     override fun onPageSelected(position: Int) {
         selectedPagePosition.value = position
-    }
-
-    fun onResume() {
-        // TODO
     }
 
     fun getTitle(): String {
@@ -138,17 +162,18 @@ class TaskEOMergeViewModel : CoreViewModel(), PageSelectionListener {
                             addAllEOAsGE()
                         }, {
                             //Кнопка объединить
-                            consolidate(eoNumbersList, listOf(), Consolidation.CONSOLIDATION_EO_IN_GE_MODE)
+                            consolidate(eoNumbersList, listOf(), ConsolidationNetRequest.CONSOLIDATION_EO_IN_GE_MODE)
                         })
                     }
 
                     1 -> {
-                        geList.value?.let {
-                            val list = it
+                        geList.value?.let { geListValue ->
                             val eoListIndex = listOfSelected.first()
                             val newCargoUnit = CargoUnit(eoNumbersList[eoListIndex].eoNumber, listOf())
-                            list.add(newCargoUnit)
-                            geList.value = list
+                            geListValue.add(newCargoUnit)
+                            eoList[eoListIndex].state = ProcessingUnit.State.TOP_LEVEL_EO
+                            geList.value = geListValue
+                            changeTabToGEList()
                         }
                     }
 
@@ -157,17 +182,17 @@ class TaskEOMergeViewModel : CoreViewModel(), PageSelectionListener {
                         listOfSelected.forEach { eoListIndex ->
                             selectedEO.add(eoNumbersList[eoListIndex])
                         }
-                        consolidate(selectedEO, listOf(), Consolidation.CONSOLIDATION_EO_IN_GE_MODE)
+                        consolidate(selectedEO, listOf(), ConsolidationNetRequest.CONSOLIDATION_EO_IN_GE_MODE)
                     }
                 }
+                eoSelectionHelper.clearPositions()
             }
         }
     }
 
     private fun consolidate(sendEOList: List<ConsolidationProcessingUnit>, sendGEList: List<RestCargoUnit>, mode: String) {
-
         viewModelScope.launch {
-            screenNavigator.showProgress(consolidation)
+            screenNavigator.showProgress(consolidationNetRequest)
             val either = sessionInfo.personnelNumber?.let { personnelNumber ->
                 val params = ConsolidationParams(
                         deviceIp = context.getDeviceIp(),
@@ -177,7 +202,7 @@ class TaskEOMergeViewModel : CoreViewModel(), PageSelectionListener {
                         eoNumberList = sendEOList,
                         geNumberList = sendGEList
                 )
-                consolidation(params)
+                consolidationNetRequest(params)
             }
                     ?: Either.Left(PersonnelNumberFailure(context.getString(R.string.alert_null_personnel_number)))
             either.either({ failure ->
@@ -185,35 +210,90 @@ class TaskEOMergeViewModel : CoreViewModel(), PageSelectionListener {
                 screenNavigator.openAlertScreen(failure)
             }, { result ->
                 screenNavigator.hideProgress()
-                geList.value = result.geList.toCargoUnitList()
-                Unit
+                eoList.value?.let { eoListValue ->
+                    eoListValue.forEach { eo ->
+                        geList.value = result.geList.toCargoUnitList()
+                        when (mode) {
+                            ConsolidationNetRequest.CONSOLIDATION_EO_IN_GE_MODE -> {
+                                result.geList.forEach { ge ->
+                                    if (ge.processingUnitNumber == eo.processingUnitNumber) {
+                                        eo.cargoUnitNumber = ge.cargoUnitNumber
+                                        eo.state = ProcessingUnit.State.COMBINED
+                                    }
+                                }
+                            }
+
+                            ConsolidationNetRequest.SEPARATION_GE_TO_EO_MODE -> {
+                                sendGEList.forEach { ge ->
+                                    if (ge.processingUnitNumber == eo.processingUnitNumber) {
+                                        eo.cargoUnitNumber = null
+                                        eo.state = ProcessingUnit.State.NOT_PROCESSED
+                                    }
+                                }
+                            }
+                        }
+                        eoList.value = eoListValue
+                    }
+                }
+                changeTabToGEList()
             })
         }
     }
 
     private fun addAllEOAsGE() {
         eoList.value?.forEach { eo ->
-            if (eo.cargoUnitNumber == null) {
-                geList.value?.let {
-                    val list = it
+            if (eo.state == ProcessingUnit.State.NOT_PROCESSED) {
+                geList.value?.let { geListValue ->
                     val newCargoUnit = CargoUnit(eo.processingUnitNumber, listOf())
-                    list.add(newCargoUnit)
-                    geList.value = list
+                    geListValue.add(newCargoUnit)
+                    geList.value = geListValue
+                    eo.state = ProcessingUnit.State.TOP_LEVEL_EO
                 }
             }
         }
     }
 
     fun onExcludeBtnClick() {
-        // TODO
+        geSelectionHelper.selectedPositions.value?.let { setOfSelectedPositions ->
+            geList.value?.let { geListValue ->
+                val geNumbersList = geListValue.flatMap { ge ->
+                    ge.eoList.map { eo ->
+                        RestCargoUnit(ge.number, eo.processingUnitNumber)
+                    }
+                }
+                val selectedGEList = setOfSelectedPositions.map { geListIndex ->
+                    geNumbersList[geListIndex]
+                }
+                consolidate(mutableListOf(), selectedGEList, ConsolidationNetRequest.SEPARATION_GE_TO_EO_MODE)
+            }
+        }
     }
 
     fun onSaveBtnClick() {
-        // TODO create and call EndConsolidation.kt
+        viewModelScope.launch {
+            screenNavigator.showProgress(endConsolidationNetRequest)
+            val either = sessionInfo.personnelNumber?.let { personnelNumber ->
+                val params = EndConsolidationParams(
+                        deviceIp = context.getDeviceIp(),
+                        taskNumber = taskManager.getTask().number,
+                        personnelNumber = personnelNumber,
+                        taskList = listOf()
+                )
+                endConsolidationNetRequest(params)
+            }
+                    ?: Either.Left(PersonnelNumberFailure(context.getString(R.string.alert_null_personnel_number)))
+            either.either({ failure ->
+                screenNavigator.hideProgress()
+                screenNavigator.openAlertScreen(failure)
+            }, { result ->
+                screenNavigator.hideProgress()
+            })
+        }
+
     }
 
     fun onClickEOListItem(position: Int) {
-        // TODO
+        // TODO OPEN EO INSIDES SCREEN
     }
 
     fun onClickGEListItem(position: Int) {
@@ -224,16 +304,51 @@ class TaskEOMergeViewModel : CoreViewModel(), PageSelectionListener {
         screenNavigator.goBack()
     }
 
+
+    override fun onOkInSoftKeyboard(): Boolean {
+        searchCode(eanCode.value.orEmpty(), fromScan = false)
+        return true
+    }
+
     fun onScanResult(data: String) {
-        // TODO
+        searchCode(code = data, fromScan = true, isBarCode = true)
     }
 
-    fun onDigitPressed(digit: Int) {
-        // TODO
+    private fun searchCode(code: String, fromScan: Boolean, isBarCode: Boolean? = null) {
+        viewModelScope.launch {
+            scanInfoHelper.searchCode(code, fromScan, isBarCode) { productInfo ->
+                screenNavigator.openTaskGoodsInfoScreen(productInfo)
+            }
+        }
     }
-
 
     fun onPrintBtnClick() {
-        // TODO
+        viewModelScope.launch {
+            screenNavigator.showProgress(documentsToPrintNetRequest)
+            documentsToPrintNetRequest(
+                    DocumentsToPrintParams(
+                            taskManager.getTask().number
+                    )
+            ).either({ failure ->
+                screenNavigator.hideProgress()
+                screenNavigator.openAlertScreen(failure)
+            }, { result ->
+                screenNavigator.hideProgress()
+                // TODO screenNavigator.openFormedDocuments(result.docList)
+            }
+            )
+        }
+    }
+
+    private fun changeTabToGEList() {
+        selectedPagePosition.value = GE_LIST_TAB
+    }
+
+    fun onDigitPressed(digit: Int) = Unit // TODO
+
+    companion object {
+        private const val EO_LIST_TAB = 0
+        private const val GE_LIST_TAB = 1
+        private const val EMPTY_GE_STATE_RESOURCE_ID = 0
     }
 }

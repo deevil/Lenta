@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
+import androidx.core.os.bundleOf
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import com.lenta.movement.BR
@@ -16,6 +17,7 @@ import com.lenta.movement.databinding.LayoutTaskEoMergeGeListTabBinding
 import com.lenta.movement.models.CargoUnit
 import com.lenta.movement.models.ProcessingUnit
 import com.lenta.movement.platform.extensions.getAppComponent
+import com.lenta.movement.platform.extensions.unsafeLazy
 import com.lenta.movement.view.simpleListRecyclerViewConfig
 import com.lenta.shared.keys.KeyCode
 import com.lenta.shared.keys.OnKeyDownListener
@@ -42,9 +44,12 @@ class TaskEOMergeFragment : CoreFragment<FragmentTaskEoMergeBinding, TaskEOMerge
 
     private var eoListRecyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
     private var geListRecyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
-    private var eoList: List<ProcessingUnit>? = null
-    private var geList: MutableList<CargoUnit>? = null
-
+    private val eoList: List<ProcessingUnit>? by unsafeLazy {
+        arguments?.getParcelableArrayList<ProcessingUnit>(EO_LIST_KEY)
+    }
+    private val geList: MutableList<CargoUnit>? by unsafeLazy {
+        arguments?.getParcelableArrayList<CargoUnit>(GE_LIST_KEY)
+    }
 
     override fun getLayoutId() = R.layout.fragment_task_eo_merge
 
@@ -64,11 +69,6 @@ class TaskEOMergeFragment : CoreFragment<FragmentTaskEoMergeBinding, TaskEOMerge
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding?.viewPagerSettings = this
-    }
-
-    override fun onResume() {
-        super.onResume()
-        vm.onResume()
     }
 
     override fun setupTopToolBar(topToolbarUiModel: TopToolbarUiModel) {
@@ -91,6 +91,9 @@ class TaskEOMergeFragment : CoreFragment<FragmentTaskEoMergeBinding, TaskEOMerge
 
         connectLiveData(vm.isProcessBtnVisible, bottomToolbarUiModel.uiModelButton3.visibility)
         connectLiveData(vm.isExcludeBtnVisible, bottomToolbarUiModel.uiModelButton4.visibility)
+        connectLiveData(vm.isExcludeBtnEnabled, bottomToolbarUiModel.uiModelButton4.enabled)
+        connectLiveData(vm.isSaveBtnEnabled, bottomToolbarUiModel.uiModelButton5.enabled)
+
     }
 
     override fun onToolbarButtonClick(view: View) {
@@ -114,11 +117,9 @@ class TaskEOMergeFragment : CoreFragment<FragmentTaskEoMergeBinding, TaskEOMerge
                     it.apply {
 
                         val onClickSelectionListener = View.OnClickListener { clickListener ->
-                            clickListener?.let { view ->
-                                val itemPosition = view.tag as Int
-                                vm.eoSelectionHelper.revert(position = position)
+                                val itemPosition = clickListener.tag as Int
+                                vm.eoSelectionHelper.revert(position = itemPosition)
                                 this.eoRecyclerView.adapter?.notifyItemChanged(itemPosition)
-                            }
                         }
 
                         rvConfig = DataBindingRecyclerViewConfig(
@@ -133,6 +134,7 @@ class TaskEOMergeFragment : CoreFragment<FragmentTaskEoMergeBinding, TaskEOMerge
                                         vm.eoItemList.value?.let { list ->
                                             binding.item = list[position]
                                         }
+
                                         binding.selectedToDelete = vm.eoSelectionHelper.isSelected(position)
                                         eoListRecyclerViewKeyHandler?.let { eoListRecyclerViewKeyHandler ->
                                             binding.root.isSelected = eoListRecyclerViewKeyHandler.isSelected(position)
@@ -241,12 +243,19 @@ class TaskEOMergeFragment : CoreFragment<FragmentTaskEoMergeBinding, TaskEOMerge
 
     companion object {
         private const val PAGE_NUMBER = "10/06"
+        private const val EO_LIST_KEY = "EO_LIST_KEY"
+        private const val GE_LIST_KEY = "GE_LIST_KEY"
 
         fun newInstance(eoList: List<ProcessingUnit>, geList: List<CargoUnit>): TaskEOMergeFragment {
             return TaskEOMergeFragment().apply {
-                this.eoList = eoList
-                this.geList = geList.toMutableList()
+                arguments = bundleOf (
+                    EO_LIST_KEY to eoList,
+                    GE_LIST_KEY to geList
+                )
+//                this.eoList = eoList
+//                this.geList = geList.toMutableList()
             }
         }
     }
 }
+
