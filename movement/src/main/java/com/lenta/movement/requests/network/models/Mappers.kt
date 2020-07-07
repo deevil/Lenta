@@ -50,8 +50,6 @@ fun List<StartConsolidationProcessingUnit>.toModelList(): List<ProcessingUnit> {
     }
 }
 
-
-
 fun List<RestCargoUnit>.toCargoUnitList(): MutableList<CargoUnit> {
     return this.groupBy { it.cargoUnitNumber }
             .mapValues { it.value.map { it.processingUnitNumber } }
@@ -59,7 +57,9 @@ fun List<RestCargoUnit>.toCargoUnitList(): MutableList<CargoUnit> {
                 CargoUnit(
                         map.key,
                         map.value.map { processingUnitNumber ->
-                            ProcessingUnit(processingUnitNumber = processingUnitNumber)
+                            ProcessingUnit(
+                                    processingUnitNumber = processingUnitNumber,
+                                    state = ProcessingUnit.State.COMBINED)
                         }
                 )
             }.toMutableList()
