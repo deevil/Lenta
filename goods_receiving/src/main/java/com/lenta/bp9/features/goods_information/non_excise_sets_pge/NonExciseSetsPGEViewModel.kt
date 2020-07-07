@@ -1,7 +1,9 @@
 package com.lenta.bp9.features.goods_information.non_excise_sets_pge
 
+import android.content.Context
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import com.lenta.bp9.R
 import com.lenta.bp9.features.goods_information.excise_alco_receiving.excise_alco_box_acc.excise_alco_box_list.BoxListItem
 import com.lenta.bp9.features.goods_list.ListCountedItem
 import com.lenta.bp9.features.goods_list.ListWithoutBarcodeItem
@@ -49,18 +51,27 @@ class NonExciseSetsPGEViewModel : CoreViewModel(),
 
     @Inject
     lateinit var screenNavigator: IScreenNavigator
+
     @Inject
     lateinit var taskManager: IReceivingTaskManager
+
     @Inject
     lateinit var searchProductDelegate: SearchProductDelegate
+
     @Inject
     lateinit var dataBase: IDataBaseRepo
+
     @Inject
     lateinit var processNonExciseSetsPGEProductService: ProcessNonExciseSetsPGEProductService
+
     @Inject
     lateinit var repoInMemoryHolder: IRepoInMemoryHolder
+
     @Inject
     lateinit var hyperHive: HyperHive
+
+    @Inject
+    lateinit var context: Context
 
     private val zmpUtz25V001: ZmpUtz25V001 by lazy {
         ZmpUtz25V001(hyperHive)
@@ -139,8 +150,10 @@ class NonExciseSetsPGEViewModel : CoreViewModel(),
         !it.isNullOrEmpty()
     }
 
-    val enabledApplyButton: MutableLiveData<Boolean> = countValue.map {
-        (it ?: 0.0) > 0.0
+    val enabledApplyButton: MutableLiveData<Boolean> = countValue.combineLatest(listComponents).map {
+        it?.second?.filter { componentItem ->
+            !componentItem.full
+        }?.size == 0
     }
 
     init {
@@ -152,7 +165,7 @@ class NonExciseSetsPGEViewModel : CoreViewModel(),
             if (isDiscrepancy.value!!) {
                 count.value = taskManager.getReceivingTask()?.taskRepository?.getProductsDiscrepancies()?.getCountProductNotProcessedOfProduct(productInfo.value!!).toStringFormatted()
                 qualityInfo.value = dataBase.getQualityInfoPGEForDiscrepancy()
-                spinQualitySelectedPosition.value = qualityInfo.value!!.indexOfLast {it.code == "4"}
+                spinQualitySelectedPosition.value = qualityInfo.value!!.indexOfLast { it.code == "4" }
             } else {
                 qualityInfo.value = dataBase.getQualityInfoPGE()
             }
@@ -161,7 +174,7 @@ class NonExciseSetsPGEViewModel : CoreViewModel(),
                 it.name
             }
 
-            spinProcessingUnit.value = listOf("ЕО - ${productInfo.value!!.processingUnit}")
+            spinProcessingUnit.value = listOf("${context.getString(R.string.spin_processing_unit)}${productInfo.value!!.processingUnit}")
 
             if (processNonExciseSetsPGEProductService.newProcessNonExciseSetsPGEProductService(productInfo.value!!) == null) {
                 screenNavigator.goBack()
@@ -180,21 +193,23 @@ class NonExciseSetsPGEViewModel : CoreViewModel(),
     }
 
     private fun updateListComponents() {
-        repoInMemoryHolder.sets.value.let {setsInfoList ->
+        repoInMemoryHolder.sets.value.let { setsInfoList ->
             listComponents.postValue(
-                    setsInfoList?.filter {filterSetInfo ->
+                    setsInfoList?.filter { filterSetInfo ->
                         filterSetInfo.setNumber == productInfo.value?.materialNumber
-                    }?.sortedByDescending {sorted ->
+                    }?.sortedByDescending { sorted ->
                         sorted.componentNumber
                     }?.mapIndexed { index, taskSetsInfo ->
                         val componentDescription = zfmpUtz48V001.getProductInfoByMaterial(taskSetsInfo.componentNumber)?.name
-                        val countProcessedComponents = taskManager.getReceivingTask()!!.taskRepository.getProductsDiscrepancies().getAllCountDiscrepanciesOfProduct(taskSetsInfo.componentNumber).toStringFormatted()
-                        val howMuchProcessComponents = (taskSetsInfo.quantity * (countValue.value ?: 0.0)).toStringFormatted()
+                        val countProcessedComponents = processNonExciseSetsPGEProductService.getCountDiscrepanciesOfComponent(taskSetsInfo.componentNumber).toStringFormatted()
+                        val howMuchProcessComponents = (taskSetsInfo.quantity * (countValue.value
+                                ?: 0.0)).toStringFormatted()
                         ListComponentsItem(
                                 number = index + 1,
                                 name = "${taskSetsInfo.componentNumber.substring(taskSetsInfo.componentNumber.length - 6)} $componentDescription",
-                                quantity = "$countProcessedComponents из $howMuchProcessComponents",
+                                quantity = "$countProcessedComponents ${context.getString(R.string.of)} $howMuchProcessComponents",
                                 componentInfo = taskSetsInfo,
+                                full = countProcessedComponents == howMuchProcessComponents && (countProcessedComponents.toDouble() + howMuchProcessComponents.toDouble()) > 0,
                                 even = index % 2 == 0
                         )
                     }
@@ -202,15 +217,16 @@ class NonExciseSetsPGEViewModel : CoreViewModel(),
         }
 
         componentsSelectionsHelper.clearPositions()
+        processNonExciseSetsPGEProductService.setCountSet(countValue.value ?: 0.0)
     }
 
     fun onClickClean() {
         componentsSelectionsHelper.selectedPositions.value?.map { position ->
-            taskManager
-                    .getReceivingTask()
-                    ?.taskRepository
-                    ?.getProductsDiscrepancies()
-                    ?.deleteProductsDiscrepanciesForProduct(listComponents.value?.get(position)!!.componentInfo.componentNumber)
+            listComponents.value?.let {
+                processNonExciseSetsPGEProductService.clearCurrentComponent(
+                        it[position].componentInfo.componentNumber
+                )
+            }
         }
 
         updateListComponents()
@@ -221,10 +237,9 @@ class NonExciseSetsPGEViewModel : CoreViewModel(),
     }
 
     fun onClickAdd() {
-        if (processNonExciseSetsPGEProductService.overLimit(countValue.value ?: 0.0)) {
-            screenNavigator.openAlertOverLimitPlannedScreen()
-        } else {
-            processNonExciseSetsPGEProductService.addSet(count.value!!, qualityInfo.value!![spinQualitySelectedPosition.value!!].code, productInfo.value!!.processingUnit)
+        if (count.value != null && qualityInfo.value != null) {
+            processNonExciseSetsPGEProductService.apply(count.value!!, qualityInfo.value!![spinQualitySelectedPosition.value
+                    ?: 0].code, productInfo.value!!.processingUnit)
         }
     }
 
@@ -273,7 +288,7 @@ class NonExciseSetsPGEViewModel : CoreViewModel(),
         }
     }
 
-    private fun searchCode(data: String) : ZfmpUtz48V001.ItemLocal_ET_MATNR_LIST? {
+    private fun searchCode(data: String): ZfmpUtz48V001.ItemLocal_ET_MATNR_LIST? {
         val eanInfo = zmpUtz25V001.getEanInfo(ean = data)
         //не менять последовательность
         return zfmpUtz48V001.getProductInfoByMaterial(material = eanInfo?.material)
@@ -300,6 +315,7 @@ data class ListComponentsItem(
         val name: String,
         val quantity: String,
         val componentInfo: TaskSetsInfo,
+        val full: Boolean,
         val even: Boolean
 ) : Evenable {
     override fun isEven() = even

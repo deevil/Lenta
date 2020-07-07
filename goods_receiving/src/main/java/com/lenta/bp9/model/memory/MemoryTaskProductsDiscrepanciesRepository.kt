@@ -240,6 +240,16 @@ class MemoryTaskProductsDiscrepanciesRepository : ITaskProductsDiscrepanciesRepo
         return countDiscrepancies
     }
 
+    override fun getCountOfDiscrepanciesOfProduct(materialNumber: String, typeDiscrepancies: String): Double {
+        var countDiscrepancies = 0.0
+        findProductDiscrepanciesOfProduct(materialNumber).filter {
+            it.typeDiscrepancies == typeDiscrepancies
+        }.map {discrepancies ->
+            countDiscrepancies += discrepancies.numberDiscrepancies.toDouble()
+        }
+        return countDiscrepancies
+    }
+
     override fun getQuantityDiscrepanciesOfProduct(product: TaskProductInfo): Int {
         return findProductDiscrepanciesOfProduct(product).size
     }

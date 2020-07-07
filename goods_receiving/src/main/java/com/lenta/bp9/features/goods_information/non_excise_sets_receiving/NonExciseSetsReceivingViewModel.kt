@@ -144,8 +144,10 @@ class NonExciseSetsReceivingViewModel : CoreViewModel(),
         !it.isNullOrEmpty()
     }
 
-    val enabledApplyButton: MutableLiveData<Boolean> = countValue.map {
-        (it ?: 0.0) > 0.0
+    val enabledApplyButton: MutableLiveData<Boolean> = countValue.combineLatest(listComponents).map {
+        it?.second?.filter { componentItem ->
+            !componentItem.full
+        }?.size == 0
     }
 
     init {
@@ -199,20 +201,16 @@ class NonExciseSetsReceivingViewModel : CoreViewModel(),
                         sorted.componentNumber
                     }?.mapIndexed { index, taskSetsInfo ->
                         val componentDescription = zfmpUtz48V001.getProductInfoByMaterial(taskSetsInfo.componentNumber)?.name
-                        val countProcessedComponents = taskManager
-                                .getReceivingTask()!!
-                                .taskRepository
-                                .getProductsDiscrepancies()
-                                .getAllCountDiscrepanciesOfProduct(taskSetsInfo.componentNumber)
-                                .toStringFormatted()
+                        val countProcessedComponents = processNonExciseSetsReceivingProductService.getCountDiscrepanciesOfComponent(taskSetsInfo.componentNumber).toStringFormatted()
                         val howMuchProcessComponents = ((productInfo.value?.quantityInvest?.toDouble()
                                 ?: 0.0) * (countValue.value
                                 ?: 0.0) * taskSetsInfo.quantity).toStringFormatted()
                         ListComponentsItem(
                                 number = index + 1,
                                 name = "${taskSetsInfo.componentNumber.substring(taskSetsInfo.componentNumber.length - 6)} $componentDescription",
-                                quantity = "$countProcessedComponents из $howMuchProcessComponents",
+                                quantity = "$countProcessedComponents ${context.getString(R.string.of)} $howMuchProcessComponents",
                                 componentInfo = taskSetsInfo,
+                                full = countProcessedComponents == howMuchProcessComponents && (countProcessedComponents.toDouble() + howMuchProcessComponents.toDouble()) > 0,
                                 even = index % 2 == 0
                         )
                     }
@@ -224,11 +222,11 @@ class NonExciseSetsReceivingViewModel : CoreViewModel(),
 
     fun onClickClean() {
         componentsSelectionsHelper.selectedPositions.value?.map { position ->
-            taskManager
-                    .getReceivingTask()
-                    ?.taskRepository
-                    ?.getProductsDiscrepancies()
-                    ?.deleteProductsDiscrepanciesForProduct(listComponents.value!![position].componentInfo.componentNumber)
+            listComponents.value?.let {
+                processNonExciseSetsReceivingProductService.clearCurrentComponent(
+                        it[position].componentInfo.componentNumber
+                )
+            }
         }
 
         updateListComponents()
@@ -239,10 +237,9 @@ class NonExciseSetsReceivingViewModel : CoreViewModel(),
     }
 
     fun onClickAdd() {
-        if (processNonExciseSetsReceivingProductService.overLimit(countValue.value ?: 0.0)) {
-            screenNavigator.openAlertOverLimitPlannedScreen()
-        } else {
-            processNonExciseSetsReceivingProductService.addSet(count.value!!, qualityInfo.value!![spinQualitySelectedPosition.value!!].code)
+        if (count.value != null && qualityInfo.value != null) {
+            processNonExciseSetsReceivingProductService.apply(count.value!!, qualityInfo.value!![spinQualitySelectedPosition.value
+                    ?: 0].code)
         }
     }
 

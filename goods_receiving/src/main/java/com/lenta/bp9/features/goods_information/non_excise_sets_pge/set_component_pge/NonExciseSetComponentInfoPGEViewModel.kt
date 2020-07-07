@@ -1,8 +1,10 @@
 package com.lenta.bp9.features.goods_information.non_excise_sets_pge.set_component_pge
 
 import android.annotation.SuppressLint
+import android.content.Context
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import com.lenta.bp9.R
 import com.lenta.bp9.model.processing.ProcessNonExciseSetsPGEProductService
 import com.lenta.bp9.model.task.IReceivingTaskManager
 import com.lenta.bp9.model.task.TaskBatchInfo
@@ -16,6 +18,7 @@ import com.lenta.shared.fmp.resources.slow.ZfmpUtz48V001
 import com.lenta.shared.models.core.Manufacturer
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.requests.combined.scan_info.pojo.QualityInfo
+import com.lenta.shared.utilities.extentions.combineLatest
 import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.utilities.extentions.toStringFormatted
 import com.lenta.shared.view.OnPositionClickListener
@@ -29,16 +32,24 @@ class NonExciseSetComponentInfoPGEViewModel : CoreViewModel(),
 
     @Inject
     lateinit var taskManager: IReceivingTaskManager
+
     @Inject
     lateinit var screenNavigator: IScreenNavigator
+
     @Inject
     lateinit var dataBase: IDataBaseRepo
+
     @Inject
     lateinit var repoInMemoryHolder: IRepoInMemoryHolder
+
     @Inject
     lateinit var processNonExciseSetsPGEProductService: ProcessNonExciseSetsPGEProductService
+
     @Inject
     lateinit var hyperHive: HyperHive
+
+    @Inject
+    lateinit var context: Context
 
     private val zfmpUtz48V001: ZfmpUtz48V001 by lazy {
         ZfmpUtz48V001(hyperHive)
@@ -46,7 +57,8 @@ class NonExciseSetComponentInfoPGEViewModel : CoreViewModel(),
 
     val productInfo: MutableLiveData<TaskProductInfo> = MutableLiveData()
     val setInfo: MutableLiveData<TaskSetsInfo> = MutableLiveData()
-    val planQuantityBatch: MutableLiveData<String> = MutableLiveData()
+    private val planQuantityBatch: MutableLiveData<Double> = MutableLiveData()
+    val planQuantityBatchWithUom: MutableLiveData<String> = MutableLiveData()
     val spinQuality: MutableLiveData<List<String>> = MutableLiveData()
     val spinQualitySelectedPosition: MutableLiveData<Int> = MutableLiveData(0)
     val spinManufacturers: MutableLiveData<List<String>> = MutableLiveData()
@@ -63,12 +75,17 @@ class NonExciseSetComponentInfoPGEViewModel : CoreViewModel(),
     private val manufacturer: MutableLiveData<List<Manufacturer>> = MutableLiveData()
 
     val count: MutableLiveData<String> = MutableLiveData("0")
-    private val countValue: MutableLiveData<Double> = count.map { it?.toDoubleOrNull() ?: 0.0 }
+    private val countValue: MutableLiveData<Double> = count.map {
+        if (it != null && spinManufacturersSelectedPosition.value != null) {
+            updateDataSpinBottlingDate(spinManufacturersSelectedPosition.value!!)
+        }
+        it?.toDoubleOrNull() ?: 0.0
+    }
 
     val enabledResetButton: MutableLiveData<Boolean> = MutableLiveData(false)
 
-    val enabledApplyButton: MutableLiveData<Boolean> = countValue.map {
-        (it ?: 0.0) > 0.0
+    val enabledApplyButton: MutableLiveData<Boolean> = planQuantityBatch.combineLatest(countValue).map {
+        (it?.first ?: 0.0) >= 0.0 && (it?.second ?: 0.0) > 0.0
     }
 
     @SuppressLint("SimpleDateFormat")
@@ -77,8 +94,10 @@ class NonExciseSetComponentInfoPGEViewModel : CoreViewModel(),
     @SuppressLint("SimpleDateFormat")
     private val formatterEN = SimpleDateFormat("yyyy-MM-dd")
 
-    fun getTitle() : String {
-        return  "${setInfo.value!!.componentNumber.substring(setInfo.value!!.componentNumber.length - 6)} ${zfmpUtz48V001.getProductInfoByMaterial(setInfo.value!!.componentNumber)?.name}"
+    fun getTitle(): String {
+        return setInfo.value?.let {
+            "${it.componentNumber.substring(it.componentNumber.length - 6)} ${zfmpUtz48V001.getProductInfoByMaterial(it.componentNumber)?.name}"
+        } ?: ""
     }
 
     init {
@@ -86,15 +105,19 @@ class NonExciseSetComponentInfoPGEViewModel : CoreViewModel(),
             suffix.value = setInfo.value?.uom?.name
             qualityInfo.value = dataBase.getQualityInfoPGE()
 
-            spinQuality.value = listOf(qualityInfo.value?.findLast {find ->
+            spinQuality.value = listOf(qualityInfo.value?.findLast { find ->
                 find.code == typeDiscrepancies.value
             }.let {
                 it?.name ?: ""
             })
 
-            spinProcessingUnit.value = listOf("ЕО - ${productInfo.value!!.processingUnit}")
-
-            batchInfo.value = taskManager.getReceivingTask()!!.taskRepository.getBatches().findBatchOfProduct(setInfo.value!!.componentNumber)
+            batchInfo.value = setInfo.value?.let {
+                taskManager
+                        .getReceivingTask()
+                        ?.taskRepository
+                        ?.getBatches()
+                        ?.findBatchOfProduct(it.componentNumber)
+            }
 
             manufacturer.value = batchInfo.value?.mapNotNull { batch ->
                 repoInMemoryHolder.manufacturers.value?.findLast {
@@ -115,22 +138,26 @@ class NonExciseSetComponentInfoPGEViewModel : CoreViewModel(),
     }
 
     fun onClickApply() {
-        val manufactureCode = manufacturer.value?.findLast {
-            it.name == spinManufacturers.value?.get(spinManufacturersSelectedPosition.value ?: 0)
-        }?.code
-        val batchSelected = batchInfo.value?.findLast {batch ->
-            batch.egais == manufactureCode &&
-                    batch.bottlingDate == formatterEN.format(formatterRU.parse(spinBottlingDate.value?.get(spinBottlingDateSelectedPosition.value ?: 0))) &&
-                    batch.processingUnitNumber == spinProcessingUnit.value?.get(spinProcessingUnitSelectedPosition.value ?: 0)?.substring(5)
+        val bottlingDate = spinBottlingDate.value?.let {
+            formatterEN.format(formatterRU.parse(it[spinBottlingDateSelectedPosition.value ?: 0]))
+        }
+        val batchSelected = batchInfo.value?.findLast { batch ->
+            batch.egais == getManufactureCode(spinManufacturersSelectedPosition.value ?: 0) &&
+                    batch.bottlingDate == bottlingDate &&
+                    batch.processingUnitNumber == spinProcessingUnit.value?.get(spinProcessingUnitSelectedPosition.value
+                    ?: 0)?.substring(context.getString(R.string.spin_processing_unit).length)
         }
 
-        if (batchSelected != null) {
-            if (processNonExciseSetsPGEProductService.overLimitBatch(countValue.value!!, batchSelected)) {
-                screenNavigator.openAlertOverLimitPlannedBatchScreen()
-            } else {
-                processNonExciseSetsPGEProductService.addComponent(count.value!!, qualityInfo.value!![spinQualitySelectedPosition.value!!].code, spinProcessingUnit.value!![spinProcessingUnitSelectedPosition.value!!].substring(5), batchSelected)
-            }
+        if (batchSelected != null && count.value != null && qualityInfo.value != null && setInfo.value != null) {
+            processNonExciseSetsPGEProductService.addCurrentComponent(
+                    count = count.value!!,
+                    typeDiscrepancies = qualityInfo.value!![spinQualitySelectedPosition.value
+                            ?: 0].code,
+                    componentInfo = setInfo.value!!,
+                    batchInfo = batchSelected
+            )
         }
+        screenNavigator.goBack()
     }
 
     override fun onClickPosition(position: Int) {
@@ -143,40 +170,51 @@ class NonExciseSetComponentInfoPGEViewModel : CoreViewModel(),
     }
 
     private fun updateDataSpinBottlingDate(position: Int) {
-        val manufactureCode = manufacturer.value?.findLast {
-            it.name == spinManufacturers.value?.get(position)
-        }?.code
+        val manufactureCode = getManufactureCode(position)
 
         val bottlingDates = batchInfo.value?.filter {
             it.egais == manufactureCode
-        }?.map {batch ->
+        }?.map { batch ->
             formatterRU.format(formatterEN.parse(batch.bottlingDate))
         }
         spinBottlingDateSelectedPosition.value = 0
         spinBottlingDate.value = bottlingDates
 
-        batchInfo.value?.findLast {batch ->
-            batch.egais == manufactureCode && batch.bottlingDate == formatterEN.format(formatterRU.parse(spinBottlingDate.value?.get(spinBottlingDateSelectedPosition.value ?: 0)))
-        }?.let {
-            planQuantityBatch.value = "${it.purchaseOrderScope.toStringFormatted()} ${setInfo.value!!.uom.name}"
+        spinBottlingDate.value?.let { bottlingDate ->
+            batchInfo.value?.findLast { batch ->
+                batch.egais == manufactureCode && batch.bottlingDate == formatterEN.format(formatterRU.parse(bottlingDate[spinBottlingDateSelectedPosition.value
+                        ?: 0]))
+            }?.let { batch ->
+                setInfo.value?.let { set ->
+                    taskManager
+                            .getReceivingTask()
+                            ?.taskRepository
+                            ?.getProductsDiscrepancies()
+                            ?.getAllCountDiscrepanciesOfProduct(set.componentNumber)
+                            ?.let { allCountDiscrepancies ->
+                                planQuantityBatch.value = processNonExciseSetsPGEProductService.getCountSet() * set.quantity - allCountDiscrepancies - processNonExciseSetsPGEProductService.getCountDiscrepanciesOfComponent(set.componentNumber) - (count.value?.toDoubleOrNull()
+                                        ?: 0.0)
+                                planQuantityBatchWithUom.value = "${(batch.purchaseOrderScope - allCountDiscrepancies - processNonExciseSetsPGEProductService.getCountDiscrepanciesOfComponent(set.componentNumber) - (count.value?.toDoubleOrNull() ?: 0.0)).toStringFormatted()} ${set.uom.name}"
+                            }
+                }
+            }
         }
         updateDataSpinProcessingUnit(spinBottlingDateSelectedPosition.value ?: 0)
 
     }
 
     private fun updateDataSpinProcessingUnit(positionSpinBottlingDate: Int) {
-        val manufactureCode = manufacturer.value?.findLast {
-            it.name == spinManufacturers.value?.get(spinManufacturersSelectedPosition.value ?: 0)
-        }?.code
+        val bottlingDate = spinBottlingDate.value?.let {
+            formatterEN.format(formatterRU.parse(it[positionSpinBottlingDate]))
+        }
 
-        val bottlingDate = formatterEN.format(formatterRU.parse(spinBottlingDate.value?.get(positionSpinBottlingDate)))
-
-        val listProcessingUnitNumber = batchInfo.value?.filter {fIt ->
-            fIt.egais == manufactureCode && fIt.bottlingDate == bottlingDate
-        }?.groupBy {gIt ->
+        val listProcessingUnitNumber = batchInfo.value?.filter { fIt ->
+            fIt.egais == getManufactureCode(spinManufacturersSelectedPosition.value
+                    ?: 0) && fIt.bottlingDate == bottlingDate
+        }?.groupBy { gIt ->
             gIt.processingUnitNumber
-        }?.map {mIt ->
-            "ЕО - " + mIt.key
+        }?.map { mIt ->
+            "${context.getString(R.string.spin_processing_unit)}${mIt.key}"
         }
         spinProcessingUnitSelectedPosition.value = 0
         spinProcessingUnit.value = listProcessingUnitNumber
@@ -185,8 +223,19 @@ class NonExciseSetComponentInfoPGEViewModel : CoreViewModel(),
 
     fun onClickPositionBottlingDate(position: Int) {
         spinBottlingDateSelectedPosition.value = position
-        batchInfo.value?.let {
-            planQuantityBatch.value = "${it[position].purchaseOrderScope.toStringFormatted()} ${setInfo.value!!.uom.name}"
+        batchInfo.value?.let { batches ->
+            setInfo.value?.let { set ->
+                taskManager
+                        .getReceivingTask()
+                        ?.taskRepository
+                        ?.getProductsDiscrepancies()
+                        ?.getAllCountDiscrepanciesOfProduct(set.componentNumber)
+                        ?.let { allCountDiscrepancies ->
+                            planQuantityBatch.value = processNonExciseSetsPGEProductService.getCountSet() * set.quantity - allCountDiscrepancies - processNonExciseSetsPGEProductService.getCountDiscrepanciesOfComponent(set.componentNumber) - (count.value?.toDoubleOrNull()
+                                    ?: 0.0)
+                            planQuantityBatchWithUom.value = "${(batches[position].purchaseOrderScope - allCountDiscrepancies - processNonExciseSetsPGEProductService.getCountDiscrepanciesOfComponent(set.componentNumber) - (count.value?.toDoubleOrNull() ?: 0.0)).toStringFormatted()} ${set.uom.name}"
+                        }
+            }
         }
     }
 
@@ -204,5 +253,13 @@ class NonExciseSetComponentInfoPGEViewModel : CoreViewModel(),
         } else {
             enabledResetButton.value = true
         }
+    }
+
+    private fun getManufactureCode(position: Int): String {
+        return manufacturer.value?.findLast {
+            it.name == spinManufacturers.value?.get(position)
+        }
+                ?.code
+                ?: ""
     }
 }
