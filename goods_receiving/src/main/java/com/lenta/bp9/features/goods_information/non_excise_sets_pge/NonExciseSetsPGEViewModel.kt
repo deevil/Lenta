@@ -162,8 +162,37 @@ class NonExciseSetsPGEViewModel : CoreViewModel(),
                     scanResultHandler = this@NonExciseSetsPGEViewModel::handleProductSearchResult)
 
             suffix.value = productInfo.value?.uom?.name
-            if (isDiscrepancy.value!!) {
-                count.value = taskManager.getReceivingTask()?.taskRepository?.getProductsDiscrepancies()?.getCountProductNotProcessedOfProduct(productInfo.value!!).toStringFormatted()
+            if (isDiscrepancy.value == true) {
+                val processingUnitsOfProduct = productInfo.value?.let {
+                    taskManager
+                            .getReceivingTask()
+                            ?.taskRepository
+                            ?.getProducts()
+                            ?.getProcessingUnitsOfProduct(it.materialNumber)
+                }.orEmpty()
+                count.value = if (processingUnitsOfProduct.size > 1) { //если у товара две ЕО
+                    val countOrderQuantity = processingUnitsOfProduct.map { unitInfo ->
+                        unitInfo.orderQuantity.toDouble()
+                    }.sumByDouble {
+                        it
+                    }
+                    productInfo.value?.let{
+                        taskManager
+                                .getReceivingTask()
+                                ?.taskRepository
+                                ?.getProductsDiscrepancies()
+                                ?.getCountProductNotProcessedOfProductPGEOfProcessingUnits(it, countOrderQuantity).toStringFormatted()
+                    }
+
+                } else {
+                    productInfo.value?.let{
+                        taskManager
+                                .getReceivingTask()
+                                ?.taskRepository
+                                ?.getProductsDiscrepancies()
+                                ?.getCountProductNotProcessedOfProductPGE(it).toStringFormatted()
+                    }
+                }
                 qualityInfo.value = dataBase.getQualityInfoPGEForDiscrepancy()
                 spinQualitySelectedPosition.value = qualityInfo.value!!.indexOfLast { it.code == "3" }
             } else {

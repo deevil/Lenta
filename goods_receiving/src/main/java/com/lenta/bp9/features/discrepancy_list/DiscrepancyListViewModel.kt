@@ -113,13 +113,19 @@ class DiscrepancyListViewModel : CoreViewModel(), PageSelectionListener {
             if (taskManager.getReceivingTask()?.taskHeader?.taskType == TaskType.RecalculationCargoUnit) {
                 qualityInfo.value = dataBase.getQualityInfoPGE()
             } else {
-                qualityInfo.value = dataBase.getAllReasonRejectionInfo()?.map {
+                qualityInfo.value = dataBase.getQualityInfoForDiscrepancy()?.map {
                     QualityInfo(
                             id = it.id,
                             code = it.code,
                             name = it.name
                     )
-                }
+                }.orEmpty() + dataBase.getAllReasonRejectionInfo()?.map {
+                    QualityInfo(
+                            id = it.id,
+                            code = it.code,
+                            name = it.name
+                    )
+                }.orEmpty()
             }
             updateData()
             screenNavigator.hideProgress()
@@ -237,10 +243,13 @@ class DiscrepancyListViewModel : CoreViewModel(), PageSelectionListener {
         taskManager.getReceivingTask()?.let { task ->
             task.taskRepository.getProductsDiscrepancies().getProductsDiscrepancies()
                     .filter {
+                        val isComponent= repoInMemoryHolder.sets.value?.any { set ->
+                            set.componentNumber == it.materialNumber
+                        }
                         if (repoInMemoryHolder.taskList.value?.taskListLoadingMode == TaskListLoadingMode.PGE) {
-                            !(it.typeDiscrepancies == "1" || it.typeDiscrepancies == "2")
+                            !(it.typeDiscrepancies == "1" || it.typeDiscrepancies == "2") && isComponent == false
                         } else {
-                            it.typeDiscrepancies != "1"
+                            it.typeDiscrepancies != "1" && isComponent == false
                         }
                     }
                     .sortedByDescending {

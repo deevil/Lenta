@@ -13,6 +13,7 @@ import com.lenta.bp9.repos.IRepoInMemoryHolder
 import com.lenta.shared.models.core.ProductType
 import com.lenta.shared.models.core.Uom
 import com.lenta.shared.platform.viewmodel.CoreViewModel
+import com.lenta.shared.requests.combined.scan_info.pojo.QualityInfo
 import com.lenta.shared.requests.combined.scan_info.pojo.ReasonRejectionInfo
 import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.SelectionItemsHelper
@@ -71,7 +72,14 @@ class GoodsDetailsViewModel : CoreViewModel() {
                     )
                 }
             } else {
-                dataBase.getAllReasonRejectionInfo()
+                dataBase.getAllReasonRejectionInfo().orEmpty() + dataBase.getQualityInfoForDiscrepancy()?.map {
+                    ReasonRejectionInfo(
+                            id = it.id,
+                            qualityCode = "",
+                            code = it.code,
+                            name = it.name
+                    )
+                }.orEmpty()
             }
 
             updateProduct()

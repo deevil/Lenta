@@ -191,7 +191,7 @@ class NonExciseSetComponentInfoPGEViewModel : CoreViewModel(),
                             ?.getProductsDiscrepancies()
                             ?.getAllCountDiscrepanciesOfProduct(set.componentNumber)
                             ?.let { allCountDiscrepancies ->
-                                planQuantityBatch.value = processNonExciseSetsPGEProductService.getCountSet() * set.quantity - allCountDiscrepancies - processNonExciseSetsPGEProductService.getCountDiscrepanciesOfComponent(set.componentNumber) - (count.value?.toDoubleOrNull()
+                                planQuantityBatch.value = batch.purchaseOrderScope - allCountDiscrepancies - processNonExciseSetsPGEProductService.getCountDiscrepanciesOfComponent(set.componentNumber) - (count.value?.toDoubleOrNull()
                                         ?: 0.0)
                                 planQuantityBatchWithUom.value = "${(batch.purchaseOrderScope - allCountDiscrepancies - processNonExciseSetsPGEProductService.getCountDiscrepanciesOfComponent(set.componentNumber) - (count.value?.toDoubleOrNull() ?: 0.0)).toStringFormatted()} ${set.uom.name}"
                             }
@@ -230,7 +230,7 @@ class NonExciseSetComponentInfoPGEViewModel : CoreViewModel(),
                         ?.getProductsDiscrepancies()
                         ?.getAllCountDiscrepanciesOfProduct(set.componentNumber)
                         ?.let { allCountDiscrepancies ->
-                            planQuantityBatch.value = processNonExciseSetsPGEProductService.getCountSet() * set.quantity - allCountDiscrepancies - processNonExciseSetsPGEProductService.getCountDiscrepanciesOfComponent(set.componentNumber) - (count.value?.toDoubleOrNull()
+                            planQuantityBatch.value = batches[position].purchaseOrderScope - allCountDiscrepancies - processNonExciseSetsPGEProductService.getCountDiscrepanciesOfComponent(set.componentNumber) - (count.value?.toDoubleOrNull()
                                     ?: 0.0)
                             planQuantityBatchWithUom.value = "${(batches[position].purchaseOrderScope - allCountDiscrepancies - processNonExciseSetsPGEProductService.getCountDiscrepanciesOfComponent(set.componentNumber) - (count.value?.toDoubleOrNull() ?: 0.0)).toStringFormatted()} ${set.uom.name}"
                         }
