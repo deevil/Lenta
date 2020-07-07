@@ -21,24 +21,34 @@ import javax.inject.Inject
 class LoadingTaskCardViewModel : CoreLoadingViewModel() {
     @Inject
     lateinit var screenNavigator: IScreenNavigator
+
     @Inject
     lateinit var taskCardNetRequest: TaskCardNetRequest
+
     @Inject
     lateinit var taskContentsNetRequest: TaskContentsNetRequest
+
     @Inject
     lateinit var taskContentsReceptionDistrCenterNetRequest: TaskContentsReceptionDistrCenterNetRequest
+
     @Inject
     lateinit var zmpUtzGrz43V001NetRequest: ZmpUtzGrz43V001NetRequest
+
     @Inject
     lateinit var sessionInfo: ISessionInfo
+
     @Inject
     lateinit var context: Context
+
     @Inject
     lateinit var taskManager: IReceivingTaskManager
+
     @Inject
     lateinit var repoInMemoryHolder: IRepoInMemoryHolder
+
     @Inject
     lateinit var taskContents: TaskContents
+
     @Inject
     lateinit var hyperHive: HyperHive
 
@@ -59,21 +69,30 @@ class LoadingTaskCardViewModel : CoreLoadingViewModel() {
                     personalNumber = sessionInfo.personnelNumber ?: "",
                     taskNumber = taskNumber
             )
-            val taskHeader = repoInMemoryHolder.taskList.value?.tasks?.findLast { it.taskNumber == taskNumber }
+            val taskHeader = repoInMemoryHolder.taskList.value
+                    ?.tasks
+                    ?.findLast { it.taskNumber == taskNumber }
+                    ?: repoInMemoryHolder.lastSearchResult.value
+                            ?.tasks
+                            ?.findLast { it.taskNumber == taskNumber }
             if (loadFullData) {
                 when (taskHeader?.taskType) {
                     TaskType.ReceptionDistributionCenter, TaskType.OwnProduction -> {
                         if (taskHeader.status == TaskStatus.Traveling) {
                             taskCardNetRequest(params).either(::handleFailure, ::handleSuccess)
                         } else {
-                            val paramsRDS = TaskContentsReceptionDistrCenterParameters(
-                                    mode = mode.TaskCardModeString,
-                                    deviceIP = context.getDeviceIp(),
-                                    personalNumber = sessionInfo.personnelNumber ?: "",
-                                    taskNumber = taskNumber,
-                                    taskType = if (taskHeader.taskType == TaskType.ReceptionDistributionCenter) TaskType.ReceptionDistributionCenter.taskTypeString else TaskType.OwnProduction.taskTypeString
-                            )
-                            taskContentsReceptionDistrCenterNetRequest(paramsRDS).either(::handleFailure, ::handleSuccessRDS)
+                            if (taskHeader.taskType == TaskType.ReceptionDistributionCenter && taskHeader.status == TaskStatus.Cancel) { //https://trello.com/c/pBXnVYkp
+                                screenNavigator.goBack()
+                            } else {
+                                val paramsRDS = TaskContentsReceptionDistrCenterParameters(
+                                        mode = mode.TaskCardModeString,
+                                        deviceIP = context.getDeviceIp(),
+                                        personalNumber = sessionInfo.personnelNumber ?: "",
+                                        taskNumber = taskNumber,
+                                        taskType = if (taskHeader.taskType == TaskType.ReceptionDistributionCenter) TaskType.ReceptionDistributionCenter.taskTypeString else TaskType.OwnProduction.taskTypeString
+                                )
+                                taskContentsReceptionDistrCenterNetRequest(paramsRDS).either(::handleFailure, ::handleSuccessRDS)
+                            }
                         }
                     }
                     TaskType.RecalculationCargoUnit -> {
@@ -118,13 +137,19 @@ class LoadingTaskCardViewModel : CoreLoadingViewModel() {
     private fun handleSuccess(result: TaskCardRequestResult) {
         Logg.d { "Task card request result $result" }
         screenNavigator.goBack()
-        val taskHeader = repoInMemoryHolder.taskList.value?.tasks?.findLast { it.taskNumber == taskNumber } ?: repoInMemoryHolder.lastSearchResult.value?.tasks?.findLast { it.taskNumber == taskNumber }
+        val taskHeader = repoInMemoryHolder.taskList.value
+                ?.tasks
+                ?.findLast { it.taskNumber == taskNumber }
+                ?: repoInMemoryHolder.lastSearchResult.value
+                        ?.tasks
+                        ?.findLast { it.taskNumber == taskNumber }
         taskHeader?.let {
             val notifications = result.notifications.map { TaskNotification.from(it) }
             val newTask = taskManager.newReceivingTask(taskHeader, TaskDescription.from(result.taskDescription))
             newTask?.taskRepository?.getNotifications()?.updateWithNotifications(notifications, null, null, null)
             taskManager.setTask(newTask)
-            screenNavigator.openTaskCardScreen(mode, taskManager.getReceivingTask()?.taskHeader?.taskType ?: TaskType.None)
+            screenNavigator.openTaskCardScreen(mode, taskManager.getReceivingTask()?.taskHeader?.taskType
+                    ?: TaskType.None)
         }
     }
 
@@ -133,9 +158,14 @@ class LoadingTaskCardViewModel : CoreLoadingViewModel() {
         //screenNavigator.goBack()
         viewModelScope.launch {
             repoInMemoryHolder.manufacturers.value = result.manufacturers
-            repoInMemoryHolder.processOrderData.value = result.processOrderData.map { TaskProcessOrderDataInfo.from( it) }
+            repoInMemoryHolder.processOrderData.value = result.processOrderData.map { TaskProcessOrderDataInfo.from(it) }
             repoInMemoryHolder.sets.value = result.setsInfo.map { TaskSetsInfo.from(hyperHive, it) }
-            val taskHeader = repoInMemoryHolder.taskList.value?.tasks?.findLast { it.taskNumber == taskNumber }
+            val taskHeader = repoInMemoryHolder.taskList.value
+                    ?.tasks
+                    ?.findLast { it.taskNumber == taskNumber }
+                    ?: repoInMemoryHolder.lastSearchResult.value
+                            ?.tasks
+                            ?.findLast { it.taskNumber == taskNumber }
             taskHeader?.let {
                 val notifications = result.notifications.map { TaskNotification.from(it) }
                 val documentNotifications = result.documentNotifications.map { TaskNotification.from(it) }
@@ -188,7 +218,12 @@ class LoadingTaskCardViewModel : CoreLoadingViewModel() {
         viewModelScope.launch {
             repoInMemoryHolder.manufacturers.value = result.manufacturers
             repoInMemoryHolder.sets.value = result.setsInfo.map { TaskSetsInfo.from(hyperHive, it) }
-            val taskHeader = repoInMemoryHolder.taskList.value?.tasks?.findLast { it.taskNumber == taskNumber }
+            val taskHeader = repoInMemoryHolder.taskList.value
+                    ?.tasks
+                    ?.findLast { it.taskNumber == taskNumber }
+                    ?: repoInMemoryHolder.lastSearchResult.value
+                            ?.tasks
+                            ?.findLast { it.taskNumber == taskNumber }
             taskHeader?.let {
                 val notifications = result.notifications.map { TaskNotification.from(it) }
                 val documentNotifications = result.documentNotifications.map { TaskNotification.from(it) }
@@ -239,7 +274,12 @@ class LoadingTaskCardViewModel : CoreLoadingViewModel() {
 
     private fun handleSuccessShipmentRC(result: ZmpUtzGrz43V001Result) {
         viewModelScope.launch {
-            val taskHeader = repoInMemoryHolder.taskList.value?.tasks?.findLast { it.taskNumber == taskNumber }
+            val taskHeader = repoInMemoryHolder.taskList.value
+                    ?.tasks
+                    ?.findLast { it.taskNumber == taskNumber }
+                    ?: repoInMemoryHolder.lastSearchResult.value
+                            ?.tasks
+                            ?.findLast { it.taskNumber == taskNumber }
             taskHeader?.let {
                 val notifications = result.notifications.map { TaskNotification.from(it) }
                 val conditionNotifications = result.conditionNotifications.map { TaskNotification.from(it) }
@@ -261,7 +301,8 @@ class LoadingTaskCardViewModel : CoreLoadingViewModel() {
                             screenNavigator.openControlDeliveryCargoUnitsScreen() //экран Контроль погрузки ГЕ
                         }
                         else -> {
-                            screenNavigator.openTaskCardScreen(TaskCardMode.Full, taskManager.getReceivingTask()?.taskHeader?.taskType ?: TaskType.None)
+                            screenNavigator.openTaskCardScreen(TaskCardMode.Full, taskManager.getReceivingTask()?.taskHeader?.taskType
+                                    ?: TaskType.None)
                         }
                     }
                 }
@@ -307,7 +348,8 @@ class LoadingTaskCardViewModel : CoreLoadingViewModel() {
                     screenNavigator.openTransferGoodsSectionScreen()
                 }
                 else -> {
-                    screenNavigator.openTaskCardScreen(TaskCardMode.Full, taskManager.getReceivingTask()?.taskHeader?.taskType ?: TaskType.None)
+                    screenNavigator.openTaskCardScreen(TaskCardMode.Full, taskManager.getReceivingTask()?.taskHeader?.taskType
+                            ?: TaskType.None)
                 }
             }
         }

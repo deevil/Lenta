@@ -15,6 +15,7 @@ interface ITaskProductsDiscrepanciesRepository {
     fun deleteProductsDiscrepanciesForProduct(product: TaskProductInfo): Boolean
     fun deleteProductsDiscrepanciesForProduct(materialNumber: String): Boolean
     fun deleteProductsDiscrepanciesNotNormForProduct(product: TaskProductInfo): Boolean
+    fun deleteProductsDiscrepanciesNotNormForProduct(materialNumber: String): Boolean
     fun changeProductDiscrepancyNotRecountPGE(discrepancy: TaskProductDiscrepancies): Boolean
     fun deleteProductDiscrepancyNotRecountPGE(discrepancy: TaskProductDiscrepancies): Boolean
     fun deleteProductDiscrepancyNotRecountPGE(materialNumber: String, typeDiscrepancies: String): Boolean
@@ -28,6 +29,7 @@ interface ITaskProductsDiscrepanciesRepository {
     fun getCountProductNotProcessedOfProductPGE(product: TaskProductInfo): Double
     fun getCountProductNotProcessedOfProductPGEOfProcessingUnits(product: TaskProductInfo, orderQuantity: Double) : Double
     fun getCountOfDiscrepanciesOfProduct(product: TaskProductInfo, typeDiscrepancies: String): Double
+    fun getCountOfDiscrepanciesOfProduct(materialNumber: String, typeDiscrepancies: String): Double
     fun getQuantityDiscrepanciesOfProduct(product: TaskProductInfo): Int
     fun getAllCountDiscrepanciesOfProduct(product: TaskProductInfo): Double
     fun getAllCountDiscrepanciesOfProduct(materialNumber: String): Double

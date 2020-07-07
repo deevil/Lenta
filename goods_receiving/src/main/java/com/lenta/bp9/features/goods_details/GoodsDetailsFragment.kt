@@ -39,7 +39,7 @@ class GoodsDetailsFragment : CoreFragment<FragmentGoodsDetailsBinding, GoodsDeta
     override fun getPageNumber(): String = "09/25"
 
     override fun getViewModel(): GoodsDetailsViewModel {
-        provideViewModel(GoodsDetailsViewModel::class.java).let {vm ->
+        provideViewModel(GoodsDetailsViewModel::class.java).let { vm ->
             getAppComponent()?.inject(vm)
             vm.productInfo.value = this.productInfo
             return vm
@@ -54,26 +54,21 @@ class GoodsDetailsFragment : CoreFragment<FragmentGoodsDetailsBinding, GoodsDeta
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
         bottomToolbarUiModel.cleanAll()
         bottomToolbarUiModel.uiModelButton1.show(ButtonDecorationInfo.back)
-        /**это для view с/без удаления, ранее использовалась, но решили сделать для всех товаров с возможностью удаления количеств по расхождениям
-          if (vm.isVetProduct.value == true) {
+        if (vm.productInfo.value?.isSet == false) {
             bottomToolbarUiModel.uiModelButton3.show(ButtonDecorationInfo.delete)
             connectLiveData(vm.enabledDelBtn, bottomToolbarUiModel.uiModelButton3.enabled)
-        }*/
-        bottomToolbarUiModel.uiModelButton3.show(ButtonDecorationInfo.delete)
-        connectLiveData(vm.enabledDelBtn, bottomToolbarUiModel.uiModelButton3.enabled)
+        }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        /**это для view с/без удаления, ранее использовалась, но решили сделать для всех товаров с возможностью удаления количеств по расхождениям
-          if (vm.isVetProduct.value == true) {
+        if (vm.productInfo.value?.isSet == false) {
             initRvConfigWithDel()
         } else {
             initRvConfig()
-        }*/
-        initRvConfigWithDel()
+        }
     }
 
-    //это view без удаления, ранее использовалась, но решили сделать для всех товаров с возможностью удаления количеств по расхождениям
+    //это view без удаления
     private fun initRvConfig() {
         binding?.let { layoutBinding ->
             layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
