@@ -12,6 +12,7 @@ import com.lenta.bp9.model.processing.ProcessNonExciseSetsReceivingProductServic
 import com.lenta.bp9.model.task.IReceivingTaskManager
 import com.lenta.bp9.model.task.TaskProductInfo
 import com.lenta.bp9.model.task.TaskSetsInfo
+import com.lenta.bp9.platform.TypeDiscrepanciesConstants
 import com.lenta.bp9.platform.navigation.IScreenNavigator
 import com.lenta.bp9.repos.IDataBaseRepo
 import com.lenta.bp9.repos.IRepoInMemoryHolder
@@ -96,7 +97,7 @@ class NonExciseSetsReceivingViewModel : CoreViewModel(),
         countValue.combineLatest(spinQualitySelectedPosition).map {
             val countAccept = taskManager.getReceivingTask()!!.taskRepository.getProductsDiscrepancies().getCountAcceptOfProduct(productInfo.value!!)
 
-            if (qualityInfo.value?.get(it!!.second)?.code == "1") {
+            if (qualityInfo.value?.get(it!!.second)?.code == TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_NORM) {
                 (it?.first ?: 0.0) + countAccept
             } else {
                 countAccept
@@ -105,6 +106,45 @@ class NonExciseSetsReceivingViewModel : CoreViewModel(),
     }
 
     val acceptTotalCountWithUom: MutableLiveData<String> = acceptTotalCount.map {
+        val countAccept = taskManager.getReceivingTask()!!.taskRepository.getProductsDiscrepancies().getCountAcceptOfProduct(productInfo.value!!)
+        val totalCount = it ?: DEFAULT_DOUBLE_ZERO_VALUE
+
+        when {
+            totalCount > DEFAULT_DOUBLE_ZERO_VALUE -> {
+                val purchaseName = productInfo.value?.purchaseOrderUnits?.name
+                purchaseName?.run {
+                    buildString {
+                        append(LEAD_PLUS)
+                        append(totalCount.toStringFormatted())
+                        append(" ")
+                        append(purchaseName)
+                    }
+                }.orEmpty()
+            }
+            totalCount == DEFAULT_DOUBLE_ZERO_VALUE -> {
+                val purchaseName = productInfo.value?.purchaseOrderUnits?.name
+                purchaseName?.run {
+                    buildString {
+                        append(LEAD_ZERO)
+                        append(purchaseName)
+                    }
+                }.orEmpty()
+            }
+            else -> {
+                val firstPart = LEAD_PLUS.takeIf{countAccept > DEFAULT_DOUBLE_ZERO_VALUE}.orEmpty()
+                val middlePart = countAccept.toStringFormatted()
+                val lastPart = productInfo.value?.purchaseOrderUnits?.name.orEmpty()
+                buildString {
+                    append(firstPart)
+                    append(middlePart)
+                    append(" ")
+                    append(lastPart)
+                }
+            }
+        }
+    }
+
+    /**val acceptTotalCountWithUom: MutableLiveData<String> = acceptTotalCount.map {
         val countAccept = taskManager.getReceivingTask()!!.taskRepository.getProductsDiscrepancies().getCountAcceptOfProduct(productInfo.value!!)
         when {
             (it ?: 0.0) > 0.0 -> {
@@ -117,7 +157,7 @@ class NonExciseSetsReceivingViewModel : CoreViewModel(),
                 "${if (countAccept > 0.0) "+ " + countAccept.toStringFormatted() else countAccept.toStringFormatted()} ${productInfo.value?.purchaseOrderUnits?.name}"
             }
         }
-    }
+    }*/
 
     val refusalTotalCount: MutableLiveData<Double> by lazy {
         countValue.combineLatest(spinQualitySelectedPosition).map {
@@ -253,8 +293,11 @@ class NonExciseSetsReceivingViewModel : CoreViewModel(),
 
     fun onClickItemPosition(position: Int) {
         listComponents.value?.get(position)?.componentInfo?.let {
-            if (qualityInfo.value != null && spinQualitySelectedPosition.value != null && productInfo.value != null) {
-                screenNavigator.openNonExciseSetComponentInfoReceivingScreen(it, qualityInfo.value!![spinQualitySelectedPosition.value!!].code, productInfo.value!!)
+            val qualityInfoValue = qualityInfo.value
+            val productInfoValue = productInfo.value
+            val spinQualitySelectedPositionValue = spinQualitySelectedPosition.value
+            if (qualityInfoValue != null && spinQualitySelectedPositionValue != null && productInfoValue != null) {
+                screenNavigator.openNonExciseSetComponentInfoReceivingScreen(it, qualityInfoValue[spinQualitySelectedPositionValue].code, productInfoValue)
             } else {
                 screenNavigator.openAlertGoodsNotFoundTaskScreen()
             }
@@ -309,6 +352,12 @@ class NonExciseSetsReceivingViewModel : CoreViewModel(),
         } else {
             screenNavigator.goBack()
         }
+    }
+
+    companion object {
+        private const val DEFAULT_DOUBLE_ZERO_VALUE = 0.0
+        private const val LEAD_PLUS = "+ "
+        private const val LEAD_ZERO = "0 "
     }
 
 }

@@ -75,7 +75,8 @@ import com.lenta.shared.platform.navigation.runOrPostpone
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.progress.IProgressUseCaseInformator
 
-private const val  PAGE_NUMBER_95 = "95"
+private const val PAGE_NUMBER_95 = "95"
+
 class ScreenNavigator(
         private val context: Context,
         private val coreNavigator: ICoreNavigator,
@@ -1245,7 +1246,7 @@ class ScreenNavigator(
 
     override fun openExciseAlcoBoxListPGEScreen(productInfo: TaskProductInfo, selectQualityCode: String) {
         runOrPostpone {
-            getFragmentStack()?.push(ExciseAlcoBoxListPGEFragment.create(productInfo, selectQualityCode))
+            getFragmentStack()?.push(ExciseAlcoBoxListPGEFragment.newInstance(productInfo, selectQualityCode))
         }
     }
 

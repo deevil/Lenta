@@ -271,7 +271,7 @@ class NonExciseSetsPGEViewModel : CoreViewModel(),
     }
 
     override fun onOkInSoftKeyboard(): Boolean {
-        onScanResult(eanCode.value ?: "")
+        onScanResult(eanCode.value.orEmpty())
         return true
     }
 

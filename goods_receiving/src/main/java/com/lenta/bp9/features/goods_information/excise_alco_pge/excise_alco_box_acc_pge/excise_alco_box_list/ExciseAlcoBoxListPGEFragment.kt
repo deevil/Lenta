@@ -32,19 +32,6 @@ class ExciseAlcoBoxListPGEFragment : CoreFragment<FragmentExciseAlcoBoxListPgeBi
         OnScanResultListener,
         OnKeyDownListener {
 
-    companion object {
-        private const val SELECTED_PAGE_UNTREATED_BOXES = 0
-        private const val SELECTED_PAGE_PROCESSED_BOXES = 1
-
-        fun create(productInfo: TaskProductInfo, selectQualityCode: String): ExciseAlcoBoxListPGEFragment {
-            ExciseAlcoBoxListPGEFragment().let {
-                it.productInfo = productInfo
-                it.selectQualityCode = selectQualityCode
-                return it
-            }
-        }
-    }
-
     private var productInfo by state<TaskProductInfo?>(null)
     private var selectQualityCode by state<String?>(null)
 
@@ -56,7 +43,7 @@ class ExciseAlcoBoxListPGEFragment : CoreFragment<FragmentExciseAlcoBoxListPgeBi
     override fun getPageNumber(): String = "09/42"
 
     override fun getViewModel(): ExciseAlcoBoxListPGEViewModel {
-        provideViewModel(ExciseAlcoBoxListPGEViewModel::class.java).let {vm ->
+        provideViewModel(ExciseAlcoBoxListPGEViewModel::class.java).let { vm ->
             getAppComponent()?.inject(vm)
             vm.productInfo.value = productInfo
             vm.selectQualityCode.value = this.selectQualityCode
@@ -71,7 +58,8 @@ class ExciseAlcoBoxListPGEFragment : CoreFragment<FragmentExciseAlcoBoxListPgeBi
 
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
         bottomToolbarUiModel.uiModelButton1.show(ButtonDecorationInfo.back)
-        bottomToolbarUiModel.uiModelButton3.show(ButtonDecorationInfo.clean, visible = vm.visibilityCleanButton.value ?: false, enabled = vm.enabledCleanButton.value ?: false)
+        bottomToolbarUiModel.uiModelButton3.show(ButtonDecorationInfo.clean, visible = vm.visibilityCleanButton.value
+                ?: false, enabled = vm.enabledCleanButton.value ?: false)
         bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.apply)
 
         connectLiveData(vm.visibilityCleanButton, bottomToolbarUiModel.uiModelButton3.visibility)
@@ -248,6 +236,19 @@ class ExciseAlcoBoxListPGEFragment : CoreFragment<FragmentExciseAlcoBoxListPgeBi
             return true
         }
         return false
+    }
+
+    companion object {
+        private const val SELECTED_PAGE_UNTREATED_BOXES = 0
+        private const val SELECTED_PAGE_PROCESSED_BOXES = 1
+
+        fun newInstance(productInfo: TaskProductInfo, selectQualityCode: String): ExciseAlcoBoxListPGEFragment {
+            ExciseAlcoBoxListPGEFragment().let {
+                it.productInfo = productInfo
+                it.selectQualityCode = selectQualityCode
+                return it
+            }
+        }
     }
 
 }
