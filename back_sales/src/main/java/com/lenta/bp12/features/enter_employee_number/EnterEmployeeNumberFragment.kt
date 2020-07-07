@@ -21,7 +21,7 @@ class EnterEmployeeNumberFragment : CoreFragment<FragmentEnterEmployeeNumberBind
 
     override fun getLayoutId(): Int = R.layout.fragment_enter_employee_number
 
-    override fun getPageNumber(): String? = generateScreenNumberFromPostfix("4")
+    override fun getPageNumber(): String? = generateScreenNumberFromPostfix(SCREEN_NUMBER)
 
     override fun getViewModel(): EnterEmployeeNumberViewModel {
         provideViewModel(EnterEmployeeNumberViewModel::class.java).let {
@@ -58,6 +58,10 @@ class EnterEmployeeNumberFragment : CoreFragment<FragmentEnterEmployeeNumberBind
     override fun onResume() {
         super.onResume()
         vm.onResume()
+    }
+
+    companion object {
+        const val SCREEN_NUMBER = "4"
     }
 
 }

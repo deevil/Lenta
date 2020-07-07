@@ -31,7 +31,7 @@ class GoodDetailsCreateFragment : CoreFragment<FragmentGoodDetailsCreateBinding,
 
     override fun getLayoutId(): Int = R.layout.fragment_good_details_create
 
-    override fun getPageNumber(): String? = generateScreenNumberFromPostfix("96")
+    override fun getPageNumber(): String? = generateScreenNumberFromPostfix(SCREEN_NUMBER)
 
     override fun getViewModel(): GoodDetailsCreateViewModel {
         provideViewModel(GoodDetailsCreateViewModel::class.java).let {
@@ -61,8 +61,8 @@ class GoodDetailsCreateFragment : CoreFragment<FragmentGoodDetailsCreateBinding,
 
     override fun getPagerItemView(container: ViewGroup, position: Int): View {
         return when (position) {
-            0 -> initGoodDetailsBaskets(container)
-            1 -> initGoodDetailsCategories(container)
+            TAB_BASKETS -> initGoodDetailsBaskets(container)
+            TAB_CATEGORIES -> initGoodDetailsCategories(container)
             else -> View(context)
         }
     }
@@ -157,19 +157,28 @@ class GoodDetailsCreateFragment : CoreFragment<FragmentGoodDetailsCreateBinding,
 
     override fun getTextTitle(position: Int): String {
         return when (position) {
-            0 -> getString(R.string.baskets)
-            1 -> getString(R.string.categories)
+            TAB_BASKETS -> getString(R.string.baskets)
+            TAB_CATEGORIES -> getString(R.string.categories)
             else -> throw IllegalArgumentException("Wrong pager position!")
         }
     }
 
     override fun countTab(): Int {
-        return if (vm.good.value?.type == GoodType.COMMON) 1 else 2
+        return if (vm.good.value?.type == GoodType.COMMON) ONE_TAB else TWO_TABS
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding?.viewPagerSettings = this
+    }
+
+    companion object {
+        const val SCREEN_NUMBER = "96"
+
+        private const val ONE_TAB = 1
+        private const val TWO_TABS = 2
+        private const val TAB_BASKETS = 0
+        private const val TAB_CATEGORIES = 1
     }
 
 }

@@ -23,7 +23,7 @@ class TaskCardCreateFragment : CoreFragment<FragmentTaskCardCreateBinding, TaskC
 
     override fun getLayoutId(): Int = R.layout.fragment_task_card_create
 
-    override fun getPageNumber(): String? = generateScreenNumberFromPostfix("8")
+    override fun getPageNumber(): String? = generateScreenNumberFromPostfix(SCREEN_NUMBER)
 
     override fun getViewModel(): TaskCardCreateViewModel {
         provideViewModel(TaskCardCreateViewModel::class.java).let {
@@ -52,8 +52,8 @@ class TaskCardCreateFragment : CoreFragment<FragmentTaskCardCreateBinding, TaskC
 
     override fun getPagerItemView(container: ViewGroup, position: Int): View {
         return when (position) {
-            0 -> initTaskCardType(container)
-            1 -> initTaskCardComment(container)
+            TAB_TASK_TYPE -> initTaskCardType(container)
+            TAB_COMMENT -> initTaskCardComment(container)
             else -> View(context)
         }
     }
@@ -86,19 +86,27 @@ class TaskCardCreateFragment : CoreFragment<FragmentTaskCardCreateBinding, TaskC
 
     override fun getTextTitle(position: Int): String {
         return when (position) {
-            0 -> getString(R.string.task_type)
-            1 -> getString(R.string.comment)
+            TAB_TASK_TYPE -> getString(R.string.task_type)
+            TAB_COMMENT -> getString(R.string.comment)
             else -> throw IllegalArgumentException("Wrong pager position!")
         }
     }
 
     override fun countTab(): Int {
-        return 2
+        return TABS
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding?.viewPagerSettings = this
+    }
+
+    companion object {
+        const val SCREEN_NUMBER = "8"
+
+        private const val TABS = 2
+        private const val TAB_TASK_TYPE = 0
+        private const val TAB_COMMENT = 1
     }
 
 }
