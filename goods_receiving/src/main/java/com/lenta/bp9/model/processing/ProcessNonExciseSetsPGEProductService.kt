@@ -17,45 +17,44 @@ class ProcessNonExciseSetsPGEProductService
     lateinit var dataBase: IDataBaseRepo
 
     private lateinit var productInfo: TaskProductInfo
+    private val currentComponentsDiscrepancies: ArrayList<TaskProductDiscrepancies> = ArrayList()
+    private val currentBatchesDiscrepancies: ArrayList<TaskBatchesDiscrepancies> = ArrayList()
+    private var countSet: Double = 0.0
 
-    fun newProcessNonExciseSetsPGEProductService(productInfo: TaskProductInfo) : ProcessNonExciseSetsPGEProductService? {
-        return if (productInfo.type == ProductType.NonExciseAlcohol && productInfo.isSet){
+    fun newProcessNonExciseSetsPGEProductService(productInfo: TaskProductInfo): ProcessNonExciseSetsPGEProductService? {
+        return if (productInfo.type == ProductType.NonExciseAlcohol && productInfo.isSet) {
             this.productInfo = productInfo.copy()
+            currentComponentsDiscrepancies.clear()
+            currentBatchesDiscrepancies.clear()
             this
+        } else null
+    }
+
+    private fun getCountOfDiscrepanciesOfSet(typeDiscrepancies: String): Double {
+        return taskManager.getReceivingTask()?.taskRepository?.getProductsDiscrepancies()?.getCountOfDiscrepanciesOfProduct(productInfo, typeDiscrepancies)
+                ?: 0.0
+    }
+
+    fun getCountDiscrepanciesOfComponent(componentNumber: String): Double {
+        return currentComponentsDiscrepancies.filter { unitInfo ->
+            unitInfo.materialNumber == componentNumber
+        }.sumByDouble {
+            it.numberDiscrepancies.toDouble()
         }
-        else null
     }
 
-    private fun getCountOfDiscrepancies(typeDiscrepancies: String) : Double {
-        return taskManager.getReceivingTask()?.taskRepository?.getProductsDiscrepancies()?.getCountOfDiscrepanciesOfProduct(productInfo, typeDiscrepancies) ?: 0.0
-    }
-
-    private fun getCountOfDiscrepanciesOfBatch(batchInfo: TaskBatchInfo, typeDiscrepancies: String) : Double {
+    private fun getCountOfDiscrepanciesOfBatch(batchInfo: TaskBatchInfo, typeDiscrepancies: String): Double {
         return taskManager.getReceivingTask()!!.taskRepository.getBatchesDiscrepancies().getCountOfDiscrepanciesOfBatch(batchInfo, typeDiscrepancies)
     }
 
-    fun overLimit(count: Double) : Boolean {
-        return productInfo.origQuantity.toDouble() < ((taskManager.getReceivingTask()?.taskRepository?.getProductsDiscrepancies()?.getCountAcceptOfProduct(productInfo) ?: 0.0)
-                + (taskManager.getReceivingTask()?.taskRepository?.getProductsDiscrepancies()?.getCountRefusalOfProduct(productInfo) ?: 0.0) + count)
-    }
-
-    fun overLimitBatch(count: Double, batchInfo: TaskBatchInfo) : Boolean {
-        return batchInfo.purchaseOrderScope < ((taskManager.getReceivingTask()?.taskRepository?.getBatchesDiscrepancies()?.getCountAcceptOfBatchPGE(batchInfo) ?: 0.0)
-                + (taskManager.getReceivingTask()?.taskRepository?.getBatchesDiscrepancies()?.getCountRefusalOfBatchPGE(batchInfo) ?: 0.0) + count)
-
-    }
-
-    fun addSet(count: String, typeDiscrepancies: String, processingUnit: String){
-        val countAdd: Double = getCountOfDiscrepancies(typeDiscrepancies) + count.toDouble()
-        val foundDiscrepancy = taskManager.getReceivingTask()?.taskRepository?.getProductsDiscrepancies()?.findProductDiscrepanciesOfProduct(productInfo)?.findLast {
+    fun apply(count: String, typeDiscrepancies: String, processingUnit: String) {
+        val countAdd: Double = getCountOfDiscrepanciesOfSet(typeDiscrepancies) + count.toDouble()
+        var foundDiscrepancy = taskManager.getReceivingTask()?.taskRepository?.getProductsDiscrepancies()?.findProductDiscrepanciesOfProduct(productInfo)?.findLast {
             it.materialNumber == productInfo.materialNumber && it.typeDiscrepancies == typeDiscrepancies
         }
 
         if (foundDiscrepancy == null) {
-            taskManager.getReceivingTask()?.
-            taskRepository?.
-            getProductsDiscrepancies()?.
-            changeProductDiscrepancy(TaskProductDiscrepancies(
+            taskManager.getReceivingTask()?.taskRepository?.getProductsDiscrepancies()?.changeProductDiscrepancy(TaskProductDiscrepancies(
                     materialNumber = productInfo.materialNumber,
                     processingUnitNumber = processingUnit,
                     numberDiscrepancies = countAdd.toString(),
@@ -66,78 +65,124 @@ class ProcessNonExciseSetsPGEProductService
                     notEditNumberDiscrepancies = ""
             ))
         } else {
-            taskManager.getReceivingTask()?.
-            taskRepository?.
-            getProductsDiscrepancies()?.
-            changeProductDiscrepancy(foundDiscrepancy.copy(numberDiscrepancies = countAdd.toString(), processingUnitNumber = processingUnit))
+            taskManager.getReceivingTask()?.taskRepository?.getProductsDiscrepancies()?.changeProductDiscrepancy(foundDiscrepancy.copy(numberDiscrepancies = countAdd.toString(), processingUnitNumber = processingUnit))
+        }
+
+        if (currentComponentsDiscrepancies.isNotEmpty()) {
+            currentComponentsDiscrepancies.map {
+                taskManager
+                        .getReceivingTask()
+                        ?.taskRepository
+                        ?.getProductsDiscrepancies()
+                        ?.changeProductDiscrepancy(it)
+            }
+        }
+
+        if (currentBatchesDiscrepancies.isNotEmpty()) {
+            currentBatchesDiscrepancies.map {
+                taskManager
+                        .getReceivingTask()
+                        ?.taskRepository
+                        ?.getBatchesDiscrepancies()
+                        ?.changeBatchDiscrepancy(it)
+            }
         }
     }
 
-    fun addComponent(count: String, typeDiscrepancies: String, componentNumber: String, batchInfo: TaskBatchInfo){
-        val countAdd = getCountOfDiscrepancies(typeDiscrepancies) + count.toDouble()
-        val foundDiscrepancy = taskManager.getReceivingTask()?.taskRepository?.getProductsDiscrepancies()?.findProductDiscrepanciesOfProduct(componentNumber)?.findLast {
-            it.materialNumber == componentNumber && it.typeDiscrepancies == typeDiscrepancies
+    fun addCurrentComponent(count: String, typeDiscrepancies: String, componentInfo: TaskSetsInfo, batchInfo: TaskBatchInfo) {
+        var foundDiscrepancy = currentComponentsDiscrepancies.findLast {
+            it.materialNumber == componentInfo.componentNumber && it.typeDiscrepancies == typeDiscrepancies
+        }
+        val countAdd = (foundDiscrepancy?.numberDiscrepancies?.toDoubleOrNull()
+                ?: 0.0) + count.toDouble()
+
+
+        foundDiscrepancy = foundDiscrepancy?.copy(numberDiscrepancies = countAdd.toString())
+                ?: TaskProductDiscrepancies(
+                        materialNumber = componentInfo.componentNumber,
+                        processingUnitNumber = batchInfo.processingUnitNumber,
+                        numberDiscrepancies = countAdd.toString(),
+                        uom = componentInfo.uom,
+                        typeDiscrepancies = typeDiscrepancies,
+                        isNotEdit = false,
+                        isNew = false,
+                        notEditNumberDiscrepancies = ""
+                )
+
+        currentComponentsDiscrepancies.map { it }.filter { unitInfo ->
+            if (unitInfo.materialNumber == componentInfo.componentNumber && unitInfo.typeDiscrepancies == typeDiscrepancies) {
+                currentComponentsDiscrepancies.remove(unitInfo)
+                return@filter true
+            }
+            return@filter false
         }
 
-        if (foundDiscrepancy == null) {
-            taskManager.getReceivingTask()?.
-            taskRepository?.
-            getProductsDiscrepancies()?.
-            changeProductDiscrepancy(TaskProductDiscrepancies(
-                    materialNumber = productInfo.materialNumber,
-                    processingUnitNumber = productInfo.processingUnit,
-                    numberDiscrepancies = countAdd.toString(),
-                    uom = productInfo.uom,
-                    typeDiscrepancies = typeDiscrepancies,
-                    isNotEdit = false,
-                    isNew = false,
-                    notEditNumberDiscrepancies = ""
-            ))
-        } else {
-            taskManager.getReceivingTask()?.
-            taskRepository?.
-            getProductsDiscrepancies()?.
-            changeProductDiscrepancy(foundDiscrepancy.copy(numberDiscrepancies = countAdd.toString()))
-        }
+        currentComponentsDiscrepancies.add(foundDiscrepancy)
 
-        taskManager.getReceivingTask()?.
-        taskRepository?.
-        getProducts()?.
-        changeProduct(productInfo.copy(isNoEAN = false))
-
-        addBatch(count, typeDiscrepancies, batchInfo)
+        addBatch(count, typeDiscrepancies, componentInfo, batchInfo)
     }
 
-    private fun addBatch(count: String, typeDiscrepancies: String, batchInfo: TaskBatchInfo){
-        val countAdd = getCountOfDiscrepanciesOfBatch(batchInfo, typeDiscrepancies) + count.toDouble()
-        val foundBatchDiscrepancy = taskManager.getReceivingTask()?.taskRepository?.getBatchesDiscrepancies()?.findBatchDiscrepanciesOfBatch(batchInfo)?.findLast {
-            it.materialNumber == batchInfo.materialNumber && it.batchNumber == batchInfo.batchNumber && it.typeDiscrepancies == typeDiscrepancies
+    private fun addBatch(count: String, typeDiscrepancies: String, componentInfo: TaskSetsInfo, batchInfo: TaskBatchInfo) {
+        var foundBatchDiscrepancy = currentBatchesDiscrepancies.findLast {
+            it.materialNumber == batchInfo.materialNumber &&
+                    it.typeDiscrepancies == typeDiscrepancies &&
+                    it.processingUnitNumber == batchInfo.processingUnitNumber &&
+                    it.batchNumber == batchInfo.batchNumber
+        }
+        val countAdd = (foundBatchDiscrepancy?.numberDiscrepancies?.toDoubleOrNull()
+                ?: 0.0) + count.toDouble()
+
+
+        foundBatchDiscrepancy = foundBatchDiscrepancy?.copy(numberDiscrepancies = countAdd.toString())
+                ?: TaskBatchesDiscrepancies(
+                        materialNumber = batchInfo.materialNumber,
+                        processingUnitNumber = batchInfo.processingUnitNumber,
+                        batchNumber = batchInfo.batchNumber,
+                        numberDiscrepancies = countAdd.toString(),
+                        uom = componentInfo.uom,
+                        typeDiscrepancies = typeDiscrepancies,
+                        isNotEdit = false,
+                        isNew = false,
+                        setMaterialNumber = batchInfo.setMaterialNumber,
+                        egais = batchInfo.egais,
+                        bottlingDate = batchInfo.bottlingDate,
+                        notEditNumberDiscrepancies = ""
+                )
+
+        currentBatchesDiscrepancies.map { it }.filter { unitInfo ->
+            if (unitInfo.materialNumber == batchInfo.materialNumber &&
+                    unitInfo.typeDiscrepancies == typeDiscrepancies &&
+                    unitInfo.processingUnitNumber == batchInfo.processingUnitNumber &&
+                    unitInfo.batchNumber == batchInfo.batchNumber) {
+                currentBatchesDiscrepancies.remove(unitInfo)
+                return@filter true
+            }
+            return@filter false
         }
 
-        if (foundBatchDiscrepancy == null) {
-            taskManager.getReceivingTask()?.
-            taskRepository?.
-            getBatchesDiscrepancies()?.
-            changeBatchDiscrepancy(TaskBatchesDiscrepancies(
-                    materialNumber = batchInfo.materialNumber,
-                    processingUnitNumber = batchInfo.processingUnitNumber,
-                    batchNumber = batchInfo.batchNumber,
-                    numberDiscrepancies = countAdd.toString(),
-                    uom = productInfo.uom,
-                    typeDiscrepancies = typeDiscrepancies,
-                    isNotEdit = false,
-                    isNew = false,
-                    setMaterialNumber = batchInfo.setMaterialNumber,
-                    egais = batchInfo.egais,
-                    bottlingDate = batchInfo.bottlingDate,
-                    notEditNumberDiscrepancies = ""
-            ))
-        } else {
-            taskManager.getReceivingTask()?.
-            taskRepository?.
-            getBatchesDiscrepancies()?.
-            changeBatchDiscrepancy(foundBatchDiscrepancy.copy(numberDiscrepancies = countAdd.toString()))
+        currentBatchesDiscrepancies.add(foundBatchDiscrepancy)
+    }
+
+    fun cleanCurrentComponent(componentNumber: String) {
+        currentComponentsDiscrepancies.map { it }.filter { unitInfo ->
+            if (unitInfo.materialNumber == componentNumber) {
+                currentComponentsDiscrepancies.remove(unitInfo)
+                return@filter true
+            }
+            return@filter false
         }
+    }
+
+    fun clearCurrentComponent() {
+        currentComponentsDiscrepancies.clear()
+    }
+
+    fun setCountSet(count: Double) {
+        countSet = count
+    }
+
+    fun getCountSet(): Double {
+        return countSet
     }
 
 }

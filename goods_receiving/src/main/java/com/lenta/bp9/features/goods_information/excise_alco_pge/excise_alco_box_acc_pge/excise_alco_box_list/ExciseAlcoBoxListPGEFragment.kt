@@ -32,27 +32,18 @@ class ExciseAlcoBoxListPGEFragment : CoreFragment<FragmentExciseAlcoBoxListPgeBi
         OnScanResultListener,
         OnKeyDownListener {
 
-    companion object {
-        fun create(productInfo: TaskProductInfo, selectQualityCode: String): ExciseAlcoBoxListPGEFragment {
-            ExciseAlcoBoxListPGEFragment().let {
-                it.productInfo = productInfo
-                it.selectQualityCode = selectQualityCode
-                return it
-            }
-        }
-    }
-
     private var productInfo by state<TaskProductInfo?>(null)
     private var selectQualityCode by state<String?>(null)
 
     private var notProcessedRecyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
+    private var processedRecyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
 
     override fun getLayoutId(): Int = R.layout.fragment_excise_alco_box_list_pge
 
     override fun getPageNumber(): String = "09/42"
 
     override fun getViewModel(): ExciseAlcoBoxListPGEViewModel {
-        provideViewModel(ExciseAlcoBoxListPGEViewModel::class.java).let {vm ->
+        provideViewModel(ExciseAlcoBoxListPGEViewModel::class.java).let { vm ->
             getAppComponent()?.inject(vm)
             vm.productInfo.value = productInfo
             vm.selectQualityCode.value = this.selectQualityCode
@@ -67,7 +58,8 @@ class ExciseAlcoBoxListPGEFragment : CoreFragment<FragmentExciseAlcoBoxListPgeBi
 
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
         bottomToolbarUiModel.uiModelButton1.show(ButtonDecorationInfo.back)
-        bottomToolbarUiModel.uiModelButton3.show(ButtonDecorationInfo.clean, visible = vm.visibilityCleanButton.value ?: false, enabled = vm.enabledCleanButton.value ?: false)
+        bottomToolbarUiModel.uiModelButton3.show(ButtonDecorationInfo.clean, visible = vm.visibilityCleanButton.value
+                ?: false, enabled = vm.enabledCleanButton.value ?: false)
         bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.apply)
 
         connectLiveData(vm.visibilityCleanButton, bottomToolbarUiModel.uiModelButton3.visibility)
@@ -88,7 +80,7 @@ class ExciseAlcoBoxListPGEFragment : CoreFragment<FragmentExciseAlcoBoxListPgeBi
     }
 
     override fun getPagerItemView(container: ViewGroup, position: Int): View {
-        if (position == 0) {
+        if (position == SELECTED_PAGE_UNTREATED_BOXES) {
             DataBindingUtil
                     .inflate<LayoutExciseAlcoBoxListNotProcessedPgeBinding>(LayoutInflater.from(container.context),
                             R.layout.layout_excise_alco_box_list_not_processed_pge,
@@ -167,13 +159,31 @@ class ExciseAlcoBoxListPGEFragment : CoreFragment<FragmentExciseAlcoBoxListPgeBi
                                     binding.tvItemNumber.tag = position
                                     binding.tvItemNumber.setOnClickListener(onClickSelectionListener)
                                     binding.selectedForDelete = vm.processedSelectionsHelper.isSelected(position)
+                                    processedRecyclerViewKeyHandler?.let {
+                                        binding.root.isSelected = it.isSelected(position)
+                                    }
                                 }
 
+                            },
+                            onItemClickListener = AdapterView.OnItemClickListener { _, _, position, _ ->
+                                processedRecyclerViewKeyHandler?.let {
+                                    if (it.isSelected(position)) {
+                                        vm.onClickItemPosition(position)
+                                    } else {
+                                        it.selectPosition(position)
+                                    }
+                                }
                             }
                     )
 
                     layoutBinding.vm = vm
                     layoutBinding.lifecycleOwner = viewLifecycleOwner
+                    processedRecyclerViewKeyHandler = RecyclerViewKeyHandler(
+                            rv = layoutBinding.rv,
+                            items = vm.countNotProcessed,
+                            lifecycleOwner = layoutBinding.lifecycleOwner!!,
+                            initPosInfo = processedRecyclerViewKeyHandler?.posInfo?.value
+                    )
                     return layoutBinding.root
                 }
     }
@@ -212,8 +222,8 @@ class ExciseAlcoBoxListPGEFragment : CoreFragment<FragmentExciseAlcoBoxListPgeBi
 
     override fun onKeyDown(keyCode: KeyCode): Boolean {
         when (vm.selectedPage.value) {
-            0 -> notProcessedRecyclerViewKeyHandler
-            1 -> notProcessedRecyclerViewKeyHandler
+            SELECTED_PAGE_UNTREATED_BOXES -> notProcessedRecyclerViewKeyHandler
+            SELECTED_PAGE_PROCESSED_BOXES -> processedRecyclerViewKeyHandler
             else -> null
         }?.let {
             if (!it.onKeyDown(keyCode)) {
@@ -226,6 +236,19 @@ class ExciseAlcoBoxListPGEFragment : CoreFragment<FragmentExciseAlcoBoxListPgeBi
             return true
         }
         return false
+    }
+
+    companion object {
+        private const val SELECTED_PAGE_UNTREATED_BOXES = 0
+        private const val SELECTED_PAGE_PROCESSED_BOXES = 1
+
+        fun newInstance(productInfo: TaskProductInfo, selectQualityCode: String): ExciseAlcoBoxListPGEFragment {
+            ExciseAlcoBoxListPGEFragment().let {
+                it.productInfo = productInfo
+                it.selectQualityCode = selectQualityCode
+                return it
+            }
+        }
     }
 
 }
