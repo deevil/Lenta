@@ -26,10 +26,6 @@ import com.lenta.shared.utilities.extentions.provideViewModel
 class PackGoodListFragment : CoreFragment<FragmentPackGoodListBinding, PackGoodListViewModel>(),
         ToolbarButtonsClickListener, OnBackPresserListener, OnKeyDownListener {
 
-    companion object {
-        const val SCREEN_NUMBER = "32"
-    }
-
     private var recyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
 
     override fun getLayoutId(): Int = R.layout.fragment_pack_good_list
@@ -117,6 +113,10 @@ class PackGoodListFragment : CoreFragment<FragmentPackGoodListBinding, PackGoodL
     override fun onDestroyView() {
         recyclerViewKeyHandler?.onClickPositionFunc = null
         super.onDestroyView()
+    }
+
+    companion object {
+        const val SCREEN_NUMBER = "32"
     }
 
 }

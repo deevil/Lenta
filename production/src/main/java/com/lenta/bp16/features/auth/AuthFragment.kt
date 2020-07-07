@@ -14,10 +14,6 @@ import com.lenta.shared.utilities.extentions.provideViewModel
 
 class AuthFragment : CoreLoginFragment() {
 
-    companion object {
-        const val SCREEN_NUMBER = "1"
-    }
-
     override fun getPageNumber(): String? = generateScreenNumberFromPostfix(SCREEN_NUMBER)
 
     override fun getViewModel(): CoreAuthViewModel {
@@ -45,6 +41,10 @@ class AuthFragment : CoreLoginFragment() {
             R.id.b_5 -> vm.onClickEnter()
             R.id.b_topbar_1 -> vm.onClickAuxiliaryMenu()
         }
+    }
+
+    companion object {
+        const val SCREEN_NUMBER = "1"
     }
 
 }

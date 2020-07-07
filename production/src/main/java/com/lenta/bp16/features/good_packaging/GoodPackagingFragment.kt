@@ -17,10 +17,6 @@ import com.lenta.shared.utilities.extentions.provideViewModel
 class GoodPackagingFragment : CoreFragment<FragmentGoodWeighingBinding, GoodPackagingViewModel>(),
         ToolbarButtonsClickListener {
 
-    companion object {
-        const val SCREEN_NUMBER = "33"
-    }
-
     override fun getLayoutId(): Int = R.layout.fragment_good_packaging
 
     override fun getPageNumber(): String? = generateScreenNumberFromPostfix(SCREEN_NUMBER)
@@ -55,6 +51,10 @@ class GoodPackagingFragment : CoreFragment<FragmentGoodWeighingBinding, GoodPack
             R.id.b_2 -> vm.onClickDefect()
             R.id.b_5 -> vm.onClickComplete()
         }
+    }
+
+    companion object {
+        const val SCREEN_NUMBER = "33"
     }
 
 }

@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.AdapterView
 import androidx.databinding.DataBindingUtil
 import com.lenta.bp16.BR
 import com.lenta.bp16.R
@@ -14,16 +13,12 @@ import com.lenta.bp16.databinding.LayoutPuTaskListProcessedBinding
 import com.lenta.bp16.databinding.LayoutPuTaskListProcessingBinding
 import com.lenta.bp16.platform.extention.getAppComponent
 import com.lenta.shared.keys.KeyCode
-import com.lenta.shared.keys.OnKeyDownListener
-import com.lenta.shared.platform.fragment.CoreFragment
 import com.lenta.shared.platform.fragment.KeyDownCoreFragment
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListener
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
 import com.lenta.shared.scan.OnScanResultListener
-import com.lenta.shared.utilities.databinding.DataBindingAdapter
-import com.lenta.shared.utilities.databinding.DataBindingRecyclerViewConfig
 import com.lenta.shared.utilities.databinding.RecyclerViewKeyHandler
 import com.lenta.shared.utilities.databinding.ViewPagerSettings
 import com.lenta.shared.utilities.extentions.connectLiveData
@@ -33,14 +28,6 @@ import com.lenta.shared.utilities.extentions.provideViewModel
 
 class ProcessingUnitTaskListFragment : KeyDownCoreFragment<FragmentProcessingUnitTaskListBinding, ProcessingUnitTaskListViewModel>(),
         ViewPagerSettings, ToolbarButtonsClickListener, OnScanResultListener {
-
-    companion object {
-        const val SCREEN_NUMBER = "51"
-
-        private const val TABS = 2
-        private const val TAB_PROCESSING = 0
-        private const val TAB_PROCESSED = 1
-    }
 
     private var processedRecyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
 
@@ -179,6 +166,14 @@ class ProcessingUnitTaskListFragment : KeyDownCoreFragment<FragmentProcessingUni
     override fun onDestroyView() {
         processedRecyclerViewKeyHandler?.onClickPositionFunc = null
         super.onDestroyView()
+    }
+
+    companion object {
+        const val SCREEN_NUMBER = "51"
+
+        private const val TABS = 2
+        private const val TAB_PROCESSING = 0
+        private const val TAB_PROCESSED = 1
     }
 
 }

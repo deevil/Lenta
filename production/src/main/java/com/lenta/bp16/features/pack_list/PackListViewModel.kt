@@ -82,8 +82,7 @@ class PackListViewModel : CoreViewModel() {
                 ).either({ failure ->
                     navigator.openAlertScreen(failure)
                 }) { result ->
-                    // todo 4942 - Доделать когда будет больше информации по задаче
-                    /*if (result.isAutofix.isSapTrue()) {
+                    if (result.isAutofix.isSapTrue()) {
                         navigator.showFixStartNextStageSuccessful {
                             navigator.goBack()
                             navigator.goBack()
@@ -93,11 +92,6 @@ class PackListViewModel : CoreViewModel() {
                             navigator.goBack()
                             navigator.goBack()
                         }
-                    }*/
-
-                    navigator.showDefrostingPhaseIsCompleted {
-                        navigator.goBack()
-                        navigator.goBack()
                     }
                 }
                 navigator.hideProgress()

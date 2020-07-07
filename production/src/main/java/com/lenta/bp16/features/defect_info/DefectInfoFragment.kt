@@ -18,10 +18,6 @@ import com.lenta.shared.utilities.extentions.provideViewModel
 class DefectInfoFragment : CoreFragment<FragmentDefectInfoBinding, DefectInfoViewModel>(),
         ToolbarButtonsClickListener, OnBackPresserListener {
 
-    companion object {
-        const val SCREEN_NUMBER = "07"
-    }
-
     override fun getLayoutId(): Int = R.layout.fragment_defect_info
 
     override fun getPageNumber(): String? = generateScreenNumberFromPostfix(SCREEN_NUMBER)
@@ -65,6 +61,10 @@ class DefectInfoFragment : CoreFragment<FragmentDefectInfoBinding, DefectInfoVie
     override fun onBackPressed(): Boolean {
         vm.onBackPressed()
         return false
+    }
+
+    companion object {
+        const val SCREEN_NUMBER = "07"
     }
 
 }

@@ -22,16 +22,6 @@ import android.view.View
 
 class ${className} : CoreFragment<${underscoreToCamelCase(layoutName)}Binding, ${viewModelName}>()<#if numberOfTabs != "0">, ViewPagerSettings</#if> {
 
-    companion object {
-        const val SCREEN_NUMBER = "Specify screen number!"
-
-        <#if numberOfTabs != "0">
-        private const val TABS = ${numberOfTabs}
-        private const val TAB_FIRST = 0
-        private const val TAB_SECOND = 1
-        </#if>
-    }
-
     override fun getLayoutId(): Int = R.layout.${layoutName}
 
     override fun getPageNumber(): String? = generateScreenNumberFromPostfix(SCREEN_NUMBER)
@@ -96,5 +86,15 @@ class ${className} : CoreFragment<${underscoreToCamelCase(layoutName)}Binding, $
         vm.onBackPressed()
         return false
     }*/
+
+    companion object {
+        const val SCREEN_NUMBER = "Specify screen number!"
+
+        <#if numberOfTabs != "0">
+        private const val TABS = ${numberOfTabs}
+        private const val TAB_FIRST = 0
+        private const val TAB_SECOND = 1
+        </#if>
+    }
 
 }

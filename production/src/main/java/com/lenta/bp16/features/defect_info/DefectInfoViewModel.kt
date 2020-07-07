@@ -8,6 +8,7 @@ import com.lenta.bp16.data.LabelInfo
 import com.lenta.bp16.model.ITaskManager
 import com.lenta.bp16.model.pojo.Pack
 import com.lenta.bp16.platform.navigation.IScreenNavigator
+import com.lenta.bp16.platform.resource.IResourceManager
 import com.lenta.bp16.repository.IDatabaseRepository
 import com.lenta.bp16.request.PackCodeNetRequest
 import com.lenta.bp16.request.PackCodeParams
@@ -55,6 +56,9 @@ class DefectInfoViewModel : CoreViewModel() {
 
     @Inject
     lateinit var database: IDatabaseRepository
+
+    @Inject
+    lateinit var resource: IResourceManager
 
 
     val good by lazy {
@@ -252,7 +256,7 @@ class DefectInfoViewModel : CoreViewModel() {
                                 nameOsn = raw.value!!.name,
                                 dateExpir = dateExpir?.let { SimpleDateFormat(Constants.DATE_FORMAT_dd_mm_yyyy, Locale.getDefault()).format(it.time) }
                                         ?: "",
-                                goodsName = "***БРАК*** ${packCodeResult.dataLabel.materialName}",
+                                goodsName = "${resource.defectMark()} ${packCodeResult.dataLabel.materialName}",
                                 weigher = sessionInfo.personnelNumber ?: "",
                                 productTime = SimpleDateFormat(Constants.DATE_FORMAT_dd_mm_yyyy, Locale.getDefault()).format(productTime.time),
                                 goodsCode = packCodeResult.dataLabel.material.takeLast(6),
@@ -273,8 +277,8 @@ class DefectInfoViewModel : CoreViewModel() {
 
     private fun getTimeInMinutes(sourceTime: String, units: String): Int {
         return when (units.toLowerCase(Locale.getDefault())) {
-            "m" -> (sourceTime.toDoubleOrNull() ?: 0.0).toInt()
-            "h" -> (sourceTime.toDoubleOrNull() ?: 0.0 * 60).toInt()
+            MINUTE -> (sourceTime.toDoubleOrNull() ?: 0.0).toInt()
+            HOUR -> (sourceTime.toDoubleOrNull() ?: 0.0 * 60).toInt()
             else -> 0
         }
     }
@@ -350,6 +354,11 @@ class DefectInfoViewModel : CoreViewModel() {
                 }
             }
         }
+    }
+
+    companion object {
+        private const val MINUTE = "m"
+        private const val HOUR = "h"
     }
 
 }

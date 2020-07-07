@@ -20,10 +20,6 @@ import com.lenta.shared.utilities.extentions.connectLiveData
 class PackListFragment : CoreFragment<FragmentPackListBinding, PackListViewModel>(),
         ToolbarButtonsClickListener {
 
-    companion object {
-        const val SCREEN_NUMBER = "11"
-    }
-
     override fun getLayoutId(): Int = R.layout.fragment_pack_list
 
     override fun getPageNumber(): String? = generateScreenNumberFromPostfix(SCREEN_NUMBER)
@@ -69,6 +65,10 @@ class PackListFragment : CoreFragment<FragmentPackListBinding, PackListViewModel
             layoutBinding.vm = vm
             layoutBinding.lifecycleOwner = viewLifecycleOwner
         }
+    }
+
+    companion object {
+        const val SCREEN_NUMBER = "11"
     }
 
 }

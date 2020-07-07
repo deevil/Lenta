@@ -57,5 +57,6 @@
     <string name="defect">Брак</string>
     <string name="total_sf">Итого ПФ</string>
     <string name="total_defect">Итого брак</string>
+    <string name="defect_mark">***БРАК***</string>
 
 </resources>
