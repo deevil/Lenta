@@ -98,9 +98,13 @@ class MemoryTaskProductsDiscrepanciesRepository : ITaskProductsDiscrepanciesRepo
     }
 
     override fun deleteProductsDiscrepanciesNotNormForProduct(product: TaskProductInfo): Boolean {
+        return deleteProductsDiscrepanciesNotNormForProduct(product.materialNumber)
+    }
+
+    override fun deleteProductsDiscrepanciesNotNormForProduct(materialNumber: String): Boolean {
         val delDiscrepancies = ArrayList<TaskProductDiscrepancies>()
         for (i in productsDiscrepancies.indices) {
-            if (product.materialNumber == productsDiscrepancies[i].materialNumber && productsDiscrepancies[i].typeDiscrepancies != "1") {
+            if (materialNumber == productsDiscrepancies[i].materialNumber && productsDiscrepancies[i].typeDiscrepancies != "1") {
                 delDiscrepancies.add(productsDiscrepancies[i])
             }
         }

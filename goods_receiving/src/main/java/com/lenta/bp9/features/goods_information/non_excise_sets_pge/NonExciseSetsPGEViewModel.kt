@@ -165,7 +165,7 @@ class NonExciseSetsPGEViewModel : CoreViewModel(),
             if (isDiscrepancy.value!!) {
                 count.value = taskManager.getReceivingTask()?.taskRepository?.getProductsDiscrepancies()?.getCountProductNotProcessedOfProduct(productInfo.value!!).toStringFormatted()
                 qualityInfo.value = dataBase.getQualityInfoPGEForDiscrepancy()
-                spinQualitySelectedPosition.value = qualityInfo.value!!.indexOfLast { it.code == "4" }
+                spinQualitySelectedPosition.value = qualityInfo.value!!.indexOfLast { it.code == "3" }
             } else {
                 qualityInfo.value = dataBase.getQualityInfoPGE()
             }

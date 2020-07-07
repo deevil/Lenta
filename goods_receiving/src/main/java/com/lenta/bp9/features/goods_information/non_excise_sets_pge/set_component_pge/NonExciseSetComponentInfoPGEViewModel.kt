@@ -148,11 +148,10 @@ class NonExciseSetComponentInfoPGEViewModel : CoreViewModel(),
                     ?: 0)?.substring(context.getString(R.string.spin_processing_unit).length)
         }
 
-        if (batchSelected != null && count.value != null && qualityInfo.value != null && setInfo.value != null) {
+        if (batchSelected != null && count.value != null && setInfo.value != null && typeDiscrepancies.value != null) {
             processNonExciseSetsPGEProductService.addCurrentComponent(
                     count = count.value!!,
-                    typeDiscrepancies = qualityInfo.value!![spinQualitySelectedPosition.value
-                            ?: 0].code,
+                    typeDiscrepancies = typeDiscrepancies.value!!,
                     componentInfo = setInfo.value!!,
                     batchInfo = batchSelected
             )

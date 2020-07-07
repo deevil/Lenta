@@ -143,11 +143,10 @@ class NonExciseSetComponentInfoReceivingViewModel : CoreViewModel(),
                     ?: 0)
         }
 
-        if (batchSelected != null && count.value != null && qualityInfo.value != null && setInfo.value != null) {
+        if (batchSelected != null && count.value != null && setInfo.value != null && typeDiscrepancies.value != null) {
             processNonExciseSetsReceivingProductService.addCurrentComponent(
                     count = count.value!!,
-                    typeDiscrepancies = qualityInfo.value!![spinQualitySelectedPosition.value
-                            ?: 0].code,
+                    typeDiscrepancies = typeDiscrepancies.value!!,
                     componentInfo = setInfo.value!!,
                     batchInfo = batchSelected
             )
