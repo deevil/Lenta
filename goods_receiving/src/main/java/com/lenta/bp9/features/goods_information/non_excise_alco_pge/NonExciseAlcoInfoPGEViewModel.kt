@@ -180,7 +180,7 @@ class NonExciseAlcoInfoPGEViewModel : CoreViewModel(), OnPositionClickListener {
                         count.value = taskManager.getReceivingTask()?.taskRepository?.getBatchesDiscrepancies()?.getCountBatchNotProcessedOfBatch(it[0]).toStringFormatted()
                     }
 
-                    qualityInfo.value = dataBase.getQualityInfoForDiscrepancy()
+                    qualityInfo.value = dataBase.getQualityInfoPGEForDiscrepancy()
                     qualityInfo.value?.let {quality ->
                         spinQualitySelectedPosition.value = quality.indexOfLast {it.code == "4"}
                     }
