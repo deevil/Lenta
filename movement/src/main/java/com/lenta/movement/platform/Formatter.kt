@@ -102,7 +102,8 @@ class Formatter(
     }
 
     override fun getEOSubtitle(eo: ProcessingUnit): String {
-        return if (eo.cargoUnitNumber == null) {
+        val geNumber = eo.cargoUnitNumber
+        return if (geNumber == null) {
             buildString {
                 append("№${eo.basketNumber}")
                 append(
@@ -115,7 +116,7 @@ class Formatter(
                 append(eo.supplier.orEmpty())
             }
         } else {
-            "$GE-$eo.cargoUnit"
+            "$GE-$geNumber"
         }
     }
 
@@ -124,14 +125,7 @@ class Formatter(
         return if (ge.eoList.size == 1) {
             eoList[0].processingUnitNumber
         } else {
-            buildString {
-                append(ge.number)
-                eoList.takeIf { it.isNotEmpty() }
-                        ?.forEach { processingUnit ->
-                            append("/${processingUnit.processingUnitNumber}")
-                        }
-
-            }
+            ge.number
         }
     }
 
