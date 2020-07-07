@@ -250,8 +250,8 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
     }
 
     fun onClickUpdate() {
-        val user = if (isEnteredLogin()) sessionInfo.userName ?: "" else ""
-        val userNumber = if (isEnteredLogin()) sessionInfo.personnelNumber ?: "" else ""
+        val user = if (isEnteredLogin()) numberField.value ?: "" else sessionInfo.userName ?: ""
+        val userNumber = if (isEnteredLogin()) "" else sessionInfo.personnelNumber ?: ""
 
         loadTaskList(user, userNumber)
         loadTaskListWithParams(user, userNumber)
