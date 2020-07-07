@@ -39,18 +39,25 @@ class DiscrepancyListViewModel : CoreViewModel(), PageSelectionListener {
 
     @Inject
     lateinit var screenNavigator: IScreenNavigator
+
     @Inject
     lateinit var taskManager: IReceivingTaskManager
+
     @Inject
     lateinit var endRecountDirectDeliveries: EndRecountDirectDeliveriesNetRequest
+
     @Inject
     lateinit var context: Context
+
     @Inject
     lateinit var sessionInfo: ISessionInfo
+
     @Inject
     lateinit var searchProductDelegate: SearchProductDelegate
+
     @Inject
     lateinit var repoInMemoryHolder: IRepoInMemoryHolder
+
     @Inject
     lateinit var dataBase: IDataBaseRepo
 
@@ -64,7 +71,7 @@ class DiscrepancyListViewModel : CoreViewModel(), PageSelectionListener {
 
     val isAlco: MutableLiveData<Boolean> by lazy {
         //проверяем, есть ли алкогольные акцизные товары в задании и стоит ли признак isAlco в задании
-        MutableLiveData(!taskManager.getReceivingTask()?.taskRepository?.getProducts()?.getProducts()?.filter {product ->
+        MutableLiveData(!taskManager.getReceivingTask()?.taskRepository?.getProducts()?.getProducts()?.filter { product ->
             product.isBoxFl || product.isMarkFl
         }.isNullOrEmpty() && taskManager.getReceivingTask()?.taskDescription?.isAlco == true)
     }
@@ -136,7 +143,7 @@ class DiscrepancyListViewModel : CoreViewModel(), PageSelectionListener {
                         } else {
                             task.taskRepository.getProductsDiscrepancies().getCountProductNotProcessedOfProduct(it) > 0.0
                         }
-                    }.sortedByDescending {sorted ->
+                    }.sortedByDescending { sorted ->
                         sorted.materialNumber
                     }
                     .map { productInfo ->
@@ -147,7 +154,7 @@ class DiscrepancyListViewModel : CoreViewModel(), PageSelectionListener {
                         }
                         if (isBatches.value == true && productInfo.type == ProductType.NonExciseAlcohol && !productInfo.isBoxFl && !productInfo.isMarkFl) {
                             val batchesInfoOfProduct = task.taskRepository.getBatches().findBatchOfProduct(productInfo)
-                            batchesInfoOfProduct?.map {batch ->
+                            batchesInfoOfProduct?.map { batch ->
                                 val batchInfo = task.taskRepository.getBatches().findBatch(
                                         batchNumber = batch.batchNumber,
                                         materialNumber = batch.materialNumber,
@@ -178,7 +185,7 @@ class DiscrepancyListViewModel : CoreViewModel(), PageSelectionListener {
                             val quantityNotProcessedProduct = if (task.taskHeader.taskType == TaskType.RecalculationCargoUnit) {
                                 val processingUnitsOfProduct = task.taskRepository.getProducts().getProcessingUnitsOfProduct(productInfo.materialNumber)
                                 if (processingUnitsOfProduct.size > 1) { //если у товара две ЕО
-                                    val countOrderQuantity = processingUnitsOfProduct.map {unitInfo ->
+                                    val countOrderQuantity = processingUnitsOfProduct.map { unitInfo ->
                                         unitInfo.orderQuantity.toDouble()
                                     }.sumByDouble {
                                         it
@@ -252,18 +259,18 @@ class DiscrepancyListViewModel : CoreViewModel(), PageSelectionListener {
                         if (isBatches.value == true && productInfo?.type == ProductType.NonExciseAlcohol && !productInfo.isBoxFl && !productInfo.isMarkFl) {
                             if (addeBatchProduct != productInfo.materialNumber) { //показываем партии без разбивки по расхождениям
                                 addeBatchProduct = productInfo.materialNumber
-                                val batchesInfoOfProduct = task.taskRepository.getBatches().findBatchOfProduct(productInfo)?.filter {findBatch ->
+                                val batchesInfoOfProduct = task.taskRepository.getBatches().findBatchOfProduct(productInfo)?.filter { findBatch ->
                                     if (repoInMemoryHolder.taskList.value?.taskListLoadingMode == TaskListLoadingMode.PGE) {
-                                        task.taskRepository.getBatchesDiscrepancies().findBatchDiscrepanciesOfBatch(findBatch).filter {findBatchDiscrPGE ->
+                                        task.taskRepository.getBatchesDiscrepancies().findBatchDiscrepanciesOfBatch(findBatch).filter { findBatchDiscrPGE ->
                                             !(findBatchDiscrPGE.typeDiscrepancies == "1" || findBatchDiscrPGE.typeDiscrepancies == "2")
                                         }.any()
                                     } else {
-                                        task.taskRepository.getBatchesDiscrepancies().findBatchDiscrepanciesOfBatch(findBatch).filter {findBatchDiscr ->
+                                        task.taskRepository.getBatchesDiscrepancies().findBatchDiscrepanciesOfBatch(findBatch).filter { findBatchDiscr ->
                                             findBatchDiscr.typeDiscrepancies != "1"
                                         }.any()
                                     }
                                 }
-                                batchesInfoOfProduct?.map {batch ->
+                                batchesInfoOfProduct?.map { batch ->
                                     val batchInfo = task.taskRepository.getBatches().findBatch(
                                             batchNumber = batch.batchNumber,
                                             materialNumber = batch.materialNumber,
@@ -325,7 +332,7 @@ class DiscrepancyListViewModel : CoreViewModel(), PageSelectionListener {
         taskManager.getReceivingTask()?.let { task ->
             countControl.postValue( //https://trello.com/c/9K1FZnUU, отображать перечень маркированных товаров, по которым не пройден хотя бы один из видов контроля
                     task.getProcessedProducts()
-                            .filter {goodsInfo ->
+                            .filter { goodsInfo ->
                                 normEnteredButControlNotPassed(goodsInfo)
                             }
                             .sortedByDescending {
@@ -344,8 +351,10 @@ class DiscrepancyListViewModel : CoreViewModel(), PageSelectionListener {
                                         productInfo = productInfo,
                                         productDiscrepancies = null,
                                         batchInfo = null,
-                                        checkBoxControl = taskManager.getReceivingTask()?.controlBoxesOfProduct(productInfo) ?: false,
-                                        checkStampControl = taskManager.getReceivingTask()?.controlExciseStampsOfProduct(productInfo) ?: false,
+                                        checkBoxControl = taskManager.getReceivingTask()?.controlBoxesOfProduct(productInfo)
+                                                ?: false,
+                                        checkStampControl = taskManager.getReceivingTask()?.controlExciseStampsOfProduct(productInfo)
+                                                ?: false,
                                         even = index % 2 == 0)
                             }
                             .reversed())
@@ -364,7 +373,7 @@ class DiscrepancyListViewModel : CoreViewModel(), PageSelectionListener {
         val matnr: String? = if (selectedPage.value == 0) {
             countNotProcessed.value?.get(position)?.productInfo?.materialNumber
         } else {
-            if ( (isAlco.value == true && selectedPage.value == 2) || (isAlco.value == false && selectedPage.value == 1)) {
+            if ((isAlco.value == true && selectedPage.value == 2) || (isAlco.value == false && selectedPage.value == 1)) {
                 countProcessed.value?.get(position)?.productInfo?.materialNumber
             } else {
                 countControl.value?.get(position)?.productInfo?.materialNumber
@@ -376,7 +385,8 @@ class DiscrepancyListViewModel : CoreViewModel(), PageSelectionListener {
                 selectedPage.value == 0) { //коробочный учет для ПРИЕМКИ https://trello.com/c/WeGFSdAW
             screenNavigator.openExciseAlcoBoxProductFailureScreen(countNotProcessed.value?.get(position)?.productInfo!!)
         } else {
-            searchProductDelegate.searchCode(code = matnr ?: "", fromScan = false, isDiscrepancy = true)
+            searchProductDelegate.searchCode(code = matnr
+                    ?: "", fromScan = false, isDiscrepancy = true)
         }
     }
 
@@ -385,6 +395,23 @@ class DiscrepancyListViewModel : CoreViewModel(), PageSelectionListener {
             if (!countProcessed.value?.get(position)!!.productInfo!!.isNotEdit) {
                 if (isBatches.value == true && !countProcessed.value?.get(position)!!.productInfo!!.isBoxFl && !countProcessed.value?.get(position)!!.productInfo!!.isMarkFl) {
                     //удаляем все расхождения, кроме Нормы
+                    if (countProcessed.value?.get(position)?.productInfo?.isSet == true) {
+                        repoInMemoryHolder.sets.value?.filter {
+                            it.setNumber == countProcessed.value?.get(position)?.productInfo?.materialNumber
+                        }?.map { component ->
+                            taskManager
+                                    .getReceivingTask()
+                                    ?.taskRepository
+                                    ?.getProductsDiscrepancies()
+                                    ?.deleteProductsDiscrepanciesNotNormForProduct(component.componentNumber)
+
+                            taskManager
+                                    .getReceivingTask()
+                                    ?.taskRepository
+                                    ?.getBatchesDiscrepancies()
+                                    ?.deleteBatchesDiscrepanciesNotNormForProduct(component.componentNumber)
+                        }
+                    }
                     taskManager
                             .getReceivingTask()
                             ?.taskRepository
@@ -405,6 +432,23 @@ class DiscrepancyListViewModel : CoreViewModel(), PageSelectionListener {
                             ?.deleteBatchesDiscrepanciesNotNormForProduct(countProcessed.value?.get(position)!!.productInfo!!.materialNumber)
                 } else {
                     //удаляем конкретное расхождение
+                    if (countProcessed.value?.get(position)?.productInfo?.isSet == true) {
+                        repoInMemoryHolder.sets.value?.filter {
+                            it.setNumber == countProcessed.value?.get(position)?.productInfo?.materialNumber
+                        }?.map { component ->
+                            taskManager
+                                    .getReceivingTask()
+                                    ?.taskRepository
+                                    ?.getProductsDiscrepancies()
+                                    ?.deleteProductDiscrepancy(component.componentNumber, countProcessed.value?.get(position)!!.productDiscrepancies!!.typeDiscrepancies)
+
+                            taskManager
+                                    .getReceivingTask()
+                                    ?.taskRepository
+                                    ?.getBatchesDiscrepancies()
+                                    ?.deleteBatchesDiscrepanciesForProductAndDiscrepancies(component.componentNumber, countProcessed.value?.get(position)!!.productDiscrepancies!!.typeDiscrepancies)
+                        }
+                    }
                     taskManager
                             .getReceivingTask()
                             ?.taskRepository
@@ -439,13 +483,13 @@ class DiscrepancyListViewModel : CoreViewModel(), PageSelectionListener {
         viewModelScope.launch {
             screenNavigator.showProgressLoadingData()
             //очищаем таблицу ET_TASK_DIFF от не акцизного (партионного) алкоголя, т.к. для этих товаров необходимо передавать только данные из таблицы ET_PARTS_DIFF
-            taskManager.getReceivingTask()!!.taskRepository.getProductsDiscrepancies().getProductsDiscrepancies().map {productDiscr ->
+            taskManager.getReceivingTask()!!.taskRepository.getProductsDiscrepancies().getProductsDiscrepancies().map { productDiscr ->
                 taskManager.getReceivingTask()!!.taskRepository.getProducts().findProduct(productDiscr.materialNumber)
-            }.filter {filterProduct ->
+            }.filter { filterProduct ->
                 //партионный - это помеченный IS_ALCO и не помеченный IS_BOX_FL, IS_MARK_FL (Артем)
                 filterProduct?.type == ProductType.NonExciseAlcohol && !filterProduct.isBoxFl && !filterProduct.isMarkFl
-            }.map {mapProduct ->
-                mapProduct?.let {productForDel ->
+            }.map { mapProduct ->
+                mapProduct?.let { productForDel ->
                     taskManager.getReceivingTask()!!.taskRepository.getProductsDiscrepancies().deleteProductsDiscrepanciesForProduct(productForDel.materialNumber)
                 }
             }
@@ -467,7 +511,8 @@ class DiscrepancyListViewModel : CoreViewModel(), PageSelectionListener {
 
     private fun handleSuccess(result: EndRecountDDResult) {
         taskManager.updateTaskDescription(TaskDescription.from(result.taskDescription))
-        screenNavigator.openTaskCardScreen(TaskCardMode.Full, taskManager.getReceivingTask()?.taskHeader?.taskType ?: TaskType.None)
+        screenNavigator.openTaskCardScreen(TaskCardMode.Full, taskManager.getReceivingTask()?.taskHeader?.taskType
+                ?: TaskType.None)
     }
 
     override fun handleFailure(failure: Failure) {
@@ -475,13 +520,13 @@ class DiscrepancyListViewModel : CoreViewModel(), PageSelectionListener {
         screenNavigator.openAlertScreen(failure, pageNumber = "97")
     }
 
-    private fun normEnteredButControlNotPassed(productInfo: TaskProductInfo) : Boolean {
+    private fun normEnteredButControlNotPassed(productInfo: TaskProductInfo): Boolean {
         /** Артем:
-          товар на вкладке Контроль появляется если по товару была введеная норма, но не был пройден контроль
-          Причем если по товару
-          10 шт
-          контроль 2 шт,
-          а по факту мы ввели 1 норму (и подтвердили сканированием) и 9 брака то контроль считается пройден*/
+        товар на вкладке Контроль появляется если по товару была введеная норма, но не был пройден контроль
+        Причем если по товару
+        10 шт
+        контроль 2 шт,
+        а по факту мы ввели 1 норму (и подтвердили сканированием) и 9 брака то контроль считается пройден*/
         return if (taskManager.getReceivingTask()!!.taskRepository.getProductsDiscrepancies().getCountAcceptOfProduct(productInfo) <= 0 || taskManager.getReceivingTask()!!.controlBoxesOfProduct(productInfo)) {
             false
         } else {
@@ -490,13 +535,13 @@ class DiscrepancyListViewModel : CoreViewModel(), PageSelectionListener {
         }
     }
 
-    private fun getManufacturerName(batchInfo: TaskBatchInfo?) : String {
-        return repoInMemoryHolder.manufacturers.value?.findLast {manufacture ->
+    private fun getManufacturerName(batchInfo: TaskBatchInfo?): String {
+        return repoInMemoryHolder.manufacturers.value?.findLast { manufacture ->
             manufacture.code == batchInfo?.egais
         }?.name ?: ""
     }
 
-    private fun getRefusalTotalCountWithUomBatch(batchInfo: TaskBatchInfo?, uom: Uom?) : String {
+    private fun getRefusalTotalCountWithUomBatch(batchInfo: TaskBatchInfo?, uom: Uom?): String {
         val refusalTotalCountBatch = batchInfo?.let {
             if (taskManager.getReceivingTask()?.taskHeader?.taskType == TaskType.RecalculationCargoUnit) {
                 taskManager.getReceivingTask()?.taskRepository?.getBatchesDiscrepancies()?.getCountRefusalOfBatchPGE(batchInfo)

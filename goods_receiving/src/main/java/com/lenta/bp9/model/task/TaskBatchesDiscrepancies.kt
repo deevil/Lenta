@@ -49,6 +49,13 @@ data class TaskBatchesDiscrepancies(
 
         }
     }
+
+    fun getMaterialLastSix(): String {
+        return if (materialNumber.length > 6)
+            materialNumber.substring(materialNumber.length - 6)
+        else
+            materialNumber
+    }
 }
 
 data class TaskBatchesDiscrepanciesRestData(

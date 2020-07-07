@@ -222,7 +222,7 @@ class ExciseAlcoBoxCardPGEViewModel : CoreViewModel(), OnPositionClickListener {
                 qualityInfo.value = dataBase.getSurplusInfoForPGE()
                 onClickUnitChange() //вызываем, чтобы Отображать пиктограмму «БЕИ».
                 visibilityImgUnit.value = false //Кнопка недоступна для нажатия.
-                count.value = processExciseAlcoBoxAccPGEService.getInitialCount().toStringFormatted() //при вызове onClickUnitChange() подставится 0, пожтому обновляем эту переменную здессь
+                count.value = processExciseAlcoBoxAccPGEService.getInitialCount().toStringFormatted() //при вызове onClickUnitChange() подставится 0, поэтому обновляем эту переменную здессь
             } else {
                 qualityInfo.value = dataBase.getQualityInfoPGENotSurplusNotUnderload()
             }

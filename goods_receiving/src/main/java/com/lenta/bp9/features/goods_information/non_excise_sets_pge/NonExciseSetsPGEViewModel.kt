@@ -1,7 +1,9 @@
 package com.lenta.bp9.features.goods_information.non_excise_sets_pge
 
+import android.content.Context
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import com.lenta.bp9.R
 import com.lenta.bp9.features.goods_information.excise_alco_receiving.excise_alco_box_acc.excise_alco_box_list.BoxListItem
 import com.lenta.bp9.features.goods_list.ListCountedItem
 import com.lenta.bp9.features.goods_list.ListWithoutBarcodeItem
@@ -12,10 +14,16 @@ import com.lenta.bp9.model.task.TaskProductInfo
 import com.lenta.bp9.model.task.TaskSetsInfo
 import com.lenta.bp9.model.task.TaskType
 import com.lenta.bp9.platform.navigation.IScreenNavigator
+import com.lenta.bp9.platform.requestCodeTypeBarCode
+import com.lenta.bp9.platform.requestCodeTypeSap
 import com.lenta.bp9.repos.IDataBaseRepo
 import com.lenta.bp9.repos.IRepoInMemoryHolder
+import com.lenta.shared.fmp.resources.dao_ext.getEanInfo
+import com.lenta.shared.fmp.resources.dao_ext.getEansFromMaterial
+import com.lenta.shared.fmp.resources.dao_ext.getProductInfoByMatcode
 import com.lenta.shared.fmp.resources.dao_ext.getProductInfoByMaterial
 import com.lenta.shared.fmp.resources.slow.ZfmpUtz48V001
+import com.lenta.shared.fmp.resources.slow.ZmpUtz25V001
 import com.lenta.shared.models.core.MatrixType
 import com.lenta.shared.models.core.ProductType
 import com.lenta.shared.models.core.Uom
@@ -23,6 +31,7 @@ import com.lenta.shared.models.core.getProductType
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.requests.combined.scan_info.ScanInfoResult
 import com.lenta.shared.requests.combined.scan_info.pojo.QualityInfo
+import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.SelectionItemsHelper
 import com.lenta.shared.utilities.databinding.Evenable
 import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
@@ -42,18 +51,31 @@ class NonExciseSetsPGEViewModel : CoreViewModel(),
 
     @Inject
     lateinit var screenNavigator: IScreenNavigator
+
     @Inject
     lateinit var taskManager: IReceivingTaskManager
+
     @Inject
     lateinit var searchProductDelegate: SearchProductDelegate
+
     @Inject
     lateinit var dataBase: IDataBaseRepo
+
     @Inject
     lateinit var processNonExciseSetsPGEProductService: ProcessNonExciseSetsPGEProductService
+
     @Inject
     lateinit var repoInMemoryHolder: IRepoInMemoryHolder
+
     @Inject
     lateinit var hyperHive: HyperHive
+
+    @Inject
+    lateinit var context: Context
+
+    private val zmpUtz25V001: ZmpUtz25V001 by lazy {
+        ZmpUtz25V001(hyperHive)
+    }
 
     private val zfmpUtz48V001: ZfmpUtz48V001 by lazy {
         ZfmpUtz48V001(hyperHive)
@@ -128,8 +150,10 @@ class NonExciseSetsPGEViewModel : CoreViewModel(),
         !it.isNullOrEmpty()
     }
 
-    val enabledApplyButton: MutableLiveData<Boolean> = countValue.map {
-        (it ?: 0.0) > 0.0
+    val enabledApplyButton: MutableLiveData<Boolean> = countValue.combineLatest(listComponents).map {
+        it?.second?.filter { componentItem ->
+            !componentItem.full
+        }?.size == 0
     }
 
     init {
@@ -141,7 +165,7 @@ class NonExciseSetsPGEViewModel : CoreViewModel(),
             if (isDiscrepancy.value!!) {
                 count.value = taskManager.getReceivingTask()?.taskRepository?.getProductsDiscrepancies()?.getCountProductNotProcessedOfProduct(productInfo.value!!).toStringFormatted()
                 qualityInfo.value = dataBase.getQualityInfoPGEForDiscrepancy()
-                spinQualitySelectedPosition.value = qualityInfo.value!!.indexOfLast {it.code == "4"}
+                spinQualitySelectedPosition.value = qualityInfo.value!!.indexOfLast { it.code == "3" }
             } else {
                 qualityInfo.value = dataBase.getQualityInfoPGE()
             }
@@ -150,7 +174,7 @@ class NonExciseSetsPGEViewModel : CoreViewModel(),
                 it.name
             }
 
-            spinProcessingUnit.value = listOf("ЕО - ${productInfo.value!!.processingUnit}")
+            spinProcessingUnit.value = listOf("${context.getString(R.string.spin_processing_unit)}${productInfo.value!!.processingUnit}")
 
             if (processNonExciseSetsPGEProductService.newProcessNonExciseSetsPGEProductService(productInfo.value!!) == null) {
                 screenNavigator.goBack()
@@ -169,19 +193,23 @@ class NonExciseSetsPGEViewModel : CoreViewModel(),
     }
 
     private fun updateListComponents() {
-        repoInMemoryHolder.sets.value.let {setsInfoList ->
+        repoInMemoryHolder.sets.value.let { setsInfoList ->
             listComponents.postValue(
-                    setsInfoList?.filter {filterSetInfo ->
+                    setsInfoList?.filter { filterSetInfo ->
                         filterSetInfo.setNumber == productInfo.value?.materialNumber
-                    }?.sortedByDescending {sorted ->
+                    }?.sortedByDescending { sorted ->
                         sorted.componentNumber
                     }?.mapIndexed { index, taskSetsInfo ->
                         val componentDescription = zfmpUtz48V001.getProductInfoByMaterial(taskSetsInfo.componentNumber)?.name
+                        val countProcessedComponents = processNonExciseSetsPGEProductService.getCountDiscrepanciesOfComponent(taskSetsInfo.componentNumber).toStringFormatted()
+                        val howMuchProcessComponents = (taskSetsInfo.quantity * (countValue.value
+                                ?: 0.0)).toStringFormatted()
                         ListComponentsItem(
                                 number = index + 1,
                                 name = "${taskSetsInfo.componentNumber.substring(taskSetsInfo.componentNumber.length - 6)} $componentDescription",
-                                quantity = "${taskManager.getReceivingTask()!!.taskRepository.getProductsDiscrepancies().getAllCountDiscrepanciesOfProduct(taskSetsInfo.componentNumber).toStringFormatted()} из ${(taskSetsInfo.quantity * (countValue.value ?: 0.0)).toStringFormatted()}",
+                                quantity = "$countProcessedComponents ${context.getString(R.string.of)} $howMuchProcessComponents",
                                 componentInfo = taskSetsInfo,
+                                full = countProcessedComponents == howMuchProcessComponents && (countProcessedComponents.toDouble() + howMuchProcessComponents.toDouble()) > 0,
                                 even = index % 2 == 0
                         )
                     }
@@ -189,15 +217,16 @@ class NonExciseSetsPGEViewModel : CoreViewModel(),
         }
 
         componentsSelectionsHelper.clearPositions()
+        processNonExciseSetsPGEProductService.setCountSet(countValue.value ?: 0.0)
     }
 
     fun onClickClean() {
         componentsSelectionsHelper.selectedPositions.value?.map { position ->
-            taskManager
-                    .getReceivingTask()
-                    ?.taskRepository
-                    ?.getProductsDiscrepancies()
-                    ?.deleteProductsDiscrepanciesForProduct(listComponents.value?.get(position)!!.componentInfo.componentNumber)
+            listComponents.value?.let {
+                processNonExciseSetsPGEProductService.cleanCurrentComponent(
+                        it[position].componentInfo.componentNumber
+                )
+            }
         }
 
         updateListComponents()
@@ -208,10 +237,12 @@ class NonExciseSetsPGEViewModel : CoreViewModel(),
     }
 
     fun onClickAdd() {
-        if (processNonExciseSetsPGEProductService.overLimit(countValue.value ?: 0.0)) {
-            screenNavigator.openAlertOverLimitPlannedScreen()
-        } else {
-            processNonExciseSetsPGEProductService.addSet(count.value!!, qualityInfo.value!![spinQualitySelectedPosition.value!!].code, productInfo.value!!.processingUnit)
+        if (count.value != null && qualityInfo.value != null) {
+            processNonExciseSetsPGEProductService.apply(count.value!!, qualityInfo.value!![spinQualitySelectedPosition.value
+                    ?: 0].code, productInfo.value!!.processingUnit)
+            count.value = "0"
+            processNonExciseSetsPGEProductService.clearCurrentComponent()
+            updateListComponents()
         }
     }
 
@@ -221,7 +252,13 @@ class NonExciseSetsPGEViewModel : CoreViewModel(),
     }
 
     fun onClickItemPosition(position: Int) {
-        listComponents.value?.get(position)?.componentInfo?.let { screenNavigator.openNonExciseSetComponentInfoPGEScreen(it, qualityInfo.value!![spinQualitySelectedPosition.value!!].code, productInfo.value!!) }
+        listComponents.value?.get(position)?.componentInfo?.let {
+            if (qualityInfo.value != null && spinQualitySelectedPosition.value != null && productInfo.value != null) {
+                screenNavigator.openNonExciseSetComponentInfoPGEScreen(it, qualityInfo.value!![spinQualitySelectedPosition.value!!].code, productInfo.value!!)
+            } else {
+                screenNavigator.openAlertGoodsNotFoundTaskScreen()
+            }
+        }
     }
 
     override fun onPageSelected(position: Int) {
@@ -234,9 +271,7 @@ class NonExciseSetsPGEViewModel : CoreViewModel(),
     }
 
     override fun onOkInSoftKeyboard(): Boolean {
-        eanCode.value?.let {
-            searchProductDelegate.searchCode(it, fromScan = false)
-        }
+        onScanResult(eanCode.value.orEmpty())
         return true
     }
 
@@ -245,14 +280,23 @@ class NonExciseSetsPGEViewModel : CoreViewModel(),
     }
 
     fun onScanResult(data: String) {
-        val componentNumber: TaskSetsInfo? = repoInMemoryHolder.sets.value?.findLast {
-            it.componentNumber == data
+        val componentNumber = searchCode(data)?.material
+        val componentInfo: TaskSetsInfo? = repoInMemoryHolder.sets.value?.findLast {
+            it.setNumber == productInfo.value?.materialNumber && it.componentNumber == componentNumber
         }
-        if (componentNumber == null) {
+        if (componentInfo == null) {
             screenNavigator.openAlertGoodsNotFoundTaskScreen()
         } else {
-            screenNavigator.openNonExciseSetComponentInfoPGEScreen(componentNumber, qualityInfo.value!![spinQualitySelectedPosition.value!!].code, productInfo.value!!)
+            screenNavigator.openNonExciseSetComponentInfoPGEScreen(componentInfo, qualityInfo.value!![spinQualitySelectedPosition.value!!].code, productInfo.value!!)
         }
+    }
+
+    private fun searchCode(data: String): ZfmpUtz48V001.ItemLocal_ET_MATNR_LIST? {
+        val eanInfo = zmpUtz25V001.getEanInfo(ean = data)
+        //не менять последовательность
+        return zfmpUtz48V001.getProductInfoByMaterial(material = eanInfo?.material)
+                ?: zfmpUtz48V001.getProductInfoByMatcode(matcode = data)
+                ?: zfmpUtz48V001.getProductInfoByMaterial(material = "000000000000${data.takeLast(6)}")
     }
 
     fun onBackPressed() {
@@ -274,6 +318,7 @@ data class ListComponentsItem(
         val name: String,
         val quantity: String,
         val componentInfo: TaskSetsInfo,
+        val full: Boolean,
         val even: Boolean
 ) : Evenable {
     override fun isEven() = even

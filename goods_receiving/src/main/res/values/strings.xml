@@ -323,4 +323,8 @@
     <string name="alcocode_not_found">Алкокод не найден</string>
     <string name="over_limit_planned">Превышено плановое количество</string>
     <string name="over_limit_planned_batch">Превышено плановое количество по партии</string>
+    <string name="error_while_saving">Ошибка при сохранении</string>
+    <string name="code_with_12_digits">000000000000</string>
+    <string name="spin_processing_unit">ЕО - </string>
+    <string name="of">из</string>
 </resources>

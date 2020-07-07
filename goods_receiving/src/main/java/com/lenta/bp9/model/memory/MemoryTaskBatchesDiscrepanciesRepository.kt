@@ -35,6 +35,18 @@ class MemoryTaskBatchesDiscrepanciesRepository : ITaskBatchesDiscrepanciesReposi
         return foundDiscrepancies
     }
 
+    override fun findBatchDiscrepanciesOfProducts(materialNumbers: List<String>): List<TaskBatchesDiscrepancies> {
+        val foundDiscrepancies = ArrayList<TaskBatchesDiscrepancies>()
+        materialNumbers.map {
+            for (i in batchesDiscrepancies.indices) {
+                if (it == batchesDiscrepancies[i].materialNumber) {
+                    foundDiscrepancies.add(batchesDiscrepancies[i])
+                }
+            }
+        }
+        return foundDiscrepancies
+    }
+
     override fun addBatchDiscrepancies(discrepancies: TaskBatchesDiscrepancies): Boolean {
         var index = -1
         for (i in batchesDiscrepancies.indices) {
