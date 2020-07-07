@@ -422,7 +422,6 @@ class GoodInfoCreateViewModel : CoreViewModel() {
         manager.findGoodByEan(eanWithoutWeight)?.let { foundGood ->
             lastSuccessSearchNumber.value = eanWithoutWeight
             setFoundGood(foundGood)
-            setDefaultQuantity(foundGood)
         } ?: loadGoodInfo(ean = eanWithoutWeight)
     }
 
@@ -436,7 +435,7 @@ class GoodInfoCreateViewModel : CoreViewModel() {
 
     private fun setFoundGood(foundGood: GoodCreate) {
         manager.updateCurrentGood(foundGood)
-        setScanModeFromGoodType(foundGood.kind)
+        setScanModeFromGoodKind(foundGood.kind)
         updateProviders(foundGood.providers)
         updateProducers(foundGood.producers)
         setDefaultQuantity(foundGood)
@@ -454,7 +453,7 @@ class GoodInfoCreateViewModel : CoreViewModel() {
         }
     }
 
-    private fun setScanModeFromGoodType(goodKind: GoodKind) {
+    private fun setScanModeFromGoodKind(goodKind: GoodKind) {
         scanModeType.value = when (goodKind) {
             GoodKind.COMMON -> ScanNumberType.COMMON
             GoodKind.ALCOHOL -> ScanNumberType.ALCOHOL
@@ -482,18 +481,18 @@ class GoodInfoCreateViewModel : CoreViewModel() {
                     if (manager.isGoodCanBeAdded(goodInfo)) {
                         isEanLastScanned = ean != null
                         isExistUnsavedData = true
-                        addGood(goodInfo)
+                        addGood(goodInfo, ean ?: (material ?: ""))
                     } else {
-                        navigator.showGoodCannotBeAdded {
-                            if (manager.searchGoodFromList) {
-                                manager.searchGoodFromList = false
-                                manager.searchNumber = ""
-                                navigator.goBack()
-                                navigator.goBack()
-                            } else {
-                                navigator.goBack()
-                            }
+                        if (manager.searchGoodFromList) {
+                            manager.searchGoodFromList = false
+                            manager.searchNumber = ""
+                            navigator.goBack()
+                            navigator.goBack()
+                        } else {
+                            navigator.goBack()
                         }
+
+                        navigator.showGoodCannotBeAdded()
                     }
                 }
             }
@@ -510,7 +509,7 @@ class GoodInfoCreateViewModel : CoreViewModel() {
         navigator.openAlertScreen(failure)
     }
 
-    private fun addGood(goodInfo: GoodInfoResult) {
+    private fun addGood(goodInfo: GoodInfoResult, number: String) {
         viewModelScope.launch {
             goodInfo.apply {
                 val commonUnits = database.getUnitsByCode(materialInfo.commonUnitsCode)
@@ -537,10 +536,10 @@ class GoodInfoCreateViewModel : CoreViewModel() {
             }
 
             good.value?.let { good ->
-                lastSuccessSearchNumber.value = good.material
+                lastSuccessSearchNumber.value = number
                 updateProviders(good.providers)
                 updateProducers(good.producers)
-                setScanModeFromGoodType(good.kind)
+                setScanModeFromGoodKind(good.kind)
                 setDefaultQuantity(good)
 
                 if (good.kind == GoodKind.EXCISE) {

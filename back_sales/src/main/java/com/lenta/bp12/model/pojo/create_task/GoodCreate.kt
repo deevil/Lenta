@@ -21,6 +21,7 @@ data class GoodCreate(
         val control: ControlType = ControlType.COMMON,
         val section: String,
         val matrix: MatrixType,
+
         val commonUnits: Uom = Uom.ST,
         val convertingUnits: Uom = Uom.ST,
         val innerQuantity: Double = 0.0,

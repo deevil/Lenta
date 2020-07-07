@@ -119,7 +119,7 @@ class OpenTaskManager @Inject constructor(
                                 planQuantity = planQuantity.toDoubleOrNull() ?: 0.0,
                                 factQuantity = factQuantity.toDoubleOrNull() ?: 0.0,
                                 innerQuantity = innerQuantity.toDoubleOrNull() ?: 1.0,
-                                units = database.getUnitsByCode(unitsCode),
+                                commonUnits = database.getUnitsByCode(unitsCode),
                                 isCounted = isCounted.isSapTrue(),
                                 isDeleted = isDeleted.isSapTrue(),
                                 provider = ProviderInfo(providerCode, providerName),
@@ -147,7 +147,7 @@ class OpenTaskManager @Inject constructor(
         return currentTask.value?.goods?.find { it.material == formattedMaterial }
     }
 
-    override fun goodCorrespondToTask(goodInfo: GoodInfoResult): Boolean {
+    override fun isGoodCorrespondToTask(goodInfo: GoodInfoResult): Boolean {
         currentTask.value?.let { task ->
             val control = task.control == goodInfo.getControlType()
             val type = if (task.goodType.isNotEmpty()) task.goodType == goodInfo.materialInfo.goodType else true
@@ -189,7 +189,7 @@ class OpenTaskManager @Inject constructor(
                                     factQuantity = position.quantity.dropZeros(),
                                     isCounted = good.isCounted.toSapBooleanString(),
                                     isDeleted = good.isDeleted.toSapBooleanString(),
-                                    unitsCode = good.units.code
+                                    unitsCode = good.commonUnits.code
                             )
                     )
                 }
@@ -287,7 +287,7 @@ interface IOpenTaskManager {
     fun saveGoodInTask(good: GoodOpen)
     fun findGoodByEan(ean: String): GoodOpen?
     fun findGoodByMaterial(material: String): GoodOpen?
-    fun goodCorrespondToTask(goodInfo: GoodInfoResult): Boolean
+    fun isGoodCorrespondToTask(goodInfo: GoodInfoResult): Boolean
     suspend fun isGoodCanBeAdded(goodInfo: GoodInfoResult): Boolean
     fun finishCurrentTask()
     suspend fun addTasks(tasksInfo: List<TaskInfo>)
