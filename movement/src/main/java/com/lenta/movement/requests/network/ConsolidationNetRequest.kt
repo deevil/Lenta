@@ -11,7 +11,7 @@ import com.lenta.shared.requests.FmpRequestsHelper
 import javax.inject.Inject
 
 /** ZMP_UTZ_MVM_09_V001	«Консолидация ЕО\ГЕ» */
-class Consolidation @Inject constructor(
+class ConsolidationNetRequest @Inject constructor(
         private val fmpRequestsHelper: FmpRequestsHelper
 ) : UseCase<ConsolidationResult, ConsolidationParams> {
 
