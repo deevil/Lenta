@@ -77,6 +77,8 @@
     <string name="type_quantity">Количество</string>
     <string name="type_mark">Марочно</string>
     <string name="type_part">Партионно</string>
+    <string name="total_with_converting_info">Итого %1$s</string>
+    <string name="by_basket">По корзине</string>
 
     // Разное
     <string name="provider">Поставщик</string>

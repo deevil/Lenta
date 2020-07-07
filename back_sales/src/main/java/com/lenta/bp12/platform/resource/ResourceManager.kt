@@ -26,13 +26,16 @@ class ResourceManager @Inject constructor(
     override fun chooseProvider(): String = context.getString(R.string.choose_provider)
 
     override fun chooseProducer(): String = context.getString(R.string.choose_producer)
+
+    override fun totalWithConvertingInfo(info: String): String = context.getString(R.string.total_with_converting_info, info)
+
+    override fun byBasket(): String = context.getString(R.string.by_basket)
 }
 
 interface IResourceManager {
 
     fun tkNumber(number: String): String
     fun backSalesFromDate(date: String): String
-
     fun alcocodeDoesNotApplyToThisGood(): String
     fun unknownAlcocode(): String
     fun typeQuantity(): String
@@ -40,6 +43,7 @@ interface IResourceManager {
     fun typePart(): String
     fun chooseProvider(): String
     fun chooseProducer(): String
-
+    fun totalWithConvertingInfo(info: String): String
+    fun byBasket(): String
 
 }

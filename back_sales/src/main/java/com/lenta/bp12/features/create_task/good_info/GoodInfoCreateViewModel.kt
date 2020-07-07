@@ -18,14 +18,13 @@ import com.lenta.bp12.request.pojo.ProviderInfo
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.functional.Either
+import com.lenta.shared.models.core.Uom
 import com.lenta.shared.models.core.getMatrixType
 import com.lenta.shared.platform.constants.Constants
 import com.lenta.shared.platform.viewmodel.CoreViewModel
+import com.lenta.shared.requests.combined.scan_info.ScanCodeInfo
 import com.lenta.shared.utilities.Logg
-import com.lenta.shared.utilities.extentions.combineLatest
-import com.lenta.shared.utilities.extentions.dropZeros
-import com.lenta.shared.utilities.extentions.map
-import com.lenta.shared.utilities.extentions.sumWith
+import com.lenta.shared.utilities.extentions.*
 import com.lenta.shared.view.OnPositionClickListener
 import kotlinx.coroutines.launch
 import java.math.BigInteger
@@ -104,11 +103,15 @@ class GoodInfoCreateViewModel : CoreViewModel() {
 
     private val markInfoResult = MutableLiveData<MarkInfoResult>()
 
+    private var isEanLastScanned = false
+
+    private var scanCodeInfo: ScanCodeInfo? = null
+
     /**
     Ввод количества
      */
 
-    val quantityField = MutableLiveData("1")
+    val quantityField = MutableLiveData("0")
 
     val quantity = quantityField.map {
         it?.toDoubleOrNull() ?: 0.0
@@ -127,7 +130,11 @@ class GoodInfoCreateViewModel : CoreViewModel() {
     Количество товара итого
      */
 
-    val totalTitle = MutableLiveData("Итого")
+    val totalTitle by lazy {
+        good.map { good ->
+            resource.totalWithConvertingInfo(good?.convertingInfo ?: "")
+        }
+    }
 
     private val totalQuantity by lazy {
         good.combineLatest(quantity).map {
@@ -142,7 +149,7 @@ class GoodInfoCreateViewModel : CoreViewModel() {
 
     val totalWithUnits by lazy {
         totalQuantity.map { quantity ->
-            "${quantity.dropZeros()} ${good.value?.units?.name}"
+            "${quantity.dropZeros()} ${good.value?.commonUnits?.name}"
         }
     }
 
@@ -150,7 +157,9 @@ class GoodInfoCreateViewModel : CoreViewModel() {
     Количество товара по корзинам
      */
 
-    val basketTitle = MutableLiveData("По корзине")
+    val basketTitle by lazy {
+        MutableLiveData(resource.byBasket())
+    }
 
     private val basket by lazy {
         good.combineLatest(selectedProvider).map {
@@ -161,26 +170,36 @@ class GoodInfoCreateViewModel : CoreViewModel() {
     }
 
     val basketNumber by lazy {
-        good.combineLatest(quantity).combineLatest(selectedProvider).map {
+        good.combineLatest(quantity).combineLatest(selectedProvider).combineLatest(isProviderSelected).map {
             it?.let {
-                task.value?.let { task ->
-                    getBasket()?.let { basket ->
-                        "${task.baskets.indexOf(basket) + 1}"
-                    } ?: "${task.baskets.size + 1}"
-                } ?: ""
+                val isProviderSelected = it.second
+
+                if (isProviderSelected) {
+                    task.value?.let { task ->
+                        getBasket()?.let { basket ->
+                            "${task.baskets.indexOf(basket) + 1}"
+                        } ?: "${task.baskets.size + 1}"
+                    } ?: ""
+                } else ""
             }
         }
     }
 
     val basketQuantity by lazy {
-        good.combineLatest(quantity).combineLatest(selectedProvider).map {
+        good.combineLatest(quantity).combineLatest(selectedProvider).combineLatest(isProviderSelected).map {
             it?.let {
-                val good = it.first.first
-                val quantity = it.first.second
+                val good = it.first.first.first
+                val quantity = it.first.first.second
+                val isProviderSelected = it.second
 
-                getBasket()?.let { basket ->
-                    "${task.value?.getQuantityByBasket(basket).sumWith(quantity).dropZeros()} ${good.units.name}"
-                } ?: "${quantity.dropZeros()} ${good.units.name}"
+                if (isProviderSelected) {
+                    getBasket()?.let { basket ->
+                        "${task.value?.getQuantityByBasket(basket).sumWith(quantity).dropZeros()} ${good.commonUnits.name}"
+                    } ?: "${quantity.dropZeros()} ${good.commonUnits.name}"
+                } else {
+                    "0 ${good.commonUnits.name}"
+                }
+
             }
         }
     }
@@ -404,20 +423,27 @@ class GoodInfoCreateViewModel : CoreViewModel() {
     }
 
     private fun getGoodByEan(ean: String) {
-        manager.findGoodByEan(ean)?.let { foundGood ->
+        isEanLastScanned = true
+        scanCodeInfo = ScanCodeInfo(ean)
+        val eanWithoutWeight = scanCodeInfo?.eanWithoutWeight ?: ean
+
+        manager.findGoodByEan(eanWithoutWeight)?.let { foundGood ->
+            lastSuccessSearchNumber.value = eanWithoutWeight
             setFoundGood(foundGood)
-        } ?: loadGoodInfo(ean = ean)
+            setDefaultQuantity(foundGood)
+        } ?: loadGoodInfo(ean = eanWithoutWeight)
     }
 
     private fun getGoodByMaterial(material: String) {
+        isEanLastScanned = false
         manager.findGoodByMaterial(material)?.let { foundGood ->
+            lastSuccessSearchNumber.value = material
             setFoundGood(foundGood)
         } ?: loadGoodInfo(material = material)
     }
 
     private fun setFoundGood(foundGood: GoodCreate) {
         manager.updateCurrentGood(foundGood)
-        lastSuccessSearchNumber.value = foundGood.material
         setScanModeFromGoodType(foundGood.type)
         updateProviders(foundGood.providers)
         updateProducers(foundGood.producers)
@@ -425,7 +451,15 @@ class GoodInfoCreateViewModel : CoreViewModel() {
     }
 
     private fun setDefaultQuantity(good: GoodCreate) {
-        quantityField.value = if (good.type == GoodType.COMMON) "1" else "0"
+        if (good.type == GoodType.COMMON) {
+            if (good.commonUnits == Uom.KG) {
+                quantityField.value = (scanCodeInfo?.getQuantity(good.convertingUnits) ?: 1.0).dropZeros()
+            } else {
+                if (isEanLastScanned) {
+                    quantityField.value = "1"
+                }
+            }
+        }
     }
 
     private fun setScanModeFromGoodType(goodType: GoodType) {
@@ -454,6 +488,7 @@ class GoodInfoCreateViewModel : CoreViewModel() {
             }.either(::handleFailure) { goodInfo ->
                 viewModelScope.launch {
                     if (manager.isGoodCanBeAdded(goodInfo)) {
+                        isEanLastScanned = ean != null
                         isExistUnsavedData = true
                         addGood(goodInfo)
                     } else {
@@ -485,21 +520,29 @@ class GoodInfoCreateViewModel : CoreViewModel() {
 
     private fun addGood(goodInfo: GoodInfoResult) {
         viewModelScope.launch {
-            good.value = GoodCreate(
-                    ean = goodInfo.eanInfo.ean,
-                    material = goodInfo.materialInfo.material,
-                    name = goodInfo.materialInfo.name,
-                    units = database.getUnitsByCode(goodInfo.materialInfo.unitsCode),
-                    type = goodInfo.getGoodType(),
-                    matype = goodInfo.materialInfo.matype,
-                    control = goodInfo.getControlType(),
-                    section = goodInfo.materialInfo.section,
-                    matrix = getMatrixType(goodInfo.materialInfo.matrix),
-                    innerQuantity = goodInfo.materialInfo.innerQuantity.toDoubleOrNull() ?: 1.0,
-                    orderUnits = database.getUnitsByCode(goodInfo.materialInfo.orderUnitCode),
-                    providers = goodInfo.providers.toMutableList(),
-                    producers = goodInfo.producers.toMutableList()
-            )
+            goodInfo.apply {
+                val commonUnits = database.getUnitsByCode(materialInfo.commonUnitsCode)
+                val convertingUnits = database.getUnitsByCode(materialInfo.convertingUnitsCode)
+                val innerQuantity = materialInfo.innerQuantity.toDoubleOrNull() ?: 0.0
+                val convertingInfo = if (commonUnits != convertingUnits) " (${commonUnits.name} = ${innerQuantity.dropZeros()} ${convertingUnits.name})" else ""
+
+                good.value = GoodCreate(
+                        ean = eanInfo.ean,
+                        material = materialInfo.material,
+                        name = materialInfo.name,
+                        type = getGoodType(),
+                        matype = materialInfo.goodType,
+                        control = getControlType(),
+                        section = materialInfo.section,
+                        matrix = getMatrixType(materialInfo.matrix),
+                        commonUnits = commonUnits,
+                        convertingUnits = convertingUnits,
+                        innerQuantity = materialInfo.innerQuantity.toDoubleOrNull() ?: 0.0,
+                        convertingInfo = convertingInfo,
+                        providers = providers.toMutableList(),
+                        producers = producers.toMutableList()
+                )
+            }
 
             good.value?.let { good ->
                 lastSuccessSearchNumber.value = good.material
@@ -691,7 +734,7 @@ class GoodInfoCreateViewModel : CoreViewModel() {
                     number = lastSuccessSearchNumber.value!!,
                     material = changedGood.material,
                     quantity = quantity.value!!,
-                    units = changedGood.units,
+                    units = changedGood.convertingUnits,
                     providerCode = selectedProvider.value?.code ?: "",
                     producerCode = selectedProducer.value?.code ?: "",
                     date = date.value!!

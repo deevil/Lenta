@@ -138,7 +138,7 @@ class DatabaseRepository @Inject constructor(
 
             // Параметры товара
             val controlType = goodInfo.getControlType().code
-            val goodType = goodInfo.materialInfo.matype
+            val goodType = goodInfo.materialInfo.goodType
             val goodGroup = goodInfo.materialInfo.goodGroup
             val purchaseGroup = goodInfo.materialInfo.purchaseGroup
 

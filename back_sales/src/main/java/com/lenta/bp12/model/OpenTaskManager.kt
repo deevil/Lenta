@@ -94,8 +94,9 @@ class OpenTaskManager @Inject constructor(
                     reason = database.getReturnReason(taskInfo.typeCode, taskInfo.reasonCode),
                     comment = taskInfo.comment,
                     section = taskInfo.section,
+                    goodType = taskInfo.goodType,
                     purchaseGroup = taskInfo.purchaseGroup,
-                    goodGroup = taskInfo.goodGroup,
+                    goodGroup = taskInfo.goodType,
                     numberOfGoods = taskInfo.quantity.toIntOrNull() ?: 0,
                     isStrict = taskInfo.isStrict.isSapTrue(),
                     isFinished = !taskInfo.isNotFinish.isSapTrue()
@@ -149,12 +150,12 @@ class OpenTaskManager @Inject constructor(
     override fun goodCorrespondToTask(goodInfo: GoodInfoResult): Boolean {
         currentTask.value?.let { task ->
             val control = task.control == goodInfo.getControlType()
-            val matype = "matype" == goodInfo.materialInfo.matype // todo Откуда в задаче взять тип товара???
+            val type = if (task.goodType.isNotEmpty()) task.goodType == goodInfo.materialInfo.goodType else true
             val section = if (goodInfo.materialInfo.section.isNotEmpty()) task.section == goodInfo.materialInfo.section else true
             val purchaseGroup = if (goodInfo.materialInfo.purchaseGroup.isNotEmpty()) task.purchaseGroup == goodInfo.materialInfo.purchaseGroup else true
             val provider =  goodInfo.providers.find { it.code == task.provider.code } != null
 
-            return control && section && purchaseGroup && provider
+            return control && type && section && purchaseGroup && provider
         }
 
         return false

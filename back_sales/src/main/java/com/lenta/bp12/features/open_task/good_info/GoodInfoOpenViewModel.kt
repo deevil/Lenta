@@ -409,7 +409,7 @@ class GoodInfoOpenViewModel : CoreViewModel() {
                     matrix = getMatrixType(goodInfo.materialInfo.matrix),
                     type = goodInfo.getGoodType(),
                     innerQuantity = goodInfo.materialInfo.innerQuantity.toDoubleOrNull() ?: 1.0,
-                    units = database.getUnitsByCode(goodInfo.materialInfo.unitsCode),
+                    units = database.getUnitsByCode(goodInfo.materialInfo.convertingUnitsCode),
                     provider = task.value!!.provider,
                     producers = goodInfo.producers
             )

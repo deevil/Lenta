@@ -132,7 +132,7 @@ class CreateTaskManager @Inject constructor(
                                     factQuantity = position.quantity.dropZeros(),
                                     isCounted = true.toSapBooleanString(),
                                     isDeleted = false.toSapBooleanString(),
-                                    unitsCode = good.units.code
+                                    unitsCode = good.commonUnits.code
                             )
                     )
                 }

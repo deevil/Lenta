@@ -54,9 +54,9 @@ data class TaskInfo(
         /** Группа закупок */
         @SerializedName("EKGRP")
         var purchaseGroup: String,
-        /** Товарная группа */
+        /** Вид товара */
         @SerializedName("MTART")
-        var goodGroup: String,
+        var goodType: String,
         /** ??? */
         @SerializedName("KUNNR")
         var kunnr: String,

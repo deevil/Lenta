@@ -7,7 +7,7 @@ import com.lenta.bp14.models.check_price.IPriceInfoParser
 import com.lenta.bp14.models.data.GoodType
 import com.lenta.bp14.models.data.getGoodType
 import com.lenta.bp14.models.not_exposed.INotExposedTask
-import com.lenta.bp14.platform.extentions.getQuantity
+import com.lenta.shared.utilities.extentions.getQuantity
 import com.lenta.bp14.platform.navigation.IScreenNavigator
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.fmp.resources.dao_ext.getMaxPositionsProdWkl
@@ -241,7 +241,7 @@ class GoodInfoNeViewModel : CoreViewModel(), PageSelectionListener {
                                 )
 
                                 val scanCodeInfo = ScanCodeInfo(code)
-                                val quantity = scanCodeInfo.getQuantity(defaultUnits = scanInfoResult.productInfo.uom)
+                                val quantity = scanCodeInfo.getQuantity(units = scanInfoResult.productInfo.uom)
 
                                 task.getProductInfoAndSetProcessed(
                                         matNr = scanInfoResult.productInfo.materialNumber,
