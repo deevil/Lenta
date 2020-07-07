@@ -10,6 +10,7 @@ import com.lenta.bp9.model.processing.ProcessNonExciseAlcoProductPGEService
 import com.lenta.bp9.model.task.IReceivingTaskManager
 import com.lenta.bp9.model.task.TaskBatchInfo
 import com.lenta.bp9.model.task.TaskProductInfo
+import com.lenta.bp9.platform.TypeDiscrepanciesConstants
 import com.lenta.bp9.platform.navigation.IScreenNavigator
 import com.lenta.bp9.repos.IDataBaseRepo
 import com.lenta.bp9.repos.IRepoInMemoryHolder
@@ -182,7 +183,7 @@ class NonExciseAlcoInfoPGEViewModel : CoreViewModel(), OnPositionClickListener {
 
                     qualityInfo.value = dataBase.getQualityInfoPGEForDiscrepancy()
                     qualityInfo.value?.let {quality ->
-                        spinQualitySelectedPosition.value = quality.indexOfLast {it.code == "4"}
+                        spinQualitySelectedPosition.value = quality.indexOfLast {it.code == TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_PGE_UNDERLOAD}
                     }
                 }
                 else -> qualityInfo.value = dataBase.getQualityInfoPGENotSurplus()
