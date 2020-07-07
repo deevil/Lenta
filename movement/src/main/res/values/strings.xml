@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">movement</string>
+    <string name="processing_pu">Обработка ЕО</string>
+    <string name="processing_es">Обработка ВП</string>
+    <string name="movement_btw_storage">Перемещение между складами</string>
+    <string name="preparation">Подготовка ингредиентов</string>
+    <string name="count">Количество</string>
+    <string name="storage_sender">Склад отправитель</string>
+    <string name="storage_receiver">Склад получатель</string>
+    <string name="container">Тара</string>
+</resources>
