@@ -96,6 +96,13 @@ class CreateTaskManager @Inject constructor(
         }
     }
 
+    override fun removeGoodByBasketAndMaterials(basket: Basket, materials: MutableList<String>) {
+        currentTask.value?.let { task ->
+            task.removeGoodByBasketAndMaterials(basket, materials)
+            updateCurrentTask(task)
+        }
+    }
+
     override fun removeBaskets(basketList: MutableList<Basket>) {
         currentTask.value?.let { task ->
             task.removeBaskets(basketList)
@@ -214,6 +221,7 @@ interface ICreateTaskManager {
     fun addBasket(basket: Basket)
     fun getBasketPosition(basket: Basket?): Int
     fun removeGoodByMaterials(materialList: List<String>)
+    fun removeGoodByBasketAndMaterials(basket: Basket, materials: MutableList<String>)
     fun removeBaskets(basketList: MutableList<Basket>)
     fun finishCurrentTask()
     fun addProviderInCurrentGood(providerInfo: ProviderInfo)

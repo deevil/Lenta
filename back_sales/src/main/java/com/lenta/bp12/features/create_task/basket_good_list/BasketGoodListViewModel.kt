@@ -3,6 +3,7 @@ package com.lenta.bp12.features.create_task.basket_good_list
 import androidx.lifecycle.MutableLiveData
 import com.lenta.bp12.model.ICreateTaskManager
 import com.lenta.bp12.platform.navigation.IScreenNavigator
+import com.lenta.bp12.platform.resource.IResourceManager
 import com.lenta.shared.platform.constants.Constants
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.SelectionItemsHelper
@@ -19,6 +20,9 @@ class BasketGoodListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
     @Inject
     lateinit var manager: ICreateTaskManager
 
+    @Inject
+    lateinit var resource: IResourceManager
+
 
     val selectionsHelper = SelectionItemsHelper()
 
@@ -32,7 +36,7 @@ class BasketGoodListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
 
     val title by lazy {
         basket.map { basket ->
-            "Корзина ${manager.getBasketPosition(basket)}: ${basket?.getDescription(task.value!!.taskType.isDivBySection)}"
+            resource.basketTitle("${manager.getBasketPosition(basket)}: ${basket?.getDescription(task.value!!.taskType.isDivBySection)}")
         }
     }
 
@@ -109,8 +113,19 @@ class BasketGoodListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
         }
 
         selectionsHelper.clearPositions()
-        manager.removeGoodByMaterials(materialList)
-        manager.updateCurrentBasket(manager.currentBasket.value)
+
+        basket.value?.let { basket ->
+            manager.removeGoodByBasketAndMaterials(basket, materialList)
+            manager.updateCurrentBasket(manager.currentBasket.value)
+
+            task.value?.let { task ->
+                if (task.isExistBasket(basket)) {
+                    manager.updateCurrentBasket(basket)
+                } else {
+                    navigator.goBack()
+                }
+            }
+        }
     }
 
 }

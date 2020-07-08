@@ -12,7 +12,7 @@ data class Basket(
 
     fun getDescription(isDivBySection: Boolean): String {
         val sectionBlock = if (isDivBySection) "C-${section}/" else ""
-        return "$sectionBlock${goodType}/${control.code}/ПП-${provider?.code}"
+        return "$sectionBlock${goodType}/${control.code}/ПП-${provider.code}"
     }
 
 }

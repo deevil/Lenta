@@ -136,8 +136,14 @@ data class GoodCreate(
         removeParts(parts.filter { it.providerCode == providerCode })
     }
 
-    /*fun isSameMaterial(material: String): Boolean {
-        return this.material.takeLast(6) == material.takeLast(6)
-    }*/
+    fun removeByProvider(providerCode: String) {
+        removePositionsByProvider(providerCode)
+        removeMarksByProvider(providerCode)
+        removePartsByProvider(providerCode)
+    }
+
+    fun isEmpty(): Boolean {
+        return positions.isEmpty() && marks.isEmpty() && parts.isEmpty()
+    }
 
 }

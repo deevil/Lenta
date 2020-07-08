@@ -41,11 +41,25 @@ data class TaskCreate(
         }
     }
 
-    fun removeGoodByMaterials(materialList: List<String>) {
-        materialList.forEach { material ->
+    fun removeGoodByMaterials(materials: List<String>) {
+        materials.forEach { material ->
             goods.remove(goods.find { it.material == material })
         }
 
+        removeEmptyBaskets()
+    }
+
+    fun removeGoodByBasketAndMaterials(basket: Basket, materials: MutableList<String>) {
+        materials.forEach { material ->
+            goods.find { it.material == material }?.let { good ->
+                good.removeByProvider(basket.provider.code)
+                if (good.isEmpty()) {
+                    goods.remove(good)
+                }
+            }
+        }
+
+        removeEmptyGoods()
         removeEmptyBaskets()
     }
 
@@ -73,6 +87,10 @@ data class TaskCreate(
 
     private fun removeEmptyBaskets() {
         baskets.removeAll(baskets.filter { getQuantityByBasket(it) == 0.0 })
+    }
+
+    fun isExistBasket(basket: Basket): Boolean {
+        return baskets.contains(basket)
     }
 
 }

@@ -79,6 +79,7 @@
     <string name="type_part">Партионно</string>
     <string name="total_with_converting_info">Итого %1$s</string>
     <string name="by_basket">По корзине</string>
+    <string name="basket_title">Корзина %1$s</string>
 
     // Разное
     <string name="provider">Поставщик</string>
