@@ -4,34 +4,22 @@ import android.content.Context
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.lenta.bp9.R
-import com.lenta.bp9.features.goods_information.excise_alco_receiving.excise_alco_box_acc.excise_alco_box_list.BoxListItem
-import com.lenta.bp9.features.goods_list.ListCountedItem
-import com.lenta.bp9.features.goods_list.ListWithoutBarcodeItem
 import com.lenta.bp9.features.goods_list.SearchProductDelegate
 import com.lenta.bp9.model.processing.ProcessNonExciseSetsPGEProductService
 import com.lenta.bp9.model.task.IReceivingTaskManager
 import com.lenta.bp9.model.task.TaskProductInfo
 import com.lenta.bp9.model.task.TaskSetsInfo
-import com.lenta.bp9.model.task.TaskType
 import com.lenta.bp9.platform.navigation.IScreenNavigator
-import com.lenta.bp9.platform.requestCodeTypeBarCode
-import com.lenta.bp9.platform.requestCodeTypeSap
 import com.lenta.bp9.repos.IDataBaseRepo
 import com.lenta.bp9.repos.IRepoInMemoryHolder
 import com.lenta.shared.fmp.resources.dao_ext.getEanInfo
-import com.lenta.shared.fmp.resources.dao_ext.getEansFromMaterial
 import com.lenta.shared.fmp.resources.dao_ext.getProductInfoByMatcode
 import com.lenta.shared.fmp.resources.dao_ext.getProductInfoByMaterial
 import com.lenta.shared.fmp.resources.slow.ZfmpUtz48V001
 import com.lenta.shared.fmp.resources.slow.ZmpUtz25V001
-import com.lenta.shared.models.core.MatrixType
-import com.lenta.shared.models.core.ProductType
-import com.lenta.shared.models.core.Uom
-import com.lenta.shared.models.core.getProductType
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.requests.combined.scan_info.ScanInfoResult
 import com.lenta.shared.requests.combined.scan_info.pojo.QualityInfo
-import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.SelectionItemsHelper
 import com.lenta.shared.utilities.databinding.Evenable
 import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
@@ -162,8 +150,41 @@ class NonExciseSetsPGEViewModel : CoreViewModel(),
                     scanResultHandler = this@NonExciseSetsPGEViewModel::handleProductSearchResult)
 
             suffix.value = productInfo.value?.uom?.name
-            if (isDiscrepancy.value!!) {
-                count.value = taskManager.getReceivingTask()?.taskRepository?.getProductsDiscrepancies()?.getCountProductNotProcessedOfProduct(productInfo.value!!).toStringFormatted()
+            if (isDiscrepancy.value == true) {
+                val processingUnitsOfProduct = productInfo.value?.let {
+                    taskManager
+                            .getReceivingTask()
+                            ?.taskRepository
+                            ?.getProducts()
+                            ?.getProcessingUnitsOfProduct(it.materialNumber)
+                }.orEmpty()
+                count.value = if (processingUnitsOfProduct.size > 1) { //если у товара две ЕО
+                    val countOrderQuantity = processingUnitsOfProduct.map { unitInfo ->
+                        unitInfo.orderQuantity.toDouble()
+                    }.sumByDouble {
+                        it
+                    }
+                    productInfo.value?.let {
+                        taskManager
+                                .getReceivingTask()
+                                ?.taskRepository
+                                ?.getProductsDiscrepancies()
+                                ?.getCountProductNotProcessedOfProductPGEOfProcessingUnits(
+                                        product = it,
+                                        orderQuantity = countOrderQuantity)
+                                .toStringFormatted()
+                    }
+
+                } else {
+                    productInfo.value?.let {
+                        taskManager
+                                .getReceivingTask()
+                                ?.taskRepository
+                                ?.getProductsDiscrepancies()
+                                ?.getCountProductNotProcessedOfProductPGE(it)
+                                .toStringFormatted()
+                    }
+                }
                 qualityInfo.value = dataBase.getQualityInfoPGEForDiscrepancy()
                 spinQualitySelectedPosition.value = qualityInfo.value!!.indexOfLast { it.code == "3" }
             } else {
