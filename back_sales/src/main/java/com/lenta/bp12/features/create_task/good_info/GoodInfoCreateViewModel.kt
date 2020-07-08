@@ -25,6 +25,7 @@ import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.requests.combined.scan_info.ScanCodeInfo
 import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.extentions.*
+import com.lenta.shared.utilities.getFormattedDate
 import com.lenta.shared.view.OnPositionClickListener
 import kotlinx.coroutines.launch
 import java.math.BigInteger
@@ -598,14 +599,7 @@ class GoodInfoCreateViewModel : CoreViewModel() {
             Constants.MARK_150 -> {
                 scanModeType.value = ScanNumberType.MARK_150
                 updateProducers(markInfo.producers.toMutableList())
-
-
-
-
-
-
-
-                date.value = markInfo.producedDate
+                date.value = getFormattedDate(markInfo.producedDate, Constants.DATE_FORMAT_yyyy_mm_dd, Constants.DATE_FORMAT_dd_mm_yyyy)
             }
             Constants.MARK_68 -> {
                 scanModeType.value = ScanNumberType.MARK_68
@@ -735,7 +729,7 @@ class GoodInfoCreateViewModel : CoreViewModel() {
                     units = changedGood.convertingUnits,
                     providerCode = selectedProvider.value?.code ?: "",
                     producerCode = selectedProducer.value?.code ?: "",
-                    date = date.value!!
+                    date = date.value ?: ""
             ))
 
             createBasket(changedGood)

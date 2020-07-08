@@ -5,6 +5,8 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import com.google.android.material.tabs.TabLayout
 import com.lenta.shared.R
+import java.text.SimpleDateFormat
+import java.util.*
 
 fun setIndicatorForTab(tabStrip: TabLayout?, tab: Int, color: TabIndicatorColor) {
     val tabItemLayout = (tabStrip?.getChildAt(0) as LinearLayout).getChildAt(tab) as LinearLayout
@@ -20,4 +22,16 @@ fun setIndicatorForTab(tabStrip: TabLayout?, tab: Int, color: TabIndicatorColor)
 
     textView.setCompoundDrawablesWithIntrinsicBounds(0, 0, indicator, 0)
     textView.compoundDrawablePadding = 5
+}
+
+fun getDateFromString(date: String, pattern: String): Date {
+    return SimpleDateFormat(pattern, Locale.getDefault()).parse(date)
+}
+
+fun getStringFromDate(date: Date, pattern: String): String {
+    return SimpleDateFormat(pattern, Locale.getDefault()).format(date)
+}
+
+fun getFormattedDate(date: String, sourcePattern: String, targetPattern: String): String {
+    return getStringFromDate(getDateFromString(date, sourcePattern), targetPattern)
 }
