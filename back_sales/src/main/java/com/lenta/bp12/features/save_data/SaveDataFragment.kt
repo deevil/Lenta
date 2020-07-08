@@ -21,7 +21,7 @@ class SaveDataFragment : CoreFragment<FragmentSaveDataBinding, SaveDataViewModel
 
     override fun getLayoutId(): Int = R.layout.fragment_save_data
 
-    override fun getPageNumber(): String? = generateScreenNumberFromPostfix("21")
+    override fun getPageNumber(): String? = generateScreenNumberFromPostfix(SCREEN_NUMBER)
 
     override fun getViewModel(): SaveDataViewModel {
         provideViewModel(SaveDataViewModel::class.java).let {
@@ -55,6 +55,10 @@ class SaveDataFragment : CoreFragment<FragmentSaveDataBinding, SaveDataViewModel
                 layoutId = R.layout.item_save_data,
                 itemId = BR.item
         )
+    }
+
+    companion object {
+        const val SCREEN_NUMBER = "21"
     }
 
 }

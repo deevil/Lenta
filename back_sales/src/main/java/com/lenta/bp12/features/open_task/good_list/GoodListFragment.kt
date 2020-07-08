@@ -31,7 +31,7 @@ class GoodListFragment : CoreFragment<FragmentGoodListBinding, GoodListViewModel
 
     override fun getLayoutId(): Int = R.layout.fragment_good_list
 
-    override fun getPageNumber(): String? = generateScreenNumberFromPostfix("32")
+    override fun getPageNumber(): String? = generateScreenNumberFromPostfix(SCREEN_NUMBER)
 
     override fun getViewModel(): GoodListViewModel {
         provideViewModel(GoodListViewModel::class.java).let {
@@ -64,8 +64,8 @@ class GoodListFragment : CoreFragment<FragmentGoodListBinding, GoodListViewModel
 
     override fun getPagerItemView(container: ViewGroup, position: Int): View {
         return when (position) {
-            0 -> initGoodListNotProcessed(container)
-            1 -> initGoodListProcessed(container)
+            TAB_PROCESSING -> initGoodListNotProcessed(container)
+            TAB_PROCESSED -> initGoodListProcessed(container)
             else -> View(context)
         }
     }
@@ -180,19 +180,27 @@ class GoodListFragment : CoreFragment<FragmentGoodListBinding, GoodListViewModel
 
     override fun getTextTitle(position: Int): String {
         return when (position) {
-            0 -> getString(R.string.not_processed)
-            1 -> getString(R.string.processed)
+            TAB_PROCESSING -> getString(R.string.not_processed)
+            TAB_PROCESSED -> getString(R.string.processed)
             else -> throw IllegalArgumentException("Wrong pager position!")
         }
     }
 
     override fun countTab(): Int {
-        return 2
+        return TABS
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding?.viewPagerSettings = this
+    }
+
+    companion object {
+        const val SCREEN_NUMBER = "32"
+
+        private const val TABS = 2
+        private const val TAB_PROCESSING = 0
+        private const val TAB_PROCESSED = 1
     }
 
 }

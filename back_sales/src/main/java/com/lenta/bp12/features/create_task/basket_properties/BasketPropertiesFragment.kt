@@ -15,7 +15,7 @@ class BasketPropertiesFragment : CoreFragment<FragmentBasketPropertiesBinding, B
 
     override fun getLayoutId(): Int = R.layout.fragment_basket_properties
 
-    override fun getPageNumber(): String? = generateScreenNumberFromPostfix("16")
+    override fun getPageNumber(): String? = generateScreenNumberFromPostfix(SCREEN_NUMBER)
 
     override fun getViewModel(): BasketPropertiesViewModel {
         provideViewModel(BasketPropertiesViewModel::class.java).let {
@@ -32,6 +32,10 @@ class BasketPropertiesFragment : CoreFragment<FragmentBasketPropertiesBinding, B
 
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
         bottomToolbarUiModel.uiModelButton1.show(ButtonDecorationInfo.back)
+    }
+
+    companion object {
+        const val SCREEN_NUMBER = "16"
     }
 
 }
