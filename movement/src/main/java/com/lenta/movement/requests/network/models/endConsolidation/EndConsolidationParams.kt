@@ -13,9 +13,5 @@ data class EndConsolidationParams(
 
         /** Табельный номер */
         @SerializedName("IV_PERNR")
-        val personnelNumber: String,
-
-        /** Список созданных заданий */
-        @SerializedName("ET_TASK_LIST")
-        val taskList: List<EndConsolidationTask>
+        val personnelNumber: String
 )

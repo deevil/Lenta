@@ -3,13 +3,14 @@ package com.lenta.movement.requests.network.models
 import com.lenta.movement.models.CargoUnit
 import com.lenta.movement.models.ProcessingUnit
 import com.lenta.movement.models.Task
+import com.lenta.movement.requests.network.models.endConsolidation.EndConsolidationTask
 import com.lenta.movement.requests.network.models.saveTask.SaveTaskResultTask
 import com.lenta.movement.requests.network.models.startConsolidation.StartConsolidationProcessingUnit
 import com.lenta.shared.platform.constants.Constants
 import com.lenta.shared.utilities.extentions.getSapDate
 import com.lenta.shared.utilities.extentions.isSapTrue
 
-fun SaveTaskResultTask.toTask(): Task {
+fun Taskable.toTask(): Task {
     return Task(
             number = taskNumber,
             isCreated = notFinish.isSapTrue().not(),
@@ -58,7 +59,7 @@ fun List<RestCargoUnit>.toCargoUnitList(): MutableList<CargoUnit> {
                         map.key,
                         map.value.map { processingUnitNumber ->
                             ProcessingUnit(
-                                    processingUnitNumber = processingUnitNumber,
+                                    processingUnitNumber = processingUnitNumber.orEmpty(),
                                     state = ProcessingUnit.State.COMBINED)
                         }
                 )

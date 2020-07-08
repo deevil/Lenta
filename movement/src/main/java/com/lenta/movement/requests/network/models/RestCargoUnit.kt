@@ -10,5 +10,5 @@ data class RestCargoUnit(
 
         /** Номер ЕО */
         @SerializedName("EXIDV")
-        val processingUnitNumber: String
+        val processingUnitNumber: String?
 )
