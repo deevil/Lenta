@@ -390,87 +390,142 @@ class DiscrepancyListViewModel : CoreViewModel(), PageSelectionListener {
     }
 
     fun onClickClean() {
-        processedSelectionsHelper.selectedPositions.value?.map { position ->
-            if (!countProcessed.value?.get(position)!!.productInfo!!.isNotEdit) {
-                if (isBatches.value == true && !countProcessed.value?.get(position)!!.productInfo!!.isBoxFl && !countProcessed.value?.get(position)!!.productInfo!!.isMarkFl) {
-                    //удаляем все расхождения, кроме Нормы
-                    if (countProcessed.value?.get(position)?.productInfo?.isSet == true) {
-                        repoInMemoryHolder.sets.value?.filter {
-                            it.setNumber == countProcessed.value?.get(position)?.productInfo?.materialNumber
-                        }?.map { component ->
-                            taskManager
-                                    .getReceivingTask()
-                                    ?.taskRepository
-                                    ?.getProductsDiscrepancies()
-                                    ?.deleteProductsDiscrepanciesNotNormForProduct(component.componentNumber)
-
-                            taskManager
-                                    .getReceivingTask()
-                                    ?.taskRepository
-                                    ?.getBatchesDiscrepancies()
-                                    ?.deleteBatchesDiscrepanciesNotNormForProduct(component.componentNumber)
-                        }
-                    }
-                    taskManager
-                            .getReceivingTask()
-                            ?.taskRepository
-                            ?.getProductsDiscrepancies()
-                            ?.deleteProductsDiscrepanciesNotNormForProduct(countProcessed.value?.get(position)!!.productInfo!!)
-
-
-                    taskManager
-                            .getReceivingTask()
-                            ?.taskRepository
-                            ?.getMercuryDiscrepancies()
-                            ?.deleteMercuryDiscrepanciesNotNormForProduct(countProcessed.value?.get(position)!!.productInfo!!)
-
-                    taskManager
-                            .getReceivingTask()
-                            ?.taskRepository
-                            ?.getBatchesDiscrepancies()
-                            ?.deleteBatchesDiscrepanciesNotNormForProduct(countProcessed.value?.get(position)!!.productInfo!!.materialNumber)
-                } else {
-                    //удаляем конкретное расхождение
-                    if (countProcessed.value?.get(position)?.productInfo?.isSet == true) {
-                        repoInMemoryHolder.sets.value?.filter {
-                            it.setNumber == countProcessed.value?.get(position)?.productInfo?.materialNumber
-                        }?.map { component ->
-                            taskManager
-                                    .getReceivingTask()
-                                    ?.taskRepository
-                                    ?.getProductsDiscrepancies()
-                                    ?.deleteProductDiscrepancy(component.componentNumber, countProcessed.value?.get(position)!!.productDiscrepancies!!.typeDiscrepancies)
-
-                            taskManager
-                                    .getReceivingTask()
-                                    ?.taskRepository
-                                    ?.getBatchesDiscrepancies()
-                                    ?.deleteBatchesDiscrepanciesForProductAndDiscrepancies(component.componentNumber, countProcessed.value?.get(position)!!.productDiscrepancies!!.typeDiscrepancies)
-                        }
-                    }
-                    taskManager
-                            .getReceivingTask()
-                            ?.taskRepository
-                            ?.getProductsDiscrepancies()
-                            ?.deleteProductDiscrepancy(countProcessed.value?.get(position)!!.productDiscrepancies!!)
-
-                    taskManager
-                            .getReceivingTask()
-                            ?.taskRepository
-                            ?.getMercuryDiscrepancies()
-                            ?.deleteMercuryDiscrepancyOfProduct(countProcessed.value?.get(position)!!.productInfo!!.materialNumber, countProcessed.value?.get(position)!!.productDiscrepancies!!.typeDiscrepancies)
-
-                    taskManager
-                            .getReceivingTask()
-                            ?.taskRepository
-                            ?.getBatchesDiscrepancies()
-                            ?.deleteBatchesDiscrepanciesForProductAndDiscrepancies(countProcessed.value?.get(position)!!.productInfo!!.materialNumber, countProcessed.value?.get(position)!!.productDiscrepancies!!.typeDiscrepancies)
+        processedSelectionsHelper
+                .selectedPositions
+                .value
+                ?.map { position ->
+                    countProcessed
+                            .value
+                            ?.get(position)
+                            ?.productInfo
+                            ?.let { selectedProduct ->
+                                if (!selectedProduct.isNotEdit) {
+                                    if (isBatches.value == true && !selectedProduct.isBoxFl && !selectedProduct.isMarkFl) {
+                                        //удаляем все расхождения, кроме Нормы
+                                        if (selectedProduct.isSet) {
+                                            repoInMemoryHolder
+                                                    .sets
+                                                    .value
+                                                    ?.filter {
+                                                        it.setNumber == selectedProduct.materialNumber
+                                                    }?.map { component ->
+                                                        deleteDiscrepanciesNotNormForSet(component.componentNumber)
+                                                    }
+                                        }
+                                        deleteDiscrepanciesNotNormForProduct(selectedProduct)
+                                    } else {
+                                        //удаляем конкретное расхождение
+                                        val selectedTypeDiscrepancies = countProcessed.value?.get(position)?.productDiscrepancies?.typeDiscrepancies.orEmpty()
+                                        if (selectedProduct.isSet) {
+                                            repoInMemoryHolder
+                                                    .sets
+                                                    .value
+                                                    ?.filter {
+                                                        it.setNumber == selectedProduct.materialNumber
+                                                    }
+                                                    ?.map { component ->
+                                                        deleteDiscrepanciesForSet(component.componentNumber, selectedTypeDiscrepancies)
+                                                    }
+                                        }
+                                        deleteDiscrepanciesForProduct(selectedProduct.materialNumber, selectedTypeDiscrepancies)
+                                    }
+                                }
+                            }
                 }
-            }
-
-        }
 
         updateData()
+    }
+
+    private fun deleteDiscrepanciesForSet(componentNumber: String, typeDiscrepancies: String) {
+        taskManager
+                .getReceivingTask()
+                ?.taskRepository
+                ?.let { taskRepository ->
+                    taskRepository
+                            .getProductsDiscrepancies()
+                            .deleteProductDiscrepancy(componentNumber, typeDiscrepancies)
+
+                    taskRepository
+                            .getBatchesDiscrepancies()
+                            .deleteBatchesDiscrepanciesForProductAndDiscrepancies(componentNumber, typeDiscrepancies)
+                }
+    }
+
+    private fun deleteDiscrepanciesNotNormForSet(componentNumber: String) {
+        taskManager
+                .getReceivingTask()
+                ?.taskRepository
+                ?.let { taskRepository ->
+                    taskRepository
+                            .getProductsDiscrepancies()
+                            .deleteProductsDiscrepanciesNotNormForProduct(componentNumber)
+
+                    taskRepository
+                            .getBatchesDiscrepancies()
+                            .deleteBatchesDiscrepanciesNotNormForProduct(componentNumber)
+                }
+    }
+
+    private fun deleteDiscrepanciesForProduct(materialNumber: String, typeDiscrepancies: String) {
+        taskManager
+                .getReceivingTask()
+                ?.taskRepository
+                ?.let { taskRepository ->
+                    taskRepository
+                            .getProductsDiscrepancies()
+                            .deleteProductDiscrepancy(materialNumber, typeDiscrepancies)
+
+                    taskRepository
+                            .getMercuryDiscrepancies()
+                            .deleteMercuryDiscrepancyOfProduct(materialNumber, typeDiscrepancies)
+
+                    taskRepository
+                            .getBatchesDiscrepancies()
+                            .deleteBatchesDiscrepanciesForProductAndDiscrepancies(materialNumber, typeDiscrepancies)
+
+                    taskRepository
+                            .getBoxesDiscrepancies()
+                            .deleteBoxesDiscrepanciesForProductAndDiscrepancies(materialNumber, typeDiscrepancies)
+
+                    taskRepository
+                            .getExciseStampsDiscrepancies()
+                            .deleteExciseStampsDiscrepanciesForProductAndDiscrepancies(materialNumber, typeDiscrepancies)
+
+                    taskRepository
+                            .getExciseStampsBad()
+                            .deleteExciseStampBadForProductAndDiscrepancies(materialNumber, typeDiscrepancies)
+                }
+    }
+
+    private fun deleteDiscrepanciesNotNormForProduct(product: TaskProductInfo) {
+        taskManager
+                .getReceivingTask()
+                ?.taskRepository
+                ?.let { taskRepository ->
+                    taskRepository
+                            .getProductsDiscrepancies()
+                            .deleteProductsDiscrepanciesNotNormForProduct(product)
+
+                    taskRepository
+                            .getMercuryDiscrepancies()
+                            .deleteMercuryDiscrepanciesNotNormForProduct(product)
+
+                    taskRepository
+                            .getBatchesDiscrepancies()
+                            .deleteBatchesDiscrepanciesNotNormForProduct(product.materialNumber)
+
+                    taskRepository
+                            .getBoxesDiscrepancies()
+                            .deleteBoxesDiscrepanciesNotNormForProduct(product.materialNumber)
+
+                    taskRepository
+                            .getExciseStampsDiscrepancies()
+                            .deleteExciseStampsDiscrepanciesNotNormForProduct(product.materialNumber)
+
+                    taskRepository
+                            .getExciseStampsBad()
+                            .deleteExciseStampBadNotNormForProduct(product.materialNumber)
+                }
     }
 
     fun onClickBatches() {

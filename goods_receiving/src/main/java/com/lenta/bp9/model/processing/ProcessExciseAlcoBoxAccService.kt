@@ -60,10 +60,11 @@ class ProcessExciseAlcoBoxAccService
 
         if (currentBoxDiscrepancies.isNotEmpty()) {
             currentBoxDiscrepancies.map {
-                taskManager.getReceivingTask()?.
-                        taskRepository?.
-                        getBoxesDiscrepancies()?.
-                        changeBoxDiscrepancy(it)
+                taskManager
+                        .getReceivingTask()
+                        ?.taskRepository
+                        ?.getBoxesDiscrepancies()
+                        ?.changeBoxDiscrepancy(it)
             }
         }
 
@@ -261,10 +262,11 @@ class ProcessExciseAlcoBoxAccService
             currentBoxDiscrepancies.filter {boxDiscrepancies ->
                 boxDiscrepancies.boxNumber == unitInfo.boxNumber
             }.map {addBoxDiscrepancies ->
-                taskManager.getReceivingTask()?.
-                        taskRepository?.
-                        getBoxesDiscrepancies()?.
-                        changeBoxDiscrepancy(addBoxDiscrepancies)
+                taskManager
+                        .getReceivingTask()
+                        ?.taskRepository
+                        ?.getBoxesDiscrepancies()
+                        ?.changeBoxDiscrepancy(addBoxDiscrepancies)
             }
         }
     }

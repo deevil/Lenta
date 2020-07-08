@@ -68,7 +68,7 @@ class ReceivingTask(val taskHeader: TaskInfo,
         taskRepository.getExciseStampsDiscrepancies().updateExciseStampsDiscrepancy(taskContentsInfo.taskExciseStampDiscrepancies)
         taskRepository.getExciseStampsBad().updateExciseStampBad(taskContentsInfo.taskExciseStampBad)
         taskRepository.getBoxes().updateBoxes(taskContentsInfo.taskBoxes)
-        taskRepository.getBoxesDiscrepancies().updateBoxesDiscrepancy(taskContentsInfo.taskBoxesDiscrepancies)
+        taskRepository.getBoxesDiscrepancies().updateBoxesDiscrepancies(taskContentsInfo.taskBoxesDiscrepancies)
     }
 
     //количество коробов для товара прошедших контроль

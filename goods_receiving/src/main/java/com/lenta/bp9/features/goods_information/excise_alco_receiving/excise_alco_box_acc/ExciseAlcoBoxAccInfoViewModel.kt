@@ -8,6 +8,7 @@ import com.lenta.bp9.features.goods_list.SearchProductDelegate
 import com.lenta.bp9.model.processing.ProcessExciseAlcoBoxAccService
 import com.lenta.bp9.model.task.IReceivingTaskManager
 import com.lenta.bp9.model.task.TaskProductInfo
+import com.lenta.bp9.platform.TypeDiscrepanciesConstants
 import com.lenta.bp9.platform.navigation.IScreenNavigator
 import com.lenta.bp9.repos.IDataBaseRepo
 import com.lenta.shared.fmp.resources.dao_ext.getProductInfoByMaterial
@@ -130,34 +131,48 @@ class ExciseAlcoBoxAccInfoViewModel : CoreViewModel(), OnPositionClickListener {
 
     val checkStampControl: MutableLiveData<Boolean> = checkStampControlVisibility.map {
         //https://trello.com/c/Z1SPfmAJ, Проставлять чекбокс при прохождении контроля всех марок во всех коробах
-        taskManager.getReceivingTask()?.controlExciseStampsOfProduct(productInfo.value!!)
+        productInfo.value?.let {
+            taskManager.getReceivingTask()?.controlExciseStampsOfProduct(it)
+        } ?: false
     }
 
     val checkBoxControlVisibility: MutableLiveData<Boolean> = MutableLiveData()
 
     val tvBoxControlVal: MutableLiveData<String> = acceptTotalCount.combineLatest(spinQualitySelectedPosition).map {
         //https://trello.com/c/Z1SPfmAJ
-        if (qualityInfo.value?.get(it?.second ?: 0)?.code == "1") {
-            if ( (productInfo.value?.numberBoxesControl?.toInt() == 0 && productInfo.value?.numberStampsControl?.toInt() == 0) ||
-                    ((it?.first ?: 0.0) <= 0.0) ) {
+        val acceptTotalCountValue = it?.first ?: 0.0
+        val spinQualitySelectedPositionValue = it?.second ?: 0
+        val qualityInfoCode = qualityInfo.value?.get(spinQualitySelectedPositionValue)?.code
+        val productNumberBoxesControl = productInfo.value?.numberBoxesControl?.toDouble() ?: 0.0
+        val productNumberStampsControl = productInfo.value?.numberStampsControl?.toDouble() ?: 0.0
+
+        if (qualityInfoCode == TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_NORM) {
+            if ( (productNumberBoxesControl == 0.0 && productNumberStampsControl == 0.0) || acceptTotalCountValue <= 0.0 ) {
                 checkBoxControlVisibility.value = false
                 context.getString(R.string.not_required)
             } else {
                 checkBoxControlVisibility.value = true
-                if ((it?.first ?: 0.0) < (productInfo.value?.numberBoxesControl?.toDouble() ?: 0.0) ) {
-                    "${taskManager.getReceivingTask()?.countBoxesPassedControlOfProduct(productInfo.value!!)} из ${it?.first.toStringFormatted()}"
+                val countBoxesPassedControlOfProductValue = productInfo.value?.let {product ->
+                    taskManager
+                            .getReceivingTask()
+                            ?.countBoxesPassedControlOfProduct(product)
+                } ?: 0
+                if (acceptTotalCountValue < productNumberBoxesControl) {
+                    "$countBoxesPassedControlOfProductValue ${context.getString(R.string.of)} ${acceptTotalCountValue.toStringFormatted()}"
                 } else {
-                    "${taskManager.getReceivingTask()?.countBoxesPassedControlOfProduct(productInfo.value!!)} из ${productInfo.value?.numberBoxesControl?.toDouble().toStringFormatted()}"
+                    "$countBoxesPassedControlOfProductValue ${context.getString(R.string.of)} ${productNumberBoxesControl.toStringFormatted()}"
                 }
             }
-        } else {
-            "" //это поле отображается только при выбранной категории "Норма"
-        }
+        } else "" //это поле отображается только при выбранной категории "Норма"
     }
 
     val checkBoxControl: MutableLiveData<Boolean> = checkBoxControlVisibility.map {
         //https://trello.com/c/Z1SPfmAJ, 2.4. Устанавливать чекбокс, когда F=Z;
-        taskManager.getReceivingTask()?.controlBoxesOfProduct(productInfo.value!!)
+        productInfo.value?.let {
+            taskManager
+                    .getReceivingTask()
+                    ?.controlBoxesOfProduct(it)
+        } ?: false
     }
 
     val checkBoxListVisibility: MutableLiveData<Boolean> = MutableLiveData()

@@ -1,11 +1,10 @@
 package com.lenta.bp9.model.memory
 
 import com.lenta.bp9.model.repositories.ITaskBoxesDiscrepanciesRepository
-import com.lenta.bp9.model.repositories.ITaskExciseStampDiscrepanciesRepository
 import com.lenta.bp9.model.task.TaskBoxDiscrepancies
 import com.lenta.bp9.model.task.TaskBoxInfo
 import com.lenta.bp9.model.task.TaskProductInfo
-import com.lenta.bp9.model.task.TaskExciseStampDiscrepancies
+import com.lenta.bp9.platform.TypeDiscrepanciesConstants
 
 class MemoryTaskBoxesDiscrepanciesRepository : ITaskBoxesDiscrepanciesRepository {
 
@@ -52,7 +51,7 @@ class MemoryTaskBoxesDiscrepanciesRepository : ITaskBoxesDiscrepanciesRepository
         return false
     }
 
-    override fun updateBoxesDiscrepancy(newBoxesDiscrepancies: List<TaskBoxDiscrepancies>) {
+    override fun updateBoxesDiscrepancies(newBoxesDiscrepancies: List<TaskBoxDiscrepancies>) {
         boxesDiscrepancies.clear()
         newBoxesDiscrepancies.map {
             addBoxDiscrepancies(it)
@@ -69,7 +68,7 @@ class MemoryTaskBoxesDiscrepanciesRepository : ITaskBoxesDiscrepanciesRepository
     }
 
     override fun deleteBoxDiscrepancies(materialNumber: String, boxNumber: String, typeDiscrepancies: String): Boolean {
-        boxesDiscrepancies.map { it }.filter {boxDiscrepancies ->
+        boxesDiscrepancies.map { it }.filter { boxDiscrepancies ->
             if (materialNumber == boxDiscrepancies.materialNumber &&
                     boxNumber == boxDiscrepancies.boxNumber &&
                     typeDiscrepancies == boxDiscrepancies.typeDiscrepancies) {
@@ -88,6 +87,62 @@ class MemoryTaskBoxesDiscrepanciesRepository : ITaskBoxesDiscrepanciesRepository
         for (i in boxesDiscrepancies.indices) {
             if (delBox.materialNumber == boxesDiscrepancies[i].materialNumber &&
                     delBox.boxNumber == boxesDiscrepancies[i].boxNumber) {
+                delDiscrepancies.add(boxesDiscrepancies[i])
+            }
+        }
+
+        if (delDiscrepancies.isEmpty()) {
+            return false
+        }
+
+        delDiscrepancies.map {
+            deleteBoxDiscrepancies(it)
+        }
+        return true
+    }
+
+    override fun deleteBoxesDiscrepanciesForProduct(product: TaskProductInfo): Boolean {
+        val delDiscrepancies = ArrayList<TaskBoxDiscrepancies>()
+        for (i in boxesDiscrepancies.indices) {
+            if (product.materialNumber == boxesDiscrepancies[i].materialNumber) {
+                delDiscrepancies.add(boxesDiscrepancies[i])
+            }
+        }
+
+        if (delDiscrepancies.isEmpty()) {
+            return false
+        }
+
+        delDiscrepancies.map {
+            deleteBoxDiscrepancies(it)
+        }
+        return true
+    }
+
+    override fun deleteBoxesDiscrepanciesForProductAndDiscrepancies(materialNumber: String, typeDiscrepancies: String): Boolean {
+        val delDiscrepancies = ArrayList<TaskBoxDiscrepancies>()
+        for (i in boxesDiscrepancies.indices) {
+            if (materialNumber == boxesDiscrepancies[i].materialNumber &&
+                    typeDiscrepancies == boxesDiscrepancies[i].typeDiscrepancies) {
+                delDiscrepancies.add(boxesDiscrepancies[i])
+            }
+        }
+
+        if (delDiscrepancies.isEmpty()) {
+            return false
+        }
+
+        delDiscrepancies.map {
+            deleteBoxDiscrepancies(it)
+        }
+        return true
+    }
+
+    override fun deleteBoxesDiscrepanciesNotNormForProduct(materialNumber: String): Boolean {
+        val delDiscrepancies = ArrayList<TaskBoxDiscrepancies>()
+        for (i in boxesDiscrepancies.indices) {
+            if (boxesDiscrepancies[i].materialNumber == materialNumber &&
+                    boxesDiscrepancies[i].typeDiscrepancies == TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_NORM) {
                 delDiscrepancies.add(boxesDiscrepancies[i])
             }
         }
