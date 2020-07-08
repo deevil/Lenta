@@ -33,7 +33,7 @@ class TaskCompositionFragment : CoreFragment<FragmentTaskCompositionBinding, Tas
 
     override fun getLayoutId(): Int = R.layout.fragment_task_composition
 
-    override fun getPageNumber(): String? = generateScreenNumberFromPostfix("17")
+    override fun getPageNumber(): String? = generateScreenNumberFromPostfix(SCREEN_NUMBER)
 
     override fun getViewModel(): TaskCompositionViewModel {
         provideViewModel(TaskCompositionViewModel::class.java).let {
@@ -66,8 +66,8 @@ class TaskCompositionFragment : CoreFragment<FragmentTaskCompositionBinding, Tas
 
     override fun getPagerItemView(container: ViewGroup, position: Int): View {
         return when (position) {
-            0 -> initTaskCompositionGoods(container)
-            1 -> initTaskCompositionBaskets(container)
+            TAB_GOODS -> initTaskCompositionGoods(container)
+            TAB_BASKETS -> initTaskCompositionBaskets(container)
             else -> View(context)
         }
     }
@@ -180,14 +180,14 @@ class TaskCompositionFragment : CoreFragment<FragmentTaskCompositionBinding, Tas
 
     override fun getTextTitle(position: Int): String {
         return when (position) {
-            0 -> getString(R.string.goods)
-            1 -> getString(R.string.baskets)
+            TAB_GOODS -> getString(R.string.goods)
+            TAB_BASKETS -> getString(R.string.baskets)
             else -> throw IllegalArgumentException("Wrong pager position!")
         }
     }
 
     override fun countTab(): Int {
-        return 2
+        return TABS
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -202,6 +202,14 @@ class TaskCompositionFragment : CoreFragment<FragmentTaskCompositionBinding, Tas
 
     override fun onScanResult(data: String) {
         vm.onScanResult(data)
+    }
+
+    companion object {
+        const val SCREEN_NUMBER = "17"
+
+        private const val TABS = 2
+        private const val TAB_GOODS = 0
+        private const val TAB_BASKETS = 1
     }
 
 }

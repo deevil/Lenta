@@ -18,7 +18,7 @@ class TaskSearchFragment : CoreFragment<FragmentTaskSearchBinding, TaskSearchVie
 
     override fun getLayoutId(): Int = R.layout.fragment_task_search
 
-    override fun getPageNumber(): String? = generateScreenNumberFromPostfix("70")
+    override fun getPageNumber(): String? = generateScreenNumberFromPostfix(SCREEN_NUMBER)
 
     override fun getViewModel(): TaskSearchViewModel {
         provideViewModel(TaskSearchViewModel::class.java).let {
@@ -43,6 +43,10 @@ class TaskSearchFragment : CoreFragment<FragmentTaskSearchBinding, TaskSearchVie
         when (view.id) {
             R.id.b_5 -> vm.onClickSearch()
         }
+    }
+
+    companion object {
+        const val SCREEN_NUMBER = "70"
     }
 
 }

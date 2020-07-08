@@ -20,7 +20,7 @@ class GoodInfoOpenFragment : CoreFragment<FragmentGoodInfoOpenBinding, GoodInfoO
 
     override fun getLayoutId(): Int = R.layout.fragment_good_info_open
 
-    override fun getPageNumber(): String? = generateScreenNumberFromPostfix("12")
+    override fun getPageNumber(): String? = generateScreenNumberFromPostfix(SCREEN_NUMBER)
 
     override fun getViewModel(): GoodInfoOpenViewModel {
         provideViewModel(GoodInfoOpenViewModel::class.java).let {
@@ -66,6 +66,10 @@ class GoodInfoOpenFragment : CoreFragment<FragmentGoodInfoOpenBinding, GoodInfoO
     override fun onBackPressed(): Boolean {
         vm.onBackPressed()
         return false
+    }
+
+    companion object {
+        const val SCREEN_NUMBER = "12"
     }
 
 }
