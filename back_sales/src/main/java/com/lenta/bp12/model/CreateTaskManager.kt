@@ -46,6 +46,10 @@ class CreateTaskManager @Inject constructor(
         currentBasket.value = basket
     }
 
+    override fun clearCurrentGood() {
+        currentGood.value = null
+    }
+
     override fun saveGoodInTask(good: GoodCreate) {
         currentTask.value?.let { task ->
             task.goods.find { it.material == good.material }?.let { good ->
@@ -216,5 +220,6 @@ interface ICreateTaskManager {
     fun prepareSendTaskDataParams(deviceIp: String, tkNumber: String, userNumber: String)
     fun saveGoodInTask(good: GoodCreate)
     fun clearSearchFromListParams()
+    fun clearCurrentGood()
 
 }

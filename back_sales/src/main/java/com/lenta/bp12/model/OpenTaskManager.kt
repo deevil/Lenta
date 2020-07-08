@@ -51,7 +51,10 @@ class OpenTaskManager @Inject constructor(
 
     override fun updateCurrentGood(good: GoodOpen) {
         currentGood.value = good
-        saveGoodInTask(good)
+    }
+
+    override fun clearCurrentGood() {
+        currentGood.value = null
     }
 
     override fun saveGoodInTask(good: GoodOpen) {
@@ -296,5 +299,6 @@ interface IOpenTaskManager {
     fun markGoodsDeleted(materials: List<String>)
     fun markGoodsUncounted(materials: List<String>)
     fun clearSearchFromListParams()
+    fun clearCurrentGood()
 
 }

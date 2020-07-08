@@ -68,8 +68,8 @@ class GoodInfoCreateViewModel : CoreViewModel() {
     }
 
     val title by lazy {
-        good.map { good ->
-            good?.getNameWithMaterial()
+        good.map {good ->
+            good?.getNameWithMaterial() ?: task.value?.getFormattedName()
         }
     }
 
@@ -366,6 +366,7 @@ class GoodInfoCreateViewModel : CoreViewModel() {
 
     init {
         viewModelScope.launch {
+            manager.clearCurrentGood()
             checkSearchNumber(manager.searchNumber)
         }
     }
@@ -487,9 +488,6 @@ class GoodInfoCreateViewModel : CoreViewModel() {
                         if (manager.searchGoodFromList) {
                             manager.searchGoodFromList = false
                             manager.searchNumber = ""
-                            navigator.goBack()
-                            navigator.goBack()
-                        } else {
                             navigator.goBack()
                         }
 

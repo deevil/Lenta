@@ -64,8 +64,8 @@ class GoodInfoOpenViewModel : CoreViewModel() {
     }
 
     val title by lazy {
-        good.map { good ->
-            good?.getNameWithMaterial()
+        good.map {good ->
+            good?.getNameWithMaterial() ?: task.value?.getFormattedName()
         }
     }
 
@@ -277,10 +277,8 @@ class GoodInfoOpenViewModel : CoreViewModel() {
 
     init {
         viewModelScope.launch {
+            manager.clearCurrentGood()
             checkSearchNumber(manager.searchNumber)
-
-            // todo При открытии загруженного товара этот номер пустой
-            // Не отрабатывается блок загрузки и смены состояния экрана
         }
     }
 

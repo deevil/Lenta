@@ -18,6 +18,10 @@ data class TaskCreate(
         val baskets: MutableList<Basket> = mutableListOf()
 ) {
 
+    fun getFormattedName(): String {
+        return "${taskType.code} // $name"
+    }
+
     fun getQuantityByBasket(basket: Basket): Double {
         return getGoodListByBasket(basket).map { good ->
             val positionQuantity = good.positions.filter { it.provider.code == basket.provider.code }.map { it.quantity }.sumList()
