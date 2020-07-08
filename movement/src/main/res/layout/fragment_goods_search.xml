@@ -21,7 +21,7 @@
             <TextView
                 android:gravity="center"
                 android:textSize="14sp"
-                android:text="Отсканируйте ШК или введите товар вручную"
+                android:text="@string/tw_search_info"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_weight="1"
@@ -44,6 +44,17 @@
         </LinearLayout>
 
         <ImageButton
+            android:layout_margin="8dp"
+            android:layout_width="wrap_content"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:background="?selectableItemBackground"
+            app:layout_constraintEnd_toStartOf="@+id/ib_scan"
+            android:src="@drawable/ic_barcode_white_32dp"
+            android:layout_marginEnd="8dp"
+            android:layout_height="wrap_content"/>
+
+        <ImageButton
+            android:id="@+id/ib_scan"
             android:layout_margin="8dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"

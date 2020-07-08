@@ -21,9 +21,7 @@
             android:focusable="true"
             android:gravity="center"
             android:maxLines="1"
-
             android:padding="8dp"
-
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
@@ -58,15 +56,15 @@
             <Button
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/movement_btw_storage"
-                app:icon="@drawable/ic_document_page_white_32dp"
+                android:text="@string/movement_btw_warehouses"
+                app:icon="@drawable/ic_between_warehouses"
                 app:iconGravity="end" />
 
             <Button
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/preparation"
-                app:icon="@drawable/ic_document_page_white_32dp"
+                android:text="@string/preparation_ingredients"
+                app:icon="@drawable/ic_ingridient"
                 app:iconGravity="end" />
 
             <Button
