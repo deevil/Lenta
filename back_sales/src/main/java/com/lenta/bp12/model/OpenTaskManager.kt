@@ -5,7 +5,6 @@ import com.lenta.bp12.model.pojo.Block
 import com.lenta.bp12.model.pojo.open_task.GoodOpen
 import com.lenta.bp12.model.pojo.open_task.TaskOpen
 import com.lenta.bp12.platform.extention.addZerosToStart
-import com.lenta.bp12.platform.extention.getBlockType
 import com.lenta.bp12.platform.extention.getControlType
 import com.lenta.bp12.repository.IDatabaseRepository
 import com.lenta.bp12.request.GoodInfoResult
@@ -81,12 +80,12 @@ class OpenTaskManager @Inject constructor(
                     name = taskInfo.name,
                     type = database.getTaskType(taskInfo.typeCode),
                     block = Block(
-                            type = taskInfo.blockType.getBlockType(),
+                            type = BlockType.from(taskInfo.blockType),
                             user = taskInfo.blockUser,
                             ip = taskInfo.blockIp
                     ),
                     storage = taskInfo.storage,
-                    control = taskInfo.control.getControlType(),
+                    control = ControlType.from(taskInfo.control),
                     provider = ProviderInfo(
                             code = taskInfo.providerCode.addZerosToStart(10),
                             name = taskInfo.providerName
