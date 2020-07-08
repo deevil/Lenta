@@ -415,7 +415,6 @@ class GoodInfoOpenViewModel : CoreViewModel() {
     }
 
     private fun goBackFromScreen() {
-        Logg.d { "--> ..." }
         if (manager.searchGoodFromList) {
             manager.clearSearchFromListParams()
         }

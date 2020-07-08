@@ -598,6 +598,13 @@ class GoodInfoCreateViewModel : CoreViewModel() {
             Constants.MARK_150 -> {
                 scanModeType.value = ScanNumberType.MARK_150
                 updateProducers(markInfo.producers.toMutableList())
+
+
+
+
+
+
+
                 date.value = markInfo.producedDate
             }
             Constants.MARK_68 -> {
