@@ -27,7 +27,7 @@ class DiscrepancyListFragment : CoreFragment<FragmentDiscrepancyListBinding, Dis
 
     override fun getLayoutId(): Int = R.layout.fragment_discrepancy_list
 
-    override fun getPageNumber(): String? = generateScreenNumberFromPostfix("35")
+    override fun getPageNumber(): String? = generateScreenNumberFromPostfix(SCREEN_NUMBER)
 
     override fun getViewModel(): DiscrepancyListViewModel {
         provideViewModel(DiscrepancyListViewModel::class.java).let {
@@ -110,6 +110,10 @@ class DiscrepancyListFragment : CoreFragment<FragmentDiscrepancyListBinding, Dis
                     initPosInfo = recyclerViewKeyHandler?.posInfo?.value
             )
         }
+    }
+
+    companion object {
+        const val SCREEN_NUMBER = "35"
     }
 
 }

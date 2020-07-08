@@ -20,7 +20,7 @@ class GoodInfoCreateFragment : CoreFragment<FragmentGoodInfoCreateBinding, GoodI
 
     override fun getLayoutId(): Int = R.layout.fragment_good_info_create
 
-    override fun getPageNumber(): String? = generateScreenNumberFromPostfix("12")
+    override fun getPageNumber(): String? = generateScreenNumberFromPostfix(SCREEN_NUMBER)
 
     override fun getViewModel(): GoodInfoCreateViewModel {
         provideViewModel(GoodInfoCreateViewModel::class.java).let {
@@ -70,4 +70,9 @@ class GoodInfoCreateFragment : CoreFragment<FragmentGoodInfoCreateBinding, GoodI
         super.onResume()
         vm.updateData()
     }
+
+    companion object {
+        const val SCREEN_NUMBER = "12"
+    }
+
 }

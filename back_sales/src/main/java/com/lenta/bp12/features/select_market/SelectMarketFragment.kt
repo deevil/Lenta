@@ -18,7 +18,7 @@ class SelectMarketFragment : CoreFragment<FragmentSelectMarketBinding, SelectMar
 
     override fun getLayoutId(): Int = R.layout.fragment_select_market
 
-    override fun getPageNumber(): String? = generateScreenNumberFromPostfix("2")
+    override fun getPageNumber(): String? = generateScreenNumberFromPostfix(SCREEN_NUMBER)
 
     override fun getViewModel(): SelectMarketViewModel {
         provideViewModel(SelectMarketViewModel::class.java).let {
@@ -43,6 +43,10 @@ class SelectMarketFragment : CoreFragment<FragmentSelectMarketBinding, SelectMar
         if (view.id == R.id.b_5) {
             vm.onClickNext()
         }
+    }
+
+    companion object {
+        const val SCREEN_NUMBER = "2"
     }
 
 }

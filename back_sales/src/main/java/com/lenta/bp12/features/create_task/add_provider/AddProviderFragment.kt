@@ -18,7 +18,7 @@ class AddProviderFragment : CoreFragment<FragmentAddProviderBinding, AddProvider
 
     override fun getLayoutId(): Int = R.layout.fragment_add_provider
 
-    override fun getPageNumber(): String? = generateScreenNumberFromPostfix("7")
+    override fun getPageNumber(): String? = generateScreenNumberFromPostfix(SCREEN_NUMBER)
 
     override fun getViewModel(): AddProviderViewModel {
         provideViewModel(AddProviderViewModel::class.java).let {
@@ -44,6 +44,10 @@ class AddProviderFragment : CoreFragment<FragmentAddProviderBinding, AddProvider
         when (view.id) {
             R.id.b_5 -> vm.onClickApply()
         }
+    }
+
+    companion object {
+        const val SCREEN_NUMBER = "7"
     }
 
 }
