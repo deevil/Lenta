@@ -25,3 +25,9 @@ fun String.encode(): String {
     return Base64.encodeToString(this.toByteArray(charset("UTF-8")), Base64.DEFAULT)
 }
 
+/**
+ * Helper nullability function
+ */
+inline fun <reified T> T?.orIfNull(input: () -> T): T {
+    return this ?: input()
+}
