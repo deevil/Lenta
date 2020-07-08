@@ -5,8 +5,11 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.Observer
 import com.lenta.bp12.R
-import com.lenta.bp12.databinding.*
+import com.lenta.bp12.databinding.FragmentTaskCardOpenBinding
+import com.lenta.bp12.databinding.LayoutTaskCardOpenCommentBinding
+import com.lenta.bp12.databinding.LayoutTaskCardOpenTypeBinding
 import com.lenta.bp12.platform.extention.getAppComponent
 import com.lenta.shared.platform.activity.OnBackPresserListener
 import com.lenta.shared.platform.fragment.CoreFragment
@@ -14,9 +17,11 @@ import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListener
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
+import com.lenta.shared.utilities.TabIndicatorColor
 import com.lenta.shared.utilities.databinding.ViewPagerSettings
 import com.lenta.shared.utilities.extentions.generateScreenNumberFromPostfix
 import com.lenta.shared.utilities.extentions.provideViewModel
+import com.lenta.shared.utilities.setIndicatorForTab
 
 class TaskCardOpenFragment : CoreFragment<FragmentTaskCardOpenBinding, TaskCardOpenViewModel>(),
         ToolbarButtonsClickListener, ViewPagerSettings, OnBackPresserListener {
@@ -97,6 +102,18 @@ class TaskCardOpenFragment : CoreFragment<FragmentTaskCardOpenBinding, TaskCardO
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding?.viewPagerSettings = this
+    }
+
+    override fun onResume() {
+        super.onResume()
+
+        viewLifecycleOwner.apply {
+            vm.isExistComment.observe(this, Observer { isExistComment ->
+                if (isExistComment) {
+                    setIndicatorForTab(binding?.tabStrip, 1, TabIndicatorColor.YELLOW)
+                }
+            })
+        }
     }
 
     override fun onBackPressed(): Boolean {

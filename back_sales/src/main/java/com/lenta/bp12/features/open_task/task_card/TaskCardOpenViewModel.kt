@@ -71,6 +71,12 @@ class TaskCardOpenViewModel : CoreViewModel(), PageSelectionListener {
         }
     }
 
+    val isExistComment by lazy {
+        task.map {
+            it?.comment?.isNotEmpty()
+        }
+    }
+
     /**
     Методы
      */
