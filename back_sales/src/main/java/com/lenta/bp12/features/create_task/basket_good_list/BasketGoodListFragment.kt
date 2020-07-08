@@ -23,7 +23,7 @@ class BasketGoodListFragment : CoreFragment<FragmentBasketGoodListBinding, Baske
 
     override fun getLayoutId(): Int = R.layout.fragment_basket_good_list
 
-    override fun getPageNumber(): String? = generateScreenNumberFromPostfix("13")
+    override fun getPageNumber(): String? = generateScreenNumberFromPostfix(SCREEN_NUMBER)
 
     private val onClickSelectionListener: View.OnClickListener
         get() = View.OnClickListener {
@@ -95,4 +95,9 @@ class BasketGoodListFragment : CoreFragment<FragmentBasketGoodListBinding, Baske
     override fun onScanResult(data: String) {
         vm.onScanResult(data)
     }
+
+    companion object {
+        const val SCREEN_NUMBER = "13"
+    }
+
 }

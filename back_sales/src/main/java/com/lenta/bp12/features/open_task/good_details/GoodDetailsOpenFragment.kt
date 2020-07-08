@@ -26,7 +26,7 @@ class GoodDetailsOpenFragment : CoreFragment<FragmentGoodDetailsOpenBinding, Goo
 
     override fun getLayoutId(): Int = R.layout.fragment_good_details_open
 
-    override fun getPageNumber(): String? = generateScreenNumberFromPostfix(PAGE_NUMBER)
+    override fun getPageNumber(): String? = generateScreenNumberFromPostfix(SCREEN_NUMBER)
 
     override fun getViewModel(): GoodDetailsOpenViewModel {
         provideViewModel(GoodDetailsOpenViewModel::class.java).let {
@@ -56,7 +56,7 @@ class GoodDetailsOpenFragment : CoreFragment<FragmentGoodDetailsOpenBinding, Goo
 
     override fun getPagerItemView(container: ViewGroup, position: Int): View {
         return when (position) {
-            0 -> initGoodDetailsCategories(container)
+            TAB_CATEGORIES -> initGoodDetailsCategories(container)
             else -> View(context)
         }
     }
@@ -99,13 +99,13 @@ class GoodDetailsOpenFragment : CoreFragment<FragmentGoodDetailsOpenBinding, Goo
 
     override fun getTextTitle(position: Int): String {
         return when (position) {
-            DEFAULT_POSITION -> getString(R.string.categories)
+            TAB_CATEGORIES -> getString(R.string.categories)
             else -> throw IllegalArgumentException("Wrong pager position!")
         }
     }
 
     override fun countTab(): Int {
-        return TAB_COUNT
+        return TABS
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -114,8 +114,10 @@ class GoodDetailsOpenFragment : CoreFragment<FragmentGoodDetailsOpenBinding, Goo
     }
 
     companion object {
-        private const val PAGE_NUMBER = "56"
-        private const val DEFAULT_POSITION = 0
-        private const val TAB_COUNT = 1
+        const val SCREEN_NUMBER = "56"
+
+        private const val TABS = 1
+        private const val TAB_CATEGORIES = 0
     }
+
 }

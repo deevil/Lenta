@@ -34,7 +34,7 @@ class TaskListFragment : CoreFragment<FragmentTaskListBinding, TaskListViewModel
 
     override fun getLayoutId(): Int = R.layout.fragment_task_list
 
-    override fun getPageNumber(): String? = generateScreenNumberFromPostfix("25")
+    override fun getPageNumber(): String? = generateScreenNumberFromPostfix(SCREEN_NUMBER)
 
     override fun getViewModel(): TaskListViewModel {
         provideViewModel(TaskListViewModel::class.java).let {
@@ -72,8 +72,8 @@ class TaskListFragment : CoreFragment<FragmentTaskListBinding, TaskListViewModel
 
     override fun getPagerItemView(container: ViewGroup, position: Int): View {
         return when (position) {
-            0 -> initTaskListProcessing(container)
-            1 -> initTaskListSearch(container)
+            TAB_PROCESSING -> initTaskListProcessing(container)
+            TAB_SEARCH -> initTaskListSearch(container)
             else -> View(context)
         }
     }
@@ -164,19 +164,27 @@ class TaskListFragment : CoreFragment<FragmentTaskListBinding, TaskListViewModel
 
     override fun getTextTitle(position: Int): String {
         return when (position) {
-            0 -> getString(R.string.processing)
-            1 -> getString(R.string.search)
+            TAB_PROCESSING -> getString(R.string.processing)
+            TAB_SEARCH -> getString(R.string.search)
             else -> throw IllegalArgumentException("Wrong pager position!")
         }
     }
 
     override fun countTab(): Int {
-        return 2
+        return TABS
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding?.viewPagerSettings = this
+    }
+
+    companion object {
+        const val SCREEN_NUMBER = "25"
+
+        private const val TABS = 2
+        private const val TAB_PROCESSING = 0
+        private const val TAB_SEARCH = 1
     }
 
 }
