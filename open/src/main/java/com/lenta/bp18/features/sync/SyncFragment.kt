@@ -1,31 +1,39 @@
 package com.lenta.bp18.features.sync
 
-import androidx.lifecycle.ViewModelProviders
-import android.os.Bundle
-import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
-import androidx.lifecycle.ViewModelProvider
 import com.lenta.bp18.R
+import com.lenta.bp18.databinding.FragmentSyncBinding
+import com.lenta.bp18.platform.extention.getAppComponent
+import com.lenta.shared.platform.fragment.CoreFragment
+import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
+import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
+import com.lenta.shared.utilities.extentions.generateScreenNumberFromPostfix
+import com.lenta.shared.utilities.extentions.getDeviceId
+import com.lenta.shared.utilities.extentions.provideViewModel
 
-class SyncFragment : Fragment() {
+class SyncFragment : CoreFragment<FragmentSyncBinding, SyncViewModel>() {
 
-    companion object {
-        fun newInstance() = SyncFragment()
+    override fun getLayoutId(): Int = R.layout.fragment_sync
+
+    override fun getPageNumber(): String? = generateScreenNumberFromPostfix(SCREEN_NUMBER)
+
+    override fun getViewModel(): SyncViewModel {
+        provideViewModel(SyncViewModel::class.java).let {
+            getAppComponent()?.inject(it)
+            it.deviceIp.value = context!!.getDeviceId()
+            return it
+        }
     }
 
-    private lateinit var viewModel: SyncViewModel
-
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
-                              savedInstanceState: Bundle?): View? {
-        return inflater.inflate(R.layout.fragment_sync, container, false)
+    override fun setupTopToolBar(topToolbarUiModel: TopToolbarUiModel) {
+        topToolbarUiModel.description.value = getString(R.string.load_data)
     }
 
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
-        viewModel = ViewModelProvider(this).get(SyncViewModel::class.java)
-        // TODO: Use the ViewModel
+    override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
+        bottomToolbarUiModel.hide()
+    }
+
+    companion object{
+        const val SCREEN_NUMBER = "101" //Потом поменять
     }
 
 }

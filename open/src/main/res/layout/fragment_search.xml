@@ -33,6 +33,7 @@
                 android:layout_height="0dp"
                 android:layout_margin="@dimen/size_8dp"
                 android:layout_weight="1"
+                android:drawableEnd="@drawable/ic_loupe_white_16dp"
                 android:digits="0123456789"
                 android:ellipsize="end"
                 android:imeOptions="actionGo"
