@@ -19,7 +19,6 @@ import com.lenta.movement.requests.network.models.startConsolidation.StartConsol
 import com.lenta.movement.requests.network.models.toCargoUnitList
 import com.lenta.movement.requests.network.models.toModelList
 import com.lenta.shared.account.ISessionInfo
-import com.lenta.shared.exception.Failure
 import com.lenta.shared.functional.Either
 import com.lenta.shared.models.core.GisControl
 import com.lenta.shared.platform.constants.Constants
@@ -193,7 +192,7 @@ class TaskViewModel : CoreViewModel(), PageSelectionListener {
     }
 
     fun onNextClick() {
-        Logg.e {
+        Logg.d {
             """
             Status : $currentStatus
             Task: ${taskManager.getTaskOrNull()}
@@ -218,11 +217,8 @@ class TaskViewModel : CoreViewModel(), PageSelectionListener {
                                                 withProductInfo = true.toSapBooleanString()
                                         )
                                 )
-                            }
-                                    ?: Either.Left(PersonnelNumberFailure(context.getString(R.string.alert_null_personnel_number)))
-
-                        }
-                                ?: Either.Left(EmptyTaskFailure(context.getString(R.string.alert_null_task)))
+                            } ?: Either.Left(PersonnelNumberFailure(context.getString(R.string.alert_null_personnel_number)))
+                        } ?: Either.Left(EmptyTaskFailure(context.getString(R.string.alert_null_task)))
 
                         either.either({ failure ->
                             screenNavigator.hideProgress()
@@ -250,10 +246,8 @@ class TaskViewModel : CoreViewModel(), PageSelectionListener {
                                                 personnelNumber = personnelNumber
                                         )
                                 )
-                            }
-                                    ?: Either.Left(PersonnelNumberFailure(context.getString(R.string.alert_null_personnel_number)))
-                        }
-                                ?: Either.Left(EmptyTaskFailure(context.getString(R.string.alert_null_task)))
+                            } ?: Either.Left(PersonnelNumberFailure(context.getString(R.string.alert_null_personnel_number)))
+                        } ?: Either.Left(EmptyTaskFailure(context.getString(R.string.alert_null_task)))
                         either.either({ failure ->
                             screenNavigator.hideProgress()
                             screenNavigator.openAlertScreen(failure)
@@ -265,7 +259,6 @@ class TaskViewModel : CoreViewModel(), PageSelectionListener {
                     }
                 }
             }
-
         }
     }
 

@@ -4,11 +4,13 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.os.bundleOf
 import androidx.databinding.DataBindingUtil
 import com.lenta.movement.R
 import com.lenta.movement.databinding.*
 import com.lenta.movement.models.Task
 import com.lenta.movement.platform.extensions.getAppComponent
+import com.lenta.movement.platform.extensions.unsafeLazy
 import com.lenta.shared.platform.activity.OnBackPresserListener
 import com.lenta.shared.platform.fragment.CoreFragment
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
@@ -24,8 +26,9 @@ class TaskFragment : CoreFragment<FragmentTaskBinding, TaskViewModel>(),
     ToolbarButtonsClickListener,
     OnBackPresserListener {
 
-    // TODO save to bundle. now it's impossible because this class is sealed, but GSON can't work with sealed classes
-    var task: Task? = null
+    val task: Task? by unsafeLazy {
+        arguments?.getParcelable<Task>(TASK_KEY)
+    }
 
     override fun getLayoutId() = R.layout.fragment_task
 
@@ -133,10 +136,13 @@ class TaskFragment : CoreFragment<FragmentTaskBinding, TaskViewModel>(),
 
     companion object {
         private const val PAGE_NUMBER = "10/05"
+        private const val TASK_KEY = "TASK_KEY"
 
         fun newInstance(task: Task?): TaskFragment {
             return TaskFragment().apply {
-                this.task = task
+                arguments = bundleOf(
+                        TASK_KEY to task
+                )
             }
         }
     }

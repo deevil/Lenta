@@ -25,7 +25,7 @@ class TaskBasketFragment: CoreFragment<FragmentTaskBasketBinding, TaskBasketView
     OnScanResultListener,
     OnKeyDownListener {
 
-    private var basketIndex: Int by state( -1 )
+    private var basketIndex: Int by state( DEFAULT_BASKET_INDEX )
 
     private var recyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
 
@@ -105,6 +105,7 @@ class TaskBasketFragment: CoreFragment<FragmentTaskBasketBinding, TaskBasketView
 
     companion object {
         private const val PAGE_NUMBER = "04/06"
+        private const val DEFAULT_BASKET_INDEX = -1
 
         fun newInstance(basketIndex: Int): TaskBasketFragment {
             return TaskBasketFragment().apply {

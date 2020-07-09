@@ -12,7 +12,7 @@ import com.lenta.shared.utilities.state.state
 
 class TaskBasketInfoFragment: CoreFragment<FragmentTaskBasketInfoBinding, TaskBasketInfoViewModel>() {
 
-    private var basketIndex : Int by state(-1)
+    private var basketIndex : Int by state( DEFAULT_BASKET_INDEX )
 
     override fun getLayoutId() = R.layout.fragment_task_basket_info
 
@@ -38,6 +38,7 @@ class TaskBasketInfoFragment: CoreFragment<FragmentTaskBasketInfoBinding, TaskBa
 
     companion object {
         private const val PAGE_NUMBER = "10/06"
+        private const val DEFAULT_BASKET_INDEX = -1
 
         fun newInstance(basketIndex: Int): TaskBasketInfoFragment {
             return TaskBasketInfoFragment().apply {

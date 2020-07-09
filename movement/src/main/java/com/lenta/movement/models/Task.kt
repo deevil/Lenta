@@ -1,7 +1,10 @@
 package com.lenta.movement.models
 
+import android.os.Parcelable
+import kotlinx.android.parcel.Parcelize
 import java.util.*
 
+@Parcelize
 data class Task(
     val number: String,
     val isCreated: Boolean,
@@ -15,24 +18,31 @@ data class Task(
     val pikingStorage: String,
     val shipmentStorage: String,
     val shipmentDate: Date
-) {
+) : Parcelable {
 
-    sealed class Status {
+    sealed class Status : Parcelable {
 
         abstract val text: String?
 
+        @Parcelize
         data class Created(override val text: String? = null): Status()
 
+        @Parcelize
         data class Counted(override val text: String? = null): Status()
 
+        @Parcelize
         data class Published(override val text: String? = null): Status()
 
+        @Parcelize
         data class Unknown(override val text: String): Status()
 
+        @Parcelize
         data class ToConsolidation(override val text: String? = null) : Status()
 
+        @Parcelize
         data class Consolidation(override val text: String? = null) : Status()
 
+        @Parcelize
         data class Consolidated(override val text: String? = null) : Status()
 
         companion object {

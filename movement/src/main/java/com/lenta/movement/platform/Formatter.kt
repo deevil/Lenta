@@ -1,11 +1,8 @@
 package com.lenta.movement.platform
 
-import android.content.Context
 import com.lenta.movement.models.*
 
-class Formatter(
-        val context: Context
-) : IFormatter {
+class Formatter : IFormatter {
 
     override fun formatMarketName(market: String): String {
         return "$TK - $market"
@@ -58,11 +55,11 @@ class Formatter(
             val signsOfDiv = settings.signsOfDiv
 
             if (signsOfDiv.contains(GoodsSignOfDivision.ALCO) && basket.keys.first().isAlco) {
-                append("A/")
+                append(A_AND_SLASH)
             } else if (signsOfDiv.contains(GoodsSignOfDivision.VET) && basket.keys.first().isVet) {
-                append("B/")
+                append(B_AND_SLASH)
             } else if (signsOfDiv.contains(GoodsSignOfDivision.USUAL) && basket.keys.first().isUsual) {
-                append("C/")
+                append(C_AND_SLASH)
             }
 
             append("${basket.keys.first().materialType}/")
@@ -77,9 +74,9 @@ class Formatter(
 
             if (signsOfDiv.contains(GoodsSignOfDivision.FOOD)) {
                 if (basket.keys.first().isFood) {
-                    append("F")
+                    append(BASKET_DESC_FOOD_CHAR)
                 } else {
-                    append("NF")
+                    append(BASKET_DESC_NOT_FOOD_CHAR)
                 }
             }
 
@@ -103,13 +100,15 @@ class Formatter(
 
     override fun getEOSubtitle(eo: ProcessingUnit): String {
         val geNumber = eo.cargoUnitNumber
+        val isAlco = eo.isAlco ?: false
+        val isUsual = eo.isUsual ?: false
         return if (geNumber == null) {
             buildString {
                 append("№${eo.basketNumber}")
                 append(
                         when {
-                            eo.isAlco ?: false -> "/A"
-                            eo.isUsual ?: false -> "/O"
+                            isAlco -> SLASH_AND_ALCO_CHAR
+                            isUsual -> SLASH_AND_USUAL_CHAR
                             else -> ""
                         }
                 )
@@ -130,6 +129,10 @@ class Formatter(
     }
 
     companion object {
+        private const val A_AND_SLASH = "A/"
+        private const val B_AND_SLASH = "B/"
+        private const val C_AND_SLASH = "C/"
+
         private const val TK = "ТК"
         private const val GE = "ГЕ"
 
@@ -139,11 +142,15 @@ class Formatter(
         private const val SCST_MOVEMENT = "Для перемещения на ТК" // TODO
 
         private const val BASKET = "Корзина"
+        private const val BASKET_DESC_FOOD_CHAR = "F"
+        private const val BASKET_DESC_NOT_FOOD_CHAR = "NF"
 
         private const val ALCO = "Алкоголь"
+        private const val SLASH_AND_ALCO_CHAR = "/А"
         private const val EXCISE_ALCO = "Марочные остатки"
         private const val NOT_EXCISE_ALCO = "Партионные остатки"
         private const val USUAL = "Обычный товар"
+        private const val SLASH_AND_USUAL_CHAR = "/О"
         private const val VET = "Меркурианский товар"
         private const val FOOD = "Еда"
 

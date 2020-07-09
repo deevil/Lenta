@@ -41,6 +41,8 @@ dependencies {
     api deps.kotlin.coroutines
     api deps.kotlin.coroutinesAndroid
     api deps.kotlin.viewmodel_ktx
+    api deps.kotlin.core_ktx
+    api deps.kotlin.lifecycle_livedata_ktx
 
     // DI
     kapt deps.dagger.compiler
@@ -70,12 +72,12 @@ dependencies {
     testImplementation 'org.mockito:mockito-core:2.23.0'
     testImplementation "com.nhaarman.mockitokotlin2:mockito-kotlin:2.1.0"
     testImplementation 'org.mockito:mockito-inline:2.13.0'
-    testImplementation("io.mockk:mockk:1.9")
+    testImplementation("io.mockk:mockk:1.9.3")
 
     // Mask for EditText
     implementation 'com.redmadrobot:input-mask-android:4.3.1'
 
     // Style attribute for recycler view
-    implementation 'androidx.recyclerview:recyclerview:1.1.0-beta05'
+    implementation 'androidx.recyclerview:recyclerview:1.2.0-alpha04'
 
 }

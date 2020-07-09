@@ -1,1 +1,1 @@
-include /*':writeoff_breakage',*/ ':Shared', /*':planogram', ':goods_receiving',':work_list',*/ ':hhive', /*':inventory',*/ ':HoneywellDataCollection', /*':production',*/ ':movement'
+include ':writeoff_breakage', ':Shared', ':planogram', ':goods_receiving',':work_list', ':hhive', ':inventory', ':HoneywellDataCollection', ':production', ':movement'

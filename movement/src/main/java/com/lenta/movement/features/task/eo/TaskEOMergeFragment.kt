@@ -7,7 +7,6 @@ import android.view.ViewGroup
 import android.widget.AdapterView
 import androidx.core.os.bundleOf
 import androidx.databinding.DataBindingUtil
-import androidx.lifecycle.Observer
 import com.lenta.movement.BR
 import com.lenta.movement.R
 import com.lenta.movement.databinding.FragmentTaskEoMergeBinding
@@ -207,12 +206,6 @@ class TaskEOMergeFragment : CoreFragment<FragmentTaskEoMergeBinding, TaskEOMerge
 
     override fun countTab() = TaskEOMergePage.values().size
 
-    fun changeTabToGE()  {
-        vm.geList.observe(viewLifecycleOwner, Observer {
-            binding?.viewPager?.currentItem = 1
-        })
-    }
-
     override fun onBackPressed(): Boolean {
         vm.onBackPressed()
         return false
@@ -252,8 +245,6 @@ class TaskEOMergeFragment : CoreFragment<FragmentTaskEoMergeBinding, TaskEOMerge
                     EO_LIST_KEY to eoList,
                     GE_LIST_KEY to geList
                 )
-//                this.eoList = eoList
-//                this.geList = geList.toMutableList()
             }
         }
     }
