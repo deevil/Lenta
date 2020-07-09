@@ -78,22 +78,26 @@ class TaskEOMergeViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
     val eoItemList by unsafeLazy {
         eoList.switchMap { eoList ->
             liveData {
-                emit(eoList.mapIndexed { index, eo ->
+                val eoMappedList = eoList.mapIndexed { index, eo ->
                     EoListItem(
                             number = index + 1,
                             title = eo.processingUnitNumber,
                             subtitle = formatter.getEOSubtitle(eo),
                             quantity = eo.quantity.orEmpty(),
                             isClickable = true,
-                            stateResId = when (eo.state) {
-                                ProcessingUnit.State.NOT_PROCESSED -> EMPTY_GE_STATE_RESOURCE_ID
-                                ProcessingUnit.State.TOP_LEVEL_EO -> R.drawable.ic_top_level_processing_unit_32dp
-                                ProcessingUnit.State.COMBINED -> R.drawable.ic_cargo_unit_32dp
-                            }
+                            stateResId = choseResIdByEOState(eo.state)
                     )
-                })
-
+                }
+                emit(eoMappedList)
             }
+        }
+    }
+
+    private fun choseResIdByEOState(state: ProcessingUnit.State): Int {
+        return when (state) {
+            ProcessingUnit.State.NOT_PROCESSED -> EMPTY_GE_STATE_RESOURCE_ID
+            ProcessingUnit.State.TOP_LEVEL_EO -> R.drawable.ic_top_level_processing_unit_32dp
+            ProcessingUnit.State.COMBINED -> R.drawable.ic_cargo_unit_32dp
         }
     }
 
@@ -102,13 +106,14 @@ class TaskEOMergeViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
     val geItemList by unsafeLazy {
         geList.switchMap { list ->
             liveData {
-                emit(list.mapIndexed { index, ge ->
+                val geMappedList = list.mapIndexed { index, ge ->
                     SimpleListItem(
                             number = index + 1,
                             title = formatter.getGETitle(ge),
                             countWithUom = ge.eoList.size.toString(),
                             isClickable = true)
-                })
+                }
+                emit(geMappedList)
             }
         }
     }
@@ -195,9 +200,8 @@ class TaskEOMergeViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
 
                     else -> {
                         if (notProcessedEOList.isNotEmpty()) {
-                            val selectedEO = mutableListOf<ConsolidationProcessingUnit>()
-                            listOfSelected.forEach { eoListIndex ->
-                                selectedEO.add(notProcessedEOList[eoListIndex])
+                            val selectedEO = listOfSelected.mapTo(mutableListOf()) {
+                                notProcessedEOList[it]
                             }
                             consolidate(
                                     sendEOList = selectedEO,
@@ -270,18 +274,21 @@ class TaskEOMergeViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
     }
 
     private fun addAllEOAsGE() {
-        eoList.value?.forEach { eo ->
-            geList.value?.let { geListValue ->
-                val newCargoUnit = CargoUnit(eo.processingUnitNumber, listOf())
-                if (eo.state == ProcessingUnit.State.NOT_PROCESSED && geListValue.contains(newCargoUnit).not()) {
-                    geListValue.add(newCargoUnit)
-                    geList.value = geListValue
-                    eo.state = ProcessingUnit.State.TOP_LEVEL_EO
-                    changeTabToGEList()
-                    eoSelectionHelper.clearPositions()
-                }
+        val eoListValue = eoList.value
+        val geListValue = geList.value?.let { geListValue ->
+            eoListValue?.filter { eo ->
+                eo.state == ProcessingUnit.State.NOT_PROCESSED
+                        && geListValue.all { it.number != eo.processingUnitNumber }
+            }?.mapTo(geListValue) { eo ->
+                eo.state = ProcessingUnit.State.TOP_LEVEL_EO
+                CargoUnit(eo.processingUnitNumber, listOf())
             }
-        }
+        }.orEmpty()
+
+        geList.value = geListValue.toMutableList()
+        eoList.value = eoListValue
+        changeTabToGEList()
+        eoSelectionHelper.clearPositions()
     }
 
     fun onExcludeBtnClick() {
@@ -321,6 +328,8 @@ class TaskEOMergeViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
                 screenNavigator.hideProgress()
                 val task = result.taskList[0].toTask()
                 taskManager.setTask(task)
+                screenNavigator.goBack()
+                screenNavigator.goBack()
                 screenNavigator.openTaskScreen(task)
             })
         }
