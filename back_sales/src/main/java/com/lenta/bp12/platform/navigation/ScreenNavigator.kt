@@ -24,7 +24,9 @@ import com.lenta.bp12.features.open_task.task_list.TaskListFragment
 import com.lenta.bp12.features.open_task.task_search.TaskSearchFragment
 import com.lenta.shared.account.IAuthenticator
 import com.lenta.shared.features.alert.AlertFragment
+import com.lenta.shared.fmp.resources.dao_ext.IconCode
 import com.lenta.shared.platform.activity.ForegroundActivityProvider
+import com.lenta.shared.platform.navigation.CustomAnimation
 import com.lenta.shared.platform.navigation.ICoreNavigator
 import com.lenta.shared.platform.navigation.runOrPostpone
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
@@ -295,13 +297,22 @@ class ScreenNavigator @Inject constructor(
         }
     }
 
-    override fun showNotMatchTaskSettingsAddingNotPossible(backCallback: () -> Unit) {
+    override fun showNotMatchTaskSettingsAddingNotPossible() {
         runOrPostpone {
             getFragmentStack()?.push(AlertFragment.create(
                     pageNumber = "73",
                     message = context.getString(R.string.not_match_task_settings_adding_not_possible),
-                    iconRes = R.drawable.ic_warning_red_80dp,
-                    codeConfirmForLeft = backFragmentResultHelper.setFuncForResult(backCallback)
+                    iconRes = R.drawable.ic_warning_red_80dp
+            ))
+        }
+    }
+
+    override fun showGoodCannotBeAdded() {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    pageNumber = "73.1",
+                    message = context.getString(R.string.good_cannot_be_added),
+                    iconRes = R.drawable.ic_warning_red_80dp
             ))
         }
     }
@@ -359,9 +370,27 @@ class ScreenNavigator @Inject constructor(
         }
     }
 
+    // Описание иконок
+    override fun showAlcoholGoodInfoScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    message = context.getString(R.string.alcohol_good),
+                    iconRes = com.lenta.shared.R.drawable.ic_excise_alcohol_white_32dp), CustomAnimation.vertical)
+        }
+    }
+
+    override fun showCommonGoodInfoScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    message = context.getString(R.string.common_good),
+                    iconRes = com.lenta.shared.R.drawable.ic_kandy_white_32dp), CustomAnimation.vertical)
+        }
+    }
+
 }
 
 interface IScreenNavigator : ICoreNavigator {
+
     fun openFirstScreen()
     fun openLoginScreen()
     fun openFastDataLoadingScreen()
@@ -383,6 +412,7 @@ interface IScreenNavigator : ICoreNavigator {
     fun openTaskCardCreateScreen()
     fun openTaskCardOpenScreen()
     fun openTaskSearchScreen()
+    fun openAddProviderScreen()
 
     fun showUnsentDataFoundOnDevice(deleteCallback: () -> Unit, goOverCallback: () -> Unit)
     fun showTwelveCharactersEntered(sapCallback: () -> Unit, barCallback: () -> Unit)
@@ -394,11 +424,15 @@ interface IScreenNavigator : ICoreNavigator {
     fun showRawGoodsRemainedInTask(yesCallback: () -> Unit)
     fun showBoxWasLastScanned(afterShowCallback: () -> Unit)
     fun showDoYouReallyWantSetZeroQuantity(yesCallback: () -> Unit, counted: Int)
-    fun showNotMatchTaskSettingsAddingNotPossible(backCallback: () -> Unit)
+    fun showNotMatchTaskSettingsAddingNotPossible()
+    fun showGoodCannotBeAdded()
     fun openScannedMarkIsNotOnBalanceInCurrentStore(proceedCallback: () -> Unit)
     fun showScannedBoxIsNotWhole()
     fun showMarksInBoxAreNotOnBalanceInCurrentStore()
     fun showFinishProcessingBox()
     fun showFinishProcessingCurrentBox()
-    fun openAddProviderScreen()
+
+    fun showAlcoholGoodInfoScreen()
+    fun showCommonGoodInfoScreen()
+
 }

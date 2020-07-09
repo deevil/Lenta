@@ -35,7 +35,7 @@ class DefectListViewModel : CoreViewModel() {
                 DefectListUi(
                         position = "${defectPacks.size - index}",
                         packAndCategory = "${pack.code} / ${pack.category?.description}",
-                        cause = pack.defect?.description ?: "",
+                        cause = pack.defect?.description.orEmpty(),
                         weight = "${pack.quantity.dropZeros()} ${good.units.name}"
                 )
             }

@@ -186,11 +186,10 @@ class JobCardViewModel : CoreViewModel() {
                                         taskManager = checkPriceTaskManager,
                                         taskDescription = CheckPriceTaskDescription(
                                                 tkNumber = sessionInfo.market!!,
-                                                taskNumber = taskFromTaskList?.taskId
-                                                        ?: "",
-                                                taskName = taskName.value ?: "",
-                                                comment = comment.value ?: "",
-                                                description = description.value ?: "",
+                                                taskNumber = taskFromTaskList?.taskId.orEmpty(),
+                                                taskName = taskName.value.orEmpty(),
+                                                comment = comment.value.orEmpty(),
+                                                description = description.value.orEmpty(),
                                                 isStrictList = taskFromTaskList?.isStrict ?: false,
                                                 additionalTaskInfo = correctedResult
                                         )
@@ -206,11 +205,10 @@ class JobCardViewModel : CoreViewModel() {
                             taskManager = checkListTaskManager,
                             taskDescription = CheckListTaskDescription(
                                     tkNumber = sessionInfo.market!!,
-                                    taskNumber = taskFromTaskList?.taskId
-                                            ?: "",
-                                    taskName = taskName.value ?: "",
-                                    comment = comment.value ?: "",
-                                    description = description.value ?: "",
+                                    taskNumber = taskFromTaskList?.taskId.orEmpty(),
+                                    taskName = taskName.value.orEmpty(),
+                                    comment = comment.value.orEmpty(),
+                                    description = description.value.orEmpty(),
                                     isStrictList = taskFromTaskList?.isStrict ?: false
                             )
                     )
@@ -255,10 +253,10 @@ class JobCardViewModel : CoreViewModel() {
                                         taskManager = workListTaskManager,
                                         taskDescription = WorkListTaskDescription(
                                                 tkNumber = sessionInfo.market!!,
-                                                taskNumber = taskFromTaskList?.taskId ?: "",
-                                                taskName = taskName.value ?: "",
-                                                comment = comment.value ?: "",
-                                                description = description.value ?: "",
+                                                taskNumber = taskFromTaskList?.taskId.orEmpty(),
+                                                taskName = taskName.value.orEmpty(),
+                                                comment = comment.value.orEmpty(),
+                                                description = description.value.orEmpty(),
                                                 isStrictList = taskFromTaskList?.isStrict ?: false,
                                                 taskInfoResult = correctedResult
                                         )
@@ -304,10 +302,10 @@ class JobCardViewModel : CoreViewModel() {
                                         taskDescription = NotExposedTaskDescription(
                                                 tkNumber = sessionInfo.market!!,
                                                 taskNumber = taskFromTaskList?.taskId
-                                                        ?: "",
-                                                taskName = taskName.value ?: "",
-                                                comment = comment.value ?: "",
-                                                description = description.value ?: "",
+                                                       .orEmpty(),
+                                                taskName = taskName.value.orEmpty(),
+                                                comment = comment.value.orEmpty(),
+                                                description = description.value.orEmpty(),
                                                 isStrictList = taskFromTaskList?.isStrict ?: false,
                                                 additionalTaskInfo = correctedResult
                                         )
@@ -330,7 +328,7 @@ class JobCardViewModel : CoreViewModel() {
             clearCurrentTaskAndGoBack()
         } else {
             screenNavigator.openConfirmationExitTask(generalTaskManager.getProcessedTask()?.getDescription()?.taskName
-                    ?: "") {
+                   .orEmpty()) {
                 clearCurrentTaskAndGoBack()
             }
         }

@@ -11,10 +11,10 @@ data class MaterialInfo(
         var name: String,
         /** Вид товара */
         @SerializedName("MATYPE")
-        var matype: String,
+        var goodType: String,
         /** Базовая единица измерения */
         @SerializedName("BUOM")
-        var unitsCode: String,
+        var convertingUnitsCode: String,
         /** Тип матрицы SCU */
         @SerializedName("MATR_TYPE")
         var matrix: String,
@@ -34,8 +34,8 @@ data class MaterialInfo(
         @SerializedName("EKGRP")
         var purchaseGroup: String,
         /** ЕИ заказа на поставку */
-        @SerializedName("BSTME") // Коробки или штуки
-        var orderUnitCode: String,
+        @SerializedName("BSTME")
+        var commonUnitsCode: String,
         /** Количество вложенного */
         @SerializedName("QNTINCL")
         var innerQuantity: String,

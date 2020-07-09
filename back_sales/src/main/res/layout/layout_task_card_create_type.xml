@@ -104,7 +104,7 @@
                     android:id="@+id/spin_storage"
                     style="@style/CellSpinnerStyle"
                     android:layout_height="match_parent"
-                    app:items="@{vm.storageList}"
+                    app:items="@{vm.storage}"
                     app:onPositionClickListener="@{vm.onSelectStorage}"
                     app:position="@{vm.storagePosition}"
                     tools:entries="@array/test_list" />

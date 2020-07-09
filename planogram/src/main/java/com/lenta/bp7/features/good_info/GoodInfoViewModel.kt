@@ -29,8 +29,8 @@ class GoodInfoViewModel : AddGoodViewModel() {
         if (checkData.checkEmptyPlaces) {
             // Выбор - Пустое место оформлено правильно? - Назад / Нет / Да
             navigator.showIsEmptyPlaceDecoratedCorrectly(
-                    material = good.value?.getFormattedMaterial() ?: "Not found!",
-                    name = good.value?.name ?: "Not found!",
+                    material = good.value?.getFormattedMaterial().orEmpty(),
+                    name = good.value?.name.orEmpty(),
                     segmentNumber = checkData.getCurrentSegment()!!.number,
                     shelfNumber = checkData.getCurrentShelf()!!.number,
                     noCallback = {

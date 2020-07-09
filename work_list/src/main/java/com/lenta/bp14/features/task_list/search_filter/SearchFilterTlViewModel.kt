@@ -52,28 +52,28 @@ class SearchFilterTlViewModel : CoreViewModel(), OnPositionClickListener {
     val goodField by lazy {
         MutableLiveData<String>().also { liveData ->
             viewModelScope.launch {
-                liveData.value = tasksSearchHelper.filterParams?.matNr ?: ""
+                liveData.value = tasksSearchHelper.filterParams?.matNr.orEmpty()
             }
         }
     }
     val sectionField by lazy {
         MutableLiveData<String>().also { liveData ->
             viewModelScope.launch {
-                liveData.value = tasksSearchHelper.filterParams?.sectionId ?: ""
+                liveData.value = tasksSearchHelper.filterParams?.sectionId.orEmpty()
             }
         }
     }
     val goodsGroupField by lazy {
         MutableLiveData<String>().also { liveData ->
             viewModelScope.launch {
-                liveData.value = tasksSearchHelper.filterParams?.group ?: ""
+                liveData.value = tasksSearchHelper.filterParams?.group.orEmpty()
             }
         }
     }
     val publicationDateField by lazy {
         MutableLiveData<String>().also { liveData ->
             viewModelScope.launch {
-                liveData.value = tasksSearchHelper.filterParams?.dateOfPublic ?: ""
+                liveData.value = tasksSearchHelper.filterParams?.dateOfPublic.orEmpty()
             }
         }
     }
@@ -100,15 +100,15 @@ class SearchFilterTlViewModel : CoreViewModel(), OnPositionClickListener {
     private suspend fun getFilterParams(): SearchTaskFilter? {
         return SearchTaskFilter(
                 taskType = getSelectedTaskType(),
-                matNr = goodField.value ?: "",
-                sectionId = sectionField.value ?: "",
-                group = goodsGroupField.value ?: "",
-                dateOfPublic = publicationDateField.value ?: ""
+                matNr = goodField.value.orEmpty(),
+                sectionId = sectionField.value.orEmpty(),
+                group = goodsGroupField.value.orEmpty(),
+                dateOfPublic = publicationDateField.value.orEmpty()
         )
     }
 
     private suspend fun getSelectedTaskType(): String {
-        return generalRepo.getTasksTypes().getOrNull(selectedPosition.value ?: 0)?.taskType ?: ""
+        return generalRepo.getTasksTypes().getOrNull(selectedPosition.value ?: 0)?.taskType.orEmpty()
     }
 
 

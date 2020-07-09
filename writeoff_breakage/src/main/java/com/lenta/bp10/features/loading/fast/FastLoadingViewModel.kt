@@ -121,8 +121,8 @@ class FastLoadingViewModel : CoreLoadingViewModel() {
 
     private fun getServerTime() {
         viewModelScope.launch {
-            serverTimeRequest(ServerTimeRequestParam(sessionInfo.market
-                    ?: "")).either(::handleFailure, ::handleSuccessServerTime)
+            serverTimeRequest(ServerTimeRequestParam(sessionInfo.market.orEmpty()))
+                    .either(::handleFailure, ::handleSuccessServerTime)
         }
     }
 

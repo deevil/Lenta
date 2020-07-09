@@ -38,7 +38,7 @@ class ProductInfoNetRequest
 
         val productInfoNetRequestParams = ProductInfoNetRequestParams(
                 ean = params.number,
-                tk = processServiceManager.getWriteOffTask()?.taskDescription?.tkNumber ?: "",
+                tk = processServiceManager.getWriteOffTask()?.taskDescription?.tkNumber.orEmpty(),
                 matNr = ""
         )
 

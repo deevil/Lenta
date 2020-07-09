@@ -6,12 +6,22 @@ enum class TaskStatus {
 }
 
 enum class BlockType {
-    UNLOCK,
     SELF_LOCK,
-    LOCK
+    LOCK,
+    UNLOCK;
+
+    companion object {
+        fun from(code: String): BlockType {
+            return when (code) {
+                "1" -> SELF_LOCK
+                "2" -> LOCK
+                else -> UNLOCK
+            }
+        }
+    }
 }
 
-enum class GoodType {
+enum class GoodKind {
     COMMON,
     ALCOHOL,
     EXCISE
@@ -20,13 +30,17 @@ enum class GoodType {
 enum class ControlType(val code: String, val description: String) {
     UNKNOWN("UNKNOWN", "Неизвестный"),
     COMMON("N", "Обычный"),
-    ALCOHOL("A", "Алкоголь")
-}
+    ALCOHOL("A", "Алкоголь");
 
-enum class Category(val description: String) {
-    QUANTITY("Количество"),
-    CONSIGNMENT("Партионно"),
-    MARK("Марочно")
+    companion object {
+        fun from(code: String): ControlType {
+            return when (code) {
+                "N" -> COMMON
+                "A" -> ALCOHOL
+                else -> UNKNOWN
+            }
+        }
+    }
 }
 
 enum class CategoryType(val description: String){

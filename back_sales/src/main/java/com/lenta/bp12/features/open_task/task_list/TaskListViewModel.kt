@@ -7,6 +7,7 @@ import com.lenta.bp12.model.IOpenTaskManager
 import com.lenta.bp12.model.TaskStatus
 import com.lenta.bp12.model.pojo.open_task.TaskOpen
 import com.lenta.bp12.platform.navigation.IScreenNavigator
+import com.lenta.bp12.platform.resource.IResourceManager
 import com.lenta.bp12.request.TaskListNetRequest
 import com.lenta.bp12.request.TaskListParams
 import com.lenta.shared.account.ISessionInfo
@@ -37,13 +38,16 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
     @Inject
     lateinit var manager: IOpenTaskManager
 
+    @Inject
+    lateinit var resource: IResourceManager
+
 
     /**
     Переменные
      */
 
     val title by lazy {
-        "TK - ${sessionInfo.market}"
+        resource.tk(sessionInfo.market.orEmpty())
     }
 
     val selectedPage = MutableLiveData(0)
@@ -144,7 +148,7 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
 
             taskListNetRequest(
                     TaskListParams(
-                            tkNumber = sessionInfo.market ?: "",
+                            tkNumber = sessionInfo.market.orEmpty(),
                             user = user,
                             userNumber = userNumber,
                             mode = 1
@@ -166,7 +170,7 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
 
                 taskListNetRequest(
                         TaskListParams(
-                                tkNumber = sessionInfo.market ?: "",
+                                tkNumber = sessionInfo.market.orEmpty(),
                                 user = user,
                                 userNumber = userNumber,
                                 mode = 2,
@@ -237,7 +241,7 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
     }
 
     private fun isEnteredLogin(): Boolean {
-        val entered = numberField.value ?: ""
+        val entered = numberField.value.orEmpty()
         return entered.isNotEmpty() && !entered.all { it.isDigit() }
     }
 
@@ -250,8 +254,8 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
     }
 
     fun onClickUpdate() {
-        val user = if (isEnteredLogin()) sessionInfo.userName ?: "" else ""
-        val userNumber = if (isEnteredLogin()) sessionInfo.personnelNumber ?: "" else ""
+        val user = if (isEnteredLogin()) numberField.value.orEmpty() else sessionInfo.userName.orEmpty()
+        val userNumber = if (isEnteredLogin()) "" else sessionInfo.personnelNumber.orEmpty()
 
         loadTaskList(user, userNumber)
         loadTaskListWithParams(user, userNumber)

@@ -1,7 +1,7 @@
 package com.lenta.bp12.model.pojo.create_task
 
 import com.lenta.bp12.model.ControlType
-import com.lenta.bp12.model.GoodType
+import com.lenta.bp12.model.GoodKind
 import com.lenta.bp12.model.pojo.Mark
 import com.lenta.bp12.model.pojo.Part
 import com.lenta.bp12.model.pojo.Position
@@ -16,14 +16,16 @@ data class GoodCreate(
         val ean: String,
         val material: String,
         val name: String,
-        val units: Uom = Uom.ST,
-        val orderUnits: Uom= Uom.ST,
-        val type: GoodType,
-        val matype: String = "",
+        val kind: GoodKind,
+        val type: String,
         val control: ControlType = ControlType.COMMON,
         val section: String,
         val matrix: MatrixType,
+
+        val commonUnits: Uom = Uom.ST,
+        val convertingUnits: Uom = Uom.ST,
         val innerQuantity: Double = 0.0,
+        val convertingInfo: String,
 
         val providers: MutableList<ProviderInfo> = mutableListOf(),
         val producers: MutableList<ProducerInfo> = mutableListOf(),
@@ -35,6 +37,10 @@ data class GoodCreate(
 
     fun getNameWithMaterial(delimiter: String = " "): String {
         return "${material.takeLast(6)}$delimiter$name"
+    }
+
+    fun isDifferentUnits(): Boolean {
+        return commonUnits != convertingUnits
     }
 
     fun getTotalQuantity(): Double {
@@ -81,7 +87,7 @@ data class GoodCreate(
     }
 
     fun addPart(part: Part) {
-        parts.find { it.providerCode == part.providerCode && it.producerCode == part.producerCode && it.date == part.date}?.let { foundPart ->
+        parts.find { it.providerCode == part.providerCode && it.producerCode == part.producerCode && it.date == part.date }?.let { foundPart ->
             foundPart.quantity = foundPart.quantity.sumWith(part.quantity)
         } ?: parts.add(part)
     }
@@ -130,8 +136,14 @@ data class GoodCreate(
         removeParts(parts.filter { it.providerCode == providerCode })
     }
 
-    /*fun isSameMaterial(material: String): Boolean {
-        return this.material.takeLast(6) == material.takeLast(6)
-    }*/
+    fun removeByProvider(providerCode: String) {
+        removePositionsByProvider(providerCode)
+        removeMarksByProvider(providerCode)
+        removePartsByProvider(providerCode)
+    }
+
+    fun isEmpty(): Boolean {
+        return positions.isEmpty() && marks.isEmpty() && parts.isEmpty()
+    }
 
 }

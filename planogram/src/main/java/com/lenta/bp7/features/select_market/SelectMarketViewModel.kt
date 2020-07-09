@@ -130,14 +130,14 @@ class SelectMarketViewModel : CoreViewModel(), OnPositionClickListener {
     private fun getServerTime() {
         viewModelScope.launch {
             serverTimeRequest(ServerTimeRequestParam(sessionInfo.market
-                    ?: "")).either(::handleFailure, ::handleSuccessServerTime)
+                   .orEmpty())).either(::handleFailure, ::handleSuccessServerTime)
         }
     }
 
     private fun handleSuccessServerTime(serverTime: ServerTime) {
         navigator.hideProgress()
         timeMonitor.setServerTime(time = serverTime.time, date = serverTime.date)
-        checkData.marketNumber = sessionInfo.market ?: "Not found!"
+        checkData.marketNumber = sessionInfo.market.orEmpty()
 
         // Раскомментировать для удаление сохраненных данных
         //checkData.clearSavedData()

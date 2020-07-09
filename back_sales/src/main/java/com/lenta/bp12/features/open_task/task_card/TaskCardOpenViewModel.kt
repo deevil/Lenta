@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.lenta.bp12.model.ControlType
 import com.lenta.bp12.model.IOpenTaskManager
 import com.lenta.bp12.platform.navigation.IScreenNavigator
+import com.lenta.bp12.platform.resource.IResourceManager
 import com.lenta.bp12.request.TaskContentNetRequest
 import com.lenta.bp12.request.TaskContentParams
 import com.lenta.bp12.request.UnblockTaskNetRequest
@@ -42,9 +43,12 @@ class TaskCardOpenViewModel : CoreViewModel(), PageSelectionListener {
     @Inject
     lateinit var appSettings: IAppSettings
 
+    @Inject
+    lateinit var resource: IResourceManager
+
 
     val title by lazy {
-        "ТК - ${sessionInfo.market}"
+        resource.tk(sessionInfo.market.orEmpty())
     }
 
     val task by lazy {
@@ -60,14 +64,20 @@ class TaskCardOpenViewModel : CoreViewModel(), PageSelectionListener {
                         name = task.name,
                         provider = task.getProviderCodeWithName(),
                         storage = task.storage,
-                        reason = task.reason?.description ?: "",
-                        description = task.type?.description ?: "",
+                        reason = task.reason?.description.orEmpty(),
+                        description = task.type?.description.orEmpty(),
                         comment = task.comment,
                         isStrict = task.isStrict,
                         isAlcohol = task.control == ControlType.ALCOHOL,
                         isCommon = task.control == ControlType.COMMON
                 )
             }
+        }
+    }
+
+    val isExistComment by lazy {
+        task.map {
+            it?.comment?.isNotEmpty()
         }
     }
 
@@ -87,7 +97,7 @@ class TaskCardOpenViewModel : CoreViewModel(), PageSelectionListener {
                     deviceIp = deviceInfo.getDeviceIp(),
                     taskNumber = task.value!!.number,
                     mode = 1,
-                    userNumber = appSettings.lastPersonnelNumber ?: ""
+                    userNumber = appSettings.lastPersonnelNumber.orEmpty()
             )).also {
                 navigator.hideProgress()
             }.either(::handleFailure) { taskContentResult ->
@@ -109,7 +119,12 @@ class TaskCardOpenViewModel : CoreViewModel(), PageSelectionListener {
      */
 
     fun onClickNext() {
-        loadGoodList()
+        val goodList = task.value?.goods.orEmpty()
+        if (goodList.isEmpty()) {
+            loadGoodList()
+        } else {
+            navigator.openGoodListScreen()
+        }
     }
 
     fun onBackPressed() {
@@ -119,7 +134,7 @@ class TaskCardOpenViewModel : CoreViewModel(), PageSelectionListener {
             unblockTaskNetRequest(
                     UnblockTaskParams(
                             taskNumber = task.value!!.number,
-                            userNumber = sessionInfo.personnelNumber ?: "",
+                            userNumber = sessionInfo.personnelNumber.orEmpty(),
                             deviceIp = deviceInfo.getDeviceIp()
                     )
             ).also {

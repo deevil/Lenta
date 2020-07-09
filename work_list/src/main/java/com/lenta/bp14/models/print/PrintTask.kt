@@ -147,8 +147,7 @@ class PrintTask @Inject constructor(
                             productNumber = productInfo.matNr.takeLast(6),
                             ean = productInfo.ean,
                             date = timeMonitor.getServerDate(),
-                            address = repoInMemoryHolder.storesRequestResult?.markets?.firstOrNull { it.tkNumber == sessionInfo.market }?.address
-                                    ?: "",
+                            address = repoInMemoryHolder.storesRequestResult?.markets?.firstOrNull { it.tkNumber == sessionInfo.market }?.address.orEmpty(),
                             promoBegin = serverPriceInfo.startPromo,
                             promoEnd = serverPriceInfo.endPromo,
                             copies = copies

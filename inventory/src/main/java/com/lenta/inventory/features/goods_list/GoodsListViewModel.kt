@@ -90,12 +90,12 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
     fun getTitle(): String {
         return when (taskManager.getInventoryTask()?.taskDescription?.recountType) {
             RecountType.Simple -> "${taskManager.getInventoryTask()?.taskDescription?.getTaskTypeAndNumber()
-                    ?: ""} / ${context.getString(R.string.simple_recount)}"
+                   .orEmpty()} / ${context.getString(R.string.simple_recount)}"
             RecountType.ParallelByStorePlaces -> "${taskManager.getInventoryTask()?.taskDescription?.getTaskTypeAndNumber()
-                    ?: ""} / МХ-${storePlaceManager?.storePlaceNumber}"
+                   .orEmpty()} / МХ-${storePlaceManager?.storePlaceNumber}"
             RecountType.ParallelByPerNo -> "${taskManager.getInventoryTask()?.taskDescription?.getTaskTypeAndNumber()
-                    ?: ""} / ${sessionInfo.personnelFullName}"
-            else -> taskManager.getInventoryTask()?.taskDescription?.getTaskTypeAndNumber() ?: ""
+                   .orEmpty()} / ${sessionInfo.personnelFullName}"
+            else -> taskManager.getInventoryTask()?.taskDescription?.getTaskTypeAndNumber().orEmpty()
         }
     }
 
@@ -178,7 +178,7 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
                 val matnr = processedGoods.value?.get(it)?.matnr
                 if (matnr != null) {
                     val productInfo = taskManager.getInventoryTask()?.taskRepository?.getProducts()?.findProduct(matnr, storePlaceManager?.storePlaceNumber
-                            ?: "")
+                           .orEmpty())
 
                     if (productInfo != null) {
                         taskManager.getInventoryTask()!!.taskRepository.apply {
@@ -300,9 +300,9 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
             screenNavigator.showProgress(lockRequest)
             taskManager.getInventoryTask()?.let {
                 val userNumber = if (recountType == RecountType.ParallelByPerNo) sessionInfo.personnelNumber
-                        ?: "" else "" // указываем номер только при пересчете по номерам
+                       .orEmpty() else "" // указываем номер только при пересчете по номерам
                 val storePlaceCode = if (recountType == RecountType.ParallelByStorePlaces) storePlaceManager?.storePlaceNumber
-                        ?: "" else "" //указываем номер только при пересчете по МХ
+                       .orEmpty() else "" //указываем номер только при пересчете по МХ
                 lockRequest(StorePlaceLockParams(ip = context.getDeviceIp(),
                         taskNumber = it.taskDescription.taskNumber,
                         storePlaceCode = storePlaceCode,
@@ -320,7 +320,7 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
 
     fun onDigitPressed(digit: Int) {
         requestFocusToEan.value = true
-        eanCode.value = eanCode.value ?: "" + digit
+        eanCode.value = eanCode.value.orEmpty() + digit
     }
 
     fun onScanResult(data: String) {
@@ -348,7 +348,7 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
         }
         matnr?.let {
             val productInfo = taskManager.getInventoryTask()?.taskRepository?.getProducts()?.findProduct(it, storePlaceManager?.storePlaceNumber
-                    ?: "")
+                   .orEmpty())
             if (productInfo != null) searchProductDelegate.openTaskProductScreen(productInfo)
         }
     }

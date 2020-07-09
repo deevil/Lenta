@@ -48,7 +48,7 @@ class DatabaseRepository @Inject constructor(
                         ean = getEanByMaterialUnits(material, goodInfo.buom),
                         material = material,
                         name = goodInfo.name,
-                        type = goodInfo.getGoodType(),
+                        kind = goodInfo.getGoodKind(),
                         section = goodInfo.abtnr,
                         matrix = getMatrixType(goodInfo.matrType)
                 )
@@ -58,13 +58,13 @@ class DatabaseRepository @Inject constructor(
 
     override suspend fun getEanByMaterialUnits(material: String, unitsCode: String): String {
         return withContext(Dispatchers.IO) {
-            return@withContext eanInfo.getEanInfoByMaterialUnits(material, unitsCode)?.toEanInfo()?.ean ?: ""
+            return@withContext eanInfo.getEanInfoByMaterialUnits(material, unitsCode)?.toEanInfo()?.ean.orEmpty()
         }
     }
 
     override suspend fun getNameByMaterial(material: String): String {
         return withContext(Dispatchers.IO) {
-            return@withContext products.getNameByMaterial(material) ?: ""
+            return@withContext products.getNameByMaterial(material).orEmpty()
         }
     }
 
@@ -138,7 +138,7 @@ class DatabaseRepository @Inject constructor(
 
             // Параметры товара
             val controlType = goodInfo.getControlType().code
-            val goodType = goodInfo.materialInfo.matype
+            val goodType = goodInfo.materialInfo.goodType
             val goodGroup = goodInfo.materialInfo.goodGroup
             val purchaseGroup = goodInfo.materialInfo.purchaseGroup
 

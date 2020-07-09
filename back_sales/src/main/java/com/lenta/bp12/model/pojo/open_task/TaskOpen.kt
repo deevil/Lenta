@@ -19,6 +19,7 @@ data class TaskOpen(
         val reason: ReturnReason?,
         var comment: String,
         var section: String,
+        val goodType: String,
         var purchaseGroup: String,
         var goodGroup: String,
 

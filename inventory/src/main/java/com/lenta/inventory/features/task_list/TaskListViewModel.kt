@@ -33,7 +33,7 @@ class TaskListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
     val filter = MutableLiveData("")
 
     val tkNumber: String by lazy {
-        sessionInfo.market ?: ""
+        sessionInfo.market.orEmpty()
     }
     val tasks: LiveData<List<TaskItemVm>> by lazy {
         repoInMemoryHolder.tasksListRestInfo.map {
@@ -69,7 +69,7 @@ class TaskListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
             screenNavigator.showProgress(taskListNetRequest)
             taskListNetRequest(
                     TasksListParams(
-                            werks = sessionInfo.market ?: "",
+                            werks = sessionInfo.market.orEmpty(),
                             user = if (filter.value.isNullOrBlank()) sessionInfo.userName!! else filter.value!!
                     )
             )

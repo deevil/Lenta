@@ -48,11 +48,18 @@
     <string name="do_you_really_want_set_zero_quantity">Вы действительно хотите установить 0 в поле количество для (%1$d) товаров из списка?</string>
     <string name="not_match_task_settings_gis_error">Товар не соответствует настройкам задания. Ошибка в ГИС-контроле.</string>
     <string name="not_match_task_settings_adding_not_possible">Товар не соответствует настройкам задания. Добавление товара невозможно.</string>
+    <string name="good_cannot_be_added">Товар запрещен для добавление в данный тип задания. Добавление товара невозможно.</string>
     <string name="scanned_mark_is_not_on_balance_in_current_store">Отсканированная марка не числится на остатках текущего ТК. Отложите марку и проведите расследование. Записать марку в проблемные?</string>
     <string name="scanned_box_is_not_whole">Отсканированный короб не является целым. Добавление марок по номеру короба невозможно. Необходимо отсканировать каждую АМ.</string>
     <string name="marks_in_box_are_not_on_balance_in_current_store">В коробке присутствуют марки, которые не числятся на остатках текущего ТК. Добавление марок по номеру короба невозможно. Необходимо отсканировать каждую АМ.</string>
     <string name="finish_processing_box">Отсканированный товар партионный, завершите обработку коробки с марочным алкоголем, после чего повторите сканирование марки.</string>
     <string name="finish_processing_current_box">Завершите обработку текущей коробки с марочным алкоголем, после чего повторите сканирование номера коробки.</string>
+    <string name="alcocode_does_not_apply_to_this_good">Алкокод не относится к этому товару</string>
+    <string name="unknown_alcocode">Неизвестный алкокод</string>
+
+    // Описание иконок
+    <string name="alcohol_good">Алкогольный товар</string>
+    <string name="common_good">Обычный товар</string>
 
     // Наименование кнопок
     <string name="create_task">Создать задание</string>
@@ -65,6 +72,14 @@
     // Строки в коде
     <string name="tk_number">ТК - %1$s</string>
     <string name="back_sales_from_date">Возврат от %1$s</string>
+    <string name="choose_provider">Выберите поставщика (кредитора)</string>
+    <string name="choose_producer">Выберите производителя</string>
+    <string name="type_quantity">Количество</string>
+    <string name="type_mark">Марочно</string>
+    <string name="type_part">Партионно</string>
+    <string name="total_with_converting_info">Итого %1$s</string>
+    <string name="by_basket">По корзине</string>
+    <string name="basket_title">Корзина %1$s</string>
 
     // Разное
     <string name="provider">Поставщик</string>
