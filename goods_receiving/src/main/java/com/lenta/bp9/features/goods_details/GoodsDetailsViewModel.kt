@@ -5,7 +5,6 @@ import androidx.lifecycle.viewModelScope
 import com.lenta.bp9.features.loading.tasks.TaskListLoadingMode
 import com.lenta.bp9.model.processing.ProcessMercuryProductService
 import com.lenta.bp9.model.task.IReceivingTaskManager
-import com.lenta.bp9.model.task.TaskBatchInfo
 import com.lenta.bp9.model.task.TaskProductInfo
 import com.lenta.bp9.model.task.TaskType
 import com.lenta.bp9.repos.IDataBaseRepo
@@ -14,7 +13,6 @@ import com.lenta.shared.models.core.ProductType
 import com.lenta.shared.models.core.Uom
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.requests.combined.scan_info.pojo.ReasonRejectionInfo
-import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.SelectionItemsHelper
 import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.utilities.extentions.toStringFormatted
@@ -25,10 +23,13 @@ class GoodsDetailsViewModel : CoreViewModel() {
 
     @Inject
     lateinit var taskManager: IReceivingTaskManager
+
     @Inject
     lateinit var dataBase: IDataBaseRepo
+
     @Inject
     lateinit var processMercuryProductService: ProcessMercuryProductService
+
     @Inject
     lateinit var repoInMemoryHolder: IRepoInMemoryHolder
 
@@ -58,17 +59,18 @@ class GoodsDetailsViewModel : CoreViewModel() {
 
     init {
         viewModelScope.launch {
-            reasonRejectionInfo.value = if (taskManager.getReceivingTask()?.taskHeader?.taskType == TaskType.RecalculationCargoUnit) {
+            val task = taskManager.getReceivingTask()
+            val taskType = task?.taskHeader?.taskType
+            reasonRejectionInfo.value = if (taskType == TaskType.RecalculationCargoUnit) {
                 dataBase.getQualityInfoPGE()?.map {
-                    ReasonRejectionInfo(
-                            id = it.id,
-                            qualityCode = "",
-                            code = it.code,
-                            name = it.name
-                    )
+                    it.convertToReasonRejectionInfo()
                 }
             } else {
-                dataBase.getAllReasonRejectionInfo()
+                val qualityInfoForDiscrepancy = dataBase.getQualityInfoForDiscrepancy()?.map {
+                    it.convertToReasonRejectionInfo()
+                }.orEmpty()
+                val allReasonRejectionInfo = dataBase.getAllReasonRejectionInfo().orEmpty()
+                qualityInfoForDiscrepancy + allReasonRejectionInfo
             }
 
             updateProduct()
@@ -85,7 +87,7 @@ class GoodsDetailsViewModel : CoreViewModel() {
     }
 
     private fun updateProduct() {
-        if (isVetProduct.value!! && !productInfo.value!!.isNotEdit) {
+        if (isVetProduct.value == true && productInfo.value?.isNotEdit == false) {
             goodsDetails.postValue(
                     processMercuryProductService.getGoodsDetails()?.mapIndexed { index, discrepancy ->
                         val isNormDiscrepancies = when (repoInMemoryHolder.taskList.value?.taskListLoadingMode) {
@@ -94,7 +96,7 @@ class GoodsDetailsViewModel : CoreViewModel() {
                         }
                         GoodsDetailsCategoriesItem(
                                 number = index + 1,
-                                name = "${reasonRejectionInfo.value?.firstOrNull {it.code == discrepancy.typeDiscrepancies}?.name}",
+                                name = "${reasonRejectionInfo.value?.firstOrNull { it.code == discrepancy.typeDiscrepancies }?.name}",
                                 nameBatch = "",
                                 visibilityNameBatch = false,
                                 quantityWithUom = "${discrepancy.numberDiscrepancies.toDouble().toStringFormatted()} ${uom.value?.name}",
@@ -108,44 +110,69 @@ class GoodsDetailsViewModel : CoreViewModel() {
             )
         } else {
             goodsDetails.postValue(
-                    if (isBatchProduct.value == true) {
-                        taskManager.getReceivingTask()?.taskRepository?.getBatchesDiscrepancies()?.findBatchDiscrepanciesOfProduct(productInfo.value!!.materialNumber)?.mapIndexed { index, discrepancy ->
-                            val isNormDiscrepancies = when (repoInMemoryHolder.taskList.value?.taskListLoadingMode) {
-                                TaskListLoadingMode.PGE -> discrepancy.typeDiscrepancies == "1" || discrepancy.typeDiscrepancies == "2"
-                                else -> discrepancy.typeDiscrepancies == "1"
-                            }
-                            GoodsDetailsCategoriesItem(
-                                    number = index + 1,
-                                    name = "${reasonRejectionInfo.value?.firstOrNull {it.code == discrepancy.typeDiscrepancies}?.name}",
-                                    nameBatch = "ДР-${discrepancy.bottlingDate} // ${getManufacturerName(discrepancy.egais)}",
-                                    visibilityNameBatch = true,
-                                    quantityWithUom = "${discrepancy.numberDiscrepancies.toDouble().toStringFormatted()} ${uom.value?.name}",
-                                    isNormDiscrepancies = isNormDiscrepancies,
-                                    typeDiscrepancies = discrepancy.typeDiscrepancies,
-                                    materialNumber = productInfo.value?.materialNumber ?: "",
-                                    batchDiscrepancies = discrepancy,
-                                    even = index % 2 == 0
-                            )
-                        }?.reversed()
+                    if (isBatchProduct.value == true || productInfo.value?.isSet == true) {
+                        val productNumbers = if (productInfo.value?.isSet == true) {
+                            repoInMemoryHolder.sets.value?.filter {
+                                it.setNumber == productInfo.value?.materialNumber
+                            }?.map {
+                                it.componentNumber
+                            } ?: emptyList()
+                        } else {
+                            listOf(productInfo.value!!.materialNumber)
+                        }
+                        taskManager
+                                .getReceivingTask()
+                                ?.taskRepository
+                                ?.getBatchesDiscrepancies()
+                                ?.findBatchDiscrepanciesOfProducts(productNumbers)
+                                ?.mapIndexed { index, discrepancy ->
+                                    val isNormDiscrepancies = when (repoInMemoryHolder.taskList.value?.taskListLoadingMode) {
+                                        TaskListLoadingMode.PGE -> discrepancy.typeDiscrepancies == "1" || discrepancy.typeDiscrepancies == "2"
+                                        else -> discrepancy.typeDiscrepancies == "1"
+                                    }
+                                    val nameItem = if (productInfo.value?.isSet == true) {
+                                        "${discrepancy.getMaterialLastSix()} ${reasonRejectionInfo.value?.firstOrNull { it.code == discrepancy.typeDiscrepancies }?.name}"
+                                    } else {
+                                        "${reasonRejectionInfo.value?.firstOrNull { it.code == discrepancy.typeDiscrepancies }?.name}"
+                                    }
+                                    GoodsDetailsCategoriesItem(
+                                            number = index + 1,
+                                            name = nameItem,
+                                            nameBatch = "ДР-${discrepancy.bottlingDate} // ${getManufacturerName(discrepancy.egais)}",
+                                            visibilityNameBatch = true,
+                                            quantityWithUom = "${discrepancy.numberDiscrepancies.toDouble().toStringFormatted()} ${uom.value?.name}",
+                                            isNormDiscrepancies = isNormDiscrepancies,
+                                            typeDiscrepancies = discrepancy.typeDiscrepancies,
+                                            materialNumber = discrepancy.materialNumber,
+                                            batchDiscrepancies = discrepancy,
+                                            even = index % 2 == 0
+                                    )
+                                }?.reversed()
                     } else {
-                        taskManager.getReceivingTask()?.taskRepository?.getProductsDiscrepancies()?.findProductDiscrepanciesOfProduct(productInfo.value!!)?.mapIndexed { index, discrepancy ->
-                            val isNormDiscrepancies = when (repoInMemoryHolder.taskList.value?.taskListLoadingMode) {
-                                TaskListLoadingMode.PGE -> discrepancy.typeDiscrepancies == "1" || discrepancy.typeDiscrepancies == "2"
-                                else -> discrepancy.typeDiscrepancies == "1"
-                            }
-                            GoodsDetailsCategoriesItem(
-                                    number = index + 1,
-                                    name = "${reasonRejectionInfo.value?.firstOrNull {it.code == discrepancy.typeDiscrepancies}?.name}",
-                                    nameBatch = "",
-                                    visibilityNameBatch = false,
-                                    quantityWithUom = "${discrepancy.numberDiscrepancies.toDouble().toStringFormatted()} ${uom.value?.name}",
-                                    isNormDiscrepancies = isNormDiscrepancies,
-                                    typeDiscrepancies = discrepancy.typeDiscrepancies,
-                                    materialNumber = productInfo.value?.materialNumber ?: "",
-                                    batchDiscrepancies = null,
-                                    even = index % 2 == 0
-                            )
-                        }?.reversed()
+                        taskManager
+                                .getReceivingTask()
+                                ?.taskRepository
+                                ?.getProductsDiscrepancies()
+                                ?.findProductDiscrepanciesOfProduct(productInfo.value!!)
+                                ?.mapIndexed { index, discrepancy ->
+                                    val isNormDiscrepancies = when (repoInMemoryHolder.taskList.value?.taskListLoadingMode) {
+                                        TaskListLoadingMode.PGE -> discrepancy.typeDiscrepancies == "1" || discrepancy.typeDiscrepancies == "2"
+                                        else -> discrepancy.typeDiscrepancies == "1"
+                                    }
+                                    GoodsDetailsCategoriesItem(
+                                            number = index + 1,
+                                            name = "${reasonRejectionInfo.value?.firstOrNull { it.code == discrepancy.typeDiscrepancies }?.name}",
+                                            nameBatch = "",
+                                            visibilityNameBatch = false,
+                                            quantityWithUom = "${discrepancy.numberDiscrepancies.toDouble().toStringFormatted()} ${uom.value?.name}",
+                                            isNormDiscrepancies = isNormDiscrepancies,
+                                            typeDiscrepancies = discrepancy.typeDiscrepancies,
+                                            materialNumber = productInfo.value?.materialNumber
+                                                    ?: "",
+                                            batchDiscrepancies = null,
+                                            even = index % 2 == 0
+                                    )
+                                }?.reversed()
                     }
             )
         }
@@ -185,8 +212,8 @@ class GoodsDetailsViewModel : CoreViewModel() {
         updateProduct()
     }
 
-    private fun getManufacturerName(manufactureCode: String?) : String {
-        return repoInMemoryHolder.manufacturers.value?.findLast {manufacture ->
+    private fun getManufacturerName(manufactureCode: String?): String {
+        return repoInMemoryHolder.manufacturers.value?.findLast { manufacture ->
             manufacture.code == manufactureCode
         }?.name ?: ""
     }

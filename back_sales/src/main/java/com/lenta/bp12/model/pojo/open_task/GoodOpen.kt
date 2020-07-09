@@ -1,6 +1,6 @@
 package com.lenta.bp12.model.pojo.open_task
 
-import com.lenta.bp12.model.GoodType
+import com.lenta.bp12.model.GoodKind
 import com.lenta.bp12.model.pojo.Mark
 import com.lenta.bp12.model.pojo.Part
 import com.lenta.bp12.model.pojo.Position
@@ -15,15 +15,19 @@ data class GoodOpen(
         val ean: String,
         val material: String,
         val name: String,
+        val kind: GoodKind,
         val section: String,
         val matrix: MatrixType,
-        val type: GoodType,
 
         var planQuantity: Double = 0.0,
         var factQuantity: Double = 0.0,
-        val innerQuantity: Double,
-        val units: Uom,
 
+        val commonUnits: Uom = Uom.ST,
+        val convertingUnits: Uom = Uom.ST,
+        val innerQuantity: Double,
+        val convertingInfo: String = "",
+
+        var isDataLoaded: Boolean = false,
         var isCounted: Boolean = false,
         var isDeleted: Boolean = false,
         var isMissing: Boolean = false,
@@ -38,6 +42,10 @@ data class GoodOpen(
 
     fun getNameWithMaterial(delimiter: String = " "): String {
         return "${material.takeLast(6)}$delimiter$name"
+    }
+
+    fun isDifferentUnits(): Boolean {
+        return commonUnits != convertingUnits
     }
 
     fun getTotalQuantity(): Double {

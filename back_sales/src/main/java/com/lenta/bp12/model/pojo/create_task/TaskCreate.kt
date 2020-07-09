@@ -18,6 +18,10 @@ data class TaskCreate(
         val baskets: MutableList<Basket> = mutableListOf()
 ) {
 
+    fun getFormattedName(): String {
+        return "${taskType.code} // $name"
+    }
+
     fun getQuantityByBasket(basket: Basket): Double {
         return getGoodListByBasket(basket).map { good ->
             val positionQuantity = good.positions.filter { it.provider.code == basket.provider.code }.map { it.quantity }.sumList()
@@ -30,18 +34,32 @@ data class TaskCreate(
 
     fun getGoodListByBasket(basket: Basket): List<GoodCreate> {
         return goods.filter { good ->
-            good.section == basket.section && good.matype == basket.matype && good.control == basket.control &&
+            good.section == basket.section && good.type == basket.goodType && good.control == basket.control &&
                     (good.positions.find { it.provider == basket.provider } != null ||
                             good.marks.find { it.providerCode == basket.provider.code } != null ||
                             good.parts.find { it.providerCode == basket.provider.code } != null)
         }
     }
 
-    fun removeGoodByMaterials(materialList: List<String>) {
-        materialList.forEach { material ->
+    fun removeGoodByMaterials(materials: List<String>) {
+        materials.forEach { material ->
             goods.remove(goods.find { it.material == material })
         }
 
+        removeEmptyBaskets()
+    }
+
+    fun removeGoodByBasketAndMaterials(basket: Basket, materials: MutableList<String>) {
+        materials.forEach { material ->
+            goods.find { it.material == material }?.let { good ->
+                good.removeByProvider(basket.provider.code)
+                if (good.isEmpty()) {
+                    goods.remove(good)
+                }
+            }
+        }
+
+        removeEmptyGoods()
         removeEmptyBaskets()
     }
 
@@ -69,6 +87,10 @@ data class TaskCreate(
 
     private fun removeEmptyBaskets() {
         baskets.removeAll(baskets.filter { getQuantityByBasket(it) == 0.0 })
+    }
+
+    fun isExistBasket(basket: Basket): Boolean {
+        return baskets.contains(basket)
     }
 
 }

@@ -61,7 +61,7 @@ class TaskCompositionViewModel : CoreViewModel(), PageSelectionListener, OnOkInS
                         material = good.material,
                         position = "${task.goods.size - index}",
                         name = good.getNameWithMaterial(),
-                        quantity = "${good.getTotalQuantity().dropZeros()} ${good.units.name}"
+                        quantity = "${good.getTotalQuantity().dropZeros()} ${good.convertingUnits.name}"
                 )
             }
         }
@@ -107,7 +107,7 @@ class TaskCompositionViewModel : CoreViewModel(), PageSelectionListener, OnOkInS
     }
 
     override fun onOkInSoftKeyboard(): Boolean {
-        checkEnteredNumber(numberField.value ?: "")
+        checkEnteredNumber(numberField.value.orEmpty())
         return true
     }
 
@@ -116,7 +116,7 @@ class TaskCompositionViewModel : CoreViewModel(), PageSelectionListener, OnOkInS
             when (page) {
                 0 -> {
                     manager.searchNumber = goods.value!![position].material
-                    manager.openGoodFromList = true
+                    manager.searchGoodFromList = true
                     navigator.openGoodInfoCreateScreen()
                 }
                 1 -> {
@@ -132,7 +132,7 @@ class TaskCompositionViewModel : CoreViewModel(), PageSelectionListener, OnOkInS
         number.length.let { length ->
             if (length >= Constants.SAP_6) {
                 manager.searchNumber = number
-                manager.openGoodFromList = true
+                manager.searchGoodFromList = true
                 numberField.value = ""
                 navigator.openGoodInfoCreateScreen()
             }
@@ -173,8 +173,8 @@ class TaskCompositionViewModel : CoreViewModel(), PageSelectionListener, OnOkInS
         navigator.showMakeTaskCountedAndClose {
             manager.prepareSendTaskDataParams(
                     deviceIp = deviceInfo.getDeviceIp(),
-                    tkNumber = sessionInfo.market ?: "",
-                    userNumber = sessionInfo.personnelNumber ?: ""
+                    tkNumber = sessionInfo.market.orEmpty(),
+                    userNumber = sessionInfo.personnelNumber.orEmpty()
             )
 
             manager.finishCurrentTask()

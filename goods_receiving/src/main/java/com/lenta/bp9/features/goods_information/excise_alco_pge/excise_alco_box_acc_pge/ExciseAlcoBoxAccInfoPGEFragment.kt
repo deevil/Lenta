@@ -22,6 +22,7 @@ class ExciseAlcoBoxAccInfoPGEFragment : CoreFragment<FragmentExciseAlcoBoxAccInf
         OnScanResultListener {
 
     companion object {
+        private const val PAGE_NUMBER = "09/41"
         fun create(productInfo: TaskProductInfo): ExciseAlcoBoxAccInfoPGEFragment {
             ExciseAlcoBoxAccInfoPGEFragment().let {
                 it.productInfo = productInfo
@@ -34,7 +35,7 @@ class ExciseAlcoBoxAccInfoPGEFragment : CoreFragment<FragmentExciseAlcoBoxAccInf
 
     override fun getLayoutId(): Int = R.layout.fragment_excise_alco_box_acc_info_pge
 
-    override fun getPageNumber(): String = "09/41"
+    override fun getPageNumber(): String = PAGE_NUMBER
 
     override fun getViewModel(): ExciseAlcoBoxAccInfoPGEViewModel {
         provideViewModel(ExciseAlcoBoxAccInfoPGEViewModel::class.java).let {vm ->

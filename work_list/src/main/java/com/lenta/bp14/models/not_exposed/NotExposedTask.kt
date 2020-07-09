@@ -52,7 +52,7 @@ class NotExposedTask @Inject constructor(
                 val productInfo = productsInfoMap[it.matNr]
                 NotExposedProductInfo(
                         ean = null,
-                        name = productInfo?.name ?: "",
+                        name = productInfo?.name.orEmpty(),
                         matNr = it.matNr,
                         quantity = it.quantity,
                         defaultUnits = null,
@@ -79,7 +79,7 @@ class NotExposedTask @Inject constructor(
                         NotExposedProductInfo(
                                 ean = null,
                                 matNr = position.matNr,
-                                name = productInfo?.name ?: "",
+                                name = productInfo?.name.orEmpty(),
                                 quantity = position.quantity,
                                 isEmptyPlaceMarked = checkPlace?.let { place ->
                                     when {

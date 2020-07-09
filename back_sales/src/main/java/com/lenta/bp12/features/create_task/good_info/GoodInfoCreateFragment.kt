@@ -20,7 +20,7 @@ class GoodInfoCreateFragment : CoreFragment<FragmentGoodInfoCreateBinding, GoodI
 
     override fun getLayoutId(): Int = R.layout.fragment_good_info_create
 
-    override fun getPageNumber(): String? = generateScreenNumberFromPostfix("12")
+    override fun getPageNumber(): String? = generateScreenNumberFromPostfix(SCREEN_NUMBER)
 
     override fun getViewModel(): GoodInfoCreateViewModel {
         provideViewModel(GoodInfoCreateViewModel::class.java).let {
@@ -49,10 +49,12 @@ class GoodInfoCreateFragment : CoreFragment<FragmentGoodInfoCreateBinding, GoodI
     override fun onToolbarButtonClick(view: View) {
         when (view.id) {
             R.id.b_2 -> vm.onClickRollback()
-            //R.id.b_2 -> vm.onScanResult("22N00000XOIJT87CH2W0123456789012345678901234567890123456789000000001") // Марка
-            //R.id.b_2 -> vm.onScanResult("22N00002NWKKIF6RWF30123456789012345678901234567890123456789000000004") // Партия
-            //R.id.b_2 -> vm.onScanResult("03000048752210319000100516") // Коробка
             R.id.b_3 -> vm.onClickDetails()
+            //R.id.b_3 -> vm.onScanResult("147300249826851018001FZSIZAB5I6KZKWEQKPKZJHW6MYKVGAETXLPV7M5AIF7OXTQFIM347EWQGXAK65QGJFKTR7EQDHJQTJFSW5DNWTBU3BRLKVM7D6YZMYRBV6IOQY5ZXLPKLBHUZPBTRFTLQ") // Марка
+            //R.id.b_3 -> vm.onScanResult("1734001784926710180016BZ3532QMZKOBPRTXTL7BZMZ3YNNMK53PXMB3ZU66TJ3SNVFR7YTCYVLOPKUNBQIG5XXLKNYYWMWGGUXJLVHB2NLSMF6ACBJDB73IUKGGSAEOWKBY7TW7FZ5BLIT3YT2Y")
+            //R.id.b_3 -> vm.onScanResult("22N00000XOIJT87CH2W0123456789012345678901234567890123456789000000001") // Марка
+            //R.id.b_3 -> vm.onScanResult("22N00002NWKKIF6RWF30123456789012345678901234567890123456789000000004") // Партия
+            //R.id.b_3 -> vm.onScanResult("03000048752210319000100516") // Коробка
             R.id.b_5 -> vm.onClickApply()
         }
     }
@@ -70,4 +72,9 @@ class GoodInfoCreateFragment : CoreFragment<FragmentGoodInfoCreateBinding, GoodI
         super.onResume()
         vm.updateData()
     }
+
+    companion object {
+        const val SCREEN_NUMBER = "12"
+    }
+
 }

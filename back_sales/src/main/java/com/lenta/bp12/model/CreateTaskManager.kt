@@ -23,7 +23,7 @@ class CreateTaskManager @Inject constructor(
 
     override var searchNumber = ""
 
-    override var openGoodFromList = false
+    override var searchGoodFromList = false
 
     override var isWasAddedProvider = false
 
@@ -44,6 +44,10 @@ class CreateTaskManager @Inject constructor(
 
     override fun updateCurrentBasket(basket: Basket?) {
         currentBasket.value = basket
+    }
+
+    override fun clearCurrentGood() {
+        currentGood.value = null
     }
 
     override fun saveGoodInTask(good: GoodCreate) {
@@ -92,6 +96,13 @@ class CreateTaskManager @Inject constructor(
         }
     }
 
+    override fun removeGoodByBasketAndMaterials(basket: Basket, materials: MutableList<String>) {
+        currentTask.value?.let { task ->
+            task.removeGoodByBasketAndMaterials(basket, materials)
+            updateCurrentTask(task)
+        }
+    }
+
     override fun removeBaskets(basketList: MutableList<Basket>) {
         currentTask.value?.let { task ->
             task.removeBaskets(basketList)
@@ -132,7 +143,7 @@ class CreateTaskManager @Inject constructor(
                                     factQuantity = position.quantity.dropZeros(),
                                     isCounted = true.toSapBooleanString(),
                                     isDeleted = false.toSapBooleanString(),
-                                    unitsCode = good.units.code
+                                    unitsCode = good.commonUnits.code
                             )
                     )
                 }
@@ -182,13 +193,18 @@ class CreateTaskManager @Inject constructor(
         }
     }
 
+    override fun clearSearchFromListParams() {
+        searchGoodFromList = false
+        searchNumber = ""
+    }
+
 }
 
 
 interface ICreateTaskManager {
 
     var searchNumber: String
-    var openGoodFromList: Boolean
+    var searchGoodFromList: Boolean
     var isWasAddedProvider: Boolean
 
     val currentTask: MutableLiveData<TaskCreate>
@@ -205,10 +221,13 @@ interface ICreateTaskManager {
     fun addBasket(basket: Basket)
     fun getBasketPosition(basket: Basket?): Int
     fun removeGoodByMaterials(materialList: List<String>)
+    fun removeGoodByBasketAndMaterials(basket: Basket, materials: MutableList<String>)
     fun removeBaskets(basketList: MutableList<Basket>)
     fun finishCurrentTask()
     fun addProviderInCurrentGood(providerInfo: ProviderInfo)
     fun prepareSendTaskDataParams(deviceIp: String, tkNumber: String, userNumber: String)
     fun saveGoodInTask(good: GoodCreate)
+    fun clearSearchFromListParams()
+    fun clearCurrentGood()
 
 }

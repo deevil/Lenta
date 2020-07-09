@@ -32,10 +32,10 @@ class LoadingTasksViewModel : CoreLoadingViewModel() {
     init {
         viewModelScope.launch {
             progress.value = true
-            taskListNetRequest(TasksListParams(werks = sessionInfo.market
-                    ?: "",
-                    user = sessionInfo.userName
-                            ?: "")).either(::handleFailure, ::handleSuccess)
+            taskListNetRequest(TasksListParams(
+                    werks = sessionInfo.market.orEmpty(),
+                    user = sessionInfo.userName.orEmpty())
+            ).either(::handleFailure, ::handleSuccess)
             progress.value = false
         }
     }

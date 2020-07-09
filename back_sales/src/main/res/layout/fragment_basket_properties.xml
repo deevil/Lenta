@@ -71,7 +71,7 @@
                 <TextView
                     android:id="@+id/tv_removed_good"
                     style="@style/CellTextStyle"
-                    android:text="@{vm.properties.type}"
+                    android:text="@{vm.properties.goodType}"
                     tools:text="1HAW" />
 
             </LinearLayout>

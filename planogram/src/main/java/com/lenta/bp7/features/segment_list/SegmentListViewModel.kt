@@ -104,7 +104,7 @@ class SegmentListViewModel : SendDataViewModel(), OnOkInSoftKeyboardListener {
         navigator.showSegmentStarted(
                 segmentNumber = segmentNumber,
                 isFacings = checkData.countFacings) {
-            checkData.addSegment(sessionInfo.market ?: "Not found!", segmentNumber)
+            checkData.addSegment(sessionInfo.market.orEmpty(), segmentNumber)
             navigator.openShelfListScreen()
         }
     }

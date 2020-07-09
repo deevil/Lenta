@@ -189,6 +189,18 @@ class ExciseAlcoBoxListViewModel : CoreViewModel(), PageSelectionListener, OnOkI
                     initialCount = initialCount.value!!,
                     isScan = false
             )
+        } else {
+            screenNavigator.goBack()
+            screenNavigator.openExciseAlcoBoxCardScreen(
+                    productInfo = productInfo.value!!,
+                    boxInfo = countProcessed.value?.get(position)?.boxInfo,
+                    massProcessingBoxesNumber = null,
+                    exciseStampInfo = null,
+                    selectQualityCode = selectQualityCode.value!!,
+                    selectReasonRejectionCode = selectReasonRejectionCode.value,
+                    initialCount = initialCount.value!!,
+                    isScan = false
+            )
         }
     }
 

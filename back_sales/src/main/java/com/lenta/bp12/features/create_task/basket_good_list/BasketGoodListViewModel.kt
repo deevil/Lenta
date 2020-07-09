@@ -3,6 +3,7 @@ package com.lenta.bp12.features.create_task.basket_good_list
 import androidx.lifecycle.MutableLiveData
 import com.lenta.bp12.model.ICreateTaskManager
 import com.lenta.bp12.platform.navigation.IScreenNavigator
+import com.lenta.bp12.platform.resource.IResourceManager
 import com.lenta.shared.platform.constants.Constants
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.SelectionItemsHelper
@@ -19,6 +20,9 @@ class BasketGoodListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
     @Inject
     lateinit var manager: ICreateTaskManager
 
+    @Inject
+    lateinit var resource: IResourceManager
+
 
     val selectionsHelper = SelectionItemsHelper()
 
@@ -32,7 +36,9 @@ class BasketGoodListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
 
     val title by lazy {
         basket.map { basket ->
-            "Корзина ${manager.getBasketPosition(basket)}: ${basket?.getDescription(task.value!!.taskType.isDivBySection)}"
+            val position = manager.getBasketPosition(basket)
+            val description = basket?.getDescription(task.value?.taskType?.isDivBySection ?: false)
+            resource.basket("$position: $description")
         }
     }
 
@@ -43,10 +49,13 @@ class BasketGoodListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
             it?.let { basket ->
                 task.value?.let { task ->
                     task.getGoodListByBasket(basket).mapIndexed { index, good ->
+                        val quantity = good.getQuantityByProvider(basket.provider.code).dropZeros()
+                        val units = good.commonUnits.name
+
                         ItemGoodUi(
                                 position = "${index + 1}",
                                 name = good.getNameWithMaterial(),
-                                quantity = "${good.getQuantityByProvider(basket.provider.code).dropZeros()} ${good.units.name}",
+                                quantity = "$quantity $units",
                                 material = good.material
                         )
                     }
@@ -70,7 +79,7 @@ class BasketGoodListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
     }
 
     override fun onOkInSoftKeyboard(): Boolean {
-        checkEnteredNumber(numberField.value ?: "")
+        checkEnteredNumber(numberField.value.orEmpty())
         return true
     }
 
@@ -78,7 +87,7 @@ class BasketGoodListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
         number.length.let { length ->
             if (length >= Constants.SAP_6) {
                 manager.searchNumber = number
-                manager.openGoodFromList = true
+                manager.searchGoodFromList = true
                 navigator.goBack()
                 navigator.openGoodInfoCreateScreen()
             }
@@ -86,8 +95,8 @@ class BasketGoodListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
     }
 
     fun onClickItemPosition(position: Int) {
-        manager.searchNumber = goods.value!![position].material
-        manager.openGoodFromList = true
+        manager.searchNumber = goods.value?.get(position)?.material.orEmpty()
+        manager.searchGoodFromList = true
         navigator.goBack()
         navigator.openGoodInfoCreateScreen()
     }
@@ -109,8 +118,19 @@ class BasketGoodListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
         }
 
         selectionsHelper.clearPositions()
-        manager.removeGoodByMaterials(materialList)
-        manager.updateCurrentBasket(manager.currentBasket.value)
+
+        basket.value?.let { basket ->
+            manager.removeGoodByBasketAndMaterials(basket, materialList)
+            manager.updateCurrentBasket(manager.currentBasket.value)
+
+            task.value?.let { task ->
+                if (task.isExistBasket(basket)) {
+                    manager.updateCurrentBasket(basket)
+                } else {
+                    navigator.goBack()
+                }
+            }
+        }
     }
 
 }

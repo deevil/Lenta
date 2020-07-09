@@ -70,7 +70,7 @@ class DiscrepancyListFragment : CoreFragment<FragmentDiscrepancyListBinding, Dis
                 val textView = if (tabItemLayout.getChildAt(0) is TextView) tabItemLayout.getChildAt(0) as TextView else tabItemLayout.getChildAt(1) as TextView
                 if (iconView != null) tabItemLayout.removeView(iconView)
                 if (it.isNotEmpty()) {
-                    textView.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_indicator_tablayout_red_10dp, 0)
+                    textView.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_indicator_tablayout_red_8dp, 0)
                     textView.compoundDrawablePadding = 5
                 } else {
                     textView.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0)

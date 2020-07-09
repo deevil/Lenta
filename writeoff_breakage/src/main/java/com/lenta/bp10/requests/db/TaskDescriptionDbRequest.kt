@@ -32,8 +32,8 @@ class TaskDescriptionDbRequest
                 moveTypes = getMoveTypes(params, gisControls),
                 gisControls = gisControls,
                 materialTypes = getMaterialTypes(params),
-                perNo = sessionInfo.personnelNumber ?: "",
-                printer = sessionInfo.printer ?: "",
+                perNo = sessionInfo.personnelNumber.orEmpty(),
+                printer = sessionInfo.printer.orEmpty(),
                 tkNumber = sessionInfo.market!!,
                 ipAddress = context.getDeviceIp())
 

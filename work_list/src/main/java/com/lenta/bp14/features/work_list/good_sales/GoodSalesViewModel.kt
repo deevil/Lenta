@@ -59,8 +59,8 @@ class GoodSalesViewModel : CoreViewModel() {
             navigator.showProgressLoadingData()
             goodSalesNetRequest(
                     GoodSalesParams(
-                            tkNumber = sessionInfo.market ?: "Not Found!",
-                            material = task.currentGood.value?.material ?: ""
+                            tkNumber = sessionInfo.market.orEmpty(),
+                            material = task.currentGood.value?.material.orEmpty()
                     )
             ).either(::handleFailure, ::updateSales)
         }

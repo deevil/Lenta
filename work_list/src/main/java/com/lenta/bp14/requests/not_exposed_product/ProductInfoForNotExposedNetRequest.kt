@@ -35,7 +35,7 @@ class ProductInfoForNotExposedNetRequest
     }
 
     private fun getUnitsName(code: String?): String {
-        return units.getUnitName(code)?.toLowerCase(Locale.getDefault()) ?: ""
+        return units.getUnitName(code)?.toLowerCase(Locale.getDefault()).orEmpty()
     }
 
 }

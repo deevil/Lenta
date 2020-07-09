@@ -89,7 +89,7 @@ class SelectMarketViewModel : CoreViewModel(), OnPositionClickListener {
                 appSettings.lastTK = tkNumber
                 navigator.showProgress(serverTimeRequest)
                 serverTimeRequest(ServerTimeRequestParam(sessionInfo.market
-                        ?: "")).either(::handleFailure, ::handleSuccessServerTime)
+                       .orEmpty())).either(::handleFailure, ::handleSuccessServerTime)
             }
         }
     }

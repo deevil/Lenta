@@ -12,7 +12,7 @@ fun <T : ViewModel> Fragment.provideViewModel(clazz: Class<T>): T {
 }
 
 fun CoreFragment<*, *>.generateScreenNumber(): String {
-    return activity.implementationOf(CoreMainActivity::class.java)?.generateNumberScreen(this) ?: ""
+    return activity.implementationOf(CoreMainActivity::class.java)?.generateNumberScreen(this).orEmpty()
 }
 
 fun CoreFragment<*, *>.generateScreenNumberFromPostfix(postfix: String?): String? {
@@ -20,7 +20,7 @@ fun CoreFragment<*, *>.generateScreenNumberFromPostfix(postfix: String?): String
 }
 
 fun CoreFragment<*, *>.getScreenPrefix(): String {
-    return activity.implementationOf(CoreMainActivity::class.java)?.getPrefixScreen(this) ?: ""
+    return activity.implementationOf(CoreMainActivity::class.java)?.getPrefixScreen(this).orEmpty()
 }
 
 fun <T> Fragment.connectLiveData(source: MutableLiveData<out T>, target: MutableLiveData<T>) {

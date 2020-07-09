@@ -5,7 +5,6 @@ import com.lenta.bp12.model.pojo.Block
 import com.lenta.bp12.model.pojo.open_task.GoodOpen
 import com.lenta.bp12.model.pojo.open_task.TaskOpen
 import com.lenta.bp12.platform.extention.addZerosToStart
-import com.lenta.bp12.platform.extention.getBlockType
 import com.lenta.bp12.platform.extention.getControlType
 import com.lenta.bp12.repository.IDatabaseRepository
 import com.lenta.bp12.request.GoodInfoResult
@@ -52,7 +51,10 @@ class OpenTaskManager @Inject constructor(
 
     override fun updateCurrentGood(good: GoodOpen) {
         currentGood.value = good
-        saveGoodInTask(good)
+    }
+
+    override fun clearCurrentGood() {
+        currentGood.value = null
     }
 
     override fun saveGoodInTask(good: GoodOpen) {
@@ -81,12 +83,12 @@ class OpenTaskManager @Inject constructor(
                     name = taskInfo.name,
                     type = database.getTaskType(taskInfo.typeCode),
                     block = Block(
-                            type = taskInfo.blockType.getBlockType(),
+                            type = BlockType.from(taskInfo.blockType),
                             user = taskInfo.blockUser,
                             ip = taskInfo.blockIp
                     ),
                     storage = taskInfo.storage,
-                    control = taskInfo.control.getControlType(),
+                    control = ControlType.from(taskInfo.control),
                     provider = ProviderInfo(
                             code = taskInfo.providerCode.addZerosToStart(10),
                             name = taskInfo.providerName
@@ -94,8 +96,9 @@ class OpenTaskManager @Inject constructor(
                     reason = database.getReturnReason(taskInfo.typeCode, taskInfo.reasonCode),
                     comment = taskInfo.comment,
                     section = taskInfo.section,
+                    goodType = taskInfo.goodType,
                     purchaseGroup = taskInfo.purchaseGroup,
-                    goodGroup = taskInfo.goodGroup,
+                    goodGroup = taskInfo.goodType,
                     numberOfGoods = taskInfo.quantity.toIntOrNull() ?: 0,
                     isStrict = taskInfo.isStrict.isSapTrue(),
                     isFinished = !taskInfo.isNotFinish.isSapTrue()
@@ -114,11 +117,11 @@ class OpenTaskManager @Inject constructor(
                                 name = goodInfo.name,
                                 section = goodInfo.section,
                                 matrix = goodInfo.matrix,
-                                type = goodInfo.type,
+                                kind = goodInfo.kind,
                                 planQuantity = planQuantity.toDoubleOrNull() ?: 0.0,
                                 factQuantity = factQuantity.toDoubleOrNull() ?: 0.0,
                                 innerQuantity = innerQuantity.toDoubleOrNull() ?: 1.0,
-                                units = database.getUnitsByCode(unitsCode),
+                                commonUnits = database.getUnitsByCode(unitsCode),
                                 isCounted = isCounted.isSapTrue(),
                                 isDeleted = isDeleted.isSapTrue(),
                                 provider = ProviderInfo(providerCode, providerName),
@@ -146,8 +149,22 @@ class OpenTaskManager @Inject constructor(
         return currentTask.value?.goods?.find { it.material == formattedMaterial }
     }
 
+    override fun isGoodCorrespondToTask(goodInfo: GoodInfoResult): Boolean {
+        currentTask.value?.let { task ->
+            val control = task.control == goodInfo.getControlType()
+            val type = if (task.goodType.isNotEmpty()) task.goodType == goodInfo.materialInfo.goodType else true
+            val section = if (goodInfo.materialInfo.section.isNotEmpty()) task.section == goodInfo.materialInfo.section else true
+            val purchaseGroup = if (goodInfo.materialInfo.purchaseGroup.isNotEmpty()) task.purchaseGroup == goodInfo.materialInfo.purchaseGroup else true
+            val provider =  goodInfo.providers.find { it.code == task.provider.code } != null
+
+            return control && type && section && purchaseGroup && provider
+        }
+
+        return false
+    }
+
     override suspend fun isGoodCanBeAdded(goodInfo: GoodInfoResult): Boolean {
-        return database.isGoodCanBeAdded(goodInfo, currentTask.value?.type?.code ?: "")
+        return database.isGoodCanBeAdded(goodInfo, currentTask.value?.type?.code.orEmpty())
     }
 
     override fun finishCurrentTask() {
@@ -174,7 +191,7 @@ class OpenTaskManager @Inject constructor(
                                     factQuantity = position.quantity.dropZeros(),
                                     isCounted = good.isCounted.toSapBooleanString(),
                                     isDeleted = good.isDeleted.toSapBooleanString(),
-                                    unitsCode = good.units.code
+                                    unitsCode = good.commonUnits.code
                             )
                     )
                 }
@@ -212,10 +229,10 @@ class OpenTaskManager @Inject constructor(
                             taskNumber = task.number,
                             userNumber = userNumber,
                             taskName = task.name,
-                            taskType = task.type?.code ?: "",
+                            taskType = task.type?.code.orEmpty(),
                             tkNumber = tkNumber,
                             storage = task.storage,
-                            reasonCode = task.reason?.code ?: "",
+                            reasonCode = task.reason?.code.orEmpty(),
                             isNotFinish = (!task.isFinished).toSapBooleanString(),
                             positions = positions,
                             marks = marks,
@@ -272,6 +289,7 @@ interface IOpenTaskManager {
     fun saveGoodInTask(good: GoodOpen)
     fun findGoodByEan(ean: String): GoodOpen?
     fun findGoodByMaterial(material: String): GoodOpen?
+    fun isGoodCorrespondToTask(goodInfo: GoodInfoResult): Boolean
     suspend fun isGoodCanBeAdded(goodInfo: GoodInfoResult): Boolean
     fun finishCurrentTask()
     suspend fun addTasks(tasksInfo: List<TaskInfo>)
@@ -281,5 +299,6 @@ interface IOpenTaskManager {
     fun markGoodsDeleted(materials: List<String>)
     fun markGoodsUncounted(materials: List<String>)
     fun clearSearchFromListParams()
+    fun clearCurrentGood()
 
 }

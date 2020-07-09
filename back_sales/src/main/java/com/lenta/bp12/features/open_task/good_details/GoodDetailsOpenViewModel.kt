@@ -65,7 +65,7 @@ class GoodDetailsOpenViewModel : CoreViewModel(), PageSelectionListener {
                 ItemCategoryUi(
                         position = "${index + 1}",
                         type = itemCategory.type.description,
-                        quantity = "${itemCategory.quantity.dropZeros()} ${good?.units?.name}"
+                        quantity = "${itemCategory.quantity.dropZeros()} ${good?.commonUnits?.name}"
                 )
             }
         }

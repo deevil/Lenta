@@ -139,7 +139,7 @@ class GoodListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
     }
 
     override fun onOkInSoftKeyboard(): Boolean {
-        checkEnteredNumber(numberField.value ?: "")
+        checkEnteredNumber(numberField.value.orEmpty())
         return true
     }
 
@@ -192,8 +192,8 @@ class GoodListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
                 manager.finishCurrentTask()
                 manager.prepareSendTaskDataParams(
                         deviceIp = deviceInfo.getDeviceIp(),
-                        tkNumber = sessionInfo.market ?: "",
-                        userNumber = sessionInfo.personnelNumber ?: ""
+                        tkNumber = sessionInfo.market.orEmpty(),
+                        userNumber = sessionInfo.personnelNumber.orEmpty()
                 )
 
                 navigator.openSaveDataScreen()

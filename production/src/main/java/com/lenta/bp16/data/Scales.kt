@@ -42,7 +42,7 @@ class Scales @Inject constructor(
 
         try {
             client.newCall(Request.Builder().url(urlOne).build()).execute().apply {
-                responseOneBody = this.body()?.string() ?: ""
+                responseOneBody = this.body()?.string().orEmpty()
                 Logg.d { "Response one body: $responseOneBody" }
             }
         } catch (e: Exception) {
@@ -70,7 +70,7 @@ class Scales @Inject constructor(
 
         try {
             client.newCall(Request.Builder().url(urlTwo).build()).execute().apply {
-                responseTwoBody = this.body()?.string() ?: ""
+                responseTwoBody = this.body()?.string().orEmpty()
                 Logg.d { "Response two body: $responseTwoBody" }
             }
         } catch (e: Exception) {

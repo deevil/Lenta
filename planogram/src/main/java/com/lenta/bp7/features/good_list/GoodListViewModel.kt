@@ -43,7 +43,7 @@ class GoodListViewModel : AddGoodViewModel(), OnOkInSoftKeyboardListener {
     }
 
     override fun onOkInSoftKeyboard(): Boolean {
-        checkEnteredNumber(goodNumber.value ?: "")
+        checkEnteredNumber(goodNumber.value.orEmpty())
         return true
     }
 

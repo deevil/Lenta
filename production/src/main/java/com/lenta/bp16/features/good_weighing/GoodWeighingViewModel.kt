@@ -125,14 +125,14 @@ class GoodWeighingViewModel : CoreViewModel() {
 
             packCodeNetRequest(
                     PackCodeParams(
-                            marketNumber = sessionInfo.market ?: "Not found!",
+                            marketNumber = sessionInfo.market.orEmpty(),
                             taskType = manager.getTaskTypeCode(),
                             parent = manager.currentTask.value!!.taskInfo.number,
-                            deviceIp = deviceIp.value ?: "Not found!",
+                            deviceIp = deviceIp.value.orEmpty(),
                             material = good.value!!.material,
                             order = raw.value!!.order,
                             quantity = total.value!!,
-                            personnelNumber = sessionInfo.personnelNumber ?: ""
+                            personnelNumber = sessionInfo.personnelNumber.orEmpty()
                     )
             ).also {
                 navigator.hideProgress()
@@ -187,9 +187,9 @@ class GoodWeighingViewModel : CoreViewModel() {
                                 aufnr = raw.value!!.order,
                                 nameOsn = raw.value!!.name,
                                 dateExpir = dateExpir?.let { SimpleDateFormat(Constants.DATE_FORMAT_dd_mm_yyyy, Locale.getDefault()).format(it.time) }
-                                        ?: "",
+                                       .orEmpty(),
                                 goodsName = packCodeResult.dataLabel.materialName,
-                                weigher = sessionInfo.personnelNumber ?: "",
+                                weigher = sessionInfo.personnelNumber.orEmpty(),
                                 productTime = SimpleDateFormat(Constants.DATE_FORMAT_dd_mm_yyyy, Locale.getDefault()).format(productTime.time),
                                 goodsCode = packCodeResult.dataLabel.material.takeLast(6),
                                 barcode = barcode,

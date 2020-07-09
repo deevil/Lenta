@@ -99,11 +99,11 @@ class AuthViewModel : CoreAuthViewModel() {
     }
 
     private fun getLogin(): String {
-        return login.value?.trim() ?: ""
+        return login.value?.trim().orEmpty()
     }
 
     private fun getPassword(): String {
-        return password.value?.trim() ?: ""
+        return password.value?.trim().orEmpty()
     }
 
     override fun onResume() {

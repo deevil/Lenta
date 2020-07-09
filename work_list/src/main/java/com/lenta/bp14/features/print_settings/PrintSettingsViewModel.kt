@@ -68,7 +68,7 @@ class PrintSettingsViewModel : CoreViewModel(), OnPositionClickListener, OnOkInS
     val title = productInfoResult.map {
         it?.productsInfo?.getOrNull(0)?.let {
             "${it.matNr.takeLast(6)} ${it.name}"
-        } ?: ""
+        }.orEmpty()
     }
 
     val printerTypesTitles = printerTypes.map { list -> list?.map { it.name } }
@@ -224,7 +224,7 @@ class PrintSettingsViewModel : CoreViewModel(), OnPositionClickListener, OnOkInS
 
     private fun checkCode(code: String?) {
         analyseCode(
-                code = code ?: "",
+                code = code.orEmpty(),
                 funcForEan = { eanCode ->
                     searchCode(eanCode = eanCode)
                 },
@@ -294,7 +294,7 @@ class PrintSettingsViewModel : CoreViewModel(), OnPositionClickListener, OnOkInS
 
             navigator.showProgressConnection()
             task.printPrice(
-                    ip = ipAddress.value ?: "",
+                    ip = ipAddress.value.orEmpty(),
                     productInfoResult = productInfoResult.value!!,
                     printerType = getSelectedPrinterType()!!,
                     isRegular = getSelectedPriceType()!!.isRegular ?: false,

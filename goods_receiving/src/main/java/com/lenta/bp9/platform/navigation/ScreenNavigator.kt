@@ -75,6 +75,8 @@ import com.lenta.shared.platform.navigation.runOrPostpone
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.progress.IProgressUseCaseInformator
 
+private const val PAGE_NUMBER_95 = "95"
+
 class ScreenNavigator(
         private val context: Context,
         private val coreNavigator: ICoreNavigator,
@@ -1129,7 +1131,7 @@ class ScreenNavigator(
                     message = context.getString(R.string.scanned_stamp_not_listed_in_current_delivery_box),
                     codeConfirmForRight = backFragmentResultHelper.setFuncForResult(yesCallbackFunc),
                     iconRes = R.drawable.ic_question_yellow_80dp,
-                    pageNumber = "97",
+                    pageNumber = PAGE_NUMBER_95,
                     rightButtonDecorationInfo = ButtonDecorationInfo.next))
         }
     }
@@ -1244,7 +1246,7 @@ class ScreenNavigator(
 
     override fun openExciseAlcoBoxListPGEScreen(productInfo: TaskProductInfo, selectQualityCode: String) {
         runOrPostpone {
-            getFragmentStack()?.push(ExciseAlcoBoxListPGEFragment.create(productInfo, selectQualityCode))
+            getFragmentStack()?.push(ExciseAlcoBoxListPGEFragment.newInstance(productInfo, selectQualityCode))
         }
     }
 
@@ -1509,6 +1511,17 @@ class ScreenNavigator(
         }
     }
 
+    override fun openAlertErrorWhileSavingScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    message = context.getString(R.string.error_while_saving),
+                    iconRes = R.drawable.ic_info_pink_80dp,
+                    textColor = ContextCompat.getColor(context, R.color.color_text_dialogWarning),
+                    pageNumber = "97")
+            )
+        }
+    }
+
     private fun getFragmentStack() = foregroundActivityProvider.getActivity()?.fragmentStack
 }
 
@@ -1682,4 +1695,5 @@ interface IScreenNavigator : ICoreNavigator {
     fun openAlertAlcocodeNotFoundTaskScreen()
     fun openAlertOverLimitPlannedScreen()
     fun openAlertOverLimitPlannedBatchScreen()
+    fun openAlertErrorWhileSavingScreen()
 }

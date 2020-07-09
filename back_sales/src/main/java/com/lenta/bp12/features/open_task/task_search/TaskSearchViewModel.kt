@@ -47,10 +47,10 @@ class TaskSearchViewModel : CoreViewModel() {
 
     fun onClickSearch() {
         manager.searchParams.value = TaskSearchParams(
-                providerCode = provider.value ?: "",
-                material = material.value ?: "",
-                section = section.value ?: "",
-                exciseMark = mark.value ?: ""
+                providerCode = provider.value.orEmpty(),
+                material = material.value.orEmpty(),
+                section = section.value.orEmpty(),
+                exciseMark = mark.value.orEmpty()
         )
 
         navigator.goBack()

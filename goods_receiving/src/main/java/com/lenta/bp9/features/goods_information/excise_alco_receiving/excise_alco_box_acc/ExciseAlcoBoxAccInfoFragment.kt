@@ -34,7 +34,7 @@ class ExciseAlcoBoxAccInfoFragment : CoreFragment<FragmentExciseAlcoBoxAccInfoBi
 
     override fun getLayoutId(): Int = R.layout.fragment_excise_alco_box_acc_info
 
-    override fun getPageNumber(): String = "09/18"
+    override fun getPageNumber(): String = "09/41"
 
     override fun getViewModel(): ExciseAlcoBoxAccInfoViewModel {
         provideViewModel(ExciseAlcoBoxAccInfoViewModel::class.java).let {vm ->
