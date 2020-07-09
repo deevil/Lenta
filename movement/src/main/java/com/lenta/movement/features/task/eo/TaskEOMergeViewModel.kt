@@ -205,7 +205,7 @@ class TaskEOMergeViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
                             }
                             consolidate(
                                     sendEOList = selectedEO,
-                                    sendGEList = listOf(),
+                                    sendGEList = emptyList(),
                                     mode = ConsolidationNetRequest.CONSOLIDATION_EO_IN_GE_MODE
                             )
                         } else {
@@ -231,7 +231,11 @@ class TaskEOMergeViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
                         geNumberList = sendGEList
                 )
                 consolidationNetRequest(params)
-            } ?: Either.Left(PersonnelNumberFailure(context.getString(R.string.alert_null_personnel_number)))
+            } ?: Either.Left(
+                    PersonnelNumberFailure(
+                            context.getString(R.string.alert_null_personnel_number)
+                    )
+            )
 
             either.either({ failure ->
                 screenNavigator.hideProgress()
@@ -242,30 +246,29 @@ class TaskEOMergeViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
                 val resultGeList = result.geList
 
                 eoList.value?.let { eoListValue ->
-                    eoListValue.forEach { eo ->
-                        when (mode) {
-                            ConsolidationNetRequest.CONSOLIDATION_EO_IN_GE_MODE -> {
-                                resultGeList.forEach { ge ->
-                                    if (ge.processingUnitNumber == eo.processingUnitNumber) {
-                                        eo.cargoUnitNumber = ge.cargoUnitNumber
-                                        eo.state = ProcessingUnit.State.COMBINED
-                                    }
-                                }
+                    when (mode) {
+                        ConsolidationNetRequest.CONSOLIDATION_EO_IN_GE_MODE -> {
+                            eoListValue.forEach { eo ->
+                                resultGeList
+                                        .find { it.processingUnitNumber == eo.processingUnitNumber }
+                                        ?.let { ge ->
+                                            eo.cargoUnitNumber = ge.cargoUnitNumber
+                                            eo.state = ProcessingUnit.State.COMBINED
+                                        }
                             }
-
-                            ConsolidationNetRequest.SEPARATION_GE_TO_EO_MODE -> {
-                                sendGEList.forEach { geToExclude ->
-                                    eoListValue.forEach { eo ->
-                                        if (geToExclude.cargoUnitNumber == eo.cargoUnitNumber) {
+                        }
+                        ConsolidationNetRequest.SEPARATION_GE_TO_EO_MODE -> {
+                            eoListValue.forEach { eo ->
+                                sendGEList.find { it.cargoUnitNumber == eo.cargoUnitNumber }
+                                        ?.let { ge ->
                                             eo.cargoUnitNumber = null
                                             eo.state = ProcessingUnit.State.NOT_PROCESSED
                                         }
-                                    }
-                                }
                             }
                         }
-                        eoList.value = eoListValue
                     }
+
+                    eoList.value = eoListValue
                 }
                 geList.value = resultGeList.toCargoUnitList()
                 changeTabToGEList()
@@ -319,7 +322,11 @@ class TaskEOMergeViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
                         personnelNumber = personnelNumber
                 )
                 endConsolidationNetRequest(params)
-            } ?: Either.Left(PersonnelNumberFailure(context.getString(R.string.alert_null_personnel_number)))
+            } ?: Either.Left(
+                    PersonnelNumberFailure(
+                            context.getString(R.string.alert_null_personnel_number)
+                    )
+            )
 
             either.either({ failure ->
                 screenNavigator.hideProgress()

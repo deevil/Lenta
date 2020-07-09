@@ -3,8 +3,6 @@ package com.lenta.movement.requests.network.models
 import com.lenta.movement.models.CargoUnit
 import com.lenta.movement.models.ProcessingUnit
 import com.lenta.movement.models.Task
-import com.lenta.movement.requests.network.models.endConsolidation.EndConsolidationTask
-import com.lenta.movement.requests.network.models.saveTask.SaveTaskResultTask
 import com.lenta.movement.requests.network.models.startConsolidation.StartConsolidationProcessingUnit
 import com.lenta.shared.platform.constants.Constants
 import com.lenta.shared.utilities.extentions.getSapDate
@@ -56,12 +54,17 @@ fun List<RestCargoUnit>.toCargoUnitList(): MutableList<CargoUnit> {
             .mapValues { it.value.map { it.processingUnitNumber } }
             .map { map ->
                 CargoUnit(
-                        map.key,
-                        map.value.map { processingUnitNumber ->
-                            ProcessingUnit(
-                                    processingUnitNumber = processingUnitNumber.orEmpty(),
-                                    state = ProcessingUnit.State.COMBINED)
-                        }
+                        number = map.key,
+                        eoList = map.value
+                                .mapNotNullTo(mutableListOf()) { processingUnitNumber ->
+                                    processingUnitNumber
+                                            ?.takeIf { it.isNotEmpty() }
+                                            ?.let {
+                                                ProcessingUnit(
+                                                        processingUnitNumber = it,
+                                                        state = ProcessingUnit.State.COMBINED)
+                                            }
+                                }
                 )
             }.toMutableList()
 }
