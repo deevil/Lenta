@@ -48,19 +48,9 @@
         </androidx.viewpager.widget.ViewPager>
 
         <!-- Блок с иконками -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp"
-            android:gravity="center_vertical"
-            android:orientation="horizontal">
+        <LinearLayout style="@style/BottomIconBarStyle">
 
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:gravity="center"
-                android:orientation="horizontal">
+            <LinearLayout style="@style/BottomIconContainerStyle">
 
                 <TextView
                     android:layout_width="30dp"
@@ -73,12 +63,7 @@
 
             </LinearLayout>
 
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:gravity="center"
-                android:orientation="horizontal">
+            <LinearLayout style="@style/BottomIconContainerStyle">
 
                 <TextView
                     android:layout_width="30dp"
@@ -92,41 +77,29 @@
             </LinearLayout>
 
             <ImageView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
+                style="@style/BottomIconStyle"
                 app:goodTypeIcon="@{vm.options.goodType}"
                 tools:src="@drawable/ic_kandy_white_32dp" />
 
             <ImageView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
+                style="@style/BottomIconStyle"
                 android:onClick="@{(v) -> vm.navigator.openPictogrammInfoNova()}"
                 app:invisible="@{!vm.options.novelty}"
                 tools:src="@drawable/ic_new_white_32dp" />
 
             <ImageView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
+                style="@style/BottomIconStyle"
                 android:onClick="@{(v) -> vm.navigator.openPictogrammInfoHealthyFood()}"
                 app:invisible="@{!vm.options.healthFood}"
                 tools:src="@drawable/ic_natural_white_32dp" />
 
             <ImageView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:background="?selectableItemBackground"
+                style="@style/BottomIconStyle"
                 android:onClick="@{(v) -> vm.navigator.openESInfoScreen()}"
                 android:src="@drawable/ic_scan_barcode_es_white_32dp" />
 
             <ImageView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:background="?selectableItemBackground"
+                style="@style/BottomIconStyle"
                 android:onClick="@{(v) -> vm.navigator.openEanInfoScreen()}"
                 android:src="@drawable/ic_scan_barcode_white_32dp" />
 

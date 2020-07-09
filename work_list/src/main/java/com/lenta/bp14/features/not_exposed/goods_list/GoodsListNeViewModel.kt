@@ -192,7 +192,7 @@ class GoodsListNeViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
                         }
                 ) {
                     scanInfoResult = it
-                    quantity = scanCodeInfo.getQuantity(units = scanInfoResult!!.productInfo.uom)
+                    quantity = scanCodeInfo.getQuantity(units = it.productInfo.uom)
                     true
                 }
 

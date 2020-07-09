@@ -415,21 +415,12 @@
 
         <!-- Блок с иконками -->
         <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp"
-            android:gravity="center_vertical"
-            android:orientation="horizontal"
+            style="@style/BottomIconBarStyle"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent">
 
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:gravity="center"
-                android:orientation="horizontal">
+            <LinearLayout style="@style/BottomIconContainerStyle">
 
                 <TextView
                     android:layout_width="30dp"
@@ -444,42 +435,23 @@
             </LinearLayout>
 
             <ImageView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
+                style="@style/BottomIconStyle"
                 android:src="@drawable/ic_mercury_white_32dp" />
 
-            <View
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1" />
+            <View style="@style/BottomIconEmptyPlaceStyle" />
 
-            <View
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1" />
+            <View style="@style/BottomIconEmptyPlaceStyle" />
 
-            <View
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1" />
+            <View style="@style/BottomIconEmptyPlaceStyle" />
 
             <ImageView
-                android:id="@+id/b_scan_es"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:background="?selectableItemBackground"
+                style="@style/BottomIconStyle"
                 android:onClick="@{(v) -> vm.screenNavigator.openGS128InfoScreen()}"
                 android:src="@drawable/ic_scan_barcode_vet_white_32dp"
                 android:visibility="@{!vm.isDefect}" />
 
             <ImageView
-                android:id="@+id/b_scan"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:background="?selectableItemBackground"
+                style="@style/BottomIconStyle"
                 android:onClick="@{(v) -> vm.screenNavigator.openEanInfoScreen()}"
                 android:src="@drawable/ic_scan_barcode_white_32dp" />
 
