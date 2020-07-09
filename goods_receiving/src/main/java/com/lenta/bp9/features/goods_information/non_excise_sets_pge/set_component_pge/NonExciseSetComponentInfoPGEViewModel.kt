@@ -191,9 +191,11 @@ class NonExciseSetComponentInfoPGEViewModel : CoreViewModel(),
                             ?.getProductsDiscrepancies()
                             ?.getAllCountDiscrepanciesOfProduct(set.componentNumber)
                             ?.let { allCountDiscrepancies ->
-                                planQuantityBatch.value = processNonExciseSetsPGEProductService.getCountSet() * set.quantity - allCountDiscrepancies - processNonExciseSetsPGEProductService.getCountDiscrepanciesOfComponent(set.componentNumber) - (count.value?.toDoubleOrNull()
-                                        ?: 0.0)
-                                planQuantityBatchWithUom.value = "${(batch.purchaseOrderScope - allCountDiscrepancies - processNonExciseSetsPGEProductService.getCountDiscrepanciesOfComponent(set.componentNumber) - (count.value?.toDoubleOrNull() ?: 0.0)).toStringFormatted()} ${set.uom.name}"
+                                val scope = batch.purchaseOrderScope
+                                val countDiscrepanciesOfComponent = processNonExciseSetsPGEProductService.getCountDiscrepanciesOfComponent(set.componentNumber)
+                                val countEntered = (count.value?.toDoubleOrNull() ?: 0.0)
+                                planQuantityBatch.value = scope - allCountDiscrepancies - countDiscrepanciesOfComponent - countEntered
+                                planQuantityBatchWithUom.value = "${(scope - allCountDiscrepancies - countDiscrepanciesOfComponent - countEntered).toStringFormatted()} ${set.uom.name}"
                             }
                 }
             }
@@ -230,9 +232,11 @@ class NonExciseSetComponentInfoPGEViewModel : CoreViewModel(),
                         ?.getProductsDiscrepancies()
                         ?.getAllCountDiscrepanciesOfProduct(set.componentNumber)
                         ?.let { allCountDiscrepancies ->
-                            planQuantityBatch.value = processNonExciseSetsPGEProductService.getCountSet() * set.quantity - allCountDiscrepancies - processNonExciseSetsPGEProductService.getCountDiscrepanciesOfComponent(set.componentNumber) - (count.value?.toDoubleOrNull()
-                                    ?: 0.0)
-                            planQuantityBatchWithUom.value = "${(batches[position].purchaseOrderScope - allCountDiscrepancies - processNonExciseSetsPGEProductService.getCountDiscrepanciesOfComponent(set.componentNumber) - (count.value?.toDoubleOrNull() ?: 0.0)).toStringFormatted()} ${set.uom.name}"
+                            val scope = batches[position].purchaseOrderScope
+                            val countDiscrepanciesOfComponent = processNonExciseSetsPGEProductService.getCountDiscrepanciesOfComponent(set.componentNumber)
+                            val countEntered = (count.value?.toDoubleOrNull() ?: 0.0)
+                            planQuantityBatch.value = scope - allCountDiscrepancies - countDiscrepanciesOfComponent - countEntered
+                            planQuantityBatchWithUom.value = "${(scope - allCountDiscrepancies - countDiscrepanciesOfComponent - countEntered).toStringFormatted()} ${set.uom.name}"
                         }
             }
         }

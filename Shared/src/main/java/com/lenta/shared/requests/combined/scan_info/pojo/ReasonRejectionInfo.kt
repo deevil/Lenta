@@ -5,4 +5,13 @@ class ReasonRejectionInfo(
         val qualityCode: String,
         val code: String,
         val name: String
-)
+) {
+    fun convertToQualityInfo(): QualityInfo {
+        return QualityInfo(
+                id = this.id,
+                code = this.code,
+                name = this.name
+        )
+
+    }
+}

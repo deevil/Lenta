@@ -3,11 +3,11 @@ package com.lenta.bp9.features.discrepancy_list
 import android.content.Context
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import com.lenta.bp9.features.goods_list.ListCountedItem
 import com.lenta.bp9.features.goods_list.SearchProductDelegate
 import com.lenta.bp9.features.loading.tasks.TaskCardMode
 import com.lenta.bp9.features.loading.tasks.TaskListLoadingMode
 import com.lenta.bp9.model.task.*
+import com.lenta.bp9.platform.TypeDiscrepanciesConstants
 import com.lenta.bp9.platform.navigation.IScreenNavigator
 import com.lenta.bp9.repos.IDataBaseRepo
 import com.lenta.bp9.repos.IRepoInMemoryHolder
@@ -16,22 +16,16 @@ import com.lenta.bp9.requests.network.EndRecountDDResult
 import com.lenta.bp9.requests.network.EndRecountDirectDeliveriesNetRequest
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.exception.Failure
-import com.lenta.shared.fmp.resources.dao_ext.getProductInfoByMaterial
-import com.lenta.shared.fmp.resources.slow.ZfmpUtz48V001
 import com.lenta.shared.models.core.ProductType
 import com.lenta.shared.models.core.Uom
-import com.lenta.shared.models.core.getProductType
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.requests.combined.scan_info.ScanInfoResult
 import com.lenta.shared.requests.combined.scan_info.pojo.QualityInfo
-import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.SelectionItemsHelper
 import com.lenta.shared.utilities.databinding.PageSelectionListener
-import com.lenta.shared.utilities.extentions.combineLatest
 import com.lenta.shared.utilities.extentions.getDeviceIp
 import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.utilities.extentions.toStringFormatted
-import com.mobrun.plugin.api.HyperHive
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -113,13 +107,13 @@ class DiscrepancyListViewModel : CoreViewModel(), PageSelectionListener {
             if (taskManager.getReceivingTask()?.taskHeader?.taskType == TaskType.RecalculationCargoUnit) {
                 qualityInfo.value = dataBase.getQualityInfoPGE()
             } else {
-                qualityInfo.value = dataBase.getAllReasonRejectionInfo()?.map {
-                    QualityInfo(
-                            id = it.id,
-                            code = it.code,
-                            name = it.name
-                    )
-                }
+                val qualityInfoForDiscrepancy = dataBase.getQualityInfoForDiscrepancy()?.map {
+                    it
+                }.orEmpty()
+                val allReasonRejectionInfo = dataBase.getAllReasonRejectionInfo()?.map {
+                    it.convertToQualityInfo()
+                }.orEmpty()
+                qualityInfo.value = qualityInfoForDiscrepancy + allReasonRejectionInfo
             }
             updateData()
             screenNavigator.hideProgress()
@@ -237,10 +231,15 @@ class DiscrepancyListViewModel : CoreViewModel(), PageSelectionListener {
         taskManager.getReceivingTask()?.let { task ->
             task.taskRepository.getProductsDiscrepancies().getProductsDiscrepancies()
                     .filter {
+                        val isComponent = repoInMemoryHolder.sets.value?.any { set ->
+                            set.componentNumber == it.materialNumber
+                        }
                         if (repoInMemoryHolder.taskList.value?.taskListLoadingMode == TaskListLoadingMode.PGE) {
-                            !(it.typeDiscrepancies == "1" || it.typeDiscrepancies == "2")
+                            !(it.typeDiscrepancies == TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_NORM ||
+                                    it.typeDiscrepancies == TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_SURPLUS) &&
+                                    isComponent == false
                         } else {
-                            it.typeDiscrepancies != "1"
+                            it.typeDiscrepancies != TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_NORM && isComponent == false
                         }
                     }
                     .sortedByDescending {
