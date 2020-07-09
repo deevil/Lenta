@@ -164,7 +164,7 @@ class OpenTaskManager @Inject constructor(
     }
 
     override suspend fun isGoodCanBeAdded(goodInfo: GoodInfoResult): Boolean {
-        return database.isGoodCanBeAdded(goodInfo, currentTask.value?.type?.code ?: "")
+        return database.isGoodCanBeAdded(goodInfo, currentTask.value?.type?.code.orEmpty())
     }
 
     override fun finishCurrentTask() {
@@ -229,10 +229,10 @@ class OpenTaskManager @Inject constructor(
                             taskNumber = task.number,
                             userNumber = userNumber,
                             taskName = task.name,
-                            taskType = task.type?.code ?: "",
+                            taskType = task.type?.code.orEmpty(),
                             tkNumber = tkNumber,
                             storage = task.storage,
-                            reasonCode = task.reason?.code ?: "",
+                            reasonCode = task.reason?.code.orEmpty(),
                             isNotFinish = (!task.isFinished).toSapBooleanString(),
                             positions = positions,
                             marks = marks,

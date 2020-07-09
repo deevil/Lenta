@@ -227,7 +227,7 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
 
     fun onDigitPressed(digit: Int) {
         requestFocusToEan.value = true
-        eanCode.value = eanCode.value ?: "" + digit
+        eanCode.value = eanCode.value.orEmpty() + digit
     }
 
     private fun saveData() {

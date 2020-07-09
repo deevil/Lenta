@@ -78,9 +78,9 @@ class SelectPersonnelNumberViewModel : CoreViewModel(), OnOkInSoftKeyboardListen
             taskListNetRequest(
                     TasksListParams(
                             werks = sessionInfo.market
-                                    ?: "",
+                                   .orEmpty(),
                             user = sessionInfo.userName
-                                    ?: ""
+                                   .orEmpty()
                     )
             ).either(::handleFailure)
             { tasksListRestInfo ->

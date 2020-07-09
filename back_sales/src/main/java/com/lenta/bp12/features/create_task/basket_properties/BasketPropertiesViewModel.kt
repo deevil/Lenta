@@ -2,6 +2,7 @@ package com.lenta.bp12.features.create_task.basket_properties
 
 import com.lenta.bp12.model.ICreateTaskManager
 import com.lenta.bp12.platform.navigation.IScreenNavigator
+import com.lenta.bp12.platform.resource.IResourceManager
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.extentions.map
 import javax.inject.Inject
@@ -14,6 +15,9 @@ class BasketPropertiesViewModel : CoreViewModel() {
     @Inject
     lateinit var manager: ICreateTaskManager
 
+    @Inject
+    lateinit var resource: IResourceManager
+
 
     private val task by lazy {
         manager.currentTask
@@ -25,16 +29,18 @@ class BasketPropertiesViewModel : CoreViewModel() {
 
     val title by lazy {
         basket.map { basket ->
-            "Корзина ${manager.getBasketPosition(basket)}: ${basket?.getDescription(task.value!!.taskType.isDivBySection)}"
+            val position = manager.getBasketPosition(basket)
+            val description = basket?.getDescription(task.value?.taskType?.isDivBySection ?: false)
+            resource.basket("$position: $description")
         }
     }
 
     val properties by lazy {
         basket.map { basket ->
             BasketPropertiesUi(
-                    section = basket?.section ?: "",
-                    goodType = basket?.goodType ?: "",
-                    gisControl = basket?.control?.description ?: "",
+                    section = basket?.section.orEmpty(),
+                    goodType = basket?.goodType.orEmpty(),
+                    gisControl = basket?.control?.description.orEmpty(),
                     provider = "${basket?.provider?.code} ${basket?.provider?.name}"
             )
         }

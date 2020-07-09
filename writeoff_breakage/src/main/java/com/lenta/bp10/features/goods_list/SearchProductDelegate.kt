@@ -111,7 +111,7 @@ class SearchProductDelegate @Inject constructor(
                 true
             }
             requestCodeTypeBarCode -> {
-                searchCode(code = codeWith12Digits ?: "", fromScan = false, isBarCode = true)
+                searchCode(code = codeWith12Digits.orEmpty(), fromScan = false, isBarCode = true)
                 codeWith12Digits = null
                 true
             }

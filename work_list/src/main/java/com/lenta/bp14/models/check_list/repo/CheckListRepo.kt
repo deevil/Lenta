@@ -87,7 +87,7 @@ class CheckListRepo @Inject constructor(
 
     private suspend fun getUnitsName(code: String?): String {
         return withContext(Dispatchers.IO) {
-            return@withContext units.getUnitName(code) ?: ""
+            return@withContext units.getUnitName(code).orEmpty()
         }
     }
 

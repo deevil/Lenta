@@ -116,7 +116,7 @@ class DiscrepanciesFoundViewModel : CoreViewModel() {
     }
 
     fun getTitle(): String {
-        return taskManager.getInventoryTask()?.taskDescription?.getTaskTypeAndNumber() ?: ""
+        return taskManager.getInventoryTask()?.taskDescription?.getTaskTypeAndNumber().orEmpty()
     }
 
     fun onClickMissing() {
@@ -219,7 +219,7 @@ class DiscrepanciesFoundViewModel : CoreViewModel() {
         if (taskManager.getInventoryTask()?.taskDescription?.isRecount == true) {
             screenNavigator.openConfirmationSkippingDiscrepanciesRecount(
                     elapsedTime = taskManager.getInventoryTask()?.getElapsedTimePrintable(timeMonitor.getUnixTime())
-                            ?: "",
+                           .orEmpty(),
                     rightCallbackFunc = {
                         dataSaver.saveData(true)
                     },
@@ -232,7 +232,7 @@ class DiscrepanciesFoundViewModel : CoreViewModel() {
 
         screenNavigator.openConfirmationSkippingDiscrepancies(
                 elapsedTime = taskManager.getInventoryTask()?.getElapsedTimePrintable(timeMonitor.getUnixTime())
-                        ?: "",
+                       .orEmpty(),
                 callbackFunc = {
                     dataSaver.saveData(false)
                 }

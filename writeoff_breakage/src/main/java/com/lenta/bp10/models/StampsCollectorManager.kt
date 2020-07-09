@@ -45,8 +45,7 @@ class StampsCollectorManager @Inject constructor() {
     }
 
     fun addStampToComponentsStampCollector(materialNumber: String, setMaterialNumber: String, writeOffReason: String, isBadStamp: Boolean): Boolean {
-        if (setsStampCollector!!.containsStamp(componentsStampCollector?.getPreparedStampCode()
-                        ?: "")) {
+        if (setsStampCollector!!.containsStamp(componentsStampCollector?.getPreparedStampCode().orEmpty())) {
             return false
         }
         return componentsStampCollector!!.add(materialNumber, setMaterialNumber, writeOffReason, isBadStamp)

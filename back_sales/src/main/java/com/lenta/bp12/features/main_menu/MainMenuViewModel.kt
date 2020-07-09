@@ -15,7 +15,7 @@ class MainMenuViewModel : CoreViewModel() {
 
 
     val employeeName: String by lazy {
-        sessionInfo.personnelFullName ?: ""
+        sessionInfo.personnelFullName.orEmpty()
     }
 
     // -----------------------------

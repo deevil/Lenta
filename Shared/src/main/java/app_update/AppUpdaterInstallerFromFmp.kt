@@ -46,7 +46,7 @@ class AppUpdaterInstallerFromFmp @Inject constructor(
             if (codeVersion == null) {
                 return Either.Right(files.maxBy {
                     it.split("-").lastOrNull()?.replace(".apk", "")?.toIntOrNull() ?: 0
-                } ?: "")
+                }.orEmpty())
             }
             return files.find { it.endsWith("-$codeVersion.apk") }.let { fileName ->
                 if (fileName.isNullOrBlank()) {

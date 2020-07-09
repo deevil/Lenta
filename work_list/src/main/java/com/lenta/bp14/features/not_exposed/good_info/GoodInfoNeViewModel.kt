@@ -71,7 +71,7 @@ class GoodInfoNeViewModel : CoreViewModel(), PageSelectionListener {
                                 number = "${index + 1}",
                                 storage = stock.lgort,
                                 quantity = "${stock.stock.toStringFormatted()} ${goodInfo.units?.name
-                                        ?: ""}"
+                                       .orEmpty()}"
                         )
 
                     }
@@ -85,7 +85,7 @@ class GoodInfoNeViewModel : CoreViewModel(), PageSelectionListener {
 
     val marketStorage by lazy {
         "${(goodInfo.stocks.sumByDouble { it.stock }).toStringFormatted()} ${goodInfo.units?.name
-                ?: ""}"
+               .orEmpty()}"
     }
 
     val quantityField by lazy {
@@ -112,7 +112,7 @@ class GoodInfoNeViewModel : CoreViewModel(), PageSelectionListener {
 
     val totalQuantity: MutableLiveData<String> by lazy {
         totalQuantityValue.map {
-            "${it.dropZeros()} ${goodInfo.units?.name ?: ""}"
+            "${it.dropZeros()} ${goodInfo.units?.name.orEmpty()}"
         }
     }
 
@@ -188,7 +188,7 @@ class GoodInfoNeViewModel : CoreViewModel(), PageSelectionListener {
 
     private fun checkCode(code: String?) {
         analyseCode(
-                code = code ?: "",
+                code = code.orEmpty(),
                 funcForEan = { eanCode ->
                     searchCode(eanCode)
                 },

@@ -68,7 +68,7 @@ class GoodInfoCreateViewModel : CoreViewModel() {
     }
 
     val title by lazy {
-        good.map {good ->
+        good.map { good ->
             good?.getNameWithMaterial() ?: task.value?.getFormattedName()
         }
     }
@@ -133,7 +133,7 @@ class GoodInfoCreateViewModel : CoreViewModel() {
 
     val totalTitle by lazy {
         good.map { good ->
-            resource.totalWithConvertingInfo(good?.convertingInfo ?: "")
+            resource.totalWithConvertingInfo(good?.convertingInfo.orEmpty())
         }
     }
 
@@ -163,38 +163,44 @@ class GoodInfoCreateViewModel : CoreViewModel() {
     }
 
     val basketNumber by lazy {
-        good.combineLatest(quantity).combineLatest(selectedProvider).combineLatest(isProviderSelected).map {
-            it?.let {
-                val isProviderSelected = it.second
+        good.combineLatest(quantity)
+                .combineLatest(selectedProvider)
+                .combineLatest(isProviderSelected).map {
+                    it?.let {
+                        val isProviderSelected = it.second
 
-                if (isProviderSelected) {
-                    task.value?.let { task ->
-                        getBasket()?.let { basket ->
-                            "${task.baskets.indexOf(basket) + 1}"
-                        } ?: "${task.baskets.size + 1}"
-                    } ?: ""
-                } else ""
-            }
-        }
+                        if (isProviderSelected) {
+                            task.value?.let { task ->
+                                getBasket()?.let { basket ->
+                                    "${task.baskets.indexOf(basket) + 1}"
+                                } ?: "${task.baskets.size + 1}"
+                            }.orEmpty()
+                        } else ""
+                    }
+                }
     }
 
     val basketQuantity by lazy {
-        good.combineLatest(quantity).combineLatest(selectedProvider).combineLatest(isProviderSelected).map {
-            it?.let {
-                val good = it.first.first.first
-                val quantity = it.first.first.second
-                val isProviderSelected = it.second
+        good.combineLatest(quantity)
+                .combineLatest(selectedProvider)
+                .combineLatest(isProviderSelected).map {
+                    it?.let {
+                        val good = it.first.first.first
+                        val quantity = it.first.first.second
+                        val isProviderSelected = it.second
 
-                if (isProviderSelected) {
-                    getBasket()?.let { basket ->
-                        "${task.value?.getQuantityByBasket(basket).sumWith(quantity).dropZeros()} ${good.commonUnits.name}"
-                    } ?: "${quantity.dropZeros()} ${good.commonUnits.name}"
-                } else {
-                    "0 ${good.commonUnits.name}"
+                        val units = good.commonUnits.name
+
+                        if (isProviderSelected) {
+                            getBasket()?.let { basket ->
+                                "${task.value?.getQuantityByBasket(basket).sumWith(quantity).dropZeros()} $units"
+                            } ?: "${quantity.dropZeros()} $units"
+                        } else {
+                            "0 $units"
+                        }
+
+                    }
                 }
-
-            }
-        }
     }
 
     /**
@@ -401,15 +407,9 @@ class GoodInfoCreateViewModel : CoreViewModel() {
                                 barCallback = { getGoodByEan(number) }
                         )
                     }
-                    Constants.MARK_150 -> {
-                        loadMarkInfo(number)
-                    }
-                    Constants.MARK_68 -> {
-                        loadMarkInfo(number)
-                    }
-                    Constants.BOX_26 -> {
-                        loadBoxInfo(number)
-                    }
+                    Constants.MARK_150 -> loadMarkInfo(number)
+                    Constants.MARK_68 -> loadMarkInfo(number)
+                    Constants.BOX_26 -> loadBoxInfo(number)
                     else -> getGoodByEan(number)
                 }
             }
@@ -446,7 +446,8 @@ class GoodInfoCreateViewModel : CoreViewModel() {
     private fun setDefaultQuantity(good: GoodCreate) {
         if (good.kind == GoodKind.COMMON) {
             if (good.commonUnits == Uom.KG) {
-                quantityField.value = (scanCodeInfo?.getQuantity(good.convertingUnits) ?: 0.0).dropZeros()
+                quantityField.value = (scanCodeInfo?.getQuantity(good.convertingUnits)
+                        ?: 0.0).dropZeros()
             } else {
                 if (isEanLastScanned) {
                     quantityField.value = "1"
@@ -472,9 +473,9 @@ class GoodInfoCreateViewModel : CoreViewModel() {
             navigator.showProgressLoadingData()
 
             goodInfoNetRequest(GoodInfoParams(
-                    tkNumber = sessionInfo.market ?: "",
-                    ean = ean ?: "",
-                    material = material ?: "",
+                    tkNumber = sessionInfo.market.orEmpty(),
+                    ean = ean.orEmpty(),
+                    material = material.orEmpty(),
                     taskType = task.value!!.taskType.code
             )).also {
                 navigator.hideProgress()
@@ -483,7 +484,7 @@ class GoodInfoCreateViewModel : CoreViewModel() {
                     if (manager.isGoodCanBeAdded(goodInfo)) {
                         isEanLastScanned = ean != null
                         isExistUnsavedData = true
-                        addGood(goodInfo, ean ?: (material ?: ""))
+                        addGood(goodInfo = goodInfo, number = ean ?: (material.orEmpty()))
                     } else {
                         if (manager.searchGoodFromList) {
                             manager.searchGoodFromList = false
@@ -553,7 +554,7 @@ class GoodInfoCreateViewModel : CoreViewModel() {
             navigator.showProgressLoadingData()
 
             markInfoNetRequest(MarkInfoParams(
-                    tkNumber = sessionInfo.market ?: "",
+                    tkNumber = sessionInfo.market.orEmpty(),
                     material = good.value!!.material,
                     markNumber = number,
                     mode = 1,
@@ -619,7 +620,7 @@ class GoodInfoCreateViewModel : CoreViewModel() {
             navigator.showProgressLoadingData()
 
             markInfoNetRequest(MarkInfoParams(
-                    tkNumber = sessionInfo.market ?: "",
+                    tkNumber = sessionInfo.market.orEmpty(),
                     material = good.value!!.material,
                     markNumber = number,
                     mode = 2,
@@ -652,10 +653,10 @@ class GoodInfoCreateViewModel : CoreViewModel() {
         navigator.showProgressLoadingData()
 
         return markInfoNetRequest(MarkInfoParams(
-                tkNumber = sessionInfo.market ?: "",
-                material = good.value?.material ?: "",
-                producerCode = selectedProducer.value?.code ?: "",
-                bottledDate = date.value ?: "",
+                tkNumber = sessionInfo.market.orEmpty(),
+                material = good.value?.material.orEmpty(),
+                producerCode = selectedProducer.value?.code.orEmpty(),
+                bottledDate = date.value.orEmpty(),
                 mode = 3,
                 quantity = quantity.value ?: 0.0
         )).also {
@@ -709,8 +710,8 @@ class GoodInfoCreateViewModel : CoreViewModel() {
                     number = lastSuccessSearchNumber.value!!,
                     material = changedGood.material,
                     isBadMark = markInfoResult.value?.status == MarkStatus.BAD.code,
-                    providerCode = selectedProvider.value?.code ?: "",
-                    producerCode = selectedProducer.value?.code ?: ""
+                    providerCode = selectedProvider.value?.code.orEmpty(),
+                    producerCode = selectedProducer.value?.code.orEmpty()
             ))
 
             createBasket(changedGood)
@@ -725,9 +726,9 @@ class GoodInfoCreateViewModel : CoreViewModel() {
                     material = changedGood.material,
                     quantity = quantity.value!!,
                     units = changedGood.convertingUnits,
-                    providerCode = selectedProvider.value?.code ?: "",
-                    producerCode = selectedProducer.value?.code ?: "",
-                    date = date.value ?: ""
+                    providerCode = selectedProvider.value?.code.orEmpty(),
+                    producerCode = selectedProducer.value?.code.orEmpty(),
+                    date = date.value.orEmpty()
             ))
 
             createBasket(changedGood)
@@ -744,8 +745,8 @@ class GoodInfoCreateViewModel : CoreViewModel() {
                             material = changedGood.material,
                             boxNumber = lastSuccessSearchNumber.value!!,
                             isBadMark = mark.isBadMark.isNotEmpty(),
-                            providerCode = selectedProvider.value?.code ?: "",
-                            producerCode = selectedProducer.value?.code ?: ""
+                            providerCode = selectedProvider.value?.code.orEmpty(),
+                            producerCode = selectedProducer.value?.code.orEmpty()
                     ))
                 }
             }
@@ -773,7 +774,6 @@ class GoodInfoCreateViewModel : CoreViewModel() {
             manager.isWasAddedProvider = false
         }
     }
-
 
     /**
     Обработка нажатий кнопок

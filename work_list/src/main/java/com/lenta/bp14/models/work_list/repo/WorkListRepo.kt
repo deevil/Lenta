@@ -157,7 +157,7 @@ class WorkListRepo @Inject constructor(
 
     private suspend fun getUnitsName(code: String?): String {
         return withContext(Dispatchers.IO) {
-            return@withContext units.getUnitName(code)?.toLowerCase(Locale.getDefault()) ?: ""
+            return@withContext units.getUnitName(code)?.toLowerCase(Locale.getDefault()).orEmpty()
         }
     }
 

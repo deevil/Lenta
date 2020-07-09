@@ -9,7 +9,7 @@ class ResourceManager @Inject constructor(
         val context: Context
 ) : IResourceManager {
 
-    override fun tkNumber(number: String): String = context.getString(R.string.tk_number, number)
+    override fun tk(number: String): String = context.getString(R.string.tk_number, number)
 
     override fun backSalesFromDate(date: String): String = context.getString(R.string.back_sales_from_date, date)
 
@@ -31,12 +31,12 @@ class ResourceManager @Inject constructor(
 
     override fun byBasket(): String = context.getString(R.string.by_basket)
 
-    override fun basketTitle(description: String): String = context.getString(R.string.basket_title, description)
+    override fun basket(description: String): String = context.getString(R.string.basket_title, description)
 }
 
 interface IResourceManager {
 
-    fun tkNumber(number: String): String
+    fun tk(number: String): String
     fun backSalesFromDate(date: String): String
     fun alcocodeDoesNotApplyToThisGood(): String
     fun unknownAlcocode(): String
@@ -47,6 +47,6 @@ interface IResourceManager {
     fun chooseProducer(): String
     fun totalWithConvertingInfo(info: String): String
     fun byBasket(): String
-    fun basketTitle(description: String): String
+    fun basket(description: String): String
 
 }

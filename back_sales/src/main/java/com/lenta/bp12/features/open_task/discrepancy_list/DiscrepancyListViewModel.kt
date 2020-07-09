@@ -83,8 +83,8 @@ class DiscrepancyListViewModel : CoreViewModel() {
     private fun prepareToSaveAndOpenNextScreen() {
         manager.prepareSendTaskDataParams(
                 deviceIp = deviceInfo.getDeviceIp(),
-                tkNumber = sessionInfo.market ?: "",
-                userNumber = sessionInfo.personnelNumber ?: ""
+                tkNumber = sessionInfo.market.orEmpty(),
+                userNumber = sessionInfo.personnelNumber.orEmpty()
         )
         navigator.openSaveDataScreen()
     }

@@ -107,7 +107,7 @@ class TaskCompositionViewModel : CoreViewModel(), PageSelectionListener, OnOkInS
     }
 
     override fun onOkInSoftKeyboard(): Boolean {
-        checkEnteredNumber(numberField.value ?: "")
+        checkEnteredNumber(numberField.value.orEmpty())
         return true
     }
 
@@ -173,8 +173,8 @@ class TaskCompositionViewModel : CoreViewModel(), PageSelectionListener, OnOkInS
         navigator.showMakeTaskCountedAndClose {
             manager.prepareSendTaskDataParams(
                     deviceIp = deviceInfo.getDeviceIp(),
-                    tkNumber = sessionInfo.market ?: "",
-                    userNumber = sessionInfo.personnelNumber ?: ""
+                    tkNumber = sessionInfo.market.orEmpty(),
+                    userNumber = sessionInfo.personnelNumber.orEmpty()
             )
 
             manager.finishCurrentTask()

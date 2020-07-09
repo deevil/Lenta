@@ -8,6 +8,7 @@ import com.lenta.bp12.model.CategoryType
 import com.lenta.bp12.model.ICreateTaskManager
 import com.lenta.bp12.model.pojo.create_task.Basket
 import com.lenta.bp12.platform.navigation.IScreenNavigator
+import com.lenta.bp12.platform.resource.IResourceManager
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.SelectionItemsHelper
 import com.lenta.shared.utilities.databinding.PageSelectionListener
@@ -23,6 +24,9 @@ class GoodDetailsCreateViewModel : CoreViewModel(), PageSelectionListener {
 
     @Inject
     lateinit var manager: ICreateTaskManager
+
+    @Inject
+    lateinit var resource: IResourceManager
 
 
     val basketSelectionsHelper = SelectionItemsHelper()
@@ -56,7 +60,7 @@ class GoodDetailsCreateViewModel : CoreViewModel(), PageSelectionListener {
                     ItemBasketUi(
                             basket = basket,
                             position = "${list.size - index}",
-                            name = "Корзина ${manager.getBasketPosition(basket)}",
+                            name = resource.basket("${manager.getBasketPosition(basket)}"),
                             description = basket.getDescription(task.taskType.isDivBySection),
                             quantity = task.getQuantityByBasket(basket).dropZeros()
                     )
@@ -87,10 +91,13 @@ class GoodDetailsCreateViewModel : CoreViewModel(), PageSelectionListener {
             }
 
             categories.mapIndexed { index, itemCategory ->
+                val quantity = itemCategory.quantity.dropZeros()
+                val units = good?.commonUnits?.name
+
                 ItemCategoryUi(
                         position = "${index + 1}",
                         type = itemCategory.type.description,
-                        quantity = "${itemCategory.quantity.dropZeros()} ${good?.commonUnits?.name}"
+                        quantity = "$quantity $units"
                 )
             }
         }

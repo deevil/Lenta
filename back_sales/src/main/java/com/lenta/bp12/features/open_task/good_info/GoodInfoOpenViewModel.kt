@@ -64,7 +64,7 @@ class GoodInfoOpenViewModel : CoreViewModel() {
     }
 
     val title by lazy {
-        good.map {good ->
+        good.map { good ->
             good?.getNameWithMaterial() ?: task.value?.getFormattedName()
         }
     }
@@ -128,7 +128,7 @@ class GoodInfoOpenViewModel : CoreViewModel() {
 
     val totalTitle by lazy {
         good.map { good ->
-            resource.totalWithConvertingInfo(good?.convertingInfo ?: "")
+            resource.totalWithConvertingInfo(good?.convertingInfo.orEmpty())
         }
     }
 
@@ -225,25 +225,27 @@ class GoodInfoOpenViewModel : CoreViewModel() {
      */
 
     val applyEnabled by lazy {
-        scanModeType.combineLatest(quantity).combineLatest(isProducerSelected).combineLatest(isCorrectDate).map {
-            it?.let {
-                val type = it.first.first.first
-                val quantity = it.first.first.second
-                val isProducerSelected = it.first.second
-                val isDateEntered = it.second
+        scanModeType.combineLatest(quantity)
+                .combineLatest(isProducerSelected)
+                .combineLatest(isCorrectDate).map {
+                    it?.let {
+                        val type = it.first.first.first
+                        val quantity = it.first.first.second
+                        val isProducerSelected = it.first.second
+                        val isDateEntered = it.second
 
-                when (type) {
-                    ScanNumberType.COMMON -> quantity > 0.0
-                    ScanNumberType.ALCOHOL -> quantity > 0.0 && isProducerSelected && isDateEntered
-                    ScanNumberType.EXCISE -> false
-                    ScanNumberType.MARK_150 -> true
-                    ScanNumberType.MARK_68 -> true
-                    ScanNumberType.PART -> isProducerSelected && isDateEntered
-                    ScanNumberType.BOX -> isProducerSelected
-                    else -> false
+                        when (type) {
+                            ScanNumberType.COMMON -> quantity > 0.0
+                            ScanNumberType.ALCOHOL -> quantity > 0.0 && isProducerSelected && isDateEntered
+                            ScanNumberType.EXCISE -> false
+                            ScanNumberType.MARK_150 -> true
+                            ScanNumberType.MARK_68 -> true
+                            ScanNumberType.PART -> isProducerSelected && isDateEntered
+                            ScanNumberType.BOX -> isProducerSelected
+                            else -> false
+                        }
+                    } ?: false
                 }
-            } ?: false
-        }
     }
 
     val detailsVisibility = scanModeType.map { type ->
@@ -312,15 +314,9 @@ class GoodInfoOpenViewModel : CoreViewModel() {
                                 barCallback = { getGoodByEan(number) }
                         )
                     }
-                    Constants.MARK_150 -> {
-                        loadMarkInfo(number)
-                    }
-                    Constants.MARK_68 -> {
-                        loadMarkInfo(number)
-                    }
-                    Constants.BOX_26 -> {
-                        loadBoxInfo(number)
-                    }
+                    Constants.MARK_150 -> loadMarkInfo(number)
+                    Constants.MARK_68 -> loadMarkInfo(number)
+                    Constants.BOX_26 -> loadBoxInfo(number)
                     else -> getGoodByEan(number)
                 }
             }
@@ -386,10 +382,10 @@ class GoodInfoOpenViewModel : CoreViewModel() {
             navigator.showProgressLoadingData()
 
             goodInfoNetRequest(GoodInfoParams(
-                    tkNumber = sessionInfo.market ?: "",
-                    ean = ean ?: "",
-                    material = material ?: "",
-                    taskType = task.value?.type?.code ?: ""
+                    tkNumber = sessionInfo.market.orEmpty(),
+                    ean = ean.orEmpty(),
+                    material = material.orEmpty(),
+                    taskType = task.value?.type?.code.orEmpty()
             )).also {
                 navigator.hideProgress()
             }.either(::handleFailure) { goodInfo ->
@@ -398,7 +394,7 @@ class GoodInfoOpenViewModel : CoreViewModel() {
                         if (manager.isGoodCanBeAdded(goodInfo)) {
                             isEanLastScanned = ean != null
                             isExistUnsavedData = true
-                            addGood(goodInfo, ean ?: (material ?: ""))
+                            addGood(goodInfo = goodInfo, number = ean ?: (material.orEmpty()))
                         } else {
                             goBackFromScreen()
                             navigator.showGoodCannotBeAdded()
@@ -463,8 +459,8 @@ class GoodInfoOpenViewModel : CoreViewModel() {
             navigator.showProgressLoadingData()
 
             markInfoNetRequest(MarkInfoParams(
-                    tkNumber = sessionInfo.market ?: "",
-                    material = good.value?.material ?: "",
+                    tkNumber = sessionInfo.market.orEmpty(),
+                    material = good.value?.material.orEmpty(),
                     markNumber = number,
                     mode = 1,
                     quantity = 0.0
@@ -530,8 +526,8 @@ class GoodInfoOpenViewModel : CoreViewModel() {
             navigator.showProgressLoadingData()
 
             markInfoNetRequest(MarkInfoParams(
-                    tkNumber = sessionInfo.market ?: "",
-                    material = good.value?.material ?: "",
+                    tkNumber = sessionInfo.market.orEmpty(),
+                    material = good.value?.material.orEmpty(),
                     markNumber = number,
                     mode = 2,
                     quantity = 0.0
@@ -573,10 +569,10 @@ class GoodInfoOpenViewModel : CoreViewModel() {
         navigator.showProgressLoadingData()
 
         return markInfoNetRequest(MarkInfoParams(
-                tkNumber = sessionInfo.market ?: "",
-                material = good.value?.material ?: "",
-                producerCode = selectedProducer.value?.code ?: "",
-                bottledDate = date.value ?: "",
+                tkNumber = sessionInfo.market.orEmpty(),
+                material = good.value?.material.orEmpty(),
+                producerCode = selectedProducer.value?.code.orEmpty(),
+                bottledDate = date.value.orEmpty(),
                 mode = 3,
                 quantity = quantity.value ?: 0.0
         )).also {
@@ -616,7 +612,7 @@ class GoodInfoOpenViewModel : CoreViewModel() {
                     material = changedGood.material,
                     isBadMark = markInfoResult.value?.status == MarkStatus.BAD.code,
                     providerCode = changedGood.provider.code,
-                    producerCode = selectedProducer.value?.code ?: ""
+                    producerCode = selectedProducer.value?.code.orEmpty()
             ))
 
             manager.updateCurrentGood(changedGood)
@@ -632,7 +628,7 @@ class GoodInfoOpenViewModel : CoreViewModel() {
                     quantity = quantity.value!!,
                     units = changedGood.commonUnits,
                     providerCode = changedGood.provider.code,
-                    producerCode = selectedProducer.value?.code ?: "",
+                    producerCode = selectedProducer.value?.code.orEmpty(),
                     date = date.value!!
             ))
 
@@ -651,7 +647,7 @@ class GoodInfoOpenViewModel : CoreViewModel() {
                             boxNumber = lastSuccessSearchNumber.value!!,
                             isBadMark = mark.isBadMark.isNotEmpty(),
                             providerCode = changedGood.provider.code,
-                            producerCode = selectedProducer.value?.code ?: ""
+                            producerCode = selectedProducer.value?.code.orEmpty()
                     ))
                 }
             }

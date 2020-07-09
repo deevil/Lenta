@@ -111,9 +111,9 @@ class ProcessingUnitTaskListViewModel : CoreViewModel(), PageSelectionListener, 
 
             taskListNetRequest(
                     TaskListParams(
-                            tkNumber = sessionInfo.market ?: "",
+                            tkNumber = sessionInfo.market.orEmpty(),
                             taskType = manager.getTaskTypeCode(),
-                            deviceIp = deviceIp.value ?: "Not found!"
+                            deviceIp = deviceIp.value.orEmpty()
                     )
             ).also {
                 navigator.hideProgress()
@@ -147,7 +147,7 @@ class ProcessingUnitTaskListViewModel : CoreViewModel(), PageSelectionListener, 
     }
 
     override fun onOkInSoftKeyboard(): Boolean {
-        openTaskByNumber(formatNumberForSearch(numberField.value ?: ""))
+        openTaskByNumber(formatNumberForSearch(numberField.value.orEmpty()))
         return true
     }
 
@@ -187,8 +187,8 @@ class ProcessingUnitTaskListViewModel : CoreViewModel(), PageSelectionListener, 
                 navigator.showProgressLoadingData()
                 taskInfoNetRequest(
                         TaskInfoParams(
-                                marketNumber = sessionInfo.market ?: "Not found!",
-                                deviceIp = deviceIp.value ?: "Not found!",
+                                marketNumber = sessionInfo.market.orEmpty(),
+                                deviceIp = deviceIp.value.orEmpty(),
                                 taskNumber = task.number,
                                 blockingType = manager.getBlockType()
                         )

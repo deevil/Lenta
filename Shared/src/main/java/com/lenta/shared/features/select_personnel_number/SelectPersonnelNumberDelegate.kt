@@ -56,7 +56,7 @@ class SelectPersonnelNumberDelegate @Inject constructor(
         viewModelScope().launch {
             coreNavigator.showProgress(personnelNumberNetRequest)
             personnelNumberNetRequest(TabNumberParams(tabNumber = personnelNumber.value
-                    ?: "")).either(::handleFailure, ::handleSuccess)
+                   .orEmpty())).either(::handleFailure, ::handleSuccess)
             coreNavigator.hideProgress()
         }
     }

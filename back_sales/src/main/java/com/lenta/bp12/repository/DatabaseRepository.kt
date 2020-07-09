@@ -58,13 +58,13 @@ class DatabaseRepository @Inject constructor(
 
     override suspend fun getEanByMaterialUnits(material: String, unitsCode: String): String {
         return withContext(Dispatchers.IO) {
-            return@withContext eanInfo.getEanInfoByMaterialUnits(material, unitsCode)?.toEanInfo()?.ean ?: ""
+            return@withContext eanInfo.getEanInfoByMaterialUnits(material, unitsCode)?.toEanInfo()?.ean.orEmpty()
         }
     }
 
     override suspend fun getNameByMaterial(material: String): String {
         return withContext(Dispatchers.IO) {
-            return@withContext products.getNameByMaterial(material) ?: ""
+            return@withContext products.getNameByMaterial(material).orEmpty()
         }
     }
 

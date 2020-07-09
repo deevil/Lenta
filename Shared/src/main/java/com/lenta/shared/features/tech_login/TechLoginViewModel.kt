@@ -56,8 +56,8 @@ class TechLoginViewModel : CoreViewModel() {
         viewModelScope.launch {
             screenNavigator.showProgress(pinCodeNetRequest)
             pinCodeNetRequest(PinCodeRequestParams(
-                    login = login.value ?: "",
-                    password = password.value ?: ""
+                    login = login.value.orEmpty(),
+                    password = password.value.orEmpty()
             )).either(::handleFailure, ::handlePinCodeSuccess)
             screenNavigator.hideProgress()
         }

@@ -48,7 +48,7 @@ class LoadingStorePlaceLockViewModel : CoreLoadingViewModel() {
                 title.postValue(it.taskDescription.getTaskTypeAndNumber())
                 progress.value = true
                 val recountType = taskManager.getInventoryTask()?.taskDescription?.recountType
-                val userNumber = if (recountType == RecountType.ParallelByPerNo) sessionInfo.personnelNumber ?: "" else "" // указываем номер только при пересчете по номерам
+                val userNumber = if (recountType == RecountType.ParallelByPerNo) sessionInfo.personnelNumber.orEmpty() else "" // указываем номер только при пересчете по номерам
                 val storePlaceCode = if (recountType == RecountType.ParallelByStorePlaces) storePlaceNumber else "" //указываем номер только при пересчете по МХ
                 storePlaceLockRequest(StorePlaceLockParams(ip = context.getDeviceIp(),
                         taskNumber = it.taskDescription.taskNumber,

@@ -36,7 +36,9 @@ class BasketGoodListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
 
     val title by lazy {
         basket.map { basket ->
-            resource.basketTitle("${manager.getBasketPosition(basket)}: ${basket?.getDescription(task.value!!.taskType.isDivBySection)}")
+            val position = manager.getBasketPosition(basket)
+            val description = basket?.getDescription(task.value?.taskType?.isDivBySection ?: false)
+            resource.basket("$position: $description")
         }
     }
 
@@ -47,10 +49,13 @@ class BasketGoodListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
             it?.let { basket ->
                 task.value?.let { task ->
                     task.getGoodListByBasket(basket).mapIndexed { index, good ->
+                        val quantity = good.getQuantityByProvider(basket.provider.code).dropZeros()
+                        val units = good.commonUnits.name
+
                         ItemGoodUi(
                                 position = "${index + 1}",
                                 name = good.getNameWithMaterial(),
-                                quantity = "${good.getQuantityByProvider(basket.provider.code).dropZeros()} ${good.commonUnits.name}",
+                                quantity = "$quantity $units",
                                 material = good.material
                         )
                     }
@@ -74,7 +79,7 @@ class BasketGoodListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
     }
 
     override fun onOkInSoftKeyboard(): Boolean {
-        checkEnteredNumber(numberField.value ?: "")
+        checkEnteredNumber(numberField.value.orEmpty())
         return true
     }
 
@@ -90,7 +95,7 @@ class BasketGoodListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
     }
 
     fun onClickItemPosition(position: Int) {
-        manager.searchNumber = goods.value!![position].material
+        manager.searchNumber = goods.value?.get(position)?.material.orEmpty()
         manager.searchGoodFromList = true
         navigator.goBack()
         navigator.openGoodInfoCreateScreen()

@@ -124,7 +124,7 @@ class JobCardViewModel : CoreViewModel() {
                                 taskName = taskName.value!!,
                                 gisControlList = jobCardRepo.getGisControlList(getSelectedTaskSettings()?.taskType),
                                 taskSetting = it,
-                                stock = getSelectedStock() ?: ""
+                                stock = getSelectedStock().orEmpty()
                         )).either(::handleFailure, ::openNextScreen)
 
             }

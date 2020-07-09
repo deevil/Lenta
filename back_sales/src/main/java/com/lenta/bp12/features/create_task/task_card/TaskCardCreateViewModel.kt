@@ -13,7 +13,6 @@ import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.platform.constants.Constants
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.databinding.PageSelectionListener
-import com.lenta.shared.utilities.extentions.combineLatest
 import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.view.OnPositionClickListener
 import kotlinx.coroutines.launch
@@ -44,7 +43,7 @@ class TaskCardCreateViewModel : CoreViewModel(), PageSelectionListener {
      */
 
     val title by lazy {
-        resource.tkNumber(sessionInfo.market ?: "")
+        resource.tk(sessionInfo.market.orEmpty())
     }
 
     val selectedPage = MutableLiveData(0)
@@ -166,7 +165,7 @@ class TaskCardCreateViewModel : CoreViewModel(), PageSelectionListener {
 
     fun onClickNext() {
         manager.updateCurrentTask(TaskCreate(
-                name = taskName.value ?: "",
+                name = taskName.value.orEmpty(),
                 taskType = types.value!![taskTypePosition.value!!],
                 storage = storage.value!![storagePosition.value!!],
                 reason = reasons.value!![returnReasonPosition.value!!]

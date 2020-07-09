@@ -916,10 +916,10 @@ class GoodsInfoViewModel : CoreViewModel(), OnPositionClickListener {
 
             packCodeNetRequest(
                     PackCodeParams(
-                            marketNumber = sessionInfo.market ?: "Not found!",
+                            marketNumber = sessionInfo.market.orEmpty(),
                             taskType = manager.getTaskTypeCode(),
                             parent = manager.currentTask.value!!.taskInfo.number,
-                            deviceIp = deviceIp.value ?: "Not found!",
+                            deviceIp = deviceIp.value.orEmpty(),
                             material = good.value!!.material,
                             order = raw.value!!.order,
                             quantity = total.value!!,

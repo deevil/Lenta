@@ -69,7 +69,7 @@ class FmpAnalytics @Inject constructor(val hyperHive: HyperHive, val logDao: Log
     /*private fun enableLogsFuncDisableLogs(tag: String?, message: String, funcSendLogs: KFunction1<@ParameterName(name = "message") String, Unit>) {
         Logg.d { "logTrace: $tag, message: $message" }
         enableFmpLogs()
-        funcSendLogs("${tag ?: ""}\n$message")
+        funcSendLogs("${tag.orEmpty()}\n$message")
         disableFmpLogs()
     }*/
 
