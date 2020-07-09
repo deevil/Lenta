@@ -16,9 +16,9 @@ import com.lenta.movement.requests.network.ApprovalAndTransferToTasksCargoUnit
 import com.lenta.movement.requests.network.StartConsolidation
 import com.lenta.movement.requests.network.models.approvalAndTransferToTasksCargoUnit.ApprovalAndTransferToTasksCargoUnitParams
 import com.lenta.movement.requests.network.models.startConsolidation.StartConsolidationParams
+import com.lenta.movement.requests.network.models.toCargoUnitList
 import com.lenta.movement.requests.network.models.toModelList
 import com.lenta.shared.account.ISessionInfo
-import com.lenta.shared.exception.Failure
 import com.lenta.shared.functional.Either
 import com.lenta.shared.models.core.GisControl
 import com.lenta.shared.platform.constants.Constants
@@ -60,6 +60,7 @@ class TaskViewModel : CoreViewModel(), PageSelectionListener {
     lateinit var approvalAndTransferToTasksCargoUnit: ApprovalAndTransferToTasksCargoUnit
 
     val task by unsafeLazy { MutableLiveData(taskManager.getTaskOrNull()) }
+
     private val currentStatus: Task.Status
         get() = task.value?.currentStatus ?: Task.Status.Created()
     private val nextStatus: Task.Status
@@ -191,41 +192,51 @@ class TaskViewModel : CoreViewModel(), PageSelectionListener {
     }
 
     fun onNextClick() {
+        Logg.d {
+            """
+            Status : $currentStatus
+            Task: ${taskManager.getTaskOrNull()}
+            """.trimIndent()
+        }
         if (task.value == null) {
             taskManager.setTask(buildTask())
             screenNavigator.openTaskCompositionScreen()
         } else {
-            Logg.d {
-                currentStatus.toString()
-            }
             when (currentStatus) {
                 Task.Status.ToConsolidation(Task.Status.TO_CONSOLIDATION) -> {
                     viewModelScope.launch {
+                        screenNavigator.showProgress(startConsolidation)
                         val either = task.value?.let { taskValue ->
                             sessionInfo.personnelNumber?.let { personnelNumber ->
                                 startConsolidation(
                                         StartConsolidationParams(
                                                 deviceIp = context.getDeviceIp(),
                                                 taskNumber = taskValue.number,
-                                                mode = GET_TASK_COMP_CODE,
+                                                mode = StartConsolidation.MODE_GET_TASK_COMP_CODE,
                                                 personnelNumber = personnelNumber,
                                                 withProductInfo = true.toSapBooleanString()
                                         )
                                 )
                             } ?: Either.Left(PersonnelNumberFailure(context.getString(R.string.alert_null_personnel_number)))
-
                         } ?: Either.Left(EmptyTaskFailure(context.getString(R.string.alert_null_task)))
 
-                        either.either({
-                            screenNavigator.openAlertScreen(it)
-                        }, {
-                            screenNavigator.openTaskEoMergeScreen(it.eoList.toModelList(), it.geList)
+                        either.either({ failure ->
+                            screenNavigator.hideProgress()
+                            screenNavigator.openAlertScreen(failure)
+                        }, { result ->
+                            screenNavigator.hideProgress()
+                            screenNavigator.openTaskEoMergeScreen(
+                                    result.eoList.toModelList(),
+                                    result.geList.toCargoUnitList()
+                            )
                         })
+
                     }
                 }
 
                 Task.Status.Consolidated(Task.Status.CONSOLIDATED) -> {
                     viewModelScope.launch {
+                        screenNavigator.showProgress(approvalAndTransferToTasksCargoUnit)
                         val either = task.value?.let { taskValue ->
                             sessionInfo.personnelNumber?.let { personnelNumber ->
                                 approvalAndTransferToTasksCargoUnit(
@@ -237,12 +248,13 @@ class TaskViewModel : CoreViewModel(), PageSelectionListener {
                                 )
                             } ?: Either.Left(PersonnelNumberFailure(context.getString(R.string.alert_null_personnel_number)))
                         } ?: Either.Left(EmptyTaskFailure(context.getString(R.string.alert_null_task)))
-                        either.either({
-                            screenNavigator.openAlertScreen(it)
-                        }, {
-                            // TODO screenNavigator.openApprovalScreen()
-                            Logg.d { "Approval and transfer to task cargo unit: $it" }
-                            screenNavigator.openNotImplementedScreenAlert("Одобрение и передача на ГЗ")
+                        either.either({ failure ->
+                            screenNavigator.hideProgress()
+                            screenNavigator.openAlertScreen(failure)
+                        }, { result ->
+                            Logg.d { "Approval and transfer to task cargo unit: $result" }
+                            screenNavigator.hideProgress()
+                            screenNavigator.openNotImplementedScreenAlert("Одобрение и передача на ГЗ") // TODO screenNavigator.openApprovalScreen()
                         })
                     }
                 }
@@ -305,10 +317,4 @@ class TaskViewModel : CoreViewModel(), PageSelectionListener {
     private fun <T> LiveData<List<T>>.getSelectedValue(position: LiveData<Int>): T? {
         return value?.getOrNull(position.value ?: -1)
     }
-
-    companion object {
-        private const val GET_TASK_COMP_CODE = 1
-        private const val GET_TASK_COMP_WITH_BLOCK = 2
-    }
-
 }

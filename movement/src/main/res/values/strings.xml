@@ -62,8 +62,15 @@
     <string name="task_save_confirmation_msg">Перевести задание в статус «Посчитано» и закрыть его для редактирования?</string>
 
     <string name="process">Обработать</string>
+    <string name="combine">Объединить</string>
     <string name="task_eo_merge_title">Объединение ЕО</string>
     <string name="task_eo_merge_eo_list">Список ЕО</string>
     <string name="task_eo_merge_ge_list">Список ГЕ</string>
     <string name="task_eo_merge_ge_eo">ГЕ/ЕО</string>
+    <string name="task_eo_merge_zero_selected_eo_message">
+        Не была выбрана ни одна ЕО\n
+        Выберите дальнейшие действия:\n
+        НАЗАД - возврат к списку ЕО\n
+        ОБРАБОТАТЬ - обработать каждое ЕО как ЕО верхнего уровня, без создания ГЕ\n
+        ОБЪЕДИНИТЬ - добавить все ЕО в одну ГЕ</string>
 </resources>

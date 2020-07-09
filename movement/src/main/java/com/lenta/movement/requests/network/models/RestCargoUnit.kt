@@ -1,14 +1,14 @@
-package com.lenta.movement.requests.network.models.startConsolidation
+package com.lenta.movement.requests.network.models
 
 import com.google.gson.annotations.SerializedName
 
-/**"ET_TASK_EXIDV_TOP" Список ГЕ*/
-data class CargoUnit(
+/** ГЕ */
+data class RestCargoUnit(
         /** Номер ГЕ */
         @SerializedName("EXIDV_TOP")
         val cargoUnitNumber: String,
 
         /** Номер ЕО */
         @SerializedName("EXIDV")
-        val processingUnitNumber: String
+        val processingUnitNumber: String?
 )

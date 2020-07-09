@@ -104,7 +104,7 @@ class GoodsListFragment : CoreFragment<FragmentGoodsListBinding, GoodsListViewMo
             lifecycleOwner?.let{ lifecycleOwner ->
                     recyclerViewKeyHandler = RecyclerViewKeyHandler(
                             rv,
-                            vm.goodsList,
+                            this@GoodsListFragment.vm.goodsList,
                             lifecycleOwner,
                             recyclerViewKeyHandler?.posInfo?.value
                     )

@@ -9,7 +9,7 @@
 
         <variable
             name="item"
-            type="com.lenta.movement.models.SimpleListItem" />
+            type="com.lenta.movement.models.EoListItem" />
 
         <variable
             name="selectedToDelete"
@@ -144,7 +144,7 @@
             android:ellipsize="end"
             android:gravity="center|center_vertical"
             android:maxLines="1"
-            android:text='@{item.countWithUom}'
+            android:text='@{item.quantity}'
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="@id/vertical_guideline_3"
             app:layout_constraintStart_toEndOf="@+id/div_vert2"
@@ -176,7 +176,8 @@
             app:layout_constraintTop_toTopOf="parent"
             tools:text="2"
             android:contentDescription="@string/tag"
-            tools:src="@drawable/ic_detail"/>
+            app:imageResource="@{item.stateResId}"
+            tools:src="@drawable/ic_top_level_processing_unit_32dp"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

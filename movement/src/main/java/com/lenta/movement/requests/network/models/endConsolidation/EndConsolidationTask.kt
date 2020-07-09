@@ -1,11 +1,11 @@
-package com.lenta.movement.requests.network.models.saveTask
+package com.lenta.movement.requests.network.models.endConsolidation
 
 import com.google.gson.annotations.SerializedName
 import com.lenta.movement.models.MovementType
 import com.lenta.movement.models.TaskType
 import com.lenta.movement.requests.network.models.Taskable
 
-data class SaveTaskResultTask(
+data class EndConsolidationTask(
         /**Номер задания на перемещение*/
         @SerializedName("TASK_NUM")
         override val taskNumber: String,
@@ -58,25 +58,23 @@ data class SaveTaskResultTask(
         @SerializedName("IS_CONS")
         val isCons: String,
 
-        /** Тип ГИС-контроля */
-        @SerializedName("TASK_CNTRL")
-        val taskCntrl: String,
-
-        @SerializedName("TASK_COMMENT")
-        override val taskComment: String,
-
-        @SerializedName("DATE_SHIP")
-        override val dateShip: String,
-
+        /** Статус задания */
         @SerializedName("CUR_STAT")
         override val currentStatusCode: String,
 
+        /** Текст статус задания */
         @SerializedName("CUR_STAT_TEXT")
         override val currentStatusText: String,
 
+        /** Текст следующего статуса задания */
         @SerializedName("NEXT_STAT_TEXT")
         override val nextStatusText: String,
 
-        @SerializedName("ERROR_TEXT")
-        val errorText: String
+        /** УТЗ ТСД. Комментарий при смене статуса */
+        @SerializedName("TASK_COMMENT")
+        override val taskComment: String,
+
+        /** Поле типа DATS */
+        @SerializedName("DATE_SHIP")
+        override val dateShip: String
 ) : Taskable

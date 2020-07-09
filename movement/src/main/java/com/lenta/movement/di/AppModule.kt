@@ -59,8 +59,8 @@ class AppModule {
 
     @Provides
     @AppScope
-    internal fun provideFormatter(context: Context): IFormatter {
-        return Formatter(context)
+    internal fun provideFormatter(): IFormatter {
+        return Formatter()
     }
 
     @Provides

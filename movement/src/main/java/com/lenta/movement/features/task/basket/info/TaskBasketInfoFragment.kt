@@ -9,11 +9,10 @@ import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
 import com.lenta.shared.utilities.extentions.provideViewModel
 import com.lenta.shared.utilities.state.state
-import java.lang.IllegalArgumentException
 
 class TaskBasketInfoFragment: CoreFragment<FragmentTaskBasketInfoBinding, TaskBasketInfoViewModel>() {
 
-    private var basketIndex : Int by state(throw IllegalArgumentException("Basket Index cannot be null"))
+    private var basketIndex : Int by state( DEFAULT_BASKET_INDEX )
 
     override fun getLayoutId() = R.layout.fragment_task_basket_info
 
@@ -39,6 +38,7 @@ class TaskBasketInfoFragment: CoreFragment<FragmentTaskBasketInfoBinding, TaskBa
 
     companion object {
         private const val PAGE_NUMBER = "10/06"
+        private const val DEFAULT_BASKET_INDEX = -1
 
         fun newInstance(basketIndex: Int): TaskBasketInfoFragment {
             return TaskBasketInfoFragment().apply {
