@@ -4,6 +4,7 @@ import androidx.lifecycle.viewModelScope
 import com.lenta.movement.platform.navigation.IScreenNavigator
 import com.lenta.shared.features.loading.startProgressTimer
 import com.lenta.shared.platform.activity.main_activity.CoreMainViewModel
+import com.lenta.movement.platform.Constants
 import com.lenta.shared.platform.statusbar.StatusBarUiModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
@@ -32,7 +33,7 @@ class MainViewModel : CoreMainViewModel() {
                 startProgressTimer(
                         coroutineScope = this,
                         remainingTime = it.remainingTime,
-                        timeoutInSec = 60
+                        timeoutInSec = Constants.TIME_OUT_IN_SEC
                 )
             }
 

@@ -1,5 +1,6 @@
 package com.lenta.movement.main
 
+import com.lenta.movement.platform.Constants
 import com.lenta.shared.features.auxiliary_menu.AuxiliaryMenuFragment
 import com.lenta.shared.features.exit.ExitWithConfirmationFragment
 import com.lenta.shared.features.fmp_settings.FmpSettingsFragment
@@ -22,16 +23,16 @@ class NumberScreenGenerator @Inject constructor() : INumberScreenGenerator {
 
     override fun generateNumberScreen(fragment: CoreFragment<*, *>): String? {
         return generateNumberScreenFromPostfix(when (fragment) {
-            is ExitWithConfirmationFragment -> "93"
-            is AuxiliaryMenuFragment -> "50"
-            is FmpSettingsFragment -> "100"
-            is PrinterChangeFragment -> "53"
-            is SelectOperModeFragment -> "54"
-            is SettingsFragment -> "51"
-            is SupportFragment -> "52"
-            is TechLoginFragment -> "55"
-            is PinCodeFragment -> "56"
-            is FailurePinCodeFragment -> "96"
+            is ExitWithConfirmationFragment -> Constants.EXIT_WITH_CONFIRMATION_FRAGMENT
+            is AuxiliaryMenuFragment -> Constants.AUXILIARY_MENU_FRAGMENT
+            is FmpSettingsFragment -> Constants.FMP_SETTINGS_FRAGMENT
+            is PrinterChangeFragment -> Constants.PRINTER_CHANGE_FRAGMENT
+            is SelectOperModeFragment -> Constants.SELECT_OPERMODE_FRAGMENT
+            is SettingsFragment -> Constants.SETTINGS_FRAGMENT
+            is SupportFragment -> Constants.SUPPORT_FRAGMENT
+            is TechLoginFragment -> Constants.TECH_LOGIN_FRAGMENT
+            is PinCodeFragment -> Constants.PINCODE_FRAGMENT
+            is FailurePinCodeFragment -> Constants.FAILURE_PINCODE_FRAGMENT
            /* is GoodsInfoFragment -> "09"
             is ExciseAlcoInfoFragment -> "09"
             is GoodsDetailsStorageFragment -> "22"

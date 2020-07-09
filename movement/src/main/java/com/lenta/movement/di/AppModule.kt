@@ -4,16 +4,12 @@ import android.content.Context
 import app_update.AppUpdateInstaller
 import app_update.AppUpdaterConfig
 import app_update.AppUpdaterInstallerFromFmp
-import com.google.gson.Gson
 import com.lenta.movement.BuildConfig.APPLICATION_ID
 import com.lenta.movement.platform.navigation.IScreenNavigator
 import com.lenta.movement.platform.navigation.ScreenNavigator
-import com.lenta.shared.account.IAuthenticator
 import com.lenta.shared.di.AppScope
 import com.lenta.shared.platform.activity.ForegroundActivityProvider
 import com.lenta.shared.platform.navigation.ICoreNavigator
-import com.lenta.shared.progress.IProgressUseCaseInformator
-import com.mobrun.plugin.api.HyperHive
 import dagger.Binds
 import dagger.Module
 import dagger.Provides
@@ -41,7 +37,7 @@ open class AppModule {
     @Provides
     @AppScope
     internal fun provideAppUpdaterConfig(): AppUpdaterConfig {
-        return AppUpdaterConfig(folderName = "bp11", applicationId = APPLICATION_ID)
+        return AppUpdaterConfig(folderName = "movement", applicationId = APPLICATION_ID)
     }
 
 }

@@ -23,14 +23,14 @@
                 android:id="@+id/iv_icon"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="32dp"
+                android:layout_marginBottom="@dimen/size_32dp"
                 tools:src="@drawable/ic_info_pink_80dp"  />
 
             <ProgressBar
                 android:id="@+id/pb"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="32dp"
+                android:layout_marginBottom="@dimen/size_32dp"
                 android:visibility="invisible"
                 android:layout_centerInParent="true"/>
 
@@ -41,9 +41,9 @@
             style="@style/TextMedium"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp"
-            android:layout_marginEnd="16dp"
-            android:layout_marginStart="16dp"
+            android:layout_marginBottom="@dimen/size_8dp"
+            android:layout_marginEnd="@dimen/size_16dp"
+            android:layout_marginStart="@dimen/size_16dp"
             android:gravity="center"
             app:layout_constraintBottom_toTopOf="@+id/tv_time"
             app:layout_constraintEnd_toEndOf="parent"
@@ -57,9 +57,9 @@
             style="@style/TextMedium"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp"
-            android:layout_marginEnd="16dp"
-            android:layout_marginStart="16dp"
+            android:layout_marginBottom="@dimen/size_8dp"
+            android:layout_marginEnd="@dimen/size_16dp"
+            android:layout_marginStart="@dimen/size_16dp"
             android:gravity="center"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
