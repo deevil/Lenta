@@ -5,6 +5,7 @@
     <dimen name="size_12dp">12dp</dimen>
     <dimen name="size_16dp">16dp</dimen>
     <dimen name="size_32dp">32dp</dimen>
+    <dimen name="size_98dp">98dp</dimen>
 
     <dimen name="text_14sp">14sp</dimen>
 </resources>
