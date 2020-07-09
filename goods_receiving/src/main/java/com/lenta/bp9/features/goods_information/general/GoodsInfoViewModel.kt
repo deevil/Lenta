@@ -907,10 +907,7 @@ class GoodsInfoViewModel : CoreViewModel(), OnPositionClickListener {
     }
 
     fun onClickLabel() { //https://trello.com/c/LhzZRxzi
-        repoInMemoryHolder.processOrderData.value?.map {
-            Logg.d { "testddi materialNumber ${it.materialNumber}" }
-            Logg.d { "testddi processOrderData ${it.processOrderData}" }
-        }
+
         /**viewModelScope.launch {
             navigator.showProgressLoadingData()
 
