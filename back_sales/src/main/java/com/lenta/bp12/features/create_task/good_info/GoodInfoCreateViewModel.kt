@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.lenta.bp12.model.*
 import com.lenta.bp12.model.pojo.Mark
 import com.lenta.bp12.model.pojo.Part
+import com.lenta.bp12.model.pojo.Position
 import com.lenta.bp12.model.pojo.create_task.Basket
 import com.lenta.bp12.model.pojo.create_task.GoodCreate
 import com.lenta.bp12.platform.extention.getControlType
@@ -73,10 +74,7 @@ class GoodInfoCreateViewModel : CoreViewModel() {
         }
     }
 
-    private var isExistUnsavedData = false
-
     private val lastSuccessSearchNumber = MutableLiveData("")
-
 
     val isCompactMode by lazy {
         good.map { good ->
@@ -104,9 +102,13 @@ class GoodInfoCreateViewModel : CoreViewModel() {
 
     private val markInfoResult = MutableLiveData<MarkInfoResult>()
 
+    private var scanCodeInfo: ScanCodeInfo? = null
+
+    private var isExistUnsavedData = false
+
     private var isEanLastScanned = false
 
-    private var scanCodeInfo: ScanCodeInfo? = null
+    private var thereWasRollback = false
 
     /**
     Ввод количества
@@ -345,10 +347,10 @@ class GoodInfoCreateViewModel : CoreViewModel() {
                     ScanNumberType.COMMON -> quantity > 0.0 && isProviderSelected
                     ScanNumberType.ALCOHOL -> quantity > 0.0 && isProviderSelected && isProducerSelected && isDateEntered
                     ScanNumberType.EXCISE -> false
-                    ScanNumberType.MARK_150 -> isProviderSelected
-                    ScanNumberType.MARK_68 -> isProviderSelected && isProducerSelected
+                    ScanNumberType.MARK_150 -> quantity > 0.0 && isProviderSelected
+                    ScanNumberType.MARK_68 -> quantity > 0.0 && isProviderSelected && isProducerSelected
                     ScanNumberType.PART -> isProviderSelected && isProducerSelected && isDateEntered
-                    ScanNumberType.BOX -> isProviderSelected && isProducerSelected
+                    ScanNumberType.BOX -> quantity > 0.0 && isProviderSelected && isProducerSelected
                     else -> false
                 }
             } ?: false
@@ -387,7 +389,12 @@ class GoodInfoCreateViewModel : CoreViewModel() {
         }
 
         if (applyEnabled.value!! || good.value!!.kind == GoodKind.EXCISE && (number.length == Constants.MARK_150 || number.length == Constants.MARK_68 || number.length == Constants.BOX_26)) {
-            saveChanges()
+            if (!thereWasRollback) {
+                saveChanges()
+            } else {
+                thereWasRollback = false
+            }
+
             manager.searchGoodFromList = false
             manager.searchNumber = number
             checkSearchNumber(number)
@@ -697,7 +704,12 @@ class GoodInfoCreateViewModel : CoreViewModel() {
 
     private fun addPosition() {
         good.value?.let { changedGood ->
-            changedGood.addPosition(quantity.value!!, selectedProvider.value ?: ProviderInfo())
+            val position = Position(
+                    quantity = quantity.value ?: 0.0,
+                    provider = selectedProvider.value ?: ProviderInfo()
+            )
+            Logg.d { "--> add position = $position" }
+            changedGood.addPosition(position)
 
             createBasket(changedGood)
             manager.updateCurrentGood(changedGood)
@@ -706,13 +718,15 @@ class GoodInfoCreateViewModel : CoreViewModel() {
 
     private fun addMark() {
         good.value?.let { changedGood ->
-            changedGood.addMark(Mark(
+            val mark = Mark(
                     number = lastSuccessSearchNumber.value!!,
                     material = changedGood.material,
                     isBadMark = markInfoResult.value?.status == MarkStatus.BAD.code,
                     providerCode = selectedProvider.value?.code.orEmpty(),
                     producerCode = selectedProducer.value?.code.orEmpty()
-            ))
+            )
+            Logg.d { "--> add mark = $mark" }
+            changedGood.addMark(mark)
 
             createBasket(changedGood)
             manager.updateCurrentGood(changedGood)
@@ -721,7 +735,7 @@ class GoodInfoCreateViewModel : CoreViewModel() {
 
     private fun addPart() {
         good.value?.let { changedGood ->
-            changedGood.addPart(Part(
+            val part = Part(
                     number = lastSuccessSearchNumber.value!!,
                     material = changedGood.material,
                     quantity = quantity.value!!,
@@ -729,7 +743,9 @@ class GoodInfoCreateViewModel : CoreViewModel() {
                     providerCode = selectedProvider.value?.code.orEmpty(),
                     producerCode = selectedProducer.value?.code.orEmpty(),
                     date = date.value.orEmpty()
-            ))
+            )
+            Logg.d { "--> add part = $part" }
+            changedGood.addPart(part)
 
             createBasket(changedGood)
             manager.updateCurrentGood(changedGood)
@@ -740,14 +756,16 @@ class GoodInfoCreateViewModel : CoreViewModel() {
         good.value?.let { changedGood ->
             markInfoResult.value?.marks?.let { marks ->
                 marks.forEach { mark ->
-                    changedGood.addMark(Mark(
+                    val markFromBox = Mark(
                             number = mark.number,
                             material = changedGood.material,
                             boxNumber = lastSuccessSearchNumber.value!!,
                             isBadMark = mark.isBadMark.isNotEmpty(),
                             providerCode = selectedProvider.value?.code.orEmpty(),
                             producerCode = selectedProducer.value?.code.orEmpty()
-                    ))
+                    )
+                    Logg.d { "--> add mark from box = $markFromBox" }
+                    changedGood.addMark(markFromBox)
                 }
             }
 
@@ -796,22 +814,12 @@ class GoodInfoCreateViewModel : CoreViewModel() {
     }
 
     fun onClickRollback() {
-        good.value?.let { changedGood ->
-            when (scanModeType.value) {
-                ScanNumberType.MARK_150, ScanNumberType.MARK_68 -> {
-                    changedGood.removeMark(lastSuccessSearchNumber.value!!)
-                }
-                ScanNumberType.BOX -> {
-                    markInfoResult.value?.marks?.forEach { mark ->
-                        changedGood.removeMark(mark.number)
-                    }
-                }
-            }
-
-            quantityField.value = ""
+        good.value?.let { good ->
+            thereWasRollback = true
+            updateProducers(good.producers)
             markInfoResult.value = null
-
-            manager.updateCurrentGood(changedGood)
+            quantityField.value = "0"
+            date.value = ""
         }
     }
 
