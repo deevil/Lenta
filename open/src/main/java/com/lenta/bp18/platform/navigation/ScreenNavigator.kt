@@ -60,6 +60,10 @@ class ScreenNavigator @Inject constructor(
         }
     }
 
+    override fun openFastDataLoadingScreen() {
+        TODO("Not yet implemented")
+    }
+
 }
 
 interface IScreenNavigator : ICoreNavigator {
@@ -69,4 +73,5 @@ interface IScreenNavigator : ICoreNavigator {
     fun openResultScreen()
     fun openSearchScreen()
     fun openSyncScreen()
+    fun openFastDataLoadingScreen()
 }
