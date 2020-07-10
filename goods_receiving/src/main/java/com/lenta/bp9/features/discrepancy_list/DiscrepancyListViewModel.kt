@@ -29,6 +29,10 @@ import com.lenta.shared.utilities.extentions.toStringFormatted
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+private const val SELECTED_PAGE_NOT_PROCESSED = 0
+private const val SELECTED_PAGE_CONTROL = 1
+private const val SELECTED_PAGE_PROCESSED = 2
+
 class DiscrepancyListViewModel : CoreViewModel(), PageSelectionListener {
 
     @Inject
@@ -227,7 +231,7 @@ class DiscrepancyListViewModel : CoreViewModel(), PageSelectionListener {
     private fun updateCountProcessed() {
         val arrayCounted: ArrayList<GoodsDiscrepancyItem> = ArrayList()
         var index = 0
-        var addeBatchProduct = ""
+        var addBatchProduct = ""
         taskManager.getReceivingTask()?.let { task ->
             task.taskRepository.getProductsDiscrepancies().getProductsDiscrepancies()
                     .filter {
@@ -235,9 +239,10 @@ class DiscrepancyListViewModel : CoreViewModel(), PageSelectionListener {
                             set.componentNumber == it.materialNumber
                         }
                         if (repoInMemoryHolder.taskList.value?.taskListLoadingMode == TaskListLoadingMode.PGE) {
-                            !(it.typeDiscrepancies == TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_NORM ||
-                                    it.typeDiscrepancies == TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_SURPLUS) &&
-                                    isComponent == false
+                            !(it.typeDiscrepancies == TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_NORM
+                                    || it.typeDiscrepancies == TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_SURPLUS
+                                    )
+                                    && isComponent == false
                         } else {
                             it.typeDiscrepancies != TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_NORM && isComponent == false
                         }
@@ -256,8 +261,8 @@ class DiscrepancyListViewModel : CoreViewModel(), PageSelectionListener {
                             it.code == productDiscrepancies.typeDiscrepancies
                         }?.name
                         if (isBatches.value == true && productInfo?.type == ProductType.NonExciseAlcohol && !productInfo.isBoxFl && !productInfo.isMarkFl) {
-                            if (addeBatchProduct != productInfo.materialNumber) { //показываем партии без разбивки по расхождениям
-                                addeBatchProduct = productInfo.materialNumber
+                            if (addBatchProduct != productInfo.materialNumber) { //показываем партии без разбивки по расхождениям
+                                addBatchProduct = productInfo.materialNumber
                                 val batchesInfoOfProduct = task.taskRepository.getBatches().findBatchOfProduct(productInfo)?.filter { findBatch ->
                                     if (repoInMemoryHolder.taskList.value?.taskListLoadingMode == TaskListLoadingMode.PGE) {
                                         task.taskRepository.getBatchesDiscrepancies().findBatchDiscrepanciesOfBatch(findBatch).filter { findBatchDiscrPGE ->
@@ -338,6 +343,14 @@ class DiscrepancyListViewModel : CoreViewModel(), PageSelectionListener {
                                 it.materialNumber
                             }
                             .mapIndexed { index, productInfo ->
+                                val isControlBoxesOfProduct = taskManager
+                                        .getReceivingTask()
+                                        ?.controlBoxesOfProduct(productInfo)
+                                        ?: false
+                                val isControlExciseStampsOfProduct = taskManager
+                                        .getReceivingTask()
+                                        ?.controlExciseStampsOfProduct(productInfo)
+                                        ?: false
                                 GoodsDiscrepancyItem(
                                         number = index + 1,
                                         name = "${productInfo.getMaterialLastSix()} ${productInfo.description}",
@@ -350,10 +363,8 @@ class DiscrepancyListViewModel : CoreViewModel(), PageSelectionListener {
                                         productInfo = productInfo,
                                         productDiscrepancies = null,
                                         batchInfo = null,
-                                        checkBoxControl = taskManager.getReceivingTask()?.controlBoxesOfProduct(productInfo)
-                                                ?: false,
-                                        checkStampControl = taskManager.getReceivingTask()?.controlExciseStampsOfProduct(productInfo)
-                                                ?: false,
+                                        checkBoxControl = isControlBoxesOfProduct,
+                                        checkStampControl = isControlExciseStampsOfProduct,
                                         even = index % 2 == 0)
                             }
                             .reversed())
@@ -361,7 +372,7 @@ class DiscrepancyListViewModel : CoreViewModel(), PageSelectionListener {
     }
 
     fun getTitle(): String {
-        return taskManager.getReceivingTask()?.taskHeader?.caption ?: ""
+        return taskManager.getReceivingTask()?.taskHeader?.caption.orEmpty()
     }
 
     override fun onPageSelected(position: Int) {
@@ -369,23 +380,43 @@ class DiscrepancyListViewModel : CoreViewModel(), PageSelectionListener {
     }
 
     fun onClickItemPosition(position: Int) {
-        val matnr: String? = if (selectedPage.value == 0) {
-            countNotProcessed.value?.get(position)?.productInfo?.materialNumber
+        val selectedNotProcessedProduct = countNotProcessed
+                .value
+                ?.get(position)
+                ?.productInfo
+        val selectedMaterialNumber: String? = if (selectedPage.value == SELECTED_PAGE_NOT_PROCESSED) {
+            selectedNotProcessedProduct?.materialNumber
         } else {
-            if ((isAlco.value == true && selectedPage.value == 2) || (isAlco.value == false && selectedPage.value == 1)) {
-                countProcessed.value?.get(position)?.productInfo?.materialNumber
+            if ((isAlco.value == true && selectedPage.value == SELECTED_PAGE_PROCESSED)
+                    || (isAlco.value == false && selectedPage.value == SELECTED_PAGE_CONTROL)) {
+                countProcessed
+                        .value
+                        ?.get(position)
+                        ?.productInfo
+                        ?.materialNumber
             } else {
-                countControl.value?.get(position)?.productInfo?.materialNumber
+                countControl
+                        .value
+                        ?.get(position)
+                        ?.productInfo
+                        ?.materialNumber
             }
         }
 
-        if (repoInMemoryHolder.taskList.value?.taskListLoadingMode == TaskListLoadingMode.Receiving &&
-                countNotProcessed.value?.get(position)?.productInfo?.isBoxFl == true &&
-                selectedPage.value == 0) { //коробочный учет для ПРИЕМКИ https://trello.com/c/WeGFSdAW
-            screenNavigator.openExciseAlcoBoxProductFailureScreen(countNotProcessed.value?.get(position)?.productInfo!!)
+        val mode = repoInMemoryHolder
+                .taskList
+                .value
+                ?.taskListLoadingMode
+        if (mode == TaskListLoadingMode.Receiving
+                && selectedNotProcessedProduct?.isBoxFl == true
+                && selectedPage.value == SELECTED_PAGE_NOT_PROCESSED) { //коробочный учет для ПРИЕМКИ https://trello.com/c/WeGFSdAW
+            screenNavigator.openExciseAlcoBoxProductFailureScreen(selectedNotProcessedProduct)
         } else {
-            searchProductDelegate.searchCode(code = matnr
-                    ?: "", fromScan = false, isDiscrepancy = true)
+            searchProductDelegate.searchCode(
+                    code = selectedMaterialNumber.orEmpty(),
+                    fromScan = false,
+                    isDiscrepancy = true
+            )
         }
     }
 
@@ -581,11 +612,35 @@ class DiscrepancyListViewModel : CoreViewModel(), PageSelectionListener {
         10 шт
         контроль 2 шт,
         а по факту мы ввели 1 норму (и подтвердили сканированием) и 9 брака то контроль считается пройден*/
-        return if (taskManager.getReceivingTask()!!.taskRepository.getProductsDiscrepancies().getCountAcceptOfProduct(productInfo) <= 0 || taskManager.getReceivingTask()!!.controlBoxesOfProduct(productInfo)) {
+        val countAcceptOfProduct = taskManager
+                .getReceivingTask()
+                ?.taskRepository
+                ?.getProductsDiscrepancies()
+                ?.getCountAcceptOfProduct(productInfo)
+                ?: 0.0
+        val countRefusalOfProduct = taskManager
+                .getReceivingTask()
+                ?.taskRepository
+                ?.getProductsDiscrepancies()
+                ?.getCountRefusalOfProduct(productInfo)
+                ?: 0.0
+        val isControlBoxesOfProduct = taskManager
+                .getReceivingTask()
+                ?.controlBoxesOfProduct(productInfo)
+                ?: false
+        val isControlExciseStampsOfProduct = taskManager
+                .getReceivingTask()
+                ?.controlExciseStampsOfProduct(productInfo)
+                ?: false
+        val countBoxesPassedControlOfProduct = taskManager
+                .getReceivingTask()
+                ?.countBoxesPassedControlOfProduct(productInfo)
+                ?: 0
+
+        return if (countAcceptOfProduct <= 0 || (isControlExciseStampsOfProduct && isControlBoxesOfProduct)) {
             false
         } else {
-            ((taskManager.getReceivingTask()?.countBoxesPassedControlOfProduct(productInfo) ?: 0) +
-                    taskManager.getReceivingTask()!!.taskRepository.getProductsDiscrepancies().getCountRefusalOfProduct(productInfo)) < productInfo.origQuantity.toDouble()
+            (countBoxesPassedControlOfProduct + countRefusalOfProduct) < productInfo.origQuantity.toDouble()
         }
     }
 

@@ -20,8 +20,8 @@ class ProcessExciseAlcoBoxAccService
     private val currentExciseStampsBad: ArrayList<TaskExciseStampBad> = ArrayList()
     private var countAccept: Double = 0.0
 
-    fun newProcessExciseAlcoBoxService(productInfo: TaskProductInfo) : ProcessExciseAlcoBoxAccService? {
-        return if (productInfo.type == ProductType.ExciseAlcohol && productInfo.isBoxFl){ //алкоголь, коробочный учет https://trello.com/c/KbBbXj2t
+    fun newProcessExciseAlcoBoxService(productInfo: TaskProductInfo): ProcessExciseAlcoBoxAccService? {
+        return if (productInfo.type == ProductType.ExciseAlcohol && productInfo.isBoxFl) { //алкоголь, коробочный учет https://trello.com/c/KbBbXj2t
             this.productInfo = productInfo.copy()
             boxes.clear()
             taskManager.getReceivingTask()?.taskRepository?.getBoxes()?.getBoxes()?.map {
@@ -44,17 +44,20 @@ class ProcessExciseAlcoBoxAccService
                 currentExciseStampsBad.add(it.copy())
             }
             this
-        }
-        else null
+        } else null
     }
 
-    fun applyBoxCard(box: TaskBoxInfo, typeDiscrepancies: String, isScan: Boolean) {
-        addBoxDiscrepancy(box.boxNumber, typeDiscrepancies, isScan)
+    fun applyBoxCard(box: TaskBoxInfo, typeDiscrepancies: String) {
         //отмечаем все марки из короба
-        exciseStamps.filter {fstamp ->
-            fstamp.boxNumber == box.boxNumber
-        }.map {stamp ->
-            val isScanExciseStamp = currentExciseStampsDiscrepancies.findLast { it.code == stamp.code }?.isScan ?: false //если марки были ранее отсканированы, то с этим признаком их и сохраняем, а иначе ставим false
+        exciseStamps.filter { foundStamp ->
+            foundStamp.boxNumber == box.boxNumber
+        }.map { stamp ->
+            val isScanExciseStamp = currentExciseStampsDiscrepancies
+                    .findLast {
+                        it.code == stamp.code
+                    }
+                    ?.isScan
+                    ?: false //если марки были ранее отсканированы, то с этим признаком их и сохраняем, а иначе ставим false
             addExciseStampDiscrepancy(stamp, typeDiscrepancies, isScanExciseStamp)
         }
 
@@ -70,24 +73,26 @@ class ProcessExciseAlcoBoxAccService
 
         if (currentExciseStampsDiscrepancies.isNotEmpty()) {
             currentExciseStampsDiscrepancies.map {
-                taskManager.getReceivingTask()?.
-                        taskRepository?.
-                        getExciseStampsDiscrepancies()?.
-                        changeExciseStampDiscrepancy(it)
+                taskManager
+                        .getReceivingTask()
+                        ?.taskRepository
+                        ?.getExciseStampsDiscrepancies()
+                        ?.changeExciseStampDiscrepancy(it)
             }
         }
 
         if (currentExciseStampsBad.isNotEmpty()) {
             currentExciseStampsBad.map {
-                taskManager.getReceivingTask()?.
-                        taskRepository?.
-                        getExciseStampsBad()?.
-                        changeExciseStampBad(it)
+                taskManager
+                        .getReceivingTask()
+                        ?.taskRepository
+                        ?.getExciseStampsBad()
+                        ?.changeExciseStampBad(it)
             }
         }
     }
 
-    fun addProduct(count: String, typeDiscrepancies: String){
+    fun addProduct(count: String, typeDiscrepancies: String) {
         val countAdd = if (typeDiscrepancies == "1") count.toDouble() else getCountOfDiscrepanciesOfProduct(typeDiscrepancies) + count.toDouble()
 
         //добавляем кол-во по расхождению для продукта
@@ -107,10 +112,7 @@ class ProcessExciseAlcoBoxAccService
                         notEditNumberDiscrepancies = ""
                 )
 
-        taskManager.getReceivingTask()?.
-                taskRepository?.
-                getProductsDiscrepancies()?.
-                changeProductDiscrepancy(foundDiscrepancy)
+        taskManager.getReceivingTask()?.taskRepository?.getProductsDiscrepancies()?.changeProductDiscrepancy(foundDiscrepancy)
     }
 
     fun addExciseStampDiscrepancy(exciseStamp: TaskExciseStampInfo, typeDiscrepancies: String, isScan: Boolean) {
@@ -133,7 +135,7 @@ class ProcessExciseAlcoBoxAccService
                         isUnknown = false
                 )
 
-        currentExciseStampsDiscrepancies.map { it }.filter {unitInfo ->
+        currentExciseStampsDiscrepancies.map { it }.filter { unitInfo ->
             if (unitInfo.code == exciseStamp.code) {
                 currentExciseStampsDiscrepancies.remove(unitInfo)
                 return@filter true
@@ -182,7 +184,7 @@ class ProcessExciseAlcoBoxAccService
                         isScan = isScan
                 )
 
-        currentBoxDiscrepancies.map { it }.filter {unitInfo ->
+        currentBoxDiscrepancies.map { it }.filter { unitInfo ->
             if (unitInfo.boxNumber == boxNumber) {
                 currentBoxDiscrepancies.remove(unitInfo)
                 return@filter true
@@ -196,7 +198,7 @@ class ProcessExciseAlcoBoxAccService
     fun addDiscrepancyScannedMarkCurrentBox(currentBoxNumber: String, realBoxNumber: String, scannedExciseStampInfo: TaskExciseStampInfo, typeDiscrepancies: String) {
         //https://trello.com/c/Wr4xe6L8 - отмечаем текущий короб и короб, в котором числится отсканированная марка, и все марки из этих коробов, категорией для брака из параметра GRZ_CR_GRUNDCAT
         //удаляем все ранее отсканированные марки для этих коробв
-        currentExciseStampsDiscrepancies.map { it }.filter {unitInfo ->
+        currentExciseStampsDiscrepancies.map { it }.filter { unitInfo ->
             if (unitInfo.boxNumber == currentBoxNumber || unitInfo.boxNumber == realBoxNumber) {
                 currentExciseStampsDiscrepancies.remove(unitInfo)
                 return@filter true
@@ -209,7 +211,7 @@ class ProcessExciseAlcoBoxAccService
         addBoxDiscrepancy(realBoxNumber, typeDiscrepancies, false) //передаем false, т.к. эта ф-ция (addDiscrepancyScannedMarkCurrentBox) вызывается только при скане марки, а не короба
 
         //отмечаем все марки из этих коробов признаком IS_SCAN=false (в карточке трелло не было указано ставить true для этих марок) и категорией для брака из параметра GRZ_CR_GRUNDCAT
-        exciseStamps.filter {stamp ->
+        exciseStamps.filter { stamp ->
             stamp.boxNumber == currentBoxNumber || stamp.boxNumber == realBoxNumber
         }.map {
             if (it.code == scannedExciseStampInfo.code) {
@@ -225,10 +227,15 @@ class ProcessExciseAlcoBoxAccService
     fun denialOfFullProductAcceptance(typeDiscrepancies: String) {
         //https://trello.com/c/WeGFSdAW
         //отмечаем все короба и марки для продукта категорией для брака из параметра GRZ_CR_GRUNDCAT
-        boxes.filter {box ->
+        boxes.filter { box ->
             box.materialNumber == productInfo.materialNumber
         }.map {
-            applyBoxCard(it, typeDiscrepancies, false) //передаем false, т.к. эта ф-ция (denialOfFullProductAcceptance) вызывается с экрана Оюнаружены расхождения по клику на короб на вкладке Не обработаны
+            addBoxDiscrepancy(
+                    boxNumber = it.boxNumber,
+                    typeDiscrepancies = typeDiscrepancies,
+                    isScan = false //передаем false, т.к. эта ф-ция (denialOfFullProductAcceptance) вызывается с экрана Обнаружены расхождения по клику на короб на вкладке Не обработаны
+            )
+            applyBoxCard(it, typeDiscrepancies)
         }
 
         //отмечаем продукт
@@ -238,30 +245,30 @@ class ProcessExciseAlcoBoxAccService
     fun refusalToAcceptPartlyByProduct(typeDiscrepancies: String) {
         //https://trello.com/c/WeGFSdAW
         //отмечаем все не обработанные короба для продукта категорией для брака из параметра GRZ_CR_GRUNDCAT
-        boxes.filter {box ->
+        boxes.filter { box ->
             box.materialNumber == productInfo.materialNumber && currentBoxDiscrepancies.findLast { it.boxNumber == box.boxNumber }?.boxNumber == null
         }.map {
             addBoxDiscrepancy(it.boxNumber, typeDiscrepancies, false) //передаем false, т.к. эта ф-ция (refusalToAcceptPartlyByProduct) вызывается с экрана Оюнаружены расхождения по клику на короб на вкладке Не обработаны
         }
 
         //отмечаем все не обработанные марки для продукта категорией для брака из параметра GRZ_CR_GRUNDCAT
-        exciseStamps.filter {fstamp ->
+        exciseStamps.filter { fstamp ->
             fstamp.materialNumber == productInfo.materialNumber && currentExciseStampsDiscrepancies.findLast { it.code == fstamp.code }?.code == null
-        }.map {stamp ->
+        }.map { stamp ->
             addExciseStampDiscrepancy(stamp, typeDiscrepancies, false)//передаем false, т.к. эта ф-ция (refusalToAcceptPartlyByProduct) вызывается с экрана Оюнаружены расхождения по клику на короб на вкладке Не обработаны
         }
         //отмечаем продукт
         addProduct((productInfo.origQuantity.toDouble() - getCountAcceptOfProduct() - getCountRefusalOfProduct()).toString(), typeDiscrepancies)
     }
 
-    fun massProcessingRejectBoxes (typeDiscrepancies: String) {
-        boxes.filter {box ->
+    fun massProcessingRejectBoxes(typeDiscrepancies: String) {
+        boxes.filter { box ->
             box.materialNumber == productInfo.materialNumber && currentBoxDiscrepancies.findLast { it.boxNumber == box.boxNumber }?.boxNumber.isNullOrEmpty()
-        }.map {unitInfo ->
+        }.map { unitInfo ->
             addBoxDiscrepancy(unitInfo.boxNumber, typeDiscrepancies, false) //передаем  false, т.к. эта ф-ция (massProcessingRejectBoxes) вызыывается только на экране Информация о товаре и только при нажатии на кнопку Применить и только для массовой обработки брака
-            currentBoxDiscrepancies.filter {boxDiscrepancies ->
+            currentBoxDiscrepancies.filter { boxDiscrepancies ->
                 boxDiscrepancies.boxNumber == unitInfo.boxNumber
-            }.map {addBoxDiscrepancies ->
+            }.map { addBoxDiscrepancies ->
                 taskManager
                         .getReceivingTask()
                         ?.taskRepository
@@ -271,66 +278,66 @@ class ProcessExciseAlcoBoxAccService
         }
     }
 
-    fun overLimit(count: Double) : Boolean {
+    fun overLimit(count: Double): Boolean {
         return productInfo.origQuantity.toDouble() < (getCountAcceptOfProduct() + getCountRefusalOfProduct() + count)
     }
 
-    fun searchExciseStamp(code: String) : TaskExciseStampInfo? {
+    fun searchExciseStamp(code: String): TaskExciseStampInfo? {
         return exciseStamps.findLast {
             it.code == code
         }
     }
 
-    fun exciseStampIsAlreadyProcessed(code: String) : Boolean {
+    fun exciseStampIsAlreadyProcessed(code: String): Boolean {
         return currentExciseStampsDiscrepancies.any {
             it.code == code && it.isScan
         }
     }
 
-    fun searchBox(boxNumber: String) : TaskBoxInfo? {
+    fun searchBox(boxNumber: String): TaskBoxInfo? {
         return boxes.findLast {
             it.boxNumber == boxNumber
         }
     }
 
-    fun getCountBoxOfProductOfDiscrepancies(boxNumber: String, typeDiscrepancies: String) : Int {
+    fun getCountBoxOfProductOfDiscrepancies(boxNumber: String, typeDiscrepancies: String): Int {
         return currentBoxDiscrepancies.filter {
             it.boxNumber == boxNumber && it.typeDiscrepancies == typeDiscrepancies
         }.size
     }
 
-    private fun getCountOfDiscrepanciesOfProduct(typeDiscrepancies: String) : Double {
-        return taskManager.getReceivingTask()!!.taskRepository.getProductsDiscrepancies().findProductDiscrepanciesOfProduct(productInfo).filter {productDiscrepancies ->
+    private fun getCountOfDiscrepanciesOfProduct(typeDiscrepancies: String): Double {
+        return taskManager.getReceivingTask()!!.taskRepository.getProductsDiscrepancies().findProductDiscrepanciesOfProduct(productInfo).filter { productDiscrepancies ->
             productDiscrepancies.typeDiscrepancies == typeDiscrepancies
         }.sumByDouble {
             it.numberDiscrepancies.toDouble()
         }
     }
 
-    fun getCountAcceptOfProduct() : Double {
-        return taskManager.getReceivingTask()!!.taskRepository.getProductsDiscrepancies().findProductDiscrepanciesOfProduct(productInfo).filter {productDiscrepancies ->
+    fun getCountAcceptOfProduct(): Double {
+        return taskManager.getReceivingTask()!!.taskRepository.getProductsDiscrepancies().findProductDiscrepanciesOfProduct(productInfo).filter { productDiscrepancies ->
             productDiscrepancies.typeDiscrepancies == "1"
         }.sumByDouble {
             it.numberDiscrepancies.toDouble()
         }
     }
 
-    fun getCountRefusalOfProduct() : Double {
-        return taskManager.getReceivingTask()!!.taskRepository.getProductsDiscrepancies().findProductDiscrepanciesOfProduct(productInfo).filter {productDiscrepancies ->
+    fun getCountRefusalOfProduct(): Double {
+        return taskManager.getReceivingTask()!!.taskRepository.getProductsDiscrepancies().findProductDiscrepanciesOfProduct(productInfo).filter { productDiscrepancies ->
             productDiscrepancies.typeDiscrepancies != "1"
         }.sumByDouble {
             it.numberDiscrepancies.toDouble()
         }
     }
 
-    fun getCountExciseStampDiscrepanciesOfBox(boxNumber: String, typeDiscrepancies: String) : Int {
+    fun getCountExciseStampDiscrepanciesOfBox(boxNumber: String, typeDiscrepancies: String): Int {
         return currentExciseStampsDiscrepancies.filter {
             it.boxNumber == boxNumber && it.typeDiscrepancies == typeDiscrepancies && it.isScan
         }.size
     }
 
     //https://trello.com/c/Hve509E5 контроль марки для короба
-    fun stampControlOfBox(box: TaskBoxInfo) : Boolean {
+    fun stampControlOfBox(box: TaskBoxInfo): Boolean {
         val countScannedExciseStampsDiscrepanciesOfBox = currentExciseStampsDiscrepancies.filter {
             it.boxNumber == box.boxNumber && it.typeDiscrepancies == "1" && it.isScan
         }.size
@@ -339,7 +346,7 @@ class ProcessExciseAlcoBoxAccService
     }
 
     // https://trello.com/c/Hve509E5 контроль короба
-    fun boxControl(box: TaskBoxInfo) : Boolean {
+    fun boxControl(box: TaskBoxInfo): Boolean {
         val countProcessedBox = currentBoxDiscrepancies.filter {
             it.boxNumber == box.boxNumber
         }.size
@@ -347,7 +354,7 @@ class ProcessExciseAlcoBoxAccService
             it.boxNumber == box.boxNumber && it.isScan && it.typeDiscrepancies == "1"
         }.size
 
-        return (countProcessedBox >=1 && countScannedExciseStampOfBox >=1) || (countScannedExciseStampOfBox >= 2) || (countScannedExciseStampOfBox >= productInfo.numberStampsControl.toInt())
+        return (countProcessedBox >= 1 && countScannedExciseStampOfBox >= 1) || (countScannedExciseStampOfBox >= 2) || (countScannedExciseStampOfBox >= productInfo.numberStampsControl.toInt())
     }
 
     fun rollbackScannedExciseStamp() {
@@ -357,17 +364,17 @@ class ProcessExciseAlcoBoxAccService
         currentExciseStampsDiscrepancies.remove(stamp)
     }
 
-    fun getCountUntreatedBoxes() : Int {
+    fun getCountUntreatedBoxes(): Int {
         val countTotalBoxes = boxes.filter { it.materialNumber == productInfo.materialNumber }.size
         val countProcessedBoxes = currentBoxDiscrepancies.filter { it.materialNumber == productInfo.materialNumber }.size
         return countTotalBoxes - countProcessedBoxes
     }
 
-    fun getCountDefectBoxes() : Int {
-        return currentBoxDiscrepancies.filter { it.materialNumber == productInfo.materialNumber && it.typeDiscrepancies != "1"}.size
+    fun getCountDefectBoxes(): Int {
+        return currentBoxDiscrepancies.filter { it.materialNumber == productInfo.materialNumber && it.typeDiscrepancies != "1" }.size
     }
 
-    fun modifications() : Boolean {
+    fun modifications(): Boolean {
         return currentExciseStampsDiscrepancies != taskManager.getReceivingTask()?.taskRepository?.getExciseStampsDiscrepancies()?.getExciseStampDiscrepancies()
     }
 
@@ -386,20 +393,20 @@ class ProcessExciseAlcoBoxAccService
         }
     }
 
-    fun defectiveBox (boxNumber: String) : Boolean {
+    fun defectiveBox(boxNumber: String): Boolean {
         return currentBoxDiscrepancies.none {
             it.boxNumber == boxNumber && it.typeDiscrepancies == "1"
         }
     }
 
-    fun getCountBoxesProcessedOfProduct() : Int {
+    fun getCountBoxesProcessedOfProduct(): Int {
         return currentBoxDiscrepancies.filter {
             it.materialNumber == productInfo.materialNumber
         }.size
     }
 
     fun cleanBoxInfo(boxNumber: String, typeDiscrepancies: String) {
-        currentExciseStampsDiscrepancies.map { it }.filter {unitInfo ->
+        currentExciseStampsDiscrepancies.map { it }.filter { unitInfo ->
             if (unitInfo.materialNumber == productInfo.materialNumber && unitInfo.boxNumber == boxNumber && unitInfo.typeDiscrepancies == typeDiscrepancies) {
                 currentExciseStampsDiscrepancies.remove(unitInfo)
                 return@filter true
@@ -407,16 +414,13 @@ class ProcessExciseAlcoBoxAccService
             return@filter false
         }
 
-        taskManager.getReceivingTask()?.
-                taskRepository?.
-                getExciseStampsDiscrepancies()?.
-                deleteExciseStampDiscrepancyOfProductOfBoxOfDiscrepancy(
-                        materialNumber = productInfo.materialNumber,
-                        boxNumber = boxNumber,
-                        typeDiscrepancies = typeDiscrepancies
-                )
+        taskManager.getReceivingTask()?.taskRepository?.getExciseStampsDiscrepancies()?.deleteExciseStampDiscrepancyOfProductOfBoxOfDiscrepancy(
+                materialNumber = productInfo.materialNumber,
+                boxNumber = boxNumber,
+                typeDiscrepancies = typeDiscrepancies
+        )
 
-        currentBoxDiscrepancies.map { it }.filter {unitInfo ->
+        currentBoxDiscrepancies.map { it }.filter { unitInfo ->
             if (unitInfo.materialNumber == productInfo.materialNumber && unitInfo.boxNumber == boxNumber && unitInfo.typeDiscrepancies == typeDiscrepancies) {
                 currentBoxDiscrepancies.remove(unitInfo)
                 return@filter true
@@ -424,14 +428,11 @@ class ProcessExciseAlcoBoxAccService
             return@filter false
         }
 
-        taskManager.getReceivingTask()?.
-                taskRepository?.
-                getBoxesDiscrepancies()?.
-                deleteBoxDiscrepancies(
-                        materialNumber = productInfo.materialNumber,
-                        boxNumber = boxNumber,
-                        typeDiscrepancies = typeDiscrepancies
-                )
+        taskManager.getReceivingTask()?.taskRepository?.getBoxesDiscrepancies()?.deleteBoxDiscrepancies(
+                materialNumber = productInfo.materialNumber,
+                boxNumber = boxNumber,
+                typeDiscrepancies = typeDiscrepancies
+        )
 
         taskManager
                 .getReceivingTask()
@@ -440,7 +441,7 @@ class ProcessExciseAlcoBoxAccService
                 ?.deleteProductDiscrepancy(productInfo.materialNumber, typeDiscrepancies)
     }
 
-    fun getLastAddExciseStamp() : TaskExciseStampInfo? {
+    fun getLastAddExciseStamp(): TaskExciseStampInfo? {
         return if (currentExciseStampsDiscrepancies.isNotEmpty()) {
             exciseStamps.findLast { stampInfo ->
                 stampInfo.code == currentExciseStampsDiscrepancies.last {
@@ -454,7 +455,7 @@ class ProcessExciseAlcoBoxAccService
         countAccept = count
     }
 
-    fun getCountAccept() : Double {
+    fun getCountAccept(): Double {
         return countAccept
     }
 
