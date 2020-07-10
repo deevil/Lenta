@@ -1,0 +1,86 @@
+plugins{
+    id 'com.android.application'
+    id 'kotlin-android'
+    id 'kotlin-kapt'
+    id 'io.fabric'
+    id 'kotlin-android-extensions'
+}
+
+apply from: '../fmp_settings.gradle'
+
+def prefixAppVersion = "18"
+
+android {
+    compileSdkVersion build_versions.target_sdk
+    defaultConfig {
+        applicationId "com.lenta.bp18"
+        minSdkVersion build_versions.min_sdk
+        targetSdkVersion build_versions.target_sdk
+        versionCode getCodeVersion()
+        versionName getNameVersion(prefixAppVersion)
+        println 'version of' + applicationId + ": " + getNameVersion()
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        multiDexEnabled true
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    buildFeatures {
+        dataBinding = true
+    }
+
+    flavorDimensions "server"
+
+    productFlavors {
+        staging {
+            dimension "server"
+            stagingSettings.each {
+                resValue it.type, it.name, it.value
+            }
+        }
+
+        prod {
+            dimension "server"
+            prodSettings.each {
+                resValue it.type, it.name, it.value
+            }
+        }
+    }
+    applicationVariants.all { variant ->
+        if (variant.buildType.name == "release") {
+            variant.outputs.all {
+                def name = outputFileName.replace("app-", "LentaOpen-")
+                outputFileName = name.replace(".apk", "-${variant.versionName}-${variant.versionCode}.apk")
+            }
+        }
+    }
+
+    configurations {
+        all*.exclude group: 'com.google.guava', module: 'listenablefuture'
+    }
+
+    packagingOptions {
+        pickFirst 'META-INF/kotlinx-io.kotlin_module'
+        pickFirst 'META-INF/atomicfu.kotlin_module'
+        pickFirst 'META-INF/kotlinx-coroutines-io.kotlin_module'
+    }
+
+}
+
+dependencies {
+    implementation project(':Shared')
+
+    // Dagger2
+    kapt deps.dagger.compiler
+
+    testImplementation deps.junit
+
+    implementation('com.crashlytics.sdk.android:crashlytics:2.10.1@aar') {
+        transitive = true
+    }
+
+}
