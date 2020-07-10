@@ -18,6 +18,7 @@ import com.lenta.shared.exception.Failure
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
 import com.lenta.shared.utilities.databinding.PageSelectionListener
+import com.lenta.shared.utilities.extentions.combineLatest
 import com.lenta.shared.utilities.extentions.dropZeros
 import com.lenta.shared.utilities.extentions.isSapTrue
 import com.lenta.shared.utilities.extentions.map
@@ -28,16 +29,21 @@ class ExternalSupplyTaskListViewModel : CoreViewModel(), PageSelectionListener, 
 
     @Inject
     lateinit var navigator: IScreenNavigator
+
     @Inject
     lateinit var sessionInfo: ISessionInfo
+
     @Inject
     lateinit var manager: ITaskManager
+
     @Inject
     lateinit var taskListNetRequest: TaskListNetRequest
+
     @Inject
     lateinit var taskInfoNetRequest: TaskInfoNetRequest
+
     @Inject
-    lateinit var resourceManager: IResourceManager
+    lateinit var resource: IResourceManager
 
 
     private val tasks by lazy {
@@ -52,7 +58,7 @@ class ExternalSupplyTaskListViewModel : CoreViewModel(), PageSelectionListener, 
 
     val description by lazy {
         tasks.map {
-            resourceManager.workWith(manager.taskType.abbreviation, it?.size ?: 0)
+            resource.workWith(manager.taskType.abbreviation, it?.size ?: 0)
         }
     }
 
@@ -79,19 +85,21 @@ class ExternalSupplyTaskListViewModel : CoreViewModel(), PageSelectionListener, 
     }
 
     val processing by lazy {
-        tasks.map { it?.filter { task -> !task.isProcessed } }.map(toUiFunc)
+        tasks.combineLatest(numberField).map {
+            it?.let {
+                val (list, number) = it
+                list.filter { task -> !task.isProcessed && task.number.contains(number) }
+            }
+        }.map(toUiFunc)
     }
 
     val processed by lazy {
-        tasks.map { it?.filter { task -> task.isProcessed } }.map(toUiFunc)
-    }
-
-    // -----------------------------
-
-    init {
-        viewModelScope.launch {
-            //loadTaskList()
-        }
+        tasks.combineLatest(numberField).map {
+            it?.let {
+                val (list, number) = it
+                list.filter { task -> task.isProcessed && task.number.contains(number) }
+            }
+        }.map(toUiFunc)
     }
 
     // -----------------------------
