@@ -1,12 +1,6 @@
 package com.lenta.bp18.features.select_market
 
-import androidx.lifecycle.ViewModelProviders
-import android.os.Bundle
-import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
-import androidx.lifecycle.Observer
 import com.lenta.bp18.R
 import com.lenta.bp18.databinding.FragmentSelectMarketBinding
 import com.lenta.bp18.platform.extention.getAppComponent

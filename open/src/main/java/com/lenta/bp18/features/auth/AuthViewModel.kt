@@ -9,7 +9,6 @@ import com.lenta.shared.exception.Failure
 import com.lenta.shared.features.login.CoreAuthViewModel
 import com.lenta.shared.features.login.isEnterEnabled
 import com.lenta.shared.features.login.isValidLoginFields
-import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.requests.network.Auth
 import com.lenta.shared.requests.network.AuthParams
 import com.lenta.shared.settings.IAppSettings
@@ -20,7 +19,6 @@ import com.lenta.shared.utilities.getBaseAuth
 import com.lenta.shared.utilities.runIfDebug
 import kotlinx.coroutines.launch
 import javax.inject.Inject
-import kotlin.math.log
 
 class AuthViewModel : CoreAuthViewModel() {
 

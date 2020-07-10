@@ -1,7 +1,6 @@
 package com.lenta.bp18.features.select_goods
 
 import android.view.View
-import androidx.lifecycle.Observer
 import com.lenta.bp18.R
 import com.lenta.bp18.databinding.FragmentSelectGoodsBinding
 import com.lenta.bp18.platform.extention.getAppComponent

@@ -1,5 +1,6 @@
 package com.lenta.bp18
 
+import com.lenta.bp18.platform.extention.getAppComponent
 import com.lenta.shared.CoreApplication
 import com.lenta.shared.settings.DefaultConnectionSettings
 import com.lenta.shared.utilities.Logg

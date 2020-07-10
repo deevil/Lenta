@@ -18,23 +18,24 @@ import com.lenta.shared.settings.IAppSettings
 import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.view.OnPositionClickListener
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 class SelectMarketViewModel : CoreViewModel(), OnPositionClickListener {
-
+    @Inject
     lateinit var navigator: IScreenNavigator
-
+    @Inject
     lateinit var sessionInfo: ISessionInfo
-
+    @Inject
     lateinit var appSettings: IAppSettings
-
-    //lateinit var repoInMemoryHolder: IRepoInMemoryHolder
-
+/*    @Inject
+    lateinit var repoInMemoryHolder: IRepoInMemoryHolder*/
+    @Inject
     lateinit var timeMonitor: ITimeMonitor
-
+    @Inject
     lateinit var serverTimeRequest: ServerTimeRequest
-
+    @Inject
     lateinit var printerMessage: PrinterManager
-
+    @Inject
     lateinit var gson: Gson
 
     private val markets: MutableLiveData<List<MarketUi>> = MutableLiveData()
