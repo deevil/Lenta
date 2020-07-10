@@ -71,18 +71,10 @@ data class GoodOpen(
         return positionQuantity.sumWith(partQuantity)
     }
 
-    fun addPosition(quantity: Double, provider: ProviderInfo) {
-        val position = positions.find { it.provider.code == provider.code }
-        val oldQuantity = position?.quantity
-
-        if (position != null) {
-            positions.remove(position)
-        }
-
-        positions.add(0, Position(
-                quantity = quantity.sumWith(oldQuantity),
-                provider = provider
-        ))
+    fun addPosition(position: Position) {
+        positions.find { it.provider.code == position.provider.code }?.let { found ->
+            found.quantity = found.quantity.sumWith(position.quantity)
+        } ?: positions.add(position)
     }
 
     fun addMark(mark: Mark) {

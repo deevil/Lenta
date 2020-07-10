@@ -347,7 +347,7 @@ class GoodInfoCreateViewModel : CoreViewModel() {
                     ScanNumberType.EXCISE -> false
                     ScanNumberType.MARK_150 -> quantity > 0.0 && isProviderSelected
                     ScanNumberType.MARK_68 -> quantity > 0.0 && isProviderSelected && isProducerSelected
-                    ScanNumberType.PART -> isProviderSelected && isProducerSelected && isDateEntered
+                    ScanNumberType.PART -> quantity > 0.0 && isProviderSelected && isProducerSelected && isDateEntered
                     ScanNumberType.BOX -> quantity > 0.0 && isProviderSelected && isProducerSelected
                     else -> false
                 }
