@@ -14,15 +14,16 @@ import com.lenta.movement.platform.extensions.unsafeLazy
 import com.lenta.movement.platform.navigation.IScreenNavigator
 import com.lenta.movement.requests.network.ConsolidationNetRequest
 import com.lenta.movement.requests.network.DocumentsToPrintNetRequest
-import com.lenta.movement.requests.network.DocumentsToPrintParams
 import com.lenta.movement.requests.network.EndConsolidationNetRequest
 import com.lenta.movement.requests.network.models.RestCargoUnit
 import com.lenta.movement.requests.network.models.consolidation.ConsolidationParams
 import com.lenta.movement.requests.network.models.consolidation.ConsolidationProcessingUnit
+import com.lenta.movement.requests.network.models.documentsToPrint.DocumentsToPrintParams
 import com.lenta.movement.requests.network.models.endConsolidation.EndConsolidationParams
 import com.lenta.movement.requests.network.models.toCargoUnitList
 import com.lenta.movement.requests.network.models.toTask
 import com.lenta.shared.account.ISessionInfo
+import com.lenta.shared.exception.Failure
 import com.lenta.shared.functional.Either
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.Logg
@@ -32,6 +33,7 @@ import com.lenta.shared.utilities.databinding.PageSelectionListener
 import com.lenta.shared.utilities.extentions.getDeviceIp
 import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.utilities.extentions.mapSkipNulls
+import com.lenta.shared.utilities.orIfNull
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -260,14 +262,13 @@ class TaskEOMergeViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
                         ConsolidationNetRequest.SEPARATION_GE_TO_EO_MODE -> {
                             eoListValue.forEach { eo ->
                                 sendGEList.find { it.cargoUnitNumber == eo.cargoUnitNumber }
-                                        ?.let { ge ->
+                                        ?.run {
                                             eo.cargoUnitNumber = null
                                             eo.state = ProcessingUnit.State.NOT_PROCESSED
                                         }
                             }
                         }
                     }
-
                     eoList.value = eoListValue
                 }
                 geList.value = resultGeList.toCargoUnitList()
@@ -376,16 +377,23 @@ class TaskEOMergeViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
     fun onPrintBtnClick() {
         viewModelScope.launch {
             screenNavigator.showProgress(documentsToPrintNetRequest)
-            documentsToPrintNetRequest(
-                    DocumentsToPrintParams(
-                            taskManager.getTask().number
-                    )
-            ).either({ failure ->
+            val params = DocumentsToPrintParams(
+                    taskManager.getTask().number
+            )
+            val either = documentsToPrintNetRequest(params)
+            either.either({ failure ->
                 screenNavigator.hideProgress()
                 screenNavigator.openAlertScreen(failure)
             }, { result ->
                 screenNavigator.hideProgress()
-                // TODO screenNavigator.openFormedDocuments(result.docList)
+                result.docList?.let { docList ->
+                    screenNavigator.openTaskEoMergeFormedDocumentsScreen(docList)
+                }.orIfNull {
+                    screenNavigator.openAlertScreen(Failure.ServerError)
+                    Logg.e {
+                        "Список документов null"
+                    }
+                }
             }
             )
         }
@@ -395,7 +403,7 @@ class TaskEOMergeViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
         selectedPagePosition.value = GE_LIST_TAB
     }
 
-    fun onDigitPressed(digit: Int) = Unit // TODO
+    fun onDigitPressed(digit: Int) = Unit
 
     companion object {
         private const val EO_LIST_TAB = 0

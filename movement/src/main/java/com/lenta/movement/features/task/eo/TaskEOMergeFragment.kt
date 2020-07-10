@@ -134,7 +134,7 @@ class TaskEOMergeFragment : CoreFragment<FragmentTaskEoMergeBinding, TaskEOMerge
                                             binding.item = list[position]
                                         }
 
-                                        binding.selectedToDelete = vm.eoSelectionHelper.isSelected(position)
+                                        binding.selectedToProcess = vm.eoSelectionHelper.isSelected(position)
                                         eoListRecyclerViewKeyHandler?.let { eoListRecyclerViewKeyHandler ->
                                             binding.root.isSelected = eoListRecyclerViewKeyHandler.isSelected(position)
                                         }

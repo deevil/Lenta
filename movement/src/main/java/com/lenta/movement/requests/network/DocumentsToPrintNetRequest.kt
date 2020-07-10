@@ -1,7 +1,8 @@
 package com.lenta.movement.requests.network
 
-import com.google.gson.annotations.SerializedName
 import com.lenta.movement.exception.InfoFailure
+import com.lenta.movement.requests.network.models.documentsToPrint.DocumentsToPrintParams
+import com.lenta.movement.requests.network.models.documentsToPrint.DocumentsToPrintResult
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.fmp.ObjectRawStatus
 import com.lenta.shared.functional.Either
@@ -21,7 +22,10 @@ class DocumentsToPrintNetRequest@Inject constructor(
                 clazz = DocumentsToPrintStatus::class.java
         ).let { result ->
             if(result is Either.Right && result.b.retCode != NON_FAILURE_RET_CODE) {
-                Either.Left(InfoFailure(result.b.errorTxt))
+                val errorText = result.b.errorTxt
+                errorText?.let {
+                    Either.Left(InfoFailure(it))
+                } ?: Either.Left(Failure.ServerError)
             } else result
         }
     }
@@ -34,23 +38,5 @@ class DocumentsToPrintNetRequest@Inject constructor(
 
 class DocumentsToPrintStatus : ObjectRawStatus<DocumentsToPrintResult>()
 
-data class DocumentsToPrintParams(
-        /** Номер задания */
-        @SerializedName("IV_TASK_NUM")
-        val taskNumber: String
-)
 
-data class DocumentsToPrintResult(
 
-        /** Список документов для печати */
-        @SerializedName("ET_DOC_PRINT")
-        val docList: String,
-
-        /** Код возврата */
-        @SerializedName("EV_RETCODE")
-        val retCode: String,
-
-        /** Текст ошибки */
-        @SerializedName("EV_ERROR_TEXT")
-        val errorTxt: String
-)

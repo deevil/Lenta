@@ -22,4 +22,6 @@ interface ITaskManager {
     fun isDisallowProduct(product: ProductInfo): Boolean
 
     fun clear()
+
+    fun getPrinterName() : String
 }

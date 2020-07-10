@@ -1,6 +1,7 @@
 package com.lenta.movement.models
 
 import com.lenta.movement.fmp.resources.fast.*
+import com.lenta.shared.fmp.resources.fast.ZmpUtz26V001
 import com.lenta.shared.models.core.GisControl
 import com.lenta.shared.utilities.extentions.isSapTrue
 import com.mobrun.plugin.api.HyperHive
@@ -15,6 +16,7 @@ class TaskManager(
     private val allowProductsTable = ZmpUtz49V001(hyperHive).localHelper_ET_ALLOW_MATNR
     private val excludeProductsTable = ZmpUtz50V001(hyperHive).localHelper_ET_EXCLUDE_MATNR
     private val receiversTable = ZmpUtz79V001(hyperHive).localHelper_ET_PLANTS
+    private val printerTable = ZmpUtz26V001(hyperHive).localHelper_ET_PRINTERS
 
     private var task: Task? = null
 
@@ -77,6 +79,10 @@ class TaskManager(
 
     override fun clear() {
         task = null
+    }
+
+    override fun getPrinterName() : String {
+        return printerTable.all.first().printerName
     }
 
     override fun getTaskSettings(taskType: TaskType, movementType: MovementType): TaskSettings {
@@ -145,4 +151,6 @@ class TaskManager(
             gisControls = gisControls
         )
     }
+
+
 }
