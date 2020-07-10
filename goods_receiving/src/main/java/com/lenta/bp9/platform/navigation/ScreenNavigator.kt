@@ -18,11 +18,11 @@ import com.lenta.bp9.features.goods_information.excise_alco_pge.excise_alco_box_
 import com.lenta.bp9.features.goods_information.excise_alco_pge.excise_alco_box_acc_pge.excise_alco_box_list.ExciseAlcoBoxListPGEFragment
 import com.lenta.bp9.features.goods_information.excise_alco_pge.excise_alco_stamp_acc_pge.ExciseAlcoStampAccInfoPGEFragment
 import com.lenta.bp9.features.goods_information.excise_alco_pge.excise_alco_stamp_acc_pge.batch_signs.ExciseAlcoStampPGEBatchSignsFragment
-import com.lenta.bp9.features.goods_information.excise_alco_receiving.excise_alco_stamp_acc.ExciseAlcoStampAccInfoFragment
 import com.lenta.bp9.features.goods_information.excise_alco_receiving.excise_alco_box_acc.ExciseAlcoBoxAccInfoFragment
 import com.lenta.bp9.features.goods_information.excise_alco_receiving.excise_alco_box_acc.excise_alco_box_card.ExciseAlcoBoxCardFragment
 import com.lenta.bp9.features.goods_information.excise_alco_receiving.excise_alco_box_acc.excise_alco_box_list.ExciseAlcoBoxListFragment
 import com.lenta.bp9.features.goods_information.excise_alco_receiving.excise_alco_box_acc.excise_alco_box_product_failure.ExciseAlcoBoxProductFailureFragment
+import com.lenta.bp9.features.goods_information.excise_alco_receiving.excise_alco_stamp_acc.ExciseAlcoStampAccInfoFragment
 import com.lenta.bp9.features.goods_information.general.GoodsInfoFragment
 import com.lenta.bp9.features.goods_information.general_opp.GoodsInfoShipmentPPFragment
 import com.lenta.bp9.features.goods_information.mercury.GoodsMercuryInfoFragment
@@ -69,7 +69,6 @@ import com.lenta.bp9.requests.network.TaskListSearchParams
 import com.lenta.shared.account.IAuthenticator
 import com.lenta.shared.features.alert.AlertFragment
 import com.lenta.shared.platform.activity.ForegroundActivityProvider
-import com.lenta.shared.platform.navigation.CustomAnimation
 import com.lenta.shared.platform.navigation.ICoreNavigator
 import com.lenta.shared.platform.navigation.runOrPostpone
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
@@ -1511,17 +1510,6 @@ class ScreenNavigator(
         }
     }
 
-    override fun openAlertErrorWhileSavingScreen() {
-        runOrPostpone {
-            getFragmentStack()?.push(AlertFragment.create(
-                    message = context.getString(R.string.error_while_saving),
-                    iconRes = R.drawable.ic_info_pink_80dp,
-                    textColor = ContextCompat.getColor(context, R.color.color_text_dialogWarning),
-                    pageNumber = "97")
-            )
-        }
-    }
-
     private fun getFragmentStack() = foregroundActivityProvider.getActivity()?.fragmentStack
 }
 
@@ -1695,5 +1683,4 @@ interface IScreenNavigator : ICoreNavigator {
     fun openAlertAlcocodeNotFoundTaskScreen()
     fun openAlertOverLimitPlannedScreen()
     fun openAlertOverLimitPlannedBatchScreen()
-    fun openAlertErrorWhileSavingScreen()
 }
