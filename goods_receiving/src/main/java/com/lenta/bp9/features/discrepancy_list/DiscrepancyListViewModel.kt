@@ -240,8 +240,7 @@ class DiscrepancyListViewModel : CoreViewModel(), PageSelectionListener {
                         }
                         if (repoInMemoryHolder.taskList.value?.taskListLoadingMode == TaskListLoadingMode.PGE) {
                             !(it.typeDiscrepancies == TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_NORM
-                                    || it.typeDiscrepancies == TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_SURPLUS
-                                    )
+                                    || it.typeDiscrepancies == TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_SURPLUS)
                                     && isComponent == false
                         } else {
                             it.typeDiscrepancies != TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_NORM && isComponent == false

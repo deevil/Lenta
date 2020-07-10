@@ -1,6 +1,7 @@
 package com.lenta.bp9.model.processing
 
 import com.lenta.bp9.model.task.*
+import com.lenta.bp9.platform.TypeDiscrepanciesConstants
 import com.lenta.shared.di.AppScope
 import com.lenta.shared.models.core.ProductType
 import javax.inject.Inject
@@ -315,19 +316,32 @@ class ProcessExciseAlcoBoxAccService
     }
 
     fun getCountAcceptOfProduct(): Double {
-        return taskManager.getReceivingTask()!!.taskRepository.getProductsDiscrepancies().findProductDiscrepanciesOfProduct(productInfo).filter { productDiscrepancies ->
-            productDiscrepancies.typeDiscrepancies == "1"
-        }.sumByDouble {
-            it.numberDiscrepancies.toDouble()
-        }
+        return taskManager
+                .getReceivingTask()
+                ?.taskRepository
+                ?.getProductsDiscrepancies()
+                ?.findProductDiscrepanciesOfProduct(productInfo)
+                ?.filter { productDiscrepancies ->
+                    productDiscrepancies.typeDiscrepancies == TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_NORM
+                }?.sumByDouble {
+                    it.numberDiscrepancies.toDouble()
+                }
+                ?: 0.0
     }
 
     fun getCountRefusalOfProduct(): Double {
-        return taskManager.getReceivingTask()!!.taskRepository.getProductsDiscrepancies().findProductDiscrepanciesOfProduct(productInfo).filter { productDiscrepancies ->
-            productDiscrepancies.typeDiscrepancies != "1"
-        }.sumByDouble {
-            it.numberDiscrepancies.toDouble()
-        }
+        return taskManager
+                .getReceivingTask()
+                ?.taskRepository
+                ?.getProductsDiscrepancies()
+                ?.findProductDiscrepanciesOfProduct(productInfo)
+                ?.filter { productDiscrepancies ->
+                    productDiscrepancies.typeDiscrepancies != TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_NORM
+                }
+                ?.sumByDouble {
+                    it.numberDiscrepancies.toDouble()
+                }
+                ?: 0.0
     }
 
     fun getCountExciseStampDiscrepanciesOfBox(boxNumber: String, typeDiscrepancies: String): Int {
