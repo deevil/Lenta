@@ -67,7 +67,7 @@ class PackCodeStatus : ObjectRawStatus<PackCodeResult>()
 
 data class PackCodeResult(
         /** Структура данных для этикетки */
-        @SerializedName("ZSPCP_DATA_LABEL")
+        @SerializedName("ES_DATA_LABEL")
         val dataLabel: DataLabel,
         /** Код тары */
         @SerializedName("EV_CODE_CONT")
