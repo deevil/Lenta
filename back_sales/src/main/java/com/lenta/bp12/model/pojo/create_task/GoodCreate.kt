@@ -61,9 +61,10 @@ data class GoodCreate(
 
     fun getQuantityByProvider(providerCode: String?): Double {
         val positionQuantity = positions.filter { it.provider.code == providerCode }.map { it.quantity }.sumList()
+        val markQuantity = marks.filter { it.providerCode == providerCode }.size.toDouble()
         val partQuantity = parts.filter { it.providerCode == providerCode }.map { it.quantity }.sumList()
 
-        return positionQuantity.sumWith(partQuantity)
+        return positionQuantity.sumWith(markQuantity).sumWith(partQuantity)
     }
 
     fun addPosition(quantity: Double, provider: ProviderInfo) {
