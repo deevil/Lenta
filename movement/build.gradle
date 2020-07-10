@@ -6,13 +6,13 @@ apply plugin: 'de.mannodermaus.android-junit5'
 apply from: '../fmp_settings.gradle'
 apply plugin: 'kotlin-android-extensions'
 
-def prefixAppVersion = "77"
+def prefixAppVersion = "16"
 
 android {
     compileSdkVersion build_versions.target_sdk
 
     defaultConfig {
-        applicationId "com.lenta.movement"
+        applicationId "com.lenta.$prefixAppVersion"
         minSdkVersion build_versions.target_sdk
         targetSdkVersion build_versions.target_sdk
         versionCode getCodeVersion()

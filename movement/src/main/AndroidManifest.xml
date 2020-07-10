@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="com.lenta.movement">
+    package="com.lenta.bp16">
 
     <application
         android:allowBackup="false"
@@ -16,7 +16,7 @@
         tools:replace="android:appComponentFactory, android:allowBackup, android:supportsRtl"
         tools:targetApi="p">
         <activity
-            android:name=".main.MainActivity"
+            android:name="com.lenta.bp16.main.MainActivity"
             android:excludeFromRecents="true"
             android:launchMode="singleInstance"
             android:screenOrientation="portrait">
