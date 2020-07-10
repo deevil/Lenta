@@ -252,8 +252,7 @@ class GoodInfoCreateViewModel : CoreViewModel() {
     private val selectedProvider by lazy {
         providers.combineLatest(providerPosition).map {
             it?.let {
-                val list = it.first
-                val position = it.second
+                val (list, position) = it
                 if (list.isNotEmpty()) list[position] else null
             }
         }
@@ -306,8 +305,7 @@ class GoodInfoCreateViewModel : CoreViewModel() {
     private val selectedProducer by lazy {
         producers.combineLatest(producerPosition).map {
             it?.let {
-                val list = it.first
-                val position = it.second
+                val (list, position) = it
                 if (list.isNotEmpty()) list[position] else null
             }
         }
