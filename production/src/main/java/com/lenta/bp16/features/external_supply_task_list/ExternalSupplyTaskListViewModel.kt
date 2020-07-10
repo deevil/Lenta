@@ -87,8 +87,7 @@ class ExternalSupplyTaskListViewModel : CoreViewModel(), PageSelectionListener, 
     val processing by lazy {
         tasks.combineLatest(numberField).map {
             it?.let {
-                val list = it.first
-                val number = it.second
+                val (list, number) = it
                 list.filter { task -> !task.isProcessed && task.number.contains(number) }
             }
         }.map(toUiFunc)
@@ -97,8 +96,7 @@ class ExternalSupplyTaskListViewModel : CoreViewModel(), PageSelectionListener, 
     val processed by lazy {
         tasks.combineLatest(numberField).map {
             it?.let {
-                val list = it.first
-                val number = it.second
+                val (list, number) = it
                 list.filter { task -> task.isProcessed && task.number.contains(number) }
             }
         }.map(toUiFunc)
