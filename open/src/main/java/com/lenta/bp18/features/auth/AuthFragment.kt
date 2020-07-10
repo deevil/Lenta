@@ -1,15 +1,13 @@
 package com.lenta.bp18.features.auth
 
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
-import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
 import com.lenta.bp18.R
 import com.lenta.bp18.platform.extention.getAppComponent
 import com.lenta.shared.features.login.CoreAuthViewModel
 import com.lenta.shared.features.login.CoreLoginFragment
+import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
+import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.top_toolbar.ImageButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
 import com.lenta.shared.utilities.extentions.generateScreenNumberFromPostfix
@@ -35,6 +33,10 @@ class AuthFragment : CoreLoginFragment() {
         topToolbarUiModel.uiModelButton2.show(ImageButtonDecorationInfo.exitFromApp)
     }
 
+    override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
+        bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.enterToApp)
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         vm.appTitle.value = context?.getAppInfo(withHash = false)
@@ -42,8 +44,9 @@ class AuthFragment : CoreLoginFragment() {
 
     override fun onToolbarButtonClick(view: View) {
         when (view.id) {
-            com.lenta.shared.R.id.b_5 -> vm.onClickEnter()
-            com.lenta.shared.R.id.b_topbar_1 -> vm.onClickAuxiliaryMenu()
+            R.id.b_5 -> vm.onClickEnter()
+           // R.id.b_topbar_1 -> vm.onClickSettingsMenu()
+            R.id.b_topbar_2 -> vm.onClickAuxiliaryMenu()
         }
     }
 

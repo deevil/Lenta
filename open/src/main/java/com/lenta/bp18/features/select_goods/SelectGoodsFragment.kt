@@ -1,14 +1,9 @@
-package com.lenta.bp18.features.search
+package com.lenta.bp18.features.select_goods
 
-import androidx.lifecycle.ViewModelProviders
-import android.os.Bundle
-import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import androidx.lifecycle.Observer
 import com.lenta.bp18.R
-import com.lenta.bp18.databinding.FragmentSearchBinding
+import com.lenta.bp18.databinding.FragmentSelectGoodsBinding
 import com.lenta.bp18.platform.extention.getAppComponent
 import com.lenta.shared.platform.fragment.CoreFragment
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
@@ -19,14 +14,14 @@ import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
 import com.lenta.shared.utilities.extentions.generateScreenNumberFromPostfix
 import com.lenta.shared.utilities.extentions.provideViewModel
 
-class SearchFragment : CoreFragment<FragmentSearchBinding, SearchViewModel>(), ToolbarButtonsClickListener {
+class SelectGoodsFragment : CoreFragment<FragmentSelectGoodsBinding, SelectGoodsViewModel>(), ToolbarButtonsClickListener {
 
-    override fun getLayoutId(): Int = R.layout.fragment_search
+    override fun getLayoutId(): Int = R.layout.fragment_select_goods
 
     override fun getPageNumber(): String? = generateScreenNumberFromPostfix(SCREEN_NUMBER)
 
-    override fun getViewModel(): SearchViewModel {
-        provideViewModel(SearchViewModel::class.java).let{
+    override fun getViewModel(): SelectGoodsViewModel {
+        provideViewModel(SelectGoodsViewModel::class.java).let{
             getAppComponent()?.inject(it)
             return it
         }
@@ -38,15 +33,13 @@ class SearchFragment : CoreFragment<FragmentSearchBinding, SearchViewModel>(), T
     }
 
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
-        bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.next)
-        vm.selectedPosition.observe(viewLifecycleOwner, Observer{
-            bottomToolbarUiModel.uiModelButton5.requestFocus()
-        })
+        bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.next, enabled = false)
     }
 
     override fun onToolbarButtonClick(view: View) {
-        if(view.id == R.id.b_5){
-            vm.onClickNext()
+        when(view.id){
+           /* R.id.b_1 -> vm.onClickBack()
+            R.id.b_5 -> vm.onClickComplete()*/
         }
     }
 

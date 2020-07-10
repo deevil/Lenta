@@ -3,6 +3,7 @@ package com.lenta.bp18.features.goods_info
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.lenta.bp18.platform.navigation.IScreenNavigator
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.extentions.map
 import kotlinx.coroutines.launch
@@ -33,7 +34,7 @@ class GoodsInfoViewModel : CoreViewModel() {
     }
 
     val completeEnabled = entered.map{
-        it ?: 0.0 != 0.0
+        val enabledValue = it ?: 0.0
     }
 
     fun onClickComplete(){

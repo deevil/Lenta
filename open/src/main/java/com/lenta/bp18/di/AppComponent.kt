@@ -2,12 +2,9 @@ package com.lenta.bp18.di
 
 import com.lenta.bp18.ExceptionHandler
 import com.lenta.bp18.features.auth.AuthViewModel
-import com.lenta.bp18.features.goods_info.GoodsInfoFragment
 import com.lenta.bp18.features.goods_info.GoodsInfoViewModel
-import com.lenta.bp18.features.result.ResultViewModel
-import com.lenta.bp18.features.search.SearchViewModel
+import com.lenta.bp18.features.select_goods.SelectGoodsViewModel
 import com.lenta.bp18.features.select_market.SelectMarketViewModel
-import com.lenta.bp18.features.sync.SyncViewModel
 import com.lenta.bp18.main.MainActivity
 import com.lenta.bp18.main.MainViewModel
 import com.lenta.bp18.platform.navigation.IScreenNavigator
@@ -29,8 +26,6 @@ interface AppComponent : CoreComponent, FromParentToCoreProvider {
     fun inject(it: AuthViewModel)
     fun inject(it: SelectMarketViewModel)
     fun inject(it: GoodsInfoViewModel)
-    fun inject(it: ResultViewModel)
-    fun inject(it: SearchViewModel)
-    fun inject(it: SyncViewModel)
+    fun inject(it: SelectGoodsViewModel)
 
 }

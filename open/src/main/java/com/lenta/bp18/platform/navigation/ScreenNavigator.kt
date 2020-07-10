@@ -1,13 +1,14 @@
 package com.lenta.bp18.platform.navigation
 
 import android.content.Context
+import com.lenta.bp18.R
 import com.lenta.bp18.features.auth.AuthFragment
 import com.lenta.bp18.features.goods_info.GoodsInfoFragment
-import com.lenta.bp18.features.result.ResultFragment
-import com.lenta.bp18.features.search.SearchFragment
+import com.lenta.bp18.features.select_goods.SelectGoodsFragment
 import com.lenta.bp18.features.select_market.SelectMarketFragment
-import com.lenta.bp18.features.sync.SyncFragment
+import com.lenta.bp18.platform.Constants
 import com.lenta.shared.account.IAuthenticator
+import com.lenta.shared.features.alert.AlertFragment
 import com.lenta.shared.platform.activity.ForegroundActivityProvider
 import com.lenta.shared.platform.navigation.ICoreNavigator
 import com.lenta.shared.platform.navigation.runOrPostpone
@@ -24,6 +25,7 @@ class ScreenNavigator @Inject constructor(
 
     private fun getFragmentStack() = foregroundActivityProvider.getActivity()?.fragmentStack
 
+    //Base screens
     override fun openAuthScreen() {
         runOrPostpone {
             getFragmentStack()?.push(AuthFragment())
@@ -42,26 +44,42 @@ class ScreenNavigator @Inject constructor(
         }
     }
 
-    override fun openResultScreen() {
+    override fun openSelectGoodsScreen() {
         runOrPostpone {
-            getFragmentStack()?.push(ResultFragment())
+            getFragmentStack()?.push(SelectGoodsFragment())
         }
     }
 
-    override fun openSearchScreen() {
+    // Informational screens
+    override fun openAlertConfirmOpeningPackage() {
         runOrPostpone {
-            getFragmentStack()?.push(SearchFragment())
+            getFragmentStack()?.push(AlertFragment.create(
+                    message = context.getString(R.string.tw_unpucking),
+                    iconRes = R.drawable.ic_question_yellow_80dp,
+                    pageNumber = Constants.ALERT_SCREEN_NUMBER
+            ))
         }
     }
 
-    override fun openSyncScreen() {
+    override fun openAlertSuccessfulOpeningPackage() {
         runOrPostpone {
-            getFragmentStack()?.push(SyncFragment())
+            getFragmentStack()?.push(AlertFragment.create(
+                    message = context.getString(R.string.tw_unpucking_success),
+                    iconRes = R.drawable.ic_info_green_80dp,
+                    pageNumber = Constants.ALERT_SCREEN_NUMBER
+
+            ))
         }
     }
 
-    override fun openFastDataLoadingScreen() {
-        TODO("Not yet implemented")
+    override fun openAlertPartcodeNotFound() {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    message = context.getString(R.string.tw_part_number_not_found),
+                    iconRes = R.drawable.ic_warning_red_80dp,
+                    pageNumber = Constants.ALERT_SCREEN_NUMBER
+            ))
+        }
     }
 
 }
@@ -70,8 +88,8 @@ interface IScreenNavigator : ICoreNavigator {
     fun openAuthScreen()
     fun openSelectMarketScreen()
     fun openGoodsInfoScreen()
-    fun openResultScreen()
-    fun openSearchScreen()
-    fun openSyncScreen()
-    fun openFastDataLoadingScreen()
+    fun openSelectGoodsScreen()
+    fun openAlertConfirmOpeningPackage()
+    fun openAlertSuccessfulOpeningPackage()
+    fun openAlertPartcodeNotFound()
 }

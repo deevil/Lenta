@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.recyclerview.widget.RecyclerView
 import com.google.gson.Gson
+import com.lenta.bp18.platform.navigation.IScreenNavigator
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.features.printer_change.PrinterManager
@@ -26,7 +27,7 @@ class SelectMarketViewModel : CoreViewModel(), OnPositionClickListener {
 
     lateinit var appSettings: IAppSettings
 
-    lateinit var repoInMemoryHolder: IRepoInMemoryHolder
+    //lateinit var repoInMemoryHolder: IRepoInMemoryHolder
 
     lateinit var timeMonitor: ITimeMonitor
 
@@ -50,7 +51,7 @@ class SelectMarketViewModel : CoreViewModel(), OnPositionClickListener {
         }
     }
 
-    init {
+/*    init {
         viewModelScope.launch {
             repoInMemoryHolder.storesRequestResult?.markets?.let { list ->
                 markets.value = list.map {
@@ -74,14 +75,14 @@ class SelectMarketViewModel : CoreViewModel(), OnPositionClickListener {
                 }
             }
         }
-    }
+    }*/
 
     fun onClickNext() {
         viewModelScope.launch {
             markets.value?.getOrNull(selectedPosition.value ?: -1)?.number?.let { tkNumber ->
-                if (appSettings.lastTK != tkNumber) {
+/*                if (appSettings.lastTK != tkNumber) {
                     printerManager.setDefaultPrinterForTk(tkNumber)
-                }
+                }*/
                 sessionInfo.market = tkNumber
                 appSettings.lastTK = tkNumber
                 navigator.showProgress(serverTimeRequest)
@@ -100,7 +101,7 @@ class SelectMarketViewModel : CoreViewModel(), OnPositionClickListener {
         navigator.hideProgress()
         timeMonitor.setServerTime(time = serverTime.time, date = serverTime.date)
 
-        navigator.openFastDataLoadingScreen()
+        //navigator.openFastDataLoadingScreen()
     }
 
     override fun onClickPosition(position: Int) {

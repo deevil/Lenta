@@ -39,9 +39,9 @@ class SelectMarketFragment : CoreFragment<FragmentSelectMarketBinding, SelectMar
 
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
         bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.next)
-        vm.selectedPosition.observe(viewLifecycleOwner, Observer{
+/*        vm.selectedPosition.observe(viewLifecycleOwner, Observer{
             bottomToolbarUiModel.uiModelButton5.requestFocus()
-        })
+        })*/
     }
 
     override fun onToolbarButtonClick(view: View) {
