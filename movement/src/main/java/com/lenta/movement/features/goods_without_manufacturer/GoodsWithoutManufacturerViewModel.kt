@@ -23,7 +23,7 @@ class GoodsWithoutManufacturerViewModel : CoreViewModel() {
     }
 
     val completeEnabled = entered.map{
-        it ?: 0.0 != 0.0
+        val enteredValue = it ?: 0.0
     }
 
     fun onClickComplete(){

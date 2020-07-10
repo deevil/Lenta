@@ -10,19 +10,18 @@ import com.lenta.shared.progress.IProgressUseCaseInformator
 import javax.inject.Inject
 
 class ScreenNavigator @Inject constructor(private val context: Context,
-                      private val coreNavigator: ICoreNavigator,
-                      private val foregroundActivityProvider: ForegroundActivityProvider,
-                      private val authenticator: IAuthenticator,
-                      private val progressUseCaseInformator: IProgressUseCaseInformator
+                                          private val coreNavigator: ICoreNavigator,
+                                          private val foregroundActivityProvider: ForegroundActivityProvider,
+                                          private val authenticator: IAuthenticator,
+                                          private val progressUseCaseInformator: IProgressUseCaseInformator
 ) : IScreenNavigator, ICoreNavigator by coreNavigator {
-
 
 
     private fun getFragmentStack() = foregroundActivityProvider.getActivity()?.fragmentStack
     override fun openFirstScreen() {
-        if(authenticator.isAuthorized()){
+        if (authenticator.isAuthorized()) {
             openMainMenuScreen()
-        }else{
+        } else {
             openLoginScreen()
         }
     }
