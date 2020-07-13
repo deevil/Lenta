@@ -26,7 +26,7 @@ class FmpRequestsHelper(val hyperHive: HyperHive,
                 this.data = if (data is String) data else gson.toJson(data)
             }
             headers = defaultHeaders.toMutableMap().also {
-                it["Web-Authorization"] = sessionInfo.basicAuth ?: ""
+                it["Web-Authorization"] = sessionInfo.basicAuth.orEmpty()
             }
         }
 
@@ -46,7 +46,7 @@ class FmpRequestsHelper(val hyperHive: HyperHive,
                 analyticsHelper.onFinishFmpRequest(resourceName = resourceName)
                 val resultData = status.result?.raw
                 if (resultData is SapResponse && resultData.retCode != 0) {
-                    val errorText = resultData.errorText ?: ""
+                    val errorText = resultData.errorText.orEmpty()
                     analyticsHelper.onRetCodeNotEmpty("errorText: ${resultData.errorText}, retCode: ${resultData.retCode}, sent data: ${webCallParams.data}")
                     Either.Left(Failure.SapError(message = errorText, retCode = resultData.retCode))
                 } else {

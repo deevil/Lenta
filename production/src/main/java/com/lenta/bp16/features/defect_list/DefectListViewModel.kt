@@ -13,15 +13,15 @@ class DefectListViewModel : CoreViewModel() {
     lateinit var navigator: IScreenNavigator
 
     @Inject
-    lateinit var taskManager: ITaskManager
+    lateinit var manager: ITaskManager
 
 
     val good by lazy {
-        taskManager.currentGood
+        manager.currentGood
     }
 
     val raw by lazy {
-        taskManager.currentRaw
+        manager.currentRaw
     }
 
     val title by lazy {
@@ -35,7 +35,7 @@ class DefectListViewModel : CoreViewModel() {
                 DefectListUi(
                         position = "${defectPacks.size - index}",
                         packAndCategory = "${pack.code} / ${pack.category?.description}",
-                        cause = pack.defect?.description ?: "",
+                        cause = pack.defect?.description.orEmpty(),
                         weight = "${pack.quantity.dropZeros()} ${good.units.name}"
                 )
             }

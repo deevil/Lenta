@@ -23,6 +23,10 @@ fun ZmpUtz14V001.getAllowedProAppVersion(): String? {
     return getParams("PRO_ALLOWED_VRSN_A").firstOrNull()
 }
 
+fun ZmpUtz14V001.getAllowedBksAppVersion(): String? {
+    return getParams("BKS_ALLOWED_VRSN_A").firstOrNull()
+}
+
 fun ZmpUtz14V001.getSelfControlPinCode(): String? {
     return getParams("PLE_INTERNAL_PINCODE").firstOrNull()
 }
@@ -110,6 +114,22 @@ fun ZmpUtz14V001.getGrwUlGrundcat(): String? {
 
 fun ZmpUtz14V001.getGrzWerksOwnpr(): List<String>? {
     return getParams("GRZ_WERKS_OWNPR")
+}
+
+fun ZmpUtz14V001.getParamGrzRoundLackRatio(): String? {
+    return getParams("GRZ_ROUND_LACK_RATIO").firstOrNull()
+}
+
+fun ZmpUtz14V001.getParamGrzRoundLackUnit(): String? {
+    return getParams("GRZ_ROUND_LACK_UNIT").firstOrNull()
+}
+
+fun ZmpUtz14V001.getParamGrzRoundHeapRatio(): String? {
+    return getParams("GRZ_ROUND_HEAP_RATIO").firstOrNull()
+}
+
+fun ZmpUtz14V001.getGrzCrGrundcat(): String? {
+    return getParams("GRZ_CR_GRUNDCAT").firstOrNull()
 }
 
 fun ZmpUtz14V001.getEoVolume(): Double? {

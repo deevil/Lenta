@@ -1,5 +1,9 @@
 package com.lenta.bp14.di
 
+import app_update.AppUpdateInstaller
+import app_update.AppUpdaterConfig
+import app_update.AppUpdaterInstallerFromFmp
+import com.lenta.bp14.BuildConfig.APPLICATION_ID
 import com.lenta.bp14.models.GeneralTaskManager
 import com.lenta.bp14.models.IGeneralTaskManager
 import com.lenta.bp14.models.IPersistTaskData
@@ -30,12 +34,17 @@ import com.lenta.bp14.requests.work_list.WorkListTaskInfoNetRequest
 import com.lenta.shared.di.AppScope
 import dagger.Binds
 import dagger.Module
+import dagger.Provides
 
 @Module(includes = [AppModule.Declarations::class])
 class AppModule {
 
     @Module
     internal interface Declarations {
+        @Binds
+        @AppScope
+        fun bindAppUpdateInstaller(realisation: AppUpdaterInstallerFromFmp): AppUpdateInstaller
+
         @Binds
         @AppScope
         fun bindGeneralTaskManager(realisation: GeneralTaskManager): IGeneralTaskManager
@@ -100,6 +109,12 @@ class AppModule {
         @AppScope
         fun bindResourceManager(realisation: ResourceManager): IResourceManager
 
+    }
+
+    @Provides
+    @AppScope
+    internal fun provideAppUpdaterConfig(): AppUpdaterConfig {
+        return AppUpdaterConfig(folderName = "bp14", applicationId = APPLICATION_ID)
     }
 
 }

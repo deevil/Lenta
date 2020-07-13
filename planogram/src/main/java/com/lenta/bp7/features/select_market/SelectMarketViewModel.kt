@@ -2,11 +2,18 @@ package com.lenta.bp7.features.select_market
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import app_update.AppUpdateInstaller
 import com.lenta.bp7.data.CheckType
 import com.lenta.bp7.data.model.CheckData
 import com.lenta.bp7.platform.navigation.IScreenNavigator
 import com.lenta.bp7.repos.IDatabaseRepo
+import com.lenta.bp7.repos.IRepoInMemoryHolder
 import com.lenta.shared.account.ISessionInfo
+import com.lenta.shared.exception.Failure
+import com.lenta.shared.exception.IFailureInterpreter
+import com.lenta.shared.fmp.resources.fast.ZmpUtz23V001
+import com.lenta.shared.functional.Either
+import com.lenta.shared.platform.resources.ISharedStringResourceManager
 import com.lenta.shared.platform.time.ITimeMonitor
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.requests.combined.scan_info.pojo.MarketInfo
@@ -14,9 +21,13 @@ import com.lenta.shared.requests.network.ServerTime
 import com.lenta.shared.requests.network.ServerTimeRequest
 import com.lenta.shared.requests.network.ServerTimeRequestParam
 import com.lenta.shared.settings.IAppSettings
+import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.view.OnPositionClickListener
+import com.mobrun.plugin.api.HyperHive
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 class SelectMarketViewModel : CoreViewModel(), OnPositionClickListener {
@@ -28,13 +39,23 @@ class SelectMarketViewModel : CoreViewModel(), OnPositionClickListener {
     @Inject
     lateinit var appSettings: IAppSettings
     @Inject
-    lateinit var timeMonitor: ITimeMonitor
+    lateinit var database: IDatabaseRepo
+    @Inject
+    lateinit var hyperHive: HyperHive
     @Inject
     lateinit var serverTimeRequest: ServerTimeRequest
     @Inject
+    lateinit var timeMonitor: ITimeMonitor
+    @Inject
     lateinit var checkData: CheckData
     @Inject
-    lateinit var database: IDatabaseRepo
+    lateinit var failureInterpreter: IFailureInterpreter
+    @Inject
+    lateinit var appUpdateInstaller: AppUpdateInstaller
+    @Inject
+    lateinit var resourceManager: ISharedStringResourceManager
+    @Inject
+    lateinit var repoInMemoryHolder: IRepoInMemoryHolder
 
 
     private val markets: MutableLiveData<List<MarketInfo>> = MutableLiveData()
@@ -45,6 +66,7 @@ class SelectMarketViewModel : CoreViewModel(), OnPositionClickListener {
     val selectedAddress: MutableLiveData<String> = selectedPosition.map {
         it?.let { position -> markets.value?.getOrNull(position)?.address }
     }
+    val title: MutableLiveData<String> = MutableLiveData()
 
     init {
         viewModelScope.launch {
@@ -71,26 +93,51 @@ class SelectMarketViewModel : CoreViewModel(), OnPositionClickListener {
     }
 
     fun onClickNext() {
-        markets.value?.getOrNull(selectedPosition.value ?: -1)?.number?.let {
-            if (appSettings.lastTK != it) {
-                clearPrinters()
-            }
-            sessionInfo.printer = appSettings.printer
-            sessionInfo.market = it
-            appSettings.lastTK = it
+        viewModelScope.launch {
+            navigator.showProgressLoadingData()
+            markets.value?.getOrNull(selectedPosition.value ?: -1)?.number?.let { tkNumber ->
+                if (appSettings.lastTK != tkNumber) {
+                    clearPrinters()
+                }
+                sessionInfo.market = tkNumber
+                appSettings.lastTK = tkNumber
 
-            viewModelScope.launch {
-                navigator.showProgress(serverTimeRequest)
-                serverTimeRequest(ServerTimeRequestParam(sessionInfo.market
-                        ?: "")).either(::handleFailure, ::handleSuccessServerTime)
-                navigator.hideProgress()
+                withContext(Dispatchers.IO) {
+                    database.getAllMarkets().find { it.number == sessionInfo.market }.let { market ->
+                        val codeVersion = market?.version?.toIntOrNull()
+                        Logg.d { "codeVersion for update: $codeVersion" }
+                        if (codeVersion == null) {
+                            Either.Right("")
+                        } else {
+                            appUpdateInstaller.checkNeedAndHaveUpdate(codeVersion)
+                        }
+                    }
+                }.either({
+                    Logg.e { "checkNeedAndHaveUpdate failure: $it" }
+                    handleFailure(failure = it)
+                }) { updateFileName ->
+                    Logg.d { "update fileName: $updateFileName" }
+                    if (updateFileName.isBlank()) {
+                        getServerTime()
+                    } else {
+                        installUpdate(updateFileName)
+                    }
+                }
             }
         }
     }
 
+    private fun getServerTime() {
+        viewModelScope.launch {
+            serverTimeRequest(ServerTimeRequestParam(sessionInfo.market
+                   .orEmpty())).either(::handleFailure, ::handleSuccessServerTime)
+        }
+    }
+
     private fun handleSuccessServerTime(serverTime: ServerTime) {
+        navigator.hideProgress()
         timeMonitor.setServerTime(time = serverTime.time, date = serverTime.date)
-        checkData.marketNumber = sessionInfo.market ?: "Not found!"
+        checkData.marketNumber = sessionInfo.market.orEmpty()
 
         // Раскомментировать для удаление сохраненных данных
         //checkData.clearSavedData()
@@ -113,6 +160,24 @@ class SelectMarketViewModel : CoreViewModel(), OnPositionClickListener {
         } else {
             navigator.openSelectCheckTypeScreen()
         }
+    }
+
+    override fun handleFailure(failure: Failure) {
+        navigator.openLoginScreen()
+        navigator.openAlertScreen(failureInterpreter.getFailureDescription(failure).message)
+        navigator.hideProgress()
+    }
+
+    private fun installUpdate(updateFileName: String) {
+        viewModelScope.launch {
+            navigator.showProgress(resourceManager.loadingNewAppVersion())
+            withContext(Dispatchers.IO) {
+                appUpdateInstaller.installUpdate(updateFileName)
+            }.either(::handleFailure) {
+                // do nothing. App is finished
+            }
+        }
+
     }
 
     private fun clearPrinters() {

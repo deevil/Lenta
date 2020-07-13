@@ -7,7 +7,7 @@ import com.lenta.bp14.models.check_price.IPriceInfoParser
 import com.lenta.bp14.models.data.GoodType
 import com.lenta.bp14.models.data.getGoodType
 import com.lenta.bp14.models.not_exposed.INotExposedTask
-import com.lenta.bp14.platform.extentions.getQuantity
+import com.lenta.shared.utilities.extentions.getQuantity
 import com.lenta.bp14.platform.navigation.IScreenNavigator
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.fmp.resources.dao_ext.getMaxPositionsProdWkl
@@ -71,7 +71,7 @@ class GoodInfoNeViewModel : CoreViewModel(), PageSelectionListener {
                                 number = "${index + 1}",
                                 storage = stock.lgort,
                                 quantity = "${stock.stock.toStringFormatted()} ${goodInfo.units?.name
-                                        ?: ""}"
+                                       .orEmpty()}"
                         )
 
                     }
@@ -85,7 +85,7 @@ class GoodInfoNeViewModel : CoreViewModel(), PageSelectionListener {
 
     val marketStorage by lazy {
         "${(goodInfo.stocks.sumByDouble { it.stock }).toStringFormatted()} ${goodInfo.units?.name
-                ?: ""}"
+               .orEmpty()}"
     }
 
     val quantityField by lazy {
@@ -112,7 +112,7 @@ class GoodInfoNeViewModel : CoreViewModel(), PageSelectionListener {
 
     val totalQuantity: MutableLiveData<String> by lazy {
         totalQuantityValue.map {
-            "${it.dropZeros()} ${goodInfo.units?.name ?: ""}"
+            "${it.dropZeros()} ${goodInfo.units?.name.orEmpty()}"
         }
     }
 
@@ -188,7 +188,7 @@ class GoodInfoNeViewModel : CoreViewModel(), PageSelectionListener {
 
     private fun checkCode(code: String?) {
         analyseCode(
-                code = code ?: "",
+                code = code.orEmpty(),
                 funcForEan = { eanCode ->
                     searchCode(eanCode)
                 },
@@ -241,7 +241,7 @@ class GoodInfoNeViewModel : CoreViewModel(), PageSelectionListener {
                                 )
 
                                 val scanCodeInfo = ScanCodeInfo(code)
-                                val quantity = scanCodeInfo.getQuantity(defaultUnits = scanInfoResult.productInfo.uom)
+                                val quantity = scanCodeInfo.getQuantity(units = scanInfoResult.productInfo.uom)
 
                                 task.getProductInfoAndSetProcessed(
                                         matNr = scanInfoResult.productInfo.materialNumber,

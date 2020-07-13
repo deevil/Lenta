@@ -16,7 +16,9 @@ import com.lenta.shared.exception.Failure
 import com.lenta.shared.platform.constants.Constants
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.settings.IAppSettings
+import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.extentions.dropZeros
+import com.lenta.shared.utilities.extentions.isSapTrue
 import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.utilities.extentions.sumWith
 import kotlinx.coroutines.Dispatchers.IO
@@ -38,7 +40,7 @@ class GoodWeighingViewModel : CoreViewModel() {
     lateinit var appSettings: IAppSettings
 
     @Inject
-    lateinit var taskManager: ITaskManager
+    lateinit var manager: ITaskManager
 
     @Inject
     lateinit var packCodeNetRequest: PackCodeNetRequest
@@ -54,11 +56,11 @@ class GoodWeighingViewModel : CoreViewModel() {
 
 
     val good by lazy {
-        taskManager.currentGood
+        manager.currentGood
     }
 
     val raw by lazy {
-        taskManager.currentRaw
+        manager.currentRaw
     }
 
     val title by lazy {
@@ -123,21 +125,22 @@ class GoodWeighingViewModel : CoreViewModel() {
 
             packCodeNetRequest(
                     PackCodeParams(
-                            marketNumber = sessionInfo.market ?: "Not found!",
-                            taskType = taskManager.getTaskTypeCode(),
-                            parent = taskManager.currentTask.value!!.taskInfo.number,
-                            deviceIp = deviceIp.value ?: "Not found!",
+                            marketNumber = sessionInfo.market.orEmpty(),
+                            taskType = manager.getTaskTypeCode(),
+                            parent = manager.currentTask.value!!.taskInfo.number,
+                            deviceIp = deviceIp.value.orEmpty(),
                             material = good.value!!.material,
                             order = raw.value!!.order,
-                            quantity = total.value!!
+                            quantity = total.value!!,
+                            personnelNumber = sessionInfo.personnelNumber.orEmpty()
                     )
             ).also {
                 navigator.hideProgress()
             }.either(::handleFailure) { packCodeResult ->
-                good.value?.let {
-                    it.packs.add(0,
+                good.value?.let { good ->
+                    good.packs.add(0,
                             Pack(
-                                    material = it.material,
+                                    material = good.material,
                                     materialOsn = raw.value!!.materialOsn,
                                     code = packCodeResult.packCode,
                                     order = raw.value!!.order,
@@ -145,7 +148,8 @@ class GoodWeighingViewModel : CoreViewModel() {
                             )
                     )
 
-                    good.value = it
+                    manager.updateCurrentGood(good)
+                    manager.onTaskChanged()
                 }
 
                 viewModelScope.launch {
@@ -156,9 +160,13 @@ class GoodWeighingViewModel : CoreViewModel() {
                     planAufFinish.add(Calendar.MINUTE, getTimeInMinutes(packCodeResult.dataLabel.planAufFinish, packCodeResult.dataLabel.planAufUnit))
                     planAufFinish.add(Calendar.MINUTE, database.getPcpContTimeMm())
 
-                    val dateExpir = packCodeResult.dataLabel.dateExpiration.toIntOrNull()?.let { days ->
+                    val dateExpir = packCodeResult.dataLabel.time.toIntOrNull()?.let { time ->
                         val dateExpiration = Calendar.getInstance()
-                        dateExpiration.add(Calendar.DAY_OF_YEAR, days)
+                        when (packCodeResult.dataLabel.timeType.toIntOrNull()) {
+                            1 -> dateExpiration.add(Calendar.HOUR_OF_DAY, time)
+                            2 -> dateExpiration.add(Calendar.DAY_OF_YEAR, time)
+                        }
+
                         dateExpiration
                     }
 
@@ -171,29 +179,37 @@ class GoodWeighingViewModel : CoreViewModel() {
 
                     val barcode = barCodeText.replace("(", "").replace(")", "")
 
-                    printLabel(LabelInfo(
-                            quantity = "${total.value!!}  ${good.value?.units?.name}",
-                            codeCont = packCodeResult.packCode,
-                            storCond = "${packCodeResult.dataLabel.storCondTime} ч",
-                            planAufFinish = SimpleDateFormat(Constants.DATE_FORMAT_dd_mm_yyyy_hh_mm, Locale.getDefault()).format(planAufFinish.time),
-                            aufnr = raw.value!!.order,
-                            nameOsn = raw.value!!.name,
-                            dateExpir = dateExpir?.let { SimpleDateFormat(Constants.DATE_FORMAT_dd_mm_yyyy_hh_mm, Locale.getDefault()).format(it.time) }
-                                    ?: "",
-                            goodsName = packCodeResult.dataLabel.materialName,
-                            weigher = appSettings.weightEquipmentName ?: "",
-                            productTime = SimpleDateFormat(Constants.DATE_FORMAT_dd_mm_yyyy_hh_mm, Locale.getDefault()).format(productTime.time),
-                            nameDone = packCodeResult.dataLabel.materialNameDone,
-                            goodsCode = packCodeResult.dataLabel.material.takeLast(6),
-                            barcode = barcode,
-                            barcodeText = barCodeText,
-                            printTime = Date()
-                    ))
+                    try {
+                        printLabel(LabelInfo(
+                                quantity = "${total.value!!}  ${good.value?.units?.name}",
+                                codeCont = packCodeResult.packCode,
+                                planAufFinish = SimpleDateFormat(Constants.DATE_FORMAT_dd_mm_yyyy_hh_mm, Locale.getDefault()).format(planAufFinish.time),
+                                aufnr = raw.value!!.order,
+                                nameOsn = raw.value!!.name,
+                                dateExpir = dateExpir?.let { SimpleDateFormat(Constants.DATE_FORMAT_dd_mm_yyyy, Locale.getDefault()).format(it.time) }
+                                       .orEmpty(),
+                                goodsName = packCodeResult.dataLabel.materialName,
+                                weigher = sessionInfo.personnelNumber.orEmpty(),
+                                productTime = SimpleDateFormat(Constants.DATE_FORMAT_dd_mm_yyyy, Locale.getDefault()).format(productTime.time),
+                                goodsCode = packCodeResult.dataLabel.material.takeLast(6),
+                                barcode = barcode,
+                                barcodeText = barCodeText,
+                                printTime = Date()
+                        ))
+                    } catch (e: Exception) {
+                        Logg.e { "Create print label exception: $e" }
+                    }
 
                     total.value = 0.0
                     weightField.value = "0"
 
-                    navigator.openPackListScreen()
+                    if (packCodeResult.isAutofix.isSapTrue()) {
+                        navigator.showFixStartNextStageSuccessful {
+                            navigator.openPackListScreen()
+                        }
+                    } else {
+                        navigator.openPackListScreen()
+                    }
                 }
             }
         }
@@ -201,13 +217,13 @@ class GoodWeighingViewModel : CoreViewModel() {
 
     private fun getTimeInMinutes(sourceTime: String, units: String): Int {
         return when (units.toLowerCase(Locale.getDefault())) {
-            "m" -> (sourceTime.toDoubleOrNull() ?: 0.0).toInt()
-            "h" -> (sourceTime.toDoubleOrNull() ?: 0.0 * 60).toInt()
+            MINUTE -> (sourceTime.toDoubleOrNull() ?: 0.0).toInt()
+            HOUR -> (sourceTime.toDoubleOrNull() ?: 0.0 * 60).toInt()
             else -> 0
         }
     }
 
-    fun getFormattedWeight(weight: String): String {
+    /*fun getFormattedWeight(weight: String): String {
         if (weight.isEmpty()) {
             return "000000"
         }
@@ -225,7 +241,7 @@ class GoodWeighingViewModel : CoreViewModel() {
         }
 
         return "$kilogram$gram"
-    }
+    }*/
 
     fun getFormattedEan(sourceEan: String, quantity: Double): String {
         val ean = sourceEan.take(7)
@@ -294,7 +310,7 @@ class GoodWeighingViewModel : CoreViewModel() {
     private fun printLabel(labelInfo: LabelInfo) {
         viewModelScope.launch {
             withContext(IO) {
-                taskManager.addLabelToList(labelInfo)
+                manager.addLabelToList(labelInfo)
 
                 appSettings.printerIpAddress.let { ipAddress ->
                     if (ipAddress == null) {
@@ -330,6 +346,11 @@ class GoodWeighingViewModel : CoreViewModel() {
 
     fun onClickDefect() {
         navigator.openDefectInfoScreen()
+    }
+
+    companion object {
+        private const val MINUTE = "m"
+        private const val HOUR = "h"
     }
 
 }

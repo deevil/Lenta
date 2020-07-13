@@ -1,0 +1,28 @@
+<resources>
+
+    <!-- Две колонки / Тип 1  -->
+    <integer name="two_one_1">15</integer>
+    <integer name="two_one_2">85</integer>
+
+    <!-- Две колонки / Тип 2  -->
+    <integer name="two_two_1">50</integer>
+    <integer name="two_two_2">50</integer>
+
+    <!-- Три колонки / Тип 1 -->
+    <integer name="three_one_1">15</integer>
+    <integer name="three_one_2">53</integer>
+    <integer name="three_one_3">32</integer>
+
+    <!-- Четыре колонки / Тип 1 -->
+    <integer name="four_one_1">15</integer>
+    <integer name="four_one_2">45</integer>
+    <integer name="four_one_3">20</integer>
+    <integer name="four_one_4">20</integer>
+
+    <!-- Четыре колонки / Тип 2 -->
+    <integer name="four_two_1">15</integer>
+    <integer name="four_two_2">40</integer>
+    <integer name="four_two_3">30</integer>
+    <integer name="four_two_4">15</integer>
+
+</resources>

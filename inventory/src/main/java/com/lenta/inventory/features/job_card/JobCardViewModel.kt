@@ -86,7 +86,7 @@ class JobCardViewModel : CoreViewModel(), OnPositionClickListener {
             } else {
                 persistInventoryTask.saveWriteOffTask(null)
                 screenNavigator.closeAllScreen()
-                screenNavigator.openSelectionPersonnelNumberScreen()
+                screenNavigator.openSelectionPersonnelNumberScreen(true)
                 return
             }
         }

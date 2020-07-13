@@ -69,7 +69,7 @@ class GoodInfoPcViewModel : CoreViewModel() {
 
     private fun checkCode(code: String?) {
         analyseCode(
-                code = code ?: "",
+                code = code.orEmpty(),
                 funcForEan = { eanCode ->
                     searchCode(eanCode = eanCode)
                 },

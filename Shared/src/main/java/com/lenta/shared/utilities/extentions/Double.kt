@@ -16,6 +16,10 @@ fun Double?.sumWith(other: Double?): Double {
     return ((this ?: 0.0).toBigDecimal() + (other ?: 0.0).toBigDecimal()).toDouble()
 }
 
+fun Double?.subWith(other: Double?): Double {
+    return ((this ?: 0.0).toBigDecimal() - (other ?: 0.0).toBigDecimal()).toDouble()
+}
+
 fun Iterable<Double>.sumList(): Double {
     var total = 0.0
     for (element in this) {

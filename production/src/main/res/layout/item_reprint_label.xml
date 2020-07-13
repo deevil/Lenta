@@ -30,7 +30,7 @@
 
             <LinearLayout
                 style="@style/LinearCellStyle"
-                android:layout_weight="@integer/reprint_label_column_1">
+                android:layout_weight="@integer/four_two_1">
 
                 <TextView
                     android:id="@+id/tv_item_number"
@@ -49,7 +49,7 @@
 
             <LinearLayout
                 style="@style/LinearCellStyle"
-                android:layout_weight="@integer/reprint_label_column_2">
+                android:layout_weight="@integer/four_two_2">
 
                 <TextView
                     style="@style/CellTextStyle"
@@ -64,7 +64,7 @@
 
             <LinearLayout
                 style="@style/LinearCellStyle"
-                android:layout_weight="@integer/reprint_label_column_3">
+                android:layout_weight="@integer/four_two_3">
 
                 <TextView
                     style="@style/CellTextStyle"
@@ -90,11 +90,11 @@
 
             <LinearLayout
                 style="@style/LinearCellStyle"
-                android:layout_weight="@integer/reprint_label_column_4">
+                android:layout_weight="@integer/four_two_4">
 
                 <TextView
                     style="@style/CellTextStyle"
-                    android:gravity="center"
+                    android:layout_width="wrap_content"
                     android:layout_marginStart="1dp"
                     android:layout_marginEnd="1dp"
                     android:text="@{item.quantity}"

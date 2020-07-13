@@ -23,10 +23,12 @@
     <string name="more_than_one_good_for_this_task">По данной задаче активно более одного товара на упаковку</string>
     <string name="error_completing_object_processing">Ошибка завершения обработки объекта</string>
     <string name="label_sent_to_print">Этикетка отправлена на печать</string>
+    <string name="process_order_not_found">Не найден технологический заказ</string>
+    <string name="fix_start_next_stage_successful">Фиксация начала следующего этапа прошла успешно</string>
 
     // Заголовки списков
     <string name="sku">SKU</string>
-    <string name="sign">Признак</string>
+    <string name="sign">Признаки</string>
     <string name="pu">ЕО</string>
     <string name="es">ВП</string>
     <string name="remain">Остаток</string>
@@ -55,5 +57,6 @@
     <string name="defect">Брак</string>
     <string name="total_sf">Итого ПФ</string>
     <string name="total_defect">Итого брак</string>
+    <string name="defect_mark">***БРАК***</string>
 
 </resources>

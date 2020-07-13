@@ -36,8 +36,8 @@ abstract class SendDataViewModel : CoreViewModel() {
         viewModelScope.launch {
             val saveCheckDataParams = SaveCheckDataParams(
                     shop = checkData.getFormattedMarketNumber(),
-                    terminalId = terminalId.value ?: "Not found!",
-                    data = checkData.prepareXmlCheckResult(marketIp.value ?: "Not found!"),
+                    terminalId = terminalId.value.orEmpty(),
+                    data = checkData.prepareXmlCheckResult(marketIp.value.orEmpty()),
                     saveDoc = 1)
 
             val saveRequestType = when (checkData.checkType) {

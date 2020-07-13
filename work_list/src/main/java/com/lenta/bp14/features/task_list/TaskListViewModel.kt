@@ -28,7 +28,7 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
     val selectedPage = MutableLiveData(0)
 
     val searchFieldProcessing by lazy {
-        MutableLiveData(sessionInfo.userName ?: "")
+        MutableLiveData(sessionInfo.userName.orEmpty())
     }
 
     val searchFieldFiltered = MutableLiveData("")
@@ -58,7 +58,7 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
     }
     val searchTasks by lazy {
         tasksSearchHelper.filteredTaskList.combineLatest(searchFieldFiltered).map { pair ->
-            val pattern = pair?.second ?: ""
+            val pattern = pair?.second.orEmpty()
             pair?.first?.filter { it.taskNumber.contains(pattern, true) }
         }.map(funcTaskAdapter)
     }
@@ -148,7 +148,7 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
             0 -> searchFieldProcessing
             else -> searchFieldFiltered
         }.let {
-            it.postValue(it.value ?: "" + digit)
+            it.postValue(it.value.orEmpty() + digit)
         }
         requestFocusToNumberField.value = true
     }

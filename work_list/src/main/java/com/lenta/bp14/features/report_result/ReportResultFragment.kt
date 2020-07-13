@@ -5,7 +5,7 @@ import android.view.View
 import com.lenta.bp14.BR
 import com.lenta.bp14.R
 import com.lenta.bp14.databinding.FragmentReportResultBinding
-import com.lenta.bp14.databinding.ItemTileTaskReportBinding
+import com.lenta.bp14.databinding.ItemTaskReportBinding
 import com.lenta.bp14.platform.extentions.getAppComponent
 import com.lenta.shared.platform.fragment.CoreFragment
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
@@ -46,7 +46,7 @@ class ReportResultFragment : CoreFragment<FragmentReportResultBinding, ReportRes
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        binding?.rvConfig = DataBindingRecyclerViewConfig<ItemTileTaskReportBinding>(layoutId = R.layout.item_tile_task_report, itemId = BR.vm)
+        binding?.rvConfig = DataBindingRecyclerViewConfig<ItemTaskReportBinding>(layoutId = R.layout.item_task_report, itemId = BR.vm)
     }
 
 

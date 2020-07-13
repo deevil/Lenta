@@ -67,7 +67,7 @@ class SearchFilterViewModel : CoreViewModel() {
     fun onClickSearch() {
         filterable.addNewFilters(
                 filters = mapFieldsToTypes.map {
-                    FilterParameter(it.value, it.key.value ?: "")
+                    FilterParameter(it.value, it.key.value.orEmpty())
                 }
         )
         screenNavigator.goBack()

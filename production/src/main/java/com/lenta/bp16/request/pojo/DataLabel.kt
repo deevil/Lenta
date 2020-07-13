@@ -17,7 +17,10 @@ data class DataLabel(
         val storCondTime: String,
         /** Срок годности */
         @SerializedName("DATE_EXPIR")
-        val dateExpiration: String,
+        val time: String,
+        /** Тип срок годности (часы или дни) */
+        @SerializedName("DATE_EXPIR_PER")
+        val timeType: String,
         /** Плановое время окончания этапа (из технологического заказа в часах) */
         @SerializedName("PLAN_AUF_FINISH")
         val planAufFinish: String,

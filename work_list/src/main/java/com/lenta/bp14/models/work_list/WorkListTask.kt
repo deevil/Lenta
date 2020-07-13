@@ -62,7 +62,7 @@ class WorkListTask @Inject constructor(
                     good.scanResults = checkResults.filter { it.matNr == position.matNr }.map { result ->
                         ScanResult(
                                 quantity = result.quantity,
-                                comment = good.comments.find { it.code == result.commentCode }?.description ?: "",
+                                comment = good.comments.find { it.code == result.commentCode }?.description.orEmpty(),
                                 productionDate = result.producedDate.getSapDate(Constants.DATE_FORMAT_yyyy_mm_dd),
                                 expirationDate = result.shelfLife.getSapDate(Constants.DATE_FORMAT_yyyy_mm_dd)
                         )

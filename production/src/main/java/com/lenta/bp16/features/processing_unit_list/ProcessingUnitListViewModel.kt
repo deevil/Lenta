@@ -10,7 +10,6 @@ import com.lenta.bp16.request.UnblockTaskNetRequest
 import com.lenta.bp16.request.UnblockTaskParams
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.platform.viewmodel.CoreViewModel
-import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.extentions.dropZeros
 import com.lenta.shared.utilities.extentions.map
 import kotlinx.coroutines.launch
@@ -21,7 +20,7 @@ class ProcessingUnitListViewModel : CoreViewModel() {
     @Inject
     lateinit var navigator: IScreenNavigator
     @Inject
-    lateinit var taskManager: ITaskManager
+    lateinit var manager: ITaskManager
     @Inject
     lateinit var unblockTaskNetRequest: UnblockTaskNetRequest
     @Inject
@@ -29,7 +28,7 @@ class ProcessingUnitListViewModel : CoreViewModel() {
 
 
     private val task by lazy {
-        taskManager.currentTask
+        manager.currentTask
     }
 
     val title by lazy {
@@ -63,7 +62,7 @@ class ProcessingUnitListViewModel : CoreViewModel() {
     fun onClickItemPosition(position: Int) {
         val material = goods.value!![position].material
         task.value?.goods?.first { it.material == material }?.let { good ->
-            taskManager.currentGood.value = good
+            manager.updateCurrentGood(good)
             navigator.openRawListScreen()
         }
     }
@@ -73,7 +72,7 @@ class ProcessingUnitListViewModel : CoreViewModel() {
             unblockTaskNetRequest(
                     UnblockTaskParams(
                             taskNumber = task.value!!.taskInfo.number,
-                            unblockType = taskManager.getTaskTypeCode()
+                            unblockType = manager.getTaskTypeCode()
                     )
             )
 
@@ -82,19 +81,20 @@ class ProcessingUnitListViewModel : CoreViewModel() {
     }
 
     fun onClickComplete() {
-        navigator.showConfirmNoRawItem(taskManager.taskType.abbreviation) {
+        navigator.showConfirmNoRawItem(manager.taskType.abbreviation) {
             viewModelScope.launch {
                 navigator.showProgressLoadingData()
 
                 endProcessingNetRequest(
                         EndProcessingParams(
                                 taskNumber = task.value!!.taskInfo.number,
-                                taskType = taskManager.getTaskTypeCode()
+                                taskType = manager.getTaskTypeCode()
                         )
                 ).also {
                     navigator.hideProgress()
                 }.either(::handleFailure) {
-                    completeTask()
+                    manager.completeCurrentTask()
+                    navigator.goBack()
                 }
             }
         }
@@ -103,11 +103,6 @@ class ProcessingUnitListViewModel : CoreViewModel() {
     override fun handleFailure(failure: Failure) {
         super.handleFailure(failure)
         navigator.openAlertScreen(failure)
-    }
-
-    private fun completeTask() {
-        taskManager.completeCurrentTask()
-        navigator.goBack()
     }
 
 }

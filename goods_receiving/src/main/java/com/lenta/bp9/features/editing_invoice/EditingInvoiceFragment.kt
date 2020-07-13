@@ -7,6 +7,8 @@ import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
 import com.lenta.shared.utilities.extentions.provideViewModel
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.LayoutInflater
 import com.lenta.shared.utilities.databinding.ViewPagerSettings
 import android.view.ViewGroup
@@ -21,6 +23,8 @@ import com.lenta.shared.keys.KeyCode
 import com.lenta.shared.keys.OnKeyDownListener
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListener
+import com.lenta.shared.platform.viewmodel.CoreViewModel
+import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.databinding.DataBindingAdapter
 import com.lenta.shared.utilities.databinding.DataBindingRecyclerViewConfig
 import com.lenta.shared.utilities.databinding.RecyclerViewKeyHandler
@@ -60,9 +64,9 @@ class EditingInvoiceFragment : CoreFragment<FragmentEditingInvoiceBinding, Editi
                 if (vm.editingAvailable) {
                     bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.save)
                     if (it == 1) {
-                        bottomToolbarUiModel.uiModelButton3.show(ButtonDecorationInfo.restore)
+                        bottomToolbarUiModel.uiModelButton3.show(ButtonDecorationInfo.restore, enabled = vm.enabledRestoreDelBtn.value ?: false)
                     } else {
-                        bottomToolbarUiModel.uiModelButton3.show(ButtonDecorationInfo.delete)
+                        bottomToolbarUiModel.uiModelButton3.show(ButtonDecorationInfo.delete, enabled = vm.enabledRestoreDelBtn.value ?: false)
                     }
                     connectLiveData(vm.enabledRestoreDelBtn, bottomToolbarUiModel.uiModelButton3.enabled)
                 }
@@ -96,15 +100,20 @@ class EditingInvoiceFragment : CoreFragment<FragmentEditingInvoiceBinding, Editi
 
                             layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
                                     layoutId = R.layout.item_tile_editing_invoice_total,
-                                    itemId = BR.vm,
+                                    itemId = BR.item,
                                     realisation = object : DataBindingAdapter<ItemTileEditingInvoiceTotalBinding> {
                                         override fun onCreate(binding: ItemTileEditingInvoiceTotalBinding) {
                                         }
 
                                         override fun onBind(binding: ItemTileEditingInvoiceTotalBinding, position: Int) {
-                                            binding.tvCounter.tag = position
-                                            binding.tvCounter.setOnClickListener(onClickSelectionListener)
-                                            binding.etQuantity.setOnEditorActionListener { v, actionId, event ->
+                                            binding.tvItemNumber.tag = position
+                                            binding.tvItemNumber.setOnClickListener(onClickSelectionListener)
+                                            binding.etQuantity.setOnFocusChangeListener { v, hasFocus ->
+                                                if (!hasFocus) {
+                                                    vm.finishedInput(position)
+                                                }
+                                            }
+                                            /**binding.etQuantity.setOnEditorActionListener { v, actionId, event ->
                                                 when(actionId) {
                                                     EditorInfo.IME_ACTION_NEXT -> {
                                                         vm.finishedInput(position)
@@ -112,7 +121,7 @@ class EditingInvoiceFragment : CoreFragment<FragmentEditingInvoiceBinding, Editi
                                                     }
                                                     else -> return@setOnEditorActionListener false
                                                 }
-                                            }
+                                            }*/
                                             binding.selectedForDelete = vm.totalSelectionsHelper.isSelected(position)
                                             totalRecyclerViewKeyHandler?.let {
                                                 binding.root.isSelected = it.isSelected(position)
@@ -154,14 +163,14 @@ class EditingInvoiceFragment : CoreFragment<FragmentEditingInvoiceBinding, Editi
 
                             layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
                                     layoutId = R.layout.item_tile_editing_invoice_del_add,
-                                    itemId = BR.vm,
+                                    itemId = BR.item,
                                     realisation = object : DataBindingAdapter<ItemTileEditingInvoiceDelAddBinding> {
                                         override fun onCreate(binding: ItemTileEditingInvoiceDelAddBinding) {
                                         }
 
                                         override fun onBind(binding: ItemTileEditingInvoiceDelAddBinding, position: Int) {
-                                            binding.tvCounter.tag = position
-                                            binding.tvCounter.setOnClickListener(onClickSelectionListener)
+                                            binding.tvItemNumber.tag = position
+                                            binding.tvItemNumber.setOnClickListener(onClickSelectionListener)
                                             binding.selectedForDelete = vm.delSelectionsHelper.isSelected(position)
                                             delRecyclerViewKeyHandler?.let {
                                                 binding.root.isSelected = it.isSelected(position)
@@ -203,14 +212,14 @@ class EditingInvoiceFragment : CoreFragment<FragmentEditingInvoiceBinding, Editi
 
                             layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
                                     layoutId = R.layout.item_tile_editing_invoice_del_add,
-                                    itemId = BR.vm,
+                                    itemId = BR.item,
                                     realisation = object : DataBindingAdapter<ItemTileEditingInvoiceDelAddBinding> {
                                         override fun onCreate(binding: ItemTileEditingInvoiceDelAddBinding) {
                                         }
 
                                         override fun onBind(binding: ItemTileEditingInvoiceDelAddBinding, position: Int) {
-                                            binding.tvCounter.tag = position
-                                            binding.tvCounter.setOnClickListener(onClickSelectionListener)
+                                            binding.tvItemNumber.tag = position
+                                            binding.tvItemNumber.setOnClickListener(onClickSelectionListener)
                                             binding.selectedForDelete = vm.addSelectionsHelper.isSelected(position)
                                             addRecyclerViewKeyHandler?.let {
                                                 binding.root.isSelected = it.isSelected(position)
@@ -252,20 +261,19 @@ class EditingInvoiceFragment : CoreFragment<FragmentEditingInvoiceBinding, Editi
 
                             layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
                                     layoutId = R.layout.item_tile_editing_invoice_notes,
-                                    itemId = BR.vm,
+                                    itemId = BR.item,
                                     realisation = object : DataBindingAdapter<ItemTileEditingInvoiceNotesBinding> {
                                         override fun onCreate(binding: ItemTileEditingInvoiceNotesBinding) {
                                         }
 
                                         override fun onBind(binding: ItemTileEditingInvoiceNotesBinding, position: Int) {
-                                            binding.tvCounter.tag = position
-                                            binding.tvCounter.setOnClickListener(onClickSelectionListener)
+                                            binding.tvItemNumber.tag = position
+                                            binding.tvItemNumber.setOnClickListener(onClickSelectionListener)
                                             binding.selectedForDelete = vm.notesSelectionsHelper.isSelected(position)
                                             notesRecyclerViewKeyHandler?.let {
                                                 binding.root.isSelected = it.isSelected(position)
                                             }
                                         }
-
                                     },
                                     onItemClickListener = AdapterView.OnItemClickListener { _, _, position, _ ->
                                         notesRecyclerViewKeyHandler?.let {

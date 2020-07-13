@@ -134,7 +134,8 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
     fun onClickSave() {
         if (sessionInfo.personnelNumber.isNullOrEmpty()) {
             screenNavigator.openSelectionPersonnelNumberScreen(
-                    codeConfirmation = requestCodeSelectPersonnelNumber
+                    codeConfirmation = requestCodeSelectPersonnelNumber,
+                    isScreenMainMenu = true
             )
         } else {
             saveData()
@@ -226,7 +227,7 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
 
     fun onDigitPressed(digit: Int) {
         requestFocusToEan.value = true
-        eanCode.value = eanCode.value ?: "" + digit
+        eanCode.value = eanCode.value.orEmpty() + digit
     }
 
     private fun saveData() {

@@ -80,7 +80,7 @@ class TransferGoodsSectionFragment : CoreFragment<FragmentTransferGoodsSectionBi
 
                     layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
                             layoutId = R.layout.item_tile_transfer_goods_section,
-                            itemId = BR.vm,
+                            itemId = BR.item,
                             realisation = object : DataBindingAdapter<ItemTileTransferGoodsSectionBinding> {
                                 override fun onCreate(binding: ItemTileTransferGoodsSectionBinding) {
                                 }

@@ -13,18 +13,25 @@ class MemoryTaskBatchesRepository : ITaskBatchesRepository {
     }
 
     override fun findBatch(batch: TaskBatchInfo): TaskBatchInfo? {
-        return batchesInfo.firstOrNull { it.materialNumber == batch.materialNumber && it.batchNumber == batch.batchNumber}
+        return findBatch(batch.batchNumber, batch.materialNumber, batch.processingUnitNumber)
     }
 
-    override fun findBatchOfProduct(productInfo: TaskProductInfo): TaskBatchInfo? {
-        return batchesInfo.firstOrNull { it.materialNumber == productInfo.materialNumber}
+    override fun findBatch(batchNumber: String, materialNumber: String, processingUnitNumber: String): TaskBatchInfo? {
+        return batchesInfo.firstOrNull { it.batchNumber == batchNumber && it.materialNumber == materialNumber && it.processingUnitNumber == processingUnitNumber}
+    }
+
+    override fun findBatchOfProduct(productInfo: TaskProductInfo): List<TaskBatchInfo>? {
+        return findBatchOfProduct(productInfo.materialNumber)
+    }
+
+    override fun findBatchOfProduct(materialNumber: String): List<TaskBatchInfo>? {
+        return batchesInfo.filter { it.materialNumber == materialNumber}
     }
 
     override fun addBatch(batch: TaskBatchInfo): Boolean {
         var index = -1
         for (i in batchesInfo.indices) {
             if (batch.materialNumber == batchesInfo[i].materialNumber &&
-                    batch.setMaterialNumber == batchesInfo[i].setMaterialNumber &&
                     batch.processingUnitNumber == batchesInfo[i].processingUnitNumber &&
                     batch.batchNumber == batchesInfo[i].batchNumber) {
                 index = i
@@ -53,7 +60,6 @@ class MemoryTaskBatchesRepository : ITaskBatchesRepository {
     override fun deleteBatch(delBatch: TaskBatchInfo): Boolean {
         batchesInfo.map { it }.filter {batch ->
             if (delBatch.materialNumber == batch.materialNumber &&
-                    delBatch.setMaterialNumber == batch.setMaterialNumber &&
                     delBatch.processingUnitNumber == batch.processingUnitNumber &&
                     delBatch.batchNumber == batch.batchNumber) {
                 batchesInfo.remove(batch)

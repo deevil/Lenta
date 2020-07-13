@@ -18,6 +18,7 @@ import com.lenta.shared.exception.Failure
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
 import com.lenta.shared.utilities.databinding.PageSelectionListener
+import com.lenta.shared.utilities.extentions.combineLatest
 import com.lenta.shared.utilities.extentions.dropZeros
 import com.lenta.shared.utilities.extentions.isSapTrue
 import com.lenta.shared.utilities.extentions.map
@@ -28,20 +29,25 @@ class ExternalSupplyTaskListViewModel : CoreViewModel(), PageSelectionListener, 
 
     @Inject
     lateinit var navigator: IScreenNavigator
+
     @Inject
     lateinit var sessionInfo: ISessionInfo
+
     @Inject
-    lateinit var taskManager: ITaskManager
+    lateinit var manager: ITaskManager
+
     @Inject
     lateinit var taskListNetRequest: TaskListNetRequest
+
     @Inject
     lateinit var taskInfoNetRequest: TaskInfoNetRequest
+
     @Inject
-    lateinit var resourceManager: IResourceManager
+    lateinit var resource: IResourceManager
 
 
     private val tasks by lazy {
-        taskManager.tasks.map {
+        manager.tasks.map {
             it?.filter { task -> task.type == TaskType.EXTERNAL_SUPPLY }
         }
     }
@@ -52,7 +58,7 @@ class ExternalSupplyTaskListViewModel : CoreViewModel(), PageSelectionListener, 
 
     val description by lazy {
         tasks.map {
-            resourceManager.workWith(taskManager.taskType.abbreviation, it?.size ?: 0)
+            resource.workWith(manager.taskType.abbreviation, it?.size ?: 0)
         }
     }
 
@@ -79,19 +85,21 @@ class ExternalSupplyTaskListViewModel : CoreViewModel(), PageSelectionListener, 
     }
 
     val processing by lazy {
-        tasks.map { it?.filter { task -> !task.isProcessed } }.map(toUiFunc)
+        tasks.combineLatest(numberField).map {
+            it?.let {
+                val (list, number) = it
+                list.filter { task -> !task.isProcessed && task.number.contains(number) }
+            }
+        }.map(toUiFunc)
     }
 
     val processed by lazy {
-        tasks.map { it?.filter { task -> task.isProcessed } }.map(toUiFunc)
-    }
-
-    // -----------------------------
-
-    init {
-        viewModelScope.launch {
-            loadTaskList()
-        }
+        tasks.combineLatest(numberField).map {
+            it?.let {
+                val (list, number) = it
+                list.filter { task -> task.isProcessed && task.number.contains(number) }
+            }
+        }.map(toUiFunc)
     }
 
     // -----------------------------
@@ -106,14 +114,14 @@ class ExternalSupplyTaskListViewModel : CoreViewModel(), PageSelectionListener, 
 
             taskListNetRequest(
                     TaskListParams(
-                            tkNumber = sessionInfo.market ?: "",
-                            taskType = taskManager.getTaskTypeCode(),
-                            deviceIp = deviceIp.value ?: "Not found!"
+                            tkNumber = sessionInfo.market.orEmpty(),
+                            taskType = manager.getTaskTypeCode(),
+                            deviceIp = deviceIp.value.orEmpty()
                     )
             ).also {
                 navigator.hideProgress()
             }.either(::handleFailure) { taskListResult ->
-                taskManager.addTasks(taskListResult)
+                manager.addTasks(taskListResult)
             }
         }
     }
@@ -142,13 +150,13 @@ class ExternalSupplyTaskListViewModel : CoreViewModel(), PageSelectionListener, 
     }
 
     override fun onOkInSoftKeyboard(): Boolean {
-        openTaskByNumber(formatNumberForSearch(numberField.value ?: ""))
+        openTaskByNumber(formatNumberForSearch(numberField.value.orEmpty()))
         return true
     }
 
     private fun formatNumberForSearch(number: String): String {
         var formattedNumber = number
-        while (formattedNumber.length < taskManager.taskType.numberLength) {
+        while (formattedNumber.length < manager.taskType.numberLength) {
             formattedNumber = "0$formattedNumber"
         }
 
@@ -156,8 +164,8 @@ class ExternalSupplyTaskListViewModel : CoreViewModel(), PageSelectionListener, 
     }
 
     private fun openTaskByNumber(taskNumber: String) {
-        taskManager.tasks.value?.find { it.number == taskNumber }?.let { task ->
-            taskManager.currentTask.value = task
+        manager.tasks.value?.find { it.number == taskNumber }?.let { task ->
+            manager.updateCurrentTask(task)
             numberField.value = ""
 
             task.taskInfo.apply {
@@ -178,16 +186,16 @@ class ExternalSupplyTaskListViewModel : CoreViewModel(), PageSelectionListener, 
                 navigator.showProgressLoadingData()
                 taskInfoNetRequest(
                         TaskInfoParams(
-                                marketNumber = sessionInfo.market ?: "Not found!",
-                                deviceIp = deviceIp.value ?: "Not found!",
+                                marketNumber = sessionInfo.market.orEmpty(),
+                                deviceIp = deviceIp.value.orEmpty(),
                                 taskNumber = task.number,
-                                blockingType = taskManager.getBlockType()
+                                blockingType = manager.getBlockType()
                         )
                 ).also {
                     navigator.hideProgress()
                 }.either(::handleFailure) { taskInfoResult ->
                     viewModelScope.launch {
-                        taskManager.addTaskInfoToCurrentTask(taskInfoResult)
+                        manager.addTaskInfoToCurrentTask(taskInfoResult)
                         openTaskByType(task)
                     }
                 }

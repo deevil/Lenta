@@ -7,11 +7,13 @@ import com.lenta.shared.utilities.databinding.Evenable
 data class ListCountedItem(
         val number: Int,
         val name: String,
+        val nameMaxLines: Int,
+        val nameBatch: String,
+        val visibilityNameBatch: Boolean,
         val countAcceptWithUom: String,
         val countRefusalWithUom: String,
         val isNotEdit: Boolean,
         val productInfo: TaskProductInfo?,
-        val batchInfo: TaskBatchInfo?,
         val even: Boolean
 ) : Evenable {
     override fun isEven() = even
@@ -21,8 +23,10 @@ data class ListCountedItem(
 data class ListWithoutBarcodeItem(
         val number: Int,
         val name: String,
+        val nameMaxLines: Int,
+        val nameBatch: String,
+        val visibilityNameBatch: Boolean,
         val productInfo: TaskProductInfo?,
-        val batchInfo: TaskBatchInfo?,
         val even: Boolean
 ) : Evenable {
     override fun isEven() = even

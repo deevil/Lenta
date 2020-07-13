@@ -41,22 +41,22 @@ class WriteOffDetailsFragment : CoreFragment<FragmentWriteOffDetailsBinding, Wri
         super.onViewCreated(view, savedInstanceState)
         binding?.rvConfig = DataBindingRecyclerViewConfig(
                 layoutId = R.layout.item_tile_goods_reasons,
-                itemId = BR.vm,
+                itemId = BR.item,
                 realisation = object : DataBindingAdapter<ItemTileGoodsReasonsBinding> {
                     override fun onCreate(binding: ItemTileGoodsReasonsBinding) {
                     }
 
                     override fun onBind(binding: ItemTileGoodsReasonsBinding, position: Int) {
-                        binding.tvCounter.tag = position
-                        binding.tvCounter.setOnClickListener {
+                        binding.tvItemNumber.tag = position
+                        binding.tvItemNumber.setOnClickListener {
                             (it!!.tag as Int).let { position ->
                                 vm.selectionsHelper.revert(position = position)
                                 this@WriteOffDetailsFragment.binding?.rv?.adapter?.notifyItemChanged(position)
                             }
                         }
+                        
                         binding.selectedForDelete = vm.selectionsHelper.isSelected(position)
                     }
-
                 })
 
     }
@@ -66,8 +66,6 @@ class WriteOffDetailsFragment : CoreFragment<FragmentWriteOffDetailsBinding, Wri
             topToolbarUiModel.title.value = "${it.getMaterialLastSix()} ${it.description}"
             topToolbarUiModel.description.value = getString(R.string.write_off_details)
         }
-
-
     }
 
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
@@ -75,7 +73,6 @@ class WriteOffDetailsFragment : CoreFragment<FragmentWriteOffDetailsBinding, Wri
         bottomToolbarUiModel.uiModelButton3.show(ButtonDecorationInfo.delete)
 
         viewLifecycleOwner.connectLiveData(vm.deleteButtonEnabled, bottomToolbarUiModel.uiModelButton3.enabled)
-
     }
 
     override fun onToolbarButtonClick(view: View) {
@@ -91,6 +88,5 @@ class WriteOffDetailsFragment : CoreFragment<FragmentWriteOffDetailsBinding, Wri
             }
         }
     }
-
-
+    
 }

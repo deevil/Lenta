@@ -84,7 +84,7 @@ class GoodsListPcViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
             list?.mapIndexed { index, iCheckPriceResult ->
                 SimpleProductUi(
                         position = list.size - index,
-                        matNr = iCheckPriceResult.matNr ?: "",
+                        matNr = iCheckPriceResult.matNr.orEmpty(),
                         name = "${iCheckPriceResult.matNr?.takeLast(6)} ${iCheckPriceResult.name}"
                 )
             }
@@ -163,7 +163,7 @@ class GoodsListPcViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
 
     private fun checkCode(code: String?) {
         analyseCode(
-                code = code ?: "",
+                code = code.orEmpty(),
                 funcForEan = { eanCode ->
                     searchCode(eanCode = eanCode)
                 },
@@ -274,7 +274,7 @@ class GoodsListPcViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
             var printerName = ""
             withContext(IO) {
                 printerName = printTask.getPrinterTypes().firstOrNull { it.isStatic == true }?.name
-                        ?: ""
+                       .orEmpty()
             }
 
             getResultsForPrint().let { printList ->
@@ -370,7 +370,7 @@ class GoodsListPcViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
     }
 
     fun onDigitPressed(digit: Int) {
-        numberField.postValue(numberField.value ?: "" + digit)
+        numberField.postValue(numberField.value.orEmpty() + digit)
         requestFocusToNumberField.value = true
     }
 

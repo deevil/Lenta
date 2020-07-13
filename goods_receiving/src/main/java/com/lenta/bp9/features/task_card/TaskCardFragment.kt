@@ -28,7 +28,6 @@ import com.lenta.shared.utilities.databinding.RecyclerViewKeyHandler
 import com.lenta.shared.utilities.databinding.ViewPagerSettings
 import com.lenta.shared.utilities.extentions.connectLiveData
 import com.lenta.shared.utilities.extentions.provideViewModel
-import com.lenta.shared.utilities.state.state
 
 class TaskCardFragment : CoreFragment<FragmentTaskCardBinding, TaskCardViewModel>(), ViewPagerSettings, ToolbarButtonsClickListener, OnBackPresserListener {
 
@@ -166,9 +165,9 @@ class TaskCardFragment : CoreFragment<FragmentTaskCardBinding, TaskCardViewModel
             val textView = tabItemLayout.getChildAt(1) as TextView
             tabItemLayout.removeView(iconView)
             if (vm.bookmarkIndicator == NotificationIndicatorType.Red) {
-                textView.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_indicator_red_tablayout, 0)
+                textView.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_indicator_tablayout_red_8dp, 0)
             } else {
-                textView.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_indicator_yellow_tablayout, 0)
+                textView.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_indicator_tablayout_yellow_8dp, 0)
             }
             textView.compoundDrawablePadding = 5
         }
@@ -232,13 +231,13 @@ class TaskCardFragment : CoreFragment<FragmentTaskCardBinding, TaskCardViewModel
 
                     layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
                             layoutId = R.layout.item_tile_notifications,
-                            itemId = BR.vm,
+                            itemId = BR.item,
                             realisation = object : DataBindingAdapter<ItemTileNotificationsBinding> {
                                 override fun onCreate(binding: ItemTileNotificationsBinding) {
                                 }
 
                                 override fun onBind(binding: ItemTileNotificationsBinding, position: Int) {
-                                    binding.tvCounter.tag = position
+                                    binding.tvItemNumber.tag = position
                                 }
                             }
                     )

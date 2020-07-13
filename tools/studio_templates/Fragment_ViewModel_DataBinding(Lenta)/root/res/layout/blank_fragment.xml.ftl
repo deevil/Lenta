@@ -14,8 +14,8 @@
         <variable
             name="viewPagerSettings"
             type="com.lenta.shared.utilities.databinding.ViewPagerSettings" />
-        </#if>
 
+        </#if>
     </data>
 
     <#if numberOfTabs == "0">
@@ -39,22 +39,18 @@
         <com.google.android.material.tabs.TabLayout
             android:id="@+id/tab_strip"
             android:layout_width="match_parent"
-            android:layout_height="40dp"
+            android:layout_height="@dimen/tab_height"
             android:background="@color/colorBottomPanelBackground"
             android:elevation="0dp"
-            android:textSize="15sp"
             app:tabIndicatorColor="@color/colorTabIndicator"
-            app:tabIndicatorHeight="4dp"
+            app:tabIndicatorHeight="@dimen/tab_indicator_height"
             app:tabMode="scrollable"
             app:tabSelectedTextColor="@color/colorTabIndicator"
             app:tabTextAppearance="@style/TabLayoutStyle"
             app:tabTextColor="@color/colorWhite"
             tools:targetApi="lollipop" />
+
     </androidx.viewpager.widget.ViewPager>
-
     </#if>
-
-    
-    
 
 </layout>

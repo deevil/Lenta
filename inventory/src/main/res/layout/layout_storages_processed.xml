@@ -4,63 +4,57 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
+
         <variable
             name="vm"
             type="com.lenta.inventory.features.storages_list.StoragesListViewModel" />
+
         <variable
             name="rvConfig"
             type="com.lenta.shared.utilities.databinding.DataBindingRecyclerViewConfig" />
+
     </data>
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:orientation="vertical">
 
+        <!-- Наименования колонок -->
         <include
-            android:id="@+id/layout_titles"
             layout="@layout/item_title_storages"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            android:layout_height="wrap_content" />
 
+        <!-- Список элементов -->
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rv"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_marginBottom="8dp"
+            android:layout_weight="1"
             app:items="@{vm.processedStorages}"
-            app:layout_constraintBottom_toTopOf="@id/et_search"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/layout_titles"
             app:rv_config="@{rvConfig}"
             tools:listitem="@layout/item_tile_processed_storages" />
 
-        <EditText
-            android:id="@+id/et_search"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
-            android:layout_marginStart="8dp"
-            android:layout_marginEnd="8dp"
-            android:layout_marginBottom="8dp"
-            android:drawableEnd="@drawable/ic_search_white_16dp"
-            android:hint="@string/enter_storage_place_number"
-            android:imeOptions="actionSearch"
-            android:inputType="numberDecimal"
-            android:paddingTop="8dp"
-            android:paddingBottom="8dp"
-            android:text="@={vm.storageNumber}"
-            app:cursorToLastPos="@{true}"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:onOkInSoftKeyboard="@{vm}"
-            app:requestFocus="@{vm.requestFocusToStorageNumber}"
-            tools:ignore="Autofill" />
-    </androidx.constraintlayout.widget.ConstraintLayout>
+        <!-- Ввод номера -->
+        <LinearLayout style="@style/EnterNumberFieldLayout">
 
+            <EditText
+                style="@style/EnterNumberField"
+                android:digits="0123456789"
+                android:drawableEnd="@drawable/ic_loupe_white_16dp"
+                android:hint="@string/enter_storage_place_number"
+                android:inputType="numberDecimal"
+                android:maxLength="20"
+                android:text="@={vm.storageNumber}"
+                app:cursorToLastPos="@{true}"
+                app:onOkInSoftKeyboard="@{vm}"
+                app:requestFocus="@{vm.requestFocusToStorageNumber}"
+                tools:ignore="Autofill" />
+
+        </LinearLayout>
+
+    </LinearLayout>
 
 </layout>

@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        xmlns:tools="http://schemas.android.com/tools"
-        tools:context=".features.job_card.JobCardFragment">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".features.job_card.JobCardFragment">
 
     <data>
 
@@ -22,8 +22,7 @@
             android:orientation="vertical">
 
             <!-- Выбор типа задания -->
-            <LinearLayout
-                style="@style/LinearRowStyle">
+            <LinearLayout style="@style/LinearRowStyle">
 
                 <com.lenta.shared.view.ClickableSpinner
                     style="@style/CellSpinnerStyle"
@@ -34,12 +33,10 @@
 
             </LinearLayout>
 
-            <View
-                style="@style/HorizontalDivider" />
+            <View style="@style/HorizontalDivider" />
 
             <!-- Ниаменование -->
-            <LinearLayout
-                style="@style/LinearRowStyle">
+            <LinearLayout style="@style/LinearRowStyle">
 
                 <com.lenta.shared.view.EditTextWithSuffix
                     style="@style/CellEditTextStyle"
@@ -54,8 +51,7 @@
 
             </LinearLayout>
 
-            <View
-                style="@style/HorizontalDivider" />
+            <View style="@style/HorizontalDivider" />
 
             <!-- Описание -->
             <LinearLayout
@@ -74,8 +70,7 @@
 
                 </LinearLayout>
 
-                <View
-                    style="@style/VerticalDivider" />
+                <View style="@style/VerticalDivider" />
 
                 <LinearLayout
                     style="@style/LinearCellStyle"
@@ -94,8 +89,7 @@
 
             </LinearLayout>
 
-            <View
-                style="@style/HorizontalDivider" />
+            <View style="@style/HorizontalDivider" />
 
             <!-- Комментарий -->
             <LinearLayout
@@ -114,8 +108,7 @@
 
                 </LinearLayout>
 
-                <View
-                    style="@style/VerticalDivider" />
+                <View style="@style/VerticalDivider" />
 
                 <LinearLayout
                     style="@style/LinearCellStyle"
@@ -134,8 +127,7 @@
 
             </LinearLayout>
 
-            <View
-                style="@style/HorizontalDivider" />
+            <View style="@style/HorizontalDivider" />
 
         </LinearLayout>
 
@@ -143,10 +135,11 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom"
-            android:layout_margin="10dp"
+            android:layout_marginStart="13dp"
+            android:layout_marginBottom="19dp"
             app:isStrictList="@{vm.isStrictList()}"
-            tools:src="@drawable/ic_strict_list_48dp"
-            tools:ignore="ContentDescription" />
+            tools:ignore="ContentDescription"
+            tools:src="@drawable/ic_strict_list_white_32dp" />
 
     </FrameLayout>
 

@@ -57,7 +57,7 @@ class JobCardRepo @Inject constructor(val hyperHive: HyperHive,
                                 name =
                                 ZmpUtz36V001(hyperHive).localHelper_ET_CNTRL_TXT
                                         .getWhere("TASK_CNTRL = \"${it.taskCntrl}\"")
-                                        .getOrNull(0)?.cntrlTxt ?: "",
+                                        .getOrNull(0)?.cntrlTxt.orEmpty(),
                                 code = it.taskCntrl
                         )
 

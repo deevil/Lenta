@@ -31,7 +31,7 @@ data class Good(
     }
 
     fun getEanOrEmpty(): String {
-        return if (enteredCode == EnteredCode.EAN) ean ?: "Not found!" else ""
+        return if (enteredCode == EnteredCode.EAN) ean.orEmpty() else ""
     }
 
 }

@@ -1,7 +1,11 @@
 package com.lenta.bp7.di
 
 import android.content.Context
+import app_update.AppUpdateInstaller
+import app_update.AppUpdaterConfig
+import app_update.AppUpdaterInstallerFromFmp
 import com.google.gson.Gson
+import com.lenta.bp7.BuildConfig.APPLICATION_ID
 import com.lenta.bp7.data.IPersistCheckResult
 import com.lenta.bp7.data.PersistCheckResult
 import com.lenta.bp7.data.model.CheckData
@@ -20,11 +24,19 @@ import com.lenta.shared.platform.navigation.ICoreNavigator
 import com.lenta.shared.platform.time.ITimeMonitor
 import com.lenta.shared.progress.IProgressUseCaseInformator
 import com.mobrun.plugin.api.HyperHive
+import dagger.Binds
 import dagger.Module
 import dagger.Provides
 
-@Module
+@Module(includes = [AppModule.Declarations::class])
 class AppModule {
+
+    @Module
+    internal interface Declarations {
+        @Binds
+        @AppScope
+        fun bindAppUpdateInstaller(realisation: AppUpdaterInstallerFromFmp): AppUpdateInstaller
+    }
 
     @Provides
     @AppScope
@@ -67,4 +79,11 @@ class AppModule {
     internal fun provideIPersistCheckResult(hyperHive: HyperHive, gson: Gson): IPersistCheckResult {
         return PersistCheckResult(hyperHive, gson)
     }
+
+    @Provides
+    @AppScope
+    internal fun provideAppUpdaterConfig(): AppUpdaterConfig {
+        return AppUpdaterConfig(folderName = "bp7", applicationId = APPLICATION_ID)
+    }
+
 }

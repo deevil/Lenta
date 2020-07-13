@@ -41,12 +41,12 @@ class DatabaseRepo(
                 return@withContext GoodInfo(
                         ean = ean,
                         material = eanInfo.materialNumber,
-                        matcode = productInfo?.matcode ?: "Not found!",
+                        matcode = productInfo?.matcode.orEmpty(),
                         enteredCode = EnteredCode.EAN,
-                        name = productInfo?.name ?: "Not found!",
+                        name = productInfo?.name.orEmpty(),
                         uom = Uom(
-                                code = productInfo?.buom ?: "Not found!",
-                                name = unitName ?: "Not found!"))
+                                code = productInfo?.buom.orEmpty(),
+                                name = unitName.orEmpty()))
             }
         }
     }
@@ -60,14 +60,14 @@ class DatabaseRepo(
                 val eanInfo = getEanInfoByMaterial(productInfo.material)
                 val unitName = getGoodUnitName(productInfo.buom)
                 return@withContext GoodInfo(
-                        ean = eanInfo?.ean ?: "Not found!",
+                        ean = eanInfo?.ean.orEmpty(),
                         material = material,
                         matcode = productInfo.matcode,
                         enteredCode = EnteredCode.MATERIAL,
                         name = productInfo.name,
                         uom = Uom(
                                 code = productInfo.buom,
-                                name = unitName ?: "Not found!"))
+                                name = unitName.orEmpty()))
             }
         }
     }
@@ -81,14 +81,14 @@ class DatabaseRepo(
                 val eanInfo = getEanInfoByMaterial(productInfo.material)
                 val unitName = getGoodUnitName(productInfo.buom)
                 return@withContext GoodInfo(
-                        ean = eanInfo?.ean ?: "Not found!",
+                        ean = eanInfo?.ean.orEmpty(),
                         material = productInfo.material,
                         matcode = matcode,
                         enteredCode = EnteredCode.MATCODE,
                         name = productInfo.name,
                         uom = Uom(
                                 code = productInfo.buom,
-                                name = unitName ?: "Not found!"))
+                                name = unitName.orEmpty()))
             }
         }
     }

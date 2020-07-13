@@ -2,6 +2,8 @@ package com.lenta.bp9.model.memory
 
 import com.lenta.bp9.model.repositories.ITaskExciseStampBadRepository
 import com.lenta.bp9.model.task.TaskExciseStampBad
+import com.lenta.bp9.platform.TypeDiscrepanciesConstants
+import com.lenta.shared.utilities.extentions.removeItemFromListWithPredicate
 
 class MemoryTaskExciseStampBadRepository : ITaskExciseStampBadRepository {
 
@@ -12,9 +14,10 @@ class MemoryTaskExciseStampBadRepository : ITaskExciseStampBadRepository {
     }
 
     override fun findExciseStampBad(findExciesStampBad: TaskExciseStampBad): TaskExciseStampBad? {
-        return stampsBad.firstOrNull { it.materialNumber == findExciesStampBad.materialNumber &&
-                it.exciseStampCode == findExciesStampBad.exciseStampCode &&
-                it.typeDiscrepancies == findExciesStampBad.typeDiscrepancies
+        return stampsBad.firstOrNull {
+            it.materialNumber == findExciesStampBad.materialNumber &&
+                    it.exciseStampCode == findExciesStampBad.exciseStampCode &&
+                    it.typeDiscrepancies == findExciesStampBad.typeDiscrepancies
         }
     }
 
@@ -46,15 +49,26 @@ class MemoryTaskExciseStampBadRepository : ITaskExciseStampBadRepository {
     }
 
     override fun deleteExciseStampBad(delExciesStampBad: TaskExciseStampBad): Boolean {
-        stampsBad.map { it }.filter {stamp ->
-            if (delExciesStampBad.exciseStampCode == stamp.exciseStampCode) {
-                stampsBad.remove(stamp)
-                return@filter true
-            }
-            return@filter false
+        return stampsBad.removeItemFromListWithPredicate { stamp ->
+            delExciesStampBad.exciseStampCode == stamp.exciseStampCode
+        }
+    }
 
-        }.let {
-            return it.isNotEmpty()
+    override fun deleteExciseStampBadForProduct(materialNumber: String): Boolean {
+        return stampsBad.removeItemFromListWithPredicate { stamp ->
+            stamp.materialNumber == materialNumber
+        }
+    }
+
+    override fun deleteExciseStampBadForProductAndDiscrepancies(materialNumber: String, typeDiscrepancies: String): Boolean {
+        return stampsBad.removeItemFromListWithPredicate { stamp ->
+            stamp.materialNumber == materialNumber && stamp.typeDiscrepancies == typeDiscrepancies
+        }
+    }
+
+    override fun deleteExciseStampBadNotNormForProduct(materialNumber: String): Boolean {
+        return stampsBad.removeItemFromListWithPredicate { stamp ->
+            stamp.materialNumber == materialNumber && stamp.typeDiscrepancies == TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_NORM
         }
     }
 

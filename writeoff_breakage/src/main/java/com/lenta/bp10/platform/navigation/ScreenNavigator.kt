@@ -72,13 +72,9 @@ class ScreenNavigator(
 
     }
 
-    override fun openSelectionPersonnelNumberScreen(codeConfirmation: Int?) {
+    override fun openSelectionPersonnelNumberScreen(codeConfirmation: Int?, isScreenMainMenu: Boolean) {
         runOrPostpone {
-            if (codeConfirmation == null) {
-                getFragmentStack()?.replace(SelectPersonnelNumberFragment())
-            } else {
-                getFragmentStack()?.push(SelectPersonnelNumberFragment.create(codeConfirmation = codeConfirmation))
-            }
+            getFragmentStack()?.push(SelectPersonnelNumberFragment.create(codeConfirmation = codeConfirmation, isScreenMainMenu = isScreenMainMenu))
         }
     }
 
@@ -127,7 +123,7 @@ class ScreenNavigator(
 
     override fun openSetsInfoScreen(productInfo: ProductInfo, quantity: Double) {
         runOrPostpone {
-            getFragmentStack()?.push(SetsFragment.create(productInfo, quantity))
+            getFragmentStack()?.push(SetsFragment.newInstance(productInfo, quantity))
         }
     }
 
@@ -231,7 +227,7 @@ class ScreenNavigator(
     override fun openAlertDoubleScanStamp() {
         openAlertScreen(
                 message = context.getString(R.string.alert_double_scan_stamp),
-                iconRes = R.drawable.ic_info_pink,
+                iconRes = R.drawable.ic_info_pink_80dp,
                 textColor = ContextCompat.getColor(context, com.lenta.shared.R.color.color_text_dialogWarning),
                 pageNumber = "97"
         )
@@ -258,7 +254,7 @@ class ScreenNavigator(
     override fun openAlertNotValidFormatStamp() {
         openAlertScreen(
                 message = context.getString(R.string.not_valid_format_stamp),
-                iconRes = R.drawable.is_warning_yellow_80dp,
+                iconRes = R.drawable.ic_warning_yellow_80dp,
                 pageNumber = "96"
         )
     }
@@ -266,7 +262,7 @@ class ScreenNavigator(
     override fun openFailDetectComponentForStampScreen() {
         openAlertScreen(
                 message = context.getString(R.string.fail_detect_product_for_stamp),
-                iconRes = R.drawable.ic_info_pink,
+                iconRes = R.drawable.ic_info_pink_80dp,
                 textColor = ContextCompat.getColor(context, com.lenta.shared.R.color.color_text_dialogWarning),
                 pageNumber = "97"
         )
@@ -275,7 +271,7 @@ class ScreenNavigator(
     override fun openLimitExceededScreen() {
         openAlertScreen(
                 message = context.getString(R.string.limit_exceeded_alco_product),
-                iconRes = R.drawable.is_warning_yellow_80dp,
+                iconRes = R.drawable.ic_warning_yellow_80dp,
                 pageNumber = "96",
                 timeAutoExitInMillis = 2000
         )
@@ -300,7 +296,7 @@ interface IScreenNavigator : ICoreNavigator {
     fun openLoginScreen()
     fun openSelectMarketScreen()
     fun openFastDataLoadingScreen()
-    fun openSelectionPersonnelNumberScreen(codeConfirmation: Int? = null)
+    fun openSelectionPersonnelNumberScreen(codeConfirmation: Int? = null, isScreenMainMenu: Boolean)
     fun openMainMenuScreen()
     fun openJobCardScreen()
     fun openLoadingTaskSettingsScreen()

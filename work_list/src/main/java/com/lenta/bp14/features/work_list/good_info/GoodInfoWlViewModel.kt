@@ -248,7 +248,7 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKe
     private fun loadAdditionalInfo() {
         viewModelScope.launch {
             additionalGoodInfoNetRequest(AdditionalGoodInfoParams(
-                    tkNumber = sessionInfo.market ?: "Not Found!",
+                    tkNumber = sessionInfo.market.orEmpty(),
                     ean = good.value?.ean,
                     matNr = good.value?.material
             )).also {
@@ -387,7 +387,7 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKe
                 navigator.showProgressLoadingData()
 
                 checkMarkNetRequest(CheckMarkParams(
-                        tkNumber = sessionInfo.market ?: "Not Found!",
+                        tkNumber = sessionInfo.market.orEmpty(),
                         material = good.value!!.material,
                         markNumber = goodMark,
                         mode = "2"
@@ -415,7 +415,7 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKe
                 navigator.showProgressLoadingData()
 
                 checkMarkNetRequest(CheckMarkParams(
-                        tkNumber = sessionInfo.market ?: "Not Found!",
+                        tkNumber = sessionInfo.market.orEmpty(),
                         material = good.value!!.material,
                         markNumber = exciseMark,
                         mode = "1"

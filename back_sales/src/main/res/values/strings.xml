@@ -1,0 +1,102 @@
+<resources>
+    <string name="app_name">Возвраты</string>
+
+    // Заголовки экранов
+    <string name="task_composition">Состав задания</string>
+    <string name="basket_good_list">Список товаров корзины</string>
+    <string name="good_details">Детали по товару</string>
+    <string name="task_list">Список заданий</string>
+    <string name="saving_data">Сохранение данных</string>
+    <string name="good_list">Список товаров</string>
+    <string name="discrepancies_detected">Обнаруженные расхождения</string>
+    <string name="basket_properties">Свойства корзины</string>
+    <string name="filter_for_search">Фильтр для поиска</string>
+    <string name="task_card">Карточка задания</string>
+    <string name="good_info">Информация о товаре</string>
+    <string name="add_supplier">Добавление поставщика</string>
+
+    // Наименование вкладок
+    <string name="goods">Товары</string>
+    <string name="baskets">Корзины</string>
+    <string name="categories">Категории</string>
+    <string name="processing">К обработке</string>
+    <string name="search">Поиск</string>
+    <string name="not_processed">Не обработанные</string>
+    <string name="processed">Обработанные</string>
+    <string name="task_type">Тип задания</string>
+    <string name="comment">Комментарий</string>
+
+    // Наименования колонок
+    <string name="good">Товар</string>
+    <string name="quantity">Количество</string>
+    <string name="of_goods">Товаров</string>
+    <string name="basket">Корзина</string>
+    <string name="task">Задание</string>
+    <string name="tags">Признаки</string>
+    <string name="consignments">Партии</string>
+
+    // Информационные сообщения
+    <string name="unsent_data_found_on_device">На устройстве обнаружены непереданные данные. Перейти к данным?</string>
+    <string name="twelve_characters_entered">Введено 12 знаков. Какой код вы ввели?</string>
+    <string name="unsaved_data_will_be_lost">Несохраненные данные будут утеряны. Продолжить?</string>
+    <string name="make_task_counted_and_close">Перевести задание в статус \"Посчитано\" и закрыть его для редактирования?</string>
+    <string name="task_unsent_data_will_be_deleted">По заданию \"%1$s\" будут удалены все непереданные данные</string>
+    <string name="scanned_mark_belongs_to_product">Отсканированная марка принадлежит товару %1$s</string>
+    <string name="for_excise_alcohol_need_scan_first_mark">Для акцизного алкогольного товара необходимо отсканировать первую акцизную марку. По ней будет определена категория \"Марочно\", с помарочным сканированием или \"Партионно\", с ручным вводом количеств.</string>
+    <string name="raw_goods_remained_in_task">В задании остались необработанные товары. Сохранить в статусе "Опубликовано" и оставить доступным для продолжения пересчета?</string>
+    <string name="box_was_last_scanned">Последней была отсканирована коробка. Будут удалены все добавленные марки этой коробки.</string>
+    <string name="do_you_really_want_set_zero_quantity">Вы действительно хотите установить 0 в поле количество для (%1$d) товаров из списка?</string>
+    <string name="not_match_task_settings_gis_error">Товар не соответствует настройкам задания. Ошибка в ГИС-контроле.</string>
+    <string name="not_match_task_settings_adding_not_possible">Товар не соответствует настройкам задания. Добавление товара невозможно.</string>
+    <string name="good_cannot_be_added">Товар запрещен для добавление в данный тип задания. Добавление товара невозможно.</string>
+    <string name="scanned_mark_is_not_on_balance_in_current_store">Отсканированная марка не числится на остатках текущего ТК. Отложите марку и проведите расследование. Записать марку в проблемные?</string>
+    <string name="scanned_box_is_not_whole">Отсканированный короб не является целым. Добавление марок по номеру короба невозможно. Необходимо отсканировать каждую АМ.</string>
+    <string name="marks_in_box_are_not_on_balance_in_current_store">В коробке присутствуют марки, которые не числятся на остатках текущего ТК. Добавление марок по номеру короба невозможно. Необходимо отсканировать каждую АМ.</string>
+    <string name="finish_processing_box">Отсканированный товар партионный, завершите обработку коробки с марочным алкоголем, после чего повторите сканирование марки.</string>
+    <string name="finish_processing_current_box">Завершите обработку текущей коробки с марочным алкоголем, после чего повторите сканирование номера коробки.</string>
+    <string name="alcocode_does_not_apply_to_this_good">Алкокод не относится к этому товару</string>
+    <string name="unknown_alcocode">Неизвестный алкокод</string>
+
+    // Описание иконок
+    <string name="alcohol_good">Алкогольный товар</string>
+    <string name="common_good">Обычный товар</string>
+
+    // Наименование кнопок
+    <string name="create_task">Создать задание</string>
+    <string name="work_with_tasks">Работа с заданиями</string>
+
+    // Подсказки
+    <string name="enter_sap_or_barcode">Введите SAP-код или штрихкод</string>
+    <string name="enter_task_or_user_name">Введите номер задания или имя пользователя</string>
+
+    // Строки в коде
+    <string name="tk_number">ТК - %1$s</string>
+    <string name="back_sales_from_date">Возврат от %1$s</string>
+    <string name="choose_provider">Выберите поставщика (кредитора)</string>
+    <string name="choose_producer">Выберите производителя</string>
+    <string name="type_quantity">Количество</string>
+    <string name="type_mark">Марочно</string>
+    <string name="type_part">Партионно</string>
+    <string name="total_with_converting_info">Итого %1$s</string>
+    <string name="by_basket">По корзине</string>
+    <string name="basket_title">Корзина %1$s</string>
+
+    // Разное
+    <string name="provider">Поставщик</string>
+    <string name="gis_control">ГИС-контроль</string>
+    <string name="good_type">Вид товара</string>
+    <string name="section">Секция</string>
+    <string name="mark">Марка</string>
+    <string name="from">Откуда</string>
+    <string name="storage">Склад</string>
+    <string name="description">Описание</string>
+    <string name="consignment">Партия</string>
+    <string name="with_bottling_date">с датой розлива</string>
+    <string name="common_product">Обычный товар</string>
+    <string name="alcohol">Алкоголь</string>
+    <string name="excise_alcohol">Акцизный алкоголь</string>
+    <string name="specify_supplier_sap">Укажите SAP-код поставщика</string>
+    <string name="supplier_name">Наименование поставщика:</string>
+    <string name="all_suppliers">Все поставщики</string>
+
+</resources>

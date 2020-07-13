@@ -1,7 +1,11 @@
 package com.lenta.inventory.di
 
 import android.content.Context
+import app_update.AppUpdateInstaller
+import app_update.AppUpdaterConfig
+import app_update.AppUpdaterInstallerFromFmp
 import com.google.gson.Gson
+import com.lenta.inventory.BuildConfig.APPLICATION_ID
 import com.lenta.inventory.models.IPersistInventoryTask
 import com.lenta.inventory.models.PersistInventoryTask
 import com.lenta.inventory.models.task.IInventoryTaskManager
@@ -18,11 +22,19 @@ import com.lenta.shared.platform.activity.ForegroundActivityProvider
 import com.lenta.shared.platform.navigation.ICoreNavigator
 import com.lenta.shared.progress.IProgressUseCaseInformator
 import com.mobrun.plugin.api.HyperHive
+import dagger.Binds
 import dagger.Module
 import dagger.Provides
 
-@Module
+@Module(includes = [AppModule.Declarations::class])
 open class AppModule {
+
+    @Module
+    internal interface Declarations {
+        @Binds
+        @AppScope
+        fun bindAppUpdateInstaller(realisation: AppUpdaterInstallerFromFmp): AppUpdateInstaller
+    }
 
     @Provides
     @AppScope
@@ -62,5 +74,10 @@ open class AppModule {
         return PersistInventoryTask(hyperHive, gson)
     }
 
+    @Provides
+    @AppScope
+    internal fun provideAppUpdaterConfig(): AppUpdaterConfig {
+        return AppUpdaterConfig(folderName = "bp11", applicationId = APPLICATION_ID)
+    }
 
 }

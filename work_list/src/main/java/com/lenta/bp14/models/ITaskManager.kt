@@ -85,11 +85,11 @@ data class BaseProductInfo(
 )
 
 fun ITaskManager<*, *>.getTaskName(): String? {
-    return this.getTask()?.getDescription()?.taskName ?: ""
+    return this.getTask()?.getDescription()?.taskName.orEmpty()
 }
 
 fun ITaskManager<*, *>.getTaskType(): String? {
-    return this.getTask()?.getTaskType()?.taskType ?: ""
+    return this.getTask()?.getTaskType()?.taskType.orEmpty()
 }
 
 fun ITask.getTaskName(): String {

@@ -49,6 +49,7 @@ class GoodsListWlViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
     val good by lazy { task.currentGood }
 
     val numberField: MutableLiveData<String> = MutableLiveData("")
+
     val requestFocusToNumberField: MutableLiveData<Boolean> = MutableLiveData()
 
     private val toUiFunc = { products: List<Good>? ->
@@ -147,7 +148,7 @@ class GoodsListWlViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
     }
 
     override fun onOkInSoftKeyboard(): Boolean {
-        checkEnteredNumber(numberField.value ?: "")
+        checkEnteredNumber(numberField.value.orEmpty())
         return true
     }
 
@@ -223,7 +224,7 @@ class GoodsListWlViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
     }
 
     fun onDigitPressed(digit: Int) {
-        numberField.postValue(numberField.value ?: "" + digit)
+        numberField.postValue(numberField.value.orEmpty() + digit)
         requestFocusToNumberField.value = true
     }
 
