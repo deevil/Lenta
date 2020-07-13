@@ -843,7 +843,7 @@ class GoodInfoCreateViewModel : CoreViewModel() {
 
     fun onClickApply() {
         when (scanModeType.value) {
-            ScanNumberType.ALCOHOL, ScanNumberType.PART -> {
+            ScanNumberType.ALCOHOL, ScanNumberType.PART, ScanNumberType.MARK_68 -> {
                 viewModelScope.launch {
                     checkPart().either(::handleFailure) { result ->
                         result.status.let { status ->
