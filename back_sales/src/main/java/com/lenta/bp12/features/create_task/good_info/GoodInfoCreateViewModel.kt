@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.lenta.bp12.model.*
 import com.lenta.bp12.model.pojo.Mark
 import com.lenta.bp12.model.pojo.Part
+import com.lenta.bp12.model.pojo.Position
 import com.lenta.bp12.model.pojo.create_task.Basket
 import com.lenta.bp12.model.pojo.create_task.GoodCreate
 import com.lenta.bp12.platform.extention.getControlType
@@ -73,10 +74,7 @@ class GoodInfoCreateViewModel : CoreViewModel() {
         }
     }
 
-    private var isExistUnsavedData = false
-
     private val lastSuccessSearchNumber = MutableLiveData("")
-
 
     val isCompactMode by lazy {
         good.map { good ->
@@ -104,9 +102,13 @@ class GoodInfoCreateViewModel : CoreViewModel() {
 
     private val markInfoResult = MutableLiveData<MarkInfoResult>()
 
+    private var scanCodeInfo: ScanCodeInfo? = null
+
+    private var isExistUnsavedData = false
+
     private var isEanLastScanned = false
 
-    private var scanCodeInfo: ScanCodeInfo? = null
+    private var thereWasRollback = false
 
     /**
     Ввод количества
@@ -163,9 +165,7 @@ class GoodInfoCreateViewModel : CoreViewModel() {
     }
 
     val basketNumber by lazy {
-        good.combineLatest(quantity)
-                .combineLatest(selectedProvider)
-                .combineLatest(isProviderSelected).map {
+        good.combineLatest(quantity).combineLatest(isProviderSelected).map {
                     it?.let {
                         val isProviderSelected = it.second
 
@@ -181,19 +181,17 @@ class GoodInfoCreateViewModel : CoreViewModel() {
     }
 
     val basketQuantity by lazy {
-        good.combineLatest(quantity)
-                .combineLatest(selectedProvider)
-                .combineLatest(isProviderSelected).map {
+        good.combineLatest(quantity).combineLatest(isProviderSelected).map {
                     it?.let {
-                        val good = it.first.first.first
-                        val quantity = it.first.first.second
+                        val good = it.first.first
+                        val quantity = it.first.second
                         val isProviderSelected = it.second
 
                         val units = good.commonUnits.name
 
                         if (isProviderSelected) {
                             getBasket()?.let { basket ->
-                                "${task.value?.getQuantityByBasket(basket).sumWith(quantity).dropZeros()} $units"
+                                "${good.getQuantityByProvider(basket.provider.code).sumWith(quantity).dropZeros()} $units"
                             } ?: "${quantity.dropZeros()} $units"
                         } else {
                             "0 $units"
@@ -247,16 +245,6 @@ class GoodInfoCreateViewModel : CoreViewModel() {
         isEnabled && position > 0 || !isEnabled && position == 0
     }
 
-    private val selectedProvider by lazy {
-        providers.combineLatest(providerPosition).map {
-            it?.let {
-                val list = it.first
-                val position = it.second
-                if (list.isNotEmpty()) list[position] else null
-            }
-        }
-    }
-
     /**
     Список производителей
      */
@@ -301,16 +289,6 @@ class GoodInfoCreateViewModel : CoreViewModel() {
         isEnabled && position > 0 || !isEnabled && position == 0
     }
 
-    private val selectedProducer by lazy {
-        producers.combineLatest(producerPosition).map {
-            it?.let {
-                val list = it.first
-                val position = it.second
-                if (list.isNotEmpty()) list[position] else null
-            }
-        }
-    }
-
     /**
     Дата производства
      */
@@ -336,19 +314,19 @@ class GoodInfoCreateViewModel : CoreViewModel() {
         scanModeType.combineLatest(quantity).combineLatest(isProviderSelected).combineLatest(isProducerSelected).combineLatest(isCorrectDate).map {
             it?.let {
                 val type = it.first.first.first.first
-                val quantity = it.first.first.first.second
+                val isEnteredQuantity = it.first.first.first.second > 0.0
                 val isProviderSelected = it.first.first.second
                 val isProducerSelected = it.first.second
                 val isDateEntered = it.second
 
                 when (type) {
-                    ScanNumberType.COMMON -> quantity > 0.0 && isProviderSelected
-                    ScanNumberType.ALCOHOL -> quantity > 0.0 && isProviderSelected && isProducerSelected && isDateEntered
+                    ScanNumberType.COMMON -> isEnteredQuantity && isProviderSelected
+                    ScanNumberType.ALCOHOL -> isEnteredQuantity && isProviderSelected && isProducerSelected && isDateEntered
                     ScanNumberType.EXCISE -> false
-                    ScanNumberType.MARK_150 -> isProviderSelected
-                    ScanNumberType.MARK_68 -> isProviderSelected && isProducerSelected
-                    ScanNumberType.PART -> isProviderSelected && isProducerSelected && isDateEntered
-                    ScanNumberType.BOX -> isProviderSelected && isProducerSelected
+                    ScanNumberType.MARK_150 -> isEnteredQuantity && isProviderSelected
+                    ScanNumberType.MARK_68 -> isEnteredQuantity && isProviderSelected && isProducerSelected
+                    ScanNumberType.PART -> isEnteredQuantity && isProviderSelected && isProducerSelected && isDateEntered
+                    ScanNumberType.BOX -> isEnteredQuantity && isProviderSelected && isProducerSelected
                     else -> false
                 }
             } ?: false
@@ -386,8 +364,14 @@ class GoodInfoCreateViewModel : CoreViewModel() {
             return
         }
 
-        if (applyEnabled.value!! || good.value!!.kind == GoodKind.EXCISE && (number.length == Constants.MARK_150 || number.length == Constants.MARK_68 || number.length == Constants.BOX_26)) {
-            saveChanges()
+        if (applyEnabled.value!! || good.value!!.kind == GoodKind.EXCISE &&
+                (number.length == Constants.MARK_150 || number.length == Constants.MARK_68 || number.length == Constants.BOX_26)) {
+            if (!thereWasRollback) {
+                saveChanges()
+            } else {
+                thereWasRollback = false
+            }
+
             manager.searchGoodFromList = false
             manager.searchNumber = number
             checkSearchNumber(number)
@@ -655,8 +639,8 @@ class GoodInfoCreateViewModel : CoreViewModel() {
         return markInfoNetRequest(MarkInfoParams(
                 tkNumber = sessionInfo.market.orEmpty(),
                 material = good.value?.material.orEmpty(),
-                producerCode = selectedProducer.value?.code.orEmpty(),
-                bottledDate = date.value.orEmpty(),
+                producerCode = getProducerCode(),
+                bottledDate = getFormattedDate(date.value.orEmpty(), Constants.DATE_FORMAT_dd_mm_yyyy, Constants.DATE_FORMAT_yyyy_mm_dd),
                 mode = 3,
                 quantity = quantity.value ?: 0.0
         )).also {
@@ -664,13 +648,50 @@ class GoodInfoCreateViewModel : CoreViewModel() {
         }
     }
 
+    private fun getProviderCode(): String {
+        var providerCode = ""
+        if (isProviderSelected.value == true) {
+            providers.value?.let { providers ->
+                providerPosition.value?.let { position ->
+                    providerCode = providers[position].code
+                }
+            }
+        }
+
+        return providerCode
+    }
+
+    private fun getProducerCode(): String {
+        var producerCode = ""
+        if (isProducerSelected.value == true) {
+            producers.value?.let { producers ->
+                producerPosition.value?.let { position ->
+                    producerCode = producers[position].code
+                }
+            }
+        }
+
+        return producerCode
+    }
+
+    private fun getProvider(): ProviderInfo {
+        var provider = ProviderInfo()
+        if (isProviderSelected.value == true) {
+            providers.value?.let { providers ->
+                providerPosition.value?.let { position ->
+                    provider = providers[position]
+                }
+            }
+        }
+
+        return provider
+    }
+
     private fun getBasket(): Basket? {
         return task.value?.let { task ->
             good.value?.let { good ->
-                selectedProvider.value?.let { provider ->
-                    task.baskets.find { basket ->
-                        basket.section == good.section && basket.goodType == good.type && basket.control == good.control && basket.provider.code == provider.code
-                    }
+                task.baskets.find { basket ->
+                    basket.section == good.section && basket.goodType == good.type && basket.control == good.control && basket.provider.code == getProviderCode()
                 }
             }
         }
@@ -697,7 +718,12 @@ class GoodInfoCreateViewModel : CoreViewModel() {
 
     private fun addPosition() {
         good.value?.let { changedGood ->
-            changedGood.addPosition(quantity.value!!, selectedProvider.value ?: ProviderInfo())
+            val position = Position(
+                    quantity = quantity.value ?: 0.0,
+                    provider = getProvider()
+            )
+            Logg.d { "--> add position = $position" }
+            changedGood.addPosition(position)
 
             createBasket(changedGood)
             manager.updateCurrentGood(changedGood)
@@ -706,13 +732,15 @@ class GoodInfoCreateViewModel : CoreViewModel() {
 
     private fun addMark() {
         good.value?.let { changedGood ->
-            changedGood.addMark(Mark(
+            val mark = Mark(
                     number = lastSuccessSearchNumber.value!!,
                     material = changedGood.material,
                     isBadMark = markInfoResult.value?.status == MarkStatus.BAD.code,
-                    providerCode = selectedProvider.value?.code.orEmpty(),
-                    producerCode = selectedProducer.value?.code.orEmpty()
-            ))
+                    providerCode = getProviderCode(),
+                    producerCode = getProducerCode()
+            )
+            Logg.d { "--> add mark = $mark" }
+            changedGood.addMark(mark)
 
             createBasket(changedGood)
             manager.updateCurrentGood(changedGood)
@@ -721,15 +749,17 @@ class GoodInfoCreateViewModel : CoreViewModel() {
 
     private fun addPart() {
         good.value?.let { changedGood ->
-            changedGood.addPart(Part(
+            val part = Part(
                     number = lastSuccessSearchNumber.value!!,
                     material = changedGood.material,
                     quantity = quantity.value!!,
                     units = changedGood.convertingUnits,
-                    providerCode = selectedProvider.value?.code.orEmpty(),
-                    producerCode = selectedProducer.value?.code.orEmpty(),
+                    providerCode = getProviderCode(),
+                    producerCode = getProducerCode(),
                     date = date.value.orEmpty()
-            ))
+            )
+            Logg.d { "--> add part = $part" }
+            changedGood.addPart(part)
 
             createBasket(changedGood)
             manager.updateCurrentGood(changedGood)
@@ -740,14 +770,16 @@ class GoodInfoCreateViewModel : CoreViewModel() {
         good.value?.let { changedGood ->
             markInfoResult.value?.marks?.let { marks ->
                 marks.forEach { mark ->
-                    changedGood.addMark(Mark(
+                    val markFromBox = Mark(
                             number = mark.number,
                             material = changedGood.material,
                             boxNumber = lastSuccessSearchNumber.value!!,
                             isBadMark = mark.isBadMark.isNotEmpty(),
-                            providerCode = selectedProvider.value?.code.orEmpty(),
-                            producerCode = selectedProducer.value?.code.orEmpty()
-                    ))
+                            providerCode = getProviderCode(),
+                            producerCode = getProducerCode()
+                    )
+                    Logg.d { "--> add mark from box = $markFromBox" }
+                    changedGood.addMark(markFromBox)
                 }
             }
 
@@ -762,7 +794,7 @@ class GoodInfoCreateViewModel : CoreViewModel() {
                     section = changedGood.section,
                     goodType = changedGood.type,
                     control = changedGood.control,
-                    provider = selectedProvider.value ?: ProviderInfo()
+                    provider = getProvider()
             ))
         }
     }
@@ -796,22 +828,12 @@ class GoodInfoCreateViewModel : CoreViewModel() {
     }
 
     fun onClickRollback() {
-        good.value?.let { changedGood ->
-            when (scanModeType.value) {
-                ScanNumberType.MARK_150, ScanNumberType.MARK_68 -> {
-                    changedGood.removeMark(lastSuccessSearchNumber.value!!)
-                }
-                ScanNumberType.BOX -> {
-                    markInfoResult.value?.marks?.forEach { mark ->
-                        changedGood.removeMark(mark.number)
-                    }
-                }
-            }
-
-            quantityField.value = ""
+        good.value?.let { good ->
+            thereWasRollback = true
+            updateProducers(good.producers)
             markInfoResult.value = null
-
-            manager.updateCurrentGood(changedGood)
+            quantityField.value = "0"
+            date.value = ""
         }
     }
 
@@ -822,7 +844,7 @@ class GoodInfoCreateViewModel : CoreViewModel() {
 
     fun onClickApply() {
         when (scanModeType.value) {
-            ScanNumberType.ALCOHOL, ScanNumberType.PART -> {
+            ScanNumberType.ALCOHOL, ScanNumberType.PART, ScanNumberType.MARK_68 -> {
                 viewModelScope.launch {
                     checkPart().either(::handleFailure) { result ->
                         result.status.let { status ->
