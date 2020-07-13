@@ -97,7 +97,7 @@ class ScreenNavigator @Inject constructor(
 
     override fun openProcessingUnitListScreen() {
         runOrPostpone {
-            getFragmentStack()?.push(ProcessingUnitListFragment())
+            getFragmentStack()?.push(ProcessingUnitListFragment.newInstance())
         }
     }
 
