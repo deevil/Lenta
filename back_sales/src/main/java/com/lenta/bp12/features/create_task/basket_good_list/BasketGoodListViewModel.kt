@@ -95,7 +95,7 @@ class BasketGoodListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
     }
 
     fun onClickItemPosition(position: Int) {
-        goods.value?.getOrNull(position)?.material?.let { material ->
+        goods.value?.get(position)?.material?.let { material ->
             manager.searchNumber = material
             manager.searchGoodFromList = true
             navigator.goBack()
