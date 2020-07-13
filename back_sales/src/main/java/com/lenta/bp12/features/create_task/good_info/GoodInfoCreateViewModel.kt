@@ -196,7 +196,6 @@ class GoodInfoCreateViewModel : CoreViewModel() {
                         } else {
                             "0 $units"
                         }
-
                     }
                 }
     }
@@ -651,7 +650,7 @@ class GoodInfoCreateViewModel : CoreViewModel() {
     private fun getProviderCode(): String {
         var providerCode = ""
         if (isProviderSelected.value == true) {
-            providers.value?.let { providers ->
+            providers.value?.takeIf { it.isNotEmpty() }?.let { providers ->
                 providerPosition.value?.let { position ->
                     providerCode = providers[position].code
                 }
@@ -664,7 +663,7 @@ class GoodInfoCreateViewModel : CoreViewModel() {
     private fun getProducerCode(): String {
         var producerCode = ""
         if (isProducerSelected.value == true) {
-            producers.value?.let { producers ->
+            producers.value?.takeIf { it.isNotEmpty() }?.let { producers ->
                 producerPosition.value?.let { position ->
                     producerCode = producers[position].code
                 }
@@ -677,7 +676,7 @@ class GoodInfoCreateViewModel : CoreViewModel() {
     private fun getProvider(): ProviderInfo {
         var provider = ProviderInfo()
         if (isProviderSelected.value == true) {
-            providers.value?.let { providers ->
+            providers.value?.takeIf { it.isNotEmpty() }?.let { providers ->
                 providerPosition.value?.let { position ->
                     provider = providers[position]
                 }
