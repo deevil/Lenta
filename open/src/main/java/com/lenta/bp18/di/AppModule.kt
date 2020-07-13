@@ -3,7 +3,10 @@ package com.lenta.bp18.di
 import app_update.AppUpdateInstaller
 import app_update.AppUpdaterConfig
 import app_update.AppUpdaterInstallerFromFmp
+import com.lenta.bp18.BuildConfig.APPLICATION_ID
 import com.lenta.bp18.platform.Constants
+import com.lenta.bp18.platform.navigation.IScreenNavigator
+import com.lenta.bp18.platform.navigation.ScreenNavigator
 import com.lenta.shared.di.AppScope
 import dagger.Binds
 import dagger.Module
@@ -18,6 +21,10 @@ class AppModule {
         @Binds
         @AppScope
         fun bindAppUpdateInstaller(realisation: AppUpdaterInstallerFromFmp): AppUpdateInstaller
+
+        @Binds
+        @AppScope
+        fun bindScreenNavigator(realisation: ScreenNavigator): IScreenNavigator
 
     }
 
