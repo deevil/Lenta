@@ -2,7 +2,6 @@ package com.lenta.bp9.features.revise
 
 import android.os.Bundle
 import android.view.View
-import android.widget.AdapterView
 import com.lenta.bp9.BR
 import com.lenta.bp9.R
 import com.lenta.bp9.databinding.FragmentAlcoholBatchSelectBinding
@@ -13,10 +12,6 @@ import com.lenta.shared.platform.fragment.CoreFragment
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
-import com.lenta.shared.utilities.databinding.DataBindingAdapter
-import com.lenta.shared.utilities.databinding.DataBindingRecyclerViewConfig
-import com.lenta.shared.utilities.databinding.RecyclerViewKeyHandler
-import com.lenta.shared.utilities.extentions.generateScreenNumber
 import com.lenta.shared.utilities.extentions.provideViewModel
 import com.lenta.shared.utilities.state.state
 
@@ -24,8 +19,6 @@ class AlcoholBatchSelectFragment : CoreFragment<FragmentAlcoholBatchSelectBindin
 
     private var matnr by state("")
     private var type by state(ProductDocumentType.None)
-
-    private var recyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
 
     override fun getLayoutId(): Int = R.layout.fragment_alcohol_batch_select
 
@@ -55,39 +48,18 @@ class AlcoholBatchSelectFragment : CoreFragment<FragmentAlcoholBatchSelectBindin
 
     private fun initRvConfig() {
         binding?.let { layoutBinding ->
-            layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
+            layoutBinding.rvConfig = initRecycleAdapterDataBinding<ItemTileAlcoholBatchBinding>(
                     layoutId = R.layout.item_tile_alcohol_batch,
-                    itemId = BR.item,
-                    realisation = object : DataBindingAdapter<ItemTileAlcoholBatchBinding> {
-                        override fun onCreate(binding: ItemTileAlcoholBatchBinding) {
-                        }
-
-                        override fun onBind(binding: ItemTileAlcoholBatchBinding, position: Int) {
-                            binding.tvItemNumber.tag = position
-                            recyclerViewKeyHandler?.let {
-                                binding.root.isSelected = it.isSelected(position)
-                            }
-                        }
-                    },
-                    onItemClickListener = AdapterView.OnItemClickListener { _, _, position, _ ->
-                        recyclerViewKeyHandler?.let {
-                            if (it.isSelected(position)) {
-                                vm.onClickItemPosition(position)
-                            } else {
-                                it.selectPosition(position)
-                            }
-                        }
-
-                    }
+                    itemId = BR.item
             )
 
             layoutBinding.vm = vm
             layoutBinding.lifecycleOwner = viewLifecycleOwner
-            recyclerViewKeyHandler = RecyclerViewKeyHandler(
-                    rv = layoutBinding.rv,
+            recyclerViewKeyHandler = initRecyclerViewKeyHandler(
+                    recyclerView = layoutBinding.rv,
                     items = vm.batches,
-                    lifecycleOwner = layoutBinding.lifecycleOwner!!,
-                    initPosInfo = recyclerViewKeyHandler?.posInfo?.value
+                    previousPosInfo = recyclerViewKeyHandler?.posInfo?.value,
+                    onClickHandler = vm::onClickItemPosition
             )
         }
     }

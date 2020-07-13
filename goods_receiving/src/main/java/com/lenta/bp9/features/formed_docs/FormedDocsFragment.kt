@@ -22,8 +22,6 @@ import com.lenta.shared.utilities.extentions.provideViewModel
 class FormedDocsFragment : CoreFragment<FragmentFormedDocsBinding, FormedDocsViewModel>(),
         ToolbarButtonsClickListener {
 
-    private var recyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
-
     override fun getLayoutId(): Int = R.layout.fragment_formed_docs
 
     override fun getPageNumber(): String = "09/23"
@@ -68,33 +66,22 @@ class FormedDocsFragment : CoreFragment<FragmentFormedDocsBinding, FormedDocsVie
                 }
             }
 
-            layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
+            layoutBinding.rvConfig = initRecycleAdapterDataBinding(
                     layoutId = R.layout.item_tile_formed_docs,
                     itemId = BR.item,
-                    realisation = object : DataBindingAdapter<ItemTileFormedDocsBinding> {
-                        override fun onCreate(binding: ItemTileFormedDocsBinding) {
-                        }
-
-                        override fun onBind(binding: ItemTileFormedDocsBinding, position: Int) {
-                            binding.tvItemNumber.tag = position
-                            binding.tvItemNumber.setOnClickListener(onClickSelectionListener)
-                            binding.selectedForDelete = vm.docsSelectionsHelper.isSelected(position)
-                            recyclerViewKeyHandler?.let {
-                                binding.root.isSelected = it.isSelected(position)
-                            }
-                        }
+                    onAdapterItemBind = { binding: ItemTileFormedDocsBinding, position: Int ->
+                        binding.tvItemNumber.tag = position
+                        binding.tvItemNumber.setOnClickListener(onClickSelectionListener)
+                        binding.selectedForDelete = vm.docsSelectionsHelper.isSelected(position)
+                        onAdapterBindHandler(binding, position)
                     }
             )
 
-            layoutBinding.vm = vm
-            layoutBinding.lifecycleOwner = viewLifecycleOwner
-            recyclerViewKeyHandler = RecyclerViewKeyHandler(
-                    rv = layoutBinding.rv,
+            recyclerViewKeyHandler = initRecyclerViewKeyHandler(
+                    recyclerView = layoutBinding.rv,
                     items = vm.listDocs,
-                    lifecycleOwner = layoutBinding.lifecycleOwner!!,
-                    initPosInfo = recyclerViewKeyHandler?.posInfo?.value
+                    previousPosInfo = recyclerViewKeyHandler?.posInfo?.value
             )
         }
     }
-
 }

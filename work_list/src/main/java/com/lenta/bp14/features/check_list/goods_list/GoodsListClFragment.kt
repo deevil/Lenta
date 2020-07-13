@@ -19,6 +19,7 @@ import com.lenta.shared.keys.KeyCode
 import com.lenta.shared.keys.OnKeyDownListener
 import com.lenta.shared.platform.activity.OnBackPresserListener
 import com.lenta.shared.platform.fragment.CoreFragment
+import com.lenta.shared.platform.fragment.KeyDownCoreFragment
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListener
@@ -31,10 +32,8 @@ import com.lenta.shared.utilities.databinding.ViewPagerSettings
 import com.lenta.shared.utilities.extentions.connectLiveData
 import com.lenta.shared.utilities.extentions.provideViewModel
 
-class GoodsListClFragment : CoreFragment<FragmentGoodsListClBinding, GoodsListClViewModel>(),
-        ToolbarButtonsClickListener, ViewPagerSettings, OnKeyDownListener, OnScanResultListener, OnBackPresserListener {
-
-    private var recyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
+class GoodsListClFragment : KeyDownCoreFragment<FragmentGoodsListClBinding, GoodsListClViewModel>(),
+        ToolbarButtonsClickListener, ViewPagerSettings, OnScanResultListener, OnBackPresserListener {
 
     override fun getLayoutId(): Int = R.layout.fragment_goods_list_cl
 
@@ -119,6 +118,10 @@ class GoodsListClFragment : CoreFragment<FragmentGoodsListClBinding, GoodsListCl
                 }
     }
 
+    override fun onAdapterItemClickHandler(position: Int) {
+        recyclerViewKeyHandler?.selectPosition(position)
+    }
+
 
     override fun getTextTitle(position: Int): String {
         return getString(R.string.goods)
@@ -129,7 +132,6 @@ class GoodsListClFragment : CoreFragment<FragmentGoodsListClBinding, GoodsListCl
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding?.viewPagerSettings = this
-
     }
 
     override fun onKeyDown(keyCode: KeyCode): Boolean {
