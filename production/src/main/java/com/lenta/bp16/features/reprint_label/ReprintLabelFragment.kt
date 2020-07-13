@@ -2,7 +2,6 @@ package com.lenta.bp16.features.reprint_label
 
 import android.os.Bundle
 import android.view.View
-import android.widget.AdapterView
 import com.lenta.bp16.BR
 import com.lenta.bp16.R
 import com.lenta.bp16.databinding.FragmentReprintLabelBinding
@@ -13,17 +12,12 @@ import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListener
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
-import com.lenta.shared.utilities.databinding.DataBindingAdapter
-import com.lenta.shared.utilities.databinding.DataBindingRecyclerViewConfig
-import com.lenta.shared.utilities.databinding.RecyclerViewKeyHandler
 import com.lenta.shared.utilities.extentions.connectLiveData
 import com.lenta.shared.utilities.extentions.generateScreenNumberFromPostfix
 import com.lenta.shared.utilities.extentions.provideViewModel
 
 class ReprintLabelFragment : CoreFragment<FragmentReprintLabelBinding, ReprintLabelViewModel>(),
         ToolbarButtonsClickListener {
-
-    private var recyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
 
     override fun getLayoutId(): Int = R.layout.fragment_reprint_label
 
@@ -81,27 +75,20 @@ class ReprintLabelFragment : CoreFragment<FragmentReprintLabelBinding, ReprintLa
                 }
             }
 
-            layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
+            layoutBinding.rvConfig = initRecycleAdapterDataBinding(
                     layoutId = R.layout.item_reprint_label,
                     itemId = BR.item,
-                    realisation = object : DataBindingAdapter<ItemReprintLabelBinding> {
-                        override fun onCreate(binding: ItemReprintLabelBinding) {
-                        }
+                    onAdapterItemBind = { binding: ItemReprintLabelBinding, position: Int ->
+                        binding.tvItemNumber.tag = position
+                        binding.tvItemNumber.setOnClickListener(onClickSelectionListener)
+                        binding.selectedForDelete = vm.selectionsHelper.isSelected(position)
+                    }
+            )
 
-                        override fun onBind(binding: ItemReprintLabelBinding, position: Int) {
-                            binding.tvItemNumber.tag = position
-                            binding.tvItemNumber.setOnClickListener(onClickSelectionListener)
-                            binding.selectedForDelete = vm.selectionsHelper.isSelected(position)
-                        }
-                    })
-
-            layoutBinding.vm = vm
-            layoutBinding.lifecycleOwner = viewLifecycleOwner
-            recyclerViewKeyHandler = RecyclerViewKeyHandler(
-                    rv = layoutBinding.rv,
+            recyclerViewKeyHandler = initRecyclerViewKeyHandler(
+                    recyclerView = layoutBinding.rv,
                     items = vm.labels,
-                    lifecycleOwner = layoutBinding.lifecycleOwner!!,
-                    initPosInfo = recyclerViewKeyHandler?.posInfo?.value
+                    previousPosInfo = recyclerViewKeyHandler?.posInfo?.value
             )
         }
     }
@@ -109,5 +96,4 @@ class ReprintLabelFragment : CoreFragment<FragmentReprintLabelBinding, ReprintLa
     companion object {
         const val SCREEN_NUMBER = "07"
     }
-
 }

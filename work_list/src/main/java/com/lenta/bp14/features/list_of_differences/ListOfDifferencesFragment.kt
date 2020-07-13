@@ -2,7 +2,6 @@ package com.lenta.bp14.features.list_of_differences
 
 import android.os.Bundle
 import android.view.View
-import android.widget.AdapterView
 import com.lenta.bp14.BR
 import com.lenta.bp14.R
 import com.lenta.bp14.databinding.FragmentListOfDifferencesBinding
@@ -13,23 +12,19 @@ import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListener
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
-import com.lenta.shared.utilities.databinding.DataBindingAdapter
-import com.lenta.shared.utilities.databinding.DataBindingRecyclerViewConfig
-import com.lenta.shared.utilities.databinding.RecyclerViewKeyHandler
 import com.lenta.shared.utilities.extentions.connectLiveData
 import com.lenta.shared.utilities.extentions.generateScreenNumberFromPostfix
 import com.lenta.shared.utilities.extentions.provideViewModel
 import com.lenta.shared.utilities.state.state
 
-class ListOfDifferencesFragment : CoreFragment<FragmentListOfDifferencesBinding, ListOfDifferencesViewModel>(), ToolbarButtonsClickListener {
+class ListOfDifferencesFragment : CoreFragment<FragmentListOfDifferencesBinding, ListOfDifferencesViewModel>(),
+        ToolbarButtonsClickListener {
 
     private var onClickSkipCallbackID: Int? by state(null)
 
-    private var recyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
-
     override fun getLayoutId(): Int = R.layout.fragment_list_of_differences
 
-    override fun getPageNumber(): String? = generateScreenNumberFromPostfix("36")
+    override fun getPageNumber(): String? = generateScreenNumberFromPostfix(PAGE_NUMBER)
 
     override fun getViewModel(): ListOfDifferencesViewModel {
         provideViewModel(ListOfDifferencesViewModel::class.java).let {
@@ -73,51 +68,33 @@ class ListOfDifferencesFragment : CoreFragment<FragmentListOfDifferencesBinding,
                 }
             }
 
-            layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
+            layoutBinding.rvConfig = initRecycleAdapterDataBinding(
                     layoutId = R.layout.item_simple_good_selectable,
                     itemId = BR.vm,
-                    realisation = object : DataBindingAdapter<ItemSimpleGoodSelectableBinding> {
-                        override fun onCreate(binding: ItemSimpleGoodSelectableBinding) {
-                        }
-
-                        override fun onBind(binding: ItemSimpleGoodSelectableBinding, position: Int) {
-                            binding.tvItemNumber.tag = position
-                            binding.tvItemNumber.setOnClickListener(onClickSelectionListener)
-                            binding.selectedForDelete = vm.selectionsHelper.isSelected(position)
-                            recyclerViewKeyHandler?.let {
-                                binding.root.isSelected = it.isSelected(position)
-                            }
-                        }
-                    },
-                    onItemClickListener = AdapterView.OnItemClickListener { _, _, position, _ ->
-                        recyclerViewKeyHandler?.let {
-                            if (it.isSelected(position)) {
-                                vm.onClickItemPosition(position)
-                            } else {
-                                it.selectPosition(position)
-                            }
-                        }
-
+                    onAdapterItemBind = { binding: ItemSimpleGoodSelectableBinding, position: Int ->
+                        binding.tvItemNumber.tag = position
+                        binding.tvItemNumber.setOnClickListener(onClickSelectionListener)
+                        binding.selectedForDelete = vm.selectionsHelper.isSelected(position)
+                        onAdapterBindHandler(binding, position)
                     }
             )
 
-            layoutBinding.vm = vm
-            layoutBinding.lifecycleOwner = viewLifecycleOwner
-            recyclerViewKeyHandler = RecyclerViewKeyHandler(
-                    rv = layoutBinding.rv,
+            recyclerViewKeyHandler = initRecyclerViewKeyHandler(
+                    recyclerView = layoutBinding.rv,
                     items = vm.goods,
-                    lifecycleOwner = layoutBinding.lifecycleOwner!!,
-                    initPosInfo = recyclerViewKeyHandler?.posInfo?.value
+                    previousPosInfo = recyclerViewKeyHandler?.posInfo?.value,
+                    onClickHandler = vm::onClickItemPosition
             )
         }
     }
 
     companion object {
-        fun create(onClickSkipCallbackID: Int): ListOfDifferencesFragment {
+        private const val PAGE_NUMBER = "36"
+
+        fun newInstance(onClickSkipCallbackID: Int): ListOfDifferencesFragment {
             return ListOfDifferencesFragment().apply {
                 this.onClickSkipCallbackID = onClickSkipCallbackID
             }
         }
     }
-
 }

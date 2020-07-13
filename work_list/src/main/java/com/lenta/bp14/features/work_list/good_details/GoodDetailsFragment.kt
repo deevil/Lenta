@@ -26,12 +26,9 @@ import com.lenta.shared.utilities.extentions.provideViewModel
 class GoodDetailsFragment : CoreFragment<FragmentGoodDetailsBinding, GoodDetailsViewModel>(),
         ToolbarButtonsClickListener, ViewPagerSettings {
 
-    private var shelfLifeRecyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
-    private var commentsRecyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
-
     override fun getLayoutId(): Int = R.layout.fragment_good_details
 
-    override fun getPageNumber(): String? = generateScreenNumberFromPostfix("13")
+    override fun getPageNumber(): String? = generateScreenNumberFromPostfix(SCREEN_NUMBER)
 
     override fun getViewModel(): GoodDetailsViewModel {
         provideViewModel(GoodDetailsViewModel::class.java).let {
@@ -74,21 +71,13 @@ class GoodDetailsFragment : CoreFragment<FragmentGoodDetailsBinding, GoodDetails
                             }
                         }
 
-                        layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
+                        layoutBinding.rvConfig = initRecycleAdapterDataBinding(
                                 layoutId = R.layout.item_wl_shelf_life_quantity_selectable,
                                 itemId = BR.shelfLife,
-                                realisation = object : DataBindingAdapter<ItemWlShelfLifeQuantitySelectableBinding> {
-                                    override fun onCreate(binding: ItemWlShelfLifeQuantitySelectableBinding) {
-                                    }
-
-                                    override fun onBind(binding: ItemWlShelfLifeQuantitySelectableBinding, position: Int) {
-                                        binding.tvItemNumber.tag = position
-                                        binding.tvItemNumber.setOnClickListener(onClickSelectionListener)
-                                        binding.selectedForDelete = vm.shelfLifeSelectionsHelper.isSelected(position)
-                                        shelfLifeRecyclerViewKeyHandler?.let {
-                                            binding.root.isSelected = it.isSelected(position)
-                                        }
-                                    }
+                                onAdapterItemBind = { binding: ItemWlShelfLifeQuantitySelectableBinding, position: Int ->
+                                    binding.tvItemNumber.tag = position
+                                    binding.tvItemNumber.setOnClickListener(onClickSelectionListener)
+                                    binding.selectedForDelete = vm.shelfLifeSelectionsHelper.isSelected(position)
                                 }
                         )
 
@@ -111,21 +100,13 @@ class GoodDetailsFragment : CoreFragment<FragmentGoodDetailsBinding, GoodDetails
                         }
                     }
 
-                    layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
+                    layoutBinding.rvConfig = initRecycleAdapterDataBinding(
                             layoutId = R.layout.item_wl_comment_quantity_selectable,
                             itemId = BR.comment,
-                            realisation = object : DataBindingAdapter<ItemWlCommentQuantitySelectableBinding> {
-                                override fun onCreate(binding: ItemWlCommentQuantitySelectableBinding) {
-                                }
-
-                                override fun onBind(binding: ItemWlCommentQuantitySelectableBinding, position: Int) {
-                                    binding.tvItemNumber.tag = position
-                                    binding.tvItemNumber.setOnClickListener(onClickSelectionListener)
-                                    binding.selectedForDelete = vm.commentSelectionsHelper.isSelected(position)
-                                    commentsRecyclerViewKeyHandler?.let {
-                                        binding.root.isSelected = it.isSelected(position)
-                                    }
-                                }
+                            onAdapterItemBind = { binding: ItemWlCommentQuantitySelectableBinding, position: Int ->
+                                binding.tvItemNumber.tag = position
+                                binding.tvItemNumber.setOnClickListener(onClickSelectionListener)
+                                binding.selectedForDelete = vm.commentSelectionsHelper.isSelected(position)
                             }
                     )
 
@@ -137,17 +118,25 @@ class GoodDetailsFragment : CoreFragment<FragmentGoodDetailsBinding, GoodDetails
 
     override fun getTextTitle(position: Int): String {
         return when (position) {
-            0 -> getString(R.string.expiration_dates)
-            1 -> getString(R.string.comments)
+            TAB_SHELFLIFE -> getString(R.string.expiration_dates)
+            TAB_COMMENTS -> getString(R.string.comments)
             else -> throw IllegalArgumentException("Wrong pager position!")
         }
     }
 
-    override fun countTab() = 2
+    override fun countTab() = TABS
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding?.viewPagerSettings = this
+    }
+
+    companion object {
+        const val SCREEN_NUMBER = "13"
+
+        private const val TABS = 2
+        private const val TAB_SHELFLIFE = 0
+        private const val TAB_COMMENTS = 1
     }
 
 }

@@ -12,6 +12,7 @@ import com.lenta.shared.keys.KeyCode
 import com.lenta.shared.keys.OnKeyDownListener
 import com.lenta.shared.platform.activity.OnBackPresserListener
 import com.lenta.shared.platform.fragment.CoreFragment
+import com.lenta.shared.platform.fragment.KeyDownCoreFragment
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListener
@@ -23,10 +24,8 @@ import com.lenta.shared.utilities.extentions.connectLiveData
 import com.lenta.shared.utilities.extentions.generateScreenNumberFromPostfix
 import com.lenta.shared.utilities.extentions.provideViewModel
 
-class PackGoodListFragment : CoreFragment<FragmentPackGoodListBinding, PackGoodListViewModel>(),
-        ToolbarButtonsClickListener, OnBackPresserListener, OnKeyDownListener {
-
-    private var recyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
+class PackGoodListFragment : KeyDownCoreFragment<FragmentPackGoodListBinding, PackGoodListViewModel>(),
+        ToolbarButtonsClickListener, OnBackPresserListener {
 
     override fun getLayoutId(): Int = R.layout.fragment_pack_good_list
 
@@ -64,39 +63,16 @@ class PackGoodListFragment : CoreFragment<FragmentPackGoodListBinding, PackGoodL
 
     private fun initRvConfig() {
         binding?.let { layoutBinding ->
-            layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
+            layoutBinding.rvConfig = initRecycleAdapterDataBinding<ItemPackGoodListBinding>(
                     layoutId = R.layout.item_pack_good_list,
-                    itemId = BR.item,
-                    realisation = object : DataBindingAdapter<ItemPackGoodListBinding> {
-                        override fun onCreate(binding: ItemPackGoodListBinding) {
-                        }
-
-                        override fun onBind(binding: ItemPackGoodListBinding, position: Int) {
-                            recyclerViewKeyHandler?.let {
-                                binding.root.isSelected = it.isSelected(position)
-                            }
-                        }
-                    },
-                    onItemClickListener = AdapterView.OnItemClickListener { _, _, position, _ ->
-                        recyclerViewKeyHandler?.let {
-                            if (it.isSelected(position)) {
-                                vm.onClickItemPosition(position)
-                            } else {
-                                it.selectPosition(position)
-                            }
-                        }
-
-                    }
+                    itemId = BR.item
             )
 
-            layoutBinding.vm = vm
-            layoutBinding.lifecycleOwner = viewLifecycleOwner
-            recyclerViewKeyHandler = RecyclerViewKeyHandler(
-                    rv = layoutBinding.rv,
+            recyclerViewKeyHandler = initRecyclerViewKeyHandler(
+                    recyclerView = layoutBinding.rv,
                     items = vm.packGoods,
-                    lifecycleOwner = layoutBinding.lifecycleOwner!!,
-                    initPosInfo = recyclerViewKeyHandler?.posInfo?.value,
-                    onClickPositionFunc = vm::onClickItemPosition
+                    previousPosInfo = recyclerViewKeyHandler?.posInfo?.value,
+                    onClickHandler = vm::onClickItemPosition
             )
         }
     }
@@ -106,17 +82,7 @@ class PackGoodListFragment : CoreFragment<FragmentPackGoodListBinding, PackGoodL
         return false
     }
 
-    override fun onKeyDown(keyCode: KeyCode): Boolean {
-        return recyclerViewKeyHandler?.onKeyDown(keyCode) ?: false
-    }
-
-    override fun onDestroyView() {
-        recyclerViewKeyHandler?.onClickPositionFunc = null
-        super.onDestroyView()
-    }
-
     companion object {
         const val SCREEN_NUMBER = "32"
     }
-
 }

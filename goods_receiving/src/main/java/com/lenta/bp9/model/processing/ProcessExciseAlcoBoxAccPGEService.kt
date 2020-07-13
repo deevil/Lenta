@@ -57,10 +57,11 @@ class ProcessExciseAlcoBoxAccPGEService
         addBoxDiscrepancy(box.boxNumber, typeDiscrepancies, isScan)
         if (currentBoxDiscrepancies.isNotEmpty()) {
             currentBoxDiscrepancies.map {
-                taskManager.getReceivingTask()?.
-                        taskRepository?.
-                        getBoxesDiscrepancies()?.
-                        changeBoxDiscrepancy(it)
+                taskManager
+                        .getReceivingTask()
+                        ?.taskRepository
+                        ?.getBoxesDiscrepancies()
+                        ?.changeBoxDiscrepancy(it)
             }
         }
 

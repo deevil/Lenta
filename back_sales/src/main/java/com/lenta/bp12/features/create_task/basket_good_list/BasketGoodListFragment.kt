@@ -2,21 +2,18 @@ package com.lenta.bp12.features.create_task.basket_good_list
 
 import android.os.Bundle
 import android.view.View
-import android.widget.AdapterView
+import androidx.viewbinding.ViewBinding
+import com.lenta.bp12.BR
 import com.lenta.bp12.R
 import com.lenta.bp12.databinding.FragmentBasketGoodListBinding
 import com.lenta.bp12.databinding.ItemBasketGoodListGoodBinding
 import com.lenta.bp12.platform.extention.getAppComponent
-import com.lenta.bp12.BR
 import com.lenta.shared.platform.fragment.CoreFragment
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListener
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
 import com.lenta.shared.scan.OnScanResultListener
-import com.lenta.shared.utilities.databinding.DataBindingAdapter
-import com.lenta.shared.utilities.databinding.DataBindingRecyclerViewConfig
-import com.lenta.shared.utilities.databinding.RecyclerViewKeyHandler
 import com.lenta.shared.utilities.extentions.connectLiveData
 import com.lenta.shared.utilities.extentions.generateScreenNumberFromPostfix
 import com.lenta.shared.utilities.extentions.provideViewModel
@@ -24,11 +21,17 @@ import com.lenta.shared.utilities.extentions.provideViewModel
 class BasketGoodListFragment : CoreFragment<FragmentBasketGoodListBinding, BasketGoodListViewModel>(),
         ToolbarButtonsClickListener, OnScanResultListener {
 
-    private var recyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
-
     override fun getLayoutId(): Int = R.layout.fragment_basket_good_list
 
     override fun getPageNumber(): String? = generateScreenNumberFromPostfix(SCREEN_NUMBER)
+
+    private val onClickSelectionListener: View.OnClickListener
+        get() = View.OnClickListener {
+            (it.tag as Int).let { position ->
+                vm.selectionsHelper.revert(position = position)
+                binding?.rv?.adapter?.notifyItemChanged(position)
+            }
+        }
 
     override fun getViewModel(): BasketGoodListViewModel {
         provideViewModel(BasketGoodListViewModel::class.java).let {
@@ -65,49 +68,27 @@ class BasketGoodListFragment : CoreFragment<FragmentBasketGoodListBinding, Baske
 
     private fun initBasketGoodList() {
         binding?.let { layoutBinding ->
-            val onClickSelectionListener = View.OnClickListener {
-                (it!!.tag as Int).let { position ->
-                    vm.selectionsHelper.revert(position = position)
-                    layoutBinding.rv.adapter?.notifyItemChanged(position)
-                }
-            }
 
-            layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
+            layoutBinding.rvConfig = initRecycleAdapterDataBinding<ItemBasketGoodListGoodBinding>(
                     layoutId = R.layout.item_basket_good_list_good,
-                    itemId = BR.item,
-                    realisation = object : DataBindingAdapter<ItemBasketGoodListGoodBinding> {
-                        override fun onCreate(binding: ItemBasketGoodListGoodBinding) {
-                        }
-
-                        override fun onBind(binding: ItemBasketGoodListGoodBinding, position: Int) {
-                            binding.tvItemNumber.tag = position
-                            binding.tvItemNumber.setOnClickListener(onClickSelectionListener)
-                            binding.selectedForDelete = vm.selectionsHelper.isSelected(position)
-                            recyclerViewKeyHandler?.let {
-                                binding.root.isSelected = it.isSelected(position)
-                            }
-                        }
-                    },
-                    onItemClickListener = AdapterView.OnItemClickListener { _, _, position, _ ->
-                        recyclerViewKeyHandler?.let {
-                            if (it.isSelected(position)) {
-                                vm.onClickItemPosition(position)
-                            } else {
-                                it.selectPosition(position)
-                            }
-                        }
-
-                    }
+                    itemId = BR.item
             )
 
-            layoutBinding.vm = vm
-            layoutBinding.lifecycleOwner = viewLifecycleOwner
-            recyclerViewKeyHandler = RecyclerViewKeyHandler(
-                    rv = layoutBinding.rv,
+            recyclerViewKeyHandler = initRecyclerViewKeyHandler(
+                    recyclerView = layoutBinding.rv,
                     items = vm.goods,
-                    lifecycleOwner = layoutBinding.lifecycleOwner!!,
-                    initPosInfo = recyclerViewKeyHandler?.posInfo?.value
+                    previousPosInfo = recyclerViewKeyHandler?.posInfo?.value,
+                    onClickHandler = vm::onClickItemPosition
             )
+        }
+    }
+
+    override fun onAdapterBindHandler(bindItem: ViewBinding, position: Int) {
+        (bindItem as ItemBasketGoodListGoodBinding).apply {
+            bindItem.tvItemNumber.tag = position
+            bindItem.tvItemNumber.setOnClickListener(onClickSelectionListener)
+            bindItem.selectedForDelete = vm.selectionsHelper.isSelected(position)
+            super.onAdapterBindHandler(bindItem, position)
         }
     }
 

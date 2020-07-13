@@ -29,17 +29,7 @@ class TransportMarriageCargoUnitFragment : CoreFragment<FragmentTransportMarriag
         OnKeyDownListener,
         OnScanResultListener {
 
-    companion object {
-        fun create(cargoUnitNumber: String): TransportMarriageCargoUnitFragment {
-            TransportMarriageCargoUnitFragment().let {
-                it.cargoUnitNumber = cargoUnitNumber
-                return it
-            }
-        }
-    }
     private var cargoUnitNumber by state<String?>(null)
-
-    private var recyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
 
     override fun getLayoutId(): Int = R.layout.fragment_transport_marriage_cargo_unit
 
@@ -90,41 +80,22 @@ class TransportMarriageCargoUnitFragment : CoreFragment<FragmentTransportMarriag
                 }
             }
 
-            layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
+            layoutBinding.rvConfig = initRecycleAdapterDataBinding(
                     layoutId = R.layout.item_tile_transport_marriage_act,
                     itemId = BR.item,
-                    realisation = object : DataBindingAdapter<ItemTileTransportMarriageActBinding> {
-                        override fun onCreate(binding: ItemTileTransportMarriageActBinding) {
-                        }
-
-                        override fun onBind(binding: ItemTileTransportMarriageActBinding, position: Int) {
-                            binding.tvItemNumber.tag = position
-                            binding.tvItemNumber.setOnClickListener(onClickSelectionListener)
-                            binding.selectedForDelete = vm.actSelectionsHelper.isSelected(position)
-                            recyclerViewKeyHandler?.let {
-                                binding.root.isSelected = it.isSelected(position)
-                            }
-                        }
-                    },
-                    onItemClickListener = AdapterView.OnItemClickListener { _, _, position, _ ->
-                        recyclerViewKeyHandler?.let {
-                            if (it.isSelected(position)) {
-                                vm.onClickItemPosition(position)
-                            } else {
-                                it.selectPosition(position)
-                            }
-                        }
-
+                    onAdapterItemBind = { binding: ItemTileTransportMarriageActBinding, position: Int ->
+                        binding.tvItemNumber.tag = position
+                        binding.tvItemNumber.setOnClickListener(onClickSelectionListener)
+                        binding.selectedForDelete = vm.actSelectionsHelper.isSelected(position)
+                        onAdapterBindHandler(binding, position)
                     }
             )
 
-            layoutBinding.vm = vm
-            layoutBinding.lifecycleOwner = viewLifecycleOwner
-            recyclerViewKeyHandler = RecyclerViewKeyHandler(
-                    rv = layoutBinding.rv,
+            recyclerViewKeyHandler = initRecyclerViewKeyHandler(
+                    recyclerView = layoutBinding.rv,
                     items = vm.listAct,
-                    lifecycleOwner = layoutBinding.lifecycleOwner!!,
-                    initPosInfo = recyclerViewKeyHandler?.posInfo?.value
+                    previousPosInfo = recyclerViewKeyHandler?.posInfo?.value,
+                    onClickHandler = vm::onClickItemPosition
             )
         }
     }
@@ -155,6 +126,15 @@ class TransportMarriageCargoUnitFragment : CoreFragment<FragmentTransportMarriag
     override fun onFragmentResult(arguments: Bundle) {
         super.onFragmentResult(arguments)
         vm.onResult(arguments.getFragmentResultCode())
+    }
+
+    companion object {
+        fun create(cargoUnitNumber: String): TransportMarriageCargoUnitFragment {
+            TransportMarriageCargoUnitFragment().let {
+                it.cargoUnitNumber = cargoUnitNumber
+                return it
+            }
+        }
     }
 
 }
