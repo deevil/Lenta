@@ -649,7 +649,7 @@ class GoodInfoCreateViewModel : CoreViewModel() {
 
     private fun getProviderCode(): String {
         var providerCode = ""
-        try {
+        runCatching {
             if (isProviderSelected.value == true) {
                 providers.value?.let { providers ->
                     providerPosition.value?.let { position ->
@@ -657,8 +657,8 @@ class GoodInfoCreateViewModel : CoreViewModel() {
                     }
                 }
             }
-        } catch (e: Exception) {
-            Logg.w { "e: $e" }
+        }.onFailure {
+            Logg.w { "e: ${it.message}" }
         }
 
         return providerCode
