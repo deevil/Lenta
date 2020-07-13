@@ -1,4 +1,4 @@
-package com.lenta.bp16.features.goods_info
+package com.lenta.bp16.features.good_without_manufacturer
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
@@ -8,21 +8,10 @@ import com.lenta.shared.utilities.extentions.map
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-class GoodsInfoViewModel : CoreViewModel() {
+class GoodWithoutManufacturerViewModel : CoreViewModel() {
 
     @Inject
     lateinit var navigator: IScreenNavigator
-
-/*    @Inject
-    lateinit var manager: ITaskManager
-
-    val good by lazy {
-        manager.currentGood
-    }
-
-    val title by lazy {
-        good.map { it?.getNameWithMaterial() }
-    }*/
 
     val deviceIp = MutableLiveData("")
 
@@ -33,13 +22,14 @@ class GoodsInfoViewModel : CoreViewModel() {
     }
 
     val completeEnabled = entered.map{
-        it ?: 0.0 != 0.0
+        val enteredValue = it ?: 0.0
     }
 
     fun onClickComplete(){
         viewModelScope.launch {
             navigator.showProgressLoadingData()
             //TODO Обработать клик
+            navigator.goBack()
         }
     }
 }

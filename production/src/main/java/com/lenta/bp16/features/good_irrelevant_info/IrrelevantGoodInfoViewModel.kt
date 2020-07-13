@@ -1,4 +1,4 @@
-package com.lenta.bp16.features.goods_irrelevant_info
+package com.lenta.bp16.features.good_irrelevant_info
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
@@ -8,7 +8,7 @@ import com.lenta.shared.utilities.extentions.map
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-class IrrelevantGoodsInfoViewModel : CoreViewModel() {
+class IrrelevantGoodInfoViewModel : CoreViewModel() {
     @Inject
     lateinit var navigator: IScreenNavigator
 
@@ -28,6 +28,7 @@ class IrrelevantGoodsInfoViewModel : CoreViewModel() {
         viewModelScope.launch {
             navigator.showProgressLoadingData()
             //TODO Обработать клик
+            navigator.goBack()
         }
     }
 }

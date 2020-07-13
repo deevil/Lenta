@@ -7,8 +7,11 @@ import com.lenta.bp16.features.defect_info.DefectInfoFragment
 import com.lenta.bp16.features.defect_list.DefectListFragment
 import com.lenta.bp16.features.external_supply_list.ExternalSupplyListFragment
 import com.lenta.bp16.features.external_supply_task_list.ExternalSupplyTaskListFragment
+import com.lenta.bp16.features.good_info.GoodInfoFragment
+import com.lenta.bp16.features.good_irrelevant_info.IrrelevantGoodInfoFragment
 import com.lenta.bp16.features.good_packaging.GoodPackagingFragment
 import com.lenta.bp16.features.good_weighing.GoodWeighingFragment
+import com.lenta.bp16.features.good_without_manufacturer.GoodWithoutManufacturerFragment
 import com.lenta.bp16.features.processing_unit_list.ProcessingUnitListFragment
 import com.lenta.bp16.features.loading.fast.FastDataLoadingFragment
 import com.lenta.bp16.features.main_menu.MainMenuFragment
@@ -18,7 +21,9 @@ import com.lenta.bp16.features.raw_list.RawListFragment
 import com.lenta.bp16.features.select_market.SelectMarketFragment
 import com.lenta.bp16.features.processing_unit_task_list.ProcessingUnitTaskListFragment
 import com.lenta.bp16.features.reprint_label.ReprintLabelFragment
+import com.lenta.bp16.features.select_good.GoodSelectFragment
 import com.lenta.bp16.features.select_personnel_number.SelectPersonnelNumberFragment
+import com.lenta.bp16.platform.Constants
 import com.lenta.shared.account.IAuthenticator
 import com.lenta.shared.features.alert.AlertFragment
 import com.lenta.shared.platform.activity.ForegroundActivityProvider
@@ -150,6 +155,22 @@ class ScreenNavigator @Inject constructor(
         }
     }
 
+    override fun openSelectGoodScreen() {
+        getFragmentStack()?.push(GoodSelectFragment())
+    }
+
+    override fun openGoodInfoScreen() {
+        getFragmentStack()?.push(GoodInfoFragment())
+    }
+
+    override fun openGoodIrrelevantInfoScreen() {
+        getFragmentStack()?.push(IrrelevantGoodInfoFragment())
+    }
+
+    override fun openGoodWithoutManufacturerScreen() {
+        getFragmentStack()?.push(GoodWithoutManufacturerFragment())
+    }
+
 
     // Информационные экраны
     override fun showDefrostingPhaseIsCompleted(nextCallback: () -> Unit) {
@@ -273,6 +294,15 @@ class ScreenNavigator @Inject constructor(
         }
     }
 
+    override fun showAlertPartNotFound() {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    message = context.getString(R.string.tw_alert_part_not_found),
+                    iconRes = R.drawable.ic_warning_red_80dp,
+                    pageNumber = Constants.ALERT_FRAGMENT))
+        }
+    }
+
 }
 
 interface IScreenNavigator : ICoreNavigator {
@@ -294,6 +324,10 @@ interface IScreenNavigator : ICoreNavigator {
     fun openReprintLabelScreen()
     fun openDefectInfoScreen()
     fun openDefectListScreen()
+    fun openGoodInfoScreen()
+    fun openGoodIrrelevantInfoScreen()
+    fun openGoodWithoutManufacturerScreen()
+    fun openSelectGoodScreen()
 
     fun showDefrostingPhaseIsCompleted(nextCallback: () -> Unit)
     fun showFixStartNextStageSuccessful(nextCallback: () -> Unit)
@@ -305,4 +339,5 @@ interface IScreenNavigator : ICoreNavigator {
     fun showNotSavedDataWillBeLost(yesCallback: () -> Unit)
     fun showAlertNoIpPrinter()
     fun showLabelSentToPrint(nextCallback: () -> Unit)
+    fun showAlertPartNotFound()
 }

@@ -1,34 +1,26 @@
-package com.lenta.bp16.features.goods_without_manufacturer
+package com.lenta.bp16.features.select_good
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.lenta.bp16.platform.navigation.IScreenNavigator
 import com.lenta.shared.platform.viewmodel.CoreViewModel
-import com.lenta.shared.utilities.extentions.map
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-class GoodsWithoutManufacturerViewModel : CoreViewModel() {
+class GoodSelectViewModel : CoreViewModel() {
 
     @Inject
     lateinit var navigator: IScreenNavigator
 
     val deviceIp = MutableLiveData("")
 
-    val weightField = MutableLiveData("0")
-
-    private val entered = weightField.map{
-        it?.toDoubleOrNull() ?: 0.0
-    }
-
-    val completeEnabled = entered.map{
-        val enteredValue = it ?: 0.0
-    }
-
-    fun onClickComplete(){
+    fun onClickNext(){
         viewModelScope.launch {
             navigator.showProgressLoadingData()
-            //TODO Обработать клик
+            //TODO Заполнить форму данными по запросу номера штрихкода
+            /*Допустим, пока так, потом с появлением ТП пропишу логику*/
+            navigator.openGoodInfoScreen()
         }
     }
+
 }

@@ -23,7 +23,7 @@
 
                     <TextView
                         style="@style/CellTextStyle"
-                        android:text="@string/count"/>
+                        android:text="@string/quantity"/>
 
                 </LinearLayout>
 
