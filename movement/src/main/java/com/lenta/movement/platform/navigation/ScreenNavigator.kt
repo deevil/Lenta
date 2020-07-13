@@ -5,19 +5,20 @@ import androidx.core.content.ContextCompat
 import com.lenta.movement.R
 import com.lenta.movement.exception.InfoFailure
 import com.lenta.movement.features.auth.AuthFragment
-import com.lenta.movement.features.main.MainMenuFragment
 import com.lenta.movement.features.loading.fast.FastDataLoadingFragment
+import com.lenta.movement.features.main.MainMenuFragment
 import com.lenta.movement.features.main.box.GoodsListFragment
 import com.lenta.movement.features.main.box.create.CreateBoxesFragment
 import com.lenta.movement.features.selectmarket.SelectMarketFragment
 import com.lenta.movement.features.selectpersonalnumber.SelectPersonnelNumberFragment
+import com.lenta.movement.features.task.TaskFragment
 import com.lenta.movement.features.task.basket.TaskBasketFragment
+import com.lenta.movement.features.task.basket.info.TaskBasketInfoFragment
+import com.lenta.movement.features.task.eo.TaskEOMergeFragment
+import com.lenta.movement.features.task.eo.ge_insides.TaskEOMergeGEInsidesFragment
 import com.lenta.movement.features.task.goods.TaskGoodsFragment
 import com.lenta.movement.features.task.goods.details.TaskGoodsDetailsFragment
 import com.lenta.movement.features.task.goods.info.TaskGoodsInfoFragment
-import com.lenta.movement.features.task.TaskFragment
-import com.lenta.movement.features.task.basket.info.TaskBasketInfoFragment
-import com.lenta.movement.features.task.eo.TaskEOMergeFragment
 import com.lenta.movement.models.*
 import com.lenta.movement.progress.IWriteOffProgressUseCaseInformator
 import com.lenta.shared.account.IAuthenticator
@@ -293,6 +294,15 @@ class ScreenNavigator(
         }
     }
 
+    override fun openGEInsidesScreen(eoList: List<ProcessingUnit>) {
+        runOrPostpone {
+            getFragmentStack()
+                    ?.push(
+                            TaskEOMergeGEInsidesFragment.newInstance(eoList = eoList)
+                    )
+        }
+    }
+
     companion object {
         private const val TASK_TO_MOVE = "Задания на перемещение"
         private const val ZERO_SELECTED_EO_PAGE_NUMBER = "02"
@@ -333,4 +343,5 @@ interface IScreenNavigator : ICoreNavigator {
     fun openTaskList()
     fun openTaskEoMergeScreen(eoList: List<ProcessingUnit>, geList: List<CargoUnit>)
     fun openZeroSelectedEODialog(processCallbackFunc: () -> Unit, combineCallbackFunc: () -> Unit)
+    fun openGEInsidesScreen(eoList: List<ProcessingUnit>)
 }

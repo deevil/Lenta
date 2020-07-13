@@ -116,9 +116,9 @@ class TaskEOMergeFragment : CoreFragment<FragmentTaskEoMergeBinding, TaskEOMerge
                     it.apply {
 
                         val onClickSelectionListener = View.OnClickListener { clickListener ->
-                                val itemPosition = clickListener.tag as Int
-                                vm.eoSelectionHelper.revert(position = itemPosition)
-                                this.eoRecyclerView.adapter?.notifyItemChanged(itemPosition)
+                            val itemPosition = clickListener.tag as Int
+                            vm.eoSelectionHelper.revert(position = itemPosition)
+                            this.eoRecyclerView.adapter?.notifyItemChanged(itemPosition)
                         }
 
                         rvConfig = DataBindingRecyclerViewConfig(
@@ -138,14 +138,11 @@ class TaskEOMergeFragment : CoreFragment<FragmentTaskEoMergeBinding, TaskEOMerge
                                         eoListRecyclerViewKeyHandler?.let { eoListRecyclerViewKeyHandler ->
                                             binding.root.isSelected = eoListRecyclerViewKeyHandler.isSelected(position)
                                         }
+
                                     }
                                 },
                                 onItemClickListener = AdapterView.OnItemClickListener { _, _, position, _ ->
-                                    eoListRecyclerViewKeyHandler?.let { eoListRecyclerViewKeyHandler ->
-                                        if (eoListRecyclerViewKeyHandler.isSelected(position).not()) {
-                                            eoListRecyclerViewKeyHandler.selectPosition(position)
-                                        }
-                                    }
+                                    vm.onClickEOListItem(position)
                                 }
                         )
 
@@ -241,9 +238,9 @@ class TaskEOMergeFragment : CoreFragment<FragmentTaskEoMergeBinding, TaskEOMerge
 
         fun newInstance(eoList: List<ProcessingUnit>, geList: List<CargoUnit>): TaskEOMergeFragment {
             return TaskEOMergeFragment().apply {
-                arguments = bundleOf (
-                    EO_LIST_KEY to eoList,
-                    GE_LIST_KEY to geList
+                arguments = bundleOf(
+                        EO_LIST_KEY to eoList,
+                        GE_LIST_KEY to geList
                 )
             }
         }
