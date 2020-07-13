@@ -195,7 +195,7 @@ class GoodInfoCreateViewModel : CoreViewModel() {
 
                         if (isProviderSelected) {
                             getBasket()?.let { basket ->
-                                "${task.value?.getQuantityByBasket(basket).sumWith(quantity).dropZeros()} $units"
+                                "${good.getQuantityByProvider(basket.provider.code).sumWith(quantity).dropZeros()} $units"
                             } ?: "${quantity.dropZeros()} $units"
                         } else {
                             "0 $units"
