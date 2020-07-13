@@ -38,6 +38,14 @@ class MainMenuViewModel : CoreViewModel() {
         navigator.openAuxiliaryMenuScreen()
     }
 
+    fun onClickMovementBetweenWarehouse(){
+        navigator.openSelectGoodScreen()
+    }
+
+    fun onClickPreparationIngredients(){
+        //
+    }
+
     fun onClickExternalSupply() {
         manager.taskType = TaskType.EXTERNAL_SUPPLY
         navigator.openExternalSupplyTaskListScreen()
