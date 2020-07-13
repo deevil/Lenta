@@ -3,6 +3,8 @@ package com.lenta.movement.requests.network.models
 import com.lenta.movement.models.MovementType
 import com.lenta.movement.models.TaskType
 
+/** Интерфейс объектов Task приходящих с сервера, для преобразования их в модель клиента
+ * @see Taskable.toTask */
 interface Taskable {
     val taskNumber: String
     val description: String

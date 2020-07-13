@@ -23,6 +23,7 @@ import com.lenta.shared.utilities.databinding.RecyclerViewKeyHandler
 import com.lenta.shared.utilities.extentions.provideViewModel
 import kotlinx.android.synthetic.main.fragment_task_eo_merge_docs.*
 
+/** Фрагмент печати паллетной ведомости */
 class TaskEOMergeFormedDocsFragment :
         CoreFragment<FragmentTaskEoMergeDocsBinding, TaskEOMergeFormedDocsViewModel>(),
         ToolbarButtonsClickListener,

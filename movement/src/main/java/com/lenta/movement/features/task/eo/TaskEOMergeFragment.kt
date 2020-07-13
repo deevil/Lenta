@@ -34,6 +34,7 @@ import com.lenta.shared.utilities.databinding.ViewPagerSettings
 import com.lenta.shared.utilities.extentions.connectLiveData
 import com.lenta.shared.utilities.extentions.provideViewModel
 
+/** Фрагмент Объединение ЕО */
 class TaskEOMergeFragment : CoreFragment<FragmentTaskEoMergeBinding, TaskEOMergeViewModel>(),
         ViewPagerSettings,
         ToolbarButtonsClickListener,

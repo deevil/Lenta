@@ -14,8 +14,6 @@ import com.lenta.movement.requests.network.PrintDocumentsNetRequest
 import com.lenta.movement.requests.network.models.documentsToPrint.DocumentsToPrintDocument
 import com.lenta.movement.requests.network.models.printDocuments.PrintDocumentsParams
 import com.lenta.shared.account.ISessionInfo
-import com.lenta.shared.fmp.resources.fast.ZmpUtz26V001
-import com.lenta.shared.functional.Either
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.SelectionItemsHelper
@@ -23,6 +21,7 @@ import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+/** ViewModel экрана печати паллетной ведомости */
 class TaskEOMergeFormedDocsViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
 
     @Inject
@@ -41,7 +40,7 @@ class TaskEOMergeFormedDocsViewModel : CoreViewModel(), OnOkInSoftKeyboardListen
     lateinit var formatter: IFormatter
 
     @Inject
-    lateinit var printDocumetnsNetRequest: PrintDocumentsNetRequest
+    lateinit var printDocumentsNetRequest: PrintDocumentsNetRequest
 
     val docsSelectionHelper = SelectionItemsHelper()
 
@@ -54,7 +53,6 @@ class TaskEOMergeFormedDocsViewModel : CoreViewModel(), OnOkInSoftKeyboardListen
         docList.switchMap { docList ->
             liveData {
                 val docMappedList = docList.mapIndexed { index, doc ->
-                    val number = index + 1
                     SimpleListItem(
                             number = index + 1,
                             title = doc.docName.orEmpty(),
@@ -78,13 +76,12 @@ class TaskEOMergeFormedDocsViewModel : CoreViewModel(), OnOkInSoftKeyboardListen
         viewModelScope.launch {
             docList.value?.let { docsListValue ->
                 screenNavigator.openTaskEoMergePrintConfirmationDialog(
-                        docsListValue.size,
+                        eoGeQuantity = docsListValue.size,
                         yesCallbackFunc = {
                             printDocs()
                         }
                 )
             }
-
         }
     }
 
@@ -99,13 +96,13 @@ class TaskEOMergeFormedDocsViewModel : CoreViewModel(), OnOkInSoftKeyboardListen
                     docListValue
                 }
                 viewModelScope.launch {
-                    screenNavigator.showProgress(printDocumetnsNetRequest)
+                    screenNavigator.showProgress(printDocumentsNetRequest)
                     val params = PrintDocumentsParams(
                             taskNum = taskManager.getTask().number,
                             docList = selectedDocs,
                             printerName = taskManager.getPrinterName()
                     )
-                    val either = printDocumetnsNetRequest(params)
+                    val either = printDocumentsNetRequest(params)
                     either.either({ failure ->
                         screenNavigator.hideProgress()
                         screenNavigator.openAlertScreen(failure)
@@ -115,11 +112,13 @@ class TaskEOMergeFormedDocsViewModel : CoreViewModel(), OnOkInSoftKeyboardListen
                     })
                 }
             } ?: Logg.e {
-                "Список документов пуст"
+                "List of selected docs is null"
+            } ?: Logg.e {
+                "docList is null"
             }
         }
     }
 
-    override fun onOkInSoftKeyboard(): Boolean = true
+        override fun onOkInSoftKeyboard(): Boolean = true
 
-}
+    }

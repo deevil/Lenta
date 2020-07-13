@@ -1,6 +1,5 @@
 package com.lenta.movement.requests.network
 
-import com.google.gson.annotations.SerializedName
 import com.lenta.movement.exception.InfoFailure
 import com.lenta.movement.requests.network.models.printDocuments.PrintDocumentsParams
 import com.lenta.movement.requests.network.models.printDocuments.PrintDocumentsResult
