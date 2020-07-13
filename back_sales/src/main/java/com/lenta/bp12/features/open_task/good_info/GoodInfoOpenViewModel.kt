@@ -196,15 +196,6 @@ class GoodInfoOpenViewModel : CoreViewModel() {
         isEnabled && position > 0 || !isEnabled && position == 0
     }
 
-    private val selectedProducer by lazy {
-        producers.combineLatest(producerPosition).map {
-            it?.let {
-                val (list, position) = it
-                if (list.isNotEmpty()) list[position] else null
-            }
-        }
-    }
-
     /**
     Дата производства
      */
@@ -578,13 +569,26 @@ class GoodInfoOpenViewModel : CoreViewModel() {
         return markInfoNetRequest(MarkInfoParams(
                 tkNumber = sessionInfo.market.orEmpty(),
                 material = good.value?.material.orEmpty(),
-                producerCode = selectedProducer.value?.code.orEmpty(),
+                producerCode = getProducerCode(),
                 bottledDate = date.value.orEmpty(),
                 mode = 3,
                 quantity = quantity.value ?: 0.0
         )).also {
             navigator.hideProgress()
         }
+    }
+
+    private fun getProducerCode(): String {
+        var producerCode = ""
+        if (isProducerSelected.value == true) {
+            producers.value?.let { producers ->
+                producerPosition.value?.let { position ->
+                    producerCode = producers[position].code
+                }
+            }
+        }
+
+        return producerCode
     }
 
     private fun updateProducers(producers: List<ProducerInfo>) {
@@ -624,7 +628,7 @@ class GoodInfoOpenViewModel : CoreViewModel() {
                     material = changedGood.material,
                     isBadMark = markInfoResult.value?.status == MarkStatus.BAD.code,
                     providerCode = changedGood.provider.code,
-                    producerCode = selectedProducer.value?.code.orEmpty()
+                    producerCode = getProducerCode()
             )
             Logg.d { "--> add mark = $mark" }
             changedGood.addMark(mark)
@@ -642,7 +646,7 @@ class GoodInfoOpenViewModel : CoreViewModel() {
                     quantity = quantity.value!!,
                     units = changedGood.convertingUnits,
                     providerCode = changedGood.provider.code,
-                    producerCode = selectedProducer.value?.code.orEmpty(),
+                    producerCode = getProducerCode(),
                     date = date.value.orEmpty()
             )
             Logg.d { "--> add part = $part" }
@@ -663,7 +667,7 @@ class GoodInfoOpenViewModel : CoreViewModel() {
                             boxNumber = lastSuccessSearchNumber.value!!,
                             isBadMark = mark.isBadMark.isNotEmpty(),
                             providerCode = changedGood.provider.code,
-                            producerCode = selectedProducer.value?.code.orEmpty()
+                            producerCode = getProducerCode()
                     )
                     Logg.d { "--> add mark from box = $markFromBox" }
                     changedGood.addMark(markFromBox)
