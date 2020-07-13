@@ -56,7 +56,7 @@ class ScreenNavigator @Inject constructor(
             getFragmentStack()?.push(AlertFragment.create(
                     message = context.getString(R.string.tw_unpucking),
                     iconRes = R.drawable.ic_question_yellow_80dp,
-                    pageNumber = Constants.ALERT_SCREEN_NUMBER
+                    pageNumber = Constants.CONFIRMATION_SCREEN
             ))
         }
     }
@@ -67,7 +67,6 @@ class ScreenNavigator @Inject constructor(
                     message = context.getString(R.string.tw_unpucking_success),
                     iconRes = R.drawable.ic_info_green_80dp,
                     pageNumber = Constants.ALERT_SCREEN_NUMBER
-
             ))
         }
     }
