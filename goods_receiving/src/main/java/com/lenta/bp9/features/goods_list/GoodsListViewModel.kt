@@ -3,30 +3,25 @@ package com.lenta.bp9.features.goods_list
 import android.content.Context
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import com.lenta.bp9.R
-import com.lenta.bp9.features.discrepancy_list.GoodsDiscrepancyItem
 import com.lenta.bp9.features.loading.tasks.TaskCardMode
 import com.lenta.bp9.model.task.*
 import com.lenta.bp9.platform.navigation.IScreenNavigator
 import com.lenta.bp9.repos.IRepoInMemoryHolder
-import com.lenta.bp9.requests.network.*
+import com.lenta.bp9.requests.network.EndRecountDDParameters
+import com.lenta.bp9.requests.network.EndRecountDDResult
+import com.lenta.bp9.requests.network.EndRecountDirectDeliveriesNetRequest
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.exception.Failure
-import com.lenta.shared.fmp.resources.dao_ext.getProductInfoByMaterial
-import com.lenta.shared.fmp.resources.slow.ZfmpUtz48V001
 import com.lenta.shared.models.core.ProductType
 import com.lenta.shared.models.core.Uom
-import com.lenta.shared.models.core.getProductType
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.requests.combined.scan_info.ScanInfoResult
-import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.SelectionItemsHelper
 import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
 import com.lenta.shared.utilities.databinding.PageSelectionListener
 import com.lenta.shared.utilities.extentions.getDeviceIp
 import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.utilities.extentions.toStringFormatted
-import com.mobrun.plugin.api.HyperHive
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -365,50 +360,87 @@ class GoodsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKey
         if (taskType.value == TaskType.ShipmentPP) {//https://trello.com/c/3WVovfmE
             screenNavigator.openSkipRecountScreen()
         } else {
-            countedSelectionsHelper.selectedPositions.value?.map { position ->
-                val isNotRecountCargoUnit = isTaskPGE.value == true && listCounted.value?.get(position)!!.productInfo!!.isWithoutRecount
-                if (isNotRecountCargoUnit) { //если это не пересчетная ГЕ //https://trello.com/c/PRTAVnUP только без признака ВЗЛОМ (обсудили с Колей 17.06.2020)
-                    taskManager.getReceivingTask()?.taskRepository?.getProductsDiscrepancies()?.deleteProductsDiscrepanciesForProductNotRecountPGE(listCounted.value?.get(position)!!.productInfo!!)
-                }
-                if (listCounted.value?.get(position)?.productInfo?.isNotEdit == false && !isNotRecountCargoUnit) {
-                    if (listCounted.value?.get(position)?.productInfo?.isSet == true) {
-                        repoInMemoryHolder.sets.value?.filter {
-                            it.setNumber == listCounted.value?.get(position)?.productInfo?.materialNumber
-                        }?.map { component ->
-                            taskManager
-                                    .getReceivingTask()
-                                    ?.taskRepository
-                                    ?.getProductsDiscrepancies()
-                                    ?.deleteProductsDiscrepanciesForProduct(component.componentNumber)
-
-                            taskManager
-                                    .getReceivingTask()
-                                    ?.taskRepository
-                                    ?.getBatchesDiscrepancies()
-                                    ?.deleteBatchesDiscrepanciesForProduct(component.componentNumber)
-                        }
+            countedSelectionsHelper
+                    .selectedPositions
+                    .value
+                    ?.map { position ->
+                        listCounted
+                                .value
+                                ?.get(position)
+                                ?.productInfo
+                                ?.let { selectedProduct ->
+                                    val isNotRecountCargoUnit = isTaskPGE.value == true && selectedProduct.isWithoutRecount
+                                    if (isNotRecountCargoUnit) { //если это не пересчетная ГЕ //https://trello.com/c/PRTAVnUP только без признака ВЗЛОМ (обсудили с Колей 17.06.2020)
+                                        taskManager
+                                                .getReceivingTask()
+                                                ?.taskRepository
+                                                ?.getProductsDiscrepancies()
+                                                ?.deleteProductsDiscrepanciesForProductNotRecountPGE(selectedProduct)
+                                    }
+                                    if (!selectedProduct.isNotEdit && !isNotRecountCargoUnit) {
+                                        if (selectedProduct.isSet) {
+                                            repoInMemoryHolder
+                                                    .sets
+                                                    .value
+                                                    ?.filter { setInfo ->
+                                                        setInfo.setNumber == selectedProduct.materialNumber
+                                                    }
+                                                    ?.map { component ->
+                                                        deleteDiscrepanciesForSet(component.componentNumber)
+                                                    }
+                                        }
+                                        deleteDiscrepanciesForProduct(selectedProduct)
+                                    }
+                                }
                     }
-                    taskManager
-                            .getReceivingTask()
-                            ?.taskRepository
-                            ?.getProductsDiscrepancies()
-                            ?.deleteProductsDiscrepanciesForProduct(listCounted.value?.get(position)!!.productInfo!!)
-
-                    taskManager
-                            .getReceivingTask()
-                            ?.taskRepository
-                            ?.getMercuryDiscrepancies()
-                            ?.deleteMercuryDiscrepanciesForProduct(listCounted.value?.get(position)!!.productInfo!!)
-
-                    taskManager
-                            .getReceivingTask()
-                            ?.taskRepository
-                            ?.getBatchesDiscrepancies()
-                            ?.deleteBatchesDiscrepanciesForProduct(listCounted.value?.get(position)!!.productInfo!!.materialNumber)
-                }
-            }
             updateData()
         }
+    }
+
+    private fun deleteDiscrepanciesForSet(componentNumber: String) {
+        taskManager
+                .getReceivingTask()
+                ?.taskRepository
+                ?.let { taskRepository ->
+                    taskRepository
+                            .getProductsDiscrepancies()
+                            .deleteProductsDiscrepanciesForProduct(componentNumber)
+
+                    taskRepository
+                            .getBatchesDiscrepancies()
+                            .deleteBatchesDiscrepanciesForProduct(componentNumber)
+                }
+    }
+
+    private fun deleteDiscrepanciesForProduct(product: TaskProductInfo) {
+        taskManager
+                .getReceivingTask()
+                ?.taskRepository
+                ?.let { taskRepository ->
+                    taskRepository
+                            .getProductsDiscrepancies()
+                            .deleteProductsDiscrepanciesForProduct(product)
+
+                    taskRepository
+                            .getMercuryDiscrepancies()
+                            .deleteMercuryDiscrepanciesForProduct(product)
+
+                    taskRepository
+                            .getBatchesDiscrepancies()
+                            .deleteBatchesDiscrepanciesForProduct(product.materialNumber)
+
+                    taskRepository
+                            .getBoxesDiscrepancies()
+                            .deleteBoxesDiscrepanciesForProduct(product)
+
+                    taskRepository
+                            .getExciseStampsDiscrepancies()
+                            .deleteExciseStampsDiscrepanciesForProduct(product)
+
+                    taskRepository
+                            .getExciseStampsBad()
+                            .deleteExciseStampBadForProduct(product.materialNumber)
+                }
     }
 
     fun onClickFourthBtn() {
