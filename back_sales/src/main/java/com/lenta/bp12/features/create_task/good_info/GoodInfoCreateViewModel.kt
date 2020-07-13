@@ -166,38 +166,38 @@ class GoodInfoCreateViewModel : CoreViewModel() {
 
     val basketNumber by lazy {
         good.combineLatest(quantity).combineLatest(isProviderSelected).map {
-                    it?.let {
-                        val isProviderSelected = it.second
+            it?.let {
+                val isProviderSelected = it.second
 
-                        if (isProviderSelected) {
-                            task.value?.let { task ->
-                                getBasket()?.let { basket ->
-                                    "${task.baskets.indexOf(basket) + 1}"
-                                } ?: "${task.baskets.size + 1}"
-                            }.orEmpty()
-                        } else ""
-                    }
-                }
+                if (isProviderSelected) {
+                    task.value?.let { task ->
+                        getBasket()?.let { basket ->
+                            "${task.baskets.indexOf(basket) + 1}"
+                        } ?: "${task.baskets.size + 1}"
+                    }.orEmpty()
+                } else ""
+            }
+        }
     }
 
     val basketQuantity by lazy {
         good.combineLatest(quantity).combineLatest(isProviderSelected).map {
-                    it?.let {
-                        val good = it.first.first
-                        val quantity = it.first.second
-                        val isProviderSelected = it.second
+            it?.let {
+                val good = it.first.first
+                val quantity = it.first.second
+                val isProviderSelected = it.second
 
-                        val units = good.commonUnits.name
+                val units = good.commonUnits.name
 
-                        if (isProviderSelected) {
-                            getBasket()?.let { basket ->
-                                "${good.getQuantityByProvider(basket.provider.code).sumWith(quantity).dropZeros()} $units"
-                            } ?: "${quantity.dropZeros()} $units"
-                        } else {
-                            "0 $units"
-                        }
-                    }
+                if (isProviderSelected) {
+                    getBasket()?.let { basket ->
+                        "${good.getQuantityByProvider(basket.provider.code).sumWith(quantity).dropZeros()} $units"
+                    } ?: "${quantity.dropZeros()} $units"
+                } else {
+                    "0 $units"
                 }
+            }
+        }
     }
 
     /**
@@ -649,16 +649,12 @@ class GoodInfoCreateViewModel : CoreViewModel() {
 
     private fun getProviderCode(): String {
         var providerCode = ""
-        runCatching {
-            if (isProviderSelected.value == true) {
-                providers.value?.let { providers ->
-                    providerPosition.value?.let { position ->
-                        providerCode = providers[position].code
-                    }
+        if (isProviderSelected.value == true) {
+            providers.value?.let { providers ->
+                providerPosition.value?.let { position ->
+                    providerCode = providers.getOrNull(position)?.code.orEmpty()
                 }
             }
-        }.onFailure {
-            Logg.w { "e: ${it.message}" }
         }
 
         return providerCode
