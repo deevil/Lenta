@@ -3,6 +3,7 @@ package com.lenta.bp18.features.auth
 import android.os.Bundle
 import android.view.View
 import com.lenta.bp18.R
+import com.lenta.bp18.platform.Constants
 import com.lenta.bp18.platform.extention.getAppComponent
 import com.lenta.shared.features.login.CoreAuthViewModel
 import com.lenta.shared.features.login.CoreLoginFragment
@@ -51,7 +52,7 @@ class AuthFragment : CoreLoginFragment() {
     }
 
     companion object {
-        const val SCREEN_NUMBER = "1"
+        const val SCREEN_NUMBER = Constants.AUTH_FRAGMENT
     }
 
 }
