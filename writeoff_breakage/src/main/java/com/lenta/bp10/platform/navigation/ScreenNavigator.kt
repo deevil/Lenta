@@ -123,7 +123,7 @@ class ScreenNavigator(
 
     override fun openSetsInfoScreen(productInfo: ProductInfo, quantity: Double) {
         runOrPostpone {
-            getFragmentStack()?.push(SetsFragment.create(productInfo, quantity))
+            getFragmentStack()?.push(SetsFragment.newInstance(productInfo, quantity))
         }
     }
 

@@ -97,7 +97,7 @@ class ScreenNavigator @Inject constructor(
 
     override fun openListOfDifferencesScreen(onClickSkipCallback: () -> Unit) {
         runOrPostpone {
-            getFragmentStack()?.push(ListOfDifferencesFragment.create(
+            getFragmentStack()?.push(ListOfDifferencesFragment.newInstance(
                     onClickSkipCallbackID = backFragmentResultHelper.setFuncForResult(onClickSkipCallback)
             ))
         }

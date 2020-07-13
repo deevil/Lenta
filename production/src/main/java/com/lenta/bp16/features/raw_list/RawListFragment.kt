@@ -2,31 +2,23 @@ package com.lenta.bp16.features.raw_list
 
 import android.os.Bundle
 import android.view.View
-import android.widget.AdapterView
 import com.lenta.bp16.BR
 import com.lenta.bp16.R
 import com.lenta.bp16.databinding.FragmentRawListBinding
 import com.lenta.bp16.databinding.ItemRawBinding
 import com.lenta.bp16.platform.extention.getAppComponent
-import com.lenta.shared.keys.KeyCode
-import com.lenta.shared.keys.OnKeyDownListener
-import com.lenta.shared.platform.fragment.CoreFragment
+import com.lenta.shared.platform.fragment.KeyDownCoreFragment
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListener
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
-import com.lenta.shared.utilities.databinding.DataBindingAdapter
-import com.lenta.shared.utilities.databinding.DataBindingRecyclerViewConfig
-import com.lenta.shared.utilities.databinding.RecyclerViewKeyHandler
 import com.lenta.shared.utilities.extentions.connectLiveData
 import com.lenta.shared.utilities.extentions.generateScreenNumberFromPostfix
 import com.lenta.shared.utilities.extentions.provideViewModel
 
-class RawListFragment : CoreFragment<FragmentRawListBinding, RawListViewModel>(),
-        ToolbarButtonsClickListener, OnKeyDownListener {
-
-    private var recyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
-
+class RawListFragment : KeyDownCoreFragment<FragmentRawListBinding, RawListViewModel>(),
+        ToolbarButtonsClickListener {
+    
     override fun getLayoutId(): Int = R.layout.fragment_raw_list
 
     override fun getPageNumber(): String? = generateScreenNumberFromPostfix(SCREEN_NUMBER)
@@ -62,54 +54,21 @@ class RawListFragment : CoreFragment<FragmentRawListBinding, RawListViewModel>()
 
     private fun initRvConfig() {
         binding?.let { layoutBinding ->
-            layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
+            layoutBinding.rvConfig = initRecycleAdapterDataBinding<ItemRawBinding>(
                     layoutId = R.layout.item_raw,
-                    itemId = BR.item,
-                    realisation = object : DataBindingAdapter<ItemRawBinding> {
-                        override fun onCreate(binding: ItemRawBinding) {
-                        }
-
-                        override fun onBind(binding: ItemRawBinding, position: Int) {
-                            recyclerViewKeyHandler?.let {
-                                binding.root.isSelected = it.isSelected(position)
-                            }
-                        }
-                    },
-                    onItemClickListener = AdapterView.OnItemClickListener { _, _, position, _ ->
-                        recyclerViewKeyHandler?.let {
-                            if (it.isSelected(position)) {
-                                vm.onClickItemPosition(position)
-                            } else {
-                                it.selectPosition(position)
-                            }
-                        }
-
-                    }
+                    itemId = BR.item
             )
 
-            layoutBinding.vm = vm
-            layoutBinding.lifecycleOwner = viewLifecycleOwner
-            recyclerViewKeyHandler = RecyclerViewKeyHandler(
-                    rv = layoutBinding.rv,
+            recyclerViewKeyHandler = initRecyclerViewKeyHandler(
+                    recyclerView = layoutBinding.rv,
+                    previousPosInfo = recyclerViewKeyHandler?.posInfo?.value,
                     items = vm.raws,
-                    lifecycleOwner = layoutBinding.lifecycleOwner!!,
-                    initPosInfo = recyclerViewKeyHandler?.posInfo?.value,
-                    onClickPositionFunc = vm::onClickItemPosition
+                    onClickHandler = vm::onClickItemPosition
             )
         }
     }
 
-    override fun onKeyDown(keyCode: KeyCode): Boolean {
-        return recyclerViewKeyHandler?.onKeyDown(keyCode) ?: false
-    }
-
-    override fun onDestroyView() {
-        recyclerViewKeyHandler?.onClickPositionFunc = null
-        super.onDestroyView()
-    }
-
     companion object {
-        const val SCREEN_NUMBER = "7"
+        private const val SCREEN_NUMBER = "7"
     }
-
 }
