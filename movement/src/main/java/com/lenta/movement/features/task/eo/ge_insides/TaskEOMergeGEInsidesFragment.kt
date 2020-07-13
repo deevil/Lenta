@@ -3,8 +3,10 @@ package com.lenta.movement.features.task.eo.ge_insides
 import android.os.Bundle
 import android.view.View
 import androidx.core.os.bundleOf
+import com.lenta.movement.BR
 import com.lenta.movement.R
-import com.lenta.movement.databinding.FragmentTaskEoMergeBinding
+import com.lenta.movement.databinding.FragmentTaskEoMergeGeInsidesBinding
+import com.lenta.movement.databinding.LayoutItemSimpleBinding
 import com.lenta.movement.models.ProcessingUnit
 import com.lenta.movement.platform.extensions.getAppComponent
 import com.lenta.movement.platform.extensions.unsafeLazy
@@ -17,18 +19,16 @@ import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListener
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
 import com.lenta.shared.scan.OnScanResultListener
-import com.lenta.shared.utilities.databinding.RecyclerViewKeyHandler
 import com.lenta.shared.utilities.extentions.connectLiveData
 import com.lenta.shared.utilities.extentions.provideViewModel
 
 /** Список вложенных ЕО (при нажатии на элемент в списке ГЕ на экране Объединение ЕО (TaskEOMergeFragment)*/
-class TaskEOMergeGEInsidesFragment : CoreFragment<FragmentTaskEoMergeBinding, TaskEOMergeGEInsidesViewModel>(),
+class TaskEOMergeGEInsidesFragment : CoreFragment<FragmentTaskEoMergeGeInsidesBinding, TaskEOMergeGEInsidesViewModel>(),
         ToolbarButtonsClickListener,
         OnBackPresserListener,
         OnScanResultListener,
         OnKeyDownListener {
 
-    private var eoListRecyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
     private val eoList: List<ProcessingUnit>? by unsafeLazy {
         arguments?.getParcelableArrayList<ProcessingUnit>(EO_LIST_KEY)
     }
@@ -49,6 +49,42 @@ class TaskEOMergeGEInsidesFragment : CoreFragment<FragmentTaskEoMergeBinding, Ta
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        val onClickSelectionListener = View.OnClickListener { clickListener ->
+            clickListener?.let {
+                val position = it.tag as Int
+                vm.selectionsHelper.revert(position = position)
+                binding?.recyclerView?.adapter?.notifyItemChanged(position)
+            }
+        }
+
+        binding?.apply {
+            rvConfig = initRecycleAdapterDataBinding(
+                    layoutId = R.layout.layout_item_simple,
+                    itemId = BR.vm,
+                    onAdapterItemBind = { binding: LayoutItemSimpleBinding, position ->
+                        binding.tvCounter.tag = position
+                        binding.tvCounter.setOnClickListener(onClickSelectionListener)
+                        binding.selectedForDelete = vm.selectionsHelper.isSelected(position)
+                        recyclerViewKeyHandler?.let {
+                            binding.root.isSelected = it.isSelected(position)
+                        }
+                    },
+                    onAdapterItemClicked = { position ->
+                        recyclerViewKeyHandler?.let {
+                            if (it.isSelected(position).not()) {
+                                it.selectPosition(position)
+                            }
+                        }
+                    }
+            )
+
+            recyclerViewKeyHandler = initRecyclerViewKeyHandler(
+                    recyclerView = recyclerView,
+                    items = this@TaskEOMergeGEInsidesFragment.vm.eoItemsList,
+                    previousPosInfo = recyclerViewKeyHandler?.posInfo?.value
+            )
+        }
     }
 
     override fun setupTopToolBar(topToolbarUiModel: TopToolbarUiModel) {
@@ -60,15 +96,16 @@ class TaskEOMergeGEInsidesFragment : CoreFragment<FragmentTaskEoMergeBinding, Ta
         bottomToolbarUiModel.cleanAll()
 
         bottomToolbarUiModel.uiModelButton1.show(ButtonDecorationInfo.back)
-        bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.exclude)
-
+        bottomToolbarUiModel.uiModelButton4.show(ButtonDecorationInfo.exclude)
+        bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.next)
 
         connectLiveData(vm.isExcludeBtnEnabled, bottomToolbarUiModel.uiModelButton4.enabled)
     }
 
     override fun onToolbarButtonClick(view: View) {
         when (view.id) {
-            R.id.b_5 -> vm.onExcludeBtnClick()
+            R.id.b_4 -> vm.onExcludeBtnClick()
+            R.id.b_5 -> onBackPressed()
         }
     }
 
@@ -82,7 +119,7 @@ class TaskEOMergeGEInsidesFragment : CoreFragment<FragmentTaskEoMergeBinding, Ta
     }
 
     override fun onKeyDown(keyCode: KeyCode): Boolean {
-        eoListRecyclerViewKeyHandler?.let {
+        recyclerViewKeyHandler?.let {
             if (it.onKeyDown(keyCode)) {
                 keyCode.digit?.let { digit ->
                     vm.onDigitPressed(digit)
@@ -102,8 +139,8 @@ class TaskEOMergeGEInsidesFragment : CoreFragment<FragmentTaskEoMergeBinding, Ta
 
         fun newInstance(eoList: List<ProcessingUnit>): TaskEOMergeGEInsidesFragment {
             return TaskEOMergeGEInsidesFragment().apply {
-                arguments = bundleOf (
-                    EO_LIST_KEY to eoList
+                arguments = bundleOf(
+                        EO_LIST_KEY to eoList
                 )
             }
         }

@@ -2,7 +2,6 @@ package com.lenta.movement.features.main.box
 
 import android.os.Bundle
 import android.view.View
-import android.widget.AdapterView
 import com.lenta.movement.BR
 import com.lenta.movement.R
 import com.lenta.movement.databinding.FragmentGoodsListBinding
@@ -17,9 +16,6 @@ import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListener
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
 import com.lenta.shared.scan.OnScanResultListener
-import com.lenta.shared.utilities.databinding.DataBindingAdapter
-import com.lenta.shared.utilities.databinding.DataBindingRecyclerViewConfig
-import com.lenta.shared.utilities.databinding.RecyclerViewKeyHandler
 import com.lenta.shared.utilities.extentions.connectLiveData
 import com.lenta.shared.utilities.extentions.provideViewModel
 
@@ -28,8 +24,6 @@ class GoodsListFragment : CoreFragment<FragmentGoodsListBinding, GoodsListViewMo
     OnBackPresserListener,
     OnKeyDownListener,
     ToolbarButtonsClickListener {
-
-    private var recyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
 
     override fun getLayoutId() = R.layout.fragment_goods_list
 
@@ -76,39 +70,33 @@ class GoodsListFragment : CoreFragment<FragmentGoodsListBinding, GoodsListViewMo
             }
         }
 
-        binding?.rvConfig = DataBindingRecyclerViewConfig(
-            layoutId = R.layout.layout_item_goods_list,
-            itemId = BR.vm,
-            realisation = object : DataBindingAdapter<LayoutItemGoodsListBinding> {
-                override fun onCreate(binding: LayoutItemGoodsListBinding) = Unit
-
-                override fun onBind(binding: LayoutItemGoodsListBinding, position: Int) {
+        binding?.rvConfig = initRecycleAdapterDataBinding(
+                layoutId = R.layout.layout_item_goods_list,
+                itemId = BR.vm,
+                onAdapterItemBind = { binding : LayoutItemGoodsListBinding , position ->
                     binding.tvCounter.tag = position
                     binding.tvCounter.setOnClickListener(onClickSelectionListener)
                     binding.selectedForDelete = vm.selectionsHelper.isSelected(position)
                     recyclerViewKeyHandler?.let {
                         binding.root.isSelected = it.isSelected(position)
                     }
-                }
-            },
-            onItemClickListener = AdapterView.OnItemClickListener { _, _, position, _ ->
-                recyclerViewKeyHandler?.let {
-                    if (it.isSelected(position).not()) {
-                        it.selectPosition(position)
+                },
+                onAdapterItemClicked = { position ->
+                    recyclerViewKeyHandler?.let {
+                        if (it.isSelected(position).not()) {
+                            it.selectPosition(position)
+                        }
                     }
                 }
-            }
+
         )
 
         binding?.apply {
-            lifecycleOwner?.let{ lifecycleOwner ->
-                    recyclerViewKeyHandler = RecyclerViewKeyHandler(
-                            rv,
-                            this@GoodsListFragment.vm.goodsList,
-                            lifecycleOwner,
-                            recyclerViewKeyHandler?.posInfo?.value
-                    )
-            }
+                recyclerViewKeyHandler = initRecyclerViewKeyHandler(
+                        recyclerView = rv,
+                        items = this@GoodsListFragment.vm.goodsList,
+                        previousPosInfo = recyclerViewKeyHandler?.posInfo?.value
+                )
         }
     }
 

@@ -3,7 +3,10 @@ package com.lenta.movement.features.task.goods.info
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.google.common.base.Optional
-import com.lenta.movement.models.*
+import com.lenta.movement.models.Basket
+import com.lenta.movement.models.GoodsSignOfDivision
+import com.lenta.movement.models.ITaskManager
+import com.lenta.movement.models.ProductInfo
 import com.lenta.movement.models.repositories.ITaskBasketsRepository
 import com.lenta.movement.platform.extensions.unsafeLazy
 import com.lenta.movement.platform.navigation.IScreenNavigator
@@ -85,6 +88,7 @@ class TaskGoodsInfoViewModel : CoreViewModel() {
     }
 
     fun onApplyClick() {
+        productInfo.volume = 0.1
         taskBasketsRepository.addProduct(
             product = productInfo,
             supplier = supplierSelected.value?.orNull(),

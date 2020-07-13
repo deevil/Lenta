@@ -18,7 +18,6 @@ import com.lenta.shared.utilities.databinding.RecyclerViewKeyHandler
 import com.lenta.shared.utilities.extentions.connectLiveData
 import com.lenta.shared.utilities.extentions.provideViewModel
 import com.lenta.shared.utilities.state.state
-import java.lang.IllegalArgumentException
 
 class TaskBasketFragment: CoreFragment<FragmentTaskBasketBinding, TaskBasketViewModel>(),
     ToolbarButtonsClickListener,
@@ -26,8 +25,6 @@ class TaskBasketFragment: CoreFragment<FragmentTaskBasketBinding, TaskBasketView
     OnKeyDownListener {
 
     private var basketIndex: Int by state( DEFAULT_BASKET_INDEX )
-
-    private var recyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
 
     override fun getLayoutId() = R.layout.fragment_task_basket
 

@@ -33,8 +33,6 @@ class CreateBoxesFragment : CoreFragment<FragmentCreateBoxesBinding, CreateBoxes
     OnScanResultListener,
     OnBackPresserListener {
 
-    private var recyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
-
     private var productInfo: ProductInfo? by state(null)
 
     override fun getLayoutId() = R.layout.fragment_create_boxes

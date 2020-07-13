@@ -40,7 +40,7 @@ class TaskEOMergeGEInsidesViewModel : CoreViewModel(), OnOkInSoftKeyboardListene
     @Inject
     lateinit var scanInfoHelper: ScanInfoHelper
 
-    val eoSelectionHelper = SelectionItemsHelper()
+    val selectionsHelper = SelectionItemsHelper()
 
     val eanCode: MutableLiveData<String> = MutableLiveData()
     val requestFocusToEan: MutableLiveData<Boolean> = MutableLiveData()
@@ -65,7 +65,7 @@ class TaskEOMergeGEInsidesViewModel : CoreViewModel(), OnOkInSoftKeyboardListene
     }
 
     val isExcludeBtnEnabled by unsafeLazy {
-        eoSelectionHelper.selectedPositions.map { setOfSelectedItems ->
+        selectionsHelper.selectedPositions.map { setOfSelectedItems ->
             setOfSelectedItems?.size?.let {
                 it > 0
             }
@@ -84,7 +84,9 @@ class TaskEOMergeGEInsidesViewModel : CoreViewModel(), OnOkInSoftKeyboardListene
     }
 
     fun onExcludeBtnClick() {
+        selectionsHelper.selectedPositions.value?.let {
 
+        }
     }
 
     override fun onOkInSoftKeyboard(): Boolean {
@@ -105,8 +107,4 @@ class TaskEOMergeGEInsidesViewModel : CoreViewModel(), OnOkInSoftKeyboardListene
     }
 
     fun onDigitPressed(digit: Int) = Unit
-
-    companion object {
-
-    }
 }
