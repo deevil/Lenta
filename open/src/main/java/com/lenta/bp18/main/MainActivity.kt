@@ -3,6 +3,8 @@ package com.lenta.bp18.main
 import android.os.Bundle
 import androidx.lifecycle.ViewModelProvider
 import com.crashlytics.android.Crashlytics
+import com.lenta.bp18.di.AppComponent
+import com.lenta.bp18.platform.extention.getAppComponent
 import com.lenta.shared.di.FromParentToCoreProvider
 import com.lenta.shared.platform.activity.main_activity.CoreMainActivity
 import com.lenta.shared.platform.fragment.CoreFragment
