@@ -27,6 +27,7 @@ import com.lenta.shared.requests.combined.scan_info.ScanCodeInfo
 import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.extentions.*
 import com.lenta.shared.utilities.getFormattedDate
+import com.lenta.shared.utilities.orIfNull
 import com.lenta.shared.view.OnPositionClickListener
 import kotlinx.coroutines.launch
 import java.math.BigInteger
@@ -665,7 +666,7 @@ class GoodInfoCreateViewModel : CoreViewModel() {
         if (isProducerSelected.value == true) {
             producers.value?.let { producers ->
                 producerPosition.value?.let { position ->
-                    producerCode = producers[position].code
+                    producerCode = producers.getOrNull(position)?.code.orEmpty()
                 }
             }
         }
@@ -678,7 +679,7 @@ class GoodInfoCreateViewModel : CoreViewModel() {
         if (isProviderSelected.value == true) {
             providers.value?.let { providers ->
                 providerPosition.value?.let { position ->
-                    provider = providers[position]
+                    provider = providers.getOrNull(position).orIfNull { ProviderInfo() }
                 }
             }
         }
