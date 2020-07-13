@@ -314,19 +314,19 @@ class GoodInfoCreateViewModel : CoreViewModel() {
         scanModeType.combineLatest(quantity).combineLatest(isProviderSelected).combineLatest(isProducerSelected).combineLatest(isCorrectDate).map {
             it?.let {
                 val type = it.first.first.first.first
-                val quantity = it.first.first.first.second
+                val isEnteredQuantity = it.first.first.first.second > 0.0
                 val isProviderSelected = it.first.first.second
                 val isProducerSelected = it.first.second
                 val isDateEntered = it.second
 
                 when (type) {
-                    ScanNumberType.COMMON -> quantity > 0.0 && isProviderSelected
-                    ScanNumberType.ALCOHOL -> quantity > 0.0 && isProviderSelected && isProducerSelected && isDateEntered
+                    ScanNumberType.COMMON -> isEnteredQuantity && isProviderSelected
+                    ScanNumberType.ALCOHOL -> isEnteredQuantity && isProviderSelected && isProducerSelected && isDateEntered
                     ScanNumberType.EXCISE -> false
-                    ScanNumberType.MARK_150 -> quantity > 0.0 && isProviderSelected
-                    ScanNumberType.MARK_68 -> quantity > 0.0 && isProviderSelected && isProducerSelected
-                    ScanNumberType.PART -> quantity > 0.0 && isProviderSelected && isProducerSelected && isDateEntered
-                    ScanNumberType.BOX -> quantity > 0.0 && isProviderSelected && isProducerSelected
+                    ScanNumberType.MARK_150 -> isEnteredQuantity && isProviderSelected
+                    ScanNumberType.MARK_68 -> isEnteredQuantity && isProviderSelected && isProducerSelected
+                    ScanNumberType.PART -> isEnteredQuantity && isProviderSelected && isProducerSelected && isDateEntered
+                    ScanNumberType.BOX -> isEnteredQuantity && isProviderSelected && isProducerSelected
                     else -> false
                 }
             } ?: false
@@ -364,7 +364,8 @@ class GoodInfoCreateViewModel : CoreViewModel() {
             return
         }
 
-        if (applyEnabled.value!! || good.value!!.kind == GoodKind.EXCISE && (number.length == Constants.MARK_150 || number.length == Constants.MARK_68 || number.length == Constants.BOX_26)) {
+        if (applyEnabled.value!! || good.value!!.kind == GoodKind.EXCISE &&
+                (number.length == Constants.MARK_150 || number.length == Constants.MARK_68 || number.length == Constants.BOX_26)) {
             if (!thereWasRollback) {
                 saveChanges()
             } else {

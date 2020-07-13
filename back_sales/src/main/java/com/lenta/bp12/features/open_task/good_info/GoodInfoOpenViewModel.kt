@@ -223,18 +223,18 @@ class GoodInfoOpenViewModel : CoreViewModel() {
                 .combineLatest(isCorrectDate).map {
                     it?.let {
                         val type = it.first.first.first
-                        val quantity = it.first.first.second
+                        val isEnteredQuantity = it.first.first.second > 0.0
                         val isProducerSelected = it.first.second
                         val isDateEntered = it.second
 
                         when (type) {
-                            ScanNumberType.COMMON -> quantity > 0.0
-                            ScanNumberType.ALCOHOL -> quantity > 0.0 && isProducerSelected && isDateEntered
+                            ScanNumberType.COMMON -> isEnteredQuantity
+                            ScanNumberType.ALCOHOL -> isEnteredQuantity && isProducerSelected && isDateEntered
                             ScanNumberType.EXCISE -> false
-                            ScanNumberType.MARK_150 -> quantity > 0.0 && isProducerSelected
-                            ScanNumberType.MARK_68 -> quantity > 0.0 && isProducerSelected
-                            ScanNumberType.PART -> quantity > 0.0 && isProducerSelected && isDateEntered
-                            ScanNumberType.BOX -> quantity > 0.0 && isProducerSelected
+                            ScanNumberType.MARK_150 -> isEnteredQuantity && isProducerSelected
+                            ScanNumberType.MARK_68 -> isEnteredQuantity && isProducerSelected
+                            ScanNumberType.PART -> isEnteredQuantity && isProducerSelected && isDateEntered
+                            ScanNumberType.BOX -> isEnteredQuantity && isProducerSelected
                             else -> false
                         }
                     } ?: false
@@ -286,7 +286,8 @@ class GoodInfoOpenViewModel : CoreViewModel() {
             return
         }
 
-        if (applyEnabled.value!! || good.value!!.kind == GoodKind.EXCISE && (number.length == Constants.MARK_150 || number.length == Constants.MARK_68 || number.length == Constants.BOX_26)) {
+        if (applyEnabled.value!! || good.value!!.kind == GoodKind.EXCISE &&
+                (number.length == Constants.MARK_150 || number.length == Constants.MARK_68 || number.length == Constants.BOX_26)) {
             if (!thereWasRollback) {
                 saveChanges()
             } else {
