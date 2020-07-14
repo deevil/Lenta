@@ -34,9 +34,6 @@
             app:layout_constraintTop_toBottomOf="@+id/div_hor_1"
             tools:src="@drawable/ic_checkbox_green_32dp" />
 
-
-
-
         <FrameLayout
             android:id="@+id/fl_root_scan"
             android:layout_width="0dp"

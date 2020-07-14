@@ -8,6 +8,7 @@ enum class TaskStatus {
 }
 
 enum class TaskType(val abbreviation: String, val numberLength: Int) {
+    WAREHOUSE_INGREDIENTS("ИН", 30),
     PROCESSING_UNIT("ЕО", 20),
     EXTERNAL_SUPPLY("ВП", 10)
 }
