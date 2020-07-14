@@ -23,6 +23,7 @@ import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.requests.combined.scan_info.ScanCodeInfo
 import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.extentions.*
+import com.lenta.shared.utilities.getDateFromString
 import com.lenta.shared.view.OnPositionClickListener
 import kotlinx.coroutines.launch
 import java.math.BigInteger
@@ -353,8 +354,8 @@ class GoodInfoOpenViewModel : CoreViewModel() {
 
     private fun setDefaultQuantity(good: GoodOpen) {
         if (good.kind == GoodKind.COMMON) {
-            if (good.commonUnits == Uom.KG) {
-                quantityField.value = (scanCodeInfo?.getQuantity(good.convertingUnits)
+            if (good.commonUnits != good.convertingUnits) {
+                quantityField.value = (scanCodeInfo?.getConvertedQuantity(good.innerQuantity)
                         ?: 0.0).dropZeros()
             } else {
                 if (isEanLastScanned) {
@@ -648,7 +649,7 @@ class GoodInfoOpenViewModel : CoreViewModel() {
                     units = changedGood.convertingUnits,
                     providerCode = changedGood.provider.code,
                     producerCode = getProducerCode(),
-                    date = date.value.orEmpty()
+                    date = getDateFromString(date.value.orEmpty(), Constants.DATE_FORMAT_dd_mm_yyyy)
             )
             Logg.d { "--> add part = $part" }
             changedGood.addPart(part)
