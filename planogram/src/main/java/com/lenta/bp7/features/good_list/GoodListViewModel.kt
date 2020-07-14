@@ -5,8 +5,8 @@ import androidx.lifecycle.viewModelScope
 import com.lenta.bp7.data.model.Good
 import com.lenta.bp7.data.model.ShelfStatus
 import com.lenta.bp7.features.other.AddGoodViewModel
-import com.lenta.shared.platform.constants.Constants.COMMON_SAP_LENGTH
-import com.lenta.shared.platform.constants.Constants.SAP_OR_BAR_LENGTH
+import com.lenta.shared.platform.constants.Constants.SAP_6
+import com.lenta.shared.platform.constants.Constants.SAP_OR_BAR_12
 import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
 import com.lenta.shared.utilities.extentions.map
 import kotlinx.coroutines.launch
@@ -43,22 +43,22 @@ class GoodListViewModel : AddGoodViewModel(), OnOkInSoftKeyboardListener {
     }
 
     override fun onOkInSoftKeyboard(): Boolean {
-        checkEnteredNumber(goodNumber.value ?: "")
+        checkEnteredNumber(goodNumber.value.orEmpty())
         return true
     }
 
     private fun checkEnteredNumber(number: String) {
         number.length.let { length ->
-            if (length < COMMON_SAP_LENGTH) {
+            if (length < SAP_6) {
                 // Сообщение - Данный товар не найден в справочнике
                 navigator.showGoodNotFound()
                 return
             }
 
-            if (length >= COMMON_SAP_LENGTH) {
+            if (length >= SAP_6) {
                 when (length) {
-                    COMMON_SAP_LENGTH -> addGoodByMaterial(number)
-                    SAP_OR_BAR_LENGTH -> {
+                    SAP_6 -> addGoodByMaterial(number)
+                    SAP_OR_BAR_12 -> {
                         // Выбор - Введено 12 знаков. Какой код вы ввели? - SAP-код / Штрихкод
                         navigator.showTwelveCharactersEntered(
                                 sapCallback = { addGoodByMatcode(number) },

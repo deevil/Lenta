@@ -1,8 +1,10 @@
 package com.lenta.bp9.model.memory
 
 import com.lenta.bp9.model.repositories.ITaskExciseStampDiscrepanciesRepository
-import com.lenta.bp9.model.task.TaskProductInfo
 import com.lenta.bp9.model.task.TaskExciseStampDiscrepancies
+import com.lenta.bp9.model.task.TaskProductInfo
+import com.lenta.bp9.platform.TypeDiscrepanciesConstants
+import com.lenta.shared.utilities.extentions.removeItemFromListWithPredicate
 
 class MemoryTaskExciseStampDiscrepanciesRepository : ITaskExciseStampDiscrepanciesRepository {
 
@@ -17,7 +19,7 @@ class MemoryTaskExciseStampDiscrepanciesRepository : ITaskExciseStampDiscrepanci
     }
 
     override fun findExciseStampsDiscrepanciesOfProduct(materialNumber: String): List<TaskExciseStampDiscrepancies> {
-        return stampsDiscrepancies.filter {stampDiscrepancies ->
+        return stampsDiscrepancies.filter { stampDiscrepancies ->
             stampDiscrepancies.materialNumber == materialNumber
         }
     }
@@ -54,34 +56,37 @@ class MemoryTaskExciseStampDiscrepanciesRepository : ITaskExciseStampDiscrepanci
     }
 
     override fun deleteExciseStampDiscrepancy(exciseStampCode: String): Boolean {
-        stampsDiscrepancies.map { it }.filter {discrepancies ->
-            if (exciseStampCode == discrepancies.code) {
-                stampsDiscrepancies.remove(discrepancies)
-                return@filter true
-            }
-            return@filter false
-
-        }.let {
-            return it.isNotEmpty()
+        return stampsDiscrepancies.removeItemFromListWithPredicate { stamp ->
+            exciseStampCode == stamp.code
         }
     }
 
     override fun deleteExciseStampsDiscrepanciesForProduct(product: TaskProductInfo): Boolean {
-        val delDiscrepancies = ArrayList<TaskExciseStampDiscrepancies>()
-        for (i in stampsDiscrepancies.indices) {
-            if (product.materialNumber == stampsDiscrepancies[i].materialNumber) {
-                delDiscrepancies.add(stampsDiscrepancies[i])
-            }
+        return stampsDiscrepancies.removeItemFromListWithPredicate { stamp ->
+            product.materialNumber == stamp.materialNumber
         }
+    }
 
-        if (delDiscrepancies.isEmpty()) {
-            return false
+    override fun deleteExciseStampsDiscrepanciesForProductAndDiscrepancies(materialNumber: String, typeDiscrepancies: String): Boolean {
+        return stampsDiscrepancies.removeItemFromListWithPredicate { stamp ->
+            stamp.materialNumber == materialNumber
+                    && stamp.typeDiscrepancies == typeDiscrepancies
         }
+    }
 
-        delDiscrepancies.map {
-            deleteExciseStampDiscrepancy(it)
+    override fun deleteExciseStampsDiscrepanciesNotNormForProduct(materialNumber: String): Boolean {
+        return stampsDiscrepancies.removeItemFromListWithPredicate { stamp ->
+            stamp.materialNumber == materialNumber &&
+                    stamp.typeDiscrepancies == TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_NORM
         }
-        return true
+    }
+
+    override fun deleteExciseStampDiscrepancyOfProductOfBoxOfDiscrepancy(materialNumber: String, boxNumber: String, typeDiscrepancies: String): Boolean {
+        return stampsDiscrepancies.removeItemFromListWithPredicate { stamp ->
+            materialNumber == stamp.materialNumber
+                    && boxNumber == stamp.boxNumber
+                    && typeDiscrepancies == stamp.typeDiscrepancies
+        }
     }
 
     override fun clear() {

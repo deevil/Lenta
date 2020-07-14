@@ -6,6 +6,7 @@ import com.lenta.bp9.model.repositories.ITaskProductRepository
 class MemoryTaskProductRepository : ITaskProductRepository {
 
     private val productInfo: ArrayList<TaskProductInfo> = ArrayList()
+    private val processingUnitsOfProduct: ArrayList<TaskProductInfo> = ArrayList()
 
     override fun getProducts(): List<TaskProductInfo> {
         return productInfo
@@ -40,10 +41,32 @@ class MemoryTaskProductRepository : ITaskProductRepository {
         return false
     }
 
+    private fun addProcessingUnitsOfProduct(processingUnit: TaskProductInfo): Boolean {
+        var index = -1
+        for (i in processingUnitsOfProduct.indices) {
+            if (processingUnit.materialNumber == processingUnitsOfProduct[i].materialNumber && processingUnit.processingUnit == processingUnitsOfProduct[i].processingUnit) {
+                index = i
+            }
+        }
+
+        if (index == -1) {
+            processingUnitsOfProduct.add(processingUnit)
+            return true
+        } else if (index !=  processingUnitsOfProduct.size - 1) {
+            processingUnitsOfProduct.getOrNull(index)?.let {
+                processingUnitsOfProduct.removeAt(index)
+                processingUnitsOfProduct.add(it)
+            }
+        }
+
+        return false
+    }
+
     override fun updateProducts(newProducts: List<TaskProductInfo>) {
         productInfo.clear()
         newProducts.map {
             addProduct(it)
+            addProcessingUnitsOfProduct(it)
         }
     }
 
@@ -65,7 +88,14 @@ class MemoryTaskProductRepository : ITaskProductRepository {
         }
     }
 
+    override fun getProcessingUnitsOfProduct(materialNumber: String): List<TaskProductInfo> {
+        return processingUnitsOfProduct.filter {unitInfo ->
+            unitInfo.materialNumber == materialNumber
+        }
+    }
+
     override fun clear() {
         productInfo.clear()
+        processingUnitsOfProduct.clear()
     }
 }

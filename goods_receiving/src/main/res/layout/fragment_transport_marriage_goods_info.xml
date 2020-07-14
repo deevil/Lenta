@@ -10,9 +10,7 @@
             name="vm"
             type="com.lenta.bp9.features.transport_marriage.goods_info.TransportMarriageGoodsInfoViewModel" />
 
-
     </data>
-
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -49,7 +47,7 @@
         <com.lenta.shared.view.ClickableSpinner
             android:id="@+id/spinner_quality"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="32dp"
             android:layout_marginStart="8dp"
             android:layout_marginEnd="8dp"
             app:items="@{vm.spinQuality}"
@@ -57,7 +55,8 @@
             app:layout_constraintEnd_toStartOf="@+id/div_vert"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="@+id/et_inventory"
-            app:position="@{vm.spinQualitySelectedPosition}"/>
+            app:position="@{vm.spinQualitySelectedPosition}"
+            tools:entries="@array/test_list" />
 
         <com.lenta.shared.view.EditTextWithSuffix
             android:id="@+id/et_inventory"
@@ -68,15 +67,15 @@
             android:layout_marginEnd="8dp"
             android:ellipsize="end"
             android:inputType="numberDecimal"
-            android:maxLines="1"
             android:maxLength="10"
-            app:maxLengthForScanProtect="@{10}"
-            app:requestFocus="@{true}"
+            android:maxLines="1"
             android:text="@={vm.count}"
             app:digitsForUom="@{vm.transportMarriageInfoCurrent.uom}"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/div_vert"
             app:layout_constraintTop_toTopOf="@+id/div_vert"
+            app:maxLengthForScanProtect="@{10}"
+            app:requestFocus="@{true}"
             app:suffix="@{vm.suffix}"
             tools:text="1 шт" />
 
@@ -184,7 +183,7 @@
             <com.lenta.shared.view.ClickableSpinner
                 android:id="@+id/spinner_processing_unit"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_height="32dp"
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="8dp"
                 android:layout_marginEnd="8dp"
@@ -193,41 +192,49 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:onPositionClickListener="@{vm}"
-                app:position="@{vm.spinProcessingUnitSelectedPosition}" />
+                app:position="@{vm.spinProcessingUnitSelectedPosition}"
+                tools:entries="@array/test_list" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
-        <TextView
-            android:id="@+id/tv_section"
-            style="@style/NumberSectionTxt"
-            android:layout_width="36sp"
-            android:layout_height="36sp"
-            android:layout_marginStart="8dp"
-            android:clickable="true"
-            android:focusable="true"
-            android:foreground="?selectableItemBackground"
-            android:gravity="center"
-            android:onClick="@{(v) -> vm.screenNavigator.openSectionInfoScreen(vm.transportMarriageInfoCurrent.sectionId)}"
-            android:text='@{"" + vm.transportMarriageInfoCurrent.sectionId}'
-            app:layout_constraintBottom_toBottomOf="@+id/b_scan"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/b_scan"
-            tools:text="02" />
-
-        <ImageButton
-            android:id="@+id/b_scan"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="8dp"
-            android:layout_marginBottom="24dp"
-            android:background="?selectableItemBackground"
-            android:onClick="@{(v) -> vm.screenNavigator.openEanInfoScreen()}"
-            android:padding="8dp"
-            android:src="@drawable/ic_scan_barcode_48dp"
+        <!-- Блок с иконками -->
+        <LinearLayout
+            style="@style/BottomIconBarStyle"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent">
+
+            <LinearLayout style="@style/BottomIconContainerStyle">
+
+                <TextView
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:background="@drawable/bg_white_circle"
+                    android:gravity="center"
+                    android:onClick="@{(v) -> vm.screenNavigator.openSectionInfoScreen(vm.transportMarriageInfoCurrent.sectionId)}"
+                    android:text='@{"" + vm.transportMarriageInfoCurrent.sectionId}'
+                    android:textSize="12sp"
+                    tools:text="02" />
+
+            </LinearLayout>
+
+            <View style="@style/BottomIconEmptyPlaceStyle" />
+
+            <View style="@style/BottomIconEmptyPlaceStyle" />
+
+            <View style="@style/BottomIconEmptyPlaceStyle" />
+
+            <View style="@style/BottomIconEmptyPlaceStyle" />
+
+            <View style="@style/BottomIconEmptyPlaceStyle" />
+
+            <ImageView
+                 style="@style/BottomIconStyle"
+                android:onClick="@{(v) -> vm.screenNavigator.openEanInfoScreen()}"
+                android:src="@drawable/ic_scan_barcode_white_32dp" />
+
+        </LinearLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
-
 
 </layout>

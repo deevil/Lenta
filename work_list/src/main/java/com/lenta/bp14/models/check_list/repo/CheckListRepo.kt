@@ -3,7 +3,7 @@ package com.lenta.bp14.models.check_list.repo
 import androidx.lifecycle.MutableLiveData
 import com.lenta.bp14.models.check_list.Good
 import com.lenta.bp14.platform.extentions.CheckListGoodInfo
-import com.lenta.bp14.platform.extentions.getQuantity
+import com.lenta.shared.utilities.extentions.getQuantity
 import com.lenta.bp14.platform.extentions.toCheckListGoodInfo
 import com.lenta.shared.fmp.resources.dao_ext.*
 import com.lenta.shared.fmp.resources.fast.ZmpUtz07V001
@@ -87,7 +87,7 @@ class CheckListRepo @Inject constructor(
 
     private suspend fun getUnitsName(code: String?): String {
         return withContext(Dispatchers.IO) {
-            return@withContext units.getUnitName(code) ?: ""
+            return@withContext units.getUnitName(code).orEmpty()
         }
     }
 

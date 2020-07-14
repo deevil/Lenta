@@ -31,13 +31,11 @@ class MercuryListViewModel : CoreViewModel(), PageSelectionListener {
     private val origProductVetDocuments: MutableLiveData<List<ProductVetDocumentRevise>?> = MutableLiveData()
 
     val tiedEnabled: MutableLiveData<Boolean> = untiedSelectionsHelper.selectedPositions.map {
-        val selectedComponentsPositions = untiedSelectionsHelper.selectedPositions.value
-        !selectedComponentsPositions.isNullOrEmpty()
+        !it.isNullOrEmpty()
     }
 
     val untiedEnabled: MutableLiveData<Boolean> = tiedSelectionsHelper.selectedPositions.map {
-        val selectedComponentsPositions = tiedSelectionsHelper.selectedPositions.value
-        !selectedComponentsPositions.isNullOrEmpty()
+        !it.isNullOrEmpty()
     }
 
     fun getTitle(): String {

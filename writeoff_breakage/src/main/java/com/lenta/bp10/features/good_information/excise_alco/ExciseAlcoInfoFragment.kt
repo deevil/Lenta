@@ -21,7 +21,8 @@ open class ExciseAlcoInfoFragment : GoodInfoFragment() {
             exciseAlcoInfoViewModel = viewModel
             viewModel.setProductInfo(productInfo!!)
             initCount?.let {
-                viewModel.count.value = it.toStringFormatted()
+                viewModel.initCount(it)
+                initCount = null
             }
             return viewModel
         }

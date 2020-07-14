@@ -111,8 +111,7 @@ private fun WriteOffTask.getProductsPrint(): List<PrintProduct> {
                 PrintProduct(
                         materialNumber = it.materialNumber,
                         quantity = it.count,
-                        uomCode = taskRepository.getProducts().findProduct(it.materialNumber)?.uom?.code
-                                ?: "",
+                        uomCode = taskRepository.getProducts().findProduct(it.materialNumber)?.uom?.code.orEmpty(),
                         reasonCode = it.writeOffReason.code
                 )
             }

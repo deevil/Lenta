@@ -9,6 +9,7 @@
         <variable
             name="vm"
             type="com.lenta.inventory.features.goods_information.excise_alco.party_signs.PartySignsViewModel" />
+
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -42,7 +43,7 @@
         <com.lenta.shared.view.ClickableSpinner
             android:id="@+id/spin_manufacturers"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="32dp"
             android:layout_centerHorizontal="true"
             android:layout_marginStart="16dp"
             android:layout_marginEnd="16dp"
@@ -54,7 +55,8 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:onPositionClickListener="@{vm}"
-            app:position="@{vm.selectedPosition}" />
+            app:position="@{vm.selectedPosition}"
+            tools:entries="@array/test_list" />
 
         <View
             android:id="@+id/div_hor2"

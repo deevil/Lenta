@@ -1,17 +1,23 @@
 package com.lenta.shared.platform.activity.main_activity
 
 import android.Manifest
+import android.content.Context
 import android.content.pm.PackageManager.PERMISSION_GRANTED
 import android.os.Bundle
 import android.view.KeyEvent
+import android.view.MotionEvent
 import android.view.View
+import android.view.inputmethod.InputMethodManager
+import android.widget.EditText
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.Observer
+import app_update.AppUpdateInstaller
 import com.lenta.shared.R
 import com.lenta.shared.analytics.AnalyticsHelper
 import com.lenta.shared.databinding.ActivityMainBinding
+import com.lenta.shared.di.FromParentToCoreProvider
 import com.lenta.shared.keys.KeyCode
 import com.lenta.shared.keys.OnKeyDownListener
 import com.lenta.shared.keys.OnKeyUpListener
@@ -20,6 +26,7 @@ import com.lenta.shared.platform.activity.CoreActivity
 import com.lenta.shared.platform.activity.ForegroundActivityProvider
 import com.lenta.shared.platform.activity.INumberScreenGenerator
 import com.lenta.shared.platform.activity.OnBackPresserListener
+import com.lenta.shared.platform.app_update.AppUpdateChecker
 import com.lenta.shared.platform.battery_state.BatteryStateMonitor
 import com.lenta.shared.platform.fragment.CoreFragment
 import com.lenta.shared.platform.navigation.FragmentStack
@@ -41,22 +48,26 @@ import com.lenta.shared.scan.zebra.ZebraScanHelper
 import com.lenta.shared.utilities.extentions.*
 import com.lenta.shared.utilities.extentions.hhive.ANALYTICS_HELPER
 
-
 abstract class CoreMainActivity : CoreActivity<ActivityMainBinding>(), ToolbarButtonsClickListener, INumberScreenGenerator {
 
     @Inject
     lateinit var networkStateMonitor: NetworkStateMonitor
+
     @Inject
     lateinit var batteryStateMonitor: BatteryStateMonitor
+
     @Inject
     lateinit var foregroundActivityProvider: ForegroundActivityProvider
+
     @Inject
     lateinit var scanHelper: IScanHelper
 
     @Inject
     lateinit var screenNavigator: ICoreNavigator
+
     @Inject
     lateinit var analyticsHelper: AnalyticsHelper
+
 
     val honeywellScanHelper = HoneywellScanHelper()
     val newLandScanHelper = NewLandScanHelper()
@@ -81,7 +92,6 @@ abstract class CoreMainActivity : CoreActivity<ActivityMainBinding>(), ToolbarBu
         }
     }
 
-
     override fun getLayoutId() = R.layout.activity_main
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -96,7 +106,6 @@ abstract class CoreMainActivity : CoreActivity<ActivityMainBinding>(), ToolbarBu
         binding?.vm = vm
 
         setupScanner()
-
     }
 
     private fun setupScanner() {
@@ -138,6 +147,7 @@ abstract class CoreMainActivity : CoreActivity<ActivityMainBinding>(), ToolbarBu
                 )
             }
         }
+
         networkStateMonitor.start(this)
         batteryStateMonitor.start(this)
         scanHelper.startListen(this)
@@ -162,7 +172,6 @@ abstract class CoreMainActivity : CoreActivity<ActivityMainBinding>(), ToolbarBu
         return emptyList()
     }
 
-
     override fun onPause() {
         foregroundActivityProvider.clear()
         super.onPause()
@@ -176,7 +185,6 @@ abstract class CoreMainActivity : CoreActivity<ActivityMainBinding>(), ToolbarBu
         cipherLabScanHelper.stopListen(this)
         vm.onPause()
     }
-
 
     override fun onBackPressed() {
         getCurrentFragment()?.implementationOf(OnBackPresserListener::class.java)?.let {
@@ -209,8 +217,6 @@ abstract class CoreMainActivity : CoreActivity<ActivityMainBinding>(), ToolbarBu
         getCurrentFragment()?.implementationOf(CoreFragment::class.java)?.getPageNumber()?.let {
             vm.statusBarUiModel.pageNumber.postValue(it)
         }
-
-
     }
 
     override fun onToolbarButtonClick(view: View) {
@@ -292,6 +298,10 @@ abstract class CoreMainActivity : CoreActivity<ActivityMainBinding>(), ToolbarBu
         vm.hideProgress()
     }
 
+    open fun provideFromParentToCoreProvider(): FromParentToCoreProvider? {
+        return null
+    }
+
     protected abstract fun getViewModel(): CoreMainViewModel
 
     abstract fun onClickExit()
@@ -299,6 +309,33 @@ abstract class CoreMainActivity : CoreActivity<ActivityMainBinding>(), ToolbarBu
     override fun onUserInteraction() {
         super.onUserInteraction()
         vm.onUserInteraction()
+    }
+
+    override fun dispatchTouchEvent(event: MotionEvent?): Boolean {
+        event?.let {
+            hideKeyboardAfterOutsideTouch(it)
+        }
+
+        return super.dispatchTouchEvent(event)
+    }
+
+    private fun hideKeyboardAfterOutsideTouch(event: MotionEvent) {
+        val view = currentFocus
+        if (view is EditText &&
+                (event.action == MotionEvent.ACTION_UP || event.action == MotionEvent.ACTION_MOVE) &&
+                !view.javaClass.name.startsWith("android.webkit.")
+        ) {
+            val scrCoords = IntArray(2)
+            view.getLocationOnScreen(scrCoords)
+
+            val x: Float = event.rawX + view.getLeft() - scrCoords[0]
+            val y: Float = event.rawY + view.getTop() - scrCoords[1]
+
+            if (x < view.getLeft() || x > view.getRight() || y < view.getTop() || y > view.getBottom()) {
+                val imm = applicationContext.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                imm.hideSoftInputFromWindow(view.getWindowToken(), 0)
+            }
+        }
     }
 
 }

@@ -262,15 +262,19 @@ class EditingInvoiceViewModel : CoreViewModel(), PageSelectionListener, OnOkInSo
         updateData()
     }
 
+    private val isClickSave: MutableLiveData<Boolean> = MutableLiveData(false) //чтобы при нажатии на Save и если был по какому-то товару превышен лимит, то будет вызыван диалог и выход из Save, после вызова диалога и нажатия Да опять вызывается Save, но уже при этом данный товар будет помечен как разрешенный на превышение количества
     fun onClickSave() {
         viewModelScope.launch {
-            screenNavigator.showProgressLoadingData()
-
+            isClickSave.value = true
             repoInMemoryHolder.invoiceContents.value!!.map {invoice ->
                 listTotal.value?.findLast {item ->
                     item.invoiceContent.materialNumber == invoice.materialNumber
                 }?.let {
-                    invoice.originalQuantity = it.quantity.toDouble()
+                    if (isShownDialog.value == true) { //если при нажатии на Save был по какому-то товару превышен лимит и открылся диалог, то выходим из Save, если на диалоге будет нажата кнопка Да, то Save опять будет вызыван и во второй раз уже пойдет сохранение
+                        return@launch
+                    } else {
+                        invoice.originalQuantity = it.quantity.toDouble()
+                    }
                 }
             }
 
@@ -286,6 +290,7 @@ class EditingInvoiceViewModel : CoreViewModel(), PageSelectionListener, OnOkInSo
                 )
             }
 
+            screenNavigator.showProgressLoadingData()
             taskManager.getReceivingTask()?.let { task ->
                 val params = InvoiceContentSaveRequestParameters(
                         taskNumber = task.taskHeader.taskNumber,
@@ -350,30 +355,40 @@ class EditingInvoiceViewModel : CoreViewModel(), PageSelectionListener, OnOkInSo
         requestFocusToNumberField.value = true
     }
 
+    private val isShownDialog: MutableLiveData<Boolean> = MutableLiveData(false) //чтобы диалог не вызывался два раза при смене фокуса
     fun finishedInput(position: Int) {
         viewModelScope.launch {
-            val editInvoice = repoInMemoryHolder.invoiceContents.value!!.findLast {
-                it.materialNumber == listTotal.value!![position].invoiceContent.materialNumber
-            }
-            if (listTotal.value!![position].quantity.toDouble() > (editInvoice!!.registeredQuantity - editInvoice!!.quantityInOrder)) {
-                screenNavigator.openOrderQuantityEexceededDialog(
-                        noCallbackFunc = {
-                            onNoClick(position, editInvoice.originalQuantity.toStringFormatted())
-                        },
-                        yesCallbackFunc = {
-                            onYesClick(position, listTotal.value!![position].quantity.toDouble().toStringFormatted())
-                        }
-                )
+            if (isShownDialog.value == false) {
+                val editInvoice = repoInMemoryHolder.invoiceContents.value!!.findLast {
+                    it.materialNumber == listTotal.value!![position].invoiceContent.materialNumber
+                }
+                if (listTotal.value!![position].quantity.toDouble() > ((editInvoice?.quantityInOrder ?: 0.0) - (editInvoice?.registeredQuantity ?: 0.0))) {
+                    isShownDialog.value = true
+                    screenNavigator.openOrderQuantityEexceededDialog(
+                            noCallbackFunc = {
+                                isShownDialog.value = false
+                                onNoClick(position, editInvoice?.originalQuantity.toStringFormatted())
+                            },
+                            yesCallbackFunc = {
+                                isShownDialog.value = false
+                                onYesClick(position, listTotal.value!![position].quantity.toDouble().toStringFormatted())
+                            }
+                    )
+                }
             }
         }
     }
 
     private fun onNoClick(position: Int, origQuantity: String) {
+        isClickSave.value = false
         listTotal.value!![position].quantity = origQuantity
     }
 
     private fun onYesClick(position: Int, newQuantity: String) {
         listTotal.value!![position].quantity = newQuantity
+        if (isClickSave.value == true) {
+            onClickSave()
+        }
     }
 
 }

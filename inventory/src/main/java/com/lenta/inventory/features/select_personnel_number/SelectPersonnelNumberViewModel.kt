@@ -38,11 +38,14 @@ class SelectPersonnelNumberViewModel : CoreViewModel(), OnOkInSoftKeyboardListen
     lateinit var repoInMemoryHolder: IRepoInMemoryHolder
 
     val editTextFocus = MutableLiveData<Boolean>()
-    val nextButtonFocus = MutableLiveData<Boolean>()
-
+    private val nextButtonFocus = MutableLiveData<Boolean>()
+    val isScreenMainMenu: MutableLiveData<Boolean> = MutableLiveData()
     val personnelNumber = MutableLiveData("")
     val fullName = MutableLiveData("")
     val employeesPosition = MutableLiveData("")
+    val enabledBackButton by lazy {
+        isScreenMainMenu
+    }
     val enabledNextButton = fullName.map { !it.isNullOrBlank() }
 
 
@@ -75,9 +78,9 @@ class SelectPersonnelNumberViewModel : CoreViewModel(), OnOkInSoftKeyboardListen
             taskListNetRequest(
                     TasksListParams(
                             werks = sessionInfo.market
-                                    ?: "",
+                                   .orEmpty(),
                             user = sessionInfo.userName
-                                    ?: ""
+                                   .orEmpty()
                     )
             ).either(::handleFailure)
             { tasksListRestInfo ->
@@ -134,5 +137,8 @@ class SelectPersonnelNumberViewModel : CoreViewModel(), OnOkInSoftKeyboardListen
         selectPersonnelNumberDelegate.onScanResult(data)
     }
 
+    fun onBackPressed() {
+        screenNavigator.openMainMenuScreen()
+    }
 
 }

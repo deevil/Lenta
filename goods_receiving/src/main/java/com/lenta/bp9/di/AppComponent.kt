@@ -1,6 +1,7 @@
 package com.lenta.bp9.di
 
 import com.lenta.bp9.ExceptionHandler
+import com.lenta.bp9.features.supply_results.SupplyResultsViewModel
 import com.lenta.bp9.features.auth.AuthViewModel
 import com.lenta.bp9.features.cargo_unit_card.CargoUnitCardViewModel
 import com.lenta.bp9.features.change_datetime.ChangeDateTimeViewModel
@@ -10,11 +11,25 @@ import com.lenta.bp9.features.driver_data.DriverDataViewModel
 import com.lenta.bp9.features.editing_invoice.EditingInvoiceViewModel
 import com.lenta.bp9.features.formed_docs.FormedDocsViewModel
 import com.lenta.bp9.features.goods_details.GoodsDetailsViewModel
-import com.lenta.bp9.features.goods_information.excise_alco_stamp_acc.ExciseAlcoStampAccInfoViewModel
-import com.lenta.bp9.features.goods_information.excise_alco_box_acc.ExciseAlcoBoxAccInfoViewModel
+import com.lenta.bp9.features.goods_information.excise_alco_pge.excise_alco_box_acc_pge.ExciseAlcoBoxAccInfoPGEViewModel
+import com.lenta.bp9.features.goods_information.excise_alco_pge.excise_alco_box_acc_pge.excise_alco_box_card.ExciseAlcoBoxCardPGEViewModel
+import com.lenta.bp9.features.goods_information.excise_alco_pge.excise_alco_box_acc_pge.excise_alco_box_list.ExciseAlcoBoxListPGEViewModel
+import com.lenta.bp9.features.goods_information.excise_alco_pge.excise_alco_stamp_acc_pge.ExciseAlcoStampAccInfoPGEViewModel
+import com.lenta.bp9.features.goods_information.excise_alco_pge.excise_alco_stamp_acc_pge.batch_signs.ExciseAlcoStampPGEBatchSignsViewModel
+import com.lenta.bp9.features.goods_information.excise_alco_receiving.excise_alco_stamp_acc.ExciseAlcoStampAccInfoViewModel
+import com.lenta.bp9.features.goods_information.excise_alco_receiving.excise_alco_box_acc.ExciseAlcoBoxAccInfoViewModel
+import com.lenta.bp9.features.goods_information.excise_alco_receiving.excise_alco_box_acc.excise_alco_box_card.ExciseAlcoBoxCardViewModel
+import com.lenta.bp9.features.goods_information.excise_alco_receiving.excise_alco_box_acc.excise_alco_box_list.ExciseAlcoBoxListViewModel
+import com.lenta.bp9.features.goods_information.excise_alco_receiving.excise_alco_box_acc.excise_alco_box_product_failure.ExciseAlcoBoxProductFailureViewModel
 import com.lenta.bp9.features.goods_information.general.GoodsInfoViewModel
+import com.lenta.bp9.features.goods_information.general_opp.GoodsInfoShipmentPPViewModel
 import com.lenta.bp9.features.goods_information.mercury.GoodsMercuryInfoViewModel
-import com.lenta.bp9.features.goods_information.non_excise_alco.NonExciseAlcoInfoViewModel
+import com.lenta.bp9.features.goods_information.non_excise_alco_pge.NonExciseAlcoInfoPGEViewModel
+import com.lenta.bp9.features.goods_information.non_excise_alco_receiving.NonExciseAlcoInfoViewModel
+import com.lenta.bp9.features.goods_information.non_excise_sets_pge.NonExciseSetsPGEViewModel
+import com.lenta.bp9.features.goods_information.non_excise_sets_pge.set_component_pge.NonExciseSetComponentInfoPGEViewModel
+import com.lenta.bp9.features.goods_information.non_excise_sets_receiving.NonExciseSetsReceivingViewModel
+import com.lenta.bp9.features.goods_information.non_excise_sets_receiving.set_component_receiving.NonExciseSetComponentInfoReceivingViewModel
 import com.lenta.bp9.features.goods_list.GoodsListViewModel
 import com.lenta.bp9.features.input_outgoing_fillings.InputOutgoingFillingsViewModel
 import com.lenta.bp9.features.list_goods_transfer.ListGoodsTransferViewModel
@@ -46,11 +61,12 @@ import com.lenta.bp9.main.MainActivity
 import com.lenta.bp9.main.MainViewModel
 import com.lenta.shared.di.AppScope
 import com.lenta.shared.di.CoreComponent
+import com.lenta.shared.di.FromParentToCoreProvider
 import dagger.Component
 
 @Component(modules = [AppModule::class], dependencies = [CoreComponent::class])
 @AppScope
-interface AppComponent {
+interface AppComponent : FromParentToCoreProvider {
     fun inject(mainActivity: MainActivity)
     fun inject(mainViewModel: MainViewModel)
     fun inject(it: ExceptionHandler)
@@ -119,4 +135,19 @@ interface AppComponent {
     fun inject(it: TransportMarriageGoodsInfoViewModel)
     fun inject(it: TransportMarriageGoodsDetailsViewModel)
     fun inject(it: ExciseAlcoBoxAccInfoViewModel)
+    fun inject(it: ExciseAlcoBoxListViewModel)
+    fun inject(it: ExciseAlcoBoxCardViewModel)
+    fun inject(it: ExciseAlcoBoxProductFailureViewModel)
+    fun inject(it: GoodsInfoShipmentPPViewModel)
+    fun inject(it: ExciseAlcoBoxAccInfoPGEViewModel)
+    fun inject(it: ExciseAlcoBoxListPGEViewModel)
+    fun inject(it: ExciseAlcoBoxCardPGEViewModel)
+    fun inject(it: ExciseAlcoStampAccInfoPGEViewModel)
+    fun inject(it: NonExciseAlcoInfoPGEViewModel)
+    fun inject(it: ExciseAlcoStampPGEBatchSignsViewModel)
+    fun inject(it: SupplyResultsViewModel)
+    fun inject(it: NonExciseSetsPGEViewModel)
+    fun inject(it: NonExciseSetsReceivingViewModel)
+    fun inject(it: NonExciseSetComponentInfoPGEViewModel)
+    fun inject(it: NonExciseSetComponentInfoReceivingViewModel)
 }

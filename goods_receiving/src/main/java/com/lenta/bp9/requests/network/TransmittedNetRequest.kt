@@ -1,14 +1,13 @@
 package com.lenta.bp9.requests.network
 
 import com.google.gson.annotations.SerializedName
-import com.lenta.bp9.model.task.TaskDescriptionRestInfo
-import com.lenta.bp9.model.task.TaskMercuryNotActualRestData
-import com.lenta.bp9.model.task.TaskNotificationRestInfo
+import com.lenta.bp9.model.task.*
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.fmp.ObjectRawStatus
 import com.lenta.shared.functional.Either
 import com.lenta.shared.interactor.UseCase
 import com.lenta.shared.requests.FmpRequestsHelper
+import com.lenta.shared.requests.SapResponse
 import javax.inject.Inject
 
 class TransmittedNetRequest
@@ -36,10 +35,18 @@ data class TransmittedRestInfo(
         val taskDescription: TaskDescriptionRestInfo, //Структура карточки задания
         @SerializedName("ET_NOTIFY")
         val notifications: List<TaskNotificationRestInfo>, //Таблица уведомлений
+        @SerializedName("ET_DOC_PRINT") //Список документов для печати
+        val listDocumentsPrinting: List<TaskDocumentsPrintingRestInfo>,
         @SerializedName("ET_VET_NOT_ACTUAL") //Список не актуальных ВСД
         val taskMercuryNotActualRestData: List<TaskMercuryNotActualRestData>,
-        @SerializedName("EV_RETCODE")
-        val retcode: String,
+        @SerializedName("ET_TASK_PERNR")
+        val sectionsInfo: List<TaskSectionRestData>,
+        @SerializedName("ET_MATNR_ABTNR")
+        val sectionProducts: List<TaskSectionProductsRestData>,
+        @SerializedName("EV_BKS_LIFNR")
+        val supplierShipmentPP: String,
         @SerializedName("EV_ERROR_TEXT")
-        val errorText: String
-)
+        override val errorText: String?,
+        @SerializedName("EV_RETCODE")
+        override val retCode: Int
+) : SapResponse

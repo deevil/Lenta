@@ -15,8 +15,8 @@ fun setTaskStatusIcon(imageView: ImageView, taskBlockingStatus: TaskBlockingStat
     taskBlockingStatus.let {
         when (it) {
             TaskBlockingStatus.NOT_BLOCKED -> imageView.setImageResource(R.drawable.ic_play_arrow_white_24dp)
-            TaskBlockingStatus.SELF_BLOCK -> imageView.setImageResource(R.drawable.ic_lock_open_dark_24dp)
-            TaskBlockingStatus.BLOCK -> imageView.setImageResource(R.drawable.ic_processed_status_dark_24dp)
+            TaskBlockingStatus.SELF_BLOCK -> imageView.setImageResource(R.drawable.ic_self_lock_status_gray_24dp)
+            TaskBlockingStatus.BLOCK -> imageView.setImageResource(R.drawable.ic_lock_status_gray_24dp)
         }
         imageView.setVisible(it != TaskBlockingStatus.NOT_BLOCKED)
     }
@@ -45,11 +45,11 @@ fun setPrintStatusIcon(imageView: ImageView, isPrinted: Boolean?) {
     when (isPrinted) {
         true -> {
             imageView.setVisible(true)
-            imageView.setImageResource(R.drawable.ic_print_dark_24dp)
+            imageView.setImageResource(R.drawable.ic_print_gray_24dp)
         }
         false -> {
             imageView.setVisible(true)
-            imageView.setImageResource(R.drawable.ic_print_no_dark_24dp)
+            imageView.setImageResource(R.drawable.ic_print_no_gray_24dp)
         }
         null -> imageView.setVisible(false)
     }
@@ -58,10 +58,10 @@ fun setPrintStatusIcon(imageView: ImageView, isPrinted: Boolean?) {
 @BindingAdapter("goodTypeIcon")
 fun setGoodTypeIcon(imageView: ImageView, goodType: GoodType?) {
     imageView.setImageResource(when (goodType) {
-        GoodType.ALCOHOL -> R.drawable.ic_alco_white_48dp
-        GoodType.EXCISE -> R.drawable.ic_alco_white_48dp
-        GoodType.MARKED -> R.drawable.ic_marked_white_48dp
-        else -> R.drawable.ic_kandy_48dp
+        GoodType.ALCOHOL -> R.drawable.ic_no_excise_alcohol_white_32dp
+        GoodType.EXCISE -> R.drawable.ic_excise_alcohol_white_32dp
+        GoodType.MARKED -> R.drawable.ic_marked_white_32dp
+        else -> R.drawable.ic_kandy_white_32dp
     }.also { iconRes ->
 
         imageView.setInvisible(goodType == null)

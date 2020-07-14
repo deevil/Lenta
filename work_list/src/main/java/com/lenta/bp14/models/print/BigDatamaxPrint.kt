@@ -78,7 +78,7 @@ class BigDatamaxPrintImpl @Inject constructor(
         try {
             client.newCall(request).execute().apply {
                 Logg.d { "Big Datamax response: $this" }
-                val responceBody = this.body()?.string() ?: ""
+                val responceBody = this.body()?.string().orEmpty()
                 Logg.d { "Big Datamax response body: $responceBody" }
                 analyticsHelper.logPrintDatamaxResponce(this.code(), responceBody)
             }

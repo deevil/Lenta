@@ -5,6 +5,7 @@
     tools:context=".features.task_card.TaskListFragment">
 
     <data>
+
         <variable
             name="vm"
             type="com.lenta.bp9.features.revise.invoice.InvoiceReviseViewModel" />
@@ -12,6 +13,7 @@
         <variable
             name="rvConfig"
             type="com.lenta.shared.utilities.databinding.DataBindingRecyclerViewConfig" />
+
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout

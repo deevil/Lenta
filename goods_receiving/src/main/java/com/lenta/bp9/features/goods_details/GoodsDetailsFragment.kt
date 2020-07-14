@@ -24,68 +24,56 @@ import com.lenta.shared.utilities.state.state
 class GoodsDetailsFragment : CoreFragment<FragmentGoodsDetailsBinding, GoodsDetailsViewModel>(), ToolbarButtonsClickListener {
 
     companion object {
-        fun create(productInfo: TaskProductInfo?, batch: TaskBatchInfo?): GoodsDetailsFragment {
+        fun create(productInfo: TaskProductInfo): GoodsDetailsFragment {
             GoodsDetailsFragment().let {
                 it.productInfo = productInfo
-                it.batch = batch
                 return it
             }
         }
     }
 
     private var productInfo by state<TaskProductInfo?>(null)
-    private var batch by state<TaskBatchInfo?>(null)
 
     override fun getLayoutId(): Int = R.layout.fragment_goods_details
 
     override fun getPageNumber(): String = "09/25"
 
     override fun getViewModel(): GoodsDetailsViewModel {
-        provideViewModel(GoodsDetailsViewModel::class.java).let {vm ->
+        provideViewModel(GoodsDetailsViewModel::class.java).let { vm ->
             getAppComponent()?.inject(vm)
-            productInfo?.let {
-                vm.productInfo.value = it
-            }
-            batch?.let {
-                vm.batchInfo.value = it
-            }
+            vm.productInfo.value = this.productInfo
             return vm
         }
     }
 
     override fun setupTopToolBar(topToolbarUiModel: TopToolbarUiModel) {
         topToolbarUiModel.description.value = getString(R.string.details_quantities_entered)
-        topToolbarUiModel.title.value = "${vm.productInfo.value!!.getMaterialLastSix()} ${vm.productInfo.value!!.description}"
+        topToolbarUiModel.title.value = vm.getTitle()
     }
 
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
         bottomToolbarUiModel.cleanAll()
         bottomToolbarUiModel.uiModelButton1.show(ButtonDecorationInfo.back)
-        /**это для view с/без удаления, ранее использовалась, но решили сделать для всех товаров с возможностью удаления количеств по расхождениям
-          if (vm.isVetProduct.value == true) {
+        if (vm.productInfo.value?.isSet == false) {
             bottomToolbarUiModel.uiModelButton3.show(ButtonDecorationInfo.delete)
             connectLiveData(vm.enabledDelBtn, bottomToolbarUiModel.uiModelButton3.enabled)
-        }*/
-        bottomToolbarUiModel.uiModelButton3.show(ButtonDecorationInfo.delete)
-        connectLiveData(vm.enabledDelBtn, bottomToolbarUiModel.uiModelButton3.enabled)
+        }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        /**это для view с/без удаления, ранее использовалась, но решили сделать для всех товаров с возможностью удаления количеств по расхождениям
-          if (vm.isVetProduct.value == true) {
+        if (vm.productInfo.value?.isSet == false) {
             initRvConfigWithDel()
         } else {
             initRvConfig()
-        }*/
-        initRvConfigWithDel()
+        }
     }
 
-    //это view без удаления, ранее использовалась, но решили сделать для всех товаров с возможностью удаления количеств по расхождениям
+    //это view без удаления
     private fun initRvConfig() {
         binding?.let { layoutBinding ->
             layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
                     layoutId = R.layout.item_tile_goods_details,
-                    itemId = BR.vm,
+                    itemId = BR.item,
                     realisation = object : DataBindingAdapter<ItemTileGoodsDetailsBinding> {
                         override fun onCreate(binding: ItemTileGoodsDetailsBinding) {
                         }
@@ -112,14 +100,14 @@ class GoodsDetailsFragment : CoreFragment<FragmentGoodsDetailsBinding, GoodsDeta
 
             layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
                     layoutId = R.layout.item_tile_goods_details_del,
-                    itemId = BR.vm,
+                    itemId = BR.item,
                     realisation = object : DataBindingAdapter<ItemTileGoodsDetailsDelBinding> {
                         override fun onCreate(binding: ItemTileGoodsDetailsDelBinding) {
                         }
 
                         override fun onBind(binding: ItemTileGoodsDetailsDelBinding, position: Int) {
-                            binding.tvCounter.tag = position
-                            binding.tvCounter.setOnClickListener(onClickSelectionListener)
+                            binding.tvItemNumber.tag = position
+                            binding.tvItemNumber.setOnClickListener(onClickSelectionListener)
                             binding.selectedForDelete = vm.categoriesSelectionsHelper.isSelected(position)
                         }
 

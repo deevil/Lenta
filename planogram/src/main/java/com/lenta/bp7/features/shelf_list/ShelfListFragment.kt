@@ -23,8 +23,6 @@ import com.lenta.shared.utilities.extentions.*
 class ShelfListFragment : CoreFragment<FragmentShelfListBinding, ShelfListViewModel>(),
         ToolbarButtonsClickListener, OnBackPresserListener {
 
-    private var recyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
-
     override fun getLayoutId(): Int = R.layout.fragment_shelf_list
 
     override fun getPageNumber(): String? = generateScreenNumberFromPostfix("10")
@@ -88,41 +86,22 @@ class ShelfListFragment : CoreFragment<FragmentShelfListBinding, ShelfListViewMo
                 }
             }
 
-            layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
+            layoutBinding.rvConfig = initRecycleAdapterDataBinding(
                     layoutId = R.layout.item_shelf,
                     itemId = BR.shelf,
-                    realisation = object : DataBindingAdapter<ItemShelfBinding> {
-                        override fun onCreate(binding: ItemShelfBinding) {
-                        }
-
-                        override fun onBind(binding: ItemShelfBinding, position: Int) {
-                            binding.tvItemNumber.tag = position
-                            binding.tvItemNumber.setOnClickListener(onClickSelectionListener)
-                            binding.selectedForDelete = vm.selectionsHelper.isSelected(position)
-                            recyclerViewKeyHandler?.let {
-                                binding.root.isSelected = it.isSelected(position)
-                            }
-                        }
-                    },
-                    onItemClickListener = AdapterView.OnItemClickListener { _, _, position, _ ->
-                        recyclerViewKeyHandler?.let {
-                            if (it.isSelected(position)) {
-                                vm.onClickItemPosition(position)
-                            } else {
-                                it.selectPosition(position)
-                            }
-                        }
-
+                    onAdapterItemBind = { binding: ItemShelfBinding, position: Int ->
+                        binding.tvItemNumber.tag = position
+                        binding.tvItemNumber.setOnClickListener(onClickSelectionListener)
+                        binding.selectedForDelete = vm.selectionsHelper.isSelected(position)
+                        onAdapterBindHandler(binding, position)
                     }
             )
 
-            layoutBinding.vm = vm
-            layoutBinding.lifecycleOwner = viewLifecycleOwner
-            recyclerViewKeyHandler = RecyclerViewKeyHandler(
-                    rv = layoutBinding.rv,
+            recyclerViewKeyHandler = initRecyclerViewKeyHandler(
+                    recyclerView = layoutBinding.rv,
                     items = vm.shelves,
-                    lifecycleOwner = layoutBinding.lifecycleOwner!!,
-                    initPosInfo = recyclerViewKeyHandler?.posInfo?.value
+                    previousPosInfo = recyclerViewKeyHandler?.posInfo?.value,
+                    onClickHandler = vm::onClickItemPosition
             )
         }
     }

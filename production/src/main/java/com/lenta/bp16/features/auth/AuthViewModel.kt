@@ -6,7 +6,6 @@ import com.lenta.bp16.platform.navigation.IScreenNavigator
 import com.lenta.bp16.repository.IRepoInMemoryHolder
 import com.lenta.bp16.request.PermissionsRequestParams
 import com.lenta.bp16.request.UserPermissionsNetRequest
-import com.lenta.shared.utilities.runIfDebug
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.features.login.CoreAuthViewModel
@@ -19,6 +18,7 @@ import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.extentions.combineLatest
 import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.utilities.getBaseAuth
+import com.lenta.shared.utilities.runIfDebug
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -78,7 +78,7 @@ class AuthViewModel : CoreAuthViewModel() {
 
     private fun onAuthSuccess(login: String) {
         progress.value = false
-        navigator.openFastDataLoadingScreen()
+        navigator.openSelectMarketScreen()
     }
 
     override fun handleFailure(failure: Failure) {
@@ -93,11 +93,11 @@ class AuthViewModel : CoreAuthViewModel() {
     }
 
     private fun getLogin(): String {
-        return login.value?.trim() ?: ""
+        return login.value?.trim().orEmpty()
     }
 
     private fun getPassword(): String {
-        return password.value?.trim() ?: ""
+        return password.value?.trim().orEmpty()
     }
 
     override fun onResume() {

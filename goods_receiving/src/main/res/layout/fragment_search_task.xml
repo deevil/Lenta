@@ -5,9 +5,11 @@
     tools:context=".features.search_task.SearchTaskFragment">
 
     <data>
+
         <variable
             name="vm"
             type="com.lenta.bp9.features.search_task.SearchTaskViewModel" />
+
     </data>
 
     <ScrollView
@@ -33,6 +35,7 @@
                 android:layout_marginStart="8dp"
                 android:layout_marginEnd="8dp"
                 android:text="@string/supplier"
+                android:visibility="@{vm.tvSupplierVisibility}"
                 app:layout_constraintBaseline_toBaselineOf="@+id/et_supplier"
                 app:layout_constraintEnd_toStartOf="@+id/guideline"
                 app:layout_constraintStart_toStartOf="parent" />
@@ -50,12 +53,13 @@
                 android:inputType="textNoSuggestions|number"
                 android:paddingTop="8dp"
                 android:paddingBottom="8dp"
-                app:onOkInSoftKeyboard="@{vm}"
                 android:text="@={vm.supplier}"
+                android:visibility="@{vm.tvSupplierVisibility}"
+                app:cursorToLastPos="@{true}"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/guideline"
                 app:layout_constraintTop_toTopOf="parent"
-                app:cursorToLastPos="@{true}"
+                app:onOkInSoftKeyboard="@{vm}"
                 app:requestFocus="@{vm.requestFocusToSupplier}"
                 tools:ignore="Autofill" />
 
@@ -67,6 +71,7 @@
                 android:layout_marginStart="8dp"
                 android:layout_marginEnd="8dp"
                 android:text="@string/order"
+                android:visibility="@{vm.tvOrderVisibility}"
                 app:layout_constraintBaseline_toBaselineOf="@+id/et_order"
                 app:layout_constraintEnd_toStartOf="@+id/guideline"
                 app:layout_constraintStart_toStartOf="parent" />
@@ -84,11 +89,12 @@
                 android:inputType="textNoSuggestions|number"
                 android:paddingTop="8dp"
                 android:paddingBottom="8dp"
-                app:onOkInSoftKeyboard="@{vm}"
                 android:text="@={vm.order}"
+                android:visibility="@{vm.tvOrderVisibility}"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/guideline"
                 app:layout_constraintTop_toBottomOf="@+id/et_supplier"
+                app:onOkInSoftKeyboard="@{vm}"
                 tools:ignore="Autofill" />
 
             <TextView
@@ -99,6 +105,7 @@
                 android:layout_marginStart="8dp"
                 android:layout_marginEnd="8dp"
                 android:text="@string/invoice"
+                android:visibility="@{vm.tvInvoiceVisibility}"
                 app:layout_constraintBaseline_toBaselineOf="@+id/et_invoice"
                 app:layout_constraintEnd_toStartOf="@+id/guideline"
                 app:layout_constraintStart_toStartOf="parent" />
@@ -117,11 +124,12 @@
                 android:maxLines="1"
                 android:paddingTop="8dp"
                 android:paddingBottom="8dp"
-                app:onOkInSoftKeyboard="@{vm}"
                 android:text="@={vm.invoice}"
+                android:visibility="@{vm.tvInvoiceVisibility}"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/guideline"
                 app:layout_constraintTop_toBottomOf="@+id/et_order"
+                app:onOkInSoftKeyboard="@{vm}"
                 tools:ignore="Autofill" />
 
             <TextView
@@ -132,6 +140,7 @@
                 android:layout_marginStart="8dp"
                 android:layout_marginEnd="8dp"
                 android:text="@string/transportation"
+                android:visibility="@{vm.tvTransportationVisibility}"
                 app:layout_constraintBaseline_toBaselineOf="@+id/et_transportation"
                 app:layout_constraintEnd_toStartOf="@+id/guideline"
                 app:layout_constraintStart_toStartOf="parent" />
@@ -150,11 +159,12 @@
                 android:maxLines="1"
                 android:paddingTop="8dp"
                 android:paddingBottom="8dp"
-                app:onOkInSoftKeyboard="@{vm}"
                 android:text="@={vm.transportation}"
+                android:visibility="@{vm.tvTransportationVisibility}"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/guideline"
                 app:layout_constraintTop_toBottomOf="@+id/et_invoice"
+                app:onOkInSoftKeyboard="@{vm}"
                 tools:ignore="Autofill" />
 
             <TextView
@@ -183,11 +193,11 @@
                 android:maxLines="1"
                 android:paddingTop="8dp"
                 android:paddingBottom="8dp"
-                app:onOkInSoftKeyboard="@{vm}"
                 android:text="@={vm.numberGE}"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/guideline"
                 app:layout_constraintTop_toBottomOf="@+id/et_transportation"
+                app:onOkInSoftKeyboard="@{vm}"
                 tools:ignore="Autofill" />
 
             <TextView
@@ -216,12 +226,13 @@
                 android:maxLines="1"
                 android:paddingTop="8dp"
                 android:paddingBottom="8dp"
-                app:onOkInSoftKeyboard="@{vm}"
                 android:text="@={vm.numberEO}"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/guideline"
                 app:layout_constraintTop_toBottomOf="@+id/et_numberGE"
+                app:onOkInSoftKeyboard="@{vm}"
                 tools:ignore="Autofill" />
+
         </androidx.constraintlayout.widget.ConstraintLayout>
 
     </ScrollView>

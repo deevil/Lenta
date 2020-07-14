@@ -4,6 +4,14 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context=".features.reject.RejectFragment">
 
+    <data>
+
+        <variable
+            name="vm"
+            type="com.lenta.bp9.features.reject.RejectViewModel" />
+
+    </data>
+
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
@@ -13,65 +21,54 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
-            android:layout_marginEnd="16dp"
             android:layout_marginTop="56dp"
+            android:layout_marginEnd="16dp"
             android:ellipsize="end"
+            android:gravity="center"
             android:maxLines="2"
             android:text="@string/select_reason"
             android:textSize="21sp"
-            android:gravity="center"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
             tools:text="@string/select_reason" />
 
         <com.lenta.shared.view.ClickableSpinner
             android:id="@+id/spinner_reason"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="32dp"
             android:layout_marginStart="22dp"
             android:layout_marginTop="48dp"
             android:layout_marginEnd="22dp"
             app:items="@{vm.failureReasons}"
-            app:position="@{vm.selectedPosition}"
-            app:onPositionClickListener="@{vm}"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tv_header" />
+            app:layout_constraintTop_toBottomOf="@+id/tv_header"
+            app:onPositionClickListener="@{vm}"
+            app:position="@{vm.selectedPosition}"
+            tools:entries="@array/test_list" />
 
         <EditText
             android:id="@+id/et_custom_reason"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="32dp"
             android:layout_centerHorizontal="true"
             android:layout_marginStart="22dp"
-            android:layout_marginEnd="22dp"
             android:layout_marginTop="32dp"
-            android:drawableEnd="@drawable/ic_edit"
+            android:layout_marginEnd="22dp"
+            android:drawableEnd="@drawable/ic_edit_white_24dp"
+            android:enabled="@{vm.customReasonEnabled}"
             android:hint="@string/enter_comment"
             android:imeOptions="actionDone"
             android:inputType="text"
             android:paddingTop="8dp"
             android:paddingBottom="8dp"
             android:text="@={vm.customComment}"
-            android:enabled="@{vm.customReasonEnabled}"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/spinner_reason"
             tools:ignore="Autofill" />
 
-
     </androidx.constraintlayout.widget.ConstraintLayout>
-
-
-    <data>
-
-        <variable
-            name="vm"
-            type="com.lenta.bp9.features.reject.RejectViewModel" />
-
-
-    </data>
-
 
 </layout>

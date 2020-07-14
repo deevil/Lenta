@@ -14,11 +14,11 @@ class RawListViewModel : CoreViewModel() {
     @Inject
     lateinit var navigator: IScreenNavigator
     @Inject
-    lateinit var taskManager: ITaskManager
+    lateinit var manager: ITaskManager
 
 
     val good by lazy {
-        taskManager.currentGood
+        manager.currentGood
     }
 
     val title by lazy {
@@ -26,7 +26,7 @@ class RawListViewModel : CoreViewModel() {
     }
 
     val description by lazy {
-        taskManager.currentTask.map { it?.taskInfo?.text3 }
+        manager.currentTask.map { it?.taskInfo?.text3 }
     }
 
     val raws: MutableLiveData<List<ItemRawListUi>> by lazy {
@@ -61,8 +61,8 @@ class RawListViewModel : CoreViewModel() {
     // -----------------------------
 
     fun onClickComplete() {
-        navigator.showConfirmNoSuchItemLeft(taskManager.taskType.abbreviation) {
-            taskManager.completeCurrentGood()
+        navigator.showConfirmNoSuchItemLeft(manager.taskType.abbreviation) {
+            manager.completeCurrentGood()
             navigator.goBack()
         }
     }
@@ -74,7 +74,7 @@ class RawListViewModel : CoreViewModel() {
 
         val order = raws.value!![position].order
         good.value?.raws?.find { it.order == order }?.let { raw ->
-            taskManager.currentRaw.value = raw
+            manager.updateCurrentRaw(raw)
             navigator.openGoodWeighingScreen()
         }
     }

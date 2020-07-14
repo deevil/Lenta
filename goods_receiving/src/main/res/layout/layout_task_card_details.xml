@@ -73,7 +73,7 @@
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:background="@color/color_divider"
-            android:layout_marginTop="66dp"
+            android:layout_marginTop="@dimen/common_row_height"
             app:layout_constraintTop_toBottomOf="@id/div_hor_1"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
@@ -107,7 +107,7 @@
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:background="@color/color_divider"
-            android:layout_marginTop="66dp"
+            android:layout_marginTop="@dimen/common_row_height"
             app:layout_constraintTop_toBottomOf="@id/div_hor_2"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
@@ -141,7 +141,7 @@
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:background="@color/color_divider"
-            android:layout_marginTop="66dp"
+            android:layout_marginTop="@dimen/common_row_height"
             app:layout_constraintTop_toBottomOf="@id/div_hor_3"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
@@ -175,7 +175,7 @@
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:background="@color/color_divider"
-            android:layout_marginTop="66dp"
+            android:layout_marginTop="@dimen/common_row_height"
             app:layout_constraintTop_toBottomOf="@id/div_hor_4"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent" />

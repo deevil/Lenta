@@ -1,0 +1,102 @@
+apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-kapt'
+apply plugin: 'io.fabric'
+apply plugin: 'de.mannodermaus.android-junit5'
+apply from: '../fmp_settings.gradle'
+apply plugin: 'kotlin-android-extensions'
+
+def prefixAppVersion = "12"
+
+android {
+    compileSdkVersion build_versions.target_sdk
+    defaultConfig {
+        applicationId "com.lenta.bp12"
+        minSdkVersion build_versions.min_sdk
+        targetSdkVersion build_versions.target_sdk
+        versionCode getCodeVersion()
+        versionName getNameVersion(prefixAppVersion)
+        println 'version of' + applicationId + ": " + getNameVersion()
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        multiDexEnabled true
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    buildFeatures{
+        dataBinding = true
+    }
+
+    flavorDimensions "server"
+
+    productFlavors {
+        staging {
+            dimension "server"
+            stagingSettings.each {
+                resValue it.type, it.name, it.value
+            }
+        }
+
+        prod {
+            dimension "server"
+            prodSettings.each {
+                resValue it.type, it.name, it.value
+            }
+        }
+
+    }
+
+    applicationVariants.all { variant ->
+        if (variant.buildType.name == "release") {
+            variant.outputs.all {
+                def name = outputFileName.replace("app-", "LentaProduction-")
+                outputFileName = name.replace(".apk", "-${variant.versionName}-${variant.versionCode}.apk")
+            }
+        }
+    }
+
+    configurations {
+        all*.exclude group: 'com.google.guava', module: 'listenablefuture'
+    }
+
+    packagingOptions {
+        pickFirst 'META-INF/kotlinx-io.kotlin_module'
+        pickFirst 'META-INF/atomicfu.kotlin_module'
+        pickFirst 'META-INF/kotlinx-coroutines-io.kotlin_module'
+    }
+
+}
+
+dependencies {
+    implementation project(':Shared')
+    implementation 'com.android.support:multidex:1.0.3'
+
+    // Okhttp
+    implementation 'com.squareup.okhttp3:okhttp:3.10.0'
+
+    // Dagger2
+    kapt deps.dagger.compiler
+
+    testImplementation deps.junit
+
+    implementation('com.crashlytics.sdk.android:crashlytics:2.10.1@aar') {
+        transitive = true
+    }
+
+    // JUnit 5 tests
+    testImplementation "org.junit.jupiter:junit-jupiter-api:5.3.2"
+    testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:5.3.2"
+    testImplementation "org.junit.jupiter:junit-jupiter-params:5.3.2"
+
+    // Support for older JUnit versions
+    testImplementation "junit:junit:4.12"
+    testRuntimeOnly "org.junit.vintage:junit-vintage-engine:5.3.2"
+
+    // Mockito
+    testImplementation "com.nhaarman.mockitokotlin2:mockito-kotlin:2.1.0"
+    testImplementation "io.mockk:mockk:1.9.3"
+}

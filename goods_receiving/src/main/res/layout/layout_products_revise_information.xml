@@ -12,6 +12,7 @@
         <variable
             name="rvConfig"
             type="com.lenta.shared.utilities.databinding.DataBindingRecyclerViewConfig" />
+
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout

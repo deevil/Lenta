@@ -1,6 +1,7 @@
 package com.lenta.bp9.features.goods_list
 
 import android.content.Context
+import com.lenta.bp9.features.loading.tasks.TaskListLoadingMode
 import com.lenta.bp9.model.task.IReceivingTaskManager
 import com.lenta.bp9.model.task.TaskProductInfo
 import com.lenta.bp9.model.task.TaskType
@@ -179,7 +180,7 @@ class SearchProductDelegate @Inject constructor(
                 remainingShelfLife = "0",
                 isRus = result.productSurplusDataPGE.isRus == "X",
                 isBoxFl = false,
-                isMarkFl = false,
+                isMarkFl = getProductType(isAlco = result.productSurplusDataPGE.isAlco == "X", isExcise = result.productSurplusDataPGE.isExc == "X") == ProductType.ExciseAlcohol, //елси это алкоголльный акциз, то ставим признак марочного товара, чтобы обрабатывать как марочный для этих товаров из тикета https://trello.com/c/WQg659Ww
                 isVet = result.productSurplusDataPGE.isVet == "X",
                 numberBoxesControl = "0",
                 numberStampsControl = "0",
@@ -198,7 +199,7 @@ class SearchProductDelegate @Inject constructor(
             val taskProductInfo = taskManager.getReceivingTask()!!.taskRepository.getProducts().findProduct(infoResult.productInfo.materialNumber)
             if (taskProductInfo == null) {
                 if (taskManager.getReceivingTask()?.taskHeader?.taskType == TaskType.RecalculationCargoUnit) {
-                    screenNavigator.openAddGoodsSurplusDialog(requestCodeAddGoodsSurplus) //эта проверка только для ПГЕ, карточки трелло https://trello.com/c/8P4mPlGN и https://trello.com/c/im9rJqrU
+                    screenNavigator.openAddGoodsSurplusDialog(requestCodeAddGoodsSurplus) //эта проверка только для ПГЕ, карточки трелло https://trello.com/c/8P4mPlGN, https://trello.com/c/im9rJqrU, https://trello.com/c/WQg659Ww
                 } else {
                     screenNavigator.openAlertGoodsNotInOrderScreen()
                 }
@@ -220,30 +221,63 @@ class SearchProductDelegate @Inject constructor(
             when (taskProductInfo.type) {
                 ProductType.General -> {
                     if (taskProductInfo.isVet &&
-                            //это условие прописано временно, т.к. на продакшене для ПГЕ и ПРЦ не реализована таблица ET_VET_DIFF, она приходит пустой  в 28 и 30 рестах, поэтому обрабатываем данные товары не как вет, а как обычные. Не делал условия для типов задания, чтобы если для других типов задания эта таблица будет пустая, то товары обрабатывались как обычные, а не веттовары
+                            //todo это условие прописано временно, т.к. на продакшене для ПГЕ и ПРЦ не реализована таблица ET_VET_DIFF, она приходит пустой  в 28 и 30 рестах, поэтому обрабатываем данные товары не как вет, а как обычные. Не делал условия для типов задания, чтобы если для других типов задания эта таблица будет пустая, то товары обрабатывались как обычные, а не веттовары
                             !taskManager.getReceivingTask()?.taskRepository?.getMercuryDiscrepancies()?.getMercuryInfo().isNullOrEmpty()) {
                         screenNavigator.openGoodsMercuryInfoScreen(taskProductInfo, isDiscrepancy)
                     } else {
-                        screenNavigator.openGoodsInfoScreen(productInfo = taskProductInfo, isDiscrepancy = isDiscrepancy)
+                        if (taskManager.getReceivingTask()?.taskHeader?.taskType == TaskType.ShipmentPP) {
+                            screenNavigator.openGoodsInfoShipmentPPScreen(productInfo = taskProductInfo, isDiscrepancy = isDiscrepancy)
+                        } else {
+                            screenNavigator.openGoodsInfoScreen(productInfo = taskProductInfo, isDiscrepancy = isDiscrepancy)
+                        }
                     }
                 }
                 ProductType.ExciseAlcohol -> {
                     when {
                         taskProductInfo.isSet -> {
-                            screenNavigator.openNotImplementedScreenAlert("Информация о наборе")
+                            screenNavigator.openInfoScreen("Ошибка получения данных") //openNotImplementedScreenAlert("Информация о наборе")
                             //screenNavigator.openSetsInfoScreen(taskProductInfo)
                         }
-                        taskProductInfo.isBoxFl -> { //алкоголь, коробочный учет https://trello.com/c/KbBbXj2t
-                            screenNavigator.openExciseAlcoBoxAccInfoScreen(taskProductInfo)
+                        taskProductInfo.isBoxFl -> { //алкоголь, коробочный учет ППП https://trello.com/c/KbBbXj2t; коробочный учет ПГЕ https://trello.com/c/TzUSGIH7
+                            when (repoInMemoryHolder.taskList.value?.taskListLoadingMode) {
+                                TaskListLoadingMode.Receiving -> screenNavigator.openExciseAlcoBoxAccInfoReceivingScreen(taskProductInfo)
+                                TaskListLoadingMode.PGE -> screenNavigator.openExciseAlcoBoxAccInfoPGEScreen(taskProductInfo)
+                                TaskListLoadingMode.Shipment -> screenNavigator.openInfoScreen("Ошибка получения данных") //openNotImplementedScreenAlert("Информация о коробочном учете")
+                                else -> screenNavigator.openAlertUnknownTaskTypeScreen() //сообщение о неизвестном типе задания
+                            }
                         }
-                        taskProductInfo.isMarkFl -> { //алкоголь, марочный учет
-                            screenNavigator.openNotImplementedScreenAlert("Информация о марочном учете")
-                            //screenNavigator.openExciseAlcoStampAccInfoScreen(taskProductInfo)
+                        taskProductInfo.isMarkFl -> { //алкоголь, марочный учет ПГЕ https://trello.com/c/Bx03dgxE;
+                            when (repoInMemoryHolder.taskList.value?.taskListLoadingMode) {
+                                TaskListLoadingMode.Receiving -> screenNavigator.openInfoScreen("Ошибка получения данных") //screenNavigator.openExciseAlcoStampAccInfoScreen(taskProductInfo) это экран для марочного учета ППП
+                                TaskListLoadingMode.PGE -> screenNavigator.openExciseAlcoStampAccInfoPGEScreen(taskProductInfo)
+                                TaskListLoadingMode.Shipment -> screenNavigator.openInfoScreen("Ошибка получения данных") //openNotImplementedScreenAlert("Информация о марочном учете")
+                                else -> screenNavigator.openAlertUnknownTaskTypeScreen() //сообщение о неизвестном типе задания
+                            }
+
                         }
                         else -> screenNavigator.openAlertUnknownGoodsTypeScreen() //сообщение о неизвестном типе товара
                     }
                 }
-                ProductType.NonExciseAlcohol -> screenNavigator.openNonExciseAlcoInfoScreen(taskProductInfo)
+                ProductType.NonExciseAlcohol -> { //не акцизный алкоголь ППП https://trello.com/c/rmn2WFMD; ПГЕ https://trello.com/c/P9KBZcNB;
+                    when {
+                        taskProductInfo.isSet -> { //https://trello.com/c/yQ9jtjnZ
+                            when (repoInMemoryHolder.taskList.value?.taskListLoadingMode) {
+                                TaskListLoadingMode.Receiving -> screenNavigator.openNonExciseSetsInfoReceivingScreen(productInfo = taskProductInfo, isDiscrepancy = isDiscrepancy)
+                                TaskListLoadingMode.PGE -> screenNavigator.openNonExciseSetsInfoPGEScreen(productInfo = taskProductInfo, isDiscrepancy = isDiscrepancy)
+                                TaskListLoadingMode.Shipment -> screenNavigator.openInfoScreen("Ошибка получения данных") //openNotImplementedScreenAlert("Информация о не акцизном наборе")
+                                else -> screenNavigator.openAlertUnknownTaskTypeScreen() //сообщение о неизвестном типе задания
+                            }
+                        }
+                        else -> {
+                            when (repoInMemoryHolder.taskList.value?.taskListLoadingMode) {
+                                TaskListLoadingMode.Receiving -> screenNavigator.openNonExciseAlcoInfoReceivingScreen(productInfo = taskProductInfo, isDiscrepancy = isDiscrepancy)
+                                TaskListLoadingMode.PGE -> screenNavigator.openNonExciseAlcoInfoPGEScreen(productInfo = taskProductInfo, isDiscrepancy = isDiscrepancy)
+                                TaskListLoadingMode.Shipment -> screenNavigator.openInfoScreen("Ошибка получения данных") //openNotImplementedScreenAlert("Информация о не акцизном алкоголе")
+                                else -> screenNavigator.openAlertUnknownTaskTypeScreen() //сообщение о неизвестном типе задания
+                            }
+                        }
+                    }
+                }
                 else -> {
                     screenNavigator.openAlertUnknownGoodsTypeScreen() //сообщение о неизвестном типе товара
                 }

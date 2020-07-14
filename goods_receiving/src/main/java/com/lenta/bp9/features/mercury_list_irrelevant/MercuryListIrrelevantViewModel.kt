@@ -6,10 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.lenta.bp9.R
 import com.lenta.bp9.features.loading.tasks.TaskCardMode
 import com.lenta.bp9.features.reject.RejectType
-import com.lenta.bp9.model.task.IReceivingTaskManager
-import com.lenta.bp9.model.task.TaskContents
-import com.lenta.bp9.model.task.TaskDescription
-import com.lenta.bp9.model.task.TaskType
+import com.lenta.bp9.model.task.*
 import com.lenta.bp9.platform.navigation.IScreenNavigator
 import com.lenta.bp9.repos.IRepoInMemoryHolder
 import com.lenta.bp9.requests.network.*
@@ -18,6 +15,7 @@ import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.extentions.getDeviceIp
 import com.lenta.shared.utilities.extentions.toStringFormatted
+import com.mobrun.plugin.api.HyperHive
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -44,6 +42,8 @@ class MercuryListIrrelevantViewModel : CoreViewModel() {
     lateinit var rejectRequest: RejectNetRequest
     @Inject
     lateinit var repoInMemoryHolder: IRepoInMemoryHolder
+    @Inject
+    lateinit var hyperHive: HyperHive
 
     val listIrrelevantMercury: MutableLiveData<List<MercuryListIrrelevantItem>> = MutableLiveData()
     val netRestNumber: MutableLiveData<Int> = MutableLiveData()
@@ -116,6 +116,8 @@ class MercuryListIrrelevantViewModel : CoreViewModel() {
     private fun handleSuccessRecountStart(result: DirectSupplierStartRecountRestInfo) {
         viewModelScope.launch {
             repoInMemoryHolder.manufacturers.value = result.manufacturers
+            //todo закомичено, т.к. на проде этот фунционал пока не реализован repoInMemoryHolder.processOrderData.value = result.processOrderData.map { TaskProcessOrderDataInfo.from( it) }
+            repoInMemoryHolder.sets.value = result.setsInfo.map { TaskSetsInfo.from(hyperHive, it) }
             taskManager.updateTaskDescription(TaskDescription.from(result.taskDescription))
             taskManager.getReceivingTask()?.updateTaskWithContents(taskContents.getTaskContentsInfo(result))
             screenNavigator.openGoodsListScreen(taskType = taskManager.getReceivingTask()?.taskHeader?.taskType ?: TaskType.None)

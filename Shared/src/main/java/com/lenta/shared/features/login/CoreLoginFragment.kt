@@ -1,5 +1,6 @@
 package com.lenta.shared.features.login
 
+import android.os.Bundle
 import android.view.View
 import androidx.lifecycle.Observer
 import com.lenta.shared.R
@@ -11,6 +12,9 @@ import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListe
 import com.lenta.shared.scan.OnScanResultListener
 
 abstract class CoreLoginFragment : CoreFragment<com.lenta.shared.databinding.FragmentLoginBinding, CoreAuthViewModel>(), OnBackPresserListener, ToolbarButtonsClickListener, OnScanResultListener {
+
+    private var viewFocus: View? = null
+
     override fun getLayoutId(): Int = R.layout.fragment_login
 
 
@@ -40,8 +44,22 @@ abstract class CoreLoginFragment : CoreFragment<com.lenta.shared.databinding.Fra
     }
 
     override fun onScanResult(data: String) {
-        vm.onScanResult(data)
+        vm.onScanResult(data, viewFocus)
     }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        binding?.layoutLogin?.etLogin?.setOnFocusChangeListener { v, hasFocus ->
+            if (hasFocus) {
+                viewFocus = v
+            }
+        }
+
+        binding?.layoutLogin?.etPassword?.setOnFocusChangeListener { v, hasFocus ->
+            if (hasFocus) {
+                viewFocus = v
+            }
+        }
+    }
 
 }

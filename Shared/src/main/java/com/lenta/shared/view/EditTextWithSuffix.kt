@@ -59,7 +59,7 @@ class EditTextWithSuffix : AppCompatEditText {
 
 @BindingAdapter(value = ["suffix"])
 fun setSuffix(editText: EditTextWithSuffix, suffix: String?) {
-    @Suppress("NAME_SHADOWING") val suffix = suffix ?: ""
+    @Suppress("NAME_SHADOWING") val suffix = suffix.orEmpty()
     editText.setSuffix(" $suffix")
     editText.hint = suffix
 

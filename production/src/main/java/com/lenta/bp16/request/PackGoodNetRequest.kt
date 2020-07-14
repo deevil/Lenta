@@ -39,6 +39,9 @@ data class PackGoodParams(
         /** Номер объекта */
         @SerializedName("IV_PARENT")
         val taskNumber: String,
+        /** Номер пользователя */
+        @SerializedName("IV_PERNR")
+        val userNumber: String,
         /** IP адрес ТСД */
         @SerializedName("IV_IP")
         val deviceIp: String,

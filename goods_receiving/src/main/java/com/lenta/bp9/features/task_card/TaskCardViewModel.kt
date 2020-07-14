@@ -85,7 +85,7 @@ class TaskCardViewModel : CoreViewModel(), PageSelectionListener {
     }
 
     val enabledBtn by lazy {
-        MutableLiveData(if (taskType == TaskType.ShipmentRC && taskManager.getReceivingTask()?.taskDescription?.currentStatus == TaskStatus.Ordered) {
+        MutableLiveData(if ( (taskType == TaskType.ShipmentRC && taskManager.getReceivingTask()?.taskDescription?.currentStatus == TaskStatus.Ordered) || (taskManager.getReceivingTask()?.taskDescription?.currentStatus == TaskStatus.SentToGIS)) {
             false
         } else {
             notifications.value?.findLast {
@@ -113,7 +113,7 @@ class TaskCardViewModel : CoreViewModel(), PageSelectionListener {
     val visibilitySecondBtn by lazy {
         MutableLiveData(taskManager.getReceivingTask()?.taskDescription?.currentStatus.let {
             it == TaskStatus.Recounted ||
-                    (it == TaskStatus.Checked && taskType == TaskType.ShipmentPP) ||
+                    (it == TaskStatus.Checked && taskType != TaskType.ShipmentPP) ||
                     (it == TaskStatus.Unloaded && (taskType == TaskType.RecalculationCargoUnit || taskType == TaskType.ReceptionDistributionCenter)) ||
                     (it == TaskStatus.ReadyToShipment && taskType == TaskType.ShipmentRC)
         })
@@ -459,7 +459,7 @@ class TaskCardViewModel : CoreViewModel(), PageSelectionListener {
                 }
             }
             TaskStatus.Arrived -> {
-                if (isEdo && taskManager.getReceivingTask()?.taskHeader?.taskType == TaskType.DirectSupplier) {
+                if (isEdo && taskManager.getReceivingTask()?.taskHeader?.taskType == TaskType.DirectSupplier && incomingDelivery.isEmpty()) {
                     screenNavigator.openCreateInboundDeliveryDialog(
                             yesCallbackFunc = {
                                 screenNavigator.openStartReviseLoadingScreen()

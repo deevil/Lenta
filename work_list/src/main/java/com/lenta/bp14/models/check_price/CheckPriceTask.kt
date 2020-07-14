@@ -87,12 +87,12 @@ class CheckPriceTask @Inject constructor(
                             price3 = it.price3.toNullIfEmpty(),
                             price4 = it.price4.toNullIfEmpty(),
                             options = GoodOptions(
-                                    matrixType = getMatrixType(productInfo?.matrixType ?: ""),
+                                    matrixType = getMatrixType(productInfo?.matrixType.orEmpty()),
                                     section = if (productInfo?.sectionNumber?.isNotEmpty() == true) productInfo.sectionNumber else "91",
                                     goodType = getGoodType(
-                                            alcohol = productInfo?.isAlco ?: "",
-                                            excise = productInfo?.isExcise ?: "",
-                                            marked = productInfo?.isMarked ?: ""),
+                                            alcohol = productInfo?.isAlco.orEmpty(),
+                                            excise = productInfo?.isExcise.orEmpty(),
+                                            marked = productInfo?.isMarked.orEmpty()),
                                     healthFood = productInfo?.isHealthyFood.isSapTrue(),
                                     novelty = productInfo?.isNew.isSapTrue()
                             )
@@ -216,12 +216,12 @@ class CheckPriceTask @Inject constructor(
                         price3 = priceInfo?.price3.toNullIfEmpty(),
                         price4 = priceInfo?.price4.toNullIfEmpty(),
                         options = GoodOptions(
-                                matrixType = getMatrixType(productInfo?.matrixType ?: ""),
+                                matrixType = getMatrixType(productInfo?.matrixType.orEmpty()),
                                 section = if (productInfo?.sectionNumber?.isNotEmpty() == true) productInfo.sectionNumber else "91",
                                 goodType = getGoodType(
-                                        alcohol = productInfo?.isAlco ?: "",
-                                        excise = productInfo?.isExcise ?: "",
-                                        marked = productInfo?.isMarked ?: ""),
+                                        alcohol = productInfo?.isAlco.orEmpty(),
+                                        excise = productInfo?.isExcise.orEmpty(),
+                                        marked = productInfo?.isMarked.orEmpty()),
                                 healthFood = productInfo?.isHealthyFood.isSapTrue(),
                                 novelty = productInfo?.isNew.isSapTrue()
                         )
@@ -238,7 +238,7 @@ class CheckPriceTask @Inject constructor(
     }
 
     override fun setCheckPriceStatus(isValid: Boolean?) {
-        setCheckPriceStatus(isValid, processingMatNumber ?: "")
+        setCheckPriceStatus(isValid, processingMatNumber.orEmpty())
     }
 
     private fun setCheckPriceStatus(isValid: Boolean?, matNr: String) {
@@ -335,8 +335,8 @@ class CheckPriceTask @Inject constructor(
         return processingProducts.map { list ->
             list?.map { item ->
                 BaseProductInfo(
-                        matNr = item.matNr ?: "",
-                        name = item.name ?: ""
+                        matNr = item.matNr.orEmpty(),
+                        name = item.name.orEmpty()
                 )
             }
         }

@@ -89,13 +89,13 @@ class TransportConditionsReviseFragment : CoreFragment<FragmentTransportConditio
 
                     layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
                             layoutId = R.layout.item_tile_transport_condition,
-                            itemId = BR.vm,
+                            itemId = BR.item,
                             realisation = object : DataBindingAdapter<ItemTileTransportConditionBinding> {
                                 override fun onCreate(binding: ItemTileTransportConditionBinding) {
                                 }
 
                                 override fun onBind(binding: ItemTileTransportConditionBinding, position: Int) {
-                                    binding.tvCounter.tag = position
+                                    binding.tvItemNumber.tag = position
                                     binding.cbChecked.setOnClickListener { view ->
                                         val cb = view as? CheckBox
                                         cb?.let { vm.checkedChanged(position, it.isChecked) }
@@ -151,24 +151,42 @@ class TransportConditionsReviseFragment : CoreFragment<FragmentTransportConditio
 
                     layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
                             layoutId = R.layout.item_tile_transport_condition_checked,
-                            itemId = BR.vm,
+                            itemId = BR.item,
                             realisation = object : DataBindingAdapter<ItemTileTransportConditionCheckedBinding> {
                                 override fun onCreate(binding: ItemTileTransportConditionCheckedBinding) {
                                 }
 
                                 override fun onBind(binding: ItemTileTransportConditionCheckedBinding, position: Int) {
-                                    binding.tvCounter.tag = position
+                                    binding.tvItemNumber.tag = position
                                     binding.cbChecked.setOnClickListener { view ->
                                         val cb = view as? CheckBox
                                         cb?.let { vm.checkedChanged(position, it.isChecked) }
                                     }
-                                    binding.cbChecked.visibility = when (vm.checkedConditions.value?.get(position)?.conditionType) {
-                                        ConditionType.Checkbox -> View.VISIBLE
-                                        else -> View.INVISIBLE
+                                    if ((vm.checkedConditions.value?.size ?: 0) - 1 >= position) {
+                                        binding.cbChecked.visibility = when (vm.checkedConditions.value?.get(position)?.conditionType) {
+                                            ConditionType.Checkbox -> View.VISIBLE
+                                            else -> View.INVISIBLE
+                                        }
                                     }
-                                    binding.tvConditionValue.visibility = when (vm.checkedConditions.value?.get(position)?.conditionType) {
-                                        ConditionType.Input -> View.VISIBLE
-                                        else -> View.INVISIBLE
+                                    if ((vm.checkedConditions.value?.size ?: 0) - 1 >= position) {
+                                        binding.etConditionValue.visibility = when (vm.checkedConditions.value?.get(position)?.conditionType) {
+                                                ConditionType.Input -> View.VISIBLE
+                                                else -> View.INVISIBLE
+                                        }
+                                    }
+                                    binding.etConditionValue.setOnFocusChangeListener { v, hasFocus ->
+                                        if (!hasFocus) {
+                                            vm.finishedInput(position)
+                                        }
+                                    }
+                                    binding.etConditionValue.setOnEditorActionListener { v, actionId, event ->
+                                        when(actionId) {
+                                            EditorInfo.IME_ACTION_DONE -> {
+                                                vm.finishedInput(position)
+                                                return@setOnEditorActionListener false
+                                            }
+                                            else -> return@setOnEditorActionListener false
+                                        }
                                     }
                                 }
                             }
@@ -196,13 +214,13 @@ class TransportConditionsReviseFragment : CoreFragment<FragmentTransportConditio
 
                     layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
                             layoutId = R.layout.item_tile_notifications,
-                            itemId = BR.vm,
+                            itemId = BR.item,
                             realisation = object : DataBindingAdapter<ItemTileNotificationsBinding> {
                                 override fun onCreate(binding: ItemTileNotificationsBinding) {
                                 }
 
                                 override fun onBind(binding: ItemTileNotificationsBinding, position: Int) {
-                                    binding.tvCounter.tag = position
+                                    binding.tvItemNumber.tag = position
                                 }
                             }
                     )

@@ -1,7 +1,11 @@
 package com.lenta.bp10.di
 
 import android.content.Context
+import app_update.AppUpdaterConfig
+import app_update.AppUpdaterInstallerFromFmp
+import app_update.AppUpdateInstaller
 import com.google.gson.Gson
+import com.lenta.bp10.BuildConfig.APPLICATION_ID
 import com.lenta.bp10.features.good_information.GoodInformationRepo
 import com.lenta.bp10.features.good_information.IGoodInformationRepo
 import com.lenta.bp10.features.job_card.IJobCardRepo
@@ -27,11 +31,19 @@ import com.lenta.shared.platform.navigation.ICoreNavigator
 import com.lenta.shared.platform.resources.ISharedStringResourceManager
 import com.lenta.shared.progress.IProgressUseCaseInformator
 import com.mobrun.plugin.api.HyperHive
+import dagger.Binds
 import dagger.Module
 import dagger.Provides
 
-@Module
+@Module(includes = [AppModule.Declarations::class])
 class AppModule {
+
+    @Module
+    internal interface Declarations {
+        @Binds
+        @AppScope
+        fun bindAppUpdateInstaller(realisation: AppUpdaterInstallerFromFmp): AppUpdateInstaller
+    }
 
 
     @Provides
@@ -93,6 +105,12 @@ class AppModule {
     @AppScope
     internal fun provideIRepoInMemoryHolder(): IRepoInMemoryHolder {
         return RepoInMemoryHolder()
+    }
+
+    @Provides
+    @AppScope
+    internal fun provideAppUpdaterConfig(): AppUpdaterConfig {
+        return AppUpdaterConfig(folderName = "bp10", applicationId = APPLICATION_ID)
     }
 
 

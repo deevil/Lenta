@@ -18,7 +18,7 @@ class ReportResultViewModel : CoreViewModel() {
 
 
     fun getMarket(): String {
-        return sessionInfo.market ?: ""
+        return sessionInfo.market.orEmpty()
     }
 
     fun setWriteOffReportResponse(writeOffReportResponse: WriteOffReportResponse) {

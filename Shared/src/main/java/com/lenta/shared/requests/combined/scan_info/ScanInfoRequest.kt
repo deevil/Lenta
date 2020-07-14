@@ -52,9 +52,9 @@ class ScanInfoRequest(private val hyperHive: HyperHive, private val gson: Gson, 
 
     private fun searchMaterialFromServer(scanCodeInfo: ScanCodeInfo, tk: String): Either<Failure, ScanInfoResult> {
         val productInfoNetRequestParams = ProductInfoNetRequestParams(
-                ean = scanCodeInfo.eanNumberForSearch ?: "",
+                ean = scanCodeInfo.eanNumberForSearch.orEmpty(),
                 tk = tk,
-                matNr = scanCodeInfo.materialNumberForSearch ?: ""
+                matNr = scanCodeInfo.materialNumberForSearch.orEmpty()
         )
 
         Logg.d { "searchParams: $productInfoNetRequestParams" }

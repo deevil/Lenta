@@ -42,7 +42,7 @@ class PriceScannerViewModel : CoreViewModel() {
 private fun CheckPriceResult?.toUi(): CheckPriceResultUi? {
     return this?.let {
         CheckPriceResultUi(
-                productTitle = this.matNr?.takeLast(6) ?: "",
+                productTitle = this.matNr?.takeLast(6).orEmpty(),
                 price = this.actualPriceInfo.price1.toString(),
                 discountPrice = this.actualPriceInfo.getDiscountCardPrice().toString(),
                 priceIsValid = this.isPriceValid(),

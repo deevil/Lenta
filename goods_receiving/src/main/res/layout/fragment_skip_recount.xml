@@ -10,9 +10,7 @@
             name="vm"
             type="com.lenta.bp9.features.skip_recount.SkipRecountViewModel" />
 
-
     </data>
-
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -37,12 +35,12 @@
         <EditText
             android:id="@+id/et_custom_reason"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="32dp"
             android:layout_centerHorizontal="true"
             android:layout_marginStart="22dp"
-            android:layout_marginEnd="22dp"
             android:layout_marginTop="48dp"
-            android:drawableEnd="@drawable/ic_edit"
+            android:layout_marginEnd="22dp"
+            android:drawableEnd="@drawable/ic_edit_white_24dp"
             android:hint="@string/enter_comment"
             android:imeOptions="actionDone"
             android:inputType="text"
@@ -55,6 +53,5 @@
             tools:ignore="Autofill" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
-
 
 </layout>

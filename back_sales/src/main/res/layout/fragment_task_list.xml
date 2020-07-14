@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".features.open_task.task_list.TaskListFragment">
+
+    <data>
+
+        <variable
+            name="vm"
+            type="com.lenta.bp12.features.open_task.task_list.TaskListViewModel" />
+
+        <variable
+            name="viewPagerSettings"
+            type="com.lenta.shared.utilities.databinding.ViewPagerSettings" />
+
+    </data>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <androidx.viewpager.widget.ViewPager
+            android:id="@+id/view_pager"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            app:pageSelectionListener="@{vm}"
+            app:tabPosition="@{vm.selectedPage}"
+            app:viewPagerSettings="@{viewPagerSettings}">
+
+            <com.google.android.material.tabs.TabLayout
+                android:id="@+id/tab_strip"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/tab_height"
+                android:background="@color/colorBottomPanelBackground"
+                android:elevation="0dp"
+                app:tabIndicatorColor="@color/colorTabIndicator"
+                app:tabIndicatorHeight="@dimen/tab_indicator_height"
+                app:tabMode="scrollable"
+                app:tabSelectedTextColor="@color/colorTabIndicator"
+                app:tabTextAppearance="@style/TabLayoutStyle"
+                app:tabTextColor="@color/colorWhite"
+                tools:targetApi="lollipop" />
+
+        </androidx.viewpager.widget.ViewPager>
+
+        <!-- Ввод номера товара -->
+        <LinearLayout style="@style/EnterNumberFieldLayout">
+
+            <EditText
+                style="@style/EnterNumberField"
+                android:drawableEnd="@drawable/ic_filter_white_16dp"
+                android:hint="@string/enter_task_or_user_name"
+                android:inputType="textNoSuggestions|textVisiblePassword"
+                android:maxLength="20"
+                android:text="@={vm.numberField}"
+                app:onOkInSoftKeyboard="@{vm}"
+                app:requestFocus="@{vm.requestFocusToNumberField}"
+                app:textAllCaps="@{true}"
+                tools:ignore="Autofill" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</layout>

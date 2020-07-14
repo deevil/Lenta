@@ -4,7 +4,7 @@ import com.lenta.bp9.model.task.TaskSectionInfo
 import com.lenta.shared.utilities.databinding.Evenable
 
 data class TransferGoodsSectionItem(
-        val number: Int,
+        val number: String,
         val condition: String,
         val representative: String?,
         val ofGoods: String?,

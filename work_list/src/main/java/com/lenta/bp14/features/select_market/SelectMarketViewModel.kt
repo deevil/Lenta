@@ -43,24 +43,7 @@ class SelectMarketViewModel : CoreViewModel(), OnPositionClickListener {
     @Inject
     lateinit var repoInMemoryHolder: IRepoInMemoryHolder
     @Inject
-    lateinit var timeMonitor: ITimeMonitor
-    @Inject
-    lateinit var serverTimeRequest: ServerTimeRequest
-    @Inject
     lateinit var printerManager: PrinterManager
-    @Inject
-    lateinit var generalTaskManager: IGeneralTaskManager
-    @Inject
-    lateinit var checkListTaskManager: CheckListTaskManager
-    @Inject
-    lateinit var workListTaskManager: WorkListTaskManager
-    @Inject
-    lateinit var checkPriceTaskManager: CheckPriceTaskManager
-    @Inject
-    lateinit var notExposedTaskManager: NotExposedTaskManager
-    @Inject
-    lateinit var gson: Gson
-
 
     private val markets: MutableLiveData<List<MarketUi>> = MutableLiveData()
     val marketsNames: MutableLiveData<List<String>> = markets.map { markets ->
@@ -105,109 +88,13 @@ class SelectMarketViewModel : CoreViewModel(), OnPositionClickListener {
                 }
                 sessionInfo.market = tkNumber
                 appSettings.lastTK = tkNumber
-                navigator.showProgress(serverTimeRequest)
-                serverTimeRequest(ServerTimeRequestParam(sessionInfo.market
-                        ?: "")).either(::handleFailure, ::handleSuccessServerTime)
             }
-        }
-    }
-
-    override fun handleFailure(failure: Failure) {
-        super.handleFailure(failure)
-        navigator.hideProgress()
-    }
-
-    private fun handleSuccessServerTime(serverTime: ServerTime) {
-        navigator.hideProgress()
-        timeMonitor.setServerTime(time = serverTime.time, date = serverTime.date)
-
-        if (generalTaskManager.isExistSavedTaskData()) {
-            navigator.showUnsavedDataFoundOnDevice(
-                    deleteCallback = {
-                        generalTaskManager.clearSavedTaskData()
-                        navigator.openMainMenuScreen()
-                    },
-                    goOverCallback = {
-                        restoreSavedTask()
-                    }
-            )
-        } else {
-            navigator.openMainMenuScreen()
+            navigator.openFastDataLoadingScreen()
         }
     }
 
     override fun onClickPosition(position: Int) {
         selectedPosition.value = position
-    }
-
-
-    private fun restoreSavedTask() {
-        navigator.showProgressLoadingData()
-
-        generalTaskManager.getSavedData()?.let { taskData ->
-            when (taskData.taskType) {
-                AppTaskTypes.CheckPrice.taskType -> {
-                    val data = gson.fromJson(taskData.data, CheckPriceData::class.java)
-                    newTask(
-                            taskName = data.taskDescription.taskName,
-                            taskManager = checkPriceTaskManager,
-                            taskDescription = data.taskDescription
-                    )
-                }
-
-                AppTaskTypes.CheckList.taskType -> {
-                    val data = gson.fromJson(taskData.data, CheckListData::class.java)
-                    newTask(
-                            taskName = data.taskDescription.taskName,
-                            taskManager = checkListTaskManager,
-                            taskDescription = data.taskDescription
-                    )
-                }
-
-                AppTaskTypes.WorkList.taskType -> {
-                    val data = gson.fromJson(taskData.data, WorkListData::class.java)
-                    newTask(
-                            taskName = data.taskDescription.taskName,
-                            taskManager = workListTaskManager,
-                            taskDescription = data.taskDescription
-                    )
-                }
-
-                AppTaskTypes.NotExposedProducts.taskType -> {
-                    val data = gson.fromJson(taskData.data, NotExposedData::class.java)
-                    newTask(
-                            taskName = data.taskDescription.taskName,
-                            taskManager = notExposedTaskManager,
-                            taskDescription = data.taskDescription
-                    )
-                }
-
-                else -> navigator.openNotImplementedScreenAlert("")
-            }
-        }
-
-        navigator.hideProgress()
-    }
-
-    private fun <S : ITask, D : ITaskDescription> newTask(taskName: String, taskManager: ITaskManager<S, D>, taskDescription: D) {
-        if (taskManager.getTask() == null) {
-            taskManager.clearTask()
-            taskManager.newTask(
-                    taskDescription = taskDescription
-            )
-        } else {
-            taskManager.getTask()?.getDescription()?.taskName = taskName
-        }
-
-        generalTaskManager.restoreSavedData()
-
-        navigator.openMainMenuScreen()
-
-        if (taskManager.getTask()?.isFreeMode() == false) {
-            navigator.openTaskListScreen()
-        }
-
-        navigator.openJobCardScreen()
     }
 
 }

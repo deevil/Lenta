@@ -10,6 +10,7 @@
     <string name="good_list">Список товаров</string>
     <string name="pu_number">ЕО %1$s</string>
     <string name="good_card">Карточка товара</string>
+    <string name="good_search">Поиск товара</string>
     <string name="defect_detail">Детализация брака</string>
     <string name="pack_list">Список тар</string>
 
@@ -23,10 +24,12 @@
     <string name="more_than_one_good_for_this_task">По данной задаче активно более одного товара на упаковку</string>
     <string name="error_completing_object_processing">Ошибка завершения обработки объекта</string>
     <string name="label_sent_to_print">Этикетка отправлена на печать</string>
+    <string name="process_order_not_found">Не найден технологический заказ</string>
+    <string name="fix_start_next_stage_successful">Фиксация начала следующего этапа прошла успешно</string>
 
     // Заголовки списков
     <string name="sku">SKU</string>
-    <string name="sign">Признак</string>
+    <string name="sign">Признаки</string>
     <string name="pu">ЕО</string>
     <string name="es">ВП</string>
     <string name="remain">Остаток</string>
@@ -55,5 +58,15 @@
     <string name="defect">Брак</string>
     <string name="total_sf">Итого ПФ</string>
     <string name="total_defect">Итого брак</string>
+    <string name="defect_mark">***БРАК***</string>
+
+    <string name="movement_btw_warehouses">Перемещение между складами</string>
+    <string name="count">Количество</string>
+    <string name="storage_sender">Склад отправитель</string>
+    <string name="storage_receiver">Склад получатель</string>
+    <string name="container">Тара</string>
+    <string name="tw_search_info">Отсканируйте штрахкод или введите товар вручную</string>
+    <string name="preparation_ingredients">Подготовка ингредиентов</string>
+    <string name="tw_alert_part_not_found">Отсканированная партия не найдена в системе. Отложите товар и проведите инвентаризацию.</string>
 
 </resources>

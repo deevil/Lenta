@@ -138,7 +138,7 @@ class TaskListFragment : CoreFragment<FragmentTaskListBinding, TaskListViewModel
 
                     layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
                             layoutId = R.layout.item_tile_tasks,
-                            itemId = BR.vm,
+                            itemId = BR.item,
                             realisation = object : DataBindingAdapter<ItemTileTasksBinding> {
                                 override fun onCreate(binding: ItemTileTasksBinding) {
                                 }
@@ -182,7 +182,7 @@ class TaskListFragment : CoreFragment<FragmentTaskListBinding, TaskListViewModel
 
                     layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
                             layoutId = R.layout.item_tile_tasks,
-                            itemId = BR.vm,
+                            itemId = BR.item,
                             realisation = object : DataBindingAdapter<ItemTileTasksBinding> {
                                 override fun onCreate(binding: ItemTileTasksBinding) {
                                 }
@@ -226,7 +226,7 @@ class TaskListFragment : CoreFragment<FragmentTaskListBinding, TaskListViewModel
 
                     layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
                             layoutId = R.layout.item_tile_tasks,
-                            itemId = BR.vm,
+                            itemId = BR.item,
                             realisation = object : DataBindingAdapter<ItemTileTasksBinding> {
                                 override fun onCreate(binding: ItemTileTasksBinding) {
                                 }
