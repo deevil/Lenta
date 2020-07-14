@@ -44,7 +44,7 @@ class SelectGoodFragment : CoreFragment<FragmentSelectGoodsBinding, SelectGoodVi
     }
 
     companion object {
-        const val SCREEN_NUMBER = Constants.SELECT_GOODS_FRAGMENT
+        const val SCREEN_NUMBER = Constants.SELECT_GOOD_FRAGMENT
     }
 
 }

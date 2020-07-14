@@ -26,7 +26,7 @@ class NumberScreenGenerator @Inject constructor() : INumberScreenGenerator {
         return generateNumberScreenFromPostfix(when (fragment) {
             is AuthFragment -> Constants.AUTH_FRAGMENT
             is SelectMarketFragment -> Constants.SELECT_MARKET_FRAGMENT
-            is SelectGoodFragment -> Constants.SELECT_GOODS_FRAGMENT
+            is SelectGoodFragment -> Constants.SELECT_GOOD_FRAGMENT
             is GoodInfoFragment -> Constants.GOODS_INFO_FRAGMENT
             is AlertFragment -> Constants.ALERT_SCREEN_NUMBER
             is AuxiliaryMenuFragment -> Constants.AUXILIARY_MENU_FRAGMENT

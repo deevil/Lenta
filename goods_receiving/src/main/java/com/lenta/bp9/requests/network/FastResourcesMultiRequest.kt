@@ -18,7 +18,7 @@ class FastResourcesMultiRequest @Inject constructor(val hyperHive: HyperHive) : 
         return mapOf(
                 ZmpUtz07V001.NAME_RESOURCE to ZmpUtz07V001(hyperHive).newRequest(),
                 ZmpUtz14V001.NAME_RESOURCE to ZmpUtz14V001(hyperHive).newRequest(),
-                ZmpUtz17V001.NAME_RESOURCE to ZmpUtz17V001(hyperHive).newRequest(),
+                ZmpUtz45V001.NAME_RESOURCE to ZmpUtz45V001(hyperHive).newRequest(),
                 ZmpUtz20V001.NAME_RESOURCE to ZmpUtz20V001(hyperHive).newRequest(),
                 ZmpUtz25V001.NAME_RESOURCE to ZmpUtz25V001(hyperHive).newRequest(),
                 ZmpUtz26V001.NAME_RESOURCE to ZmpUtz26V001(hyperHive).newRequest(),
