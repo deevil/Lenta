@@ -94,7 +94,7 @@ interface IScreenNavigator : ICoreNavigator {
     fun openSelectMarketScreen()
     fun openSelectGoodScreen()
     fun openGoodsInfoScreen()
-    fun openFastDataLoadingScreen()  //Возможно пригодится
+    fun openFastDataLoadingScreen()
 
     fun openAlertConfirmOpeningPackage()
     fun openAlertSuccessfulOpeningPackage()

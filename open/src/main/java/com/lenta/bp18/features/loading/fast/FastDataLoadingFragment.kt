@@ -3,6 +3,7 @@ package com.lenta.bp18.features.loading.fast
 import android.os.Bundle
 import android.view.View
 import com.lenta.bp18.R
+import com.lenta.bp18.platform.Constants
 import com.lenta.bp18.platform.extention.getAppComponent
 import com.lenta.shared.features.loading.CoreLoadingFragment
 import com.lenta.shared.features.loading.CoreLoadingViewModel
@@ -46,7 +47,7 @@ class FastDataLoadingFragment : CoreLoadingFragment() {
     }
 
     companion object {
-        const val SCREEN_NUMBER = "03"
+        const val SCREEN_NUMBER = Constants.FAST_LOAD_FRAGMENT
     }
 
 }

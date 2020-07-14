@@ -108,7 +108,6 @@ class SelectMarketViewModel : CoreViewModel(), OnPositionClickListener {
     private fun handleSuccessServerTime(serverTime: ServerTime) {
         navigator.hideProgress()
         timeMonitor.setServerTime(time = serverTime.time, date = serverTime.date)
-
         navigator.openFastDataLoadingScreen()
     }
 

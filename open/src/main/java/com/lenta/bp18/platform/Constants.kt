@@ -15,6 +15,7 @@ object Constants {
     //Номера экранов
     const val AUTH_FRAGMENT = "01"
     const val SELECT_MARKET_FRAGMENT = "02"
+    const val FAST_LOAD_FRAGMENT = "03"
     const val SELECT_GOODS_FRAGMENT = "04"
     const val GOODS_INFO_FRAGMENT = "05"
     const val ALERT_SCREEN_NUMBER = "97"

@@ -104,7 +104,7 @@ class FastLoadingViewModel : CoreLoadingViewModel() {
     }
 
     override fun handleFailure(failure: Failure) {
-        navigator.openAuthScreen()
+        navigator.openSelectMarketScreen()
         navigator.openAlertScreen(failureInterpreter.getFailureDescription(failure).message)
         progress.postValue(false)
     }
