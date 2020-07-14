@@ -3,6 +3,7 @@ package com.lenta.bp18.features.goods_info
 import android.view.View
 import com.lenta.bp18.R
 import com.lenta.bp18.databinding.FragmentGoodsInfoBinding
+import com.lenta.bp18.platform.Constants
 import com.lenta.bp18.platform.extention.getAppComponent
 import com.lenta.shared.platform.fragment.CoreFragment
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
@@ -43,7 +44,7 @@ class GoodsInfoFragment : CoreFragment<FragmentGoodsInfoBinding, GoodsInfoViewMo
     }
 
     companion object {
-        const val SCREEN_NUMBER = "100"
+        const val SCREEN_NUMBER = Constants.GOODS_INFO_FRAGMENT
     }
 
 }

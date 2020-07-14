@@ -22,4 +22,12 @@
     <integer name="four_two_3">25</integer>
     <integer name="four_two_4">22</integer>
 
+    <dimen name="size_8dp">8dp</dimen>
+    <dimen name="size_10dp">10dp</dimen>
+    <dimen name="size_16dp">16dp</dimen>
+    <dimen name="size_32dp">32dp</dimen>
+    <dimen name="size_96dp">96dp</dimen>
+
+    <dimen name="text_14sp">14sp</dimen>
+
 </resources>

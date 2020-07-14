@@ -3,6 +3,7 @@ package com.lenta.bp18.features.select_market
 import android.view.View
 import com.lenta.bp18.R
 import com.lenta.bp18.databinding.FragmentSelectMarketBinding
+import com.lenta.bp18.platform.Constants
 import com.lenta.bp18.platform.extention.getAppComponent
 import com.lenta.shared.platform.fragment.CoreFragment
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
@@ -45,7 +46,7 @@ class SelectMarketFragment : CoreFragment<FragmentSelectMarketBinding, SelectMar
     }
 
     companion object {
-        const val SCREEN_NUMBER = "2"
+        const val SCREEN_NUMBER = Constants.SELECT_MARKET_FRAGMENT
     }
 
 }

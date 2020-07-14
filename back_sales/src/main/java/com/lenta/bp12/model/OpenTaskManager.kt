@@ -12,9 +12,11 @@ import com.lenta.bp12.request.SendTaskDataParams
 import com.lenta.bp12.request.TaskContentResult
 import com.lenta.bp12.request.pojo.*
 import com.lenta.shared.platform.constants.Constants
+import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.extentions.dropZeros
 import com.lenta.shared.utilities.extentions.isSapTrue
 import com.lenta.shared.utilities.extentions.toSapBooleanString
+import com.lenta.shared.utilities.getStringFromDate
 import javax.inject.Inject
 
 class OpenTaskManager @Inject constructor(
@@ -153,9 +155,12 @@ class OpenTaskManager @Inject constructor(
         currentTask.value?.let { task ->
             val control = task.control == goodInfo.getControlType()
             val type = if (task.goodType.isNotEmpty()) task.goodType == goodInfo.materialInfo.goodType else true
-            val section = if (goodInfo.materialInfo.section.isNotEmpty()) task.section == goodInfo.materialInfo.section else true
-            val purchaseGroup = if (goodInfo.materialInfo.purchaseGroup.isNotEmpty()) task.purchaseGroup == goodInfo.materialInfo.purchaseGroup else true
-            val provider =  goodInfo.providers.find { it.code == task.provider.code } != null
+            val section = if (task.section.isNotEmpty()) task.section == goodInfo.materialInfo.section else true
+            val purchaseGroup = if (task.purchaseGroup.isNotEmpty()) task.purchaseGroup == goodInfo.materialInfo.purchaseGroup else true
+            val provider =  goodInfo.providers.find { task.provider.code.contains(it.code) } != null
+
+            Logg.d { "--> task parameters: ${task.control} / ${task.goodType} / ${task.section} / ${task.purchaseGroup} / ${task.provider.code}" }
+            Logg.d { "--> good parameters: ${goodInfo.getControlType()} / ${goodInfo.materialInfo.goodType} / ${goodInfo.materialInfo.section} / ${goodInfo.materialInfo.purchaseGroup} / ${goodInfo.providers}" }
 
             return control && type && section && purchaseGroup && provider
         }
@@ -213,7 +218,7 @@ class OpenTaskManager @Inject constructor(
                             PartInfo(
                                     material = good.material,
                                     producerCode = part.producerCode,
-                                    productionDate = part.date,
+                                    productionDate = getStringFromDate(part.date, Constants.DATE_FORMAT_yyyyMMdd),
                                     unitsCode = part.units.code,
                                     factQuantity = part.quantity.dropZeros(),
                                     partNumber = part.number,

@@ -7,16 +7,15 @@ import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import com.lenta.bp12.BR
 import com.lenta.bp12.R
-import com.lenta.bp12.databinding.*
+import com.lenta.bp12.databinding.FragmentGoodDetailsOpenBinding
+import com.lenta.bp12.databinding.ItemCategoryBinding
+import com.lenta.bp12.databinding.LayoutGoodDetailsCategoryOpenBinding
 import com.lenta.bp12.platform.extention.getAppComponent
 import com.lenta.shared.platform.fragment.CoreFragment
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListener
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
-import com.lenta.shared.utilities.databinding.DataBindingAdapter
-import com.lenta.shared.utilities.databinding.DataBindingRecyclerViewConfig
-import com.lenta.shared.utilities.databinding.RecyclerViewKeyHandler
 import com.lenta.shared.utilities.databinding.ViewPagerSettings
 import com.lenta.shared.utilities.extentions.connectLiveData
 import com.lenta.shared.utilities.extentions.generateScreenNumberFromPostfix
@@ -24,8 +23,6 @@ import com.lenta.shared.utilities.extentions.provideViewModel
 
 class GoodDetailsOpenFragment : CoreFragment<FragmentGoodDetailsOpenBinding, GoodDetailsOpenViewModel>(),
         ViewPagerSettings, ToolbarButtonsClickListener {
-
-    private var recyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
 
     override fun getLayoutId(): Int = R.layout.fragment_good_details_open
 
@@ -77,31 +74,23 @@ class GoodDetailsOpenFragment : CoreFragment<FragmentGoodDetailsOpenBinding, Goo
                 }
             }
 
-            layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
+            layoutBinding.rvConfig = initRecycleAdapterDataBinding(
                     layoutId = R.layout.item_category,
                     itemId = BR.item,
-                    realisation = object : DataBindingAdapter<ItemCategoryBinding> {
-                        override fun onCreate(binding: ItemCategoryBinding) {
-                        }
-
-                        override fun onBind(binding: ItemCategoryBinding, position: Int) {
-                            binding.tvItemNumber.tag = position
-                            binding.tvItemNumber.setOnClickListener(onClickSelectionListener)
-                            binding.selectedForDelete = vm.selectionsHelper.isSelected(position)
-                            recyclerViewKeyHandler?.let {
-                                binding.root.isSelected = it.isSelected(position)
-                            }
-                        }
+                    onAdapterItemBind = { binding: ItemCategoryBinding, position: Int ->
+                        binding.tvItemNumber.tag = position
+                        binding.tvItemNumber.setOnClickListener(onClickSelectionListener)
+                        binding.selectedForDelete = vm.selectionsHelper.isSelected(position)
+                        onAdapterBindHandler(binding, position)
                     }
             )
 
             layoutBinding.vm = vm
             layoutBinding.lifecycleOwner = viewLifecycleOwner
-            recyclerViewKeyHandler = RecyclerViewKeyHandler(
-                    rv = layoutBinding.rv,
+            recyclerViewKeyHandler = initRecyclerViewKeyHandler(
+                    recyclerView = layoutBinding.rv,
                     items = vm.categories,
-                    lifecycleOwner = layoutBinding.lifecycleOwner!!,
-                    initPosInfo = recyclerViewKeyHandler?.posInfo?.value
+                    previousPosInfo = recyclerViewKeyHandler?.posInfo?.value
             )
 
             return layoutBinding.root

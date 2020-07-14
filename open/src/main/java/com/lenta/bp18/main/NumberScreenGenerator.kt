@@ -1,5 +1,11 @@
 package com.lenta.bp18.main
 
+import com.lenta.bp18.features.auth.AuthFragment
+import com.lenta.bp18.features.goods_info.GoodsInfoFragment
+import com.lenta.bp18.features.select_goods.SelectGoodsFragment
+import com.lenta.bp18.features.select_market.SelectMarketFragment
+import com.lenta.bp18.platform.Constants
+import com.lenta.shared.features.alert.AlertFragment
 import com.lenta.shared.features.auxiliary_menu.AuxiliaryMenuFragment
 import com.lenta.shared.features.exit.ExitWithConfirmationFragment
 import com.lenta.shared.features.fmp_settings.FmpSettingsFragment
@@ -22,16 +28,17 @@ class NumberScreenGenerator @Inject constructor() : INumberScreenGenerator {
 
     override fun generateNumberScreen(fragment: CoreFragment<*, *>): String? {
         return generateNumberScreenFromPostfix(when (fragment) {
-            is ExitWithConfirmationFragment -> "93"
-            is AuxiliaryMenuFragment -> "50"
-            is FmpSettingsFragment -> "100"
-            is PrinterChangeFragment -> "53"
-            is SelectOperModeFragment -> "54"
-            is SettingsFragment -> "51"
-            is SupportFragment -> "52"
-            is TechLoginFragment -> "55"
-            is PinCodeFragment -> "56"
-            is FailurePinCodeFragment -> "96"
+            is AuthFragment -> Constants.AUTH_FRAGMENT
+            is SelectMarketFragment -> Constants.SELECT_MARKET_FRAGMENT
+            is SelectGoodsFragment -> Constants.SELECT_GOODS_FRAGMENT
+            is GoodsInfoFragment -> Constants.GOODS_INFO_FRAGMENT
+            is AlertFragment -> Constants.ALERT_SCREEN_NUMBER
+            is AuxiliaryMenuFragment -> Constants.AUXILIARY_MENU_FRAGMENT
+            is SelectOperModeFragment -> Constants.SELECT_OPER_MODE_FRAGMENT
+            is SettingsFragment -> Constants.SETTINGS_FRAGMENT
+            is SupportFragment -> Constants.SUPPORT_FRAGMENT
+            is TechLoginFragment -> Constants.TECH_LOGIN_FRAGMENT
+            is PinCodeFragment -> Constants.PINCODE_FRAGMENT
             else -> null
         }
         )
@@ -42,7 +49,7 @@ class NumberScreenGenerator @Inject constructor() : INumberScreenGenerator {
     }
 
     companion object {
-        const val prefix = "16"
+        const val prefix = "18"
     }
 
 }

@@ -14,6 +14,7 @@ import com.lenta.bp12.request.pojo.ProviderInfo
 import com.lenta.shared.platform.constants.Constants
 import com.lenta.shared.utilities.extentions.dropZeros
 import com.lenta.shared.utilities.extentions.toSapBooleanString
+import com.lenta.shared.utilities.getStringFromDate
 import javax.inject.Inject
 
 class CreateTaskManager @Inject constructor(
@@ -110,14 +111,6 @@ class CreateTaskManager @Inject constructor(
         }
     }
 
-    override fun finishCurrentTask() {
-        currentTask.value?.let { task ->
-            task.isProcessed = true
-
-            updateCurrentTask(task)
-        }
-    }
-
     override fun addProviderInCurrentGood(providerInfo: ProviderInfo) {
         currentGood.value?.let { good ->
             good.providers.add(0, providerInfo)
@@ -165,11 +158,12 @@ class CreateTaskManager @Inject constructor(
                             PartInfo(
                                     material = good.material,
                                     producerCode = part.producerCode,
-                                    productionDate = part.date,
+                                    productionDate = getStringFromDate(part.date, Constants.DATE_FORMAT_yyyyMMdd),
                                     unitsCode = part.units.code,
                                     factQuantity = part.quantity.dropZeros(),
                                     partNumber = part.number,
-                                    providerCode = part.providerCode
+                                    providerCode = part.providerCode,
+                                    basketNumber = task.getBasketNumber(good, part)
                             )
                     )
                 }
@@ -223,7 +217,6 @@ interface ICreateTaskManager {
     fun removeGoodByMaterials(materialList: List<String>)
     fun removeGoodByBasketAndMaterials(basket: Basket, materials: MutableList<String>)
     fun removeBaskets(basketList: MutableList<Basket>)
-    fun finishCurrentTask()
     fun addProviderInCurrentGood(providerInfo: ProviderInfo)
     fun prepareSendTaskDataParams(deviceIp: String, tkNumber: String, userNumber: String)
     fun saveGoodInTask(good: GoodCreate)

@@ -1,6 +1,7 @@
 package com.lenta.bp12.model.pojo
 
 import com.lenta.shared.models.core.Uom
+import java.util.*
 
 data class Part(
         var number: String,
@@ -9,5 +10,5 @@ data class Part(
         var units: Uom,
         var providerCode: String,
         var producerCode: String,
-        var date: String
+        var date: Date
 )

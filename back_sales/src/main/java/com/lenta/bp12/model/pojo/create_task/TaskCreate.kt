@@ -1,6 +1,7 @@
 package com.lenta.bp12.model.pojo.create_task
 
 import com.lenta.bp12.model.ControlType
+import com.lenta.bp12.model.pojo.Part
 import com.lenta.bp12.model.pojo.TaskType
 import com.lenta.bp12.model.pojo.ReturnReason
 import com.lenta.shared.utilities.extentions.sumList
@@ -91,6 +92,15 @@ data class TaskCreate(
 
     fun isExistBasket(basket: Basket): Boolean {
         return baskets.contains(basket)
+    }
+
+    fun getBasketNumber(good: GoodCreate, part: Part): String {
+        val basket = baskets.find {
+            it.section == good.section && it.goodType == good.type &&
+                    it.control == good.control && it.provider.code == part.providerCode
+        }
+
+        return "${baskets.indexOf(basket) + 1}"
     }
 
 }
