@@ -2,7 +2,6 @@ package com.lenta.movement.features.task.eo.formedDocs
 
 import android.os.Bundle
 import android.view.View
-import android.widget.AdapterView
 import androidx.core.os.bundleOf
 import com.lenta.movement.BR
 import com.lenta.movement.R
@@ -17,9 +16,6 @@ import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListener
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
-import com.lenta.shared.utilities.databinding.DataBindingAdapter
-import com.lenta.shared.utilities.databinding.DataBindingRecyclerViewConfig
-import com.lenta.shared.utilities.databinding.RecyclerViewKeyHandler
 import com.lenta.shared.utilities.extentions.provideViewModel
 import kotlinx.android.synthetic.main.fragment_task_eo_merge_docs.*
 
@@ -29,7 +25,6 @@ class TaskEOMergeFormedDocsFragment :
         ToolbarButtonsClickListener,
         OnBackPresserListener {
 
-    private var docsListRecyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
     private val docList by unsafeLazy {
         arguments?.getParcelableArrayList<DocumentsToPrintDocument>(DOC_LIST_KEY)
     }
@@ -59,43 +54,36 @@ class TaskEOMergeFormedDocsFragment :
             this.recyclerView.adapter?.notifyItemChanged(itemPosition)
         }
 
-        binding?.rvConfig = DataBindingRecyclerViewConfig(
-                layoutId = R.layout.layout_item_docs_list,
-                itemId = BR.item,
-                realisation = object : DataBindingAdapter<LayoutItemDocsListBinding> {
-                    override fun onCreate(binding: LayoutItemDocsListBinding) = Unit
-
-                    override fun onBind(binding: LayoutItemDocsListBinding, position: Int) {
+        binding?.apply {
+            val vm = this@TaskEOMergeFormedDocsFragment.vm
+            rvConfig = initRecycleAdapterDataBinding(
+                    layoutId = R.layout.layout_item_docs_list,
+                    itemId = BR.item,
+                    onAdapterItemBind = { binding : LayoutItemDocsListBinding, position ->
                         binding.counterText.tag = position
                         binding.counterText.setOnClickListener(onClickSelectionListener)
                         vm.docsItemList.value?.let { list ->
                             binding.item = list[position]
                         }
                         binding.selectedToPrint = vm.docsSelectionHelper.isSelected(position)
-                        docsListRecyclerViewKeyHandler?.let { handler ->
+                        recyclerViewKeyHandler?.let { handler ->
                             binding.root.isSelected = handler.isSelected(position)
                         }
-                    }
-
-                },
-                onItemClickListener = AdapterView.OnItemClickListener { _, _, position, _ ->
-                    docsListRecyclerViewKeyHandler?.let { handler ->
-                        if (!handler.isSelected(position)) {
-                            handler.selectPosition(position)
+                    },
+                    onAdapterItemClicked = { position ->
+                        recyclerViewKeyHandler?.let { handler ->
+                            if (!handler.isSelected(position)) {
+                                handler.selectPosition(position)
+                            }
                         }
                     }
-                }
-        )
+            )
 
-        binding?.recyclerView?.let { recyclerView ->
-            binding?.lifecycleOwner?.let { lifecycleOwner ->
-                docsListRecyclerViewKeyHandler = RecyclerViewKeyHandler(
-                        rv = recyclerView,
-                        items = vm.docsItemList,
-                        lifecycleOwner = lifecycleOwner,
-                        initPosInfo = docsListRecyclerViewKeyHandler?.posInfo?.value
-                )
-            }
+            recyclerViewKeyHandler = initRecyclerViewKeyHandler(
+                    recyclerView = recyclerView,
+                    items = vm.docsItemList,
+                    previousPosInfo = recyclerViewKeyHandler?.posInfo?.value
+            )
         }
     }
 

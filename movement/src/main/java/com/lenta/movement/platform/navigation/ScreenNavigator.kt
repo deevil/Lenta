@@ -5,20 +5,20 @@ import androidx.core.content.ContextCompat
 import com.lenta.movement.R
 import com.lenta.movement.exception.InfoFailure
 import com.lenta.movement.features.auth.AuthFragment
-import com.lenta.movement.features.main.MainMenuFragment
 import com.lenta.movement.features.loading.fast.FastDataLoadingFragment
+import com.lenta.movement.features.main.MainMenuFragment
 import com.lenta.movement.features.main.box.GoodsListFragment
 import com.lenta.movement.features.main.box.create.CreateBoxesFragment
 import com.lenta.movement.features.selectmarket.SelectMarketFragment
 import com.lenta.movement.features.selectpersonalnumber.SelectPersonnelNumberFragment
-import com.lenta.movement.features.task.basket.TaskBasketFragment
-import com.lenta.movement.features.task.goods.TaskGoodsFragment
-import com.lenta.movement.features.task.goods.details.TaskGoodsDetailsFragment
-import com.lenta.movement.features.task.goods.info.TaskGoodsInfoFragment
 import com.lenta.movement.features.task.TaskFragment
+import com.lenta.movement.features.task.basket.TaskBasketFragment
 import com.lenta.movement.features.task.basket.info.TaskBasketInfoFragment
 import com.lenta.movement.features.task.eo.TaskEOMergeFragment
 import com.lenta.movement.features.task.eo.formedDocs.TaskEOMergeFormedDocsFragment
+import com.lenta.movement.features.task.goods.TaskGoodsFragment
+import com.lenta.movement.features.task.goods.details.TaskGoodsDetailsFragment
+import com.lenta.movement.features.task.goods.info.TaskGoodsInfoFragment
 import com.lenta.movement.models.*
 import com.lenta.movement.progress.IWriteOffProgressUseCaseInformator
 import com.lenta.movement.requests.network.models.documentsToPrint.DocumentsToPrintDocument
@@ -136,7 +136,7 @@ class ScreenNavigator(
                         R.string.alert_product_incorrect_for_create_box,
                         productInfo.materialNumber
                 ),
-                iconRes = com.lenta.shared.R.drawable.is_warning_red_80dp
+                iconRes = com.lenta.shared.R.drawable.ic_warning_red_80dp
         )
     }
 
@@ -156,7 +156,7 @@ class ScreenNavigator(
     override fun openInfoScreen(message: String) {
         openAlertScreen(
                 message = message,
-                iconRes = com.lenta.shared.R.drawable.ic_info_pink,
+                iconRes = com.lenta.shared.R.drawable.ic_info_pink_80dp,
                 textColor = ContextCompat.getColor(context, com.lenta.shared.R.color.color_text_white),
                 pageNumber = INFO_SCREEN_PAGE_NUMBER
         )
@@ -168,7 +168,7 @@ class ScreenNavigator(
                     AlertFragment.create(
                             message = msg,
                             codeConfirmForRight = backFragmentResultHelper.setFuncForResult(yesCallbackFunc),
-                            iconRes = R.drawable.ic_question_80dp,
+                            iconRes = R.drawable.ic_question_yellow_80dp,
                             pageNumber = OPEN_BOX_REWRITE_DIALOG_PAGE_NUMBER,
                             leftButtonDecorationInfo = ButtonDecorationInfo.no,
                             rightButtonDecorationInfo = ButtonDecorationInfo.yes
@@ -256,7 +256,7 @@ class ScreenNavigator(
                             description = context.getString(R.string.data_saving),
                             message = context.getString(R.string.task_save_confirmation_msg),
                             codeConfirmForRight = backFragmentResultHelper.setFuncForResult(yesCallbackFunc),
-                            iconRes = R.drawable.ic_question_80dp,
+                            iconRes = R.drawable.ic_question_yellow_80dp,
                             pageNumber = SAVE_TASK_CONFIRM_DIALOG_PAGE_NUMBER,
                             leftButtonDecorationInfo = ButtonDecorationInfo.back,
                             rightButtonDecorationInfo = ButtonDecorationInfo.yes
@@ -277,7 +277,7 @@ class ScreenNavigator(
                     AlertFragment.create(
                             description = context.getString(R.string.task_goods_title),
                             message = context.getString(R.string.task_eo_merge_zero_selected_eo_message),
-                            iconRes = R.drawable.ic_question_80dp,
+                            iconRes = R.drawable.ic_question_yellow_80dp,
                             pageNumber = ZERO_SELECTED_EO_PAGE_NUMBER,
                             leftButtonDecorationInfo = ButtonDecorationInfo.back,
                             buttonDecorationInfo3 = ButtonDecorationInfo(
@@ -308,7 +308,7 @@ class ScreenNavigator(
                             description = context.getString(R.string.detected_discrepancies),
                             message = context.getString(R.string.task_eo_merge_print_confirmation_msg, eoGeQuantity),
                             codeConfirmForRight = backFragmentResultHelper.setFuncForResult(yesCallbackFunc),
-                            iconRes = R.drawable.ic_question_80dp,
+                            iconRes = R.drawable.ic_question_yellow_80dp,
                             pageNumber = SAVE_TASK_CONFIRM_DIALOG_PAGE_NUMBER,
                             leftButtonDecorationInfo = ButtonDecorationInfo.back,
                             rightButtonDecorationInfo = ButtonDecorationInfo.yes

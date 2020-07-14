@@ -41,8 +41,8 @@
 
         <TextView
             android:id="@+id/counterText"
-            android:layout_width="@dimen/counter_text_size"
-            android:layout_height="@dimen/counter_text_size"
+            android:layout_width="@dimen/counter_textView_size"
+            android:layout_height="@dimen/counter_textView_size"
             android:layout_marginStart="@dimen/size_8dp"
             android:layout_marginTop="@dimen/size_16dp"
             android:layout_marginEnd="@dimen/size_8dp"
@@ -58,7 +58,8 @@
             app:layout_constraintEnd_toStartOf="@+id/div_vert1"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            tools:text="1" />
+            tools:text="1"
+            tools:ignore="UnusedAttribute" />
 
         <TextView
             android:id="@+id/docTitleText"

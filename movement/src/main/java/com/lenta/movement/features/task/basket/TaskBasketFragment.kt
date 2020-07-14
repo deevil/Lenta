@@ -14,11 +14,9 @@ import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListener
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
 import com.lenta.shared.scan.OnScanResultListener
-import com.lenta.shared.utilities.databinding.RecyclerViewKeyHandler
 import com.lenta.shared.utilities.extentions.connectLiveData
 import com.lenta.shared.utilities.extentions.provideViewModel
 import com.lenta.shared.utilities.state.state
-import java.lang.IllegalArgumentException
 
 class TaskBasketFragment: CoreFragment<FragmentTaskBasketBinding, TaskBasketViewModel>(),
     ToolbarButtonsClickListener,
@@ -26,8 +24,6 @@ class TaskBasketFragment: CoreFragment<FragmentTaskBasketBinding, TaskBasketView
     OnKeyDownListener {
 
     private var basketIndex: Int by state( DEFAULT_BASKET_INDEX )
-
-    private var recyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
 
     override fun getLayoutId() = R.layout.fragment_task_basket
 
@@ -43,21 +39,20 @@ class TaskBasketFragment: CoreFragment<FragmentTaskBasketBinding, TaskBasketView
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        binding?.rvConfig = simpleListRecyclerViewConfig(
-            binding?.recyclerView,
-            vm.selectionsHelper,
-            recyclerViewKeyHandler
-        )
+        binding?.apply {
+            val vm = this@TaskBasketFragment.vm
 
-        binding?.recyclerView?.let{ recyclerView ->
-            binding?.lifecycleOwner?.let { lifecycleOwner ->
-                recyclerViewKeyHandler = RecyclerViewKeyHandler(
-                        recyclerView,
-                        vm.goodsItemList,
-                        lifecycleOwner,
-                        recyclerViewKeyHandler?.posInfo?.value
-                )
-            }
+            rvConfig = simpleListRecyclerViewConfig(
+                    recyclerView = binding?.recyclerView,
+                    selectionItemsHelper = vm.selectionsHelper,
+                    recyclerViewKeyHandler = recyclerViewKeyHandler
+            )
+
+            recyclerViewKeyHandler = initRecyclerViewKeyHandler(
+                    recyclerView = recyclerView,
+                    items = vm.goodsItemList,
+                    previousPosInfo = recyclerViewKeyHandler?.posInfo?.value
+            )
         }
     }
 

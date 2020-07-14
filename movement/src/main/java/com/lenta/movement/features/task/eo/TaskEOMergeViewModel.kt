@@ -345,11 +345,19 @@ class TaskEOMergeViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
     }
 
     fun onClickEOListItem(position: Int) {
-        // TODO OPEN EO INSIDES SCREEN
+        // OPEN EO INSIDES SCREEN
     }
 
     fun onClickGEListItem(position: Int) {
-        // TODO Open GE Edit screen 86
+        geList.value?.let { geListValue ->
+            val ge = geListValue[position]
+            val geEoList = ge.eoList
+            if (geEoList.isEmpty()) {
+                // OPEN EO INSIDES SCREEN
+            } else {
+                // screenNavigator.openGEInsidesScreen(geEoList)
+            }
+        }
     }
 
     fun onBackPressed() {
@@ -403,7 +411,7 @@ class TaskEOMergeViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
         selectedPagePosition.value = GE_LIST_TAB
     }
 
-    fun onDigitPressed(digit: Int) = Unit
+    fun onDigitPressed(digit: Int) = Unit // TODO
 
     companion object {
         private const val EO_LIST_TAB = 0
