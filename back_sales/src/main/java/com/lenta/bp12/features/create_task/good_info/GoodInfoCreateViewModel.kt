@@ -26,6 +26,7 @@ import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.requests.combined.scan_info.ScanCodeInfo
 import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.extentions.*
+import com.lenta.shared.utilities.getDateFromString
 import com.lenta.shared.utilities.getFormattedDate
 import com.lenta.shared.view.OnPositionClickListener
 import kotlinx.coroutines.launch
@@ -755,7 +756,7 @@ class GoodInfoCreateViewModel : CoreViewModel() {
                     units = changedGood.convertingUnits,
                     providerCode = getProviderCode(),
                     producerCode = getProducerCode(),
-                    date = date.value.orEmpty()
+                    date = getDateFromString(date.value.orEmpty(), Constants.DATE_FORMAT_dd_mm_yyyy)
             )
             Logg.d { "--> add part = $part" }
             changedGood.addPart(part)

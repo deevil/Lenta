@@ -185,7 +185,6 @@ class TaskCompositionViewModel : CoreViewModel(), PageSelectionListener, OnOkInS
                     userNumber = sessionInfo.personnelNumber.orEmpty()
             )
 
-            manager.finishCurrentTask()
             navigator.openSaveDataScreen()
         }
     }

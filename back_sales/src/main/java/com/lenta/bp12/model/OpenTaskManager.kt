@@ -15,6 +15,7 @@ import com.lenta.shared.platform.constants.Constants
 import com.lenta.shared.utilities.extentions.dropZeros
 import com.lenta.shared.utilities.extentions.isSapTrue
 import com.lenta.shared.utilities.extentions.toSapBooleanString
+import com.lenta.shared.utilities.getStringFromDate
 import javax.inject.Inject
 
 class OpenTaskManager @Inject constructor(
@@ -213,7 +214,7 @@ class OpenTaskManager @Inject constructor(
                             PartInfo(
                                     material = good.material,
                                     producerCode = part.producerCode,
-                                    productionDate = part.date,
+                                    productionDate = getStringFromDate(part.date, Constants.DATE_FORMAT_yyyyMMdd),
                                     unitsCode = part.units.code,
                                     factQuantity = part.quantity.dropZeros(),
                                     partNumber = part.number,
