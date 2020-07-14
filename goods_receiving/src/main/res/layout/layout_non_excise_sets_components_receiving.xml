@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="vm"
+            type="com.lenta.bp9.features.goods_information.non_excise_sets_receiving.NonExciseSetsReceivingViewModel" />
+
+        <variable
+            name="rvConfig"
+            type="com.lenta.shared.utilities.databinding.DataBindingRecyclerViewConfig" />
+
+    </data>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <!-- Наименования колонок -->
+        <include
+            layout="@layout/item_title_non_excise_sets_components"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <!-- Список элементов -->
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rv"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_marginBottom="8dp"
+            android:layout_weight="1"
+            app:items="@{vm.listComponents}"
+            app:rv_config="@{rvConfig}"
+            tools:listitem="@layout/item_tile_non_excise_sets_components" />
+
+        <!-- Ввод номера -->
+        <LinearLayout style="@style/EnterNumberFieldLayout">
+
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="8dp"
+                android:digits="0123456789"
+                android:drawableEnd="@drawable/ic_loupe_white_16dp"
+                android:ellipsize="end"
+                android:hint="@string/scanned_ean"
+                android:imeOptions="actionSearch"
+                android:inputType="numberDecimal"
+                android:maxLength="20"
+                android:maxLines="1"
+                android:text="@={vm.eanCode}"
+                app:cursorToLastPos="@{true}"
+                app:onOkInSoftKeyboard="@{vm}"
+                app:requestFocus="@{vm.requestFocusToEan}"
+                tools:ignore="Autofill" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</layout>

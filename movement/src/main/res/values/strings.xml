@@ -56,6 +56,7 @@
     <string name="task_basket_title">Список товаров корзины</string>
     <string name="task_basket_info_title">Свойства корзины</string>
     <string name="task_basket_characteristics_title">Свойства</string>
+    <string name="basket">Корзина</string>
     <string name="baskets">Корзины</string>
     <string name="pu">ЕО</string>
     <string name="boxes">Коробки</string>
@@ -73,4 +74,12 @@
         НАЗАД - возврат к списку ЕО\n
         ОБРАБОТАТЬ - обработать каждое ЕО как ЕО верхнего уровня, без создания ГЕ\n
         ОБЪЕДИНИТЬ - добавить все ЕО в одну ГЕ</string>
+    <string name="task_eo_merge_docs_title">Сформированные документы</string>
+    <string name="documents_type">Тип документа</string>
+    <string name="detected_discrepancies">Обнаруженные расхождения</string>
+    <string name="task_eo_merge_print_confirmation_msg">Напечатать паллетные ведомости для всех(%1$d) ЕО/ГЕ?</string>
+    <string name="cargoUnit_doc_print">Печать паллетной ведомости</string>
+    <string name="cargoUnit_doc_printed">Паллетная ведомость напечатана</string>
+    <string name="zero_pcs">0 шт.</string>
+    <string name="total_in_basket">Итого\nПо корзине</string>
 </resources>

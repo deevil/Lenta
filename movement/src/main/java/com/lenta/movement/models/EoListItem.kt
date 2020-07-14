@@ -1,6 +1,5 @@
 package com.lenta.movement.models
 
-import android.graphics.drawable.Drawable
 import com.lenta.shared.utilities.databinding.Evenable
 
 data class EoListItem(

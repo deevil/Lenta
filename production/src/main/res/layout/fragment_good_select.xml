@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".features.create_task.task_composition.TaskCompositionFragment">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <!-- Ввод номера товара -->
+        <LinearLayout
+            android:orientation="vertical"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            style="@style/EnterNumberFieldLayout">
+
+            <TextView
+                android:gravity="center"
+                android:textSize="@dimen/text_14sp"
+                android:text="@string/tw_search_info"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:layout_margin="@dimen/size_8dp"
+                />
+
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_margin="@dimen/size_8dp"
+                android:layout_weight="1"
+                android:digits="0123456789"
+                android:ellipsize="end"
+                android:imeOptions="actionGo"
+                android:inputType="number"
+                android:maxLength="20"
+                android:maxLines="1"
+                tools:ignore="Autofill" />
+
+        </LinearLayout>
+
+        <ImageButton
+            android:layout_margin="@dimen/size_8dp"
+            android:layout_width="wrap_content"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:background="?selectableItemBackground"
+            app:layout_constraintEnd_toStartOf="@+id/ib_scan"
+            android:src="@drawable/ic_barcode_white_32dp"
+            android:layout_marginEnd="@dimen/size_8dp"
+            android:layout_height="wrap_content"/>
+
+        <ImageButton
+            android:id="@+id/ib_scan"
+            android:layout_margin="@dimen/size_8dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/size_8dp"
+            android:background="?selectableItemBackground"
+            android:src="@drawable/ic_scan_barcode_white_32dp" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</layout>

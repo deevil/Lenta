@@ -13,7 +13,7 @@ import com.lenta.bp14.models.data.GoodsListTab
 import com.lenta.bp14.models.getTaskName
 import com.lenta.bp14.models.not_exposed.INotExposedTask
 import com.lenta.bp14.models.not_exposed.repo.NotExposedProductInfo
-import com.lenta.bp14.platform.extentions.getQuantity
+import com.lenta.shared.utilities.extentions.getQuantity
 import com.lenta.bp14.platform.navigation.IScreenNavigator
 import com.lenta.bp14.requests.not_exposed_product.NotExposedSendReportNetRequest
 import com.lenta.shared.account.ISessionInfo
@@ -92,7 +92,7 @@ class GoodsListNeViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
                     matNr = productInfo.matNr,
                     name = "${productInfo.matNr.takeLast(6)} ${productInfo.name}",
                     quantity = "${productInfo.quantity.toStringFormatted()} ${productInfo.units?.name
-                            ?: ""}",
+                           .orEmpty()}",
                     isEmptyPlaceMarked = productInfo.isEmptyPlaceMarked
             )
         }
@@ -144,7 +144,7 @@ class GoodsListNeViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
 
     private fun checkCode(code: String?) {
         analyseCode(
-                code = code ?: "",
+                code = code.orEmpty(),
                 funcForEan = { eanCode ->
                     searchCode(eanCode = eanCode)
                 },
@@ -192,7 +192,7 @@ class GoodsListNeViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
                         }
                 ) {
                     scanInfoResult = it
-                    quantity = scanCodeInfo.getQuantity(defaultUnits = scanInfoResult!!.productInfo.uom)
+                    quantity = scanCodeInfo.getQuantity(units = it.productInfo.uom)
                     true
                 }
 
@@ -294,13 +294,13 @@ class GoodsListNeViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
     }
 
     fun onDigitPressed(digit: Int) {
-        numberField.postValue(numberField.value ?: "" + digit)
+        numberField.postValue(numberField.value.orEmpty() + digit)
         requestFocusToNumberField.value = true
     }
 
     fun applyFilter() {
         task.onFilterChanged(FilterParameter(FilterFieldType.NUMBER, filterField.value
-                ?: ""))
+               .orEmpty()))
     }
 
     fun onScanResult(data: String) {

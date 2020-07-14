@@ -1,10 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string-array name="test_list">
-        <item>Тестовая строка 1</item>
-        <item>Тестовая строка 2</item>
-        <item>Тестовая строка 3</item>
+    <string-array name="storage_list">
+        <item>Склад 1</item>
+        <item>Склад 2</item>
+        <item>Склад 3</item>
+    </string-array>
+
+    <string-array name="manufacturer_list">
+        <item>Производитель 1</item>
+        <item>Производитель 2</item>
+        <item>Производитель 3</item>
+    </string-array>
+
+    <string-array name="date_list">
+        <item>Дата производства 1</item>
+        <item>Дата производства 2</item>
+        <item>Дата производства 3</item>
     </string-array>
 
 </resources>

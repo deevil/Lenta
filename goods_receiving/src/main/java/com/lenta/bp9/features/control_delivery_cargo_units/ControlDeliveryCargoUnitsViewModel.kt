@@ -86,8 +86,7 @@ class ControlDeliveryCargoUnitsViewModel : CoreViewModel(), PageSelectionListene
     }
 
     val enabledMissingBtn: MutableLiveData<Boolean> = notProcessedSelectionsHelper.selectedPositions.map {
-        val selectedComponentsPositions = notProcessedSelectionsHelper.selectedPositions.value
-        !selectedComponentsPositions.isNullOrEmpty()
+        !it.isNullOrEmpty()
     }
 
     val saveEnabled = listNotProcessedHolder.map {
@@ -108,11 +107,15 @@ class ControlDeliveryCargoUnitsViewModel : CoreViewModel(), PageSelectionListene
 
             statusCodeSurplus.value = dataBase.getSurplusInfoForPRC()?.first()?.code
 
-            onResume()
+            updateData()
         }
     }
 
     fun onResume() {
+        updateData()
+    }
+
+    private fun updateData() {
         updateNotProcessed()
         updateProcessed()
     }
@@ -140,8 +143,7 @@ class ControlDeliveryCargoUnitsViewModel : CoreViewModel(), PageSelectionListene
             }
         }
 
-        updateNotProcessed()
-        updateProcessed()
+        updateData()
     }
 
     fun onClickSave() {

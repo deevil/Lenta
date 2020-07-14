@@ -1,5 +1,6 @@
 package com.lenta.shared.utilities.databinding
 
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.databinding.BindingAdapter
@@ -60,7 +61,7 @@ fun setTextColor(textView: TextView, textColorCustom: Int?) {
 @BindingAdapter(value = ["setTextWithVisibilities", "prefix", "postfix"], requireAll = false)
 fun setTextWithVisibilities(textView: TextView, text: String?, prefix: String?, postfix: String?) {
     textView.setVisible(!text.isNullOrEmpty())
-    val resText = "${prefix ?: ""}${text ?: ""}${postfix ?: ""}"
+    val resText = "${prefix.orEmpty()}${text.orEmpty()}${postfix.orEmpty()}"
     textView.text = resText
 }
 
@@ -151,4 +152,13 @@ fun setTextWithVisibilities(textView: TextView, @Suppress("UNUSED_PARAMETER") sc
         dataBindingHelpHolder.coreNavigator.openAlertScreen(message = textView.text.toString(), onlyIfFirstAlert = true)
     }
     textView.setBackgroundResource(textView.context.selectableItemBackgroundResId())
+}
+
+@BindingAdapter("visibleOrGone")
+fun setVisibleOrGone(textView: TextView, isVisible: Boolean?) {
+    if (isVisible == true) {
+        textView.setVisible()
+    } else {
+        textView.setVisibleGone()
+    }
 }

@@ -13,9 +13,13 @@ class MemoryTaskProductsDiscrepanciesRepository : ITaskProductsDiscrepanciesRepo
     }
 
     override fun findProductDiscrepanciesOfProduct(product: TaskProductInfo): List<TaskProductDiscrepancies> {
+        return findProductDiscrepanciesOfProduct(product.materialNumber)
+    }
+
+    override fun findProductDiscrepanciesOfProduct(materialNumber: String): List<TaskProductDiscrepancies> {
         val foundDiscrepancies = ArrayList<TaskProductDiscrepancies>()
         for (i in productsDiscrepancies.indices) {
-            if (product.materialNumber == productsDiscrepancies[i].materialNumber) {
+            if (materialNumber == productsDiscrepancies[i].materialNumber) {
                 foundDiscrepancies.add(productsDiscrepancies[i])
             }
         }
@@ -72,9 +76,35 @@ class MemoryTaskProductsDiscrepanciesRepository : ITaskProductsDiscrepanciesRepo
     }
 
     override fun deleteProductsDiscrepanciesForProduct(product: TaskProductInfo): Boolean {
+        return deleteProductsDiscrepanciesForProduct(product.materialNumber)
+    }
+
+    override fun deleteProductsDiscrepanciesForProduct(materialNumber: String): Boolean {
         val delDiscrepancies = ArrayList<TaskProductDiscrepancies>()
         for (i in productsDiscrepancies.indices) {
-            if (product.materialNumber == productsDiscrepancies[i].materialNumber) {
+            if (materialNumber == productsDiscrepancies[i].materialNumber) {
+                delDiscrepancies.add(productsDiscrepancies[i])
+            }
+        }
+
+        if (delDiscrepancies.isEmpty()) {
+            return false
+        }
+
+        delDiscrepancies.map {
+            deleteProductDiscrepancy(it)
+        }
+        return true
+    }
+
+    override fun deleteProductsDiscrepanciesNotNormForProduct(product: TaskProductInfo): Boolean {
+        return deleteProductsDiscrepanciesNotNormForProduct(product.materialNumber)
+    }
+
+    override fun deleteProductsDiscrepanciesNotNormForProduct(materialNumber: String): Boolean {
+        val delDiscrepancies = ArrayList<TaskProductDiscrepancies>()
+        for (i in productsDiscrepancies.indices) {
+            if (materialNumber == productsDiscrepancies[i].materialNumber && productsDiscrepancies[i].typeDiscrepancies != "1") {
                 delDiscrepancies.add(productsDiscrepancies[i])
             }
         }
@@ -200,14 +230,26 @@ class MemoryTaskProductsDiscrepanciesRepository : ITaskProductsDiscrepanciesRepo
         return product.orderQuantity.toDouble() - getCountAcceptOfProductPGE(product) - getCountRefusalOfProductPGE(product)
     }
 
-    override fun getCountOfDiscrepanciesOfProduct(product: TaskProductInfo, typeDiscrepancies: String?): Double {
+    override fun getCountProductNotProcessedOfProductPGEOfProcessingUnits(product: TaskProductInfo, orderQuantity: Double) : Double {
+        return orderQuantity - getCountAcceptOfProductPGE(product) - getCountRefusalOfProductPGE(product)
+    }
+
+    override fun getCountOfDiscrepanciesOfProduct(product: TaskProductInfo, typeDiscrepancies: String): Double {
         var countDiscrepancies = 0.0
-        typeDiscrepancies?.let {
-            findProductDiscrepanciesOfProduct(product).filter {
-                it.typeDiscrepancies == typeDiscrepancies
-            }.map {discrepancies ->
-                countDiscrepancies += discrepancies.numberDiscrepancies.toDouble()
-            }
+        findProductDiscrepanciesOfProduct(product).filter {
+            it.typeDiscrepancies == typeDiscrepancies
+        }.map {discrepancies ->
+            countDiscrepancies += discrepancies.numberDiscrepancies.toDouble()
+        }
+        return countDiscrepancies
+    }
+
+    override fun getCountOfDiscrepanciesOfProduct(materialNumber: String, typeDiscrepancies: String): Double {
+        var countDiscrepancies = 0.0
+        findProductDiscrepanciesOfProduct(materialNumber).filter {
+            it.typeDiscrepancies == typeDiscrepancies
+        }.map {discrepancies ->
+            countDiscrepancies += discrepancies.numberDiscrepancies.toDouble()
         }
         return countDiscrepancies
     }
@@ -222,6 +264,11 @@ class MemoryTaskProductsDiscrepanciesRepository : ITaskProductsDiscrepanciesRepo
         }
     }
 
+    override fun getAllCountDiscrepanciesOfProduct(materialNumber: String): Double {
+        return findProductDiscrepanciesOfProduct(materialNumber).sumByDouble {
+            it.numberDiscrepancies.toDouble()
+        }
+    }
 
     override fun clear() {
         productsDiscrepancies.clear()

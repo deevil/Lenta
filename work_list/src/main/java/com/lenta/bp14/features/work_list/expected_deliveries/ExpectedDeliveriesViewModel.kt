@@ -22,15 +22,18 @@ class ExpectedDeliveriesViewModel : CoreViewModel() {
 
     @Inject
     lateinit var navigator: IScreenNavigator
+
     @Inject
     lateinit var task: IWorkListTask
+
     @Inject
     lateinit var sessionInfo: ISessionInfo
+
     @Inject
     lateinit var expectedDeliveriesNetRequest: IExpectedDeliveriesNetRequest
 
 
-    val title = MutableLiveData<String>("")
+    val title = MutableLiveData("")
 
     val deliveries: MutableLiveData<List<DeliveriesUi>> by lazy {
         task.currentGood.value?.deliveries!!.map { list: List<Delivery>? ->
@@ -59,8 +62,8 @@ class ExpectedDeliveriesViewModel : CoreViewModel() {
             navigator.showProgressLoadingData()
             expectedDeliveriesNetRequest(
                     ExpectedDeliveriesParams(
-                            tkNumber = sessionInfo.market ?: "Not Found!",
-                            material = task.currentGood.value?.material ?: ""
+                            tkNumber = sessionInfo.market.orEmpty(),
+                            material = task.currentGood.value?.material.orEmpty()
                     )
             ).either(::handleFailure, ::updateDeliveries)
         }
@@ -79,7 +82,7 @@ class ExpectedDeliveriesViewModel : CoreViewModel() {
                 Delivery(
                         status = delivery.status,
                         type = delivery.type,
-                        quantity = delivery.quantityInDelivery,
+                        quantity = delivery.quantityInOrder,
                         date = "${delivery.date}_${delivery.time}".getDate(Constants.DATE_TIME_ONE)
                 )
             }

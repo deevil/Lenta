@@ -34,7 +34,7 @@ interface UseCase<out Type, in Params> where Type : Any {
 
     suspend operator fun invoke(params: Params): Either<Failure, Type> {
         return withContext(Dispatchers.IO) {
-            return@withContext run(params)
+            run(params)
         }
     }
 

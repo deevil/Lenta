@@ -66,7 +66,7 @@ class MercuryListIrrelevantFragment : CoreFragment<FragmentMercuryListIrrelevant
         binding?.let { layoutBinding ->
             layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
                     layoutId = R.layout.item_tile_mercury_list_irrelevant,
-                    itemId = BR.vm,
+                    itemId = BR.item,
                     realisation = object : DataBindingAdapter<ItemTileMercuryListIrrelevantBinding> {
                         override fun onCreate(binding: ItemTileMercuryListIrrelevantBinding) {
                         }

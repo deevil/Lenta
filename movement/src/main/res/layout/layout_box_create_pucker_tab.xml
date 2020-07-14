@@ -25,13 +25,13 @@
         <View
             android:id="@+id/topHorizontalDiv"
             android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:layout_marginTop="16dp"
+            android:layout_height="@dimen/divider_stroke_width"
+            android:layout_marginTop="@dimen/size_16dp"
             android:background="@color/color_divider"
             app:layout_constraintTop_toTopOf="parent" />
 
         <View
-            android:layout_width="1dp"
+            android:layout_width="@dimen/divider_stroke_width"
             android:layout_height="0dp"
             android:background="@color/color_divider"
             app:layout_constraintBottom_toTopOf="@+id/horizontalDiv2"
@@ -42,37 +42,39 @@
         <EditText
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginEnd="16dp"
+            android:layout_marginStart="@dimen/size_16dp"
+            android:layout_marginEnd="@dimen/size_16dp"
             android:clickable="false"
             android:focusable="false"
             android:text="@string/quantity"
             app:layout_constraintBottom_toTopOf="@+id/horizontalDiv1"
             app:layout_constraintEnd_toEndOf="@+id/centerVerticalGuideline"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/topHorizontalDiv" />
+            app:layout_constraintTop_toBottomOf="@+id/topHorizontalDiv"
+            tools:ignore="Autofill,LabelFor,TextFields" />
 
         <EditText
             android:id="@+id/countText"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginEnd="16dp"
-            android:text="0 шт."
+            android:layout_marginStart="@dimen/size_16dp"
+            android:layout_marginEnd="@dimen/size_16dp"
+            android:text="@string/zero_pcs"
             android:clickable="false"
             android:focusable="false"
             app:layout_constraintBottom_toTopOf="@+id/horizontalDiv1"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="@+id/centerVerticalGuideline"
-            app:layout_constraintTop_toBottomOf="@+id/topHorizontalDiv" />
+            app:layout_constraintTop_toBottomOf="@+id/topHorizontalDiv"
+            tools:ignore="Autofill,LabelFor,TextFields"/>
 
         <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="6dp"
-            android:layout_marginEnd="12dp"
-            android:layout_marginBottom="6dp"
-            android:src="@drawable/ic_eiz_24dp"
+            android:layout_marginTop="@dimen/size_6dp"
+            android:layout_marginEnd="@dimen/size_12dp"
+            android:layout_marginBottom="@dimen/size_6dp"
+            android:src="@drawable/ic_eiz_white_24dp"
             app:layout_constraintBottom_toBottomOf="@+id/countText"
             app:layout_constraintEnd_toEndOf="@+id/countText"
             app:layout_constraintTop_toTopOf="@+id/countText" />
@@ -80,16 +82,16 @@
         <View
             android:id="@+id/horizontalDiv1"
             android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:layout_marginTop="70dp"
+            android:layout_height="@dimen/divider_stroke_width"
+            android:layout_marginTop="@dimen/size_70dp"
             android:background="@color/color_divider"
             app:layout_constraintTop_toBottomOf="@+id/topHorizontalDiv" />
 
         <TextView
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginEnd="16dp"
+            android:layout_marginStart="@dimen/size_16dp"
+            android:layout_marginEnd="@dimen/size_16dp"
             android:text="@{@string/create_boxes_filling_tab_attachment_format(vm.productInfo.quantityInvestments)}"
             app:layout_constraintBottom_toTopOf="@id/horizontalDiv2"
             app:layout_constraintEnd_toEndOf="@+id/centerVerticalGuideline"
@@ -101,7 +103,7 @@
             android:id="@+id/completableCheckbox"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
+            android:layout_marginStart="@dimen/size_16dp"
             android:clickable="false"
             android:focusable="false"
             android:checked="@{vm.stamps.size() == vm.productInfo.quantityInvestments}"
@@ -113,7 +115,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
+            android:layout_marginStart="@dimen/size_16dp"
             android:text="@{@string/create_boxes_filling_tab_progress_format(vm.stamps.size(), vm.productInfo.quantityInvestments)}"
             app:layout_constraintBottom_toTopOf="@id/horizontalDiv2"
             app:layout_constraintStart_toEndOf="@+id/completableCheckbox"
@@ -131,8 +133,8 @@
         <EditText
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginEnd="16dp"
+            android:layout_marginStart="@dimen/size_16dp"
+            android:layout_marginEnd="@dimen/size_16dp"
             android:clickable="false"
             android:focusable="false"
             android:text='@{vm.stamps.size() > 0 ? vm.stamps.get(0).manufacturerName : ""}'
@@ -140,18 +142,19 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/horizontalDiv2"
-            tools:text="Производитель винишка №1" />
+            tools:text="Производитель винишка №1"
+            tools:ignore="Autofill,LabelFor,TextFields"/>
 
         <View
             android:id="@+id/horizontalDiv3"
             android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:layout_marginTop="70dp"
+            android:layout_height="@dimen/divider_stroke_width"
+            android:layout_marginTop="@dimen/size_70dp"
             android:background="@color/color_divider"
             app:layout_constraintTop_toBottomOf="@+id/horizontalDiv2" />
 
         <View
-            android:layout_width="1dp"
+            android:layout_width="@dimen/divider_stroke_width"
             android:layout_height="0dp"
             android:background="@color/color_divider"
             app:layout_constraintBottom_toTopOf="@+id/horizontalDiv4"
@@ -162,8 +165,8 @@
         <TextView
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginEnd="16dp"
+            android:layout_marginStart="@dimen/size_16dp"
+            android:layout_marginEnd="@dimen/size_16dp"
             android:text='@{vm.productInfo.isRus ? "Дата розлива" : "Дата ввоза"}'
             app:layout_constraintBottom_toTopOf="@+id/horizontalDiv4"
             app:layout_constraintEnd_toEndOf="@+id/centerVerticalGuideline"
@@ -175,8 +178,8 @@
             android:id="@+id/dateOfPourText"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginEnd="16dp"
+            android:layout_marginStart="@dimen/size_16dp"
+            android:layout_marginEnd="@dimen/size_16dp"
             android:clickable="false"
             android:focusable="false"
             android:text='@{vm.stamps.size() > 0 ? vm.stamps.get(0).dateOfPour : ""}'
@@ -184,21 +187,22 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="@+id/centerVerticalGuideline"
             app:layout_constraintTop_toBottomOf="@+id/horizontalDiv3"
-            tools:text="25.02.2017" />
+            tools:text="25.02.2017"
+            tools:ignore="Autofill,LabelFor,TextFields"/>
 
         <View
             android:id="@+id/horizontalDiv4"
             android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:layout_marginTop="70dp"
+            android:layout_height="@dimen/divider_stroke_width"
+            android:layout_marginTop="@dimen/size_70dp"
             android:background="@color/color_divider"
             app:layout_constraintTop_toBottomOf="@+id/horizontalDiv3" />
 
         <EditText
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginEnd="16dp"
+            android:layout_marginStart="@dimen/size_16dp"
+            android:layout_marginEnd="@dimen/size_16dp"
             android:clickable="false"
             android:focusable="false"
             android:text='@{TextUtils.isEmpty(vm.boxNumber) ? "Отсканируйте номер коробки" : vm.boxNumber }'
@@ -206,13 +210,14 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/horizontalDiv5"
-            tools:text="12345678912345678912345678" />
+            tools:text="12345678912345678912345678"
+            tools:ignore="Autofill,LabelFor,TextFields"/>
 
         <View
             android:id="@+id/horizontalDiv5"
             android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:layout_marginTop="70dp"
+            android:layout_height="@dimen/divider_stroke_width"
+            android:layout_marginTop="@dimen/size_70dp"
             android:background="@color/color_divider"
             app:layout_constraintTop_toBottomOf="@+id/horizontalDiv4" />
 
@@ -220,35 +225,35 @@
             android:id="@+id/matrixLayout"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
+            android:layout_marginStart="@dimen/size_8dp"
             android:foreground="?selectableItemBackground"
             android:onClick="@{(v) -> vm.screenNavigator.openMatrixInfoScreen(vm.productInfo.matrixType)}"
-            android:padding="8dp"
+            android:padding="@dimen/size_8dp"
             app:layout_constraintBottom_toBottomOf="@+id/b_scan"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="@+id/b_scan">
 
             <TextView
                 android:id="@+id/tv_matrix"
-                android:layout_width="36sp"
-                android:layout_height="36sp"
+                android:layout_width="@dimen/round_btn_size"
+                android:layout_height="@dimen/round_btn_size"
                 android:autoSizeTextType="uniform"
                 android:fontFamily="@font/tahoma_bold"
                 android:gravity="center"
-                android:textSize="18sp"
+                android:textSize="@dimen/text_18sp"
                 app:matrixType="@{vm.productInfo.matrixType}"
                 tools:background="@drawable/bg_white_circle"
-                tools:text="A" />
+                tools:text="A"/>
         </FrameLayout>
 
         <FrameLayout
             android:id="@+id/sectionLayout"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
+            android:layout_marginStart="@dimen/size_8dp"
             android:foreground="?selectableItemBackground"
             android:onClick="@{(v) -> vm.screenNavigator.openSectionInfoScreen(vm.productInfo.sectionId)}"
-            android:padding="8dp"
+            android:padding="@dimen/size_8dp"
             app:layout_constraintBottom_toBottomOf="@+id/b_scan"
             app:layout_constraintStart_toEndOf="@+id/matrixLayout"
             app:layout_constraintTop_toTopOf="@+id/b_scan">
@@ -256,8 +261,8 @@
             <TextView
                 android:id="@+id/sectionText"
                 style="@style/NumberSectionTxt"
-                android:layout_width="36sp"
-                android:layout_height="36sp"
+                android:layout_width="@dimen/round_btn_size"
+                android:layout_height="@dimen/round_btn_size"
                 android:autoSizeTextType="uniform"
                 android:gravity="center"
                 android:text='@{"" + vm.productInfo.sectionId}'
@@ -268,65 +273,65 @@
             android:id="@+id/exciseAlcoButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="8dp"
-            android:layout_marginBottom="4dp"
+            android:layout_marginStart="@dimen/size_4dp"
             android:background="?selectableItemBackground"
             android:padding="8dp"
+            android:scaleType="fitCenter"
             app:alcoIcon="@{vm.productInfo.type}"
-            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintBottom_toBottomOf="@id/b_scan"
             app:layout_constraintStart_toEndOf="@+id/sectionLayout"
-            tools:src="@drawable/ic_excise_white_48dp" />
+            tools:src="@drawable/ic_excise_alcohol_white_32dp" />
 
         <FrameLayout
             android:id="@+id/scanBoxLayout"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="4dp"
+            android:layout_marginEnd="@dimen/size_4dp"
             android:foreground="?selectableItemBackground"
             android:onClick="@{(v) -> vm.screenNavigator.openBoxInfoScreen()}"
-            android:padding="4dp"
+            android:padding="@dimen/size_4dp"
             app:layout_constraintBottom_toBottomOf="@+id/b_scan"
             app:layout_constraintEnd_toStartOf="@+id/scanBarcodeLayout"
             app:layout_constraintTop_toTopOf="@+id/b_scan">
 
             <ImageView
                 android:id="@+id/b_scan_box"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
+                android:layout_width="@dimen/square_btn_size"
+                android:layout_height="@dimen/square_btn_size"
                 android:scaleType="fitCenter"
-                android:src="@drawable/is_scan_box" />
+                android:src="@drawable/ic_scan_box_white_32dp" />
         </FrameLayout>
 
         <FrameLayout
             android:id="@+id/scanBarcodeLayout"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="4dp"
+            android:layout_marginEnd="@dimen/size_8dp"
             android:foreground="?selectableItemBackground"
             android:onClick="@{(v) -> vm.screenNavigator.openESInfoScreen()}"
-            android:padding="4dp"
+            android:padding="@dimen/size_4dp"
             app:layout_constraintBottom_toBottomOf="@+id/b_scan"
             app:layout_constraintEnd_toStartOf="@+id/b_scan"
             app:layout_constraintTop_toTopOf="@+id/b_scan">
 
             <ImageView
                 android:id="@+id/b_scan_es"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
+                android:layout_width="@dimen/square_btn_size"
+                android:layout_height="@dimen/square_btn_size"
                 android:scaleType="fitCenter"
-                android:src="@drawable/is_scan_barcode_es" />
+                android:src="@drawable/ic_scan_barcode_es_white_32dp" />
         </FrameLayout>
 
         <ImageButton
             android:id="@+id/b_scan"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="8dp"
-            android:layout_marginBottom="8dp"
+            android:layout_width="@dimen/square_btn_size"
+            android:layout_height="@dimen/square_btn_size"
+            android:layout_marginEnd="@dimen/size_8dp"
+            android:layout_marginBottom="@dimen/size_8dp"
             android:background="?selectableItemBackground"
             android:onClick="@{(v) -> vm.screenNavigator.openEanInfoScreen()}"
-            android:padding="4dp"
-            android:src="@drawable/ic_scan_barcode_48dp"
+            android:scaleType="fitCenter"
+            android:src="@drawable/ic_scan_barcode_white_32dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />
 

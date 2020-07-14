@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="item"
+            type="com.lenta.bp12.features.open_task.discrepancy_list.ItemGoodUi" />
+
+        <variable
+            name="selectedForDelete"
+            type="Boolean" />
+
+    </data>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/bg_selectable"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/common_row_height"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <LinearLayout
+                style="@style/LinearCellStyle"
+                android:layout_weight="@integer/good_column_1">
+
+                <TextView
+                    android:id="@+id/tv_item_number"
+                    style="@style/CellTextStyle"
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:background="@drawable/bg_border_circle_white_selectable_for_delete"
+                    android:gravity="center"
+                    android:text='@{"" + item.position}'
+                    app:selected="@{selectedForDelete}"
+                    tools:text="1" />
+
+            </LinearLayout>
+
+            <View style="@style/VerticalDivider" />
+
+            <LinearLayout
+                style="@style/LinearCellStyle"
+                android:layout_weight="@integer/good_column_2"
+                android:orientation="horizontal">
+
+                <TextView
+                    style="@style/CellTextStyle"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:text="@{item.name}"
+                    tools:text="003298 Арбалет" />
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="5dp"
+                    android:src="@drawable/ic_keyboard_arrow_right_white_16dp"
+                    tools:ignore="ContentDescription" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <View style="@style/HorizontalDivider" />
+
+    </LinearLayout>
+
+</layout>

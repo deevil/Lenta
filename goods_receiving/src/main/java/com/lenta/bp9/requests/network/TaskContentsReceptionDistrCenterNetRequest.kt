@@ -91,6 +91,8 @@ data class TaskContentsReceptionDistrCenterResult(
         val quantityOutgoingFillings: String,
         @SerializedName("ET_PROD_TEXT") //Таблица ЕГАИС производителей
         val manufacturers: List<Manufacturer>,
+        @SerializedName("ET_TASK_SETS")//Список наборов
+        val setsInfo: List<TaskSetsRestData>,
         @SerializedName("EV_RETCODE")
         override val retCode: Int,
         @SerializedName("EV_ERROR_TEXT")

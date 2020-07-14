@@ -8,6 +8,7 @@
         <variable
             name="vm"
             type="com.lenta.bp10.features.main_menu.MainMenuViewModel" />
+
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -51,23 +52,29 @@
             app:layout_constraintTop_toTopOf="parent"
             tools:ignore="ContentDescription" />
 
-        <Button
-            android:id="@+id/b_create_task"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:layout_marginEnd="16dp"
             android:layout_marginBottom="16dp"
-            android:layoutDirection="rtl"
-            android:onClick="@{(view) -> vm.onClickCreateTask()}"
-            android:text="@string/create_task"
-            android:textAllCaps="false"
-            app:icon="@drawable/ic_detail"
-            app:iconGravity="end"
+            android:orientation="vertical"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:requestFocus="@{vm.fio}" />
+            app:layout_constraintStart_toStartOf="parent">
+
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:onClick="@{(view) -> vm.onClickCreateTask()}"
+                android:text="@string/create_task"
+                android:textAllCaps="false"
+                app:icon="@drawable/ic_detail_white_32dp"
+                app:iconGravity="end"
+                app:requestFocus="@{vm.fio}" />
+
+        </LinearLayout>
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </layout>

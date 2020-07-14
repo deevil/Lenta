@@ -2,6 +2,8 @@ package com.lenta.shared.platform.navigation
 
 import android.content.Context
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.LiveData
 import com.lenta.shared.R
@@ -11,6 +13,7 @@ import com.lenta.shared.analytics.db.RoomAppDatabase
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.exception.IFailureInterpreter
 import com.lenta.shared.features.alert.AlertFragment
+import com.lenta.shared.features.app_updates.AppUpdateFragment
 import com.lenta.shared.features.auxiliary_menu.AuxiliaryMenuFragment
 import com.lenta.shared.features.exit.ExitWithConfirmationFragment
 import com.lenta.shared.features.fmp_settings.FmpSettingsFragment
@@ -60,6 +63,15 @@ class CoreNavigator @Inject constructor(
 
     private fun getFragmentStack() = foregroundActivityProvider.getActivity()?.fragmentStack
 
+    private fun getFragmentStackSize(): Int {
+        return foregroundActivityProvider.getActivity()?.supportFragmentManager?.backStackEntryCount
+                ?: 0
+    }
+
+    override fun isOneScreenInStack(): Boolean {
+        return getFragmentStackSize() == 1
+    }
+
     override fun goBackWithArgs(args: Bundle) {
         runOrPostpone {
             getFragmentStack()?.popReturnArgs(args = args)
@@ -83,6 +95,13 @@ class CoreNavigator @Inject constructor(
         runOrPostpone {
             analyticsHelper.onGoBack()
             getFragmentStack()?.pop()
+        }
+    }
+
+    override fun goBackTo(fragmentName: String) {
+        runOrPostpone {
+            analyticsHelper.onGoBack()
+            getFragmentStack()?.pop(fragmentName)
         }
     }
 
@@ -262,7 +281,7 @@ class CoreNavigator @Inject constructor(
         runOrPostpone {
             getFragmentStack()?.push(AlertFragment.create(message = iconDescriptionHelper.getDescription(IconCode.EAN)
                     ?: context.getString(R.string.ean_info),
-                    iconRes = R.drawable.ic_scan_barcode_48dp), CustomAnimation.vertical)
+                    iconRes = R.drawable.ic_scan_barcode_white_80dp), CustomAnimation.vertical)
         }
     }
 
@@ -271,7 +290,7 @@ class CoreNavigator @Inject constructor(
             getFragmentStack()?.push(
                     AlertFragment.create(message = iconDescriptionHelper.getDescription(IconCode.QR_CODE)
                             ?: context.getString(R.string.qr_code_info),
-                            iconRes = R.drawable.ic_scan_qrcode_48dp), CustomAnimation.vertical)
+                            iconRes = R.drawable.ic_scan_qrcode_white_80dp), CustomAnimation.vertical)
         }
     }
 
@@ -279,7 +298,7 @@ class CoreNavigator @Inject constructor(
         runOrPostpone {
             getFragmentStack()?.push(AlertFragment.create(message = iconDescriptionHelper.getDescription(IconCode.EXCISE_STAMP)
                     ?: context.getString(R.string.es_info),
-                    iconRes = R.drawable.ic_scan_barcode_es_48dp), CustomAnimation.vertical)
+                    iconRes = R.drawable.ic_scan_barcode_es_white_80dp), CustomAnimation.vertical)
         }
     }
 
@@ -287,7 +306,14 @@ class CoreNavigator @Inject constructor(
         runOrPostpone {
             getFragmentStack()?.push(AlertFragment.create(
                     message = context.getString(R.string.gs128_info),
-                    iconRes = R.drawable.ic_scan_barcode_vet_48dp), CustomAnimation.vertical)
+                    iconRes = R.drawable.ic_scan_barcode_vet_white_80dp), CustomAnimation.vertical)
+        }
+    }
+
+
+    override fun openUpdateAppScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(AppUpdateFragment())
         }
     }
 
@@ -295,13 +321,13 @@ class CoreNavigator @Inject constructor(
         runOrPostpone {
             getFragmentStack()?.push(AlertFragment.create(message = iconDescriptionHelper.getDescription(IconCode.BOX_SCAN)
                     ?: context.getString(R.string.box_info),
-                    iconRes = R.drawable.is_scan_box), CustomAnimation.vertical)
+                    iconRes = R.drawable.ic_scan_box_white_80dp), CustomAnimation.vertical)
         }
     }
 
     override fun openInfoScreen(message: String) {
         openAlertScreen(message = message,
-                iconRes = R.drawable.ic_info_pink,
+                iconRes = R.drawable.ic_info_pink_80dp,
                 textColor = ContextCompat.getColor(context, R.color.color_text_dialogWarning),
                 pageNumber = "97"
         )
@@ -389,7 +415,7 @@ class CoreNavigator @Inject constructor(
         runOrPostpone {
             getFragmentStack()?.push(AlertFragment.create(
                     message = context.getString(R.string.saved_data_detect_message),
-                    iconRes = R.drawable.ic_question_80dp,
+                    iconRes = R.drawable.ic_question_yellow_80dp,
                     pageNumber = "91",
                     codeConfirmForRight = backFragmentResultHelper.setFuncForResult(confirmCallback),
                     codeConfirmForButton3 = backFragmentResultHelper.setFuncForResult(deleteCallback),
@@ -403,7 +429,7 @@ class CoreNavigator @Inject constructor(
         runOrPostpone {
             getFragmentStack()?.push(AlertFragment.create(
                     message = context.getString(R.string.detect_changes_connection_message),
-                    iconRes = R.drawable.is_warning_yellow_80dp,
+                    iconRes = R.drawable.ic_warning_yellow_80dp,
                     pageNumber = "91",
                     codeConfirmForRight = backFragmentResultHelper.setFuncForResult(yesCallback),
                     codeConfirmForButton3 = backFragmentResultHelper.setFuncForResult(noCallback),
@@ -416,7 +442,7 @@ class CoreNavigator @Inject constructor(
         runOrPostpone {
             getFragmentStack()?.push(AlertFragment.create(
                     message = context.getString(R.string.another_user_block_task, userName),
-                    iconRes = R.drawable.ic_info_pink,
+                    iconRes = R.drawable.ic_info_pink_80dp,
                     pageNumber = "94",
                     leftButtonDecorationInfo = ButtonDecorationInfo.back
             )
@@ -428,7 +454,7 @@ class CoreNavigator @Inject constructor(
         runOrPostpone {
             getFragmentStack()?.push(AlertFragment.create(
                     message = context.getString(R.string.task_block_user_with_tsd_ip, userName, deviceIp),
-                    iconRes = R.drawable.ic_info_pink,
+                    iconRes = R.drawable.ic_info_pink_80dp,
                     pageNumber = "94",
                     leftButtonDecorationInfo = ButtonDecorationInfo.back
             )
@@ -440,7 +466,7 @@ class CoreNavigator @Inject constructor(
         runOrPostpone {
             getFragmentStack()?.push(AlertFragment.create(
                     message = context.getString(R.string.user_self_block_task, userName),
-                    iconRes = R.drawable.ic_question_80dp,
+                    iconRes = R.drawable.ic_question_yellow_80dp,
                     pageNumber = "94",
                     leftButtonDecorationInfo = ButtonDecorationInfo.back,
                     rightButtonDecorationInfo = ButtonDecorationInfo.next,
@@ -459,9 +485,11 @@ fun ICoreNavigator.runOrPostpone(function: () -> Unit) {
 interface ICoreNavigator {
     val functionsCollector: FunctionsCollector
     val backFragmentResultHelper: BackFragmentResultHelper
+    fun isOneScreenInStack(): Boolean
     fun goBackWithArgs(args: Bundle)
     fun goBackWithResultCode(code: Int?)
     fun goBack()
+    fun goBackTo(fragmentName: String)
     fun finishApp(restart: Boolean = false)
     fun openAlertScreen(message: String,
                         iconRes: Int = 0,
@@ -510,6 +538,7 @@ interface ICoreNavigator {
     fun showAlertBlockedTaskAnotherUser(userName: String, deviceIp: String)
     fun showAlertBlockedTaskByMe(userName: String, yesCallback: () -> Unit)
     fun openGS128InfoScreen()
+    fun openUpdateAppScreen()
 }
 
 class FunctionsCollector(private val needCollectLiveData: LiveData<Boolean>) {
@@ -517,11 +546,13 @@ class FunctionsCollector(private val needCollectLiveData: LiveData<Boolean>) {
     private val functions: MutableList<() -> Unit> = mutableListOf()
 
     init {
-        needCollectLiveData.observeForever { needCollect ->
-            if (!needCollect) {
-                functions.map { it }.forEach {
-                    it()
-                    functions.remove(it)
+        Handler(Looper.getMainLooper()).post {
+            needCollectLiveData.observeForever { needCollect ->
+                if (!needCollect) {
+                    functions.map { it }.forEach {
+                        it()
+                        functions.remove(it)
+                    }
                 }
             }
         }

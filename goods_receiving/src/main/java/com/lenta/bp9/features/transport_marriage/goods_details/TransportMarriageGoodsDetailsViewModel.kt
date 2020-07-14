@@ -46,11 +46,13 @@ class TransportMarriageGoodsDetailsViewModel : CoreViewModel() {
                         GoodsDetailsCategoriesItem(
                                 number = index + 1,
                                 name = discrepanciesName.value ?: "",
+                                nameBatch = "",
+                                visibilityNameBatch = false,
                                 quantityWithUom = "${taskTransportMarriageInfo.quantity.toStringFormatted()} ${taskTransportMarriageInfo.uom.name}",
                                 isNormDiscrepancies = false,
                                 typeDiscrepancies = "",
                                 materialNumber = materialNumber.value ?: "",
-                                batchNumber = "",
+                                batchDiscrepancies = null,
                                 even = index % 2 == 0
                         )
                     }?.reversed()

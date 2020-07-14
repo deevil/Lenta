@@ -48,7 +48,7 @@ class InputOutgoingFillingsFragment : CoreFragment<FragmentInputOutgoingFillings
         binding?.let { layoutBinding ->
             layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
                     layoutId = R.layout.item_tile_input_outgoing_fillings,
-                    itemId = BR.vm,
+                    itemId = BR.item,
                     realisation = object : DataBindingAdapter<ItemTileInputOutgoingFillingsBinding> {
                         override fun onCreate(binding: ItemTileInputOutgoingFillingsBinding) {
                         }

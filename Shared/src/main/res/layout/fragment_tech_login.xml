@@ -19,15 +19,16 @@
             android:id="@+id/tv_tv_tech_login"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="32dp"
-            android:layout_marginEnd="32dp"
-            android:layout_marginBottom="32dp"
+            android:layout_marginStart="56dp"
+            android:layout_marginTop="94dp"
+            android:layout_marginEnd="56dp"
             android:gravity="center"
             android:text="@string/tv_tech_login"
-            app:layout_constraintBottom_toTopOf="@+id/et_login"
+            android:textSize="14sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toStartOf="parent" />
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
             android:id="@+id/tv_login"
@@ -37,25 +38,23 @@
             android:text="@string/sap_login"
             app:layout_constraintBottom_toBottomOf="@+id/et_login"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/et_login"
-            app:layout_constraintVertical_bias="1.0" />
+            app:layout_constraintTop_toTopOf="@+id/et_login" />
 
         <EditText
             android:id="@+id/et_login"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="32dp"
-            android:layout_marginTop="8dp"
+            android:layout_marginTop="27dp"
             android:layout_marginEnd="16dp"
-            android:layout_marginBottom="8dp"
             android:inputType="textNoSuggestions|textVisiblePassword"
             android:text="@={vm.login}"
-            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toEndOf="@+id/tv_login"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:ignore="Autofill,LabelFor" >
+            app:layout_constraintTop_toBottomOf="@+id/tv_tv_tech_login"
+            tools:ignore="Autofill,LabelFor">
+
             <requestFocus />
         </EditText>
 
@@ -66,8 +65,7 @@
             android:text="@string/password"
             app:layout_constraintBottom_toBottomOf="@+id/et_password"
             app:layout_constraintEnd_toEndOf="@+id/tv_login"
-            app:layout_constraintTop_toTopOf="@+id/et_password"
-            app:layout_constraintVertical_bias="1.0" />
+            app:layout_constraintTop_toTopOf="@+id/et_password" />
 
         <EditText
             android:id="@+id/et_password"

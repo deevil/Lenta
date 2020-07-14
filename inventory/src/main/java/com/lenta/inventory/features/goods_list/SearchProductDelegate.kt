@@ -84,7 +84,7 @@ class SearchProductDelegate @Inject constructor(
             scanInfoRequest(
                     ScanInfoRequestParams(
                             number = code,
-                            tkNumber = sessionInfo.market ?: "",
+                            tkNumber = sessionInfo.market.orEmpty(),
                             fromScan = fromScan,
                             isBarCode = isBarCode
                     )
@@ -103,7 +103,7 @@ class SearchProductDelegate @Inject constructor(
                 true
             }
             requestCodeTypeBarCode -> {
-                searchCode(code = codeWith12Digits ?: "", fromScan = false, isBarCode = true)
+                searchCode(code = codeWith12Digits.orEmpty(), fromScan = false, isBarCode = true)
                 codeWith12Digits = null
                 true
             }

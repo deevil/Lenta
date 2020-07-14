@@ -191,4 +191,16 @@
     <string name="enter_name_weight_equipment">Введите имя весового оборудования для получения веса на этот терминал</string>
     <string name="enter_printer_address">Введите IP-адрес принтера для печати с этого терминала</string>
     <string name="inStock">В наличии</string>
+    <string name="proceed">Продолжить</string>
+    <string name="properties">Свойства</string>
+    <string name="boxes">Короба</string>
+    <string name="handle_goods">Обработать</string>
+    <string name="select_all">Выбрать все</string>
+    <string name="complete_rejection">Полный</string>
+    <string name="partial_failure">Частичный</string>
+    <string name="not_found_app_file_update">Обновление приложения №%s не найдено на сервере FMP</string>
+    <string name="loading_new_app_version">Загрузка новой версии</string>
+    <string name="check_app_updates">Проверка обновлений приложения</string>
+    <string name="app_update">Обновление версии</string>
+    <string name="reset">Сбросить</string>
 </resources>

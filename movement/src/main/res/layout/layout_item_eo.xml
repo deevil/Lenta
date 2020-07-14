@@ -12,7 +12,7 @@
             type="com.lenta.movement.models.EoListItem" />
 
         <variable
-            name="selectedToDelete"
+            name="selectedToProcess"
             type="Boolean" />
     </data>
 
@@ -81,7 +81,7 @@
             app:layout_constraintEnd_toStartOf="@+id/div_vert1"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:selected="@{selectedToDelete}"
+            app:selected="@{selectedToProcess}"
             tools:text="2"
             tools:ignore="UnusedAttribute" />
 

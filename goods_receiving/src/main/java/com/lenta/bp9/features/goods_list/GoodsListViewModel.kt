@@ -3,24 +3,25 @@ package com.lenta.bp9.features.goods_list
 import android.content.Context
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import com.lenta.bp9.R
 import com.lenta.bp9.features.loading.tasks.TaskCardMode
 import com.lenta.bp9.model.task.*
 import com.lenta.bp9.platform.navigation.IScreenNavigator
-import com.lenta.bp9.requests.network.*
+import com.lenta.bp9.repos.IRepoInMemoryHolder
+import com.lenta.bp9.requests.network.EndRecountDDParameters
+import com.lenta.bp9.requests.network.EndRecountDDResult
+import com.lenta.bp9.requests.network.EndRecountDirectDeliveriesNetRequest
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.models.core.ProductType
+import com.lenta.shared.models.core.Uom
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.requests.combined.scan_info.ScanInfoResult
-import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.SelectionItemsHelper
 import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
 import com.lenta.shared.utilities.databinding.PageSelectionListener
 import com.lenta.shared.utilities.extentions.getDeviceIp
 import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.utilities.extentions.toStringFormatted
-import com.mobrun.plugin.api.HyperHive
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -28,20 +29,24 @@ class GoodsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKey
 
     @Inject
     lateinit var screenNavigator: IScreenNavigator
+
     @Inject
     lateinit var taskManager: IReceivingTaskManager
+
     @Inject
     lateinit var endRecountDirectDeliveries: EndRecountDirectDeliveriesNetRequest
+
     @Inject
     lateinit var context: Context
+
     @Inject
     lateinit var sessionInfo: ISessionInfo
+
     @Inject
     lateinit var searchProductDelegate: SearchProductDelegate
+
     @Inject
-    lateinit var skipRecountNetRequest: SkipRecountNetRequest
-    @Inject
-    lateinit var hyperHive: HyperHive
+    lateinit var repoInMemoryHolder: IRepoInMemoryHolder
 
     val selectedPage = MutableLiveData(0)
     val countedSelectionsHelper = SelectionItemsHelper()
@@ -61,12 +66,11 @@ class GoodsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKey
     }
 
     val enabledCleanButton: MutableLiveData<Boolean> = countedSelectionsHelper.selectedPositions.map {
-        val selectedComponentsPositions = countedSelectionsHelper.selectedPositions.value
-        !selectedComponentsPositions.isNullOrEmpty()
+        !it.isNullOrEmpty()
     }
 
     val visibilityBatchesButton: MutableLiveData<Boolean> by lazy {
-        MutableLiveData(taskManager.getReceivingTask()?.taskDescription?.isAlco == true && taskManager.getReceivingTask()?.taskHeader?.taskType == TaskType.RecalculationCargoUnit)
+        MutableLiveData(taskManager.getReceivingTask()?.taskDescription?.isAlco == true && !(taskManager.getReceivingTask()?.taskHeader?.taskType == TaskType.ShipmentPP || taskManager.getReceivingTask()?.taskHeader?.taskType == TaskType.ShipmentRC)) //для заданий ОПП и ОРЦ не показываем кнопку Партия, уточнил у Артема
     }
 
     val enabledBtnSaveForShipmentPP: MutableLiveData<Boolean> = listToProcessing.map {
@@ -74,13 +78,11 @@ class GoodsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKey
     }
 
     val enabledBtnMissingForShipmentPP = toProcessingSelectionsHelper.selectedPositions.map {
-        val selectedComponentsPositions = toProcessingSelectionsHelper.selectedPositions.value
-        !selectedComponentsPositions.isNullOrEmpty()
+        !it.isNullOrEmpty()
     }
 
     val enabledBtnCleanForShipmentPP = processedSelectionsHelper.selectedPositions.map {
-        val selectedComponentsPositions = processedSelectionsHelper.selectedPositions.value
-        !selectedComponentsPositions.isNullOrEmpty()
+        !it.isNullOrEmpty()
     }
 
     val enabledBtnSkipForShipmentPP: MutableLiveData<Boolean> by lazy {
@@ -113,134 +115,142 @@ class GoodsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKey
     }
 
     private fun updateListCounted() {
+        val arrayCounted: ArrayList<ListCountedItem> = ArrayList()
+        var index = 0
+        var addeBatchProduct = ""
         taskManager.getReceivingTask()?.let { task ->
-            if (!isBatches.value!!) {
-                listCounted.postValue(
-                        task.getProcessedProducts()
-                                .filter {
-                                    if (task.taskHeader.taskType == TaskType.RecalculationCargoUnit) {
-                                        (task.taskRepository.getProductsDiscrepancies().getCountAcceptOfProductPGE(it) +
-                                                task.taskRepository.getProductsDiscrepancies().getCountRefusalOfProductPGE(it)) > 0.0
-                                    } else {
-                                        (task.taskRepository.getProductsDiscrepancies().getCountAcceptOfProduct(it) +
-                                                task.taskRepository.getProductsDiscrepancies().getCountRefusalOfProduct(it)) > 0.0
-                                    }
-                                }
-                                .mapIndexed { index, productInfo ->
-                                    val uom = if (task.taskHeader.taskType == TaskType.DirectSupplier) {
-                                        productInfo.purchaseOrderUnits
-                                    } else {
-                                        productInfo.uom
-                                    }
-                                    val acceptTotalCount = if (task.taskHeader.taskType == TaskType.RecalculationCargoUnit) {
-                                        task.taskRepository.getProductsDiscrepancies().getCountAcceptOfProductPGE(productInfo)
-                                    } else {
-                                        task.taskRepository.getProductsDiscrepancies().getCountAcceptOfProduct(productInfo)
-                                    }
-                                    val acceptTotalCountWithUom = if (acceptTotalCount != 0.0) {
-                                        "+ ${acceptTotalCount.toStringFormatted()} ${uom.name}"
-                                    } else {
-                                        "0 ${uom.name}"
-                                    }
-                                    val refusalTotalCount = if (task.taskHeader.taskType == TaskType.RecalculationCargoUnit) {
-                                        task.taskRepository.getProductsDiscrepancies().getCountRefusalOfProductPGE(productInfo)
-                                    } else {
-                                        task.taskRepository.getProductsDiscrepancies().getCountRefusalOfProduct(productInfo)
-                                    }
-                                    val refusalTotalCountWithUom = if (refusalTotalCount != 0.0) {
-                                        "- ${refusalTotalCount.toStringFormatted()} ${uom.name}"
-                                    } else {
-                                        "0 ${uom.name}"
-                                    }
+            task.getProcessedProducts()
+                    .filter {
+                        if (task.taskHeader.taskType == TaskType.RecalculationCargoUnit) {
+                            (task.taskRepository.getProductsDiscrepancies().getCountAcceptOfProductPGE(it) +
+                                    task.taskRepository.getProductsDiscrepancies().getCountRefusalOfProductPGE(it)) > 0.0
+                        } else {
+                            (task.taskRepository.getProductsDiscrepancies().getCountAcceptOfProduct(it) +
+                                    task.taskRepository.getProductsDiscrepancies().getCountRefusalOfProduct(it)) > 0.0
+                        }
+                    }
+                    .sortedByDescending { sorted ->
+                        sorted.materialNumber
+                    }
+                    .map { productInfo ->
+                        val uom = if (task.taskHeader.taskType == TaskType.DirectSupplier) {
+                            productInfo.purchaseOrderUnits
+                        } else {
+                            productInfo.uom
+                        }
 
+                        if (isBatches.value == true && productInfo.type == ProductType.NonExciseAlcohol && !productInfo.isBoxFl && !productInfo.isMarkFl) {
+                            if (addeBatchProduct != productInfo.materialNumber) { //показываем партии без разбивки по расхождениям
+                                addeBatchProduct = productInfo.materialNumber
+                                val batchesInfoOfProduct = task.taskRepository.getBatches().findBatchOfProduct(productInfo)
+                                batchesInfoOfProduct?.map { batch ->
+                                    val batchInfo = task.taskRepository.getBatches().findBatch(
+                                            batchNumber = batch.batchNumber,
+                                            materialNumber = batch.materialNumber,
+                                            processingUnitNumber = batch.processingUnitNumber
+                                    )
+                                    arrayCounted.add(
+                                            ListCountedItem(
+                                                    number = index + 1,
+                                                    name = "${productInfo.getMaterialLastSix()} ${productInfo.description}",
+                                                    nameMaxLines = 1,
+                                                    nameBatch = "ДР-${batchInfo?.bottlingDate} // ${getManufacturerName(batchInfo)}",
+                                                    visibilityNameBatch = true,
+                                                    countAcceptWithUom = getAcceptTotalCountWithUomBatch(batchInfo, uom),
+                                                    countRefusalWithUom = getRefusalTotalCountWithUomBatch(batchInfo, uom),
+                                                    isNotEdit = productInfo.isNotEdit,
+                                                    productInfo = productInfo,
+                                                    even = index % 2 == 0
+                                            )
+                                    )
+                                    index += 1
+                                }
+                            }
+                        } else {
+                            arrayCounted.add(
                                     ListCountedItem(
                                             number = index + 1,
                                             name = "${productInfo.getMaterialLastSix()} ${productInfo.description}",
-                                            countAcceptWithUom = acceptTotalCountWithUom,
-                                            countRefusalWithUom = refusalTotalCountWithUom,
+                                            nameMaxLines = 2,
+                                            nameBatch = "",
+                                            visibilityNameBatch = false,
+                                            countAcceptWithUom = getAcceptTotalCountWithUomProduct(productInfo, uom),
+                                            countRefusalWithUom = getRefusalTotalCountWithUomProduct(productInfo, uom),
                                             isNotEdit = productInfo.isNotEdit,
                                             productInfo = productInfo,
-                                            batchInfo = null,
                                             even = index % 2 == 0
                                     )
-                                }
-                                .reversed())
-            } else {
-                /**listCounted.postValue(
-                        task.getProcessedBatches()
-                                .filter {
-                                    task.taskRepository.getBatchesDiscrepancies().getCountAcceptOfBatch(it) > 0.0
-                                            || task.taskRepository.getBatchesDiscrepancies().getCountAcceptOfBatch(it) > 0.0
-                                }
-                                .mapIndexed { index, batchInfo ->
-                                    val acceptTotalCount = task.taskRepository.getBatchesDiscrepancies().getCountAcceptOfBatch(batchInfo)
-                                    val acceptTotalCountWithUom = if (acceptTotalCount != 0.0) {
-                                        "+ ${acceptTotalCount.toStringFormatted()} ${batchInfo.uom.name}"
-                                    } else {
-                                        "0 ${batchInfo.uom.name}"
-                                    }
-                                    val refusalTotalCount = task.taskRepository.getBatchesDiscrepancies().getCountRefusalOfBatch(batchInfo)
-                                    val refusalTotalCountWithUom = if (refusalTotalCount != 0.0) {
-                                        "- ${refusalTotalCount.toStringFormatted()} ${batchInfo.uom.name}"
-                                    } else {
-                                        "0 ${batchInfo.uom.name}"
-                                    }
-                                    ListCountedItem(
-                                            number = index + 1,
-                                            name = "${batchInfo.getMaterialLastSix()} ${batchInfo.description} \nДР-${batchInfo.bottlingDate} // ${batchInfo.manufacturer}",
-                                            countAcceptWithUom = acceptTotalCountWithUom,
-                                            countRefusalWithUom = refusalTotalCountWithUom,
-                                            productInfo = null,
-                                            batchInfo = batchInfo,
-                                            even = index % 2 == 0)
-                                }
-                                .reversed())*/
-            }
-
+                            )
+                            index += 1
+                        }
+                    }
         }
+
+        listCounted.postValue(
+                arrayCounted.reversed()
+        )
 
         countedSelectionsHelper.clearPositions()
     }
 
     private fun updateListWithoutBarcode() {
+        val arrayWithoutBarcode: ArrayList<ListWithoutBarcodeItem> = ArrayList()
+        var index = 0
         taskManager.getReceivingTask()?.let { task ->
-            if (!isBatches.value!!) {
-                listWithoutBarcode.postValue(
-                        task.getProcessedProducts()
-                                .filter {
-                                    if (task.taskHeader.taskType == TaskType.RecalculationCargoUnit) {
-                                        it.isNoEAN && (task.taskRepository.getProductsDiscrepancies().getCountAcceptOfProductPGE(it) +
-                                                task.taskRepository.getProductsDiscrepancies().getCountRefusalOfProductPGE(it) == 0.0)
-                                    } else {
-                                        it.isNoEAN && (task.taskRepository.getProductsDiscrepancies().getCountAcceptOfProduct(it) +
-                                                task.taskRepository.getProductsDiscrepancies().getCountRefusalOfProduct(it) == 0.0)
-                                    }
-                                }.mapIndexed { index, productInfo ->
+            task.getProcessedProducts()
+                    .filter {
+                        if (task.taskHeader.taskType == TaskType.RecalculationCargoUnit) {
+                            it.isNoEAN && (task.taskRepository.getProductsDiscrepancies().getCountAcceptOfProductPGE(it) +
+                                    task.taskRepository.getProductsDiscrepancies().getCountRefusalOfProductPGE(it) == 0.0)
+                        } else {
+                            it.isNoEAN && (task.taskRepository.getProductsDiscrepancies().getCountAcceptOfProduct(it) +
+                                    task.taskRepository.getProductsDiscrepancies().getCountRefusalOfProduct(it) == 0.0)
+                        }
+                    }
+                    .sortedByDescending { sorted ->
+                        sorted.materialNumber
+                    }
+                    .map { productInfo ->
+                        if (isBatches.value == true && productInfo.type == ProductType.NonExciseAlcohol && !productInfo.isBoxFl && !productInfo.isMarkFl) {
+                            val batchesDiscrepanciesOfProduct = task.taskRepository.getBatchesDiscrepancies().findBatchDiscrepanciesOfProduct(productInfo.materialNumber)
+                            batchesDiscrepanciesOfProduct.map { batchDiscrepancies ->
+                                val batchInfo = task.taskRepository.getBatches().findBatch(
+                                        batchNumber = batchDiscrepancies.batchNumber,
+                                        materialNumber = batchDiscrepancies.materialNumber,
+                                        processingUnitNumber = batchDiscrepancies.processingUnitNumber
+                                )
+                                arrayWithoutBarcode.add(ListWithoutBarcodeItem(
+                                        number = index + 1,
+                                        name = "${productInfo.getMaterialLastSix()} ${productInfo.description}",
+                                        nameMaxLines = 1,
+                                        nameBatch = "ДР-${batchInfo?.bottlingDate} // ${getManufacturerName(batchInfo)}",
+                                        visibilityNameBatch = true,
+                                        productInfo = productInfo,
+                                        even = index % 2 == 0
+                                ))
+                                index += 1
+                            }
+                        } else {
+                            arrayWithoutBarcode.add(
                                     ListWithoutBarcodeItem(
                                             number = index + 1,
                                             name = "${productInfo.getMaterialLastSix()} ${productInfo.description}",
+                                            nameMaxLines = 2,
+                                            nameBatch = "",
+                                            visibilityNameBatch = false,
                                             productInfo = productInfo,
-                                            batchInfo = null,
-                                            even = index % 2 == 0)
-                                }
-                                .reversed())
-            } else {
-                /**listWithoutBarcode.postValue(
-                        task.getProcessedBatches()
-                                .filter {
-                                    it.isNoEAN && (task.taskRepository.getBatchesDiscrepancies().getCountAcceptOfBatch(it) +
-                                            task.taskRepository.getBatchesDiscrepancies().getCountRefusalOfBatch(it) == 0.0)
-                                }.mapIndexed { index, batchInfo ->
-                                    ListWithoutBarcodeItem(
-                                            number = index + 1,
-                                            name = "${batchInfo.getMaterialLastSix()} ${batchInfo.description} \nДР-${batchInfo.bottlingDate} // ${batchInfo.manufacturer}",
-                                            productInfo = null,
-                                            batchInfo = batchInfo,
-                                            even = index % 2 == 0)
-                                }
-                                .reversed())*/
-            }
+                                            even = index % 2 == 0
+                                    )
+                            )
+                            index += 1
+                        }
+
+                    }
         }
+
+        listWithoutBarcode.postValue(
+                arrayWithoutBarcode.reversed()
+        )
     }
 
     private fun updateListToProcessing() {
@@ -250,10 +260,16 @@ class GoodsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKey
                             .filter {
                                 task.taskRepository.getProductsDiscrepancies().getQuantityDiscrepanciesOfProduct(it) == 0
                             }.mapIndexed { index, productInfo ->
+                                val isEizUnit = productInfo.purchaseOrderUnits.code != productInfo.uom.code
+                                val uom = if (isEizUnit) {
+                                    productInfo.purchaseOrderUnits
+                                } else {
+                                    productInfo.uom
+                                }
                                 ListShipmentPPItem(
                                         number = index + 1,
                                         name = "${productInfo.getMaterialLastSix()} ${productInfo.description}",
-                                        countWithUom = "${productInfo.origQuantity.toDouble().toStringFormatted()} ${productInfo.uom.name}",
+                                        countWithUom = "${productInfo.origQuantity.toDouble().toStringFormatted()} ${uom.name}",
                                         productInfo = productInfo,
                                         even = index % 2 == 0)
                             }
@@ -270,10 +286,16 @@ class GoodsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKey
                             .filter {
                                 task.taskRepository.getProductsDiscrepancies().getQuantityDiscrepanciesOfProduct(it) > 0
                             }.mapIndexed { index, productInfo ->
+                                val isEizUnit = productInfo.purchaseOrderUnits.code != productInfo.uom.code
+                                val uom = if (isEizUnit) {
+                                    productInfo.purchaseOrderUnits
+                                } else {
+                                    productInfo.uom
+                                }
                                 ListShipmentPPItem(
                                         number = index + 1,
                                         name = "${productInfo.getMaterialLastSix()} ${productInfo.description}",
-                                        countWithUom = "${task.taskRepository.getProductsDiscrepancies().getAllCountDiscrepanciesOfProduct(productInfo).toStringFormatted()} ${productInfo.uom.name}",
+                                        countWithUom = "${task.taskRepository.getProductsDiscrepancies().getAllCountDiscrepanciesOfProduct(productInfo).toStringFormatted()} ${uom.name}",
                                         productInfo = productInfo,
                                         even = index % 2 == 0)
                             }
@@ -336,65 +358,89 @@ class GoodsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKey
 
     fun onClickThirdBtn() {
         if (taskType.value == TaskType.ShipmentPP) {//https://trello.com/c/3WVovfmE
-            shipmentSkipRecount()
+            screenNavigator.openSkipRecountScreen()
         } else {
-            if (!isBatches.value!!) {
-                countedSelectionsHelper.selectedPositions.value?.map { position ->
-                    val isNotRecountBreakingCargoUnit = isTaskPGE.value == true && taskManager.getReceivingTask()!!.taskHeader.isCracked && listCounted.value?.get(position)!!.productInfo!!.isWithoutRecount
-                    if (isNotRecountBreakingCargoUnit) { //если это не пересчетная ГЕ //https://trello.com/c/PRTAVnUP
-                        taskManager.getReceivingTask()?.taskRepository?.getProductsDiscrepancies()?.deleteProductsDiscrepanciesForProductNotRecountPGE(listCounted.value?.get(position)!!.productInfo!!)
+            countedSelectionsHelper
+                    .selectedPositions
+                    .value
+                    ?.map { position ->
+                        listCounted
+                                .value
+                                ?.get(position)
+                                ?.productInfo
+                                ?.let { selectedProduct ->
+                                    val isNotRecountCargoUnit = isTaskPGE.value == true && selectedProduct.isWithoutRecount
+                                    if (isNotRecountCargoUnit) { //если это не пересчетная ГЕ //https://trello.com/c/PRTAVnUP только без признака ВЗЛОМ (обсудили с Колей 17.06.2020)
+                                        taskManager
+                                                .getReceivingTask()
+                                                ?.taskRepository
+                                                ?.getProductsDiscrepancies()
+                                                ?.deleteProductsDiscrepanciesForProductNotRecountPGE(selectedProduct)
+                                    }
+                                    if (!selectedProduct.isNotEdit && !isNotRecountCargoUnit) {
+                                        if (selectedProduct.isSet) {
+                                            repoInMemoryHolder
+                                                    .sets
+                                                    .value
+                                                    ?.filter { setInfo ->
+                                                        setInfo.setNumber == selectedProduct.materialNumber
+                                                    }
+                                                    ?.map { component ->
+                                                        deleteDiscrepanciesForSet(component.componentNumber)
+                                                    }
+                                        }
+                                        deleteDiscrepanciesForProduct(selectedProduct)
+                                    }
+                                }
                     }
-                    if (!listCounted.value?.get(position)!!.productInfo!!.isNotEdit && !isNotRecountBreakingCargoUnit) {
-                    taskManager
-                            .getReceivingTask()
-                            ?.taskRepository
-                            ?.getProductsDiscrepancies()
-                            ?.deleteProductsDiscrepanciesForProduct(listCounted.value?.get(position)!!.productInfo!!)
-
-                    taskManager
-                            .getReceivingTask()
-                            ?.taskRepository
-                            ?.getMercuryDiscrepancies()
-                            ?.deleteMercuryDiscrepanciesForProduct(listCounted.value?.get(position)!!.productInfo!!)
-                    }
-                }
-            } else {
-                countedSelectionsHelper.selectedPositions.value?.map { position ->
-                    taskManager
-                            .getReceivingTask()
-                            ?.taskRepository
-                            ?.getBatchesDiscrepancies()
-                            ?.deleteBatchesDiscrepanciesForBatch(listCounted.value?.get(position)!!.batchInfo!!)
-                }
-            }
             updateData()
         }
     }
 
-    private fun shipmentSkipRecount() {
-        viewModelScope.launch {
-            screenNavigator.showProgress(context.getString(R.string.skipping_recount))
-            val params = SkipRecountParameters(
-                    taskNumber = taskManager.getReceivingTask()?.taskHeader?.taskNumber ?: "",
-                    deviceIP = context.getDeviceIp(),
-                    personalNumber = sessionInfo.personnelNumber ?: "",
-                    comment = ""
-            )
-            skipRecountNetRequest(params).either(::handleFailure, ::handleSuccessSkipRecount)
-            screenNavigator.hideProgress()
-        }
+    private fun deleteDiscrepanciesForSet(componentNumber: String) {
+        taskManager
+                .getReceivingTask()
+                ?.taskRepository
+                ?.let { taskRepository ->
+                    taskRepository
+                            .getProductsDiscrepancies()
+                            .deleteProductsDiscrepanciesForProduct(componentNumber)
+
+                    taskRepository
+                            .getBatchesDiscrepancies()
+                            .deleteBatchesDiscrepanciesForProduct(componentNumber)
+                }
     }
 
-    private fun handleSuccessSkipRecount(result: SkipRecountResult) {
-        viewModelScope.launch {
-            val notifications = result.notifications.map { TaskNotification.from(it) }
-            val sectionInfo = result.sectionsInfo.map { TaskSectionInfo.from(it) }
-            val sectionProducts = result.sectionProducts.map { TaskSectionProducts.from(hyperHive, it) }
-            taskManager.updateTaskDescription(TaskDescription.from(result.taskDescription))
-            taskManager.getReceivingTask()?.taskRepository?.getNotifications()?.updateWithNotifications(notifications, null, null, null)
-            taskManager.getReceivingTask()?.taskRepository?.getSections()?.updateSections(sectionInfo, sectionProducts)
-            screenNavigator.openTaskCardScreen(TaskCardMode.Full, taskManager.getReceivingTask()?.taskHeader?.taskType ?: TaskType.None)
-        }
+    private fun deleteDiscrepanciesForProduct(product: TaskProductInfo) {
+        taskManager
+                .getReceivingTask()
+                ?.taskRepository
+                ?.let { taskRepository ->
+                    taskRepository
+                            .getProductsDiscrepancies()
+                            .deleteProductsDiscrepanciesForProduct(product)
+
+                    taskRepository
+                            .getMercuryDiscrepancies()
+                            .deleteMercuryDiscrepanciesForProduct(product)
+
+                    taskRepository
+                            .getBatchesDiscrepancies()
+                            .deleteBatchesDiscrepanciesForProduct(product.materialNumber)
+
+                    taskRepository
+                            .getBoxesDiscrepancies()
+                            .deleteBoxesDiscrepanciesForProduct(product)
+
+                    taskRepository
+                            .getExciseStampsDiscrepancies()
+                            .deleteExciseStampsDiscrepanciesForProduct(product)
+
+                    taskRepository
+                            .getExciseStampsBad()
+                            .deleteExciseStampBadForProduct(product.materialNumber)
+                }
     }
 
     fun onClickFourthBtn() {
@@ -405,27 +451,23 @@ class GoodsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKey
                 cleanGoodsForShipmentPP()
             }
         } else {
-            /**isBatches.value = !isBatches.value!!
-            updateListCounted()
-            updateListWithoutBarcode()*/
+            isBatches.value = !isBatches.value!!
+            updateData()
         }
     }
 
     private fun missingGoodsForShipmentPP() {
         toProcessingSelectionsHelper.selectedPositions.value?.map { position ->
-            taskManager.getReceivingTask()?.
-                    taskRepository?.
-                    getProductsDiscrepancies()?.
-                    changeProductDiscrepancy(TaskProductDiscrepancies(
-                            materialNumber = listToProcessing.value?.get(position)!!.productInfo!!.materialNumber,
-                            processingUnitNumber = listToProcessing.value?.get(position)!!.productInfo!!.processingUnit,
-                            numberDiscrepancies = "0",
-                            uom = listToProcessing.value?.get(position)!!.productInfo!!.uom,
-                            typeDiscrepancies = "3",
-                            isNotEdit = false,
-                            isNew = false,
-                            notEditNumberDiscrepancies = ""
-                    ))
+            taskManager.getReceivingTask()?.taskRepository?.getProductsDiscrepancies()?.changeProductDiscrepancy(TaskProductDiscrepancies(
+                    materialNumber = listToProcessing.value?.get(position)!!.productInfo!!.materialNumber,
+                    processingUnitNumber = listToProcessing.value?.get(position)!!.productInfo!!.processingUnit,
+                    numberDiscrepancies = "0",
+                    uom = listToProcessing.value?.get(position)!!.productInfo!!.uom,
+                    typeDiscrepancies = "3",
+                    isNotEdit = false,
+                    isNew = false,
+                    notEditNumberDiscrepancies = ""
+            ))
         }
 
         updateData()
@@ -453,21 +495,39 @@ class GoodsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKey
         viewModelScope.launch {
             val countProductNotProcessed = taskManager.getReceivingTask()?.let { task ->
                 task.getProcessedProducts()
-                        .map {productInfo ->
+                        .filter { productInfo ->
                             if (task.taskHeader.taskType == TaskType.RecalculationCargoUnit) {
-                                task.taskRepository.getProductsDiscrepancies().getCountProductNotProcessedOfProductPGE(productInfo)
+                                task.taskRepository.getProductsDiscrepancies().getCountProductNotProcessedOfProductPGE(productInfo) > 0.0
                             } else {
-                                task.taskRepository.getProductsDiscrepancies().getCountProductNotProcessedOfProduct(productInfo)
+                                task.taskRepository.getProductsDiscrepancies().getCountProductNotProcessedOfProduct(productInfo) > 0.0
                             }
+                        }.map {
+                            if (task.taskHeader.taskType == TaskType.RecalculationCargoUnit) {
+                                task.taskRepository.getProductsDiscrepancies().getCountProductNotProcessedOfProductPGE(it)
+                            } else {
+                                task.taskRepository.getProductsDiscrepancies().getCountProductNotProcessedOfProduct(it)
+                            }
+                        }.sumByDouble {
+                            it
                         }
-            }?.sumByDouble {
-                it
             } ?: 0.0
 
-            if (countProductNotProcessed > 0.0 && taskType.value != TaskType.ShipmentPP) { //https://trello.com/c/3WVovfmE если это ОПП, то мы сразу переходим к сохранению (условию else)
+            if (countProductNotProcessed > 0.0) {
                 screenNavigator.openDiscrepancyListScreen()
             } else {
                 screenNavigator.showProgressLoadingData()
+                //очищаем таблицу ET_TASK_DIFF от не акцизного (партионного) алкоголя, т.к. для этих товаров необходимо передавать только данные из таблицы ET_PARTS_DIFF
+                taskManager.getReceivingTask()!!.taskRepository.getProductsDiscrepancies().getProductsDiscrepancies().map { productDiscr ->
+                    taskManager.getReceivingTask()!!.taskRepository.getProducts().findProduct(productDiscr.materialNumber)
+                }.filter { filterProduct ->
+                    //партионный - это помеченный IS_ALCO и не помеченный IS_BOX_FL, IS_MARK_FL (Артем)
+                    filterProduct?.type == ProductType.NonExciseAlcohol && !filterProduct.isBoxFl && !filterProduct.isMarkFl
+                }.map { mapProduct ->
+                    mapProduct?.let { productForDel ->
+                        taskManager.getReceivingTask()!!.taskRepository.getProductsDiscrepancies().deleteProductsDiscrepanciesForProduct(productForDel.materialNumber)
+                    }
+                }
+
                 endRecountDirectDeliveries(EndRecountDDParameters(
                         taskNumber = taskManager.getReceivingTask()!!.taskHeader.taskNumber,
                         deviceIP = context.getDeviceIp(),
@@ -486,7 +546,8 @@ class GoodsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKey
 
     private fun handleSuccess(result: EndRecountDDResult) {
         taskManager.updateTaskDescription(TaskDescription.from(result.taskDescription))
-        screenNavigator.openTaskCardScreen(TaskCardMode.Full, taskManager.getReceivingTask()?.taskHeader?.taskType ?: TaskType.None)
+        screenNavigator.openTaskCardScreen(TaskCardMode.Full, taskManager.getReceivingTask()?.taskHeader?.taskType
+                ?: TaskType.None)
     }
 
     override fun handleFailure(failure: Failure) {
@@ -505,6 +566,68 @@ class GoodsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKey
     fun onDigitPressed(digit: Int) {
         requestFocusToEan.value = true
         eanCode.value = eanCode.value ?: "" + digit
+    }
+
+    private fun getManufacturerName(batchInfo: TaskBatchInfo?): String {
+        return repoInMemoryHolder.manufacturers.value?.findLast { manufacture ->
+            manufacture.code == batchInfo?.egais
+        }?.name ?: ""
+    }
+
+    private fun getAcceptTotalCountWithUomBatch(batchInfo: TaskBatchInfo?, uom: Uom): String {
+        val acceptTotalCountBatch = batchInfo?.let {
+            if (taskManager.getReceivingTask()?.taskHeader?.taskType == TaskType.RecalculationCargoUnit) {
+                taskManager.getReceivingTask()?.taskRepository?.getBatchesDiscrepancies()?.getCountAcceptOfBatchPGE(batchInfo)
+            } else {
+                taskManager.getReceivingTask()?.taskRepository?.getBatchesDiscrepancies()?.getCountAcceptOfBatch(batchInfo)
+            }
+        }
+        return if (acceptTotalCountBatch != 0.0) {
+            "+ ${acceptTotalCountBatch.toStringFormatted()} ${uom.name}"
+        } else {
+            "0 ${uom.name}"
+        }
+    }
+
+    private fun getRefusalTotalCountWithUomBatch(batchInfo: TaskBatchInfo?, uom: Uom): String {
+        val refusalTotalCountBatch = batchInfo?.let {
+            if (taskManager.getReceivingTask()?.taskHeader?.taskType == TaskType.RecalculationCargoUnit) {
+                taskManager.getReceivingTask()?.taskRepository?.getBatchesDiscrepancies()?.getCountRefusalOfBatchPGE(batchInfo)
+            } else {
+                taskManager.getReceivingTask()?.taskRepository?.getBatchesDiscrepancies()?.getCountRefusalOfBatch(batchInfo)
+            }
+        }
+        return if (refusalTotalCountBatch != 0.0) {
+            "- ${refusalTotalCountBatch.toStringFormatted()} ${uom.name}"
+        } else {
+            "0 ${uom.name}"
+        }
+    }
+
+    private fun getAcceptTotalCountWithUomProduct(productInfo: TaskProductInfo, uom: Uom): String {
+        val acceptTotalCount = if (taskManager.getReceivingTask()?.taskHeader?.taskType == TaskType.RecalculationCargoUnit) {
+            taskManager.getReceivingTask()?.taskRepository?.getProductsDiscrepancies()?.getCountAcceptOfProductPGE(productInfo)
+        } else {
+            taskManager.getReceivingTask()?.taskRepository?.getProductsDiscrepancies()?.getCountAcceptOfProduct(productInfo)
+        }
+        return if (acceptTotalCount != 0.0) {
+            "+ ${acceptTotalCount.toStringFormatted()} ${uom.name}"
+        } else {
+            "0 ${uom.name}"
+        }
+    }
+
+    private fun getRefusalTotalCountWithUomProduct(productInfo: TaskProductInfo, uom: Uom): String {
+        val refusalTotalCount = if (taskManager.getReceivingTask()?.taskHeader?.taskType == TaskType.RecalculationCargoUnit) {
+            taskManager.getReceivingTask()?.taskRepository?.getProductsDiscrepancies()?.getCountRefusalOfProductPGE(productInfo)
+        } else {
+            taskManager.getReceivingTask()?.taskRepository?.getProductsDiscrepancies()?.getCountRefusalOfProduct(productInfo)
+        }
+        return if (refusalTotalCount != 0.0) {
+            "- ${refusalTotalCount.toStringFormatted()} ${uom.name}"
+        } else {
+            "0 ${uom.name}"
+        }
     }
 
 }

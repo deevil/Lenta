@@ -19,7 +19,8 @@ object Constants {
     const val DATE_FORMAT_ddmmyy = "dd.MM.yy"
     const val DATE_FORMAT_ddmm = "dd.MM"
     const val DATE_FORMAT_yyyy_mm_dd = "yyyy-MM-dd"
-    const val DATE_FORMAT_dd_mm_yyyy_hh_mm = "dd.MM.yyyy  HH:mm"
+    const val DATE_FORMAT_dd_mm_yyyy_hh_mm = "dd.MM.yyyy HH:mm"
+    const val DATE_FORMAT_dd_mm_yyyy = "dd.MM.yyyy"
     const val DATE_FORMAT_yyyy_mm_dd_hh_mm = "yyyyMMddHHmm"
     const val DATE_FORMAT_dd = "dd"
     const val DATE_FORMAT_mm = "MM"
@@ -32,14 +33,15 @@ object Constants {
     const val PRICE_TAG_DATE_TIME_ONE = "dd.MM.yyyy HH:mm"
 
     // Entered code length
-    const val COMMON_SAP_LENGTH = 6
-    const val COMMON_SAP_FULL_LENGTH = 18
-    const val SAP_OR_BAR_LENGTH = 12
+    const val SAP_6 = 6
+    const val SAP_18 = 18
+    const val SAP_OR_BAR_12 = 12
+    const val BOX_26 = 26
 
     // Mark code length
-    const val EXCISE_FULL_CODE = 150
-    const val EXCISE_SIMPLE_CODE = 68
-    const val MARKED_FULL_CODE = 134
-    const val MARKED_SIMPLE_CODE = 39
+    const val MARK_150 = 150
+    const val MARK_68 = 68
+    const val MARK_134 = 134
+    const val MARK_39 = 39
 
 }

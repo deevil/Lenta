@@ -25,7 +25,7 @@ class AnalyticsHelper(
     fun logAppInfo() {
         analytics.logTrace(message = context.packageManager?.getPackageInfo(context.packageName, 0)?.let { packageInfo ->
             "Приложение: ${packageInfo.packageName}, версия:${packageInfo.versionName}"
-        } ?: "")
+        }.orEmpty())
         analytics.logTrace(message = "сервер: ${appSettings.getCurrentServerAddress()}, среда: ${appSettings.getCurrentEnvironment()}")
     }
 
@@ -44,8 +44,7 @@ class AnalyticsHelper(
 
     fun onNewScreen(fragment: CoreFragment<*, *>?) {
         fragment?.let {
-            analytics.logTrace(message = "экран: ${fragment.getPageNumber()
-                    ?: ""} (${fragment.javaClass.simpleName})")
+            analytics.logTrace(message = "экран: ${fragment.getPageNumber().orEmpty()} (${fragment.javaClass.simpleName})")
         }
     }
 

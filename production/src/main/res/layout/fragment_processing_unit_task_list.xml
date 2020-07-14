@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        xmlns:tools="http://schemas.android.com/tools"
-        tools:context=".features.processing_unit_task_list.ProcessingUnitTaskListFragment">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".features.processing_unit_task_list.ProcessingUnitTaskListFragment">
 
     <data>
 
@@ -16,29 +16,60 @@
 
     </data>
 
-    <androidx.viewpager.widget.ViewPager
-        android:id="@+id/view_pager"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:pageSelectionListener="@{vm}"
-        app:tabPosition="@{vm.selectedPage}"
-        app:viewPagerSettings="@{viewPagerSettings}">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
 
-        <com.google.android.material.tabs.TabLayout
-            android:id="@+id/tab_strip"
-            android:layout_width="match_parent"
-            android:layout_height="40dp"
-            android:background="@color/colorBottomPanelBackground"
-            android:elevation="0dp"
-            android:textSize="15sp"
-            app:tabIndicatorColor="@color/colorTabIndicator"
-            app:tabIndicatorHeight="4dp"
-            app:tabMode="scrollable"
-            app:tabSelectedTextColor="@color/colorTabIndicator"
-            app:tabTextAppearance="@style/TabLayoutStyle"
-            app:tabTextColor="@color/colorWhite"
-            tools:targetApi="lollipop" />
+        <androidx.viewpager.widget.ViewPager
+            android:id="@+id/view_pager"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            app:pageSelectionListener="@{vm}"
+            app:tabPosition="@{vm.selectedPage}"
+            app:viewPagerSettings="@{viewPagerSettings}">
 
-    </androidx.viewpager.widget.ViewPager>
+            <com.google.android.material.tabs.TabLayout
+                android:id="@+id/tab_strip"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/tab_height"
+                android:background="@color/colorBottomPanelBackground"
+                android:elevation="0dp"
+                app:tabIndicatorColor="@color/colorTabIndicator"
+                app:tabIndicatorHeight="@dimen/tab_indicator_height"
+                app:tabMode="scrollable"
+                app:tabSelectedTextColor="@color/colorTabIndicator"
+                app:tabTextAppearance="@style/TabLayoutStyle"
+                app:tabTextColor="@color/colorWhite"
+                tools:targetApi="lollipop" />
+
+        </androidx.viewpager.widget.ViewPager>
+
+        <!-- Ввод номера -->
+        <LinearLayout style="@style/EnterNumberFieldLayout">
+
+            <EditText
+                style="@style/EnterNumberField"
+                android:digits="0123456789"
+                android:drawableEnd="@drawable/ic_filter_white_16dp"
+                android:hint="@string/enter_number_pu"
+                android:inputType="number"
+                android:maxLength="20"
+                android:text="@={vm.numberField}"
+                app:onOkInSoftKeyboard="@{vm}"
+                app:requestFocus="@{vm.requestFocusToNumberField}"
+                tools:ignore="Autofill" />
+
+            <ImageButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:background="?selectableItemBackground"
+                android:src="@drawable/ic_scan_barcode_white_32dp" />
+
+        </LinearLayout>
+
+    </LinearLayout>
 
 </layout>

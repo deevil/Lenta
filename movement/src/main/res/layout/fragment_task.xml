@@ -50,7 +50,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/size_8dp"
             android:layout_marginBottom="@dimen/size_8dp"
-            android:src="@drawable/ic_alco_white_48dp"
+            android:src="@drawable/ic_excise_alcohol_white_32dp"
             android:visibility="@{vm.alcoVisible}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
@@ -61,7 +61,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/size_8dp"
             android:layout_marginBottom="@dimen/size_8dp"
-            android:src="@drawable/ic_kandy_48dp"
+            android:src="@drawable/ic_kandy_white_32dp"
             android:visibility="@{vm.generalVisible}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toEndOf="@+id/alcoImage" />

@@ -4,8 +4,9 @@ import com.google.gson.annotations.SerializedName
 import com.lenta.shared.models.core.ExciseStamp
 
 //ET_MARK_DIFF Таблица обработанных марок задания
-class TaskExciseStampDiscrepancies(materialNumber: String, //Номер товара
-                      code: String, //Код акцизной марки
+data class TaskExciseStampDiscrepancies(
+                      val materialNumber: String, //Номер товара
+                      val code: String, //Код акцизной марки
                       val processingUnitNumber: String,
                       val typeDiscrepancies: String,
                       val isScan: Boolean,
@@ -14,7 +15,7 @@ class TaskExciseStampDiscrepancies(materialNumber: String, //Номер това
                       val isMSC: Boolean,
                       val organizationCodeEGAIS: String,
                       val bottlingDate: String,
-                      val isUnknown: Boolean) : ExciseStamp(materialNumber, code)
+                      val isUnknown: Boolean)
 {
 
     companion object {

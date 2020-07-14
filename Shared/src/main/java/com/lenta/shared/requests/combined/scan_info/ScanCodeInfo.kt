@@ -1,6 +1,5 @@
 package com.lenta.shared.requests.combined.scan_info
 
-import com.lenta.shared.models.core.Uom
 import com.lenta.shared.platform.constants.Constants
 import com.lenta.shared.requests.combined.scan_info.pojo.EanInfo
 import java.lang.Long.parseLong
@@ -111,7 +110,7 @@ fun analyseCode(
             return
         }
 
-        if (length == Constants.EXCISE_FULL_CODE || length == Constants.EXCISE_SIMPLE_CODE) {
+        if (length == Constants.MARK_150 || length == Constants.MARK_68) {
             funcForExciseCode?.let {
                 it(code)
                 return
@@ -120,7 +119,7 @@ fun analyseCode(
             return
         }
 
-        if (length == Constants.MARKED_FULL_CODE || length == Constants.MARKED_SIMPLE_CODE) {
+        if (length == Constants.MARK_134 || length == Constants.MARK_39) {
             funcForMarkCode?.let {
                 it(code)
                 return
@@ -129,16 +128,16 @@ fun analyseCode(
             return
         }
 
-        if (length < Constants.COMMON_SAP_LENGTH) {
+        if (length < Constants.SAP_6) {
             funcForNotValidFormat()
             return
         }
 
-        if (length >= Constants.COMMON_SAP_LENGTH) {
+        if (length >= Constants.SAP_6) {
             when (length) {
-                Constants.COMMON_SAP_LENGTH -> funcForMatNr("000000000000${code.takeLast(6)}")
-                Constants.COMMON_SAP_FULL_LENGTH -> funcForMatNr(code)
-                Constants.SAP_OR_BAR_LENGTH -> {
+                Constants.SAP_6 -> funcForMatNr("000000000000${code.takeLast(6)}")
+                Constants.SAP_18 -> funcForMatNr(code)
+                Constants.SAP_OR_BAR_12 -> {
                     if (funcForSapOrBar == null) {
                         funcForNotValidFormat()
                     } else {

@@ -25,7 +25,7 @@ class ReprintLabelViewModel : CoreViewModel() {
     lateinit var navigator: IScreenNavigator
 
     @Inject
-    lateinit var taskManager: ITaskManager
+    lateinit var manager: ITaskManager
 
     @Inject
     lateinit var sessionInfo: ISessionInfo
@@ -44,7 +44,7 @@ class ReprintLabelViewModel : CoreViewModel() {
     }
 
     val labels by lazy {
-        taskManager.labels.map { list ->
+        manager.labels.map { list ->
             list?.mapIndexed { index, labelInfo ->
                 ReprintLabelUi(
                         labelInfo = labelInfo,

@@ -19,13 +19,13 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="@dimen/list_row_height"
+            android:layout_height="@dimen/common_row_height"
             android:gravity="center_vertical"
             android:orientation="horizontal">
 
             <LinearLayout
                 style="@style/LinearCellStyle"
-                android:layout_weight="@integer/size_column_1">
+                android:layout_weight="@integer/four_one_1">
 
                 <TextView
                     android:id="@+id/tv_item_number"
@@ -41,20 +41,18 @@
 
             <LinearLayout
                 style="@style/LinearCellStyle"
-                android:layout_weight="@integer/size_column_2"
+                android:layout_weight="@integer/four_one_2"
                 android:orientation="horizontal">
 
                 <LinearLayout
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="8dp"
                     android:layout_weight="1"
                     android:orientation="vertical">
 
                     <TextView
                         android:id="@+id/tv_segment_number"
                         style="@style/CellTextStyle"
-                        android:layout_marginBottom="2dp"
                         android:maxLines="1"
                         android:text="@{@string/segment_number_store(segment.number, segment.storeNumber)}"
                         tools:text="123-456 (ТК - 0005)"/>
@@ -71,10 +69,7 @@
 
                 <ImageView
                     android:id="@+id/iv_open"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:padding="5dp"
-                    android:src="@drawable/ic_keyboard_arrow_right_white_16dp"/>
+                    style="@style/OpenItemButton" />
 
             </LinearLayout>
 
@@ -83,7 +78,7 @@
 
             <LinearLayout
                 style="@style/LinearCellStyle"
-                android:layout_weight="@integer/size_column_3">
+                android:layout_weight="@integer/four_one_3">
 
                 <ImageView
                     android:id="@+id/iv_segment_status"
@@ -99,12 +94,12 @@
 
             <LinearLayout
                 style="@style/LinearCellStyle"
-                android:layout_weight="@integer/size_column_4">
+                android:layout_weight="@integer/four_one_4">
 
                 <TextView
                     android:id="@+id/tv_shelves_count"
                     style="@style/CellTextStyle"
-                    android:layout_marginStart="8dp"
+                    android:layout_width="wrap_content"
                     android:text="@{String.valueOf(segment.shelves.size())}"
                     tools:text="5"/>
 

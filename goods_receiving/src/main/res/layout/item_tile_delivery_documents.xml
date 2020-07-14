@@ -4,179 +4,102 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
+
         <variable
-            name="vm"
+            name="item"
             type="com.lenta.bp9.features.revise.DeliveryDocumentVM" />
 
     </data>
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@drawable/bg_selectable">
+        android:background="@drawable/bg_selectable"
+        android:orientation="vertical">
 
-
-        <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/vertical_guidline_1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            app:layout_constraintGuide_percent="0.12" />
-
-        <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/vertical_guidline_2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            app:layout_constraintGuide_percent="0.53" />
-
-        <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/vertical_guidline_3"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            app:layout_constraintGuide_percent="0.77" />
-
-        <View
-            android:id="@+id/div_vert1"
-            android:layout_width="1dp"
-            android:layout_height="0dp"
-            android:background="@color/color_divider"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toStartOf="@+id/vertical_guidline_1"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <View
-            android:id="@+id/div_vert2"
-            android:layout_width="1dp"
-            android:layout_height="0dp"
-            android:background="@color/color_divider"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toStartOf="@+id/vertical_guidline_2"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <View
-            android:id="@+id/div_vert3"
-            android:layout_width="1dp"
-            android:layout_height="0dp"
-            android:background="@color/color_divider"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toStartOf="@+id/vertical_guidline_3"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <TextView
-            android:id="@+id/tv_counter"
-            android:layout_width="32dp"
-            android:layout_height="32dp"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="16dp"
-            android:layout_marginEnd="8dp"
-            android:layout_marginBottom="16dp"
-            android:ellipsize="end"
-            android:gravity="center"
-            android:maxLines="1"
-            android:text='@{vm.position + ""}'
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/div_vert1"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:ignore="UnusedAttribute"
-            tools:text="2" />
-
-        <TextView
-            android:id="@+id/tv_name"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_marginEnd="8dp"
-            android:ellipsize="end"
-            android:gravity="start|center_vertical"
-            android:maxLines="2"
-            android:text="@{vm.name}"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/imageView2"
-            app:layout_constraintStart_toEndOf="@+id/div_vert1"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_chainStyle="packed"
-            tools:text="Накладная" />
-
-        <ImageView
-            android:id="@+id/imageView2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:layout_marginBottom="8dp"
-            android:src="@drawable/ic_keyboard_arrow_right_white_16dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/vertical_guidline_2"
-            app:layout_constraintTop_toTopOf="parent"
-            app:visibleOrGone='@{vm.isInvoice || vm.isCompositeDoc}'/>
-
-        <View
-            android:id="@+id/div_hor_bottom"
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="@color/color_divider"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
+            android:layout_height="@dimen/common_row_height"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
 
+            <LinearLayout
+                style="@style/LinearCellStyle"
+                android:layout_weight="@integer/four_one_1">
 
-        <ImageView
-            android:id="@+id/imageView4"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:layout_marginEnd="4dp"
-            android:layout_marginBottom="8dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/imageView3"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toEndOf="@+id/vertical_guidline_2"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_goneMarginStart="8dp"
-            app:documentTypeIcon='@{vm.type}'
-            app:isEDO='@{vm.isEDO}'
-            tools:src="@drawable/ic_simple_delivery_doc" />
+                <TextView
+                    android:id="@+id/tv_item_number"
+                    style="@style/CellTextStyle"
+                    android:layout_width="wrap_content"
+                    android:text='@{item.position + ""}'
+                    tools:text="1" />
 
-        <ImageView
-            android:id="@+id/imageView3"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:layout_marginEnd="4dp"
-            android:layout_marginBottom="8dp"
-            android:src="@drawable/ic_obligatory"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/vertical_guidline_3"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toEndOf="@+id/imageView4"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_goneMarginStart="8dp"
-            app:visibleOrGone='@{vm.isObligatory}'
-            tools:src="@drawable/ic_obligatory" />
+            </LinearLayout>
 
-        <CheckBox
-            android:id="@+id/cb_checked"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginEnd="8dp"
-            android:enabled="@{!vm.isCheckNotEnabled}"
-            android:checked="@{vm.isCheck}"
-            app:layout_constraintBottom_toBottomOf="@+id/tv_counter"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toEndOf="@+id/div_vert3"
-            app:layout_constraintTop_toTopOf="@+id/tv_counter"
-            tools:checked="true" />
+            <View style="@style/VerticalDivider" />
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+            <LinearLayout
+                style="@style/LinearCellStyle"
+                android:layout_weight="@integer/four_one_2"
+                android:orientation="horizontal">
+
+                <TextView
+                    style="@style/CellTextStyle"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:maxLines="2"
+                    android:text="@{item.name}"
+                    tools:text="Накладная" />
+
+                <ImageView
+                    android:id="@+id/iv_open"
+                    style="@style/OpenItemButton"
+                    app:visibleOrGone='@{item.isInvoice || item.isCompositeDoc}' />
+
+            </LinearLayout>
+
+            <View style="@style/VerticalDivider" />
+
+            <LinearLayout
+                style="@style/LinearCellStyle"
+                android:layout_weight="@integer/four_one_3"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:documentTypeIcon='@{item.type}'
+                    app:isEDO='@{item.isEDO}'
+                    tools:src="@drawable/ic_simple_delivery_gray_24dp" />
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_star_gray_24dp"
+                    app:visibleOrGone='@{item.isObligatory}' />
+
+            </LinearLayout>
+
+            <View style="@style/VerticalDivider" />
+
+            <LinearLayout
+                style="@style/LinearCellStyle"
+                android:layout_weight="@integer/four_one_4">
+
+                <CheckBox
+                    android:id="@+id/cb_checked"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:checked="@{item.isCheck}"
+                    android:enabled="@{!item.isCheckNotEnabled}"
+                    tools:checked="true" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <View style="@style/HorizontalDivider" />
+
+    </LinearLayout>
 
 </layout>

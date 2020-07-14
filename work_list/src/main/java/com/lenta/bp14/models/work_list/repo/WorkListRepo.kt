@@ -4,7 +4,7 @@ import com.lenta.bp14.models.data.getGoodType
 import com.lenta.bp14.models.work_list.Good
 import com.lenta.bp14.models.work_list.GoodOptions
 import com.lenta.bp14.platform.extentions.WorkListGoodInfo
-import com.lenta.bp14.platform.extentions.getQuantity
+import com.lenta.shared.utilities.extentions.getQuantity
 import com.lenta.bp14.platform.extentions.toWorkListGoodInfo
 import com.lenta.shared.fmp.resources.dao_ext.*
 import com.lenta.shared.fmp.resources.fast.ZmpUtz07V001
@@ -157,7 +157,7 @@ class WorkListRepo @Inject constructor(
 
     private suspend fun getUnitsName(code: String?): String {
         return withContext(Dispatchers.IO) {
-            return@withContext units.getUnitName(code)?.toLowerCase(Locale.getDefault()) ?: ""
+            return@withContext units.getUnitName(code)?.toLowerCase(Locale.getDefault()).orEmpty()
         }
     }
 

@@ -10,9 +10,7 @@
             name="vm"
             type="com.lenta.bp9.features.mercury_exception_integration.MercuryExceptionIntegrationViewModel" />
 
-
     </data>
-
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -37,7 +35,7 @@
         <com.lenta.shared.view.ClickableSpinner
             android:id="@+id/spinner"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="32dp"
             android:layout_marginStart="22dp"
             android:layout_marginTop="24dp"
             android:layout_marginEnd="22dp"
@@ -46,10 +44,9 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/tv_header"
             app:onPositionClickListener="@{vm}"
-            app:position="@{vm.selectedPosition}" />
-
+            app:position="@{vm.selectedPosition}"
+            tools:entries="@array/test_list" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
-
 
 </layout>

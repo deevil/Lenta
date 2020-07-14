@@ -13,11 +13,25 @@ import com.lenta.bp9.features.driver_data.DriverDataFragment
 import com.lenta.bp9.features.editing_invoice.EditingInvoiceFragment
 import com.lenta.bp9.features.formed_docs.FormedDocsFragment
 import com.lenta.bp9.features.goods_details.GoodsDetailsFragment
-import com.lenta.bp9.features.goods_information.excise_alco_stamp_acc.ExciseAlcoStampAccInfoFragment
-import com.lenta.bp9.features.goods_information.excise_alco_box_acc.ExciseAlcoBoxAccInfoFragment
+import com.lenta.bp9.features.goods_information.excise_alco_pge.excise_alco_box_acc_pge.ExciseAlcoBoxAccInfoPGEFragment
+import com.lenta.bp9.features.goods_information.excise_alco_pge.excise_alco_box_acc_pge.excise_alco_box_card.ExciseAlcoBoxCardPGEFragment
+import com.lenta.bp9.features.goods_information.excise_alco_pge.excise_alco_box_acc_pge.excise_alco_box_list.ExciseAlcoBoxListPGEFragment
+import com.lenta.bp9.features.goods_information.excise_alco_pge.excise_alco_stamp_acc_pge.ExciseAlcoStampAccInfoPGEFragment
+import com.lenta.bp9.features.goods_information.excise_alco_pge.excise_alco_stamp_acc_pge.batch_signs.ExciseAlcoStampPGEBatchSignsFragment
+import com.lenta.bp9.features.goods_information.excise_alco_receiving.excise_alco_box_acc.ExciseAlcoBoxAccInfoFragment
+import com.lenta.bp9.features.goods_information.excise_alco_receiving.excise_alco_box_acc.excise_alco_box_card.ExciseAlcoBoxCardFragment
+import com.lenta.bp9.features.goods_information.excise_alco_receiving.excise_alco_box_acc.excise_alco_box_list.ExciseAlcoBoxListFragment
+import com.lenta.bp9.features.goods_information.excise_alco_receiving.excise_alco_box_acc.excise_alco_box_product_failure.ExciseAlcoBoxProductFailureFragment
+import com.lenta.bp9.features.goods_information.excise_alco_receiving.excise_alco_stamp_acc.ExciseAlcoStampAccInfoFragment
 import com.lenta.bp9.features.goods_information.general.GoodsInfoFragment
+import com.lenta.bp9.features.goods_information.general_opp.GoodsInfoShipmentPPFragment
 import com.lenta.bp9.features.goods_information.mercury.GoodsMercuryInfoFragment
-import com.lenta.bp9.features.goods_information.non_excise_alco.NonExciseAlcoInfoFragment
+import com.lenta.bp9.features.goods_information.non_excise_alco_pge.NonExciseAlcoInfoPGEFragment
+import com.lenta.bp9.features.goods_information.non_excise_alco_receiving.NonExciseAlcoInfoFragment
+import com.lenta.bp9.features.goods_information.non_excise_sets_pge.NonExciseSetsPGEFragment
+import com.lenta.bp9.features.goods_information.non_excise_sets_pge.set_component_pge.NonExciseSetComponentInfoPGEFragment
+import com.lenta.bp9.features.goods_information.non_excise_sets_receiving.NonExciseSetsReceivingFragment
+import com.lenta.bp9.features.goods_information.non_excise_sets_receiving.set_component_receiving.NonExciseSetComponentInfoReceivingFragment
 import com.lenta.bp9.features.goods_list.GoodsListFragment
 import com.lenta.bp9.features.input_outgoing_fillings.InputOutgoingFillingsFragment
 import com.lenta.bp9.features.list_goods_transfer.ListGoodsTransferFragment
@@ -37,6 +51,7 @@ import com.lenta.bp9.features.search_task.SearchTaskFragment
 import com.lenta.bp9.features.select_market.SelectMarketFragment
 import com.lenta.bp9.features.select_personnel_number.SelectPersonnelNumberFragment
 import com.lenta.bp9.features.skip_recount.SkipRecountFragment
+import com.lenta.bp9.features.supply_results.SupplyResultsFragment
 import com.lenta.bp9.features.task_card.TaskCardFragment
 import com.lenta.bp9.features.task_list.TaskListFragment
 import com.lenta.bp9.features.transfer_goods_section.TransferGoodsSectionFragment
@@ -54,11 +69,12 @@ import com.lenta.bp9.requests.network.TaskListSearchParams
 import com.lenta.shared.account.IAuthenticator
 import com.lenta.shared.features.alert.AlertFragment
 import com.lenta.shared.platform.activity.ForegroundActivityProvider
-import com.lenta.shared.platform.navigation.CustomAnimation
 import com.lenta.shared.platform.navigation.ICoreNavigator
 import com.lenta.shared.platform.navigation.runOrPostpone
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.progress.IProgressUseCaseInformator
+
+private const val PAGE_NUMBER_95 = "95"
 
 class ScreenNavigator(
         private val context: Context,
@@ -112,15 +128,15 @@ class ScreenNavigator(
         }
     }
 
-    override fun openSelectionPersonnelNumberScreen() {
+    override fun openSelectionPersonnelNumberScreen(isScreenMainMenu: Boolean) {
         runOrPostpone {
-            getFragmentStack()?.replace(SelectPersonnelNumberFragment())
+            getFragmentStack()?.replace(SelectPersonnelNumberFragment.create(isScreenMainMenu))
         }
     }
 
     override fun openAlertNotPermissions(message: String) {
         openAlertScreen(message = message,
-                iconRes = R.drawable.ic_info_pink,
+                iconRes = R.drawable.ic_info_pink_80dp,
                 textColor = ContextCompat.getColor(context, R.color.color_text_dialogWarning),
                 pageNumber = "96",
                 timeAutoExitInMillis = 3000
@@ -155,6 +171,7 @@ class ScreenNavigator(
         runOrPostpone {
             getFragmentStack()?.push(AlertFragment.create(message = context.getString(R.string.unlock_confirmation),
                     codeConfirmForRight = backFragmentResultHelper.setFuncForResult(callbackFunc),
+                    iconRes = R.drawable.ic_question_yellow_80dp,
                     pageNumber = "93",
                     rightButtonDecorationInfo = ButtonDecorationInfo.yes))
         }
@@ -164,6 +181,7 @@ class ScreenNavigator(
         runOrPostpone {
             getFragmentStack()?.push(AlertFragment.create(message = context.getString(R.string.view_confirmation),
                     codeConfirmForRight = backFragmentResultHelper.setFuncForResult(callbackFunc),
+                    iconRes = R.drawable.ic_question_yellow_80dp,
                     pageNumber = "93",
                     rightButtonDecorationInfo = ButtonDecorationInfo.yes))
         }
@@ -173,6 +191,7 @@ class ScreenNavigator(
         runOrPostpone {
             getFragmentStack()?.push(AlertFragment.create(message = context.getString(R.string.unsaved_data_confirmation),
                     codeConfirmForRight = backFragmentResultHelper.setFuncForResult(callbackFunc),
+                    iconRes = R.drawable.ic_question_yellow_80dp,
                     pageNumber = "93",
                     rightButtonDecorationInfo = ButtonDecorationInfo.yes))
         }
@@ -182,6 +201,7 @@ class ScreenNavigator(
         runOrPostpone {
             getFragmentStack()?.push(AlertFragment.create(message = context.getString(R.string.process_as_discrepancy_confirmation),
                     codeConfirmForRight = backFragmentResultHelper.setFuncForResult(callbackFunc),
+                    iconRes = R.drawable.ic_question_yellow_80dp,
                     pageNumber = "93",
                     rightButtonDecorationInfo = ButtonDecorationInfo.process))
         }
@@ -216,16 +236,16 @@ class ScreenNavigator(
 
     override fun openAlertWrongProductType() {
         openAlertScreen(message = context.getString(R.string.wrong_product_type),
-                iconRes = R.drawable.ic_info_pink,
+                iconRes = R.drawable.ic_info_pink_80dp,
                 textColor = ContextCompat.getColor(context, R.color.color_text_dialogWarning),
                 pageNumber = "96",
                 timeAutoExitInMillis = 3000
         )
     }
 
-    override fun openGoodsDetailsScreen(productInfo: TaskProductInfo?, batch: TaskBatchInfo?) {
+    override fun openGoodsDetailsScreen(productInfo: TaskProductInfo) {
         runOrPostpone {
-            getFragmentStack()?.push(GoodsDetailsFragment.create(productInfo, batch))
+            getFragmentStack()?.push(GoodsDetailsFragment.create(productInfo))
         }
     }
 
@@ -301,77 +321,15 @@ class ScreenNavigator(
         openInfoScreen(context.getString(R.string.goods_not_in_order))
     }
 
-    override fun openNonExciseAlcoInfoScreen(productInfo: TaskProductInfo) {
+    override fun openNonExciseAlcoInfoReceivingScreen(productInfo: TaskProductInfo, isDiscrepancy: Boolean) {
         runOrPostpone {
-            getFragmentStack()?.push(NonExciseAlcoInfoFragment.create(productInfo))
+            getFragmentStack()?.push(NonExciseAlcoInfoFragment.create(productInfo, isDiscrepancy))
         }
     }
 
-    override fun openSupplyResultsSuccessDialog(numberSupply: String, leftCallbackFunc: () -> Unit, rightCallbackFunc: () -> Unit) {
-        runOrPostpone {
-            getFragmentStack()?.push(AlertFragment.create(message = context.getString(R.string.supply_results_success_dialog, numberSupply),
-                    codeConfirmForButton4 = backFragmentResultHelper.setFuncForResult(leftCallbackFunc),
-                    codeConfirmForRight = backFragmentResultHelper.setFuncForResult(rightCallbackFunc),
-                    iconRes = R.drawable.ic_done_green_80dp,
-                    pageNumber = "78",
-                    description = context.getString(R.string.supply_results),
-                    isVisibleLeftButton = false,
-                    rightButtonDecorationInfo = ButtonDecorationInfo.next,
-                    buttonDecorationInfo4 = ButtonDecorationInfo.supply))
-        }
-    }
-
-    override fun openSupplyResultsErrorDialog(numberSupply: String, userName: String) {
-        runOrPostpone {
-            getFragmentStack()?.let {
-
-                val fragment = AlertFragment.create(
-                        message = context.getString(R.string.supply_results_error_dialog, numberSupply, userName),
-                        iconRes = R.drawable.ic_info_pink,
-                        textColor = ContextCompat.getColor(context, com.lenta.shared.R.color.color_text_dialogWarning),
-                        pageNumber = "77",
-                        description = context.getString(R.string.supply_results)
-                )
-                it.push(fragment, CustomAnimation.vertical)
-
-            }
-        }
-    }
-
-    override fun openSupplyResultsAutomaticChargeSuccessDialog(numberSupply: String, leftCallbackFunc: () -> Unit, rightCallbackFunc: () -> Unit) {
-        runOrPostpone {
-            getFragmentStack()?.push(AlertFragment.create(message = context.getString(R.string.supply_results_automatic_charge_success, numberSupply),
-                    codeConfirmForButton4 = backFragmentResultHelper.setFuncForResult(leftCallbackFunc),
-                    codeConfirmForRight = backFragmentResultHelper.setFuncForResult(rightCallbackFunc),
-                    iconRes = R.drawable.ic_done_green_80dp,
-                    pageNumber = "76",
-                    description = context.getString(R.string.supply_results),
-                    isVisibleLeftButton = false,
-                    rightButtonDecorationInfo = ButtonDecorationInfo.next,
-                    buttonDecorationInfo4 = ButtonDecorationInfo.supply))
-        }
-    }
-
-    override fun openSupplyResultsAutomaticChargeErrorDialog() {
-        runOrPostpone {
-            getFragmentStack()?.let {
-
-                val fragment = AlertFragment.create(
-                        message = context.getString(R.string.supply_results_automatic_charge_error),
-                        iconRes = R.drawable.ic_info_pink,
-                        textColor = ContextCompat.getColor(context, com.lenta.shared.R.color.color_text_dialogWarning),
-                        pageNumber = "75",
-                        description = context.getString(R.string.supply_results)
-                )
-                it.push(fragment, CustomAnimation.vertical)
-
-            }
-        }
-    }
-
-    override fun openAlertOverlimit() {
+    override fun openAlertOverLimit() {
         openAlertScreen(message = context.getString(R.string.alert_overlimit),
-                iconRes = R.drawable.ic_info_pink,
+                iconRes = R.drawable.ic_info_pink_80dp,
                 textColor = ContextCompat.getColor(context, R.color.color_text_dialogWarning),
                 pageNumber = "96",
                 timeAutoExitInMillis = 3000
@@ -414,7 +372,7 @@ class ScreenNavigator(
                     message = context.getString(R.string.rounding_issue),
                     codeConfirmForLeft = backFragmentResultHelper.setFuncForResult(noCallbackFunc),
                     codeConfirmForRight = backFragmentResultHelper.setFuncForResult(yesCallbackFunc),
-                    iconRes = R.drawable.ic_question_80dp,
+                    iconRes = R.drawable.ic_question_yellow_80dp,
                     pageNumber = "97",
                     leftButtonDecorationInfo = ButtonDecorationInfo.no,
                     rightButtonDecorationInfo = ButtonDecorationInfo.yes))
@@ -465,7 +423,7 @@ class ScreenNavigator(
 
     override fun openAlertCountMoreOverdelivery() {
         openAlertScreen(message = context.getString(R.string.alert_count_larger_overdelivery),
-                iconRes = R.drawable.ic_info_pink,
+                iconRes = R.drawable.ic_info_pink_80dp,
                 textColor = ContextCompat.getColor(context, R.color.color_text_dialogWarning),
                 pageNumber = "96"
         )
@@ -473,7 +431,7 @@ class ScreenNavigator(
 
     override fun openAlertNotCorrectDate() {
         openAlertScreen(message = context.getString(R.string.alert_not_correct_date),
-                iconRes = R.drawable.ic_info_pink,
+                iconRes = R.drawable.ic_info_pink_80dp,
                 textColor = ContextCompat.getColor(context, R.color.color_text_dialogWarning),
                 pageNumber = "96"
         )
@@ -484,7 +442,7 @@ class ScreenNavigator(
             getFragmentStack()?.push(AlertFragment.create(
                     message = context.getString(R.string.the_shelf_life_has_expired),
                     codeConfirmForRight = backFragmentResultHelper.setFuncForResult(yesCallbackFunc),
-                    iconRes = R.drawable.ic_question_80dp,
+                    iconRes = R.drawable.ic_question_yellow_80dp,
                     pageNumber = "97",
                     leftButtonDecorationInfo = ButtonDecorationInfo.no,
                     rightButtonDecorationInfo = ButtonDecorationInfo.yes))
@@ -529,7 +487,7 @@ class ScreenNavigator(
 
     override fun openInfoDocsSentPrintScreen() {
         openAlertScreen(message = context.getString(R.string.documents_sent_print),
-                iconRes = R.drawable.is_warning_yellow_80dp,
+                iconRes = R.drawable.ic_warning_yellow_80dp,
                 pageNumber = "96"
         )
     }
@@ -538,7 +496,7 @@ class ScreenNavigator(
         runOrPostpone {
             getFragmentStack()?.push(AlertFragment.create(
                     message = context.getString(R.string.goods_not_in_order),
-                    iconRes = R.drawable.is_warning_yellow_80dp,
+                    iconRes = R.drawable.ic_warning_yellow_80dp,
                     pageNumber = "96",
                     timeAutoExitInMillis = 3000)
             )
@@ -551,7 +509,7 @@ class ScreenNavigator(
                     message = context.getString(R.string.order_quantity_exceeded),
                     codeConfirmForLeft = backFragmentResultHelper.setFuncForResult(noCallbackFunc),
                     codeConfirmForRight = backFragmentResultHelper.setFuncForResult(yesCallbackFunc),
-                    iconRes = R.drawable.ic_question_80dp,
+                    iconRes = R.drawable.ic_question_yellow_80dp,
                     pageNumber = "94",
                     leftButtonDecorationInfo = ButtonDecorationInfo.no,
                     rightButtonDecorationInfo = ButtonDecorationInfo.yes))
@@ -597,7 +555,7 @@ class ScreenNavigator(
             getFragmentStack()?.push(AlertFragment.create(
                     message = context.getString(R.string.discrepancies_inconsistency_vet_docs_dialog),
                     codeConfirmForRight = backFragmentResultHelper.setFuncForResult(markCallbackFunc),
-                    iconRes = R.drawable.ic_question_80dp,
+                    iconRes = R.drawable.ic_question_yellow_80dp,
                     pageNumber = "79",
                     rightButtonDecorationInfo = ButtonDecorationInfo.mark))
         }
@@ -609,7 +567,7 @@ class ScreenNavigator(
                     message = context.getString(R.string.discrepancies_no_vad_dialog),
                     codeConfirmForButton3 = backFragmentResultHelper.setFuncForResult(excludeCallbackFunc),
                     codeConfirmForRight = backFragmentResultHelper.setFuncForResult(markCallbackFunc),
-                    iconRes = R.drawable.ic_question_80dp,
+                    iconRes = R.drawable.ic_question_yellow_80dp,
                     pageNumber = "103",
                     buttonDecorationInfo3 = ButtonDecorationInfo.exclude,
                     rightButtonDecorationInfo = ButtonDecorationInfo.mark))
@@ -629,7 +587,7 @@ class ScreenNavigator(
             getFragmentStack()?.push(AlertFragment.create(
                     message = context.getString(R.string.some_certificates_have_lost_relevance),
                     codeConfirmForRight = backFragmentResultHelper.setFuncForResult(nextCallbackFunc),
-                    iconRes = R.drawable.ic_info_pink,
+                    iconRes = R.drawable.ic_info_pink_80dp,
                     textColor = ContextCompat.getColor(context, R.color.color_text_dialogWarning),
                     pageNumber = "97",
                     isVisibleLeftButton = false,
@@ -665,6 +623,7 @@ class ScreenNavigator(
                     message = context.getString(R.string.dialog_seal_damage),
                     codeConfirmForRight = backFragmentResultHelper.setFuncForResult(nextCallbackFunc),
                     description = context.getString(R.string.seal_damage),
+                    iconRes = R.drawable.ic_question_yellow_80dp,
                     pageNumber = "95",
                     rightButtonDecorationInfo = ButtonDecorationInfo.nextAlternate))
         }
@@ -674,7 +633,7 @@ class ScreenNavigator(
         runOrPostpone {
             getFragmentStack()?.push(AlertFragment.create(
                     message = context.getString(R.string.alert_seal_damage),
-                    iconRes = R.drawable.is_warning_yellow_80dp,
+                    iconRes = R.drawable.ic_warning_yellow_80dp,
                     description = context.getString(R.string.seal_damage),
                     pageNumber = "96",
                     timeAutoExitInMillis = 3000)
@@ -700,6 +659,7 @@ class ScreenNavigator(
                     message = context.getString(R.string.dialog_new_cargo_unit_another_transportation, cargoUnitNumber, marketNumber),
                     codeConfirmForRight = backFragmentResultHelper.setFuncForResult(nextCallbackFunc),
                     pageNumber = "95",
+                    iconRes = R.drawable.ic_question_yellow_80dp,
                     rightButtonDecorationInfo = ButtonDecorationInfo.nextAlternate))
         }
     }
@@ -710,6 +670,7 @@ class ScreenNavigator(
                     message = context.getString(R.string.dialog_new_cargo_unit_current_transportation, cargoUnitNumber, marketNumber),
                     codeConfirmForRight = backFragmentResultHelper.setFuncForResult(nextCallbackFunc),
                     pageNumber = "95",
+                    iconRes = R.drawable.ic_question_yellow_80dp,
                     rightButtonDecorationInfo = ButtonDecorationInfo.nextAlternate))
         }
     }
@@ -718,7 +679,7 @@ class ScreenNavigator(
         runOrPostpone {
             getFragmentStack()?.push(AlertFragment.create(
                     message = context.getString(R.string.alert_new_cargo_unit, cargoUnitNumber, marketNumber),
-                    iconRes = R.drawable.ic_info_pink,
+                    iconRes = R.drawable.ic_info_pink_80dp,
                     textColor = ContextCompat.getColor(context, R.color.color_text_dialogWarning),
                     pageNumber = "97")
             )
@@ -735,7 +696,7 @@ class ScreenNavigator(
         runOrPostpone {
             getFragmentStack()?.push(AlertFragment.create(
                     message = context.getString(R.string.in_task_special_goods),
-                    iconRes = R.drawable.is_warning_yellow_80dp,
+                    iconRes = R.drawable.ic_warning_yellow_80dp,
                     description = context.getString(R.string.skip_recount),
                     pageNumber = "96",
                     timeAutoExitInMillis = 3000)
@@ -747,7 +708,7 @@ class ScreenNavigator(
         runOrPostpone {
             getFragmentStack()?.push(AlertFragment.create(
                     message = context.getString(R.string.in_task_no_special_goods),
-                    iconRes = R.drawable.is_warning_yellow_80dp,
+                    iconRes = R.drawable.ic_warning_yellow_80dp,
                     description = context.getString(R.string.skip_recount),
                     pageNumber = "96",
                     timeAutoExitInMillis = 3000)
@@ -781,7 +742,7 @@ class ScreenNavigator(
         runOrPostpone {
             getFragmentStack()?.push(AlertFragment.create(
                     message = context.getString(R.string.date_not_correctly),
-                    iconRes = R.drawable.is_warning_yellow_80dp,
+                    iconRes = R.drawable.ic_warning_yellow_80dp,
                     pageNumber = "96",
                     timeAutoExitInMillis = 3000)
             )
@@ -831,7 +792,7 @@ class ScreenNavigator(
     override fun openShipmentAdjustmentConfirmationDialog(submergedGE: String, nextCallbackFunc: () -> Unit) {
         runOrPostpone {
             getFragmentStack()?.push(AlertFragment.create(
-                    message = submergedGE,
+                    message = context.getString(R.string.dialog_submerged_ge, submergedGE),
                     codeConfirmForRight = backFragmentResultHelper.setFuncForResult(nextCallbackFunc),
                     pageNumber = "95",
                     rightButtonDecorationInfo = ButtonDecorationInfo.nextAlternate))
@@ -880,7 +841,7 @@ class ScreenNavigator(
                     message = context.getString(R.string.edo_dialog),
                     codeConfirmForButton3 = backFragmentResultHelper.setFuncForResult(missing),
                     codeConfirmForRight = backFragmentResultHelper.setFuncForResult(inStock),
-                    iconRes = R.drawable.ic_question_80dp,
+                    iconRes = R.drawable.ic_question_yellow_80dp,
                     pageNumber = "81",
                     buttonDecorationInfo3 = ButtonDecorationInfo.missing,
                     rightButtonDecorationInfo = ButtonDecorationInfo.inStock))
@@ -891,7 +852,7 @@ class ScreenNavigator(
         runOrPostpone {
             getFragmentStack()?.push(AlertFragment.create(
                     message = context.getString(R.string.alert_missing_vp_for_provider),
-                    iconRes = R.drawable.is_warning_yellow_80dp,
+                    iconRes = R.drawable.ic_warning_yellow_80dp,
                     pageNumber = "96",
                     timeAutoExitInMillis = 3000)
             )
@@ -924,7 +885,7 @@ class ScreenNavigator(
         runOrPostpone {
             getFragmentStack()?.push(AlertFragment.create(
                     message = context.getString(R.string.cargo_unit_not_found),
-                    iconRes = R.drawable.ic_info_pink,
+                    iconRes = R.drawable.ic_info_pink_80dp,
                     textColor = ContextCompat.getColor(context, R.color.color_text_dialogWarning),
                     pageNumber = "97")
             )
@@ -935,7 +896,7 @@ class ScreenNavigator(
         runOrPostpone {
             getFragmentStack()?.push(AlertFragment.create(
                     message = context.getString(R.string.invalid_barcode_format),
-                    iconRes = R.drawable.is_warning_yellow_80dp,
+                    iconRes = R.drawable.ic_warning_yellow_80dp,
                     pageNumber = "96",
                     timeAutoExitInMillis = 3000)
             )
@@ -958,7 +919,7 @@ class ScreenNavigator(
         runOrPostpone {
             getFragmentStack()?.push(AlertFragment.create(
                     message = context.getString(R.string.amount_entered_greater_pu),
-                    iconRes = R.drawable.ic_info_pink,
+                    iconRes = R.drawable.ic_info_pink_80dp,
                     textColor = ContextCompat.getColor(context, R.color.color_text_dialogWarning),
                     pageNumber = "97")
             )
@@ -992,7 +953,7 @@ class ScreenNavigator(
         runOrPostpone {
             getFragmentStack()?.push(AlertFragment.create(
                     message = context.getString(R.string.alert_both_surplus_and_underload),
-                    iconRes = R.drawable.ic_info_pink,
+                    iconRes = R.drawable.ic_info_pink_80dp,
                     textColor = ContextCompat.getColor(context, R.color.color_text_dialogWarning),
                     pageNumber = "97")
             )
@@ -1004,7 +965,7 @@ class ScreenNavigator(
             getFragmentStack()?.push(AlertFragment.create(
                     message = context.getString(R.string.alert_count_larger_cargo_unit),
                     codeConfirmForRight = backFragmentResultHelper.setFuncForResult(yesCallbackFunc),
-                    iconRes = R.drawable.ic_question_80dp,
+                    iconRes = R.drawable.ic_question_yellow_80dp,
                     pageNumber = "97",
                     leftButtonDecorationInfo = ButtonDecorationInfo.no,
                     rightButtonDecorationInfo = ButtonDecorationInfo.yes))
@@ -1017,7 +978,7 @@ class ScreenNavigator(
                     message = context.getString(R.string.the_shelf_life_expires, expiresThrough),
                     codeConfirmForLeft = backFragmentResultHelper.setFuncForResult(noCallbackFunc),
                     codeConfirmForRight = backFragmentResultHelper.setFuncForResult(yesCallbackFunc),
-                    iconRes = R.drawable.ic_question_80dp,
+                    iconRes = R.drawable.ic_question_yellow_80dp,
                     pageNumber = "97",
                     leftButtonDecorationInfo = ButtonDecorationInfo.no,
                     rightButtonDecorationInfo = ButtonDecorationInfo.yes))
@@ -1038,7 +999,7 @@ class ScreenNavigator(
         }
     }
 
-    override fun openExciseAlcoBoxAccInfoScreen(productInfo: TaskProductInfo) {
+    override fun openExciseAlcoBoxAccInfoReceivingScreen(productInfo: TaskProductInfo) {
         runOrPostpone {
             getFragmentStack()?.push(ExciseAlcoBoxAccInfoFragment.create(productInfo))
         }
@@ -1053,6 +1014,7 @@ class ScreenNavigator(
             getFragmentStack()?.push(AlertFragment.create(
                     message = context.getString(R.string.create_inbound_delivery_dialog),
                     codeConfirmForRight = backFragmentResultHelper.setFuncForResult(yesCallbackFunc),
+                    iconRes = R.drawable.ic_question_yellow_80dp,
                     pageNumber = "94",
                     leftButtonDecorationInfo = ButtonDecorationInfo.no,
                     rightButtonDecorationInfo = ButtonDecorationInfo.yes))
@@ -1063,10 +1025,487 @@ class ScreenNavigator(
         runOrPostpone {
             getFragmentStack()?.push(AlertFragment.create(
                     message = context.getString(R.string.alert_unable_to_save_negative_quantity),
-                    iconRes = R.drawable.ic_info_pink,
+                    iconRes = R.drawable.ic_info_pink_80dp,
                     textColor = ContextCompat.getColor(context, R.color.color_text_dialogWarning),
                     pageNumber = "97",
                     timeAutoExitInMillis = 3000)
+            )
+        }
+    }
+
+    override fun openExciseAlcoBoxListScreen(productInfo: TaskProductInfo, selectQualityCode: String, selectReasonRejectionCode: String?, initialCount: String) {
+        runOrPostpone {
+            getFragmentStack()?.push(ExciseAlcoBoxListFragment.create(productInfo, selectQualityCode, selectReasonRejectionCode, initialCount))
+        }
+    }
+
+    override fun openExciseAlcoBoxCardScreen(productInfo: TaskProductInfo, boxInfo: TaskBoxInfo?, massProcessingBoxesNumber: List<String>?, exciseStampInfo: TaskExciseStampInfo?, selectQualityCode: String, selectReasonRejectionCode: String?, initialCount: String, isScan: Boolean) {
+        runOrPostpone {
+            getFragmentStack()?.push(ExciseAlcoBoxCardFragment.create(productInfo, boxInfo, massProcessingBoxesNumber, exciseStampInfo, selectQualityCode, selectReasonRejectionCode, initialCount, isScan))
+        }
+    }
+
+    override fun openAlertScannedStampNotFoundScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    message = context.getString(R.string.scanned_stamp_not_listed_in_current_delivery),
+                    iconRes = R.drawable.ic_info_pink_80dp,
+                    textColor = ContextCompat.getColor(context, R.color.color_text_dialogWarning),
+                    pageNumber = "97")
+            )
+        }
+    }
+
+    override fun openAlertScannedStampBelongsAnotherProductScreen(materialNumber: String, materialName: String) {
+        runOrPostpone {
+            val materialNumberLastSix = if (materialNumber.length > 6) materialNumber.substring(materialNumber.length - 6) else materialNumber
+            getFragmentStack()?.push(AlertFragment.create(
+                    message = context.getString(R.string.scanned_mark_belongs_to_another_product, materialNumberLastSix, materialName),
+                    iconRes = R.drawable.ic_info_pink_80dp,
+                    textColor = ContextCompat.getColor(context, R.color.color_text_dialogWarning),
+                    pageNumber = "97")
+            )
+        }
+    }
+
+    override fun openAlertRequiredQuantityBoxesAlreadyProcessedScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    message = context.getString(R.string.required_quantity_boxes_already_processed),
+                    iconRes = R.drawable.ic_info_pink_80dp,
+                    textColor = ContextCompat.getColor(context, R.color.color_text_dialogWarning),
+                    pageNumber = "97")
+            )
+        }
+    }
+
+    override fun openAlertMustEnterQuantityScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    message = context.getString(R.string.must_enter_quantity),
+                    iconRes = R.drawable.ic_info_pink_80dp,
+                    textColor = ContextCompat.getColor(context, R.color.color_text_dialogWarning),
+                    pageNumber = "97")
+            )
+        }
+    }
+
+    override fun openAlertScannedBoxNotFoundScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    message = context.getString(R.string.scanned_box_not_listed_in_current_delivery),
+                    iconRes = R.drawable.ic_info_pink_80dp,
+                    textColor = ContextCompat.getColor(context, R.color.color_text_dialogWarning),
+                    pageNumber = "97")
+            )
+        }
+    }
+
+    override fun openAlertScannedBoxBelongsAnotherProductScreen(materialNumber: String, materialName: String) {
+        runOrPostpone {
+            val materialNumberLastSix = if (materialNumber.length > 6) materialNumber.substring(materialNumber.length - 6) else materialNumber
+            getFragmentStack()?.push(AlertFragment.create(
+                    message = context.getString(R.string.scanned_box_belongs_to_another_product, materialNumberLastSix, materialName),
+                    iconRes = R.drawable.ic_info_pink_80dp,
+                    textColor = ContextCompat.getColor(context, R.color.color_text_dialogWarning),
+                    pageNumber = "97")
+            )
+        }
+    }
+
+    override fun openAlertInvalidBarcodeFormatScannedScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    message = context.getString(R.string.invalid_barcode_format_scanned),
+                    iconRes = R.drawable.ic_info_pink_80dp,
+                    textColor = ContextCompat.getColor(context, R.color.color_text_dialogWarning),
+                    pageNumber = "97")
+            )
+        }
+    }
+
+    override fun openScannedStampNotFoundDialog(yesCallbackFunc: () -> Unit) {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    message = context.getString(R.string.scanned_stamp_not_listed_in_current_delivery_box),
+                    codeConfirmForRight = backFragmentResultHelper.setFuncForResult(yesCallbackFunc),
+                    iconRes = R.drawable.ic_question_yellow_80dp,
+                    pageNumber = PAGE_NUMBER_95,
+                    rightButtonDecorationInfo = ButtonDecorationInfo.next))
+        }
+    }
+
+    override fun openAlertScannedStampIsAlreadyProcessedScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    message = context.getString(R.string.scanned_stamp_is_already_processed),
+                    iconRes = R.drawable.ic_info_pink_80dp,
+                    textColor = ContextCompat.getColor(context, R.color.color_text_dialogWarning),
+                    pageNumber = "97")
+            )
+        }
+    }
+
+    override fun openDiscrepancyScannedMarkCurrentBoxDialog(yesCallbackFunc: () -> Unit, currentBoxNumber: String, realBoxNumber: String, paramGrzCrGrundcatName: String) {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    message = context.getString(R.string.discrepancy_scanned_mark_current_box, currentBoxNumber, realBoxNumber, paramGrzCrGrundcatName),
+                    codeConfirmForRight = backFragmentResultHelper.setFuncForResult(yesCallbackFunc),
+                    iconRes = R.drawable.ic_question_yellow_80dp,
+                    pageNumber = "97",
+                    leftButtonDecorationInfo = ButtonDecorationInfo.no,
+                    rightButtonDecorationInfo = ButtonDecorationInfo.yes))
+        }
+    }
+
+    override fun openAlertScannedBoxNotFoundInDeliveryScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    message = context.getString(R.string.box_not_found_in_delivery),
+                    iconRes = R.drawable.ic_info_pink_80dp,
+                    textColor = ContextCompat.getColor(context, R.color.color_text_dialogWarning),
+                    pageNumber = "97")
+            )
+        }
+    }
+
+    override fun openAlertGoodsNotInInvoiceScreen(materialNumber: String, materialName: String, callbackFunc: () -> Unit) {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    message = context.getString(R.string.no_box_selection_required, materialNumber, materialName),
+                    iconRes = R.drawable.ic_warning_yellow_80dp,
+                    pageNumber = "96",
+                    isVisibleLeftButton = false,
+                    timeAutoExitInMillis = 3000,
+                    codeConfirmForExit = backFragmentResultHelper.setFuncForResult(callbackFunc))
+            )
+        }
+    }
+
+    override fun openAlertMoreBoxesSelectedThanSnteredScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    message = context.getString(R.string.alert_more_boxes_selected_than_entered),
+                    iconRes = R.drawable.ic_info_pink_80dp,
+                    textColor = ContextCompat.getColor(context, R.color.color_text_dialogWarning),
+                    pageNumber = "97")
+            )
+        }
+    }
+
+    override fun openExciseAlcoBoxProductFailureScreen(productInfo: TaskProductInfo) {
+        runOrPostpone {
+            getFragmentStack()?.push(ExciseAlcoBoxProductFailureFragment.create(productInfo))
+        }
+    }
+
+    override fun openCompleteRejectionOfGoodsDialog(applyCallbackFunc: () -> Unit, title: String, countBoxes: String, paramGrzCrGrundcatName: String) {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    message = context.getString(R.string.dialogue_complete_rejection_of_goods, countBoxes, paramGrzCrGrundcatName),
+                    title = title,
+                    description = context.getString(R.string.complete_rejection),
+                    iconRes = R.drawable.ic_complete_rejection_yellow_80dp,
+                    codeConfirmForRight = backFragmentResultHelper.setFuncForResult(applyCallbackFunc),
+                    rightButtonDecorationInfo = ButtonDecorationInfo.apply,
+                    pageNumber = "94")
+            )
+        }
+    }
+
+    override fun openPartialRefusalOnGoodsDialog(applyCallbackFunc: () -> Unit, title: String, countScanBoxes: String, unconfirmedQuantity: String, paramGrzCrGrundcatName: String) {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    message = context.getString(R.string.dialogue_partial_refusal_on_goods, countScanBoxes, unconfirmedQuantity, paramGrzCrGrundcatName),
+                    title = title,
+                    description = context.getString(R.string.partial_failure),
+                    iconRes = R.drawable.ic_complete_rejection_yellow_80dp,
+                    codeConfirmForRight = backFragmentResultHelper.setFuncForResult(applyCallbackFunc),
+                    rightButtonDecorationInfo = ButtonDecorationInfo.apply,
+                    pageNumber = "94")
+            )
+        }
+    }
+
+    override fun openGoodsInfoShipmentPPScreen(productInfo: TaskProductInfo, isDiscrepancy: Boolean, initialCount: Double) {
+        runOrPostpone {
+            getFragmentStack()?.push(GoodsInfoShipmentPPFragment.create(productInfo, isDiscrepancy, initialCount))
+        }
+    }
+
+    override fun openAlertUnknownTaskTypeScreen() {
+        openInfoScreen(context.getString(R.string.unknown_task_type))
+    }
+
+    override fun openExciseAlcoBoxAccInfoPGEScreen(productInfo: TaskProductInfo) {
+        runOrPostpone {
+            getFragmentStack()?.push(ExciseAlcoBoxAccInfoPGEFragment.create(productInfo))
+        }
+    }
+
+    override fun openExciseAlcoBoxListPGEScreen(productInfo: TaskProductInfo, selectQualityCode: String) {
+        runOrPostpone {
+            getFragmentStack()?.push(ExciseAlcoBoxListPGEFragment.newInstance(productInfo, selectQualityCode))
+        }
+    }
+
+    override fun openExciseAlcoBoxCardPGEScreen(productInfo: TaskProductInfo, boxInfo: TaskBoxInfo?, massProcessingBoxesNumber: List<String>?, exciseStampInfo: TaskExciseStampInfo?, selectQualityCode: String, isScan: Boolean, isBoxNotIncludedInNetworkLenta: Boolean) {
+        runOrPostpone {
+            getFragmentStack()?.push(ExciseAlcoBoxCardPGEFragment.create(productInfo, boxInfo, massProcessingBoxesNumber, exciseStampInfo, selectQualityCode, isScan, isBoxNotIncludedInNetworkLenta))
+        }
+    }
+
+    override fun openAlertOverLimitAlcoPGEScreen(nextCallbackFunc: () -> Unit) {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    message = context.getString(R.string.alert_overlimit_alco_pge),
+                    codeConfirmForRight = backFragmentResultHelper.setFuncForResult(nextCallbackFunc),
+                    iconRes = R.drawable.ic_warning_yellow_80dp,
+                    pageNumber = "95",
+                    rightButtonDecorationInfo = ButtonDecorationInfo.next))
+        }
+    }
+
+    override fun openAlertScannedStampNotFoundTaskPGEScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    message = context.getString(R.string.scanned_stamp_not_in_task_pge),
+                    iconRes = R.drawable.ic_info_pink_80dp,
+                    textColor = ContextCompat.getColor(context, R.color.color_text_dialogWarning),
+                    pageNumber = "97")
+            )
+        }
+    }
+
+    override fun openScannedBoxListedInCargoUnitDialog(cargoUnitNumber: String, nextCallbackFunc: () -> Unit) {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    message = context.getString(R.string.scanned_box_is_listed_in_cargo_unit, cargoUnitNumber),
+                    codeConfirmForRight = backFragmentResultHelper.setFuncForResult(nextCallbackFunc),
+                    iconRes = R.drawable.ic_question_yellow_80dp,
+                    pageNumber = "97",
+                    rightButtonDecorationInfo = ButtonDecorationInfo.nextAlternate))
+        }
+    }
+
+    override fun openScannedBoxNotIncludedInDeliveryDialog(nextCallbackFunc: () -> Unit) {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    message = context.getString(R.string.scanned_box_not_included_in_delivery),
+                    codeConfirmForRight = backFragmentResultHelper.setFuncForResult(nextCallbackFunc),
+                    iconRes = R.drawable.ic_question_yellow_80dp,
+                    pageNumber = "97",
+                    rightButtonDecorationInfo = ButtonDecorationInfo.nextAlternate))
+        }
+    }
+
+    override fun openScannedBoxNotIncludedInNetworkLentaDialog(nextCallbackFunc: () -> Unit) {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    message = context.getString(R.string.scanned_box_is_not_in_network_lenta),
+                    codeConfirmForRight = backFragmentResultHelper.setFuncForResult(nextCallbackFunc),
+                    iconRes = R.drawable.ic_question_yellow_80dp,
+                    pageNumber = "97",
+                    rightButtonDecorationInfo = ButtonDecorationInfo.nextAlternate))
+        }
+    }
+
+    override fun openScannedStampBoxPGENotFoundDialog(nextCallbackFunc: () -> Unit) {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    message = context.getString(R.string.scanned_stamp_boxcard_not_in_task_pge),
+                    codeConfirmForRight = backFragmentResultHelper.setFuncForResult(nextCallbackFunc),
+                    iconRes = R.drawable.ic_question_yellow_80dp,
+                    pageNumber = "97",
+                    rightButtonDecorationInfo = ButtonDecorationInfo.nextAlternate))
+        }
+    }
+
+    override fun openBoxCardUnsavedDataConfirmationDialog(nextCallbackFunc: () -> Unit) {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    message = context.getString(R.string.boxcard_unsaved_data_confirmation),
+                    codeConfirmForRight = backFragmentResultHelper.setFuncForResult(nextCallbackFunc),
+                    iconRes = R.drawable.ic_question_yellow_80dp,
+                    pageNumber = "97",
+                    rightButtonDecorationInfo = ButtonDecorationInfo.nextAlternate))
+        }
+    }
+
+    override fun openAlertAmountNormWillBeReduced() {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    message = context.getString(R.string.amount_of_norm_will_be_reduced),
+                    iconRes = R.drawable.ic_warning_yellow_80dp,
+                    pageNumber = "97",
+                    timeAutoExitInMillis = 3000))
+        }
+    }
+
+    override fun openAlertExciseStampPresentInTask() {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    message = context.getString(R.string.excise_stamp_present_in_task),
+                    iconRes = R.drawable.ic_info_pink_80dp,
+                    textColor = ContextCompat.getColor(context, R.color.color_text_dialogWarning),
+                    pageNumber = "97"))
+        }
+    }
+
+    override fun openDiscrepancyScannedMarkCurrentBoxPGEDialog(nextCallbackFunc: () -> Unit, realBoxNumber: String) {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    message = context.getString(R.string.discrepancy_scanned_mark_current_box_pge, realBoxNumber),
+                    codeConfirmForRight = backFragmentResultHelper.setFuncForResult(nextCallbackFunc),
+                    iconRes = R.drawable.ic_question_yellow_80dp,
+                    pageNumber = "97",
+                    rightButtonDecorationInfo = ButtonDecorationInfo.nextAlternate))
+        }
+    }
+
+    override fun openExciseAlcoStampAccInfoPGEScreen(productInfo: TaskProductInfo) {
+        runOrPostpone {
+            getFragmentStack()?.push(ExciseAlcoStampAccInfoPGEFragment.create(productInfo))
+        }
+    }
+
+    override fun openScannedStampListedInCargoUnitDialog(cargoUnitNumber: String, nextCallbackFunc: () -> Unit) {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    message = context.getString(R.string.scanned_stamp_is_listed_in_cargo_unit, cargoUnitNumber),
+                    codeConfirmForRight = backFragmentResultHelper.setFuncForResult(nextCallbackFunc),
+                    iconRes = R.drawable.ic_question_yellow_80dp,
+                    pageNumber = "97",
+                    rightButtonDecorationInfo = ButtonDecorationInfo.nextAlternate))
+        }
+    }
+
+    override fun openScannedStampNotIncludedInDeliveryDialog(nextCallbackFunc: () -> Unit) {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    message = context.getString(R.string.scanned_stamp_not_included_in_delivery),
+                    codeConfirmForRight = backFragmentResultHelper.setFuncForResult(nextCallbackFunc),
+                    iconRes = R.drawable.ic_question_yellow_80dp,
+                    pageNumber = "97",
+                    rightButtonDecorationInfo = ButtonDecorationInfo.nextAlternate))
+        }
+    }
+
+    override fun openNonExciseAlcoInfoPGEScreen(productInfo: TaskProductInfo, isDiscrepancy: Boolean) {
+        runOrPostpone {
+            getFragmentStack()?.push(NonExciseAlcoInfoPGEFragment.create(productInfo, isDiscrepancy))
+        }
+    }
+
+    override fun openExceededPlannedQuantityBatchPGEDialog(nextCallbackFunc: () -> Unit) {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    message = context.getString(R.string.exceeded_planned_quantity_batch_pge_dialog),
+                    codeConfirmForRight = backFragmentResultHelper.setFuncForResult(nextCallbackFunc),
+                    iconRes = R.drawable.ic_question_yellow_80dp,
+                    pageNumber = "97",
+                    rightButtonDecorationInfo = ButtonDecorationInfo.nextAlternate))
+        }
+    }
+
+    override fun openScannedStampNotIncludedInNetworkLentaDialog(title: String) {
+        runOrPostpone {
+            getFragmentStack()?.push(ExciseAlcoStampPGEBatchSignsFragment.create(title))
+        }
+    }
+
+    override fun openAlertDeliveryDdataWasSentToGISScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    message = context.getString(R.string.delivery_data_was_sent_to_GIS),
+                    iconRes = R.drawable.ic_warning_yellow_80dp,
+                    pageNumber = "96",
+                    timeAutoExitInMillis = 3000)
+            )
+        }
+    }
+
+    override fun openCurrentProviderHasReturnJobsAvailableDialog(numberCurrentProvider: String, nextCallbackFunc: () -> Unit) {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(message = context.getString(R.string.current_provider_has_return_jobs_available, numberCurrentProvider),
+                    codeConfirmForRight = backFragmentResultHelper.setFuncForResult(nextCallbackFunc),
+                    iconRes = R.drawable.ic_warning_yellow_80dp,
+                    pageNumber = "96",
+                    description = context.getString(R.string.supply_results),
+                    rightButtonDecorationInfo = ButtonDecorationInfo.next))
+        }
+    }
+
+    override fun openSupplyResultsScreen(pageNumber: String, numberSupply: String, isAutomaticWriteOff: Boolean) {
+        runOrPostpone {
+            getFragmentStack()?.push(SupplyResultsFragment.create(pageNumber, numberSupply, isAutomaticWriteOff))
+        }
+    }
+
+    override fun openNonExciseSetsInfoPGEScreen(productInfo: TaskProductInfo, isDiscrepancy: Boolean) {
+        runOrPostpone {
+            getFragmentStack()?.push(NonExciseSetsPGEFragment.create(productInfo, isDiscrepancy))
+        }
+    }
+
+    override fun openNonExciseSetComponentInfoPGEScreen(setInfo: TaskSetsInfo, typeDiscrepancies: String, productInfo: TaskProductInfo) {
+        runOrPostpone {
+            getFragmentStack()?.push(NonExciseSetComponentInfoPGEFragment.create(setInfo, typeDiscrepancies, productInfo))
+        }
+    }
+
+    override fun openNonExciseSetsInfoReceivingScreen(productInfo: TaskProductInfo, isDiscrepancy: Boolean) {
+        runOrPostpone {
+            getFragmentStack()?.push(NonExciseSetsReceivingFragment.create(productInfo, isDiscrepancy))
+        }
+    }
+
+    override fun openNonExciseSetComponentInfoReceivingScreen(setInfo: TaskSetsInfo, typeDiscrepancies: String, productInfo: TaskProductInfo) {
+        runOrPostpone {
+            getFragmentStack()?.push(NonExciseSetComponentInfoReceivingFragment.create(setInfo, typeDiscrepancies, productInfo))
+        }
+    }
+
+    override fun openAlertGoodsNotFoundTaskScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    message = context.getString(R.string.goods_not_found),
+                    iconRes = R.drawable.ic_info_pink_80dp,
+                    textColor = ContextCompat.getColor(context, R.color.color_text_dialogWarning),
+                    pageNumber = "97")
+            )
+        }
+    }
+
+    override fun openAlertAlcocodeNotFoundTaskScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    message = context.getString(R.string.alcocode_not_found),
+                    iconRes = R.drawable.ic_info_pink_80dp,
+                    textColor = ContextCompat.getColor(context, R.color.color_text_dialogWarning),
+                    pageNumber = "97")
+            )
+        }
+    }
+
+    override fun openAlertOverLimitPlannedScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    message = context.getString(R.string.over_limit_planned),
+                    iconRes = R.drawable.ic_info_pink_80dp,
+                    textColor = ContextCompat.getColor(context, R.color.color_text_dialogWarning),
+                    pageNumber = "97")
+            )
+        }
+    }
+
+    override fun openAlertOverLimitPlannedBatchScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    message = context.getString(R.string.over_limit_planned_batch),
+                    iconRes = R.drawable.ic_info_pink_80dp,
+                    textColor = ContextCompat.getColor(context, R.color.color_text_dialogWarning),
+                    pageNumber = "97")
             )
         }
     }
@@ -1082,7 +1521,7 @@ interface IScreenNavigator : ICoreNavigator {
     fun openTaskListScreen()
     fun openTaskListLoadingScreen(mode: TaskListLoadingMode, searchParams: TaskListSearchParams? = null, numberEO: String? = null)
     fun openFastDataLoadingScreen()
-    fun openSelectionPersonnelNumberScreen()
+    fun openSelectionPersonnelNumberScreen(isScreenMainMenu: Boolean)
     fun openAlertNotPermissions(message: String)
     fun openTaskSearchScreen(loadingMode: TaskListLoadingMode)
     fun openGoodsListScreen(taskType: TaskType)
@@ -1098,7 +1537,7 @@ interface IScreenNavigator : ICoreNavigator {
     fun openTaskReviseScreen()
     fun openGoodsInfoScreen(productInfo: TaskProductInfo, isDiscrepancy: Boolean, initialCount: Double = 0.0)
     fun openAlertWrongProductType()
-    fun openGoodsDetailsScreen(productInfo: TaskProductInfo? = null, batch: TaskBatchInfo? = null)
+    fun openGoodsDetailsScreen(productInfo: TaskProductInfo)
     fun openInvoiceReviseScreen()
     fun openRejectScreen()
     fun openProductDocumentsReviseScreen()
@@ -1108,12 +1547,8 @@ interface IScreenNavigator : ICoreNavigator {
     fun openDiscrepancyListScreen()
     fun openSelectTypeCodeScreen(codeConfirmationForSap: Int, codeConfirmationForBarCode: Int)
     fun openAlertGoodsNotInOrderScreen()
-    fun openNonExciseAlcoInfoScreen(productInfo: TaskProductInfo)
-    fun openSupplyResultsErrorDialog(numberSupply: String, userName: String)
-    fun openSupplyResultsSuccessDialog(numberSupply: String, leftCallbackFunc: () -> Unit, rightCallbackFunc: () -> Unit)
-    fun openSupplyResultsAutomaticChargeErrorDialog()
-    fun openSupplyResultsAutomaticChargeSuccessDialog(numberSupply: String, leftCallbackFunc: () -> Unit, rightCallbackFunc: () -> Unit)
-    fun openAlertOverlimit()
+    fun openNonExciseAlcoInfoReceivingScreen(productInfo: TaskProductInfo, isDiscrepancy: Boolean)
+    fun openAlertOverLimit()
     fun openExciseAlcoStampAccInfoScreen(productInfo: TaskProductInfo)
     fun openFinishReviseLoadingScreen()
     fun openRegisterArrivalLoadingScreen(isInStockPaperTTN: Boolean = false, isEdo: Boolean = false, status: TaskStatus = TaskStatus.Other)
@@ -1194,8 +1629,58 @@ interface IScreenNavigator : ICoreNavigator {
     fun openAlertCountMoreCargoUnitDialog(yesCallbackFunc: () -> Unit)
     fun openShelfLifeExpiresDialog(noCallbackFunc: () -> Unit, yesCallbackFunc: () -> Unit, expiresThrough: String)
     fun openSupplyResultsActDisagreementTransportationDialog(transportationNumber: String, docCallbackFunc: () -> Unit, nextCallbackFunc: () -> Unit)
-    fun openExciseAlcoBoxAccInfoScreen(productInfo: TaskProductInfo)
+    fun openExciseAlcoBoxAccInfoReceivingScreen(productInfo: TaskProductInfo)
     fun openAlertUnknownGoodsTypeScreen()
     fun openCreateInboundDeliveryDialog(yesCallbackFunc: () -> Unit)
     fun openAlertUnableSaveNegativeQuantity()
+    fun openExciseAlcoBoxListScreen(productInfo: TaskProductInfo, selectQualityCode: String, selectReasonRejectionCode: String?, initialCount: String)
+    fun openExciseAlcoBoxCardScreen(productInfo: TaskProductInfo, boxInfo: TaskBoxInfo?, massProcessingBoxesNumber: List<String>?, exciseStampInfo: TaskExciseStampInfo?, selectQualityCode: String, selectReasonRejectionCode: String?, initialCount: String, isScan: Boolean)
+    fun openAlertScannedStampNotFoundScreen()
+    fun openAlertScannedStampBelongsAnotherProductScreen(materialNumber: String, materialName: String)
+    fun openAlertRequiredQuantityBoxesAlreadyProcessedScreen()
+    fun openAlertMustEnterQuantityScreen()
+    fun openAlertScannedBoxNotFoundScreen()
+    fun openAlertScannedBoxBelongsAnotherProductScreen(materialNumber: String, materialName: String)
+    fun openAlertInvalidBarcodeFormatScannedScreen()
+    fun openScannedStampNotFoundDialog(yesCallbackFunc: () -> Unit)
+    fun openAlertScannedStampIsAlreadyProcessedScreen()
+    fun openDiscrepancyScannedMarkCurrentBoxDialog(yesCallbackFunc: () -> Unit, currentBoxNumber: String, realBoxNumber: String, paramGrzCrGrundcatName: String)
+    fun openAlertScannedBoxNotFoundInDeliveryScreen()
+    fun openAlertGoodsNotInInvoiceScreen(materialNumber: String, materialName: String, callbackFunc: () -> Unit)
+    fun openAlertMoreBoxesSelectedThanSnteredScreen()
+    fun openExciseAlcoBoxProductFailureScreen(productInfo: TaskProductInfo)
+    fun openCompleteRejectionOfGoodsDialog(applyCallbackFunc: () -> Unit, title: String, countBoxes: String, paramGrzCrGrundcatName: String)
+    fun openPartialRefusalOnGoodsDialog(applyCallbackFunc: () -> Unit, title: String, countScanBoxes: String, unconfirmedQuantity: String, paramGrzCrGrundcatName: String)
+    fun openGoodsInfoShipmentPPScreen(productInfo: TaskProductInfo, isDiscrepancy: Boolean, initialCount: Double = 0.0)
+    fun openAlertUnknownTaskTypeScreen()
+    fun openExciseAlcoBoxAccInfoPGEScreen(productInfo: TaskProductInfo)
+    fun openExciseAlcoBoxListPGEScreen(productInfo: TaskProductInfo, selectQualityCode: String)
+    fun openExciseAlcoBoxCardPGEScreen(productInfo: TaskProductInfo, boxInfo: TaskBoxInfo?, massProcessingBoxesNumber: List<String>?, exciseStampInfo: TaskExciseStampInfo?, selectQualityCode: String, isScan: Boolean, isBoxNotIncludedInNetworkLenta: Boolean)
+    fun openAlertOverLimitAlcoPGEScreen(nextCallbackFunc: () -> Unit)
+    fun openAlertScannedStampNotFoundTaskPGEScreen()
+    fun openScannedBoxListedInCargoUnitDialog(cargoUnitNumber: String, nextCallbackFunc: () -> Unit)
+    fun openScannedBoxNotIncludedInDeliveryDialog(nextCallbackFunc: () -> Unit)
+    fun openScannedBoxNotIncludedInNetworkLentaDialog(nextCallbackFunc: () -> Unit)
+    fun openScannedStampBoxPGENotFoundDialog(nextCallbackFunc: () -> Unit)
+    fun openBoxCardUnsavedDataConfirmationDialog(nextCallbackFunc: () -> Unit)
+    fun openAlertAmountNormWillBeReduced()
+    fun openAlertExciseStampPresentInTask()
+    fun openDiscrepancyScannedMarkCurrentBoxPGEDialog(nextCallbackFunc: () -> Unit, realBoxNumber: String)
+    fun openExciseAlcoStampAccInfoPGEScreen(productInfo: TaskProductInfo)
+    fun openScannedStampListedInCargoUnitDialog(cargoUnitNumber: String, nextCallbackFunc: () -> Unit)
+    fun openScannedStampNotIncludedInDeliveryDialog(nextCallbackFunc: () -> Unit)
+    fun openNonExciseAlcoInfoPGEScreen(productInfo: TaskProductInfo, isDiscrepancy: Boolean)
+    fun openExceededPlannedQuantityBatchPGEDialog(nextCallbackFunc: () -> Unit)
+    fun openScannedStampNotIncludedInNetworkLentaDialog(title: String)
+    fun openAlertDeliveryDdataWasSentToGISScreen()
+    fun openCurrentProviderHasReturnJobsAvailableDialog(numberCurrentProvider: String, nextCallbackFunc: () -> Unit)
+    fun openSupplyResultsScreen(pageNumber: String, numberSupply: String, isAutomaticWriteOff: Boolean)
+    fun openNonExciseSetsInfoPGEScreen(productInfo: TaskProductInfo, isDiscrepancy: Boolean)
+    fun openNonExciseSetComponentInfoPGEScreen(setInfo: TaskSetsInfo, typeDiscrepancies: String, productInfo: TaskProductInfo)
+    fun openNonExciseSetsInfoReceivingScreen(productInfo: TaskProductInfo, isDiscrepancy: Boolean)
+    fun openNonExciseSetComponentInfoReceivingScreen(setInfo: TaskSetsInfo, typeDiscrepancies: String, productInfo: TaskProductInfo)
+    fun openAlertGoodsNotFoundTaskScreen()
+    fun openAlertAlcocodeNotFoundTaskScreen()
+    fun openAlertOverLimitPlannedScreen()
+    fun openAlertOverLimitPlannedBatchScreen()
 }

@@ -24,7 +24,7 @@ class PrintTaskNetRequest
 
 
     override suspend fun run(params: PrintTask): Either<Failure, Boolean> {
-        val resName = "ZMP_UTZ_WOB_04_V001"
+        val resName = "ZMP_UTZ_WOB_05_V001"
         val printTaskStatus = hyperHive.requestAPI.web(resName,
                 WebCallParams().apply {
                     data = gson.toJson(params)

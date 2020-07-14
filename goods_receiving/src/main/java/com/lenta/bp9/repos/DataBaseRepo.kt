@@ -88,6 +88,22 @@ class DataBaseRepo(
         zmpUtz14V001.getGrzWerksOwnpr()
     }
 
+    override suspend fun getParamGrzRoundLackRatio(): String? = withContext(Dispatchers.IO) {
+        zmpUtz14V001.getParamGrzRoundLackRatio()
+    }
+
+    override suspend fun getParamGrzRoundLackUnit(): String? = withContext(Dispatchers.IO) {
+        zmpUtz14V001.getParamGrzRoundLackUnit()
+    }
+
+    override suspend fun getParamGrzRoundHeapRatio(): String? = withContext(Dispatchers.IO) {
+        zmpUtz14V001.getParamGrzRoundHeapRatio()
+    }
+
+    override suspend fun getParamGrzCrGrundcat(): String? = withContext(Dispatchers.IO) {
+        zmpUtz14V001.getGrzCrGrundcat()
+    }
+
     override suspend fun getExclusionFromIntegration(): List<QualityInfo>? = withContext(Dispatchers.IO) {
         zmpUtz17V001.getAllQuality()?.toQualityInfoList()?.filter {
             it.id == "016"
@@ -124,6 +140,12 @@ class DataBaseRepo(
         }
     }
 
+    override suspend fun getQualityInfoNormPGE(): List<QualityInfo>? = withContext(Dispatchers.IO) {
+        zmpUtz17V001.getAllQuality()?.toQualityInfoList()?.filter {
+            it.id == "013" && it.code == "1"
+        }
+    }
+
     override suspend fun getQualityInfoPGENotRecountBreaking(): List<QualityInfo>? = withContext(Dispatchers.IO) {
         zmpUtz17V001.getAllQuality()?.toQualityInfoList()?.filter {
             it.id == "013" && (it.code == "4" || it.code == "5")
@@ -139,6 +161,18 @@ class DataBaseRepo(
     override suspend fun getQualityInfoPGEForDiscrepancy(): List<QualityInfo>? = withContext(Dispatchers.IO) {
         zmpUtz17V001.getAllQuality()?.toQualityInfoList()?.filter {
             it.id == "013" && (it.code == "3" || it.code == "4" || it.code == "5")
+        }
+    }
+
+    override suspend fun getQualityInfoPGENotSurplusNotUnderload(): List<QualityInfo>? = withContext(Dispatchers.IO) {
+        zmpUtz17V001.getAllQuality()?.toQualityInfoList()?.filter {
+            it.id == "013" && !(it.code == "2" || it.code == "3")
+        }
+    }
+
+    override suspend fun getQualityInfoPGENotSurplus(): List<QualityInfo>? = withContext(Dispatchers.IO) {
+        zmpUtz17V001.getAllQuality()?.toQualityInfoList()?.filter {
+            it.id == "013" && it.code != "2"
         }
     }
 
@@ -159,6 +193,18 @@ class DataBaseRepo(
             it.id == "006" && it.code == "4"
         }
     }
+
+    override suspend fun getQualityBoxesDefectInfo(): List<QualityInfo>? = withContext(Dispatchers.IO) {
+        zmpUtz17V001.getAllQuality()?.toQualityInfoList()?.filter {
+            it.id == "005" && it.code != "4"
+        }
+    }
+
+    override suspend fun getGrzCrGrundcatName(code: String): String? = withContext(Dispatchers.IO) {
+        zmpUtz20V001.getAllReasonRejection()?.toReasonRejectionInfoList()?.findLast {
+            it.code == code
+        }?.name
+    }
 }
 
 interface IDataBaseRepo {
@@ -176,16 +222,25 @@ interface IDataBaseRepo {
     suspend fun getParamGrwOlGrundcat(): String?
     suspend fun getParamGrwUlGrundcat(): String?
     suspend fun getParamGrzWerksOwnpr(): List<String>?
+    suspend fun getParamGrzRoundLackRatio(): String?
+    suspend fun getParamGrzRoundLackUnit(): String?
+    suspend fun getParamGrzRoundHeapRatio(): String?
+    suspend fun getParamGrzCrGrundcat(): String?
     suspend fun getExclusionFromIntegration(): List<QualityInfo>?
     suspend fun getAllStatusInfoForPRC(): List<QualityInfo>?
     suspend fun getStatusInfoForPRC(): List<QualityInfo>?
     suspend fun getSurplusInfoForPRC(): List<QualityInfo>?
     suspend fun getTypePalletInfo(): List<QualityInfo>?
     suspend fun getQualityInfoPGE(): List<QualityInfo>?
+    suspend fun getQualityInfoNormPGE(): List<QualityInfo>?
     suspend fun getQualityInfoPGENotRecountBreaking(): List<QualityInfo>?
     suspend fun getSurplusInfoForPGE(): List<QualityInfo>?
     suspend fun getQualityInfoPGEForDiscrepancy(): List<QualityInfo>?
+    suspend fun getQualityInfoPGENotSurplusNotUnderload(): List<QualityInfo>?
+    suspend fun getQualityInfoPGENotSurplus(): List<QualityInfo>?
     suspend fun getFailureReasons(): List<QualityInfo>?
     suspend fun getStatusInfoShipmentRC(): List<QualityInfo>?
     suspend fun getQualityInfoTransportMarriage(): List<QualityInfo>?
+    suspend fun getQualityBoxesDefectInfo(): List<QualityInfo>?
+    suspend fun getGrzCrGrundcatName(code: String): String?
 }

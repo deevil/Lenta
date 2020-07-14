@@ -8,8 +8,8 @@ import com.lenta.bp16.request.*
 import com.lenta.bp16.request.pojo.PackCode
 import com.lenta.shared.platform.device_info.DeviceInfo
 import com.lenta.shared.platform.viewmodel.CoreViewModel
-import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.extentions.dropZeros
+import com.lenta.shared.utilities.extentions.isSapTrue
 import com.lenta.shared.utilities.extentions.map
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -18,20 +18,23 @@ class PackListViewModel : CoreViewModel() {
 
     @Inject
     lateinit var navigator: IScreenNavigator
+
     @Inject
-    lateinit var taskManager: ITaskManager
+    lateinit var manager: ITaskManager
+
     @Inject
     lateinit var endDefrostingNetRequest: EndDefrostingNetRequest
+
     @Inject
     lateinit var deviceInfo: DeviceInfo
 
 
     val good by lazy {
-        taskManager.currentGood
+        manager.currentGood
     }
 
     val raw by lazy {
-        taskManager.currentRaw
+        manager.currentRaw
     }
 
     val title by lazy {
@@ -78,11 +81,17 @@ class PackListViewModel : CoreViewModel() {
                 )
                 ).either({ failure ->
                     navigator.openAlertScreen(failure)
-                }) {
-                    navigator.showDefrostingPhaseIsCompleted {
-                        taskManager.onTaskChanged()
-                        navigator.goBack()
-                        navigator.goBack()
+                }) { result ->
+                    if (result.isAutofix.isSapTrue()) {
+                        navigator.showFixStartNextStageSuccessful {
+                            navigator.goBack()
+                            navigator.goBack()
+                        }
+                    } else {
+                        navigator.showDefrostingPhaseIsCompleted {
+                            navigator.goBack()
+                            navigator.goBack()
+                        }
                     }
                 }
                 navigator.hideProgress()

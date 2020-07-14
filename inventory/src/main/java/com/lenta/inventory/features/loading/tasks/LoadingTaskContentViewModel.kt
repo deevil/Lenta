@@ -56,12 +56,12 @@ class LoadingTaskContentViewModel : CoreLoadingViewModel() {
             val userNumber = if (recountType == RecountType.ParallelByPerNo) sessionInfo.personnelNumber else ""
             var needsRelock = false
             if (recountType == RecountType.Simple) {
-                val status = StatusTask.from(taskInfo, sessionInfo.userName ?: "")
+                val status = StatusTask.from(taskInfo, sessionInfo.userName.orEmpty())
                 needsRelock = status == StatusTask.BlockedMe
             }
             taskContentRequest(TaskContentParams(ip = context.getDeviceIp(),
                     taskNumber = taskInfo.taskNumber,
-                    userNumber = userNumber ?: "",
+                    userNumber = userNumber.orEmpty(),
                     additionalDataFlag = "",
                     newProductNumbers = emptyList(),
                     numberRelock = if (needsRelock) "X" else "",

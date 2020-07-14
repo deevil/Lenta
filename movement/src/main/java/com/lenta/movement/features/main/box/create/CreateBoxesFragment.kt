@@ -22,6 +22,7 @@ import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListener
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
 import com.lenta.shared.scan.OnScanResultListener
+import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.databinding.*
 import com.lenta.shared.utilities.extentions.connectLiveData
 import com.lenta.shared.utilities.extentions.provideViewModel
@@ -32,8 +33,6 @@ class CreateBoxesFragment : CoreFragment<FragmentCreateBoxesBinding, CreateBoxes
     ViewPagerSettings,
     OnScanResultListener,
     OnBackPresserListener {
-
-    private var recyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
 
     private var productInfo: ProductInfo? by state(null)
 
@@ -78,6 +77,11 @@ class CreateBoxesFragment : CoreFragment<FragmentCreateBoxesBinding, CreateBoxes
                     bottomToolbarUiModel.uiModelButton3.show(ButtonDecorationInfo.delete)
 
                     connectLiveData(vm.deleteEnabled, bottomToolbarUiModel.uiModelButton3.enabled)
+                }
+                else -> {
+                    Logg.e {
+                        "LiveData vm.selectedPage is null"
+                    }
                 }
             }
         })

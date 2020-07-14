@@ -109,9 +109,9 @@ class PriceTagGenerator @Inject constructor(private val context: Context) : IPri
         mutableMapOf<String, String>().apply {
 
             printPriceInfo.goodsName.splitByLines(25).let {
-                put("GOODSNAME1", it.getOrNull(0) ?: "")
-                put("GOODSNAME2", it.getOrNull(1) ?: "")
-                put("GOODSNAME3", it.getOrNull(2) ?: "")
+                put("GOODSNAME1", it.getOrNull(0).orEmpty())
+                put("GOODSNAME2", it.getOrNull(1).orEmpty())
+                put("GOODSNAME3", it.getOrNull(2).orEmpty())
             }
 
             printPriceInfo.price1.let { price ->
@@ -154,8 +154,8 @@ class PriceTagGenerator @Inject constructor(private val context: Context) : IPri
             }
 
             address.splitByLines(LENGTH_MAX_ADDRESS / 2).also {
-                put("ADDRESS1", it.getOrNull(0) ?: "")
-                put("ADDRESS2", it.getOrNull(1) ?: "")
+                put("ADDRESS1", it.getOrNull(0).orEmpty())
+                put("ADDRESS2", it.getOrNull(1).orEmpty())
             }
 
             put("COPIES", printPriceInfo.copies.toString())

@@ -1,0 +1,363 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".features.goods_information.excise_alco_receiving.excise_alco_box_acc.excise_alco_box_card.ExciseAlcoBoxCardFragment">
+
+    <data>
+
+        <variable
+            name="vm"
+            type="com.lenta.bp9.features.goods_information.excise_alco_receiving.excise_alco_box_acc.excise_alco_box_card.ExciseAlcoBoxCardViewModel" />
+
+
+    </data>
+
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <View
+            android:id="@+id/div_hor1"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginTop="8dp"
+            android:background="@color/color_divider"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideline"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.5" />
+
+        <View
+            android:id="@+id/div_vert1"
+            android:layout_width="1dp"
+            android:layout_height="0dp"
+            android:background="@color/color_divider"
+            app:layout_constraintBottom_toBottomOf="@+id/div_hor2"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="@+id/guideline"
+            app:layout_constraintTop_toBottomOf="@+id/div_hor1" />
+
+        <com.lenta.shared.view.ClickableSpinner
+            android:id="@+id/spinner_quality"
+            android:layout_width="0dp"
+            android:layout_height="32dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
+            android:enabled="@{vm.enabledSpinCategorySubcategory.booleanValue()}"
+            app:items="@{vm.spinQuality}"
+            app:layout_constraintBottom_toBottomOf="@+id/et_inventory"
+            app:layout_constraintEnd_toStartOf="@+id/div_vert1"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/et_inventory"
+            app:position="@{vm.spinQualitySelectedPosition}"
+            tools:entries="@array/test_list" />
+
+        <com.lenta.shared.view.EditTextWithSuffix
+            android:id="@+id/et_inventory"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="8dp"
+            android:ellipsize="end"
+            android:enabled="false"
+            android:inputType="numberDecimal"
+            android:maxLength="6"
+            android:maxLines="1"
+            android:text="@={vm.count}"
+            app:digitsForUom="@{vm.productInfo.uom}"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/div_vert1"
+            app:layout_constraintTop_toTopOf="@+id/div_vert1"
+            app:maxLengthForScanProtect="@{6}"
+            app:suffix="@{vm.suffix}"
+            tools:text="1 шт" />
+
+        <View
+            android:id="@+id/div_hor2"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginTop="8dp"
+            android:background="@color/color_divider"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/et_inventory" />
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/ConstraintNorm"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="@{!vm.isDefect}"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="1.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/div_hor2">
+
+            <View
+                android:id="@+id/div_vert2"
+                android:layout_width="1dp"
+                android:layout_height="0dp"
+                android:layout_marginStart="1dp"
+                android:background="@color/color_divider"
+                app:layout_constraintBottom_toBottomOf="@+id/div_hor4"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="@+id/div_hor3"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/tv_stamp_control"
+                style="@style/TextTitle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="8dp"
+                android:ellipsize="end"
+                android:text="@string/stamps_control"
+                app:layout_constraintBottom_toBottomOf="@+id/checkBox_stamp_control"
+                app:layout_constraintEnd_toStartOf="@+id/div_vert2"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/checkBox_stamp_control" />
+
+            <TextView
+                android:id="@+id/tv_stamp_control_val"
+                style="@style/TextTitle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="8dp"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:text="@{vm.tvStampControlVal}"
+                app:layout_constraintBottom_toBottomOf="@+id/checkBox_stamp_control"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/checkBox_stamp_control"
+                app:layout_constraintTop_toTopOf="@+id/checkBox_stamp_control" />
+
+            <CheckBox
+                android:id="@+id/checkBox_stamp_control"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:checked="@{vm.checkStampControl}"
+                android:enabled="false"
+                app:layout_constraintStart_toEndOf="@+id/div_vert2"
+                app:layout_constraintTop_toTopOf="@+id/div_vert2" />
+
+            <View
+                android:id="@+id/div_hor3"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginTop="8dp"
+                android:background="@color/color_divider"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/checkBox_stamp_control" />
+
+            <TextView
+                android:id="@+id/tv_box_control"
+                style="@style/TextTitle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="8dp"
+                android:ellipsize="end"
+                android:text="@string/box_control"
+                app:layout_constraintBottom_toBottomOf="@+id/checkBox_box_control"
+                app:layout_constraintEnd_toStartOf="@+id/div_vert2"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/checkBox_box_control" />
+
+            <CheckBox
+                android:id="@+id/checkBox_box_control"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:checked="@{vm.checkBoxControl}"
+                android:enabled="false"
+                app:layout_constraintStart_toEndOf="@+id/div_vert2"
+                app:layout_constraintTop_toBottomOf="@+id/div_hor3" />
+
+            <View
+                android:id="@+id/div_hor4"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginTop="8dp"
+                android:background="@color/color_divider"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/checkBox_box_control" />
+
+            <com.lenta.shared.view.ClickableSpinner
+                android:id="@+id/spinner_manufacturers"
+                android:layout_width="0dp"
+                android:layout_height="32dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="8dp"
+                app:items="@{vm.spinManufacturers}"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/div_hor4"
+                app:position="@{vm.spinManufacturersSelectedPosition}"
+                tools:entries="@array/test_list" />
+
+            <View
+                android:id="@+id/div_hor5"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginTop="8dp"
+                android:background="@color/color_divider"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="1.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/spinner_manufacturers" />
+
+            <TextView
+                android:id="@+id/tv_bottling_date"
+                style="@style/TextTitle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="8dp"
+                android:ellipsize="end"
+                android:text="@{vm.tvBottlingDate}"
+                app:layout_constraintBottom_toBottomOf="@+id/spinner_bottling_date"
+                app:layout_constraintEnd_toStartOf="@+id/div_vert3"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/spinner_bottling_date"
+                tools:text="Дата розлива" />
+
+            <View
+                android:id="@+id/div_hor6"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginTop="8dp"
+                android:background="@color/color_divider"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/spinner_bottling_date" />
+
+            <com.lenta.shared.view.ClickableSpinner
+                android:id="@+id/spinner_bottling_date"
+                android:layout_width="0dp"
+                android:layout_height="32dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="8dp"
+                app:items="@{vm.spinBottlingDate}"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/div_vert3"
+                app:layout_constraintTop_toBottomOf="@+id/div_hor5"
+                app:position="@{vm.spinBottlingDateSelectedPosition}"
+                tools:entries="@array/test_list" />
+
+            <View
+                android:id="@+id/div_vert3"
+                android:layout_width="1dp"
+                android:layout_height="0dp"
+                android:background="@color/color_divider"
+                app:layout_constraintBottom_toBottomOf="@+id/div_hor6"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="@+id/div_hor5"
+                app:layout_constraintTop_toBottomOf="@+id/div_hor5" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/ConstraintDefect"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:visibility="@{vm.isDefect}"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/ConstraintNorm">
+
+            <com.lenta.shared.view.ClickableSpinner
+                android:id="@+id/spinner_reject_rejection"
+                android:layout_width="0dp"
+                android:layout_height="32dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="8dp"
+                android:enabled="@{vm.enabledSpinCategorySubcategory.booleanValue()}"
+                app:items="@{vm.spinReasonRejection}"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:onPositionClickListener="@{vm}"
+                app:position="@{vm.spinReasonRejectionSelectedPosition}"
+                tools:entries="@array/test_list" />
+
+            <View
+                android:id="@+id/div_hor7"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginTop="8dp"
+                android:background="@color/color_divider"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/spinner_reject_rejection" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <!-- Блок с иконками -->
+        <LinearLayout
+            style="@style/BottomIconBarStyle"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent">
+
+            <LinearLayout style="@style/BottomIconContainerStyle">
+
+                <TextView
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:background="@drawable/bg_white_circle"
+                    android:gravity="center"
+                    android:onClick="@{(v) -> vm.screenNavigator.openSectionInfoScreen(vm.productInfo.sectionId)}"
+                    android:text='@{"" + vm.productInfo.sectionId}'
+                    android:textSize="12sp"
+                    tools:text="02" />
+
+            </LinearLayout>
+
+            <ImageView
+                style="@style/BottomIconStyle"
+                app:alcoIcon="@{vm.productInfo.type}"
+                tools:src="@drawable/ic_excise_alcohol_white_32dp" />
+
+            <View style="@style/BottomIconEmptyPlaceStyle" />
+
+            <View style="@style/BottomIconEmptyPlaceStyle" />
+
+            <View style="@style/BottomIconEmptyPlaceStyle" />
+
+            <ImageView
+                style="@style/BottomIconStyle"
+                android:onClick="@{(v) -> vm.screenNavigator.openBoxInfoScreen()}"
+                android:src="@drawable/ic_scan_box_white_32dp" />
+
+            <ImageView
+                style="@style/BottomIconStyle"
+                android:onClick="@{(v) -> vm.screenNavigator.openESInfoScreen()}"
+                android:src="@drawable/ic_scan_barcode_es_white_32dp"
+                android:visibility="@{!vm.isDefect}" />
+
+        </LinearLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</layout>

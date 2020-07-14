@@ -2,33 +2,28 @@ package com.lenta.bp16.features.external_supply_list
 
 import android.os.Bundle
 import android.view.View
-import android.widget.AdapterView
 import com.lenta.bp16.BR
 import com.lenta.bp16.R
 import com.lenta.bp16.databinding.FragmentExternalSupplyListBinding
 import com.lenta.bp16.databinding.ItemExternalSupplyBinding
 import com.lenta.bp16.platform.extention.getAppComponent
+import com.lenta.shared.keys.KeyCode
 import com.lenta.shared.platform.activity.OnBackPresserListener
-import com.lenta.shared.platform.fragment.CoreFragment
+import com.lenta.shared.platform.fragment.KeyDownCoreFragment
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListener
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
-import com.lenta.shared.utilities.databinding.DataBindingAdapter
-import com.lenta.shared.utilities.databinding.DataBindingRecyclerViewConfig
-import com.lenta.shared.utilities.databinding.RecyclerViewKeyHandler
 import com.lenta.shared.utilities.extentions.connectLiveData
 import com.lenta.shared.utilities.extentions.generateScreenNumberFromPostfix
 import com.lenta.shared.utilities.extentions.provideViewModel
 
-class ExternalSupplyListFragment : CoreFragment<FragmentExternalSupplyListBinding, ExternalSupplyListViewModel>(),
+class ExternalSupplyListFragment : KeyDownCoreFragment<FragmentExternalSupplyListBinding, ExternalSupplyListViewModel>(),
         OnBackPresserListener, ToolbarButtonsClickListener {
-
-    private var recyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
 
     override fun getLayoutId(): Int = R.layout.fragment_external_supply_list
 
-    override fun getPageNumber(): String? = generateScreenNumberFromPostfix("62")
+    override fun getPageNumber(): String? = generateScreenNumberFromPostfix(SCREEN_NUMBER)
 
     override fun getViewModel(): ExternalSupplyListViewModel {
         provideViewModel(ExternalSupplyListViewModel::class.java).let {
@@ -62,38 +57,16 @@ class ExternalSupplyListFragment : CoreFragment<FragmentExternalSupplyListBindin
 
     private fun initRvConfig() {
         binding?.let { layoutBinding ->
-            layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
+            layoutBinding.rvConfig = initRecycleAdapterDataBinding<ItemExternalSupplyBinding>(
                     layoutId = R.layout.item_external_supply,
-                    itemId = BR.item,
-                    realisation = object : DataBindingAdapter<ItemExternalSupplyBinding> {
-                        override fun onCreate(binding: ItemExternalSupplyBinding) {
-                        }
-
-                        override fun onBind(binding: ItemExternalSupplyBinding, position: Int) {
-                            recyclerViewKeyHandler?.let {
-                                binding.root.isSelected = it.isSelected(position)
-                            }
-                        }
-                    },
-                    onItemClickListener = AdapterView.OnItemClickListener { _, _, position, _ ->
-                        recyclerViewKeyHandler?.let {
-                            if (it.isSelected(position)) {
-                                vm.onClickItemPosition(position)
-                            } else {
-                                it.selectPosition(position)
-                            }
-                        }
-
-                    }
+                    itemId = BR.item
             )
 
-            layoutBinding.vm = vm
-            layoutBinding.lifecycleOwner = viewLifecycleOwner
-            recyclerViewKeyHandler = RecyclerViewKeyHandler(
-                    rv = layoutBinding.rv,
+            recyclerViewKeyHandler = initRecyclerViewKeyHandler(
+                    recyclerView = layoutBinding.rv,
                     items = vm.goods,
-                    lifecycleOwner = layoutBinding.lifecycleOwner!!,
-                    initPosInfo = recyclerViewKeyHandler?.posInfo?.value
+                    previousPosInfo = recyclerViewKeyHandler?.posInfo?.value,
+                    onClickHandler = vm::onClickItemPosition
             )
         }
     }
@@ -103,9 +76,17 @@ class ExternalSupplyListFragment : CoreFragment<FragmentExternalSupplyListBindin
         return false
     }
 
-    /*override fun onResume() {
-        super.onResume()
-        vm.updateList()
-    }*/
+    override fun onKeyDown(keyCode: KeyCode): Boolean {
+        return recyclerViewKeyHandler?.onKeyDown(keyCode) ?: false
+    }
+
+    override fun onDestroyView() {
+        recyclerViewKeyHandler?.onClickPositionFunc = null
+        super.onDestroyView()
+    }
+
+    companion object {
+        const val SCREEN_NUMBER = "62"
+    }
 
 }

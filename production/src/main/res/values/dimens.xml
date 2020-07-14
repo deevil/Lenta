@@ -1,46 +1,33 @@
 <resources>
 
-    <!-- Список заданий - № / ЕО / Признак / SKU -->
-    <integer name="pu_type_column_1">10</integer>
-    <integer name="pu_type_column_2">50</integer>
-    <integer name="pu_type_column_3">20</integer>
-    <integer name="pu_type_column_4">20</integer>
+    <!-- Три колонки / Тип 1 -->
+    <integer name="three_one_1">10</integer>
+    <integer name="three_one_2">55</integer>
+    <integer name="three_one_3">35</integer>
 
-    <!-- Список товаров - № / SKU / Прибыло / Остаток -->
-    <integer name="sku_arrived_remain_column_1">10</integer>
-    <integer name="sku_arrived_remain_column_2">50</integer>
-    <integer name="sku_arrived_remain_column_3">20</integer>
-    <integer name="sku_arrived_remain_column_4">20</integer>
+    <!-- Три колонки / Тип 2 -->
+    <integer name="three_two_1">10</integer>
+    <integer name="three_two_2">60</integer>
+    <integer name="three_two_3">30</integer>
 
-    <!-- Список товаров - № / SKU / Прибыло -->
-    <integer name="sku_arrived_column_1">10</integer>
-    <integer name="sku_arrived_column_2">60</integer>
-    <integer name="sku_arrived_column_3">30</integer>
+    <!-- Четыре колонки / Тип 1 -->
+    <integer name="four_one_1">10</integer>
+    <integer name="four_one_2">50</integer>
+    <integer name="four_one_3">20</integer>
+    <integer name="four_one_4">20</integer>
 
-    <!-- Список сырья - № / Вид ПФ / Обработано -->
-    <integer name="type_sf_processed_column_1">10</integer>
-    <integer name="type_sf_processed_column_2">55</integer>
-    <integer name="type_sf_processed_column_3">35</integer>
+    <!-- Четыре колонки / Тип 2 -->
+    <integer name="four_two_1">15</integer>
+    <integer name="four_two_2">38</integer>
+    <integer name="four_two_3">25</integer>
+    <integer name="four_two_4">22</integer>
 
-    <!-- Список тар - № / Номер тары / Общий вес -->
-    <integer name="pack_number_total_weight_column_1">10</integer>
-    <integer name="pack_number_total_weight_column_2">60</integer>
-    <integer name="pack_number_total_weight_column_3">30</integer>
+    <dimen name="size_8dp">8dp</dimen>
+    <dimen name="size_10dp">10dp</dimen>
+    <dimen name="size_16dp">16dp</dimen>
+    <dimen name="size_32dp">32dp</dimen>
+    <dimen name="size_96dp">96dp</dimen>
 
-    <!-- Список товаров на упаковку - № / SKU / План кол-во -->
-    <integer name="sku_plan_quantity_column_1">10</integer>
-    <integer name="sku_plan_quantity_column_2">60</integer>
-    <integer name="sku_plan_quantity_column_3">30</integer>
-
-    <!-- Список товаров - № / ПФ / Тара/Печать / Кол-во -->
-    <integer name="reprint_label_column_1">15</integer>
-    <integer name="reprint_label_column_2">38</integer>
-    <integer name="reprint_label_column_3">25</integer>
-    <integer name="reprint_label_column_4">22</integer>
-
-    <!-- Список тар - № / Тара/Тип/Причина / Кол-во -->
-    <integer name="pack_type_cause_quantity_column_1">10</integer>
-    <integer name="pack_type_cause_quantity_column_2">60</integer>
-    <integer name="pack_type_cause_quantity_column_3">30</integer>
+    <dimen name="text_14sp">14sp</dimen>
 
 </resources>

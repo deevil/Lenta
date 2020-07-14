@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.AdapterView
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import com.lenta.bp10.BR
@@ -15,45 +14,30 @@ import com.lenta.bp10.databinding.LayoutSetsComponentsBinding
 import com.lenta.bp10.databinding.LayoutSetsQuantityBinding
 import com.lenta.bp10.platform.extentions.getAppComponent
 import com.lenta.shared.keys.KeyCode
-import com.lenta.shared.keys.OnKeyDownListener
 import com.lenta.shared.models.core.ProductInfo
 import com.lenta.shared.platform.activity.OnBackPresserListener
-import com.lenta.shared.platform.fragment.CoreFragment
+import com.lenta.shared.platform.fragment.KeyDownCoreFragment
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListener
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
 import com.lenta.shared.scan.OnScanResultListener
-import com.lenta.shared.utilities.databinding.*
+import com.lenta.shared.utilities.databinding.PageSelectionListener
+import com.lenta.shared.utilities.databinding.ViewPagerSettings
 import com.lenta.shared.utilities.extentions.*
 import com.lenta.shared.utilities.state.state
 
 class SetsFragment :
-        CoreFragment<FragmentSetsBinding, SetsViewModel>(),
+        KeyDownCoreFragment<FragmentSetsBinding, SetsViewModel>(),
         ViewPagerSettings,
         PageSelectionListener,
         ToolbarButtonsClickListener,
         OnBackPresserListener,
-        OnScanResultListener,
-        OnKeyDownListener {
-
-    private var recyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
+        OnScanResultListener {
 
     private var productInfo: ProductInfo? by state(null)
 
     private var quantity by state(0.0)
-
-
-    companion object {
-        fun create(productInfo: ProductInfo, quantity: Double): SetsFragment {
-            SetsFragment().let {
-                it.productInfo = productInfo
-                it.quantity = quantity
-                return it
-            }
-        }
-
-    }
 
     override fun getLayoutId(): Int = R.layout.fragment_sets
 
@@ -108,7 +92,7 @@ class SetsFragment :
         }
 
         getBottomToolBarUIModel()?.let { bottomToolbarUiModel ->
-            vm.selectedPage.observe(this, Observer { pos ->
+            vm.selectedPage.observe(this.viewLifecycleOwner, Observer { pos ->
                 bottomToolbarUiModel.uiModelButton3.show(
                         if (pos == 0) ButtonDecorationInfo.details else ButtonDecorationInfo.clean,
                         enabled = false)
@@ -144,45 +128,26 @@ class SetsFragment :
                         }
                     }
 
-                    layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
+                    layoutBinding.rvConfig = initRecycleAdapterDataBinding(
                             layoutId = R.layout.item_tile_sets,
-                            itemId = BR.vm,
-                            realisation = object : DataBindingAdapter<ItemTileSetsBinding> {
-                                override fun onCreate(binding: ItemTileSetsBinding) {
-                                }
-
-                                override fun onBind(binding: ItemTileSetsBinding, position: Int) {
-                                    binding.tvCounter.tag = position
-                                    binding.tvCounter.setOnClickListener(onClickSelectionListener)
-                                    binding.selectedForDelete = vm.componentsSelectionsHelper.isSelected(position)
-                                    recyclerViewKeyHandler?.let {
-                                        binding.root.isSelected = it.isSelected(position)
-                                    }
-                                }
-
-                            },
-                            onItemClickListener = AdapterView.OnItemClickListener { _, _, position, _ ->
-                                recyclerViewKeyHandler?.let {
-                                    if (it.isSelected(position)) {
-                                        vm.onClickItemPosition(position)
-                                    } else {
-                                        it.selectPosition(position)
-                                    }
-                                }
-
+                            itemId = BR.item,
+                            onAdapterItemBind = { binding: ItemTileSetsBinding, position: Int ->
+                                binding.tvItemNumber.tag = position
+                                binding.tvItemNumber.setOnClickListener(onClickSelectionListener)
+                                binding.selectedForDelete = vm.componentsSelectionsHelper.isSelected(position)
+                                onAdapterBindHandler(binding, position)
                             }
                     )
                     layoutBinding.vm = vm
                     layoutBinding.lifecycleOwner = viewLifecycleOwner
-                    recyclerViewKeyHandler = RecyclerViewKeyHandler(
-                            rv = layoutBinding.rv,
+                    recyclerViewKeyHandler = initRecyclerViewKeyHandler(
+                            recyclerView = layoutBinding.rv,
                             items = vm.componentsLiveData,
-                            lifecycleOwner = layoutBinding.lifecycleOwner!!,
-                            initPosInfo = recyclerViewKeyHandler?.posInfo?.value
+                            previousPosInfo = recyclerViewKeyHandler?.posInfo?.value,
+                            onClickHandler = vm::onClickItemPosition
                     )
                     return layoutBinding.root
                 }
-
     }
 
     override fun getTextTitle(position: Int): String = getString(if (position == 0) R.string.quantity else R.string.components)
@@ -212,10 +177,22 @@ class SetsFragment :
     }
 
     override fun onKeyDown(keyCode: KeyCode): Boolean {
-        if (vm.selectedPage.value == 1) {
+        if (vm.selectedPage.value == KEY_DOWN_SELECTED_PAGE) {
             return recyclerViewKeyHandler?.onKeyDown(keyCode) ?: false
         }
         return false
+    }
+
+    companion object {
+        private const val KEY_DOWN_SELECTED_PAGE = 1
+
+        fun newInstance(productInfo: ProductInfo, quantity: Double): SetsFragment {
+            SetsFragment().let {
+                it.productInfo = productInfo
+                it.quantity = quantity
+                return it
+            }
+        }
     }
 
 }

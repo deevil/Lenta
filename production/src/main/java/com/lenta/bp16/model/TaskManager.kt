@@ -33,6 +33,24 @@ class TaskManager @Inject constructor(
     override val currentRaw = MutableLiveData<Raw>()
 
 
+    override fun updateCurrentTask(task: Task?) {
+        currentTask.value = task
+    }
+
+    override fun updateCurrentGood(good: Good?) {
+        currentGood.value = good
+    }
+
+    override fun updateCurrentRaw(raw: Raw?) {
+        currentRaw.value = raw
+    }
+
+    override fun onTaskChanged() {
+        currentTask.value?.let { task ->
+            currentTask.value = task
+        }
+    }
+
     override suspend fun getLabelList() {
         labelLimit = database.getLabelLimit()
 
@@ -121,7 +139,7 @@ class TaskManager @Inject constructor(
                 )
             }.toMutableList()
 
-            currentTask.value = task
+            updateCurrentTask(task)
         }
     }
 
@@ -142,7 +160,7 @@ class TaskManager @Inject constructor(
                 good.isProcessed = true
             }
 
-            currentTask.value = task
+            updateCurrentTask(task)
         }
     }
 
@@ -154,35 +172,16 @@ class TaskManager @Inject constructor(
     }
 
     override fun getBlockType(): Int {
-        //todo Добавить варианты с переблокировкой
-
         return when (taskType) {
             TaskType.PROCESSING_UNIT -> 1
             TaskType.EXTERNAL_SUPPLY -> 3
         }
     }
 
-    override fun updateGoodInCurrentTask(good: Good) {
-        currentTask.value?.let { task ->
-            val index = task.goods.indexOf(task.goods.find { it.material == currentGood.value?.material })
-            if (index >= 0) {
-                task.goods.removeAt(index)
-            }
-
-            task.goods.add(good)
-            currentTask.value = task
-        }
-    }
-
-    override fun onTaskChanged() {
-        currentTask.value?.let { task ->
-            currentTask.value = task
-        }
-    }
-
 }
 
 interface ITaskManager {
+
     var taskType: TaskType
 
     val tasks: MutableLiveData<List<Task>>
@@ -191,14 +190,19 @@ interface ITaskManager {
     val currentGood: MutableLiveData<Good>
     val currentRaw: MutableLiveData<Raw>
 
+    fun updateCurrentTask(task: Task?)
+    fun updateCurrentGood(good: Good?)
+    fun updateCurrentRaw(raw: Raw?)
+
+    fun onTaskChanged()
+
     fun addTasks(taskListResult: TaskListResult)
     suspend fun addTaskInfoToCurrentTask(taskInfoResult: TaskInfoResult)
     fun getTaskTypeCode(): Int
     fun getBlockType(): Int
     fun completeCurrentTask()
     fun completeCurrentGood()
-    fun onTaskChanged()
     suspend fun getLabelList()
     suspend fun addLabelToList(labelInfo: LabelInfo)
-    fun updateGoodInCurrentTask(good: Good)
+
 }

@@ -9,8 +9,8 @@
         <variable
             name="vm"
             type="com.lenta.inventory.features.job_card.JobCardViewModel" />
-    </data>
 
+    </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -181,8 +181,8 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:layout_marginEnd="8dp"
-            android:enabled="false"
             android:checked="@{vm.strictList}"
+            android:enabled="false"
             app:layout_constraintBottom_toBottomOf="@+id/tv_strict_list"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
@@ -203,16 +203,17 @@
         <com.lenta.shared.view.ClickableSpinner
             android:id="@+id/spinner_job_type"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="32dp"
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
             android:layout_marginEnd="8dp"
             app:items="@{vm.recountsTitles}"
-            app:position="@{vm.selectedPosition}"
-            app:onPositionClickListener="@{vm}"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/div_hor5" />
+            app:layout_constraintTop_toBottomOf="@+id/div_hor5"
+            app:onPositionClickListener="@{vm}"
+            app:position="@{vm.selectedPosition}"
+            tools:entries="@array/test_list" />
 
         <View
             android:id="@+id/div_hor6"
@@ -229,15 +230,13 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
-            android:layout_marginBottom="16dp"
-            app:alcoIcon="@{vm.productType}"
+            android:layout_marginBottom="8dp"
             android:background="?selectableItemBackground"
-            android:src="@drawable/ic_excise_white_48dp"
+            android:src="@drawable/ic_excise_alcohol_white_32dp"
+            app:alcoIcon="@{vm.productType}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
 
-
     </androidx.constraintlayout.widget.ConstraintLayout>
-
 
 </layout>

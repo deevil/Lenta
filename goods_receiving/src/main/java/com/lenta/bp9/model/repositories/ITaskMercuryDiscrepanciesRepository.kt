@@ -16,6 +16,7 @@ interface ITaskMercuryDiscrepanciesRepository {
     fun deleteMercuryDiscrepancy(discrepancy: TaskMercuryDiscrepancies): Boolean
     fun deleteMercuryDiscrepancyOfProduct(materialNumber: String, typeDiscrepancies: String): Boolean
     fun deleteMercuryDiscrepanciesForProduct(product: TaskProductInfo): Boolean
+    fun deleteMercuryDiscrepanciesNotNormForProduct(product: TaskProductInfo): Boolean
     fun getMercuryCountAcceptOfProduct(product: TaskProductInfo): Double
     fun getMercuryCountRefusalOfProduct(product: TaskProductInfo): Double
     fun getMercuryCountRefusalOfProductOfReasonRejection(product: TaskProductInfo, reasonRejectionCode: String?): Double

@@ -49,7 +49,8 @@ data class TaskDescription(val currentStatus: TaskStatus,   //Код текущ�
                       val quantityST: Double, //Количество в задании, ШТ
                       val quantityKG: Double, //Количество в задании, КГ
                       val quantityAll: Double, //Общее количество в задании
-                      val isBksTN: Boolean
+                      val isBksTN: Boolean,
+                      val isWO: Boolean //Товары для автосписания
 ) {
 
     companion object {
@@ -96,7 +97,8 @@ data class TaskDescription(val currentStatus: TaskStatus,   //Код текущ�
                     quantityST = restData.quantityST.toDouble() ?: 0.0,
                     quantityKG = restData.quantityKG.toDouble() ?: 0.0,
                     quantityAll = restData.quantityAll.toDouble() ?: 0.0,
-                    isBksTN = restData.isBksTN.isNotEmpty()
+                    isBksTN = restData.isBksTN.isNotEmpty(),
+                    isWO = restData.isWO.isNotEmpty()
             )
         }
     }
@@ -182,7 +184,9 @@ data class TaskDescriptionRestInfo(
         @SerializedName("QNT_ALL")
         val quantityAll: String,
         @SerializedName("IS_BKS_TN")
-        val isBksTN: String
+        val isBksTN: String,
+        @SerializedName("IS_WO")
+        val isWO: String
 
 ) {
 }

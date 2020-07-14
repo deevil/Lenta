@@ -33,14 +33,14 @@ class FmpSettingsViewModel : CoreViewModel() {
 
     fun onClickApply() {
         if (appSettings.isTest) {
-            appSettings.testServerAddress = serverAddress.value ?: ""
-            appSettings.testEnvironment = environment.value ?: ""
-            appSettings.testProject = project.value ?: ""
+            appSettings.testServerAddress = serverAddress.value.orEmpty()
+            appSettings.testEnvironment = environment.value.orEmpty()
+            appSettings.testProject = project.value.orEmpty()
 
         } else {
-            appSettings.serverAddress = serverAddress.value ?: ""
-            appSettings.environment = environment.value ?: ""
-            appSettings.project = project.value ?: ""
+            appSettings.serverAddress = serverAddress.value.orEmpty()
+            appSettings.environment = environment.value.orEmpty()
+            appSettings.project = project.value.orEmpty()
         }
 
         appSettings.isTest = true

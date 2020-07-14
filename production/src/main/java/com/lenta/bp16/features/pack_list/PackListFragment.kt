@@ -22,7 +22,7 @@ class PackListFragment : CoreFragment<FragmentPackListBinding, PackListViewModel
 
     override fun getLayoutId(): Int = R.layout.fragment_pack_list
 
-    override fun getPageNumber(): String? = generateScreenNumberFromPostfix("11")
+    override fun getPageNumber(): String? = generateScreenNumberFromPostfix(SCREEN_NUMBER)
 
     override fun getViewModel(): PackListViewModel {
         provideViewModel(PackListViewModel::class.java).let {
@@ -65,6 +65,10 @@ class PackListFragment : CoreFragment<FragmentPackListBinding, PackListViewModel
             layoutBinding.vm = vm
             layoutBinding.lifecycleOwner = viewLifecycleOwner
         }
+    }
+
+    companion object {
+        const val SCREEN_NUMBER = "11"
     }
 
 }

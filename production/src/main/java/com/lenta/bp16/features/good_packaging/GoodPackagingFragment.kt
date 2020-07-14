@@ -19,7 +19,7 @@ class GoodPackagingFragment : CoreFragment<FragmentGoodWeighingBinding, GoodPack
 
     override fun getLayoutId(): Int = R.layout.fragment_good_packaging
 
-    override fun getPageNumber(): String? = generateScreenNumberFromPostfix("33")
+    override fun getPageNumber(): String? = generateScreenNumberFromPostfix(SCREEN_NUMBER)
 
     override fun getViewModel(): GoodPackagingViewModel {
         provideViewModel(GoodPackagingViewModel::class.java).let {
@@ -51,6 +51,10 @@ class GoodPackagingFragment : CoreFragment<FragmentGoodWeighingBinding, GoodPack
             R.id.b_2 -> vm.onClickDefect()
             R.id.b_5 -> vm.onClickComplete()
         }
+    }
+
+    companion object {
+        const val SCREEN_NUMBER = "33"
     }
 
 }

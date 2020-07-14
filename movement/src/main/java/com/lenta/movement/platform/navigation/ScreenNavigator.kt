@@ -5,21 +5,23 @@ import androidx.core.content.ContextCompat
 import com.lenta.movement.R
 import com.lenta.movement.exception.InfoFailure
 import com.lenta.movement.features.auth.AuthFragment
-import com.lenta.movement.features.main.MainMenuFragment
 import com.lenta.movement.features.loading.fast.FastDataLoadingFragment
+import com.lenta.movement.features.main.MainMenuFragment
 import com.lenta.movement.features.main.box.GoodsListFragment
 import com.lenta.movement.features.main.box.create.CreateBoxesFragment
 import com.lenta.movement.features.selectmarket.SelectMarketFragment
 import com.lenta.movement.features.selectpersonalnumber.SelectPersonnelNumberFragment
+import com.lenta.movement.features.task.TaskFragment
 import com.lenta.movement.features.task.basket.TaskBasketFragment
+import com.lenta.movement.features.task.basket.info.TaskBasketInfoFragment
+import com.lenta.movement.features.task.eo.TaskEOMergeFragment
+import com.lenta.movement.features.task.eo.formedDocs.TaskEOMergeFormedDocsFragment
 import com.lenta.movement.features.task.goods.TaskGoodsFragment
 import com.lenta.movement.features.task.goods.details.TaskGoodsDetailsFragment
 import com.lenta.movement.features.task.goods.info.TaskGoodsInfoFragment
-import com.lenta.movement.features.task.TaskFragment
-import com.lenta.movement.features.task.basket.info.TaskBasketInfoFragment
-import com.lenta.movement.features.task.eo.TaskEOMergeFragment
 import com.lenta.movement.models.*
 import com.lenta.movement.progress.IWriteOffProgressUseCaseInformator
+import com.lenta.movement.requests.network.models.documentsToPrint.DocumentsToPrintDocument
 import com.lenta.shared.account.IAuthenticator
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.features.alert.AlertFragment
@@ -30,11 +32,11 @@ import com.lenta.shared.platform.navigation.runOrPostpone
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 
 class ScreenNavigator(
-    private val context: Context,
-    private val coreNavigator: ICoreNavigator,
-    private val foregroundActivityProvider: ForegroundActivityProvider,
-    private val authenticator: IAuthenticator,
-    private val progressUseCaseInformator: IWriteOffProgressUseCaseInformator
+        private val context: Context,
+        private val coreNavigator: ICoreNavigator,
+        private val foregroundActivityProvider: ForegroundActivityProvider,
+        private val authenticator: IAuthenticator,
+        private val progressUseCaseInformator: IWriteOffProgressUseCaseInformator
 ) : IScreenNavigator, ICoreNavigator by coreNavigator {
 
     private fun getFragmentStack() = foregroundActivityProvider.getActivity()?.fragmentStack
@@ -97,44 +99,44 @@ class ScreenNavigator(
     override fun openUnsavedDataDialog(yesCallbackFunc: () -> Unit) {
         runOrPostpone {
             getFragmentStack()?.push(
-                AlertFragment.create(
-                    message = context.getString(R.string.unsaved_data_will_lost),
-                    codeConfirmForRight = backFragmentResultHelper.setFuncForResult(yesCallbackFunc),
-                    iconRes = R.drawable.ic_delete_red_80dp,
-                    pageNumber = OPEN_UNSAVED_DATA_DIALOG_PAGE_NUMBER,
-                    leftButtonDecorationInfo = ButtonDecorationInfo.no,
-                    rightButtonDecorationInfo = ButtonDecorationInfo.yes
-                )
+                    AlertFragment.create(
+                            message = context.getString(R.string.unsaved_data_will_lost),
+                            codeConfirmForRight = backFragmentResultHelper.setFuncForResult(yesCallbackFunc),
+                            iconRes = R.drawable.ic_delete_red_80dp,
+                            pageNumber = OPEN_UNSAVED_DATA_DIALOG_PAGE_NUMBER,
+                            leftButtonDecorationInfo = ButtonDecorationInfo.no,
+                            rightButtonDecorationInfo = ButtonDecorationInfo.yes
+                    )
             )
         }
     }
 
     override fun openSelectTypeCodeScreen(
-        codeConfirmationForSap: Int,
-        codeConfirmationForBarCode: Int
+            codeConfirmationForSap: Int,
+            codeConfirmationForBarCode: Int
     ) {
         runOrPostpone {
             getFragmentStack()?.push(
-                AlertFragment.create(
-                    message = context.getString(R.string.select_type_code_description),
-                    iconRes = 0,
-                    codeConfirmForRight = codeConfirmationForBarCode,
-                    codeConfirmForLeft = codeConfirmationForSap,
-                    pageNumber = OPEN_SELECT_TYPE_CODE_SCREEN_PAGE_NUMBER,
-                    leftButtonDecorationInfo = ButtonDecorationInfo.sap,
-                    rightButtonDecorationInfo = ButtonDecorationInfo.barcode
-                )
+                    AlertFragment.create(
+                            message = context.getString(R.string.select_type_code_description),
+                            iconRes = 0,
+                            codeConfirmForRight = codeConfirmationForBarCode,
+                            codeConfirmForLeft = codeConfirmationForSap,
+                            pageNumber = OPEN_SELECT_TYPE_CODE_SCREEN_PAGE_NUMBER,
+                            leftButtonDecorationInfo = ButtonDecorationInfo.sap,
+                            rightButtonDecorationInfo = ButtonDecorationInfo.barcode
+                    )
             )
         }
     }
 
     override fun openProductIncorrectForCreateBox(productInfo: ProductInfo) {
         openAlertScreen(
-            message = context.getString(
-                R.string.alert_product_incorrect_for_create_box,
-                productInfo.materialNumber
-            ),
-            iconRes = com.lenta.shared.R.drawable.is_warning_red_80dp
+                message = context.getString(
+                        R.string.alert_product_incorrect_for_create_box,
+                        productInfo.materialNumber
+                ),
+                iconRes = com.lenta.shared.R.drawable.ic_warning_red_80dp
         )
     }
 
@@ -153,24 +155,24 @@ class ScreenNavigator(
 
     override fun openInfoScreen(message: String) {
         openAlertScreen(
-            message = message,
-            iconRes = com.lenta.shared.R.drawable.ic_info_pink,
-            textColor = ContextCompat.getColor(context, com.lenta.shared.R.color.color_text_white),
-            pageNumber = INFO_SCREEN_PAGE_NUMBER
+                message = message,
+                iconRes = com.lenta.shared.R.drawable.ic_info_pink_80dp,
+                textColor = ContextCompat.getColor(context, com.lenta.shared.R.color.color_text_white),
+                pageNumber = INFO_SCREEN_PAGE_NUMBER
         )
     }
 
     override fun openBoxRewriteDialog(msg: String, yesCallbackFunc: () -> Unit) {
         runOrPostpone {
             getFragmentStack()?.push(
-                AlertFragment.create(
-                    message = msg,
-                    codeConfirmForRight = backFragmentResultHelper.setFuncForResult(yesCallbackFunc),
-                    iconRes = R.drawable.ic_question_80dp,
-                    pageNumber = OPEN_BOX_REWRITE_DIALOG_PAGE_NUMBER,
-                    leftButtonDecorationInfo = ButtonDecorationInfo.no,
-                    rightButtonDecorationInfo = ButtonDecorationInfo.yes
-                )
+                    AlertFragment.create(
+                            message = msg,
+                            codeConfirmForRight = backFragmentResultHelper.setFuncForResult(yesCallbackFunc),
+                            iconRes = R.drawable.ic_question_yellow_80dp,
+                            pageNumber = OPEN_BOX_REWRITE_DIALOG_PAGE_NUMBER,
+                            leftButtonDecorationInfo = ButtonDecorationInfo.no,
+                            rightButtonDecorationInfo = ButtonDecorationInfo.yes
+                    )
             )
         }
     }
@@ -201,12 +203,12 @@ class ScreenNavigator(
         val shortBoxCode = "${box.code.take(5)}...${box.code.takeLast(5)}"
         runOrPostpone {
             getFragmentStack()?.push(
-                AlertFragment.create(
-                    message = context.getString(R.string.box_saved_msg, shortBoxCode),
-                    iconRes = R.drawable.ic_checkbox_green_32dp,
-                    pageNumber = BOX_SAVED_DIALOG_PAGE_NUMBER,
-                    leftButtonDecorationInfo = ButtonDecorationInfo.back
-                )
+                    AlertFragment.create(
+                            message = context.getString(R.string.box_saved_msg, shortBoxCode),
+                            iconRes = R.drawable.ic_checkbox_green_32dp,
+                            pageNumber = BOX_SAVED_DIALOG_PAGE_NUMBER,
+                            leftButtonDecorationInfo = ButtonDecorationInfo.back
+                    )
             )
         }
     }
@@ -250,15 +252,15 @@ class ScreenNavigator(
     override fun openSaveTaskConfirmationDialog(yesCallbackFunc: () -> Unit) {
         runOrPostpone {
             getFragmentStack()?.push(
-                AlertFragment.create(
-                    description = context.getString(R.string.data_saving),
-                    message = context.getString(R.string.task_save_confirmation_msg),
-                    codeConfirmForRight = backFragmentResultHelper.setFuncForResult(yesCallbackFunc),
-                    iconRes = R.drawable.ic_question_80dp,
-                    pageNumber = SAVE_TASK_CONFIRM_DIALOG_PAGE_NUMBER,
-                    leftButtonDecorationInfo = ButtonDecorationInfo.back,
-                    rightButtonDecorationInfo = ButtonDecorationInfo.yes
-                )
+                    AlertFragment.create(
+                            description = context.getString(R.string.data_saving),
+                            message = context.getString(R.string.task_save_confirmation_msg),
+                            codeConfirmForRight = backFragmentResultHelper.setFuncForResult(yesCallbackFunc),
+                            iconRes = R.drawable.ic_question_yellow_80dp,
+                            pageNumber = SAVE_TASK_CONFIRM_DIALOG_PAGE_NUMBER,
+                            leftButtonDecorationInfo = ButtonDecorationInfo.back,
+                            rightButtonDecorationInfo = ButtonDecorationInfo.yes
+                    )
             )
         }
     }
@@ -275,7 +277,7 @@ class ScreenNavigator(
                     AlertFragment.create(
                             description = context.getString(R.string.task_goods_title),
                             message = context.getString(R.string.task_eo_merge_zero_selected_eo_message),
-                            iconRes = R.drawable.ic_question_80dp,
+                            iconRes = R.drawable.ic_question_yellow_80dp,
                             pageNumber = ZERO_SELECTED_EO_PAGE_NUMBER,
                             leftButtonDecorationInfo = ButtonDecorationInfo.back,
                             buttonDecorationInfo3 = ButtonDecorationInfo(
@@ -288,6 +290,47 @@ class ScreenNavigator(
                                     titleRes = R.string.combine
                             ),
                             codeConfirmForRight = backFragmentResultHelper.setFuncForResult(combineCallbackFunc)
+                    )
+            )
+        }
+    }
+
+    override fun openTaskEoMergeFormedDocumentsScreen(docList: List<DocumentsToPrintDocument>) {
+        runOrPostpone {
+            getFragmentStack()?.push(TaskEOMergeFormedDocsFragment.newInstance(docList))
+        }
+    }
+
+    override fun openTaskEoMergePrintConfirmationDialog(eoGeQuantity: Int, yesCallbackFunc: () -> Unit) {
+        runOrPostpone {
+            getFragmentStack()?.push(
+                    AlertFragment.create(
+                            description = context.getString(R.string.detected_discrepancies),
+                            message = context.getString(R.string.task_eo_merge_print_confirmation_msg, eoGeQuantity),
+                            codeConfirmForRight = backFragmentResultHelper.setFuncForResult(yesCallbackFunc),
+                            iconRes = R.drawable.ic_question_yellow_80dp,
+                            pageNumber = SAVE_TASK_CONFIRM_DIALOG_PAGE_NUMBER,
+                            leftButtonDecorationInfo = ButtonDecorationInfo.back,
+                            rightButtonDecorationInfo = ButtonDecorationInfo.yes
+                    )
+            )
+        }
+    }
+
+    override fun openTaskEoMergePrintedDialog() {
+        runOrPostpone {
+            getFragmentStack()?.push(
+                    AlertFragment.create(
+                            description = context.getString(R.string.cargoUnit_doc_print),
+                            message = context.getString(R.string.cargoUnit_doc_printed),
+                            iconRes = R.drawable.ic_done_green_80dp,
+                            pageNumber = SAVE_TASK_CONFIRM_DIALOG_PAGE_NUMBER,
+                            leftButtonDecorationInfo = ButtonDecorationInfo.back,
+                            rightButtonDecorationInfo = ButtonDecorationInfo.next,
+                            codeConfirmForRight = backFragmentResultHelper.setFuncForResult {
+                                goBack()
+                                goBack()
+                            }
                     )
             )
         }
@@ -333,4 +376,7 @@ interface IScreenNavigator : ICoreNavigator {
     fun openTaskList()
     fun openTaskEoMergeScreen(eoList: List<ProcessingUnit>, geList: List<CargoUnit>)
     fun openZeroSelectedEODialog(processCallbackFunc: () -> Unit, combineCallbackFunc: () -> Unit)
+    fun openTaskEoMergeFormedDocumentsScreen(docList: List<DocumentsToPrintDocument>)
+    fun openTaskEoMergePrintConfirmationDialog(eoGeQuantity: Int, yesCallbackFunc: () -> Unit)
+    fun openTaskEoMergePrintedDialog()
 }

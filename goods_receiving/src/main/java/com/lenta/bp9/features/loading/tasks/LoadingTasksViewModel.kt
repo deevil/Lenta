@@ -53,9 +53,11 @@ class LoadingTasksViewModel : CoreLoadingViewModel() {
     }
 
     override fun handleFailure(failure: Failure) {
-        screenNavigator.goBack()
-        screenNavigator.goBack()
-        screenNavigator.openTaskSearchScreen(mode)
+        repoInMemoryHolder.taskList.value = TaskList(tasks = listOf(),
+                taskCount = 0,
+                taskListLoadingMode = TaskListLoadingMode.from(mode.taskListLoadingModeString)
+        )
+        screenNavigator.openTaskListScreen()
         screenNavigator.openAlertScreen(failure)
     }
 

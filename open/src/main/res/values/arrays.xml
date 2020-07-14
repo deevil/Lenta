@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string-array name="group_list">
+        <item>Группа №1</item>
+        <item>Группа №2</item>
+        <item>Группа №3</item>
+    </string-array>
+
+    <string-array name="condition_list">
+        <item>Условие №1</item>
+        <item>Условие №2</item>
+        <item>Условие №3</item>
+    </string-array>
+
+</resources>

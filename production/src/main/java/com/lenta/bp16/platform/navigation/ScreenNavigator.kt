@@ -7,8 +7,11 @@ import com.lenta.bp16.features.defect_info.DefectInfoFragment
 import com.lenta.bp16.features.defect_list.DefectListFragment
 import com.lenta.bp16.features.external_supply_list.ExternalSupplyListFragment
 import com.lenta.bp16.features.external_supply_task_list.ExternalSupplyTaskListFragment
+import com.lenta.bp16.features.good_info.GoodInfoFragment
+import com.lenta.bp16.features.good_irrelevant_info.IrrelevantGoodInfoFragment
 import com.lenta.bp16.features.good_packaging.GoodPackagingFragment
 import com.lenta.bp16.features.good_weighing.GoodWeighingFragment
+import com.lenta.bp16.features.good_without_manufacturer.GoodWithoutManufacturerFragment
 import com.lenta.bp16.features.processing_unit_list.ProcessingUnitListFragment
 import com.lenta.bp16.features.loading.fast.FastDataLoadingFragment
 import com.lenta.bp16.features.main_menu.MainMenuFragment
@@ -18,6 +21,9 @@ import com.lenta.bp16.features.raw_list.RawListFragment
 import com.lenta.bp16.features.select_market.SelectMarketFragment
 import com.lenta.bp16.features.processing_unit_task_list.ProcessingUnitTaskListFragment
 import com.lenta.bp16.features.reprint_label.ReprintLabelFragment
+import com.lenta.bp16.features.select_good.GoodSelectFragment
+import com.lenta.bp16.features.select_personnel_number.SelectPersonnelNumberFragment
+import com.lenta.bp16.platform.Constants
 import com.lenta.shared.account.IAuthenticator
 import com.lenta.shared.features.alert.AlertFragment
 import com.lenta.shared.platform.activity.ForegroundActivityProvider
@@ -65,6 +71,12 @@ class ScreenNavigator @Inject constructor(
         }
     }
 
+    override fun openSelectPersonnelNumberScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(SelectPersonnelNumberFragment())
+        }
+    }
+
     override fun openMainMenuScreen() {
         runOrPostpone {
             getFragmentStack()?.push(MainMenuFragment())
@@ -85,7 +97,7 @@ class ScreenNavigator @Inject constructor(
 
     override fun openProcessingUnitListScreen() {
         runOrPostpone {
-            getFragmentStack()?.push(ProcessingUnitListFragment())
+            getFragmentStack()?.push(ProcessingUnitListFragment.newInstance())
         }
     }
 
@@ -143,6 +155,22 @@ class ScreenNavigator @Inject constructor(
         }
     }
 
+    override fun openSelectGoodScreen() {
+        getFragmentStack()?.push(GoodSelectFragment())
+    }
+
+    override fun openGoodInfoScreen() {
+        getFragmentStack()?.push(GoodInfoFragment())
+    }
+
+    override fun openGoodIrrelevantInfoScreen() {
+        getFragmentStack()?.push(IrrelevantGoodInfoFragment())
+    }
+
+    override fun openGoodWithoutManufacturerScreen() {
+        getFragmentStack()?.push(GoodWithoutManufacturerFragment())
+    }
+
 
     // Информационные экраны
     override fun showDefrostingPhaseIsCompleted(nextCallback: () -> Unit) {
@@ -150,7 +178,20 @@ class ScreenNavigator @Inject constructor(
             getFragmentStack()?.push(AlertFragment.create(
                     pageNumber = "12",
                     message = context.getString(R.string.defrosting_phase_is_completed),
-                    iconRes = R.drawable.is_warning_yellow_80dp,
+                    iconRes = R.drawable.ic_warning_yellow_80dp,
+                    isVisibleLeftButton = false,
+                    codeConfirmForRight = backFragmentResultHelper.setFuncForResult(nextCallback),
+                    rightButtonDecorationInfo = ButtonDecorationInfo.next
+            ))
+        }
+    }
+
+    override fun showFixStartNextStageSuccessful(nextCallback: () -> Unit) {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    pageNumber = "12.1",
+                    message = context.getString(R.string.fix_start_next_stage_successful),
+                    iconRes = R.drawable.ic_warning_yellow_80dp,
                     isVisibleLeftButton = false,
                     codeConfirmForRight = backFragmentResultHelper.setFuncForResult(nextCallback),
                     rightButtonDecorationInfo = ButtonDecorationInfo.next
@@ -163,7 +204,7 @@ class ScreenNavigator @Inject constructor(
             getFragmentStack()?.push(AlertFragment.create(
                     pageNumber = "23",
                     message = context.getString(R.string.confirm_that_there_is_no_such_item_left, taskType),
-                    iconRes = R.drawable.is_warning_red_80dp,
+                    iconRes = R.drawable.ic_warning_red_80dp,
                     codeConfirmForRight = backFragmentResultHelper.setFuncForResult(confirmCallback),
                     rightButtonDecorationInfo = ButtonDecorationInfo.confirm
             ))
@@ -175,7 +216,7 @@ class ScreenNavigator @Inject constructor(
             getFragmentStack()?.push(AlertFragment.create(
                     pageNumber = "24",
                     message = context.getString(R.string.confirm_no_raw_items, taskType),
-                    iconRes = R.drawable.is_warning_red_80dp,
+                    iconRes = R.drawable.ic_warning_red_80dp,
                     codeConfirmForRight = backFragmentResultHelper.setFuncForResult(confirmCallback),
                     rightButtonDecorationInfo = ButtonDecorationInfo.confirm
             ))
@@ -187,7 +228,7 @@ class ScreenNavigator @Inject constructor(
             getFragmentStack()?.push(AlertFragment.create(
                     pageNumber = "35",
                     message = context.getString(R.string.fixing_beginning_of_packaging_phase_was_successful),
-                    iconRes = R.drawable.is_warning_yellow_80dp,
+                    iconRes = R.drawable.ic_warning_yellow_80dp,
                     isVisibleLeftButton = false,
                     codeConfirmForRight = backFragmentResultHelper.setFuncForResult(nextCallback),
                     rightButtonDecorationInfo = ButtonDecorationInfo.next
@@ -200,7 +241,19 @@ class ScreenNavigator @Inject constructor(
             getFragmentStack()?.push(AlertFragment.create(
                     pageNumber = "32.1",
                     message = context.getString(R.string.more_than_one_order_for_this_product),
-                    iconRes = R.drawable.is_warning_red_80dp,
+                    iconRes = R.drawable.ic_warning_red_80dp,
+                    codeConfirmForLeft = backFragmentResultHelper.setFuncForResult(backCallback),
+                    leftButtonDecorationInfo = ButtonDecorationInfo.back
+            ))
+        }
+    }
+
+    override fun showProcessOrderNotFound(backCallback: () -> Unit) {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    pageNumber = "32.2",
+                    message = context.getString(R.string.process_order_not_found),
+                    iconRes = R.drawable.ic_warning_red_80dp,
                     codeConfirmForLeft = backFragmentResultHelper.setFuncForResult(backCallback),
                     leftButtonDecorationInfo = ButtonDecorationInfo.back
             ))
@@ -241,6 +294,15 @@ class ScreenNavigator @Inject constructor(
         }
     }
 
+    override fun showAlertPartNotFound() {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    message = context.getString(R.string.tw_alert_part_not_found),
+                    iconRes = R.drawable.ic_warning_red_80dp,
+                    pageNumber = Constants.ALERT_FRAGMENT))
+        }
+    }
+
 }
 
 interface IScreenNavigator : ICoreNavigator {
@@ -248,6 +310,7 @@ interface IScreenNavigator : ICoreNavigator {
     fun openLoginScreen()
     fun openFastDataLoadingScreen()
     fun openSelectMarketScreen()
+    fun openSelectPersonnelNumberScreen()
     fun openMainMenuScreen()
     fun openProcessingUnitTaskListScreen()
     fun openExternalSupplyTaskListScreen()
@@ -261,13 +324,20 @@ interface IScreenNavigator : ICoreNavigator {
     fun openReprintLabelScreen()
     fun openDefectInfoScreen()
     fun openDefectListScreen()
+    fun openGoodInfoScreen()
+    fun openGoodIrrelevantInfoScreen()
+    fun openGoodWithoutManufacturerScreen()
+    fun openSelectGoodScreen()
 
     fun showDefrostingPhaseIsCompleted(nextCallback: () -> Unit)
+    fun showFixStartNextStageSuccessful(nextCallback: () -> Unit)
     fun showConfirmNoSuchItemLeft(taskType: String, confirmCallback: () -> Unit)
     fun showConfirmNoRawItem(taskType: String, confirmCallback: () -> Unit)
     fun showFixingPackagingPhaseSuccessful(nextCallback: () -> Unit)
     fun showMoreThanOneOrderForThisProduct(backCallback: () -> Unit)
+    fun showProcessOrderNotFound(backCallback: () -> Unit)
     fun showNotSavedDataWillBeLost(yesCallback: () -> Unit)
     fun showAlertNoIpPrinter()
     fun showLabelSentToPrint(nextCallback: () -> Unit)
+    fun showAlertPartNotFound()
 }

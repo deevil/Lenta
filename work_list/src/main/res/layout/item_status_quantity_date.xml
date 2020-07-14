@@ -24,7 +24,7 @@
 
             <LinearLayout
                 style="@style/LinearCellStyle"
-                android:layout_weight="@integer/number_status_quantity_date_column_1">
+                android:layout_weight="@integer/four_two_1">
 
                 <TextView
                     android:id="@+id/tv_item_number"
@@ -39,7 +39,7 @@
 
             <LinearLayout
                 style="@style/LinearCellStyle"
-                android:layout_weight="@integer/number_status_quantity_date_column_2">
+                android:layout_weight="@integer/four_two_2">
 
                 <TextView
                     style="@style/CellTextStyle"
@@ -57,13 +57,11 @@
 
             <LinearLayout
                 style="@style/LinearCellStyle"
-                android:layout_weight="@integer/number_status_quantity_date_column_3"
-                android:orientation="horizontal">
+                android:layout_weight="@integer/four_two_3">
 
                 <TextView
                     style="@style/CellTextStyle"
                     android:layout_width="wrap_content"
-                    android:layout_gravity="center"
                     android:text="@{delivery.quantity}"
                     tools:text="10 кор" />
 
@@ -73,7 +71,7 @@
 
             <LinearLayout
                 style="@style/LinearCellStyle"
-                android:layout_weight="@integer/number_status_quantity_date_column_4">
+                android:layout_weight="@integer/four_two_4">
 
                 <TextView
                     style="@style/CellTextStyle"

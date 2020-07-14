@@ -36,7 +36,7 @@ class TasksSearchHelper @Inject constructor(
         return generalRepo.getTaskList(
                 SimpleParams(
                         tkNumber = sessionInfo.market!!,
-                        searchQuery = processedFilter ?: ""
+                        searchQuery = processedFilter.orEmpty()
                 )).map {
             taskList.postValue(it)
             true
@@ -46,7 +46,7 @@ class TasksSearchHelper @Inject constructor(
     override suspend fun updateFilteredTaskList(): Either<Failure, Boolean> {
         val userName = processedFilter?.let {
             if (it.isNotEmpty() && it.toIntOrNull() == null) it else sessionInfo.userName
-        } ?: sessionInfo.userName ?: ""
+        } ?: sessionInfo.userName.orEmpty()
 
         return generalRepo.getFilteredTaskList(
                 FilteredParams(

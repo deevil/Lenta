@@ -8,3 +8,8 @@ enum class PackageName(val path: String) {
     INV("com.lenta.inventory"),
     SHA("com.lenta.shared")
 }
+
+enum class TabIndicatorColor {
+    YELLOW,
+    RED
+}

@@ -82,7 +82,7 @@ class StoragesListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
     }
 
     fun getTitle(): String {
-        return taskManager.getInventoryTask()?.taskDescription?.getTaskTypeAndNumber() ?: ""
+        return taskManager.getInventoryTask()?.taskDescription?.getTaskTypeAndNumber().orEmpty()
     }
 
     private fun updateProcessed() {
@@ -163,8 +163,8 @@ class StoragesListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
             taskContentsRequest(
                     TaskContentParams(ip = context.getDeviceIp(),
                             taskNumber = taskManager.getInventoryTask()?.taskDescription?.taskNumber
-                                    ?: "",
-                            userNumber = userNumber ?: "",
+                                   .orEmpty(),
+                            userNumber = userNumber.orEmpty(),
                             additionalDataFlag = "",
                             newProductNumbers = emptyList(),
                             numberRelock = "",
@@ -221,7 +221,7 @@ class StoragesListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
 
     fun onDigitPressed(digit: Int) {
         requestFocusToStorageNumber.value = true
-        storageNumber.value = storageNumber.value ?: "" + digit
+        storageNumber.value = storageNumber.value.orEmpty() + digit
     }
 
     fun onScanResult(data: String) {
