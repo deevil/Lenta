@@ -68,18 +68,15 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
         manager.foundTasks
     }
 
-    val taskNumber = MutableLiveData("")
-
     val processing by lazy {
-        tasks.combineLatest(taskNumber).map {
+        tasks.combineLatest(numberField).map {
             it?.let {
-                val tasks = it.first
-                val number = it.second
+                val (tasks, number) = it
 
-                if (number.isNullOrEmpty()) {
+                if (isEnteredLogin()) {
                     tasks
                 } else {
-                    tasks?.filter { task -> task.number.contains(number) }
+                    tasks?.filter { task -> task.number.contains(number.orEmpty()) }
                 }?.let { taskList ->
                     taskList.mapIndexed { index, task ->
                         ItemTaskUi(
@@ -98,15 +95,14 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
     }
 
     val found by lazy {
-        foundTasks.combineLatest(taskNumber).map {
+        foundTasks.combineLatest(numberField).map {
             it?.let {
-                val tasks = it.first
-                val number = it.second
+                val (tasks, number) = it
 
-                if (number.isNullOrEmpty()) {
+                if (isEnteredLogin()) {
                     tasks
                 } else {
-                    tasks?.filter { task -> task.number.contains(number) }
+                    tasks?.filter { task -> task.number.contains(number.orEmpty()) }
                 }?.let { taskList ->
                     taskList.mapIndexed { index, task ->
                         ItemTaskUi(
@@ -231,10 +227,7 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
 
     override fun onOkInSoftKeyboard(): Boolean {
         if (isEnteredLogin()) {
-            taskNumber.value = ""
             onClickUpdate()
-        } else {
-            taskNumber.value = numberField.value
         }
 
         return true
