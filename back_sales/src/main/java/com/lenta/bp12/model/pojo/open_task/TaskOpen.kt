@@ -53,8 +53,4 @@ data class TaskOpen(
         return "${type?.code}-$number // $name"
     }
 
-    fun getClearProviderCode(): String {
-        return provider.code.dropWhile { it == '0' }
-    }
-
 }
