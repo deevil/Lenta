@@ -29,11 +29,12 @@ sealed class Failure {
     object GoodNotFound : Failure()
     object InvalidProductForTask : Failure()
     object NotValidEnterNumber : Failure()
-    class SapError(val message: String, val retCode: Int? = null) : Failure()
-    class DbError(val message: String) : Failure()
+    data class SapError(val message: String, val retCode: Int? = null) : Failure()
+    data class DbError(val message: String) : Failure()
     object NotValidQrCode : Failure()
     object FileReadingError: Failure()
     object PrintTemplateError: Failure()
+    data class ThrowableFailure(val throwable: Throwable) : Failure()
 
     /** * Extend this class for feature specific failures.*/
     abstract class FeatureFailure : Failure()

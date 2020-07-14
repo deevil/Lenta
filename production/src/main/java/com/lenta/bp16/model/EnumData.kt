@@ -1,5 +1,12 @@
 package com.lenta.bp16.model
 
+enum class IngredientStatus {
+    COMMON,
+    STARTED,
+    SELF_LOCK,
+    LOCK
+}
+
 enum class TaskStatus {
     COMMON,
     STARTED,

@@ -67,5 +67,9 @@
     <string name="warehouse_3">0131</string>
     <string name="warehouse_4">0141</string>
     <string name="warehouse_all">Выбрать все</string>
+    <string name="desc_ingredients_list">Список ингредиентов</string>
+    <string name="column_name_two">Заказ/Склад/ПФ</string>
+    <string name="tab_name_by_order">По Заказу</string>
+    <string name="tab_name_by_material">По Материалу</string>
 
 </resources>

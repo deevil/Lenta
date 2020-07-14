@@ -39,6 +39,7 @@ abstract class CoreFragment<T : ViewDataBinding, S : CoreViewModel> : Fragment()
     }
 
     private var timeForAllowHandleEnter = Long.MAX_VALUE
+    private var mCount = 0
 
     protected open var recyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
 
@@ -54,6 +55,7 @@ abstract class CoreFragment<T : ViewDataBinding, S : CoreViewModel> : Fragment()
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         saveInstanceStateGsonBundle(outState)
+        bundle.putInt("mCount", mCount)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -61,7 +63,6 @@ abstract class CoreFragment<T : ViewDataBinding, S : CoreViewModel> : Fragment()
         return binding?.run {
             setVariable(BR.vm, vm)
             lifecycleOwner = viewLifecycleOwner
-            executePendingBindings()
             root
         } ?: throw NullPointerException("DataBinding is null")
     }

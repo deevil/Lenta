@@ -12,6 +12,8 @@ import com.lenta.bp16.model.IPersistLabelList
 import com.lenta.bp16.model.ITaskManager
 import com.lenta.bp16.model.PersistLabelList
 import com.lenta.bp16.model.TaskManager
+import com.lenta.bp16.model.warehouse.IWarehousePersistStorage
+import com.lenta.bp16.model.warehouse.WarehousePersistStorage
 import com.lenta.bp16.platform.navigation.IScreenNavigator
 import com.lenta.bp16.platform.navigation.ScreenNavigator
 import com.lenta.bp16.platform.resource.IResourceManager
@@ -66,6 +68,10 @@ class AppModule {
         @Binds
         @AppScope
         fun bindPersistTaskData(realisation: PersistLabelList): IPersistLabelList
+
+        @Binds
+        @AppScope
+        fun bindPersistWarehouseData(realisation: WarehousePersistStorage): IWarehousePersistStorage
 
     }
 

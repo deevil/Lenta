@@ -42,6 +42,7 @@ dependencies {
     api deps.kotlin.coroutines
     api deps.kotlin.coroutinesAndroid
     api deps.kotlin.viewmodel_ktx
+    api deps.kotlin.livedata_ktx
 
     // DI
     kapt deps.dagger.compiler
