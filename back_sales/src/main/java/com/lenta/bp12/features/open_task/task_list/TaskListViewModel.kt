@@ -78,9 +78,10 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
                 } else {
                     tasks?.filter { task -> task.number.contains(number.orEmpty()) }
                 }?.let { taskList ->
+                    val taskListSize = taskList.size
                     taskList.mapIndexed { index, task ->
                         ItemTaskUi(
-                                position = "${taskList.size - index}",
+                                position = "${taskListSize - index}",
                                 number = task.number,
                                 name = task.getFormattedName(),
                                 provider = task.getProviderCodeWithName(),
@@ -104,9 +105,10 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
                 } else {
                     tasks?.filter { task -> task.number.contains(number.orEmpty()) }
                 }?.let { taskList ->
+                    val taskListSize = taskList.size
                     taskList.mapIndexed { index, task ->
                         ItemTaskUi(
-                                position = "${taskList.size - index}",
+                                position = "${taskListSize - index}",
                                 number = task.number,
                                 name = task.name,
                                 provider = task.getProviderCodeWithName(),
