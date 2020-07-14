@@ -1,6 +1,7 @@
 package com.lenta.bp16.main
 
 import androidx.lifecycle.viewModelScope
+import com.lenta.bp16.platform.Constants
 import com.lenta.bp16.platform.navigation.IScreenNavigator
 import com.lenta.shared.features.loading.startProgressTimer
 import com.lenta.shared.platform.activity.main_activity.CoreMainViewModel
@@ -32,7 +33,7 @@ class MainViewModel : CoreMainViewModel() {
                 startProgressTimer(
                         coroutineScope = this,
                         remainingTime = it.remainingTime,
-                        timeoutInSec = 60
+                        timeoutInSec = Constants.TIME_OUT_IN_SEC
                 )
             }
         }
