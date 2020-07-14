@@ -96,7 +96,8 @@ data class TaskCreate(
 
     fun getBasketNumber(good: GoodCreate, part: Part): String {
         val basket = baskets.find {
-            it.section == good.section && it.goodType == good.type && it.control == good.control && it.provider.code == part.providerCode
+            it.section == good.section && it.goodType == good.type &&
+                    it.control == good.control && it.provider.code == part.providerCode
         }
 
         return "${baskets.indexOf(basket) + 1}"
