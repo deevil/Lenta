@@ -49,7 +49,6 @@ abstract class CoreFragment<T : ViewDataBinding, S : CoreViewModel> : Fragment()
         binding?.let {
             it.setVariable(BR.vm, vm)
             it.lifecycleOwner = viewLifecycleOwner
-            it.executePendingBindings()
             return it.root
         }
         throw NullPointerException("DataBinding is null")

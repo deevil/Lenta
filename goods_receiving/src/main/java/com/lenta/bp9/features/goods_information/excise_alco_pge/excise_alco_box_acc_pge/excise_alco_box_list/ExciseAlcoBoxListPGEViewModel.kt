@@ -240,8 +240,10 @@ class ExciseAlcoBoxListPGEViewModel : CoreViewModel(), PageSelectionListener, On
                     } else {
                         if (exciseStampInfo.materialNumber != productInfo.value!!.materialNumber) {
                             //Отсканированная марка принадлежит товару <SAP-код> <Название>"
-                            screenNavigator.openAlertScannedStampBelongsAnotherProductScreen(exciseStampInfo.materialNumber, zfmpUtz48V001.getProductInfoByMaterial(exciseStampInfo.materialNumber)?.name
-                                    ?: "")
+                            screenNavigator.openAlertScannedStampBelongsAnotherProductScreen(
+                                    materialNumber = exciseStampInfo.materialNumber,
+                                    materialName =zfmpUtz48V001.getProductInfoByMaterial(exciseStampInfo.materialNumber)?.name.orEmpty()
+                            )
                         } else {
                             screenNavigator.openExciseAlcoBoxCardPGEScreen(
                                     productInfo = productInfo.value!!,
