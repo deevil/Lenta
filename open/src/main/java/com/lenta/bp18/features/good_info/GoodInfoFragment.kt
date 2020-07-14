@@ -1,50 +1,50 @@
-package com.lenta.bp18.features.select_goods
+package com.lenta.bp18.features.good_info
 
 import android.view.View
 import com.lenta.bp18.R
-import com.lenta.bp18.databinding.FragmentSelectGoodsBinding
+import com.lenta.bp18.databinding.FragmentGoodsInfoBinding
 import com.lenta.bp18.platform.Constants
 import com.lenta.bp18.platform.extention.getAppComponent
 import com.lenta.shared.platform.fragment.CoreFragment
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListener
-import com.lenta.shared.platform.toolbar.top_toolbar.ImageButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
 import com.lenta.shared.utilities.extentions.generateScreenNumberFromPostfix
+import com.lenta.shared.utilities.extentions.getDeviceId
 import com.lenta.shared.utilities.extentions.provideViewModel
 
-class SelectGoodsFragment : CoreFragment<FragmentSelectGoodsBinding, SelectGoodsViewModel>(), ToolbarButtonsClickListener {
+class GoodInfoFragment : CoreFragment<FragmentGoodsInfoBinding, GoodInfoViewModel>(), ToolbarButtonsClickListener {
 
-    override fun getLayoutId(): Int = R.layout.fragment_select_goods
+    override fun getLayoutId(): Int = R.layout.fragment_goods_info
 
     override fun getPageNumber(): String? = generateScreenNumberFromPostfix(SCREEN_NUMBER)
 
-    override fun getViewModel(): SelectGoodsViewModel {
-        provideViewModel(SelectGoodsViewModel::class.java).let{
+    override fun getViewModel(): GoodInfoViewModel {
+        provideViewModel(GoodInfoViewModel::class.java).let {
             getAppComponent()?.inject(it)
+            it.deviceIp.value = context!!.getDeviceId()
             return it
         }
     }
 
     override fun setupTopToolBar(topToolbarUiModel: TopToolbarUiModel) {
-        topToolbarUiModel.description.value = getString(R.string.select_goods)
-        topToolbarUiModel.uiModelButton2.show(ImageButtonDecorationInfo.exitFromApp)
+        topToolbarUiModel.description.value = getString(R.string.good_card)
     }
 
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
-        bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.next, enabled = false)
+        bottomToolbarUiModel.uiModelButton1.show(ButtonDecorationInfo.back)
+        bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.complete, enabled = false)
     }
 
     override fun onToolbarButtonClick(view: View) {
         when(view.id){
-           /* R.id.b_1 -> vm.onClickBack()
-            R.id.b_5 -> vm.onClickComplete()*/
+            R.id.b_5 -> vm.onClickComplete()
         }
     }
 
     companion object {
-        const val SCREEN_NUMBER = Constants.SELECT_GOODS_FRAGMENT
+        const val SCREEN_NUMBER = Constants.GOODS_INFO_FRAGMENT
     }
 
 }

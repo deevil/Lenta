@@ -3,7 +3,10 @@ package com.lenta.bp18.platform
 object Constants {
 
     const val USER_200 = "USER200"
-    const val TEST_PASSWORD = "987654321"
+    const val PASSWORD = "987654321"
+
+    const val TEST_LOGIN = "MAKAROV"
+    const val TEST_PASSWORD = "1q2w3e4r"
 
     const val APP_FOLDER_NAME = "bp18"
 

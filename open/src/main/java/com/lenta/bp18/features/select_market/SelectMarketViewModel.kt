@@ -1,11 +1,11 @@
 package com.lenta.bp18.features.select_market
 
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.recyclerview.widget.RecyclerView
 import com.google.gson.Gson
+import com.lenta.bp18.model.pojo.MarketUI
 import com.lenta.bp18.platform.navigation.IScreenNavigator
+import com.lenta.bp18.repository.IRepoInMemoryHolder
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.features.printer_change.PrinterManager
@@ -23,22 +23,29 @@ import javax.inject.Inject
 class SelectMarketViewModel : CoreViewModel(), OnPositionClickListener {
     @Inject
     lateinit var navigator: IScreenNavigator
+
     @Inject
     lateinit var sessionInfo: ISessionInfo
+
     @Inject
     lateinit var appSettings: IAppSettings
-/*    @Inject
-    lateinit var repoInMemoryHolder: IRepoInMemoryHolder*/
+
+    @Inject
+    lateinit var repoInMemoryHolder: IRepoInMemoryHolder
+
     @Inject
     lateinit var timeMonitor: ITimeMonitor
+
     @Inject
     lateinit var serverTimeRequest: ServerTimeRequest
+
     @Inject
-    lateinit var printerMessage: PrinterManager
+    lateinit var printerManager: PrinterManager
+
     @Inject
     lateinit var gson: Gson
 
-    private val markets: MutableLiveData<List<MarketUi>> = MutableLiveData()
+    private val markets: MutableLiveData<List<MarketUI>> = MutableLiveData()
 
     val marketsNames: MutableLiveData<List<String>> = markets.map { markets ->
         markets?.map { it.number }
@@ -52,17 +59,17 @@ class SelectMarketViewModel : CoreViewModel(), OnPositionClickListener {
         }
     }
 
-/*    init {
+    init {
         viewModelScope.launch {
             repoInMemoryHolder.storesRequestResult?.markets?.let { list ->
                 markets.value = list.map {
-                    MarketUi(number = it.tkNumber, address = it.address)
+                    MarketUI(number = it.number, address = it.address)
                 }
 
                 if (selectedPosition.value == null) {
                     if (appSettings.lastTK != null) {
                         list.forEachIndexed { index, market ->
-                            if (market.tkNumber == appSettings.lastTK) {
+                            if (market.number == appSettings.lastTK) {
                                 onClickPosition(index)
                             }
                         }
@@ -76,14 +83,14 @@ class SelectMarketViewModel : CoreViewModel(), OnPositionClickListener {
                 }
             }
         }
-    }*/
+    }
 
     fun onClickNext() {
         viewModelScope.launch {
             markets.value?.getOrNull(selectedPosition.value ?: -1)?.number?.let { tkNumber ->
-/*                if (appSettings.lastTK != tkNumber) {
+                if (appSettings.lastTK != tkNumber) {
                     printerManager.setDefaultPrinterForTk(tkNumber)
-                }*/
+                }
                 sessionInfo.market = tkNumber
                 appSettings.lastTK = tkNumber
                 navigator.showProgress(serverTimeRequest)
@@ -102,16 +109,10 @@ class SelectMarketViewModel : CoreViewModel(), OnPositionClickListener {
         navigator.hideProgress()
         timeMonitor.setServerTime(time = serverTime.time, date = serverTime.date)
 
-        //navigator.openFastDataLoadingScreen()
+        navigator.openFastDataLoadingScreen()
     }
 
     override fun onClickPosition(position: Int) {
         selectedPosition.value = position
     }
-
 }
-
-data class MarketUi(
-        val number: String,
-        val address: String
-)

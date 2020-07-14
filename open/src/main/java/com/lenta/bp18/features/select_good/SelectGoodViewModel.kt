@@ -1,4 +1,4 @@
-package com.lenta.bp18.features.select_goods
+package com.lenta.bp18.features.select_good
 
 import com.lenta.bp18.platform.navigation.IScreenNavigator
 import com.lenta.shared.account.ISessionInfo
@@ -6,7 +6,7 @@ import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.settings.IAppSettings
 import javax.inject.Inject
 
-class SelectGoodsViewModel : CoreViewModel() {
+class SelectGoodViewModel : CoreViewModel() {
 
     @Inject
     lateinit var navigator: IScreenNavigator

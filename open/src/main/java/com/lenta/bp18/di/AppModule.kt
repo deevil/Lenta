@@ -4,10 +4,15 @@ import app_update.AppUpdateInstaller
 import app_update.AppUpdaterConfig
 import app_update.AppUpdaterInstallerFromFmp
 import com.lenta.bp18.BuildConfig.APPLICATION_ID
+import com.lenta.bp18.model.ITaskManager
+import com.lenta.bp18.model.TaskManager
 import com.lenta.bp18.platform.Constants
 import com.lenta.bp18.platform.navigation.IScreenNavigator
 import com.lenta.bp18.platform.navigation.ScreenNavigator
+import com.lenta.bp18.repository.IRepoInMemoryHolder
+import com.lenta.bp18.repository.RepoInMemoryHolder
 import com.lenta.shared.di.AppScope
+import com.mobrun.plugin.api.HyperHive
 import dagger.Binds
 import dagger.Module
 import dagger.Provides
@@ -27,6 +32,18 @@ class AppModule {
         fun bindScreenNavigator(realisation: ScreenNavigator): IScreenNavigator
 
     }
+
+    @Provides
+    @AppScope
+    internal fun provideIRepoInMemoryHolder(): IRepoInMemoryHolder {
+        return RepoInMemoryHolder()
+    }
+
+/*    @Provides
+    @AppScope
+    internal fun provideTaskManager(hyperHive: HyperHive): ITaskManager {
+        return TaskManager(hyperHive)
+    }*/
 
     @Provides
     @AppScope
