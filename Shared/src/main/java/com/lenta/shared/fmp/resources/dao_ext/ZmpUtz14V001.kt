@@ -116,6 +116,10 @@ fun ZmpUtz14V001.getGrzWerksOwnpr(): List<String>? {
     return getParams("GRZ_WERKS_OWNPR")
 }
 
+fun ZmpUtz14V001.getEoVolume(): Double? {
+    return getParams("MVM_EO_VOLUME_KUBM").firstOrNull()?.toDoubleOrNull()
+}
+
 fun ZmpUtz14V001.getParamGrzRoundLackRatio(): String? {
     return getParams("GRZ_ROUND_LACK_RATIO").firstOrNull()
 }
@@ -130,10 +134,7 @@ fun ZmpUtz14V001.getParamGrzRoundHeapRatio(): String? {
 
 fun ZmpUtz14V001.getGrzCrGrundcat(): String? {
     return getParams("GRZ_CR_GRUNDCAT").firstOrNull()
-}
-
-fun ZmpUtz14V001.getEoVolume(): Double? {
-    return getParams("MVM_EO_VOLUME_KUBM").firstOrNull()?.toDoubleOrNull()
+>>>>>>>>> Temporary merge branch 2
 }
 
 private fun ZmpUtz14V001.getParams(paramName: String): List<String> {

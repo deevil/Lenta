@@ -11,7 +11,7 @@ android {
     compileSdkVersion build_versions.target_sdk
 
     defaultConfig {
-        applicationId "com.lenta.movement"
+        applicationId "com.lenta.bp13"
         minSdkVersion build_versions.min_sdk
         targetSdkVersion build_versions.target_sdk
         versionCode getCodeVersion()
