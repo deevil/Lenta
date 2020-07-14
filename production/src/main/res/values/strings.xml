@@ -60,4 +60,12 @@
     <string name="total_defect">Итого брак</string>
     <string name="defect_mark">***БРАК***</string>
 
+    <!-- Типы складов -->
+    <string name="warehouse_select">Выберите склад:</string>
+    <string name="warehouse_1">0111</string>
+    <string name="warehouse_2">0121</string>
+    <string name="warehouse_3">0131</string>
+    <string name="warehouse_4">0141</string>
+    <string name="warehouse_all">Выбрать все</string>
+
 </resources>

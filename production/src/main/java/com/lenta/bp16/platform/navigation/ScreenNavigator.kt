@@ -19,6 +19,7 @@ import com.lenta.bp16.features.raw_list.RawListFragment
 import com.lenta.bp16.features.reprint_label.ReprintLabelFragment
 import com.lenta.bp16.features.select_market.SelectMarketFragment
 import com.lenta.bp16.features.select_personnel_number.SelectPersonnelNumberFragment
+import com.lenta.bp16.features.warehouse_selection.WarehouseSelectionFragment
 import com.lenta.shared.account.IAuthenticator
 import com.lenta.shared.features.alert.AlertFragment
 import com.lenta.shared.platform.activity.ForegroundActivityProvider
@@ -87,6 +88,12 @@ class ScreenNavigator @Inject constructor(
     override fun openExternalSupplyTaskListScreen() {
         runOrPostpone {
             getFragmentStack()?.push(ExternalSupplyTaskListFragment())
+        }
+    }
+
+    override fun openSelectWarehouseScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(WarehouseSelectionFragment())
         }
     }
 
@@ -284,6 +291,7 @@ interface IScreenNavigator : ICoreNavigator {
     fun openMainMenuScreen()
     fun openProcessingUnitTaskListScreen()
     fun openExternalSupplyTaskListScreen()
+    fun openSelectWarehouseScreen()
     fun openProcessingUnitListScreen()
     fun openExternalSupplyListScreen()
     fun openRawListScreen()

@@ -168,6 +168,7 @@ class TaskManager @Inject constructor(
         return when (taskType) {
             TaskType.PROCESSING_UNIT -> 1
             TaskType.EXTERNAL_SUPPLY -> 2
+            else -> 0
         }
     }
 
@@ -175,6 +176,7 @@ class TaskManager @Inject constructor(
         return when (taskType) {
             TaskType.PROCESSING_UNIT -> 1
             TaskType.EXTERNAL_SUPPLY -> 3
+            else -> 0
         }
     }
 
