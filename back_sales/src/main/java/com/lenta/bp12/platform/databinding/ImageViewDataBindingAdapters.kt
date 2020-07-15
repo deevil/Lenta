@@ -5,26 +5,10 @@ import androidx.databinding.BindingAdapter
 import com.lenta.bp12.R
 import com.lenta.bp12.model.BlockType
 import com.lenta.bp12.model.GoodKind
-import com.lenta.bp12.model.TaskStatus
 import com.lenta.bp12.platform.extention.getDescriptionResId
 import com.lenta.shared.utilities.databinding.dataBindingHelpHolder
 import com.lenta.shared.utilities.extentions.setInvisible
 import com.lenta.shared.utilities.extentions.setVisible
-
-@BindingAdapter("taskStatusIcon")
-fun setTaskStatusIcon(imageView: ImageView, taskStatus: TaskStatus) {
-    imageView.apply {
-        if (taskStatus == TaskStatus.COMMON) {
-            setVisible(false)
-        } else {
-            setImageResource(when (taskStatus) {
-                TaskStatus.STARTED -> R.drawable.ic_play_arrow_gray_24dp
-                else -> R.drawable.ic_play_arrow_gray_24dp
-            })
-            setVisible()
-        }
-    }
-}
 
 @BindingAdapter("blockTypeIcon")
 fun setBlockTypeIcon(imageView: ImageView, blockType: BlockType) {

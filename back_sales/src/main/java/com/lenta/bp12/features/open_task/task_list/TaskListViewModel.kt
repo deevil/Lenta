@@ -4,7 +4,6 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.lenta.bp12.model.BlockType
 import com.lenta.bp12.model.IOpenTaskManager
-import com.lenta.bp12.model.TaskStatus
 import com.lenta.bp12.model.pojo.open_task.TaskOpen
 import com.lenta.bp12.platform.navigation.IScreenNavigator
 import com.lenta.bp12.platform.resource.IResourceManager
@@ -85,7 +84,7 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
                                 number = task.number,
                                 name = task.getFormattedName(),
                                 provider = task.getProviderCodeWithName(),
-                                taskStatus = task.status,
+                                isFinished = task.isFinished,
                                 blockType = task.block.type,
                                 quantity = task.numberOfGoods.toString()
                         )
@@ -112,7 +111,7 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
                                 number = task.number,
                                 name = task.name,
                                 provider = task.getProviderCodeWithName(),
-                                taskStatus = task.status,
+                                isFinished = task.isFinished,
                                 blockType = task.block.type,
                                 quantity = task.numberOfGoods.toString()
                         )
@@ -267,7 +266,7 @@ data class ItemTaskUi(
         val number: String,
         val name: String,
         val provider: String,
-        val taskStatus: TaskStatus,
+        val isFinished: Boolean,
         val blockType: BlockType,
         val quantity: String
 )
