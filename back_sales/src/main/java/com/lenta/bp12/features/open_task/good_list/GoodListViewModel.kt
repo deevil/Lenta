@@ -138,6 +138,10 @@ class GoodListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
         }
     }
 
+    fun onScanResult(data: String) {
+        checkEnteredNumber(data)
+    }
+
     override fun onOkInSoftKeyboard(): Boolean {
         checkEnteredNumber(numberField.value.orEmpty())
         return true
@@ -145,7 +149,8 @@ class GoodListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
 
     private fun checkEnteredNumber(number: String) {
         number.length.let { length ->
-            if (task.value?.isStrict == false && length >= Constants.SAP_6) {
+            if (task.value?.isStrict == false && length >= Constants.SAP_6 &&
+                    length != Constants.BOX_26 && length != Constants.MARK_68 && length != Constants.MARK_150) {
                 manager.searchNumber = number
                 manager.searchGoodFromList = true
                 numberField.value = ""
