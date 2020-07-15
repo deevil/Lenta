@@ -14,7 +14,7 @@ class GoodInfoViewModel : CoreViewModel() {
     @Inject
     lateinit var navigator: IScreenNavigator
 
-    @Inject
+/*    @Inject
     lateinit var manager: ITaskManager
 
     val good by lazy {
@@ -23,7 +23,7 @@ class GoodInfoViewModel : CoreViewModel() {
 
     val title by lazy {
         good.map { it?.getNameWithMaterial() }
-    }
+    }*/
 
     val deviceIp = MutableLiveData("")
 

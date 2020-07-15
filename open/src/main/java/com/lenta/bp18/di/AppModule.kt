@@ -31,19 +31,15 @@ class AppModule {
         @AppScope
         fun bindScreenNavigator(realisation: ScreenNavigator): IScreenNavigator
 
-    }
+        @Binds
+        @AppScope
+        fun bindRepoInMemoryHolder(realisation: RepoInMemoryHolder): IRepoInMemoryHolder
 
-    @Provides
-    @AppScope
-    internal fun provideIRepoInMemoryHolder(): IRepoInMemoryHolder {
-        return RepoInMemoryHolder()
-    }
+        @Binds
+        @AppScope
+        fun bindTaskManager(realisation: TaskManager): ITaskManager
 
-/*    @Provides
-    @AppScope
-    internal fun provideTaskManager(hyperHive: HyperHive): ITaskManager {
-        return TaskManager(hyperHive)
-    }*/
+    }
 
     @Provides
     @AppScope

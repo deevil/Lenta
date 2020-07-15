@@ -1,8 +1,9 @@
 package com.lenta.bp18.model.pojo
 
-import com.lenta.bp16.model.TaskStatus
-import com.lenta.bp16.model.TaskType
-import com.lenta.bp16.request.pojo.TaskInfo
+import com.lenta.bp18.model.TaskStatus
+import com.lenta.bp18.model.TaskType
+import com.lenta.bp18.request.pojo.TaskInfo
+
 
 data class Task(
         var isProcessed: Boolean = false,
@@ -13,5 +14,4 @@ data class Task(
         val quantity: Double,
         val taskInfo: TaskInfo,
         var goods: MutableList<Good> = mutableListOf()
-) {
-}
+)

@@ -8,11 +8,11 @@ import com.lenta.shared.utilities.extentions.isSapTrue
 import javax.inject.Inject
 
 class TaskManager @Inject constructor(
-        private val database: IDatabaseRepository,
-        private val persistLabelList: PersistLabelList
+        /*private val database: IDatabaseRepository,
+        private val persistLabelList: PersistLabelList*/
 ) : ITaskManager {
 
-    override lateinit var taskType: TaskType
+/*    override lateinit var taskType: TaskType
 
     private var labelLimit = 0
 
@@ -170,13 +170,13 @@ class TaskManager @Inject constructor(
             TaskType.PROCESSING_UNIT -> 1
             TaskType.EXTERNAL_SUPPLY -> 3
         }
-    }
+    }*/
 
 }
 
 interface ITaskManager {
 
-    var taskType: TaskType
+    /*var taskType: TaskType
 
     val tasks: MutableLiveData<List<Task>>
     val labels: MutableLiveData<List<LabelInfo>>
@@ -197,6 +197,6 @@ interface ITaskManager {
     fun completeCurrentTask()
     fun completeCurrentGood()
     suspend fun getLabelList()
-    suspend fun addLabelToList(labelInfo: LabelInfo)
+    suspend fun addLabelToList(labelInfo: LabelInfo)*/
 
 }

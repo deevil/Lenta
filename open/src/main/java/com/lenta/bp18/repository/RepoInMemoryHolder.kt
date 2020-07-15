@@ -8,12 +8,8 @@ import javax.inject.Inject
 class RepoInMemoryHolder @Inject constructor() : IRepoInMemoryHolder {
 
     override var storesRequestResult: StoresRequestResult? = null
-   // override var stockLockRequestResult: StockLockRequestResult? = null
-
-
 }
 
 interface IRepoInMemoryHolder {
     var storesRequestResult: StoresRequestResult?
-   // var stockLockRequestResult: StockLockRequestResult?
 }

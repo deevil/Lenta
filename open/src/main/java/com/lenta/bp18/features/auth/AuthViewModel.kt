@@ -33,12 +33,14 @@ class AuthViewModel : CoreAuthViewModel() {
     lateinit var sessionInfo: ISessionInfo
     @Inject
     lateinit var appSettings: IAppSettings
-    @Inject
-    lateinit var repoInMemoryHolder: IRepoInMemoryHolder
-    @Inject
-    lateinit var storesRequest: StoresRequest
 
     val packageName = MutableLiveData<String>()
+
+    init {
+        viewModelScope.launch {
+            sessionInfo.packageName = packageName.value
+        }
+    }
 
     override val enterEnabled: MutableLiveData<Boolean> by lazy {
         login.combineLatest(password).map { isValidLoginFields(login = it?.first, password = it?.second) }
@@ -59,15 +61,9 @@ class AuthViewModel : CoreAuthViewModel() {
                 sessionInfo.basicAuth = getBaseAuth(login, getPassword())
                 appSettings.lastLogin = login
             }
-            progress.value = true
-            storesRequest(null).either(::handleFailure, ::onAuthSuccess)
             progress.value = false
+            navigator.openFastDataLoadingScreen()
         }
-    }
-
-    private fun onAuthSuccess(storesRequestResult: StoresRequestResult) {
-        repoInMemoryHolder.storesRequestResult = storesRequestResult
-        navigator.openSelectMarketScreen()
     }
 
     override fun handleFailure(failure: Failure) {
@@ -90,19 +86,8 @@ class AuthViewModel : CoreAuthViewModel() {
 
     override fun onResume() {
         viewModelScope.launch {
-            if (!appSettings.lastLogin.isNullOrEmpty()) {
-                login.value = appSettings.lastLogin
-            }
-            runIfDebug {
-                Logg.d { "login.value ${login.value}" }
-                if (login.value.isNullOrEmpty()) {
-                    login.value = Constants.USER_200
-                }
-                if (login.value == Constants.USER_200 && getPassword().isEmpty()) {
-                    password.value = Constants.TEST_PASSWORD
-                }
-            }
+            login.value = appSettings.techLogin
+            password.value = appSettings.techPassword
         }
     }
-
 }

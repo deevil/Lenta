@@ -6,6 +6,7 @@ import com.lenta.shared.fmp.ObjectRawStatus
 import com.lenta.shared.functional.Either
 import com.lenta.shared.interactor.UseCase
 import com.lenta.shared.requests.FmpRequestsHelper
+import com.lenta.shared.requests.Market
 import com.lenta.shared.requests.SapResponse
 import javax.inject.Inject
 
@@ -28,7 +29,7 @@ class PermissionsRequestStatus : ObjectRawStatus<PermissionsRequestResult>()
 data class PermissionsRequestResult(
         /** Список адресов ТК */
         @SerializedName("ET_WERKS")
-        val marketInfos: List<MarketInfo>,
+        val marketInfos: List<Market>,
         /** Код возврата */
         @SerializedName("EV_RETCODE")
         override val retCode: Int,
