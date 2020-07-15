@@ -83,7 +83,7 @@ class TaskCompositionViewModel : CoreViewModel(), PageSelectionListener, OnOkInS
                             position = "$position",
                             name = resource.basket("$position"),
                             description = basket.getDescription(task.taskType.isDivBySection),
-                            quantity = task.getQuantityByBasket(basket).dropZeros()
+                            quantity = "${task.getCountByBasket(basket)}"
                     )
                 }
             }

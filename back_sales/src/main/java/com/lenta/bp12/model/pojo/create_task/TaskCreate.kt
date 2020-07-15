@@ -42,6 +42,10 @@ data class TaskCreate(
         }
     }
 
+    fun getCountByBasket(basket: Basket): Int {
+        return getGoodListByBasket(basket).size
+    }
+
     fun removeGoodByMaterials(materials: List<String>) {
         materials.forEach { material ->
             goods.remove(goods.find { it.material == material })
