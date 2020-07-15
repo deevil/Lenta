@@ -7,6 +7,7 @@ import com.lenta.bp12.model.pojo.Mark
 import com.lenta.bp12.model.pojo.Part
 import com.lenta.bp12.model.pojo.Position
 import com.lenta.bp12.model.pojo.open_task.GoodOpen
+import com.lenta.bp12.platform.extention.extractAlcoCode
 import com.lenta.bp12.platform.extention.getGoodKind
 import com.lenta.bp12.platform.navigation.IScreenNavigator
 import com.lenta.bp12.platform.resource.IResourceManager
@@ -465,28 +466,31 @@ class GoodInfoOpenViewModel : CoreViewModel() {
                     quantity = 0.0
             )).also {
                 navigator.hideProgress()
-            }.either(::handleFailure) { markInfoResult ->
-                viewModelScope.launch {
-                    markInfoResult.status.let { status ->
-                        if (status == MarkStatus.OK.code || status == MarkStatus.BAD.code) {
-                            addMarkInfo(number, markInfoResult)
-                        } else if (status == MarkStatus.UNKNOWN.code) {
-                            val alcoCode = BigInteger(number.substring(7, 19), 36).toString().padStart(19, '0')
-                            database.getAlcoCodeInfoList(alcoCode).let { alcoCodeInfoList ->
-                                if (alcoCodeInfoList.isNotEmpty()) {
-                                    if (alcoCodeInfoList.find { it.material == good.value!!.material } != null) {
-                                        addPartInfo(number, markInfoResult)
-                                    } else {
-                                        navigator.openAlertScreen(resource.alcocodeDoesNotApplyToThisGood())
-                                    }
+            }.either(::handleFailure) { result ->
+                handleLoadMarkInfoResult(result, number)
+            }
+        }
+    }
+
+    private fun handleLoadMarkInfoResult(result: ScanInfoResult, number: String) {
+        viewModelScope.launch {
+            result.status.let { status ->
+                when (status) {
+                    MarkStatus.OK.code, MarkStatus.BAD.code -> addMarkInfo(number, result)
+                    MarkStatus.UNKNOWN.code -> {
+                        database.getAlcoCodeInfoList(number.extractAlcoCode()).let { alcoCodeInfoList ->
+                            if (alcoCodeInfoList.isNotEmpty()) {
+                                if (alcoCodeInfoList.find { it.material == good.value!!.material } != null) {
+                                    addPartInfo(number, result)
                                 } else {
-                                    navigator.openAlertScreen(resource.unknownAlcocode())
+                                    navigator.openAlertScreen(resource.alcocodeDoesNotApplyToThisGood())
                                 }
+                            } else {
+                                navigator.openAlertScreen(resource.unknownAlcocode())
                             }
-                        } else {
-                            navigator.openAlertScreen(markInfoResult.statusDescription)
                         }
                     }
+                    else -> navigator.openAlertScreen(result.statusDescription)
                 }
             }
         }
@@ -532,16 +536,17 @@ class GoodInfoOpenViewModel : CoreViewModel() {
                     quantity = 0.0
             )).also {
                 navigator.hideProgress()
-            }.either(::handleFailure) { markInfoResult ->
-                viewModelScope.launch {
-                    markInfoResult.status.let { status ->
-                        if (status == BoxStatus.OK.code) {
-                            addBoxInfo(number, markInfoResult)
-                        } else {
-                            navigator.openAlertScreen(markInfoResult.statusDescription)
-                        }
-                    }
-                }
+            }.either(::handleFailure) { result ->
+                handleLoadBoxInfoResult(result, number)
+            }
+        }
+    }
+
+    private fun handleLoadBoxInfoResult(result: ScanInfoResult, number: String) {
+        viewModelScope.launch {
+            when(result.status){
+                BoxStatus.OK.code -> addBoxInfo(number, result)
+                else -> navigator.openAlertScreen(result.statusDescription)
             }
         }
     }

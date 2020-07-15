@@ -8,6 +8,7 @@ import com.lenta.bp12.model.pojo.Part
 import com.lenta.bp12.model.pojo.Position
 import com.lenta.bp12.model.pojo.create_task.Basket
 import com.lenta.bp12.model.pojo.create_task.GoodCreate
+import com.lenta.bp12.platform.extention.extractAlcoCode
 import com.lenta.bp12.platform.extention.getControlType
 import com.lenta.bp12.platform.extention.getGoodKind
 import com.lenta.bp12.platform.navigation.IScreenNavigator
@@ -545,27 +546,30 @@ class GoodInfoCreateViewModel : CoreViewModel() {
             )).also {
                 navigator.hideProgress()
             }.either(::handleFailure) { result ->
-                viewModelScope.launch {
-                    result.status.let { status ->
-                        if (status == MarkStatus.OK.code || status == MarkStatus.BAD.code) {
-                            addMarkInfo(number, result)
-                        } else if (status == MarkStatus.UNKNOWN.code) {
-                            val alcoCode = BigInteger(number.substring(7, 19), 36).toString().padStart(19, '0')
-                            database.getAlcoCodeInfoList(alcoCode).let { alcoCodeInfoList ->
-                                if (alcoCodeInfoList.isNotEmpty()) {
-                                    if (alcoCodeInfoList.find { it.material == good.value!!.material } != null) {
-                                        addPartInfo(number, result)
-                                    } else {
-                                        navigator.openAlertScreen(resource.alcocodeDoesNotApplyToThisGood())
-                                    }
+                handleLoadMarkInfoResult(result, number)
+            }
+        }
+    }
+
+    private fun handleLoadMarkInfoResult(result: ScanInfoResult, number: String) {
+        viewModelScope.launch {
+            result.status.let { status ->
+                when (status) {
+                    MarkStatus.OK.code, MarkStatus.BAD.code -> addMarkInfo(number, result)
+                    MarkStatus.UNKNOWN.code -> {
+                        database.getAlcoCodeInfoList(number.extractAlcoCode()).let { alcoCodeInfoList ->
+                            if (alcoCodeInfoList.isNotEmpty()) {
+                                if (alcoCodeInfoList.find { it.material == good.value!!.material } != null) {
+                                    addPartInfo(number, result)
                                 } else {
-                                    navigator.openAlertScreen(resource.unknownAlcocode())
+                                    navigator.openAlertScreen(resource.alcocodeDoesNotApplyToThisGood())
                                 }
+                            } else {
+                                navigator.openAlertScreen(resource.unknownAlcocode())
                             }
-                        } else {
-                            navigator.openAlertScreen(result.statusDescription)
                         }
                     }
+                    else -> navigator.openAlertScreen(result.statusDescription)
                 }
             }
         }
@@ -611,15 +615,16 @@ class GoodInfoCreateViewModel : CoreViewModel() {
             )).also {
                 navigator.hideProgress()
             }.either(::handleFailure) { result ->
-                viewModelScope.launch {
-                    result.status.let { status ->
-                        if (status == BoxStatus.OK.code) {
-                            addBoxInfo(number, result)
-                        } else {
-                            navigator.openAlertScreen(result.statusDescription)
-                        }
-                    }
-                }
+                handleLoadBoxInfoResult(result, number)
+            }
+        }
+    }
+
+    private fun handleLoadBoxInfoResult(result: ScanInfoResult, number: String) {
+        viewModelScope.launch {
+            when(result.status){
+                BoxStatus.OK.code -> addBoxInfo(number, result)
+                else -> navigator.openAlertScreen(result.statusDescription)
             }
         }
     }
