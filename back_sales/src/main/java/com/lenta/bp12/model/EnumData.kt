@@ -75,3 +75,9 @@ enum class ScanNumberType(val description: String){
     PART("Партия"),
     BOX("Коробка")
 }
+
+enum class ScanInfoMode(val mode: Int){
+    MARK(1),
+    BOX(2),
+    PART(3)
+}

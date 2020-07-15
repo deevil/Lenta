@@ -47,7 +47,7 @@ class GoodInfoCreateViewModel : CoreViewModel() {
     lateinit var goodInfoNetRequest: GoodInfoNetRequest
 
     @Inject
-    lateinit var markInfoNetRequest: MarkInfoNetRequest
+    lateinit var scanInfoNetRequest: ScanInfoNetRequest
 
     @Inject
     lateinit var database: IDatabaseRepository
@@ -100,7 +100,7 @@ class GoodInfoCreateViewModel : CoreViewModel() {
         }
     }
 
-    private val markInfoResult = MutableLiveData<MarkInfoResult>()
+    private val markInfoResult = MutableLiveData<ScanInfoResult>()
 
     private var scanCodeInfo: ScanCodeInfo? = null
 
@@ -536,11 +536,11 @@ class GoodInfoCreateViewModel : CoreViewModel() {
         viewModelScope.launch {
             navigator.showProgressLoadingData()
 
-            markInfoNetRequest(MarkInfoParams(
+            scanInfoNetRequest(ScanInfoParams(
                     tkNumber = sessionInfo.market.orEmpty(),
                     material = good.value!!.material,
                     markNumber = number,
-                    mode = 1,
+                    mode = ScanInfoMode.MARK.mode,
                     quantity = 0.0
             )).also {
                 navigator.hideProgress()
@@ -571,17 +571,17 @@ class GoodInfoCreateViewModel : CoreViewModel() {
         }
     }
 
-    private fun addMarkInfo(number: String, markInfo: MarkInfoResult) {
+    private fun addMarkInfo(number: String, scanInfo: ScanInfoResult) {
         lastSuccessSearchNumber.value = number
         isExistUnsavedData = true
-        markInfoResult.value = markInfo
+        markInfoResult.value = scanInfo
         quantityField.value = "1"
 
         when (number.length) {
             Constants.MARK_150 -> {
                 scanModeType.value = ScanNumberType.MARK_150
-                updateProducers(markInfo.producers.toMutableList())
-                date.value = getFormattedDate(markInfo.producedDate, Constants.DATE_FORMAT_yyyy_mm_dd, Constants.DATE_FORMAT_dd_mm_yyyy)
+                updateProducers(scanInfo.producers.toMutableList())
+                date.value = getFormattedDate(scanInfo.producedDate, Constants.DATE_FORMAT_yyyy_mm_dd, Constants.DATE_FORMAT_dd_mm_yyyy)
             }
             Constants.MARK_68 -> {
                 scanModeType.value = ScanNumberType.MARK_68
@@ -589,24 +589,24 @@ class GoodInfoCreateViewModel : CoreViewModel() {
         }
     }
 
-    private fun addPartInfo(number: String, markInfo: MarkInfoResult) {
+    private fun addPartInfo(number: String, scanInfo: ScanInfoResult) {
         scanModeType.value = ScanNumberType.PART
         lastSuccessSearchNumber.value = number
         isExistUnsavedData = true
-        markInfoResult.value = markInfo
+        markInfoResult.value = scanInfo
         quantityField.value = "1"
-        updateProducers(markInfo.producers.toMutableList())
+        updateProducers(scanInfo.producers.toMutableList())
     }
 
     private fun loadBoxInfo(number: String) {
         viewModelScope.launch {
             navigator.showProgressLoadingData()
 
-            markInfoNetRequest(MarkInfoParams(
+            scanInfoNetRequest(ScanInfoParams(
                     tkNumber = sessionInfo.market.orEmpty(),
                     material = good.value!!.material,
-                    markNumber = number,
-                    mode = 2,
+                    boxNumber = number,
+                    mode = ScanInfoMode.BOX.mode,
                     quantity = 0.0
             )).also {
                 navigator.hideProgress()
@@ -624,23 +624,23 @@ class GoodInfoCreateViewModel : CoreViewModel() {
         }
     }
 
-    private fun addBoxInfo(number: String, markInfo: MarkInfoResult) {
+    private fun addBoxInfo(number: String, scanInfo: ScanInfoResult) {
         scanModeType.value = ScanNumberType.BOX
         lastSuccessSearchNumber.value = number
         isExistUnsavedData = true
-        markInfoResult.value = markInfo
-        quantityField.value = markInfo.marks.size.toString()
+        markInfoResult.value = scanInfo
+        quantityField.value = scanInfo.marks.size.toString()
     }
 
-    private suspend fun checkPart(): Either<Failure, MarkInfoResult> {
+    private suspend fun checkPart(): Either<Failure, ScanInfoResult> {
         navigator.showProgressLoadingData()
 
-        return markInfoNetRequest(MarkInfoParams(
+        return scanInfoNetRequest(ScanInfoParams(
                 tkNumber = sessionInfo.market.orEmpty(),
                 material = good.value?.material.orEmpty(),
                 producerCode = getProducerCode(),
                 bottledDate = getFormattedDate(date.value.orEmpty(), Constants.DATE_FORMAT_dd_mm_yyyy, Constants.DATE_FORMAT_yyyy_mm_dd),
-                mode = 3,
+                mode = ScanInfoMode.PART.mode,
                 quantity = quantity.value ?: 0.0
         )).also {
             navigator.hideProgress()

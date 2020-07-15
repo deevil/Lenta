@@ -16,7 +16,6 @@ import com.lenta.bp12.request.pojo.ProducerInfo
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.functional.Either
-import com.lenta.shared.models.core.Uom
 import com.lenta.shared.models.core.getMatrixType
 import com.lenta.shared.platform.constants.Constants
 import com.lenta.shared.platform.viewmodel.CoreViewModel
@@ -44,7 +43,7 @@ class GoodInfoOpenViewModel : CoreViewModel() {
     lateinit var goodInfoNetRequest: GoodInfoNetRequest
 
     @Inject
-    lateinit var markInfoNetRequest: MarkInfoNetRequest
+    lateinit var scanInfoNetRequest: ScanInfoNetRequest
 
     @Inject
     lateinit var database: IDatabaseRepository
@@ -97,7 +96,7 @@ class GoodInfoOpenViewModel : CoreViewModel() {
         }
     }
 
-    private val markInfoResult = MutableLiveData<MarkInfoResult>()
+    private val markInfoResult = MutableLiveData<ScanInfoResult>()
 
     private var scanCodeInfo: ScanCodeInfo? = null
 
@@ -458,11 +457,11 @@ class GoodInfoOpenViewModel : CoreViewModel() {
         viewModelScope.launch {
             navigator.showProgressLoadingData()
 
-            markInfoNetRequest(MarkInfoParams(
+            scanInfoNetRequest(ScanInfoParams(
                     tkNumber = sessionInfo.market.orEmpty(),
                     material = good.value?.material.orEmpty(),
                     markNumber = number,
-                    mode = 1,
+                    mode = ScanInfoMode.MARK.mode,
                     quantity = 0.0
             )).also {
                 navigator.hideProgress()
@@ -493,18 +492,18 @@ class GoodInfoOpenViewModel : CoreViewModel() {
         }
     }
 
-    private fun addMarkInfo(number: String, markInfo: MarkInfoResult) {
+    private fun addMarkInfo(number: String, scanInfo: ScanInfoResult) {
         clearSearchFromListParams()
         lastSuccessSearchNumber.value = number
         isExistUnsavedData = true
-        markInfoResult.value = markInfo
+        markInfoResult.value = scanInfo
         quantityField.value = "1"
 
         when (number.length) {
             Constants.MARK_150 -> {
                 scanModeType.value = ScanNumberType.MARK_150
-                updateProducers(markInfo.producers.toMutableList())
-                date.value = markInfo.producedDate
+                updateProducers(scanInfo.producers.toMutableList())
+                date.value = scanInfo.producedDate
             }
             Constants.MARK_68 -> {
                 scanModeType.value = ScanNumberType.MARK_68
@@ -512,24 +511,24 @@ class GoodInfoOpenViewModel : CoreViewModel() {
         }
     }
 
-    private fun addPartInfo(number: String, markInfo: MarkInfoResult) {
+    private fun addPartInfo(number: String, scanInfo: ScanInfoResult) {
         scanModeType.value = ScanNumberType.PART
         lastSuccessSearchNumber.value = number
         isExistUnsavedData = true
-        markInfoResult.value = markInfo
+        markInfoResult.value = scanInfo
         quantityField.value = "1"
-        updateProducers(markInfo.producers.toMutableList())
+        updateProducers(scanInfo.producers.toMutableList())
     }
 
     private fun loadBoxInfo(number: String) {
         viewModelScope.launch {
             navigator.showProgressLoadingData()
 
-            markInfoNetRequest(MarkInfoParams(
+            scanInfoNetRequest(ScanInfoParams(
                     tkNumber = sessionInfo.market.orEmpty(),
                     material = good.value?.material.orEmpty(),
-                    markNumber = number,
-                    mode = 2,
+                    boxNumber = number,
+                    mode = ScanInfoMode.BOX.mode,
                     quantity = 0.0
             )).also {
                 navigator.hideProgress()
@@ -557,23 +556,23 @@ class GoodInfoOpenViewModel : CoreViewModel() {
         navigator.openAlertScreen(failure)
     }
 
-    private fun addBoxInfo(number: String, markInfo: MarkInfoResult) {
+    private fun addBoxInfo(number: String, scanInfo: ScanInfoResult) {
         scanModeType.value = ScanNumberType.BOX
         lastSuccessSearchNumber.value = number
         isExistUnsavedData = true
-        markInfoResult.value = markInfo
-        quantityField.value = markInfo.marks.size.toString()
+        markInfoResult.value = scanInfo
+        quantityField.value = scanInfo.marks.size.toString()
     }
 
-    private suspend fun checkPart(): Either<Failure, MarkInfoResult> {
+    private suspend fun checkPart(): Either<Failure, ScanInfoResult> {
         navigator.showProgressLoadingData()
 
-        return markInfoNetRequest(MarkInfoParams(
+        return scanInfoNetRequest(ScanInfoParams(
                 tkNumber = sessionInfo.market.orEmpty(),
                 material = good.value?.material.orEmpty(),
                 producerCode = getProducerCode(),
                 bottledDate = date.value.orEmpty(),
-                mode = 3,
+                mode = ScanInfoMode.PART.mode,
                 quantity = quantity.value ?: 0.0
         )).also {
             navigator.hideProgress()
