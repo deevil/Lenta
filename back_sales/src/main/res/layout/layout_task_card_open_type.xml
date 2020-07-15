@@ -25,9 +25,9 @@
 
                 <EditText
                     style="@style/CellEditTextStyle"
+                    android:drawableEnd="@drawable/spinner_arrow_down_disabled"
                     android:enabled="false"
                     android:text="@{vm.ui.description}"
-                    android:drawableEnd="@drawable/spinner_arrow_down_disabled"
                     tools:text="Возврат брака прямому поставщику" />
 
             </LinearLayout>
@@ -83,12 +83,8 @@
 
                 <TextView
                     style="@style/CellTextStyle"
-                    android:text="@string/storage"
-                    android:textColor="@color/color_text_title_header" />
-
-                <TextView
-                    style="@style/CellTextStyle"
-                    android:text="@string/from"
+                    android:singleLine="false"
+                    android:text="@string/picking_warehouse"
                     android:textColor="@color/color_text_title_header" />
 
             </LinearLayout>
@@ -101,9 +97,9 @@
 
                 <EditText
                     style="@style/CellEditTextStyle"
+                    android:drawableEnd="@drawable/spinner_arrow_down_disabled"
                     android:enabled="false"
                     android:text="@{vm.ui.storage}"
-                    android:drawableEnd="@drawable/spinner_arrow_down_disabled"
                     tools:text="0010" />
 
             </LinearLayout>
@@ -121,9 +117,9 @@
 
                 <EditText
                     style="@style/CellEditTextStyle"
+                    android:drawableEnd="@drawable/spinner_arrow_down_disabled"
                     android:enabled="false"
                     android:text="@{vm.ui.reason}"
-                    android:drawableEnd="@drawable/spinner_arrow_down_disabled"
                     tools:text="Нарушение товарного вида" />
 
             </LinearLayout>

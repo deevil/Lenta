@@ -98,5 +98,6 @@
     <string name="specify_supplier_sap">Укажите SAP-код поставщика</string>
     <string name="supplier_name">Наименование поставщика:</string>
     <string name="all_suppliers">Все поставщики</string>
+    <string name="picking_warehouse">Склад\nкомплектации</string>
 
 </resources>
