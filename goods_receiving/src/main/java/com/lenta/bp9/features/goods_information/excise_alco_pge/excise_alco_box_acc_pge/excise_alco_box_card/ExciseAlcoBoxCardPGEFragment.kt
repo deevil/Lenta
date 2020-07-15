@@ -92,7 +92,7 @@ class ExciseAlcoBoxCardPGEFragment : CoreFragment<FragmentExciseAlcoBoxCardPgeBi
     }
 
     companion object {
-        private const val PAGE_NUMBER = "09/43"
+        private const val PAGE_NUMBER = "09/62"
 
         fun create(
                 productInfo: TaskProductInfo,
