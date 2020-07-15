@@ -59,7 +59,7 @@ class GoodListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
                     filtered.mapIndexed { index, good ->
                         ItemGoodProcessingUi(
                                 position = "${filtered.size - index}",
-                                name = good.name,
+                                name = good.getNameWithMaterial(),
                                 material = good.material,
                                 providerCode = good.provider.code
                         )
@@ -76,7 +76,7 @@ class GoodListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
                     filtered.mapIndexed { index, good ->
                         ItemGoodProcessedUi(
                                 position = "${filtered.size - index}",
-                                name = good.name,
+                                name = good.getNameWithMaterial(),
                                 quantity = good.getTotalQuantity().dropZeros(),
                                 material = good.material,
                                 providerCode = good.provider.code
