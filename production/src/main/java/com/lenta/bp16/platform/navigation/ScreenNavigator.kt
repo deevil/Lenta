@@ -9,6 +9,7 @@ import com.lenta.bp16.features.external_supply_list.ExternalSupplyListFragment
 import com.lenta.bp16.features.external_supply_task_list.ExternalSupplyTaskListFragment
 import com.lenta.bp16.features.good_packaging.GoodPackagingFragment
 import com.lenta.bp16.features.good_weighing.GoodWeighingFragment
+import com.lenta.bp16.features.ingredients_list.IngredientsListFragment
 import com.lenta.bp16.features.loading.fast.FastDataLoadingFragment
 import com.lenta.bp16.features.main_menu.MainMenuFragment
 import com.lenta.bp16.features.pack_good_list.PackGoodListFragment
@@ -157,6 +158,11 @@ class ScreenNavigator @Inject constructor(
         }
     }
 
+    override fun openIngredientsListScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(IngredientsListFragment())
+        }
+    }
 
     // Информационные экраны
     override fun showDefrostingPhaseIsCompleted(nextCallback: () -> Unit) {
@@ -302,6 +308,7 @@ interface IScreenNavigator : ICoreNavigator {
     fun openReprintLabelScreen()
     fun openDefectInfoScreen()
     fun openDefectListScreen()
+    fun openIngredientsListScreen()
 
     fun showDefrostingPhaseIsCompleted(nextCallback: () -> Unit)
     fun showFixStartNextStageSuccessful(nextCallback: () -> Unit)

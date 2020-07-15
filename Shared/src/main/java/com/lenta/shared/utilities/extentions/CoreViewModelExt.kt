@@ -15,9 +15,20 @@ fun CoreViewModel.launchAsync(
     viewModelScope.launch(viewModelScope.coroutineContext + Dispatchers.IO, start, block)
 }
 
-fun CoreViewModel.launchAsyncTryCatch(catchBlock: ((Throwable) -> Unit)? = null, tryBlock: suspend CoroutineScope.()->Unit) {
+fun CoreViewModel.launchAsyncTryCatch(catchBlock: ((Throwable) -> Unit)? = null, tryBlock: suspend CoroutineScope.() -> Unit) {
     try {
         launchAsync(CoroutineStart.DEFAULT, tryBlock)
+    } catch (e: Throwable) {
+        catchBlock?.invoke(e) ?: handleFailure(failure = Failure.ThrowableFailure(e))
+    }
+}
+
+fun CoreViewModel.launchUITryCatch(
+        start: CoroutineStart = CoroutineStart.DEFAULT,
+        catchBlock: ((Throwable) -> Unit)? = null, tryBlock: suspend CoroutineScope.() -> Unit
+) {
+    try {
+        viewModelScope.launch(viewModelScope.coroutineContext, start, tryBlock)
     } catch (e: Throwable) {
         catchBlock?.invoke(e) ?: handleFailure(failure = Failure.ThrowableFailure(e))
     }

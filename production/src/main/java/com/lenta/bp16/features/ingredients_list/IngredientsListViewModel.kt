@@ -18,7 +18,8 @@ class IngredientsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInS
     val numberField by unsafeLazy { MutableLiveData<String>("") }
     val requestFocusToNumberField by unsafeLazy { MutableLiveData(true) }
 
-    val ingredients by unsafeLazy { mutableListOf<ItemIngredientUi>() }
+    val ingredientsByOrder by unsafeLazy { mutableListOf<ItemIngredientUi>() }
+    val ingredientsByMaterial by unsafeLazy { mutableListOf<ItemIngredientUi>() }
 
     override fun onPageSelected(position: Int) {
         selectedPage.value = position
@@ -44,7 +45,6 @@ class IngredientsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInS
 
 data class ItemIngredientUi(
         val position: String,
-        val number: String,
         val text1: String,
         val text2: String,
         val ingredientStatus: IngredientStatus

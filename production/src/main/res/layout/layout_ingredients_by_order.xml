@@ -73,9 +73,9 @@
             android:layout_height="0dp"
             android:layout_marginBottom="8dp"
             android:layout_weight="1"
-            app:items="@{vm.ingredients}"
+            app:items="@{vm.ingredientsByOrder}"
             app:rv_config="@{rvConfig}"
-            tools:listitem="@layout/item_ingredient" />
+            tools:listitem="@layout/item_ingredient_by_order" />
 
     </LinearLayout>
 

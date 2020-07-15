@@ -10,6 +10,8 @@ import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.extentions.launchAsyncTryCatch
 import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.utilities.extentions.unsafeLazy
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 class WarehouseSelectionViewModel : CoreViewModel() {
@@ -72,5 +74,9 @@ class WarehouseSelectionViewModel : CoreViewModel() {
         if(warehouseThreeSelected.value == true) selectedWarehousesSet.add(Consts.WAREHOUSE_0131)
         if(warehouseFourSelected.value == true) selectedWarehousesSet.add(Consts.WAREHOUSE_0141)
         warehouseStorage.saveSelectedWarehouses(selectedWarehousesSet)
+
+        withContext(Dispatchers.Main) {
+            navigator.openIngredientsListScreen()
+        }
     }
 }
