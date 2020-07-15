@@ -180,7 +180,7 @@ class GoodListFragment : CoreFragment<FragmentGoodListBinding, GoodListViewModel
 
     override fun getTextTitle(position: Int): String {
         return when (position) {
-            TAB_PROCESSING -> getString(R.string.not_processed)
+            TAB_PROCESSING -> getString(R.string.to_processing)
             TAB_PROCESSED -> getString(R.string.processed)
             else -> throw IllegalArgumentException("Wrong pager position!")
         }

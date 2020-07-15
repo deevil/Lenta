@@ -21,7 +21,7 @@
     <string name="categories">Категории</string>
     <string name="processing">К обработке</string>
     <string name="search">Поиск</string>
-    <string name="not_processed">Не обработанные</string>
+    <string name="to_processing">К обработке</string>
     <string name="processed">Обработанные</string>
     <string name="task_type">Тип задания</string>
     <string name="comment">Комментарий</string>
