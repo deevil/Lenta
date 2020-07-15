@@ -387,7 +387,8 @@ class NonExciseAlcoInfoPGEViewModel : CoreViewModel(), OnPositionClickListener {
             planQuantityBatch.value = isSelectedHeadingSpinProcessingUnit.value
                     ?.takeIf { !it }
                     ?.run {
-                        "${batch[position - 1].purchaseOrderScope.toStringFormatted()} ${productInfo.value?.uom?.name.orEmpty()}"
+                        val actualPosition = position - indexSpinValue
+                        "${batch.getOrNull(actualPosition)?.purchaseOrderScope.toStringFormatted()} ${productInfo.value?.uom?.name.orEmpty()}"
                     }.orEmpty()
         }
     }
