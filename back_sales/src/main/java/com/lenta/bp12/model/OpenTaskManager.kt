@@ -192,10 +192,10 @@ class OpenTaskManager @Inject constructor(
                             PositionInfo(
                                     material = good.material,
                                     providerCode = position.provider.code,
-                                    providerName = position.provider.name,
                                     factQuantity = position.quantity.dropZeros(),
                                     isCounted = good.isCounted.toSapBooleanString(),
                                     isDeleted = good.isDeleted.toSapBooleanString(),
+                                    innerQuantity = good.innerQuantity.dropZeros(),
                                     unitsCode = good.commonUnits.code
                             )
                     )
@@ -208,7 +208,7 @@ class OpenTaskManager @Inject constructor(
                                     number = mark.number,
                                     boxNumber = mark.boxNumber,
                                     isBadMark = mark.isBadMark.toSapBooleanString(),
-                                    producerCode = mark.producerCode
+                                    providerCode = mark.providerCode
                             )
                     )
                 }
@@ -219,8 +219,7 @@ class OpenTaskManager @Inject constructor(
                                     material = good.material,
                                     producerCode = part.producerCode,
                                     productionDate = getStringFromDate(part.date, Constants.DATE_FORMAT_yyyyMMdd),
-                                    unitsCode = part.units.code,
-                                    factQuantity = part.quantity.dropZeros(),
+                                    quantity = part.quantity.dropZeros(),
                                     partNumber = part.number,
                                     providerCode = part.providerCode
                             )

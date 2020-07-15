@@ -19,7 +19,6 @@ import com.lenta.bp12.request.pojo.ProviderInfo
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.functional.Either
-import com.lenta.shared.models.core.Uom
 import com.lenta.shared.models.core.getMatrixType
 import com.lenta.shared.platform.constants.Constants
 import com.lenta.shared.platform.viewmodel.CoreViewModel
@@ -733,11 +732,10 @@ class GoodInfoCreateViewModel : CoreViewModel() {
     private fun addMark() {
         good.value?.let { changedGood ->
             val mark = Mark(
-                    number = lastSuccessSearchNumber.value!!,
+                    number = lastSuccessSearchNumber.value.orEmpty(),
                     material = changedGood.material,
                     isBadMark = markInfoResult.value?.status == MarkStatus.BAD.code,
-                    providerCode = getProviderCode(),
-                    producerCode = getProducerCode()
+                    providerCode = getProviderCode()
             )
             Logg.d { "--> add mark = $mark" }
             changedGood.addMark(mark)
@@ -750,10 +748,9 @@ class GoodInfoCreateViewModel : CoreViewModel() {
     private fun addPart() {
         good.value?.let { changedGood ->
             val part = Part(
-                    number = lastSuccessSearchNumber.value!!,
+                    number = lastSuccessSearchNumber.value.orEmpty(),
                     material = changedGood.material,
-                    quantity = quantity.value!!,
-                    units = changedGood.convertingUnits,
+                    quantity = quantity.value ?: 0.0,
                     providerCode = getProviderCode(),
                     producerCode = getProducerCode(),
                     date = getDateFromString(date.value.orEmpty(), Constants.DATE_FORMAT_dd_mm_yyyy)
@@ -773,10 +770,9 @@ class GoodInfoCreateViewModel : CoreViewModel() {
                     val markFromBox = Mark(
                             number = mark.number,
                             material = changedGood.material,
-                            boxNumber = lastSuccessSearchNumber.value!!,
+                            boxNumber = lastSuccessSearchNumber.value.orEmpty(),
                             isBadMark = mark.isBadMark.isNotEmpty(),
-                            providerCode = getProviderCode(),
-                            producerCode = getProducerCode()
+                            providerCode = getProviderCode()
                     )
                     Logg.d { "--> add mark from box = $markFromBox" }
                     changedGood.addMark(markFromBox)

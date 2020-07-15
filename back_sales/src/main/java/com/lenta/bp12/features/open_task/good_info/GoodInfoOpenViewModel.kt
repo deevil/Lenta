@@ -626,11 +626,10 @@ class GoodInfoOpenViewModel : CoreViewModel() {
         good.value?.let { changedGood ->
             changedGood.isCounted = true
             val mark = Mark(
-                    number = lastSuccessSearchNumber.value!!,
+                    number = lastSuccessSearchNumber.value.orEmpty(),
                     material = changedGood.material,
                     isBadMark = markInfoResult.value?.status == MarkStatus.BAD.code,
-                    providerCode = changedGood.provider.code,
-                    producerCode = getProducerCode()
+                    providerCode = changedGood.provider.code
             )
             Logg.d { "--> add mark = $mark" }
             changedGood.addMark(mark)
@@ -643,10 +642,9 @@ class GoodInfoOpenViewModel : CoreViewModel() {
         good.value?.let { changedGood ->
             changedGood.isCounted = true
             val part = Part(
-                    number = lastSuccessSearchNumber.value!!,
+                    number = lastSuccessSearchNumber.value.orEmpty(),
                     material = changedGood.material,
-                    quantity = quantity.value!!,
-                    units = changedGood.convertingUnits,
+                    quantity = quantity.value ?: 0.0,
                     providerCode = changedGood.provider.code,
                     producerCode = getProducerCode(),
                     date = getDateFromString(date.value.orEmpty(), Constants.DATE_FORMAT_dd_mm_yyyy)
@@ -666,10 +664,9 @@ class GoodInfoOpenViewModel : CoreViewModel() {
                     val markFromBox = Mark(
                             number = mark.number,
                             material = changedGood.material,
-                            boxNumber = lastSuccessSearchNumber.value!!,
+                            boxNumber = lastSuccessSearchNumber.value.orEmpty(),
                             isBadMark = mark.isBadMark.isNotEmpty(),
-                            providerCode = changedGood.provider.code,
-                            producerCode = getProducerCode()
+                            providerCode = changedGood.provider.code
                     )
                     Logg.d { "--> add mark from box = $markFromBox" }
                     changedGood.addMark(markFromBox)

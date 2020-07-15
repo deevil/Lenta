@@ -56,3 +56,11 @@ fun String.addZerosToStart(targetLength: Int): String {
 
     return value
 }
+
+fun ControlType.isCommon(): Boolean {
+    return this == ControlType.COMMON
+}
+
+fun ControlType.isAlcohol(): Boolean {
+    return this == ControlType.ALCOHOL
+}
