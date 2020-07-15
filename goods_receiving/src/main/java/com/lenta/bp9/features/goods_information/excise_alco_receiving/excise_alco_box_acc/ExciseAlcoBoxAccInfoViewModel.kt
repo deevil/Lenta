@@ -248,11 +248,12 @@ class ExciseAlcoBoxAccInfoViewModel : CoreViewModel(), OnPositionClickListener {
         if (qualityInfoCode == TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_NORM) {
             totalCount != 0.0
         } else {
-            ((processExciseAlcoBoxAccService.getCountUntreatedBoxes() - totalCount.toInt() == 0) || it!!.second) && (totalCount > 0.0)
+            val someMinusValue = processExciseAlcoBoxAccService.getCountUntreatedBoxes() - totalCount.toInt()
+            (someMinusValue == 0 || it!!.second) && (totalCount > 0.0)
         }
     }
 
-    val isShowScreenNoBoxSelectionRequired: MutableLiveData<Boolean> = MutableLiveData(false)
+    private val isShowScreenNoBoxSelectionRequired: MutableLiveData<Boolean> = MutableLiveData(false)
 
     init {
         viewModelScope.launch {

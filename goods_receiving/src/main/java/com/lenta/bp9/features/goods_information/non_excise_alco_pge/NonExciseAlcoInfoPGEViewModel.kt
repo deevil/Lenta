@@ -26,6 +26,8 @@ import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import javax.inject.Inject
 
+private const val PROCESSING_UNIT_NUMBER_LENGTH = 18
+
 class NonExciseAlcoInfoPGEViewModel : CoreViewModel(), OnPositionClickListener {
 
     @Inject
@@ -157,7 +159,7 @@ class NonExciseAlcoInfoPGEViewModel : CoreViewModel(), OnPositionClickListener {
                 val bottlingDateValueNotEmpty = bottlingDate.value?.isNotEmpty() ?: false
                 val processingUnitNumberLength = enteredProcessingUnitNumber.value?.length
                 if (isGoodsAddedAsSurplus.value == true) {
-                    totalCount > 0.0 && bottlingDateValueNotEmpty && processingUnitNumberLength == 18
+                    totalCount > 0.0 && bottlingDateValueNotEmpty && processingUnitNumberLength == PROCESSING_UNIT_NUMBER_LENGTH
                 } else {
                     totalCount > 0.0 && isSelectedHeadingSpinProcessingUnit.value == false
                 }
@@ -338,8 +340,7 @@ class NonExciseAlcoInfoPGEViewModel : CoreViewModel(), OnPositionClickListener {
                     it.name == spinManufacturers.value?.get(position)
                 }?.code
 
-        val bottlingDates = batchInfo
-                .value
+        val bottlingDates = batchInfo.value?.asSequence()
                 ?.filter { batch ->
                     batch.egais == manufactureCode
                 }?.groupBy { dateGroups ->
@@ -361,13 +362,14 @@ class NonExciseAlcoInfoPGEViewModel : CoreViewModel(), OnPositionClickListener {
 
         val bottlingDate = formatterEN.format(formatterRU.parse(spinBottlingDate.value?.get(positionSpinBottlingDate)))
 
-        var listProcessingUnitNumber = batchInfo.value?.filter { batch ->
-            batch.egais == manufactureCode && batch.bottlingDate == bottlingDate
-        }?.groupBy { processingUnitNumberGroups ->
-            processingUnitNumberGroups.processingUnitNumber
-        }?.map {
-            "${context.getString(R.string.prefix_processing_unit)}${it.key}"
-        }.orEmpty()
+        var listProcessingUnitNumber = batchInfo.value?.asSequence()
+                ?.filter { batch ->
+                    batch.egais == manufactureCode && batch.bottlingDate == bottlingDate
+                }?.groupBy { processingUnitNumberGroups ->
+                    processingUnitNumberGroups.processingUnitNumber
+                }?.map {
+                    "${context.getString(R.string.prefix_processing_unit)}${it.key}"
+                }.orEmpty()
 
         if (listProcessingUnitNumber.size > 1) {
             listProcessingUnitNumber = listOf(context.getString(R.string.selected_processing_unit)).plus(listProcessingUnitNumber)

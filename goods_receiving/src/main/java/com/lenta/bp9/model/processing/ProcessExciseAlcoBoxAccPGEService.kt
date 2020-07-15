@@ -97,7 +97,10 @@ class ProcessExciseAlcoBoxAccPGEService
                         notEditNumberDiscrepancies = ""
                 )
 
-        taskManager.getReceivingTask()?.taskRepository?.getProductsDiscrepancies()?.changeProductDiscrepancy(foundDiscrepancy)
+        taskManager.getReceivingTask()
+                ?.taskRepository
+                ?.getProductsDiscrepancies()
+                ?.changeProductDiscrepancy(foundDiscrepancy)
     }
 
     fun addExciseStampDiscrepancy(exciseStamp: TaskExciseStampInfo, typeDiscrepancies: String, isScan: Boolean) {

@@ -25,12 +25,14 @@ import com.lenta.shared.requests.combined.scan_info.pojo.QualityInfo
 import com.lenta.shared.utilities.extentions.combineLatest
 import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.utilities.extentions.toStringFormatted
+import com.lenta.shared.utilities.orIfNull
 import com.lenta.shared.view.OnPositionClickListener
 import com.mobrun.plugin.api.HyperHive
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import javax.inject.Inject
 
+private const val DEFAULT_QUANTITY_INVEST = 1.0
 class ExciseAlcoBoxCardPGEViewModel : CoreViewModel(), OnPositionClickListener {
 
     @Inject
@@ -157,8 +159,10 @@ class ExciseAlcoBoxCardPGEViewModel : CoreViewModel(), OnPositionClickListener {
         //ПГЕ https://trello.com/c/iOmIb6N7
         if (boxInfo.value != null && isBoxNotIncludedInNetworkLenta.value == false) {
             processExciseAlcoBoxAccPGEService.stampControlOfBox(boxInfo.value!!)
-        } else (it
-                ?: 0) > 0 && isBoxNotIncludedInNetworkLenta.value == true //https://trello.com/c/6NyHp2jB устанавливать чек при первом добавлении марки
+        } else { //https://trello.com/c/6NyHp2jB устанавливать чек при первом добавлении марки
+            val countExciseStampsScannedValue = it ?: 0
+            countExciseStampsScannedValue > 0 && isBoxNotIncludedInNetworkLenta.value == true
+        }
     }
 
     val tvBoxTotalVal: MutableLiveData<String> = countExciseStampsScanned.map {
@@ -488,8 +492,8 @@ class ExciseAlcoBoxCardPGEViewModel : CoreViewModel(), OnPositionClickListener {
     }
 
     private fun addExciseStampDiscrepancy(scannedExciseStamp: TaskExciseStampInfo) {
-        val qualityInfoCode = qualityInfo.value?.get(spinQualitySelectedPosition.value
-                ?: 0)?.code.orEmpty()
+        val spinQualityPosition = spinQualitySelectedPosition.value ?: 0
+        val qualityInfoCode = qualityInfo.value?.getOrNull(spinQualityPosition)?.code.orEmpty()
         processExciseAlcoBoxAccPGEService.addExciseStampDiscrepancy(
                 exciseStamp = scannedExciseStamp,
                 typeDiscrepancies = qualityInfoCode,
@@ -638,7 +642,8 @@ class ExciseAlcoBoxCardPGEViewModel : CoreViewModel(), OnPositionClickListener {
     private fun convertEizToBei(): Double {
         var addNewCount = count.value?.toDouble() ?: 0.0
         if (isEizUnit.value == true) {
-            addNewCount *= productInfo.value?.quantityInvest?.toDouble() ?: 1.0
+            val quantityInvest =  productInfo.value?.quantityInvest?.toDouble() ?: DEFAULT_QUANTITY_INVEST
+            addNewCount *= quantityInvest
         }
         return addNewCount
     }
