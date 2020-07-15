@@ -4,6 +4,7 @@ import com.lenta.bp9.model.task.*
 import com.lenta.bp9.platform.TypeDiscrepanciesConstants
 import com.lenta.shared.di.AppScope
 import com.lenta.shared.models.core.ProductType
+import com.lenta.shared.utilities.extentions.removeItemFromListWithPredicate
 import javax.inject.Inject
 
 @AppScope
@@ -119,12 +120,8 @@ class ProcessExciseAlcoBoxAccPGEService
                         isUnknown = false
                 )
 
-        currentExciseStampsDiscrepancies.map { it }.filter { unitInfo ->
-            if (unitInfo.code == exciseStamp.code) {
-                currentExciseStampsDiscrepancies.remove(unitInfo)
-                return@filter true
-            }
-            return@filter false
+        currentExciseStampsDiscrepancies.removeItemFromListWithPredicate {stamp ->
+            stamp.code == exciseStamp.code
         }
 
         currentExciseStampsDiscrepancies.add(foundExciseStampDiscrepancy)

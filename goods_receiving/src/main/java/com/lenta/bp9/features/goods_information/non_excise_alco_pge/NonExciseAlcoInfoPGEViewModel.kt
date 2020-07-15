@@ -18,7 +18,6 @@ import com.lenta.shared.models.core.Manufacturer
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.requests.combined.scan_info.ScanInfoResult
 import com.lenta.shared.requests.combined.scan_info.pojo.QualityInfo
-import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.extentions.combineLatest
 import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.utilities.extentions.toStringFormatted
@@ -71,7 +70,7 @@ class NonExciseAlcoInfoPGEViewModel : CoreViewModel(), OnPositionClickListener {
     private val isSelectedHeadingSpinProcessingUnit: MutableLiveData<Boolean> = MutableLiveData(false)
     val enteredProcessingUnitNumber: MutableLiveData<String> = MutableLiveData("")
     val isGoodsAddedAsSurplus: MutableLiveData<Boolean> by lazy { //https://trello.com/c/WQg659Ww
-        MutableLiveData(productInfo.value?.isGoodsAddedAsSurplus == true )
+        MutableLiveData(productInfo.value?.isGoodsAddedAsSurplus == true)
     }
 
     @SuppressLint("SimpleDateFormat")
@@ -86,25 +85,25 @@ class NonExciseAlcoInfoPGEViewModel : CoreViewModel(), OnPositionClickListener {
     val acceptTotalCount: MutableLiveData<Double> = countValue.combineLatest(spinQualitySelectedPosition).combineLatest(spinManufacturersSelectedPosition).map {
         if (qualityInfo.value?.get(it!!.first.second)?.code == "1") {
             (it?.first?.first ?: 0.0).plus(
-                    batchInfo.value?.map {batch ->
+                    batchInfo.value?.map { batch ->
                         taskManager.getReceivingTask()?.taskRepository?.getBatchesDiscrepancies()?.getCountAcceptOfBatchPGE(batch)
-                    }?.sumByDouble {count ->
+                    }?.sumByDouble { count ->
                         count ?: 0.0
                     } ?: 0.0
             )
         } else {
-            batchInfo.value?.map {batch ->
+            batchInfo.value?.map { batch ->
                 taskManager.getReceivingTask()?.taskRepository?.getBatchesDiscrepancies()?.getCountAcceptOfBatchPGE(batch)
-            }?.sumByDouble {count ->
+            }?.sumByDouble { count ->
                 count ?: 0.0
             } ?: 0.0
         }
     }
 
     val acceptTotalCountWithUom: MutableLiveData<String> = acceptTotalCount.map {
-        val countAccept = batchInfo.value?.map {batch ->
+        val countAccept = batchInfo.value?.map { batch ->
             taskManager.getReceivingTask()?.taskRepository?.getBatchesDiscrepancies()?.getCountAcceptOfBatchPGE(batch)
-        }?.sumByDouble {count ->
+        }?.sumByDouble { count ->
             count ?: 0.0
         } ?: 0.0
         when {
@@ -120,25 +119,25 @@ class NonExciseAlcoInfoPGEViewModel : CoreViewModel(), OnPositionClickListener {
     val refusalTotalCount: MutableLiveData<Double> = countValue.combineLatest(spinQualitySelectedPosition).combineLatest(spinManufacturersSelectedPosition).map {
         if (qualityInfo.value?.get(it?.first?.second ?: 0)?.code != "1") {
             (it?.first?.first ?: 0.0).plus(
-                    batchInfo.value?.map {batch ->
+                    batchInfo.value?.map { batch ->
                         taskManager.getReceivingTask()?.taskRepository?.getBatchesDiscrepancies()?.getCountRefusalOfBatchPGE(batch)
-                    }?.sumByDouble {count ->
+                    }?.sumByDouble { count ->
                         count ?: 0.0
                     } ?: 0.0
             )
         } else {
-            batchInfo.value?.map {batch ->
+            batchInfo.value?.map { batch ->
                 taskManager.getReceivingTask()?.taskRepository?.getBatchesDiscrepancies()?.getCountRefusalOfBatchPGE(batch)
-            }?.sumByDouble {count ->
+            }?.sumByDouble { count ->
                 count ?: 0.0
             } ?: 0.0
         }
     }
 
     val refusalTotalCountWithUom: MutableLiveData<String> = refusalTotalCount.map {
-        val countRefusal = batchInfo.value?.map {batch ->
+        val countRefusal = batchInfo.value?.map { batch ->
             taskManager.getReceivingTask()?.taskRepository?.getBatchesDiscrepancies()?.getCountRefusalOfBatchPGE(batch)
-        }?.sumByDouble {count ->
+        }?.sumByDouble { count ->
             count ?: 0.0
         } ?: 0.0
 
@@ -154,9 +153,9 @@ class NonExciseAlcoInfoPGEViewModel : CoreViewModel(), OnPositionClickListener {
             .combineLatest(enteredProcessingUnitNumber)
             .combineLatest(isSelectedHeadingSpinProcessingUnit)
             .map {
-                val totalCount = it?.first?.first?.first ?: 0.0
-                val bottlingDateValueNotEmpty = it?.first?.first?.second?.isNotEmpty() ?: false
-                val processingUnitNumberLength = it?.first?.second?.length
+                val totalCount = countValue.value ?: 0.0
+                val bottlingDateValueNotEmpty = bottlingDate.value?.isNotEmpty() ?: false
+                val processingUnitNumberLength = enteredProcessingUnitNumber.value?.length
                 if (isGoodsAddedAsSurplus.value == true) {
                     totalCount > 0.0 && bottlingDateValueNotEmpty && processingUnitNumberLength == 18
                 } else {
@@ -191,8 +190,8 @@ class NonExciseAlcoInfoPGEViewModel : CoreViewModel(), OnPositionClickListener {
                     }
 
                     qualityInfo.value = dataBase.getQualityInfoPGEForDiscrepancy()
-                    qualityInfo.value?.let {quality ->
-                        spinQualitySelectedPosition.value = quality.indexOfLast {it.code == TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_PGE_UNDERLOAD}
+                    qualityInfo.value?.let { quality ->
+                        spinQualitySelectedPosition.value = quality.indexOfLast { it.code == TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_PGE_UNDERLOAD }
                     }
                 }
                 else -> qualityInfo.value = dataBase.getQualityInfoPGENotSurplus()
@@ -240,15 +239,17 @@ class NonExciseAlcoInfoPGEViewModel : CoreViewModel(), OnPositionClickListener {
         val totalCount = count.value.orEmpty()
         val prefixProcessingUnitLength = context.getString(R.string.prefix_processing_unit).length
         val spinProcessingUnitSelectedPositionValue = spinProcessingUnitSelectedPosition.value ?: 0
-        val qualityInfoCode = qualityInfo.value?.get(spinQualitySelectedPosition.value ?: 0)?.code.orEmpty()
+        val qualityInfoCode = qualityInfo.value?.get(spinQualitySelectedPosition.value
+                ?: 0)?.code.orEmpty()
         val manufactureCode = manufacturer.value?.findLast {
             it.name == spinManufacturers.value?.get(spinManufacturersSelectedPosition.value ?: 0)
         }?.code
-        val selectedBottlingDate = spinBottlingDate.value?.get(spinBottlingDateSelectedPosition.value ?: 0).orEmpty()
+        val selectedBottlingDate = spinBottlingDate.value?.get(spinBottlingDateSelectedPosition.value
+                ?: 0).orEmpty()
         val selectedProcessingUnitNumber = spinProcessingUnit.value?.get(spinProcessingUnitSelectedPositionValue)?.substring(prefixProcessingUnitLength).orEmpty()
         val batchSelected = batchInfo
                 .value
-                ?.findLast {batch ->
+                ?.findLast { batch ->
                     batch.egais == manufactureCode
                             && batch.bottlingDate == formatterEN.format(formatterRU.parse(selectedBottlingDate))
                             && batch.processingUnitNumber == selectedProcessingUnitNumber
@@ -263,7 +264,11 @@ class NonExciseAlcoInfoPGEViewModel : CoreViewModel(), OnPositionClickListener {
             count.value = "0"
             true
         } else {
-            if (batchSelected != null && totalCount.isNotEmpty() && qualityInfoCode.isNotEmpty() && selectedProcessingUnitNumber.isNotEmpty()) {
+            if (batchSelected != null
+                    && totalCount.isNotEmpty()
+                    && qualityInfoCode.isNotEmpty()
+                    && selectedProcessingUnitNumber.isNotEmpty()
+            ) {
                 if (processNonExciseAlcoProductPGEService.overLimit(totalCount.toDouble(), batchSelected)) {
                     screenNavigator.openExceededPlannedQuantityBatchPGEDialog(
                             nextCallbackFunc = {
@@ -335,9 +340,9 @@ class NonExciseAlcoInfoPGEViewModel : CoreViewModel(), OnPositionClickListener {
 
         val bottlingDates = batchInfo
                 .value
-                ?.filter {batch ->
+                ?.filter { batch ->
                     batch.egais == manufactureCode
-                }?.groupBy {dateGroups  ->
+                }?.groupBy { dateGroups ->
                     formatterRU.format(formatterEN.parse(dateGroups.bottlingDate))
                 }?.map {
                     it.key
@@ -345,7 +350,8 @@ class NonExciseAlcoInfoPGEViewModel : CoreViewModel(), OnPositionClickListener {
         spinBottlingDateSelectedPosition.value = 0
         spinBottlingDate.value = bottlingDates
 
-        if (isGoodsAddedAsSurplus.value == false) updateDataSpinProcessingUnit(spinBottlingDateSelectedPosition.value ?: 0)
+        if (isGoodsAddedAsSurplus.value == false) updateDataSpinProcessingUnit(spinBottlingDateSelectedPosition.value
+                ?: 0)
     }
 
     private fun updateDataSpinProcessingUnit(positionSpinBottlingDate: Int) {
@@ -355,15 +361,14 @@ class NonExciseAlcoInfoPGEViewModel : CoreViewModel(), OnPositionClickListener {
 
         val bottlingDate = formatterEN.format(formatterRU.parse(spinBottlingDate.value?.get(positionSpinBottlingDate)))
 
-        var listProcessingUnitNumber = batchInfo
-                .value
-                ?.filter {batch ->
-                    batch.egais == manufactureCode && batch.bottlingDate == bottlingDate
-                }?.groupBy {processingUnitNumberGroups ->
-                    processingUnitNumberGroups.processingUnitNumber
-                }?.map {
-                    "${context.getString(R.string.prefix_processing_unit)}${ it.key}"
-                }.orEmpty()
+        var listProcessingUnitNumber = batchInfo.value?.filter { batch ->
+            batch.egais == manufactureCode && batch.bottlingDate == bottlingDate
+        }?.groupBy { processingUnitNumberGroups ->
+            processingUnitNumberGroups.processingUnitNumber
+        }?.map {
+            "${context.getString(R.string.prefix_processing_unit)}${it.key}"
+        }.orEmpty()
+
         if (listProcessingUnitNumber.size > 1) {
             listProcessingUnitNumber = listOf(context.getString(R.string.selected_processing_unit)).plus(listProcessingUnitNumber)
             indexSpinProcessingUnit.value = 1
@@ -375,15 +380,13 @@ class NonExciseAlcoInfoPGEViewModel : CoreViewModel(), OnPositionClickListener {
 
     private fun setPlanQuantityBatch(position: Int) {
         isSelectedHeadingSpinProcessingUnit.value = (indexSpinProcessingUnit.value ?: 0 > 0) && position == 0
-        batchInfo
-                .value
-                ?.let {batch ->
-                    if (isSelectedHeadingSpinProcessingUnit.value == true) {
-                        planQuantityBatch.value = ""
-                    } else {
-                        planQuantityBatch.value = "${batch[position - 1].purchaseOrderScope.toStringFormatted()} ${productInfo.value?.uom?.name.orEmpty()}"
-                    }
-                }
+        batchInfo.value?.let { batch ->
+            if (isSelectedHeadingSpinProcessingUnit.value == true) {
+                planQuantityBatch.value = ""
+            } else {
+                planQuantityBatch.value = "${batch[position - 1].purchaseOrderScope.toStringFormatted()} ${productInfo.value?.uom?.name.orEmpty()}"
+            }
+        }
     }
 
     fun onBackPressed() {
