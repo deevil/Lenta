@@ -8,5 +8,4 @@ data class Raw(
         val name: String,
         val planned: Double,
         val isWasDef: Boolean
-) {
-}
+)

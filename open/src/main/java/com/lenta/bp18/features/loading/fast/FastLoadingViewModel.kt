@@ -40,16 +40,16 @@ class FastLoadingViewModel : CoreLoadingViewModel() {
     override fun handleFailure(failure: Failure) {
         navigator.openAuthScreen()
         navigator.openAlertScreen(failureInterpreter.getFailureDescription(failure).message)
-        progress.postValue(false)
+        progress.value = false
     }
 
     private fun handleSuccess(@Suppress("UNUSED_PARAMETER") b: Boolean) {
-        progress.postValue(false)
+        progress.value = false
         navigator.openSelectMarketScreen()
     }
 
     override fun clean() {
-        progress.postValue(false)
+        progress.value = false
     }
 
 }

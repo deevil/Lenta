@@ -1,11 +1,8 @@
 package com.lenta.bp18.features.select_market
 
-import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import app_update.AppUpdateInstaller
-import com.google.gson.Gson
-import com.lenta.bp18.model.pojo.MarketUI
 import com.lenta.bp18.platform.navigation.IScreenNavigator
 import com.lenta.bp18.repository.IDatabaseRepo
 import com.lenta.bp18.repository.IRepoInMemoryHolder
@@ -25,7 +22,6 @@ import com.lenta.shared.settings.IAppSettings
 import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.view.OnPositionClickListener
-import com.mobrun.plugin.api.HyperHive
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -107,35 +103,39 @@ class SelectMarketViewModel : CoreViewModel(), OnPositionClickListener {
     fun onClickNext() {
         viewModelScope.launch {
             navigator.showProgressLoadingData()
-            markets.value?.getOrNull(selectedPosition.value ?: -1)?.number?.let { tkNumber ->
-                if (appSettings.lastTK != tkNumber) {
-                    clearPrinters()
-                }
-                sessionInfo.market = tkNumber
-                appSettings.lastTK = tkNumber
+            markets.value
+                    ?.getOrNull(selectedPosition.value ?: -1)?.number
+                    ?.let { tkNumber ->
+                        if (appSettings.lastTK != tkNumber) {
+                            clearPrinters()
+                        }
+                        sessionInfo.market = tkNumber
+                        appSettings.lastTK = tkNumber
 
-                withContext(Dispatchers.IO) {
-                    database.getAllMarkets().find { it.number == sessionInfo.market }.let { market ->
-                        val codeVersion = market?.version?.toIntOrNull()
-                        Logg.d { "codeVersion for update: $codeVersion" }
-                        if (codeVersion == null) {
-                            Either.Right("")
-                        } else {
-                            appUpdateInstaller.checkNeedAndHaveUpdate(codeVersion)
+                        withContext(Dispatchers.IO) {
+                            database.getAllMarkets()
+                                    .find { it.number == sessionInfo.market }
+                                    .let { market ->
+                                        val codeVersion = market?.version?.toIntOrNull()
+                                        Logg.d { "codeVersion for update: $codeVersion" }
+                                        if (codeVersion == null) {
+                                            Either.Right("")
+                                        } else {
+                                            appUpdateInstaller.checkNeedAndHaveUpdate(codeVersion)
+                                        }
+                                    }
+                        }.either({
+                            Logg.e { "checkNeedAndHaveUpdate failure: $it" }
+                            handleFailure(failure = it)
+                        }) { updateFileName ->
+                            Logg.d { "update fileName: $updateFileName" }
+                            if (updateFileName.isBlank()) {
+                                getServerTime()
+                            } else {
+                                installUpdate(updateFileName)
+                            }
                         }
                     }
-                }.either({
-                    Logg.e { "checkNeedAndHaveUpdate failure: $it" }
-                    handleFailure(failure = it)
-                }) { updateFileName ->
-                    Logg.d { "update fileName: $updateFileName" }
-                    if (updateFileName.isBlank()) {
-                        getServerTime()
-                    } else {
-                        installUpdate(updateFileName)
-                    }
-                }
-            }
         }
     }
 

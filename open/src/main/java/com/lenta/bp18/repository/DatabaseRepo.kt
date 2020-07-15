@@ -30,15 +30,12 @@ class DatabaseRepo(
 
     override suspend fun getGoodInfoByEan(ean: String): GoodInfo? {
         return withContext(Dispatchers.IO) {
-            val eanInfo = getEanInfoByEan(ean)
-            if (eanInfo == null) {
-                return@withContext null
-            } else {
-                val productInfo = getProductInfoByMaterial(eanInfo.materialNumber)
+            getEanInfoByEan(ean)?.run {
+                val productInfo = getProductInfoByMaterial(this.materialNumber)
                 val unitName = getGoodUnitName(productInfo?.buom)
                 return@withContext GoodInfo(
                         ean = ean,
-                        material = eanInfo.materialNumber,
+                        material = this.materialNumber,
                         matcode = productInfo?.matcode.orEmpty(),
                         enteredCode = EnteredCode.EAN,
                         name = productInfo?.name.orEmpty(),
@@ -51,41 +48,36 @@ class DatabaseRepo(
 
     override suspend fun getGoodInfoByMaterial(material: String): GoodInfo? {
         return withContext(Dispatchers.IO) {
-            val productInfo = getProductInfoByMaterial(material)
-            if (productInfo == null) {
-                return@withContext null
-            } else {
-                val eanInfo = getEanInfoByMaterial(productInfo.material)
-                val unitName = getGoodUnitName(productInfo.buom)
+            getProductInfoByMaterial(material)?.run {
+                val eanInfo = getEanInfoByMaterial(this.material)
+                val unitName = getGoodUnitName(this.buom)
                 return@withContext GoodInfo(
                         ean = eanInfo?.ean.orEmpty(),
                         material = material,
-                        matcode = productInfo.matcode,
+                        matcode = this.matcode,
                         enteredCode = EnteredCode.MATERIAL,
-                        name = productInfo.name,
+                        name = this.name,
                         uom = Uom(
-                                code = productInfo.buom,
+                                code = this.buom,
                                 name = unitName.orEmpty()))
             }
+
         }
     }
 
     override suspend fun getGoodInfoByMatcode(matcode: String): GoodInfo? {
         return withContext(Dispatchers.IO) {
-            val productInfo = getProductInfoByMatcode(matcode)
-            if (productInfo == null) {
-                return@withContext null
-            } else {
-                val eanInfo = getEanInfoByMaterial(productInfo.material)
-                val unitName = getGoodUnitName(productInfo.buom)
+            getProductInfoByMatcode(matcode)?.run {
+                val eanInfo = getEanInfoByMaterial(this.material)
+                val unitName = getGoodUnitName(this.buom)
                 return@withContext GoodInfo(
                         ean = eanInfo?.ean.orEmpty(),
-                        material = productInfo.material,
+                        material = this.material,
                         matcode = matcode,
                         enteredCode = EnteredCode.MATCODE,
-                        name = productInfo.name,
+                        name = this.name,
                         uom = Uom(
-                                code = productInfo.buom,
+                                code = this.buom,
                                 name = unitName.orEmpty()))
             }
         }
@@ -133,8 +125,8 @@ class DatabaseRepo(
             return@withContext stores.getAllMarkets().toMarketInfoList()
         }
     }
-
 }
+
 
 interface IDatabaseRepo {
     suspend fun getRetailType(marketNumber: String?): String?

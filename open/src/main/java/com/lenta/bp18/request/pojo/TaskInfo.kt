@@ -34,14 +34,3 @@ data class TaskInfo(
         @SerializedName("TEXT3")
         var text3: String
 )
-
-
-
-
-
-
-
-
-
-
-

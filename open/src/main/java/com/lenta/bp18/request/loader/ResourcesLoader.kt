@@ -13,8 +13,9 @@ class ResourcesLoader(val slowResourcesNetRequest: SlowResourcesMultiRequest) {
     val slowResourcesLoadingStatus = MutableLiveData<LoadStatus>(NotInit)
 
     fun startLoadSlowResources() {
-        slowResourcesLoadingStatus.value.let {
+        val loadingStatusValue = slowResourcesLoadingStatus.value.let {
             if (it is NotInit || it is Loaded) {
+                //TODO Избавиться от GlobalScope
                 GlobalScope.launch {
                     slowResourcesNetRequest(slowResourcesLoadingStatus)
                 }

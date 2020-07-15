@@ -2,11 +2,9 @@ package com.lenta.bp18.platform
 
 object Constants {
 
-    const val USER_200 = "USER200"
-    const val PASSWORD = "987654321"
-
-    const val TEST_LOGIN = "MAKAROV"
-    const val TEST_PASSWORD = "1q2w3e4r"
+    const val GOOD_INFO_MATERIAL = "000000000000000000"
+    const val GOOD_INFO_MATCODE = "000000000000"
+    const val GOOD_INFO_NAME = "<НЕ ОПРЕДЕЛЕН>"
 
     const val APP_FOLDER_NAME = "bp18"
 
@@ -28,6 +26,4 @@ object Constants {
     const val SELECT_OPER_MODE_FRAGMENT = "54"
     const val TECH_LOGIN_FRAGMENT = "55"
     const val PINCODE_FRAGMENT = "56"
-
-
 }

@@ -13,7 +13,7 @@ import io.fabric.sdk.android.Fabric
 
 class MainActivity : CoreMainActivity() {
 
-    private var mainViewModel: MainViewModel? = null
+    var mainViewModel: MainViewModel? = null
     private val numberScreenGenerator = NumberScreenGenerator()
 
     val appComponent: AppComponent by lazy {
@@ -53,10 +53,6 @@ class MainActivity : CoreMainActivity() {
 
     override fun getPrefixScreen(fragment: CoreFragment<*, *>): String {
         return numberScreenGenerator.getPrefixScreen(fragment)
-    }
-
-    override fun getAdditionalListOfRequiredPermissions(): List<String> {
-        return emptyList()
     }
 
     override fun provideFromParentToCoreProvider(): FromParentToCoreProvider? {

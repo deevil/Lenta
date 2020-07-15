@@ -1,5 +1,6 @@
 package com.lenta.bp18.data.model
 
+import com.lenta.bp18.platform.Constants
 import com.lenta.shared.models.core.Uom
 
 data class Good(
@@ -12,36 +13,14 @@ data class Good(
         var facings: Int = 0,
         val uom: Uom = Uom.DEFAULT,
         private var status: GoodStatus = GoodStatus.CREATED
-) {
-
-    fun setStatus(status: GoodStatus) {
-        this.status = status
-    }
-
-    fun getStatus(): GoodStatus {
-        return status
-    }
-
-    fun getFormattedMaterial(): String? {
-        return material?.takeLast(6)
-    }
-
-    fun getFacingOrPlus(): String? {
-        return if ((status == GoodStatus.CREATED || status == GoodStatus.PROCESSED) && facings == 0) "+" else facings.toString()
-    }
-
-    fun getEanOrEmpty(): String {
-        return if (enteredCode == EnteredCode.EAN) ean.orEmpty() else ""
-    }
-
-}
+)
 
 data class GoodInfo(
         val ean: String,
-        val material: String = "000000000000000000",
-        val matcode: String = "000000000000",
+        val material: String = Constants.GOOD_INFO_MATERIAL,
+        val matcode: String = Constants.GOOD_INFO_MATCODE,
         val enteredCode: EnteredCode,
-        val name: String = "<НЕ ОПРЕДЕЛЕН>",
+        val name: String = Constants.GOOD_INFO_NAME,
         val uom: Uom = Uom.DEFAULT
 )
 

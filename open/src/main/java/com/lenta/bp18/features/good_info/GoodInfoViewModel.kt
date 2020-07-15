@@ -2,7 +2,6 @@ package com.lenta.bp18.features.good_info
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import com.lenta.bp18.model.ITaskManager
 import com.lenta.bp18.platform.navigation.IScreenNavigator
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.extentions.map
@@ -13,17 +12,6 @@ class GoodInfoViewModel : CoreViewModel() {
 
     @Inject
     lateinit var navigator: IScreenNavigator
-
-/*    @Inject
-    lateinit var manager: ITaskManager
-
-    val good by lazy {
-        manager.currentGood
-    }
-
-    val title by lazy {
-        good.map { it?.getNameWithMaterial() }
-    }*/
 
     val deviceIp = MutableLiveData("")
 
