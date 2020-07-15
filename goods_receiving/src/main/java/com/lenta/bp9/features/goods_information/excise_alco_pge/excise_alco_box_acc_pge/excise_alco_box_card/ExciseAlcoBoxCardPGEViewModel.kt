@@ -224,14 +224,14 @@ class ExciseAlcoBoxCardPGEViewModel : CoreViewModel(), OnPositionClickListener {
 
     init {
         viewModelScope.launch {
-            count.value = processExciseAlcoBoxAccPGEService.getInitialCount().toStringFormatted()
+            count.value = COUNT_BOXES_DEFAULT
             suffix.value = productInfo.value?.purchaseOrderUnits?.name
 
             if (isBoxNotIncludedInNetworkLenta.value == true) { //https://trello.com/c/6NyHp2jB
                 qualityInfo.value = dataBase.getSurplusInfoForPGE()
                 onClickUnitChange() //вызываем, чтобы Отображать пиктограмму «БЕИ».
                 visibilityImgUnit.value = false //Кнопка недоступна для нажатия.
-                count.value = processExciseAlcoBoxAccPGEService.getInitialCount().toStringFormatted() //при вызове onClickUnitChange() подставится 0, поэтому обновляем эту переменную здессь
+                count.value = COUNT_BOXES_DEFAULT //при вызове onClickUnitChange() подставится 0, поэтому обновляем эту переменную здессь
             } else {
                 qualityInfo.value = dataBase.getQualityInfoPGENotSurplusNotUnderload()
             }
@@ -308,32 +308,19 @@ class ExciseAlcoBoxCardPGEViewModel : CoreViewModel(), OnPositionClickListener {
         val isScanValue = isScan.value
         if (qualityInfoCode != null && isScanValue != null) {
             //массовая обработка коробов, по постановке задачи может быть только для брака, можем сюда попасть только с экрана Список коробов ExciseAlcoBoxListFragment
-            val boxesNumberValue = massProcessingBoxesNumber.value
-            if (boxesNumberValue != null) {
-                boxesNumberValue.map { boxNumber ->
-                    processExciseAlcoBoxAccPGEService.searchBox(boxNumber)?.let { box ->
-                        processExciseAlcoBoxAccPGEService.applyBoxCard(
-                                box = box,
-                                typeDiscrepancies = qualityInfoCode,
-                                isScan = isScanValue
-                        )
-                    }
+            massProcessingBoxesNumber.value?.map { boxNumber ->
+                processExciseAlcoBoxAccPGEService.searchBox(boxNumber)?.let { box ->
+                    processExciseAlcoBoxAccPGEService.addBoxDiscrepancy(
+                            boxNumber = box.boxNumber,
+                            typeDiscrepancies = qualityInfoCode,
+                            isScan = isScanValue
+                    )
                 }
-                return
-            }
-
-            //обработка одной коробки
-            boxInfo.value?.let { box ->
-                processExciseAlcoBoxAccPGEService.applyBoxCard(
-                        box = box,
-                        typeDiscrepancies = qualityInfoCode,
-                        isScan = isScanValue
-                )
-                //обнуляем кол-во отсканированных марок в текущей сессии
-                countExciseStampsScanned.value = 0
             }
         }
-
+        processExciseAlcoBoxAccPGEService.applyBoxCard()
+        //обнуляем кол-во отсканированных марок в текущей сессии
+        countExciseStampsScanned.value = 0
     }
 
     fun onClickApply() {
@@ -470,17 +457,17 @@ class ExciseAlcoBoxCardPGEViewModel : CoreViewModel(), OnPositionClickListener {
                                         materialName = zfmpUtz48V001.getProductInfoByMaterial(boxInfo.materialNumber)?.name.orEmpty()
                                 )
                             } else {
-                                isScan.value = true
-                                onClickApply()
-                                screenNavigator.openExciseAlcoBoxCardPGEScreen(
-                                        productInfo = productInfo.value!!,
-                                        boxInfo = boxInfo,
-                                        massProcessingBoxesNumber = null,
-                                        exciseStampInfo = null,
-                                        selectQualityCode = selectQualityCode.value.orEmpty(),
-                                        isScan = true,
-                                        isBoxNotIncludedInNetworkLenta = false
-                                )
+                                spinQualitySelectedPosition.value?.let { position ->
+                                    qualityInfo.value?.get(position)?.code
+                                }?.let {typeDiscrepancies ->
+                                    processExciseAlcoBoxAccPGEService.addBoxDiscrepancy(
+                                            boxNumber = boxInfo.boxNumber,
+                                            typeDiscrepancies = typeDiscrepancies,
+                                            isScan = true
+                                    )
+                                    //обновляем кол-во отсканированных марок для отображения на экране
+                                    countExciseStampsScanned.value = countExciseStampsScanned.value
+                                }
                             }
                         }
                     }
@@ -612,7 +599,7 @@ class ExciseAlcoBoxCardPGEViewModel : CoreViewModel(), OnPositionClickListener {
                             modifications.value = true
                             isEizUnit.value = !isEizUnit.value!!
                             if (isEizUnit.value!!) {
-                                count.value = "1"
+                                count.value = COUNT_BOXES_DEFAULT
                                 suffix.value = productInfo.value?.purchaseOrderUnits?.name.orEmpty()
                             } else {
                                 count.value = "0"
@@ -628,7 +615,7 @@ class ExciseAlcoBoxCardPGEViewModel : CoreViewModel(), OnPositionClickListener {
                 modifications.value = true
                 isEizUnit.value = !isEizUnit.value!!
                 if (isEizUnit.value!!) {
-                    count.value = "1"
+                    count.value = COUNT_BOXES_DEFAULT
                     suffix.value = productInfo.value?.purchaseOrderUnits?.name
                 } else {
                     count.value = "0"
@@ -667,5 +654,6 @@ class ExciseAlcoBoxCardPGEViewModel : CoreViewModel(), OnPositionClickListener {
 
     companion object {
         private const val DEFAULT_QUANTITY_INVEST = 1.0
+        private const val COUNT_BOXES_DEFAULT = "1"
     }
 }
