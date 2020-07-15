@@ -381,13 +381,14 @@ class NonExciseAlcoInfoPGEViewModel : CoreViewModel(), OnPositionClickListener {
     }
 
     private fun setPlanQuantityBatch(position: Int) {
-        isSelectedHeadingSpinProcessingUnit.value = (indexSpinProcessingUnit.value ?: 0 > 0) && position == 0
+        val indexSpinValue = indexSpinProcessingUnit.value ?: 0
+        isSelectedHeadingSpinProcessingUnit.value = indexSpinValue > 0 && position == 0
         batchInfo.value?.let { batch ->
-            if (isSelectedHeadingSpinProcessingUnit.value == true) {
-                planQuantityBatch.value = ""
-            } else {
-                planQuantityBatch.value = "${batch[position - 1].purchaseOrderScope.toStringFormatted()} ${productInfo.value?.uom?.name.orEmpty()}"
-            }
+            planQuantityBatch.value = isSelectedHeadingSpinProcessingUnit.value
+                    ?.takeIf { !it }
+                    ?.run {
+                        "${batch[position - 1].purchaseOrderScope.toStringFormatted()} ${productInfo.value?.uom?.name.orEmpty()}"
+                    }.orEmpty()
         }
     }
 

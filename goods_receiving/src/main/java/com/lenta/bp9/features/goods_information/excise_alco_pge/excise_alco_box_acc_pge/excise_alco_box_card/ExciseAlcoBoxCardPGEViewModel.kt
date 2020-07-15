@@ -32,7 +32,6 @@ import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import javax.inject.Inject
 
-private const val DEFAULT_QUANTITY_INVEST = 1.0
 class ExciseAlcoBoxCardPGEViewModel : CoreViewModel(), OnPositionClickListener {
 
     @Inject
@@ -664,5 +663,9 @@ class ExciseAlcoBoxCardPGEViewModel : CoreViewModel(), OnPositionClickListener {
         }
 
         screenNavigator.goBack()
+    }
+
+    companion object {
+        private const val DEFAULT_QUANTITY_INVEST = 1.0
     }
 }

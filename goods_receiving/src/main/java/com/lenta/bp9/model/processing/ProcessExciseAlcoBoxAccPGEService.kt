@@ -66,13 +66,19 @@ class ProcessExciseAlcoBoxAccPGEService
 
         if (currentExciseStampsDiscrepancies.isNotEmpty()) {
             currentExciseStampsDiscrepancies.map {
-                taskManager.getReceivingTask()?.taskRepository?.getExciseStampsDiscrepancies()?.changeExciseStampDiscrepancy(it)
+                taskManager.getReceivingTask()
+                        ?.taskRepository
+                        ?.getExciseStampsDiscrepancies()
+                        ?.changeExciseStampDiscrepancy(it)
             }
         }
 
         if (currentExciseStampsBad.isNotEmpty()) {
             currentExciseStampsBad.map {
-                taskManager.getReceivingTask()?.taskRepository?.getExciseStampsBad()?.changeExciseStampBad(it)
+                taskManager.getReceivingTask()
+                        ?.taskRepository
+                        ?.getExciseStampsBad()
+                        ?.changeExciseStampBad(it)
             }
         }
     }
@@ -123,7 +129,7 @@ class ProcessExciseAlcoBoxAccPGEService
                         isUnknown = false
                 )
 
-        currentExciseStampsDiscrepancies.removeItemFromListWithPredicate {stamp ->
+        currentExciseStampsDiscrepancies.removeItemFromListWithPredicate { stamp ->
             stamp.code == exciseStamp.code
         }
 
@@ -265,27 +271,45 @@ class ProcessExciseAlcoBoxAccPGEService
     }
 
     private fun getCountOfDiscrepanciesOfProduct(typeDiscrepancies: String): Double {
-        return taskManager.getReceivingTask()!!.taskRepository.getProductsDiscrepancies().findProductDiscrepanciesOfProduct(productInfo).filter { productDiscrepancies ->
-            productDiscrepancies.typeDiscrepancies == typeDiscrepancies
-        }.sumByDouble {
-            it.numberDiscrepancies.toDouble()
-        }
+        return taskManager.getReceivingTask()
+                ?.taskRepository
+                ?.getProductsDiscrepancies()
+                ?.findProductDiscrepanciesOfProduct(productInfo)
+                ?.filter { productDiscrepancies ->
+                    productDiscrepancies.typeDiscrepancies == typeDiscrepancies
+                }?.sumByDouble {
+                    it.numberDiscrepancies.toDouble()
+                }
+                ?: 0.0
     }
 
     fun getCountAcceptOfProduct(): Double {
-        return taskManager.getReceivingTask()!!.taskRepository.getProductsDiscrepancies().findProductDiscrepanciesOfProduct(productInfo).filter { productDiscrepancies ->
-            productDiscrepancies.typeDiscrepancies == "1" || productDiscrepancies.typeDiscrepancies == "2"
-        }.sumByDouble {
-            it.numberDiscrepancies.toDouble()
-        }
+        return taskManager.getReceivingTask()
+                ?.taskRepository
+                ?.getProductsDiscrepancies()
+                ?.findProductDiscrepanciesOfProduct(productInfo)
+                ?.filter { productDiscrepancies ->
+                    productDiscrepancies.typeDiscrepancies == TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_NORM
+                            || productDiscrepancies.typeDiscrepancies == TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_SURPLUS
+                }?.sumByDouble {
+                    it.numberDiscrepancies.toDouble()
+                }
+                ?: 0.0
     }
 
     fun getCountRefusalOfProduct(): Double {
-        return taskManager.getReceivingTask()!!.taskRepository.getProductsDiscrepancies().findProductDiscrepanciesOfProduct(productInfo).filter { productDiscrepancies ->
-            productDiscrepancies.typeDiscrepancies == "3" || productDiscrepancies.typeDiscrepancies == "4" || productDiscrepancies.typeDiscrepancies == "5"
-        }.sumByDouble {
-            it.numberDiscrepancies.toDouble()
-        }
+        return taskManager.getReceivingTask()
+                ?.taskRepository
+                ?.getProductsDiscrepancies()
+                ?.findProductDiscrepanciesOfProduct(productInfo)
+                ?.filter { productDiscrepancies ->
+                    productDiscrepancies.typeDiscrepancies == TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_PGE_UNDERLOAD
+                            || productDiscrepancies.typeDiscrepancies == TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_PGE_MARRIAGE_SHIPMENT
+                            || productDiscrepancies.typeDiscrepancies == TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_PGE_WAREHOUSE_MARRIAGE
+                }?.sumByDouble {
+                    it.numberDiscrepancies.toDouble()
+                }
+                ?: 0.0
     }
 
     fun getCountExciseStampDiscrepanciesOfBox(boxNumber: String): Int {
@@ -364,7 +388,8 @@ class ProcessExciseAlcoBoxAccPGEService
 
     fun defectiveBox(boxNumber: String): Boolean {
         return currentBoxDiscrepancies.none {
-            it.boxNumber == boxNumber && (it.typeDiscrepancies == "1" || it.typeDiscrepancies == "2")
+            it.boxNumber == boxNumber
+                    && (it.typeDiscrepancies == TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_NORM || it.typeDiscrepancies == TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_SURPLUS)
         }
     }
 
@@ -377,11 +402,14 @@ class ProcessExciseAlcoBoxAccPGEService
             return@filter false
         }
 
-        taskManager.getReceivingTask()?.taskRepository?.getExciseStampsDiscrepancies()?.deleteExciseStampDiscrepancyOfProductOfBoxOfDiscrepancy(
-                materialNumber = productInfo.materialNumber,
-                boxNumber = boxNumber,
-                typeDiscrepancies = typeDiscrepancies
-        )
+        taskManager.getReceivingTask()
+                ?.taskRepository
+                ?.getExciseStampsDiscrepancies()
+                ?.deleteExciseStampDiscrepancyOfProductOfBoxOfDiscrepancy(
+                        materialNumber = productInfo.materialNumber,
+                        boxNumber = boxNumber,
+                        typeDiscrepancies = typeDiscrepancies
+                )
 
         currentBoxDiscrepancies.map { it }.filter { unitInfo ->
             if (unitInfo.materialNumber == productInfo.materialNumber && unitInfo.boxNumber == boxNumber && unitInfo.typeDiscrepancies == typeDiscrepancies) {
