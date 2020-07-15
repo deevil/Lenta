@@ -592,17 +592,18 @@ class ExciseAlcoBoxCardPGEViewModel : CoreViewModel(), OnPositionClickListener {
     }
 
     fun onClickUnitChange() {
+        val isEizUnitValue = isEizUnit.value ?: true
         if (!processExciseAlcoBoxAccPGEService.boxProcessed(boxInfo.value?.boxNumber.orEmpty())) { //https://trello.com/c/iOmIb6N7 кнопка доступна, если данная коробка не была сохранена в обработанные
             if ((countExciseStampsScanned.value ?: 0) > 0) {
                 screenNavigator.openBoxCardUnsavedDataConfirmationDialog(
                         nextCallbackFunc = {
                             modifications.value = true
-                            isEizUnit.value = !isEizUnit.value!!
+                            isEizUnit.value = !isEizUnitValue
                             if (isEizUnit.value!!) {
                                 count.value = COUNT_BOXES_DEFAULT
                                 suffix.value = productInfo.value?.purchaseOrderUnits?.name.orEmpty()
                             } else {
-                                count.value = "0"
+                                count.value = COUNT_BOXES_ZERO
                                 suffix.value = productInfo.value?.uom?.name.orEmpty()
                             }
                             val countStamps = countExciseStampsScanned.value!!
@@ -613,12 +614,12 @@ class ExciseAlcoBoxCardPGEViewModel : CoreViewModel(), OnPositionClickListener {
                 )
             } else {
                 modifications.value = true
-                isEizUnit.value = !isEizUnit.value!!
+                isEizUnit.value = !isEizUnitValue
                 if (isEizUnit.value!!) {
                     count.value = COUNT_BOXES_DEFAULT
                     suffix.value = productInfo.value?.purchaseOrderUnits?.name
                 } else {
-                    count.value = "0"
+                    count.value = COUNT_BOXES_ZERO
                     suffix.value = productInfo.value?.uom?.name
                 }
             }
@@ -655,5 +656,6 @@ class ExciseAlcoBoxCardPGEViewModel : CoreViewModel(), OnPositionClickListener {
     companion object {
         private const val DEFAULT_QUANTITY_INVEST = 1.0
         private const val COUNT_BOXES_DEFAULT = "1"
+        private const val COUNT_BOXES_ZERO = "0"
     }
 }
