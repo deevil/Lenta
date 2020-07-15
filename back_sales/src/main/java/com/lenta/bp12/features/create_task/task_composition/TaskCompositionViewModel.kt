@@ -83,7 +83,7 @@ class TaskCompositionViewModel : CoreViewModel(), PageSelectionListener, OnOkInS
                             position = "$position",
                             name = resource.basket("$position"),
                             description = basket.getDescription(task.taskType.isDivBySection),
-                            quantity = task.getQuantityByBasket(basket).dropZeros()
+                            quantity = "${task.getCountByBasket(basket)}"
                     )
                 }
             }
@@ -138,7 +138,8 @@ class TaskCompositionViewModel : CoreViewModel(), PageSelectionListener, OnOkInS
 
     private fun checkEnteredNumber(number: String) {
         number.length.let { length ->
-            if (length >= Constants.SAP_6) {
+            if (length >= Constants.SAP_6 && length != Constants.BOX_26 &&
+                    length != Constants.MARK_68 && length != Constants.MARK_150) {
                 manager.searchNumber = number
                 manager.searchGoodFromList = true
                 numberField.value = ""

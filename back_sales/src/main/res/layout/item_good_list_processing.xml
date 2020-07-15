@@ -55,6 +55,8 @@
                     style="@style/CellTextStyle"
                     android:layout_width="0dp"
                     android:layout_weight="1"
+                    android:maxLines="2"
+                    android:singleLine="false"
                     android:text="@{item.name}"
                     tools:text="000021 Масло" />
 

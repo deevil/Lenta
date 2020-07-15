@@ -1,10 +1,5 @@
 package com.lenta.bp12.model
 
-enum class TaskStatus {
-    COMMON,
-    STARTED
-}
-
 enum class BlockType {
     SELF_LOCK,
     LOCK,
@@ -74,4 +69,10 @@ enum class ScanNumberType(val description: String){
     MARK_68("Марка 68 символов"),
     PART("Партия"),
     BOX("Коробка")
+}
+
+enum class ScanInfoMode(val mode: Int){
+    MARK(1),
+    BOX(2),
+    PART(3)
 }

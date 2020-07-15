@@ -4,13 +4,12 @@ import androidx.lifecycle.MutableLiveData
 import com.lenta.bp12.model.pojo.create_task.Basket
 import com.lenta.bp12.model.pojo.create_task.GoodCreate
 import com.lenta.bp12.model.pojo.create_task.TaskCreate
+import com.lenta.bp12.platform.extention.isAlcohol
+import com.lenta.bp12.platform.extention.isCommon
 import com.lenta.bp12.repository.IDatabaseRepository
 import com.lenta.bp12.request.GoodInfoResult
 import com.lenta.bp12.request.SendTaskDataParams
-import com.lenta.bp12.request.pojo.MarkInfo
-import com.lenta.bp12.request.pojo.PartInfo
-import com.lenta.bp12.request.pojo.PositionInfo
-import com.lenta.bp12.request.pojo.ProviderInfo
+import com.lenta.bp12.request.pojo.*
 import com.lenta.shared.platform.constants.Constants
 import com.lenta.shared.utilities.extentions.dropZeros
 import com.lenta.shared.utilities.extentions.toSapBooleanString
@@ -125,6 +124,33 @@ class CreateTaskManager @Inject constructor(
             val positions = mutableListOf<PositionInfo>()
             val marks = mutableListOf<MarkInfo>()
             val parts = mutableListOf<PartInfo>()
+            val baskets = mutableListOf<BasketInfo>()
+            val basketPositions = mutableListOf<BasketPositionInfo>()
+
+            task.baskets.forEach { basket ->
+                val basketNumber = "${task.baskets.indexOf(basket) + 1}"
+
+                baskets.add(
+                        BasketInfo(
+                                basketNumber = basketNumber,
+                                isCommon = basket.control.isCommon().toSapBooleanString(),
+                                isAlcohol = basket.control.isAlcohol().toSapBooleanString(),
+                                providerCode = basket.provider.code,
+                                goodType = basket.goodType,
+                                section = basket.section
+                        )
+                )
+
+                task.getGoodListByBasket(basket).forEach { good ->
+                    basketPositions.add(
+                            BasketPositionInfo(
+                                    material = good.material,
+                                    basketNumber = basketNumber,
+                                    quantity = good.getQuantityByProvider(basket.provider.code).dropZeros()
+                            )
+                    )
+                }
+            }
 
             task.goods.forEach { good ->
                 good.positions.forEach { position ->
@@ -132,10 +158,9 @@ class CreateTaskManager @Inject constructor(
                             PositionInfo(
                                     material = good.material,
                                     providerCode = position.provider.code,
-                                    providerName = position.provider.name,
                                     factQuantity = position.quantity.dropZeros(),
                                     isCounted = true.toSapBooleanString(),
-                                    isDeleted = false.toSapBooleanString(),
+                                    innerQuantity = good.innerQuantity.dropZeros(),
                                     unitsCode = good.commonUnits.code
                             )
                     )
@@ -148,7 +173,8 @@ class CreateTaskManager @Inject constructor(
                                     number = mark.number,
                                     boxNumber = mark.boxNumber,
                                     isBadMark = mark.isBadMark.toSapBooleanString(),
-                                    producerCode = mark.producerCode
+                                    providerCode = mark.providerCode,
+                                    basketNumber = task.getBasketNumber(good, mark.providerCode)
                             )
                     )
                 }
@@ -159,11 +185,10 @@ class CreateTaskManager @Inject constructor(
                                     material = good.material,
                                     producerCode = part.producerCode,
                                     productionDate = getStringFromDate(part.date, Constants.DATE_FORMAT_yyyyMMdd),
-                                    unitsCode = part.units.code,
-                                    factQuantity = part.quantity.dropZeros(),
+                                    quantity = part.quantity.dropZeros(),
                                     partNumber = part.number,
                                     providerCode = part.providerCode,
-                                    basketNumber = task.getBasketNumber(good, part)
+                                    basketNumber = task.getBasketNumber(good, part.providerCode)
                             )
                     )
                 }
@@ -181,7 +206,9 @@ class CreateTaskManager @Inject constructor(
                             isNotFinish = false.toSapBooleanString(),
                             positions = positions,
                             marks = marks,
-                            parts = parts
+                            parts = parts,
+                            baskets = baskets,
+                            basketPositions = basketPositions
                     )
             )
         }
