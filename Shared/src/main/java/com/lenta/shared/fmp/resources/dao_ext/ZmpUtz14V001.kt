@@ -134,7 +134,6 @@ fun ZmpUtz14V001.getParamGrzRoundHeapRatio(): String? {
 
 fun ZmpUtz14V001.getGrzCrGrundcat(): String? {
     return getParams("GRZ_CR_GRUNDCAT").firstOrNull()
->>>>>>>>> Temporary merge branch 2
 }
 
 private fun ZmpUtz14V001.getParams(paramName: String): List<String> {

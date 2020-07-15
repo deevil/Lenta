@@ -9,6 +9,7 @@ import com.lenta.movement.R
 import com.lenta.movement.exception.EmptyTaskFailure
 import com.lenta.movement.exception.PersonnelNumberFailure
 import com.lenta.movement.models.*
+import com.lenta.movement.models.repositories.ICargoUnitRepository
 import com.lenta.movement.platform.IFormatter
 import com.lenta.movement.platform.extensions.unsafeLazy
 import com.lenta.movement.platform.navigation.IScreenNavigator
@@ -16,6 +17,7 @@ import com.lenta.movement.requests.network.ApprovalAndTransferToTasksCargoUnit
 import com.lenta.movement.requests.network.StartConsolidation
 import com.lenta.movement.requests.network.models.approvalAndTransferToTasksCargoUnit.ApprovalAndTransferToTasksCargoUnitParams
 import com.lenta.movement.requests.network.models.startConsolidation.StartConsolidationParams
+import com.lenta.movement.requests.network.models.startConsolidation.StartConsolidationResult
 import com.lenta.movement.requests.network.models.toCargoUnitList
 import com.lenta.movement.requests.network.models.toModelList
 import com.lenta.shared.account.ISessionInfo
@@ -30,9 +32,10 @@ import com.lenta.shared.utilities.extentions.getDeviceIp
 import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.utilities.extentions.toSapBooleanString
 import com.lenta.shared.view.OnPositionClickListener
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.joda.time.DateTime
-import java.lang.Exception
 import java.util.*
 import javax.inject.Inject
 
@@ -51,6 +54,9 @@ class TaskViewModel : CoreViewModel(), PageSelectionListener {
     lateinit var taskManager: ITaskManager
 
     @Inject
+    lateinit var cargoUnitRepository : ICargoUnitRepository
+
+    @Inject
     lateinit var formatter: IFormatter
 
     @Inject
@@ -58,6 +64,8 @@ class TaskViewModel : CoreViewModel(), PageSelectionListener {
 
     @Inject
     lateinit var approvalAndTransferToTasksCargoUnit: ApprovalAndTransferToTasksCargoUnit
+
+
 
     val task by unsafeLazy { MutableLiveData(taskManager.getTaskOrNull()) }
 
@@ -224,13 +232,8 @@ class TaskViewModel : CoreViewModel(), PageSelectionListener {
                             screenNavigator.hideProgress()
                             screenNavigator.openAlertScreen(failure)
                         }, { result ->
-                            screenNavigator.hideProgress()
-                            screenNavigator.openTaskEoMergeScreen(
-                                    result.eoList.toModelList(),
-                                    result.geList.toCargoUnitList()
-                            )
+                            updateCargoUnitRepository(result)
                         })
-
                     }
                 }
 
@@ -259,6 +262,22 @@ class TaskViewModel : CoreViewModel(), PageSelectionListener {
                     }
                 }
             }
+        }
+    }
+
+    private fun updateCargoUnitRepository(result: StartConsolidationResult) {
+        viewModelScope.launch {
+            screenNavigator.hideProgress()
+            withContext(Dispatchers.IO) {
+                val eoList = result.eoList.toModelList()
+                val geList = result.geList.toCargoUnitList()
+                cargoUnitRepository.setEOAndGE(
+                        inputEoList = eoList,
+                        inputGeList = geList,
+                        inputTaskNumber = taskManager.getTask().number.toInt()
+                )
+            }
+            screenNavigator.openTaskEoMergeScreen()
         }
     }
 

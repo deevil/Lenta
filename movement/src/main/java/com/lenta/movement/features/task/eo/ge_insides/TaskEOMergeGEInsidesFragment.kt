@@ -7,7 +7,7 @@ import com.lenta.movement.BR
 import com.lenta.movement.R
 import com.lenta.movement.databinding.FragmentTaskEoMergeGeInsidesBinding
 import com.lenta.movement.databinding.LayoutItemSimpleBinding
-import com.lenta.movement.models.ProcessingUnit
+import com.lenta.movement.models.CargoUnit
 import com.lenta.movement.platform.extensions.getAppComponent
 import com.lenta.movement.platform.extensions.unsafeLazy
 import com.lenta.shared.keys.KeyCode
@@ -29,8 +29,8 @@ class TaskEOMergeGEInsidesFragment : CoreFragment<FragmentTaskEoMergeGeInsidesBi
         OnScanResultListener,
         OnKeyDownListener {
 
-    private val eoList: List<ProcessingUnit>? by unsafeLazy {
-        arguments?.getParcelableArrayList<ProcessingUnit>(EO_LIST_KEY)
+    private val ge : CargoUnit? by unsafeLazy {
+        arguments?.getParcelable<CargoUnit>(GE_KEY)
     }
 
     override fun getLayoutId() = R.layout.fragment_task_eo_merge_ge_insides
@@ -40,8 +40,8 @@ class TaskEOMergeGEInsidesFragment : CoreFragment<FragmentTaskEoMergeGeInsidesBi
     override fun getViewModel(): TaskEOMergeGEInsidesViewModel {
         provideViewModel(TaskEOMergeGEInsidesViewModel::class.java).let { vm ->
             getAppComponent()?.inject(vm)
-            if (eoList != null) {
-                vm.eoList.value = eoList
+            if (ge != null) {
+                vm.ge.value = ge
             }
             return vm
         }
@@ -59,9 +59,10 @@ class TaskEOMergeGEInsidesFragment : CoreFragment<FragmentTaskEoMergeGeInsidesBi
         }
 
         binding?.apply {
+            val vm = this@TaskEOMergeGEInsidesFragment.vm
             rvConfig = initRecycleAdapterDataBinding(
                     layoutId = R.layout.layout_item_simple,
-                    itemId = BR.vm,
+                    itemId = BR.item,
                     onAdapterItemBind = { binding: LayoutItemSimpleBinding, position ->
                         binding.tvCounter.tag = position
                         binding.tvCounter.setOnClickListener(onClickSelectionListener)
@@ -89,7 +90,7 @@ class TaskEOMergeGEInsidesFragment : CoreFragment<FragmentTaskEoMergeGeInsidesBi
 
     override fun setupTopToolBar(topToolbarUiModel: TopToolbarUiModel) {
         topToolbarUiModel.title.value = vm.getTitle()
-        topToolbarUiModel.description.value = getString(R.string.task_eo_merge_title)
+        topToolbarUiModel.description.value = getString(R.string.list_of_eo_inside)
     }
 
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
@@ -107,6 +108,11 @@ class TaskEOMergeGEInsidesFragment : CoreFragment<FragmentTaskEoMergeGeInsidesBi
             R.id.b_4 -> vm.onExcludeBtnClick()
             R.id.b_5 -> onBackPressed()
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        vm.onResume()
     }
 
     override fun onBackPressed(): Boolean {
@@ -135,12 +141,12 @@ class TaskEOMergeGEInsidesFragment : CoreFragment<FragmentTaskEoMergeGeInsidesBi
 
     companion object {
         private const val PAGE_NUMBER = "10/06"
-        private const val EO_LIST_KEY = "EO_LIST_KEY"
+        private const val GE_KEY = "GE_KEY"
 
-        fun newInstance(eoList: List<ProcessingUnit>): TaskEOMergeGEInsidesFragment {
+        fun newInstance(ge : CargoUnit): TaskEOMergeGEInsidesFragment {
             return TaskEOMergeGEInsidesFragment().apply {
                 arguments = bundleOf(
-                        EO_LIST_KEY to eoList
+                        GE_KEY to ge
                 )
             }
         }

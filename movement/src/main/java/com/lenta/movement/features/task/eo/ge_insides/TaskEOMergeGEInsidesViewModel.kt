@@ -5,18 +5,29 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.liveData
 import androidx.lifecycle.switchMap
 import androidx.lifecycle.viewModelScope
+import com.lenta.movement.R
+import com.lenta.movement.exception.PersonnelNumberFailure
 import com.lenta.movement.features.main.box.ScanInfoHelper
+import com.lenta.movement.models.CargoUnit
 import com.lenta.movement.models.ITaskManager
-import com.lenta.movement.models.ProcessingUnit
 import com.lenta.movement.models.SimpleListItem
+import com.lenta.movement.models.repositories.ICargoUnitRepository
 import com.lenta.movement.platform.IFormatter
 import com.lenta.movement.platform.extensions.unsafeLazy
 import com.lenta.movement.platform.navigation.IScreenNavigator
+import com.lenta.movement.requests.network.ConsolidationNetRequest
+import com.lenta.movement.requests.network.models.RestCargoUnit
+import com.lenta.movement.requests.network.models.consolidation.ConsolidationParams
+import com.lenta.movement.requests.network.models.consolidation.ConsolidationProcessingUnit
 import com.lenta.shared.account.ISessionInfo
+import com.lenta.shared.functional.Either
 import com.lenta.shared.platform.viewmodel.CoreViewModel
+import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.SelectionItemsHelper
 import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
+import com.lenta.shared.utilities.extentions.getDeviceIp
 import com.lenta.shared.utilities.extentions.map
+import com.lenta.shared.utilities.orIfNull
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -35,26 +46,35 @@ class TaskEOMergeGEInsidesViewModel : CoreViewModel(), OnOkInSoftKeyboardListene
     lateinit var taskManager: ITaskManager
 
     @Inject
+    lateinit var cargoUnitRepository: ICargoUnitRepository
+
+    @Inject
     lateinit var formatter: IFormatter
 
     @Inject
     lateinit var scanInfoHelper: ScanInfoHelper
+
+    @Inject
+    lateinit var consolidationNetRequest: ConsolidationNetRequest
 
     val selectionsHelper = SelectionItemsHelper()
 
     val eanCode: MutableLiveData<String> = MutableLiveData()
     val requestFocusToEan: MutableLiveData<Boolean> = MutableLiveData()
 
-    val eoList by unsafeLazy { MutableLiveData(listOf<ProcessingUnit>()) }
+    val ge by unsafeLazy { MutableLiveData<CargoUnit>() }
 
     val eoItemsList by unsafeLazy {
-        eoList.switchMap { list ->
+        ge.switchMap { ge ->
             liveData {
-                val eoMappedList = list.mapIndexed { index, processingUnit ->
+                val eoMappedList = ge.eoList.mapIndexed { index, processingUnit ->
+                    Logg.e {
+                        processingUnit.toString()
+                    }
                     SimpleListItem(
                             number = index + 1,
-                            title = processingUnit.processingUnitNumber,
-                            subtitle = formatter.getEOSubtitle(processingUnit),
+                            title = "$EO-${processingUnit.processingUnitNumber}",
+                            subtitle = formatter.getEOSubtitleForInsides(processingUnit),
                             countWithUom = processingUnit.quantity.orEmpty(),
                             isClickable = true
                     )
@@ -63,6 +83,7 @@ class TaskEOMergeGEInsidesViewModel : CoreViewModel(), OnOkInSoftKeyboardListene
             }
         }
     }
+
 
     val isExcludeBtnEnabled by unsafeLazy {
         selectionsHelper.selectedPositions.map { setOfSelectedItems ->
@@ -73,19 +94,36 @@ class TaskEOMergeGEInsidesViewModel : CoreViewModel(), OnOkInSoftKeyboardListene
     }
 
     fun getTitle(): String {
-        return eoList.value?.let{ list ->
-            "${list.first().cargoUnitNumber}"
-        } ?: ""
-
+        return ge.value?.let {
+            "$GE-${it.number}"
+        }.orIfNull {
+            Logg.e {
+                "eoList is null"
+            }
+            ERROR
+        }
     }
 
     fun onBackPressed() {
+        ge.value?.let { geValue ->
+            cargoUnitRepository.updateGE(geValue)
+        }
         screenNavigator.goBack()
     }
 
     fun onExcludeBtnClick() {
-        selectionsHelper.selectedPositions.value?.let {
-
+        selectionsHelper.selectedPositions.value?.let { setOfSelectedIndexes ->
+            val geValue = ge.value
+            geValue?.let { ge ->
+                setOfSelectedIndexes.forEach { index ->
+                    val eoToRemove = ge.eoList[index]
+                    ge.eoList.remove(eoToRemove)
+                    val consolidationEo = ConsolidationProcessingUnit(eoToRemove.processingUnitNumber)
+                    val consolidationGe = RestCargoUnit(ge.number, "")
+                    consolidate(listOf(consolidationEo), listOf(consolidationGe))
+                }
+            }
+            ge.value = geValue
         }
     }
 
@@ -107,4 +145,51 @@ class TaskEOMergeGEInsidesViewModel : CoreViewModel(), OnOkInSoftKeyboardListene
     }
 
     fun onDigitPressed(digit: Int) = Unit
+
+    fun onResume() {
+        val geValue = ge.value
+        geValue?.let {
+            val newGe = cargoUnitRepository.getGEbyItsNumber(it.number)
+            ge.value = newGe
+        }
+        Logg.e {
+            ge.value.toString()
+        }
+
+    }
+
+    private fun consolidate(sendEOList: List<ConsolidationProcessingUnit>, sendGEList: List<RestCargoUnit>) {
+        viewModelScope.launch {
+            screenNavigator.showProgress(consolidationNetRequest)
+            val either = sessionInfo.personnelNumber?.let { personnelNumber ->
+                val params = ConsolidationParams(
+                        deviceIp = context.getDeviceIp(),
+                        taskNumber = taskManager.getTask().number,
+                        personnelNumber = personnelNumber,
+                        mode = ConsolidationNetRequest.EXCLUDE_EO_FROM_GE_MODE,
+                        eoNumberList = sendEOList,
+                        geNumberList = sendGEList
+                )
+                consolidationNetRequest(params)
+            } ?: Either.Left(
+                    PersonnelNumberFailure(
+                            context.getString(R.string.alert_null_personnel_number)
+                    )
+            )
+
+            either.either({ failure ->
+                screenNavigator.hideProgress()
+                screenNavigator.openAlertScreen(failure)
+            }, { result ->
+                Logg.e { result.toString() }
+                screenNavigator.hideProgress()
+            })
+        }
+    }
+
+    companion object {
+        private const val GE = "ГЕ"
+        private const val EO = "ЕО"
+        private const val ERROR = "Ошибка"
+    }
 }
