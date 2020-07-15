@@ -1,10 +1,10 @@
 package com.lenta.bp9.model.processing
 
 import com.lenta.bp9.model.task.*
+import com.lenta.bp9.platform.TypeDiscrepanciesConstants
 import com.lenta.shared.di.AppScope
 import com.lenta.shared.models.core.ProductType
-import com.lenta.shared.utilities.Logg
-import com.lenta.shared.utilities.extentions.toStringFormatted
+import com.lenta.shared.utilities.extentions.removeItemFromListWithPredicate
 import javax.inject.Inject
 
 @AppScope
@@ -23,8 +23,8 @@ class ProcessExciseAlcoBoxAccPGEService
     private var initialCount: Double = 0.0
     private var countAcceptRefusal: Double = 0.0
 
-    fun newProcessExciseAlcoBoxPGEService(productInfo: TaskProductInfo) : ProcessExciseAlcoBoxAccPGEService? {
-        return if (productInfo.type == ProductType.ExciseAlcohol && productInfo.isBoxFl){ //алкоголь, коробочный учет https://trello.com/c/TzUSGIH7
+    fun newProcessExciseAlcoBoxPGEService(productInfo: TaskProductInfo): ProcessExciseAlcoBoxAccPGEService? {
+        return if (productInfo.type == ProductType.ExciseAlcohol && productInfo.isBoxFl) { //алкоголь, коробочный учет https://trello.com/c/TzUSGIH7
             this.productInfo = productInfo.copy()
             boxes.clear()
             taskManager.getReceivingTask()?.taskRepository?.getBoxes()?.getBoxes()?.map {
@@ -49,8 +49,7 @@ class ProcessExciseAlcoBoxAccPGEService
             initialCount = 0.0
             countAcceptRefusal = 0.0
             this
-        }
-        else null
+        } else null
     }
 
     fun applyBoxCard(box: TaskBoxInfo, typeDiscrepancies: String, isScan: Boolean) {
@@ -67,24 +66,24 @@ class ProcessExciseAlcoBoxAccPGEService
 
         if (currentExciseStampsDiscrepancies.isNotEmpty()) {
             currentExciseStampsDiscrepancies.map {
-                taskManager.getReceivingTask()?.
-                        taskRepository?.
-                        getExciseStampsDiscrepancies()?.
-                        changeExciseStampDiscrepancy(it)
+                taskManager.getReceivingTask()
+                        ?.taskRepository
+                        ?.getExciseStampsDiscrepancies()
+                        ?.changeExciseStampDiscrepancy(it)
             }
         }
 
         if (currentExciseStampsBad.isNotEmpty()) {
             currentExciseStampsBad.map {
-                taskManager.getReceivingTask()?.
-                        taskRepository?.
-                        getExciseStampsBad()?.
-                        changeExciseStampBad(it)
+                taskManager.getReceivingTask()
+                        ?.taskRepository
+                        ?.getExciseStampsBad()
+                        ?.changeExciseStampBad(it)
             }
         }
     }
 
-    fun addProduct(count: String, typeDiscrepancies: String){
+    fun addProduct(count: String, typeDiscrepancies: String) {
         val countAdd = getCountOfDiscrepanciesOfProduct(typeDiscrepancies) + count.toDouble()
 
         //добавляем кол-во по расхождению для продукта
@@ -104,10 +103,10 @@ class ProcessExciseAlcoBoxAccPGEService
                         notEditNumberDiscrepancies = ""
                 )
 
-        taskManager.getReceivingTask()?.
-                taskRepository?.
-                getProductsDiscrepancies()?.
-                changeProductDiscrepancy(foundDiscrepancy)
+        taskManager.getReceivingTask()
+                ?.taskRepository
+                ?.getProductsDiscrepancies()
+                ?.changeProductDiscrepancy(foundDiscrepancy)
     }
 
     fun addExciseStampDiscrepancy(exciseStamp: TaskExciseStampInfo, typeDiscrepancies: String, isScan: Boolean) {
@@ -130,8 +129,39 @@ class ProcessExciseAlcoBoxAccPGEService
                         isUnknown = false
                 )
 
-        currentExciseStampsDiscrepancies.map { it }.filter {unitInfo ->
-            if (unitInfo.code == exciseStamp.code) {
+        currentExciseStampsDiscrepancies.removeItemFromListWithPredicate { stamp ->
+            stamp.code == exciseStamp.code
+        }
+
+        currentExciseStampsDiscrepancies.add(foundExciseStampDiscrepancy)
+    }
+
+    //https://trello.com/c/lWYJ43Pe (Марка-излишек внутри коробки) карточка об этом условии if (isExciseStampSurplus.value == true) "2"
+    fun addExciseStampSurplus(exciseStampCode: String, boxNumber: String, organizationCodeEGAIS: String, bottlingDate: String, isScan: Boolean) {
+        var foundExciseStampDiscrepancy = currentExciseStampsDiscrepancies.findLast {
+            it.code == exciseStampCode
+        }
+
+        foundExciseStampDiscrepancy = foundExciseStampDiscrepancy?.copy(
+                typeDiscrepancies = TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_SURPLUS,
+                isScan = isScan
+        )
+                ?: TaskExciseStampDiscrepancies(
+                        materialNumber = productInfo.materialNumber,
+                        code = exciseStampCode,
+                        processingUnitNumber = productInfo.processingUnit,
+                        typeDiscrepancies = TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_SURPLUS,
+                        isScan = isScan,
+                        boxNumber = boxNumber,
+                        packNumber = "",
+                        isMSC = false,
+                        organizationCodeEGAIS = organizationCodeEGAIS,
+                        bottlingDate = bottlingDate,
+                        isUnknown = false
+                )
+
+        currentExciseStampsDiscrepancies.map { it }.filter { unitInfo ->
+            if (unitInfo.code == exciseStampCode) {
                 currentExciseStampsDiscrepancies.remove(unitInfo)
                 return@filter true
             }
@@ -179,7 +209,7 @@ class ProcessExciseAlcoBoxAccPGEService
                         isScan = isScan
                 )
 
-        currentBoxDiscrepancies.map { it }.filter {unitInfo ->
+        currentBoxDiscrepancies.map { it }.filter { unitInfo ->
             if (unitInfo.boxNumber == boxNumber) {
                 currentBoxDiscrepancies.remove(unitInfo)
                 return@filter true
@@ -194,7 +224,7 @@ class ProcessExciseAlcoBoxAccPGEService
         addProduct(count, typeDiscrepancies)
         addBoxDiscrepancy(boxNumber, typeDiscrepancies, isScan)
         //отмечаем все марки из коробки признаком IS_SCAN=false (в карточке трелло не было указано ставить true для этих марок и мы отсканировали коробку, а не марки) и категорией Излишек
-        exciseStamps.filter {stamp ->
+        exciseStamps.filter { stamp ->
             stamp.boxNumber == boxNumber
         }.map {
             addExciseStampDiscrepancy(it, typeDiscrepancies, false)
@@ -202,81 +232,94 @@ class ProcessExciseAlcoBoxAccPGEService
 
     }
 
-    fun addDiscrepancyScannedMarkCurrentBox(currentBoxNumber: String, realBoxNumber: String, scannedExciseStampInfo: TaskExciseStampInfo, typeDiscrepancies: String) {
-        //https://trello.com/c/E4b0z0q5 2.1. Сохранять отсканированную марку коробке, в которой она числится как "Норма";
-        addExciseStampDiscrepancy(scannedExciseStampInfo, typeDiscrepancies, true)
-    }
-
-    fun overLimit(count: Double) : Boolean {
+    fun overLimit(count: Double): Boolean {
         return (getCountAcceptOfProduct() + getCountRefusalOfProduct() + count) > (productInfo.orderQuantity.toDouble() + getCountBoxesOfProductWithCategorySurplus())
     }
 
-    private fun getCountBoxesOfProductWithCategorySurplus() : Double {
+    private fun getCountBoxesOfProductWithCategorySurplus(): Double {
         return currentBoxDiscrepancies.filter {
             it.typeDiscrepancies == "2"
         }.size.toDouble()
     }
 
-    fun getCountBoxesOfProductForSearchSurplus(count: Double) : Double {
+    fun getCountBoxesOfProductForSearchSurplus(count: Double): Double {
         return (getCountAcceptOfProduct() + getCountRefusalOfProduct() + count) - (productInfo.orderQuantity.toDouble() - getCountBoxesOfProductWithCategorySurplus())
     }
 
-    fun searchExciseStamp(code: String) : TaskExciseStampInfo? {
+    fun searchExciseStamp(code: String): TaskExciseStampInfo? {
         return exciseStamps.findLast {
             it.code == code
         }
     }
 
-    fun exciseStampIsAlreadyProcessed(code: String) : Boolean {
+    fun exciseStampIsAlreadyProcessed(code: String): Boolean {
         return currentExciseStampsDiscrepancies.any {
             it.code == code && it.isScan
         }
     }
 
-    fun searchBox(boxNumber: String) : TaskBoxInfo? {
+    fun searchBox(boxNumber: String): TaskBoxInfo? {
         return boxes.findLast {
             it.boxNumber == boxNumber
         }
     }
 
-    fun getCountBoxOfProductOfDiscrepancies(boxNumber: String) : Int {
+    fun getCountBoxOfProductOfDiscrepancies(boxNumber: String): Int {
         return currentBoxDiscrepancies.filter {
             it.boxNumber == boxNumber
         }.size
     }
 
-    private fun getCountOfDiscrepanciesOfProduct(typeDiscrepancies: String) : Double {
-        return taskManager.getReceivingTask()!!.taskRepository.getProductsDiscrepancies().findProductDiscrepanciesOfProduct(productInfo).filter {productDiscrepancies ->
-            productDiscrepancies.typeDiscrepancies == typeDiscrepancies
-        }.sumByDouble {
-            it.numberDiscrepancies.toDouble()
-        }
+    private fun getCountOfDiscrepanciesOfProduct(typeDiscrepancies: String): Double {
+        return taskManager.getReceivingTask()
+                ?.taskRepository
+                ?.getProductsDiscrepancies()
+                ?.findProductDiscrepanciesOfProduct(productInfo)
+                ?.filter { productDiscrepancies ->
+                    productDiscrepancies.typeDiscrepancies == typeDiscrepancies
+                }?.sumByDouble {
+                    it.numberDiscrepancies.toDouble()
+                }
+                ?: 0.0
     }
 
-    fun getCountAcceptOfProduct() : Double {
-        return taskManager.getReceivingTask()!!.taskRepository.getProductsDiscrepancies().findProductDiscrepanciesOfProduct(productInfo).filter {productDiscrepancies ->
-            productDiscrepancies.typeDiscrepancies == "1" || productDiscrepancies.typeDiscrepancies == "2"
-        }.sumByDouble {
-            it.numberDiscrepancies.toDouble()
-        }
+    fun getCountAcceptOfProduct(): Double {
+        return taskManager.getReceivingTask()
+                ?.taskRepository
+                ?.getProductsDiscrepancies()
+                ?.findProductDiscrepanciesOfProduct(productInfo)
+                ?.filter { productDiscrepancies ->
+                    productDiscrepancies.typeDiscrepancies == TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_NORM
+                            || productDiscrepancies.typeDiscrepancies == TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_SURPLUS
+                }?.sumByDouble {
+                    it.numberDiscrepancies.toDouble()
+                }
+                ?: 0.0
     }
 
-    fun getCountRefusalOfProduct() : Double {
-        return taskManager.getReceivingTask()!!.taskRepository.getProductsDiscrepancies().findProductDiscrepanciesOfProduct(productInfo).filter {productDiscrepancies ->
-            productDiscrepancies.typeDiscrepancies == "3" || productDiscrepancies.typeDiscrepancies == "4" || productDiscrepancies.typeDiscrepancies == "5"
-        }.sumByDouble {
-            it.numberDiscrepancies.toDouble()
-        }
+    fun getCountRefusalOfProduct(): Double {
+        return taskManager.getReceivingTask()
+                ?.taskRepository
+                ?.getProductsDiscrepancies()
+                ?.findProductDiscrepanciesOfProduct(productInfo)
+                ?.filter { productDiscrepancies ->
+                    productDiscrepancies.typeDiscrepancies == TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_PGE_UNDERLOAD
+                            || productDiscrepancies.typeDiscrepancies == TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_PGE_MARRIAGE_SHIPMENT
+                            || productDiscrepancies.typeDiscrepancies == TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_PGE_WAREHOUSE_MARRIAGE
+                }?.sumByDouble {
+                    it.numberDiscrepancies.toDouble()
+                }
+                ?: 0.0
     }
 
-    fun getCountExciseStampDiscrepanciesOfBox(boxNumber: String) : Int {
+    fun getCountExciseStampDiscrepanciesOfBox(boxNumber: String): Int {
         return currentExciseStampsDiscrepancies.filter {
             it.boxNumber == boxNumber && it.isScan
         }.size
     }
 
     //контроль марки для короба
-    fun stampControlOfBox(box: TaskBoxInfo) : Boolean {
+    fun stampControlOfBox(box: TaskBoxInfo): Boolean {
         val countScannedExciseStampsDiscrepanciesOfBox = currentExciseStampsDiscrepancies.filter {
             it.boxNumber == box.boxNumber && it.isScan
         }.size
@@ -285,7 +328,7 @@ class ProcessExciseAlcoBoxAccPGEService
     }
 
     // контроль короба
-    fun boxControl(box: TaskBoxInfo) : Boolean {
+    fun boxControl(box: TaskBoxInfo): Boolean {
         val countProcessedBox = currentBoxDiscrepancies.filter {
             it.boxNumber == box.boxNumber
         }.size
@@ -293,7 +336,7 @@ class ProcessExciseAlcoBoxAccPGEService
             it.boxNumber == box.boxNumber && it.isScan
         }.size
 
-        return (countProcessedBox >=1 && countScannedExciseStampOfBox >=1) || (countScannedExciseStampOfBox >= 2) || (countScannedExciseStampOfBox >= productInfo.numberStampsControl.toInt())
+        return (countProcessedBox >= 1 && countScannedExciseStampOfBox >= 1) || (countScannedExciseStampOfBox >= 2) || (countScannedExciseStampOfBox >= productInfo.numberStampsControl.toInt())
     }
 
     fun rollbackScannedExciseStamp() {
@@ -303,7 +346,7 @@ class ProcessExciseAlcoBoxAccPGEService
         currentExciseStampsDiscrepancies.remove(stamp)
     }
 
-    fun getLastAddExciseStamp() : TaskExciseStampInfo? {
+    fun getLastAddExciseStamp(): TaskExciseStampInfo? {
         return if (currentExciseStampsDiscrepancies.isNotEmpty()) {
             exciseStamps.findLast { stampInfo ->
                 stampInfo.code == currentExciseStampsDiscrepancies.last {
@@ -313,18 +356,18 @@ class ProcessExciseAlcoBoxAccPGEService
         } else null
     }
 
-    fun getCountUntreatedBoxes() : Int {
+    fun getCountUntreatedBoxes(): Int {
         val countTotalBoxes = boxes.filter { it.materialNumber == productInfo.materialNumber }.size
         val countProcessedBoxes = currentBoxDiscrepancies.filter { it.materialNumber == productInfo.materialNumber }.size
         return countTotalBoxes - countProcessedBoxes
     }
 
-    fun modifications() : Boolean {
+    fun modifications(): Boolean {
         return currentExciseStampsDiscrepancies != taskManager.getReceivingTask()?.taskRepository?.getExciseStampsDiscrepancies()?.getExciseStampDiscrepancies() ||
                 currentBoxDiscrepancies != taskManager.getReceivingTask()?.taskRepository?.getBoxesDiscrepancies()?.getBoxesDiscrepancies()
     }
 
-    fun boxProcessed(boxNumber: String) : Boolean {
+    fun boxProcessed(boxNumber: String): Boolean {
         return currentBoxDiscrepancies.any { it.boxNumber == boxNumber }
     }
 
@@ -343,14 +386,15 @@ class ProcessExciseAlcoBoxAccPGEService
         }
     }
 
-    fun defectiveBox (boxNumber: String) : Boolean {
+    fun defectiveBox(boxNumber: String): Boolean {
         return currentBoxDiscrepancies.none {
-            it.boxNumber == boxNumber && (it.typeDiscrepancies == "1" || it.typeDiscrepancies == "2")
+            it.boxNumber == boxNumber
+                    && (it.typeDiscrepancies == TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_NORM || it.typeDiscrepancies == TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_SURPLUS)
         }
     }
 
     fun cleanBoxInfo(boxNumber: String, typeDiscrepancies: String) {
-        currentExciseStampsDiscrepancies.map { it }.filter {unitInfo ->
+        currentExciseStampsDiscrepancies.map { it }.filter { unitInfo ->
             if (unitInfo.materialNumber == productInfo.materialNumber && unitInfo.boxNumber == boxNumber && unitInfo.typeDiscrepancies == typeDiscrepancies) {
                 currentExciseStampsDiscrepancies.remove(unitInfo)
                 return@filter true
@@ -358,16 +402,16 @@ class ProcessExciseAlcoBoxAccPGEService
             return@filter false
         }
 
-        taskManager.getReceivingTask()?.
-                taskRepository?.
-                getExciseStampsDiscrepancies()?.
-                deleteExciseStampDiscrepancyOfProductOfBoxOfDiscrepancy(
+        taskManager.getReceivingTask()
+                ?.taskRepository
+                ?.getExciseStampsDiscrepancies()
+                ?.deleteExciseStampDiscrepancyOfProductOfBoxOfDiscrepancy(
                         materialNumber = productInfo.materialNumber,
                         boxNumber = boxNumber,
                         typeDiscrepancies = typeDiscrepancies
                 )
 
-        currentBoxDiscrepancies.map { it }.filter {unitInfo ->
+        currentBoxDiscrepancies.map { it }.filter { unitInfo ->
             if (unitInfo.materialNumber == productInfo.materialNumber && unitInfo.boxNumber == boxNumber && unitInfo.typeDiscrepancies == typeDiscrepancies) {
                 currentBoxDiscrepancies.remove(unitInfo)
                 return@filter true
@@ -375,14 +419,11 @@ class ProcessExciseAlcoBoxAccPGEService
             return@filter false
         }
 
-        taskManager.getReceivingTask()?.
-                taskRepository?.
-                getBoxesDiscrepancies()?.
-                deleteBoxDiscrepancies(
-                        materialNumber = productInfo.materialNumber,
-                        boxNumber = boxNumber,
-                        typeDiscrepancies = typeDiscrepancies
-                )
+        taskManager.getReceivingTask()?.taskRepository?.getBoxesDiscrepancies()?.deleteBoxDiscrepancies(
+                materialNumber = productInfo.materialNumber,
+                boxNumber = boxNumber,
+                typeDiscrepancies = typeDiscrepancies
+        )
 
         taskManager
                 .getReceivingTask()
@@ -395,7 +436,7 @@ class ProcessExciseAlcoBoxAccPGEService
         initialCount = count
     }
 
-    fun getInitialCount() : Double {
+    fun getInitialCount(): Double {
         return initialCount
     }
 
@@ -407,7 +448,7 @@ class ProcessExciseAlcoBoxAccPGEService
         countAcceptRefusal = count
     }
 
-    fun getCountAcceptRefusal() : Double {
+    fun getCountAcceptRefusal(): Double {
         return countAcceptRefusal
     }
 

@@ -24,6 +24,8 @@ data class TransmittedParams(
         val deviceIP: String, //Ip адрес ТСД
         @SerializedName("IV_PERNR")
         val personnelNumber: String, //Табельный номер
+        @SerializedName("IV_PRINTERNAME")
+        val printerName: String, //Принтер
         @SerializedName("IV_UNBIND_VSD")
         val unbindVSD: String //общий флаг
 )

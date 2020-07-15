@@ -267,11 +267,20 @@ class ExciseAlcoBoxCardViewModel : CoreViewModel(), OnPositionClickListener {
                         qualityInfoCode == TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_NORM
                     }
                     ?: selectedReasonRejectionInfo
-                            ?.code.orEmpty()
-            processExciseAlcoBoxAccService.applyBoxCard(
-                    box = boxInfoValue,
-                    typeDiscrepancies = typeDiscrepancies
-            )
+                            ?.code
+            typeDiscrepancies?.let {
+                if (processExciseAlcoBoxAccService.searchCurrentBoxDiscrepancies(boxInfoValue.boxNumber) == null) {
+                    processExciseAlcoBoxAccService.addBoxDiscrepancy(
+                            boxNumber = boxInfoValue.boxNumber,
+                            typeDiscrepancies = it,
+                            isScan = true
+                    )
+                }
+                processExciseAlcoBoxAccService.applyBoxCard(
+                        box = boxInfoValue,
+                        typeDiscrepancies = it
+                )
+            }
             screenNavigator.goBack()
         }
     }

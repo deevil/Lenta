@@ -61,7 +61,6 @@ abstract class CoreFragment<T : ViewDataBinding, S : CoreViewModel> : Fragment()
         return binding?.run {
             setVariable(BR.vm, vm)
             lifecycleOwner = viewLifecycleOwner
-            executePendingBindings()
             root
         } ?: throw NullPointerException("DataBinding is null")
     }
@@ -143,7 +142,7 @@ abstract class CoreFragment<T : ViewDataBinding, S : CoreViewModel> : Fragment()
                 }
         )
     }
-    
+
     protected open fun<Item : Any> initRecyclerViewKeyHandler(
             recyclerView: RecyclerView,
             items: LiveData<List<Item>>,
