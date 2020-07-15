@@ -4,6 +4,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.lenta.bp12.model.IGeneralTaskManager
 import com.lenta.bp12.platform.navigation.IScreenNavigator
+import com.lenta.bp12.platform.resource.IResourceManager
 import com.lenta.bp12.request.SendTaskDataNetRequest
 import com.lenta.bp12.request.pojo.SentTaskInfo
 import com.lenta.shared.account.ISessionInfo
@@ -27,9 +28,12 @@ class SaveDataViewModel : CoreViewModel() {
     @Inject
     lateinit var sendTaskDataNetRequest: SendTaskDataNetRequest
 
+    @Inject
+    lateinit var resource: IResourceManager
+
 
     val title by lazy {
-        "TK - ${sessionInfo.market}"
+        resource.tk(sessionInfo.market.orEmpty())
     }
 
     private val sentTaskInfoList = MutableLiveData<List<SentTaskInfo>>(null)

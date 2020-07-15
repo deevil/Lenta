@@ -7,6 +7,7 @@ import com.lenta.bp12.model.pojo.Mark
 import com.lenta.bp12.model.pojo.Part
 import com.lenta.bp12.model.pojo.Position
 import com.lenta.bp12.model.pojo.open_task.GoodOpen
+import com.lenta.bp12.platform.extention.extractAlcoCode
 import com.lenta.bp12.platform.extention.getGoodKind
 import com.lenta.bp12.platform.navigation.IScreenNavigator
 import com.lenta.bp12.platform.resource.IResourceManager
@@ -16,13 +17,13 @@ import com.lenta.bp12.request.pojo.ProducerInfo
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.functional.Either
-import com.lenta.shared.models.core.Uom
 import com.lenta.shared.models.core.getMatrixType
 import com.lenta.shared.platform.constants.Constants
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.requests.combined.scan_info.ScanCodeInfo
 import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.extentions.*
+import com.lenta.shared.utilities.getDateFromString
 import com.lenta.shared.view.OnPositionClickListener
 import kotlinx.coroutines.launch
 import java.math.BigInteger
@@ -43,7 +44,7 @@ class GoodInfoOpenViewModel : CoreViewModel() {
     lateinit var goodInfoNetRequest: GoodInfoNetRequest
 
     @Inject
-    lateinit var markInfoNetRequest: MarkInfoNetRequest
+    lateinit var scanInfoNetRequest: ScanInfoNetRequest
 
     @Inject
     lateinit var database: IDatabaseRepository
@@ -96,7 +97,7 @@ class GoodInfoOpenViewModel : CoreViewModel() {
         }
     }
 
-    private val markInfoResult = MutableLiveData<MarkInfoResult>()
+    private val markInfoResult = MutableLiveData<ScanInfoResult>()
 
     private var scanCodeInfo: ScanCodeInfo? = null
 
@@ -353,8 +354,8 @@ class GoodInfoOpenViewModel : CoreViewModel() {
 
     private fun setDefaultQuantity(good: GoodOpen) {
         if (good.kind == GoodKind.COMMON) {
-            if (good.commonUnits == Uom.KG) {
-                quantityField.value = (scanCodeInfo?.getQuantity(good.convertingUnits)
+            if (good.commonUnits != good.convertingUnits) {
+                quantityField.value = (scanCodeInfo?.getConvertedQuantity(good.innerQuantity)
                         ?: 0.0).dropZeros()
             } else {
                 if (isEanLastScanned) {
@@ -457,53 +458,56 @@ class GoodInfoOpenViewModel : CoreViewModel() {
         viewModelScope.launch {
             navigator.showProgressLoadingData()
 
-            markInfoNetRequest(MarkInfoParams(
+            scanInfoNetRequest(ScanInfoParams(
                     tkNumber = sessionInfo.market.orEmpty(),
                     material = good.value?.material.orEmpty(),
                     markNumber = number,
-                    mode = 1,
+                    mode = ScanInfoMode.MARK.mode,
                     quantity = 0.0
             )).also {
                 navigator.hideProgress()
-            }.either(::handleFailure) { markInfoResult ->
-                viewModelScope.launch {
-                    markInfoResult.status.let { status ->
-                        if (status == MarkStatus.OK.code || status == MarkStatus.BAD.code) {
-                            addMarkInfo(number, markInfoResult)
-                        } else if (status == MarkStatus.UNKNOWN.code) {
-                            val alcoCode = BigInteger(number.substring(7, 19), 36).toString().padStart(19, '0')
-                            database.getAlcoCodeInfoList(alcoCode).let { alcoCodeInfoList ->
-                                if (alcoCodeInfoList.isNotEmpty()) {
-                                    if (alcoCodeInfoList.find { it.material == good.value!!.material } != null) {
-                                        addPartInfo(number, markInfoResult)
-                                    } else {
-                                        navigator.openAlertScreen(resource.alcocodeDoesNotApplyToThisGood())
-                                    }
+            }.either(::handleFailure) { result ->
+                handleLoadMarkInfoResult(result, number)
+            }
+        }
+    }
+
+    private fun handleLoadMarkInfoResult(result: ScanInfoResult, number: String) {
+        viewModelScope.launch {
+            result.status.let { status ->
+                when (status) {
+                    MarkStatus.OK.code, MarkStatus.BAD.code -> addMarkInfo(number, result)
+                    MarkStatus.UNKNOWN.code -> {
+                        database.getAlcoCodeInfoList(number.extractAlcoCode()).let { alcoCodeInfoList ->
+                            if (alcoCodeInfoList.isNotEmpty()) {
+                                if (alcoCodeInfoList.find { it.material == good.value!!.material } != null) {
+                                    addPartInfo(number, result)
                                 } else {
-                                    navigator.openAlertScreen(resource.unknownAlcocode())
+                                    navigator.openAlertScreen(resource.alcocodeDoesNotApplyToThisGood())
                                 }
+                            } else {
+                                navigator.openAlertScreen(resource.unknownAlcocode())
                             }
-                        } else {
-                            navigator.openAlertScreen(markInfoResult.statusDescription)
                         }
                     }
+                    else -> navigator.openAlertScreen(result.statusDescription)
                 }
             }
         }
     }
 
-    private fun addMarkInfo(number: String, markInfo: MarkInfoResult) {
+    private fun addMarkInfo(number: String, scanInfo: ScanInfoResult) {
         clearSearchFromListParams()
         lastSuccessSearchNumber.value = number
         isExistUnsavedData = true
-        markInfoResult.value = markInfo
+        markInfoResult.value = scanInfo
         quantityField.value = "1"
 
         when (number.length) {
             Constants.MARK_150 -> {
                 scanModeType.value = ScanNumberType.MARK_150
-                updateProducers(markInfo.producers.toMutableList())
-                date.value = markInfo.producedDate
+                updateProducers(scanInfo.producers.toMutableList())
+                date.value = scanInfo.producedDate
             }
             Constants.MARK_68 -> {
                 scanModeType.value = ScanNumberType.MARK_68
@@ -511,37 +515,38 @@ class GoodInfoOpenViewModel : CoreViewModel() {
         }
     }
 
-    private fun addPartInfo(number: String, markInfo: MarkInfoResult) {
+    private fun addPartInfo(number: String, scanInfo: ScanInfoResult) {
         scanModeType.value = ScanNumberType.PART
         lastSuccessSearchNumber.value = number
         isExistUnsavedData = true
-        markInfoResult.value = markInfo
+        markInfoResult.value = scanInfo
         quantityField.value = "1"
-        updateProducers(markInfo.producers.toMutableList())
+        updateProducers(scanInfo.producers.toMutableList())
     }
 
     private fun loadBoxInfo(number: String) {
         viewModelScope.launch {
             navigator.showProgressLoadingData()
 
-            markInfoNetRequest(MarkInfoParams(
+            scanInfoNetRequest(ScanInfoParams(
                     tkNumber = sessionInfo.market.orEmpty(),
                     material = good.value?.material.orEmpty(),
-                    markNumber = number,
-                    mode = 2,
+                    boxNumber = number,
+                    mode = ScanInfoMode.BOX.mode,
                     quantity = 0.0
             )).also {
                 navigator.hideProgress()
-            }.either(::handleFailure) { markInfoResult ->
-                viewModelScope.launch {
-                    markInfoResult.status.let { status ->
-                        if (status == BoxStatus.OK.code) {
-                            addBoxInfo(number, markInfoResult)
-                        } else {
-                            navigator.openAlertScreen(markInfoResult.statusDescription)
-                        }
-                    }
-                }
+            }.either(::handleFailure) { result ->
+                handleLoadBoxInfoResult(result, number)
+            }
+        }
+    }
+
+    private fun handleLoadBoxInfoResult(result: ScanInfoResult, number: String) {
+        viewModelScope.launch {
+            when(result.status){
+                BoxStatus.OK.code -> addBoxInfo(number, result)
+                else -> navigator.openAlertScreen(result.statusDescription)
             }
         }
     }
@@ -556,23 +561,23 @@ class GoodInfoOpenViewModel : CoreViewModel() {
         navigator.openAlertScreen(failure)
     }
 
-    private fun addBoxInfo(number: String, markInfo: MarkInfoResult) {
+    private fun addBoxInfo(number: String, scanInfo: ScanInfoResult) {
         scanModeType.value = ScanNumberType.BOX
         lastSuccessSearchNumber.value = number
         isExistUnsavedData = true
-        markInfoResult.value = markInfo
-        quantityField.value = markInfo.marks.size.toString()
+        markInfoResult.value = scanInfo
+        quantityField.value = scanInfo.marks.size.toString()
     }
 
-    private suspend fun checkPart(): Either<Failure, MarkInfoResult> {
+    private suspend fun checkPart(): Either<Failure, ScanInfoResult> {
         navigator.showProgressLoadingData()
 
-        return markInfoNetRequest(MarkInfoParams(
+        return scanInfoNetRequest(ScanInfoParams(
                 tkNumber = sessionInfo.market.orEmpty(),
                 material = good.value?.material.orEmpty(),
                 producerCode = getProducerCode(),
                 bottledDate = date.value.orEmpty(),
-                mode = 3,
+                mode = ScanInfoMode.PART.mode,
                 quantity = quantity.value ?: 0.0
         )).also {
             navigator.hideProgress()
@@ -625,11 +630,10 @@ class GoodInfoOpenViewModel : CoreViewModel() {
         good.value?.let { changedGood ->
             changedGood.isCounted = true
             val mark = Mark(
-                    number = lastSuccessSearchNumber.value!!,
+                    number = lastSuccessSearchNumber.value.orEmpty(),
                     material = changedGood.material,
                     isBadMark = markInfoResult.value?.status == MarkStatus.BAD.code,
-                    providerCode = changedGood.provider.code,
-                    producerCode = getProducerCode()
+                    providerCode = changedGood.provider.code
             )
             Logg.d { "--> add mark = $mark" }
             changedGood.addMark(mark)
@@ -642,13 +646,12 @@ class GoodInfoOpenViewModel : CoreViewModel() {
         good.value?.let { changedGood ->
             changedGood.isCounted = true
             val part = Part(
-                    number = lastSuccessSearchNumber.value!!,
+                    number = lastSuccessSearchNumber.value.orEmpty(),
                     material = changedGood.material,
-                    quantity = quantity.value!!,
-                    units = changedGood.convertingUnits,
+                    quantity = quantity.value ?: 0.0,
                     providerCode = changedGood.provider.code,
                     producerCode = getProducerCode(),
-                    date = date.value.orEmpty()
+                    date = getDateFromString(date.value.orEmpty(), Constants.DATE_FORMAT_dd_mm_yyyy)
             )
             Logg.d { "--> add part = $part" }
             changedGood.addPart(part)
@@ -665,10 +668,9 @@ class GoodInfoOpenViewModel : CoreViewModel() {
                     val markFromBox = Mark(
                             number = mark.number,
                             material = changedGood.material,
-                            boxNumber = lastSuccessSearchNumber.value!!,
+                            boxNumber = lastSuccessSearchNumber.value.orEmpty(),
                             isBadMark = mark.isBadMark.isNotEmpty(),
-                            providerCode = changedGood.provider.code,
-                            producerCode = getProducerCode()
+                            providerCode = changedGood.provider.code
                     )
                     Logg.d { "--> add mark from box = $markFromBox" }
                     changedGood.addMark(markFromBox)

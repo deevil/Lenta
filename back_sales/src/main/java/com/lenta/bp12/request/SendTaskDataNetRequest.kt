@@ -1,10 +1,7 @@
 package com.lenta.bp12.request
 
 import com.google.gson.annotations.SerializedName
-import com.lenta.bp12.request.pojo.SentTaskInfo
-import com.lenta.bp12.request.pojo.PositionInfo
-import com.lenta.bp12.request.pojo.MarkInfo
-import com.lenta.bp12.request.pojo.PartInfo
+import com.lenta.bp12.request.pojo.*
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.fmp.ObjectRawStatus
 import com.lenta.shared.functional.Either
@@ -24,12 +21,12 @@ class SendTaskDataNetRequest @Inject constructor(
 }
 
 data class SendTaskDataParams(
-        /** IP адрес ТСД */
-        @SerializedName("IV_IP")
-        val deviceIp: String,
         /** Номер задания */
         @SerializedName("IV_TASK_NUM")
         val taskNumber: String = "",
+        /** IP адрес ТСД */
+        @SerializedName("IV_IP")
+        val deviceIp: String,
         /** Табельный номер */
         @SerializedName("IV_PERNR")
         val userNumber: String,
@@ -59,7 +56,13 @@ data class SendTaskDataParams(
         val marks: List<MarkInfo>,
         /** Таблица партий */
         @SerializedName("IT_TASK_PARTS")
-        val parts: List<PartInfo>
+        val parts: List<PartInfo>,
+        /** Таблица корзин */
+        @SerializedName("IT_TASK_BASKET")
+        val baskets: List<BasketInfo> = emptyList(),
+        /**  Таблица товаров разбитых по корзинам */
+        @SerializedName("IT_TASK_BASKET_POS")
+        val basketPositions: List<BasketPositionInfo> = emptyList()
 )
 
 class SendTaskDataStatus : ObjectRawStatus<SendTaskDataResult>()
