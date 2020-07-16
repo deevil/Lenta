@@ -100,10 +100,17 @@ class Formatter : IFormatter {
 
     override fun getEOSubtitle(eo: ProcessingUnit): String {
         val geNumber = eo.cargoUnitNumber
+        return if (geNumber == null) {
+            getEOSubtitleForInsides(eo)
+        } else {
+            "$GE-$geNumber"
+        }
+    }
+
+    override fun getEOSubtitleForInsides(eo: ProcessingUnit): String {
         val isAlco = eo.isAlco ?: false
         val isUsual = eo.isUsual ?: false
-        return if (geNumber == null) {
-            buildString {
+        return buildString {
                 append("№${eo.basketNumber}")
                 append(
                         when {
@@ -114,9 +121,6 @@ class Formatter : IFormatter {
                 )
                 append(eo.supplier.orEmpty())
             }
-        } else {
-            "$GE-$geNumber"
-        }
     }
 
     override fun getGETitle(ge: CargoUnit): String {

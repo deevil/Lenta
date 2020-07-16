@@ -5,19 +5,11 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
-import androidx.core.os.bundleOf
 import androidx.databinding.DataBindingUtil
 import com.lenta.movement.BR
 import com.lenta.movement.R
-import com.lenta.movement.databinding.FragmentTaskEoMergeBinding
-import com.lenta.movement.databinding.LayoutItemEoBinding
-import com.lenta.movement.databinding.LayoutTaskEoMergeEoListTabBinding
-import com.lenta.movement.databinding.LayoutTaskEoMergeGeListTabBinding
-import com.lenta.movement.models.CargoUnit
-import com.lenta.movement.models.ProcessingUnit
+import com.lenta.movement.databinding.*
 import com.lenta.movement.platform.extensions.getAppComponent
-import com.lenta.movement.platform.extensions.unsafeLazy
-import com.lenta.movement.view.simpleListRecyclerViewConfig
 import com.lenta.shared.keys.KeyCode
 import com.lenta.shared.keys.OnKeyDownListener
 import com.lenta.shared.platform.activity.OnBackPresserListener
@@ -44,12 +36,6 @@ class TaskEOMergeFragment : CoreFragment<FragmentTaskEoMergeBinding, TaskEOMerge
 
     private var eoListRecyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
     private var geListRecyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
-    private val eoList: List<ProcessingUnit>? by unsafeLazy {
-        arguments?.getParcelableArrayList<ProcessingUnit>(EO_LIST_KEY)
-    }
-    private val geList: MutableList<CargoUnit>? by unsafeLazy {
-        arguments?.getParcelableArrayList<CargoUnit>(GE_LIST_KEY)
-    }
 
     override fun getLayoutId() = R.layout.fragment_task_eo_merge
 
@@ -58,12 +44,13 @@ class TaskEOMergeFragment : CoreFragment<FragmentTaskEoMergeBinding, TaskEOMerge
     override fun getViewModel(): TaskEOMergeViewModel {
         provideViewModel(TaskEOMergeViewModel::class.java).let { vm ->
             getAppComponent()?.inject(vm)
-            if (eoList != null && geList != null) {
-                vm.eoList.value = eoList
-                vm.geList.value = geList
-            }
             return vm
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        vm.onResume()
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -117,9 +104,9 @@ class TaskEOMergeFragment : CoreFragment<FragmentTaskEoMergeBinding, TaskEOMerge
                     it.apply {
 
                         val onClickSelectionListener = View.OnClickListener { clickListener ->
-                                val itemPosition = clickListener.tag as Int
-                                vm.eoSelectionHelper.revert(position = itemPosition)
-                                this.eoRecyclerView.adapter?.notifyItemChanged(itemPosition)
+                            val itemPosition = clickListener.tag as Int
+                            vm.eoSelectionHelper.revert(position = itemPosition)
+                            this.eoRecyclerView.adapter?.notifyItemChanged(itemPosition)
                         }
 
                         rvConfig = DataBindingRecyclerViewConfig(
@@ -139,14 +126,11 @@ class TaskEOMergeFragment : CoreFragment<FragmentTaskEoMergeBinding, TaskEOMerge
                                         eoListRecyclerViewKeyHandler?.let { eoListRecyclerViewKeyHandler ->
                                             binding.root.isSelected = eoListRecyclerViewKeyHandler.isSelected(position)
                                         }
+
                                     }
                                 },
                                 onItemClickListener = AdapterView.OnItemClickListener { _, _, position, _ ->
-                                    eoListRecyclerViewKeyHandler?.let { eoListRecyclerViewKeyHandler ->
-                                        if (eoListRecyclerViewKeyHandler.isSelected(position).not()) {
-                                            eoListRecyclerViewKeyHandler.selectPosition(position)
-                                        }
-                                    }
+                                    vm.onClickEOListItem(position)
                                 }
                         )
 
@@ -172,12 +156,34 @@ class TaskEOMergeFragment : CoreFragment<FragmentTaskEoMergeBinding, TaskEOMerge
                         container,
                         false
                 ).also { layoutBinding ->
-                    layoutBinding.apply {
-                        rvConfig = simpleListRecyclerViewConfig(
-                                recyclerView = geRecyclerView,
-                                selectionItemsHelper = vm.geSelectionHelper,
-                                recyclerViewKeyHandler = geListRecyclerViewKeyHandler,
-                                onClickItem = { position -> vm.onClickGEListItem(position) }
+                    layoutBinding?.apply {
+
+                        val onClickSelectionListener = View.OnClickListener { clickListener ->
+                            val itemPosition = clickListener.tag as Int
+                            vm.geSelectionHelper.revert(position = itemPosition)
+                            this.geRecyclerView.adapter?.notifyItemChanged(itemPosition)
+                        }
+
+                        rvConfig = DataBindingRecyclerViewConfig(
+                                layoutId = R.layout.layout_item_simple,
+                                itemId = BR.item,
+                                realisation = object : DataBindingAdapter<LayoutItemSimpleBinding> {
+                                    override fun onCreate(binding: LayoutItemSimpleBinding) {
+                                        // do nothing
+                                    }
+
+                                    override fun onBind(binding: LayoutItemSimpleBinding, position: Int) {
+                                        binding.tvCounter.tag = position
+                                        binding.tvCounter.setOnClickListener(onClickSelectionListener)
+                                        binding.selectedForDelete = vm.geSelectionHelper.isSelected(position)
+                                        recyclerViewKeyHandler?.let {
+                                            binding.root.isSelected = it.isSelected(position)
+                                        }
+                                    }
+                                },
+                                onItemClickListener = AdapterView.OnItemClickListener { _, _, position, _ ->
+                                    vm.onClickGEListItem(position)
+                                }
                         )
 
                         dataBindingViewModel = vm
@@ -237,17 +243,6 @@ class TaskEOMergeFragment : CoreFragment<FragmentTaskEoMergeBinding, TaskEOMerge
 
     companion object {
         private const val PAGE_NUMBER = "10/06"
-        private const val EO_LIST_KEY = "EO_LIST_KEY"
-        private const val GE_LIST_KEY = "GE_LIST_KEY"
-
-        fun newInstance(eoList: List<ProcessingUnit>, geList: List<CargoUnit>): TaskEOMergeFragment {
-            return TaskEOMergeFragment().apply {
-                arguments = bundleOf (
-                    EO_LIST_KEY to eoList,
-                    GE_LIST_KEY to geList
-                )
-            }
-        }
     }
 }
 

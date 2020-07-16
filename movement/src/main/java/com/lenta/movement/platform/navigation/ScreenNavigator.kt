@@ -16,10 +16,14 @@ import com.lenta.movement.features.task.basket.TaskBasketFragment
 import com.lenta.movement.features.task.basket.info.TaskBasketInfoFragment
 import com.lenta.movement.features.task.eo.TaskEOMergeFragment
 import com.lenta.movement.features.task.eo.formedDocs.TaskEOMergeFormedDocsFragment
+import com.lenta.movement.features.task.eo.ge_insides.TaskEOMergeGEInsidesFragment
 import com.lenta.movement.features.task.goods.TaskGoodsFragment
 import com.lenta.movement.features.task.goods.details.TaskGoodsDetailsFragment
 import com.lenta.movement.features.task.goods.info.TaskGoodsInfoFragment
-import com.lenta.movement.models.*
+import com.lenta.movement.models.CargoUnit
+import com.lenta.movement.models.ExciseBox
+import com.lenta.movement.models.ProductInfo
+import com.lenta.movement.models.Task
 import com.lenta.movement.progress.IWriteOffProgressUseCaseInformator
 import com.lenta.movement.requests.network.models.documentsToPrint.DocumentsToPrintDocument
 import com.lenta.shared.account.IAuthenticator
@@ -93,7 +97,7 @@ class ScreenNavigator(
     }
 
     override fun openTaskList() {
-        openNotImplementedScreenAlert(TASK_TO_MOVE)  //TODO Работа с заданиями
+        openNotImplementedScreenAlert(TASK_TO_MOVE)  //ЕTODO Работа с заданиями
     }
 
     override fun openUnsavedDataDialog(yesCallbackFunc: () -> Unit) {
@@ -265,9 +269,9 @@ class ScreenNavigator(
         }
     }
 
-    override fun openTaskEoMergeScreen(eoList: List<ProcessingUnit>, geList: List<CargoUnit>) {
+    override fun openTaskEoMergeScreen() {
         runOrPostpone {
-            getFragmentStack()?.push(TaskEOMergeFragment.newInstance(eoList, geList))
+            getFragmentStack()?.push(TaskEOMergeFragment())
         }
     }
 
@@ -336,6 +340,15 @@ class ScreenNavigator(
         }
     }
 
+    override fun openGEInsidesScreen(ge : CargoUnit) {
+        runOrPostpone {
+            getFragmentStack()
+                    ?.push(
+                            TaskEOMergeGEInsidesFragment.newInstance(ge)
+                    )
+        }
+    }
+
     companion object {
         private const val TASK_TO_MOVE = "Задания на перемещение"
         private const val ZERO_SELECTED_EO_PAGE_NUMBER = "02"
@@ -374,9 +387,10 @@ interface IScreenNavigator : ICoreNavigator {
     fun openTaskBasketCharacteristicsScreen(basketIndex: Int)
     fun openSaveTaskConfirmationDialog(yesCallbackFunc: () -> Unit)
     fun openTaskList()
-    fun openTaskEoMergeScreen(eoList: List<ProcessingUnit>, geList: List<CargoUnit>)
+    fun openTaskEoMergeScreen()
     fun openZeroSelectedEODialog(processCallbackFunc: () -> Unit, combineCallbackFunc: () -> Unit)
     fun openTaskEoMergeFormedDocumentsScreen(docList: List<DocumentsToPrintDocument>)
     fun openTaskEoMergePrintConfirmationDialog(eoGeQuantity: Int, yesCallbackFunc: () -> Unit)
     fun openTaskEoMergePrintedDialog()
+    fun openGEInsidesScreen(ge : CargoUnit)
 }
