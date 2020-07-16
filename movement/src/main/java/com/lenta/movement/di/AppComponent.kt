@@ -11,6 +11,7 @@ import com.lenta.movement.features.task.TaskViewModel
 import com.lenta.movement.features.task.basket.TaskBasketViewModel
 import com.lenta.movement.features.task.basket.info.TaskBasketInfoViewModel
 import com.lenta.movement.features.task.eo.TaskEOMergeViewModel
+import com.lenta.movement.features.task.eo.eo_insides.TaskEOMergeEOInsidesViewModel
 import com.lenta.movement.features.task.eo.formedDocs.TaskEOMergeFormedDocsViewModel
 import com.lenta.movement.features.task.eo.ge_insides.TaskEOMergeGEInsidesViewModel
 import com.lenta.movement.features.task.goods.TaskGoodsViewModel
@@ -43,4 +44,5 @@ interface AppComponent {
     fun inject(it: TaskEOMergeViewModel)
     fun inject(it: TaskEOMergeFormedDocsViewModel)
     fun inject(it: TaskEOMergeGEInsidesViewModel)
+    fun inject(it: TaskEOMergeEOInsidesViewModel)
 }

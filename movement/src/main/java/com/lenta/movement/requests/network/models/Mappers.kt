@@ -4,6 +4,7 @@ import com.lenta.movement.models.CargoUnit
 import com.lenta.movement.models.ProcessingUnit
 import com.lenta.movement.models.Task
 import com.lenta.movement.requests.network.models.startConsolidation.StartConsolidationProcessingUnit
+import com.lenta.movement.requests.network.models.startConsolidation.StartConsolidationTaskComposition
 import com.lenta.shared.platform.constants.Constants
 import com.lenta.shared.utilities.extentions.getSapDate
 import com.lenta.shared.utilities.extentions.isSapTrue
@@ -32,24 +33,25 @@ fun Taskable.toTask(): Task {
     )
 }
 
-fun StartConsolidationProcessingUnit.convertToModel(): ProcessingUnit {
+fun StartConsolidationProcessingUnit.convertToModel(goods: List<StartConsolidationTaskComposition>?): ProcessingUnit {
     return ProcessingUnit(
             processingUnitNumber = processingUnitNumber,
             basketNumber = basketNumber,
             supplier = supplier.ifEmpty { null },
             isAlco = isAlco.isSapTrue(),
             isUsual = isUsual.isSapTrue(),
-            quantity = quantity
+            quantity = quantity,
+            goods = goods
     )
 }
 
-fun List<StartConsolidationProcessingUnit>.toModelList(): List<ProcessingUnit> {
+fun List<StartConsolidationProcessingUnit>.toModelList(goods: List<StartConsolidationTaskComposition>?): List<ProcessingUnit> {
     return this.map {
-        it.convertToModel()
+        it.convertToModel(goods)
     }
 }
 
-fun List<RestCargoUnit>.toCargoUnitList(): MutableList<CargoUnit> {
+fun List<RestCargoUnit>.toModelList(): MutableList<CargoUnit> {
     return this.groupBy { it.cargoUnitNumber }
             .mapValues { it.value.map { it.processingUnitNumber } }
             .map { map ->

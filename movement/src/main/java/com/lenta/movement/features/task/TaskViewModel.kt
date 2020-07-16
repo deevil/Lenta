@@ -18,7 +18,6 @@ import com.lenta.movement.requests.network.StartConsolidation
 import com.lenta.movement.requests.network.models.approvalAndTransferToTasksCargoUnit.ApprovalAndTransferToTasksCargoUnitParams
 import com.lenta.movement.requests.network.models.startConsolidation.StartConsolidationParams
 import com.lenta.movement.requests.network.models.startConsolidation.StartConsolidationResult
-import com.lenta.movement.requests.network.models.toCargoUnitList
 import com.lenta.movement.requests.network.models.toModelList
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.functional.Either
@@ -64,8 +63,6 @@ class TaskViewModel : CoreViewModel(), PageSelectionListener {
 
     @Inject
     lateinit var approvalAndTransferToTasksCargoUnit: ApprovalAndTransferToTasksCargoUnit
-
-
 
     val task by unsafeLazy { MutableLiveData(taskManager.getTaskOrNull()) }
 
@@ -225,8 +222,16 @@ class TaskViewModel : CoreViewModel(), PageSelectionListener {
                                                 withProductInfo = true.toSapBooleanString()
                                         )
                                 )
-                            } ?: Either.Left(PersonnelNumberFailure(context.getString(R.string.alert_null_personnel_number)))
-                        } ?: Either.Left(EmptyTaskFailure(context.getString(R.string.alert_null_task)))
+                            } ?: Either.Left(
+                                    PersonnelNumberFailure(
+                                            context.getString(R.string.alert_null_personnel_number)
+                                    )
+                            )
+                        } ?: Either.Left(
+                                EmptyTaskFailure(
+                                        context.getString(R.string.alert_null_task)
+                                )
+                        )
 
                         either.either({ failure ->
                             screenNavigator.hideProgress()
@@ -269,13 +274,21 @@ class TaskViewModel : CoreViewModel(), PageSelectionListener {
         viewModelScope.launch {
             screenNavigator.hideProgress()
             withContext(Dispatchers.IO) {
-                val eoList = result.eoList.toModelList()
-                val geList = result.geList.toCargoUnitList()
-                cargoUnitRepository.setEOAndGE(
-                        inputEoList = eoList,
-                        inputGeList = geList,
-                        inputTaskNumber = taskManager.getTask().number.toInt()
-                )
+                val goods = result.taskComposition
+                val eoList = result.eoList
+                val geList = result.geList
+                screenNavigator.hideProgress()
+                eoList?.let { eoListValue ->
+                    geList?.let { geListValue ->
+                        val eoListModelList = eoListValue.toModelList(goods)
+                        val geListModelList = geListValue.toModelList()
+                        cargoUnitRepository.setEOAndGE(
+                                inputEoList = eoListModelList,
+                                inputGeList = geListModelList,
+                                inputTaskNumber = taskManager.getTask().number.toInt()
+                        )
+                    } ?: Logg.e { "geList null" }
+                } ?: Logg.e { "eoList null" }
             }
             screenNavigator.openTaskEoMergeScreen()
         }

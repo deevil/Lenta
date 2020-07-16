@@ -19,7 +19,7 @@ import com.lenta.movement.requests.network.models.consolidation.ConsolidationPar
 import com.lenta.movement.requests.network.models.consolidation.ConsolidationProcessingUnit
 import com.lenta.movement.requests.network.models.documentsToPrint.DocumentsToPrintParams
 import com.lenta.movement.requests.network.models.endConsolidation.EndConsolidationParams
-import com.lenta.movement.requests.network.models.toCargoUnitList
+import com.lenta.movement.requests.network.models.toModelList
 import com.lenta.movement.requests.network.models.toTask
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.exception.Failure
@@ -244,7 +244,7 @@ class TaskEOMergeViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
                         }
                     }
                 }
-                val newGeListValue = resultGeList.toCargoUnitList()
+                val newGeListValue = resultGeList.toModelList()
                 cargoUnitRepository.setGE(newGeListValue)
                 updateEoItemList()
                 updateGeItemList()
