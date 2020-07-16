@@ -42,18 +42,12 @@ class TaskEOMergeEOInsidesViewModel : CoreViewModel(), OnOkInSoftKeyboardListene
         eo.map { eo ->
             eo?.let { eoValue ->
                 eoValue.goods?.mapIndexed { index, good ->
-                    val orderUnits = good.orderUnits?.let { units ->
-                        formatter.getOrderUnitsNameByCode(units)
-                    }.orIfNull {
-                        Logg.e {
-                            "UOM null"
-                        }
-                        ERROR
-                    }
+                    val goodNumber = good.materialNumber
+                    val goodTitle = getGoodTitle(goodNumber)
+                    val orderUnits = getOrderUnits(good.orderUnits)
                     SimpleListItem(
                             number = index + 1,
-                            title = "${getMaterialLastSix(good.materialNumber.orEmpty())} " +
-                                    taskManager.getGoodName(good.materialNumber),
+                            title = goodTitle,
                             subtitle = "",
                             countWithUom = "${good.quantity?.toDouble()?.toInt()} $orderUnits",
                             isClickable = false
@@ -63,10 +57,27 @@ class TaskEOMergeEOInsidesViewModel : CoreViewModel(), OnOkInSoftKeyboardListene
         }
     }
 
-    private fun getMaterialLastSix(materialNumber: String): String {
-        return if (materialNumber.length > 6)
-            materialNumber.substring(materialNumber.length - 6)
-        else materialNumber
+    private fun getGoodTitle(goodNumber: String?)
+            = "${getMaterialLastSix(goodNumber)} ${taskManager.getGoodName(goodNumber)}"
+
+    private fun getMaterialLastSix(materialNumber: String?): String {
+        return materialNumber?.let {
+            if (materialNumber.length > 6)
+                materialNumber.substring(materialNumber.length - 6)
+            else materialNumber
+        }.orIfNull {
+            Logg.e { "materialNumber Null" }
+            ERROR
+        }
+    }
+
+    private fun getOrderUnits(orderUnits : String?) : String {
+        return orderUnits?.let { units ->
+            formatter.getOrderUnitsNameByCode(units)
+        }.orIfNull {
+            Logg.e { "UOM null" }
+            ERROR
+        }
     }
 
     fun getTitle(): String {
