@@ -77,7 +77,7 @@ class GoodListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
                         ItemGoodProcessedUi(
                                 position = "${filtered.size - index}",
                                 name = good.getNameWithMaterial(),
-                                quantity = good.getTotalQuantity().dropZeros(),
+                                quantity = "${good.getQuantity().dropZeros()} ${good.commonUnits.name}",
                                 material = good.material,
                                 providerCode = good.provider.code
                         )
