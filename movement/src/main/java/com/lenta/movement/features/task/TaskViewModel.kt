@@ -197,78 +197,75 @@ class TaskViewModel : CoreViewModel(), PageSelectionListener {
     }
 
     fun onNextClick() {
-        Logg.d {
-            """
-            Status : $currentStatus
-            Task: ${taskManager.getTaskOrNull()}
-            """.trimIndent()
-        }
         if (task.value == null) {
             taskManager.setTask(buildTask())
             screenNavigator.openTaskCompositionScreen()
         } else {
             when (currentStatus) {
-                Task.Status.ToConsolidation(Task.Status.TO_CONSOLIDATION) -> {
-                    viewModelScope.launch {
-                        screenNavigator.showProgress(startConsolidation)
-                        val either = task.value?.let { taskValue ->
-                            sessionInfo.personnelNumber?.let { personnelNumber ->
-                                startConsolidation(
-                                        StartConsolidationParams(
-                                                deviceIp = context.getDeviceIp(),
-                                                taskNumber = taskValue.number,
-                                                mode = StartConsolidation.MODE_GET_TASK_COMP_CODE,
-                                                personnelNumber = personnelNumber,
-                                                withProductInfo = false.toSapBooleanString()
-                                        )
-                                )
-                            } ?: Either.Left(
-                                    PersonnelNumberFailure(
-                                            context.getString(R.string.alert_null_personnel_number)
-                                    )
-                            )
-                        } ?: Either.Left(
-                                EmptyTaskFailure(
-                                        context.getString(R.string.alert_null_task)
-                                )
-                        )
-
-                        either.either({ failure ->
-                            screenNavigator.hideProgress()
-                            screenNavigator.openAlertScreen(failure)
-                        }, { result ->
-                            updateCargoUnitRepository(result)
-                        })
-                    }
-                }
-
-                Task.Status.Consolidated(Task.Status.CONSOLIDATED) -> {
-                    viewModelScope.launch {
-                        screenNavigator.showProgress(approvalAndTransferToTasksCargoUnit)
-                        val either = task.value?.let { taskValue ->
-                            sessionInfo.personnelNumber?.let { personnelNumber ->
-                                approvalAndTransferToTasksCargoUnit(
-                                        ApprovalAndTransferToTasksCargoUnitParams(
-                                                deviceIp = context.getDeviceIp(),
-                                                taskNumber = taskValue.number,
-                                                personnelNumber = personnelNumber
-                                        )
-                                )
-                            }
-                                    ?: Either.Left(PersonnelNumberFailure(context.getString(R.string.alert_null_personnel_number)))
-                        }
-                                ?: Either.Left(EmptyTaskFailure(context.getString(R.string.alert_null_task)))
-                        either.either({ failure ->
-                            screenNavigator.hideProgress()
-                            screenNavigator.openAlertScreen(failure)
-                        }, { result ->
-                            Logg.d { "Approval and transfer to task cargo unit: $result" }
-                            screenNavigator.hideProgress()
-                            screenNavigator.openNotImplementedScreenAlert("Одобрение и передача на ГЗ") // TODO screenNavigator.openApprovalScreen()
-                        })
-                    }
-                }
+                Task.Status.ToConsolidation(Task.Status.TO_CONSOLIDATION) -> startConsolidationRequest()
+                Task.Status.Consolidated(Task.Status.CONSOLIDATED) -> approvalAndTransferToTasksCargoUnitRequest()
             }
+        }
+    }
+
+    private fun startConsolidationRequest() {
+        viewModelScope.launch {
+            screenNavigator.showProgress(startConsolidation)
+            val either = task.value?.let { taskValue ->
+                sessionInfo.personnelNumber?.let { personnelNumber ->
+                    startConsolidation(
+                            StartConsolidationParams(
+                                    deviceIp = context.getDeviceIp(),
+                                    taskNumber = taskValue.number,
+                                    mode = StartConsolidation.MODE_GET_TASK_COMP_CODE,
+                                    personnelNumber = personnelNumber,
+                                    withProductInfo = false.toSapBooleanString()
+                            )
+                    )
+                } ?: Either.Left(
+                        PersonnelNumberFailure(
+                                context.getString(R.string.alert_null_personnel_number)
+                        )
+                )
+            } ?: Either.Left(
+                    EmptyTaskFailure(
+                            context.getString(R.string.alert_null_task)
+                    )
+            )
+
+            either.either({ failure ->
+                screenNavigator.hideProgress()
+                screenNavigator.openAlertScreen(failure)
+            }, { result ->
+                updateCargoUnitRepository(result)
+            })
+        }
+    }
+
+    private fun approvalAndTransferToTasksCargoUnitRequest() {
+        viewModelScope.launch {
+            screenNavigator.showProgress(approvalAndTransferToTasksCargoUnit)
+            val either = task.value?.let { taskValue ->
+                sessionInfo.personnelNumber?.let { personnelNumber ->
+                    approvalAndTransferToTasksCargoUnit(
+                            ApprovalAndTransferToTasksCargoUnitParams(
+                                    deviceIp = context.getDeviceIp(),
+                                    taskNumber = taskValue.number,
+                                    personnelNumber = personnelNumber
+                            )
+                    )
+                }
+                        ?: Either.Left(PersonnelNumberFailure(context.getString(R.string.alert_null_personnel_number)))
+            }
+                    ?: Either.Left(EmptyTaskFailure(context.getString(R.string.alert_null_task)))
+            either.either({ failure ->
+                screenNavigator.hideProgress()
+                screenNavigator.openAlertScreen(failure)
+            }, { result ->
+                Logg.d { "Approval and transfer to task cargo unit: $result" }
+                screenNavigator.hideProgress()
+                screenNavigator.openNotImplementedScreenAlert("Одобрение и передача на ГЗ") // TODO screenNavigator.openApprovalScreen()
+            })
         }
     }
 

@@ -69,11 +69,7 @@ class TaskEOMergeGEInsidesFragment : CoreFragment<FragmentTaskEoMergeGeInsidesBi
                                 position = position)
                     },
                     onAdapterItemClicked = { position ->
-                        recyclerViewKeyHandler?.let {
-                            if (it.isSelected(position).not()) {
-                                it.selectPosition(position)
-                            }
-                        }
+                        vm.onEoItemClickListener(position)
                     }
             )
 

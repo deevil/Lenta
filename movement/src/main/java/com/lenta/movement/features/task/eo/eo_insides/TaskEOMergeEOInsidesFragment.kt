@@ -42,7 +42,6 @@ class TaskEOMergeEOInsidesFragment : CoreFragment<FragmentTaskEoMergeEoInsidesBi
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-
         binding?.apply {
             rvConfig = initRecycleAdapterDataBinding(
                     layoutId = R.layout.layout_item_eo_insides_goods_list,
@@ -98,7 +97,6 @@ class TaskEOMergeEOInsidesFragment : CoreFragment<FragmentTaskEoMergeEoInsidesBi
         }
         return false
     }
-
 
     companion object {
         private const val PAGE_NUMBER = "13/21"

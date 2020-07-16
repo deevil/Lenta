@@ -68,9 +68,6 @@ class TaskEOMergeGEInsidesViewModel : CoreViewModel(), OnOkInSoftKeyboardListene
         ge.switchMap { ge ->
             liveData {
                 val eoMappedList = ge.eoList.mapIndexed { index, processingUnit ->
-                    Logg.e {
-                        processingUnit.toString()
-                    }
                     SimpleListItem(
                             number = index + 1,
                             title = "$EO-${processingUnit.processingUnitNumber}",
@@ -83,7 +80,6 @@ class TaskEOMergeGEInsidesViewModel : CoreViewModel(), OnOkInSoftKeyboardListene
             }
         }
     }
-
 
     val isExcludeBtnEnabled by unsafeLazy {
         selectionsHelper.selectedPositions.map { setOfSelectedItems ->
@@ -100,7 +96,7 @@ class TaskEOMergeGEInsidesViewModel : CoreViewModel(), OnOkInSoftKeyboardListene
             Logg.e {
                 "eoList is null"
             }
-            ERROR
+            SERVER_ERROR
         }
     }
 
@@ -183,9 +179,15 @@ class TaskEOMergeGEInsidesViewModel : CoreViewModel(), OnOkInSoftKeyboardListene
         }
     }
 
+    fun onEoItemClickListener(position : Int) {
+        val eoListValue = cargoUnitRepository.getEOList()
+        val eo = eoListValue[position]
+        screenNavigator.openEOInsidesScreen(eo)
+    }
+
     companion object {
         private const val GE = "ГЕ"
         private const val EO = "ЕО"
-        private const val ERROR = "Ошибка"
+        private const val SERVER_ERROR = "Ошибка сервера"
     }
 }

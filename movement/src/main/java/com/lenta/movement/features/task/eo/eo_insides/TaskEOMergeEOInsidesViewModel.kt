@@ -45,16 +45,26 @@ class TaskEOMergeEOInsidesViewModel : CoreViewModel(), OnOkInSoftKeyboardListene
                     val goodNumber = good.materialNumber
                     val goodTitle = getGoodTitle(goodNumber)
                     val orderUnits = getOrderUnits(good.orderUnits)
+                    val quantity = getQuantity(good.quantity)
                     SimpleListItem(
                             number = index + 1,
                             title = goodTitle,
                             subtitle = "",
-                            countWithUom = "${good.quantity?.toDouble()?.toInt()} $orderUnits",
+                            countWithUom = "$quantity $orderUnits",
                             isClickable = false
                     )
                 }
             }
         }
+    }
+
+    private fun getQuantity(quantity: String?) : String {
+        return quantity?.let {
+            quantity.toDouble().toInt()
+        }.orIfNull {
+            Logg.e { "Quantity null" }
+            SERVER_ERROR
+        }.toString()
     }
 
     private fun getGoodTitle(goodNumber: String?)
@@ -66,8 +76,8 @@ class TaskEOMergeEOInsidesViewModel : CoreViewModel(), OnOkInSoftKeyboardListene
                 materialNumber.substring(materialNumber.length - 6)
             else materialNumber
         }.orIfNull {
-            Logg.e { "materialNumber Null" }
-            ERROR
+            Logg.e { "MaterialNumber null" }
+            SERVER_ERROR
         }
     }
 
@@ -76,7 +86,7 @@ class TaskEOMergeEOInsidesViewModel : CoreViewModel(), OnOkInSoftKeyboardListene
             formatter.getOrderUnitsNameByCode(units)
         }.orIfNull {
             Logg.e { "UOM null" }
-            ERROR
+            SERVER_ERROR
         }
     }
 
@@ -85,9 +95,9 @@ class TaskEOMergeEOInsidesViewModel : CoreViewModel(), OnOkInSoftKeyboardListene
             "$EO-${it.processingUnitNumber}"
         }.orIfNull {
             Logg.e {
-                "eo is null"
+                "EO null"
             }
-            ERROR
+            SERVER_ERROR
         }
     }
 
@@ -101,9 +111,8 @@ class TaskEOMergeEOInsidesViewModel : CoreViewModel(), OnOkInSoftKeyboardListene
 
     fun onDigitPressed(digit: Int) = Unit
 
-
     companion object {
         private const val EO = "ЕО"
-        private const val ERROR = "Ошибка"
+        private const val SERVER_ERROR = "Ошибка сервера"
     }
 }

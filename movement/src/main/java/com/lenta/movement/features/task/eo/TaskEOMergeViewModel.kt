@@ -142,56 +142,80 @@ class TaskEOMergeViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
                 eoNumber.takeIf { eo.state == ProcessingUnit.State.NOT_PROCESSED }
                         ?.let { ConsolidationProcessingUnit(it) }
             }
-
             when (numberOfSelectedItems) {
-
-                NO_ITEM_SELECTED -> {
-                    screenNavigator.openZeroSelectedEODialog(
-                            processCallbackFunc = {
-                                addAllEOAsGE()
-                            },
-                            combineCallbackFunc = {
-                                if (notProcessedEOList.isNotEmpty())
-                                    consolidate(
-                                            sendEOList = notProcessedEOList,
-                                            sendGEList = listOf(),
-                                            mode = ConsolidationNetRequest.CONSOLIDATION_EO_IN_GE_MODE
-                                    )
-                            })
-                }
-
-                ONE_ITEM_SELECTED -> {
-                    val geListValue = cargoUnitRepository.getGEList()
-                    val eoListIndex = listOfSelected.first()
-                    val eo = eoListValue[eoListIndex]
-                    val newCargoUnit =
-                            CargoUnit(eo.processingUnitNumber, mutableListOf())
-                    if (eo.state == ProcessingUnit.State.NOT_PROCESSED
-                            && geListValue.contains(newCargoUnit).not()) {
-                        geListValue.add(newCargoUnit)
-                        eo.state = ProcessingUnit.State.TOP_LEVEL_EO
-                        updateEoItemList()
-                        updateGeItemList()
-                        changeTabToGEList()
-                    }
-                }
-
-                else -> {
-                    if (notProcessedEOList.isNotEmpty()) {
-                        val selectedEO = listOfSelected.mapTo(mutableListOf()) {
-                            notProcessedEOList[it]
-                        }
-                        consolidate(
-                                sendEOList = selectedEO,
-                                sendGEList = emptyList(),
-                                mode = ConsolidationNetRequest.CONSOLIDATION_EO_IN_GE_MODE
-                        )
-                    } else {
-                        Logg.e { "Выделенные элементы уже обработаны" }
-                    }
-                }
+                NO_ITEM_SELECTED -> onNoItemSelectedProcessing(notProcessedEOList)
+                ONE_ITEM_SELECTED -> onOneItemSelectedProcessing(listOfSelected, eoListValue)
+                else -> onMoreThanOneItemSelectedProcessing(notProcessedEOList, listOfSelected)
             }
             eoSelectionHelper.clearPositions()
+        }
+    }
+
+    private fun onNoItemSelectedProcessing(notProcessedEOList: List<ConsolidationProcessingUnit>) {
+        screenNavigator.openZeroSelectedEODialog(
+                processCallbackFunc = {
+                    addAllEOAsGE()
+                },
+                combineCallbackFunc = {
+                    if (notProcessedEOList.isNotEmpty())
+                        consolidate(
+                                sendEOList = notProcessedEOList,
+                                sendGEList = listOf(),
+                                mode = ConsolidationNetRequest.CONSOLIDATION_EO_IN_GE_MODE
+                        )
+                })
+    }
+
+    private fun addAllEOAsGE() {
+        val eoListValue = cargoUnitRepository.getEOList()
+        val geListValue = cargoUnitRepository.getGEList().let { geListValue ->
+            eoListValue.filter { eo ->
+                eo.state == ProcessingUnit.State.NOT_PROCESSED
+                        && geListValue.all { it.number != eo.processingUnitNumber }
+            }.mapTo(geListValue) { eo ->
+                eo.state = ProcessingUnit.State.TOP_LEVEL_EO
+                CargoUnit(eo.processingUnitNumber, mutableListOf())
+            }
+        }
+        cargoUnitRepository.setGE(geListValue.toMutableList())
+        updateEoItemList()
+        updateGeItemList()
+        changeTabToGEList()
+        eoSelectionHelper.clearPositions()
+    }
+
+    private fun onOneItemSelectedProcessing(
+            listOfSelected: MutableSet<Int>,
+            eoListValue: List<ProcessingUnit>) {
+        val geListValue = cargoUnitRepository.getGEList()
+        val eoListIndex = listOfSelected.first()
+        val eo = eoListValue[eoListIndex]
+        val newCargoUnit =
+                CargoUnit(eo.processingUnitNumber, mutableListOf())
+        if (eo.state == ProcessingUnit.State.NOT_PROCESSED
+                && geListValue.contains(newCargoUnit).not()) {
+            geListValue.add(newCargoUnit)
+            eo.state = ProcessingUnit.State.TOP_LEVEL_EO
+            updateEoItemList()
+            updateGeItemList()
+            changeTabToGEList()
+        }
+    }
+
+    private fun onMoreThanOneItemSelectedProcessing(
+            notProcessedEOList: List<ConsolidationProcessingUnit>,
+            listOfSelected: MutableSet<Int>) {
+        if (notProcessedEOList.isNotEmpty()) {
+            val selectedEO = listOfSelected.mapTo(mutableListOf()) {
+                notProcessedEOList[it]
+            }
+            consolidate(
+                    sendEOList = selectedEO,
+                    sendGEList = emptyList(),
+                    mode = ConsolidationNetRequest.CONSOLIDATION_EO_IN_GE_MODE
+            )
+        } else {
+            Logg.e { "Выделенные элементы уже обработаны" }
         }
     }
 
@@ -218,11 +242,8 @@ class TaskEOMergeViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
                 screenNavigator.hideProgress()
                 screenNavigator.openAlertScreen(failure)
             }, { result ->
-
-
                 val resultGeList = result.geList
                 val eoListValue = cargoUnitRepository.getEOList()
-
                 when (mode) {
                     ConsolidationNetRequest.CONSOLIDATION_EO_IN_GE_MODE -> {
                         eoListValue.forEach { eo ->
@@ -252,25 +273,6 @@ class TaskEOMergeViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
                 changeTabToGEList()
             })
         }
-    }
-
-    private fun addAllEOAsGE() {
-        val eoListValue = cargoUnitRepository.getEOList()
-        val geListValue = cargoUnitRepository.getGEList().let { geListValue ->
-            eoListValue.filter { eo ->
-                eo.state == ProcessingUnit.State.NOT_PROCESSED
-                        && geListValue.all { it.number != eo.processingUnitNumber }
-            }.mapTo(geListValue) { eo ->
-                eo.state = ProcessingUnit.State.TOP_LEVEL_EO
-                CargoUnit(eo.processingUnitNumber, mutableListOf())
-            }
-        }
-
-        cargoUnitRepository.setGE(geListValue.toMutableList())
-        updateEoItemList()
-        updateGeItemList()
-        changeTabToGEList()
-        eoSelectionHelper.clearPositions()
     }
 
     fun onExcludeBtnClick() {
@@ -313,7 +315,7 @@ class TaskEOMergeViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
                 screenNavigator.hideProgress()
                 val task = result.taskList[0].toTask()
                 taskManager.setTask(task)
-                cargoUnitRepository.clear()
+                cargoUnitRepository.clear() //Очищаем репозиторий ЕО/ГЕ так как задание сохранено
                 screenNavigator.goBack()
                 screenNavigator.goBack()
                 screenNavigator.openTaskScreen(task)
@@ -344,7 +346,6 @@ class TaskEOMergeViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
     fun onBackPressed() {
         screenNavigator.goBack()
     }
-
 
     override fun onOkInSoftKeyboard(): Boolean {
         searchCode(eanCode.value.orEmpty(), fromScan = false)
