@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="vm"
+            type="com.lenta.movement.features.task.goods.info.TaskGoodsInfoViewModel" />
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <com.lenta.movement.view.BorderedTableLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/size_16dp"
+            android:stretchColumns="*"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <TableRow>
+
+                <com.lenta.shared.view.ClickableSpinner
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="@dimen/size_16dp"
+                    app:items="@{vm.quantityList}" />
+
+                <com.lenta.shared.view.EditTextWithSuffix
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="@dimen/size_16dp"
+                    android:ellipsize="end"
+                    android:inputType="numberDecimal"
+                    android:maxLength="6"
+                    android:maxLines="1"
+                    android:text="@={vm.quantity}"
+                    app:digitsForUom="@{vm.quantityUom}"
+                    app:suffix="@{vm.quantityUom.name}"
+                    tools:text="50 шт." />
+            </TableRow>
+
+            <TableRow android:gravity="center_vertical">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="@dimen/size_16dp"
+                    android:text="@string/total_in_basket" />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="@dimen/size_16dp"
+                    android:text="@{@string/task_goods_quantities_format(vm.totalQuantity, vm.forBasketQuantity, vm.quantityUom.name)}"
+                    tools:text="50 шт.\n50 шт." />
+            </TableRow>
+
+            <TableRow android:visibility="@{vm.supplierListVisible}">
+
+                <com.lenta.shared.view.ClickableSpinner
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="@dimen/size_16dp"
+                    android:layout_span="2"
+                    app:items="@{vm.supplierList}"
+                    app:onPositionClickListener="@{vm.supplierSelectedListener}" />
+
+            </TableRow>
+
+
+        </com.lenta.movement.view.BorderedTableLayout>
+
+        <FrameLayout
+            android:id="@+id/matrixLayout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/size_8dp"
+            android:foreground="?selectableItemBackground"
+            android:onClick="@{(v) -> vm.screenNavigator.openMatrixInfoScreen(vm.productInfo.matrixType)}"
+            android:padding="@dimen/size_8dp"
+            app:layout_constraintBottom_toBottomOf="@+id/b_scan"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/b_scan">
+
+            <TextView
+                android:id="@+id/tv_matrix"
+                android:layout_width="@dimen/round_btn_size"
+                android:layout_height="@dimen/round_btn_size"
+                android:autoSizeTextType="uniform"
+                android:fontFamily="@font/tahoma_bold"
+                android:gravity="center"
+                android:textSize="@dimen/text_18sp"
+                app:matrixType="@{vm.productInfo.matrixType}"
+                tools:background="@drawable/bg_white_circle"
+                tools:text="A" />
+        </FrameLayout>
+
+        <FrameLayout
+            android:id="@+id/sectionLayout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/size_8dp"
+            android:foreground="?selectableItemBackground"
+            android:onClick="@{(v) -> vm.screenNavigator.openSectionInfoScreen(vm.productInfo.sectionId)}"
+            android:padding="@dimen/size_8dp"
+            app:layout_constraintBottom_toBottomOf="@+id/b_scan"
+            app:layout_constraintStart_toEndOf="@+id/matrixLayout"
+            app:layout_constraintTop_toTopOf="@+id/b_scan">
+
+            <TextView
+                android:id="@+id/sectionText"
+                style="@style/NumberSectionTxt"
+                android:layout_width="@dimen/round_btn_size"
+                android:layout_height="@dimen/round_btn_size"
+                android:autoSizeTextType="uniform"
+                android:gravity="center"
+                android:text='@{"" + vm.productInfo.sectionId}'
+                tools:text="02" />
+
+        </FrameLayout>
+
+        <FrameLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="@dimen/size_8dp"
+            android:layout_marginStart="@dimen/size_8dp"
+            android:foreground="?selectableItemBackground"
+            app:layout_constraintBottom_toBottomOf="@+id/b_scan"
+            app:layout_constraintStart_toEndOf="@+id/sectionLayout"
+            app:layout_constraintTop_toTopOf="@+id/b_scan">
+
+            <ImageView
+                android:layout_width="@dimen/round_btn_size"
+                android:layout_height="@dimen/round_btn_size"
+                android:src="@drawable/ic_basket_24dp"
+                android:tint="@color/color_white"
+                android:layout_gravity="center_horizontal"
+                android:contentDescription="@string/basket" />
+
+            <TextView
+                android:layout_width="@dimen/round_btn_size"
+                android:layout_height="@dimen/round_btn_size"
+                android:textColor="@color/color_background"
+                android:fontFamily="@font/tahoma_bold"
+                android:textSize="@dimen/text_16sp"
+                android:gravity="center"
+                android:text="@{@string/task_goods_basket_number_format(vm.currentBasket.number)}"
+                tools:text="01" />
+        </FrameLayout>
+
+        <ImageButton
+            android:id="@+id/b_scan"
+            android:layout_width="@dimen/square_btn_size"
+            android:layout_height="@dimen/square_btn_size"
+            android:layout_marginEnd="@dimen/size_8dp"
+            android:layout_marginBottom="@dimen/size_8dp"
+            android:background="?selectableItemBackground"
+            android:onClick="@{(v) -> vm.screenNavigator.openEanInfoScreen()}"
+            android:scaleType="fitCenter"
+            android:src="@drawable/ic_scan_barcode_white_32dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:contentDescription="@string/barcode" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

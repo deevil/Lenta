@@ -1,2 +1,2 @@
 include ':open'
-include ':writeoff_breakage', ':Shared', ':planogram', ':goods_receiving',':work_list', ':hhive', ':inventory', ':HoneywellDataCollection', ':production', ':back_sales'
+include ':writeoff_breakage', ':Shared', ':planogram', ':goods_receiving',':work_list', ':hhive', ':inventory', ':HoneywellDataCollection', ':production', ':back_sales', ':movement'
