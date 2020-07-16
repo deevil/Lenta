@@ -1,6 +1,7 @@
 package com.lenta.movement.models
 
 import android.os.Parcelable
+import com.lenta.movement.requests.network.models.startConsolidation.StartConsolidationTaskComposition
 import kotlinx.android.parcel.Parcelize
 
 //EO item
@@ -24,7 +25,8 @@ data class ProcessingUnit(
          * 1 - не обработана
          * 2 - ЕО верхнего уровня
          * 3 - Объединена в ГЕ */
-        var state : State = State.NOT_PROCESSED
+        var state : State = State.NOT_PROCESSED,
+        val goods: List<StartConsolidationTaskComposition>? = null
 
 ) : Parcelable {
         enum class State {

@@ -22,14 +22,14 @@
         android:background="@drawable/bg_selectable">
 
         <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/vertical_guidline_1"
+            android:id="@+id/vertical_guideline_1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="vertical"
             app:layout_constraintGuide_percent="0.15" />
 
         <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/vertical_guidline_2"
+            android:id="@+id/vertical_guideline_2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="vertical"
@@ -43,7 +43,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toStartOf="@+id/vertical_guidline_1"
+            app:layout_constraintStart_toStartOf="@+id/vertical_guideline_1"
             app:layout_constraintTop_toTopOf="parent" />
 
         <View
@@ -54,7 +54,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toStartOf="@+id/vertical_guidline_2"
+            app:layout_constraintStart_toStartOf="@+id/vertical_guideline_2"
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
@@ -116,7 +116,7 @@
             android:src="@drawable/ic_keyboard_arrow_right_white_16dp"
             android:visibility="@{item.isClickable ? View.VISIBLE : View.GONE}"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/vertical_guidline_2"
+            app:layout_constraintEnd_toStartOf="@+id/vertical_guideline_2"
             app:layout_constraintTop_toTopOf="parent"
             tools:ignore="ContentDescription" />
 

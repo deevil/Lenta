@@ -24,4 +24,6 @@ interface ITaskManager {
     fun clear()
 
     fun getPrinterName() : String
+
+    fun getGoodName(goodNumber: String?) : String
 }

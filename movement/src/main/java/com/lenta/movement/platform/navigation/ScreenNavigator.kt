@@ -15,15 +15,13 @@ import com.lenta.movement.features.task.TaskFragment
 import com.lenta.movement.features.task.basket.TaskBasketFragment
 import com.lenta.movement.features.task.basket.info.TaskBasketInfoFragment
 import com.lenta.movement.features.task.eo.TaskEOMergeFragment
+import com.lenta.movement.features.task.eo.eo_insides.TaskEOMergeEOInsidesFragment
 import com.lenta.movement.features.task.eo.formedDocs.TaskEOMergeFormedDocsFragment
 import com.lenta.movement.features.task.eo.ge_insides.TaskEOMergeGEInsidesFragment
 import com.lenta.movement.features.task.goods.TaskGoodsFragment
 import com.lenta.movement.features.task.goods.details.TaskGoodsDetailsFragment
 import com.lenta.movement.features.task.goods.info.TaskGoodsInfoFragment
-import com.lenta.movement.models.CargoUnit
-import com.lenta.movement.models.ExciseBox
-import com.lenta.movement.models.ProductInfo
-import com.lenta.movement.models.Task
+import com.lenta.movement.models.*
 import com.lenta.movement.progress.IWriteOffProgressUseCaseInformator
 import com.lenta.movement.requests.network.models.documentsToPrint.DocumentsToPrintDocument
 import com.lenta.shared.account.IAuthenticator
@@ -349,6 +347,15 @@ class ScreenNavigator(
         }
     }
 
+    override fun openEOInsidesScreen(eo : ProcessingUnit) {
+        runOrPostpone {
+            getFragmentStack()
+                    ?.push(
+                            TaskEOMergeEOInsidesFragment.newInstance(eo)
+                    )
+        }
+    }
+
     companion object {
         private const val TASK_TO_MOVE = "Задания на перемещение"
         private const val ZERO_SELECTED_EO_PAGE_NUMBER = "02"
@@ -393,4 +400,5 @@ interface IScreenNavigator : ICoreNavigator {
     fun openTaskEoMergePrintConfirmationDialog(eoGeQuantity: Int, yesCallbackFunc: () -> Unit)
     fun openTaskEoMergePrintedDialog()
     fun openGEInsidesScreen(ge : CargoUnit)
+    fun openEOInsidesScreen(eo : ProcessingUnit)
 }

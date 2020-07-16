@@ -2,8 +2,11 @@ package com.lenta.movement.models
 
 import com.lenta.movement.fmp.resources.fast.*
 import com.lenta.shared.fmp.resources.fast.ZmpUtz26V001
+import com.lenta.shared.fmp.resources.slow.ZmpUtz30V001
 import com.lenta.shared.models.core.GisControl
+import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.extentions.isSapTrue
+import com.lenta.shared.utilities.orIfNull
 import com.mobrun.plugin.api.HyperHive
 
 @Suppress("INACCESSIBLE_TYPE")
@@ -17,6 +20,7 @@ class TaskManager(
     private val excludeProductsTable = ZmpUtz50V001(hyperHive).localHelper_ET_EXCLUDE_MATNR
     private val receiversTable = ZmpUtz79V001(hyperHive).localHelper_ET_PLANTS
     private val printerTable = ZmpUtz26V001(hyperHive).localHelper_ET_PRINTERS
+    private val goodsTable = ZmpUtz30V001(hyperHive).localHelper_ET_MATERIALS
 
     private var task: Task? = null
 
@@ -83,6 +87,15 @@ class TaskManager(
 
     override fun getPrinterName() : String {
         return printerTable.all.first().printerName
+    }
+
+    override fun getGoodName(goodNumber: String?): String {
+        return goodNumber?.let {
+            goodsTable.getWhere("MATERIAL = \"$goodNumber\"").first().name
+        }.orIfNull {
+            Logg.e { "goodNumber null" }
+            ""
+        }
     }
 
     override fun getTaskSettings(taskType: TaskType, movementType: MovementType): TaskSettings {

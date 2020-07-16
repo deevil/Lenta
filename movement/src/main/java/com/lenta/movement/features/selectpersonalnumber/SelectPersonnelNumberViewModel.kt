@@ -8,6 +8,7 @@ import com.lenta.shared.exception.Failure
 import com.lenta.shared.features.select_personnel_number.SelectPersonnelNumberDelegate
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
+import com.lenta.shared.utilities.extentions.map
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -28,6 +29,7 @@ class SelectPersonnelNumberViewModel : CoreViewModel(), OnOkInSoftKeyboardListen
 
     val editTextFocus = MutableLiveData<Boolean>()
     val nextButtonFocus = MutableLiveData<Boolean>()
+    val nextButtonEnabled = fullName.map { !it.isNullOrBlank() }
 
     private var codeConfirm: Int? = null
 
@@ -61,12 +63,7 @@ class SelectPersonnelNumberViewModel : CoreViewModel(), OnOkInSoftKeyboardListen
         return selectPersonnelNumberDelegate.onOkInSoftKeyboard()
     }
 
-    fun onClickNext() {
-        if (!selectPersonnelNumberDelegate.fullName.value.isNullOrBlank()) {
-            sessionInfo.personnelNumber = selectPersonnelNumberDelegate.personnelNumber.value
-            selectPersonnelNumberDelegate.onClickNext()
-        }
-    }
+    fun onClickNext() = selectPersonnelNumberDelegate.onClickNext()
 
     fun onResume() = selectPersonnelNumberDelegate.onResume()
 

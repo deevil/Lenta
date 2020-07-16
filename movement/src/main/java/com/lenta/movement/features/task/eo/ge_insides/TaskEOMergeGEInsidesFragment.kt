@@ -69,11 +69,7 @@ class TaskEOMergeGEInsidesFragment : CoreFragment<FragmentTaskEoMergeGeInsidesBi
                                 position = position)
                     },
                     onAdapterItemClicked = { position ->
-                        recyclerViewKeyHandler?.let {
-                            if (it.isSelected(position).not()) {
-                                it.selectPosition(position)
-                            }
-                        }
+                        vm.onEoItemClickListener(position)
                     }
             )
 
@@ -137,7 +133,7 @@ class TaskEOMergeGEInsidesFragment : CoreFragment<FragmentTaskEoMergeGeInsidesBi
 
 
     companion object {
-        private const val PAGE_NUMBER = "10/06"
+        private const val PAGE_NUMBER = "13/20"
 
         fun newInstance(inputGe : CargoUnit): TaskEOMergeGEInsidesFragment {
             return TaskEOMergeGEInsidesFragment().apply {

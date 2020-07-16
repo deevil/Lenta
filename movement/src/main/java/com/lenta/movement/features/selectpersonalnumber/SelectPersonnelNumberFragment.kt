@@ -44,6 +44,7 @@ class SelectPersonnelNumberFragment : CoreFragment<FragmentSelectPersonnelNumber
                 .uiModelButton1.show(ButtonDecorationInfo.back, enabled = codeConfirmation != null)
 
         connectLiveData(vm.nextButtonFocus, bottomToolbarUiModel.uiModelButton5.requestFocus)
+        connectLiveData(vm.nextButtonEnabled, bottomToolbarUiModel.uiModelButton5.enabled)
 
     }
 
