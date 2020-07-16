@@ -7,7 +7,7 @@
         android:layout_height="wrap_content">
 
         <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/vertical_guidline_1"
+            android:id="@+id/vertical_guideline_1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="vertical"
@@ -27,7 +27,7 @@
             android:maxLines="1"
             android:text="№ПП"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/vertical_guidline_1"
+            app:layout_constraintEnd_toStartOf="@+id/vertical_guideline_1"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias="1.0" />
@@ -47,7 +47,7 @@
             app:layout_constraintBottom_toTopOf="@+id/div_hor_bottom"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toEndOf="@+id/vertical_guidline_1"
+            app:layout_constraintStart_toEndOf="@+id/vertical_guideline_1"
             app:layout_constraintTop_toTopOf="parent" />
 
         <View

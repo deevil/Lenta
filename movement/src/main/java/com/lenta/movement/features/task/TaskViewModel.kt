@@ -53,7 +53,7 @@ class TaskViewModel : CoreViewModel(), PageSelectionListener {
     lateinit var taskManager: ITaskManager
 
     @Inject
-    lateinit var cargoUnitRepository : ICargoUnitRepository
+    lateinit var cargoUnitRepository: ICargoUnitRepository
 
     @Inject
     lateinit var formatter: IFormatter
@@ -219,7 +219,7 @@ class TaskViewModel : CoreViewModel(), PageSelectionListener {
                                                 taskNumber = taskValue.number,
                                                 mode = StartConsolidation.MODE_GET_TASK_COMP_CODE,
                                                 personnelNumber = personnelNumber,
-                                                withProductInfo = true.toSapBooleanString()
+                                                withProductInfo = false.toSapBooleanString()
                                         )
                                 )
                             } ?: Either.Left(
@@ -254,8 +254,10 @@ class TaskViewModel : CoreViewModel(), PageSelectionListener {
                                                 personnelNumber = personnelNumber
                                         )
                                 )
-                            } ?: Either.Left(PersonnelNumberFailure(context.getString(R.string.alert_null_personnel_number)))
-                        } ?: Either.Left(EmptyTaskFailure(context.getString(R.string.alert_null_task)))
+                            }
+                                    ?: Either.Left(PersonnelNumberFailure(context.getString(R.string.alert_null_personnel_number)))
+                        }
+                                ?: Either.Left(EmptyTaskFailure(context.getString(R.string.alert_null_task)))
                         either.either({ failure ->
                             screenNavigator.hideProgress()
                             screenNavigator.openAlertScreen(failure)

@@ -34,6 +34,7 @@ fun Taskable.toTask(): Task {
 }
 
 fun StartConsolidationProcessingUnit.convertToModel(goods: List<StartConsolidationTaskComposition>?): ProcessingUnit {
+    val eoGoods = goods?.filter { it.processingUnitNumber == this.processingUnitNumber }
     return ProcessingUnit(
             processingUnitNumber = processingUnitNumber,
             basketNumber = basketNumber,
@@ -41,7 +42,7 @@ fun StartConsolidationProcessingUnit.convertToModel(goods: List<StartConsolidati
             isAlco = isAlco.isSapTrue(),
             isUsual = isUsual.isSapTrue(),
             quantity = quantity,
-            goods = goods
+            goods = eoGoods
     )
 }
 

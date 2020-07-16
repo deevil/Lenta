@@ -5,7 +5,7 @@ import android.view.View
 import com.lenta.movement.BR
 import com.lenta.movement.R
 import com.lenta.movement.databinding.FragmentTaskEoMergeEoInsidesBinding
-import com.lenta.movement.databinding.LayoutItemSimpleBinding
+import com.lenta.movement.databinding.LayoutItemEoInsidesGoodsListBinding
 import com.lenta.movement.models.ProcessingUnit
 import com.lenta.movement.platform.extensions.getAppComponent
 import com.lenta.shared.keys.KeyCode
@@ -14,15 +14,12 @@ import com.lenta.shared.platform.activity.OnBackPresserListener
 import com.lenta.shared.platform.fragment.CoreFragment
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
-import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListener
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
-import com.lenta.shared.utilities.extentions.connectLiveData
 import com.lenta.shared.utilities.extentions.provideViewModel
 import com.lenta.shared.utilities.state.state
 
 /** Список вложенных ЕО (при нажатии на элемент в списке ГЕ на экране Объединение ЕО (TaskEOMergeFragment)*/
 class TaskEOMergeEOInsidesFragment : CoreFragment<FragmentTaskEoMergeEoInsidesBinding, TaskEOMergeEOInsidesViewModel>(),
-        ToolbarButtonsClickListener,
         OnBackPresserListener,
         OnKeyDownListener {
 
@@ -45,23 +42,13 @@ class TaskEOMergeEOInsidesFragment : CoreFragment<FragmentTaskEoMergeEoInsidesBi
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val onClickSelectionListener = View.OnClickListener { clickListener ->
-            clickListener?.let {
-                val position = it.tag as Int
-                vm.selectionsHelper.revert(position = position)
-                binding?.recyclerView?.adapter?.notifyItemChanged(position)
-            }
-        }
 
         binding?.apply {
-            val vm = this@TaskEOMergeEOInsidesFragment.vm
             rvConfig = initRecycleAdapterDataBinding(
-                    layoutId = R.layout.layout_item_simple,
+                    layoutId = R.layout.layout_item_eo_insides_goods_list,
                     itemId = BR.item,
-                    onAdapterItemBind = { binding: LayoutItemSimpleBinding, position ->
+                    onAdapterItemBind = { binding: LayoutItemEoInsidesGoodsListBinding, position ->
                         binding.tvCounter.tag = position
-                        binding.tvCounter.setOnClickListener(onClickSelectionListener)
-                        binding.selectedForDelete = vm.selectionsHelper.isSelected(position)
                         onAdapterBindHandler(
                                 bindItem = binding,
                                 position = position)
@@ -84,26 +71,14 @@ class TaskEOMergeEOInsidesFragment : CoreFragment<FragmentTaskEoMergeEoInsidesBi
     }
 
     override fun setupTopToolBar(topToolbarUiModel: TopToolbarUiModel) {
-        topToolbarUiModel.title.value = vm.getTitle()
-        topToolbarUiModel.description.value = getString(R.string.list_of_eo_inside)
+        topToolbarUiModel.title.value = getString(R.string.list_of_eo_goods)
+        topToolbarUiModel.description.value = vm.getTitle()
     }
 
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
         bottomToolbarUiModel.cleanAll()
-
         bottomToolbarUiModel.uiModelButton1.show(ButtonDecorationInfo.back)
-        bottomToolbarUiModel.uiModelButton4.show(ButtonDecorationInfo.exclude)
-        bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.next)
-
-        connectLiveData(vm.isExcludeBtnEnabled, bottomToolbarUiModel.uiModelButton4.enabled)
     }
-
-    override fun onToolbarButtonClick(view: View) {
-        when (view.id) {
-            R.id.b_5 -> onBackPressed()
-        }
-    }
-
 
     override fun onBackPressed(): Boolean {
         vm.onBackPressed()
@@ -126,7 +101,7 @@ class TaskEOMergeEOInsidesFragment : CoreFragment<FragmentTaskEoMergeEoInsidesBi
 
 
     companion object {
-        private const val PAGE_NUMBER = "10/06"
+        private const val PAGE_NUMBER = "13/21"
 
         fun newInstance(inputEo : ProcessingUnit): TaskEOMergeEOInsidesFragment {
             return TaskEOMergeEOInsidesFragment().apply {

@@ -22,7 +22,9 @@ data class StartConsolidationParams(
         @SerializedName("IV_PERNR")
         val personnelNumber: String,
 
-        /**Необходимость заполнения справочных данных*/
+        /** Флаг: необходимость заполнения справочных данных,
+         * если SlowData справочник товаров ZMP_UTZ_30_V001 не пришел еще,
+         * то сервер пришлёт его сейчас */
         @SerializedName("IV_MATNR_DATA_FLG")
         val withProductInfo: String
 )

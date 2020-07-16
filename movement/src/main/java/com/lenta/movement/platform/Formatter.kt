@@ -1,6 +1,7 @@
 package com.lenta.movement.platform
 
 import com.lenta.movement.models.*
+import com.lenta.shared.models.core.Uom
 
 class Formatter : IFormatter {
 
@@ -111,16 +112,16 @@ class Formatter : IFormatter {
         val isAlco = eo.isAlco ?: false
         val isUsual = eo.isUsual ?: false
         return buildString {
-                append("№${eo.basketNumber}")
-                append(
-                        when {
-                            isAlco -> SLASH_AND_ALCO_CHAR
-                            isUsual -> SLASH_AND_USUAL_CHAR
-                            else -> ""
-                        }
-                )
-                append(eo.supplier.orEmpty())
-            }
+            append("№${eo.basketNumber}")
+            append(
+                    when {
+                        isAlco -> SLASH_AND_ALCO_CHAR
+                        isUsual -> SLASH_AND_USUAL_CHAR
+                        else -> ""
+                    }
+            )
+            append(eo.supplier.orEmpty())
+        }
     }
 
     override fun getGETitle(ge: CargoUnit): String {
@@ -131,6 +132,17 @@ class Formatter : IFormatter {
             ge.number
         }
     }
+
+    override fun getOrderUnitsNameByCode(orderUnits: String): String =
+            when (orderUnits) {
+                Uom.DEFAULT.code -> Uom.DEFAULT.name
+                Uom.G.code -> Uom.G.name
+                Uom.KAR.code -> Uom.KAR.name
+                Uom.KG.code -> Uom.KG.name
+                Uom.ST.code -> Uom.KG.name
+                else -> "Wrong uom code"
+            }
+
 
     companion object {
         private const val A_AND_SLASH = "A/"

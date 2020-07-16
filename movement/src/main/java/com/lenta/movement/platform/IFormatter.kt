@@ -24,4 +24,6 @@ interface IFormatter {
     fun getEOSubtitleForInsides(eo: ProcessingUnit): String
 
     fun getGETitle(ge: CargoUnit) : String
+
+    fun getOrderUnitsNameByCode(orderUnits: String) : String
 }

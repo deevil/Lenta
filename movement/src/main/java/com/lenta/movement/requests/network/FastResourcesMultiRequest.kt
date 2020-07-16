@@ -2,10 +2,12 @@ package com.lenta.movement.requests.network
 
 import com.lenta.movement.fmp.resources.fast.*
 import com.lenta.shared.fmp.resources.fast.ZmpUtz07V001
-import com.lenta.shared.fmp.resources.fast.ZmpUtz26V001
 import com.lenta.shared.fmp.resources.fast.ZmpUtz14V001
+import com.lenta.shared.fmp.resources.fast.ZmpUtz26V001
 import com.lenta.shared.fmp.resources.fast.ZmpUtz38V001
+import com.lenta.shared.fmp.resources.slow.ZmpUtz22V001
 import com.lenta.shared.fmp.resources.slow.ZmpUtz25V001
+import com.lenta.shared.fmp.resources.slow.ZmpUtz30V001
 import com.lenta.shared.requests.network.CoreResourcesMultiRequest
 import com.mobrun.plugin.api.HyperHive
 import com.mobrun.plugin.api.request_assistant.CustomParameter
@@ -25,18 +27,14 @@ class FastResourcesMultiRequest @Inject constructor(
                 ZmpUtz14V001.NAME_RESOURCE to ZmpUtz14V001(hyperHive).newRequest(),
                 ZmpUtz26V001.NAME_RESOURCE to ZmpUtz26V001(hyperHive).newRequest(),
                 ZmpUtz38V001.NAME_RESOURCE to ZmpUtz38V001(hyperHive).newRequest(),
-                // TODO MB_S_45
                 ZmpUtz47V001.NAME_RESOURCE to ZmpUtz47V001(hyperHive).newRequest(),
                 ZmpUtz48V001.NAME_RESOURCE to ZmpUtz48V001(hyperHive).newRequest(),
                 ZmpUtz49V001.NAME_RESOURCE to ZmpUtz49V001(hyperHive).newRequest(),
                 ZmpUtz50V001.NAME_RESOURCE to ZmpUtz50V001(hyperHive).newRequest(),
                 ZmpUtz79V001.NAME_RESOURCE to ZmpUtz79V001(hyperHive).newRequest(),
-
-                //TODO удалить загрузку SlowData после добавления в FMP sdk возможности обращения к базе во время синхронизации
-
-                ZmpUtz25V001.NAME_RESOURCE to ZmpUtz25V001(hyperHive).newRequest()
-                // TODO MB_S_30
-                // TODO MB_S_22
+                ZmpUtz25V001.NAME_RESOURCE to ZmpUtz25V001(hyperHive).newRequest(),
+                ZmpUtz30V001.NAME_RESOURCE to ZmpUtz30V001(hyperHive).newRequest(),
+                ZmpUtz22V001.NAME_RESOURCE to ZmpUtz22V001(hyperHive).newRequest()
         )
     }
 

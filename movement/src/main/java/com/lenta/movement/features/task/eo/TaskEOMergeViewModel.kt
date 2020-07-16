@@ -323,7 +323,9 @@ class TaskEOMergeViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
     }
 
     fun onClickEOListItem(position: Int) {
-
+        val eoListValue = cargoUnitRepository.getEOList()
+        val eo = eoListValue[position]
+        screenNavigator.openEOInsidesScreen(eo)
     }
 
     fun onClickGEListItem(position: Int) {
@@ -331,10 +333,7 @@ class TaskEOMergeViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
         val ge = geListValue[position]
         val geEoList = ge.eoList
         if (geEoList.isEmpty()) {
-            Logg.e {
-                "geEoList is empty"
-            }
-            // OPEN EO INSIDES SCREEN
+            onClickEOListItem(position)
         } else {
             val selectedGe = cargoUnitRepository.getSelectedGE(position)
             screenNavigator.openGEInsidesScreen(selectedGe)

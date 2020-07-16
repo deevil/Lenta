@@ -2,13 +2,15 @@ package com.lenta.movement.features.task.eo.eo_insides
 
 import android.content.Context
 import androidx.lifecycle.MutableLiveData
+import com.lenta.movement.models.ITaskManager
 import com.lenta.movement.models.ProcessingUnit
 import com.lenta.movement.models.SimpleListItem
+import com.lenta.movement.models.repositories.ITaskBasketsRepository
+import com.lenta.movement.platform.IFormatter
 import com.lenta.movement.platform.extensions.unsafeLazy
 import com.lenta.movement.platform.navigation.IScreenNavigator
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.Logg
-import com.lenta.shared.utilities.SelectionItemsHelper
 import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
 import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.utilities.orIfNull
@@ -22,7 +24,14 @@ class TaskEOMergeEOInsidesViewModel : CoreViewModel(), OnOkInSoftKeyboardListene
     @Inject
     lateinit var screenNavigator: IScreenNavigator
 
-    val selectionsHelper = SelectionItemsHelper()
+    @Inject
+    lateinit var taskManager: ITaskManager
+
+    @Inject
+    lateinit var taskBasketsRepository: ITaskBasketsRepository
+
+    @Inject
+    lateinit var formatter: IFormatter
 
     val eanCode: MutableLiveData<String> = MutableLiveData()
     val requestFocusToEan: MutableLiveData<Boolean> = MutableLiveData()
@@ -33,11 +42,20 @@ class TaskEOMergeEOInsidesViewModel : CoreViewModel(), OnOkInSoftKeyboardListene
         eo.map { eo ->
             eo?.let { eoValue ->
                 eoValue.goods?.mapIndexed { index, good ->
+                    val orderUnits = good.orderUnits?.let { units ->
+                        formatter.getOrderUnitsNameByCode(units)
+                    }.orIfNull {
+                        Logg.e {
+                            "UOM null"
+                        }
+                        ERROR
+                    }
                     SimpleListItem(
                             number = index + 1,
-                            title = good.materialNumber.orEmpty(),
+                            title = "${getMaterialLastSix(good.materialNumber.orEmpty())} " +
+                                    taskManager.getGoodName(good.materialNumber),
                             subtitle = "",
-                            countWithUom = "${good.quantity} ${good.orderUnits}",
+                            countWithUom = "${good.quantity?.toDouble()?.toInt()} $orderUnits",
                             isClickable = false
                     )
                 }
@@ -45,13 +63,10 @@ class TaskEOMergeEOInsidesViewModel : CoreViewModel(), OnOkInSoftKeyboardListene
         }
     }
 
-
-    val isExcludeBtnEnabled by unsafeLazy {
-        selectionsHelper.selectedPositions.map { setOfSelectedItems ->
-            setOfSelectedItems?.size?.let {
-                it > 0
-            }
-        }
+    private fun getMaterialLastSix(materialNumber: String): String {
+        return if (materialNumber.length > 6)
+            materialNumber.substring(materialNumber.length - 6)
+        else materialNumber
     }
 
     fun getTitle(): String {
@@ -59,7 +74,7 @@ class TaskEOMergeEOInsidesViewModel : CoreViewModel(), OnOkInSoftKeyboardListene
             "$EO-${it.processingUnitNumber}"
         }.orIfNull {
             Logg.e {
-                "eoList is null"
+                "eo is null"
             }
             ERROR
         }
