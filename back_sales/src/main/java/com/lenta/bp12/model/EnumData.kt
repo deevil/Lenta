@@ -77,3 +77,8 @@ enum class ScanInfoMode(val mode: Int){
     BOX(2),
     PART(3)
 }
+
+enum class TaskSearchMode(val mode: Int){
+    COMMON(1),
+    WITH_PARAMS(2)
+}
