@@ -2,6 +2,7 @@ package com.lenta.bp9.repos
 
 import com.lenta.shared.fmp.resources.dao_ext.*
 import com.lenta.shared.fmp.resources.fast.ZmpUtz14V001
+import com.lenta.shared.fmp.resources.fast.ZmpUtz17V001
 import com.lenta.shared.fmp.resources.fast.ZmpUtz20V001
 import com.lenta.shared.requests.combined.scan_info.pojo.QualityInfo
 import com.lenta.shared.requests.combined.scan_info.pojo.ReasonRejectionInfo
@@ -12,7 +13,7 @@ import kotlinx.coroutines.withContext
 class DataBaseRepo(
         hyperHive: HyperHive,
         private val zmpUtz14V001: ZmpUtz14V001 = ZmpUtz14V001(hyperHive), //параметры
-        private val zmpUtz17V001: ZmpUtz45V001 = ZmpUtz45V001(hyperHive), //Качество
+        private val zmpUtz17V001: ZmpUtz17V001 = ZmpUtz17V001(hyperHive), //Качество
         private val zmpUtz20V001: ZmpUtz20V001 = ZmpUtz20V001(hyperHive) //Причины отказа
 
 ) : IDataBaseRepo {
