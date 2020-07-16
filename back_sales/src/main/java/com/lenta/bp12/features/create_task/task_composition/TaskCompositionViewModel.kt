@@ -4,6 +4,7 @@ import androidx.lifecycle.MutableLiveData
 import com.lenta.bp12.model.ICreateTaskManager
 import com.lenta.bp12.model.pojo.create_task.Basket
 import com.lenta.bp12.platform.navigation.IScreenNavigator
+import com.lenta.bp12.platform.resource.IResourceManager
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.platform.constants.Constants
@@ -31,6 +32,9 @@ class TaskCompositionViewModel : CoreViewModel(), PageSelectionListener, OnOkInS
     @Inject
     lateinit var deviceInfo: DeviceInfo
 
+    @Inject
+    lateinit var resource: IResourceManager
+
 
     val goodSelectionsHelper = SelectionItemsHelper()
 
@@ -44,7 +48,7 @@ class TaskCompositionViewModel : CoreViewModel(), PageSelectionListener, OnOkInS
 
     val title by lazy {
         task.map { task ->
-            "${task?.taskType?.code} // ${task?.name}"
+            task?.getFormattedName()
         }
     }
 
@@ -55,29 +59,33 @@ class TaskCompositionViewModel : CoreViewModel(), PageSelectionListener, OnOkInS
     }
 
     val goods by lazy {
-        task.map { task ->
-            task?.goods!!.mapIndexed { index, good ->
-                ItemGoodUi(
-                        material = good.material,
-                        position = "${task.goods.size - index}",
-                        name = good.getNameWithMaterial(),
-                        quantity = "${good.getTotalQuantity().dropZeros()} ${good.convertingUnits.name}"
-                )
+        task.map {
+            it?.let { task ->
+                task.goods.mapIndexed { index, good ->
+                    ItemGoodUi(
+                            material = good.material,
+                            position = "${task.goods.size - index}",
+                            name = good.getNameWithMaterial(),
+                            quantity = "${good.getTotalQuantity().dropZeros()} ${good.commonUnits.name}"
+                    )
+                }
             }
         }
     }
 
     val baskets by lazy {
-        task.map { task ->
-            task?.baskets!!.reversed().mapIndexed { index, basket ->
-                val position = task.baskets.size - index
-                ItemBasketUi(
-                        basket = basket,
-                        position = "$position",
-                        name = "Корзина $position",
-                        description = basket.getDescription(task.taskType.isDivBySection),
-                        quantity = task.getQuantityByBasket(basket).dropZeros()
-                )
+        task.map {
+            it?.let { task ->
+                task.baskets.reversed().mapIndexed { index, basket ->
+                    val position = task.baskets.size - index
+                    ItemBasketUi(
+                            basket = basket,
+                            position = "$position",
+                            name = resource.basket("$position"),
+                            description = basket.getDescription(task.taskType.isDivBySection),
+                            quantity = "${task.getCountByBasket(basket)}"
+                    )
+                }
             }
         }
     }
@@ -130,7 +138,8 @@ class TaskCompositionViewModel : CoreViewModel(), PageSelectionListener, OnOkInS
 
     private fun checkEnteredNumber(number: String) {
         number.length.let { length ->
-            if (length >= Constants.SAP_6) {
+            if (length >= Constants.SAP_6 && length != Constants.BOX_26 &&
+                    length != Constants.MARK_68 && length != Constants.MARK_150) {
                 manager.searchNumber = number
                 manager.searchGoodFromList = true
                 numberField.value = ""
@@ -177,7 +186,6 @@ class TaskCompositionViewModel : CoreViewModel(), PageSelectionListener, OnOkInS
                     userNumber = sessionInfo.personnelNumber.orEmpty()
             )
 
-            manager.finishCurrentTask()
             navigator.openSaveDataScreen()
         }
     }

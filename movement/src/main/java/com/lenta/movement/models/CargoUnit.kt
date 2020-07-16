@@ -6,5 +6,5 @@ import kotlinx.android.parcel.Parcelize
 @Parcelize
 data class CargoUnit(
         val number : String,
-        val eoList: List<ProcessingUnit>
+        val eoList: MutableList<ProcessingUnit>
 ) : Parcelable

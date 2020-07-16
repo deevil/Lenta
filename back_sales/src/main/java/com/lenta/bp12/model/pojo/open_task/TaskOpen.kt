@@ -1,7 +1,6 @@
 package com.lenta.bp12.model.pojo.open_task
 
 import com.lenta.bp12.model.ControlType
-import com.lenta.bp12.model.TaskStatus
 import com.lenta.bp12.model.pojo.Block
 import com.lenta.bp12.model.pojo.ReturnReason
 import com.lenta.bp12.model.pojo.TaskType
@@ -27,8 +26,7 @@ data class TaskOpen(
         val goods: MutableList<GoodOpen> = mutableListOf(),
 
         val isStrict: Boolean,
-        var isFinished: Boolean,
-        var status: TaskStatus = TaskStatus.COMMON
+        var isFinished: Boolean
 ) {
 
     fun getProviderCodeWithName(): String {

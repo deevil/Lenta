@@ -21,7 +21,7 @@
     <string name="categories">Категории</string>
     <string name="processing">К обработке</string>
     <string name="search">Поиск</string>
-    <string name="not_processed">Не обработанные</string>
+    <string name="to_processing">К обработке</string>
     <string name="processed">Обработанные</string>
     <string name="task_type">Тип задания</string>
     <string name="comment">Комментарий</string>
@@ -98,5 +98,6 @@
     <string name="specify_supplier_sap">Укажите SAP-код поставщика</string>
     <string name="supplier_name">Наименование поставщика:</string>
     <string name="all_suppliers">Все поставщики</string>
+    <string name="picking_warehouse">Склад\nкомплектации</string>
 
 </resources>

@@ -6,6 +6,7 @@ import com.lenta.bp12.model.GoodKind
 import com.lenta.bp12.request.GoodInfoResult
 import com.lenta.shared.fmp.resources.slow.ZfmpUtz48V001
 import com.lenta.shared.utilities.extentions.isSapTrue
+import java.math.BigInteger
 
 fun GoodKind.getDescriptionResId(): Int {
     return when (this) {
@@ -55,4 +56,16 @@ fun String.addZerosToStart(targetLength: Int): String {
     }
 
     return value
+}
+
+fun ControlType.isCommon(): Boolean {
+    return this == ControlType.COMMON
+}
+
+fun ControlType.isAlcohol(): Boolean {
+    return this == ControlType.ALCOHOL
+}
+
+fun String.extractAlcoCode(): String {
+    return BigInteger(this.substring(7, 19), 36).toString().padStart(19, '0')
 }

@@ -5,6 +5,5 @@ data class Mark(
         var material: String,
         var boxNumber: String = "",
         var isBadMark: Boolean,
-        var providerCode: String,
-        var producerCode: String
+        var providerCode: String
 )

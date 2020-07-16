@@ -21,6 +21,7 @@ interface IFormatter {
     fun basketGisControl(basket: Basket): String
 
     fun getEOSubtitle(eo: ProcessingUnit) : String
+    fun getEOSubtitleForInsides(eo: ProcessingUnit): String
 
     fun getGETitle(ge: CargoUnit) : String
 }
