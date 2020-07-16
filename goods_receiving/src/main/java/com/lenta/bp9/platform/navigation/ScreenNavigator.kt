@@ -1169,7 +1169,7 @@ class ScreenNavigator(
         }
     }
 
-    override fun openAlertGoodsNotInInvoiceScreen(materialNumber: String, materialName: String, callbackFunc: () -> Unit) {
+    override fun openAlertNoBoxSelectionRequiredScreen(materialNumber: String, materialName: String, callbackFunc: () -> Unit) {
         runOrPostpone {
             getFragmentStack()?.push(AlertFragment.create(
                     message = context.getString(R.string.no_box_selection_required, materialNumber, materialName),
@@ -1646,7 +1646,7 @@ interface IScreenNavigator : ICoreNavigator {
     fun openAlertScannedStampIsAlreadyProcessedScreen()
     fun openDiscrepancyScannedMarkCurrentBoxDialog(yesCallbackFunc: () -> Unit, currentBoxNumber: String, realBoxNumber: String, paramGrzCrGrundcatName: String)
     fun openAlertScannedBoxNotFoundInDeliveryScreen()
-    fun openAlertGoodsNotInInvoiceScreen(materialNumber: String, materialName: String, callbackFunc: () -> Unit)
+    fun openAlertNoBoxSelectionRequiredScreen(materialNumber: String, materialName: String, callbackFunc: () -> Unit)
     fun openAlertMoreBoxesSelectedThanSnteredScreen()
     fun openExciseAlcoBoxProductFailureScreen(productInfo: TaskProductInfo)
     fun openCompleteRejectionOfGoodsDialog(applyCallbackFunc: () -> Unit, title: String, countBoxes: String, paramGrzCrGrundcatName: String)

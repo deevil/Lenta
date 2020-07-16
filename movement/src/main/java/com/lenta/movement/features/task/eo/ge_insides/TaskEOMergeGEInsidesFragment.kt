@@ -135,9 +135,9 @@ class TaskEOMergeGEInsidesFragment : CoreFragment<FragmentTaskEoMergeGeInsidesBi
     companion object {
         private const val PAGE_NUMBER = "13/20"
 
-        fun newInstance(ge : CargoUnit): TaskEOMergeGEInsidesFragment {
+        fun newInstance(inputGe : CargoUnit): TaskEOMergeGEInsidesFragment {
             return TaskEOMergeGEInsidesFragment().apply {
-                this.ge = ge
+               ge = inputGe
             }
         }
     }

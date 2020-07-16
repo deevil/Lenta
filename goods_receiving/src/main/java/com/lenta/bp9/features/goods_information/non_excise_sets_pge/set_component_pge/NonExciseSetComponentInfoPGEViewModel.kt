@@ -145,7 +145,7 @@ class NonExciseSetComponentInfoPGEViewModel : CoreViewModel(),
             batch.egais == getManufactureCode(spinManufacturersSelectedPosition.value ?: 0) &&
                     batch.bottlingDate == bottlingDate &&
                     batch.processingUnitNumber == spinProcessingUnit.value?.get(spinProcessingUnitSelectedPosition.value
-                    ?: 0)?.substring(context.getString(R.string.spin_processing_unit).length)
+                    ?: 0)?.substring(context.getString(R.string.prefix_processing_unit).length)
         }
 
         if (batchSelected != null && count.value != null && setInfo.value != null && typeDiscrepancies.value != null) {
@@ -215,7 +215,7 @@ class NonExciseSetComponentInfoPGEViewModel : CoreViewModel(),
         }?.groupBy { gIt ->
             gIt.processingUnitNumber
         }?.map { mIt ->
-            "${context.getString(R.string.spin_processing_unit)}${mIt.key}"
+            "${context.getString(R.string.prefix_processing_unit)}${mIt.key}"
         }
         spinProcessingUnitSelectedPosition.value = 0
         spinProcessingUnit.value = listProcessingUnitNumber

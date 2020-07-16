@@ -44,7 +44,8 @@ class LoadingTransmittedViewModel : CoreLoadingViewModel() {
                 val params = TransmittedParams(
                         taskNumber = task.taskHeader.taskNumber,
                         deviceIP = context.getDeviceIp(),
-                        personnelNumber = sessionInfo.personnelNumber ?: "",
+                        personnelNumber = sessionInfo.personnelNumber.orEmpty(),
+                        printerName = sessionInfo.printer.orEmpty(),
                         unbindVSD = ""
                 )
                 transmittedNetRequest(params).either(::handleFailure, ::handleSuccess)

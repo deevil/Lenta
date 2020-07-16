@@ -10,6 +10,7 @@ import com.lenta.bp9.model.task.IReceivingTaskManager
 import com.lenta.bp9.model.task.TaskBoxInfo
 import com.lenta.bp9.model.task.TaskExciseStampInfo
 import com.lenta.bp9.model.task.TaskProductInfo
+import com.lenta.bp9.platform.TypeDiscrepanciesConstants
 import com.lenta.bp9.platform.navigation.IScreenNavigator
 import com.lenta.bp9.repos.IDataBaseRepo
 import com.lenta.bp9.repos.IRepoInMemoryHolder
@@ -21,11 +22,10 @@ import com.lenta.shared.fmp.resources.dao_ext.getProductInfoByMaterial
 import com.lenta.shared.fmp.resources.slow.ZfmpUtz48V001
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.requests.combined.scan_info.pojo.QualityInfo
-import com.lenta.shared.requests.combined.scan_info.pojo.ReasonRejectionInfo
 import com.lenta.shared.utilities.extentions.combineLatest
 import com.lenta.shared.utilities.extentions.map
-import com.lenta.shared.utilities.extentions.mapSkipNulls
 import com.lenta.shared.utilities.extentions.toStringFormatted
+import com.lenta.shared.utilities.orIfNull
 import com.lenta.shared.view.OnPositionClickListener
 import com.mobrun.plugin.api.HyperHive
 import kotlinx.coroutines.launch
@@ -36,18 +36,25 @@ class ExciseAlcoBoxCardPGEViewModel : CoreViewModel(), OnPositionClickListener {
 
     @Inject
     lateinit var screenNavigator: IScreenNavigator
+
     @Inject
     lateinit var taskManager: IReceivingTaskManager
+
     @Inject
     lateinit var processExciseAlcoBoxAccPGEService: ProcessExciseAlcoBoxAccPGEService
+
     @Inject
     lateinit var dataBase: IDataBaseRepo
+
     @Inject
     lateinit var context: Context
+
     @Inject
     lateinit var repoInMemoryHolder: IRepoInMemoryHolder
+
     @Inject
     lateinit var hyperHive: HyperHive
+
     @Inject
     lateinit var zmpUtzGrz31V001NetRequest: ZmpUtzGrz31V001NetRequest
 
@@ -87,10 +94,8 @@ class ExciseAlcoBoxCardPGEViewModel : CoreViewModel(), OnPositionClickListener {
     private val qualityInfo: MutableLiveData<List<QualityInfo>> = MutableLiveData()
     private val scannedBoxNumber: MutableLiveData<String> = MutableLiveData("")
     private val modifications: MutableLiveData<Boolean> = MutableLiveData(false)
-    private val isExciseStampSurplus: MutableLiveData<Boolean> = MutableLiveData(false)
 
     val count: MutableLiveData<String> = MutableLiveData()
-    private val countValue: MutableLiveData<Double> = count.map { it?.toDoubleOrNull() ?: 0.0 }
     private val countExciseStampsScanned: MutableLiveData<Int> = MutableLiveData(0)
     val isEizUnit: MutableLiveData<Boolean> = MutableLiveData(true)
     val enabledETQuantity: MutableLiveData<Boolean> = isEizUnit.combineLatest(isBoxNotIncludedInNetworkLenta).map {
@@ -153,7 +158,10 @@ class ExciseAlcoBoxCardPGEViewModel : CoreViewModel(), OnPositionClickListener {
         //ПГЕ https://trello.com/c/iOmIb6N7
         if (boxInfo.value != null && isBoxNotIncludedInNetworkLenta.value == false) {
             processExciseAlcoBoxAccPGEService.stampControlOfBox(boxInfo.value!!)
-        } else (it ?: 0) > 0 && isBoxNotIncludedInNetworkLenta.value == true //https://trello.com/c/6NyHp2jB устанавливать чек при первом добавлении марки
+        } else { //https://trello.com/c/6NyHp2jB устанавливать чек при первом добавлении марки
+            val countExciseStampsScannedValue = it ?: 0
+            countExciseStampsScannedValue > 0 && isBoxNotIncludedInNetworkLenta.value == true
+        }
     }
 
     val tvBoxTotalVal: MutableLiveData<String> = countExciseStampsScanned.map {
@@ -210,54 +218,56 @@ class ExciseAlcoBoxCardPGEViewModel : CoreViewModel(), OnPositionClickListener {
 
     @SuppressLint("SimpleDateFormat")
     private val formatterRU = SimpleDateFormat("dd.MM.yyyy")
+
     @SuppressLint("SimpleDateFormat")
     private val formatterEN = SimpleDateFormat("yyyy-MM-dd")
 
     init {
         viewModelScope.launch {
-            count.value = processExciseAlcoBoxAccPGEService.getInitialCount().toStringFormatted()
+            count.value = COUNT_BOXES_DEFAULT
             suffix.value = productInfo.value?.purchaseOrderUnits?.name
 
             if (isBoxNotIncludedInNetworkLenta.value == true) { //https://trello.com/c/6NyHp2jB
                 qualityInfo.value = dataBase.getSurplusInfoForPGE()
                 onClickUnitChange() //вызываем, чтобы Отображать пиктограмму «БЕИ».
                 visibilityImgUnit.value = false //Кнопка недоступна для нажатия.
-                count.value = processExciseAlcoBoxAccPGEService.getInitialCount().toStringFormatted() //при вызове onClickUnitChange() подставится 0, поэтому обновляем эту переменную здессь
+                count.value = COUNT_BOXES_DEFAULT //при вызове onClickUnitChange() подставится 0, поэтому обновляем эту переменную здессь
             } else {
                 qualityInfo.value = dataBase.getQualityInfoPGENotSurplusNotUnderload()
             }
-            spinQuality.value = qualityInfo.value?.map {
-                it.name
-            }
+            spinQuality.value = qualityInfo.value?.map { it.name }
 
-            val positionQuality = qualityInfo.value?.indexOfLast {it.code == selectQualityCode.value} ?: 0
-            spinQualitySelectedPosition.value = if (positionQuality == -1) {
-                0
-            } else {
-                positionQuality
-            }
+            val positionQuality = qualityInfo.value?.indexOfLast { it.code == selectQualityCode.value }
+                    ?: 0
+            spinQualitySelectedPosition.value = if (positionQuality == -1) 0 else positionQuality
 
-            if (exciseStampInfo.value != null) { //значит была отсканирована марка
+            val exciseStampInfoValue = exciseStampInfo.value
+            if (exciseStampInfoValue != null) { //значит была отсканирована марка
                 //https://trello.com/c/iOmIb6N7 ситуация 2 по карточке, но в WM работает иначе, отображается ЕИЗ, а не БЕИ, здесь реализовано ка на WM
-                boxInfo.value = taskManager.getReceivingTask()?.taskRepository?.getBoxes()?.getBoxes()?.findLast {
-                    it.boxNumber == exciseStampInfo.value!!.boxNumber
-                }
+                boxInfo.value = taskManager
+                        .getReceivingTask()
+                        ?.taskRepository
+                        ?.getBoxes()
+                        ?.getBoxes()
+                        ?.findLast {
+                            it.boxNumber == exciseStampInfoValue.boxNumber
+                        }
             }
         }
     }
 
-    fun getDescription() : String {
+    fun getDescription(): String {
         return if (massProcessingBoxesNumber.value != null) {
             context.getString(R.string.bulk_box_processing)
         } else {
             val boxNumber = if (exciseStampInfo.value != null) { //значит была отсканирована марка
-                taskManager.getReceivingTask()?.taskRepository?.getBoxes()?.getBoxes()?.findLast {box ->
+                taskManager.getReceivingTask()?.taskRepository?.getBoxes()?.getBoxes()?.findLast { box ->
                     box.boxNumber == exciseStampInfo.value!!.boxNumber
                 }?.boxNumber
             } else {
                 boxInfo.value?.boxNumber
             }
-            "${boxNumber?.substring(0,4)}...${boxNumber?.substring(boxNumber.length - 10)}"
+            "${boxNumber?.substring(0, 4)}...${boxNumber?.substring(boxNumber.length - 10)}"
         }
     }
 
@@ -269,10 +279,10 @@ class ExciseAlcoBoxCardPGEViewModel : CoreViewModel(), OnPositionClickListener {
         val lastExciseStampInfo = processExciseAlcoBoxAccPGEService.getLastAddExciseStamp()
         val manufacturerCode = taskManager.getReceivingTask()?.taskRepository?.getBatches()?.getBatches()?.findLast {
             it.batchNumber == lastExciseStampInfo?.batchNumber
-        }?.egais ?: ""
+        }?.egais.orEmpty()
         val manufacturerName = repoInMemoryHolder.manufacturers.value?.findLast {
             it.code == manufacturerCode
-        }?.name ?: ""
+        }?.name.orEmpty()
         spinManufacturers.value = listOf(manufacturerName)
 
         val dateOfPour = taskManager.getReceivingTask()?.taskRepository?.getBatches()?.getBatches()?.findLast {
@@ -292,22 +302,25 @@ class ExciseAlcoBoxCardPGEViewModel : CoreViewModel(), OnPositionClickListener {
     fun onClickAdd() {
         visibilityImgUnit.value = false //https://trello.com/c/iOmIb6N7  кнопка изменения ЕИ доступна, пока данная коробка не была сохранена в обработанные по кнопке "Добавить"/"Применить"
 
-        //массовая обработка коробов, по постановке задачи может быть только для брака, можем сюда попасть только с экрана Список коробов ExciseAlcoBoxListFragment
-        if (massProcessingBoxesNumber.value != null) {
-            massProcessingBoxesNumber.value?.map {boxNumber ->
-                processExciseAlcoBoxAccPGEService.searchBox(boxNumber)?.let {
-                    processExciseAlcoBoxAccPGEService.applyBoxCard(it, qualityInfo.value!![spinQualitySelectedPosition.value!!].code, isScan.value!!)
+        val qualityInfoCode = spinQualitySelectedPosition.value?.let { position ->
+            qualityInfo.value?.get(position)?.code
+        }
+        val isScanValue = isScan.value
+        if (qualityInfoCode != null && isScanValue != null) {
+            //массовая обработка коробов, по постановке задачи может быть только для брака, можем сюда попасть только с экрана Список коробов ExciseAlcoBoxListFragment
+            massProcessingBoxesNumber.value?.map { boxNumber ->
+                processExciseAlcoBoxAccPGEService.searchBox(boxNumber)?.let { box ->
+                    processExciseAlcoBoxAccPGEService.addBoxDiscrepancy(
+                            boxNumber = box.boxNumber,
+                            typeDiscrepancies = qualityInfoCode,
+                            isScan = isScanValue
+                    )
                 }
             }
-            return
         }
-
-        //обработка одной коробки
-        boxInfo.value?.let {
-            processExciseAlcoBoxAccPGEService.applyBoxCard(it, qualityInfo.value!![spinQualitySelectedPosition.value!!].code, isScan.value!!)
-            //обнуляем кол-во отсканированных марок в текущей сессии
-            countExciseStampsScanned.value = 0
-        }
+        processExciseAlcoBoxAccPGEService.applyBoxCard()
+        //обнуляем кол-во отсканированных марок в текущей сессии
+        countExciseStampsScanned.value = 0
     }
 
     fun onClickApply() {
@@ -325,9 +338,10 @@ class ExciseAlcoBoxCardPGEViewModel : CoreViewModel(), OnPositionClickListener {
             screenNavigator.goBack()
             screenNavigator.openExciseAlcoBoxListPGEScreen(
                     productInfo = productInfo.value!!,
-                    selectQualityCode = qualityInfo.value?.get(spinQualitySelectedPosition.value ?: 0)?.code ?: "1"
+                    selectQualityCode = qualityInfo.value?.get(spinQualitySelectedPosition.value
+                            ?: 0)?.code ?: "1"
             )
-            if (isBoxNotIncludedInNetworkLenta.value == true) {
+            if (isBoxNotIncludedInNetworkLenta.value == true) { //https://trello.com/c/6NyHp2jB
                 processExciseAlcoBoxAccPGEService.decreaseByOneInitialCount()
                 screenNavigator.openAlertAmountNormWillBeReduced()
             }
@@ -337,20 +351,20 @@ class ExciseAlcoBoxCardPGEViewModel : CoreViewModel(), OnPositionClickListener {
     fun onScanResult(data: String) {
         when (data.length) {
             68, 150 -> {
-                exciseStampInfo.value = processExciseAlcoBoxAccPGEService.searchExciseStamp(data)
+                val scannedExciseStamp = processExciseAlcoBoxAccPGEService.searchExciseStamp(data)
                 if (isBoxNotIncludedInNetworkLenta.value == true) { //https://trello.com/c/6NyHp2jB Карточка короба-излишка
                     /**проводить проверки:
                     • Наличие марки в ET_TASK_MARK
                     1. Марка присутствует в задании – выводить экран с сообщением «Марка присутствует в задании, добавление излишка недоступно».
                     2. Марка отсутствует в задании – добавлять марку в список.
                      */
-                    if (exciseStampInfo.value == null) {
+                    if (scannedExciseStamp == null) {
                         screenNavigator.openAlertExciseStampPresentInTask()
                     } else {
-                        addExciseStampDiscrepancy()
+                        addExciseStampDiscrepancy(scannedExciseStamp)
                     }
                 } else { //https://trello.com/c/iOmIb6N7 Карточка короба
-                    if (exciseStampInfo.value == null) {
+                    if (scannedExciseStamp == null) {
                         screenNavigator.openScannedStampBoxPGENotFoundDialog( //Отсканированная марка не найдена. Пометить ее как излишек? В случае согласия необходимо будет отсканировать все марки в текущей коробке.
                                 nextCallbackFunc = {
                                     //https://trello.com/c/lWYJ43Pe
@@ -358,39 +372,68 @@ class ExciseAlcoBoxCardPGEViewModel : CoreViewModel(), OnPositionClickListener {
                                     if (isEizUnit.value == true) { //если установлена ЕИЗ
                                         onClickUnitChange() //вызываем, чтобы Отображать пиктограмму «БЕИ».
                                     }
-                                    isExciseStampSurplus.value = true //чтобы сохранить данную марку как излишек
-                                    addExciseStampDiscrepancy()
+                                    //https://trello.com/c/lWYJ43Pe (Марка-излишек внутри коробки) карточка об этом условии if (isExciseStampSurplus.value == true) "2"
+                                    val organizationCodeEGAIS = spinManufacturersSelectedPosition.value?.let { position ->
+                                        repoInMemoryHolder
+                                                .manufacturers
+                                                .value
+                                                ?.findLast {
+                                                    it.name == spinManufacturers.value?.get(position)
+                                                }
+                                                ?.code
+                                    }
+                                    val boxNumber = boxInfo.value?.boxNumber
+                                    val bottlingDate = spinBottlingDateSelectedPosition.value?.let {
+                                        spinBottlingDate.value?.get(it)
+                                    }
+                                    organizationCodeEGAIS?.let {
+                                        boxNumber?.let {
+                                            bottlingDate?.let {
+                                                processExciseAlcoBoxAccPGEService.addExciseStampSurplus(
+                                                        exciseStampCode = data,
+                                                        boxNumber = boxNumber,
+                                                        organizationCodeEGAIS = organizationCodeEGAIS,
+                                                        bottlingDate = bottlingDate,
+                                                        isScan = true
+                                                )
+                                            }
+                                        }
+                                    }
                                 }
                         )
                     } else {
                         if (processExciseAlcoBoxAccPGEService.exciseStampIsAlreadyProcessed(data)) {
                             screenNavigator.openAlertScannedStampIsAlreadyProcessedScreen() //АМ уже обработана
                         } else {
-                            if (exciseStampInfo.value!!.materialNumber != productInfo.value!!.materialNumber) {
+                            if (scannedExciseStamp.materialNumber != productInfo.value!!.materialNumber) {
                                 //Отсканированная марка принадлежит товару <SAP-код> <Название>"
-                                screenNavigator.openAlertScannedStampBelongsAnotherProductScreen(exciseStampInfo.value!!.materialNumber, zfmpUtz48V001.getProductInfoByMaterial(exciseStampInfo.value!!.materialNumber)?.name ?: "")
+                                screenNavigator.openAlertScannedStampBelongsAnotherProductScreen(
+                                        materialNumber = scannedExciseStamp.materialNumber,
+                                        materialName = zfmpUtz48V001.getProductInfoByMaterial(scannedExciseStamp.materialNumber)?.name.orEmpty()
+                                )
                             } else {
-                                if (exciseStampInfo.value!!.boxNumber == (boxInfo.value?.boxNumber ?: "")) {
-                                    addExciseStampDiscrepancy()
+                                if (scannedExciseStamp.boxNumber == (boxInfo.value?.boxNumber.orEmpty())) {
+                                    addExciseStampDiscrepancy(scannedExciseStamp)
                                 } else {//https://trello.com/c/E4b0z0q5
-                                    val realBoxNumber = processExciseAlcoBoxAccPGEService.searchBox(boxNumber = exciseStampInfo.value!!.boxNumber)?.boxNumber ?: ""
+                                    val realBoxNumber = processExciseAlcoBoxAccPGEService.searchBox(boxNumber = scannedExciseStamp.boxNumber)?.boxNumber.orEmpty()
                                     screenNavigator.openDiscrepancyScannedMarkCurrentBoxPGEDialog( //Отсканированная(ый) марка/блок числится в другой коробке. Необходимо отсканировать все марки/блоки в текущей коробке и коробке № XXXXXXX
                                             nextCallbackFunc = {
-                                                processExciseAlcoBoxAccPGEService.addDiscrepancyScannedMarkCurrentBox(
-                                                        currentBoxNumber = boxInfo.value!!.boxNumber,
-                                                        realBoxNumber = realBoxNumber,
-                                                        scannedExciseStampInfo = exciseStampInfo.value!!,
-                                                        typeDiscrepancies = "1"
+                                                //https://trello.com/c/E4b0z0q5 2.1. Сохранять отсканированную марку коробке, в которой она числится как "Норма";
+                                                processExciseAlcoBoxAccPGEService.addExciseStampDiscrepancy(
+                                                        exciseStamp = scannedExciseStamp,
+                                                        typeDiscrepancies = TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_NORM,
+                                                        isScan = true
                                                 )
+                                                /**2.4.1. Конвертировать ЕИЗ в БЕИ (т.е. 1 кор перевести в шт, используя параметр - QNTINCL) и отображать полученное кол-во в БЕИ в поле ввода, значение доступно для редактирования
+                                                2.4.2. Уменьшать количество нормы на 1 шт в БЕИ в поле ввода кол-ва.*/
+                                                val countExciseStampDiscrepanciesOfBox = processExciseAlcoBoxAccPGEService.getCountExciseStampDiscrepanciesOfBox(boxInfo.value?.boxNumber.orEmpty())
+                                                count.value = (convertEizToBei() - countExciseStampDiscrepanciesOfBox).toStringFormatted()
+                                                suffix.value = productInfo.value?.uom?.name.orEmpty()
+                                                isEizUnit.value = false
+                                                screenNavigator.openAlertAmountNormWillBeReduced()
                                             },
-                                            realBoxNumber = "${realBoxNumber?.substring(0,4)}...${realBoxNumber?.substring(realBoxNumber.length - 10)}"
+                                            realBoxNumber = "${realBoxNumber.substring(0, 4)}...${realBoxNumber.substring(realBoxNumber.length - 10)}"
                                     )
-                                    /**2.4.1. Конвертировать ЕИЗ в БЕИ (т.е. 1 кор перевести в шт, используя параметр - QNTINCL) и отображать полученное кол-во в БЕИ в поле ввода, значение доступно для редактирования
-                                    2.4.2. Уменьшать количество нормы на 1 шт в БЕИ в поле ввода кол-ва.*/
-                                    if (isEizUnit.value == true) { //если установлена ЕИЗ
-                                        onClickUnitChange() //вызываем, чтобы Отображать пиктограмму «БЕИ».
-                                    }
-                                    count.value = (convertEizToBei() - 1).toStringFormatted()
                                 }
                             }
                         }
@@ -399,7 +442,7 @@ class ExciseAlcoBoxCardPGEViewModel : CoreViewModel(), OnPositionClickListener {
             }
             26 -> {
                 if (enabledApplyBtn.value == true) { //Функция доступна только при условии, что доступна кнопка "Применить". (ПГЕ https://trello.com/c/TzUSGIH7
-                    if (processExciseAlcoBoxAccPGEService.getCountBoxOfProductOfDiscrepancies(data) >= processExciseAlcoBoxAccPGEService.getCountAcceptRefusal() ) {
+                    if (processExciseAlcoBoxAccPGEService.getCountBoxOfProductOfDiscrepancies(data) >= processExciseAlcoBoxAccPGEService.getCountAcceptRefusal()) {
                         screenNavigator.openAlertRequiredQuantityBoxesAlreadyProcessedScreen() //Необходимое количество коробок уже обработано
                     } else {
                         val boxInfo = processExciseAlcoBoxAccPGEService.searchBox(boxNumber = data)
@@ -409,20 +452,22 @@ class ExciseAlcoBoxCardPGEViewModel : CoreViewModel(), OnPositionClickListener {
                         } else {
                             if (boxInfo.materialNumber != productInfo.value!!.materialNumber) {
                                 //Отсканированная коробка принадлежит товару <SAP-код> <Название>
-                                screenNavigator.openAlertScannedBoxBelongsAnotherProductScreen(materialNumber = boxInfo.materialNumber, materialName = zfmpUtz48V001.getProductInfoByMaterial(boxInfo.materialNumber)?.name
-                                        ?: "")
-                            } else {
-                                isScan.value = true
-                                onClickApply()
-                                screenNavigator.openExciseAlcoBoxCardPGEScreen(
-                                        productInfo = productInfo.value!!,
-                                        boxInfo = boxInfo,
-                                        massProcessingBoxesNumber = null,
-                                        exciseStampInfo = null,
-                                        selectQualityCode = selectQualityCode.value ?: "",
-                                        isScan = true,
-                                        isBoxNotIncludedInNetworkLenta = false
+                                screenNavigator.openAlertScannedBoxBelongsAnotherProductScreen(
+                                        materialNumber = boxInfo.materialNumber,
+                                        materialName = zfmpUtz48V001.getProductInfoByMaterial(boxInfo.materialNumber)?.name.orEmpty()
                                 )
+                            } else {
+                                spinQualitySelectedPosition.value?.let { position ->
+                                    qualityInfo.value?.get(position)?.code
+                                }?.let {typeDiscrepancies ->
+                                    processExciseAlcoBoxAccPGEService.addBoxDiscrepancy(
+                                            boxNumber = boxInfo.boxNumber,
+                                            typeDiscrepancies = typeDiscrepancies,
+                                            isScan = true
+                                    )
+                                    //обновляем кол-во отсканированных марок для отображения на экране
+                                    countExciseStampsScanned.value = countExciseStampsScanned.value
+                                }
                             }
                         }
                     }
@@ -432,29 +477,43 @@ class ExciseAlcoBoxCardPGEViewModel : CoreViewModel(), OnPositionClickListener {
         }
     }
 
-    private fun addExciseStampDiscrepancy() {
+    private fun addExciseStampDiscrepancy(scannedExciseStamp: TaskExciseStampInfo) {
+        val spinQualityPosition = spinQualitySelectedPosition.value ?: 0
+        val qualityInfoCode = qualityInfo.value?.getOrNull(spinQualityPosition)?.code.orEmpty()
         processExciseAlcoBoxAccPGEService.addExciseStampDiscrepancy(
-                exciseStamp = exciseStampInfo.value!!,
-                typeDiscrepancies = if (isExciseStampSurplus.value == true) "2" else qualityInfo.value!![spinQualitySelectedPosition.value!!].code, //https://trello.com/c/lWYJ43Pe (Марка-излишек внутри коробки) карточка об этом условии if (isExciseStampSurplus.value == true) "2"
+                exciseStamp = scannedExciseStamp,
+                typeDiscrepancies = qualityInfoCode,
                 isScan = true
         )
-        isExciseStampSurplus.value = false //это из карточки https://trello.com/c/lWYJ43Pe (Марка-излишек внутри коробки), когда отсканированная марка была сохранена как излишек, сбрасываем эту переменную, чтобы остальные марки при скане не сохранялись как излишек
         //увеличиваем кол-во отсканированных марок на единицу для отображения на экране
         countExciseStampsScanned.value = countExciseStampsScanned.value?.plus(1)
-        val manufacturerCode = taskManager.getReceivingTask()?.taskRepository?.getBatches()?.getBatches()?.findLast {
-            it.batchNumber == exciseStampInfo.value!!.batchNumber
-        }?.egais ?: ""
-        val manufacturerName = repoInMemoryHolder.manufacturers.value?.findLast {
-            it.code == manufacturerCode
-        }?.name ?: ""
+        val manufacturerCode = taskManager
+                .getReceivingTask()
+                ?.getProcessedBatches()
+                ?.findLast {
+                    it.batchNumber == scannedExciseStamp.batchNumber
+                }
+                ?.egais
+                .orEmpty()
+        val manufacturerName = repoInMemoryHolder
+                .manufacturers
+                .value
+                ?.findLast {
+                    it.code == manufacturerCode
+                }
+                ?.name
+                .orEmpty()
         spinManufacturers.value = listOf(manufacturerName)
 
-        val dateOfPour = taskManager.getReceivingTask()?.taskRepository?.getBatches()?.getBatches()?.findLast {
-            it.batchNumber == exciseStampInfo.value!!.batchNumber
-        }?.bottlingDate
-        if (!dateOfPour.isNullOrEmpty()) {
-            spinBottlingDate.value = listOf(formatterRU.format(formatterEN.parse(dateOfPour)))
-        }
+        taskManager
+                .getReceivingTask()
+                ?.getProcessedBatches()
+                ?.findLast { batch ->
+                    batch.batchNumber == scannedExciseStamp.batchNumber
+                }?.bottlingDate?.let { date ->
+                    spinBottlingDate.value = listOf(formatterRU.format(formatterEN.parse(date)))
+                }
+        exciseStampInfo.value = scannedExciseStamp
     }
 
     private fun scannedBoxNotFound(boxNumber: String) {
@@ -480,7 +539,8 @@ class ExciseAlcoBoxCardPGEViewModel : CoreViewModel(), OnPositionClickListener {
                 screenNavigator.openScannedBoxListedInCargoUnitDialog(
                         cargoUnitNumber = result.cargoUnitNumber,
                         nextCallbackFunc = {
-                            processExciseAlcoBoxAccPGEService.addAllAsSurplusForBox(count = convertEizToBei().toString(), boxNumber = scannedBoxNumber.value ?: "", typeDiscrepancies = "2", isScan = true)
+                            processExciseAlcoBoxAccPGEService.addAllAsSurplusForBox(count = convertEizToBei().toString(), boxNumber = scannedBoxNumber.value
+                                    ?: "", typeDiscrepancies = "2", isScan = true)
                             screenNavigator.goBack()
                             screenNavigator.openExciseAlcoBoxListPGEScreen(
                                     productInfo = productInfo.value!!,
@@ -492,7 +552,8 @@ class ExciseAlcoBoxCardPGEViewModel : CoreViewModel(), OnPositionClickListener {
             "2" -> {
                 screenNavigator.openScannedBoxNotIncludedInDeliveryDialog(
                         nextCallbackFunc = {
-                            processExciseAlcoBoxAccPGEService.addAllAsSurplusForBox(count = convertEizToBei().toString(), boxNumber = scannedBoxNumber.value ?: "", typeDiscrepancies = "2", isScan = true)
+                            processExciseAlcoBoxAccPGEService.addAllAsSurplusForBox(count = convertEizToBei().toString(), boxNumber = scannedBoxNumber.value
+                                    ?: "", typeDiscrepancies = "2", isScan = true)
                             screenNavigator.goBack()
                             screenNavigator.openExciseAlcoBoxListPGEScreen(
                                     productInfo = productInfo.value!!,
@@ -504,7 +565,8 @@ class ExciseAlcoBoxCardPGEViewModel : CoreViewModel(), OnPositionClickListener {
             "3" -> {
                 screenNavigator.openScannedBoxNotIncludedInNetworkLentaDialog(
                         nextCallbackFunc = { //https://trello.com/c/6NyHp2jB 11. ПГЕ. Излишки. Карточка короба-излишка (не числится в ленте)
-                            val boxInfo = processExciseAlcoBoxAccPGEService.searchBox(boxNumber = scannedBoxNumber.value ?: "")
+                            val boxInfo = processExciseAlcoBoxAccPGEService.searchBox(boxNumber = scannedBoxNumber.value
+                                    ?: "")
                             screenNavigator.goBack()
                             screenNavigator.openExciseAlcoBoxCardPGEScreen(
                                     productInfo = productInfo.value!!,
@@ -530,18 +592,19 @@ class ExciseAlcoBoxCardPGEViewModel : CoreViewModel(), OnPositionClickListener {
     }
 
     fun onClickUnitChange() {
-        if (!processExciseAlcoBoxAccPGEService.boxProcessed(boxInfo.value?.boxNumber ?: "")) { //https://trello.com/c/iOmIb6N7 кнопка доступна, если данная коробка не была сохранена в обработанные
+        val isEizUnitValue = isEizUnit.value ?: true
+        if (!processExciseAlcoBoxAccPGEService.boxProcessed(boxInfo.value?.boxNumber.orEmpty())) { //https://trello.com/c/iOmIb6N7 кнопка доступна, если данная коробка не была сохранена в обработанные
             if ((countExciseStampsScanned.value ?: 0) > 0) {
                 screenNavigator.openBoxCardUnsavedDataConfirmationDialog(
                         nextCallbackFunc = {
                             modifications.value = true
-                            isEizUnit.value = !isEizUnit.value!!
+                            isEizUnit.value = !isEizUnitValue
                             if (isEizUnit.value!!) {
-                                count.value = "1"
-                                suffix.value = productInfo.value?.purchaseOrderUnits?.name
+                                count.value = COUNT_BOXES_DEFAULT
+                                suffix.value = productInfo.value?.purchaseOrderUnits?.name.orEmpty()
                             } else {
-                                count.value = "0"
-                                suffix.value = productInfo.value?.uom?.name
+                                count.value = COUNT_BOXES_ZERO
+                                suffix.value = productInfo.value?.uom?.name.orEmpty()
                             }
                             val countStamps = countExciseStampsScanned.value!!
                             for (i in 1..countStamps) {
@@ -551,12 +614,12 @@ class ExciseAlcoBoxCardPGEViewModel : CoreViewModel(), OnPositionClickListener {
                 )
             } else {
                 modifications.value = true
-                isEizUnit.value = !isEizUnit.value!!
+                isEizUnit.value = !isEizUnitValue
                 if (isEizUnit.value!!) {
-                    count.value = "1"
+                    count.value = COUNT_BOXES_DEFAULT
                     suffix.value = productInfo.value?.purchaseOrderUnits?.name
                 } else {
-                    count.value = "0"
+                    count.value = COUNT_BOXES_ZERO
                     suffix.value = productInfo.value?.uom?.name
                 }
             }
@@ -564,9 +627,10 @@ class ExciseAlcoBoxCardPGEViewModel : CoreViewModel(), OnPositionClickListener {
     }
 
     private fun convertEizToBei(): Double {
-        var addNewCount = countValue.value!!.toDouble()
-        if (isEizUnit.value!!) {
-            addNewCount *= productInfo.value?.quantityInvest?.toDouble() ?: 1.0
+        var addNewCount = count.value?.toDouble() ?: 0.0
+        if (isEizUnit.value == true) {
+            val quantityInvest =  productInfo.value?.quantityInvest?.toDouble() ?: DEFAULT_QUANTITY_INVEST
+            addNewCount *= quantityInvest
         }
         return addNewCount
     }
@@ -587,5 +651,11 @@ class ExciseAlcoBoxCardPGEViewModel : CoreViewModel(), OnPositionClickListener {
         }
 
         screenNavigator.goBack()
+    }
+
+    companion object {
+        private const val DEFAULT_QUANTITY_INVEST = 1.0
+        private const val COUNT_BOXES_DEFAULT = "1"
+        private const val COUNT_BOXES_ZERO = "0"
     }
 }
