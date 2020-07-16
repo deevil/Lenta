@@ -116,11 +116,12 @@ class TaskEOMergeGEInsidesViewModel : CoreViewModel(), OnOkInSoftKeyboardListene
             val geValue = ge.value
             geValue?.let { ge ->
                 setOfSelectedIndexes.forEach { index ->
-                    val eoToRemove = ge.eoList[index]
-                    ge.eoList.remove(eoToRemove)
-                    val consolidationEo = ConsolidationProcessingUnit(eoToRemove.processingUnitNumber)
-                    val consolidationGe = RestCargoUnit(ge.number, "")
-                    consolidate(listOf(consolidationEo), listOf(consolidationGe))
+                    ge.eoList.getOrNull(index)?.let { eoToRemove ->
+                        ge.eoList.remove(eoToRemove)
+                        val consolidationEo = ConsolidationProcessingUnit(eoToRemove.processingUnitNumber)
+                        val consolidationGe = RestCargoUnit(ge.number, "")
+                        consolidate(listOf(consolidationEo), listOf(consolidationGe))
+                    }
                 }
             }
             ge.value = geValue
@@ -152,10 +153,6 @@ class TaskEOMergeGEInsidesViewModel : CoreViewModel(), OnOkInSoftKeyboardListene
             val newGe = cargoUnitRepository.getGEbyItsNumber(it.number)
             ge.value = newGe
         }
-        Logg.e {
-            ge.value.toString()
-        }
-
     }
 
     private fun consolidate(sendEOList: List<ConsolidationProcessingUnit>, sendGEList: List<RestCargoUnit>) {
@@ -180,8 +177,7 @@ class TaskEOMergeGEInsidesViewModel : CoreViewModel(), OnOkInSoftKeyboardListene
             either.either({ failure ->
                 screenNavigator.hideProgress()
                 screenNavigator.openAlertScreen(failure)
-            }, { result ->
-                Logg.e { result.toString() }
+            }, {
                 screenNavigator.hideProgress()
             })
         }

@@ -88,7 +88,6 @@ class TaskGoodsInfoViewModel : CoreViewModel() {
     }
 
     fun onApplyClick() {
-        productInfo.volume = 0.1
         taskBasketsRepository.addProduct(
             product = productInfo,
             supplier = supplierSelected.value?.orNull(),

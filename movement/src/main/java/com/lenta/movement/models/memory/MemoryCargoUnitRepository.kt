@@ -10,8 +10,9 @@ class MemoryCargoUnitRepository : ICargoUnitRepository {
 
     private val eoList = mutableListOf<ProcessingUnit>()
     private val geList = mutableListOf<CargoUnit>()
-    private var taskNumber = -1
+    private var taskNumber = NO_TASK_NUMBER
 
+    /** Если номер задачи сменился, получаем данные с сервера, если нет - оставляем в репозитории */
     override fun setEOAndGE(
             inputEoList: List<ProcessingUnit>,
             inputGeList: MutableList<CargoUnit>,
@@ -93,5 +94,9 @@ class MemoryCargoUnitRepository : ICargoUnitRepository {
     override fun clear() {
         eoList.clear()
         geList.clear()
+    }
+
+    companion object {
+        private const val NO_TASK_NUMBER = -1
     }
 }
