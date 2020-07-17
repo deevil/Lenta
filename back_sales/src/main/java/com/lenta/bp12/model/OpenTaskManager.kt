@@ -156,16 +156,16 @@ class OpenTaskManager @Inject constructor(
 
     override fun isGoodCorrespondToTask(goodInfo: GoodInfoResult): Boolean {
         currentTask.value?.let { task ->
-            val control = task.control == goodInfo.getControlType()
-            val type = if (task.goodType.isNotEmpty()) task.goodType == goodInfo.materialInfo.goodType else true
-            val section = if (task.section.isNotEmpty()) task.section == goodInfo.materialInfo.section else true
-            val purchaseGroup = if (task.purchaseGroup.isNotEmpty()) task.purchaseGroup == goodInfo.materialInfo.purchaseGroup else true
-            val provider = if (task.provider.code.isNotEmpty()) goodInfo.providers.find { it.code == task.provider.code } != null else true
+            val isControl = task.control == goodInfo.getControlType()
+            val isType = if (task.goodType.isNotEmpty()) task.goodType == goodInfo.materialInfo.goodType else true
+            val isSection = if (task.section.isNotEmpty()) task.section == goodInfo.materialInfo.section else true
+            val isPurchaseGroup = if (task.purchaseGroup.isNotEmpty()) task.purchaseGroup == goodInfo.materialInfo.purchaseGroup else true
+            val isProvider = if (task.provider.code.isNotEmpty()) goodInfo.providers.find { it.code == task.provider.code } != null else true
 
             Logg.d { "--> task parameters: ${task.control} / ${task.goodType} / ${task.section} / ${task.purchaseGroup} / ${task.provider.code}" }
             Logg.d { "--> good parameters: ${goodInfo.getControlType()} / ${goodInfo.materialInfo.goodType} / ${goodInfo.materialInfo.section} / ${goodInfo.materialInfo.purchaseGroup} / ${goodInfo.providers}" }
 
-            return control && type && section && purchaseGroup && provider
+            return isControl && isType && isSection && isPurchaseGroup && isProvider
         }
 
         return false

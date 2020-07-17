@@ -402,7 +402,7 @@ class GoodInfoOpenViewModel : CoreViewModel() {
                 if (manager.isGoodCanBeAdded(result)) {
                     isEanLastScanned = ean != null
                     isExistUnsavedData = true
-                    addGood(result = result, searchNumber = ean ?: (material.orEmpty()))
+                    setGood(result = result, searchNumber = ean ?: (material.orEmpty()))
                 } else {
                     goBackFromScreen()
                     navigator.showGoodCannotBeAdded()
@@ -422,7 +422,7 @@ class GoodInfoOpenViewModel : CoreViewModel() {
         navigator.goBack()
     }
 
-    private fun addGood(result: GoodInfoResult, searchNumber: String) {
+    private fun setGood(result: GoodInfoResult, searchNumber: String) {
         viewModelScope.launch {
             with(result) {
                 good.value = GoodOpen(
