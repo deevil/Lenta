@@ -55,7 +55,7 @@ public class ZmpUtz106V001 {
         // Наименование склада
         //  type: BIGINT, source: {'name': 'SAP', 'type': 's'}
         @Nullable
-        @SerializedName("LGORT_NAME ")
+        @SerializedName("LGORT_NAME")
         public String name;
     }
 
