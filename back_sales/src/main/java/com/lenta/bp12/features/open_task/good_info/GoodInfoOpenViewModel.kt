@@ -430,7 +430,7 @@ class GoodInfoOpenViewModel : CoreViewModel() {
                         material = materialInfo.material,
                         name = materialInfo.name,
                         section = materialInfo.section,
-                        matrix = getMatrixType(result.materialInfo.matrix),
+                        matrix = getMatrixType(materialInfo.matrix),
                         kind = getGoodKind(),
                         commonUnits = database.getUnitsByCode(materialInfo.commonUnitsCode),
                         innerUnits = database.getUnitsByCode(materialInfo.innerUnitsCode),
