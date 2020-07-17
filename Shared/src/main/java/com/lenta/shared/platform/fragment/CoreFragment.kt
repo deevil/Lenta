@@ -144,7 +144,7 @@ abstract class CoreFragment<T : ViewDataBinding, S : CoreViewModel> : Fragment()
                 }
         )
     }
-    
+
     protected open fun<Item : Any> initRecyclerViewKeyHandler(
             recyclerView: RecyclerView,
             items: LiveData<List<Item>>,

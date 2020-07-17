@@ -10,6 +10,7 @@
     <string name="good_list">Список товаров</string>
     <string name="pu_number">ЕО %1$s</string>
     <string name="good_card">Карточка товара</string>
+    <string name="good_search">Поиск товара</string>
     <string name="defect_detail">Детализация брака</string>
     <string name="pack_list">Список тар</string>
 
@@ -59,6 +60,15 @@
     <string name="total_sf">Итого ПФ</string>
     <string name="total_defect">Итого брак</string>
     <string name="defect_mark">***БРАК***</string>
+
+    <string name="movement_btw_warehouses">Перемещение между складами</string>
+    <string name="count">Количество</string>
+    <string name="storage_sender">Склад отправитель</string>
+    <string name="storage_receiver">Склад получатель</string>
+    <string name="container">Тара</string>
+    <string name="tw_search_info">Отсканируйте штрахкод или введите товар вручную</string>
+    <string name="preparation_ingredients">Подготовка ингредиентов</string>
+    <string name="tw_alert_part_not_found">Отсканированная партия не найдена в системе. Отложите товар и проведите инвентаризацию.</string>
 
     <!-- Типы складов -->
     <string name="warehouse_select">Выберите склад:</string>

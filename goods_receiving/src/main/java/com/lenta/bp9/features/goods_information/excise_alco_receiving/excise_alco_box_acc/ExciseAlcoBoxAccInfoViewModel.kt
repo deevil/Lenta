@@ -222,37 +222,38 @@ class ExciseAlcoBoxAccInfoViewModel : CoreViewModel(), OnPositionClickListener {
     val checkBoxListVisibility: MutableLiveData<Boolean> = MutableLiveData()
 
     val tvBoxListVal: MutableLiveData<String> = refusalTotalCount.combineLatest(spinQualitySelectedPosition).map {
-        if (qualityInfo.value?.get(it?.second ?: 0)?.code != "1") {
-            if (processExciseAlcoBoxAccService.getCountUntreatedBoxes() == 0) {
-                checkBoxListVisibility.value = true
-                "${processExciseAlcoBoxAccService.getCountDefectBoxes()} из ${processExciseAlcoBoxAccService.getCountDefectBoxes()}"
+        val refusalTotalCountValue = it?.first ?: 0.0
+        val spinQualitySelectedPositionValue = it?.second ?: 0
+        val qualityInfoCode = qualityInfo.value?.get(spinQualitySelectedPositionValue)?.code
+        if (qualityInfoCode != TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_NORM) {
+            if (refusalTotalCountValue == 0.0 || refusalTotalCountValue.toInt() == processExciseAlcoBoxAccService.getCountUntreatedBoxes()) {
+                checkBoxListVisibility.value = false
+                context.getString(R.string.not_required)
             } else {
-                if (it?.first?.toInt() == processExciseAlcoBoxAccService.getCountUntreatedBoxes()) {
-                    checkBoxListVisibility.value = false
-                    context.getString(R.string.not_required)
-                } else {
-                    checkBoxListVisibility.value = true
-                    "${it?.first.toStringFormatted()} из ${processExciseAlcoBoxAccService.getCountUntreatedBoxes()}"
-                }
+                checkBoxListVisibility.value = true
+                "${processExciseAlcoBoxAccService.getCountDefectBoxes()} ${context.getString(R.string.of)} ${refusalTotalCountValue.toStringFormatted()}"
             }
-        } else {
-            "" //это поле отображается только при выбранной категории брака
-        }
+        } else "" //это поле отображается только при выбранной категории брака
     }
 
     val checkBoxList: MutableLiveData<Boolean> = checkBoxListVisibility.map {
         //https://trello.com/c/lqyZlYQu, Устанавливать чекбокс, когда F (кол-во в Отказать) = Q (свободные/необработанные короба);
-        processExciseAlcoBoxAccService.getCountUntreatedBoxes() == 0
+        refusalTotalCount.value == processExciseAlcoBoxAccService.getCountDefectBoxes().toDouble()
     }
 
     val enabledApplyButton: MutableLiveData<Boolean> = countValue.combineLatest(checkBoxList).map {
-        if (qualityInfo.value?.get(spinQualitySelectedPosition.value ?: 0)?.code == "1") {
-            it!!.first != 0.0
+        val totalCount = countValue.value ?: 0.0
+        val spinQualitySelectedPositionValue = spinQualitySelectedPosition.value ?: 0
+        val qualityInfoCode = qualityInfo.value?.get(spinQualitySelectedPositionValue)?.code
+        if (qualityInfoCode == TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_NORM) {
+            totalCount != 0.0
         } else {
-            ((processExciseAlcoBoxAccService.getCountUntreatedBoxes() - (countValue.value?.toInt()
-                    ?: 0) == 0) || it!!.second) && ((countValue.value?.toInt() ?: 0) > 0)
+            val someMinusValue = processExciseAlcoBoxAccService.getCountUntreatedBoxes() - totalCount.toInt()
+            (someMinusValue == 0 || it!!.second) && (totalCount > 0.0)
         }
     }
+
+    private val isShowScreenNoBoxSelectionRequired: MutableLiveData<Boolean> = MutableLiveData(false)
 
     init {
         viewModelScope.launch {
@@ -296,31 +297,52 @@ class ExciseAlcoBoxAccInfoViewModel : CoreViewModel(), OnPositionClickListener {
     }
 
     fun onClickAdd(): Boolean {
-        return if (processExciseAlcoBoxAccService.overLimit(countValue.value!!)) {
-            screenNavigator.openAlertOverLimit()
-            count.value = "0"
-            false
-        } else {
-            if (qualityInfo.value?.get(spinQualitySelectedPosition.value ?: 0)?.code == "1") {
-                processExciseAlcoBoxAccService.addProduct(acceptTotalCount.value!!.toString(), "1")
-            } else {
-                if (processExciseAlcoBoxAccService.getCountUntreatedBoxes() - (countValue.value?.toInt()
-                                ?: 0) == 0) { //https://trello.com/c/lqyZlYQu, Массовая обработка брака
-                    screenNavigator.openAlertGoodsNotInInvoiceScreen(productInfo.value!!.getMaterialLastSix(), productInfo.value!!.description) {
-                        processExciseAlcoBoxAccService.massProcessingRejectBoxes(reasonRejectionInfo.value!![spinReasonRejectionSelectedPosition.value!!].code)
-                        processExciseAlcoBoxAccService.addProduct(count.value!!, reasonRejectionInfo.value!![spinReasonRejectionSelectedPosition.value!!].code)
-                    }
+        val totalCount = countValue.value ?: 0.0
+        val spinQualitySelectedPositionValue = spinQualitySelectedPosition.value
+        val qualityInfoCode = spinQualitySelectedPositionValue?.let {
+            qualityInfo.value?.get(it)?.code
+        }
+        val acceptTotalCountValue = acceptTotalCount.value ?: 0.0
+        val spinReasonRejectionSelectedPositionValue = spinReasonRejectionSelectedPosition.value
+        val reasonRejectionInfoCode = spinReasonRejectionSelectedPositionValue?.let {
+            reasonRejectionInfo.value?.get(it)?.code
+        }
+        return productInfo.value?.let { product ->
+            reasonRejectionInfoCode?.let {typeDiscrepancies ->
+                if (processExciseAlcoBoxAccService.overLimit(totalCount)) {
+                    screenNavigator.openAlertOverLimit()
+                    count.value = "0"
+                    false
                 } else {
-                    processExciseAlcoBoxAccService.addProduct(count.value!!, reasonRejectionInfo.value!![spinReasonRejectionSelectedPosition.value!!].code)
+                    if (qualityInfoCode == TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_NORM) {
+                        processExciseAlcoBoxAccService.addProduct(acceptTotalCountValue.toString(), TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_NORM)
+                    } else {
+                        if (processExciseAlcoBoxAccService.getCountUntreatedBoxes() - totalCount.toInt() == 0) { //https://trello.com/c/lqyZlYQu, Массовая обработка брака
+                            screenNavigator.openAlertNoBoxSelectionRequiredScreen(
+                                    materialNumber = product.getMaterialLastSix(),
+                                    materialName = product.description,
+                                    callbackFunc = {
+                                        processExciseAlcoBoxAccService.massProcessingRejectBoxes(typeDiscrepancies)
+                                        processExciseAlcoBoxAccService.addProduct(totalCount.toString(), typeDiscrepancies)
+                                        screenNavigator.goBack()
+                                    }
+                            )
+                            isShowScreenNoBoxSelectionRequired.value = true
+                        } else {
+                            processExciseAlcoBoxAccService.addProduct(totalCount.toString(), typeDiscrepancies)
+                        }
+                    }
+                    count.value = "0"
+                    spinQualitySelectedPosition.value = 0
+                    true
                 }
             }
-            count.value = "0"
-            true
         }
+                ?: false
     }
 
     fun onClickApply() {
-        if (onClickAdd()) screenNavigator.goBack()
+        if (onClickAdd() && isShowScreenNoBoxSelectionRequired.value == false) screenNavigator.goBack()
     }
 
     fun onScanResult(data: String) {

@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+        <variable
+            name="vm"
+            type="com.lenta.movement.features.task.TaskViewModel" />
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <com.lenta.movement.view.BorderedTableLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:stretchColumns="*"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <TableRow android:gravity="center_vertical">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="16dp"
+                    android:text="@string/task_settings_properties_piker_storage_title" />
+
+                <com.lenta.shared.view.ClickableSpinner
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="16dp"
+                    android:enabled="@{vm.pikingStorageListEnabled}"
+                    app:items="@{vm.pikingStorageList}"
+                    app:onPositionClickListener="@{vm.pikingStorageSelectedPositionListener}"
+                    app:position="@{vm.pikingStorageSelectedPosition}" />
+            </TableRow>
+
+            <TableRow android:gravity="center_vertical">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="16dp"
+                    android:text="@string/task_settings_properties_shipment_storage_title" />
+
+                <com.lenta.shared.view.ClickableSpinner
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="16dp"
+                    android:enabled="@{vm.shipmentStorageListEnabled}"
+                    app:items="@{vm.shipmentStorageList}"
+                    app:onPositionClickListener="@{vm.shipmentStorageSelectedPositionListener}"
+                    app:position="@{vm.shipmentStorageSelectedPosition}" />
+            </TableRow>
+
+            <TableRow android:gravity="center_vertical">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="16dp"
+                    android:text="@string/task_settings_properties_shipment_date_title" />
+
+                <EditText
+                    android:id="@+id/shipmentDateEditText"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="16dp"
+                    android:digits="1234567890."
+                    android:inputType="number"
+                    android:text="@={vm.shipmentDate}"
+                    android:enabled="@{vm.shipmentDateEnabled}"
+                    app:maskPattern='@{"[00]{.}[00]{.}[00]"}' />
+
+            </TableRow>
+
+        </com.lenta.movement.view.BorderedTableLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

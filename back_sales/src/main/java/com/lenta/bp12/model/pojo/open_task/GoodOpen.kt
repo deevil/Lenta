@@ -48,6 +48,10 @@ data class GoodOpen(
         return commonUnits != convertingUnits
     }
 
+    fun getQuantity(): Double {
+        return factQuantity.takeIf { it > 0.0 } ?: getTotalQuantity()
+    }
+
     fun getTotalQuantity(): Double {
         return getPositionQuantity() + getMarkQuantity() + getPartQuantity()
     }

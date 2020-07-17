@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+        <variable
+            name="vm"
+            type="com.lenta.movement.features.task.basket.info.TaskBasketInfoViewModel" />
+    </data>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <com.lenta.movement.view.BorderedTableLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:stretchColumns="*">
+
+            <TableRow>
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="Объём корзины"
+                    android:layout_margin="16dp"/>
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    tools:text="60 шт"
+                    android:text="@{vm.size}"
+                    android:layout_margin="16dp"/>
+
+            </TableRow>
+
+            <TableRow android:visibility="@{vm.gisControlVisible}">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="ГИС-контроль"
+                    android:layout_margin="16dp"/>
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    tools:text="Обычный товар"
+                    android:text="@{vm.gisControl}"
+                    android:layout_margin="16dp"/>
+
+            </TableRow>
+
+            <TableRow android:visibility="@{vm.supplierVisible}">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="Поставщик"
+                    android:layout_margin="16dp"/>
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    tools:text="106453 Поставщик 4"
+                    android:text="@{vm.supplier}"
+                    android:layout_margin="16dp"/>
+
+            </TableRow>
+
+        </com.lenta.movement.view.BorderedTableLayout>
+
+    </FrameLayout>
+</layout>

@@ -8,6 +8,7 @@ import com.lenta.bp12.model.pojo.Part
 import com.lenta.bp12.model.pojo.Position
 import com.lenta.bp12.model.pojo.create_task.Basket
 import com.lenta.bp12.model.pojo.create_task.GoodCreate
+import com.lenta.bp12.platform.extention.extractAlcoCode
 import com.lenta.bp12.platform.extention.getControlType
 import com.lenta.bp12.platform.extention.getGoodKind
 import com.lenta.bp12.platform.navigation.IScreenNavigator
@@ -19,17 +20,16 @@ import com.lenta.bp12.request.pojo.ProviderInfo
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.functional.Either
-import com.lenta.shared.models.core.Uom
 import com.lenta.shared.models.core.getMatrixType
 import com.lenta.shared.platform.constants.Constants
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.requests.combined.scan_info.ScanCodeInfo
 import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.extentions.*
+import com.lenta.shared.utilities.getDateFromString
 import com.lenta.shared.utilities.getFormattedDate
 import com.lenta.shared.view.OnPositionClickListener
 import kotlinx.coroutines.launch
-import java.math.BigInteger
 import javax.inject.Inject
 
 class GoodInfoCreateViewModel : CoreViewModel() {
@@ -47,7 +47,7 @@ class GoodInfoCreateViewModel : CoreViewModel() {
     lateinit var goodInfoNetRequest: GoodInfoNetRequest
 
     @Inject
-    lateinit var markInfoNetRequest: MarkInfoNetRequest
+    lateinit var scanInfoNetRequest: ScanInfoNetRequest
 
     @Inject
     lateinit var database: IDatabaseRepository
@@ -82,13 +82,13 @@ class GoodInfoCreateViewModel : CoreViewModel() {
         }
     }
 
-    private val scanModeType = MutableLiveData(ScanNumberType.DEFAULT)
+    private val screenStatus = MutableLiveData(ScreenStatus.DEFAULT)
 
     val accountingType by lazy {
-        scanModeType.map { type ->
-            when (type) {
-                ScanNumberType.MARK_150, ScanNumberType.MARK_68 -> resource.typeMark()
-                ScanNumberType.ALCOHOL, ScanNumberType.PART -> resource.typePart()
+        screenStatus.map { status ->
+            when (status) {
+                ScreenStatus.MARK_150, ScreenStatus.MARK_68 -> resource.typeMark()
+                ScreenStatus.ALCOHOL, ScreenStatus.PART -> resource.typePart()
                 else -> resource.typeQuantity()
             }
         }
@@ -100,7 +100,7 @@ class GoodInfoCreateViewModel : CoreViewModel() {
         }
     }
 
-    private val markInfoResult = MutableLiveData<MarkInfoResult>()
+    private val scanInfoResult = MutableLiveData<ScanInfoResult>()
 
     private var scanCodeInfo: ScanCodeInfo? = null
 
@@ -121,10 +121,10 @@ class GoodInfoCreateViewModel : CoreViewModel() {
     }
 
     val quantityFieldEnabled by lazy {
-        scanModeType.map { type ->
-            when (type) {
-                ScanNumberType.EXCISE, ScanNumberType.MARK_150, ScanNumberType.MARK_68, ScanNumberType.BOX -> false
-                else -> true
+        screenStatus.map { status ->
+            when (status) {
+                ScreenStatus.COMMON, ScreenStatus.ALCOHOL, ScreenStatus.PART -> true
+                else -> false
             }
         }
     }
@@ -298,9 +298,9 @@ class GoodInfoCreateViewModel : CoreViewModel() {
         date?.length ?: 0 == 10
     }
 
-    val dateEnabled = scanModeType.map { type ->
-        when (type) {
-            ScanNumberType.ALCOHOL, ScanNumberType.PART -> true
+    val dateEnabled = screenStatus.map { status ->
+        when (status) {
+            ScreenStatus.ALCOHOL, ScreenStatus.PART -> true
             else -> false
         }
     }
@@ -310,36 +310,35 @@ class GoodInfoCreateViewModel : CoreViewModel() {
      */
 
     val applyEnabled by lazy {
-        scanModeType.combineLatest(quantity).combineLatest(isProviderSelected).combineLatest(isProducerSelected).combineLatest(isCorrectDate).map {
+        screenStatus.combineLatest(quantity).combineLatest(isProviderSelected).combineLatest(isProducerSelected).combineLatest(isCorrectDate).map {
             it?.let {
-                val type = it.first.first.first.first
+                val status = it.first.first.first.first
                 val isEnteredQuantity = it.first.first.first.second > 0.0
                 val isProviderSelected = it.first.first.second
                 val isProducerSelected = it.first.second
                 val isDateEntered = it.second
 
-                when (type) {
-                    ScanNumberType.COMMON -> isEnteredQuantity && isProviderSelected
-                    ScanNumberType.ALCOHOL -> isEnteredQuantity && isProviderSelected && isProducerSelected && isDateEntered
-                    ScanNumberType.EXCISE -> false
-                    ScanNumberType.MARK_150 -> isEnteredQuantity && isProviderSelected
-                    ScanNumberType.MARK_68 -> isEnteredQuantity && isProviderSelected && isProducerSelected
-                    ScanNumberType.PART -> isEnteredQuantity && isProviderSelected && isProducerSelected && isDateEntered
-                    ScanNumberType.BOX -> isEnteredQuantity && isProviderSelected && isProducerSelected
+                when (status) {
+                    ScreenStatus.COMMON -> isEnteredQuantity && isProviderSelected
+                    ScreenStatus.ALCOHOL -> isEnteredQuantity && isProviderSelected && isProducerSelected && isDateEntered
+                    ScreenStatus.MARK_150 -> isEnteredQuantity && isProviderSelected
+                    ScreenStatus.MARK_68 -> isEnteredQuantity && isProviderSelected && isProducerSelected
+                    ScreenStatus.PART -> isEnteredQuantity && isProviderSelected && isProducerSelected && isDateEntered
+                    ScreenStatus.BOX -> isEnteredQuantity && isProviderSelected && isProducerSelected
                     else -> false
                 }
             } ?: false
         }
     }
 
-    val rollbackVisibility = scanModeType.map { type ->
-        when (type) {
-            ScanNumberType.MARK_150, ScanNumberType.MARK_68, ScanNumberType.BOX -> true
+    val rollbackVisibility = screenStatus.map { status ->
+        when (status) {
+            ScreenStatus.MARK_150, ScreenStatus.MARK_68, ScreenStatus.BOX -> true
             else -> false
         }
     }
 
-    val rollbackEnabled = markInfoResult.map { info ->
+    val rollbackEnabled = scanInfoResult.map { info ->
         info != null
     }
 
@@ -420,7 +419,7 @@ class GoodInfoCreateViewModel : CoreViewModel() {
 
     private fun setFoundGood(foundGood: GoodCreate) {
         manager.updateCurrentGood(foundGood)
-        setScanModeFromGoodKind(foundGood.kind)
+        setScreenStatus(foundGood)
         updateProviders(foundGood.providers)
         updateProducers(foundGood.producers)
         setDefaultQuantity(foundGood)
@@ -428,9 +427,9 @@ class GoodInfoCreateViewModel : CoreViewModel() {
 
     private fun setDefaultQuantity(good: GoodCreate) {
         if (good.kind == GoodKind.COMMON) {
-            if (good.commonUnits == Uom.KG) {
-                quantityField.value = (scanCodeInfo?.getQuantity(good.convertingUnits)
-                        ?: 0.0).dropZeros()
+            if (good.commonUnits != good.convertingUnits) {
+                val converted = scanCodeInfo?.getConvertedQuantity(good.innerQuantity) ?: 0.0
+                quantityField.value = converted.dropZeros()
             } else {
                 if (isEanLastScanned) {
                     quantityField.value = "1"
@@ -439,11 +438,11 @@ class GoodInfoCreateViewModel : CoreViewModel() {
         }
     }
 
-    private fun setScanModeFromGoodKind(goodKind: GoodKind) {
-        scanModeType.value = when (goodKind) {
-            GoodKind.COMMON -> ScanNumberType.COMMON
-            GoodKind.ALCOHOL -> ScanNumberType.ALCOHOL
-            GoodKind.EXCISE -> ScanNumberType.EXCISE
+    private fun setScreenStatus(good: GoodCreate) {
+        screenStatus.value = when (good.kind) {
+            GoodKind.COMMON -> ScreenStatus.COMMON
+            GoodKind.ALCOHOL -> ScreenStatus.ALCOHOL
+            GoodKind.EXCISE -> ScreenStatus.EXCISE
         }
     }
 
@@ -522,7 +521,7 @@ class GoodInfoCreateViewModel : CoreViewModel() {
                 lastSuccessSearchNumber.value = number
                 updateProviders(good.providers)
                 updateProducers(good.producers)
-                setScanModeFromGoodKind(good.kind)
+                setScreenStatus(good)
                 setDefaultQuantity(good)
 
                 if (good.kind == GoodKind.EXCISE) {
@@ -536,111 +535,115 @@ class GoodInfoCreateViewModel : CoreViewModel() {
         viewModelScope.launch {
             navigator.showProgressLoadingData()
 
-            markInfoNetRequest(MarkInfoParams(
+            scanInfoNetRequest(ScanInfoParams(
                     tkNumber = sessionInfo.market.orEmpty(),
                     material = good.value!!.material,
                     markNumber = number,
-                    mode = 1,
+                    mode = ScanInfoMode.MARK.mode,
                     quantity = 0.0
             )).also {
                 navigator.hideProgress()
             }.either(::handleFailure) { result ->
-                viewModelScope.launch {
-                    result.status.let { status ->
-                        if (status == MarkStatus.OK.code || status == MarkStatus.BAD.code) {
-                            addMarkInfo(number, result)
-                        } else if (status == MarkStatus.UNKNOWN.code) {
-                            val alcoCode = BigInteger(number.substring(7, 19), 36).toString().padStart(19, '0')
-                            database.getAlcoCodeInfoList(alcoCode).let { alcoCodeInfoList ->
-                                if (alcoCodeInfoList.isNotEmpty()) {
-                                    if (alcoCodeInfoList.find { it.material == good.value!!.material } != null) {
-                                        addPartInfo(number, result)
-                                    } else {
-                                        navigator.openAlertScreen(resource.alcocodeDoesNotApplyToThisGood())
-                                    }
+                handleLoadMarkInfoResult(result, number)
+            }
+        }
+    }
+
+    private fun handleLoadMarkInfoResult(result: ScanInfoResult, number: String) {
+        viewModelScope.launch {
+            result.status.let { status ->
+                when (status) {
+                    MarkStatus.OK.code, MarkStatus.BAD.code -> addMarkInfo(number, result)
+                    MarkStatus.UNKNOWN.code -> {
+                        database.getAlcoCodeInfoList(number.extractAlcoCode()).let { alcoCodeInfoList ->
+                            if (alcoCodeInfoList.isNotEmpty()) {
+                                if (alcoCodeInfoList.find { it.material == good.value!!.material } != null) {
+                                    addPartInfo(number, result)
                                 } else {
-                                    navigator.openAlertScreen(resource.unknownAlcocode())
+                                    navigator.openAlertScreen(resource.alcocodeDoesNotApplyToThisGood())
                                 }
+                            } else {
+                                navigator.openAlertScreen(resource.unknownAlcocode())
                             }
-                        } else {
-                            navigator.openAlertScreen(result.statusDescription)
                         }
                     }
+                    else -> navigator.openAlertScreen(result.statusDescription)
                 }
             }
         }
     }
 
-    private fun addMarkInfo(number: String, markInfo: MarkInfoResult) {
+    private fun addMarkInfo(number: String, scanInfo: ScanInfoResult) {
         lastSuccessSearchNumber.value = number
         isExistUnsavedData = true
-        markInfoResult.value = markInfo
+        scanInfoResult.value = scanInfo
         quantityField.value = "1"
 
         when (number.length) {
             Constants.MARK_150 -> {
-                scanModeType.value = ScanNumberType.MARK_150
-                updateProducers(markInfo.producers.toMutableList())
-                date.value = getFormattedDate(markInfo.producedDate, Constants.DATE_FORMAT_yyyy_mm_dd, Constants.DATE_FORMAT_dd_mm_yyyy)
+                screenStatus.value = ScreenStatus.MARK_150
+                updateProducers(scanInfo.producers.toMutableList())
+                date.value = getFormattedDate(scanInfo.producedDate, Constants.DATE_FORMAT_yyyy_mm_dd, Constants.DATE_FORMAT_dd_mm_yyyy)
             }
             Constants.MARK_68 -> {
-                scanModeType.value = ScanNumberType.MARK_68
+                screenStatus.value = ScreenStatus.MARK_68
             }
         }
     }
 
-    private fun addPartInfo(number: String, markInfo: MarkInfoResult) {
-        scanModeType.value = ScanNumberType.PART
+    private fun addPartInfo(number: String, scanInfo: ScanInfoResult) {
+        screenStatus.value = ScreenStatus.PART
         lastSuccessSearchNumber.value = number
         isExistUnsavedData = true
-        markInfoResult.value = markInfo
+        scanInfoResult.value = scanInfo
         quantityField.value = "1"
-        updateProducers(markInfo.producers.toMutableList())
+        updateProducers(scanInfo.producers.toMutableList())
     }
 
     private fun loadBoxInfo(number: String) {
         viewModelScope.launch {
             navigator.showProgressLoadingData()
 
-            markInfoNetRequest(MarkInfoParams(
+            scanInfoNetRequest(ScanInfoParams(
                     tkNumber = sessionInfo.market.orEmpty(),
                     material = good.value!!.material,
-                    markNumber = number,
-                    mode = 2,
+                    boxNumber = number,
+                    mode = ScanInfoMode.BOX.mode,
                     quantity = 0.0
             )).also {
                 navigator.hideProgress()
             }.either(::handleFailure) { result ->
-                viewModelScope.launch {
-                    result.status.let { status ->
-                        if (status == BoxStatus.OK.code) {
-                            addBoxInfo(number, result)
-                        } else {
-                            navigator.openAlertScreen(result.statusDescription)
-                        }
-                    }
-                }
+                handleLoadBoxInfoResult(result, number)
             }
         }
     }
 
-    private fun addBoxInfo(number: String, markInfo: MarkInfoResult) {
-        scanModeType.value = ScanNumberType.BOX
-        lastSuccessSearchNumber.value = number
-        isExistUnsavedData = true
-        markInfoResult.value = markInfo
-        quantityField.value = markInfo.marks.size.toString()
+    private fun handleLoadBoxInfoResult(result: ScanInfoResult, number: String) {
+        viewModelScope.launch {
+            when (result.status) {
+                BoxStatus.OK.code -> addBoxInfo(number, result)
+                else -> navigator.openAlertScreen(result.statusDescription)
+            }
+        }
     }
 
-    private suspend fun checkPart(): Either<Failure, MarkInfoResult> {
+    private fun addBoxInfo(number: String, scanInfo: ScanInfoResult) {
+        screenStatus.value = ScreenStatus.BOX
+        lastSuccessSearchNumber.value = number
+        isExistUnsavedData = true
+        scanInfoResult.value = scanInfo
+        quantityField.value = scanInfo.marks.size.toString()
+    }
+
+    private suspend fun checkPart(): Either<Failure, ScanInfoResult> {
         navigator.showProgressLoadingData()
 
-        return markInfoNetRequest(MarkInfoParams(
+        return scanInfoNetRequest(ScanInfoParams(
                 tkNumber = sessionInfo.market.orEmpty(),
                 material = good.value?.material.orEmpty(),
                 producerCode = getProducerCode(),
                 bottledDate = getFormattedDate(date.value.orEmpty(), Constants.DATE_FORMAT_dd_mm_yyyy, Constants.DATE_FORMAT_yyyy_mm_dd),
-                mode = 3,
+                mode = ScanInfoMode.PART.mode,
                 quantity = quantity.value ?: 0.0
         )).also {
             navigator.hideProgress()
@@ -705,12 +708,12 @@ class GoodInfoCreateViewModel : CoreViewModel() {
     }
 
     private fun saveChanges() {
-        scanModeType.value?.let { type ->
-            when (type) {
-                ScanNumberType.COMMON -> addPosition()
-                ScanNumberType.MARK_150, ScanNumberType.MARK_68 -> addMark()
-                ScanNumberType.ALCOHOL, ScanNumberType.PART -> addPart()
-                ScanNumberType.BOX -> addBox()
+        screenStatus.value?.let { status ->
+            when (status) {
+                ScreenStatus.COMMON -> addPosition()
+                ScreenStatus.MARK_150, ScreenStatus.MARK_68 -> addMark()
+                ScreenStatus.ALCOHOL, ScreenStatus.PART -> addPart()
+                ScreenStatus.BOX -> addBox()
             }
         }
     }
@@ -732,11 +735,10 @@ class GoodInfoCreateViewModel : CoreViewModel() {
     private fun addMark() {
         good.value?.let { changedGood ->
             val mark = Mark(
-                    number = lastSuccessSearchNumber.value!!,
+                    number = lastSuccessSearchNumber.value.orEmpty(),
                     material = changedGood.material,
-                    isBadMark = markInfoResult.value?.status == MarkStatus.BAD.code,
-                    providerCode = getProviderCode(),
-                    producerCode = getProducerCode()
+                    isBadMark = scanInfoResult.value?.status == MarkStatus.BAD.code,
+                    providerCode = getProviderCode()
             )
             Logg.d { "--> add mark = $mark" }
             changedGood.addMark(mark)
@@ -749,13 +751,12 @@ class GoodInfoCreateViewModel : CoreViewModel() {
     private fun addPart() {
         good.value?.let { changedGood ->
             val part = Part(
-                    number = lastSuccessSearchNumber.value!!,
+                    number = lastSuccessSearchNumber.value.orEmpty(),
                     material = changedGood.material,
-                    quantity = quantity.value!!,
-                    units = changedGood.convertingUnits,
+                    quantity = quantity.value ?: 0.0,
                     providerCode = getProviderCode(),
                     producerCode = getProducerCode(),
-                    date = date.value.orEmpty()
+                    date = getDateFromString(date.value.orEmpty(), Constants.DATE_FORMAT_dd_mm_yyyy)
             )
             Logg.d { "--> add part = $part" }
             changedGood.addPart(part)
@@ -767,15 +768,14 @@ class GoodInfoCreateViewModel : CoreViewModel() {
 
     private fun addBox() {
         good.value?.let { changedGood ->
-            markInfoResult.value?.marks?.let { marks ->
+            scanInfoResult.value?.marks?.let { marks ->
                 marks.forEach { mark ->
                     val markFromBox = Mark(
                             number = mark.number,
                             material = changedGood.material,
-                            boxNumber = lastSuccessSearchNumber.value!!,
+                            boxNumber = lastSuccessSearchNumber.value.orEmpty(),
                             isBadMark = mark.isBadMark.isNotEmpty(),
-                            providerCode = getProviderCode(),
-                            producerCode = getProducerCode()
+                            providerCode = getProviderCode()
                     )
                     Logg.d { "--> add mark from box = $markFromBox" }
                     changedGood.addMark(markFromBox)
@@ -830,7 +830,7 @@ class GoodInfoCreateViewModel : CoreViewModel() {
         good.value?.let { good ->
             thereWasRollback = true
             updateProducers(good.producers)
-            markInfoResult.value = null
+            scanInfoResult.value = null
             quantityField.value = "0"
             date.value = ""
         }
@@ -842,8 +842,8 @@ class GoodInfoCreateViewModel : CoreViewModel() {
     }
 
     fun onClickApply() {
-        when (scanModeType.value) {
-            ScanNumberType.ALCOHOL, ScanNumberType.PART, ScanNumberType.MARK_68 -> {
+        when (screenStatus.value) {
+            ScreenStatus.ALCOHOL, ScreenStatus.PART -> {
                 viewModelScope.launch {
                     checkPart().either(::handleFailure) { result ->
                         result.status.let { status ->

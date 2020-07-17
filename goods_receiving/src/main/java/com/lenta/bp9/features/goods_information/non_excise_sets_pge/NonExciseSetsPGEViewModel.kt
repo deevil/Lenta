@@ -195,7 +195,7 @@ class NonExciseSetsPGEViewModel : CoreViewModel(),
                 it.name
             }
 
-            spinProcessingUnit.value = listOf("${context.getString(R.string.spin_processing_unit)}${productInfo.value!!.processingUnit}")
+            spinProcessingUnit.value = listOf("${context.getString(R.string.prefix_processing_unit)}${productInfo.value?.processingUnit.orEmpty()}")
 
             if (processNonExciseSetsPGEProductService.newProcessNonExciseSetsPGEProductService(productInfo.value!!) == null) {
                 screenNavigator.goBack()

@@ -8,9 +8,12 @@ import com.lenta.bp16.features.defect_info.DefectInfoViewModel
 import com.lenta.bp16.features.defect_list.DefectListViewModel
 import com.lenta.bp16.features.external_supply_list.ExternalSupplyListViewModel
 import com.lenta.bp16.features.external_supply_task_list.ExternalSupplyTaskListViewModel
+import com.lenta.bp16.features.good_info.GoodInfoViewModel
+import com.lenta.bp16.features.good_irrelevant_info.IrrelevantGoodInfoViewModel
 import com.lenta.bp16.features.good_packaging.GoodPackagingViewModel
 import com.lenta.bp16.features.good_weighing.GoodWeighingViewModel
 import com.lenta.bp16.features.ingredients_list.IngredientsListViewModel
+import com.lenta.bp16.features.good_without_manufacturer.GoodWithoutManufacturerViewModel
 import com.lenta.bp16.features.loading.fast.FastLoadingViewModel
 import com.lenta.bp16.features.main_menu.MainMenuViewModel
 import com.lenta.bp16.features.pack_good_list.PackGoodListViewModel
@@ -19,6 +22,7 @@ import com.lenta.bp16.features.processing_unit_list.ProcessingUnitListViewModel
 import com.lenta.bp16.features.processing_unit_task_list.ProcessingUnitTaskListViewModel
 import com.lenta.bp16.features.raw_list.RawListViewModel
 import com.lenta.bp16.features.reprint_label.ReprintLabelViewModel
+import com.lenta.bp16.features.select_good.GoodSelectViewModel
 import com.lenta.bp16.features.select_market.SelectMarketViewModel
 import com.lenta.bp16.features.select_personnel_number.SelectPersonnelNumberViewModel
 import com.lenta.bp16.features.warehouse_selection.WarehouseSelectionViewModel
@@ -65,6 +69,11 @@ interface AppComponent : CoreComponent, FromParentToCoreProvider {
     fun inject(it: DefectInfoViewModel)
     fun inject(it: DefectListViewModel)
     fun inject(it: SelectPersonnelNumberViewModel)
+
+    fun inject(it: GoodInfoViewModel)
+    fun inject(it: IrrelevantGoodInfoViewModel)
+    fun inject(it: GoodSelectViewModel)
+    fun inject(it: GoodWithoutManufacturerViewModel)
     fun inject(it: WarehouseSelectionViewModel)
     fun inject(it: IngredientsListViewModel)
 }

@@ -2,8 +2,9 @@ package com.lenta.bp12.features.open_task.task_card
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import com.lenta.bp12.model.ControlType
 import com.lenta.bp12.model.IOpenTaskManager
+import com.lenta.bp12.platform.extention.isAlcohol
+import com.lenta.bp12.platform.extention.isCommon
 import com.lenta.bp12.platform.navigation.IScreenNavigator
 import com.lenta.bp12.platform.resource.IResourceManager
 import com.lenta.bp12.request.TaskContentNetRequest
@@ -68,8 +69,8 @@ class TaskCardOpenViewModel : CoreViewModel(), PageSelectionListener {
                         description = task.type?.description.orEmpty(),
                         comment = task.comment,
                         isStrict = task.isStrict,
-                        isAlcohol = task.control == ControlType.ALCOHOL,
-                        isCommon = task.control == ControlType.COMMON
+                        isAlcohol = task.control.isAlcohol(),
+                        isCommon = task.control.isCommon()
                 )
             }
         }

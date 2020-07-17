@@ -66,6 +66,23 @@
             <Button
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:onClick="@{(view) -> vm.onClickMovementBetweenWarehouse()}"
+                android:text="@string/movement_btw_warehouses"
+                app:icon="@drawable/ic_between_warehouses_32dp"
+                app:iconGravity="end" />
+
+
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:onClick="@{(view) -> vm.onClickPreparationIngredients()}"
+                android:text="@string/preparation_ingredients"
+                app:icon="@drawable/ic_ingridient_32dp"
+                app:iconGravity="end" />
+
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
                 android:onClick="@{(view) -> vm.onClickWarehouseSelection()}"
                 android:text="@string/warehouse_eng"
                 app:icon="@drawable/ic_document_page_white_32dp"

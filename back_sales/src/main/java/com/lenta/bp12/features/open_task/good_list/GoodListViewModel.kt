@@ -59,7 +59,7 @@ class GoodListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
                     filtered.mapIndexed { index, good ->
                         ItemGoodProcessingUi(
                                 position = "${filtered.size - index}",
-                                name = good.name,
+                                name = good.getNameWithMaterial(),
                                 material = good.material,
                                 providerCode = good.provider.code
                         )
@@ -76,8 +76,8 @@ class GoodListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
                     filtered.mapIndexed { index, good ->
                         ItemGoodProcessedUi(
                                 position = "${filtered.size - index}",
-                                name = good.name,
-                                quantity = good.getTotalQuantity().dropZeros(),
+                                name = good.getNameWithMaterial(),
+                                quantity = "${good.getQuantity().dropZeros()} ${good.commonUnits.name}",
                                 material = good.material,
                                 providerCode = good.provider.code
                         )
@@ -138,6 +138,10 @@ class GoodListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
         }
     }
 
+    fun onScanResult(data: String) {
+        checkEnteredNumber(data)
+    }
+
     override fun onOkInSoftKeyboard(): Boolean {
         checkEnteredNumber(numberField.value.orEmpty())
         return true
@@ -145,7 +149,8 @@ class GoodListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
 
     private fun checkEnteredNumber(number: String) {
         number.length.let { length ->
-            if (task.value?.isStrict == false && length >= Constants.SAP_6) {
+            if (task.value?.isStrict == false && length >= Constants.SAP_6 &&
+                    length != Constants.BOX_26 && length != Constants.MARK_68 && length != Constants.MARK_150) {
                 manager.searchNumber = number
                 manager.searchGoodFromList = true
                 numberField.value = ""

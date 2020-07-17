@@ -23,28 +23,6 @@ class ExciseAlcoBoxCardPGEFragment : CoreFragment<FragmentExciseAlcoBoxCardPgeBi
         ToolbarButtonsClickListener,
         OnBackPresserListener {
 
-    companion object {
-        fun create(
-                productInfo: TaskProductInfo,
-                boxInfo: TaskBoxInfo?,
-                massProcessingBoxesNumber: List<String>?,
-                exciseStampInfo: TaskExciseStampInfo?,
-                selectQualityCode: String,
-                isScan: Boolean,
-                isBoxNotIncludedInNetworkLenta: Boolean): ExciseAlcoBoxCardPGEFragment {
-            ExciseAlcoBoxCardPGEFragment().let {
-                it.productInfo = productInfo
-                it.boxInfo = boxInfo
-                it.massProcessingBoxesNumber = massProcessingBoxesNumber
-                it.exciseStampInfo = exciseStampInfo
-                it.selectQualityCode = selectQualityCode
-                it.isScan = isScan
-                it.isBoxNotIncludedInNetworkLenta = isBoxNotIncludedInNetworkLenta
-                return it
-            }
-        }
-    }
-
     private var productInfo by state<TaskProductInfo?>(null)
     private var boxInfo by state<TaskBoxInfo?>(null)
     private var massProcessingBoxesNumber by state<List<String>?>(null)
@@ -55,10 +33,10 @@ class ExciseAlcoBoxCardPGEFragment : CoreFragment<FragmentExciseAlcoBoxCardPgeBi
 
     override fun getLayoutId(): Int = R.layout.fragment_excise_alco_box_card_pge
 
-    override fun getPageNumber(): String = "09/43"
+    override fun getPageNumber(): String = PAGE_NUMBER
 
     override fun getViewModel(): ExciseAlcoBoxCardPGEViewModel {
-        provideViewModel(ExciseAlcoBoxCardPGEViewModel::class.java).let {vm ->
+        provideViewModel(ExciseAlcoBoxCardPGEViewModel::class.java).let { vm ->
             getAppComponent()?.inject(vm)
             vm.productInfo.value = this.productInfo
             vm.selectQualityCode.value = this.selectQualityCode
@@ -111,6 +89,30 @@ class ExciseAlcoBoxCardPGEFragment : CoreFragment<FragmentExciseAlcoBoxCardPgeBi
     override fun onBackPressed(): Boolean {
         vm.onBackPressed()
         return false
+    }
+
+    companion object {
+        private const val PAGE_NUMBER = "09/62"
+
+        fun create(
+                productInfo: TaskProductInfo,
+                boxInfo: TaskBoxInfo?,
+                massProcessingBoxesNumber: List<String>?,
+                exciseStampInfo: TaskExciseStampInfo?,
+                selectQualityCode: String,
+                isScan: Boolean,
+                isBoxNotIncludedInNetworkLenta: Boolean): ExciseAlcoBoxCardPGEFragment {
+            ExciseAlcoBoxCardPGEFragment().let {
+                it.productInfo = productInfo
+                it.boxInfo = boxInfo
+                it.massProcessingBoxesNumber = massProcessingBoxesNumber
+                it.exciseStampInfo = exciseStampInfo
+                it.selectQualityCode = selectQualityCode
+                it.isScan = isScan
+                it.isBoxNotIncludedInNetworkLenta = isBoxNotIncludedInNetworkLenta
+                return it
+            }
+        }
     }
 
 }

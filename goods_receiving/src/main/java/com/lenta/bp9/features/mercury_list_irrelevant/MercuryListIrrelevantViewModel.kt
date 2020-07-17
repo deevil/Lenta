@@ -102,7 +102,8 @@ class MercuryListIrrelevantViewModel : CoreViewModel() {
                         val params = TransmittedParams(
                                 taskNumber = task.taskHeader.taskNumber,
                                 deviceIP = context.getDeviceIp(),
-                                personnelNumber = sessionInfo.personnelNumber ?: "",
+                                personnelNumber = sessionInfo.personnelNumber.orEmpty(),
+                                printerName = sessionInfo.printer.orEmpty(),
                                 unbindVSD = "X"
                         )
                         transmittedNetRequest(params).either(::handleFailure, ::handleSuccessTransmitted)

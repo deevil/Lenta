@@ -11,17 +11,17 @@ import com.lenta.shared.requests.FmpRequestsHelper
 import com.lenta.shared.requests.SapResponse
 import javax.inject.Inject
 
-class MarkInfoNetRequest @Inject constructor(
+class ScanInfoNetRequest @Inject constructor(
         private val fmpRequestsHelper: FmpRequestsHelper
-) : UseCase<MarkInfoResult, MarkInfoParams> {
+) : UseCase<ScanInfoResult, ScanInfoParams> {
 
-    override suspend fun run(params: MarkInfoParams): Either<Failure, MarkInfoResult> {
-        return fmpRequestsHelper.restRequest("ZMP_UTZ_100_V001", params, MarkInfoStatus::class.java)
+    override suspend fun run(params: ScanInfoParams): Either<Failure, ScanInfoResult> {
+        return fmpRequestsHelper.restRequest("ZMP_UTZ_100_V001", params, ScanInfoStatus::class.java)
     }
 
 }
 
-data class MarkInfoParams(
+data class ScanInfoParams(
         /** Номер ТК */
         @SerializedName("IV_WERKS")
         val tkNumber: String,
@@ -54,9 +54,9 @@ data class MarkInfoParams(
         val codeBp: String = "BKS"
 )
 
-class MarkInfoStatus : ObjectRawStatus<MarkInfoResult>()
+class ScanInfoStatus : ObjectRawStatus<ScanInfoResult>()
 
-data class MarkInfoResult(
+data class ScanInfoResult(
         /** Дата производства */
         @SerializedName("EV_DATEOFPOUR")
         val producedDate: String,
