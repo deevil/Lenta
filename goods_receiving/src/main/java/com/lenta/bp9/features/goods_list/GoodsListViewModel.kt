@@ -105,7 +105,7 @@ class GoodsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKey
 
     fun onResume() {
         updateData()
-        if (selectedPage.value == 0) {
+        if (selectedPage.value == GoodsListViewPages.GOODS_LIST_VIEW_PAGE_COUNTED_OR_TO_PROCESSING) {
             requestFocusCountedOrToProcessing.value = true
         } else {
             requestFocusWithoutBarcodeOrProcessed.value = true
@@ -328,20 +328,32 @@ class GoodsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKey
     }
 
     fun onClickItemPosition(position: Int) {
-        val matnr: String? = if (selectedPage.value == 0) {
+        val materialNumber: String? = if (selectedPage.value == GoodsListViewPages.GOODS_LIST_VIEW_PAGE_COUNTED_OR_TO_PROCESSING) {
             if (taskType.value == TaskType.ShipmentPP) {
-                listToProcessing.value?.get(position)?.productInfo?.materialNumber
+                listToProcessing.value
+                        ?.get(position)
+                        ?.productInfo
+                        ?.materialNumber
             } else {
-                listCounted.value?.get(position)?.productInfo?.materialNumber
+                listCounted.value
+                        ?.get(position)
+                        ?.productInfo
+                        ?.materialNumber
             }
         } else {
             if (taskType.value == TaskType.ShipmentPP) {
-                listProcessed.value?.get(position)?.productInfo?.materialNumber
+                listProcessed.value
+                        ?.get(position)
+                        ?.productInfo
+                        ?.materialNumber
             } else {
-                listWithoutBarcode.value?.get(position)?.productInfo?.materialNumber
+                listWithoutBarcode.value
+                        ?.get(position)
+                        ?.productInfo
+                        ?.materialNumber
             }
         }
-        searchProductDelegate.searchCode(code = matnr ?: "", fromScan = false)
+        searchProductDelegate.searchCode(code = materialNumber.orEmpty(), fromScan = false)
     }
 
     private fun handleProductSearchResult(@Suppress("UNUSED_PARAMETER") scanInfoResult: ScanInfoResult?): Boolean {
@@ -442,13 +454,15 @@ class GoodsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKey
 
     fun onClickFourthBtn() {
         if (taskType.value == TaskType.ShipmentPP) {//https://trello.com/c/3WVovfmE
-            if (selectedPage.value == 0) {
+            if (selectedPage.value == GoodsListViewPages.GOODS_LIST_VIEW_PAGE_COUNTED_OR_TO_PROCESSING) {
                 missingGoodsForShipmentPP()
             } else {
                 cleanGoodsForShipmentPP()
             }
         } else {
-            isBatches.value = !isBatches.value!!
+            isBatches.value?.let {
+                isBatches.value = !it
+            }
             updateData()
         }
     }
@@ -576,20 +590,20 @@ class GoodsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKey
 
     private fun setEanCode() {
         eanCode.value = when (selectedPage.value) {
-            0 -> eanCodeCountedOrToProcessing.value
-            1 -> eanCodeWithoutBarcodeOrProcessed.value
+            GoodsListViewPages.GOODS_LIST_VIEW_PAGE_COUNTED_OR_TO_PROCESSING -> eanCodeCountedOrToProcessing.value
+            GoodsListViewPages.GOODS_LIST_VIEW_PAGE_WITHOUT_BARCODE_OR_PROCESSED -> eanCodeWithoutBarcodeOrProcessed.value
             else -> null
         }
     }
 
     private fun setRequestFocus() {
         when (selectedPage.value) {
-            0 -> {
+            GoodsListViewPages.GOODS_LIST_VIEW_PAGE_COUNTED_OR_TO_PROCESSING -> {
                 //не менять последовательность, а иначе фокус будет устанавливаться не на нужном EditText
                 requestFocusWithoutBarcodeOrProcessed.value = false
                 requestFocusCountedOrToProcessing.value = true
             }
-            1 -> {
+            GoodsListViewPages.GOODS_LIST_VIEW_PAGE_WITHOUT_BARCODE_OR_PROCESSED -> {
                 //не менять последовательность, а иначе фокус будет устанавливаться не на нужном EditText
                 requestFocusCountedOrToProcessing.value = false
                 requestFocusWithoutBarcodeOrProcessed.value = true
@@ -600,15 +614,25 @@ class GoodsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKey
     private fun getManufacturerName(batchInfo: TaskBatchInfo?): String {
         return repoInMemoryHolder.manufacturers.value?.findLast { manufacture ->
             manufacture.code == batchInfo?.egais
-        }?.name ?: ""
+        }?.name.orEmpty()
     }
 
     private fun getAcceptTotalCountWithUomBatch(batchInfo: TaskBatchInfo?, uom: Uom): String {
+        val currentTaskType =
+                taskManager.getReceivingTask()
+                        ?.taskHeader
+                        ?.taskType
         val acceptTotalCountBatch = batchInfo?.let {
-            if (taskManager.getReceivingTask()?.taskHeader?.taskType == TaskType.RecalculationCargoUnit) {
-                taskManager.getReceivingTask()?.taskRepository?.getBatchesDiscrepancies()?.getCountAcceptOfBatchPGE(batchInfo)
+            if (currentTaskType == TaskType.RecalculationCargoUnit) {
+                taskManager.getReceivingTask()
+                        ?.taskRepository
+                        ?.getBatchesDiscrepancies()
+                        ?.getCountAcceptOfBatchPGE(batchInfo)
             } else {
-                taskManager.getReceivingTask()?.taskRepository?.getBatchesDiscrepancies()?.getCountAcceptOfBatch(batchInfo)
+                taskManager.getReceivingTask()
+                        ?.taskRepository
+                        ?.getBatchesDiscrepancies()
+                        ?.getCountAcceptOfBatch(batchInfo)
             }
         }
         return if (acceptTotalCountBatch != 0.0) {

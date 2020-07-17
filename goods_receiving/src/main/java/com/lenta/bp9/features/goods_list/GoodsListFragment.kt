@@ -117,14 +117,14 @@ class GoodsListFragment : CoreFragment<FragmentGoodsListBinding, GoodsListViewMo
     override fun getPagerItemView(container: ViewGroup, position: Int): View {
         return if (taskType == TaskType.ShipmentPP) {
             when(position) {
-                0 -> prepareToProcessingView(container)
-                1 -> prepareProcessedView(container)
+                GoodsListViewPages.GOODS_LIST_VIEW_PAGE_COUNTED_OR_TO_PROCESSING -> prepareToProcessingView(container)
+                GoodsListViewPages.GOODS_LIST_VIEW_PAGE_WITHOUT_BARCODE_OR_PROCESSED -> prepareProcessedView(container)
                 else -> View(context)
             }
         } else {
             when(position) {
-                0 -> prepareCountedView(container)
-                1 -> prepareWithoutBarcodeView(container)
+                GoodsListViewPages.GOODS_LIST_VIEW_PAGE_COUNTED_OR_TO_PROCESSING -> prepareCountedView(container)
+                GoodsListViewPages.GOODS_LIST_VIEW_PAGE_WITHOUT_BARCODE_OR_PROCESSED -> prepareWithoutBarcodeView(container)
                 else -> View(context)
             }
         }
@@ -342,9 +342,9 @@ class GoodsListFragment : CoreFragment<FragmentGoodsListBinding, GoodsListViewMo
 
     override fun getTextTitle(position: Int): String {
         return if (taskType == TaskType.ShipmentPP) {
-            getString(if (position == 0) R.string.to_processing else R.string.processed)
+            getString(if (position == GoodsListViewPages.GOODS_LIST_VIEW_PAGE_COUNTED_OR_TO_PROCESSING) R.string.to_processing else R.string.processed)
         } else {
-            getString(if (position == 0) R.string.counted else R.string.without_barcode)
+            getString(if (position == GoodsListViewPages.GOODS_LIST_VIEW_PAGE_COUNTED_OR_TO_PROCESSING) R.string.counted else R.string.without_barcode)
         }
     }
 
