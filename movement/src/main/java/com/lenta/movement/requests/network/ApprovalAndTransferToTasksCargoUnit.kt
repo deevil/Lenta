@@ -25,7 +25,9 @@ class ApprovalAndTransferToTasksCargoUnit @Inject constructor(
                 clazz = ApprovalAndTransferToTasksCargoUnitStatus::class.java
         ).let { result ->
             if (result is Either.Right && result.b.retCode != NON_FAILURE_RET_CODE) {
-                Either.Left(InfoFailure(result.b.errorTxt))
+                result.b.errorTxt?.let { errorTxt ->
+                    Either.Left(InfoFailure(errorTxt))
+                } ?: Either.Left(Failure.ServerError)
             } else result
         }
     }

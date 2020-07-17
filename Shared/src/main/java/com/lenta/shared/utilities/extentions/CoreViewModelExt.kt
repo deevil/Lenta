@@ -1,7 +1,7 @@
-package com.lenta.movement.platform.extensions
+package com.lenta.shared.utilities.extentions
 
 import androidx.lifecycle.viewModelScope
-import com.lenta.movement.exception.ThrowableFailure
+import com.lenta.shared.exception.Failure
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.CoroutineStart
@@ -15,7 +15,7 @@ fun CoreViewModel.launchUITryCatch(
     try {
         viewModelScope.launch(viewModelScope.coroutineContext, start, tryBlock)
     } catch (e: Throwable) {
-        catchBlock?.invoke(e) ?: handleFailure(failure = ThrowableFailure(e))
+        catchBlock?.invoke(e) ?: handleFailure(failure = Failure.ThrowableFailure(e))
     }
 }
 
@@ -30,6 +30,6 @@ fun CoreViewModel.launchAsyncTryCatch(catchBlock: ((Throwable) -> Unit)? = null,
     try {
         launchAsync(CoroutineStart.DEFAULT, tryBlock)
     } catch (e: Throwable) {
-        catchBlock?.invoke(e) ?: handleFailure(failure = ThrowableFailure(e))
+        catchBlock?.invoke(e) ?: handleFailure(failure = Failure.ThrowableFailure(e))
     }
 }

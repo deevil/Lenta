@@ -60,7 +60,7 @@
     <string name="baskets">Корзины</string>
     <string name="pu">ЕО</string>
     <string name="boxes">Коробки</string>
-    <string name="task_save_confirmation_msg">Перевести задание в статус «Посчитано» и закрыть его для редактирования?</string>
+    <string name="task_save_confirmation_msg">Перевести задание в статус «%1$s» и закрыть его для редактирования?</string>
 
     <string name="process">Обработать</string>
     <string name="combine">Объединить</string>
@@ -85,4 +85,5 @@
     <string name="EO">ЕО</string>
     <string name="list_of_eo_inside">Список вложенных ЕО</string>
     <string name="list_of_eo_goods">Список товаров ЕО</string>
+    <string name="exclude_chosen_ge">Разукомплектовать выбранную ГЕ?</string>
 </resources>

@@ -276,6 +276,12 @@ class TaskEOMergeViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
     }
 
     fun onExcludeBtnClick() {
+        screenNavigator.openExcludeConfirmationDialog {
+            exclude()
+        }
+    }
+
+    private fun exclude() {
         geSelectionHelper.selectedPositions.value?.let { setOfSelectedPositions ->
             val geListValue = cargoUnitRepository.getGEList()
             val geNumbersList = geListValue.map { ge ->
@@ -293,6 +299,13 @@ class TaskEOMergeViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
     }
 
     fun onSaveBtnClick() {
+        screenNavigator.openSaveTaskConfirmationDialog(
+                yesCallbackFunc = { endConsolidation() },
+                status = Task.Status.CONSOLIDATED
+        )
+    }
+
+    private fun endConsolidation(){
         viewModelScope.launch {
             screenNavigator.showProgress(endConsolidationNetRequest)
             val either = sessionInfo.personnelNumber?.let { personnelNumber ->
@@ -307,7 +320,6 @@ class TaskEOMergeViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
                             context.getString(R.string.alert_null_personnel_number)
                     )
             )
-
             either.either({ failure ->
                 screenNavigator.hideProgress()
                 screenNavigator.openAlertScreen(failure)
@@ -321,7 +333,6 @@ class TaskEOMergeViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
                 screenNavigator.openTaskScreen(task)
             })
         }
-
     }
 
     fun onClickEOListItem(position: Int) {
@@ -340,7 +351,6 @@ class TaskEOMergeViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
             val selectedGe = cargoUnitRepository.getSelectedGE(position)
             screenNavigator.openGEInsidesScreen(selectedGe)
         }
-
     }
 
     fun onBackPressed() {

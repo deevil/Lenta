@@ -98,6 +98,11 @@ class TaskManager(
         }
     }
 
+    override fun getMovementType(movementType: MovementType) : String {
+        val propertyName = movementType.propertyName
+        return taskSettingsTable.getWhere("TYPE_MVM = \"$propertyName\"").first().annotation
+    }
+
     override fun getTaskSettings(taskType: TaskType, movementType: MovementType): TaskSettings {
         val gisControls = allowProductsTable.all
             .filter {

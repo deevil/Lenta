@@ -3,23 +3,24 @@ package com.lenta.movement.requests.network.models.approvalAndTransferToTasksCar
 import com.google.gson.annotations.SerializedName
 import com.lenta.movement.models.MovementType
 import com.lenta.movement.models.TaskType
+import com.lenta.movement.requests.network.models.Taskable
 
 data class ApprovalResultTask(
         /**Номер задания на перемещение*/
         @SerializedName("TASK_NUM")
-        val taskNumber: String,
+        override val taskNumber: String,
 
         /**Название задания*/
         @SerializedName("DESCR")
-        val description: String,
+        override val description: String,
 
         /**Тип задания на перемещение*/
         @SerializedName("TASK_TYPE")
-        val taskType: TaskType,
+        override val taskType: TaskType,
 
         /**Тип перемещения (сценарий перемещения)*/
         @SerializedName("TYPE_MVM")
-        val movementType: MovementType,
+        override val movementType: MovementType,
 
         /**Натуральное число*/
         @SerializedName("QNT_POS")
@@ -27,15 +28,15 @@ data class ApprovalResultTask(
 
         /**Склад комплектации*/
         @SerializedName("LGORT_SRC")
-        val lgortSrc: String,
+        override val lgortSrc: String,
 
         /**Склад отгрузки*/
         @SerializedName("LGORT_TGT")
-        val lgortTarget: String,
+        override val lgortTarget: String,
 
         /**Предп*/
         @SerializedName("WERKS_DSTNTN")
-        val werksDstntnt: String,
+        override val werksDstntnt: String,
 
         /** Тип блокировки (своя/чужая) */
         @SerializedName("BLOCK_TYPE")
@@ -51,7 +52,7 @@ data class ApprovalResultTask(
 
         /** Общий флаг */
         @SerializedName("NOT_FINISH")
-        val notFinish: String,
+        override val notFinish: String,
 
         /** Общий флаг */
         @SerializedName("IS_CONS")
@@ -59,5 +60,25 @@ data class ApprovalResultTask(
 
         /** Тип ГИС-контроля */
         @SerializedName("TASK_CNTRL")
-        val taskCntrl: String
-)
+        val taskCntrl: String,
+
+        /** Статус задания */
+        @SerializedName("CUR_STAT")
+        override val currentStatusCode: String,
+
+        /** Текст статус задания */
+        @SerializedName("CUR_STAT_TEXT")
+        override val currentStatusText: String,
+
+        /** Текст следующего статуса задания */
+        @SerializedName("NEXT_STAT_TEXT")
+        override val nextStatusText: String,
+
+        /** УТЗ ТСД. Комментарий при смене статуса */
+        @SerializedName("TASK_COMMENT")
+        override val taskComment: String,
+
+        /** Поле типа DATS */
+        @SerializedName("DATE_SHIP")
+        override val dateShip: String
+) : Taskable
