@@ -21,11 +21,7 @@ class Formatter : IFormatter {
     }
 
     override fun getTaskStatusName(taskStatus: Task.Status): String {
-        taskStatus.text?.let {
-            return it
-        }
-
-        return when (taskStatus) {
+        return taskStatus.text ?: when (taskStatus) {
             is Task.Status.Created -> Task.Status.CREATED
             is Task.Status.Counted -> Task.Status.COUNTED
             is Task.Status.Published -> Task.Status.PUBLISHED
@@ -33,6 +29,7 @@ class Formatter : IFormatter {
             is Task.Status.ToConsolidation -> Task.Status.TO_CONSOLIDATION
             is Task.Status.Consolidation -> Task.Status.CONSOLIDATION
             is Task.Status.Consolidated -> Task.Status.CONSOLIDATED
+            is Task.Status.ProcessingOnGz -> Task.Status.PROCESSING_ON_GZ
         }
     }
 
