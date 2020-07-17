@@ -57,7 +57,10 @@ class GoodsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKey
     val listToProcessing: MutableLiveData<List<ListShipmentPPItem>> = MutableLiveData()
     val listProcessed: MutableLiveData<List<ListShipmentPPItem>> = MutableLiveData()
     val eanCode: MutableLiveData<String> = MutableLiveData()
-    val requestFocusToEan: MutableLiveData<Boolean> = MutableLiveData()
+    val eanCodeCountedOrToProcessing: MutableLiveData<String> = MutableLiveData()
+    val eanCodeWithoutBarcodeOrProcessed: MutableLiveData<String> = MutableLiveData()
+    val requestFocusCountedOrToProcessing: MutableLiveData<Boolean> = MutableLiveData()
+    val requestFocusWithoutBarcodeOrProcessed: MutableLiveData<Boolean> = MutableLiveData()
     val taskType: MutableLiveData<TaskType> = MutableLiveData()
     private val isBatches: MutableLiveData<Boolean> = MutableLiveData(false)
 
@@ -102,6 +105,11 @@ class GoodsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKey
 
     fun onResume() {
         updateData()
+        if (selectedPage.value == 0) {
+            requestFocusCountedOrToProcessing.value = true
+        } else {
+            requestFocusWithoutBarcodeOrProcessed.value = true
+        }
     }
 
     private fun updateData() {
@@ -319,10 +327,6 @@ class GoodsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKey
         }
     }
 
-    override fun onPageSelected(position: Int) {
-        selectedPage.value = position
-    }
-
     fun onClickItemPosition(position: Int) {
         val matnr: String? = if (selectedPage.value == 0) {
             if (taskType.value == TaskType.ShipmentPP) {
@@ -343,13 +347,6 @@ class GoodsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKey
     private fun handleProductSearchResult(@Suppress("UNUSED_PARAMETER") scanInfoResult: ScanInfoResult?): Boolean {
         eanCode.postValue("")
         return false
-    }
-
-    override fun onOkInSoftKeyboard(): Boolean {
-        eanCode.value?.let {
-            searchProductDelegate.searchCode(it, fromScan = false)
-        }
-        return true
     }
 
     fun onClickRefusal() {
@@ -563,9 +560,41 @@ class GoodsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKey
         )
     }
 
-    fun onDigitPressed(digit: Int) {
-        requestFocusToEan.value = true
-        eanCode.value = eanCode.value ?: "" + digit
+    override fun onPageSelected(position: Int) {
+        selectedPage.value = position
+        setRequestFocus()
+        setEanCode()
+    }
+
+    override fun onOkInSoftKeyboard(): Boolean {
+        setEanCode()
+        eanCode.value?.let {
+            searchProductDelegate.searchCode(it, fromScan = false)
+        }
+        return true
+    }
+
+    private fun setEanCode() {
+        eanCode.value = when (selectedPage.value) {
+            0 -> eanCodeCountedOrToProcessing.value
+            1 -> eanCodeWithoutBarcodeOrProcessed.value
+            else -> null
+        }
+    }
+
+    private fun setRequestFocus() {
+        when (selectedPage.value) {
+            0 -> {
+                //не менять последовательность, а иначе фокус будет устанавливаться не на нужном EditText
+                requestFocusWithoutBarcodeOrProcessed.value = false
+                requestFocusCountedOrToProcessing.value = true
+            }
+            1 -> {
+                //не менять последовательность, а иначе фокус будет устанавливаться не на нужном EditText
+                requestFocusCountedOrToProcessing.value = false
+                requestFocusWithoutBarcodeOrProcessed.value = true
+            }
+        }
     }
 
     private fun getManufacturerName(batchInfo: TaskBatchInfo?): String {
