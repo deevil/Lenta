@@ -30,6 +30,10 @@ class IngredientsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInS
         return true
     }
 
+    fun onClickMenu() {
+        navigator.goBack()
+    }
+
     fun onClickItemPosition(position: Int) {
         selectedPage.value?.let { page ->
             when (page) {

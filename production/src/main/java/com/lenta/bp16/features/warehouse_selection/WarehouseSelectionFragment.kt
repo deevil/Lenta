@@ -14,6 +14,7 @@ import com.lenta.shared.utilities.extentions.provideViewModel
 
 class WarehouseSelectionFragment :
         CoreFragment<FragmentWeightEquipmentNameBinding, WarehouseSelectionViewModel>(), ToolbarButtonsClickListener {
+
     override fun getLayoutId(): Int {
         return R.layout.fragment_select_warehouse
     }

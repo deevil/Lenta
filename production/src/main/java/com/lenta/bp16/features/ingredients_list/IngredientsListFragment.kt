@@ -5,9 +5,8 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import com.lenta.bp16.R
-import com.lenta.bp16.databinding.FragmentIgredientsListBinding
-import com.lenta.bp16.databinding.LayoutIngredientsByMaterialBinding
-import com.lenta.bp16.databinding.LayoutIngredientsByOrderBinding
+import com.lenta.bp16.BR
+import com.lenta.bp16.databinding.*
 import com.lenta.bp16.platform.extention.getAppComponent
 import com.lenta.shared.platform.fragment.CoreFragment
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
@@ -52,9 +51,7 @@ class IngredientsListFragment :
 
     override fun onToolbarButtonClick(view: View) {
         when (view.id) {
-            R.id.b_1 -> {
-
-            }
+            R.id.b_1 -> vm.onClickMenu()
             R.id.b_3 -> {
 
             }
@@ -90,6 +87,14 @@ class IngredientsListFragment :
                 container,
                 false).let { layoutBinding ->
 
+            layoutBinding.rvConfig = initRecycleAdapterDataBinding<ItemIngredientByOrderBinding>(
+                    layoutId = R.layout.item_ingredient_by_order,
+                    itemId = BR.item
+            )
+
+            layoutBinding.vm = vm
+            layoutBinding.lifecycleOwner = viewLifecycleOwner
+
             return layoutBinding.root
         }
     }
@@ -99,6 +104,14 @@ class IngredientsListFragment :
                 R.layout.layout_ingredients_by_material,
                 container,
                 false).let { layoutBinding ->
+
+            layoutBinding.rvConfig = initRecycleAdapterDataBinding<ItemIngredientByMaterialBinding>(
+                    layoutId = R.layout.item_ingredient_by_material,
+                    itemId = BR.item
+            )
+
+            layoutBinding.vm = vm
+            layoutBinding.lifecycleOwner = viewLifecycleOwner
 
             return layoutBinding.root
         }

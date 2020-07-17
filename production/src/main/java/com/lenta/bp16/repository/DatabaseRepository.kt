@@ -1,7 +1,9 @@
 package com.lenta.bp16.repository
 
+import com.lenta.bp16.request.pojo.WarehouseInfo
 import com.lenta.shared.fmp.resources.dao_ext.*
 import com.lenta.shared.fmp.resources.fast.ZmpUtz07V001
+import com.lenta.shared.fmp.resources.fast.ZmpUtz106V001
 import com.lenta.shared.fmp.resources.fast.ZmpUtz14V001
 import com.lenta.shared.fmp.resources.fast.ZmpUtz17V001
 import com.lenta.shared.models.core.Uom
@@ -18,6 +20,7 @@ class DatabaseRepository @Inject constructor(
     private val units: ZmpUtz07V001 by lazy { ZmpUtz07V001(hyperHive) } // Единицы измерения
     private val settings: ZmpUtz14V001 by lazy { ZmpUtz14V001(hyperHive) } // Настройки
     private val dictonary: ZmpUtz17V001 by lazy { ZmpUtz17V001(hyperHive) } // Справочник с наборами данных
+    private val warehouses: ZmpUtz106V001 by lazy { ZmpUtz106V001(hyperHive) } // Справочник складов
 
     override suspend fun getAllowedAppVersion(): String? {
         return withContext(Dispatchers.IO) {
@@ -103,6 +106,20 @@ class DatabaseRepository @Inject constructor(
         }
     }
 
+    override suspend fun getWarehouses(tkNumber: String): List<WarehouseInfo> {
+        return withContext(Dispatchers.IO) {
+            val warehousesList = warehouses.getWarehouseNumbers(tkNumber)
+            warehousesList.mapNotNull { warehouseModel ->
+                warehouseModel.name?.run {
+                    WarehouseInfo(
+                            name = warehouseModel.name.orEmpty(),
+                            werks = tkNumber,
+                            lgort = warehouseModel.lgort.orEmpty()
+                    )
+                }
+            }
+        }
+    }
 }
 
 interface IDatabaseRepository {
@@ -119,4 +136,5 @@ interface IDatabaseRepository {
     suspend fun getCategory(categoryCode: String): DictElement?
     suspend fun getDefect(defectCode: String): DictElement?
 
+    suspend fun getWarehouses(tkNumber: String): List<WarehouseInfo>
 }
