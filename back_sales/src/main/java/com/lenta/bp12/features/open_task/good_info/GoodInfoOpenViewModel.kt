@@ -14,6 +14,7 @@ import com.lenta.bp12.platform.resource.IResourceManager
 import com.lenta.bp12.repository.IDatabaseRepository
 import com.lenta.bp12.request.*
 import com.lenta.bp12.request.pojo.ProducerInfo
+import com.lenta.bp12.request.pojo.ProviderInfo
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.functional.Either
@@ -131,7 +132,7 @@ class GoodInfoOpenViewModel : CoreViewModel() {
 
     val totalTitle by lazy {
         good.map { good ->
-            resource.totalWithConvertingInfo(good?.convertingInfo.orEmpty())
+            resource.totalWithConvertingInfo(good?.getConvertingInfo().orEmpty())
         }
     }
 
@@ -325,19 +326,15 @@ class GoodInfoOpenViewModel : CoreViewModel() {
         val eanWithoutWeight = scanCodeInfo?.eanWithoutWeight ?: ean
 
         manager.findGoodByEan(eanWithoutWeight)?.let { foundGood ->
-            if (foundGood.isDataLoaded || foundGood.isCounted) {
-                lastSuccessSearchNumber.value = eanWithoutWeight
-                setFoundGood(foundGood)
-            } else loadGoodInfo(ean = eanWithoutWeight)
+            lastSuccessSearchNumber.value = eanWithoutWeight
+            setFoundGood(foundGood)
         } ?: loadGoodInfo(ean = eanWithoutWeight)
     }
 
     private fun getGoodByMaterial(material: String) {
         manager.findGoodByMaterial(material)?.let { foundGood ->
-            if (foundGood.isDataLoaded || foundGood.isCounted) {
-                lastSuccessSearchNumber.value = material
-                setFoundGood(foundGood)
-            } else loadGoodInfo(material = material)
+            lastSuccessSearchNumber.value = material
+            setFoundGood(foundGood)
         } ?: loadGoodInfo(material = material)
     }
 
@@ -352,7 +349,7 @@ class GoodInfoOpenViewModel : CoreViewModel() {
         when {
             good.isCounted -> quantityField.value = good.getQuantity().dropZeros()
             good.kind == GoodKind.COMMON -> {
-                if (good.commonUnits != good.convertingUnits) {
+                if (good.isDifferentUnits()) {
                     val converted = scanCodeInfo?.getConvertedQuantity(good.innerQuantity) ?: 0.0
                     quantityField.value = converted.dropZeros()
                 } else {
@@ -393,22 +390,26 @@ class GoodInfoOpenViewModel : CoreViewModel() {
                     taskType = task.value?.type?.code.orEmpty()
             )).also {
                 navigator.hideProgress()
-            }.either(::handleFailure) { goodInfo ->
-                viewModelScope.launch {
-                    if (manager.isGoodCorrespondToTask(goodInfo)) {
-                        if (manager.isGoodCanBeAdded(goodInfo)) {
-                            isEanLastScanned = ean != null
-                            isExistUnsavedData = true
-                            addGood(goodInfo = goodInfo, number = ean ?: (material.orEmpty()))
-                        } else {
-                            goBackFromScreen()
-                            navigator.showGoodCannotBeAdded()
-                        }
-                    } else {
-                        goBackFromScreen()
-                        navigator.showNotMatchTaskSettingsAddingNotPossible()
-                    }
+            }.either(::handleFailure) { goodInfoResult ->
+                handleLoadGoodInfoResult(goodInfoResult, ean, material)
+            }
+        }
+    }
+
+    private fun handleLoadGoodInfoResult(result: GoodInfoResult, ean: String?, material: String?) {
+        viewModelScope.launch {
+            if (manager.isGoodCorrespondToTask(result)) {
+                if (manager.isGoodCanBeAdded(result)) {
+                    isEanLastScanned = ean != null
+                    isExistUnsavedData = true
+                    addGood(result = result, searchNumber = ean ?: (material.orEmpty()))
+                } else {
+                    goBackFromScreen()
+                    navigator.showGoodCannotBeAdded()
                 }
+            } else {
+                goBackFromScreen()
+                navigator.showNotMatchTaskSettingsAddingNotPossible()
             }
         }
     }
@@ -421,33 +422,26 @@ class GoodInfoOpenViewModel : CoreViewModel() {
         navigator.goBack()
     }
 
-    private fun addGood(goodInfo: GoodInfoResult, number: String) {
+    private fun addGood(result: GoodInfoResult, searchNumber: String) {
         viewModelScope.launch {
-            goodInfo.apply {
-                val commonUnits = database.getUnitsByCode(materialInfo.commonUnitsCode)
-                val convertingUnits = database.getUnitsByCode(materialInfo.convertingUnitsCode)
-                val innerQuantity = materialInfo.innerQuantity.toDoubleOrNull() ?: 0.0
-                val convertingInfo = if (commonUnits != convertingUnits) " (${commonUnits.name} = ${innerQuantity.dropZeros()} ${convertingUnits.name})" else ""
-
+            result.apply {
                 good.value = GoodOpen(
                         ean = eanInfo.ean,
                         material = materialInfo.material,
                         name = materialInfo.name,
                         section = materialInfo.section,
-                        matrix = getMatrixType(goodInfo.materialInfo.matrix),
+                        matrix = getMatrixType(result.materialInfo.matrix),
                         kind = getGoodKind(),
-                        commonUnits = commonUnits,
-                        convertingUnits = convertingUnits,
+                        commonUnits = database.getUnitsByCode(materialInfo.commonUnitsCode),
+                        innerUnits = database.getUnitsByCode(materialInfo.innerUnitsCode),
                         innerQuantity = materialInfo.innerQuantity.toDoubleOrNull() ?: 0.0,
-                        convertingInfo = convertingInfo,
-                        isDataLoaded = true,
-                        provider = task.value!!.provider,
+                        provider = task.value?.provider ?: ProviderInfo(),
                         producers = producers
                 )
             }
 
             good.value?.let { good ->
-                lastSuccessSearchNumber.value = number
+                lastSuccessSearchNumber.value = searchNumber
                 updateProducers(good.producers)
                 setScreenStatus(good)
                 setDefaultQuantity(good)

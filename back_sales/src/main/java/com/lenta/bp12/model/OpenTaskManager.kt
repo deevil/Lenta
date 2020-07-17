@@ -4,13 +4,13 @@ import androidx.lifecycle.MutableLiveData
 import com.lenta.bp12.model.pojo.Block
 import com.lenta.bp12.model.pojo.open_task.GoodOpen
 import com.lenta.bp12.model.pojo.open_task.TaskOpen
-import com.lenta.bp12.platform.extention.addZerosToStart
 import com.lenta.bp12.platform.extention.getControlType
 import com.lenta.bp12.repository.IDatabaseRepository
 import com.lenta.bp12.request.GoodInfoResult
 import com.lenta.bp12.request.SendTaskDataParams
 import com.lenta.bp12.request.TaskContentResult
 import com.lenta.bp12.request.pojo.*
+import com.lenta.shared.models.core.getInnerUnits
 import com.lenta.shared.platform.constants.Constants
 import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.extentions.dropZeros
@@ -113,6 +113,8 @@ class OpenTaskManager @Inject constructor(
             taskContentResult.positions.map { positionInfo ->
                 positionInfo.apply {
                     database.getGoodInfoByMaterial(material)?.let { goodInfo ->
+                        val commonUnits = database.getUnitsByCode(unitsCode)
+
                         task.goods.add(GoodOpen(
                                 ean = goodInfo.ean,
                                 material = material,
@@ -122,8 +124,9 @@ class OpenTaskManager @Inject constructor(
                                 kind = goodInfo.kind,
                                 planQuantity = planQuantity.toDoubleOrNull() ?: 0.0,
                                 factQuantity = factQuantity.toDoubleOrNull() ?: 0.0,
+                                commonUnits = commonUnits,
+                                innerUnits = getInnerUnits(commonUnits),
                                 innerQuantity = innerQuantity.toDoubleOrNull() ?: 1.0,
-                                commonUnits = database.getUnitsByCode(unitsCode),
                                 isCounted = isCounted.isSapTrue(),
                                 isDeleted = isDeleted.isSapTrue(),
                                 provider = ProviderInfo(providerCode, providerName),
