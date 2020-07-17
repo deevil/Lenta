@@ -61,6 +61,7 @@ class ExciseAlcoBoxAccInfoViewModel : CoreViewModel(), OnPositionClickListener {
     val spinReasonRejection: MutableLiveData<List<String>> = MutableLiveData()
     val spinReasonRejectionSelectedPosition: MutableLiveData<Int> = MutableLiveData(0)
     val suffix: MutableLiveData<String> = MutableLiveData()
+    val requestFocusToCount: MutableLiveData<Boolean> = MutableLiveData()
     val isDefect: MutableLiveData<Boolean> = spinQualitySelectedPosition.map {
         it != 0
     }
@@ -265,6 +266,10 @@ class ExciseAlcoBoxAccInfoViewModel : CoreViewModel(), OnPositionClickListener {
             spinQuality.value = qualityInfo.value?.map {
                 it.name
             }
+
+            //эту строку необходимо прописывать только после того, как были установлены данные для переменных count  и suffix, а иначе фокус в поле et_count не установится
+            requestFocusToCount.value = true
+
             if (processExciseAlcoBoxAccService.newProcessExciseAlcoBoxService(productInfo.value!!) == null) {
                 screenNavigator.goBack()
                 screenNavigator.openAlertWrongProductType()

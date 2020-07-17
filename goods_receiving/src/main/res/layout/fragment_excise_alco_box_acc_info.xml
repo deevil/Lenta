@@ -76,6 +76,9 @@
             app:layout_constraintTop_toTopOf="@+id/div_vert1"
             app:maxLengthForScanProtect="@{6}"
             app:suffix="@{vm.suffix}"
+            app:cursorToLastPos="@{false}"
+            app:requestFocus="@{vm.requestFocusToCount}"
+
             tools:text="1 кор" />
 
         <View
