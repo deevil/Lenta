@@ -218,22 +218,26 @@ class TaskListViewModel : CoreViewModel(),
                     && it.status != TaskStatus.ReadyToShipment //ReadyToShipment этот статус добавлен для ОПП, п.п. 5.5.2 из ТП
             when (it.lockStatus) {
                 TaskLockStatus.LockedByMe -> {
-                    screenNavigator.openConfirmationUnlock {
-                        screenNavigator.openTaskCardLoadingScreen(
-                                mode = TaskCardMode.Full,
-                                taskNumber = it.taskNumber,
-                                loadFullData = loadFullData
-                        )
-                    }
+                    screenNavigator.openConfirmationUnlock(
+                            callbackFunc = {
+                                screenNavigator.openTaskCardLoadingScreen(
+                                        mode = TaskCardMode.Full,
+                                        taskNumber = it.taskNumber,
+                                        loadFullData = loadFullData
+                                )
+                            }
+                    )
                 }
                 TaskLockStatus.LockedByOthers -> {
-                    screenNavigator.openConfirmationView {
-                        screenNavigator.openTaskCardLoadingScreen(
-                                mode = TaskCardMode.ReadOnly,
-                                taskNumber = it.taskNumber,
-                                loadFullData = false
-                        )
-                    }
+                    screenNavigator.openConfirmationView(
+                            callbackFunc = {
+                                screenNavigator.openTaskCardLoadingScreen(
+                                        mode = TaskCardMode.ReadOnly,
+                                        taskNumber = it.taskNumber,
+                                        loadFullData = false
+                                )
+                            }
+                    )
                 }
                 TaskLockStatus.None -> {
                     screenNavigator.openTaskCardLoadingScreen(
