@@ -56,7 +56,7 @@ fun setStrictListIcon(imageView: ImageView, isStrictList: Boolean?) {
             if (hasIcon) {
                 imageView.setOnClickListener {
                     dataBindingHelpHolder.coreNavigator.openAlertScreen(
-                            message = imageView.context.getString(if (isStrictList == true) R.string.pictogram_strict_list else R.string.pictogram_not_strict_list),
+                            message = imageView.context.getString(if (isStrictList == true) R.string.strict_list else R.string.not_strict_list),
                             iconRes = iconRes
                     )
                 }

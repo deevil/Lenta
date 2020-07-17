@@ -135,7 +135,7 @@ class GoodInfoCreateViewModel : CoreViewModel() {
 
     val totalTitle by lazy {
         good.map { good ->
-            resource.totalWithConvertingInfo(good?.convertingInfo.orEmpty())
+            resource.totalWithConvertingInfo(good?.getConvertingInfo().orEmpty())
         }
     }
 
@@ -427,7 +427,7 @@ class GoodInfoCreateViewModel : CoreViewModel() {
 
     private fun setDefaultQuantity(good: GoodCreate) {
         if (good.kind == GoodKind.COMMON) {
-            if (good.commonUnits != good.convertingUnits) {
+            if (good.isDifferentUnits()) {
                 val converted = scanCodeInfo?.getConvertedQuantity(good.innerQuantity) ?: 0.0
                 quantityField.value = converted.dropZeros()
             } else {
@@ -461,22 +461,26 @@ class GoodInfoCreateViewModel : CoreViewModel() {
                     taskType = task.value!!.taskType.code
             )).also {
                 navigator.hideProgress()
-            }.either(::handleFailure) { goodInfo ->
-                viewModelScope.launch {
-                    if (manager.isGoodCanBeAdded(goodInfo)) {
-                        isEanLastScanned = ean != null
-                        isExistUnsavedData = true
-                        addGood(goodInfo = goodInfo, number = ean ?: (material.orEmpty()))
-                    } else {
-                        if (manager.searchGoodFromList) {
-                            manager.searchGoodFromList = false
-                            manager.searchNumber = ""
-                            navigator.goBack()
-                        }
+            }.either(::handleFailure) { goodInfoResult ->
+                handleLoadGoodInfoResult(goodInfoResult, ean, material)
+            }
+        }
+    }
 
-                        navigator.showGoodCannotBeAdded()
-                    }
+    private fun handleLoadGoodInfoResult(result: GoodInfoResult, ean: String?, material: String?) {
+        viewModelScope.launch {
+            if (manager.isGoodCanBeAdded(result)) {
+                isEanLastScanned = ean != null
+                isExistUnsavedData = true
+                setGood(result = result, searchNumber = ean ?: (material.orEmpty()))
+            } else {
+                if (manager.searchGoodFromList) {
+                    manager.searchGoodFromList = false
+                    manager.searchNumber = ""
+                    navigator.goBack()
                 }
+
+                navigator.showGoodCannotBeAdded()
             }
         }
     }
@@ -491,14 +495,9 @@ class GoodInfoCreateViewModel : CoreViewModel() {
         navigator.openAlertScreen(failure)
     }
 
-    private fun addGood(goodInfo: GoodInfoResult, number: String) {
+    private fun setGood(result: GoodInfoResult, searchNumber: String) {
         viewModelScope.launch {
-            goodInfo.apply {
-                val commonUnits = database.getUnitsByCode(materialInfo.commonUnitsCode)
-                val convertingUnits = database.getUnitsByCode(materialInfo.convertingUnitsCode)
-                val innerQuantity = materialInfo.innerQuantity.toDoubleOrNull() ?: 0.0
-                val convertingInfo = if (commonUnits != convertingUnits) " (${commonUnits.name} = ${innerQuantity.dropZeros()} ${convertingUnits.name})" else ""
-
+            with(result) {
                 good.value = GoodCreate(
                         ean = eanInfo.ean,
                         material = materialInfo.material,
@@ -508,17 +507,16 @@ class GoodInfoCreateViewModel : CoreViewModel() {
                         control = getControlType(),
                         section = materialInfo.section,
                         matrix = getMatrixType(materialInfo.matrix),
-                        commonUnits = commonUnits,
-                        convertingUnits = convertingUnits,
-                        innerQuantity = materialInfo.innerQuantity.toDoubleOrNull() ?: 0.0,
-                        convertingInfo = convertingInfo,
+                        commonUnits = database.getUnitsByCode(materialInfo.commonUnitsCode),
+                        innerUnits = database.getUnitsByCode(materialInfo.innerUnitsCode),
+                        innerQuantity = materialInfo.innerQuantity.toDoubleOrNull() ?: 1.0,
                         providers = providers.toMutableList(),
                         producers = producers.toMutableList()
                 )
             }
 
             good.value?.let { good ->
-                lastSuccessSearchNumber.value = number
+                lastSuccessSearchNumber.value = searchNumber
                 updateProviders(good.providers)
                 updateProducers(good.producers)
                 setScreenStatus(good)

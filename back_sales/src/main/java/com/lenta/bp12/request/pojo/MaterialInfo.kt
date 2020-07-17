@@ -14,7 +14,7 @@ data class MaterialInfo(
         var goodType: String,
         /** Базовая единица измерения */
         @SerializedName("BUOM")
-        var convertingUnitsCode: String,
+        var innerUnitsCode: String,
         /** Тип матрицы SCU */
         @SerializedName("MATR_TYPE")
         var matrix: String,
