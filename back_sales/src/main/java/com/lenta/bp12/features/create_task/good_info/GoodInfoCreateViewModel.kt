@@ -497,7 +497,7 @@ class GoodInfoCreateViewModel : CoreViewModel() {
 
     private fun addGood(result: GoodInfoResult, searchNumber: String) {
         viewModelScope.launch {
-            result.apply {
+            with(result) {
                 good.value = GoodCreate(
                         ean = eanInfo.ean,
                         material = materialInfo.material,

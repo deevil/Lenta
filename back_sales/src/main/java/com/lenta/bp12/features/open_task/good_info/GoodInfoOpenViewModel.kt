@@ -424,7 +424,7 @@ class GoodInfoOpenViewModel : CoreViewModel() {
 
     private fun addGood(result: GoodInfoResult, searchNumber: String) {
         viewModelScope.launch {
-            result.apply {
+            with(result) {
                 good.value = GoodOpen(
                         ean = eanInfo.ean,
                         material = materialInfo.material,
