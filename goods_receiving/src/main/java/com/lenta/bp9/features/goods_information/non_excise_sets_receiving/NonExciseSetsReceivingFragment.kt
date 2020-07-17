@@ -200,6 +200,11 @@ class NonExciseSetsReceivingFragment : CoreFragment<FragmentNonExciseSetsReceivi
 
     override fun onResume() {
         super.onResume()
+        if (vm.selectedPage.value == 0) {
+            vm.requestFocusToCount.value = true
+        } else {
+            vm.requestFocusToEan.value = true
+        }
         vm.onResume()
     }
 
