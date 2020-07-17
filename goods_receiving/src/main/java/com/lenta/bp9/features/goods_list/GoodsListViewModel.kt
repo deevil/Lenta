@@ -599,12 +599,10 @@ class GoodsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKey
     private fun setRequestFocus() {
         when (selectedPage.value) {
             GoodsListViewPages.GOODS_LIST_VIEW_PAGE_COUNTED_OR_TO_PROCESSING -> {
-                //не менять последовательность, а иначе фокус будет устанавливаться не на нужном EditText
                 requestFocusWithoutBarcodeOrProcessed.value = false
                 requestFocusCountedOrToProcessing.value = true
             }
             GoodsListViewPages.GOODS_LIST_VIEW_PAGE_WITHOUT_BARCODE_OR_PROCESSED -> {
-                //не менять последовательность, а иначе фокус будет устанавливаться не на нужном EditText
                 requestFocusCountedOrToProcessing.value = false
                 requestFocusWithoutBarcodeOrProcessed.value = true
             }

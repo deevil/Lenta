@@ -185,19 +185,16 @@ class TaskListViewModel : CoreViewModel(),
     private fun setRequestFocus() {
         when (selectedPage.value) {
             TaskListViewPages.TASK_LIST_VIEW_PAGE_TO_PROCESS -> {
-                //не менять последовательность, а иначе фокус будет устанавливаться не на нужном EditText
                 requestFocusPageSearch.value = false
                 requestFocusPagePostponed.value = false
                 requestFocusPageToProcess.value = true
             }
             TaskListViewPages.TASK_LIST_VIEW_PAGE_SEARCH -> {
-                //не менять последовательность, а иначе фокус будет устанавливаться не на нужном EditText
                 requestFocusPagePostponed.value = false
                 requestFocusPageToProcess.value = false
                 requestFocusPageSearch.value = true
             }
             TaskListViewPages.TASK_LIST_VIEW_PAGE_POSTPONED -> {
-                //не менять последовательность, а иначе фокус будет устанавливаться не на нужном EditText
                 requestFocusPageToProcess.value = false
                 requestFocusPageSearch.value = false
                 requestFocusPagePostponed.value = true
