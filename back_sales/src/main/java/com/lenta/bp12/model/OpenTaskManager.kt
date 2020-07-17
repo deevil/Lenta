@@ -92,7 +92,7 @@ class OpenTaskManager @Inject constructor(
                     storage = taskInfo.storage,
                     control = ControlType.from(taskInfo.control),
                     provider = ProviderInfo(
-                            code = taskInfo.providerCode.addZerosToStart(10),
+                            code = taskInfo.providerCode,
                             name = taskInfo.providerName
                     ),
                     reason = database.getReturnReason(taskInfo.typeCode, taskInfo.reasonCode),
@@ -157,9 +157,7 @@ class OpenTaskManager @Inject constructor(
             val type = if (task.goodType.isNotEmpty()) task.goodType == goodInfo.materialInfo.goodType else true
             val section = if (task.section.isNotEmpty()) task.section == goodInfo.materialInfo.section else true
             val purchaseGroup = if (task.purchaseGroup.isNotEmpty()) task.purchaseGroup == goodInfo.materialInfo.purchaseGroup else true
-            val provider =  if (task.provider.code.dropWhile { it == '0' }.isNotEmpty()) {
-                goodInfo.providers.find { task.provider.code.contains(it.code) } != null
-            } else true
+            val provider = if (task.provider.code.isNotEmpty()) goodInfo.providers.find { it.code == task.provider.code } != null else true
 
             Logg.d { "--> task parameters: ${task.control} / ${task.goodType} / ${task.section} / ${task.purchaseGroup} / ${task.provider.code}" }
             Logg.d { "--> good parameters: ${goodInfo.getControlType()} / ${goodInfo.materialInfo.goodType} / ${goodInfo.materialInfo.section} / ${goodInfo.materialInfo.purchaseGroup} / ${goodInfo.providers}" }
