@@ -153,17 +153,18 @@ class TaskEOMergeViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
 
     private fun onNoItemSelectedProcessing(notProcessedEOList: List<ConsolidationProcessingUnit>) {
         screenNavigator.openZeroSelectedEODialog(
-                processCallbackFunc = {
-                    addAllEOAsGE()
-                },
-                combineCallbackFunc = {
-                    if (notProcessedEOList.isNotEmpty())
-                        consolidate(
-                                sendEOList = notProcessedEOList,
-                                sendGEList = listOf(),
-                                mode = ConsolidationNetRequest.CONSOLIDATION_EO_IN_GE_MODE
-                        )
-                })
+                processCallbackFunc = ::addAllEOAsGE,
+                combineCallbackFunc = { combineEO(notProcessedEOList) }
+        )
+    }
+
+    private fun combineEO(notProcessedEOList: List<ConsolidationProcessingUnit>) {
+        if (notProcessedEOList.isNotEmpty())
+            consolidate(
+                    sendEOList = notProcessedEOList,
+                    sendGEList = listOf(),
+                    mode = ConsolidationNetRequest.CONSOLIDATION_EO_IN_GE_MODE
+            )
     }
 
     private fun addAllEOAsGE() {
@@ -300,12 +301,12 @@ class TaskEOMergeViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
 
     fun onSaveBtnClick() {
         screenNavigator.openSaveTaskConfirmationDialog(
-                yesCallbackFunc = { endConsolidation() },
+                yesCallbackFunc = ::endConsolidation,
                 status = Task.Status.CONSOLIDATED
         )
     }
 
-    private fun endConsolidation(){
+    private fun endConsolidation() {
         viewModelScope.launch {
             screenNavigator.showProgress(endConsolidationNetRequest)
             val either = sessionInfo.personnelNumber?.let { personnelNumber ->

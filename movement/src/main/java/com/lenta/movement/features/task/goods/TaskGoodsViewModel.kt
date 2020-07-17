@@ -87,7 +87,7 @@ class TaskGoodsViewModel : CoreViewModel(),
     }
 
     val selectedPagePosition = MutableLiveData(0)
-    val currentPage = selectedPagePosition.mapSkipNulls { TaskGoodsPage.values()[it] }
+    val currentPage = selectedPagePosition.mapSkipNulls { TaskGoodsPage.values().getOrNull(it) }
 
     val deleteEnabled = combineLatest(
             currentPage,
@@ -95,9 +95,10 @@ class TaskGoodsViewModel : CoreViewModel(),
             basketSelectionHelper.selectedPositions
     )
             .mapSkipNulls { (currentPage, processedSelectedPositions, basketSelectedPositions) ->
-                when (currentPage!!) {
+                when (currentPage) {
                     TaskGoodsPage.PROCESSED -> processedSelectedPositions.orEmpty().isNotEmpty()
                     TaskGoodsPage.BASKETS -> basketSelectedPositions.orEmpty().isNotEmpty()
+                    null -> false
                 }
             }
 
@@ -194,7 +195,7 @@ class TaskGoodsViewModel : CoreViewModel(),
 
     fun onSaveClick() {
         screenNavigator.openSaveTaskConfirmationDialog(
-                yesCallbackFunc = { saveTask() },
+                yesCallbackFunc = ::saveTask,
                 status = Task.Status.COUNTED
         )
     }
