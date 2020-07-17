@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+                                                        
+
+    
+                 
+                     
+                                                                    
+           
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" android:tag="layout/layout_task_properties_tab_0" xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto">
+
+        <com.lenta.movement.view.BorderedTableLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:stretchColumns="*"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <TableRow android:gravity="center_vertical">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="16dp"
+                    android:text="@string/task_settings_properties_piker_storage_title" />
+
+                <com.lenta.shared.view.ClickableSpinner
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="16dp"
+                    android:tag="binding_1"                         
+                                                       
+                                                                                             
+                                                                       />
+            </TableRow>
+
+            <TableRow android:gravity="center_vertical">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="16dp"
+                    android:text="@string/task_settings_properties_shipment_storage_title" />
+
+                <com.lenta.shared.view.ClickableSpinner
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="16dp"
+                    android:tag="binding_2"                           
+                                                         
+                                                                                               
+                                                                         />
+            </TableRow>
+
+            <TableRow android:gravity="center_vertical">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="16dp"
+                    android:text="@string/task_settings_properties_shipment_date_title" />
+
+                <EditText
+                    android:id="@+id/shipmentDateEditText"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="16dp"
+                    android:digits="1234567890."
+                    android:inputType="number"
+                    android:tag="binding_3"           
+                                                               
+                                                              />
+
+            </TableRow>
+
+        </com.lenta.movement.view.BorderedTableLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+         

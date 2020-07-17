@@ -1,0 +1,202 @@
+[
+    {
+        "merged": "/Users/alexander/lenta-pdct-android/movement/build/intermediates/res/merged/prod/debug/layout_layout_item_box_list.xml.flat",
+        "source": "/Users/alexander/lenta-pdct-android/movement/src/main/res/layout/layout_item_box_list.xml"
+    },
+    {
+        "merged": "/Users/alexander/lenta-pdct-android/movement/build/intermediates/res/merged/prod/debug/mipmap-xxhdpi_ic_launcher.png.flat",
+        "source": "/Users/alexander/lenta-pdct-android/movement/src/main/res/mipmap-xxhdpi/ic_launcher.png"
+    },
+    {
+        "merged": "/Users/alexander/lenta-pdct-android/movement/build/intermediates/res/merged/prod/debug/drawable-xxhdpi_ic_box.png.flat",
+        "source": "/Users/alexander/lenta-pdct-android/movement/build/generated/res/pngs/prod/debug/drawable-xxhdpi/ic_box.png"
+    },
+    {
+        "merged": "/Users/alexander/lenta-pdct-android/movement/build/intermediates/res/merged/prod/debug/layout_layout_header_task_save_list.xml.flat",
+        "source": "/Users/alexander/lenta-pdct-android/movement/src/main/res/layout/layout_header_task_save_list.xml"
+    },
+    {
+        "merged": "/Users/alexander/lenta-pdct-android/movement/build/intermediates/res/merged/prod/debug/drawable-xhdpi_ic_box.png.flat",
+        "source": "/Users/alexander/lenta-pdct-android/movement/build/generated/res/pngs/prod/debug/drawable-xhdpi/ic_box.png"
+    },
+    {
+        "merged": "/Users/alexander/lenta-pdct-android/movement/build/intermediates/res/merged/prod/debug/layout_layout_task_goods_processed_tab.xml.flat",
+        "source": "/Users/alexander/lenta-pdct-android/movement/src/main/res/layout/layout_task_goods_processed_tab.xml"
+    },
+    {
+        "merged": "/Users/alexander/lenta-pdct-android/movement/build/intermediates/res/merged/prod/debug/layout_layout_item_goods_list.xml.flat",
+        "source": "/Users/alexander/lenta-pdct-android/movement/src/main/res/layout/layout_item_goods_list.xml"
+    },
+    {
+        "merged": "/Users/alexander/lenta-pdct-android/movement/build/intermediates/res/merged/prod/debug/layout_fragment_goods_list.xml.flat",
+        "source": "/Users/alexander/lenta-pdct-android/movement/src/main/res/layout/fragment_goods_list.xml"
+    },
+    {
+        "merged": "/Users/alexander/lenta-pdct-android/movement/build/intermediates/res/merged/prod/debug/layout_fragment_main_menu.xml.flat",
+        "source": "/Users/alexander/lenta-pdct-android/movement/src/main/res/layout/fragment_main_menu.xml"
+    },
+    {
+        "merged": "/Users/alexander/lenta-pdct-android/movement/build/intermediates/res/merged/prod/debug/mipmap-hdpi_ic_launcher_round.png.flat",
+        "source": "/Users/alexander/lenta-pdct-android/movement/src/main/res/mipmap-hdpi/ic_launcher_round.png"
+    },
+    {
+        "merged": "/Users/alexander/lenta-pdct-android/movement/build/intermediates/res/merged/prod/debug/layout_layout_header_goods_list.xml.flat",
+        "source": "/Users/alexander/lenta-pdct-android/movement/src/main/res/layout/layout_header_goods_list.xml"
+    },
+    {
+        "merged": "/Users/alexander/lenta-pdct-android/movement/build/intermediates/res/merged/prod/debug/mipmap-xxhdpi_ic_launcher_round.png.flat",
+        "source": "/Users/alexander/lenta-pdct-android/movement/src/main/res/mipmap-xxhdpi/ic_launcher_round.png"
+    },
+    {
+        "merged": "/Users/alexander/lenta-pdct-android/movement/build/intermediates/res/merged/prod/debug/layout_fragment_select_personnel_number.xml.flat",
+        "source": "/Users/alexander/lenta-pdct-android/movement/src/main/res/layout/fragment_select_personnel_number.xml"
+    },
+    {
+        "merged": "/Users/alexander/lenta-pdct-android/movement/build/intermediates/res/merged/prod/debug/mipmap-xxxhdpi_ic_launcher.png.flat",
+        "source": "/Users/alexander/lenta-pdct-android/movement/src/main/res/mipmap-xxxhdpi/ic_launcher.png"
+    },
+    {
+        "merged": "/Users/alexander/lenta-pdct-android/movement/build/intermediates/res/merged/prod/debug/layout_fragment_create_boxes.xml.flat",
+        "source": "/Users/alexander/lenta-pdct-android/movement/src/main/res/layout/fragment_create_boxes.xml"
+    },
+    {
+        "merged": "/Users/alexander/lenta-pdct-android/movement/build/intermediates/res/merged/prod/debug/drawable-xxxhdpi_ic_box.png.flat",
+        "source": "/Users/alexander/lenta-pdct-android/movement/build/generated/res/pngs/prod/debug/drawable-xxxhdpi/ic_box.png"
+    },
+    {
+        "merged": "/Users/alexander/lenta-pdct-android/movement/build/intermediates/res/merged/prod/debug/drawable_ic_launcher_background.xml.flat",
+        "source": "/Users/alexander/lenta-pdct-android/movement/src/main/res/drawable/ic_launcher_background.xml"
+    },
+    {
+        "merged": "/Users/alexander/lenta-pdct-android/movement/build/intermediates/res/merged/prod/debug/drawable-hdpi_ic_box.png.flat",
+        "source": "/Users/alexander/lenta-pdct-android/movement/build/generated/res/pngs/prod/debug/drawable-hdpi/ic_box.png"
+    },
+    {
+        "merged": "/Users/alexander/lenta-pdct-android/movement/build/intermediates/res/merged/prod/debug/layout_fragment_select_market.xml.flat",
+        "source": "/Users/alexander/lenta-pdct-android/movement/src/main/res/layout/fragment_select_market.xml"
+    },
+    {
+        "merged": "/Users/alexander/lenta-pdct-android/movement/build/intermediates/res/merged/prod/debug/mipmap-anydpi-v26_ic_launcher_round.xml.flat",
+        "source": "/Users/alexander/lenta-pdct-android/movement/src/main/res/mipmap-anydpi-v26/ic_launcher_round.xml"
+    },
+    {
+        "merged": "/Users/alexander/lenta-pdct-android/movement/build/intermediates/res/merged/prod/debug/layout_layout_task_goods_details_buckets_tab.xml.flat",
+        "source": "/Users/alexander/lenta-pdct-android/movement/src/main/res/layout/layout_task_goods_details_buckets_tab.xml"
+    },
+    {
+        "merged": "/Users/alexander/lenta-pdct-android/movement/build/intermediates/res/merged/prod/debug/layout_layout_box_create_pucker_tab.xml.flat",
+        "source": "/Users/alexander/lenta-pdct-android/movement/src/main/res/layout/layout_box_create_pucker_tab.xml"
+    },
+    {
+        "merged": "/Users/alexander/lenta-pdct-android/movement/build/intermediates/res/merged/prod/debug/layout_layout_header_basket_or_product_list.xml.flat",
+        "source": "/Users/alexander/lenta-pdct-android/movement/src/main/res/layout/layout_header_basket_or_product_list.xml"
+    },
+    {
+        "merged": "/Users/alexander/lenta-pdct-android/movement/build/intermediates/res/merged/prod/debug/layout_layout_task_status.xml.flat",
+        "source": "/Users/alexander/lenta-pdct-android/movement/src/main/res/layout/layout_task_status.xml"
+    },
+    {
+        "merged": "/Users/alexander/lenta-pdct-android/movement/build/intermediates/res/merged/prod/debug/drawable-anydpi-v24_ic_box.xml.flat",
+        "source": "/Users/alexander/lenta-pdct-android/movement/build/generated/res/pngs/prod/debug/drawable-anydpi-v24/ic_box.xml"
+    },
+    {
+        "merged": "/Users/alexander/lenta-pdct-android/movement/build/intermediates/res/merged/prod/debug/layout_layout_header_box_list.xml.flat",
+        "source": "/Users/alexander/lenta-pdct-android/movement/src/main/res/layout/layout_header_box_list.xml"
+    },
+    {
+        "merged": "/Users/alexander/lenta-pdct-android/movement/build/intermediates/res/merged/prod/debug/mipmap-xhdpi_ic_launcher_round.png.flat",
+        "source": "/Users/alexander/lenta-pdct-android/movement/src/main/res/mipmap-xhdpi/ic_launcher_round.png"
+    },
+    {
+        "merged": "/Users/alexander/lenta-pdct-android/movement/build/intermediates/res/merged/prod/debug/drawable_ic_basket_24dp.xml.flat",
+        "source": "/Users/alexander/lenta-pdct-android/movement/src/main/res/drawable/ic_basket_24dp.xml"
+    },
+    {
+        "merged": "/Users/alexander/lenta-pdct-android/movement/build/intermediates/res/merged/prod/debug/layout_layout_task_type_tab.xml.flat",
+        "source": "/Users/alexander/lenta-pdct-android/movement/src/main/res/layout/layout_task_type_tab.xml"
+    },
+    {
+        "merged": "/Users/alexander/lenta-pdct-android/movement/build/intermediates/res/merged/prod/debug/drawable-mdpi_ic_box.png.flat",
+        "source": "/Users/alexander/lenta-pdct-android/movement/build/generated/res/pngs/prod/debug/drawable-mdpi/ic_box.png"
+    },
+    {
+        "merged": "/Users/alexander/lenta-pdct-android/movement/build/intermediates/res/merged/prod/debug/layout_layout_task_comments_tab.xml.flat",
+        "source": "/Users/alexander/lenta-pdct-android/movement/src/main/res/layout/layout_task_comments_tab.xml"
+    },
+    {
+        "merged": "/Users/alexander/lenta-pdct-android/movement/build/intermediates/res/merged/prod/debug/mipmap-mdpi_ic_launcher.png.flat",
+        "source": "/Users/alexander/lenta-pdct-android/movement/src/main/res/mipmap-mdpi/ic_launcher.png"
+    },
+    {
+        "merged": "/Users/alexander/lenta-pdct-android/movement/build/intermediates/res/merged/prod/debug/layout_fragment_task_basket_info.xml.flat",
+        "source": "/Users/alexander/lenta-pdct-android/movement/src/main/res/layout/fragment_task_basket_info.xml"
+    },
+    {
+        "merged": "/Users/alexander/lenta-pdct-android/movement/build/intermediates/res/merged/prod/debug/layout_fragment_task_goods_info.xml.flat",
+        "source": "/Users/alexander/lenta-pdct-android/movement/src/main/res/layout/fragment_task_goods_info.xml"
+    },
+    {
+        "merged": "/Users/alexander/lenta-pdct-android/movement/build/intermediates/res/merged/prod/debug/drawable-ldpi_ic_box.png.flat",
+        "source": "/Users/alexander/lenta-pdct-android/movement/build/generated/res/pngs/prod/debug/drawable-ldpi/ic_box.png"
+    },
+    {
+        "merged": "/Users/alexander/lenta-pdct-android/movement/build/intermediates/res/merged/prod/debug/layout_layout_item_simple.xml.flat",
+        "source": "/Users/alexander/lenta-pdct-android/movement/src/main/res/layout/layout_item_simple.xml"
+    },
+    {
+        "merged": "/Users/alexander/lenta-pdct-android/movement/build/intermediates/res/merged/prod/debug/layout_layout_task_goods_buckets_tab.xml.flat",
+        "source": "/Users/alexander/lenta-pdct-android/movement/src/main/res/layout/layout_task_goods_buckets_tab.xml"
+    },
+    {
+        "merged": "/Users/alexander/lenta-pdct-android/movement/build/intermediates/res/merged/prod/debug/layout_fragment_task.xml.flat",
+        "source": "/Users/alexander/lenta-pdct-android/movement/src/main/res/layout/fragment_task.xml"
+    },
+    {
+        "merged": "/Users/alexander/lenta-pdct-android/movement/build/intermediates/res/merged/prod/debug/layout_layout_box_create_box_list_tab.xml.flat",
+        "source": "/Users/alexander/lenta-pdct-android/movement/src/main/res/layout/layout_box_create_box_list_tab.xml"
+    },
+    {
+        "merged": "/Users/alexander/lenta-pdct-android/movement/build/intermediates/res/merged/prod/debug/layout_fragment_task_goods.xml.flat",
+        "source": "/Users/alexander/lenta-pdct-android/movement/src/main/res/layout/fragment_task_goods.xml"
+    },
+    {
+        "merged": "/Users/alexander/lenta-pdct-android/movement/build/intermediates/res/merged/prod/debug/mipmap-mdpi_ic_launcher_round.png.flat",
+        "source": "/Users/alexander/lenta-pdct-android/movement/src/main/res/mipmap-mdpi/ic_launcher_round.png"
+    },
+    {
+        "merged": "/Users/alexander/lenta-pdct-android/movement/build/intermediates/res/merged/prod/debug/drawable-v24_ic_launcher_foreground.xml.flat",
+        "source": "/Users/alexander/lenta-pdct-android/movement/src/main/res/drawable-v24/ic_launcher_foreground.xml"
+    },
+    {
+        "merged": "/Users/alexander/lenta-pdct-android/movement/build/intermediates/res/merged/prod/debug/layout_layout_header_basket_list.xml.flat",
+        "source": "/Users/alexander/lenta-pdct-android/movement/src/main/res/layout/layout_header_basket_list.xml"
+    },
+    {
+        "merged": "/Users/alexander/lenta-pdct-android/movement/build/intermediates/res/merged/prod/debug/mipmap-hdpi_ic_launcher.png.flat",
+        "source": "/Users/alexander/lenta-pdct-android/movement/src/main/res/mipmap-hdpi/ic_launcher.png"
+    },
+    {
+        "merged": "/Users/alexander/lenta-pdct-android/movement/build/intermediates/res/merged/prod/debug/layout_fragment_task_goods_details.xml.flat",
+        "source": "/Users/alexander/lenta-pdct-android/movement/src/main/res/layout/fragment_task_goods_details.xml"
+    },
+    {
+        "merged": "/Users/alexander/lenta-pdct-android/movement/build/intermediates/res/merged/prod/debug/layout_layout_task_properties_tab.xml.flat",
+        "source": "/Users/alexander/lenta-pdct-android/movement/src/main/res/layout/layout_task_properties_tab.xml"
+    },
+    {
+        "merged": "/Users/alexander/lenta-pdct-android/movement/build/intermediates/res/merged/prod/debug/mipmap-xhdpi_ic_launcher.png.flat",
+        "source": "/Users/alexander/lenta-pdct-android/movement/src/main/res/mipmap-xhdpi/ic_launcher.png"
+    },
+    {
+        "merged": "/Users/alexander/lenta-pdct-android/movement/build/intermediates/res/merged/prod/debug/mipmap-anydpi-v26_ic_launcher.xml.flat",
+        "source": "/Users/alexander/lenta-pdct-android/movement/src/main/res/mipmap-anydpi-v26/ic_launcher.xml"
+    },
+    {
+        "merged": "/Users/alexander/lenta-pdct-android/movement/build/intermediates/res/merged/prod/debug/layout_fragment_task_basket.xml.flat",
+        "source": "/Users/alexander/lenta-pdct-android/movement/src/main/res/layout/fragment_task_basket.xml"
+    },
+    {
+        "merged": "/Users/alexander/lenta-pdct-android/movement/build/intermediates/res/merged/prod/debug/mipmap-xxxhdpi_ic_launcher_round.png.flat",
+        "source": "/Users/alexander/lenta-pdct-android/movement/src/main/res/mipmap-xxxhdpi/ic_launcher_round.png"
+    }
+]

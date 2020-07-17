@@ -1,0 +1,307 @@
+-- Merging decision tree log ---
+manifest
+ADDED from /Users/alexander/lenta-pdct-android/movement/src/main/AndroidManifest.xml:1:1-34:12
+INJECTED from /Users/alexander/lenta-pdct-android/movement/src/main/AndroidManifest.xml:1:1-34:12
+INJECTED from /Users/alexander/lenta-pdct-android/movement/src/main/AndroidManifest.xml:1:1-34:12
+INJECTED from /Users/alexander/lenta-pdct-android/movement/src/main/AndroidManifest.xml:1:1-34:12
+MERGED from [:Shared] /Users/alexander/lenta-pdct-android/Shared/build/intermediates/library_manifest/debug/AndroidManifest.xml:2:1-21:12
+MERGED from [androidx.databinding:databinding-adapters:4.0.0] /Users/alexander/.gradle/caches/transforms-2/files-2.1/90d9fcc09ab94c1496cfe81186390217/databinding-adapters-4.0.0/AndroidManifest.xml:17:1-24:12
+MERGED from [androidx.databinding:databinding-runtime:4.0.0] /Users/alexander/.gradle/caches/transforms-2/files-2.1/91369db4332a89f6b91005a3c35cea45/databinding-runtime-4.0.0/AndroidManifest.xml:17:1-24:12
+MERGED from [androidx.core:core-ktx:1.2.0] /Users/alexander/.gradle/caches/transforms-2/files-2.1/f1635bf71ad2993cf0147c766f9a53b1/jetified-core-ktx-1.2.0/AndroidManifest.xml:2:1-9:12
+MERGED from [androidx.databinding:viewbinding:4.0.0] /Users/alexander/.gradle/caches/transforms-2/files-2.1/c8c66e9e94767367628ac95befc306c7/jetified-viewbinding-4.0.0/AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.lifecycle:lifecycle-extensions:2.1.0-rc01] /Users/alexander/.gradle/caches/transforms-2/files-2.1/f22db5f28dd1bff01d5ad00ab05d370e/lifecycle-extensions-2.1.0-rc01/AndroidManifest.xml:17:1-25:12
+MERGED from [com.google.android.material:material:1.1.0-alpha07] /Users/alexander/.gradle/caches/transforms-2/files-2.1/75ecf5b2e6583c57efe84a99fe68326f/material-1.1.0-alpha07/AndroidManifest.xml:17:1-24:12
+MERGED from [androidx.constraintlayout:constraintlayout:2.0.0-beta1] /Users/alexander/.gradle/caches/transforms-2/files-2.1/a184789fc91bf9f3dd0971a8a58b3037/constraintlayout-2.0.0-beta1/AndroidManifest.xml:2:1-11:12
+MERGED from [androidx.viewpager2:viewpager2:1.0.0-alpha04] /Users/alexander/.gradle/caches/transforms-2/files-2.1/bd6898367069127978032dfde93b0c52/jetified-viewpager2-1.0.0-alpha04/AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.recyclerview:recyclerview:1.1.0-beta05] /Users/alexander/.gradle/caches/transforms-2/files-2.1/8fb9977c50bb20f10c22e8f29976b69a/recyclerview-1.1.0-beta05/AndroidManifest.xml:17:1-24:12
+MERGED from [androidx.appcompat:appcompat:1.1.0-alpha05] /Users/alexander/.gradle/caches/transforms-2/files-2.1/2e8234e280205f7efc2e2ef09ada1699/appcompat-1.1.0-alpha05/AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.legacy:legacy-support-core-ui:1.0.0] /Users/alexander/.gradle/caches/transforms-2/files-2.1/c70731de1b51c5fa7d15cb9d23fbcfe4/legacy-support-core-ui-1.0.0/AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.coordinatorlayout:coordinatorlayout:1.1.0-alpha01] /Users/alexander/.gradle/caches/transforms-2/files-2.1/88a9e5259fa9c23dbab792d7ebc718c9/coordinatorlayout-1.1.0-alpha01/AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.room:room-runtime:2.0.0] /Users/alexander/.gradle/caches/transforms-2/files-2.1/d25a0964482d02c141d89ae1e0584254/room-runtime-2.0.0/AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.legacy:legacy-support-core-utils:1.0.0] /Users/alexander/.gradle/caches/transforms-2/files-2.1/ac453071341d30a2ed698a93aa9655c5/legacy-support-core-utils-1.0.0/AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.transition:transition:1.0.1] /Users/alexander/.gradle/caches/transforms-2/files-2.1/834b723cac468601925164037782ad85/transition-1.0.1/AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.appcompat:appcompat-resources:1.1.0-alpha05] /Users/alexander/.gradle/caches/transforms-2/files-2.1/b6d8388f6e5ff74189e9e62e63470935/jetified-appcompat-resources-1.1.0-alpha05/AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.vectordrawable:vectordrawable-animated:1.1.0-beta01] /Users/alexander/.gradle/caches/transforms-2/files-2.1/a980c1a36a9b4eb08c72da1f941463a9/vectordrawable-animated-1.1.0-beta01/AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.vectordrawable:vectordrawable:1.1.0-beta01] /Users/alexander/.gradle/caches/transforms-2/files-2.1/ed1f7937811cf3794606ce99ab9e33a4/vectordrawable-1.1.0-beta01/AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.drawerlayout:drawerlayout:1.0.0] /Users/alexander/.gradle/caches/transforms-2/files-2.1/036d21486007744cc811dd11c7b39ec4/drawerlayout-1.0.0/AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.fragment:fragment:1.1.0-alpha08] /Users/alexander/.gradle/caches/transforms-2/files-2.1/e2acbf3af12dda66ad814284547ed11f/fragment-1.1.0-alpha08/AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.viewpager:viewpager:1.0.0] /Users/alexander/.gradle/caches/transforms-2/files-2.1/5a7f376e65159942ccdf1ad79a16567a/viewpager-1.0.0/AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.slidingpanelayout:slidingpanelayout:1.0.0] /Users/alexander/.gradle/caches/transforms-2/files-2.1/310211234e87ac2a2843b52254749817/slidingpanelayout-1.0.0/AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.customview:customview:1.0.0] /Users/alexander/.gradle/caches/transforms-2/files-2.1/da80cf6db808763e1f9d9a7b2ceb7e3f/customview-1.0.0/AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.swiperefreshlayout:swiperefreshlayout:1.0.0] /Users/alexander/.gradle/caches/transforms-2/files-2.1/f24d604e9efa6f5c4aff07c1aa55802c/swiperefreshlayout-1.0.0/AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.asynclayoutinflater:asynclayoutinflater:1.0.0] /Users/alexander/.gradle/caches/transforms-2/files-2.1/94947b79d08b339add8718b9daaf08d0/asynclayoutinflater-1.0.0/AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.loader:loader:1.0.0] /Users/alexander/.gradle/caches/transforms-2/files-2.1/9d9b701fb77e03aa7981fce9fb7941b2/loader-1.0.0/AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.activity:activity:1.0.0-alpha08] /Users/alexander/.gradle/caches/transforms-2/files-2.1/17ad046f1b1cd7a8de4d084c023f5a8e/jetified-activity-1.0.0-alpha08/AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.core:core:1.2.0] /Users/alexander/.gradle/caches/transforms-2/files-2.1/e8b75a9b3af08b2550f962a6ffce6efc/core-1.2.0/AndroidManifest.xml:17:1-26:12
+MERGED from [androidx.lifecycle:lifecycle-process:2.1.0-rc01] /Users/alexander/.gradle/caches/transforms-2/files-2.1/2c904f0ef2336a4964281042422c4a5c/jetified-lifecycle-process-2.1.0-rc01/AndroidManifest.xml:17:1-30:12
+MERGED from [androidx.lifecycle:lifecycle-service:2.1.0-rc01] /Users/alexander/.gradle/caches/transforms-2/files-2.1/73b5e6524b28fb6cf899411614f24421/jetified-lifecycle-service-2.1.0-rc01/AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.lifecycle:lifecycle-runtime:2.2.0-alpha01] /Users/alexander/.gradle/caches/transforms-2/files-2.1/c30293b0c7250e5843c5e46fdbf9deff/lifecycle-runtime-2.2.0-alpha01/AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.versionedparcelable:versionedparcelable:1.1.0] /Users/alexander/.gradle/caches/transforms-2/files-2.1/8b8ac3688f13e8b98d93e8ed6066c7d9/versionedparcelable-1.1.0/AndroidManifest.xml:17:1-27:12
+MERGED from [com.redmadrobot:input-mask-android:4.3.1] /Users/alexander/.gradle/caches/transforms-2/files-2.1/13af9b85f4f79d984200bae135a2ee2b/jetified-input-mask-android-4.3.1/AndroidManifest.xml:2:1-11:12
+MERGED from [androidx.lifecycle:lifecycle-viewmodel-ktx:2.1.0-rc01] /Users/alexander/.gradle/caches/transforms-2/files-2.1/130f96b8a84b8585acf5134734fbd253/jetified-lifecycle-viewmodel-ktx-2.1.0-rc01/AndroidManifest.xml:17:1-22:12
+MERGED from [:hhive] /Users/alexander/lenta-pdct-android/hhive/build/.transforms/637abd916ce5a293ba6aab7fe8bde370/jetified-hhive/AndroidManifest.xml:2:1-20:12
+MERGED from [:HoneywellDataCollection] /Users/alexander/lenta-pdct-android/HoneywellDataCollection/build/.transforms/4194249d0d5644751e872b4a08c8a56f/jetified-DataCollection/AndroidManifest.xml:2:1-19:12
+MERGED from [androidx.lifecycle:lifecycle-livedata:2.1.0-rc01] /Users/alexander/.gradle/caches/transforms-2/files-2.1/59e972a68fe3b032d87dc62be57165e3/lifecycle-livedata-2.1.0-rc01/AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.lifecycle:lifecycle-livedata-core:2.1.0-rc01] /Users/alexander/.gradle/caches/transforms-2/files-2.1/0d6dbf0e44ad0b93280389115ca7cb52/lifecycle-livedata-core-2.1.0-rc01/AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.arch.core:core-runtime:2.1.0-rc01] /Users/alexander/.gradle/caches/transforms-2/files-2.1/66216b1dc2e7a5da5060d9eecd9933df/core-runtime-2.1.0-rc01/AndroidManifest.xml:17:1-24:12
+MERGED from [androidx.savedstate:savedstate:1.0.0-beta01] /Users/alexander/.gradle/caches/transforms-2/files-2.1/dbb28a917e9a30e9cf65e9bea9d9de61/jetified-savedstate-1.0.0-beta01/AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.cardview:cardview:1.0.0] /Users/alexander/.gradle/caches/transforms-2/files-2.1/97a0a2ebb3eb03d282967213f9fce8f1/cardview-1.0.0/AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.sqlite:sqlite-framework:2.0.0] /Users/alexander/.gradle/caches/transforms-2/files-2.1/b52d493512d986cadfcde8faca224cd6/sqlite-framework-2.0.0/AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.sqlite:sqlite:2.0.0] /Users/alexander/.gradle/caches/transforms-2/files-2.1/159e6274393c431e9d82f3f8b7abd693/sqlite-2.0.0/AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.cursoradapter:cursoradapter:1.0.0] /Users/alexander/.gradle/caches/transforms-2/files-2.1/90f1631387c216955d6e15576bf7f510/cursoradapter-1.0.0/AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.interpolator:interpolator:1.0.0] /Users/alexander/.gradle/caches/transforms-2/files-2.1/7b42773ca151ab87589b0c9beb61fcbf/interpolator-1.0.0/AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.documentfile:documentfile:1.0.0] /Users/alexander/.gradle/caches/transforms-2/files-2.1/740d141b4a9514381ae703c1028128de/documentfile-1.0.0/AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.localbroadcastmanager:localbroadcastmanager:1.0.0] /Users/alexander/.gradle/caches/transforms-2/files-2.1/8a0a4f800352c85b632780f9a2a77208/localbroadcastmanager-1.0.0/AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.print:print:1.0.0] /Users/alexander/.gradle/caches/transforms-2/files-2.1/dd313ab1688aa99cd093396ec97ec6f3/print-1.0.0/AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.lifecycle:lifecycle-viewmodel:2.2.0-alpha01] /Users/alexander/.gradle/caches/transforms-2/files-2.1/740eb84b71c3505ed7c0c28ee571df4a/lifecycle-viewmodel-2.2.0-alpha01/AndroidManifest.xml:17:1-22:12
+INJECTED from /Users/alexander/lenta-pdct-android/movement/src/main/AndroidManifest.xml:1:1-34:12
+INJECTED from /Users/alexander/lenta-pdct-android/movement/src/main/AndroidManifest.xml:1:1-34:12
+INJECTED from /Users/alexander/lenta-pdct-android/movement/src/main/AndroidManifest.xml:1:1-34:12
+	package
+		ADDED from /Users/alexander/lenta-pdct-android/movement/src/main/AndroidManifest.xml:3:5-33
+		INJECTED from /Users/alexander/lenta-pdct-android/movement/src/main/AndroidManifest.xml
+		INJECTED from /Users/alexander/lenta-pdct-android/movement/src/main/AndroidManifest.xml
+	android:versionName
+		INJECTED from /Users/alexander/lenta-pdct-android/movement/src/main/AndroidManifest.xml
+		ADDED from /Users/alexander/lenta-pdct-android/movement/src/main/AndroidManifest.xml:1:1-34:12
+		INJECTED from /Users/alexander/lenta-pdct-android/movement/src/main/AndroidManifest.xml
+	xmlns:tools
+		ADDED from /Users/alexander/lenta-pdct-android/movement/src/main/AndroidManifest.xml:2:5-51
+	android:versionCode
+		INJECTED from /Users/alexander/lenta-pdct-android/movement/src/main/AndroidManifest.xml
+		ADDED from /Users/alexander/lenta-pdct-android/movement/src/main/AndroidManifest.xml:1:1-34:12
+		INJECTED from /Users/alexander/lenta-pdct-android/movement/src/main/AndroidManifest.xml
+	xmlns:android
+		ADDED from /Users/alexander/lenta-pdct-android/movement/src/main/AndroidManifest.xml:1:11-69
+application
+ADDED from /Users/alexander/lenta-pdct-android/movement/src/main/AndroidManifest.xml:5:5-32:19
+MERGED from [:Shared] /Users/alexander/lenta-pdct-android/Shared/build/intermediates/library_manifest/debug/AndroidManifest.xml:18:5-19:19
+MERGED from [:Shared] /Users/alexander/lenta-pdct-android/Shared/build/intermediates/library_manifest/debug/AndroidManifest.xml:18:5-19:19
+MERGED from [androidx.lifecycle:lifecycle-extensions:2.1.0-rc01] /Users/alexander/.gradle/caches/transforms-2/files-2.1/f22db5f28dd1bff01d5ad00ab05d370e/lifecycle-extensions-2.1.0-rc01/AndroidManifest.xml:22:5-23:19
+MERGED from [androidx.lifecycle:lifecycle-extensions:2.1.0-rc01] /Users/alexander/.gradle/caches/transforms-2/files-2.1/f22db5f28dd1bff01d5ad00ab05d370e/lifecycle-extensions-2.1.0-rc01/AndroidManifest.xml:22:5-23:19
+MERGED from [com.google.android.material:material:1.1.0-alpha07] /Users/alexander/.gradle/caches/transforms-2/files-2.1/75ecf5b2e6583c57efe84a99fe68326f/material-1.1.0-alpha07/AndroidManifest.xml:22:5-20
+MERGED from [com.google.android.material:material:1.1.0-alpha07] /Users/alexander/.gradle/caches/transforms-2/files-2.1/75ecf5b2e6583c57efe84a99fe68326f/material-1.1.0-alpha07/AndroidManifest.xml:22:5-20
+MERGED from [androidx.constraintlayout:constraintlayout:2.0.0-beta1] /Users/alexander/.gradle/caches/transforms-2/files-2.1/a184789fc91bf9f3dd0971a8a58b3037/constraintlayout-2.0.0-beta1/AndroidManifest.xml:9:5-20
+MERGED from [androidx.constraintlayout:constraintlayout:2.0.0-beta1] /Users/alexander/.gradle/caches/transforms-2/files-2.1/a184789fc91bf9f3dd0971a8a58b3037/constraintlayout-2.0.0-beta1/AndroidManifest.xml:9:5-20
+MERGED from [androidx.core:core:1.2.0] /Users/alexander/.gradle/caches/transforms-2/files-2.1/e8b75a9b3af08b2550f962a6ffce6efc/core-1.2.0/AndroidManifest.xml:24:5-89
+MERGED from [androidx.core:core:1.2.0] /Users/alexander/.gradle/caches/transforms-2/files-2.1/e8b75a9b3af08b2550f962a6ffce6efc/core-1.2.0/AndroidManifest.xml:24:5-89
+MERGED from [androidx.lifecycle:lifecycle-process:2.1.0-rc01] /Users/alexander/.gradle/caches/transforms-2/files-2.1/2c904f0ef2336a4964281042422c4a5c/jetified-lifecycle-process-2.1.0-rc01/AndroidManifest.xml:22:5-28:19
+MERGED from [androidx.lifecycle:lifecycle-process:2.1.0-rc01] /Users/alexander/.gradle/caches/transforms-2/files-2.1/2c904f0ef2336a4964281042422c4a5c/jetified-lifecycle-process-2.1.0-rc01/AndroidManifest.xml:22:5-28:19
+MERGED from [androidx.versionedparcelable:versionedparcelable:1.1.0] /Users/alexander/.gradle/caches/transforms-2/files-2.1/8b8ac3688f13e8b98d93e8ed6066c7d9/versionedparcelable-1.1.0/AndroidManifest.xml:24:5-25:19
+MERGED from [androidx.versionedparcelable:versionedparcelable:1.1.0] /Users/alexander/.gradle/caches/transforms-2/files-2.1/8b8ac3688f13e8b98d93e8ed6066c7d9/versionedparcelable-1.1.0/AndroidManifest.xml:24:5-25:19
+MERGED from [:hhive] /Users/alexander/lenta-pdct-android/hhive/build/.transforms/637abd916ce5a293ba6aab7fe8bde370/jetified-hhive/AndroidManifest.xml:14:5-18:19
+MERGED from [:hhive] /Users/alexander/lenta-pdct-android/hhive/build/.transforms/637abd916ce5a293ba6aab7fe8bde370/jetified-hhive/AndroidManifest.xml:14:5-18:19
+MERGED from [:HoneywellDataCollection] /Users/alexander/lenta-pdct-android/HoneywellDataCollection/build/.transforms/4194249d0d5644751e872b4a08c8a56f/jetified-DataCollection/AndroidManifest.xml:13:5-17:19
+MERGED from [:HoneywellDataCollection] /Users/alexander/lenta-pdct-android/HoneywellDataCollection/build/.transforms/4194249d0d5644751e872b4a08c8a56f/jetified-DataCollection/AndroidManifest.xml:13:5-17:19
+	android:supportsRtl
+		ADDED from /Users/alexander/lenta-pdct-android/movement/src/main/AndroidManifest.xml:13:9-35
+		REJECTED from [:hhive] /Users/alexander/lenta-pdct-android/hhive/build/.transforms/637abd916ce5a293ba6aab7fe8bde370/jetified-hhive/AndroidManifest.xml:17:9-35
+	android:label
+		ADDED from /Users/alexander/lenta-pdct-android/movement/src/main/AndroidManifest.xml:10:9-41
+	android:appComponentFactory
+		ADDED from /Users/alexander/lenta-pdct-android/movement/src/main/AndroidManifest.xml:8:9-53
+		REJECTED from [androidx.core:core:1.2.0] /Users/alexander/.gradle/caches/transforms-2/files-2.1/e8b75a9b3af08b2550f962a6ffce6efc/core-1.2.0/AndroidManifest.xml:24:18-86
+	android:debuggable
+		ADDED from [:HoneywellDataCollection] /Users/alexander/lenta-pdct-android/HoneywellDataCollection/build/.transforms/4194249d0d5644751e872b4a08c8a56f/jetified-DataCollection/AndroidManifest.xml:15:9-35
+	tools:ignore
+		ADDED from /Users/alexander/lenta-pdct-android/movement/src/main/AndroidManifest.xml:15:9-48
+	android:roundIcon
+		ADDED from /Users/alexander/lenta-pdct-android/movement/src/main/AndroidManifest.xml:12:9-54
+	tools:targetApi
+		ADDED from /Users/alexander/lenta-pdct-android/movement/src/main/AndroidManifest.xml:17:9-28
+	android:largeHeap
+		ADDED from /Users/alexander/lenta-pdct-android/movement/src/main/AndroidManifest.xml:11:9-33
+	android:icon
+		ADDED from /Users/alexander/lenta-pdct-android/movement/src/main/AndroidManifest.xml:9:9-43
+	android:allowBackup
+		ADDED from /Users/alexander/lenta-pdct-android/movement/src/main/AndroidManifest.xml:7:9-36
+		REJECTED from [:hhive] /Users/alexander/lenta-pdct-android/hhive/build/.transforms/637abd916ce5a293ba6aab7fe8bde370/jetified-hhive/AndroidManifest.xml:15:9-35
+		REJECTED from [:HoneywellDataCollection] /Users/alexander/lenta-pdct-android/HoneywellDataCollection/build/.transforms/4194249d0d5644751e872b4a08c8a56f/jetified-DataCollection/AndroidManifest.xml:14:9-35
+	android:theme
+		ADDED from /Users/alexander/lenta-pdct-android/movement/src/main/AndroidManifest.xml:14:9-40
+	tools:replace
+		ADDED from /Users/alexander/lenta-pdct-android/movement/src/main/AndroidManifest.xml:16:9-94
+	android:name
+		ADDED from /Users/alexander/lenta-pdct-android/movement/src/main/AndroidManifest.xml:6:9-43
+activity#com.lenta.movement.main.MainActivity
+ADDED from /Users/alexander/lenta-pdct-android/movement/src/main/AndroidManifest.xml:19:9-28:20
+	android:screenOrientation
+		ADDED from /Users/alexander/lenta-pdct-android/movement/src/main/AndroidManifest.xml:23:13-49
+	android:excludeFromRecents
+		ADDED from /Users/alexander/lenta-pdct-android/movement/src/main/AndroidManifest.xml:21:13-46
+	android:launchMode
+		ADDED from /Users/alexander/lenta-pdct-android/movement/src/main/AndroidManifest.xml:22:13-48
+	android:name
+		ADDED from /Users/alexander/lenta-pdct-android/movement/src/main/AndroidManifest.xml:20:13-46
+intent-filter#action:name:android.intent.action.MAIN+category:name:android.intent.category.LAUNCHER
+ADDED from /Users/alexander/lenta-pdct-android/movement/src/main/AndroidManifest.xml:24:13-27:29
+action#android.intent.action.MAIN
+ADDED from /Users/alexander/lenta-pdct-android/movement/src/main/AndroidManifest.xml:25:17-69
+	android:name
+		ADDED from /Users/alexander/lenta-pdct-android/movement/src/main/AndroidManifest.xml:25:25-66
+category#android.intent.category.LAUNCHER
+ADDED from /Users/alexander/lenta-pdct-android/movement/src/main/AndroidManifest.xml:26:17-77
+	android:name
+		ADDED from /Users/alexander/lenta-pdct-android/movement/src/main/AndroidManifest.xml:26:27-74
+service#com.lenta.shared.platform.high_priority.MainService
+ADDED from /Users/alexander/lenta-pdct-android/movement/src/main/AndroidManifest.xml:30:9-87
+	android:name
+		ADDED from /Users/alexander/lenta-pdct-android/movement/src/main/AndroidManifest.xml:30:18-84
+uses-sdk
+INJECTED from /Users/alexander/lenta-pdct-android/movement/src/main/AndroidManifest.xml reason: use-sdk injection requested
+INJECTED from /Users/alexander/lenta-pdct-android/movement/src/main/AndroidManifest.xml
+INJECTED from /Users/alexander/lenta-pdct-android/movement/src/main/AndroidManifest.xml
+MERGED from [:Shared] /Users/alexander/lenta-pdct-android/Shared/build/intermediates/library_manifest/debug/AndroidManifest.xml:7:5-9:41
+MERGED from [:Shared] /Users/alexander/lenta-pdct-android/Shared/build/intermediates/library_manifest/debug/AndroidManifest.xml:7:5-9:41
+MERGED from [androidx.databinding:databinding-adapters:4.0.0] /Users/alexander/.gradle/caches/transforms-2/files-2.1/90d9fcc09ab94c1496cfe81186390217/databinding-adapters-4.0.0/AndroidManifest.xml:22:5-44
+MERGED from [androidx.databinding:databinding-adapters:4.0.0] /Users/alexander/.gradle/caches/transforms-2/files-2.1/90d9fcc09ab94c1496cfe81186390217/databinding-adapters-4.0.0/AndroidManifest.xml:22:5-44
+MERGED from [androidx.databinding:databinding-runtime:4.0.0] /Users/alexander/.gradle/caches/transforms-2/files-2.1/91369db4332a89f6b91005a3c35cea45/databinding-runtime-4.0.0/AndroidManifest.xml:22:5-44
+MERGED from [androidx.databinding:databinding-runtime:4.0.0] /Users/alexander/.gradle/caches/transforms-2/files-2.1/91369db4332a89f6b91005a3c35cea45/databinding-runtime-4.0.0/AndroidManifest.xml:22:5-44
+MERGED from [androidx.core:core-ktx:1.2.0] /Users/alexander/.gradle/caches/transforms-2/files-2.1/f1635bf71ad2993cf0147c766f9a53b1/jetified-core-ktx-1.2.0/AndroidManifest.xml:5:5-7:41
+MERGED from [androidx.core:core-ktx:1.2.0] /Users/alexander/.gradle/caches/transforms-2/files-2.1/f1635bf71ad2993cf0147c766f9a53b1/jetified-core-ktx-1.2.0/AndroidManifest.xml:5:5-7:41
+MERGED from [androidx.databinding:viewbinding:4.0.0] /Users/alexander/.gradle/caches/transforms-2/files-2.1/c8c66e9e94767367628ac95befc306c7/jetified-viewbinding-4.0.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.databinding:viewbinding:4.0.0] /Users/alexander/.gradle/caches/transforms-2/files-2.1/c8c66e9e94767367628ac95befc306c7/jetified-viewbinding-4.0.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.lifecycle:lifecycle-extensions:2.1.0-rc01] /Users/alexander/.gradle/caches/transforms-2/files-2.1/f22db5f28dd1bff01d5ad00ab05d370e/lifecycle-extensions-2.1.0-rc01/AndroidManifest.xml:20:5-44
+MERGED from [androidx.lifecycle:lifecycle-extensions:2.1.0-rc01] /Users/alexander/.gradle/caches/transforms-2/files-2.1/f22db5f28dd1bff01d5ad00ab05d370e/lifecycle-extensions-2.1.0-rc01/AndroidManifest.xml:20:5-44
+MERGED from [com.google.android.material:material:1.1.0-alpha07] /Users/alexander/.gradle/caches/transforms-2/files-2.1/75ecf5b2e6583c57efe84a99fe68326f/material-1.1.0-alpha07/AndroidManifest.xml:20:5-44
+MERGED from [com.google.android.material:material:1.1.0-alpha07] /Users/alexander/.gradle/caches/transforms-2/files-2.1/75ecf5b2e6583c57efe84a99fe68326f/material-1.1.0-alpha07/AndroidManifest.xml:20:5-44
+MERGED from [androidx.constraintlayout:constraintlayout:2.0.0-beta1] /Users/alexander/.gradle/caches/transforms-2/files-2.1/a184789fc91bf9f3dd0971a8a58b3037/constraintlayout-2.0.0-beta1/AndroidManifest.xml:5:5-7:41
+MERGED from [androidx.constraintlayout:constraintlayout:2.0.0-beta1] /Users/alexander/.gradle/caches/transforms-2/files-2.1/a184789fc91bf9f3dd0971a8a58b3037/constraintlayout-2.0.0-beta1/AndroidManifest.xml:5:5-7:41
+MERGED from [androidx.viewpager2:viewpager2:1.0.0-alpha04] /Users/alexander/.gradle/caches/transforms-2/files-2.1/bd6898367069127978032dfde93b0c52/jetified-viewpager2-1.0.0-alpha04/AndroidManifest.xml:20:5-44
+MERGED from [androidx.viewpager2:viewpager2:1.0.0-alpha04] /Users/alexander/.gradle/caches/transforms-2/files-2.1/bd6898367069127978032dfde93b0c52/jetified-viewpager2-1.0.0-alpha04/AndroidManifest.xml:20:5-44
+MERGED from [androidx.recyclerview:recyclerview:1.1.0-beta05] /Users/alexander/.gradle/caches/transforms-2/files-2.1/8fb9977c50bb20f10c22e8f29976b69a/recyclerview-1.1.0-beta05/AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.recyclerview:recyclerview:1.1.0-beta05] /Users/alexander/.gradle/caches/transforms-2/files-2.1/8fb9977c50bb20f10c22e8f29976b69a/recyclerview-1.1.0-beta05/AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.appcompat:appcompat:1.1.0-alpha05] /Users/alexander/.gradle/caches/transforms-2/files-2.1/2e8234e280205f7efc2e2ef09ada1699/appcompat-1.1.0-alpha05/AndroidManifest.xml:20:5-44
+MERGED from [androidx.appcompat:appcompat:1.1.0-alpha05] /Users/alexander/.gradle/caches/transforms-2/files-2.1/2e8234e280205f7efc2e2ef09ada1699/appcompat-1.1.0-alpha05/AndroidManifest.xml:20:5-44
+MERGED from [androidx.legacy:legacy-support-core-ui:1.0.0] /Users/alexander/.gradle/caches/transforms-2/files-2.1/c70731de1b51c5fa7d15cb9d23fbcfe4/legacy-support-core-ui-1.0.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.legacy:legacy-support-core-ui:1.0.0] /Users/alexander/.gradle/caches/transforms-2/files-2.1/c70731de1b51c5fa7d15cb9d23fbcfe4/legacy-support-core-ui-1.0.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.coordinatorlayout:coordinatorlayout:1.1.0-alpha01] /Users/alexander/.gradle/caches/transforms-2/files-2.1/88a9e5259fa9c23dbab792d7ebc718c9/coordinatorlayout-1.1.0-alpha01/AndroidManifest.xml:20:5-44
+MERGED from [androidx.coordinatorlayout:coordinatorlayout:1.1.0-alpha01] /Users/alexander/.gradle/caches/transforms-2/files-2.1/88a9e5259fa9c23dbab792d7ebc718c9/coordinatorlayout-1.1.0-alpha01/AndroidManifest.xml:20:5-44
+MERGED from [androidx.room:room-runtime:2.0.0] /Users/alexander/.gradle/caches/transforms-2/files-2.1/d25a0964482d02c141d89ae1e0584254/room-runtime-2.0.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.room:room-runtime:2.0.0] /Users/alexander/.gradle/caches/transforms-2/files-2.1/d25a0964482d02c141d89ae1e0584254/room-runtime-2.0.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.legacy:legacy-support-core-utils:1.0.0] /Users/alexander/.gradle/caches/transforms-2/files-2.1/ac453071341d30a2ed698a93aa9655c5/legacy-support-core-utils-1.0.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.legacy:legacy-support-core-utils:1.0.0] /Users/alexander/.gradle/caches/transforms-2/files-2.1/ac453071341d30a2ed698a93aa9655c5/legacy-support-core-utils-1.0.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.transition:transition:1.0.1] /Users/alexander/.gradle/caches/transforms-2/files-2.1/834b723cac468601925164037782ad85/transition-1.0.1/AndroidManifest.xml:20:5-44
+MERGED from [androidx.transition:transition:1.0.1] /Users/alexander/.gradle/caches/transforms-2/files-2.1/834b723cac468601925164037782ad85/transition-1.0.1/AndroidManifest.xml:20:5-44
+MERGED from [androidx.appcompat:appcompat-resources:1.1.0-alpha05] /Users/alexander/.gradle/caches/transforms-2/files-2.1/b6d8388f6e5ff74189e9e62e63470935/jetified-appcompat-resources-1.1.0-alpha05/AndroidManifest.xml:20:5-44
+MERGED from [androidx.appcompat:appcompat-resources:1.1.0-alpha05] /Users/alexander/.gradle/caches/transforms-2/files-2.1/b6d8388f6e5ff74189e9e62e63470935/jetified-appcompat-resources-1.1.0-alpha05/AndroidManifest.xml:20:5-44
+MERGED from [androidx.vectordrawable:vectordrawable-animated:1.1.0-beta01] /Users/alexander/.gradle/caches/transforms-2/files-2.1/a980c1a36a9b4eb08c72da1f941463a9/vectordrawable-animated-1.1.0-beta01/AndroidManifest.xml:20:5-44
+MERGED from [androidx.vectordrawable:vectordrawable-animated:1.1.0-beta01] /Users/alexander/.gradle/caches/transforms-2/files-2.1/a980c1a36a9b4eb08c72da1f941463a9/vectordrawable-animated-1.1.0-beta01/AndroidManifest.xml:20:5-44
+MERGED from [androidx.vectordrawable:vectordrawable:1.1.0-beta01] /Users/alexander/.gradle/caches/transforms-2/files-2.1/ed1f7937811cf3794606ce99ab9e33a4/vectordrawable-1.1.0-beta01/AndroidManifest.xml:20:5-44
+MERGED from [androidx.vectordrawable:vectordrawable:1.1.0-beta01] /Users/alexander/.gradle/caches/transforms-2/files-2.1/ed1f7937811cf3794606ce99ab9e33a4/vectordrawable-1.1.0-beta01/AndroidManifest.xml:20:5-44
+MERGED from [androidx.drawerlayout:drawerlayout:1.0.0] /Users/alexander/.gradle/caches/transforms-2/files-2.1/036d21486007744cc811dd11c7b39ec4/drawerlayout-1.0.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.drawerlayout:drawerlayout:1.0.0] /Users/alexander/.gradle/caches/transforms-2/files-2.1/036d21486007744cc811dd11c7b39ec4/drawerlayout-1.0.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.fragment:fragment:1.1.0-alpha08] /Users/alexander/.gradle/caches/transforms-2/files-2.1/e2acbf3af12dda66ad814284547ed11f/fragment-1.1.0-alpha08/AndroidManifest.xml:20:5-44
+MERGED from [androidx.fragment:fragment:1.1.0-alpha08] /Users/alexander/.gradle/caches/transforms-2/files-2.1/e2acbf3af12dda66ad814284547ed11f/fragment-1.1.0-alpha08/AndroidManifest.xml:20:5-44
+MERGED from [androidx.viewpager:viewpager:1.0.0] /Users/alexander/.gradle/caches/transforms-2/files-2.1/5a7f376e65159942ccdf1ad79a16567a/viewpager-1.0.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.viewpager:viewpager:1.0.0] /Users/alexander/.gradle/caches/transforms-2/files-2.1/5a7f376e65159942ccdf1ad79a16567a/viewpager-1.0.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.slidingpanelayout:slidingpanelayout:1.0.0] /Users/alexander/.gradle/caches/transforms-2/files-2.1/310211234e87ac2a2843b52254749817/slidingpanelayout-1.0.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.slidingpanelayout:slidingpanelayout:1.0.0] /Users/alexander/.gradle/caches/transforms-2/files-2.1/310211234e87ac2a2843b52254749817/slidingpanelayout-1.0.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.customview:customview:1.0.0] /Users/alexander/.gradle/caches/transforms-2/files-2.1/da80cf6db808763e1f9d9a7b2ceb7e3f/customview-1.0.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.customview:customview:1.0.0] /Users/alexander/.gradle/caches/transforms-2/files-2.1/da80cf6db808763e1f9d9a7b2ceb7e3f/customview-1.0.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.swiperefreshlayout:swiperefreshlayout:1.0.0] /Users/alexander/.gradle/caches/transforms-2/files-2.1/f24d604e9efa6f5c4aff07c1aa55802c/swiperefreshlayout-1.0.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.swiperefreshlayout:swiperefreshlayout:1.0.0] /Users/alexander/.gradle/caches/transforms-2/files-2.1/f24d604e9efa6f5c4aff07c1aa55802c/swiperefreshlayout-1.0.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.asynclayoutinflater:asynclayoutinflater:1.0.0] /Users/alexander/.gradle/caches/transforms-2/files-2.1/94947b79d08b339add8718b9daaf08d0/asynclayoutinflater-1.0.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.asynclayoutinflater:asynclayoutinflater:1.0.0] /Users/alexander/.gradle/caches/transforms-2/files-2.1/94947b79d08b339add8718b9daaf08d0/asynclayoutinflater-1.0.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.loader:loader:1.0.0] /Users/alexander/.gradle/caches/transforms-2/files-2.1/9d9b701fb77e03aa7981fce9fb7941b2/loader-1.0.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.loader:loader:1.0.0] /Users/alexander/.gradle/caches/transforms-2/files-2.1/9d9b701fb77e03aa7981fce9fb7941b2/loader-1.0.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.activity:activity:1.0.0-alpha08] /Users/alexander/.gradle/caches/transforms-2/files-2.1/17ad046f1b1cd7a8de4d084c023f5a8e/jetified-activity-1.0.0-alpha08/AndroidManifest.xml:20:5-44
+MERGED from [androidx.activity:activity:1.0.0-alpha08] /Users/alexander/.gradle/caches/transforms-2/files-2.1/17ad046f1b1cd7a8de4d084c023f5a8e/jetified-activity-1.0.0-alpha08/AndroidManifest.xml:20:5-44
+MERGED from [androidx.core:core:1.2.0] /Users/alexander/.gradle/caches/transforms-2/files-2.1/e8b75a9b3af08b2550f962a6ffce6efc/core-1.2.0/AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.core:core:1.2.0] /Users/alexander/.gradle/caches/transforms-2/files-2.1/e8b75a9b3af08b2550f962a6ffce6efc/core-1.2.0/AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.lifecycle:lifecycle-process:2.1.0-rc01] /Users/alexander/.gradle/caches/transforms-2/files-2.1/2c904f0ef2336a4964281042422c4a5c/jetified-lifecycle-process-2.1.0-rc01/AndroidManifest.xml:20:5-44
+MERGED from [androidx.lifecycle:lifecycle-process:2.1.0-rc01] /Users/alexander/.gradle/caches/transforms-2/files-2.1/2c904f0ef2336a4964281042422c4a5c/jetified-lifecycle-process-2.1.0-rc01/AndroidManifest.xml:20:5-44
+MERGED from [androidx.lifecycle:lifecycle-service:2.1.0-rc01] /Users/alexander/.gradle/caches/transforms-2/files-2.1/73b5e6524b28fb6cf899411614f24421/jetified-lifecycle-service-2.1.0-rc01/AndroidManifest.xml:20:5-44
+MERGED from [androidx.lifecycle:lifecycle-service:2.1.0-rc01] /Users/alexander/.gradle/caches/transforms-2/files-2.1/73b5e6524b28fb6cf899411614f24421/jetified-lifecycle-service-2.1.0-rc01/AndroidManifest.xml:20:5-44
+MERGED from [androidx.lifecycle:lifecycle-runtime:2.2.0-alpha01] /Users/alexander/.gradle/caches/transforms-2/files-2.1/c30293b0c7250e5843c5e46fdbf9deff/lifecycle-runtime-2.2.0-alpha01/AndroidManifest.xml:20:5-44
+MERGED from [androidx.lifecycle:lifecycle-runtime:2.2.0-alpha01] /Users/alexander/.gradle/caches/transforms-2/files-2.1/c30293b0c7250e5843c5e46fdbf9deff/lifecycle-runtime-2.2.0-alpha01/AndroidManifest.xml:20:5-44
+MERGED from [androidx.versionedparcelable:versionedparcelable:1.1.0] /Users/alexander/.gradle/caches/transforms-2/files-2.1/8b8ac3688f13e8b98d93e8ed6066c7d9/versionedparcelable-1.1.0/AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.versionedparcelable:versionedparcelable:1.1.0] /Users/alexander/.gradle/caches/transforms-2/files-2.1/8b8ac3688f13e8b98d93e8ed6066c7d9/versionedparcelable-1.1.0/AndroidManifest.xml:20:5-22:41
+MERGED from [com.redmadrobot:input-mask-android:4.3.1] /Users/alexander/.gradle/caches/transforms-2/files-2.1/13af9b85f4f79d984200bae135a2ee2b/jetified-input-mask-android-4.3.1/AndroidManifest.xml:7:5-9:41
+MERGED from [com.redmadrobot:input-mask-android:4.3.1] /Users/alexander/.gradle/caches/transforms-2/files-2.1/13af9b85f4f79d984200bae135a2ee2b/jetified-input-mask-android-4.3.1/AndroidManifest.xml:7:5-9:41
+MERGED from [androidx.lifecycle:lifecycle-viewmodel-ktx:2.1.0-rc01] /Users/alexander/.gradle/caches/transforms-2/files-2.1/130f96b8a84b8585acf5134734fbd253/jetified-lifecycle-viewmodel-ktx-2.1.0-rc01/AndroidManifest.xml:20:5-44
+MERGED from [androidx.lifecycle:lifecycle-viewmodel-ktx:2.1.0-rc01] /Users/alexander/.gradle/caches/transforms-2/files-2.1/130f96b8a84b8585acf5134734fbd253/jetified-lifecycle-viewmodel-ktx-2.1.0-rc01/AndroidManifest.xml:20:5-44
+MERGED from [:hhive] /Users/alexander/lenta-pdct-android/hhive/build/.transforms/637abd916ce5a293ba6aab7fe8bde370/jetified-hhive/AndroidManifest.xml:7:5-9:41
+MERGED from [:hhive] /Users/alexander/lenta-pdct-android/hhive/build/.transforms/637abd916ce5a293ba6aab7fe8bde370/jetified-hhive/AndroidManifest.xml:7:5-9:41
+MERGED from [:HoneywellDataCollection] /Users/alexander/lenta-pdct-android/HoneywellDataCollection/build/.transforms/4194249d0d5644751e872b4a08c8a56f/jetified-DataCollection/AndroidManifest.xml:7:5-9:41
+MERGED from [:HoneywellDataCollection] /Users/alexander/lenta-pdct-android/HoneywellDataCollection/build/.transforms/4194249d0d5644751e872b4a08c8a56f/jetified-DataCollection/AndroidManifest.xml:7:5-9:41
+MERGED from [androidx.lifecycle:lifecycle-livedata:2.1.0-rc01] /Users/alexander/.gradle/caches/transforms-2/files-2.1/59e972a68fe3b032d87dc62be57165e3/lifecycle-livedata-2.1.0-rc01/AndroidManifest.xml:20:5-44
+MERGED from [androidx.lifecycle:lifecycle-livedata:2.1.0-rc01] /Users/alexander/.gradle/caches/transforms-2/files-2.1/59e972a68fe3b032d87dc62be57165e3/lifecycle-livedata-2.1.0-rc01/AndroidManifest.xml:20:5-44
+MERGED from [androidx.lifecycle:lifecycle-livedata-core:2.1.0-rc01] /Users/alexander/.gradle/caches/transforms-2/files-2.1/0d6dbf0e44ad0b93280389115ca7cb52/lifecycle-livedata-core-2.1.0-rc01/AndroidManifest.xml:20:5-44
+MERGED from [androidx.lifecycle:lifecycle-livedata-core:2.1.0-rc01] /Users/alexander/.gradle/caches/transforms-2/files-2.1/0d6dbf0e44ad0b93280389115ca7cb52/lifecycle-livedata-core-2.1.0-rc01/AndroidManifest.xml:20:5-44
+MERGED from [androidx.arch.core:core-runtime:2.1.0-rc01] /Users/alexander/.gradle/caches/transforms-2/files-2.1/66216b1dc2e7a5da5060d9eecd9933df/core-runtime-2.1.0-rc01/AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.arch.core:core-runtime:2.1.0-rc01] /Users/alexander/.gradle/caches/transforms-2/files-2.1/66216b1dc2e7a5da5060d9eecd9933df/core-runtime-2.1.0-rc01/AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.savedstate:savedstate:1.0.0-beta01] /Users/alexander/.gradle/caches/transforms-2/files-2.1/dbb28a917e9a30e9cf65e9bea9d9de61/jetified-savedstate-1.0.0-beta01/AndroidManifest.xml:20:5-44
+MERGED from [androidx.savedstate:savedstate:1.0.0-beta01] /Users/alexander/.gradle/caches/transforms-2/files-2.1/dbb28a917e9a30e9cf65e9bea9d9de61/jetified-savedstate-1.0.0-beta01/AndroidManifest.xml:20:5-44
+MERGED from [androidx.cardview:cardview:1.0.0] /Users/alexander/.gradle/caches/transforms-2/files-2.1/97a0a2ebb3eb03d282967213f9fce8f1/cardview-1.0.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.cardview:cardview:1.0.0] /Users/alexander/.gradle/caches/transforms-2/files-2.1/97a0a2ebb3eb03d282967213f9fce8f1/cardview-1.0.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.sqlite:sqlite-framework:2.0.0] /Users/alexander/.gradle/caches/transforms-2/files-2.1/b52d493512d986cadfcde8faca224cd6/sqlite-framework-2.0.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.sqlite:sqlite-framework:2.0.0] /Users/alexander/.gradle/caches/transforms-2/files-2.1/b52d493512d986cadfcde8faca224cd6/sqlite-framework-2.0.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.sqlite:sqlite:2.0.0] /Users/alexander/.gradle/caches/transforms-2/files-2.1/159e6274393c431e9d82f3f8b7abd693/sqlite-2.0.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.sqlite:sqlite:2.0.0] /Users/alexander/.gradle/caches/transforms-2/files-2.1/159e6274393c431e9d82f3f8b7abd693/sqlite-2.0.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.cursoradapter:cursoradapter:1.0.0] /Users/alexander/.gradle/caches/transforms-2/files-2.1/90f1631387c216955d6e15576bf7f510/cursoradapter-1.0.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.cursoradapter:cursoradapter:1.0.0] /Users/alexander/.gradle/caches/transforms-2/files-2.1/90f1631387c216955d6e15576bf7f510/cursoradapter-1.0.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.interpolator:interpolator:1.0.0] /Users/alexander/.gradle/caches/transforms-2/files-2.1/7b42773ca151ab87589b0c9beb61fcbf/interpolator-1.0.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.interpolator:interpolator:1.0.0] /Users/alexander/.gradle/caches/transforms-2/files-2.1/7b42773ca151ab87589b0c9beb61fcbf/interpolator-1.0.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.documentfile:documentfile:1.0.0] /Users/alexander/.gradle/caches/transforms-2/files-2.1/740d141b4a9514381ae703c1028128de/documentfile-1.0.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.documentfile:documentfile:1.0.0] /Users/alexander/.gradle/caches/transforms-2/files-2.1/740d141b4a9514381ae703c1028128de/documentfile-1.0.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.localbroadcastmanager:localbroadcastmanager:1.0.0] /Users/alexander/.gradle/caches/transforms-2/files-2.1/8a0a4f800352c85b632780f9a2a77208/localbroadcastmanager-1.0.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.localbroadcastmanager:localbroadcastmanager:1.0.0] /Users/alexander/.gradle/caches/transforms-2/files-2.1/8a0a4f800352c85b632780f9a2a77208/localbroadcastmanager-1.0.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.print:print:1.0.0] /Users/alexander/.gradle/caches/transforms-2/files-2.1/dd313ab1688aa99cd093396ec97ec6f3/print-1.0.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.print:print:1.0.0] /Users/alexander/.gradle/caches/transforms-2/files-2.1/dd313ab1688aa99cd093396ec97ec6f3/print-1.0.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.lifecycle:lifecycle-viewmodel:2.2.0-alpha01] /Users/alexander/.gradle/caches/transforms-2/files-2.1/740eb84b71c3505ed7c0c28ee571df4a/lifecycle-viewmodel-2.2.0-alpha01/AndroidManifest.xml:20:5-44
+MERGED from [androidx.lifecycle:lifecycle-viewmodel:2.2.0-alpha01] /Users/alexander/.gradle/caches/transforms-2/files-2.1/740eb84b71c3505ed7c0c28ee571df4a/lifecycle-viewmodel-2.2.0-alpha01/AndroidManifest.xml:20:5-44
+INJECTED from /Users/alexander/lenta-pdct-android/movement/src/main/AndroidManifest.xml
+INJECTED from /Users/alexander/lenta-pdct-android/movement/src/main/AndroidManifest.xml
+	android:targetSdkVersion
+		INJECTED from /Users/alexander/lenta-pdct-android/movement/src/main/AndroidManifest.xml
+		ADDED from /Users/alexander/lenta-pdct-android/movement/src/main/AndroidManifest.xml
+		INJECTED from /Users/alexander/lenta-pdct-android/movement/src/main/AndroidManifest.xml
+	android:minSdkVersion
+		INJECTED from /Users/alexander/lenta-pdct-android/movement/src/main/AndroidManifest.xml
+		ADDED from /Users/alexander/lenta-pdct-android/movement/src/main/AndroidManifest.xml
+		INJECTED from /Users/alexander/lenta-pdct-android/movement/src/main/AndroidManifest.xml
+uses-permission#android.permission.INTERNET
+ADDED from [:Shared] /Users/alexander/lenta-pdct-android/Shared/build/intermediates/library_manifest/debug/AndroidManifest.xml:11:5-67
+MERGED from [:hhive] /Users/alexander/lenta-pdct-android/hhive/build/.transforms/637abd916ce5a293ba6aab7fe8bde370/jetified-hhive/AndroidManifest.xml:11:5-67
+MERGED from [:hhive] /Users/alexander/lenta-pdct-android/hhive/build/.transforms/637abd916ce5a293ba6aab7fe8bde370/jetified-hhive/AndroidManifest.xml:11:5-67
+	android:name
+		ADDED from [:Shared] /Users/alexander/lenta-pdct-android/Shared/build/intermediates/library_manifest/debug/AndroidManifest.xml:11:22-64
+uses-permission#android.permission.ACCESS_NETWORK_STATE
+ADDED from [:Shared] /Users/alexander/lenta-pdct-android/Shared/build/intermediates/library_manifest/debug/AndroidManifest.xml:12:5-79
+	android:name
+		ADDED from [:Shared] /Users/alexander/lenta-pdct-android/Shared/build/intermediates/library_manifest/debug/AndroidManifest.xml:12:22-76
+uses-permission#android.permission.ACCESS_WIFI_STATE
+ADDED from [:Shared] /Users/alexander/lenta-pdct-android/Shared/build/intermediates/library_manifest/debug/AndroidManifest.xml:13:5-76
+	android:name
+		ADDED from [:Shared] /Users/alexander/lenta-pdct-android/Shared/build/intermediates/library_manifest/debug/AndroidManifest.xml:13:22-73
+uses-permission#android.permission.FOREGROUND_SERVICE
+ADDED from [:Shared] /Users/alexander/lenta-pdct-android/Shared/build/intermediates/library_manifest/debug/AndroidManifest.xml:14:5-77
+	android:name
+		ADDED from [:Shared] /Users/alexander/lenta-pdct-android/Shared/build/intermediates/library_manifest/debug/AndroidManifest.xml:14:22-74
+uses-permission#android.permission.WRITE_EXTERNAL_STORAGE
+ADDED from [:Shared] /Users/alexander/lenta-pdct-android/Shared/build/intermediates/library_manifest/debug/AndroidManifest.xml:15:5-81
+MERGED from [:hhive] /Users/alexander/lenta-pdct-android/hhive/build/.transforms/637abd916ce5a293ba6aab7fe8bde370/jetified-hhive/AndroidManifest.xml:12:5-81
+MERGED from [:hhive] /Users/alexander/lenta-pdct-android/hhive/build/.transforms/637abd916ce5a293ba6aab7fe8bde370/jetified-hhive/AndroidManifest.xml:12:5-81
+	android:name
+		ADDED from [:Shared] /Users/alexander/lenta-pdct-android/Shared/build/intermediates/library_manifest/debug/AndroidManifest.xml:15:22-78
+uses-permission#android.permission.VIBRATE
+ADDED from [:Shared] /Users/alexander/lenta-pdct-android/Shared/build/intermediates/library_manifest/debug/AndroidManifest.xml:16:5-66
+	android:name
+		ADDED from [:Shared] /Users/alexander/lenta-pdct-android/Shared/build/intermediates/library_manifest/debug/AndroidManifest.xml:16:22-63
+provider#androidx.lifecycle.ProcessLifecycleOwnerInitializer
+ADDED from [androidx.lifecycle:lifecycle-process:2.1.0-rc01] /Users/alexander/.gradle/caches/transforms-2/files-2.1/2c904f0ef2336a4964281042422c4a5c/jetified-lifecycle-process-2.1.0-rc01/AndroidManifest.xml:23:9-27:43
+	android:authorities
+		ADDED from [androidx.lifecycle:lifecycle-process:2.1.0-rc01] /Users/alexander/.gradle/caches/transforms-2/files-2.1/2c904f0ef2336a4964281042422c4a5c/jetified-lifecycle-process-2.1.0-rc01/AndroidManifest.xml:25:13-69
+	android:multiprocess
+		ADDED from [androidx.lifecycle:lifecycle-process:2.1.0-rc01] /Users/alexander/.gradle/caches/transforms-2/files-2.1/2c904f0ef2336a4964281042422c4a5c/jetified-lifecycle-process-2.1.0-rc01/AndroidManifest.xml:27:13-40
+	android:exported
+		ADDED from [androidx.lifecycle:lifecycle-process:2.1.0-rc01] /Users/alexander/.gradle/caches/transforms-2/files-2.1/2c904f0ef2336a4964281042422c4a5c/jetified-lifecycle-process-2.1.0-rc01/AndroidManifest.xml:26:13-37
+	android:name
+		ADDED from [androidx.lifecycle:lifecycle-process:2.1.0-rc01] /Users/alexander/.gradle/caches/transforms-2/files-2.1/2c904f0ef2336a4964281042422c4a5c/jetified-lifecycle-process-2.1.0-rc01/AndroidManifest.xml:24:13-79
+uses-permission#android.permission.READ_EXTERNAL_STORAGE
+IMPLIED from /Users/alexander/lenta-pdct-android/movement/src/main/AndroidManifest.xml:1:1-34:12 reason: com.mobrun.plugin requested WRITE_EXTERNAL_STORAGE
+uses-permission#com.honeywell.decode.permission.DECODE
+ADDED from [:HoneywellDataCollection] /Users/alexander/lenta-pdct-android/HoneywellDataCollection/build/.transforms/4194249d0d5644751e872b4a08c8a56f/jetified-DataCollection/AndroidManifest.xml:11:5-78
+	android:name
+		ADDED from [:HoneywellDataCollection] /Users/alexander/lenta-pdct-android/HoneywellDataCollection/build/.transforms/4194249d0d5644751e872b4a08c8a56f/jetified-DataCollection/AndroidManifest.xml:11:22-75

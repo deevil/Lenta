@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+                                                   
+
+    
+                 
+                     
+                                                                                          
+           
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" android:tag="layout/fragment_task_basket_info_0" xmlns:android="http://schemas.android.com/apk/res/android" xmlns:tools="http://schemas.android.com/tools">
+
+        <com.lenta.movement.view.BorderedTableLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:stretchColumns="*">
+
+            <TableRow>
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="Объём корзины"
+                    android:layout_margin="16dp"/>
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    tools:text="60 шт"
+                    android:tag="binding_1"  
+                    android:layout_margin="16dp"/>
+
+            </TableRow>
+
+            <TableRow android:tag="binding_2"                     >
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="ГИС-контроль"
+                    android:layout_margin="16dp"/>
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    tools:text="Обычный товар"
+                    android:tag="binding_3"        
+                    android:layout_margin="16dp"/>
+
+            </TableRow>
+
+            <TableRow android:tag="binding_4"                   >
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="Поставщик"
+                    android:layout_margin="16dp"/>
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    tools:text="106453 Поставщик 4"
+                    android:tag="binding_5"      
+                    android:layout_margin="16dp"/>
+
+            </TableRow>
+
+        </com.lenta.movement.view.BorderedTableLayout>
+
+    </FrameLayout>
+         

@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+                                                        
+
+    
+                 
+                     
+                                                                    
+           
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" android:tag="layout/layout_task_type_tab_0" xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto">
+
+        <com.lenta.movement.view.BorderedTableLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:stretchColumns="*"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <TableRow>
+
+                <com.lenta.shared.view.ClickableSpinner
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="16dp"
+                    android:layout_span="2"
+                    android:tag="binding_1"                
+                                                        
+                                                                 />
+
+            </TableRow>
+
+            <TableRow>
+
+                <com.lenta.shared.view.ClickableSpinner
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="16dp"
+                    android:layout_span="2"
+                    android:tag="binding_2"                    
+                                                            
+                                                                 />
+
+            </TableRow>
+
+            <TableRow>
+
+                <EditText
+                    android:id="@+id/taskNameEditText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="16dp"
+                    android:layout_span="2"
+                    android:tag="binding_3"       
+                                                           />
+
+            </TableRow>
+
+            <TableRow
+                android:gravity="center_vertical">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="16dp"
+                    android:text="@string/task_settings_task_type_receiver_title" />
+
+                <com.lenta.shared.view.ClickableSpinner
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="16dp"
+                    android:tag="binding_4"                 
+                                               
+                                                                 
+                                                                                        />
+
+            </TableRow>
+
+        </com.lenta.movement.view.BorderedTableLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+         
