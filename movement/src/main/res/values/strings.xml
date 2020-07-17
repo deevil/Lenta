@@ -1,0 +1,88 @@
+<resources>
+    <string name="app_name">Перемещение</string>
+
+    <string name="main_menu_create_box">Создать короба</string>
+    <string name="create_box_title">Создание коробов</string>
+    <string name="create_box_product_list">Список товаров</string>
+    <string name="main_menu_create_task_button">Создать задание</string>
+    <string name="main_menu_work_with_task_button">Работа с заданиями</string>
+    <string name="unsaved_data_will_lost">Несохранённые данные будут утеряны. Всё равно выйти?</string>
+    <string name="select_type_code_description">Введено 12 знаков. Какой код вы ввели?</string>
+    <string name="alert_product_incorrect_for_create_box">Для товара %s не предусмотрено создание коробов</string>
+    <string name="alert_null_personnel_number">Не введен табельный номер</string>
+    <string name="alert_null_task">Задание не найдено</string>
+
+    <string name="create_boxes_filling_tab_title">Количество</string>
+    <string name="create_boxes_filling_tab_attachment_format">Вложение (кор = %d шт)</string>
+    <string name="create_boxes_filling_tab_progress_format">%1$d из %2$d</string>
+
+    <string name="create_boxes_box_list_tab_title">Короба</string>
+    <string name="create_boxes_box_list_tab_box_number">Номер короба</string>
+    <string name="stamp_max_count">Достигнуто максимальное количество марок для комплектации текущего короба. Завершите комплектацию этого короба и продолжите добавление марок в следующий короб.</string>
+    <string name="stamp_was_added_msg">Марка была добавлена. Перепривязка невозможна.</string>
+    <string name="stamp_was_added_to_box_msg">Марка была добавлена в короб %s. Перепривязка невозможна.</string>
+    <string name="box_number_was_used_msg">Указанный номер был использован ранее при создании другого короба</string>
+    <string name="ean_invalid_msg">Неверный формат штрихкода</string>
+
+    <string name="unsaved_data_confirmation">Несохранённые данные будут утеряны, всё равно продолжить?</string>
+    <string name="box_saved_msg">Короб %s сохранен</string>
+    <string name="save_to_sap_erp_msg">Сохранение в SAP ERP</string>
+
+    <string name="task_settings_title">Карточка задания</string>
+    <string name="task_settings_name">Перемещение от %1$s</string>
+
+    <string name="task_settings_status_title">Статус</string>
+    <string name="task_settings_status_current_state_title">Текущий статус</string>
+    <string name="task_settings_status_next_state_title">Следующий статус</string>
+
+    <string name="task_settings_task_type_tab_title">Тип задания</string>
+    <string name="task_settings_task_type_receiver_title">Получатель</string>
+
+    <string name="task_settings_properties_tab_title">Свойства</string>
+    <string name="task_settings_properties_piker_storage_title">Склад \nКомплектации</string>
+    <string name="task_settings_properties_shipment_storage_title">Склад \nОтгрузки</string>
+    <string name="task_settings_properties_shipment_date_title">Дата \nОтгрузки</string>
+
+    <string name="task_settings_comments_tab_title">Комментарий</string>
+    <string name="task_settings_comments_description_title">Описание</string>
+    <string name="task_settings_comments_comments_title">Комментарий</string>
+
+    <string name="task_goods_title">Состав задания</string>
+    <string name="task_goods_processed_tab_title">Обработанные</string>
+    <string name="task_goods_buckets_tab_title">Корзины</string>
+    <string name="task_goods_info_title">Информация о товаре</string>
+    <string name="task_goods_quantities_format">%1$d %3$s\n%2$d %3$s</string>
+    <string name="task_goods_basket_number_format">%1$02d</string>
+    <string name="task_basket_title">Список товаров корзины</string>
+    <string name="task_basket_info_title">Свойства корзины</string>
+    <string name="task_basket_characteristics_title">Свойства</string>
+    <string name="basket">Корзина</string>
+    <string name="baskets">Корзины</string>
+    <string name="pu">ЕО</string>
+    <string name="boxes">Коробки</string>
+    <string name="task_save_confirmation_msg">Перевести задание в статус «Посчитано» и закрыть его для редактирования?</string>
+
+    <string name="process">Обработать</string>
+    <string name="combine">Объединить</string>
+    <string name="task_eo_merge_title">Объединение ЕО</string>
+    <string name="task_eo_merge_eo_list">Список ЕО</string>
+    <string name="task_eo_merge_ge_list">Список ГЕ</string>
+    <string name="task_eo_merge_ge_eo">ГЕ/ЕО</string>
+    <string name="task_eo_merge_zero_selected_eo_message">
+        Не была выбрана ни одна ЕО\n
+        Выберите дальнейшие действия:\n
+        НАЗАД - возврат к списку ЕО\n
+        ОБРАБОТАТЬ - обработать каждое ЕО как ЕО верхнего уровня, без создания ГЕ\n
+        ОБЪЕДИНИТЬ - добавить все ЕО в одну ГЕ</string>
+    <string name="task_eo_merge_docs_title">Сформированные документы</string>
+    <string name="documents_type">Тип документа</string>
+    <string name="detected_discrepancies">Обнаруженные расхождения</string>
+    <string name="task_eo_merge_print_confirmation_msg">Напечатать паллетные ведомости для всех(%1$d) ЕО/ГЕ?</string>
+    <string name="cargoUnit_doc_print">Печать паллетной ведомости</string>
+    <string name="cargoUnit_doc_printed">Паллетная ведомость напечатана</string>
+    <string name="zero_pcs">0 шт.</string>
+    <string name="total_in_basket">Итого\nПо корзине</string>
+    <string name="EO">ЕО</string>
+    <string name="list_of_eo_inside">Список вложенных ЕО</string>
+    <string name="list_of_eo_goods">Список товаров ЕО</string>
+</resources>
