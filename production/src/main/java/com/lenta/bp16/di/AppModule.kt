@@ -18,10 +18,7 @@ import com.lenta.bp16.platform.navigation.IScreenNavigator
 import com.lenta.bp16.platform.navigation.ScreenNavigator
 import com.lenta.bp16.platform.resource.IResourceManager
 import com.lenta.bp16.platform.resource.ResourceManager
-import com.lenta.bp16.repository.DatabaseRepository
-import com.lenta.bp16.repository.IDatabaseRepository
-import com.lenta.bp16.repository.IRepoInMemoryHolder
-import com.lenta.bp16.repository.RepoInMemoryHolder
+import com.lenta.bp16.repository.*
 import com.lenta.shared.di.AppScope
 import dagger.Binds
 import dagger.Module
@@ -48,6 +45,10 @@ class AppModule {
         @Binds
         @AppScope
         fun bindGeneralRepository(realisation: DatabaseRepository): IDatabaseRepository
+
+        @Binds
+        @AppScope
+        fun bindIngredientsRepository(realisation: IngredientsRepository): IIngredientsRepository
 
         @Binds
         @AppScope

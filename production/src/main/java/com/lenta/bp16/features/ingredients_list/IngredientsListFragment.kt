@@ -1,5 +1,6 @@
 package com.lenta.bp16.features.ingredients_list
 
+import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -37,6 +38,11 @@ class IngredientsListFragment :
             getAppComponent()?.inject(it)
             return it
         }
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        binding?.viewPagerSettings = this
     }
 
     override fun setupTopToolBar(topToolbarUiModel: TopToolbarUiModel) {

@@ -7,7 +7,7 @@
 
         <variable
             name="item"
-            type="com.lenta.bp16.features.ingredients_list.ItemIngredientUi" />
+            type="com.lenta.bp16.model.ingredients.ItemIngredientUi" />
 
     </data>
 
