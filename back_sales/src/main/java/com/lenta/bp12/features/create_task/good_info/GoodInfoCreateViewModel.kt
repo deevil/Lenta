@@ -428,8 +428,8 @@ class GoodInfoCreateViewModel : CoreViewModel() {
     private fun setDefaultQuantity(good: GoodCreate) {
         if (good.kind == GoodKind.COMMON) {
             if (good.commonUnits != good.convertingUnits) {
-                quantityField.value = (scanCodeInfo?.getConvertedQuantity(good.innerQuantity)
-                        ?: 0.0).dropZeros()
+                val converted = scanCodeInfo?.getConvertedQuantity(good.innerQuantity) ?: 0.0
+                quantityField.value = converted.dropZeros()
             } else {
                 if (isEanLastScanned) {
                     quantityField.value = "1"

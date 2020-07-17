@@ -349,15 +349,16 @@ class GoodInfoOpenViewModel : CoreViewModel() {
     }
 
     private fun setDefaultQuantity(good: GoodOpen) {
-        if (good.isCounted) {
-            quantityField.value = good.getQuantity().dropZeros()
-        } else if (good.kind == GoodKind.COMMON) {
-            if (good.commonUnits != good.convertingUnits) {
-                quantityField.value = (scanCodeInfo?.getConvertedQuantity(good.innerQuantity)
-                        ?: 0.0).dropZeros()
-            } else {
-                if (isEanLastScanned) {
-                    quantityField.value = "1"
+        when {
+            good.isCounted -> quantityField.value = good.getQuantity().dropZeros()
+            good.kind == GoodKind.COMMON -> {
+                if (good.commonUnits != good.convertingUnits) {
+                    val converted = scanCodeInfo?.getConvertedQuantity(good.innerQuantity) ?: 0.0
+                    quantityField.value = converted.dropZeros()
+                } else {
+                    if (isEanLastScanned) {
+                        quantityField.value = "1"
+                    }
                 }
             }
         }
