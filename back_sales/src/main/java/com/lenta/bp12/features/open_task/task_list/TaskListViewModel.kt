@@ -4,6 +4,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.lenta.bp12.model.BlockType
 import com.lenta.bp12.model.IOpenTaskManager
+import com.lenta.bp12.model.TaskSearchMode
 import com.lenta.bp12.model.pojo.open_task.TaskOpen
 import com.lenta.bp12.platform.navigation.IScreenNavigator
 import com.lenta.bp12.platform.resource.IResourceManager
@@ -139,16 +140,16 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
         selectedPage.value = position
     }
 
-    private fun loadTaskList(user: String, userNumber: String) {
+    private fun loadTaskList(value: String, userNumber: String = "") {
         viewModelScope.launch {
             navigator.showProgressLoadingData()
 
             taskListNetRequest(
                     TaskListParams(
                             tkNumber = sessionInfo.market.orEmpty(),
-                            user = user,
+                            value = value,
                             userNumber = userNumber,
-                            mode = 1
+                            mode = TaskSearchMode.COMMON.mode
                     )
             ).also {
                 navigator.hideProgress()
@@ -160,7 +161,7 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
         }
     }
 
-    private fun loadTaskListWithParams(user: String, userNumber: String) {
+    private fun loadTaskListWithParams(value: String, userNumber: String = "") {
         manager.searchParams.value?.let { params ->
             viewModelScope.launch {
                 navigator.showProgressLoadingData()
@@ -168,9 +169,9 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
                 taskListNetRequest(
                         TaskListParams(
                                 tkNumber = sessionInfo.market.orEmpty(),
-                                user = user,
+                                value = value,
                                 userNumber = userNumber,
-                                mode = 2,
+                                mode = TaskSearchMode.WITH_PARAMS.mode,
                                 taskSearchParams = params
                         )
                 ).also {
@@ -227,16 +228,19 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
     }
 
     override fun onOkInSoftKeyboard(): Boolean {
-        if (isEnteredLogin()) {
-            onClickUpdate()
-        }
-
+        onClickUpdate()
         return true
     }
 
     private fun isEnteredLogin(): Boolean {
         val entered = numberField.value.orEmpty()
         return entered.isNotEmpty() && !entered.all { it.isDigit() }
+    }
+
+    private fun isEnteredUnknownTaskNumber(): Boolean {
+        val entered = numberField.value.orEmpty()
+        val list = processing.value ?: emptyList()
+        return entered.isNotEmpty() && entered.all { it.isDigit() } && list.isEmpty()
     }
 
     /**
@@ -248,11 +252,18 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
     }
 
     fun onClickUpdate() {
-        val user = if (isEnteredLogin()) numberField.value.orEmpty() else sessionInfo.userName.orEmpty()
-        val userNumber = if (isEnteredLogin()) "" else sessionInfo.personnelNumber.orEmpty()
+        if (isEnteredLogin() || isEnteredUnknownTaskNumber()) {
+            val entered = numberField.value.orEmpty()
 
-        loadTaskList(user, userNumber)
-        loadTaskListWithParams(user, userNumber)
+            loadTaskList(entered)
+            loadTaskListWithParams(entered)
+        } else {
+            val currentUser = sessionInfo.userName.orEmpty()
+            val userNumber = sessionInfo.personnelNumber.orEmpty()
+
+            loadTaskList(currentUser, userNumber)
+            loadTaskListWithParams(currentUser, userNumber)
+        }
     }
 
     fun onClickFilter() {

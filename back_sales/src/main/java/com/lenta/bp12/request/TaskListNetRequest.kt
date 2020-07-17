@@ -27,7 +27,7 @@ data class TaskListParams(
         val tkNumber: String,
         /** Адресат */
         @SerializedName("IV_EXEC_USER")
-        val user: String,
+        val value: String,
         /** Табельный номер */
         @SerializedName("IV_PERNR")
         val userNumber: String,

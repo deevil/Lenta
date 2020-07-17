@@ -157,7 +157,9 @@ class OpenTaskManager @Inject constructor(
             val type = if (task.goodType.isNotEmpty()) task.goodType == goodInfo.materialInfo.goodType else true
             val section = if (task.section.isNotEmpty()) task.section == goodInfo.materialInfo.section else true
             val purchaseGroup = if (task.purchaseGroup.isNotEmpty()) task.purchaseGroup == goodInfo.materialInfo.purchaseGroup else true
-            val provider =  goodInfo.providers.find { task.provider.code.contains(it.code) } != null
+            val provider =  if (task.provider.code.dropWhile { it == '0' }.isNotEmpty()) {
+                goodInfo.providers.find { task.provider.code.contains(it.code) } != null
+            } else true
 
             Logg.d { "--> task parameters: ${task.control} / ${task.goodType} / ${task.section} / ${task.purchaseGroup} / ${task.provider.code}" }
             Logg.d { "--> good parameters: ${goodInfo.getControlType()} / ${goodInfo.materialInfo.goodType} / ${goodInfo.materialInfo.section} / ${goodInfo.materialInfo.purchaseGroup} / ${goodInfo.providers}" }
