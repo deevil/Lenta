@@ -148,9 +148,26 @@ class GoodListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
     }
 
     private fun checkEnteredNumber(number: String) {
+        if (task.value?.isStrict == false) {
+            openGoodInfoScreen(number)
+        } else {
+            if (isGoodExist(number)) {
+                openGoodInfoScreen(number)
+            } else {
+                numberField.value = ""
+                navigator.showGoodIsMissingInTask()
+            }
+        }
+    }
+
+    private fun isGoodExist(number: String): Boolean {
+        return manager.findGoodByMaterial(number) ?: manager.findGoodByEan(number) != null
+    }
+
+    private fun openGoodInfoScreen(number: String) {
         number.length.let { length ->
-            if (task.value?.isStrict == false && length >= Constants.SAP_6 &&
-                    length != Constants.BOX_26 && length != Constants.MARK_68 && length != Constants.MARK_150) {
+            if (length >= Constants.SAP_6 && length != Constants.BOX_26 &&
+                    length != Constants.MARK_68 && length != Constants.MARK_150) {
                 manager.searchNumber = number
                 manager.searchGoodFromList = true
                 numberField.value = ""
