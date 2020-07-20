@@ -370,6 +370,15 @@ class ScreenNavigator @Inject constructor(
         }
     }
 
+    override fun showGoodIsMissingInTask() {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    pageNumber = "118",
+                    message = context.getString(R.string.good_is_missing_in_task)
+            ))
+        }
+    }
+
     // Описание иконок
     override fun showAlcoholGoodInfoScreen() {
         runOrPostpone {
@@ -431,6 +440,7 @@ interface IScreenNavigator : ICoreNavigator {
     fun showMarksInBoxAreNotOnBalanceInCurrentStore()
     fun showFinishProcessingBox()
     fun showFinishProcessingCurrentBox()
+    fun showGoodIsMissingInTask()
 
     fun showAlcoholGoodInfoScreen()
     fun showCommonGoodInfoScreen()

@@ -4,10 +4,7 @@ import android.content.Context
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.lenta.movement.features.main.box.ScanInfoHelper
-import com.lenta.movement.models.Basket
-import com.lenta.movement.models.ITaskManager
-import com.lenta.movement.models.ProductInfo
-import com.lenta.movement.models.SimpleListItem
+import com.lenta.movement.models.*
 import com.lenta.movement.models.repositories.ITaskBasketsRepository
 import com.lenta.movement.platform.IFormatter
 import com.lenta.movement.platform.navigation.IScreenNavigator
@@ -27,8 +24,8 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class TaskGoodsViewModel : CoreViewModel(),
-    PageSelectionListener,
-    OnOkInSoftKeyboardListener {
+        PageSelectionListener,
+        OnOkInSoftKeyboardListener {
 
     @Inject
     lateinit var context: Context
@@ -64,10 +61,10 @@ class TaskGoodsViewModel : CoreViewModel(),
     val processedList = processed.mapSkipNulls { processed ->
         processed.mapIndexed { index, (productInfo, count) ->
             SimpleListItem(
-                number = index + 1,
-                title = formatter.getProductName(productInfo),
-                countWithUom = "$count ${Uom.DEFAULT.name}",
-                isClickable = true
+                    number = index + 1,
+                    title = formatter.getProductName(productInfo),
+                    countWithUom = "$count ${Uom.DEFAULT.name}",
+                    isClickable = true
             )
         }
     }
@@ -76,33 +73,34 @@ class TaskGoodsViewModel : CoreViewModel(),
     val basketList = baskets.mapSkipNulls { baskets ->
         baskets.map { basket ->
             SimpleListItem(
-                number = basket.number,
-                title = formatter.getBasketName(basket),
-                subtitle = formatter.getBasketDescription(
-                    basket,
-                    taskManager.getTask(),
-                    taskManager.getTaskSettings()
-                ),
-                countWithUom = basket.keys.size.toString(),
-                isClickable = true
+                    number = basket.number,
+                    title = formatter.getBasketName(basket),
+                    subtitle = formatter.getBasketDescription(
+                            basket,
+                            taskManager.getTask(),
+                            taskManager.getTaskSettings()
+                    ),
+                    countWithUom = basket.keys.size.toString(),
+                    isClickable = true
             )
         }
     }
 
     val selectedPagePosition = MutableLiveData(0)
-    val currentPage = selectedPagePosition.mapSkipNulls { TaskGoodsPage.values()[it] }
+    val currentPage = selectedPagePosition.mapSkipNulls { TaskGoodsPage.values().getOrNull(it) }
 
     val deleteEnabled = combineLatest(
-        currentPage,
-        processedSelectionHelper.selectedPositions,
-        basketSelectionHelper.selectedPositions
+            currentPage,
+            processedSelectionHelper.selectedPositions,
+            basketSelectionHelper.selectedPositions
     )
-        .mapSkipNulls { (currentPage, processedSelectedPositions, basketSelectedPositions) ->
-            when (currentPage!!) {
-                TaskGoodsPage.PROCESSED -> processedSelectedPositions.orEmpty().isNotEmpty()
-                TaskGoodsPage.BASKETS -> basketSelectedPositions.orEmpty().isNotEmpty()
+            .mapSkipNulls { (currentPage, processedSelectedPositions, basketSelectedPositions) ->
+                when (currentPage) {
+                    TaskGoodsPage.PROCESSED -> processedSelectedPositions.orEmpty().isNotEmpty()
+                    TaskGoodsPage.BASKETS -> basketSelectedPositions.orEmpty().isNotEmpty()
+                    null -> false
+                }
             }
-        }
 
     val saveEnabled = processed.mapSkipNulls {
         it.isNotEmpty()
@@ -167,13 +165,13 @@ class TaskGoodsViewModel : CoreViewModel(),
         when (currentPage.value) {
             TaskGoodsPage.PROCESSED -> {
                 taskBasketsRepository.getAll()
-                    .flatMap { it.keys }
-                    .filterIndexed { index, _ ->
-                        processedSelectionHelper.selectedPositions.value.orEmpty().contains(index)
-                    }
-                    .forEach { doRemoveProduct ->
-                        taskBasketsRepository.removeProductFromAllBaskets(doRemoveProduct)
-                    }
+                        .flatMap { it.keys }
+                        .filterIndexed { index, _ ->
+                            processedSelectionHelper.selectedPositions.value.orEmpty().contains(index)
+                        }
+                        .forEach { doRemoveProduct ->
+                            taskBasketsRepository.removeProductFromAllBaskets(doRemoveProduct)
+                        }
 
                 processed.postValue(getProcessed())
                 baskets.postValue(getBaskets())
@@ -181,12 +179,12 @@ class TaskGoodsViewModel : CoreViewModel(),
             }
             TaskGoodsPage.BASKETS -> {
                 taskBasketsRepository.getAll()
-                    .filterIndexed { index, _ ->
-                        basketSelectionHelper.selectedPositions.value.orEmpty().contains(index)
-                    }
-                    .forEach { doRemoveBasket ->
-                        taskBasketsRepository.removeBasket(doRemoveBasket)
-                    }
+                        .filterIndexed { index, _ ->
+                            basketSelectionHelper.selectedPositions.value.orEmpty().contains(index)
+                        }
+                        .forEach { doRemoveBasket ->
+                            taskBasketsRepository.removeBasket(doRemoveBasket)
+                        }
 
                 processed.postValue(getProcessed())
                 baskets.postValue(getBaskets())
@@ -196,9 +194,10 @@ class TaskGoodsViewModel : CoreViewModel(),
     }
 
     fun onSaveClick() {
-        screenNavigator.openSaveTaskConfirmationDialog {
-            saveTask()
-        }
+        screenNavigator.openSaveTaskConfirmationDialog(
+                yesCallbackFunc = ::saveTask,
+                status = Task.Status.COUNTED
+        )
     }
 
     private fun saveTask() {
@@ -248,16 +247,16 @@ class TaskGoodsViewModel : CoreViewModel(),
                     }
             )
             saveTaskNetRequest(params).either(
-                fnL = { failure ->
-                    screenNavigator.openAlertScreen(failure)
-                },
-                fnR = { savedTask ->
-                    taskBasketsRepository.clear()
-                    screenNavigator.goBack()
-                    screenNavigator.goBack()
-                    taskManager.setTask(savedTask)
-                    screenNavigator.openTaskScreen(savedTask)
-                }
+                    fnL = { failure ->
+                        screenNavigator.openAlertScreen(failure)
+                    },
+                    fnR = { savedTask ->
+                        taskBasketsRepository.clear()
+                        screenNavigator.goBack()
+                        screenNavigator.goBack()
+                        taskManager.setTask(savedTask)
+                        screenNavigator.openTaskScreen(savedTask)
+                    }
             )
 
             screenNavigator.hideProgress()
@@ -274,10 +273,10 @@ class TaskGoodsViewModel : CoreViewModel(),
 
     private fun getProcessed(): List<Pair<ProductInfo, Int>> {
         return taskBasketsRepository.getAll()
-            .flatMap { it.entries }
-            .groupBy { (productInfo, _) -> productInfo }
-            .mapValues { it.value.sumBy { it.value } }
-            .toList()
+                .flatMap { it.entries }
+                .groupBy { (productInfo, _) -> productInfo }
+                .mapValues { it.value.sumBy { it.value } }
+                .toList()
     }
 
     private fun getBaskets(): List<Basket> {

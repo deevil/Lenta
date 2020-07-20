@@ -158,8 +158,8 @@
     <string name="saved_data_detect_message">На устройстве обнаружены несохраненные данные. Перейти к данным?</string>
     <string name="detect_changes_connection_message">Внимание! Настройки соединения изменились. Вы хотите применить новые настройки?</string>
     <string name="added">Добавлен</string>
-    <string name="pictogram_strict_list">Пиктограмма строгого списка</string>
-    <string name="pictogram_not_strict_list">Пиктограмма нестрогого списка</string>
+    <string name="strict_list">Строгий список</string>
+    <string name="not_strict_list">Нестрогий список</string>
     <string name="qr_code_info">Доступно сканирование QR-кода</string>
     <string name="price_r">%1$.2f р.</string>
     <string name="sort">Сортировка</string>

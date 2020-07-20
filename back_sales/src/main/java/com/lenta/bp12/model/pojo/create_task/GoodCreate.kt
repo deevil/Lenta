@@ -9,6 +9,7 @@ import com.lenta.bp12.request.pojo.ProducerInfo
 import com.lenta.bp12.request.pojo.ProviderInfo
 import com.lenta.shared.models.core.MatrixType
 import com.lenta.shared.models.core.Uom
+import com.lenta.shared.utilities.extentions.dropZeros
 import com.lenta.shared.utilities.extentions.sumList
 import com.lenta.shared.utilities.extentions.sumWith
 
@@ -23,9 +24,8 @@ data class GoodCreate(
         val matrix: MatrixType,
 
         val commonUnits: Uom = Uom.ST,
-        val convertingUnits: Uom = Uom.ST,
+        val innerUnits: Uom = Uom.ST,
         val innerQuantity: Double = 0.0,
-        val convertingInfo: String,
 
         val providers: MutableList<ProviderInfo> = mutableListOf(),
         val producers: MutableList<ProducerInfo> = mutableListOf(),
@@ -40,7 +40,11 @@ data class GoodCreate(
     }
 
     fun isDifferentUnits(): Boolean {
-        return commonUnits != convertingUnits
+        return commonUnits != innerUnits
+    }
+
+    fun getConvertingInfo(): String {
+        return if (isDifferentUnits()) " (${commonUnits.name} = ${innerQuantity.dropZeros()} ${innerUnits.name})" else ""
     }
 
     fun getTotalQuantity(): Double {
