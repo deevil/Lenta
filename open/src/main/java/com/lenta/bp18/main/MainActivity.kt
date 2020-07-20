@@ -13,7 +13,7 @@ import io.fabric.sdk.android.Fabric
 
 class MainActivity : CoreMainActivity() {
 
-    var mainViewModel: MainViewModel? = null
+    private var mainViewModel: MainViewModel? = null
     private val numberScreenGenerator = NumberScreenGenerator()
 
     val appComponent: AppComponent by lazy {

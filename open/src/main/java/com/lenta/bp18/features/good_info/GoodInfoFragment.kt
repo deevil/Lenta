@@ -29,6 +29,7 @@ class GoodInfoFragment : CoreFragment<FragmentGoodsInfoBinding, GoodInfoViewMode
     }
 
     override fun setupTopToolBar(topToolbarUiModel: TopToolbarUiModel) {
+        //topToolbarUiModel.title.value = "ну тут, короче, должно быть наимерование товара"
         topToolbarUiModel.description.value = getString(R.string.good_card)
     }
 

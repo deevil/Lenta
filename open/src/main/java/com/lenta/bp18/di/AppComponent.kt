@@ -8,8 +8,8 @@ import com.lenta.bp18.features.select_good.SelectGoodViewModel
 import com.lenta.bp18.features.select_market.SelectMarketViewModel
 import com.lenta.bp18.main.MainActivity
 import com.lenta.bp18.main.MainViewModel
-import com.lenta.bp18.model.ITaskManager
 import com.lenta.bp18.platform.navigation.IScreenNavigator
+import com.lenta.bp18.repository.IDatabaseRepo
 import com.lenta.shared.di.AppScope
 import com.lenta.shared.di.CoreComponent
 import com.lenta.shared.di.FromParentToCoreProvider
@@ -20,7 +20,7 @@ import dagger.Component
 interface AppComponent : FromParentToCoreProvider {
 
     fun getScreenNavigator(): IScreenNavigator
-    fun getTaskManager(): ITaskManager
+    fun getGeneralRepository(): IDatabaseRepo
 
     fun inject(mainActivity: MainActivity)
     fun inject(mainViewModel: MainViewModel)

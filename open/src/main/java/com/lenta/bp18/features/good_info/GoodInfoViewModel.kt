@@ -3,6 +3,7 @@ package com.lenta.bp18.features.good_info
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.lenta.bp18.platform.navigation.IScreenNavigator
+import com.lenta.bp18.repository.IDatabaseRepo
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.extentions.map
 import kotlinx.coroutines.launch
@@ -12,18 +13,11 @@ class GoodInfoViewModel : CoreViewModel() {
 
     @Inject
     lateinit var navigator: IScreenNavigator
+    @Inject
+    lateinit var database: IDatabaseRepo
 
     val deviceIp = MutableLiveData("")
 
-    val weightField = MutableLiveData("0")
-
-    private val entered = weightField.map{
-        it?.toDoubleOrNull() ?: 0.0
-    }
-
-    val completeEnabled = entered.map{
-        val enabledValue = it ?: 0.0
-    }
 
     fun onClickComplete(){
         viewModelScope.launch {

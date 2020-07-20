@@ -86,6 +86,17 @@ class ScreenNavigator @Inject constructor(
         }
     }
 
+    override fun showAlertGoodsNotFound() {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    message = context.getString(R.string.tw_good_not_found),
+                    iconRes = R.drawable.ic_warning_red_80dp,
+                    pageNumber = Constants.ALERT_SCREEN_NUMBER,
+                    timeAutoExitInMillis = Constants.TIME_OUT_IN_SEC
+            ))
+        }
+    }
+
 }
 
 interface IScreenNavigator : ICoreNavigator {
@@ -99,4 +110,6 @@ interface IScreenNavigator : ICoreNavigator {
     fun openAlertConfirmOpeningPackage()
     fun openAlertSuccessfulOpeningPackage()
     fun openAlertPartCodeNotFound()
+
+    fun showAlertGoodsNotFound()
 }

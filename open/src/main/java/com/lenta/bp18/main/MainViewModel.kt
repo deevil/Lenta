@@ -17,15 +17,6 @@ class MainViewModel : CoreMainViewModel() {
     override lateinit var statusBarUiModel: StatusBarUiModel
     @Inject
     lateinit var navigator: IScreenNavigator
-    @Inject
-    lateinit var appSettings: IAppSettings
-
-    init {
-        viewModelScope.launch {
-            appSettings.printerNotVisible = true
-            appSettings.printerNumber = appSettings.printerNumber
-        }
-    }
 
     override fun onNewEnter() {
         navigator.openAuthScreen()

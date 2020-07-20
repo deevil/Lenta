@@ -4,6 +4,12 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context=".features.create_task.task_composition.TaskCompositionFragment">
 
+    <data>
+        <variable
+            name="vm"
+            type="com.lenta.bp18.features.select_good.SelectGoodViewModel" />
+    </data>
+
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"

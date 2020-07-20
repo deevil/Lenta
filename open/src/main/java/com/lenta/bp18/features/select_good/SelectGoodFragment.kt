@@ -38,8 +38,8 @@ class SelectGoodFragment : CoreFragment<FragmentSelectGoodsBinding, SelectGoodVi
 
     override fun onToolbarButtonClick(view: View) {
         when(view.id){
-           /* R.id.b_1 -> vm.onClickBack()
-            R.id.b_5 -> vm.onClickComplete()*/
+            R.id.b_topbar_2 -> vm.onClickExit()
+            R.id.b_5 -> vm.onClickNext()
         }
     }
 

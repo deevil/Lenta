@@ -80,29 +80,23 @@ class SelectMarketViewModel : CoreViewModel(), OnPositionClickListener {
         viewModelScope.launch {
             database.getAllMarkets().let { list ->
                 markets.value = list
-
                 if (selectedPosition.value == null) {
                     if (appSettings.lastTK != null) {
                         list.forEachIndexed { index, market ->
-                            if (market.number == appSettings.lastTK) {
+                            if (market.number == appSettings.lastTK)
                                 onClickPosition(index)
-                            }
                         }
-                    } else {
+                    } else
                         onClickPosition(0)
-                    }
                 }
-
-                if (list.size == 1) {
+                if (list.size == 1)
                     onClickNext()
-                }
             }
         }
     }
 
     fun onClickNext() {
         viewModelScope.launch {
-            navigator.showProgressLoadingData()
             markets.value
                     ?.getOrNull(selectedPosition.value ?: -1)?.number
                     ?.let { tkNumber ->
@@ -112,7 +106,7 @@ class SelectMarketViewModel : CoreViewModel(), OnPositionClickListener {
                         sessionInfo.market = tkNumber
                         appSettings.lastTK = tkNumber
 
-                        withContext(Dispatchers.IO) {
+                        /*withContext(Dispatchers.IO) {
                             database.getAllMarkets()
                                     .find { it.number == sessionInfo.market }
                                     .let { market ->
@@ -134,45 +128,16 @@ class SelectMarketViewModel : CoreViewModel(), OnPositionClickListener {
                             } else {
                                 installUpdate(updateFileName)
                             }
-                        }
+                        }*/
                     }
+            navigator.openSelectGoodScreen()
         }
-    }
-
-    private fun getServerTime() {
-        viewModelScope.launch {
-            serverTimeRequest(ServerTimeRequestParam(sessionInfo.market
-                    .orEmpty())).either(::handleFailure, ::handleSuccessServerTime)
-        }
-    }
-
-    override fun handleFailure(failure: Failure) {
-        super.handleFailure(failure)
-        navigator.openSelectMarketScreen()
-        navigator.openAlertScreen(failureInterpreter.getFailureDescription(failure).message)
-        navigator.hideProgress()
-    }
-
-    private fun handleSuccessServerTime(serverTime: ServerTime) {
-        navigator.hideProgress()
-        timeMonitor.setServerTime(time = serverTime.time, date = serverTime.date)
-        navigator.openFastDataLoadingScreen()
     }
 
     override fun onClickPosition(position: Int) {
         selectedPosition.value = position
     }
 
-    private fun installUpdate(updateFileName: String) {
-        viewModelScope.launch {
-            navigator.showProgress(resourceManager.loadingNewAppVersion())
-            withContext(Dispatchers.IO) {
-                appUpdateInstaller.installUpdate(updateFileName)
-            }.either(::handleFailure) {
-                // do nothing. App is finished
-            }
-        }
-    }
 
     private fun clearPrinters() {
         appSettings.printer = null

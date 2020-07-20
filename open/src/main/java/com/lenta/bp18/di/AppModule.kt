@@ -5,8 +5,6 @@ import app_update.AppUpdateInstaller
 import app_update.AppUpdaterConfig
 import app_update.AppUpdaterInstallerFromFmp
 import com.lenta.bp18.BuildConfig.APPLICATION_ID
-import com.lenta.bp18.model.ITaskManager
-import com.lenta.bp18.model.TaskManager
 import com.lenta.bp18.platform.Constants
 import com.lenta.bp18.platform.navigation.IScreenNavigator
 import com.lenta.bp18.platform.navigation.ScreenNavigator
@@ -36,10 +34,6 @@ class AppModule {
         @AppScope
         fun bindAppUpdateInstaller(realisation: AppUpdaterInstallerFromFmp): AppUpdateInstaller
 
-        @Binds
-        @AppScope
-        fun bindTaskManager(realisation: TaskManager): ITaskManager
-
     }
 
     @Provides
@@ -56,12 +50,6 @@ class AppModule {
     @AppScope
     internal fun provideIRepoInMemoryHolder(): IRepoInMemoryHolder {
         return RepoInMemoryHolder()
-    }
-
-    @Provides
-    @AppScope
-    internal fun provideResourceLoader(slowResourcesNetRequest: SlowResourcesMultiRequest): ResourcesLoader {
-        return ResourcesLoader(slowResourcesNetRequest)
     }
 
     @Provides

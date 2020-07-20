@@ -1,7 +1,7 @@
 package com.lenta.bp18.repository
 
-import com.lenta.bp18.data.model.EnteredCode
-import com.lenta.bp18.data.model.GoodInfo
+import com.lenta.bp18.model.pojo.EnteredCode
+import com.lenta.bp18.model.pojo.Good
 import com.lenta.shared.di.AppScope
 import com.lenta.shared.fmp.resources.dao_ext.*
 import com.lenta.shared.fmp.resources.fast.ZmpUtz07V001
@@ -28,12 +28,12 @@ class DatabaseRepo(
         val barCodeInfo: ZmpUtz25V001 = ZmpUtz25V001(hyperHive) // Информация о штрих-коде
 ) : IDatabaseRepo {
 
-    override suspend fun getGoodInfoByEan(ean: String): GoodInfo? {
+    override suspend fun getGoodInfoByEan(ean: String): Good? {
         return withContext(Dispatchers.IO) {
             getEanInfoByEan(ean)?.run {
                 val productInfo = getProductInfoByMaterial(this.materialNumber)
                 val unitName = getGoodUnitName(productInfo?.buom)
-                return@withContext GoodInfo(
+                return@withContext Good(
                         ean = ean,
                         material = this.materialNumber,
                         matcode = productInfo?.matcode.orEmpty(),
@@ -46,12 +46,12 @@ class DatabaseRepo(
         }
     }
 
-    override suspend fun getGoodInfoByMaterial(material: String): GoodInfo? {
+    override suspend fun getGoodInfoByMaterial(material: String): Good? {
         return withContext(Dispatchers.IO) {
             getProductInfoByMaterial(material)?.run {
                 val eanInfo = getEanInfoByMaterial(this.material)
                 val unitName = getGoodUnitName(this.buom)
-                return@withContext GoodInfo(
+                return@withContext Good(
                         ean = eanInfo?.ean.orEmpty(),
                         material = material,
                         matcode = this.matcode,
@@ -65,12 +65,12 @@ class DatabaseRepo(
         }
     }
 
-    override suspend fun getGoodInfoByMatcode(matcode: String): GoodInfo? {
+    override suspend fun getGoodInfoByMatcode(matcode: String): Good? {
         return withContext(Dispatchers.IO) {
             getProductInfoByMatcode(matcode)?.run {
                 val eanInfo = getEanInfoByMaterial(this.material)
                 val unitName = getGoodUnitName(this.buom)
-                return@withContext GoodInfo(
+                return@withContext Good(
                         ean = eanInfo?.ean.orEmpty(),
                         material = this.material,
                         matcode = matcode,
@@ -135,8 +135,8 @@ interface IDatabaseRepo {
     suspend fun getProductInfoByMaterial(material: String?): ProductInfo?
     suspend fun getProductInfoByMatcode(matcode: String?): ProductInfo?
     suspend fun getGoodUnitName(unitCode: String?): String?
-    suspend fun getGoodInfoByEan(ean: String): GoodInfo?
-    suspend fun getGoodInfoByMaterial(material: String): GoodInfo?
-    suspend fun getGoodInfoByMatcode(matcode: String): GoodInfo?
+    suspend fun getGoodInfoByEan(ean: String): Good?
+    suspend fun getGoodInfoByMaterial(material: String): Good?
+    suspend fun getGoodInfoByMatcode(matcode: String): Good?
     suspend fun getAllMarkets(): List<MarketInfo>
 }
