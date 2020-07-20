@@ -53,6 +53,7 @@ class GoodListFragment : CoreFragment<FragmentGoodListBinding, GoodListViewModel
         bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.save, enabled = false)
 
         connectLiveData(vm.deleteEnabled, getBottomToolBarUIModel()!!.uiModelButton3.enabled)
+        connectLiveData(vm.deleteVisible, getBottomToolBarUIModel()!!.uiModelButton3.visibility)
         connectLiveData(vm.saveEnabled, getBottomToolBarUIModel()!!.uiModelButton5.enabled)
     }
 

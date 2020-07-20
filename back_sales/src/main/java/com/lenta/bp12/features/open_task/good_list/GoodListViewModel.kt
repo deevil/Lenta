@@ -91,6 +91,12 @@ class GoodListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
     Кнопки нижнего тулбара
      */
 
+    val deleteVisible by lazy {
+        task.map { task ->
+            task?.isStrict == false
+        }
+    }
+
     val deleteEnabled = selectedPage.combineLatest(processingSelectionsHelper.selectedPositions).combineLatest(processedSelectionsHelper.selectedPositions).map {
         it?.let {
             val page = it.first.first
