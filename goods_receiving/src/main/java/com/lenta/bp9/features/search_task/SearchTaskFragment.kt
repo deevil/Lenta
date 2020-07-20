@@ -116,4 +116,9 @@ class SearchTaskFragment: CoreFragment<FragmentSearchTaskBinding, SearchTaskView
         }
 
     }
+
+    override fun onResume() {
+        super.onResume()
+        vm.requestFocusToSupplier.value = true
+    }
 }
