@@ -23,7 +23,7 @@
                 <TextView
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:text="Объём корзины"
+                    android:text="@string/basket_value"
                     android:layout_margin="16dp"/>
 
                 <TextView
@@ -40,7 +40,7 @@
                 <TextView
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:text="ГИС-контроль"
+                    android:text="@string/gis_control"
                     android:layout_margin="16dp"/>
 
                 <TextView
@@ -57,7 +57,7 @@
                 <TextView
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:text="Поставщик"
+                    android:text="@string/provider"
                     android:layout_margin="16dp"/>
 
                 <TextView

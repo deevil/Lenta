@@ -233,12 +233,14 @@ class TaskViewModel : CoreViewModel(), PageSelectionListener {
                     )
             )
 
-            either.either({ failure ->
-                screenNavigator.hideProgress()
-                screenNavigator.openAlertScreen(failure)
-            }, { result ->
-                updateCargoUnitRepository(result)
-            })
+            either.either(
+                    fnL = { failure ->
+                        screenNavigator.hideProgress()
+                        screenNavigator.openAlertScreen(failure)
+                    },
+                    fnR = { result ->
+                        updateCargoUnitRepository(result)
+                    })
         }
     }
 
@@ -325,7 +327,11 @@ class TaskViewModel : CoreViewModel(), PageSelectionListener {
                 receiver = receivers.getSelectedValue(receiverSelectedPosition).orEmpty(),
                 pikingStorage = pikingStorageList.getSelectedValue(pikingStorageSelectedPosition).orEmpty(),
                 shipmentStorage = shipmentStorageList.getSelectedValue(shipmentStorageSelectedPosition).orEmpty(),
-                shipmentDate = shipmentDate.value?.toDate() ?: Date()
+                shipmentDate = shipmentDate.value?.toDate() ?: Date(),
+                blockType = "",
+                isNotFinish = true,
+                quantity = "",
+                isCons = false
         )
     }
 

@@ -74,7 +74,7 @@
             android:layout_marginTop="@dimen/size_6dp"
             android:layout_marginEnd="@dimen/size_12dp"
             android:layout_marginBottom="@dimen/size_6dp"
-            android:src="@drawable/ic_eiz_white_24dp"
+            android:src="@drawable/ic_bei_white_24dp"
             app:layout_constraintBottom_toBottomOf="@+id/countText"
             app:layout_constraintEnd_toEndOf="@+id/countText"
             app:layout_constraintTop_toTopOf="@+id/countText" />

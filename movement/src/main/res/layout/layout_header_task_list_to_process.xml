@@ -11,7 +11,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            app:layout_constraintGuide_percent="0.15" />
+            app:layout_constraintGuide_percent="0.12" />
 
         <androidx.constraintlayout.widget.Guideline
             android:id="@+id/vertical_guideline_2"
@@ -51,7 +51,7 @@
             android:ellipsize="end"
             android:gravity="center_vertical"
             android:maxLines="1"
-            android:text="@string/eo"
+            android:text="@string/task"
             app:layout_constraintBottom_toTopOf="@+id/div_hor_bottom"
             app:layout_constraintEnd_toStartOf="@+id/vertical_guideline_2"
             app:layout_constraintHorizontal_bias="0.5"
@@ -68,7 +68,7 @@
             app:layout_constraintStart_toStartOf="parent" />
 
         <TextView
-            android:id="@+id/tv_quantity"
+            android:id="@+id/tv_tag"
             style="@style/TextTitle"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -79,7 +79,7 @@
             android:ellipsize="end"
             android:gravity="center_vertical"
             android:maxLines="1"
-            android:text="@string/of_goods"
+            android:text="@string/tags"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@id/vertical_guideline_3"
             app:layout_constraintStart_toEndOf="@+id/vertical_guideline_2"
@@ -93,7 +93,7 @@
             app:layout_constraintGuide_percent="0.8" />
 
         <TextView
-            android:id="@+id/tv_tag"
+            android:id="@+id/tv_quantity"
             style="@style/TextTitle"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -104,11 +104,12 @@
             android:ellipsize="end"
             android:gravity="center_vertical"
             android:maxLines="1"
-            android:text="@string/tag"
+            android:text="@string/of_goods"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/vertical_guideline_3"
             app:layout_constraintTop_toTopOf="parent" />
+
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
