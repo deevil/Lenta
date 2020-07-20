@@ -252,17 +252,21 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
     }
 
     fun onClickUpdate() {
-        if (isEnteredLogin() || isEnteredUnknownTaskNumber()) {
-            val entered = numberField.value.orEmpty()
+        val entered = numberField.value.orEmpty()
 
+        if (isEnteredLogin() || isEnteredUnknownTaskNumber()) {
             loadTaskList(entered)
             loadTaskListWithParams(entered)
         } else {
-            val currentUser = sessionInfo.userName.orEmpty()
-            val userNumber = sessionInfo.personnelNumber.orEmpty()
+            if (entered.isEmpty()) {
+                val currentUser = sessionInfo.userName.orEmpty()
+                val userNumber = sessionInfo.personnelNumber.orEmpty()
 
-            loadTaskList(currentUser, userNumber)
-            loadTaskListWithParams(currentUser, userNumber)
+                loadTaskList(currentUser, userNumber)
+                loadTaskListWithParams(currentUser, userNumber)
+
+                numberField.value = sessionInfo.userName.orEmpty()
+            }
         }
     }
 
