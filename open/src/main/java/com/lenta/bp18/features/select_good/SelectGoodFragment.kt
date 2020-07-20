@@ -11,6 +11,7 @@ import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListener
 import com.lenta.shared.platform.toolbar.top_toolbar.ImageButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
+import com.lenta.shared.utilities.extentions.connectLiveData
 import com.lenta.shared.utilities.extentions.generateScreenNumberFromPostfix
 import com.lenta.shared.utilities.extentions.provideViewModel
 
@@ -33,7 +34,12 @@ class SelectGoodFragment : CoreFragment<FragmentSelectGoodsBinding, SelectGoodVi
     }
 
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
-        bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.next/*, enabled = false*/)
+        //TODO Потом изменить enabled на false
+        bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.next, enabled = true)
+
+        bottomToolbarUiModel.uiModelButton5.requestFocus()
+
+        connectLiveData(vm.nextButtonEnabled, bottomToolbarUiModel.uiModelButton5.enabled)
     }
 
     override fun onToolbarButtonClick(view: View) {

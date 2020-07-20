@@ -1,6 +1,7 @@
 package com.lenta.bp18.features.good_info
 
 import android.view.View
+import androidx.lifecycle.Observer
 import com.lenta.bp18.R
 import com.lenta.bp18.databinding.FragmentGoodsInfoBinding
 import com.lenta.bp18.platform.Constants
@@ -29,8 +30,13 @@ class GoodInfoFragment : CoreFragment<FragmentGoodsInfoBinding, GoodInfoViewMode
     }
 
     override fun setupTopToolBar(topToolbarUiModel: TopToolbarUiModel) {
-        //topToolbarUiModel.title.value = "ну тут, короче, должно быть наимерование товара"
         topToolbarUiModel.description.value = getString(R.string.good_card)
+
+        viewLifecycleOwner.apply {
+            vm.good.observe(this, Observer { good ->
+                topToolbarUiModel.title.value = getString(R.string.title_good_sap_name, good.getFormattedMaterial(), good.name)
+            })
+        }
     }
 
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {

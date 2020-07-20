@@ -1,6 +1,8 @@
 <resources>
     <string name="app_name">Вскрытие упаковки</string>
 
+    <string name="title_good_sap_name">%1$s %2$s</string>
+
     <string name="tw_search_info">Отсканируйте штрихкод или введите штрихкод вручную</string>
     <string name="tw_unpucking">Подтвердите вскрытие упаковки</string>
     <string name="tw_unpucking_process">Выполняется вскрытие упаковки</string>

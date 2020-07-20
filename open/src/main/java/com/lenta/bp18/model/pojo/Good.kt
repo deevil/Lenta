@@ -6,12 +6,16 @@ import com.lenta.shared.models.core.Uom
 
 data class Good(
         val ean: String?,
-        val name: String,
         val material: String = Constants.GOOD_MATERIAL,
         val matcode: String = Constants.GOOD_MATCODE,
-        val uom: Uom = Uom.DEFAULT,
-        val enteredCode: EnteredCode?
-)
+        val enteredCode: EnteredCode,
+        val name: String,
+        val uom: Uom = Uom.DEFAULT
+){
+    fun getFormattedMaterial(): String? {
+        return material.takeLast(6)
+    }
+}
 
 enum class EnteredCode {
     EAN,
