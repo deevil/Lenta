@@ -190,14 +190,16 @@ class OpenTaskManager @Inject constructor(
             val parts = mutableListOf<PartInfo>()
 
             task.goods.forEach { good ->
+                val isDeleted = good.isDeleted
+
                 good.positions.forEach { position ->
                     positions.add(
                             PositionInfo(
                                     material = good.material,
                                     providerCode = position.provider.code,
-                                    factQuantity = position.quantity.dropZeros(),
+                                    factQuantity = if (isDeleted) "0" else position.quantity.dropZeros(),
                                     isCounted = good.isCounted.toSapBooleanString(),
-                                    isDeleted = good.isDeleted.toSapBooleanString(),
+                                    isDeleted = isDeleted.toSapBooleanString(),
                                     innerQuantity = good.innerQuantity.dropZeros(),
                                     unitsCode = good.commonUnits.code
                             )
