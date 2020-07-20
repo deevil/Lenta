@@ -33,7 +33,7 @@ class SelectGoodFragment : CoreFragment<FragmentSelectGoodsBinding, SelectGoodVi
     }
 
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
-        bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.next, enabled = false)
+        bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.next/*, enabled = false*/)
     }
 
     override fun onToolbarButtonClick(view: View) {

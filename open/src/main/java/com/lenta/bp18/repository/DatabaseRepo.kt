@@ -33,7 +33,7 @@ class DatabaseRepo(
             getEanInfoByEan(ean)?.run {
                 val productInfo = getProductInfoByMaterial(this.materialNumber)
                 val unitName = getGoodUnitName(productInfo?.buom)
-                return@withContext Good(
+                Good(
                         ean = ean,
                         material = this.materialNumber,
                         matcode = productInfo?.matcode.orEmpty(),
@@ -51,7 +51,7 @@ class DatabaseRepo(
             getProductInfoByMaterial(material)?.run {
                 val eanInfo = getEanInfoByMaterial(this.material)
                 val unitName = getGoodUnitName(this.buom)
-                return@withContext Good(
+                Good(
                         ean = eanInfo?.ean.orEmpty(),
                         material = material,
                         matcode = this.matcode,
@@ -70,7 +70,7 @@ class DatabaseRepo(
             getProductInfoByMatcode(matcode)?.run {
                 val eanInfo = getEanInfoByMaterial(this.material)
                 val unitName = getGoodUnitName(this.buom)
-                return@withContext Good(
+                Good(
                         ean = eanInfo?.ean.orEmpty(),
                         material = this.material,
                         matcode = matcode,
@@ -85,44 +85,44 @@ class DatabaseRepo(
 
     override suspend fun getEanInfoByEan(ean: String?): EanInfo? {
         return withContext(Dispatchers.IO) {
-            return@withContext barCodeInfo.getEanInfo(ean)?.toEanInfo()
+            barCodeInfo.getEanInfo(ean)?.toEanInfo()
         }
     }
 
     override suspend fun getEanInfoByMaterial(material: String?): EanInfo? {
         return withContext(Dispatchers.IO) {
-            return@withContext barCodeInfo.getEanInfoFromMaterial(material)?.toEanInfo()
+            barCodeInfo.getEanInfoFromMaterial(material)?.toEanInfo()
         }
     }
 
     override suspend fun getProductInfoByMaterial(material: String?): ProductInfo? {
         return withContext(Dispatchers.IO) {
-            return@withContext productInfo.getProductInfoByMaterial(material)?.toMaterialInfo()
+            productInfo.getProductInfoByMaterial(material)?.toMaterialInfo()
         }
     }
 
     override suspend fun getProductInfoByMatcode(matcode: String?): ProductInfo? {
         return withContext(Dispatchers.IO) {
-            return@withContext productInfo.getProductInfoByMatcode(matcode)?.toMaterialInfo()
+            productInfo.getProductInfoByMatcode(matcode)?.toMaterialInfo()
         }
     }
 
     override suspend fun getGoodUnitName(unitCode: String?): String? {
         return withContext(Dispatchers.IO) {
-            return@withContext units.getUnitName(unitCode)
+            units.getUnitName(unitCode)
         }
     }
 
     override suspend fun getRetailType(marketNumber: String?): String? {
         return withContext(Dispatchers.IO) {
-            return@withContext marketNumber?.let { stores.getRetailType(it) }
+            marketNumber?.let { stores.getRetailType(it) }
         }
     }
 
 
     override suspend fun getAllMarkets(): List<MarketInfo> {
         return withContext(Dispatchers.IO) {
-            return@withContext stores.getAllMarkets().toMarketInfoList()
+            stores.getAllMarkets().toMarketInfoList()
         }
     }
 }

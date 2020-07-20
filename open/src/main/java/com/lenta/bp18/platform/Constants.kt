@@ -4,7 +4,7 @@ object Constants {
 
     const val GOOD_MATERIAL = "000000000000000000"
     const val GOOD_MATCODE = "000000000000"
-    const val GOOD_INFO_NAME = "<НЕ ОПРЕДЕЛЕН>"
+    const val GOOD_INFO_NAME = "НЕ ОПРЕДЕЛЁН"
 
     const val APP_FOLDER_NAME = "bp18"
 
