@@ -149,10 +149,10 @@ class GoodListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
 
     private fun checkEnteredNumber(number: String) {
         if (task.value?.isStrict == false) {
-            openGoodInfoScreen(number)
+            openGoodInfoByNumber(number)
         } else {
             if (isGoodExist(number)) {
-                openGoodInfoScreen(number)
+                openGoodInfoByNumber(number)
             } else {
                 numberField.value = ""
                 navigator.showGoodIsMissingInTask()
@@ -164,7 +164,7 @@ class GoodListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
         return manager.findGoodByMaterial(number) ?: manager.findGoodByEan(number) != null
     }
 
-    private fun openGoodInfoScreen(number: String) {
+    private fun openGoodInfoByNumber(number: String) {
         number.length.let { length ->
             if (length >= Constants.SAP_6 && length != Constants.BOX_26 &&
                     length != Constants.MARK_68 && length != Constants.MARK_150) {
