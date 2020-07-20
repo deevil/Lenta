@@ -4,13 +4,13 @@ import androidx.lifecycle.MutableLiveData
 import com.lenta.bp12.model.pojo.Block
 import com.lenta.bp12.model.pojo.open_task.GoodOpen
 import com.lenta.bp12.model.pojo.open_task.TaskOpen
-import com.lenta.bp12.platform.extention.addZerosToStart
 import com.lenta.bp12.platform.extention.getControlType
 import com.lenta.bp12.repository.IDatabaseRepository
 import com.lenta.bp12.request.GoodInfoResult
 import com.lenta.bp12.request.SendTaskDataParams
 import com.lenta.bp12.request.TaskContentResult
 import com.lenta.bp12.request.pojo.*
+import com.lenta.shared.models.core.getInnerUnits
 import com.lenta.shared.platform.constants.Constants
 import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.extentions.dropZeros
@@ -92,7 +92,7 @@ class OpenTaskManager @Inject constructor(
                     storage = taskInfo.storage,
                     control = ControlType.from(taskInfo.control),
                     provider = ProviderInfo(
-                            code = taskInfo.providerCode.addZerosToStart(10),
+                            code = taskInfo.providerCode,
                             name = taskInfo.providerName
                     ),
                     reason = database.getReturnReason(taskInfo.typeCode, taskInfo.reasonCode),
@@ -113,6 +113,8 @@ class OpenTaskManager @Inject constructor(
             taskContentResult.positions.map { positionInfo ->
                 positionInfo.apply {
                     database.getGoodInfoByMaterial(material)?.let { goodInfo ->
+                        val commonUnits = database.getUnitsByCode(unitsCode)
+
                         task.goods.add(GoodOpen(
                                 ean = goodInfo.ean,
                                 material = material,
@@ -122,8 +124,9 @@ class OpenTaskManager @Inject constructor(
                                 kind = goodInfo.kind,
                                 planQuantity = planQuantity.toDoubleOrNull() ?: 0.0,
                                 factQuantity = factQuantity.toDoubleOrNull() ?: 0.0,
+                                commonUnits = commonUnits,
+                                innerUnits = getInnerUnits(commonUnits),
                                 innerQuantity = innerQuantity.toDoubleOrNull() ?: 1.0,
-                                commonUnits = database.getUnitsByCode(unitsCode),
                                 isCounted = isCounted.isSapTrue(),
                                 isDeleted = isDeleted.isSapTrue(),
                                 provider = ProviderInfo(providerCode, providerName),
@@ -153,18 +156,16 @@ class OpenTaskManager @Inject constructor(
 
     override fun isGoodCorrespondToTask(goodInfo: GoodInfoResult): Boolean {
         currentTask.value?.let { task ->
-            val control = task.control == goodInfo.getControlType()
-            val type = if (task.goodType.isNotEmpty()) task.goodType == goodInfo.materialInfo.goodType else true
-            val section = if (task.section.isNotEmpty()) task.section == goodInfo.materialInfo.section else true
-            val purchaseGroup = if (task.purchaseGroup.isNotEmpty()) task.purchaseGroup == goodInfo.materialInfo.purchaseGroup else true
-            val provider =  if (task.provider.code.dropWhile { it == '0' }.isNotEmpty()) {
-                goodInfo.providers.find { task.provider.code.contains(it.code) } != null
-            } else true
+            val isControl = task.control == goodInfo.getControlType()
+            val isType = if (task.goodType.isNotEmpty()) task.goodType == goodInfo.materialInfo.goodType else true
+            val isSection = if (task.section.isNotEmpty()) task.section == goodInfo.materialInfo.section else true
+            val isPurchaseGroup = if (task.purchaseGroup.isNotEmpty()) task.purchaseGroup == goodInfo.materialInfo.purchaseGroup else true
+            val isProvider = if (task.provider.code.isNotEmpty()) goodInfo.providers.find { it.code == task.provider.code } != null else true
 
             Logg.d { "--> task parameters: ${task.control} / ${task.goodType} / ${task.section} / ${task.purchaseGroup} / ${task.provider.code}" }
             Logg.d { "--> good parameters: ${goodInfo.getControlType()} / ${goodInfo.materialInfo.goodType} / ${goodInfo.materialInfo.section} / ${goodInfo.materialInfo.purchaseGroup} / ${goodInfo.providers}" }
 
-            return control && type && section && purchaseGroup && provider
+            return isControl && isType && isSection && isPurchaseGroup && isProvider
         }
 
         return false

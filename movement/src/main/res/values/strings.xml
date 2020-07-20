@@ -60,7 +60,7 @@
     <string name="baskets">Корзины</string>
     <string name="eo">ЕО</string>
     <string name="boxes">Коробки</string>
-    <string name="task_save_confirmation_msg">Перевести задание в статус «Посчитано» и закрыть его для редактирования?</string>
+    <string name="task_save_confirmation_msg">Перевести задание в статус «%1$s» и закрыть его для редактирования?</string>
 
     <string name="process">Обработать</string>
     <string name="combine">Объединить</string>

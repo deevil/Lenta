@@ -54,6 +54,9 @@ data class Task(
         @Parcelize
         data class Consolidated(override val text: String? = null) : Status()
 
+        @Parcelize
+        data class ProcessingOnGz(override val text: String? = null) : Status()
+
         companion object {
             const val CREATED = "Создано"
 
@@ -72,6 +75,9 @@ data class Task(
 
             const val CONSOLIDATED = "Консолидировано"
             const val CONSOLIDATED_CODE = "19"
+
+            const val PROCESSING_ON_GZ = "Обработка на ГЗ"
+            const val PROCESSING_ON_GZ_CODE = "70"
         }
     }
 }

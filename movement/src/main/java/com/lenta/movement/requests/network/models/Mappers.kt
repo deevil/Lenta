@@ -13,16 +13,18 @@ import com.lenta.shared.utilities.orIfNull
 import java.util.*
 
 fun Taskable.toTask(): Task {
+    val currentStatus = when (currentStatusCode) {
+        Task.Status.PUBLISHED_CODE -> Task.Status.Published(currentStatusText)
+        Task.Status.COUNTED_CODE -> Task.Status.Counted(currentStatusText)
+        Task.Status.TO_CONSOLIDATION_CODE -> Task.Status.ToConsolidation(currentStatusText)
+        Task.Status.CONSOLIDATED_CODE -> Task.Status.Consolidated(currentStatusText)
+        Task.Status.PROCESSING_ON_GZ_CODE -> Task.Status.ProcessingOnGz(currentStatusText)
+        else -> Task.Status.Unknown(currentStatusText)
+    }
     return Task(
             number = taskNumber,
             isCreated = notFinish.isSapTrue().not(),
-            currentStatus = when (currentStatusCode) {
-                Task.Status.PUBLISHED_CODE -> Task.Status.Published(currentStatusText)
-                Task.Status.COUNTED_CODE -> Task.Status.Counted(currentStatusText)
-                Task.Status.TO_CONSOLIDATION_CODE -> Task.Status.ToConsolidation(currentStatusText)
-                Task.Status.CONSOLIDATED_CODE -> Task.Status.Consolidated(currentStatusText)
-                else -> Task.Status.Unknown(currentStatusText)
-            },
+            currentStatus = currentStatus,
             nextStatus = Task.Status.Unknown(nextStatusText),
             name = description,
             comment = taskComment,

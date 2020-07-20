@@ -23,6 +23,8 @@ import com.lenta.movement.features.task.goods.details.TaskGoodsDetailsFragment
 import com.lenta.movement.features.task.goods.info.TaskGoodsInfoFragment
 import com.lenta.movement.features.task_list.TaskListFragment
 import com.lenta.movement.models.*
+import com.lenta.movement.models.Task.Status.Companion.CONSOLIDATED
+import com.lenta.movement.models.Task.Status.Companion.COUNTED
 import com.lenta.movement.progress.IWriteOffProgressUseCaseInformator
 import com.lenta.movement.requests.network.models.documentsToPrint.DocumentsToPrintDocument
 import com.lenta.shared.account.IAuthenticator
@@ -254,12 +256,12 @@ class ScreenNavigator(
         }
     }
 
-    override fun openSaveTaskConfirmationDialog(yesCallbackFunc: () -> Unit) {
+    override fun openSaveTaskConfirmationDialog(yesCallbackFunc: () -> Unit, status: String) {
         runOrPostpone {
             getFragmentStack()?.push(
                     AlertFragment.create(
                             description = context.getString(R.string.data_saving),
-                            message = context.getString(R.string.task_save_confirmation_msg),
+                            message = context.getString(R.string.task_save_confirmation_msg, status),
                             codeConfirmForRight = backFragmentResultHelper.setFuncForResult(yesCallbackFunc),
                             iconRes = R.drawable.ic_question_yellow_80dp,
                             pageNumber = SAVE_TASK_CONFIRM_DIALOG_PAGE_NUMBER,
@@ -341,7 +343,7 @@ class ScreenNavigator(
         }
     }
 
-    override fun openGEInsidesScreen(ge : CargoUnit) {
+    override fun openGEInsidesScreen(ge: CargoUnit) {
         runOrPostpone {
             getFragmentStack()
                     ?.push(
@@ -350,7 +352,7 @@ class ScreenNavigator(
         }
     }
 
-    override fun openEOInsidesScreen(eo : ProcessingUnit) {
+    override fun openEOInsidesScreen(eo: ProcessingUnit) {
         runOrPostpone {
             getFragmentStack()
                     ?.push(
@@ -358,6 +360,23 @@ class ScreenNavigator(
                     )
         }
     }
+
+    override fun openExcludeConfirmationDialog(yesCallbackFunc: () -> Unit) {
+        runOrPostpone {
+            getFragmentStack()?.push(
+                    AlertFragment.create(
+                            description = context.getString(R.string.task_eo_merge_title),
+                            message = context.getString(R.string.exclude_chosen_ge),
+                            codeConfirmForRight = backFragmentResultHelper.setFuncForResult(yesCallbackFunc),
+                            iconRes = R.drawable.ic_question_yellow_80dp,
+                            pageNumber = SAVE_TASK_CONFIRM_DIALOG_PAGE_NUMBER,
+                            leftButtonDecorationInfo = ButtonDecorationInfo.back,
+                            rightButtonDecorationInfo = ButtonDecorationInfo.yes
+                    )
+            )
+        }
+    }
+
 
     companion object {
         private const val TASK_TO_MOVE = "Задания на перемещение"
@@ -395,13 +414,14 @@ interface IScreenNavigator : ICoreNavigator {
     fun openTaskGoodsDetailsScreen(productInfo: ProductInfo)
     fun openTaskBasketScreen(basketIndex: Int)
     fun openTaskBasketCharacteristicsScreen(basketIndex: Int)
-    fun openSaveTaskConfirmationDialog(yesCallbackFunc: () -> Unit)
+    fun openSaveTaskConfirmationDialog(yesCallbackFunc: () -> Unit, status: String)
     fun openTaskList()
     fun openTaskEoMergeScreen()
     fun openZeroSelectedEODialog(processCallbackFunc: () -> Unit, combineCallbackFunc: () -> Unit)
     fun openTaskEoMergeFormedDocumentsScreen(docList: List<DocumentsToPrintDocument>)
     fun openTaskEoMergePrintConfirmationDialog(eoGeQuantity: Int, yesCallbackFunc: () -> Unit)
     fun openTaskEoMergePrintedDialog()
-    fun openGEInsidesScreen(ge : CargoUnit)
-    fun openEOInsidesScreen(eo : ProcessingUnit)
+    fun openGEInsidesScreen(ge: CargoUnit)
+    fun openEOInsidesScreen(eo: ProcessingUnit)
+    fun openExcludeConfirmationDialog(yesCallbackFunc: () -> Unit)
 }

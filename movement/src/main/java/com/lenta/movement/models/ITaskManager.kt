@@ -26,4 +26,6 @@ interface ITaskManager {
     fun getPrinterName() : String
 
     fun getGoodName(goodNumber: String?) : String
+
+    fun getMovementType(movementType: MovementType) : String
 }

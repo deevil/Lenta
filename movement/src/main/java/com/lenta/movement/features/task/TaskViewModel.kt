@@ -19,7 +19,9 @@ import com.lenta.movement.requests.network.models.approvalAndTransferToTasksCarg
 import com.lenta.movement.requests.network.models.startConsolidation.StartConsolidationParams
 import com.lenta.movement.requests.network.models.startConsolidation.StartConsolidationResult
 import com.lenta.movement.requests.network.models.toModelList
+import com.lenta.movement.requests.network.models.toTask
 import com.lenta.shared.account.ISessionInfo
+import com.lenta.shared.exception.Failure
 import com.lenta.shared.functional.Either
 import com.lenta.shared.models.core.GisControl
 import com.lenta.shared.platform.constants.Constants
@@ -68,6 +70,11 @@ class TaskViewModel : CoreViewModel(), PageSelectionListener {
 
     private val currentStatus: Task.Status
         get() = task.value?.currentStatus ?: Task.Status.Created()
+
+    private val currentStatusLD by unsafeLazy {
+        MutableLiveData(currentStatus)
+    }
+
     private val nextStatus: Task.Status
         get() = task.value?.nextStatus ?: Task.Status.Counted()
     private val taskType: TaskType
@@ -90,7 +97,9 @@ class TaskViewModel : CoreViewModel(), PageSelectionListener {
 
     val movementTypeEnabled = MutableLiveData(false)
     val movementTypesFormatted by unsafeLazy {
-        MutableLiveData(MovementType.values().map { formatter.getMovementTypeNameDescription(it) })
+        MutableLiveData(MovementType.values().map {
+            taskManager.getMovementType(it)
+        })
     }
     val movementSelectedPosition by unsafeLazy { MutableLiveData(movementType.ordinal) }
 
@@ -185,6 +194,7 @@ class TaskViewModel : CoreViewModel(), PageSelectionListener {
             addSource(pikingStorageSelectedPosition) { value = validate() }
             addSource(shipmentStorageSelectedPosition) { value = validate() }
             addSource(shipmentDate) { value = validate() }
+            addSource(currentStatusLD) { value = (it != Task.Status.ProcessingOnGz(Task.Status.PROCESSING_ON_GZ))}
         }
     }
 
@@ -256,17 +266,27 @@ class TaskViewModel : CoreViewModel(), PageSelectionListener {
                                     personnelNumber = personnelNumber
                             )
                     )
-                }
-                        ?: Either.Left(PersonnelNumberFailure(context.getString(R.string.alert_null_personnel_number)))
-            }
-                    ?: Either.Left(EmptyTaskFailure(context.getString(R.string.alert_null_task)))
+                } ?: Either.Left(
+                        PersonnelNumberFailure(
+                                context.getString(R.string.alert_null_personnel_number)
+                        )
+                )
+            } ?: Either.Left(
+                    EmptyTaskFailure(
+                            context.getString(R.string.alert_null_task)
+                    )
+            )
             either.either({ failure ->
                 screenNavigator.hideProgress()
                 screenNavigator.openAlertScreen(failure)
             }, { result ->
-                Logg.d { "Approval and transfer to task cargo unit: $result" }
                 screenNavigator.hideProgress()
-                screenNavigator.openNotImplementedScreenAlert("Одобрение и передача на ГЗ") // TODO screenNavigator.openApprovalScreen()
+                val task = result.taskList?.first()?.toTask()
+                task?.let {
+                    taskManager.setTask(task)
+                    screenNavigator.goBack()
+                    screenNavigator.openTaskScreen(task)
+                } ?: screenNavigator.openAlertScreen(Failure.ServerError)
             })
         }
     }
