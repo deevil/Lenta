@@ -9,6 +9,7 @@ import com.lenta.bp9.model.processing.ProcessExciseAlcoBoxAccPGEService
 import com.lenta.bp9.model.processing.ProcessExciseAlcoBoxAccService
 import com.lenta.bp9.model.task.IReceivingTaskManager
 import com.lenta.bp9.model.task.TaskProductInfo
+import com.lenta.bp9.platform.TypeDiscrepanciesConstants
 import com.lenta.bp9.platform.navigation.IScreenNavigator
 import com.lenta.bp9.repos.IDataBaseRepo
 import com.lenta.bp9.requests.network.ZmpUtzGrz31V001NetRequest
@@ -73,7 +74,8 @@ class ExciseAlcoBoxAccInfoPGEViewModel : CoreViewModel(), OnPositionClickListene
     val suffix: MutableLiveData<String> = MutableLiveData()
     val requestFocusToCount: MutableLiveData<Boolean> = MutableLiveData()
     val isDefect: MutableLiveData<Boolean> = spinQualitySelectedPosition.map {
-        !(qualityInfo.value?.get(it!!)?.code == "1" || qualityInfo.value?.get(it!!)?.code == "2")
+        !(qualityInfo.value?.get(it!!)?.code == TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_NORM
+                || qualityInfo.value?.get(it!!)?.code == TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_SURPLUS)
     }
 
     private val qualityInfo: MutableLiveData<List<QualityInfo>> = MutableLiveData()
