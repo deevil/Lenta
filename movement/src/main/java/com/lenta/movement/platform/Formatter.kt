@@ -140,8 +140,7 @@ class Formatter : IFormatter {
                 else -> "Wrong uom code"
             }
 
-    override fun getTaskTitle(task: Task) = "${task.pikingStorage} // ${task.shipmentStorage}"
-    override fun getTaskSubtitle(task: Task) = task.receiver
+    override fun getTaskTitle(task: Task) = "${task.taskType.shortName}-${task.number} // ${task.name}"
 
 
     companion object {

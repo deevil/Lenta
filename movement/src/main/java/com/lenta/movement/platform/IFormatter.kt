@@ -28,5 +28,4 @@ interface IFormatter {
     fun getOrderUnitsNameByCode(orderUnits: String): String
 
     fun getTaskTitle(task: Task): String
-    fun getTaskSubtitle(task: Task): String
 }

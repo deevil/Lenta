@@ -135,7 +135,7 @@ class TaskFragment : CoreFragment<FragmentTaskBinding, TaskViewModel>(),
     }
 
     companion object {
-        private const val PAGE_NUMBER = "10/05"
+        private const val PAGE_NUMBER = "13/05"
         private const val TASK_KEY = "TASK_KEY"
 
         fun newInstance(task: Task?): TaskFragment {

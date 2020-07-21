@@ -41,17 +41,17 @@
 
         <EditText
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="@dimen/size_32dp"
             android:layout_marginStart="@dimen/size_16dp"
             android:layout_marginEnd="@dimen/size_16dp"
-            android:clickable="false"
-            android:focusable="false"
             android:text="@string/quantity"
+            android:drawableEnd="@drawable/spinner_arrow_down_disabled"
             app:layout_constraintBottom_toTopOf="@+id/horizontalDiv1"
             app:layout_constraintEnd_toEndOf="@+id/centerVerticalGuideline"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/topHorizontalDiv"
-            tools:ignore="Autofill,LabelFor,TextFields" />
+            tools:ignore="Autofill,LabelFor,TextFields"
+            style="@style/DisabledEditText"/>
 
         <EditText
             android:id="@+id/countText"
@@ -60,13 +60,12 @@
             android:layout_marginStart="@dimen/size_16dp"
             android:layout_marginEnd="@dimen/size_16dp"
             android:text="@string/zero_pcs"
-            android:clickable="false"
-            android:focusable="false"
             app:layout_constraintBottom_toTopOf="@+id/horizontalDiv1"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="@+id/centerVerticalGuideline"
             app:layout_constraintTop_toBottomOf="@+id/topHorizontalDiv"
-            tools:ignore="Autofill,LabelFor,TextFields"/>
+            tools:ignore="Autofill,LabelFor,TextFields"
+            style="@style/DisabledEditText"/>
 
         <ImageView
             android:layout_width="wrap_content"
@@ -74,7 +73,7 @@
             android:layout_marginTop="@dimen/size_6dp"
             android:layout_marginEnd="@dimen/size_12dp"
             android:layout_marginBottom="@dimen/size_6dp"
-            android:src="@drawable/ic_bei_white_24dp"
+            android:src="@drawable/ic_bei_disabled_24dp"
             app:layout_constraintBottom_toBottomOf="@+id/countText"
             app:layout_constraintEnd_toEndOf="@+id/countText"
             app:layout_constraintTop_toTopOf="@+id/countText" />
@@ -97,7 +96,8 @@
             app:layout_constraintEnd_toEndOf="@+id/centerVerticalGuideline"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/horizontalDiv1"
-            tools:text="Вложение (кор = 6 шт)" />
+            tools:text="Вложение (кор = 6 шт)"
+            android:textColor="@color/color_text_blue"/>
 
         <CheckBox
             android:id="@+id/completableCheckbox"
@@ -132,17 +132,17 @@
 
         <EditText
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="@dimen/size_32dp"
             android:layout_marginStart="@dimen/size_16dp"
             android:layout_marginEnd="@dimen/size_16dp"
-            android:clickable="false"
-            android:focusable="false"
             android:text='@{vm.stamps.size() > 0 ? vm.stamps.get(0).manufacturerName : ""}'
             app:layout_constraintBottom_toTopOf="@+id/horizontalDiv3"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/horizontalDiv2"
+            android:drawableEnd="@drawable/spinner_arrow_down_disabled"
             tools:text="Производитель винишка №1"
+            style="@style/DisabledEditText"
             tools:ignore="Autofill,LabelFor,TextFields"/>
 
         <View
@@ -180,14 +180,13 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/size_16dp"
             android:layout_marginEnd="@dimen/size_16dp"
-            android:clickable="false"
-            android:focusable="false"
             android:text='@{vm.stamps.size() > 0 ? vm.stamps.get(0).dateOfPour : ""}'
             app:layout_constraintBottom_toTopOf="@+id/horizontalDiv4"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="@+id/centerVerticalGuideline"
             app:layout_constraintTop_toBottomOf="@+id/horizontalDiv3"
             tools:text="25.02.2017"
+            style="@style/DisabledEditText"
             tools:ignore="Autofill,LabelFor,TextFields"/>
 
         <View
@@ -203,14 +202,13 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/size_16dp"
             android:layout_marginEnd="@dimen/size_16dp"
-            android:clickable="false"
-            android:focusable="false"
             android:text='@{TextUtils.isEmpty(vm.boxNumber) ? "Отсканируйте номер коробки" : vm.boxNumber }'
             app:layout_constraintBottom_toTopOf="@+id/horizontalDiv4"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/horizontalDiv5"
             tools:text="12345678912345678912345678"
+            style="@style/DisabledEditText"
             tools:ignore="Autofill,LabelFor,TextFields"/>
 
         <View
@@ -271,56 +269,43 @@
 
         <ImageButton
             android:id="@+id/exciseAlcoButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="@dimen/size_55dp"
+            android:layout_height="@dimen/size_55dp"
             android:layout_marginStart="@dimen/size_4dp"
             android:background="?selectableItemBackground"
             android:padding="8dp"
             android:scaleType="fitCenter"
             app:alcoIcon="@{vm.productInfo.type}"
+            app:layout_constraintTop_toTopOf="@id/b_scan"
             app:layout_constraintBottom_toBottomOf="@id/b_scan"
             app:layout_constraintStart_toEndOf="@+id/sectionLayout"
             tools:src="@drawable/ic_excise_alcohol_white_32dp" />
 
-        <FrameLayout
-            android:id="@+id/scanBoxLayout"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="@dimen/size_4dp"
-            android:foreground="?selectableItemBackground"
-            android:onClick="@{(v) -> vm.screenNavigator.openBoxInfoScreen()}"
-            android:padding="@dimen/size_4dp"
-            app:layout_constraintBottom_toBottomOf="@+id/b_scan"
-            app:layout_constraintEnd_toStartOf="@+id/scanBarcodeLayout"
-            app:layout_constraintTop_toTopOf="@+id/b_scan">
-
-            <ImageView
-                android:id="@+id/b_scan_box"
-                android:layout_width="@dimen/square_btn_size"
-                android:layout_height="@dimen/square_btn_size"
-                android:scaleType="fitCenter"
-                android:src="@drawable/ic_scan_box_white_32dp" />
-        </FrameLayout>
-
-        <FrameLayout
-            android:id="@+id/scanBarcodeLayout"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+        <ImageView
+            android:id="@+id/b_scan_box"
+            android:layout_width="@dimen/square_btn_size"
+            android:layout_height="@dimen/square_btn_size"
             android:layout_marginEnd="@dimen/size_8dp"
-            android:foreground="?selectableItemBackground"
+            android:background="?selectableItemBackground"
+            android:scaleType="fitCenter"
+            android:src="@drawable/ic_scan_box_white_32dp"
+            android:onClick="@{(v) -> vm.screenNavigator.openBoxInfoScreen()}"
+            app:layout_constraintBottom_toBottomOf="@+id/b_scan"
+            app:layout_constraintEnd_toStartOf="@+id/b_scan_es"
+            app:layout_constraintTop_toTopOf="@+id/b_scan"/>
+
+        <ImageView
+            android:id="@+id/b_scan_es"
+            android:layout_width="@dimen/square_btn_size"
+            android:layout_height="@dimen/square_btn_size"
+            android:scaleType="fitCenter"
+            android:src="@drawable/ic_scan_barcode_es_white_32dp"
+            android:background="?selectableItemBackground"
+            android:layout_marginEnd="@dimen/size_8dp"
             android:onClick="@{(v) -> vm.screenNavigator.openESInfoScreen()}"
-            android:padding="@dimen/size_4dp"
             app:layout_constraintBottom_toBottomOf="@+id/b_scan"
             app:layout_constraintEnd_toStartOf="@+id/b_scan"
-            app:layout_constraintTop_toTopOf="@+id/b_scan">
-
-            <ImageView
-                android:id="@+id/b_scan_es"
-                android:layout_width="@dimen/square_btn_size"
-                android:layout_height="@dimen/square_btn_size"
-                android:scaleType="fitCenter"
-                android:src="@drawable/ic_scan_barcode_es_white_32dp" />
-        </FrameLayout>
+            app:layout_constraintTop_toTopOf="@+id/b_scan"/>
 
         <ImageButton
             android:id="@+id/b_scan"

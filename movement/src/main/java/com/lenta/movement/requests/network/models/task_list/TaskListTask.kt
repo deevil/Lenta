@@ -62,11 +62,11 @@ data class TaskListTask(
         @SerializedName("TASK_CNTRL")
         val taskCntrl: String,
 
-        /**Текстовый комментарий*/
+        /** Текстовый комментарий */
         @SerializedName("TASK_COMMENT")
         override val taskComment: String,
 
-        /**Дата отгрузки*/
+        /** Дата отгрузки */
         @SerializedName("DATE_SHIP")
         override val dateShip: String,
 

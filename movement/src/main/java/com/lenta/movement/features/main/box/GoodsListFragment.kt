@@ -129,6 +129,6 @@ class GoodsListFragment : CoreFragment<FragmentGoodsListBinding, GoodsListViewMo
     }
 
     companion object {
-        private const val PAGE_NUMBER = "10/06"
+        private const val PAGE_NUMBER = "13/06"
     }
 }

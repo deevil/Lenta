@@ -3,7 +3,6 @@ package com.lenta.movement.features.task_list
 import android.content.Context
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import com.google.gson.annotations.SerializedName
 import com.lenta.movement.R
 import com.lenta.movement.features.main.box.ScanInfoHelper
 import com.lenta.movement.models.*
@@ -49,7 +48,7 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
     val selectedPagePosition = MutableLiveData(TO_PROCESS_TAB)
     val currentPage = selectedPagePosition.mapSkipNulls { TaskListPage.values()[it] }
 
-    val eanCode: MutableLiveData<String> = MutableLiveData()
+    val searchFilter: MutableLiveData<String> = MutableLiveData()
     val requestFocusToEan: MutableLiveData<Boolean> = MutableLiveData()
 
     val taskItemList = MutableLiveData<List<TaskListItem>>()
@@ -73,16 +72,20 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
     fun onUpdateBtnClick() {
         netRequest(
                 mode = ObtainingTaskListNetRequest.UPDATE_MODE,
-                filter = null
+                filter = null,
+                user = NO_USER_SEARCH
         )
     }
 
-    fun onSearch(
+
+
+    fun onExtendedSearch(
             taskType: String?,
             matNr: String?,
             sectionId: String?,
             group: String?,
-            dateOfPublic: String?) {
+            dateOfPublic: String?,
+            user: String) {
         val filter = SearchTaskFilter(
                 taskType = taskType.orEmpty(),
                 matNr = matNr.orEmpty(),
@@ -92,11 +95,12 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
         )
         netRequest(
                 mode = ObtainingTaskListNetRequest.SEARCH_MODE,
-                filter = filter
+                filter = filter,
+                user = user
         )
     }
 
-    private fun netRequest(mode: String, filter: SearchTaskFilter?) {
+    private fun netRequest(mode: String, filter: SearchTaskFilter?, user: String) {
         viewModelScope.launch {
             screenNavigator.showProgress(taskListNetRequest)
             sessionInfo.apply {
@@ -104,7 +108,7 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
                     personnelNumber?.let { personnelNumber ->
                         val params = TaskListParams(
                                 tkNumber = marketNumber,
-                                user = "",
+                                user = user,
                                 mode = mode,
                                 personellNumber = personnelNumber,
                                 filter = filter
@@ -122,7 +126,7 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
                                         TaskListItem(
                                                 number = index + 1,
                                                 title = formatter.getTaskTitle(task),
-                                                subtitle = formatter.getTaskSubtitle(task),
+                                                subtitle = taskManager.getMovementTypeShort(task.movementType),
                                                 isClickable = true,
                                                 blockTypeResId1 = chooseBlockTypeResId(task.blockType),
                                                 quantity = task.quantity,
@@ -166,19 +170,16 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
     }
 
     override fun onOkInSoftKeyboard(): Boolean {
-        searchCode(eanCode.value.orEmpty(), fromScan = false)
+        onSearch()
         return true
     }
 
-    fun onScanResult(data: String) {
-        searchCode(code = data, fromScan = true, isBarCode = true)
-    }
-
-    private fun searchCode(code: String, fromScan: Boolean, isBarCode: Boolean? = null) {
-        viewModelScope.launch {
-            scanInfoHelper.searchCode(code, fromScan, isBarCode) { productInfo ->
-                screenNavigator.openTaskGoodsInfoScreen(productInfo)
-            }
+    private fun onSearch() {
+        val searchText = searchFilter.value
+        searchText?.let {
+            netRequest(ObtainingTaskListNetRequest.UPDATE_MODE,
+                    filter = null,
+                    user = it)
         }
     }
 
@@ -187,6 +188,7 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
     companion object {
         private const val TO_PROCESS_TAB = 0
         private const val SEARCH_TAB = 1
+        private const val NO_USER_SEARCH = ""
 
         private const val EMPTY_IMAGE_VIEW_RES_ID = 0
     }

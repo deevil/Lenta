@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
+
         <variable
             name="vm"
             type="com.lenta.movement.features.main.MainMenuViewModel" />
@@ -11,8 +12,33 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:padding="@dimen/size_16dp">
+        android:layout_height="match_parent">
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/color_item_selected"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <TextView
+                android:id="@+id/tv_user"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="?selectableItemBackground"
+                android:clickable="true"
+                android:drawableEnd="@drawable/ic_keyboard_arrow_right_white_16dp"
+                android:ellipsize="end"
+                android:focusable="true"
+                android:gravity="center"
+                android:maxLines="1"
+                android:onClick="@{(v) -> vm.onClickUser()}"
+                android:padding="8dp"
+                android:text='@{vm.fio}'
+                tools:text="Приемов Тест Тестович" />
+
+        </FrameLayout>
 
         <ImageView
             android:id="@+id/iv_logo"
@@ -33,6 +59,8 @@
             android:id="@+id/b_create_box"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/size_8dp"
+            android:layout_marginEnd="@dimen/size_8dp"
             android:onClick="@{(view) -> vm.onClickCreateBox()}"
             android:text="@string/main_menu_create_box"
             android:textAllCaps="false"
@@ -46,6 +74,8 @@
             android:id="@+id/b_create_task"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/size_8dp"
+            android:layout_marginEnd="@dimen/size_8dp"
             android:onClick="@{(view) -> vm.onClickCreateTask()}"
             android:text="@string/main_menu_create_task_button"
             android:textAllCaps="false"
@@ -59,6 +89,9 @@
             android:id="@+id/b_work_with_task"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/size_8dp"
+            android:layout_marginEnd="@dimen/size_8dp"
+            android:layout_marginBottom="@dimen/size_8dp"
             android:onClick="@{(view) -> vm.onClickWorkWithTask()}"
             android:text="@string/main_menu_work_with_task_button"
             android:textAllCaps="false"

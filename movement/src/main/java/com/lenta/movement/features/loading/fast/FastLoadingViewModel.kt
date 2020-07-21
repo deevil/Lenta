@@ -101,14 +101,11 @@ class FastLoadingViewModel : CoreLoadingViewModel() {
             if (appUpdateChecker.isNeedUpdate(withContext(Dispatchers.IO) {
                     return@withContext zmpUtz14V001.getAllowedWobAppVersion()
                 })) {
-
                 hyperHive.authAPI.unAuth()
                 screenNavigator.closeAllScreen()
                 screenNavigator.openLoginScreen()
                 screenNavigator.openNeedUpdateScreen()
             } else {
-                //TODO Вернуть загрузку в фоне slow data после доработки SDK
-                //resourceLoader.startLoadSlowResources()
                 screenNavigator.openSelectionPersonnelNumberScreen()
             }
             progress.value = false

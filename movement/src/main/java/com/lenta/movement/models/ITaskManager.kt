@@ -28,4 +28,5 @@ interface ITaskManager {
     fun getGoodName(goodNumber: String?) : String
 
     fun getMovementType(movementType: MovementType) : String
+    fun getMovementTypeShort(movementType: MovementType) : String
 }

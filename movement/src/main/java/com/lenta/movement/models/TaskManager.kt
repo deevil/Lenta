@@ -21,6 +21,7 @@ class TaskManager(
     private val receiversTable = ZmpUtz79V001(hyperHive).localHelper_ET_PLANTS
     private val printerTable = ZmpUtz26V001(hyperHive).localHelper_ET_PRINTERS
     private val goodsTable = ZmpUtz30V001(hyperHive).localHelper_ET_MATERIALS
+    private val taskTypeTable = ZmpUtz102V001(hyperHive).localHelper_ET_MVM_TXT
 
     private var task: Task? = null
 
@@ -101,6 +102,11 @@ class TaskManager(
     override fun getMovementType(movementType: MovementType) : String {
         val propertyName = movementType.propertyName
         return taskSettingsTable.getWhere("TYPE_MVM = \"$propertyName\"").first().annotation
+    }
+
+    override fun getMovementTypeShort(movementType: MovementType): String {
+        val propertyName = movementType.propertyName
+        return taskTypeTable.getWhere("MVM_TYPE = \"$propertyName\"").first().taskTypeTxt.orEmpty()
     }
 
     override fun getTaskSettings(taskType: TaskType, movementType: MovementType): TaskSettings {

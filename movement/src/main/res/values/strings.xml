@@ -91,4 +91,5 @@
     <string name="provider">Поставщик</string>
     <string name="to_process">К обработке</string>
     <string name="tasks_to_move">Задания на перемещение</string>
+    <string name="enter_task_num_or_login">Введите номер задания или адресата</string>
 </resources>
