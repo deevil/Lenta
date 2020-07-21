@@ -301,7 +301,7 @@ class GoodInfoOpenViewModel : CoreViewModel() {
 
     private fun checkSearchNumber(number: String) {
         number.length.let { length ->
-            Logg.d { "--> checked number = $number / length = $length" }
+            Logg.d { "--> checked number = $length / $number" }
 
             if (isCommonFormatNumber(number)) {
                 when (length) {
