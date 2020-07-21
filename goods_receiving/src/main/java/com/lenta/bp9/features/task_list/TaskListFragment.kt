@@ -28,9 +28,7 @@ import com.lenta.shared.utilities.extentions.provideViewModel
 
 class TaskListFragment : CoreFragment<FragmentTaskListBinding, TaskListViewModel>(),
         ToolbarButtonsClickListener,
-        OnKeyDownListener,
         ViewPagerSettings,
-        PageSelectionListener,
         OnScanResultListener {
 
     private var toProcessRecyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
@@ -71,10 +69,7 @@ class TaskListFragment : CoreFragment<FragmentTaskListBinding, TaskListViewModel
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        binding?.let {
-            it.viewPagerSettings = this
-            it.pageSelectionListener = this
-        }
+        binding?.viewPagerSettings = this
     }
 
     override fun onToolbarButtonClick(view: View) {
@@ -84,36 +79,13 @@ class TaskListFragment : CoreFragment<FragmentTaskListBinding, TaskListViewModel
         }
     }
 
-    override fun onKeyDown(keyCode: KeyCode): Boolean {
-        when (vm.selectedPage.value) {
-            0 -> toProcessRecyclerViewKeyHandler
-            1 -> searchRecyclerViewKeyHandler
-            2 -> postponedRecyclerViewKeyHandler
-            else -> null
-        }?.let {
-            if (!it.onKeyDown(keyCode)) {
-                keyCode.digit?.let { digit ->
-                    vm.onDigitPressed(digit)
-                    return true
-                }
-                return false
-            }
-            return true
-        }
-        return false
-    }
 
-
-    override fun onPageSelected(position: Int) {
-        Logg.d { "onPageSelected $position" }
-        vm.onPageSelected(position)
-    }
 
     override fun getTextTitle(position: Int): String {
         return when (position) {
-            0 -> getString(R.string.to_process)
-            1 -> getString(R.string.search)
-            2 -> getString(R.string.postponed)
+            TaskListViewPages.TASK_LIST_VIEW_PAGE_TO_PROCESS -> getString(R.string.to_process)
+            TaskListViewPages.TASK_LIST_VIEW_PAGE_SEARCH -> getString(R.string.search)
+            TaskListViewPages.TASK_LIST_VIEW_PAGE_POSTPONED -> getString(R.string.postponed)
             else -> ""
         }
     }
@@ -122,9 +94,9 @@ class TaskListFragment : CoreFragment<FragmentTaskListBinding, TaskListViewModel
 
     override fun getPagerItemView(container: ViewGroup, position: Int): View {
         return when (position) {
-            0 -> configureToProcessPage(container)
-            1 -> configureSearchPage(container)
-            2 -> configurePostponedPage(container)
+            TaskListViewPages.TASK_LIST_VIEW_PAGE_TO_PROCESS -> configureToProcessPage(container)
+            TaskListViewPages.TASK_LIST_VIEW_PAGE_SEARCH -> configureSearchPage(container)
+            TaskListViewPages.TASK_LIST_VIEW_PAGE_POSTPONED -> configurePostponedPage(container)
             else -> configureToProcessPage(container)
         }
     }
@@ -264,4 +236,14 @@ class TaskListFragment : CoreFragment<FragmentTaskListBinding, TaskListViewModel
     override fun onScanResult(data: String) {
         vm.onScanResult(data)
     }
+
+    override fun onResume() {
+        super.onResume()
+        when (vm.selectedPage.value) {
+            TaskListViewPages.TASK_LIST_VIEW_PAGE_TO_PROCESS -> vm.requestFocusPageToProcess.value = true
+            TaskListViewPages.TASK_LIST_VIEW_PAGE_SEARCH -> vm.requestFocusPageSearch.value = true
+            TaskListViewPages.TASK_LIST_VIEW_PAGE_POSTPONED -> vm.requestFocusPagePostponed.value = true
+        }
+    }
+
 }

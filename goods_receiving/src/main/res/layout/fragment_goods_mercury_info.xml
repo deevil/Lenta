@@ -51,15 +51,15 @@
             android:layout_marginStart="8dp"
             android:layout_marginEnd="8dp"
             app:items="@{vm.spinQuality}"
-            app:layout_constraintBottom_toBottomOf="@+id/et_inventory"
+            app:layout_constraintBottom_toBottomOf="@+id/et_count"
             app:layout_constraintEnd_toStartOf="@+id/div_vert"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/et_inventory"
+            app:layout_constraintTop_toTopOf="@+id/et_count"
             app:position="@{vm.spinQualitySelectedPosition}"
             tools:entries="@array/test_list" />
 
         <com.lenta.shared.view.EditTextWithSuffix
-            android:id="@+id/et_inventory"
+            android:id="@+id/et_count"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
@@ -76,6 +76,8 @@
             app:layout_constraintTop_toTopOf="@+id/div_vert"
             app:maxLengthForScanProtect="@{6}"
             app:suffix="@{vm.suffix}"
+            app:cursorToLastPos="@{false}"
+            app:requestFocus="@{vm.requestFocusToCount}"
             tools:text="1 кор" />
 
         <View
@@ -86,7 +88,7 @@
             android:background="@color/color_divider"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/et_inventory" />
+            app:layout_constraintTop_toBottomOf="@+id/et_count" />
 
         <TextView
             android:id="@+id/tv_accept"
@@ -407,9 +409,9 @@
             android:layout_marginEnd="8dp"
             android:onClick="@{(v) -> vm.onClickUnitChange()}"
             android:src="@{vm.isEizUnit ? @drawable/ic_eiz_white_24dp : @drawable/ic_bei_white_24dp}"
-            app:layout_constraintBottom_toBottomOf="@+id/et_inventory"
-            app:layout_constraintEnd_toEndOf="@+id/et_inventory"
-            app:layout_constraintTop_toTopOf="@+id/et_inventory"
+            app:layout_constraintBottom_toBottomOf="@+id/et_count"
+            app:layout_constraintEnd_toEndOf="@+id/et_count"
+            app:layout_constraintTop_toTopOf="@+id/et_count"
             app:visibleOrGone='@{vm.isTaskPGE &amp;&amp; !vm.isGoodsAddedAsSurplus}'
             tools:src="@drawable/ic_eiz_white_24dp" />
 
