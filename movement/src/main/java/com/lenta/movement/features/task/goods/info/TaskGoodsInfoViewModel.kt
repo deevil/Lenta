@@ -33,7 +33,7 @@ class TaskGoodsInfoViewModel : CoreViewModel() {
 
     val quantityList = MutableLiveData<List<String>>()
 
-    val quantity = MutableLiveData("")
+    val quantity = MutableLiveData("0")
     val quantityUom = MutableLiveData(Uom.DEFAULT)
 
     private val supplierSelected = MutableLiveData(Optional.absent<Supplier>())

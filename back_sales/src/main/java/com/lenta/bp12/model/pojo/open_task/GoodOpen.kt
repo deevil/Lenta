@@ -13,7 +13,8 @@ import com.lenta.shared.utilities.extentions.sumList
 import com.lenta.shared.utilities.extentions.sumWith
 
 data class GoodOpen(
-        val ean: String,
+        var ean: String,
+        val allGoodEans: List<String> = emptyList(),
         val material: String,
         val name: String,
         val kind: GoodKind,

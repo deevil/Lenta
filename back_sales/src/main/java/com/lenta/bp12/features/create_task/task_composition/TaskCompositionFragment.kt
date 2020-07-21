@@ -61,6 +61,7 @@ class TaskCompositionFragment : CoreFragment<FragmentTaskCompositionBinding, Tas
         when (view.id) {
             R.id.b_3 -> vm.onClickDelete()
             R.id.b_5 -> vm.onClickSave()
+            //R.id.b_5 -> vm.onScanResult("03000042907513119000404111") // Коробка 082682
         }
     }
 
