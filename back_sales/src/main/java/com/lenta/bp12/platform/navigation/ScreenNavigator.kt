@@ -380,11 +380,19 @@ class ScreenNavigator @Inject constructor(
     }
 
     // Описание иконок
-    override fun showAlcoholGoodInfoScreen() {
+    override fun showExciseAlcoholGoodInfoScreen() {
         runOrPostpone {
             getFragmentStack()?.push(AlertFragment.create(
                     message = context.getString(R.string.alcohol_good),
                     iconRes = com.lenta.shared.R.drawable.ic_excise_alcohol_white_32dp), CustomAnimation.vertical)
+        }
+    }
+
+    override fun showAlcoholGoodInfoScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    message = context.getString(R.string.alcohol_good),
+                    iconRes = com.lenta.shared.R.drawable.ic_alcohol_white_32dp), CustomAnimation.vertical)
         }
     }
 
@@ -442,6 +450,7 @@ interface IScreenNavigator : ICoreNavigator {
     fun showFinishProcessingCurrentBox()
     fun showGoodIsMissingInTask()
 
+    fun showExciseAlcoholGoodInfoScreen()
     fun showAlcoholGoodInfoScreen()
     fun showCommonGoodInfoScreen()
 
