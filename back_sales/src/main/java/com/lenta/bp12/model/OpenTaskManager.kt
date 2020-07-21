@@ -150,7 +150,14 @@ class OpenTaskManager @Inject constructor(
     }
 
     override fun findGoodByEan(ean: String): GoodOpen? {
-        return currentTask.value?.goods?.find { it.ean == ean }
+        return currentTask.value?.let { task ->
+            task.goods.find { good ->
+                good.allGoodEans.contains(ean)
+            }?.also { found ->
+                found.ean = ean
+                updateCurrentTask(task)
+            }
+        }
     }
 
     override fun findGoodByMaterial(material: String): GoodOpen? {

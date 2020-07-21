@@ -25,6 +25,7 @@ import com.lenta.shared.requests.combined.scan_info.ScanCodeInfo
 import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.extentions.*
 import com.lenta.shared.utilities.getDateFromString
+import com.lenta.shared.utilities.isCommonFormatNumber
 import com.lenta.shared.view.OnPositionClickListener
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -300,8 +301,9 @@ class GoodInfoOpenViewModel : CoreViewModel() {
 
     private fun checkSearchNumber(number: String) {
         number.length.let { length ->
-            Logg.d { "--> number length: $length" }
-            if (length >= Constants.SAP_6) {
+            Logg.d { "--> checked number = $number / length = $length" }
+
+            if (isCommonFormatNumber(number)) {
                 when (length) {
                     Constants.SAP_6 -> getGoodByMaterial(number)
                     Constants.SAP_18 -> getGoodByMaterial(number)
@@ -311,10 +313,14 @@ class GoodInfoOpenViewModel : CoreViewModel() {
                                 barCallback = { getGoodByEan(number) }
                         )
                     }
+                    else -> getGoodByEan(number)
+                }
+            } else {
+                when (length) {
                     Constants.MARK_150 -> loadMarkInfo(number)
                     Constants.MARK_68 -> loadMarkInfo(number)
                     Constants.BOX_26 -> loadBoxInfo(number)
-                    else -> getGoodByEan(number)
+                    else -> navigator.showIncorrectEanFormat()
                 }
             }
         }
