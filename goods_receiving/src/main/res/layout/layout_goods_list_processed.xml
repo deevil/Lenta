@@ -47,10 +47,10 @@
                 android:hint="@string/enter_item_number_or_barcode"
                 android:inputType="numberDecimal"
                 android:maxLength="20"
-                android:text="@={vm.eanCode}"
+                android:text="@={vm.eanCodeWithoutBarcodeOrProcessed}"
                 app:cursorToLastPos="@{true}"
                 app:onOkInSoftKeyboard="@{vm}"
-                app:requestFocus="@{vm.requestFocusToEan}"
+                app:requestFocus="@{vm.requestFocusWithoutBarcodeOrProcessed}"
                 tools:ignore="Autofill" />
 
             <ImageButton

@@ -1,4 +1,5 @@
 <resources>
+    <dimen name="size_8dp">8dp</dimen>
 
     <!-- Две колонки / Тип 1  -->
     <integer name="two_one_1">15</integer>

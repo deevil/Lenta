@@ -1,6 +1,7 @@
 package com.lenta.bp9.features.goods_information.non_excise_alco_pge
 
 import android.os.Bundle
+import android.view.KeyEvent
 import android.view.View
 import android.widget.AdapterView
 import com.lenta.bp9.R
@@ -79,6 +80,16 @@ class NonExciseAlcoInfoPGEFragment : CoreFragment<FragmentNonExciseAlcoInfoPgeBi
             override fun onNothingSelected(adapterView: AdapterView<*>) {
             }
         }
+
+        binding?.etCount?.setOnKeyListener(View.OnKeyListener { v, keyCode, event ->
+            if (keyCode == KeyEvent.KEYCODE_ENTER && event.action == KeyEvent.ACTION_UP) {
+                if (vm.enabledApplyButton.value == true) {
+                    vm.onClickApply()
+                }
+                return@OnKeyListener true
+            }
+            false
+        })
     }
 
     override fun setupTopToolBar(topToolbarUiModel: TopToolbarUiModel) {
