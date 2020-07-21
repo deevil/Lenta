@@ -53,14 +53,14 @@
             app:items="@{vm.spinQuality}"
             app:position="@{vm.spinQualitySelectedPosition}"
             app:onPositionClickListener="@{vm}"
-            app:layout_constraintBottom_toBottomOf="@+id/et_quantity"
+            app:layout_constraintBottom_toBottomOf="@+id/et_count"
             app:layout_constraintEnd_toStartOf="@+id/div_vert1"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/et_quantity"
+            app:layout_constraintTop_toTopOf="@+id/et_count"
             tools:entries="@array/test_list"/>
 
         <com.lenta.shared.view.EditTextWithSuffix
-            android:id="@+id/et_quantity"
+            android:id="@+id/et_count"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
@@ -89,7 +89,7 @@
             android:background="@color/color_divider"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/et_quantity" />
+            app:layout_constraintTop_toBottomOf="@+id/et_count" />
 
         <TextView
             android:id="@+id/tv_accept"
@@ -295,9 +295,9 @@
             android:layout_marginEnd="8dp"
             android:src="@drawable/ic_eiz_disabled_24dp"
             android:enabled="false"
-            app:layout_constraintBottom_toBottomOf="@+id/et_quantity"
-            app:layout_constraintEnd_toEndOf="@+id/et_quantity"
-            app:layout_constraintTop_toTopOf="@+id/et_quantity"/>
+            app:layout_constraintBottom_toBottomOf="@+id/et_count"
+            app:layout_constraintEnd_toEndOf="@+id/et_count"
+            app:layout_constraintTop_toTopOf="@+id/et_count"/>
 
         <!-- Блок с иконками -->
         <LinearLayout

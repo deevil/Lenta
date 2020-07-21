@@ -1,6 +1,7 @@
 package com.lenta.bp9.features.goods_information.non_excise_sets_receiving.set_component_receiving
 
 import android.os.Bundle
+import android.view.KeyEvent
 import android.view.View
 import android.widget.AdapterView
 import com.lenta.bp9.R
@@ -97,6 +98,16 @@ class NonExciseSetComponentInfoReceivingFragment : CoreFragment<FragmentNonExcis
             override fun onNothingSelected(adapterView: AdapterView<*>) {
             }
         }
+
+        binding?.etCount?.setOnKeyListener(View.OnKeyListener { v, keyCode, event ->
+            if (keyCode == KeyEvent.KEYCODE_ENTER && event.action == KeyEvent.ACTION_UP) {
+                if (vm.enabledApplyButton.value == true) {
+                    vm.onClickApply()
+                }
+                return@OnKeyListener true
+            }
+            false
+        })
     }
 
     override fun onToolbarButtonClick(view: View) {
