@@ -157,17 +157,13 @@ class GoodListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
         if (task.value?.isStrict == false) {
             openGoodInfoByNumber(number)
         } else {
-            if (isGoodExist(number)) {
+            if (manager.isGoodExist(number)) {
                 openGoodInfoByNumber(number)
             } else {
                 numberField.value = ""
                 navigator.showGoodIsMissingInTask()
             }
         }
-    }
-
-    private fun isGoodExist(number: String): Boolean {
-        return manager.findGoodByMaterial(number) ?: manager.findGoodByEan(number) != null
     }
 
     private fun openGoodInfoByNumber(number: String) {

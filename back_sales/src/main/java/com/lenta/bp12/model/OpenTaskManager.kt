@@ -111,12 +111,12 @@ class OpenTaskManager @Inject constructor(
     override suspend fun addGoodsInCurrentTask(taskContentResult: TaskContentResult) {
         currentTask.value?.let { task ->
             taskContentResult.positions.map { positionInfo ->
-                positionInfo.apply {
+                with(positionInfo) {
                     database.getGoodInfoByMaterial(material)?.let { goodInfo ->
                         val commonUnits = database.getUnitsByCode(unitsCode)
-
-                        task.goods.add(GoodOpen(
+                        val good = GoodOpen(
                                 ean = goodInfo.ean,
+                                allGoodEans = goodInfo.allGoodEans,
                                 material = material,
                                 name = goodInfo.name,
                                 section = goodInfo.section,
@@ -136,7 +136,11 @@ class OpenTaskManager @Inject constructor(
                                             name = it.name
                                     )
                                 }
-                        ))
+                        )
+
+                        task.goods.add(good)
+
+                        Logg.d { "--> added good = $good" }
                     }
                 }
             }
@@ -152,6 +156,26 @@ class OpenTaskManager @Inject constructor(
     override fun findGoodByMaterial(material: String): GoodOpen? {
         val formattedMaterial = if (material.length == Constants.SAP_6) "000000000000$material" else material
         return currentTask.value?.goods?.find { it.material == formattedMaterial }
+    }
+
+    override fun isGoodExist(number: String): Boolean {
+        currentTask.value?.let { task ->
+            task.goods.find { good ->
+                good.material.contains(number)
+            }?.also {
+                return true
+            }
+
+            task.goods.find { good ->
+                good.allGoodEans.contains(number)
+            }?.also { found ->
+                found.ean = number
+                updateCurrentTask(task)
+                return true
+            }
+        }
+
+        return false
     }
 
     override fun isGoodCorrespondToTask(goodInfo: GoodInfoResult): Boolean {
@@ -298,6 +322,7 @@ interface IOpenTaskManager {
     fun saveGoodInTask(good: GoodOpen)
     fun findGoodByEan(ean: String): GoodOpen?
     fun findGoodByMaterial(material: String): GoodOpen?
+    fun isGoodExist(number: String): Boolean
     fun isGoodCorrespondToTask(goodInfo: GoodInfoResult): Boolean
     suspend fun isGoodCanBeAdded(goodInfo: GoodInfoResult): Boolean
     fun finishCurrentTask()
