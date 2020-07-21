@@ -1,37 +1,38 @@
 package com.lenta.bp9.features.goods_list
 
-import com.lenta.bp9.R
-import com.lenta.bp9.platform.extentions.getAppComponent
-import com.lenta.shared.platform.fragment.CoreFragment
-import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
-import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
-import com.lenta.shared.utilities.extentions.provideViewModel
 import android.os.Bundle
 import android.view.LayoutInflater
-import android.view.ViewGroup
 import android.view.View
+import android.view.ViewGroup
 import android.widget.AdapterView
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import com.lenta.bp9.BR
+import com.lenta.bp9.R
 import com.lenta.bp9.databinding.*
 import com.lenta.bp9.model.task.TaskType
-import com.lenta.shared.keys.KeyCode
+import com.lenta.bp9.platform.extentions.getAppComponent
 import com.lenta.shared.keys.OnKeyDownListener
 import com.lenta.shared.platform.activity.OnBackPresserListener
+import com.lenta.shared.platform.fragment.CoreFragment
+import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListener
+import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
 import com.lenta.shared.scan.OnScanResultListener
-import com.lenta.shared.utilities.databinding.*
+import com.lenta.shared.utilities.databinding.DataBindingAdapter
+import com.lenta.shared.utilities.databinding.DataBindingRecyclerViewConfig
+import com.lenta.shared.utilities.databinding.RecyclerViewKeyHandler
+import com.lenta.shared.utilities.databinding.ViewPagerSettings
 import com.lenta.shared.utilities.extentions.connectLiveData
 import com.lenta.shared.utilities.extentions.getFragmentResultCode
+import com.lenta.shared.utilities.extentions.provideViewModel
 
 class GoodsListFragment : CoreFragment<FragmentGoodsListBinding, GoodsListViewModel>(),
         ViewPagerSettings,
         OnScanResultListener,
         ToolbarButtonsClickListener,
-        OnBackPresserListener,
-        OnKeyDownListener {
+        OnBackPresserListener {
 
     companion object {
         fun create(taskType: TaskType): GoodsListFragment {
@@ -116,14 +117,14 @@ class GoodsListFragment : CoreFragment<FragmentGoodsListBinding, GoodsListViewMo
     override fun getPagerItemView(container: ViewGroup, position: Int): View {
         return if (taskType == TaskType.ShipmentPP) {
             when(position) {
-                0 -> prepareToProcessingView(container)
-                1 -> prepareProcessedView(container)
+                GoodsListViewPages.GOODS_LIST_VIEW_PAGE_COUNTED_OR_TO_PROCESSING -> prepareToProcessingView(container)
+                GoodsListViewPages.GOODS_LIST_VIEW_PAGE_WITHOUT_BARCODE_OR_PROCESSED -> prepareProcessedView(container)
                 else -> View(context)
             }
         } else {
             when(position) {
-                0 -> prepareCountedView(container)
-                1 -> prepareWithoutBarcodeView(container)
+                GoodsListViewPages.GOODS_LIST_VIEW_PAGE_COUNTED_OR_TO_PROCESSING -> prepareCountedView(container)
+                GoodsListViewPages.GOODS_LIST_VIEW_PAGE_WITHOUT_BARCODE_OR_PROCESSED -> prepareWithoutBarcodeView(container)
                 else -> View(context)
             }
         }
@@ -341,9 +342,9 @@ class GoodsListFragment : CoreFragment<FragmentGoodsListBinding, GoodsListViewMo
 
     override fun getTextTitle(position: Int): String {
         return if (taskType == TaskType.ShipmentPP) {
-            getString(if (position == 0) R.string.to_processing else R.string.processed)
+            getString(if (position == GoodsListViewPages.GOODS_LIST_VIEW_PAGE_COUNTED_OR_TO_PROCESSING) R.string.to_processing else R.string.processed)
         } else {
-            getString(if (position == 0) R.string.counted else R.string.without_barcode)
+            getString(if (position == GoodsListViewPages.GOODS_LIST_VIEW_PAGE_COUNTED_OR_TO_PROCESSING) R.string.counted else R.string.without_barcode)
         }
     }
 
@@ -353,6 +354,11 @@ class GoodsListFragment : CoreFragment<FragmentGoodsListBinding, GoodsListViewMo
 
     override fun onResume() {
         super.onResume()
+        if (vm.selectedPage.value == 0) {
+            vm.requestFocusCountedOrToProcessing.value = true
+        } else {
+            vm.requestFocusWithoutBarcodeOrProcessed.value = true
+        }
         vm.onResume()
     }
 
@@ -367,24 +373,6 @@ class GoodsListFragment : CoreFragment<FragmentGoodsListBinding, GoodsListViewMo
 
     override fun onBackPressed(): Boolean {
         vm.onBackPressed()
-        return false
-    }
-
-    override fun onKeyDown(keyCode: KeyCode): Boolean {
-        when (vm.selectedPage.value) {
-            0 -> countedRecyclerViewKeyHandler
-            1 -> withoutBarcodeRecyclerViewKeyHandler
-            else -> null
-        }?.let {
-            if (!it.onKeyDown(keyCode)) {
-                keyCode.digit?.let { digit ->
-                    vm.onDigitPressed(digit)
-                    return true
-                }
-                return false
-            }
-            return true
-        }
         return false
     }
 

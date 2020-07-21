@@ -56,6 +56,7 @@
     <string name="finish_processing_current_box">Завершите обработку текущей коробки с марочным алкоголем, после чего повторите сканирование номера коробки.</string>
     <string name="alcocode_does_not_apply_to_this_good">Алкокод не относится к этому товару</string>
     <string name="unknown_alcocode">Неизвестный алкокод</string>
+    <string name="good_is_missing_in_task">Товар отсутствует в задании</string>
 
     // Описание иконок
     <string name="alcohol_good">Алкогольный товар</string>

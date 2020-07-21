@@ -51,11 +51,13 @@ fun setDigitsForUom(editText: EditText, uom: Uom?) {
 }
 
 @BindingAdapter("requestFocus", "cursorToLastPos")
-fun requestFocus(editText: EditText, @Suppress("UNUSED_PARAMETER") requestFocus: Any?, cursorToLastPos: Boolean?) {
+fun requestFocus(editText: EditText, @Suppress("UNUSED_PARAMETER") requestFocus: Boolean?, cursorToLastPos: Boolean?) {
     requestFocus?.let {
-        editText.requestFocus()
-        if (cursorToLastPos == true) {
-            editText.setSelection(editText.text.length)
+        if (it) {
+            editText.requestFocus()
+            if (cursorToLastPos == true) {
+                editText.setSelection(editText.text.length)
+            }
         }
     }
 }

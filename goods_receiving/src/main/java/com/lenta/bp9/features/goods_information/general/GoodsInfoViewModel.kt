@@ -71,6 +71,7 @@ class GoodsInfoViewModel : CoreViewModel(), OnPositionClickListener {
     val spinShelfLife: MutableLiveData<List<String>> = MutableLiveData()
     val spinShelfLifeSelectedPosition: MutableLiveData<Int> = MutableLiveData(0)
     val suffix: MutableLiveData<String> = MutableLiveData()
+    val requestFocusToCount: MutableLiveData<Boolean> = MutableLiveData()
     private val countOverdelivery: MutableLiveData<Double> = MutableLiveData()
     private val isClickApply: MutableLiveData<Boolean> = MutableLiveData(false)
     val isDiscrepancy: MutableLiveData<Boolean> = MutableLiveData(false)
@@ -293,6 +294,9 @@ class GoodsInfoViewModel : CoreViewModel(), OnPositionClickListener {
                     qualityInfo.value = dataBase.getQualityInfo()
                 }
             }
+
+            //эту строку необходимо прописывать только после того, как были установлены данные для переменных count  и suffix, а иначе фокус в поле et_count не установится
+            requestFocusToCount.value = true
 
             spinQuality.value = qualityInfo.value?.map {
                 it.name

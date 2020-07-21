@@ -17,7 +17,6 @@ class AppUpdateChecker @Inject constructor(private val context: Context) {
         val currentVersionValue = getVersionValue(currentAppVersion ?: getCurrentVersionAppName())
 
         return allowedVersionValue > currentVersionValue
-
     }
 
     fun getCurrentVersionAppName(): String {

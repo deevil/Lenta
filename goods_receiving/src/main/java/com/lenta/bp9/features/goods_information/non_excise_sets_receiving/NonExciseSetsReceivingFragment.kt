@@ -1,6 +1,7 @@
 package com.lenta.bp9.features.goods_information.non_excise_sets_receiving
 
 import android.os.Bundle
+import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -111,6 +112,15 @@ class NonExciseSetsReceivingFragment : CoreFragment<FragmentNonExciseSetsReceivi
                                 override fun onNothingSelected(adapterView: AdapterView<*>) {
                                 }
                             }
+                            layoutBinding.etCount.setOnKeyListener(View.OnKeyListener { v, keyCode, event ->
+                                if (keyCode == KeyEvent.KEYCODE_ENTER && event.action == KeyEvent.ACTION_UP) {
+                                    if (vm.enabledApplyButton.value == true) {
+                                        vm.onClickApply()
+                                    }
+                                    return@OnKeyListener true
+                                }
+                                false
+                            })
                             return layoutBinding.root
                         }
             }
@@ -200,6 +210,11 @@ class NonExciseSetsReceivingFragment : CoreFragment<FragmentNonExciseSetsReceivi
 
     override fun onResume() {
         super.onResume()
+        if (vm.selectedPage.value == 0) {
+            vm.requestFocusToCount.value = true
+        } else {
+            vm.requestFocusToEan.value = true
+        }
         vm.onResume()
     }
 

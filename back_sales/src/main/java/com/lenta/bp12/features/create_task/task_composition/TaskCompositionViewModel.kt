@@ -111,11 +111,11 @@ class TaskCompositionViewModel : CoreViewModel(), PageSelectionListener, OnOkInS
     }
 
     fun onScanResult(data: String) {
-        checkEnteredNumber(data)
+        openGoodInfoByNumber(data)
     }
 
     override fun onOkInSoftKeyboard(): Boolean {
-        checkEnteredNumber(numberField.value.orEmpty())
+        openGoodInfoByNumber(numberField.value.orEmpty())
         return true
     }
 
@@ -136,7 +136,7 @@ class TaskCompositionViewModel : CoreViewModel(), PageSelectionListener, OnOkInS
         }
     }
 
-    private fun checkEnteredNumber(number: String) {
+    private fun openGoodInfoByNumber(number: String) {
         number.length.let { length ->
             if (length >= Constants.SAP_6 && length != Constants.BOX_26 &&
                     length != Constants.MARK_68 && length != Constants.MARK_150) {

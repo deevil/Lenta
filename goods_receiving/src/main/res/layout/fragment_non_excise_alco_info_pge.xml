@@ -51,15 +51,15 @@
             android:layout_marginStart="8dp"
             android:layout_marginEnd="8dp"
             app:items="@{vm.spinQuality}"
-            app:layout_constraintBottom_toBottomOf="@+id/et_inventory"
+            app:layout_constraintBottom_toBottomOf="@+id/et_count"
             app:layout_constraintEnd_toStartOf="@+id/div_vert"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/et_inventory"
+            app:layout_constraintTop_toTopOf="@+id/et_count"
             app:position="@{vm.spinQualitySelectedPosition}"
             tools:entries="@array/test_list" />
 
         <com.lenta.shared.view.EditTextWithSuffix
-            android:id="@+id/et_inventory"
+            android:id="@+id/et_count"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
@@ -75,7 +75,8 @@
             app:layout_constraintStart_toEndOf="@+id/div_vert"
             app:layout_constraintTop_toTopOf="@+id/div_vert"
             app:maxLengthForScanProtect="@{6}"
-            app:requestFocus="@{true}"
+            app:cursorToLastPos="@{false}"
+            app:requestFocus="@{vm.requestFocusToCount}"
             app:suffix="@{vm.suffix}"
             tools:text="1 шт" />
 
@@ -87,7 +88,7 @@
             android:background="@color/color_divider"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/et_inventory" />
+            app:layout_constraintTop_toBottomOf="@+id/et_count" />
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/ConstraintAcceptRefusal"
