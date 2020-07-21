@@ -91,6 +91,12 @@ class GoodListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
     Кнопки нижнего тулбара
      */
 
+    val deleteVisible by lazy {
+        task.map { task ->
+            task?.isStrict == false
+        }
+    }
+
     val deleteEnabled = selectedPage.combineLatest(processingSelectionsHelper.selectedPositions).combineLatest(processedSelectionsHelper.selectedPositions).map {
         it?.let {
             val page = it.first.first
@@ -148,9 +154,26 @@ class GoodListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
     }
 
     private fun checkEnteredNumber(number: String) {
+        if (task.value?.isStrict == false) {
+            openGoodInfoByNumber(number)
+        } else {
+            if (isGoodExist(number)) {
+                openGoodInfoByNumber(number)
+            } else {
+                numberField.value = ""
+                navigator.showGoodIsMissingInTask()
+            }
+        }
+    }
+
+    private fun isGoodExist(number: String): Boolean {
+        return manager.findGoodByMaterial(number) ?: manager.findGoodByEan(number) != null
+    }
+
+    private fun openGoodInfoByNumber(number: String) {
         number.length.let { length ->
-            if (task.value?.isStrict == false && length >= Constants.SAP_6 &&
-                    length != Constants.BOX_26 && length != Constants.MARK_68 && length != Constants.MARK_150) {
+            if (length >= Constants.SAP_6 && length != Constants.BOX_26 &&
+                    length != Constants.MARK_68 && length != Constants.MARK_150) {
                 manager.searchNumber = number
                 manager.searchGoodFromList = true
                 numberField.value = ""
