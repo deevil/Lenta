@@ -245,8 +245,10 @@ class TaskViewModel : CoreViewModel(), PageSelectionListener {
 
             either.either(
                     fnL = { failure ->
-                        screenNavigator.hideProgress()
-                        screenNavigator.openAlertScreen(failure)
+                        with(screenNavigator) {
+                            hideProgress()
+                            openAlertScreen(failure)
+                        }
                     },
                     fnR = { result ->
                         updateCargoUnitRepository(result)
@@ -277,15 +279,19 @@ class TaskViewModel : CoreViewModel(), PageSelectionListener {
                     )
             )
             either.either({ failure ->
-                screenNavigator.hideProgress()
-                screenNavigator.openAlertScreen(failure)
+                with(screenNavigator) {
+                    hideProgress()
+                    openAlertScreen(failure)
+                }
             }, { result ->
                 screenNavigator.hideProgress()
                 val task = result.taskList?.first()?.toTask()
                 task?.let {
                     taskManager.setTask(task)
-                    screenNavigator.goBack()
-                    screenNavigator.openTaskScreen(task)
+                    screenNavigator.apply {
+                        goBack()
+                        openTaskScreen(task)
+                    }
                 } ?: screenNavigator.openAlertScreen(Failure.ServerError)
             })
         }

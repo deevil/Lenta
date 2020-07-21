@@ -81,20 +81,16 @@ class TaskListFragment : CoreFragment<FragmentTaskListBinding, TaskListViewModel
                         false
                 ).also {
                     it.apply {
-                        rvConfig = DataBindingRecyclerViewConfig(
+                        rvConfig = initRecycleAdapterDataBinding(
                                 layoutId = R.layout.layout_item_task_list,
                                 itemId = BR.item,
-                                realisation = object : DataBindingAdapter<LayoutItemTaskListBinding> {
-                                    override fun onCreate(binding: LayoutItemTaskListBinding) = Unit
-
-                                    override fun onBind(binding: LayoutItemTaskListBinding, position: Int) {
-                                        binding.tvCounter.tag = position
-                                        vm.taskItemList.value?.let { list ->
-                                            binding.item = list[position]
-                                        }
+                                onAdapterItemBind = { binding: LayoutItemTaskListBinding, position ->
+                                    binding.tvCounter.tag = position
+                                    vm.taskItemList.value?.let { list ->
+                                        binding.item = list[position]
                                     }
                                 },
-                                onItemClickListener = AdapterView.OnItemClickListener { _, _, position, _ ->
+                                onAdapterItemClicked = { position ->
                                     vm.onClickTaskListItem(position)
                                 }
                         )
@@ -102,14 +98,11 @@ class TaskListFragment : CoreFragment<FragmentTaskListBinding, TaskListViewModel
                         dataBindingViewModel = this@TaskListFragment.vm
                         lifecycleOwner = viewLifecycleOwner
 
-                        lifecycleOwner?.let { lifecycleOwner ->
-                            taskListRecyclerViewKeyHandler = RecyclerViewKeyHandler(
-                                    recyclerView,
-                                    vm.taskItemList,
-                                    lifecycleOwner,
-                                    taskListRecyclerViewKeyHandler?.posInfo?.value
-                            )
-                        }
+                        taskListRecyclerViewKeyHandler = initRecyclerViewKeyHandler(
+                                recyclerView = recyclerView,
+                                items = vm.taskItemList,
+                                previousPosInfo = taskListRecyclerViewKeyHandler?.posInfo?.value
+                        )
                     }
                 }.root
             }

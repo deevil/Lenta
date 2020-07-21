@@ -11,7 +11,7 @@ import com.mobrun.plugin.api.HyperHive
 
 @Suppress("INACCESSIBLE_TYPE")
 class TaskManager(
-    hyperHive: HyperHive
+        hyperHive: HyperHive
 ) : ITaskManager {
 
     private val taskSettingsTable = ZmpUtz47V001(hyperHive).localHelper_ET_TASK_TPS
@@ -39,24 +39,24 @@ class TaskManager(
 
     override fun getAvailableReceivers(): List<String> {
         return receiversTable.all
-            .map { table ->
-                table.plant
-            }
-            .distinct()
+                .map { table ->
+                    table.plant
+                }
+                .distinct()
     }
 
     override fun getAvailablePikingStorageList(
-        taskType: TaskType,
-        movementType: MovementType
+            taskType: TaskType,
+            movementType: MovementType
     ): List<String> {
         return pickingStorageTable.all
-            .filter {
-                it.taskType == taskType && it.mvmType == movementType
-            }
-            .map {
-                it.lgortSource
-            }
-            .distinct()
+                .filter {
+                    it.taskType == taskType && it.mvmType == movementType
+                }
+                .map {
+                    it.lgortSource
+                }
+                .distinct()
     }
 
     override fun isAllowProduct(product: ProductInfo): Boolean {
@@ -71,55 +71,68 @@ class TaskManager(
 
     override fun isDisallowProduct(product: ProductInfo): Boolean {
         return excludeProductsTable.all
-            .filter {
-                it.taskType == task?.taskType
-            }
-            .any {
-                it.taskCntrl == (if (product.isAlco) "A" else "N") &&
-                        it.ekgrp == product.ekGroup &&
-                        it.matkl == product.matkl &&
-                        it.mtart == product.materialType
-            }
+                .filter {
+                    it.taskType == task?.taskType
+                }
+                .any {
+                    it.taskCntrl == (if (product.isAlco) "A" else "N") &&
+                            it.ekgrp == product.ekGroup &&
+                            it.matkl == product.matkl &&
+                            it.mtart == product.materialType
+                }
     }
 
     override fun clear() {
         task = null
     }
 
-    override fun getPrinterName() : String {
+    override fun getPrinterName(): String {
         return printerTable.all.first().printerName
     }
 
     override fun getGoodName(goodNumber: String?): String {
         return goodNumber?.let {
-            goodsTable.getWhere("MATERIAL = \"$goodNumber\"").first().name
+            goodsTable.getWhere(
+                    GET_GOODNAME_BY_GOODNUMBER.format(goodNumber)
+            )
+                    .first()
+                    .name
         }.orIfNull {
             Logg.e { "goodNumber null" }
             ""
         }
     }
 
-    override fun getMovementType(movementType: MovementType) : String {
+    override fun getMovementType(movementType: MovementType): String {
         val propertyName = movementType.propertyName
-        return taskSettingsTable.getWhere("TYPE_MVM = \"$propertyName\"").first().annotation
+        return taskSettingsTable.getWhere(
+                GET_MVM_TYPE_BY_MVM_CODE.format(propertyName)
+        )
+                .first()
+                .annotation
     }
 
     override fun getMovementTypeShort(movementType: MovementType): String {
         val propertyName = movementType.propertyName
-        return taskTypeTable.getWhere("MVM_TYPE = \"$propertyName\"").first().taskTypeTxt.orEmpty()
+        return taskTypeTable.getWhere(
+                GET_MVM_SHORT_TYPE_BY_MVM_CODE.format(propertyName)
+        )
+                .first()
+                .taskTypeTxt.orEmpty()
     }
+
 
     override fun getTaskSettings(taskType: TaskType, movementType: MovementType): TaskSettings {
         val gisControls = allowProductsTable.all
-            .filter {
-                it.taskType == taskType
-            }
-            .map {
-                when (it.taskCntrl) {
-                    "A" -> GisControl.Alcohol
-                    else -> GisControl.GeneralProduct
+                .filter {
+                    it.taskType == taskType
                 }
-            }.toSet()
+                .map {
+                    when (it.taskCntrl) {
+                        "A" -> GisControl.Alcohol
+                        else -> GisControl.GeneralProduct
+                    }
+                }.toSet()
 
         val results = taskSettingsTable.all.filter {
             it.taskType == taskType && it.mvmType == movementType
@@ -164,17 +177,21 @@ class TaskManager(
         }
 
         return TaskSettings(
-            description = results.first().annotation,
-            shipmentStorageList = results.map { it.lgortTarget }.distinct(),
-            //signsOfDiv = signOfDivision.toSet()
-            signsOfDiv = setOf(
-                GoodsSignOfDivision.ALCO,
-                GoodsSignOfDivision.VET,
-                GoodsSignOfDivision.FOOD
-            ),
-            gisControls = gisControls
+                description = results.first().annotation,
+                shipmentStorageList = results.map { it.lgortTarget }.distinct(),
+                //signsOfDiv = signOfDivision.toSet()
+                signsOfDiv = setOf(
+                        GoodsSignOfDivision.ALCO,
+                        GoodsSignOfDivision.VET,
+                        GoodsSignOfDivision.FOOD
+                ),
+                gisControls = gisControls
         )
     }
 
-
+    companion object {
+        const val GET_MVM_TYPE_BY_MVM_CODE = "TYPE_MVM = \"%s\""
+        const val GET_MVM_SHORT_TYPE_BY_MVM_CODE = "MVM_TYPE = \"%s\""
+        const val GET_GOODNAME_BY_GOODNUMBER = "MATERIAL = \"%s\""
+    }
 }

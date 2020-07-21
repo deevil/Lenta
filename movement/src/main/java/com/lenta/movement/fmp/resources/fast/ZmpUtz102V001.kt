@@ -16,6 +16,15 @@ import com.mobrun.plugin.models.StatusSelectTable
 class ZmpUtz102V001(private val hyperHive: HyperHive) {
     val localHelper_ET_MVM_TXT: LocalTableResourceHelper<Item_Local_ET_MVM_TXT, Status_ET_MVM_TXT>
 
+    init {
+        localHelper_ET_MVM_TXT = LocalTableResourceHelper<Item_Local_ET_MVM_TXT, Status_ET_MVM_TXT>(
+                NAME_RESOURCE,
+                NAME_OUT_PARAM_ET_TASK_TSP,
+                hyperHive,
+                Status_ET_MVM_TXT::class.java
+        )
+    }
+
     fun newRequest(): RequestBuilder<Params, LimitedScalarParameter> {
         return RequestBuilder(hyperHive, NAME_RESOURCE, true)
     }
@@ -44,14 +53,5 @@ class ZmpUtz102V001(private val hyperHive: HyperHive) {
         const val NAME_RESOURCE = "ZMP_UTZ_102_V001"
         const val NAME_OUT_PARAM_ET_TASK_TSP = "ET_MVM_TXT"
         const val LIFE_TIME = "1 day, 0:00:00"
-    }
-
-    init {
-        localHelper_ET_MVM_TXT = LocalTableResourceHelper<Item_Local_ET_MVM_TXT, Status_ET_MVM_TXT>(
-                NAME_RESOURCE,
-                NAME_OUT_PARAM_ET_TASK_TSP,
-                hyperHive,
-                Status_ET_MVM_TXT::class.java
-        )
     }
 }

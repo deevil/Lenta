@@ -126,7 +126,7 @@
             android:id="@+id/horizontalDiv2"
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:layout_marginTop="70dp"
+            android:layout_marginTop="@dimen/size_70dp"
             android:background="@color/color_divider"
             app:layout_constraintTop_toBottomOf="@+id/horizontalDiv1" />
 
@@ -273,7 +273,7 @@
             android:layout_height="@dimen/size_55dp"
             android:layout_marginStart="@dimen/size_4dp"
             android:background="?selectableItemBackground"
-            android:padding="8dp"
+            android:padding="@dimen/size_8dp"
             android:scaleType="fitCenter"
             app:alcoIcon="@{vm.productInfo.type}"
             app:layout_constraintTop_toTopOf="@id/b_scan"

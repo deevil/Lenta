@@ -15,6 +15,10 @@ data class SearchTaskFilter(
         val dateOfPublic: String = ""
 ) {
     fun isEmpty(): Boolean {
-        return taskType.isBlank() && matNr.isBlank() && sectionId.isBlank() && group.isBlank() && dateOfPublic.isBlank()
+        return taskType.isBlank() &&
+                matNr.isBlank() &&
+                sectionId.isBlank() &&
+                group.isBlank() &&
+                dateOfPublic.isBlank()
     }
 }
