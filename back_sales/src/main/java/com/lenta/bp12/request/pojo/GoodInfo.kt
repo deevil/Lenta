@@ -5,6 +5,7 @@ import com.lenta.shared.models.core.MatrixType
 
 data class GoodInfo(
         val ean: String,
+        val allGoodEans: List<String>,
         val material: String,
         val name: String,
         val section: String,
