@@ -49,13 +49,14 @@ class TaskManager(
             taskType: TaskType,
             movementType: MovementType
     ): List<String> {
-        return pickingStorageTable.all
+        return pickingStorageTable.all.asSequence()
                 .filter {
                     it.taskType == taskType && it.mvmType == movementType
                 }
                 .map {
                     it.lgortSource
                 }
+                .toList()
                 .distinct()
     }
 
@@ -70,12 +71,16 @@ class TaskManager(
     }
 
     override fun isDisallowProduct(product: ProductInfo): Boolean {
-        return excludeProductsTable.all
+        return excludeProductsTable.all.asSequence()
                 .filter {
                     it.taskType == task?.taskType
                 }
                 .any {
-                    it.taskCntrl == (if (product.isAlco) "A" else "N") &&
+                    val goodCodeForPictogram =
+                            if (product.isAlco) ALCO_GOOD_CODE_FOR_PICTOGRAM
+                            else USUAL_GOOD_CODE_FOR_PICTOGRAM
+
+                    it.taskCntrl == goodCodeForPictogram &&
                             it.ekgrp == product.ekGroup &&
                             it.matkl == product.matkl &&
                             it.mtart == product.materialType
@@ -121,15 +126,14 @@ class TaskManager(
                 .taskTypeTxt.orEmpty()
     }
 
-
     override fun getTaskSettings(taskType: TaskType, movementType: MovementType): TaskSettings {
-        val gisControls = allowProductsTable.all
+        val gisControls = allowProductsTable.all.asSequence()
                 .filter {
                     it.taskType == taskType
                 }
                 .map {
                     when (it.taskCntrl) {
-                        "A" -> GisControl.Alcohol
+                        ALCO_GOOD_CODE_FOR_PICTOGRAM -> GisControl.Alcohol
                         else -> GisControl.GeneralProduct
                     }
                 }.toSet()
@@ -190,8 +194,10 @@ class TaskManager(
     }
 
     companion object {
-        const val GET_MVM_TYPE_BY_MVM_CODE = "TYPE_MVM = \"%s\""
-        const val GET_MVM_SHORT_TYPE_BY_MVM_CODE = "MVM_TYPE = \"%s\""
-        const val GET_GOODNAME_BY_GOODNUMBER = "MATERIAL = \"%s\""
+        private const val GET_MVM_TYPE_BY_MVM_CODE = "TYPE_MVM = \"%s\""
+        private const val GET_MVM_SHORT_TYPE_BY_MVM_CODE = "MVM_TYPE = \"%s\""
+        private const val GET_GOODNAME_BY_GOODNUMBER = "MATERIAL = \"%s\""
+        private const val ALCO_GOOD_CODE_FOR_PICTOGRAM = "A"
+        private const val USUAL_GOOD_CODE_FOR_PICTOGRAM = "N"
     }
 }

@@ -30,6 +30,11 @@ class TaskFragment : CoreFragment<FragmentTaskBinding, TaskViewModel>(),
         arguments?.getParcelable<Task>(TASK_KEY)
     }
 
+    override fun onResume() {
+        super.onResume()
+        vm.onResume()
+    }
+
     override fun getLayoutId() = R.layout.fragment_task
 
     override fun getPageNumber() = PAGE_NUMBER

@@ -35,7 +35,7 @@ class MainMenuViewModel: CoreViewModel() {
     }
 
     fun onClickUser(){
-        screenNavigator.apply {
+        with(screenNavigator) {
             closeAllScreen()
             openSelectionPersonnelNumberScreen()
         }

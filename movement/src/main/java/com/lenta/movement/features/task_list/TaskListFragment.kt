@@ -91,7 +91,7 @@ class TaskListFragment : CoreFragment<FragmentTaskListBinding, TaskListViewModel
                                     }
                                 },
                                 onAdapterItemClicked = { position ->
-                                    vm.onClickTaskListItem(position)
+                                    taskListRecyclerViewKeyHandler?.onItemClicked(position)
                                 }
                         )
 
@@ -101,7 +101,8 @@ class TaskListFragment : CoreFragment<FragmentTaskListBinding, TaskListViewModel
                         taskListRecyclerViewKeyHandler = initRecyclerViewKeyHandler(
                                 recyclerView = recyclerView,
                                 items = vm.taskItemList,
-                                previousPosInfo = taskListRecyclerViewKeyHandler?.posInfo?.value
+                                previousPosInfo = taskListRecyclerViewKeyHandler?.posInfo?.value,
+                                onClickHandler = vm::onClickTaskListItem
                         )
                     }
                 }.root

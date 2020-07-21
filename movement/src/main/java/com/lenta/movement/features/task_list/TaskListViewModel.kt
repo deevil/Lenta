@@ -2,6 +2,8 @@ package com.lenta.movement.features.task_list
 
 import android.content.Context
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.liveData
+import androidx.lifecycle.switchMap
 import androidx.lifecycle.viewModelScope
 import com.lenta.movement.R
 import com.lenta.movement.features.main.box.ScanInfoHelper
@@ -12,13 +14,16 @@ import com.lenta.movement.platform.navigation.IScreenNavigator
 import com.lenta.movement.requests.network.ObtainingTaskListNetRequest
 import com.lenta.movement.requests.network.models.task_list.SearchTaskFilter
 import com.lenta.movement.requests.network.models.task_list.TaskListParams
+import com.lenta.movement.requests.network.models.task_list.TaskListResult
 import com.lenta.movement.requests.network.models.toTaskList
 import com.lenta.shared.account.ISessionInfo
+import com.lenta.shared.exception.Failure
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
 import com.lenta.shared.utilities.databinding.PageSelectionListener
 import com.lenta.shared.utilities.extentions.mapSkipNulls
+import com.lenta.shared.utilities.orIfNull
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -51,8 +56,27 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
     val searchFilter: MutableLiveData<String> = MutableLiveData()
     val requestFocusToEan: MutableLiveData<Boolean> = MutableLiveData()
 
-    val taskItemList = MutableLiveData<List<TaskListItem>>()
+    val taskItemList2 = MutableLiveData<List<TaskListItem>>()
 
+    val taskItemList by unsafeLazy {
+        taskList.switchMap { taskList ->
+            liveData {
+                val taskListMapped = taskList.mapIndexed { index, task ->
+                    TaskListItem(
+                            number = index + 1,
+                            title = formatter.getTaskTitle(task),
+                            subtitle = taskManager.getMovementTypeShort(task.movementType),
+                            isClickable = true,
+                            blockTypeResId1 = chooseBlockTypeResId(task.blockType),
+                            quantity = task.quantity,
+                            isCons = task.isCons,
+                            isNotFinish = task.isNotFinish
+                    )
+                }
+                emit(taskListMapped)
+            }
+        }
+    }
     private val taskList by unsafeLazy {
         MutableLiveData<List<Task>>()
     }
@@ -76,8 +100,6 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
                 user = NO_USER_SEARCH
         )
     }
-
-
 
     fun onExtendedSearch(
             taskType: String?,
@@ -115,33 +137,27 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
                         )
                         val either = taskListNetRequest(params)
                         either.either(
-                                fnL = { failure ->
-                                    screenNavigator.hideProgress()
-                                    screenNavigator.openAlertScreen(failure)
-                                },
-                                fnR = { result ->
-                                    val resultList = result.taskList
-                                    val taskList = resultList.toTaskList()
-                                    val taskListMapped = taskList.mapIndexed() { index, task ->
-                                        TaskListItem(
-                                                number = index + 1,
-                                                title = formatter.getTaskTitle(task),
-                                                subtitle = taskManager.getMovementTypeShort(task.movementType),
-                                                isClickable = true,
-                                                blockTypeResId1 = chooseBlockTypeResId(task.blockType),
-                                                quantity = task.quantity,
-                                                isCons = task.isCons,
-                                                isNotFinish = task.isNotFinish
-                                        )
-                                    }
-                                    taskItemList.value = taskListMapped
-                                    screenNavigator.hideProgress()
-                                }
+                                fnL = ::onFailResultHandler,
+                                fnR = ::onSuccessResultHandler
                         )
                     }
                 }
             }
         }
+    }
+
+    private fun onFailResultHandler(failure: Failure) {
+        with(screenNavigator) {
+            hideProgress()
+            openAlertScreen(failure)
+        }
+    }
+
+    private fun onSuccessResultHandler(result: TaskListResult) {
+        val resultList = result.taskList
+        val taskListMappedFromRestModel = resultList.toTaskList()
+        taskList.value = taskListMappedFromRestModel
+        screenNavigator.hideProgress()
     }
 
     private fun chooseBlockTypeResId(blockType: String): Int {
@@ -159,9 +175,11 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
 
     fun onClickTaskListItem(position: Int) {
         val taskListValue = taskList.value
-        taskListValue?.let {
-            val task = it[position]
+        taskListValue?.getOrNull(position)?.let { task ->
             screenNavigator.openTaskScreen(task)
+        }.orIfNull {
+            Logg.e { "wrong position for task list" }
+            screenNavigator.openAlertScreen(Failure.ServerError)
         }
     }
 
@@ -187,9 +205,7 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
 
     companion object {
         private const val TO_PROCESS_TAB = 0
-        private const val SEARCH_TAB = 1
         private const val NO_USER_SEARCH = ""
-
         private const val EMPTY_IMAGE_VIEW_RES_ID = 0
     }
 }

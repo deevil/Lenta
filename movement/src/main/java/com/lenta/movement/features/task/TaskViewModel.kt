@@ -198,6 +198,12 @@ class TaskViewModel : CoreViewModel(), PageSelectionListener {
         }
     }
 
+    fun onResume(){
+        task.value?.let {
+            taskManager.setTask(it)
+        }
+    }
+
     fun getTitle(): String {
         return formatter.formatMarketName(sessionInfo.market.orEmpty())
     }
@@ -288,7 +294,7 @@ class TaskViewModel : CoreViewModel(), PageSelectionListener {
                 val task = result.taskList?.first()?.toTask()
                 task?.let {
                     taskManager.setTask(task)
-                    screenNavigator.apply {
+                    with(screenNavigator) {
                         goBack()
                         openTaskScreen(task)
                     }
