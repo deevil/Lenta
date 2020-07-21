@@ -14,8 +14,11 @@ import com.lenta.bp16.features.good_packaging.GoodPackagingViewModel
 import com.lenta.bp16.features.good_weighing.GoodWeighingViewModel
 import com.lenta.bp16.features.ingredients_list.IngredientsListViewModel
 import com.lenta.bp16.features.good_without_manufacturer.GoodWithoutManufacturerViewModel
+import com.lenta.bp16.features.ingredient_details.IngredientDetailsViewModel
 import com.lenta.bp16.features.loading.fast.FastLoadingViewModel
 import com.lenta.bp16.features.main_menu.MainMenuViewModel
+import com.lenta.bp16.features.order_details.OrderDetailsViewModel
+import com.lenta.bp16.features.order_ingredients_list.OrderIngredientsListViewModel
 import com.lenta.bp16.features.pack_good_list.PackGoodListViewModel
 import com.lenta.bp16.features.pack_list.PackListViewModel
 import com.lenta.bp16.features.processing_unit_list.ProcessingUnitListViewModel
@@ -78,4 +81,7 @@ interface AppComponent : CoreComponent, FromParentToCoreProvider {
     fun inject(it: GoodWithoutManufacturerViewModel)
     fun inject(it: WarehouseSelectionViewModel)
     fun inject(it: IngredientsListViewModel)
+    fun inject(it: OrderDetailsViewModel)
+    fun inject(it: OrderIngredientsListViewModel)
+    fun inject(it: IngredientDetailsViewModel)
 }

@@ -7,7 +7,7 @@
 
         <variable
             name="item"
-            type="com.lenta.bp16.model.ingredients.ui.ItemIngredientUi" />
+            type="com.lenta.bp16.model.ingredients.ui.ItemOrderIngredientUi" />
 
     </data>
 
@@ -25,7 +25,7 @@
 
             <LinearLayout
                 style="@style/LinearCellStyle"
-                android:layout_weight="@integer/three_three_1">
+                android:layout_weight="@integer/four_three_1">
 
                 <TextView
                     android:id="@+id/tv_item_number"
@@ -40,7 +40,7 @@
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 style="@style/LinearCellStyle"
-                android:layout_weight="@integer/three_three_2"
+                android:layout_weight="@integer/four_three_2"
                 android:orientation="horizontal">
 
                 <ImageView
@@ -65,19 +65,13 @@
 
                     <TextView
                         style="@style/CellTextStyle"
+                        android:singleLine="false"
+                        android:maxLines="2"
                         android:layout_width="match_parent"
-                        android:text="@{item.text1}"
+                        android:text="@{item.name}"
                         tools:text="3682194862 / 10.09.19" />
 
-                    <TextView
-                        style="@style/CellTextStyle"
-                        android:layout_width="match_parent"
-                        android:text="@{item.text2}"
-                        tools:text="ООО Минторг" />
-
                 </LinearLayout>
-
-
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -85,14 +79,29 @@
 
             <LinearLayout
                 style="@style/LinearCellStyle"
-                android:layout_weight="@integer/three_three_3"
+                android:layout_weight="@integer/four_three_3"
                 android:orientation="horizontal">
 
-                <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:src="@drawable/ic_play_arrow_gray_24dp"
-                    app:ingredientStatusIcon="@{item.ingredientStatus}" />
+                <TextView
+                    style="@style/CellTextStyle"
+                    android:layout_width="match_parent"
+                    android:text="@{item.plan}"
+                    tools:text="3682194862" />
+
+            </LinearLayout>
+
+            <View style="@style/VerticalDivider" />
+
+            <LinearLayout
+                style="@style/LinearCellStyle"
+                android:layout_weight="@integer/four_three_4"
+                android:orientation="horizontal">
+
+                <TextView
+                    style="@style/CellTextStyle"
+                    android:layout_width="match_parent"
+                    android:text="@{item.fact}"
+                    tools:text="3682194862" />
 
             </LinearLayout>
 

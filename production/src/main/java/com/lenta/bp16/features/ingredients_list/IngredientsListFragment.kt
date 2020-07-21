@@ -5,8 +5,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
-import com.lenta.bp16.R
 import com.lenta.bp16.BR
+import com.lenta.bp16.R
 import com.lenta.bp16.databinding.*
 import com.lenta.bp16.platform.extention.getAppComponent
 import com.lenta.shared.platform.fragment.CoreFragment
@@ -61,9 +61,7 @@ class IngredientsListFragment :
             R.id.b_3 -> {
 
             }
-            R.id.b_5 -> {
-
-            }
+            R.id.b_5 -> vm.onRefreshClicked()
         }
     }
 
@@ -95,11 +93,26 @@ class IngredientsListFragment :
 
             layoutBinding.rvConfig = initRecycleAdapterDataBinding<ItemIngredientByOrderBinding>(
                     layoutId = R.layout.item_ingredient_by_order,
-                    itemId = BR.item
+                    itemId = BR.item,
+                    onAdapterItemBind = { binding, position ->
+                        byOrderRecyclerViewKeyHandler?.let {
+                            binding.root.isSelected = it.isSelected(position)
+                        }
+                    },
+                    onAdapterItemClicked = { position ->
+                        byOrderRecyclerViewKeyHandler?.onItemClicked(position)
+                    }
             )
 
             layoutBinding.vm = vm
             layoutBinding.lifecycleOwner = viewLifecycleOwner
+
+            byOrderRecyclerViewKeyHandler = initRecyclerViewKeyHandler(
+                    recyclerView = layoutBinding.rv,
+                    items = vm.ingredientsByOrder,
+                    previousPosInfo = recyclerViewKeyHandler?.posInfo?.value,
+                    onClickHandler = vm::onClickItemPosition
+            )
 
             return layoutBinding.root
         }
@@ -113,11 +126,26 @@ class IngredientsListFragment :
 
             layoutBinding.rvConfig = initRecycleAdapterDataBinding<ItemIngredientByMaterialBinding>(
                     layoutId = R.layout.item_ingredient_by_material,
-                    itemId = BR.item
+                    itemId = BR.item,
+                    onAdapterItemBind = { binding, position ->
+                        byMaterialRecyclerViewKeyHandler?.let {
+                            binding.root.isSelected = it.isSelected(position)
+                        }
+                    },
+                    onAdapterItemClicked = { position ->
+                        byMaterialRecyclerViewKeyHandler?.onItemClicked(position)
+                    }
             )
 
             layoutBinding.vm = vm
             layoutBinding.lifecycleOwner = viewLifecycleOwner
+
+            byMaterialRecyclerViewKeyHandler = initRecyclerViewKeyHandler(
+                    recyclerView = layoutBinding.rv,
+                    items = vm.ingredientsByMaterial,
+                    previousPosInfo = recyclerViewKeyHandler?.posInfo?.value,
+                    onClickHandler = vm::onClickItemPosition
+            )
 
             return layoutBinding.root
         }
@@ -125,9 +153,10 @@ class IngredientsListFragment :
 
     companion object {
         private const val TAB_COUNTS = 2
-        private const val TAB_BY_ORDER = 0
-        private const val TAB_BY_MATERIALS = 1
         private const val SCREEN_NUMBER = "16/82"
+
+        const val TAB_BY_ORDER = 0
+        const val TAB_BY_MATERIALS = 1
     }
 
 }

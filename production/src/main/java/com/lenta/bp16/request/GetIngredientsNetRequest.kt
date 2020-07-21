@@ -1,8 +1,8 @@
 package com.lenta.bp16.request
 
-import com.lenta.bp16.model.ingredients.GetIngredientsParams
+import com.lenta.bp16.model.ingredients.params.GetIngredientsParams
 import com.lenta.bp16.repository.IIngredientsRepository
-import com.lenta.bp16.request.pojo.IngredientInfo
+import com.lenta.bp16.model.ingredients.IngredientInfo
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.functional.Either
 import com.lenta.shared.interactor.UseCase

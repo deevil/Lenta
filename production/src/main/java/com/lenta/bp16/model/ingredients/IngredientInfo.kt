@@ -1,7 +1,11 @@
-package com.lenta.bp16.request.pojo
+package com.lenta.bp16.model.ingredients
 
+import android.os.Parcelable
 import com.google.gson.annotations.SerializedName
+import com.lenta.shared.utilities.extentions.dropZeros
+import kotlinx.android.parcel.Parcelize
 
+@Parcelize
 data class IngredientInfo(
         // Код объекта
         //  type: TEXT, source: {'name': 'SAP', 'type': 'C'}
@@ -57,14 +61,31 @@ data class IngredientInfo(
 
         // Плановое количество итогового ПФ
         @SerializedName("PLAN_QNT")
-        val planQnt: String? = null,
+        val planQnt: Double? = null,
 
         // Фактическое количество итогового ПФ, на которое уже скомплектованы ингредиенты
         @SerializedName("DONE_QNT")
         val doneQnt: String? = null
-) {
+) : Parcelable {
+
+        val isByOrder: Boolean
+                get() = objType == TYPE_ORDER
+
+        val isByMaterial: Boolean
+                get() = objType == TYPE_MATERIAL
+
+        fun getPlanQntStr(): String {
+                return planQnt.dropZeros()
+        }
+
         companion object {
                 const val TYPE_ORDER = "4"
                 const val TYPE_MATERIAL = "5"
+
+                const val BLOCK_BY_MYSELF = "1"
+                const val BLOCK_BY_OTHER = "2"
+
+                const val MODE_BLOCK_DATA = "5" // 5 – Получение данных с блокировкой заказа
+                const val MODE_RE_BLOCK_DATA = "6" // 6 – Получение данных с переблокировкой заказа
         }
 }

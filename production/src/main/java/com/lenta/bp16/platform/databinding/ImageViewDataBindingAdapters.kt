@@ -32,7 +32,8 @@ fun setIngredientStatusIcon(imageView: ImageView, ingredientStatus: IngredientSt
             setImageResource(when (ingredientStatus) {
                 IngredientStatus.LOCK -> R.drawable.ic_lock_status_gray_24dp
                 IngredientStatus.SELF_LOCK -> R.drawable.ic_self_lock_status_gray_24dp
-                else -> R.drawable.ic_play_arrow_gray_24dp
+                IngredientStatus.IS_PLAY ->  R.drawable.ic_play_arrow_gray_24dp
+                else -> R.drawable.ic_done_white_24dp
             })
             setVisible()
         }

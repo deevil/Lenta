@@ -3,13 +3,16 @@ package com.lenta.bp16.features.ingredients_list
 import android.content.Context
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.switchMap
-import com.lenta.bp16.model.IngredientStatus
-import com.lenta.bp16.model.ingredients.GetIngredientsParams
-import com.lenta.bp16.model.ingredients.ItemIngredientUi
+import com.lenta.bp16.features.ingredients_list.IngredientsListFragment.Companion.TAB_BY_MATERIALS
+import com.lenta.bp16.features.ingredients_list.IngredientsListFragment.Companion.TAB_BY_ORDER
+import com.lenta.bp16.model.ingredients.params.GetIngredientsParams
+import com.lenta.bp16.model.ingredients.ui.ItemIngredientUi
+import com.lenta.bp16.model.ingredients.params.WarehouseParam
 import com.lenta.bp16.model.warehouse.IWarehousePersistStorage
+import com.lenta.bp16.platform.extention.getIngredientStatus
 import com.lenta.bp16.platform.navigation.IScreenNavigator
 import com.lenta.bp16.request.GetIngredientsNetRequest
-import com.lenta.bp16.request.pojo.IngredientInfo
+import com.lenta.bp16.model.ingredients.IngredientInfo
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
@@ -72,7 +75,7 @@ class IngredientsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInS
                     GetIngredientsParams(
                             tkMarket = sessionInfo.market.orEmpty(),
                             deviceIP = context.getDeviceIp(),
-                            workhousesList = warehouseStorage.getSelectedWarehouses().toList()
+                            workhousesList = warehouseStorage.getSelectedWarehouses().map { WarehouseParam(it) }
                     )
             ).also {
                 navigator.hideProgress()
@@ -83,13 +86,16 @@ class IngredientsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInS
     private fun filterIngredientsBy(ingredientsList: List<IngredientInfo>, type: String): List<ItemIngredientUi> {
         return ingredientsList.asSequence()
                 .filter { it.objType == type }
-                .mapIndexed { index, ingredientInfo ->
-                    ItemIngredientUi(
-                            position = index.toString(),
-                            text1 = ingredientInfo.text1.orEmpty(),
-                            text2 = ingredientInfo.text2.orEmpty(),
-                            ingredientStatus = IngredientStatus.LOCK
-                    )
+                .mapIndexedNotNull { index, ingredientInfo ->
+                    ingredientInfo.code?.run {
+                        ItemIngredientUi(
+                                code = ingredientInfo.code,
+                                position = (index + 1).toString(),
+                                text1 = ingredientInfo.text1.orEmpty(),
+                                text2 = ingredientInfo.text2.orEmpty(),
+                                ingredientStatus = ingredientInfo.getIngredientStatus()
+                        )
+                    }
                 }.toList()
     }
 
@@ -109,12 +115,18 @@ class IngredientsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInS
     fun onClickItemPosition(position: Int) {
         selectedPage.value?.let { page ->
             when (page) {
-                //0 -> processing.value?.get(position)?.material
-                //1 -> processed.value?.get(position)?.material
+                TAB_BY_ORDER -> ingredientsByOrder.value?.get(position)
+                TAB_BY_MATERIALS -> ingredientsByMaterial.value?.get(position)
                 else -> null
-            }?.let { material ->
-                // openGoodByMaterial(material)
+            }?.let { ingredientUI ->
+                allIngredients.value?.find { it.code == ingredientUI.code }?.let {
+                    navigator.openOrderDetailsScreen(it)
+                }
             }
         }
+    }
+
+    fun onRefreshClicked() {
+        loadIngredients()
     }
 }

@@ -1,8 +1,9 @@
 package com.lenta.bp16.model
 
 enum class IngredientStatus {
+    IS_PLAY,
+    IS_DONE,
     COMMON,
-    STARTED,
     SELF_LOCK,
     LOCK
 }

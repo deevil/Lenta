@@ -12,10 +12,13 @@ import com.lenta.bp16.features.good_irrelevant_info.IrrelevantGoodInfoFragment
 import com.lenta.bp16.features.good_packaging.GoodPackagingFragment
 import com.lenta.bp16.features.good_weighing.GoodWeighingFragment
 import com.lenta.bp16.features.good_without_manufacturer.GoodWithoutManufacturerFragment
+import com.lenta.bp16.features.ingredient_details.IngredientDetailsFragment
 import com.lenta.bp16.features.processing_unit_list.ProcessingUnitListFragment
 import com.lenta.bp16.features.ingredients_list.IngredientsListFragment
 import com.lenta.bp16.features.loading.fast.FastDataLoadingFragment
 import com.lenta.bp16.features.main_menu.MainMenuFragment
+import com.lenta.bp16.features.order_details.OrderDetailsFragment
+import com.lenta.bp16.features.order_ingredients_list.OrderIngredientsListFragment
 import com.lenta.bp16.features.pack_good_list.PackGoodListFragment
 import com.lenta.bp16.features.pack_list.PackListFragment
 import com.lenta.bp16.features.raw_list.RawListFragment
@@ -26,6 +29,8 @@ import com.lenta.bp16.features.select_good.GoodSelectFragment
 import com.lenta.bp16.features.select_personnel_number.SelectPersonnelNumberFragment
 import com.lenta.bp16.platform.Constants
 import com.lenta.bp16.features.warehouse_selection.WarehouseSelectionFragment
+import com.lenta.bp16.model.ingredients.IngredientInfo
+import com.lenta.bp16.model.ingredients.OrderIngredientDataInfo
 import com.lenta.shared.account.IAuthenticator
 import com.lenta.shared.features.alert.AlertFragment
 import com.lenta.shared.platform.activity.ForegroundActivityProvider
@@ -184,6 +189,18 @@ class ScreenNavigator @Inject constructor(
         getFragmentStack()?.push(GoodWithoutManufacturerFragment())
     }
 
+    override fun openOrderDetailsScreen(selectedIngredient: IngredientInfo) {
+        getFragmentStack()?.push(OrderDetailsFragment.newInstance(selectedIngredient))
+    }
+
+    override fun openOrderIngredientsListScreen(weight: String, selectedIngredient: IngredientInfo) {
+        getFragmentStack()?.push(OrderIngredientsListFragment.newInstance(weight, selectedIngredient))
+    }
+
+    override fun openIngredientDetailsScreen(selectedIngredient: OrderIngredientDataInfo) {
+        getFragmentStack()?.push(IngredientDetailsFragment.newInstance(selectedIngredient))
+    }
+
 
     // Информационные экраны
     override fun showDefrostingPhaseIsCompleted(nextCallback: () -> Unit) {
@@ -312,7 +329,18 @@ class ScreenNavigator @Inject constructor(
             getFragmentStack()?.push(AlertFragment.create(
                     message = context.getString(R.string.tw_alert_part_not_found),
                     iconRes = R.drawable.ic_warning_red_80dp,
-                    pageNumber = Constants.ALERT_FRAGMENT))
+                    pageNumber = Constants.ALERT_FRAGMENT)
+            )
+        }
+    }
+
+    override fun showAlertWeightNotSet() {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    message = context.getString(R.string.error_weight_not_set),
+                    iconRes = R.drawable.ic_warning_red_80dp,
+                    pageNumber = Constants.ALERT_FRAGMENT)
+            )
         }
     }
 
@@ -343,6 +371,9 @@ interface IScreenNavigator : ICoreNavigator {
     fun openGoodWithoutManufacturerScreen()
     fun openSelectGoodScreen()
     fun openIngredientsListScreen()
+    fun openOrderDetailsScreen(selectedIngredient: IngredientInfo)
+    fun openIngredientDetailsScreen(selectedIngredient: OrderIngredientDataInfo)
+    fun openOrderIngredientsListScreen(weight: String, selectedIngredient: IngredientInfo)
 
     fun showDefrostingPhaseIsCompleted(nextCallback: () -> Unit)
     fun showFixStartNextStageSuccessful(nextCallback: () -> Unit)
@@ -355,4 +386,6 @@ interface IScreenNavigator : ICoreNavigator {
     fun showAlertNoIpPrinter()
     fun showLabelSentToPrint(nextCallback: () -> Unit)
     fun showAlertPartNotFound()
+    fun showAlertWeightNotSet()
+
 }

@@ -12,6 +12,7 @@
     <dimen name="text_button">12sp</dimen>
     <dimen name="text_big">21sp</dimen>
 
+    <dimen name="size_6dp">6dp</dimen>
     <dimen name="size_8dp">8dp</dimen>
     <dimen name="size_10dp">10dp</dimen>
     <dimen name="size_12dp">12dp</dimen>

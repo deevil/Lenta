@@ -34,7 +34,6 @@ sealed class Failure {
     object NotValidQrCode : Failure()
     object FileReadingError: Failure()
     object PrintTemplateError: Failure()
-    data class ThrowableFailure(val throwable: Throwable) : Failure()
 
     data class ThrowableFailure(val e : Throwable) : Failure()
     /** * Extend this class for feature specific failures.*/
