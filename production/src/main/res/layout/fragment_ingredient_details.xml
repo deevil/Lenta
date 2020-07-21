@@ -73,7 +73,7 @@
                     style="@style/CellTextStyle"
                     android:singleLine="false"
                     android:maxLines="2"
-                    android:text="@{vm.orderIngredient.name}"
+                    android:text="@{vm.totalWithUnits}"
                     tools:text="10 кг" />
 
             </LinearLayout>
