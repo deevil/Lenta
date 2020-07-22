@@ -161,7 +161,7 @@ class CreateBoxesViewModel : CoreViewModel(),
             }
 
         viewModelScope.launch {
-            screenNavigator.showProgress(getTitle())
+            screenNavigator.showProgress(LOADING_STAMP_INFO)
             exciseStampNetRequest(
                 params = ExciseStampParams(
                     tk = sessionInfo.market.orEmpty(),
@@ -197,7 +197,7 @@ class CreateBoxesViewModel : CoreViewModel(),
         }
 
         viewModelScope.launch {
-            screenNavigator.showProgress(getTitle())
+            screenNavigator.showProgress(checkExciseBoxNetRequest)
             checkExciseBoxNetRequest(
                 params = CheckExciseBoxParams(
                     tk = sessionInfo.market.orEmpty(),
@@ -280,7 +280,7 @@ class CreateBoxesViewModel : CoreViewModel(),
 
             screenNavigator.openBoxSavedDialog(newBox)
         } ?: Logg.e {
-            "productInfo is empty"
+            "productInfo empty"
         }
     }
 
@@ -303,5 +303,6 @@ class CreateBoxesViewModel : CoreViewModel(),
         private const val SCAN_LENGTH_STAMP2 = 150
         private const val SCAN_LENGTH_BOX = 26
         private const val CODE_EBP = "MVM"
+        private const val LOADING_STAMP_INFO = "Загрузка информации о марке"
     }
 }

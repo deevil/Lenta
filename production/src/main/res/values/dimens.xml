@@ -11,10 +11,10 @@
     <integer name="three_two_3">30</integer>
 
     <!-- Четыре колонки / Тип 1 -->
-    <integer name="four_one_1">10</integer>
+    <integer name="four_one_1">12</integer>
     <integer name="four_one_2">50</integer>
-    <integer name="four_one_3">20</integer>
-    <integer name="four_one_4">20</integer>
+    <integer name="four_one_3">19</integer>
+    <integer name="four_one_4">19</integer>
 
     <!-- Четыре колонки / Тип 2 -->
     <integer name="four_two_1">15</integer>

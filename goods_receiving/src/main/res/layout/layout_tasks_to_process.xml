@@ -46,10 +46,10 @@
                 android:drawableEnd="@drawable/ic_filter_white_16dp"
                 android:hint="@string/filter_hint"
                 android:inputType="textNoSuggestions|textVisiblePassword"
-                android:text="@={vm.filterSearch}"
+                android:text="@={vm.orderNumberPageToProcess}"
                 app:cursorToLastPos="@{true}"
                 app:onOkInSoftKeyboard="@{vm}"
-                app:requestFocus="@{vm.requestFocusToFilter}"
+                app:requestFocus="@{vm.requestFocusPageToProcess}"
                 tools:ignore="Autofill" />
 
         </LinearLayout>

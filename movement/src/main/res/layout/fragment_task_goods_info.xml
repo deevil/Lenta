@@ -31,7 +31,7 @@
 
                 <com.lenta.shared.view.EditTextWithSuffix
                     android:layout_width="0dp"
-                    android:layout_height="wrap_content"
+                    android:layout_height="@dimen/size_40dp"
                     android:layout_margin="@dimen/size_16dp"
                     android:ellipsize="end"
                     android:inputType="numberDecimal"
@@ -40,7 +40,8 @@
                     android:text="@={vm.quantity}"
                     app:digitsForUom="@{vm.quantityUom}"
                     app:suffix="@{vm.quantityUom.name}"
-                    tools:text="50 шт." />
+                    tools:text="50 шт."
+                    android:drawableEnd="@drawable/ic_bei_disabled_24dp"/>
             </TableRow>
 
             <TableRow android:gravity="center_vertical">

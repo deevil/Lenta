@@ -28,10 +28,9 @@
 
                 <TextView
                     android:id="@+id/tv_item_number"
-                    style="@style/CellTextStyle"
-                    android:layout_width="wrap_content"
+                    style="@style/CellNumberStyle"
                     android:text="@{item.position}"
-                    tools:text="1" />
+                    tools:text="666" />
 
             </LinearLayout>
 
@@ -47,6 +46,7 @@
                     android:layout_width="0dp"
                     android:layout_weight="1"
                     android:maxLines="2"
+                    android:singleLine="false"
                     android:text="@{item.name}"
                     tools:text="000001 Форель замороженная" />
 

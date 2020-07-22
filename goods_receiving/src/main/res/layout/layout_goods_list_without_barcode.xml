@@ -38,19 +38,23 @@
             tools:listitem="@layout/item_tile_goods_list_without_barcode" />
 
         <!-- Ввод номера -->
-        <LinearLayout style="@style/EnterNumberFieldLayout">
+        <LinearLayout
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            style="@style/EnterNumberFieldLayout">
 
             <EditText
+                android:id="@+id/et_product_number_without_barcode"
                 style="@style/EnterNumberField"
                 android:digits="0123456789"
                 android:drawableEnd="@drawable/ic_add_white_16dp"
                 android:hint="@string/enter_item_number_goods"
                 android:inputType="numberDecimal"
                 android:maxLength="20"
-                android:text="@={vm.eanCode}"
+                android:text="@={vm.eanCodeWithoutBarcodeOrProcessed}"
                 app:cursorToLastPos="@{true}"
                 app:onOkInSoftKeyboard="@{vm}"
-                app:requestFocus="@{vm.requestFocusToEan}"
+                app:requestFocus="@{vm.requestFocusWithoutBarcodeOrProcessed}"
                 tools:ignore="Autofill" />
 
         </LinearLayout>
