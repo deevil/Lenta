@@ -7,7 +7,6 @@ import com.lenta.bp12.platform.navigation.IScreenNavigator
 import com.lenta.bp12.platform.resource.IResourceManager
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.exception.Failure
-import com.lenta.shared.platform.constants.Constants
 import com.lenta.shared.platform.device_info.DeviceInfo
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.SelectionItemsHelper
@@ -16,6 +15,7 @@ import com.lenta.shared.utilities.databinding.PageSelectionListener
 import com.lenta.shared.utilities.extentions.combineLatest
 import com.lenta.shared.utilities.extentions.dropZeros
 import com.lenta.shared.utilities.extentions.map
+import com.lenta.shared.utilities.isCommonFormatNumber
 import javax.inject.Inject
 
 class TaskCompositionViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyboardListener {
@@ -119,6 +119,17 @@ class TaskCompositionViewModel : CoreViewModel(), PageSelectionListener, OnOkInS
         return true
     }
 
+    private fun openGoodInfoByNumber(number: String) {
+        if (isCommonFormatNumber(number)) {
+            manager.searchNumber = number
+            manager.searchGoodFromList = true
+            numberField.value = ""
+            navigator.openGoodInfoCreateScreen()
+        } else {
+            navigator.showIncorrectEanFormat()
+        }
+    }
+
     fun onClickItemPosition(position: Int) {
         selectedPage.value?.let { page ->
             when (page) {
@@ -132,18 +143,6 @@ class TaskCompositionViewModel : CoreViewModel(), PageSelectionListener, OnOkInS
                     navigator.openBasketGoodListScreen()
                 }
                 else -> throw IllegalArgumentException("Wrong pager position!")
-            }
-        }
-    }
-
-    private fun openGoodInfoByNumber(number: String) {
-        number.length.let { length ->
-            if (length >= Constants.SAP_6 && length != Constants.BOX_26 &&
-                    length != Constants.MARK_68 && length != Constants.MARK_150) {
-                manager.searchNumber = number
-                manager.searchGoodFromList = true
-                numberField.value = ""
-                navigator.openGoodInfoCreateScreen()
             }
         }
     }

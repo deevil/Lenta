@@ -25,6 +25,7 @@ import com.lenta.shared.requests.combined.scan_info.ScanCodeInfo
 import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.extentions.*
 import com.lenta.shared.utilities.getDateFromString
+import com.lenta.shared.utilities.isCommonFormatNumber
 import com.lenta.shared.view.OnPositionClickListener
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -299,23 +300,28 @@ class GoodInfoOpenViewModel : CoreViewModel() {
     }
 
     private fun checkSearchNumber(number: String) {
-        number.length.let { length ->
-            Logg.d { "--> number length: $length" }
-            if (length >= Constants.SAP_6) {
-                when (length) {
-                    Constants.SAP_6 -> getGoodByMaterial(number)
-                    Constants.SAP_18 -> getGoodByMaterial(number)
-                    Constants.SAP_OR_BAR_12 -> {
-                        navigator.showTwelveCharactersEntered(
-                                sapCallback = { getGoodByMaterial(number) },
-                                barCallback = { getGoodByEan(number) }
-                        )
-                    }
-                    Constants.MARK_150 -> loadMarkInfo(number)
-                    Constants.MARK_68 -> loadMarkInfo(number)
-                    Constants.BOX_26 -> loadBoxInfo(number)
-                    else -> getGoodByEan(number)
+        val numberLength = number.length
+
+        Logg.d { "--> checked number = $numberLength / $number" }
+
+        if (isCommonFormatNumber(number)) {
+            when (numberLength) {
+                Constants.SAP_6 -> getGoodByMaterial(number)
+                Constants.SAP_18 -> getGoodByMaterial(number)
+                Constants.SAP_OR_BAR_12 -> {
+                    navigator.showTwelveCharactersEntered(
+                            sapCallback = { getGoodByMaterial(number) },
+                            barCallback = { getGoodByEan(number) }
+                    )
                 }
+                else -> getGoodByEan(number)
+            }
+        } else {
+            when (numberLength) {
+                Constants.MARK_150 -> loadMarkInfo(number)
+                Constants.MARK_68 -> loadMarkInfo(number)
+                Constants.BOX_26 -> loadBoxInfo(number)
+                else -> navigator.showIncorrectEanFormat()
             }
         }
     }

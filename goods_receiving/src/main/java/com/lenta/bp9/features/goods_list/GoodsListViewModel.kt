@@ -57,7 +57,10 @@ class GoodsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKey
     val listToProcessing: MutableLiveData<List<ListShipmentPPItem>> = MutableLiveData()
     val listProcessed: MutableLiveData<List<ListShipmentPPItem>> = MutableLiveData()
     val eanCode: MutableLiveData<String> = MutableLiveData()
-    val requestFocusToEan: MutableLiveData<Boolean> = MutableLiveData()
+    val eanCodeCountedOrToProcessing: MutableLiveData<String> = MutableLiveData()
+    val eanCodeWithoutBarcodeOrProcessed: MutableLiveData<String> = MutableLiveData()
+    val requestFocusCountedOrToProcessing: MutableLiveData<Boolean> = MutableLiveData()
+    val requestFocusWithoutBarcodeOrProcessed: MutableLiveData<Boolean> = MutableLiveData()
     val taskType: MutableLiveData<TaskType> = MutableLiveData()
     private val isBatches: MutableLiveData<Boolean> = MutableLiveData(false)
 
@@ -102,6 +105,11 @@ class GoodsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKey
 
     fun onResume() {
         updateData()
+        if (selectedPage.value == GoodsListViewPages.GOODS_LIST_VIEW_PAGE_COUNTED_OR_TO_PROCESSING) {
+            requestFocusCountedOrToProcessing.value = true
+        } else {
+            requestFocusWithoutBarcodeOrProcessed.value = true
+        }
     }
 
     private fun updateData() {
@@ -319,37 +327,38 @@ class GoodsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKey
         }
     }
 
-    override fun onPageSelected(position: Int) {
-        selectedPage.value = position
-    }
-
     fun onClickItemPosition(position: Int) {
-        val matnr: String? = if (selectedPage.value == 0) {
+        val materialNumber: String? = if (selectedPage.value == GoodsListViewPages.GOODS_LIST_VIEW_PAGE_COUNTED_OR_TO_PROCESSING) {
             if (taskType.value == TaskType.ShipmentPP) {
-                listToProcessing.value?.get(position)?.productInfo?.materialNumber
+                listToProcessing.value
+                        ?.get(position)
+                        ?.productInfo
+                        ?.materialNumber
             } else {
-                listCounted.value?.get(position)?.productInfo?.materialNumber
+                listCounted.value
+                        ?.get(position)
+                        ?.productInfo
+                        ?.materialNumber
             }
         } else {
             if (taskType.value == TaskType.ShipmentPP) {
-                listProcessed.value?.get(position)?.productInfo?.materialNumber
+                listProcessed.value
+                        ?.get(position)
+                        ?.productInfo
+                        ?.materialNumber
             } else {
-                listWithoutBarcode.value?.get(position)?.productInfo?.materialNumber
+                listWithoutBarcode.value
+                        ?.get(position)
+                        ?.productInfo
+                        ?.materialNumber
             }
         }
-        searchProductDelegate.searchCode(code = matnr ?: "", fromScan = false)
+        searchProductDelegate.searchCode(code = materialNumber.orEmpty(), fromScan = false)
     }
 
     private fun handleProductSearchResult(@Suppress("UNUSED_PARAMETER") scanInfoResult: ScanInfoResult?): Boolean {
         eanCode.postValue("")
         return false
-    }
-
-    override fun onOkInSoftKeyboard(): Boolean {
-        eanCode.value?.let {
-            searchProductDelegate.searchCode(it, fromScan = false)
-        }
-        return true
     }
 
     fun onClickRefusal() {
@@ -445,13 +454,15 @@ class GoodsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKey
 
     fun onClickFourthBtn() {
         if (taskType.value == TaskType.ShipmentPP) {//https://trello.com/c/3WVovfmE
-            if (selectedPage.value == 0) {
+            if (selectedPage.value == GoodsListViewPages.GOODS_LIST_VIEW_PAGE_COUNTED_OR_TO_PROCESSING) {
                 missingGoodsForShipmentPP()
             } else {
                 cleanGoodsForShipmentPP()
             }
         } else {
-            isBatches.value = !isBatches.value!!
+            isBatches.value?.let {
+                isBatches.value = !it
+            }
             updateData()
         }
     }
@@ -563,23 +574,63 @@ class GoodsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKey
         )
     }
 
-    fun onDigitPressed(digit: Int) {
-        requestFocusToEan.value = true
-        eanCode.value = eanCode.value ?: "" + digit
+    override fun onPageSelected(position: Int) {
+        selectedPage.value = position
+        setRequestFocus()
+        setEanCode()
+    }
+
+    override fun onOkInSoftKeyboard(): Boolean {
+        setEanCode()
+        eanCode.value?.let {
+            searchProductDelegate.searchCode(it, fromScan = false)
+        }
+        return true
+    }
+
+    private fun setEanCode() {
+        eanCode.value = when (selectedPage.value) {
+            GoodsListViewPages.GOODS_LIST_VIEW_PAGE_COUNTED_OR_TO_PROCESSING -> eanCodeCountedOrToProcessing.value
+            GoodsListViewPages.GOODS_LIST_VIEW_PAGE_WITHOUT_BARCODE_OR_PROCESSED -> eanCodeWithoutBarcodeOrProcessed.value
+            else -> null
+        }
+    }
+
+    private fun setRequestFocus() {
+        when (selectedPage.value) {
+            GoodsListViewPages.GOODS_LIST_VIEW_PAGE_COUNTED_OR_TO_PROCESSING -> {
+                requestFocusWithoutBarcodeOrProcessed.value = false
+                requestFocusCountedOrToProcessing.value = true
+            }
+            GoodsListViewPages.GOODS_LIST_VIEW_PAGE_WITHOUT_BARCODE_OR_PROCESSED -> {
+                requestFocusCountedOrToProcessing.value = false
+                requestFocusWithoutBarcodeOrProcessed.value = true
+            }
+        }
     }
 
     private fun getManufacturerName(batchInfo: TaskBatchInfo?): String {
         return repoInMemoryHolder.manufacturers.value?.findLast { manufacture ->
             manufacture.code == batchInfo?.egais
-        }?.name ?: ""
+        }?.name.orEmpty()
     }
 
     private fun getAcceptTotalCountWithUomBatch(batchInfo: TaskBatchInfo?, uom: Uom): String {
+        val currentTaskType =
+                taskManager.getReceivingTask()
+                        ?.taskHeader
+                        ?.taskType
         val acceptTotalCountBatch = batchInfo?.let {
-            if (taskManager.getReceivingTask()?.taskHeader?.taskType == TaskType.RecalculationCargoUnit) {
-                taskManager.getReceivingTask()?.taskRepository?.getBatchesDiscrepancies()?.getCountAcceptOfBatchPGE(batchInfo)
+            if (currentTaskType == TaskType.RecalculationCargoUnit) {
+                taskManager.getReceivingTask()
+                        ?.taskRepository
+                        ?.getBatchesDiscrepancies()
+                        ?.getCountAcceptOfBatchPGE(batchInfo)
             } else {
-                taskManager.getReceivingTask()?.taskRepository?.getBatchesDiscrepancies()?.getCountAcceptOfBatch(batchInfo)
+                taskManager.getReceivingTask()
+                        ?.taskRepository
+                        ?.getBatchesDiscrepancies()
+                        ?.getCountAcceptOfBatch(batchInfo)
             }
         }
         return if (acceptTotalCountBatch != 0.0) {
