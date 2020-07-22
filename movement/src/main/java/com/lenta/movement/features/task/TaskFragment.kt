@@ -30,6 +30,11 @@ class TaskFragment : CoreFragment<FragmentTaskBinding, TaskViewModel>(),
         arguments?.getParcelable<Task>(TASK_KEY)
     }
 
+    override fun onResume() {
+        super.onResume()
+        vm.onResume()
+    }
+
     override fun getLayoutId() = R.layout.fragment_task
 
     override fun getPageNumber() = PAGE_NUMBER
@@ -135,7 +140,7 @@ class TaskFragment : CoreFragment<FragmentTaskBinding, TaskViewModel>(),
     }
 
     companion object {
-        private const val PAGE_NUMBER = "10/05"
+        private const val PAGE_NUMBER = "13/05"
         private const val TASK_KEY = "TASK_KEY"
 
         fun newInstance(task: Task?): TaskFragment {

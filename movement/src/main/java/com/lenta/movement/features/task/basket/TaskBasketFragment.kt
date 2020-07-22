@@ -99,7 +99,7 @@ class TaskBasketFragment: CoreFragment<FragmentTaskBasketBinding, TaskBasketView
     }
 
     companion object {
-        private const val PAGE_NUMBER = "04/06"
+        private const val PAGE_NUMBER = "13/06"
         private const val DEFAULT_BASKET_INDEX = -1
 
         fun newInstance(basketIndex: Int): TaskBasketFragment {

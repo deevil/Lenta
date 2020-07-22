@@ -9,6 +9,7 @@ import com.lenta.movement.R
 import com.lenta.movement.exception.EmptyTaskFailure
 import com.lenta.movement.exception.PersonnelNumberFailure
 import com.lenta.movement.models.*
+import com.lenta.movement.models.Task.Status.Companion.PROCESSING_ON_GZ
 import com.lenta.movement.models.repositories.ICargoUnitRepository
 import com.lenta.movement.platform.IFormatter
 import com.lenta.movement.platform.extensions.unsafeLazy
@@ -32,6 +33,7 @@ import com.lenta.shared.utilities.date_time.DateTimeUtil
 import com.lenta.shared.utilities.extentions.getDeviceIp
 import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.utilities.extentions.toSapBooleanString
+import com.lenta.shared.utilities.orIfNull
 import com.lenta.shared.view.OnPositionClickListener
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -194,7 +196,13 @@ class TaskViewModel : CoreViewModel(), PageSelectionListener {
             addSource(pikingStorageSelectedPosition) { value = validate() }
             addSource(shipmentStorageSelectedPosition) { value = validate() }
             addSource(shipmentDate) { value = validate() }
-            addSource(currentStatusLD) { value = (it != Task.Status.ProcessingOnGz(Task.Status.PROCESSING_ON_GZ))}
+            addSource(currentStatusLD) { value = validate() }
+        }
+    }
+
+    fun onResume(){
+        task.value?.let {
+            taskManager.setTask(it)
         }
     }
 
@@ -243,12 +251,16 @@ class TaskViewModel : CoreViewModel(), PageSelectionListener {
                     )
             )
 
-            either.either({ failure ->
-                screenNavigator.hideProgress()
-                screenNavigator.openAlertScreen(failure)
-            }, { result ->
-                updateCargoUnitRepository(result)
-            })
+            either.either(
+                    fnL = { failure ->
+                        with(screenNavigator) {
+                            hideProgress()
+                            openAlertScreen(failure)
+                        }
+                    },
+                    fnR = { result ->
+                        updateCargoUnitRepository(result)
+                    })
         }
     }
 
@@ -275,15 +287,19 @@ class TaskViewModel : CoreViewModel(), PageSelectionListener {
                     )
             )
             either.either({ failure ->
-                screenNavigator.hideProgress()
-                screenNavigator.openAlertScreen(failure)
+                with(screenNavigator) {
+                    hideProgress()
+                    openAlertScreen(failure)
+                }
             }, { result ->
                 screenNavigator.hideProgress()
                 val task = result.taskList?.first()?.toTask()
                 task?.let {
                     taskManager.setTask(task)
-                    screenNavigator.goBack()
-                    screenNavigator.openTaskScreen(task)
+                    with(screenNavigator) {
+                        goBack()
+                        openTaskScreen(task)
+                    }
                 } ?: screenNavigator.openAlertScreen(Failure.ServerError)
             })
         }
@@ -319,16 +335,16 @@ class TaskViewModel : CoreViewModel(), PageSelectionListener {
     }
 
     private fun validate(): Boolean {
-        if (task.value != null) {
-            return true
-        }
-
-        return buildTask().let { task ->
-            task.name.isNotEmpty() &&
-                    task.receiver.isNotEmpty() &&
-                    task.pikingStorage.isNotEmpty() &&
-                    task.shipmentStorage.isNotEmpty() &&
-                    task.shipmentDate.after(DateTime.now().minusDays(1).toDate())
+        return task.value?.let {
+            it.currentStatus != Task.Status.ProcessingOnGz(PROCESSING_ON_GZ)
+        }.orIfNull {
+            buildTask().let { task ->
+                task.name.isNotEmpty() &&
+                        task.receiver.isNotEmpty() &&
+                        task.pikingStorage.isNotEmpty() &&
+                        task.shipmentStorage.isNotEmpty() &&
+                        task.shipmentDate.after(DateTime.now().minusDays(1).toDate())
+            }
         }
     }
 
@@ -345,7 +361,11 @@ class TaskViewModel : CoreViewModel(), PageSelectionListener {
                 receiver = receivers.getSelectedValue(receiverSelectedPosition).orEmpty(),
                 pikingStorage = pikingStorageList.getSelectedValue(pikingStorageSelectedPosition).orEmpty(),
                 shipmentStorage = shipmentStorageList.getSelectedValue(shipmentStorageSelectedPosition).orEmpty(),
-                shipmentDate = shipmentDate.value?.toDate() ?: Date()
+                shipmentDate = shipmentDate.value?.toDate() ?: Date(),
+                blockType = "",
+                isNotFinish = true,
+                quantity = "",
+                isCons = false
         )
     }
 

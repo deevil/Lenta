@@ -58,7 +58,7 @@
     <string name="task_basket_characteristics_title">Свойства</string>
     <string name="basket">Корзина</string>
     <string name="baskets">Корзины</string>
-    <string name="pu">ЕО</string>
+    <string name="eo">ЕО</string>
     <string name="boxes">Коробки</string>
     <string name="task_save_confirmation_msg">Перевести задание в статус «%1$s» и закрыть его для редактирования?</string>
 
@@ -87,4 +87,10 @@
     <string name="list_of_eo_inside">Список вложенных ЕО</string>
     <string name="list_of_eo_goods">Список товаров ЕО</string>
     <string name="exclude_chosen_ge">Разукомплектовать выбранную ГЕ?</string>
+    <string name="basket_value">Объём корзины</string>
+    <string name="gis_control">ГИС-контроль</string>
+    <string name="provider">Поставщик</string>
+    <string name="to_process">К обработке</string>
+    <string name="tasks_to_move">Задания на перемещение</string>
+    <string name="enter_task_num_or_login">Введите номер задания или адресата</string>
 </resources>

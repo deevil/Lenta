@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+        <variable
+            name="vm"
+            type="com.lenta.movement.features.task_list.TaskListViewModel" />
+
+        <variable
+            name="viewPagerSettings"
+            type="com.lenta.shared.utilities.databinding.ViewPagerSettings" />
+
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <androidx.viewpager.widget.ViewPager
+            android:id="@+id/view_pager"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_marginBottom="@dimen/size_16dp"
+            app:pageSelectionListener="@{vm}"
+            app:tabPosition="@{vm.selectedPagePosition}"
+            app:viewPagerSettings="@{viewPagerSettings}"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/et_search">
+
+            <com.google.android.material.tabs.TabLayout
+                android:id="@+id/tab_strip"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/tab_strip_height"
+                android:background="@color/colorBottomPanelBackground"
+                android:elevation="0dp"
+                android:textSize="@dimen/text_14sp"
+                app:tabIndicatorColor="@color/colorTabIndicator"
+                app:tabIndicatorHeight="@dimen/size_4dp"
+                app:tabMode="scrollable"
+                app:tabSelectedTextColor="@color/colorTabIndicator"
+                app:tabTextAppearance="@style/TabLayoutStyle"
+                app:tabTextColor="@color/colorWhite"
+                tools:targetApi="lollipop" />
+
+        </androidx.viewpager.widget.ViewPager>
+
+        <EditText
+            android:id="@+id/et_search"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_margin="@dimen/size_24dp"
+            android:digits="0123456789"
+            android:drawableEnd="@drawable/ic_filter_white_16dp"
+            android:ellipsize="end"
+            android:hint="@string/enter_task_num_or_login"
+            android:imeOptions="actionSearch"
+            android:inputType="numberDecimal"
+            android:maxLines="1"
+            android:paddingTop="@dimen/size_8dp"
+            android:paddingBottom="@dimen/size_8dp"
+            android:text="@={vm.searchFilter}"
+            app:cursorToLastPos="@{true}"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:onOkInSoftKeyboard="@{vm}"
+            app:requestFocus="@{vm.requestFocusToEan}"
+            tools:ignore="Autofill" />
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

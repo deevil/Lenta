@@ -140,6 +140,8 @@ class Formatter : IFormatter {
                 else -> "Wrong uom code"
             }
 
+    override fun getTaskTitle(task: Task) = "${task.taskType.shortName}-${task.number} // ${task.name}"
+
 
     companion object {
         private const val A_AND_SLASH = "A/"
