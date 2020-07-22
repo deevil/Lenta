@@ -65,6 +65,7 @@
             app:layout_constraintStart_toStartOf="@+id/centerVerticalGuideline"
             app:layout_constraintTop_toBottomOf="@+id/topHorizontalDiv"
             tools:ignore="Autofill,LabelFor,TextFields"
+            tools:text="0 шт."
             style="@style/DisabledEditText"/>
 
         <ImageView
