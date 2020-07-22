@@ -36,7 +36,6 @@ fun CoreViewModel.launchAsyncTryCatch(catchBlock: ((Throwable) -> Unit)? = null,
     }
 }
 
-
 inline fun <reified T> CoreViewModel.asyncLiveData(
         noinline block: suspend LiveDataScope<T>.() -> Unit
 ) = liveData(context = viewModelScope.coroutineContext + Dispatchers.IO, block = block)
