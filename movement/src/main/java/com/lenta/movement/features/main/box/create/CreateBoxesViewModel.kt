@@ -26,7 +26,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class CreateBoxesViewModel : CoreViewModel(),
-    PageSelectionListener {
+        PageSelectionListener {
 
     @Inject
     lateinit var screenNavigator: IScreenNavigator
@@ -73,18 +73,18 @@ class CreateBoxesViewModel : CoreViewModel(),
     }
 
     val addAndApplyEnabled: MutableLiveData<Boolean> = combineLatest(productInfo, stamps, boxNumber)
-        .map {
-            val productInfoOrNull = it?.first
-            val stampsOrEmpty = it?.second.orEmpty()
-            val boxNumberOrNull = it?.third
+            .map {
+                val productInfoOrNull = it?.first
+                val stampsOrEmpty = it?.second.orEmpty()
+                val boxNumberOrNull = it?.third
 
-            stampsOrEmpty.size == productInfoOrNull?.quantityInvestments && boxNumberOrNull != null
-        }
+                stampsOrEmpty.size == productInfoOrNull?.quantityInvestments && boxNumberOrNull != null
+            }
 
     val deleteEnabled: MutableLiveData<Boolean> =
-        selectionsHelper.selectedPositions.map { selectedPositions ->
-            selectedPositions.orEmpty().isNotEmpty()
-        }
+            selectionsHelper.selectedPositions.map { selectedPositions ->
+                selectedPositions.orEmpty().isNotEmpty()
+            }
 
     override fun onPageSelected(position: Int) {
         selectedPagePosition.value = position
@@ -139,62 +139,66 @@ class CreateBoxesViewModel : CoreViewModel(),
 
     fun onDeleteClick() {
         selectionsHelper.selectedPositions.value.orEmpty()
-            .forEach { doRemovePosition ->
-                productInfo.value?.let { productInfoValue ->
-                    val removeBoxTarget = boxesRepository.getBoxesByProduct(productInfoValue)[doRemovePosition]
-                    boxesRepository.removeBox(removeBoxTarget)
+                .forEach { doRemovePosition ->
+                    productInfo.value?.let { productInfoValue ->
+                        val removeBoxTarget = boxesRepository.getBoxesByProduct(productInfoValue)[doRemovePosition]
+                        boxesRepository.removeBox(removeBoxTarget)
+                    }
                 }
-            }
         updateBoxes()
 
         selectionsHelper.clearPositions()
     }
 
     private fun scanStamp(stampCode: String) {
-        if (productInfo.value?.quantityInvestments == stamps.value?.size) {
-            screenNavigator.openStampMaxCountDialog()
-            return
-        }
 
         if (stamps.value.orEmpty().any { it.code == stampCode }) {
             screenNavigator.openStampWasAddedDialog()
             return
         }
 
-        boxesRepository.getBoxesByProduct(productInfo.value!!)
-            .find { box ->
-                box.stamps.any { stamp ->
-                    stamp.code == stampCode
-                }
-            }
-            ?.let { findBoxWithStamp ->
-                screenNavigator.openStampWasAddedDialog(findBoxWithStamp)
-                return
-            }
+        if (productInfo.value?.quantityInvestments == stamps.value?.size) {
+            screenNavigator.openStampMaxCountDialog()
+            return
+        }
+
+        productInfo.value?.let { productInfoValue ->
+            boxesRepository.getBoxesByProduct(productInfoValue)
+                    .find { box ->
+                        box.stamps.any { stamp ->
+                            stamp.code == stampCode
+                        }
+                    }
+                    ?.let { findBoxWithStamp ->
+                        screenNavigator.openStampWasAddedDialog(findBoxWithStamp)
+                        return
+                    }
+        }
+
 
         viewModelScope.launch {
             screenNavigator.showProgress(LOADING_STAMP_INFO)
             exciseStampNetRequest(
-                params = ExciseStampParams(
-                    tk = sessionInfo.market.orEmpty(),
-                    materialNumber = productInfo.value?.materialNumber.orEmpty(),
-                    stampCode = stampCode
-                )
+                    params = ExciseStampParams(
+                            tk = sessionInfo.market.orEmpty(),
+                            materialNumber = productInfo.value?.materialNumber.orEmpty(),
+                            stampCode = stampCode
+                    )
             ).either(
-                fnL = { failure ->
-                    screenNavigator.openAlertScreen(failure)
-                },
-                fnR = { exciseStamp ->
-                    val stampList = stamps.value.orEmpty()
+                    fnL = { failure ->
+                        screenNavigator.openAlertScreen(failure)
+                    },
+                    fnR = { exciseStamp ->
+                        val stampList = stamps.value.orEmpty()
 
-                    if (stampList.isNotEmpty()
-                        && stampList.first().manufacturerName == exciseStamp.manufacturerName
-                    ) {
-                        stamps.postValue(stampList + exciseStamp)
-                    } else {
-                        stamps.postValue(listOf(exciseStamp))
+                        if (stampList.isNotEmpty()
+                                && stampList.first().manufacturerName == exciseStamp.manufacturerName
+                        ) {
+                            stamps.postValue(stampList + exciseStamp)
+                        } else {
+                            stamps.postValue(listOf(exciseStamp))
+                        }
                     }
-                }
             )
             screenNavigator.hideProgress()
         }
@@ -211,32 +215,32 @@ class CreateBoxesViewModel : CoreViewModel(),
         viewModelScope.launch {
             screenNavigator.showProgress(checkExciseBoxNetRequest)
             checkExciseBoxNetRequest(
-                params = CheckExciseBoxParams(
-                    tk = sessionInfo.market.orEmpty(),
-                    materialNumber = productInfo.value?.materialNumber.orEmpty(),
-                    boxCode = boxCode
-                )
+                    params = CheckExciseBoxParams(
+                            tk = sessionInfo.market.orEmpty(),
+                            materialNumber = productInfo.value?.materialNumber.orEmpty(),
+                            boxCode = boxCode
+                    )
             ).either(
-                fnL = { failure ->
-                    screenNavigator.openAlertScreen(failure)
-                },
-                fnR = { checkExciseBoxStatus ->
-                    when (checkExciseBoxStatus) {
-                        CheckExciseBoxStatus.Correct -> {
-                            boxNumber.postValue(boxCode)
-                        }
-                        is CheckExciseBoxStatus.BoxFound -> {
-                            screenNavigator.openBoxRewriteDialog(
-                                checkExciseBoxStatus.msg,
-                                yesCallbackFunc = {
-                                    boxNumber.postValue(boxCode)
-                                })
-                        }
-                        is CheckExciseBoxStatus.Other -> {
-                            screenNavigator.openAlertScreen(InfoFailure(checkExciseBoxStatus.msg))
+                    fnL = { failure ->
+                        screenNavigator.openAlertScreen(failure)
+                    },
+                    fnR = { checkExciseBoxStatus ->
+                        when (checkExciseBoxStatus) {
+                            CheckExciseBoxStatus.Correct -> {
+                                boxNumber.postValue(boxCode)
+                            }
+                            is CheckExciseBoxStatus.BoxFound -> {
+                                screenNavigator.openBoxRewriteDialog(
+                                        checkExciseBoxStatus.msg,
+                                        yesCallbackFunc = {
+                                            boxNumber.postValue(boxCode)
+                                        })
+                            }
+                            is CheckExciseBoxStatus.Other -> {
+                                screenNavigator.openAlertScreen(InfoFailure(checkExciseBoxStatus.msg))
+                            }
                         }
                     }
-                }
             )
             screenNavigator.hideProgress()
         }
@@ -249,29 +253,31 @@ class CreateBoxesViewModel : CoreViewModel(),
             screenNavigator.showProgress(scanInfoNetRequest)
             val scanCodeInfo = ScanCodeInfo(code, if (fromScan) null else 0.0)
             scanInfoNetRequest(
-                params = ScanInfoParams(
-                    ean = scanCodeInfo.eanNumberForSearch.orEmpty(),
-                    tk = sessionInfo.market.orEmpty(),
-                    matNr = scanCodeInfo.materialNumberForSearch.orEmpty(),
-                    codeEBP = CODE_EBP
-                )
+                    params = ScanInfoParams(
+                            ean = scanCodeInfo.eanNumberForSearch.orEmpty(),
+                            tk = sessionInfo.market.orEmpty(),
+                            matNr = scanCodeInfo.materialNumberForSearch.orEmpty(),
+                            codeEBP = CODE_EBP
+                    )
             ).either(
-                fnL = { failure ->
-                    screenNavigator.openAlertScreen(failure)
-                },
-                fnR = { productInfo ->
-                    if (this@CreateBoxesViewModel.productInfo.value!!.materialNumber == productInfo.materialNumber) {
-                        return@either Unit
-                    }
+                    fnL = { failure ->
+                        screenNavigator.openAlertScreen(failure)
+                    },
+                    fnR = { serverProductInfo ->
+                        productInfo.value?.let { productInfoValue ->
+                            if (productInfoValue.materialNumber == serverProductInfo.materialNumber) {
+                                return@either Unit
+                            }
+                        }
 
-                    if (productInfo.type != ProductType.ExciseAlcohol) {
-                        screenNavigator.openProductIncorrectForCreateBox(productInfo)
-                    } else {
-                        screenNavigator.goBack()
-                        screenNavigator.openCreateBoxByProduct(productInfo)
-                        saveAndClearFields()
+                        if (serverProductInfo.type != ProductType.ExciseAlcohol) {
+                            screenNavigator.openProductIncorrectForCreateBox(serverProductInfo)
+                        } else {
+                            screenNavigator.goBack()
+                            screenNavigator.openCreateBoxByProduct(serverProductInfo)
+                            saveAndClearFields()
+                        }
                     }
-                }
             )
             screenNavigator.hideProgress()
         }
