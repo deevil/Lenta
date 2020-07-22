@@ -25,6 +25,7 @@ import com.lenta.bp9.features.goods_information.excise_alco_receiving.excise_alc
 import com.lenta.bp9.features.goods_information.excise_alco_receiving.excise_alco_stamp_acc.ExciseAlcoStampAccInfoFragment
 import com.lenta.bp9.features.goods_information.general.GoodsInfoFragment
 import com.lenta.bp9.features.goods_information.general_opp.GoodsInfoShipmentPPFragment
+import com.lenta.bp9.features.goods_information.marking.MarkingInfoFragment
 import com.lenta.bp9.features.goods_information.mercury.GoodsMercuryInfoFragment
 import com.lenta.bp9.features.goods_information.non_excise_alco_pge.NonExciseAlcoInfoPGEFragment
 import com.lenta.bp9.features.goods_information.non_excise_alco_receiving.NonExciseAlcoInfoFragment
@@ -1510,6 +1511,12 @@ class ScreenNavigator(
         }
     }
 
+    override fun openMarkingInfoScreen(productInfo: TaskProductInfo, isDiscrepancy: Boolean) {
+        runOrPostpone {
+            getFragmentStack()?.push(MarkingInfoFragment.newInstance(productInfo, isDiscrepancy))
+        }
+    }
+
     private fun getFragmentStack() = foregroundActivityProvider.getActivity()?.fragmentStack
 }
 
@@ -1683,4 +1690,5 @@ interface IScreenNavigator : ICoreNavigator {
     fun openAlertAlcocodeNotFoundTaskScreen()
     fun openAlertOverLimitPlannedScreen()
     fun openAlertOverLimitPlannedBatchScreen()
+    fun openMarkingInfoScreen(productInfo: TaskProductInfo, isDiscrepancy: Boolean)
 }

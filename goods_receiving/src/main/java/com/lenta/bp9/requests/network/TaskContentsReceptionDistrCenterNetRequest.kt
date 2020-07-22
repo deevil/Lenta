@@ -29,7 +29,9 @@ data class TaskContentsReceptionDistrCenterParameters(
         @SerializedName("IV_TASK_NUM")
         val taskNumber: String,
         @SerializedName("IV_TASK_TYPE")
-        val taskType: String
+        val taskType: String,
+        @SerializedName("IV_OS")
+        val operatingSystem: String //операционная система, Win - 1, Андроид - 2
 )
 
 class TaskContentsReceptionDistrCenterStatus : ObjectRawStatus<TaskContentsReceptionDistrCenterResult>()

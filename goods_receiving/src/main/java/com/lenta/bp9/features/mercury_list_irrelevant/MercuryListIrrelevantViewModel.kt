@@ -88,7 +88,8 @@ class MercuryListIrrelevantViewModel : CoreViewModel() {
                                 personnelNumber = sessionInfo.personnelNumber ?: "",
                                 dateRecount = task.taskDescription.currentStatusDate,
                                 timeRecount = task.taskDescription.currentStatusTime,
-                                unbindVSD = "X"
+                                unbindVSD = "X",
+                                operatingSystem = "2"
                         )
                         directSupplierStartRecountNetRequest(params).either(::handleFailure, ::handleSuccessRecountStart)
                     }

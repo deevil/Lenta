@@ -209,6 +209,11 @@ class TaskCardViewModel : CoreViewModel(), PageSelectionListener {
         taskManager.getReceivingTask()?.taskDescription?.isEDO == true
     }
 
+    //https://trello.com/c/74l1kXcn
+    val isMarkingProduct by lazy {
+        taskManager.getReceivingTask()?.taskDescription?.isMark == true
+    }
+
     //для ОПП, п.5.5.3 из ТП
     private val isBksDiff by lazy {
         taskManager.getReceivingTask()?.taskDescription?.isBksDiff == true

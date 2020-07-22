@@ -101,5 +101,7 @@ data class TaskContentRequestParameters(
         @SerializedName("IV_PERNR")
         val personalNumber: String,
         @SerializedName("IV_TASK_NUM")
-        val taskNumber: String
+        val taskNumber: String,
+        @SerializedName("IV_OS")
+        val operatingSystem: String //операционная система, Win - 1, Андроид - 2
 )

@@ -67,7 +67,8 @@ class LoadingTaskCardViewModel : CoreLoadingViewModel() {
             val params = TaskContentRequestParameters(mode = mode.TaskCardModeString,
                     deviceIP = context.getDeviceIp(),
                     personalNumber = sessionInfo.personnelNumber ?: "",
-                    taskNumber = taskNumber
+                    taskNumber = taskNumber,
+                    operatingSystem = "2"
             )
             val taskHeader = repoInMemoryHolder.taskList.value
                     ?.tasks
@@ -89,7 +90,12 @@ class LoadingTaskCardViewModel : CoreLoadingViewModel() {
                                         deviceIP = context.getDeviceIp(),
                                         personalNumber = sessionInfo.personnelNumber ?: "",
                                         taskNumber = taskNumber,
-                                        taskType = if (taskHeader.taskType == TaskType.ReceptionDistributionCenter) TaskType.ReceptionDistributionCenter.taskTypeString else TaskType.OwnProduction.taskTypeString
+                                        taskType = if (taskHeader.taskType == TaskType.ReceptionDistributionCenter) {
+                                            TaskType.ReceptionDistributionCenter.taskTypeString
+                                        } else {
+                                            TaskType.OwnProduction.taskTypeString
+                                        },
+                                        operatingSystem = "2"
                                 )
                                 taskContentsReceptionDistrCenterNetRequest(paramsRDS).either(::handleFailure, ::handleSuccessRDS)
                             }
@@ -102,9 +108,10 @@ class LoadingTaskCardViewModel : CoreLoadingViewModel() {
                             val params = TaskContentsReceptionDistrCenterParameters(
                                     mode = mode.TaskCardModeString,
                                     deviceIP = context.getDeviceIp(),
-                                    personalNumber = sessionInfo.personnelNumber ?: "",
+                                    personalNumber = sessionInfo.personnelNumber.orEmpty(),
                                     taskNumber = taskNumber,
-                                    taskType = TaskType.RecalculationCargoUnit.taskTypeString
+                                    taskType = TaskType.RecalculationCargoUnit.taskTypeString,
+                                    operatingSystem = "2"
                             )
                             taskContentsReceptionDistrCenterNetRequest(params).either(::handleFailure, ::handleSuccessRDS)
                         }

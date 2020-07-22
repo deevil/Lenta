@@ -61,7 +61,8 @@ class LoadingRecountStartViewModel : CoreLoadingViewModel() {
                         personnelNumber = sessionInfo.personnelNumber ?: "",
                         dateRecount = task.taskDescription.currentStatusDate,
                         timeRecount = task.taskDescription.currentStatusTime,
-                        unbindVSD = ""
+                        unbindVSD = "",
+                        operatingSystem = "2"
                 )
                 directSupplierStartRecountNetRequest(params).either(::handleFailure, ::handleSuccess)
             }

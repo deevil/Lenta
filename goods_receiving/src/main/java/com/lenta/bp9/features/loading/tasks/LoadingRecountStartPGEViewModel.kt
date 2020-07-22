@@ -53,10 +53,15 @@ class LoadingRecountStartPGEViewModel : CoreLoadingViewModel() {
                 val params = StartRecountPGEParams(
                         taskNumber = task.taskHeader.taskNumber,
                         deviceIP = context.getDeviceIp(),
-                        personnelNumber = sessionInfo.personnelNumber ?: "",
+                        personnelNumber = sessionInfo.personnelNumber.orEmpty(),
                         dateRecount = task.taskDescription.currentStatusDate,
                         timeRecount = task.taskDescription.currentStatusTime,
-                        taskType = taskManager.getReceivingTask()?.taskHeader?.taskType?.taskTypeString ?: ""
+                        taskType = taskManager.getReceivingTask()
+                                ?.taskHeader
+                                ?.taskType
+                                ?.taskTypeString
+                                .orEmpty(),
+                        operatingSystem = "2"
                 )
                 startRecountPGENetRequest(params).either(::handleFailure, ::handleSuccess)
             }

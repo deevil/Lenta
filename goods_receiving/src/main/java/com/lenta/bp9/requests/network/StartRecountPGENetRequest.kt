@@ -31,7 +31,9 @@ data class StartRecountPGEParams(
         @SerializedName("IV_TIME_COUNT")
         val timeRecount: String, //Время начала пересчета
         @SerializedName("IV_TASK_TYPE")
-        val taskType: String
+        val taskType: String,
+        @SerializedName("IV_OS")
+        val operatingSystem: String //операционная система, Win - 1, Андроид - 2
 )
 
 class StartRecountPGEStatus : ObjectRawStatus<StartRecountPGERestInfo>()

@@ -327,4 +327,6 @@
     <string name="prefix_processing_unit">ЕО-</string>
     <string name="of">из</string>
     <string name="selected_processing_unit">Выберите ЕО</string>
+    <string name="gtin_control">Контроль GTIN</string>
+    <string name="mrc_order">МРЦ заказа</string>
 </resources>
