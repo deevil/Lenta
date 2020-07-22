@@ -3,8 +3,6 @@ package com.lenta.bp18.features.select_good
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.lenta.bp18.model.pojo.Good
-import com.lenta.bp18.model.pojo.GoodInfo
-import com.lenta.bp18.model.pojo.GoodStatus
 import com.lenta.bp18.platform.navigation.IScreenNavigator
 import com.lenta.bp18.repository.IDatabaseRepo
 import com.lenta.shared.account.ISessionInfo
@@ -21,25 +19,37 @@ class SelectGoodViewModel : CoreViewModel() {
 
     @Inject
     lateinit var navigator: IScreenNavigator
-
+    @Inject
+    lateinit var sessionInfo: ISessionInfo
+    @Inject
+    lateinit var appSettings: IAppSettings
     @Inject
     lateinit var database: IDatabaseRepo
 
-    val good: MutableLiveData<GoodInfo> = MutableLiveData()
+    val good: MutableLiveData<Good> = MutableLiveData()
 
-    val selectBarcodeField: MutableLiveData<String> = MutableLiveData()
-    val nextButtonEnabled: MutableLiveData<Boolean> = good.map { it?.status == GoodStatus.CREATED }
+    val barcodeField = MutableLiveData("")
+    val editTextFocus = MutableLiveData<Boolean>()
+
+    //val barcodeField ="2499999640787"
 
     val barcodeScan = onClickBarcodeScanner()
 
     private val replaceValue = listOf("23", "24", "27", "28")
 
+    init {
+
+    }
+
 
     fun onClickNext() {
         viewModelScope.launch {
-            var barcode = selectBarcodeField.toString()
+            //TODO Упадет с ошибкой, если не ввести значение
+            var barcode = barcodeField.value ?: ""
+            Logg.d { "Введенный ШК: $barcode" }
             if (replaceValue.contains(barcode.substring(0 until 2))) {
                 barcode = barcode.replace(barcode.takeLast(6), "000000")
+                Logg.d { "ШК после изменения: $barcode" }
             }
             searchEan(barcode)
         }
@@ -57,7 +67,7 @@ class SelectGoodViewModel : CoreViewModel() {
     private fun searchEan(ean: String) {
         Logg.d { "Entered EAN: $ean" }
         viewModelScope.launch {
-            when (database.getGoodInfoByEan(ean)) {
+            when (ean/*database.getGoodInfoByEan(ean)*/) {
                 null -> showError()
                 else -> openGoodInfoScreen()
             }

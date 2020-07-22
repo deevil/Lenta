@@ -12,6 +12,7 @@
     <string name="tw_quantity_goods">Количество</string>
     <string name="tw_part_number">Номер партии</string>
     <string name="tw_sync_contacts">Синхронизация справочников</string>
+    <string name="tw_save_data">Несохраненные данные будут утеряны. Вы точно хотите выйти?</string>
 
     <string name="select_goods">Выбор товара</string>
     <string name="good_card">Карточка товара</string>

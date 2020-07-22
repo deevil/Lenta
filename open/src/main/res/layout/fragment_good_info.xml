@@ -4,6 +4,13 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".features.good_info_facing.GoodInfoFacingFragment">
 
+
+    <data>
+        <variable
+            name="vm"
+            type="com.lenta.bp18.features.good_info.GoodInfoViewModel" />
+    </data>
+
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
@@ -41,6 +48,7 @@
                         android:paddingStart="@dimen/size_10dp"
                         android:paddingEnd="@dimen/size_10dp"
                         android:textSize="@dimen/text_14sp"
+                        android:text="@{vm.quantityField}"
                         style="@style/CellEditTextStyle"
                         tools:text="10 кг"/>
 
@@ -79,6 +87,7 @@
                         android:paddingStart="@dimen/size_10dp"
                         android:paddingEnd="@dimen/size_10dp"
                         android:textSize="@dimen/text_14sp"
+                        android:text="@{vm.partNumberField}"
                         style="@style/CellEditTextStyle"
                         tools:text="10 кг"/>
 
@@ -101,6 +110,7 @@
                     <com.lenta.shared.view.ClickableSpinner
                         android:id="@+id/spin_group"
                         style="@style/CellSpinnerStyle"
+                        app:items="@{vm.groupsNames}"
                         android:layout_height="match_parent"
                         tools:entries="@array/group_list" />
 
@@ -122,6 +132,7 @@
                     <com.lenta.shared.view.ClickableSpinner
                         android:id="@+id/spin_condition"
                         style="@style/CellSpinnerStyle"
+                        app:items="@{vm.conditionNames}"
                         android:layout_height="match_parent"
                         tools:entries="@array/condition_list" />
 

@@ -13,6 +13,7 @@ import com.lenta.shared.features.alert.AlertFragment
 import com.lenta.shared.platform.activity.ForegroundActivityProvider
 import com.lenta.shared.platform.navigation.ICoreNavigator
 import com.lenta.shared.platform.navigation.runOrPostpone
+import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.progress.IProgressUseCaseInformator
 import javax.inject.Inject
 
@@ -56,17 +57,31 @@ class ScreenNavigator @Inject constructor(
     }
 
     // Informational screens
-    override fun openAlertConfirmOpeningPackage() {
+    override fun showConfirmOpeningPackage(/*confirmCallback: () -> Unit*/) {
         runOrPostpone {
             getFragmentStack()?.push(AlertFragment.create(
                     message = context.getString(R.string.tw_unpucking),
                     iconRes = R.drawable.ic_question_yellow_80dp,
-                    pageNumber = Constants.CONFIRMATION_SCREEN
+                    pageNumber = Constants.CONFIRMATION_SCREEN,
+                    //codeConfirmForRight = backFragmentResultHelper.setFuncForResult(confirmCallback),
+                    rightButtonDecorationInfo = ButtonDecorationInfo.confirm
             ))
         }
     }
 
-    override fun openAlertSuccessfulOpeningPackage() {
+    override fun showConfirmSaveData(/*confirmCallback: () -> Unit*/) {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    message = context.getString(R.string.tw_save_data),
+                    iconRes = R.drawable.ic_question_yellow_80dp,
+                    pageNumber = Constants.CONFIRMATION_SCREEN,
+                    //codeConfirmForRight = backFragmentResultHelper.setFuncForResult(confirmCallback),
+                    rightButtonDecorationInfo = ButtonDecorationInfo.confirm
+            ))
+        }
+    }
+
+    override fun showAlertSuccessfulOpeningPackage() {
         runOrPostpone {
             getFragmentStack()?.push(AlertFragment.create(
                     message = context.getString(R.string.tw_unpucking_success),
@@ -76,7 +91,7 @@ class ScreenNavigator @Inject constructor(
         }
     }
 
-    override fun openAlertPartCodeNotFound() {
+    override fun showAlertPartCodeNotFound() {
         runOrPostpone {
             getFragmentStack()?.push(AlertFragment.create(
                     message = context.getString(R.string.tw_part_number_not_found),
@@ -107,9 +122,9 @@ interface IScreenNavigator : ICoreNavigator {
     fun openGoodsInfoScreen()
     fun openFastDataLoadingScreen()
 
-    fun openAlertConfirmOpeningPackage()
-    fun openAlertSuccessfulOpeningPackage()
-    fun openAlertPartCodeNotFound()
-
+    fun showConfirmOpeningPackage(/*confirmCallback: () -> Unit*/)
+    fun showConfirmSaveData(/*confirmCallback: () -> Unit*/)
+    fun showAlertSuccessfulOpeningPackage()
+    fun showAlertPartCodeNotFound()
     fun showAlertGoodsNotFound()
 }

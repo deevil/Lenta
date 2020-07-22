@@ -4,15 +4,11 @@ import com.lenta.bp18.model.pojo.EnteredCode
 import com.lenta.bp18.model.pojo.Good
 import com.lenta.shared.di.AppScope
 import com.lenta.shared.fmp.resources.dao_ext.*
-import com.lenta.shared.fmp.resources.fast.ZmpUtz07V001
-import com.lenta.shared.fmp.resources.fast.ZmpUtz14V001
-import com.lenta.shared.fmp.resources.fast.ZmpUtz23V001
+import com.lenta.shared.fmp.resources.fast.*
 import com.lenta.shared.fmp.resources.slow.ZfmpUtz48V001
 import com.lenta.shared.fmp.resources.slow.ZmpUtz25V001
 import com.lenta.shared.models.core.Uom
-import com.lenta.shared.requests.combined.scan_info.pojo.MarketInfo
-import com.lenta.shared.requests.combined.scan_info.pojo.EanInfo
-import com.lenta.shared.requests.combined.scan_info.pojo.ProductInfo
+import com.lenta.shared.requests.combined.scan_info.pojo.*
 import com.lenta.shared.utilities.Logg
 import com.mobrun.plugin.api.HyperHive
 import kotlinx.coroutines.Dispatchers
@@ -25,7 +21,9 @@ class DatabaseRepo(
         val settings: ZmpUtz14V001 = ZmpUtz14V001(hyperHive), // Настройки
         val stores: ZmpUtz23V001 = ZmpUtz23V001(hyperHive), // Список магазинов
         val productInfo: ZfmpUtz48V001 = ZfmpUtz48V001(hyperHive), // Информация о товаре
-        val barCodeInfo: ZmpUtz25V001 = ZmpUtz25V001(hyperHive) // Информация о штрих-коде
+        val barCodeInfo: ZmpUtz25V001 = ZmpUtz25V001(hyperHive), // Информация о штрих-коде
+        val groupInfo: ZmpUtz110V001 = ZmpUtz110V001(hyperHive), //Информация о группе весового оборудования
+        val conditionInfo: ZmpUtz111V001 = ZmpUtz111V001(hyperHive) //Список условий хранения
 ) : IDatabaseRepo {
 
     override suspend fun getGoodInfoByEan(ean: String): Good? {
@@ -46,52 +44,9 @@ class DatabaseRepo(
         }
     }
 
-    override suspend fun getGoodInfoByMaterial(material: String): Good? {
-        return withContext(Dispatchers.IO) {
-            getProductInfoByMaterial(material)?.run {
-                val eanInfo = getEanInfoByMaterial(this.material)
-                val unitName = getGoodUnitName(this.buom)
-                Good(
-                        ean = eanInfo?.ean.orEmpty(),
-                        material = material,
-                        matcode = this.matcode,
-                        enteredCode = EnteredCode.MATERIAL,
-                        name = this.name,
-                        uom = Uom(
-                                code = this.buom,
-                                name = unitName.orEmpty()))
-            }
-
-        }
-    }
-
-    override suspend fun getGoodInfoByMatcode(matcode: String): Good? {
-        return withContext(Dispatchers.IO) {
-            getProductInfoByMatcode(matcode)?.run {
-                val eanInfo = getEanInfoByMaterial(this.material)
-                val unitName = getGoodUnitName(this.buom)
-                Good(
-                        ean = eanInfo?.ean.orEmpty(),
-                        material = this.material,
-                        matcode = matcode,
-                        enteredCode = EnteredCode.MATCODE,
-                        name = this.name,
-                        uom = Uom(
-                                code = this.buom,
-                                name = unitName.orEmpty()))
-            }
-        }
-    }
-
     override suspend fun getEanInfoByEan(ean: String?): EanInfo? {
         return withContext(Dispatchers.IO) {
             barCodeInfo.getEanInfo(ean)?.toEanInfo()
-        }
-    }
-
-    override suspend fun getEanInfoByMaterial(material: String?): EanInfo? {
-        return withContext(Dispatchers.IO) {
-            barCodeInfo.getEanInfoFromMaterial(material)?.toEanInfo()
         }
     }
 
@@ -101,42 +56,38 @@ class DatabaseRepo(
         }
     }
 
-    override suspend fun getProductInfoByMatcode(matcode: String?): ProductInfo? {
-        return withContext(Dispatchers.IO) {
-            productInfo.getProductInfoByMatcode(matcode)?.toMaterialInfo()
-        }
-    }
-
     override suspend fun getGoodUnitName(unitCode: String?): String? {
         return withContext(Dispatchers.IO) {
             units.getUnitName(unitCode)
         }
     }
 
-    override suspend fun getRetailType(marketNumber: String?): String? {
-        return withContext(Dispatchers.IO) {
-            marketNumber?.let { stores.getRetailType(it) }
-        }
-    }
-
-
     override suspend fun getAllMarkets(): List<MarketInfo> {
         return withContext(Dispatchers.IO) {
             stores.getAllMarkets().toMarketInfoList()
+        }
+    }
+
+    override suspend fun getAllGoodGroup(): List<GroupInfo> {
+        return withContext(Dispatchers.IO) {
+            groupInfo.getAllGroups().toGroupInfoList()
+        }
+    }
+
+    override suspend fun getAllGoodCondition(): List<ConditionInfo> {
+        return withContext(Dispatchers.IO) {
+            conditionInfo.getAllConditions().toConditionInfoList()
         }
     }
 }
 
 
 interface IDatabaseRepo {
-    suspend fun getRetailType(marketNumber: String?): String?
     suspend fun getEanInfoByEan(ean: String?): EanInfo?
-    suspend fun getEanInfoByMaterial(material: String?): EanInfo?
     suspend fun getProductInfoByMaterial(material: String?): ProductInfo?
-    suspend fun getProductInfoByMatcode(matcode: String?): ProductInfo?
     suspend fun getGoodUnitName(unitCode: String?): String?
     suspend fun getGoodInfoByEan(ean: String): Good?
-    suspend fun getGoodInfoByMaterial(material: String): Good?
-    suspend fun getGoodInfoByMatcode(matcode: String): Good?
     suspend fun getAllMarkets(): List<MarketInfo>
+    suspend fun getAllGoodCondition(): List<ConditionInfo>
+    suspend fun getAllGoodGroup(): List<GroupInfo>
 }

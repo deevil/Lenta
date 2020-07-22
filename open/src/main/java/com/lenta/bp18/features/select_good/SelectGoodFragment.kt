@@ -39,7 +39,7 @@ class SelectGoodFragment : CoreFragment<FragmentSelectGoodsBinding, SelectGoodVi
 
         bottomToolbarUiModel.uiModelButton5.requestFocus()
 
-        connectLiveData(vm.nextButtonEnabled, bottomToolbarUiModel.uiModelButton5.enabled)
+       // connectLiveData(vm.nextButtonEnabled, bottomToolbarUiModel.uiModelButton5.enabled)
     }
 
     override fun onToolbarButtonClick(view: View) {
