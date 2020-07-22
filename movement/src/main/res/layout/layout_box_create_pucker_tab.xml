@@ -59,7 +59,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/size_16dp"
             android:layout_marginEnd="@dimen/size_16dp"
-            android:text="@string/zero_pcs"
+            android:text="@{@string/x_pcs(vm.stampsQuantity)}"
             android:clickable="false"
             android:focusable="false"
             app:layout_constraintBottom_toTopOf="@+id/horizontalDiv1"

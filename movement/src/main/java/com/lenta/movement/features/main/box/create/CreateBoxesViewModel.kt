@@ -1,6 +1,7 @@
 package com.lenta.movement.features.main.box.create
 
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.liveData
 import androidx.lifecycle.viewModelScope
 import com.lenta.movement.exception.InfoFailure
 import com.lenta.movement.models.ExciseBox
@@ -11,6 +12,7 @@ import com.lenta.movement.platform.navigation.IScreenNavigator
 import com.lenta.movement.requests.network.*
 import com.lenta.movement.requests.network.models.checkExciseBox.CheckExciseBoxParams
 import com.lenta.shared.account.ISessionInfo
+import com.lenta.shared.models.core.EgaisStampVersion
 import com.lenta.shared.models.core.ProductType
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.requests.combined.scan_info.ScanCodeInfo
@@ -19,6 +21,7 @@ import com.lenta.shared.utilities.SelectionItemsHelper
 import com.lenta.shared.utilities.databinding.PageSelectionListener
 import com.lenta.shared.utilities.extentions.combineLatest
 import com.lenta.shared.utilities.extentions.map
+import com.lenta.shared.utilities.extentions.unsafeLazy
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -53,6 +56,14 @@ class CreateBoxesViewModel : CoreViewModel(),
 
     val productInfo: MutableLiveData<ProductInfo> = MutableLiveData()
     val stamps: MutableLiveData<List<ExciseStamp>> = MutableLiveData(emptyList())
+    val stampsQuantity by unsafeLazy {
+        stamps.map { stampsList ->
+            liveData {
+                val size = stampsList?.size ?: "0"
+                emit(size)
+            }
+        }
+    }
     val boxNumber: MutableLiveData<String> = MutableLiveData()
 
     val boxList: MutableLiveData<List<BoxListItem>> = MutableLiveData()
@@ -92,7 +103,8 @@ class CreateBoxesViewModel : CoreViewModel(),
 
     fun onScanResult(data: String) {
         when (data.length) {
-            SCAN_LENGTH_STAMP1, SCAN_LENGTH_STAMP2 -> scanStamp(data)
+            EgaisStampVersion.V2.version,
+            EgaisStampVersion.V3.version -> scanStamp(data)
             SCAN_LENGTH_BOX -> scanBox(data)
             else -> scanGoods(data)
         }
@@ -299,8 +311,6 @@ class CreateBoxesViewModel : CoreViewModel(),
     }
 
     companion object {
-        private const val SCAN_LENGTH_STAMP1 = 68
-        private const val SCAN_LENGTH_STAMP2 = 150
         private const val SCAN_LENGTH_BOX = 26
         private const val CODE_EBP = "MVM"
         private const val LOADING_STAMP_INFO = "Загрузка информации о марке"

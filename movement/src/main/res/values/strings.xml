@@ -81,6 +81,7 @@
     <string name="cargoUnit_doc_print">Печать паллетной ведомости</string>
     <string name="cargoUnit_doc_printed">Паллетная ведомость напечатана</string>
     <string name="zero_pcs">0 шт.</string>
+    <string name="x_pcs">%1$s шт.</string>
     <string name="total_in_basket">Итого\nПо корзине</string>
     <string name="EO">ЕО</string>
     <string name="list_of_eo_inside">Список вложенных ЕО</string>
