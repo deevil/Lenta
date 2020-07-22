@@ -1,5 +1,7 @@
 package com.lenta.shared.utilities.extentions
 
+import androidx.lifecycle.LiveDataScope
+import androidx.lifecycle.liveData
 import androidx.lifecycle.viewModelScope
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.platform.viewmodel.CoreViewModel
@@ -33,3 +35,7 @@ fun CoreViewModel.launchAsyncTryCatch(catchBlock: ((Throwable) -> Unit)? = null,
         catchBlock?.invoke(e) ?: handleFailure(failure = Failure.ThrowableFailure(e))
     }
 }
+
+inline fun <reified T> CoreViewModel.asyncLiveData(
+        noinline block: suspend LiveDataScope<T>.() -> Unit
+) = liveData(context = viewModelScope.coroutineContext + Dispatchers.IO, block = block)
