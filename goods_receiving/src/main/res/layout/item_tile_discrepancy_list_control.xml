@@ -28,8 +28,7 @@
 
                 <TextView
                     android:id="@+id/tv_item_number"
-                    style="@style/CellTextStyle"
-                    android:layout_width="wrap_content"
+                    style="@style/CellNumberStyle"
                     android:text='@{item.number + ""}'
                     tools:text="1" />
 
