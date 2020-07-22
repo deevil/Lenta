@@ -236,19 +236,17 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/tv_stamps_control_val" />
 
-            <TextView
-                android:id="@+id/tv_gtin_control"
-                style="@style/TextTitle"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="12dp"
-                android:layout_marginEnd="8dp"
-                android:ellipsize="end"
-                android:text="@string/gtin_control"
-                app:layout_constraintEnd_toStartOf="@+id/div_vert2"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/div_hor5" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/ConstraintControlGTIN"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="@{!vm.isDefect &amp;&amp; vm.isVisibilityControlGTIN}"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/ConstraintNorm">
 
             <CheckBox
                 android:id="@+id/checkBox_gtin_control_scan_gtin"
@@ -259,8 +257,8 @@
                 android:checked="@{vm.checkBoxGtinControl}"
                 android:enabled="false"
                 android:visibility="@{vm.checkBoxGtinControlVisibility}"
-                app:layout_constraintStart_toEndOf="@+id/div_vert2"
-                app:layout_constraintTop_toBottomOf="@+id/div_hor5" />
+                app:layout_constraintStart_toEndOf="@+id/div_vert4"
+                app:layout_constraintTop_toTopOf="parent" />
 
             <CheckBox
                 android:id="@+id/checkBox_gtin_control_scan_stamp"
@@ -274,6 +272,31 @@
                 app:layout_constraintStart_toEndOf="@+id/checkBox_gtin_control_scan_gtin"
                 app:layout_constraintTop_toTopOf="@+id/checkBox_gtin_control_scan_gtin" />
 
+            <TextView
+                android:id="@+id/tv_gtin_control"
+                style="@style/TextTitle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="12dp"
+                android:layout_marginEnd="8dp"
+                android:ellipsize="end"
+                android:text="@string/gtin_control"
+                app:layout_constraintEnd_toStartOf="@+id/div_vert4"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <View
+                android:id="@+id/div_vert4"
+                android:layout_width="1dp"
+                android:layout_height="0dp"
+                android:layout_marginStart="1dp"
+                android:background="@color/color_divider"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
             <View
                 android:id="@+id/div_hor4"
                 android:layout_width="match_parent"
@@ -283,6 +306,29 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/tv_gtin_control" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/ConstraintMRC"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="@{!vm.isDefect &amp;&amp; vm.isVisibilityMRC}"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/ConstraintControlGTIN">
+
+            <View
+                android:id="@+id/div_vert5"
+                android:layout_width="1dp"
+                android:layout_height="0dp"
+                android:layout_marginStart="1dp"
+                android:background="@color/color_divider"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
                 android:id="@+id/tv_mrc"
@@ -294,9 +340,9 @@
                 android:layout_marginEnd="8dp"
                 android:ellipsize="end"
                 android:text="@string/mrc_order"
-                app:layout_constraintEnd_toStartOf="@+id/div_vert2"
+                app:layout_constraintEnd_toStartOf="@+id/div_vert5"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/div_hor4" />
+                app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
                 android:id="@+id/tv_mrc_val"
@@ -311,7 +357,7 @@
                 app:layout_constraintBottom_toBottomOf="@+id/tv_mrc"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.0"
-                app:layout_constraintStart_toEndOf="@+id/div_vert2"
+                app:layout_constraintStart_toEndOf="@+id/div_vert5"
                 app:layout_constraintTop_toTopOf="@+id/tv_mrc"
                 tools:text="150 р." />
 
@@ -336,7 +382,22 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/ConstraintNorm">
+            app:layout_constraintTop_toBottomOf="@+id/ConstraintMRC">
+
+            <TextView
+                android:id="@+id/tv_stamp_list"
+                style="@style/TextTitle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="8dp"
+                android:ellipsize="end"
+                android:text="@string/list_stamp"
+                app:layout_constraintBottom_toBottomOf="@+id/tv_stamp_list_val"
+                app:layout_constraintEnd_toStartOf="@+id/div_vert3"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/tv_stamp_list_val" />
 
             <CheckBox
                 android:id="@+id/checkBox_stamp_list"
@@ -365,21 +426,6 @@
                 app:layout_constraintStart_toEndOf="@+id/checkBox_stamp_list"
                 app:layout_constraintTop_toTopOf="@+id/div_vert3"
                 tools:text="0 из 2" />
-
-            <TextView
-                android:id="@+id/tv_stamp_list"
-                style="@style/TextTitle"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginEnd="8dp"
-                android:ellipsize="end"
-                android:text="@string/list_stamp"
-                app:layout_constraintBottom_toBottomOf="@+id/tv_stamp_list_val"
-                app:layout_constraintEnd_toStartOf="@+id/div_vert3"
-                app:layout_constraintHorizontal_bias="0.0"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="@+id/tv_stamp_list_val" />
 
             <View
                 android:id="@+id/div_vert3"

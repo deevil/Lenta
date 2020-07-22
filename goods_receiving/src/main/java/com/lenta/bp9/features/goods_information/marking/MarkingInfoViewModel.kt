@@ -81,6 +81,12 @@ class MarkingInfoViewModel : CoreViewModel(),
     private val paramGrzMeinsPack: MutableLiveData<String> = MutableLiveData("")
     private val isBlockMode: MutableLiveData<Boolean> = MutableLiveData(false)
     private val uom: MutableLiveData<Uom> = MutableLiveData()
+    val isVisibilityControlGTIN: MutableLiveData<Boolean> by lazy {
+        MutableLiveData(productInfo.value?.isControlGTIN == true)
+    }
+    val isVisibilityMRC: MutableLiveData<Boolean> by lazy {
+        MutableLiveData((productInfo.value?.upLimitCondAmount?.toDoubleOrNull() ?: 0.0) > 0.0)
+    }
 
     val count: MutableLiveData<String> = MutableLiveData("0")
     private val countValue: MutableLiveData<Double> = count.map {
@@ -215,7 +221,7 @@ class MarkingInfoViewModel : CoreViewModel(),
         } ?: false
     }
 
-    val checkBoxGtinControlVisibility: MutableLiveData<Boolean> = MutableLiveData()
+    val checkBoxGtinControlVisibility: MutableLiveData<Boolean> = MutableLiveData(true)
 
     val tvMrcVal: MutableLiveData<String> = acceptTotalCount.combineLatest(spinQualitySelectedPosition).map {
         val acceptTotalCountValue = it?.first ?: 0.0
