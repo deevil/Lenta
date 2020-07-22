@@ -34,7 +34,6 @@
                 <TextView
                     android:id="@+id/tv_item_number"
                     style="@style/CellCircleNumberStyle"
-                    android:background="@drawable/bg_border_circle_white_selectable_for_delete"
                     android:text='@{item.number + ""}'
                     app:selected="@{selectedItem}"
                     tools:text="1" />
