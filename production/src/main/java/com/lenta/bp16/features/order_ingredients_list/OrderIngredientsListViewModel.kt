@@ -3,9 +3,11 @@ package com.lenta.bp16.features.order_ingredients_list
 import android.content.Context
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.switchMap
+import androidx.lifecycle.viewModelScope
 import com.lenta.bp16.model.ingredients.IngredientInfo
 import com.lenta.bp16.model.ingredients.OrderIngredientDataInfo
 import com.lenta.bp16.model.ingredients.params.GetIngredientDataParams
+import com.lenta.bp16.model.ingredients.params.UnblockIngredientsParams
 import com.lenta.bp16.model.ingredients.ui.ItemOrderIngredientUi
 import com.lenta.bp16.platform.extention.getDoneCount
 import com.lenta.bp16.platform.extention.getItemName
@@ -13,9 +15,13 @@ import com.lenta.bp16.platform.extention.getModeType
 import com.lenta.bp16.platform.extention.getPlanCount
 import com.lenta.bp16.platform.navigation.IScreenNavigator
 import com.lenta.bp16.request.GetOrderIngredientsDataNetRequest
+import com.lenta.bp16.request.UnblockIngredientNetRequest
+import com.lenta.bp16.request.UnblockTaskParams
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.extentions.*
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 import kotlin.properties.Delegates
 
@@ -29,6 +35,9 @@ class OrderIngredientsListViewModel : CoreViewModel() {
 
     @Inject
     lateinit var context: Context
+
+    @Inject
+    lateinit var unblockIngredientNetRequest: UnblockIngredientNetRequest
 
     // выбранное количество
     var weight: String by Delegates.notNull()
@@ -83,6 +92,17 @@ class OrderIngredientsListViewModel : CoreViewModel() {
                 })
             }
         }
+    }
+
+    fun onBackPressed() = launchAsyncTryCatch {
+        unblockIngredientNetRequest(
+                params = UnblockIngredientsParams(
+                        code = ingredient.value?.code.orEmpty(),
+                        mode = UnblockIngredientsParams.MODE_UNBLOCK_VP
+                )
+        ).either(fnL = ::handleFailure, fnR = {
+            navigator.goBack()
+        })
     }
 
     fun onClickItemPosition(position: Int) {

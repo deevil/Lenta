@@ -9,6 +9,7 @@ import com.lenta.bp16.databinding.FragmentIngredientsByOrderBinding
 import com.lenta.bp16.databinding.ItemOrderIngredientBinding
 import com.lenta.bp16.model.ingredients.IngredientInfo
 import com.lenta.bp16.platform.extention.getAppComponent
+import com.lenta.shared.platform.activity.OnBackPresserListener
 import com.lenta.shared.platform.fragment.CoreFragment
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
@@ -17,7 +18,8 @@ import com.lenta.shared.utilities.extentions.provideViewModel
 import com.lenta.shared.utilities.extentions.unsafeLazy
 import com.lenta.shared.utilities.state.state
 
-class OrderIngredientsListFragment : CoreFragment<FragmentIngredientsByOrderBinding, OrderIngredientsListViewModel>() {
+class OrderIngredientsListFragment : CoreFragment<FragmentIngredientsByOrderBinding,
+        OrderIngredientsListViewModel>(), OnBackPresserListener {
 
     // выбранный ранее ингредиент
     private val ingredientInfo: IngredientInfo by unsafeLazy {
@@ -57,6 +59,11 @@ class OrderIngredientsListFragment : CoreFragment<FragmentIngredientsByOrderBind
 
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
         bottomToolbarUiModel.uiModelButton1.show(ButtonDecorationInfo.back)
+    }
+
+    override fun onBackPressed(): Boolean {
+        vm.onBackPressed()
+        return false
     }
 
     private fun initRvConfig() {

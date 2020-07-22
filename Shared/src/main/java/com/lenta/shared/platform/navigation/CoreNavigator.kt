@@ -40,6 +40,7 @@ import com.lenta.shared.utilities.extentions.openAnotherApp
 import com.lenta.shared.utilities.extentions.restartApp
 import com.lenta.shared.utilities.extentions.setFragmentResultCode
 import com.mobrun.plugin.api.HyperHive
+import kotlinx.coroutines.CoroutineScope
 import javax.inject.Inject
 import kotlin.system.exitProcess
 

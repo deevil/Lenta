@@ -33,6 +33,16 @@ class IngredientDetailsViewModel : CoreViewModel() {
     // Комплектация
     val weightField: MutableLiveData<String> = MutableLiveData(DEFAULT_WEIGHT)
 
+    // суффикс
+    val suffix: String by unsafeLazy {
+        context.getString(R.string.text_weight_hint)
+    }
+
+    // Focus by request
+    val requestFocusToCount: MutableLiveData<Boolean> by unsafeLazy {
+        MutableLiveData(true)
+    }
+
     private val entered = weightField.map {
         it?.toDoubleOrNull() ?: 0.0
     }
@@ -45,11 +55,6 @@ class IngredientDetailsViewModel : CoreViewModel() {
 
     val totalWithUnits = total.map {
         "${it.dropZeros()} ${orderIngredient.value?.buom.orEmpty()}"
-    }
-
-    // суффикс
-    val suffix: String by unsafeLazy {
-        context.getString(R.string.text_weight_hint)
     }
 
     fun onCompleteClicked() = launchUITryCatch {

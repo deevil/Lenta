@@ -35,9 +35,14 @@ class OrderDetailsViewModel : CoreViewModel() {
         context.getString(R.string.text_weight_hint)
     }
 
+    // Focus by request
+    val requestFocusToCount: MutableLiveData<Boolean> by unsafeLazy {
+        MutableLiveData(true)
+    }
+
     fun onClickNext() = launchUITryCatch {
         val weight = weightField.value.orEmpty()
-        if(weight == DEFAULT_WEIGHT || weight.isEmpty()) {
+        if (weight == DEFAULT_WEIGHT || weight.isEmpty()) {
             navigator.showAlertWeightNotSet()
         } else {
             ingredient.value?.let {
