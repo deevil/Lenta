@@ -22,6 +22,7 @@ import com.lenta.shared.utilities.databinding.PageSelectionListener
 import com.lenta.shared.utilities.extentions.combineLatest
 import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.utilities.extentions.unsafeLazy
+import com.lenta.shared.utilities.orIfNull
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -150,57 +151,66 @@ class CreateBoxesViewModel : CoreViewModel(),
         selectionsHelper.clearPositions()
     }
 
+    private fun deleteStamp(stamp: ExciseStamp) {
+        stamps.value?.let{ stampsValue ->
+            val newStampsList = stampsValue.toMutableList()
+            newStampsList.remove(stamp)
+            stamps.postValue(newStampsList)
+        }
+    }
+
     private fun scanStamp(stampCode: String) {
+        val stampList = stamps.value
+        stampList?.let { stampListValue ->
+            productInfo.value?.let { productInfo ->
 
-        if (stamps.value.orEmpty().any { it.code == stampCode }) {
-            screenNavigator.openStampWasAddedDialog()
-            return
-        }
-
-        if (productInfo.value?.quantityInvestments == stamps.value?.size) {
-            screenNavigator.openStampMaxCountDialog()
-            return
-        }
-
-        productInfo.value?.let { productInfoValue ->
-            boxesRepository.getBoxesByProduct(productInfoValue)
-                    .find { box ->
-                        box.stamps.any { stamp ->
-                            stamp.code == stampCode
-                        }
-                    }
-                    ?.let { findBoxWithStamp ->
-                        screenNavigator.openStampWasAddedDialog(findBoxWithStamp)
-                        return
-                    }
-        }
-
-
-        viewModelScope.launch {
-            screenNavigator.showProgress(LOADING_STAMP_INFO)
-            exciseStampNetRequest(
-                    params = ExciseStampParams(
-                            tk = sessionInfo.market.orEmpty(),
-                            materialNumber = productInfo.value?.materialNumber.orEmpty(),
-                            stampCode = stampCode
+                stampListValue.find { it.code == stampCode }?.let {stamp ->
+                    screenNavigator.openStampWasAddedDialog(
+                            yesCallbackFunc = { deleteStamp(stamp) }
                     )
-            ).either(
-                    fnL = { failure ->
-                        screenNavigator.openAlertScreen(failure)
-                    },
-                    fnR = { exciseStamp ->
-                        val stampList = stamps.value.orEmpty()
+                    return
+                }
 
-                        if (stampList.isNotEmpty()
-                                && stampList.first().manufacturerName == exciseStamp.manufacturerName
-                        ) {
-                            stamps.postValue(stampList + exciseStamp)
-                        } else {
-                            stamps.postValue(listOf(exciseStamp))
-                        }
+                boxesRepository.getBoxesByProduct(productInfo).find { box ->
+                    box.stamps.any { stamp ->
+                        stamp.code == stampCode
                     }
-            )
-            screenNavigator.hideProgress()
+                }?.run {
+                    screenNavigator.openStampWasAddedDialogInAnotherBox()
+                    return
+                }
+
+                if (productInfo.quantityInvestments == stampListValue.size) {
+                    screenNavigator.openStampMaxCountDialog()
+                    return
+                }
+
+                viewModelScope.launch {
+                    screenNavigator.showProgress(LOADING_STAMP_INFO)
+                    exciseStampNetRequest(
+                            params = ExciseStampParams(
+                                    tk = sessionInfo.market.orEmpty(),
+                                    materialNumber = productInfo.materialNumber,
+                                    stampCode = stampCode
+                            )
+                    ).either(
+                            fnL = { failure ->
+                                screenNavigator.openAlertScreen(failure)
+                            },
+                            fnR = { exciseStamp ->
+
+                                if (stampListValue.isNotEmpty()
+                                        && stampListValue.first().manufacturerName == exciseStamp.manufacturerName
+                                ) {
+                                    stamps.postValue(stampListValue + exciseStamp)
+                                } else {
+                                    stamps.postValue(listOf(exciseStamp))
+                                }
+                            }
+                    )
+                    screenNavigator.hideProgress()
+                }
+            }
         }
     }
 
