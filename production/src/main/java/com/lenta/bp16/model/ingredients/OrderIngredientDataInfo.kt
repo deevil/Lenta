@@ -2,6 +2,7 @@ package com.lenta.bp16.model.ingredients
 
 import android.os.Parcelable
 import com.google.gson.annotations.SerializedName
+import com.lenta.shared.utilities.extentions.dropZeros
 import kotlinx.android.parcel.Parcelize
 
 /**
@@ -38,4 +39,22 @@ data class OrderIngredientDataInfo(
          */
         @SerializedName("DONE_QNT")
         val done_qnt: Double
-) : Parcelable
+) : Parcelable {
+
+        fun getPlanCount(): String {
+                return buildString {
+                        append(plan_qnt.dropZeros())
+                        append(" ")
+                        append(buom)
+                }
+        }
+
+        fun getDoneCount(): String {
+                return buildString {
+                        append(done_qnt.dropZeros())
+                        append(" ")
+                        append(buom)
+                }
+        }
+
+}

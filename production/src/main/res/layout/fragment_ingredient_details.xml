@@ -104,7 +104,7 @@
 
                 <TextView
                     style="@style/CellTextStyle"
-                    android:text="@{vm.orderIngredient.name}"
+                    android:text="@{vm.orderIngredient.planCount}"
                     tools:text="70 кг" />
 
             </LinearLayout>
@@ -135,7 +135,7 @@
 
                 <TextView
                     style="@style/CellTextStyle"
-                    android:text="@{vm.orderIngredient.name}"
+                    android:text="@{vm.orderIngredient.doneCount}"
                     tools:text="25 кг" />
 
             </LinearLayout>
