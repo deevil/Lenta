@@ -18,6 +18,7 @@ import com.lenta.shared.R
 import com.lenta.shared.analytics.AnalyticsHelper
 import com.lenta.shared.databinding.ActivityMainBinding
 import com.lenta.shared.di.FromParentToCoreProvider
+import com.lenta.shared.exception.Failure
 import com.lenta.shared.keys.KeyCode
 import com.lenta.shared.keys.OnKeyDownListener
 import com.lenta.shared.keys.OnKeyUpListener
@@ -290,8 +291,8 @@ abstract class CoreMainActivity : CoreActivity<ActivityMainBinding>(), ToolbarBu
         vm.onNewEnter()
     }
 
-    fun showSimpleProgress(title: String) {
-        vm.showSimpleProgress(title)
+    fun showSimpleProgress(title: String, handleFailure: ((Failure) -> Unit)? = null) {
+        vm.showSimpleProgress(title, handleFailure)
     }
 
     fun hideProgress() {

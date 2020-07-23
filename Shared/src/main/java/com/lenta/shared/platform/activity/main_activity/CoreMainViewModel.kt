@@ -2,6 +2,7 @@ package com.lenta.shared.platform.activity.main_activity
 
 import androidx.lifecycle.viewModelScope
 import com.lenta.shared.auto_exit.AutoExitManager
+import com.lenta.shared.exception.Failure
 import com.lenta.shared.features.loading.ICoreLoadingViewModel
 import com.lenta.shared.features.loading.TimerLoadingViewModel
 import com.lenta.shared.fmp.resources.dao_ext.getAutoExitTimeInMinutes
@@ -20,30 +21,37 @@ import kotlinx.coroutines.*
 import javax.inject.Inject
 
 abstract class CoreMainViewModel : CoreViewModel() {
-    abstract var statusBarUiModel: StatusBarUiModel
+
     @Inject
     lateinit var coreNavigator: ICoreNavigator
+
     @Inject
     lateinit var hyperHive: HyperHive
+
     @Inject
     lateinit var lockManager: LockManager
+
     @Inject
     lateinit var priorityAppManager: PriorityAppManager
+
     @Inject
     lateinit var defaultSettingsManager: DefaultSettingsManager
+
+
+    abstract var statusBarUiModel: StatusBarUiModel
 
     val zmpUtz14V001: ZmpUtz14V001 by lazy { ZmpUtz14V001(hyperHive) }
     val topToolbarUiModel: TopToolbarUiModel = TopToolbarUiModel()
     val bottomToolbarUiModel: BottomToolbarUiModel = BottomToolbarUiModel()
     val loadingViewModel: ICoreLoadingViewModel = TimerLoadingViewModel()
     var autoExitManager: AutoExitManager? = null
+
     abstract fun onNewEnter()
-    abstract fun showSimpleProgress(title: String)
+    abstract fun showSimpleProgress(title: String, handleFailure: ((Failure) -> Unit)? = null)
     abstract fun hideProgress()
 
     open fun onPause() {
         priorityAppManager.setHighPriority()
-
     }
 
     open fun onResume() {
@@ -76,12 +84,12 @@ abstract class CoreMainViewModel : CoreViewModel() {
                                 }
                         )
                     }
+
                     return@withContext zmpUtz14V001.getAutoExitTimeInMinutes().apply {
                         Logg.d { "autoExitTimeInMinutes: $this" }
                     }
                 }
             }
-
         }
     }
 

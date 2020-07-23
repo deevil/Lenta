@@ -30,6 +30,7 @@ import com.lenta.shared.utilities.getDateFromString
 import com.lenta.shared.utilities.getFormattedDate
 import com.lenta.shared.utilities.isCommonFormatNumber
 import com.lenta.shared.view.OnPositionClickListener
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -640,7 +641,10 @@ class GoodInfoCreateViewModel : CoreViewModel() {
     }
 
     private suspend fun checkPart(): Either<Failure, ScanInfoResult> {
-        navigator.showProgressLoadingData()
+        navigator.showProgressLoadingData {
+            viewModelScope.coroutineContext.cancel()
+            handleFailure(it)
+        }
 
         return scanInfoNetRequest(ScanInfoParams(
                 tkNumber = sessionInfo.market.orEmpty(),
