@@ -540,7 +540,9 @@ class GoodInfoCreateViewModel : CoreViewModel() {
 
     private fun loadMarkInfo(number: String) {
         viewModelScope.launch {
-            navigator.showProgressLoadingData()
+            navigator.showProgressLoadingData {
+            handleLoadingTimeOut { handleFailure(it) }
+        }
 
             scanInfoNetRequest(ScanInfoParams(
                     tkNumber = sessionInfo.market.orEmpty(),
@@ -609,7 +611,9 @@ class GoodInfoCreateViewModel : CoreViewModel() {
 
     private fun loadBoxInfo(number: String) {
         viewModelScope.launch {
-            navigator.showProgressLoadingData()
+            navigator.showProgressLoadingData {
+            handleLoadingTimeOut { handleFailure(it) }
+        }
 
             scanInfoNetRequest(ScanInfoParams(
                     tkNumber = sessionInfo.market.orEmpty(),
@@ -644,8 +648,7 @@ class GoodInfoCreateViewModel : CoreViewModel() {
 
     private suspend fun checkPart(): Either<Failure, ScanInfoResult> {
         navigator.showProgressLoadingData {
-            viewModelScope.coroutineContext.cancel()
-            handleFailure(it)
+            handleLoadingTimeOut { handleFailure(it) }
         }
 
         return scanInfoNetRequest(ScanInfoParams(
