@@ -290,7 +290,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
-                android:checked="@{vm.checkBoxGtinControl}"
+                android:checked="@{vm.checkBoxGtinStampControl}"
                 android:enabled="false"
                 android:visibility="@{vm.checkBoxGtinControlVisibility}"
                 app:layout_constraintBottom_toBottomOf="@+id/checkBox_gtin_control_scan_gtin"

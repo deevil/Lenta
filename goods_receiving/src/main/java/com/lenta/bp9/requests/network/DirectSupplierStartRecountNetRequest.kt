@@ -143,5 +143,7 @@ data class TaskComposition(
         @SerializedName("QNTINCL_PACK")
         val nestingInOneBlock: String?, //маркированный товар, Вложенность в один блок
         @SerializedName("IS_CHECK_GTIN")
-        val isControlGTIN: String //маркированный товар, Контроль GTIN
+        val isControlGTIN: String, //маркированный товар, Контроль GTIN
+        @SerializedName("IS_GRAYZONE")
+        val isGrayZone: String //маркированный товар
 )

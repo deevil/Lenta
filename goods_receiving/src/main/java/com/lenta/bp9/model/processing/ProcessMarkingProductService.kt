@@ -20,6 +20,7 @@ class ProcessMarkingProductService
     private lateinit var productInfo: TaskProductInfo
     private val exciseStamps: ArrayList<TaskExciseStampInfo> = ArrayList()
     private val currentExciseStampsDiscrepancies: ArrayList<TaskExciseStampDiscrepancies> = ArrayList()
+    private val blocks: ArrayList<TaskBlockInfo> = ArrayList()
 
     fun newProcessMarkingProductService(productInfo: TaskProductInfo) : ProcessMarkingProductService? {
         return if (productInfo.type == ProductType.General){
@@ -31,6 +32,10 @@ class ProcessMarkingProductService
             currentExciseStampsDiscrepancies.clear()
             taskManager.getReceivingTask()?.taskRepository?.getExciseStampsDiscrepancies()?.findExciseStampsDiscrepanciesOfProduct(productInfo)?.map {
                 currentExciseStampsDiscrepancies.add(it.copy())
+            }
+            blocks.clear()
+            taskManager.getReceivingTask()?.getProcessedBlocks()?.map {
+                blocks.add(it.copy())
             }
             this
         }
@@ -98,6 +103,12 @@ class ProcessMarkingProductService
     fun searchExciseStamp(code: String): TaskExciseStampInfo? {
         return exciseStamps.findLast {
             it.code == code
+        }
+    }
+
+    fun searchBlock(blockNumber: String): TaskBlockInfo? {
+        return blocks.findLast {
+            it.blockNumber == blockNumber
         }
     }
 

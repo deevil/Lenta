@@ -221,7 +221,8 @@ class TaskContents
                     markType = getMarkType(it.markType.orEmpty()),
                     isCountingBoxes = it.isCountingBoxes == "X",
                     nestingInOneBlock = it.nestingInOneBlock ?: "0.0",
-                    isControlGTIN = it.isControlGTIN == "X"
+                    isControlGTIN = it.isControlGTIN == "X",
+                    isGrayZone = it.isGrayZone == "X"
             )
         }
     }

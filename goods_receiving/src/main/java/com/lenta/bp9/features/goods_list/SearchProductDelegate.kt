@@ -189,7 +189,8 @@ class SearchProductDelegate @Inject constructor(
                 markType = MarkType.None,
                 isCountingBoxes = false,
                 nestingInOneBlock = "0.0",
-                isControlGTIN = false
+                isControlGTIN = false,
+                isGrayZone = false
         )
         taskManager.getReceivingTask()!!.taskRepository.getProducts().addProduct(goodsSurplus)
         openProductScreen(taskProductInfo = goodsSurplus)

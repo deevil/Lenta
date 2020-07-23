@@ -15,6 +15,7 @@ import com.lenta.bp9.model.task.TaskType
 import com.lenta.bp9.platform.TypeDiscrepanciesConstants
 import com.lenta.bp9.platform.navigation.IScreenNavigator
 import com.lenta.bp9.repos.IDataBaseRepo
+import com.lenta.shared.fmp.resources.dao_ext.getProductInfoByMaterial
 import com.lenta.shared.fmp.resources.dao_ext.getUomInfo
 import com.lenta.shared.fmp.resources.fast.ZmpUtz07V001
 import com.lenta.shared.fmp.resources.slow.ZfmpUtz48V001
@@ -58,8 +59,12 @@ class MarkingInfoViewModel : CoreViewModel(),
     @Inject
     lateinit var hyperHive: HyperHive
 
-    val zmpUtz07V001: ZmpUtz07V001 by lazy {
+    private val zmpUtz07V001: ZmpUtz07V001 by lazy {
         ZmpUtz07V001(hyperHive)
+    }
+
+    private val zfmpUtz48V001: ZfmpUtz48V001 by lazy {
+        ZfmpUtz48V001(hyperHive)
     }
 
     val productInfo: MutableLiveData<TaskProductInfo> = MutableLiveData()
@@ -233,6 +238,14 @@ class MarkingInfoViewModel : CoreViewModel(),
         } ?: false
     }
 
+    val checkBoxGtinStampControl: MutableLiveData<Boolean> = checkBoxGtinControlVisibility.map {
+        productInfo.value?.let {
+            taskManager
+                    .getReceivingTask()
+                    ?.controlBoxesOfProduct(it)
+        } ?: false
+    }
+
     val tvMrcVal: MutableLiveData<String> by lazy {
         MutableLiveData(productInfo.value?.upLimitCondAmount?.toDoubleOrNull().toStringFormatted())
     }
@@ -357,6 +370,7 @@ class MarkingInfoViewModel : CoreViewModel(),
         onScanResult("01046002660121422100000CS800501234593800092NGkg+wRXz36kBFjpfwOub5DBIIpD2iS/DMYpZuuDLU0Y3pZt1z20/1ksr4004wfhDhRxu4dgUV4QN96Qtdih9g==01046002660121422100000CS.8005012345.938000.92NGkg+wRXz36kBFjpfwOub5DBIIpD2iS/DMYpZuuDLU0Y3pZt1z20/1ksr4004wfhDhRxu4dgUV4QN96Qtdih9g==")
     }
 
+    //https://trello.com/c/N6t51jru
     fun onScanResult(data: String) {
         when (data.length) {
             in 0..20 -> {
@@ -427,11 +441,52 @@ class MarkingInfoViewModel : CoreViewModel(),
             return
         }
 
-        if (processMarkingProductService.searchExciseStamp(stampCode) != null) {
-            //Отсканированная марка не числится в текущей поставке. Верните отсканированную марку обратно поставщику
-            screenNavigator.openAlertStampNotFoundReturnSupplierScreen()
-        } else {
+        val blockInfo = processMarkingProductService.searchBlock(stampCode)
+        if (blockInfo != null) {
+            if (productInfo.value?.isGrayZone == false) {
+                //Отсканированная марка не числится в текущей поставке. Верните отсканированную марку обратно поставщику
+                screenNavigator.openAlertStampNotFoundReturnSupplierScreen()
+            } else {
+                //todo Если установлен Леша сказал пока не делать...
+                /**
+                Но вообще нужно вызывать 44 рест
+                        ZMP_UTZ_GRZ_44_V001
+                на вход заполнять:
+                iv_task_num   = iv_task_num (номер задания)
+                iv_box_num    = iv_box_num
+                iv_pack_num   = iv_pack_num (номер блока)
+                iv_mark_num   = iv_mark_num
+                iv_matnr      = iv_matnr (номер товара)
+                и если в этом ресте - пришел ev_stat=5
+                переходить к пункту 4*/
+            }
+            return
+        }
 
+        val qualityInfoCode = spinQualitySelectedPosition.value?.let { position ->
+            qualityInfo.value?.get(position)?.code.orEmpty()
+        }
+        if (qualityInfoCode == TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_NORM) {
+            count.value = count.value?.toDouble()?.minus(1)?.toString()
+            //Количество нормы будет уменьшено
+            screenNavigator.openAlertAmountNormWillBeReduced()
+            return
+        }
+
+        if (blockInfo?.materialNumber != productInfo.value?.materialNumber) {
+            //Отсканированная марка принадлежит товару <SAP-код> <Название>"
+            screenNavigator.openAlertScannedStampBelongsAnotherProductScreen(
+                    materialNumber = blockInfo?.materialNumber.orEmpty(),
+                    materialName = zfmpUtz48V001.getProductInfoByMaterial(blockInfo?.materialNumber)?.name.orEmpty()
+            )
+            return
+        }
+
+        if (checkBoxGtinControl.value == false) {
+            //Значение отсутствует - устанавливать чек бокс в поле «Сверка КМ» в поле «Контроль GTIN», количество марок с пройденным контролем не увеличивать
+            checkBoxGtinControl.value = true
+        } else {
+            //todo Значение присутствует – выполнять проверки, описанные в разделе 2. MARK.ППП. Логика сверки GTIN. https://trello.com/c/y2ECoCw4
         }
     }
 
