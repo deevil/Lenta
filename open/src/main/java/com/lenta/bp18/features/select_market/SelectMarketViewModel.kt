@@ -62,13 +62,11 @@ class SelectMarketViewModel : CoreViewModel(), OnPositionClickListener {
     lateinit var resourceManager: ISharedStringResourceManager
 
     private val markets: MutableLiveData<List<MarketInfo>> = MutableLiveData()
-
     val marketsNames: MutableLiveData<List<String>> = markets.map { markets ->
         markets?.map { it.number }
     }
 
     val selectedPosition: MutableLiveData<Int> = MutableLiveData()
-
     val selectedAddress: MutableLiveData<String> = selectedPosition.map {
         it?.let { position ->
             markets.value?.getOrNull(position)?.address
@@ -97,6 +95,7 @@ class SelectMarketViewModel : CoreViewModel(), OnPositionClickListener {
 
     fun onClickNext() {
         viewModelScope.launch {
+            navigator.showProgressLoadingData()
             markets.value
                     ?.getOrNull(selectedPosition.value ?: -1)?.number
                     ?.let { tkNumber ->
@@ -106,7 +105,7 @@ class SelectMarketViewModel : CoreViewModel(), OnPositionClickListener {
                         sessionInfo.market = tkNumber
                         appSettings.lastTK = tkNumber
 
-                        /*withContext(Dispatchers.IO) {
+                        withContext(Dispatchers.IO) {
                             database.getAllMarkets()
                                     .find { it.number == sessionInfo.market }
                                     .let { market ->
@@ -128,10 +127,44 @@ class SelectMarketViewModel : CoreViewModel(), OnPositionClickListener {
                             } else {
                                 installUpdate(updateFileName)
                             }
-                        }*/
+                        }
                     }
-            navigator.openSelectGoodScreen()
         }
+    }
+
+    private fun getServerTime() {
+        viewModelScope.launch {
+            serverTimeRequest(ServerTimeRequestParam(sessionInfo.market
+                    .orEmpty())).either(::handleFailure, ::handleSuccessServerTime)
+        }
+    }
+
+    private fun handleSuccessServerTime(serverTime: ServerTime) {
+        navigator.hideProgress()
+        timeMonitor.setServerTime(time = serverTime.time, date = serverTime.date)
+
+        // Раскомментировать для удаление сохраненных данных
+        //checkData.clearSavedData()
+        navigator.openSelectGoodScreen()
+
+    }
+
+    override fun handleFailure(failure: Failure) {
+        navigator.openSelectMarketScreen()
+        navigator.openAlertScreen(failureInterpreter.getFailureDescription(failure).message)
+        navigator.hideProgress()
+    }
+
+    private fun installUpdate(updateFileName: String) {
+        viewModelScope.launch {
+            navigator.showProgress(resourceManager.loadingNewAppVersion())
+            withContext(Dispatchers.IO) {
+                appUpdateInstaller.installUpdate(updateFileName)
+            }.either(::handleFailure) {
+                // do nothing. App is finished
+            }
+        }
+
     }
 
     override fun onClickPosition(position: Int) {
