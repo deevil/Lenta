@@ -459,9 +459,7 @@ class GoodInfoCreateViewModel : CoreViewModel() {
         }
 
         launchAsyncTryCatch {
-            navigator.showProgressLoadingData {
-                handleLoadingTimeOut { handleFailure(it) }
-            }
+            navigator.showProgressLoadingData(::handleFailure)
 
             goodInfoNetRequest(GoodInfoParams(
                     tkNumber = sessionInfo.market.orEmpty(),
@@ -540,9 +538,7 @@ class GoodInfoCreateViewModel : CoreViewModel() {
 
     private fun loadMarkInfo(number: String) {
         viewModelScope.launch {
-            navigator.showProgressLoadingData {
-            handleLoadingTimeOut { handleFailure(it) }
-        }
+            navigator.showProgressLoadingData(::handleFailure)
 
             scanInfoNetRequest(ScanInfoParams(
                     tkNumber = sessionInfo.market.orEmpty(),
@@ -611,9 +607,7 @@ class GoodInfoCreateViewModel : CoreViewModel() {
 
     private fun loadBoxInfo(number: String) {
         viewModelScope.launch {
-            navigator.showProgressLoadingData {
-            handleLoadingTimeOut { handleFailure(it) }
-        }
+            navigator.showProgressLoadingData(::handleFailure)
 
             scanInfoNetRequest(ScanInfoParams(
                     tkNumber = sessionInfo.market.orEmpty(),
@@ -647,9 +641,7 @@ class GoodInfoCreateViewModel : CoreViewModel() {
     }
 
     private suspend fun checkPart(): Either<Failure, ScanInfoResult> {
-        navigator.showProgressLoadingData {
-            handleLoadingTimeOut { handleFailure(it) }
-        }
+        navigator.showProgressLoadingData(::handleFailure)
 
         return scanInfoNetRequest(ScanInfoParams(
                 tkNumber = sessionInfo.market.orEmpty(),

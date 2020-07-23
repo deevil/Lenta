@@ -5,6 +5,7 @@ import com.lenta.bp12.platform.navigation.IScreenNavigator
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.features.loading.startProgressTimer
 import com.lenta.shared.platform.activity.main_activity.CoreMainViewModel
+import com.lenta.shared.platform.constants.Constants
 import com.lenta.shared.platform.statusbar.StatusBarUiModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
@@ -27,21 +28,21 @@ class MainViewModel : CoreMainViewModel() {
 
     override fun showSimpleProgress(title: String, handleFailure: ((Failure) -> Unit)?) {
         progressJob = viewModelScope.launch {
-            loadingViewModel.let {
-                it.progress.postValue(true)
-                it.title.postValue(title)
-                it.elapsedTime.postValue(null)
-                startProgressTimer(
-                        coroutineScope = this,
-                        remainingTime = it.remainingTime,
-                        timeoutInSec = 60,
-                        handleFailure = { failure ->
-                            handleFailure?.invoke(failure)
-                            hideProgress()
-                        }
-                )
+            with(loadingViewModel) {
+                this.progress.postValue(true)
+                this.title.postValue(title)
+                this.elapsedTime.postValue(null)
             }
+
+            startProgressTimer(
+                    coroutineScope = this,
+                    remainingTime = loadingViewModel.remainingTime,
+                    timeoutInSec = Constants.ONE_MINUTE_TIMEOUT,
+                    hideProgress = { hideProgress() },
+                    handleFailure = { handleFailure?.invoke(it) }
+            )
         }
+
         bottomToolbarUiModel.hide()
     }
 

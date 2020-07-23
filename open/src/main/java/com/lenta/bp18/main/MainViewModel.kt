@@ -1,7 +1,7 @@
 package com.lenta.bp18.main
 
 import androidx.lifecycle.viewModelScope
-import com.lenta.bp18.platform.Constants
+import com.lenta.shared.platform.constants.Constants
 import com.lenta.bp18.platform.navigation.IScreenNavigator
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.features.loading.startProgressTimer
@@ -27,17 +27,21 @@ class MainViewModel : CoreMainViewModel() {
 
     override fun showSimpleProgress(title: String, handleFailure: ((Failure) -> Unit)?) {
         progressJob = viewModelScope.launch {
-            loadingViewModel.let {
-                it.progress.postValue(true)
-                it.title.postValue(title)
-                it.elapsedTime.postValue(null)
-                startProgressTimer(
-                        coroutineScope = this,
-                        remainingTime = it.remainingTime,
-                        timeoutInSec = Constants.TIME_OUT_IN_SEC
-                )
+            with(loadingViewModel) {
+                this.progress.postValue(true)
+                this.title.postValue(title)
+                this.elapsedTime.postValue(null)
             }
+
+            startProgressTimer(
+                    coroutineScope = this,
+                    remainingTime = loadingViewModel.remainingTime,
+                    timeoutInSec = Constants.ONE_MINUTE_TIMEOUT,
+                    hideProgress = { hideProgress() },
+                    handleFailure = { handleFailure?.invoke(it) }
+            )
         }
+
         bottomToolbarUiModel.hide()
     }
 
