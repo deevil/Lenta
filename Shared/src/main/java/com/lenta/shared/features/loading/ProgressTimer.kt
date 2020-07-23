@@ -16,12 +16,12 @@ fun startProgressTimer(
 ) {
 
     val startTime = System.currentTimeMillis()
-    val timeOutInMills = timeoutInSec?.times(1000) ?: 0
+    val timeOutInMills = timeoutInSec?.times(1000L) ?: 0L
 
     elapsedTime?.postValue(0)
 
     timeoutInSec?.let {
-        remainingTime?.postValue(timeOutInMills.toLong())
+        remainingTime?.postValue(timeOutInMills)
     }
 
     coroutineScope.timer(1000) {

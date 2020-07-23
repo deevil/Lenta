@@ -10,6 +10,7 @@ import com.lenta.bp12.platform.navigation.IScreenNavigator
 import com.lenta.bp12.platform.resource.IResourceManager
 import com.lenta.bp12.request.TaskListNetRequest
 import com.lenta.bp12.request.TaskListParams
+import com.lenta.bp12.request.TaskListResult
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.platform.viewmodel.CoreViewModel
@@ -154,11 +155,13 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
                     )
             ).also {
                 navigator.hideProgress()
-            }.either(::handleFailure) { taskListResult ->
-                launchUITryCatch {
-                    manager.addTasks(taskListResult.tasks)
-                }
-            }
+            }.either(::handleFailure, ::handleTaskListResult)
+        }
+    }
+
+    private fun handleTaskListResult(result: TaskListResult) {
+        launchUITryCatch {
+            manager.addTasks(result.tasks)
         }
     }
 
@@ -177,12 +180,14 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
                         )
                 ).also {
                     navigator.hideProgress()
-                }.either(::handleFailure) { taskListResult ->
-                    launchUITryCatch {
-                        manager.addFoundTasks(taskListResult.tasks)
-                    }
-                }
+                }.either(::handleFailure, ::handleTaskListResultWithParams)
             }
+        }
+    }
+
+    private fun handleTaskListResultWithParams(result: TaskListResult) {
+        launchUITryCatch {
+            manager.addFoundTasks(result.tasks)
         }
     }
 

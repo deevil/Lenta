@@ -55,6 +55,12 @@ class SelectMarketViewModel : CoreViewModel(), OnPositionClickListener {
     // -----------------------------
 
     init {
+        takeSelectedPositionForAction()
+    }
+
+    // -----------------------------
+
+    private fun takeSelectedPositionForAction() {
         launchUITryCatch {
             repoInMemoryHolder.storesRequestResult?.marketInfos?.let { list ->
                 markets.value = list.map {
@@ -79,8 +85,6 @@ class SelectMarketViewModel : CoreViewModel(), OnPositionClickListener {
             }
         }
     }
-
-    // -----------------------------
 
     fun onClickNext() {
         launchUITryCatch {

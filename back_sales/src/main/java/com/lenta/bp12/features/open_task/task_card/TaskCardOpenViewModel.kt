@@ -7,10 +7,7 @@ import com.lenta.bp12.platform.extention.isAlcohol
 import com.lenta.bp12.platform.extention.isCommon
 import com.lenta.bp12.platform.navigation.IScreenNavigator
 import com.lenta.bp12.platform.resource.IResourceManager
-import com.lenta.bp12.request.TaskContentNetRequest
-import com.lenta.bp12.request.TaskContentParams
-import com.lenta.bp12.request.UnblockTaskNetRequest
-import com.lenta.bp12.request.UnblockTaskParams
+import com.lenta.bp12.request.*
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.platform.device_info.DeviceInfo
@@ -102,12 +99,14 @@ class TaskCardOpenViewModel : CoreViewModel(), PageSelectionListener {
                     userNumber = appSettings.lastPersonnelNumber.orEmpty()
             )).also {
                 navigator.hideProgress()
-            }.either(::handleFailure) { taskContentResult ->
-                launchUITryCatch {
-                    manager.addGoodsInCurrentTask(taskContentResult)
-                    navigator.openGoodListScreen()
-                }
-            }
+            }.either(::handleFailure, ::handleTaskContentResult)
+        }
+    }
+
+    private fun handleTaskContentResult(result: TaskContentResult) {
+        launchUITryCatch {
+            manager.addGoodsInCurrentTask(result)
+            navigator.openGoodListScreen()
         }
     }
 
