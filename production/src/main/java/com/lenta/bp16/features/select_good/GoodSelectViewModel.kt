@@ -16,7 +16,7 @@ class GoodSelectViewModel : CoreViewModel() {
 
     fun onClickNext(){
         viewModelScope.launch {
-            navigator.showProgressLoadingData()
+            navigator.showProgressLoadingData(::handleFailure)
             //TODO Заполнить форму данными по запросу номера штрихкода
             /*Допустим, пока так, потом с появлением ТП пропишу логику*/
             navigator.openGoodInfoScreen()

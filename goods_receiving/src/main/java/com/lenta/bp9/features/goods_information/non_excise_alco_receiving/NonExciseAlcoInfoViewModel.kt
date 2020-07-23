@@ -293,7 +293,7 @@ class NonExciseAlcoInfoViewModel : CoreViewModel(), OnPositionClickListener {
 
     private suspend fun updateDataSpinReasonRejection(selectedQuality: String) {
         viewModelScope.launch {
-            screenNavigator.showProgressLoadingData()
+            screenNavigator.showProgressLoadingData(::handleFailure)
             reasonRejectionInfo.value = dataBase.getReasonRejectionInfoOfQuality(selectedQuality)
             spinReasonRejection.value = reasonRejectionInfo.value?.map {
                 it.name

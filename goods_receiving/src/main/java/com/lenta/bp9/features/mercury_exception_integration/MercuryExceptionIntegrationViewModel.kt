@@ -54,7 +54,7 @@ class MercuryExceptionIntegrationViewModel : CoreViewModel(), OnPositionClickLis
 
     fun onClickNext() {
         viewModelScope.launch {
-            screenNavigator.showProgressLoadingData()
+            screenNavigator.showProgressLoadingData(::handleFailure)
             taskManager.getReceivingTask()?.let { task ->
                 val params = ExclusionFromIntegrationParameters(
                         taskNumber = task.taskHeader.taskNumber,

@@ -465,7 +465,7 @@ class ExciseAlcoBoxAccInfoViewModel : CoreViewModel(), OnPositionClickListener {
 
     private suspend fun updateDataSpinReasonRejection(selectedQuality: String) {
         viewModelScope.launch {
-            screenNavigator.showProgressLoadingData()
+            screenNavigator.showProgressLoadingData(::handleFailure)
             spinReasonRejectionSelectedPosition.value = 0
             reasonRejectionInfo.value = dataBase.getReasonRejectionInfoOfQuality(selectedQuality)
             spinReasonRejection.value = reasonRejectionInfo.value?.map {

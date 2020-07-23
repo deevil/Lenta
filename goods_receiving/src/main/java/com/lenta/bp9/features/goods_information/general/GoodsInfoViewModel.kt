@@ -381,7 +381,7 @@ class GoodsInfoViewModel : CoreViewModel(), OnPositionClickListener {
                     "ЕО - " + it.processingUnit
                 }
             } else {
-                screenNavigator.showProgressLoadingData()
+                screenNavigator.showProgressLoadingData(::handleFailure)
                 reasonRejectionInfo.value = dataBase.getReasonRejectionInfoOfQuality(selectedQuality)
                 spinReasonRejection.value = reasonRejectionInfo.value?.map {
                     it.name
@@ -913,7 +913,7 @@ class GoodsInfoViewModel : CoreViewModel(), OnPositionClickListener {
     fun onClickLabel() { //https://trello.com/c/LhzZRxzi
 
         /**viewModelScope.launch {
-            navigator.showProgressLoadingData()
+            navigator.showProgressLoadingData(::handleFailure)
 
             packCodeNetRequest(
                     PackCodeParams(

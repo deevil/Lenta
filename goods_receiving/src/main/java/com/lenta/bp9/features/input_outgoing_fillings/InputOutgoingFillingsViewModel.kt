@@ -66,7 +66,7 @@ class InputOutgoingFillingsViewModel : CoreViewModel() {
 
     fun onClickSave() {
         viewModelScope.launch {
-            screenNavigator.showProgressLoadingData()
+            screenNavigator.showProgressLoadingData(::handleFailure)
             val params = FixationDepartureReceptionDistrCenterParameters(
                     taskNumber = taskManager.getReceivingTask()?.taskHeader?.taskNumber ?: "",
                     deviceIP = context.getDeviceIp(),

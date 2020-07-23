@@ -121,7 +121,7 @@ class GoodWeighingViewModel : CoreViewModel() {
 
     fun onClickComplete() {
         viewModelScope.launch {
-            navigator.showProgressLoadingData()
+            navigator.showProgressLoadingData(::handleFailure)
 
             packCodeNetRequest(
                     PackCodeParams(
@@ -297,7 +297,7 @@ class GoodWeighingViewModel : CoreViewModel() {
     fun onClickGetWeight() {
         viewModelScope.launch {
             withContext(IO) {
-                navigator.showProgressLoadingData()
+                navigator.showProgressLoadingData(::handleFailure)
                 scales.getWeight().also {
                     navigator.hideProgress()
                 }.either(::handleFailure) { weight ->
@@ -317,7 +317,7 @@ class GoodWeighingViewModel : CoreViewModel() {
                         return@let null
                     }
 
-                    navigator.showProgressLoadingData()
+                    navigator.showProgressLoadingData(::handleFailure)
 
                     printer.printLabel(labelInfo, ipAddress)
                             .also {

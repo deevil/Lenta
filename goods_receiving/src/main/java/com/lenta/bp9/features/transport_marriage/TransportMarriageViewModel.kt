@@ -73,7 +73,7 @@ class TransportMarriageViewModel : CoreViewModel(), PageSelectionListener,
 
     init {
         viewModelScope.launch {
-            screenNavigator.showProgressLoadingData()
+            screenNavigator.showProgressLoadingData(::handleFailure)
             taskManager.getReceivingTask()?.let { task ->
                 val params = DeclareTransportDefectParams(
                         taskNumber = task.taskHeader.taskNumber,
@@ -121,7 +121,7 @@ class TransportMarriageViewModel : CoreViewModel(), PageSelectionListener,
 
     fun onClickCancellation() {
         viewModelScope.launch {
-            screenNavigator.showProgressLoadingData()
+            screenNavigator.showProgressLoadingData(::handleFailure)
             taskManager.getReceivingTask()?.let { task ->
                 val params = ZmpUtzGrz25V001Params(
                         taskNumber = task.taskHeader.taskNumber,
@@ -164,7 +164,7 @@ class TransportMarriageViewModel : CoreViewModel(), PageSelectionListener,
 
     fun onClickProcess() {
         viewModelScope.launch {
-            screenNavigator.showProgressLoadingData()
+            screenNavigator.showProgressLoadingData(::handleFailure)
             taskManager.getReceivingTask()?.let { task ->
                 val params = ZmpUtzGrz25V001Params(
                         taskNumber = task.taskHeader.taskNumber,

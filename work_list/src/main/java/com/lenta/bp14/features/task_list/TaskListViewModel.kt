@@ -95,7 +95,7 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
 
     private fun updateProcessing() {
         viewModelScope.launch {
-            navigator.showProgressLoadingData()
+            navigator.showProgressLoadingData(::handleFailure)
             tasksSearchHelper.processedFilter = searchFieldProcessing.value
             tasksSearchHelper.updateTaskList().either({
                 navigator.openAlertScreen(it)

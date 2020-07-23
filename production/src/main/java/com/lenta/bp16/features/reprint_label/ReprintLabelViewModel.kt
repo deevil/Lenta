@@ -84,7 +84,7 @@ class ReprintLabelViewModel : CoreViewModel() {
                         return@let null
                     }
 
-                    navigator.showProgressLoadingData()
+                    navigator.showProgressLoadingData(::handleFailure)
 
                     printer.printLabel(labelInfo, ipAddress)
                             .also {

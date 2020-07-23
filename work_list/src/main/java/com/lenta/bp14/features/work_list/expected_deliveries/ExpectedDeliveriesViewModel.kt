@@ -59,7 +59,7 @@ class ExpectedDeliveriesViewModel : CoreViewModel() {
 
     fun onClickUpdate() {
         viewModelScope.launch {
-            navigator.showProgressLoadingData()
+            navigator.showProgressLoadingData(::handleFailure)
             expectedDeliveriesNetRequest(
                     ExpectedDeliveriesParams(
                             tkNumber = sessionInfo.market.orEmpty(),

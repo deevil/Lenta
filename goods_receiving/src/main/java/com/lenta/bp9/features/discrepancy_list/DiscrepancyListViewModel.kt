@@ -107,7 +107,7 @@ class DiscrepancyListViewModel : CoreViewModel(), PageSelectionListener {
 
     fun onResume() {
         viewModelScope.launch {
-            screenNavigator.showProgressLoadingData()
+            screenNavigator.showProgressLoadingData(::handleFailure)
             if (taskManager.getReceivingTask()?.taskHeader?.taskType == TaskType.RecalculationCargoUnit) {
                 qualityInfo.value = dataBase.getQualityInfoPGE()
             } else {
@@ -565,7 +565,7 @@ class DiscrepancyListViewModel : CoreViewModel(), PageSelectionListener {
 
     fun onClickSave() {
         viewModelScope.launch {
-            screenNavigator.showProgressLoadingData()
+            screenNavigator.showProgressLoadingData(::handleFailure)
             //очищаем таблицу ET_TASK_DIFF от не акцизного (партионного) алкоголя, т.к. для этих товаров необходимо передавать только данные из таблицы ET_PARTS_DIFF
             taskManager.getReceivingTask()!!.taskRepository.getProductsDiscrepancies().getProductsDiscrepancies().map { productDiscr ->
                 taskManager.getReceivingTask()!!.taskRepository.getProducts().findProduct(productDiscr.materialNumber)

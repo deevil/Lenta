@@ -8,6 +8,7 @@ import com.lenta.shared.features.select_personnel_number.SelectPersonnelNumberDe
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.settings.IAppSettings
 import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
+import com.lenta.shared.utilities.extentions.launchAsyncTryCatch
 import com.lenta.shared.utilities.extentions.map
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -32,7 +33,7 @@ class EnterEmployeeNumberViewModel : CoreViewModel(), OnOkInSoftKeyboardListener
     val enabledNextButton = fullName.map { !it.isNullOrBlank() }
 
     init {
-        viewModelScope.launch {
+        launchAsyncTryCatch {
             //selectPersonnelNumberDelegate.isAppGoodsReceiving.value = true
             selectPersonnelNumberDelegate.personnelNumber = personnelNumber
             selectPersonnelNumberDelegate.fullName = fullName

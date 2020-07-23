@@ -74,7 +74,7 @@ class MercuryListIrrelevantViewModel : CoreViewModel() {
         when (netRestNumber.value) {
             ZMP_UTZ_GRZ_11_V001 -> {
                 viewModelScope.launch {
-                    screenNavigator.showProgressLoadingData()
+                    screenNavigator.showProgressLoadingData(::handleFailure)
 
                     taskManager.getReceivingTask()?.let { task ->
                         task.taskRepository.getReviseDocuments().let {taskDocs ->
@@ -97,7 +97,7 @@ class MercuryListIrrelevantViewModel : CoreViewModel() {
             }
             ZMP_UTZ_GRZ_13_V001 -> {
                 viewModelScope.launch {
-                    screenNavigator.showProgressLoadingData()
+                    screenNavigator.showProgressLoadingData(::handleFailure)
                     taskManager.getReceivingTask()?.let { task ->
                         val params = TransmittedParams(
                                 taskNumber = task.taskHeader.taskNumber,

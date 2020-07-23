@@ -38,7 +38,7 @@ class GoodsInfoViewModel : CoreViewModel() {
 
     fun onClickComplete(){
         viewModelScope.launch {
-            navigator.showProgressLoadingData()
+            navigator.showProgressLoadingData(::handleFailure)
             //TODO Обработать клик
         }
     }

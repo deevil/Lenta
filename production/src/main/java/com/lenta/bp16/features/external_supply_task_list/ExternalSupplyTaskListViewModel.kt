@@ -110,7 +110,7 @@ class ExternalSupplyTaskListViewModel : CoreViewModel(), PageSelectionListener, 
 
     fun loadTaskList() {
         viewModelScope.launch {
-            navigator.showProgressLoadingData()
+            navigator.showProgressLoadingData(::handleFailure)
 
             taskListNetRequest(
                     TaskListParams(
@@ -183,7 +183,7 @@ class ExternalSupplyTaskListViewModel : CoreViewModel(), PageSelectionListener, 
             openTaskByType(task)
         } else {
             viewModelScope.launch {
-                navigator.showProgressLoadingData()
+                navigator.showProgressLoadingData(::handleFailure)
                 taskInfoNetRequest(
                         TaskInfoParams(
                                 marketNumber = sessionInfo.market.orEmpty(),

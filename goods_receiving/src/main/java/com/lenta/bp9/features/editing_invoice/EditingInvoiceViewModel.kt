@@ -135,7 +135,7 @@ class EditingInvoiceViewModel : CoreViewModel(), PageSelectionListener, OnOkInSo
 
     init {
         viewModelScope.launch {
-            screenNavigator.showProgressLoadingData()
+            screenNavigator.showProgressLoadingData(::handleFailure)
             taskManager.getReceivingTask()?.let { task ->
                 val params = InvoiceContentRequestParameters(
                         taskNumber = task.taskHeader.taskNumber
@@ -290,7 +290,7 @@ class EditingInvoiceViewModel : CoreViewModel(), PageSelectionListener, OnOkInSo
                 )
             }
 
-            screenNavigator.showProgressLoadingData()
+            screenNavigator.showProgressLoadingData(::handleFailure)
             taskManager.getReceivingTask()?.let { task ->
                 val params = InvoiceContentSaveRequestParameters(
                         taskNumber = task.taskHeader.taskNumber,

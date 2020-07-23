@@ -94,7 +94,7 @@ class SelectMarketViewModel : CoreViewModel(), OnPositionClickListener {
 
     fun onClickNext() {
         viewModelScope.launch {
-            navigator.showProgressLoadingData()
+            navigator.showProgressLoadingData(::handleFailure)
             markets.value?.getOrNull(selectedPosition.value ?: -1)?.number?.let { tkNumber ->
                 if (appSettings.lastTK != tkNumber) {
                     clearPrinters()

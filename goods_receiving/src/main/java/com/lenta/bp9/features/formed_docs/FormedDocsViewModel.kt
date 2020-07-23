@@ -42,7 +42,7 @@ class FormedDocsViewModel : CoreViewModel() {
 
     init {
         viewModelScope.launch {
-            screenNavigator.showProgressLoadingData()
+            screenNavigator.showProgressLoadingData(::handleFailure)
             taskManager.getReceivingTask()?.let { task ->
                 val params = DocsPrintingParams(
                         taskNumber = task.taskHeader.taskNumber
@@ -76,7 +76,7 @@ class FormedDocsViewModel : CoreViewModel() {
 
     fun onClickPrint() {
         viewModelScope.launch {
-            screenNavigator.showProgressLoadingData()
+            screenNavigator.showProgressLoadingData(::handleFailure)
             val params = PrintingDocsParams(
                     listDocumentsPrinting = docsSelectionsHelper.selectedPositions.value?.map { position ->
                         listDocs.value?.get(position)!!.taskDocumentsPrinting

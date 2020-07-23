@@ -347,7 +347,7 @@ class GoodsMercuryInfoViewModel : CoreViewModel(), OnPositionClickListener {
                 spinReasonRejectionSelectedPosition.value = 0
                 spinReasonRejection.value = listOf("ЕО - " + productInfo.value!!.processingUnit)
             } else {
-                screenNavigator.showProgressLoadingData()
+                screenNavigator.showProgressLoadingData(::handleFailure)
                 reasonRejectionInfo.value = dataBase.getReasonRejectionInfoOfQuality(selectedQuality)
                 spinReasonRejection.value = reasonRejectionInfo.value?.map {
                     it.name

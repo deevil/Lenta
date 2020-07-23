@@ -506,7 +506,7 @@ class TaskCardViewModel : CoreViewModel(), PageSelectionListener {
 
     private fun shipmentStartRecount() {
         viewModelScope.launch {
-            screenNavigator.showProgressLoadingData()
+            screenNavigator.showProgressLoadingData(::handleFailure)
             val params = ZmpUtzGrz39V001Params(
                     taskNumber = taskManager.getReceivingTask()?.taskHeader?.taskNumber ?: "",
                     deviceIP = context.getDeviceIp(),
@@ -528,7 +528,7 @@ class TaskCardViewModel : CoreViewModel(), PageSelectionListener {
 
     private fun fixationDeparture() {
         viewModelScope.launch {
-            screenNavigator.showProgressLoadingData()
+            screenNavigator.showProgressLoadingData(::handleFailure)
             val params = FixationDepartureReceptionDistrCenterParameters(
                     taskNumber = taskManager.getReceivingTask()?.taskHeader?.taskNumber ?: "",
                     deviceIP = context.getDeviceIp(),
@@ -577,7 +577,7 @@ class TaskCardViewModel : CoreViewModel(), PageSelectionListener {
 
     private fun shipmentAllowedByGis() {
         viewModelScope.launch {
-            screenNavigator.showProgressLoadingData()
+            screenNavigator.showProgressLoadingData(::handleFailure)
             val params = ZmpUtzGrz41V001Params(
                     deviceIP = context.getDeviceIp(),
                     taskNumber = taskManager.getReceivingTask()?.taskHeader?.taskNumber ?: "",

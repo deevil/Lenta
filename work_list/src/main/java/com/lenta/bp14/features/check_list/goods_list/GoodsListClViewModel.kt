@@ -96,7 +96,7 @@ class GoodsListClViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
         // Подтверждение - Перевести задание в статус "Подсчитано" и закрыть его для редактирования? - Назад / Да
         navigator.showSetTaskToStatusCalculated {
             viewModelScope.launch {
-                navigator.showProgressLoadingData()
+                navigator.showProgressLoadingData(::handleFailure)
                 sentReportRequest(task.getReportData(deviceInfo.getDeviceIp())).either(
                         {
                             navigator.openAlertScreen(failure = it)
@@ -146,7 +146,7 @@ class GoodsListClViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
                 "Only one param allowed - ean: $ean, material: $material"
             }
 
-            navigator.showProgressLoadingData()
+            navigator.showProgressLoadingData(::handleFailure)
 
             when {
                 !ean.isNullOrBlank() -> task.getGoodByEan(ean)

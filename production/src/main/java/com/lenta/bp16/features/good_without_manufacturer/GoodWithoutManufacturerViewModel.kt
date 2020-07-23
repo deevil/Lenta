@@ -27,7 +27,7 @@ class GoodWithoutManufacturerViewModel : CoreViewModel() {
 
     fun onClickComplete(){
         viewModelScope.launch {
-            navigator.showProgressLoadingData()
+            navigator.showProgressLoadingData(::handleFailure)
             //TODO Обработать клик
             navigator.goBack()
         }

@@ -152,7 +152,7 @@ class ControlDeliveryCargoUnitsViewModel : CoreViewModel(), PageSelectionListene
                 processCargoUnitsService.save()
                 screenNavigator.openShipmentEndRecountLoadingScreen()
             } else {
-                screenNavigator.showProgressLoadingData()
+                screenNavigator.showProgressLoadingData(::handleFailure)
                 processCargoUnitsService.save()
                 val params = UnloadingEndReceptionDistrCenterParameters(
                         taskNumber = taskManager.getReceivingTask()?.taskHeader?.taskNumber ?: "",
@@ -264,7 +264,7 @@ class ControlDeliveryCargoUnitsViewModel : CoreViewModel(), PageSelectionListene
             searchCargoUnitNumber.value = data
             val findCargoUnit = processCargoUnitsService.findCargoUnit(data)
             if (findCargoUnit == null) {
-                screenNavigator.showProgressLoadingData()
+                screenNavigator.showProgressLoadingData(::handleFailure)
                 val params = GettingDataNewCargoUnitParameters(
                         taskNumber = taskManager.getReceivingTask()?.taskHeader?.taskNumber ?: "",
                         cargoUnitNumber = data

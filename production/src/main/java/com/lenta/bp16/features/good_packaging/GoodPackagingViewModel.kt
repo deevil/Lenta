@@ -84,7 +84,7 @@ class GoodPackagingViewModel : CoreViewModel() {
 
     fun onClickComplete() {
         viewModelScope.launch {
-            navigator.showProgressLoadingData()
+            navigator.showProgressLoadingData(::handleFailure)
 
             packGoodNetRequest(
                     PackGoodParams(

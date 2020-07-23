@@ -270,7 +270,7 @@ class GoodInfoOpenViewModel : CoreViewModel() {
      */
 
     init {
-        viewModelScope.launch {
+        launchAsyncTryCatch {
             manager.clearCurrentGood()
             checkSearchNumber(manager.searchNumber)
         }
@@ -386,8 +386,8 @@ class GoodInfoOpenViewModel : CoreViewModel() {
             "At least one param must be not null - ean: $ean, material: $material"
         }
 
-        viewModelScope.launch {
-            navigator.showProgressLoadingData()
+        launchAsyncTryCatch {
+            navigator.showProgressLoadingData(::handleFailure)
 
             goodInfoNetRequest(GoodInfoParams(
                     tkNumber = sessionInfo.market.orEmpty(),
@@ -403,7 +403,7 @@ class GoodInfoOpenViewModel : CoreViewModel() {
     }
 
     private fun handleLoadGoodInfoResult(result: GoodInfoResult, ean: String?, material: String?) {
-        viewModelScope.launch {
+        launchAsyncTryCatch {
             if (manager.isGoodCorrespondToTask(result)) {
                 if (manager.isGoodCanBeAdded(result)) {
                     isEanLastScanned = ean != null
@@ -429,7 +429,7 @@ class GoodInfoOpenViewModel : CoreViewModel() {
     }
 
     private fun setGood(result: GoodInfoResult, searchNumber: String) {
-        viewModelScope.launch {
+        launchAsyncTryCatch {
             with(result) {
                 good.value = GoodOpen(
                         ean = eanInfo.ean,
@@ -460,8 +460,8 @@ class GoodInfoOpenViewModel : CoreViewModel() {
     }
 
     private fun loadMarkInfo(number: String) {
-        viewModelScope.launch {
-            navigator.showProgressLoadingData()
+        launchAsyncTryCatch {
+            navigator.showProgressLoadingData(::handleFailure)
 
             scanInfoNetRequest(ScanInfoParams(
                     tkNumber = sessionInfo.market.orEmpty(),
@@ -478,7 +478,7 @@ class GoodInfoOpenViewModel : CoreViewModel() {
     }
 
     private fun handleLoadMarkInfoResult(result: ScanInfoResult, number: String) {
-        viewModelScope.launch {
+        launchAsyncTryCatch {
             result.status.let { status ->
                 when (status) {
                     MarkStatus.OK.code, MarkStatus.BAD.code -> addMarkInfo(number, result)
@@ -530,8 +530,8 @@ class GoodInfoOpenViewModel : CoreViewModel() {
     }
 
     private fun loadBoxInfo(number: String) {
-        viewModelScope.launch {
-            navigator.showProgressLoadingData()
+        launchAsyncTryCatch {
+            navigator.showProgressLoadingData(::handleFailure)
 
             scanInfoNetRequest(ScanInfoParams(
                     tkNumber = sessionInfo.market.orEmpty(),
@@ -548,7 +548,7 @@ class GoodInfoOpenViewModel : CoreViewModel() {
     }
 
     private fun handleLoadBoxInfoResult(result: ScanInfoResult, number: String) {
-        viewModelScope.launch {
+        launchAsyncTryCatch {
             when (result.status) {
                 BoxStatus.OK.code -> addBoxInfo(number, result)
                 else -> navigator.openAlertScreen(result.statusDescription)
@@ -575,7 +575,7 @@ class GoodInfoOpenViewModel : CoreViewModel() {
     }
 
     private suspend fun checkPart(): Either<Failure, ScanInfoResult> {
-        navigator.showProgressLoadingData()
+        navigator.showProgressLoadingData(::handleFailure)
 
         return scanInfoNetRequest(ScanInfoParams(
                 tkNumber = sessionInfo.market.orEmpty(),
@@ -739,7 +739,7 @@ class GoodInfoOpenViewModel : CoreViewModel() {
     fun onClickApply() {
         when (screenStatus.value) {
             ScreenStatus.ALCOHOL, ScreenStatus.PART -> {
-                viewModelScope.launch {
+                launchAsyncTryCatch {
                     checkPart().either(::handleCheckPartFailure) { result ->
                         result.status.let { status ->
                             if (status == PartStatus.FOUND.code) {

@@ -350,7 +350,7 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKe
                 "Only one param allowed - ean: $ean, material: $material"
             }
 
-            navigator.showProgressLoadingData()
+            navigator.showProgressLoadingData(::handleFailure)
 
             when {
                 !ean.isNullOrBlank() -> task.getGoodByEan(ean)
@@ -384,7 +384,7 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKe
             }
         } else {
             viewModelScope.launch {
-                navigator.showProgressLoadingData()
+                navigator.showProgressLoadingData(::handleFailure)
 
                 checkMarkNetRequest(CheckMarkParams(
                         tkNumber = sessionInfo.market.orEmpty(),
@@ -412,7 +412,7 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKe
             }
         } else {
             viewModelScope.launch {
-                navigator.showProgressLoadingData()
+                navigator.showProgressLoadingData(::handleFailure)
 
                 checkMarkNetRequest(CheckMarkParams(
                         tkNumber = sessionInfo.market.orEmpty(),

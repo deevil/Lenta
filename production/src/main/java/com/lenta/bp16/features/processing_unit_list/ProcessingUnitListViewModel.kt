@@ -83,7 +83,7 @@ class ProcessingUnitListViewModel : CoreViewModel() {
     fun onClickComplete() {
         navigator.showConfirmNoRawItem(manager.taskType.abbreviation) {
             viewModelScope.launch {
-                navigator.showProgressLoadingData()
+                navigator.showProgressLoadingData(::handleFailure)
 
                 endProcessingNetRequest(
                         EndProcessingParams(

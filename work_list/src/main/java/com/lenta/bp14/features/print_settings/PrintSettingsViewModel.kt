@@ -247,7 +247,7 @@ class PrintSettingsViewModel : CoreViewModel(), OnPositionClickListener, OnOkInS
     private fun searchCode(eanCode: String? = null, matNr: String? = null) {
         require((!eanCode.isNullOrBlank() xor !matNr.isNullOrBlank()))
         viewModelScope.launch {
-            navigator.showProgressLoadingData()
+            navigator.showProgressLoadingData(::handleFailure)
 
             productInfoNetRequest(
                     ProductInfoParams(

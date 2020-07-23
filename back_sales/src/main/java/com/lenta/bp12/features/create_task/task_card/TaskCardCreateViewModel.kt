@@ -13,6 +13,7 @@ import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.platform.constants.Constants
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.databinding.PageSelectionListener
+import com.lenta.shared.utilities.extentions.launchAsyncTryCatch
 import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.view.OnPositionClickListener
 import kotlinx.coroutines.launch
@@ -133,7 +134,7 @@ class TaskCardCreateViewModel : CoreViewModel(), PageSelectionListener {
      */
 
     init {
-        viewModelScope.launch {
+        launchAsyncTryCatch {
             types.value = database.getTaskTypeList()
             updateLists()
         }
@@ -148,7 +149,7 @@ class TaskCardCreateViewModel : CoreViewModel(), PageSelectionListener {
     }
 
     private fun updateLists() {
-        viewModelScope.launch {
+        launchAsyncTryCatch {
             types.value?.let { types ->
                 taskTypePosition.value?.let { position ->
                     storage.value = database.getStorageList(types[position].code)

@@ -95,7 +95,7 @@ class TransportMarriageCargoUnitViewModel : CoreViewModel(), OnOkInSoftKeyboardL
 
     private fun searchProduct(materialNumber: String) {
         viewModelScope.launch {
-            screenNavigator.showProgressLoadingData()
+            screenNavigator.showProgressLoadingData(::handleFailure)
             val foundTransportMarriageInfo = taskManager.getReceivingTask()?.taskRepository?.getTransportMarriage()?.findTransportMarriage(cargoUnitNumber.value ?: "", materialNumber)
             if (!foundTransportMarriageInfo.isNullOrEmpty()) {
                 foundTransportMarriageInfo.findLast {
@@ -145,7 +145,7 @@ class TransportMarriageCargoUnitViewModel : CoreViewModel(), OnOkInSoftKeyboardL
     fun onScanResult(data: String) {
         viewModelScope.launch {
             isScan.value = true
-            screenNavigator.showProgressLoadingData()
+            screenNavigator.showProgressLoadingData(::handleFailure)
 
             scanInfoRequest(
                     ScanInfoRequestParams(
@@ -228,7 +228,7 @@ class TransportMarriageCargoUnitViewModel : CoreViewModel(), OnOkInSoftKeyboardL
 
     fun onClickEntirely() {
         viewModelScope.launch {
-            screenNavigator.showProgressLoadingData()
+            screenNavigator.showProgressLoadingData(::handleFailure)
             taskManager.getReceivingTask()?.let { task ->
                 val params = ZmpUtzGrz26V001Params(
                         taskNumber = task.taskHeader.taskNumber,

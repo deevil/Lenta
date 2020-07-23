@@ -171,7 +171,7 @@ class DefectInfoViewModel : CoreViewModel() {
     fun onClickGetWeight() {
         viewModelScope.launch {
             withContext(Dispatchers.IO) {
-                navigator.showProgressLoadingData()
+                navigator.showProgressLoadingData(::handleFailure)
                 scales.getWeight().also {
                     navigator.hideProgress()
                 }.either(::handleFailure) { weight ->
@@ -188,7 +188,7 @@ class DefectInfoViewModel : CoreViewModel() {
 
     fun onClickLabel() {
         viewModelScope.launch {
-            navigator.showProgressLoadingData()
+            navigator.showProgressLoadingData(::handleFailure)
 
             packCodeNetRequest(
                     PackCodeParams(
@@ -339,7 +339,7 @@ class DefectInfoViewModel : CoreViewModel() {
                         return@let null
                     }
 
-                    navigator.showProgressLoadingData()
+                    navigator.showProgressLoadingData(::handleFailure)
 
                     printer.printLabel(labelInfo, ipAddress)
                             .also {

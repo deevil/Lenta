@@ -17,6 +17,7 @@ import com.lenta.shared.settings.IAppSettings
 import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
 import com.lenta.shared.utilities.databinding.PageSelectionListener
 import com.lenta.shared.utilities.extentions.combineLatest
+import com.lenta.shared.utilities.extentions.launchAsyncTryCatch
 import com.lenta.shared.utilities.extentions.map
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -127,7 +128,7 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
      */
 
     init {
-        viewModelScope.launch {
+        launchAsyncTryCatch {
             onClickUpdate()
         }
     }
@@ -141,8 +142,8 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
     }
 
     private fun loadTaskList(value: String, userNumber: String = "") {
-        viewModelScope.launch {
-            navigator.showProgressLoadingData()
+        launchAsyncTryCatch {
+            navigator.showProgressLoadingData(::handleFailure)
 
             taskListNetRequest(
                     TaskListParams(
@@ -154,7 +155,7 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
             ).also {
                 navigator.hideProgress()
             }.either(::handleFailure) { taskListResult ->
-                viewModelScope.launch {
+                launchAsyncTryCatch {
                     manager.addTasks(taskListResult.tasks)
                 }
             }
@@ -163,8 +164,8 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
 
     private fun loadTaskListWithParams(value: String, userNumber: String = "") {
         manager.searchParams.value?.let { params ->
-            viewModelScope.launch {
-                navigator.showProgressLoadingData()
+            launchAsyncTryCatch {
+                navigator.showProgressLoadingData(::handleFailure)
 
                 taskListNetRequest(
                         TaskListParams(
@@ -177,7 +178,7 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
                 ).also {
                     navigator.hideProgress()
                 }.either(::handleFailure) { taskListResult ->
-                    viewModelScope.launch {
+                    launchAsyncTryCatch {
                         manager.addFoundTasks(taskListResult.tasks)
                     }
                 }

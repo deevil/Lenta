@@ -16,6 +16,7 @@ import com.lenta.shared.requests.network.AuthParams
 import com.lenta.shared.settings.IAppSettings
 import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.extentions.combineLatest
+import com.lenta.shared.utilities.extentions.launchAsyncTryCatch
 import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.utilities.getBaseAuth
 import com.lenta.shared.utilities.runIfDebug
@@ -46,21 +47,21 @@ class AuthViewModel : CoreAuthViewModel() {
     }
 
     init {
-        viewModelScope.launch {
+        launchAsyncTryCatch {
             sessionInfo.isAuthSkipped.value = false
             sessionInfo.packageName = packageName.value
         }
     }
 
     override fun onClickEnter() {
-        viewModelScope.launch {
+        launchAsyncTryCatch {
             progress.value = true
             auth(AuthParams(getLogin(), getPassword())).either(::handleFailure, ::loadPermissions)
         }
     }
 
     private fun loadPermissions(@Suppress("UNUSED_PARAMETER") b: Boolean) {
-        viewModelScope.launch {
+        launchAsyncTryCatch {
             getLogin().let { login ->
                 sessionInfo.userName = login
                 sessionInfo.basicAuth = getBaseAuth(login, getPassword())
@@ -100,7 +101,7 @@ class AuthViewModel : CoreAuthViewModel() {
     }
 
     override fun onResume() {
-        viewModelScope.launch {
+        launchAsyncTryCatch {
             if (!appSettings.lastLogin.isNullOrEmpty()) {
                 login.value = appSettings.lastLogin
             }

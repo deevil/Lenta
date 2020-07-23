@@ -150,7 +150,7 @@ class JobCardViewModel : CoreViewModel() {
 
     private fun openTask() {
         viewModelScope.launch {
-            screenNavigator.showProgressLoadingData()
+            screenNavigator.showProgressLoadingData(::handleFailure)
             when (getSelectedTypeTask()?.taskType) {
                 AppTaskTypes.CheckPrice.taskType -> {
                     if (taskFromTaskList != null) {

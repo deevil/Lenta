@@ -72,7 +72,7 @@ class PackListViewModel : CoreViewModel() {
     fun onClickComplete() {
         if (raw.value?.isWasDef == true) {
             viewModelScope.launch {
-                navigator.showProgressLoadingData()
+                navigator.showProgressLoadingData(::handleFailure)
                 endDefrostingNetRequest(EndDefrostingParams(
                         deviceIp = deviceInfo.getDeviceIp(),
                         packCodes = packs.value?.map {

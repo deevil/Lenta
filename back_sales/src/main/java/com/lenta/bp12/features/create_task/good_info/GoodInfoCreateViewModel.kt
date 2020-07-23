@@ -349,7 +349,7 @@ class GoodInfoCreateViewModel : CoreViewModel() {
      */
 
     init {
-        viewModelScope.launch {
+        launchAsyncTryCatch {
             manager.clearCurrentGood()
             checkSearchNumber(manager.searchNumber)
         }
@@ -475,7 +475,7 @@ class GoodInfoCreateViewModel : CoreViewModel() {
     }
 
     private fun handleLoadGoodInfoResult(result: GoodInfoResult, ean: String?, material: String?) {
-        viewModelScope.launch {
+        launchAsyncTryCatch {
             if (manager.isGoodCanBeAdded(result)) {
                 isEanLastScanned = ean != null
                 isExistUnsavedData = true
@@ -502,7 +502,7 @@ class GoodInfoCreateViewModel : CoreViewModel() {
     }
 
     private fun setGood(result: GoodInfoResult, searchNumber: String) {
-        viewModelScope.launch {
+        launchAsyncTryCatch {
             with(result) {
                 good.value = GoodCreate(
                         ean = eanInfo.ean,
@@ -536,7 +536,7 @@ class GoodInfoCreateViewModel : CoreViewModel() {
     }
 
     private fun loadMarkInfo(number: String) {
-        viewModelScope.launch {
+        launchAsyncTryCatch {
             navigator.showProgressLoadingData(::handleFailure)
 
             scanInfoNetRequest(ScanInfoParams(
@@ -554,7 +554,7 @@ class GoodInfoCreateViewModel : CoreViewModel() {
     }
 
     private fun handleLoadMarkInfoResult(result: ScanInfoResult, number: String) {
-        viewModelScope.launch {
+        launchAsyncTryCatch {
             result.status.let { status ->
                 when (status) {
                     MarkStatus.OK.code, MarkStatus.BAD.code -> addMarkInfo(number, result)
@@ -605,7 +605,7 @@ class GoodInfoCreateViewModel : CoreViewModel() {
     }
 
     private fun loadBoxInfo(number: String) {
-        viewModelScope.launch {
+        launchAsyncTryCatch {
             navigator.showProgressLoadingData(::handleFailure)
 
             scanInfoNetRequest(ScanInfoParams(
@@ -623,7 +623,7 @@ class GoodInfoCreateViewModel : CoreViewModel() {
     }
 
     private fun handleLoadBoxInfoResult(result: ScanInfoResult, number: String) {
-        viewModelScope.launch {
+        launchAsyncTryCatch {
             when (result.status) {
                 BoxStatus.OK.code -> addBoxInfo(number, result)
                 else -> navigator.openAlertScreen(result.statusDescription)
@@ -852,7 +852,7 @@ class GoodInfoCreateViewModel : CoreViewModel() {
     fun onClickApply() {
         when (screenStatus.value) {
             ScreenStatus.ALCOHOL, ScreenStatus.PART -> {
-                viewModelScope.launch {
+                launchAsyncTryCatch {
                     checkPart().either(::handleCheckPartFailure) { result ->
                         result.status.let { status ->
                             if (status == PartStatus.FOUND.code) {

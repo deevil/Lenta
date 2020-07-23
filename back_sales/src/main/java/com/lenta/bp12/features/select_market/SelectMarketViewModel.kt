@@ -14,6 +14,7 @@ import com.lenta.shared.requests.network.ServerTime
 import com.lenta.shared.requests.network.ServerTimeRequest
 import com.lenta.shared.requests.network.ServerTimeRequestParam
 import com.lenta.shared.settings.IAppSettings
+import com.lenta.shared.utilities.extentions.launchAsyncTryCatch
 import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.view.OnPositionClickListener
 import kotlinx.coroutines.launch
@@ -54,7 +55,7 @@ class SelectMarketViewModel : CoreViewModel(), OnPositionClickListener {
     // -----------------------------
 
     init {
-        viewModelScope.launch {
+        launchAsyncTryCatch {
             repoInMemoryHolder.storesRequestResult?.marketInfos?.let { list ->
                 markets.value = list.map {
                     MarketUi(number = it.tkNumber, address = it.address)
@@ -82,7 +83,7 @@ class SelectMarketViewModel : CoreViewModel(), OnPositionClickListener {
     // -----------------------------
 
     fun onClickNext() {
-        viewModelScope.launch {
+        launchAsyncTryCatch {
             markets.value?.getOrNull(selectedPosition.value ?: -1)?.number?.let { tkNumber ->
                 if (appSettings.lastTK != tkNumber) {
                     printerManager.setDefaultPrinterForTk(tkNumber)

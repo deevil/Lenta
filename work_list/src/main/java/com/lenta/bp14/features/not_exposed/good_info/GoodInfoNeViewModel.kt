@@ -207,7 +207,7 @@ class GoodInfoNeViewModel : CoreViewModel(), PageSelectionListener {
 
     private fun searchCode(code: String) {
         viewModelScope.launch {
-            navigator.showProgressLoadingData()
+            navigator.showProgressLoadingData(::handleFailure)
 
             scanInfoRequest(
                     ScanInfoRequestParams(
@@ -234,7 +234,7 @@ class GoodInfoNeViewModel : CoreViewModel(), PageSelectionListener {
                     if (applyButtonEnabled.value == true) {
                         viewModelScope.launch {
                             if (task.isAllowedProduct(scanInfoResult.productInfo.materialNumber)) {
-                                navigator.showProgressLoadingData()
+                                navigator.showProgressLoadingData(::handleFailure)
                                 task.setCheckInfo(
                                         quantity = quantityField.value?.toDoubleOrNull() ?: 0.0,
                                         isEmptyPlaceMarked = null

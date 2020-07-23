@@ -167,7 +167,7 @@ class GoodsListNeViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
     private fun searchCode(eanCode: String? = null, matNr: String? = null) {
         require((!eanCode.isNullOrBlank() xor !matNr.isNullOrBlank()))
         viewModelScope.launch {
-            navigator.showProgressLoadingData()
+            navigator.showProgressLoadingData(::handleFailure)
 
             var scanInfoResult: ScanInfoResult? = null
             var quantity = 0.0
@@ -231,7 +231,7 @@ class GoodsListNeViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
     private fun showConfirmationForSave() {
         navigator.showSetTaskToStatusCalculated {
             viewModelScope.launch {
-                navigator.showProgressLoadingData()
+                navigator.showProgressLoadingData(::handleFailure)
                 sentReportRequest(task.getReportData(
                         ip = deviceInfo.getDeviceIp()
                 )).either(

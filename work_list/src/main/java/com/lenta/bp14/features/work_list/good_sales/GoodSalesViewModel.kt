@@ -56,7 +56,7 @@ class GoodSalesViewModel : CoreViewModel() {
 
     fun onClickUpdate() {
         viewModelScope.launch {
-            navigator.showProgressLoadingData()
+            navigator.showProgressLoadingData(::handleFailure)
             goodSalesNetRequest(
                     GoodSalesParams(
                             tkNumber = sessionInfo.market.orEmpty(),

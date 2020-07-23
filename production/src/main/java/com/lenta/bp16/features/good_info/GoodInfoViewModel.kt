@@ -27,7 +27,7 @@ class GoodInfoViewModel : CoreViewModel() {
 
     fun onClickComplete(){
         viewModelScope.launch {
-            navigator.showProgressLoadingData()
+            navigator.showProgressLoadingData(::handleFailure)
             //TODO показать сообщение
             navigator.goBack()
         }

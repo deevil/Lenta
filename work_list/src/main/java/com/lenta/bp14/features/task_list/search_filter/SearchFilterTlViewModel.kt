@@ -83,7 +83,7 @@ class SearchFilterTlViewModel : CoreViewModel(), OnPositionClickListener {
         viewModelScope.launch {
             tasksSearchHelper.filterParams = getFilterParams()
 
-            navigator.showProgressLoadingData()
+            navigator.showProgressLoadingData(::handleFailure)
             tasksSearchHelper.isNewSearchData = true
             tasksSearchHelper.updateFilteredTaskList().either(
                     {

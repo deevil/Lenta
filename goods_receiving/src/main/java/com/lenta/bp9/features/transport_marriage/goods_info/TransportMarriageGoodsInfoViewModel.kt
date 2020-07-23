@@ -92,7 +92,7 @@ class TransportMarriageGoodsInfoViewModel : CoreViewModel(), OnPositionClickList
 
     init {
         viewModelScope.launch {
-            screenNavigator.showProgressLoadingData()
+            screenNavigator.showProgressLoadingData(::handleFailure)
             suffix.value = transportMarriageInfoCurrent.value?.uom?.name
             spinQuality.value = dataBase.getQualityInfoTransportMarriage()?.map {
                 it.name
@@ -104,7 +104,7 @@ class TransportMarriageGoodsInfoViewModel : CoreViewModel(), OnPositionClickList
 
     private fun searchProduct(materialNumber: String) {
         viewModelScope.launch {
-            screenNavigator.showProgressLoadingData()
+            screenNavigator.showProgressLoadingData(::handleFailure)
             val foundTransportMarriageInfo = taskManager.getReceivingTask()?.taskRepository?.getTransportMarriage()?.findTransportMarriage(cargoUnitNumber ?: "", materialNumber)
             if (!foundTransportMarriageInfo.isNullOrEmpty()) {
                 transportMarriageOfProduct.value = foundTransportMarriageInfo
@@ -220,7 +220,7 @@ class TransportMarriageGoodsInfoViewModel : CoreViewModel(), OnPositionClickList
 
     fun onScanResult(data: String) {
         viewModelScope.launch {
-            screenNavigator.showProgressLoadingData()
+            screenNavigator.showProgressLoadingData(::handleFailure)
 
             scanInfoRequest(
                     ScanInfoRequestParams(

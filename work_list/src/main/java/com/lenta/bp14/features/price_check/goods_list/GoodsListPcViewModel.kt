@@ -183,7 +183,7 @@ class GoodsListPcViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
             require((eanCode != null) xor (matNr != null) xor (qrCode != null)) {
                 "only one param allowed. eanCode: $eanCode, matNr: $matNr, qrCode: $qrCode "
             }
-            navigator.showProgressLoadingData()
+            navigator.showProgressLoadingData(::handleFailure)
 
             when {
                 !eanCode.isNullOrBlank() -> task.getActualPriceByEan(eanCode)
@@ -228,7 +228,7 @@ class GoodsListPcViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
     private fun showConfirmationForSentReportScreen() {
         navigator.showSetTaskToStatusCalculated {
             viewModelScope.launch {
-                navigator.showProgressLoadingData()
+                navigator.showProgressLoadingData(::handleFailure)
                 checkPriceReportNetRequest(
                         task.getReportData(
                                 ip = deviceInfo.getDeviceIp()
@@ -302,7 +302,7 @@ class GoodsListPcViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
 
     private fun print() {
         viewModelScope.launch {
-            navigator.showProgressLoadingData()
+            navigator.showProgressLoadingData(::handleFailure)
             val selectedSearchTasks = getResultsForPrint()
             val printTasks = getPrintTasks()
             printTask.printToBigDataMax(printTasks).either({
