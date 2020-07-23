@@ -9,7 +9,9 @@ import com.lenta.inventory.models.StorePlaceLockMode
 import com.lenta.inventory.models.task.IInventoryTaskManager
 import com.lenta.inventory.models.task.StorePlaceProcessing
 import com.lenta.inventory.platform.navigation.IScreenNavigator
-import com.lenta.inventory.requests.network.*
+import com.lenta.inventory.requests.network.StorePlaceLockNetRequest
+import com.lenta.inventory.requests.network.StorePlaceLockParams
+import com.lenta.inventory.requests.network.StorePlaceLockRestInfo
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.platform.device_info.DeviceInfo
@@ -20,8 +22,8 @@ import com.lenta.shared.utilities.SelectionItemsHelper
 import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
 import com.lenta.shared.utilities.extentions.combineLatest
 import com.lenta.shared.utilities.extentions.getDeviceIp
+import com.lenta.shared.utilities.extentions.launchUITryCatch
 import com.lenta.shared.utilities.extentions.map
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
@@ -81,7 +83,7 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
     }
 
     init {
-        viewModelScope.launch {
+        launchUITryCatch {
             dataSaver.setViewModelScopeFunc(::viewModelScope)
         }
 
@@ -104,7 +106,7 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
     }
 
     init {
-        viewModelScope.launch {
+        launchUITryCatch {
             searchProductDelegate.init(viewModelScope = this@GoodsListViewModel::viewModelScope,
                     scanResultHandler = this@GoodsListViewModel::handleProductSearchResult,
                     storePlace = storePlaceManager?.storePlaceNumber ?: "00")
@@ -126,7 +128,7 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
         updateProcessed()
         processedSelectionHelper.clearPositions()
         unprocessedSelectionHelper.clearPositions()
-        viewModelScope.launch {
+        launchUITryCatch {
             moveToPreviousPageIfNeeded()
         }
     }
@@ -192,7 +194,7 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
         }
         updateUnprocessed()
         updateProcessed()
-        viewModelScope.launch {
+        launchUITryCatch {
             moveToPreviousPageIfNeeded()
         }
     }
@@ -251,7 +253,7 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
     }
 
     private fun checkIsHaveAnotherUsersNow() {
-        viewModelScope.launch {
+        launchUITryCatch {
             screenNavigator.showProgress(lockRequest)
             taskManager.getInventoryTask()?.let {
                 val userNumber = sessionInfo.personnelNumber!!
@@ -296,7 +298,7 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
 
 
     private fun makeLockUnlockRequest(recountType: RecountType?, mode: StorePlaceLockMode, successCallback: (StorePlaceLockRestInfo) -> Unit) {
-        viewModelScope.launch {
+        launchUITryCatch {
             screenNavigator.showProgress(lockRequest)
             taskManager.getInventoryTask()?.let {
                 val userNumber = if (recountType == RecountType.ParallelByPerNo) sessionInfo.personnelNumber

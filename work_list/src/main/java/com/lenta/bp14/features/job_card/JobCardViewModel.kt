@@ -1,7 +1,6 @@
 package com.lenta.bp14.features.job_card
 
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
 import com.lenta.bp14.models.*
 import com.lenta.bp14.models.check_list.CheckListTaskDescription
 import com.lenta.bp14.models.check_list.CheckListTaskManager
@@ -29,10 +28,10 @@ import com.lenta.shared.exception.Failure
 import com.lenta.shared.functional.Either
 import com.lenta.shared.platform.device_info.DeviceInfo
 import com.lenta.shared.platform.viewmodel.CoreViewModel
+import com.lenta.shared.utilities.extentions.launchUITryCatch
 import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.utilities.extentions.toSapBooleanString
 import com.lenta.shared.view.OnPositionClickListener
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class JobCardViewModel : CoreViewModel() {
@@ -113,7 +112,7 @@ class JobCardViewModel : CoreViewModel() {
     }
 
     init {
-        viewModelScope.launch {
+        launchUITryCatch {
             taskTypesInfo.value = generalRepo.getTasksTypes()
             isStrictList.value = isStrictList()
             updateProcessedTask()
@@ -149,7 +148,7 @@ class JobCardViewModel : CoreViewModel() {
     }
 
     private fun openTask() {
-        viewModelScope.launch {
+        launchUITryCatch {
             screenNavigator.showProgressLoadingData(::handleFailure)
             when (getSelectedTypeTask()?.taskType) {
                 AppTaskTypes.CheckPrice.taskType -> {
@@ -168,7 +167,7 @@ class JobCardViewModel : CoreViewModel() {
                         requestResult.either({ failure ->
                             screenNavigator.openAlertScreen(failure)
                         }) { result ->
-                            viewModelScope.launch {
+                            launchUITryCatch {
                                 val missing = result?.positions?.filter {
                                     !generalRepo.isExistMaterial(it.matNr)
                                 }?.map { it.matNr }?.toSet()
@@ -231,7 +230,7 @@ class JobCardViewModel : CoreViewModel() {
                         requestResult.either({ failure ->
                             screenNavigator.openAlertScreen(failure)
                         }) { result ->
-                            viewModelScope.launch {
+                            launchUITryCatch {
                                 val missing = result?.positions?.filter {
                                     !generalRepo.isExistMaterial(it.matNr)
                                 }?.map { it.matNr }?.toSet()
@@ -283,7 +282,7 @@ class JobCardViewModel : CoreViewModel() {
                         requestResult.either({ failure ->
                             screenNavigator.openAlertScreen(failure)
                         }) { result ->
-                            viewModelScope.launch {
+                            launchUITryCatch {
                                 val missing = result?.positions?.filter {
                                     !generalRepo.isExistMaterial(it.matNr)
                                 }?.map { it.matNr }?.toSet()
@@ -337,7 +336,7 @@ class JobCardViewModel : CoreViewModel() {
     }
 
     private fun clearCurrentTaskAndGoBack() {
-        viewModelScope.launch {
+        launchUITryCatch {
             generalTaskManager.getProcessedTask()?.getTaskNumber().let { taskNumber ->
                 if (taskNumber?.isNotBlank() == true) {
                     screenNavigator.showProgress(unlockTaskNetRequest)

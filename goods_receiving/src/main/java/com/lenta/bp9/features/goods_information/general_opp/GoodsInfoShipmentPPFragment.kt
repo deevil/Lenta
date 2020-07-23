@@ -2,9 +2,7 @@ package com.lenta.bp9.features.goods_information.general_opp
 
 import android.os.Bundle
 import android.view.KeyEvent
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import com.lenta.bp9.R
 import com.lenta.bp9.databinding.FragmentGoodsInfoShipmentPpBinding
 import com.lenta.bp9.model.task.TaskProductInfo

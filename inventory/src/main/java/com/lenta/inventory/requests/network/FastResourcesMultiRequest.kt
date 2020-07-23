@@ -1,12 +1,12 @@
 package com.lenta.inventory.requests.network
 
-import com.lenta.shared.fmp.resources.fast.ZmpUtz26V001
 import com.lenta.shared.fmp.resources.fast.ZmpUtz07V001
 import com.lenta.shared.fmp.resources.fast.ZmpUtz14V001
+import com.lenta.shared.fmp.resources.fast.ZmpUtz26V001
 import com.lenta.shared.fmp.resources.fast.ZmpUtz38V001
+import com.lenta.shared.fmp.resources.slow.ZfmpUtz48V001
 import com.lenta.shared.fmp.resources.slow.ZmpUtz25V001
 import com.lenta.shared.fmp.resources.slow.ZmpUtz46V001
-import com.lenta.shared.fmp.resources.slow.ZfmpUtz48V001
 import com.lenta.shared.requests.network.CoreResourcesMultiRequest
 import com.mobrun.plugin.api.HyperHive
 import com.mobrun.plugin.api.request_assistant.CustomParameter

@@ -1,7 +1,6 @@
 package com.lenta.bp12.features.auth
 
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
 import com.lenta.bp12.platform.navigation.IScreenNavigator
 import com.lenta.bp12.repository.IRepoInMemoryHolder
 import com.lenta.bp12.request.PermissionsRequestParams
@@ -20,7 +19,6 @@ import com.lenta.shared.utilities.extentions.launchUITryCatch
 import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.utilities.getBaseAuth
 import com.lenta.shared.utilities.runIfDebug
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class AuthViewModel : CoreAuthViewModel() {

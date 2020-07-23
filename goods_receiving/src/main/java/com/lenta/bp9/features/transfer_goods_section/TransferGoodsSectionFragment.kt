@@ -1,30 +1,28 @@
 package com.lenta.bp9.features.transfer_goods_section
 
-import com.lenta.bp9.R
-import com.lenta.bp9.databinding.FragmentTransferGoodsSectionBinding
-import com.lenta.bp9.platform.extentions.getAppComponent
-import com.lenta.shared.platform.fragment.CoreFragment
-import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
-import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
-import com.lenta.shared.utilities.extentions.provideViewModel
 import android.os.Bundle
 import android.view.LayoutInflater
-import com.lenta.shared.utilities.databinding.ViewPagerSettings
-import android.view.ViewGroup
 import android.view.View
+import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import com.lenta.bp9.BR
+import com.lenta.bp9.R
+import com.lenta.bp9.databinding.FragmentTransferGoodsSectionBinding
 import com.lenta.bp9.databinding.ItemTileTransferGoodsSectionBinding
 import com.lenta.bp9.databinding.LayoutTransferGoodsSectionBinding
-import com.lenta.bp9.model.task.TaskSectionInfo
+import com.lenta.bp9.platform.extentions.getAppComponent
 import com.lenta.shared.platform.activity.OnBackPresserListener
+import com.lenta.shared.platform.fragment.CoreFragment
+import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListener
+import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
 import com.lenta.shared.utilities.databinding.DataBindingAdapter
 import com.lenta.shared.utilities.databinding.DataBindingRecyclerViewConfig
 import com.lenta.shared.utilities.databinding.PageSelectionListener
+import com.lenta.shared.utilities.databinding.ViewPagerSettings
 import com.lenta.shared.utilities.extentions.connectLiveData
-import com.lenta.shared.utilities.state.state
+import com.lenta.shared.utilities.extentions.provideViewModel
 
 class TransferGoodsSectionFragment : CoreFragment<FragmentTransferGoodsSectionBinding, TransferGoodsSectionViewModel>(),
         ViewPagerSettings,

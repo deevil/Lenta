@@ -1,8 +1,6 @@
 package com.lenta.bp12.features.select_market
 
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
-
 import com.lenta.bp12.platform.navigation.IScreenNavigator
 import com.lenta.bp12.repository.IRepoInMemoryHolder
 import com.lenta.shared.account.ISessionInfo
@@ -17,7 +15,6 @@ import com.lenta.shared.settings.IAppSettings
 import com.lenta.shared.utilities.extentions.launchUITryCatch
 import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.view.OnPositionClickListener
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class SelectMarketViewModel : CoreViewModel(), OnPositionClickListener {

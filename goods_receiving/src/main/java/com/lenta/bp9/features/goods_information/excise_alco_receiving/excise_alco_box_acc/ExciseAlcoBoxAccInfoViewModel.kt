@@ -18,11 +18,11 @@ import com.lenta.shared.requests.combined.scan_info.ScanInfoResult
 import com.lenta.shared.requests.combined.scan_info.pojo.QualityInfo
 import com.lenta.shared.requests.combined.scan_info.pojo.ReasonRejectionInfo
 import com.lenta.shared.utilities.extentions.combineLatest
+import com.lenta.shared.utilities.extentions.launchUITryCatch
 import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.utilities.extentions.toStringFormatted
 import com.lenta.shared.view.OnPositionClickListener
 import com.mobrun.plugin.api.HyperHive
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class ExciseAlcoBoxAccInfoViewModel : CoreViewModel(), OnPositionClickListener {
@@ -257,7 +257,7 @@ class ExciseAlcoBoxAccInfoViewModel : CoreViewModel(), OnPositionClickListener {
     private val isShowScreenNoBoxSelectionRequired: MutableLiveData<Boolean> = MutableLiveData(false)
 
     init {
-        viewModelScope.launch {
+        launchUITryCatch {
             searchProductDelegate.init(viewModelScope = this@ExciseAlcoBoxAccInfoViewModel::viewModelScope,
                     scanResultHandler = this@ExciseAlcoBoxAccInfoViewModel::handleProductSearchResult)
 
@@ -457,14 +457,14 @@ class ExciseAlcoBoxAccInfoViewModel : CoreViewModel(), OnPositionClickListener {
     }
 
     fun onClickPositionSpinQuality(position: Int) {
-        viewModelScope.launch {
+        launchUITryCatch {
             spinQualitySelectedPosition.value = position
             updateDataSpinReasonRejection(qualityInfo.value!![position].code)
         }
     }
 
     private suspend fun updateDataSpinReasonRejection(selectedQuality: String) {
-        viewModelScope.launch {
+        launchUITryCatch {
             screenNavigator.showProgressLoadingData(::handleFailure)
             spinReasonRejectionSelectedPosition.value = 0
             reasonRejectionInfo.value = dataBase.getReasonRejectionInfoOfQuality(selectedQuality)

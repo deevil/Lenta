@@ -1,15 +1,14 @@
 package com.lenta.shared.features.app_updates
 
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
 import app_update.AppUpdateInstaller
 import com.lenta.shared.features.loading.startProgressTimer
 import com.lenta.shared.platform.navigation.CoreNavigator
 import com.lenta.shared.platform.resources.ISharedStringResourceManager
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.Logg
+import com.lenta.shared.utilities.extentions.launchUITryCatch
 import kotlinx.coroutines.Dispatchers.IO
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
@@ -32,7 +31,7 @@ class AppUpdateViewModel : CoreViewModel() {
     val title = MutableLiveData("")
 
     init {
-        viewModelScope.launch {
+        launchUITryCatch {
             startProgressTimer(
                     coroutineScope = this,
                     elapsedTime = elapsedTime
@@ -46,7 +45,7 @@ class AppUpdateViewModel : CoreViewModel() {
     }
 
     private fun loadingNewAppVersion() {
-        viewModelScope.launch {
+        launchUITryCatch {
             title.value = resourceManager.checkAppUpdates()
             withContext(IO) {
                 requiredAppUpdateInstaller.checkNeedAndHaveUpdate(codeVersion = null)
@@ -62,7 +61,7 @@ class AppUpdateViewModel : CoreViewModel() {
 
     private fun installUpdate(fileName: String) {
         Logg.d { "apk update fileName: $fileName" }
-        viewModelScope.launch {
+        launchUITryCatch {
             title.value = resourceManager.loadingNewAppVersion()
             withContext(IO) {
                 requiredAppUpdateInstaller.installUpdate(fileName = fileName).either({

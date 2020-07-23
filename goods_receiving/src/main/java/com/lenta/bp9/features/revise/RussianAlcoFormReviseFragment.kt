@@ -1,22 +1,24 @@
 package com.lenta.bp9.features.revise
 
+import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import androidx.databinding.DataBindingUtil
 import com.lenta.bp9.R
+import com.lenta.bp9.databinding.FragmentRussianAlcoFormReviseBinding
+import com.lenta.bp9.databinding.LayoutRussianAlcoFormRevisePartABBinding
+import com.lenta.bp9.databinding.LayoutRussianAlcoFormRevisePartOneBinding
+import com.lenta.bp9.databinding.LayoutRussianAlcoFormRevisePartTwoBinding
 import com.lenta.bp9.platform.extentions.getAppComponent
 import com.lenta.shared.platform.fragment.CoreFragment
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
-import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
-import com.lenta.shared.utilities.extentions.provideViewModel
-import android.os.Bundle
-import android.view.LayoutInflater
-import com.lenta.shared.utilities.databinding.ViewPagerSettings
-import android.view.ViewGroup
-import android.view.View
-import androidx.databinding.DataBindingUtil
-import com.lenta.bp9.databinding.*
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListener
+import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
+import com.lenta.shared.utilities.databinding.ViewPagerSettings
 import com.lenta.shared.utilities.extentions.connectLiveData
-import com.lenta.shared.utilities.extentions.generateScreenNumber
+import com.lenta.shared.utilities.extentions.provideViewModel
 import com.lenta.shared.utilities.state.state
 
 class RussianAlcoFormReviseFragment : CoreFragment<FragmentRussianAlcoFormReviseBinding, RussianAlcoFormReviseViewModel>(), ViewPagerSettings, ToolbarButtonsClickListener {

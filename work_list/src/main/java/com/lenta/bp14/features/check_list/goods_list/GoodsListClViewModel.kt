@@ -21,6 +21,7 @@ import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.SelectionItemsHelper
 import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
 import com.lenta.shared.utilities.databinding.PageSelectionListener
+import com.lenta.shared.utilities.extentions.launchUITryCatch
 import com.lenta.shared.utilities.extentions.map
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -78,7 +79,7 @@ class GoodsListClViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
     // -----------------------------
 
     init {
-        viewModelScope.launch {
+        launchUITryCatch {
             task.loadMaxTaskPositions()
             requestFocusToNumberField.value = true
             taskName.value = "${task.getTaskType().taskType} // ${task.getTaskName()}"
@@ -95,7 +96,7 @@ class GoodsListClViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
     fun onClickSave() {
         // Подтверждение - Перевести задание в статус "Подсчитано" и закрыть его для редактирования? - Назад / Да
         navigator.showSetTaskToStatusCalculated {
-            viewModelScope.launch {
+            launchUITryCatch {
                 navigator.showProgressLoadingData(::handleFailure)
                 sentReportRequest(task.getReportData(deviceInfo.getDeviceIp())).either(
                         {
@@ -201,7 +202,7 @@ class GoodsListClViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
     }
 
     private fun clearCurrentTaskAndGoBack() {
-        viewModelScope.launch {
+        launchUITryCatch {
             generalTaskManager.getProcessedTask()?.getTaskNumber().let { taskNumber ->
                 if (taskNumber?.isNotBlank() == true) {
                     navigator.showProgress(unlockTaskNetRequest)

@@ -20,9 +20,9 @@ import com.lenta.shared.utilities.SelectionItemsHelper
 import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
 import com.lenta.shared.utilities.databinding.PageSelectionListener
 import com.lenta.shared.utilities.extentions.getDeviceIp
+import com.lenta.shared.utilities.extentions.launchUITryCatch
 import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.utilities.extentions.toStringFormatted
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class GoodsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyboardListener {
@@ -97,7 +97,7 @@ class GoodsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKey
     }
 
     init {
-        viewModelScope.launch {
+        launchUITryCatch {
             searchProductDelegate.init(viewModelScope = this@GoodsListViewModel::viewModelScope,
                     scanResultHandler = this@GoodsListViewModel::handleProductSearchResult)
         }
@@ -503,7 +503,7 @@ class GoodsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKey
     }
 
     fun onClickSave() {
-        viewModelScope.launch {
+        launchUITryCatch {
             val countProductNotProcessed = taskManager.getReceivingTask()?.let { task ->
                 task.getProcessedProducts()
                         .filter { productInfo ->

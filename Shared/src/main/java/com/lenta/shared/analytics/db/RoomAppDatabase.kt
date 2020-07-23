@@ -1,6 +1,7 @@
 package com.lenta.shared.analytics.db
 
-import androidx.room.*
+import androidx.room.Database
+import androidx.room.RoomDatabase
 import com.lenta.shared.analytics.db.dao.LogDao
 import com.lenta.shared.analytics.db.entity.LogMessage
 

@@ -9,6 +9,7 @@ import com.lenta.shared.platform.activity.main_activity.CoreMainViewModel
 import com.lenta.shared.platform.constants.Constants
 import com.lenta.shared.platform.statusbar.StatusBarUiModel
 import com.lenta.shared.settings.IAppSettings
+import com.lenta.shared.utilities.extentions.launchUITryCatch
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -26,7 +27,7 @@ class MainViewModel : CoreMainViewModel() {
 
 
     init {
-        viewModelScope.launch {
+        launchUITryCatch {
             appSettings.printerNotVisible = true
             appSettings.printerNumber = appSettings.printerNumber
         }

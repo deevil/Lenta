@@ -1,8 +1,6 @@
 package com.lenta.bp9.features.editing_invoice
 
 import android.content.Context
-import androidx.lifecycle.LiveData
-import com.lenta.shared.platform.viewmodel.CoreViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.lenta.bp9.R
@@ -15,15 +13,16 @@ import com.lenta.bp9.platform.navigation.IScreenNavigator
 import com.lenta.bp9.repos.IRepoInMemoryHolder
 import com.lenta.bp9.requests.network.*
 import com.lenta.shared.exception.Failure
+import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.SelectionItemsHelper
 import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
 import com.lenta.shared.utilities.databinding.PageSelectionListener
 import com.lenta.shared.utilities.extentions.combineLatest
+import com.lenta.shared.utilities.extentions.launchUITryCatch
 import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.utilities.extentions.toStringFormatted
 import com.mobrun.plugin.api.HyperHive
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -134,7 +133,7 @@ class EditingInvoiceViewModel : CoreViewModel(), PageSelectionListener, OnOkInSo
             }
 
     init {
-        viewModelScope.launch {
+        launchUITryCatch {
             screenNavigator.showProgressLoadingData(::handleFailure)
             taskManager.getReceivingTask()?.let { task ->
                 val params = InvoiceContentRequestParameters(
@@ -154,7 +153,7 @@ class EditingInvoiceViewModel : CoreViewModel(), PageSelectionListener, OnOkInSo
     private fun handleSuccess(result: InvoiceContentRequestResult) {
         Logg.d { "invoiceContents server ${result.invoiceContents}" }
         Logg.d { "notes server ${result.notes}" }
-        viewModelScope.launch {
+        launchUITryCatch {
             repoInMemoryHolder.invoiceContents.value = result.invoiceContents.map { InvoiceContentEntry.from(hyperHive, it) }
             listNotes.postValue(
                     result.notes.mapIndexed { index, commentToVPRestData ->
@@ -357,7 +356,7 @@ class EditingInvoiceViewModel : CoreViewModel(), PageSelectionListener, OnOkInSo
 
     private val isShownDialog: MutableLiveData<Boolean> = MutableLiveData(false) //чтобы диалог не вызывался два раза при смене фокуса
     fun finishedInput(position: Int) {
-        viewModelScope.launch {
+        launchUITryCatch {
             if (isShownDialog.value == false) {
                 val editInvoice = repoInMemoryHolder.invoiceContents.value!!.findLast {
                     it.materialNumber == listTotal.value!![position].invoiceContent.materialNumber

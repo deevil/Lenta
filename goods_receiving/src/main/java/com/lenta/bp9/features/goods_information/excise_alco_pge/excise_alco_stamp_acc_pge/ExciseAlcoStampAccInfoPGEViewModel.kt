@@ -2,7 +2,6 @@ package com.lenta.bp9.features.goods_information.excise_alco_pge.excise_alco_sta
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.os.Bundle
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.lenta.bp9.R
@@ -23,8 +22,8 @@ import com.lenta.shared.fmp.resources.slow.ZfmpUtz48V001
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.requests.combined.scan_info.ScanInfoResult
 import com.lenta.shared.requests.combined.scan_info.pojo.QualityInfo
-import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.extentions.combineLatest
+import com.lenta.shared.utilities.extentions.launchUITryCatch
 import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.utilities.extentions.toStringFormatted
 import com.lenta.shared.view.OnPositionClickListener
@@ -322,7 +321,7 @@ class ExciseAlcoStampAccInfoPGEViewModel : CoreViewModel(), OnPositionClickListe
     }
 
     private fun setSurplusSearchMode() {
-        viewModelScope.launch {
+        launchUITryCatch {
             qualityInfo.value = dataBase.getSurplusInfoForPGE()
             spinQuality.value = qualityInfo.value?.map {
                 it.name
@@ -399,7 +398,7 @@ class ExciseAlcoStampAccInfoPGEViewModel : CoreViewModel(), OnPositionClickListe
     }
 
     private fun scannedStampNotFound(stampCode: String) {
-        viewModelScope.launch {
+        launchUITryCatch {
             screenNavigator.showProgressLoadingData(::handleFailure)
             taskManager.getReceivingTask()?.let { task ->
                 val params = ZmpUtzGrz31V001Params(

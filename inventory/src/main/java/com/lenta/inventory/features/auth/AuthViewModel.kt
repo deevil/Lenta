@@ -1,29 +1,27 @@
 package com.lenta.inventory.features.auth
 
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
 import com.lenta.inventory.platform.navigation.IScreenNavigator
 import com.lenta.inventory.repos.IRepoInMemoryHolder
-import com.lenta.shared.requests.PermissionsParams
-import com.lenta.shared.utilities.runIfDebug
-import com.lenta.shared.requests.PermissionsRequest
-import com.lenta.shared.requests.PermissionsResult
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.exception.IFailureInterpreter
 import com.lenta.shared.features.login.CoreAuthViewModel
 import com.lenta.shared.features.login.isEnterEnabled
 import com.lenta.shared.features.login.isValidLoginFields
+import com.lenta.shared.requests.PermissionsParams
+import com.lenta.shared.requests.PermissionsRequest
+import com.lenta.shared.requests.PermissionsResult
 import com.lenta.shared.requests.network.Auth
 import com.lenta.shared.requests.network.AuthParams
 import com.lenta.shared.settings.IAppSettings
 import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.extentions.combineLatest
+import com.lenta.shared.utilities.extentions.launchUITryCatch
 import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.utilities.getBaseAuth
-import kotlinx.coroutines.launch
+import com.lenta.shared.utilities.runIfDebug
 import javax.inject.Inject
-
 
 class AuthViewModel : CoreAuthViewModel() {
 
@@ -43,7 +41,7 @@ class AuthViewModel : CoreAuthViewModel() {
     lateinit var repoInMemoryHolder: IRepoInMemoryHolder
 
     init {
-        viewModelScope.launch {
+        launchUITryCatch {
             if (!appSettings.lastLogin.isNullOrEmpty()) {
                 login.value = appSettings.lastLogin
             }
@@ -67,7 +65,7 @@ class AuthViewModel : CoreAuthViewModel() {
 
 
     override fun onClickEnter() {
-        viewModelScope.launch {
+        launchUITryCatch {
             progress.value = true
             auth(AuthParams(login.value!!, password.value!!)).either(::handleFailure, ::loadPermissions)
         }
@@ -81,7 +79,7 @@ class AuthViewModel : CoreAuthViewModel() {
             appSettings.lastLogin = it
         }
 
-        viewModelScope.launch {
+        launchUITryCatch {
             progress.value = true
             permissionsRequest(PermissionsParams(login = "")).either(::handleFailure, ::handleAuthSuccess)
             progress.value = false
@@ -117,7 +115,7 @@ class AuthViewModel : CoreAuthViewModel() {
     }
 
     override fun onResume() {
-        viewModelScope.launch {
+        launchUITryCatch {
             if (!appSettings.lastLogin.isNullOrEmpty()) {
                 login.value = appSettings.lastLogin
             }

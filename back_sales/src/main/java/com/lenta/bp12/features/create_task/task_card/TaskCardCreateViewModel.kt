@@ -1,7 +1,6 @@
 package com.lenta.bp12.features.create_task.task_card
 
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
 import com.lenta.bp12.model.ICreateTaskManager
 import com.lenta.bp12.model.pojo.ReturnReason
 import com.lenta.bp12.model.pojo.TaskType
@@ -16,7 +15,6 @@ import com.lenta.shared.utilities.databinding.PageSelectionListener
 import com.lenta.shared.utilities.extentions.launchUITryCatch
 import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.view.OnPositionClickListener
-import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.*
 import javax.inject.Inject

@@ -1,7 +1,6 @@
 package com.lenta.bp12.features.open_task.task_list
 
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
 import com.lenta.bp12.model.BlockType
 import com.lenta.bp12.model.IOpenTaskManager
 import com.lenta.bp12.model.TaskSearchMode
@@ -20,7 +19,6 @@ import com.lenta.shared.utilities.databinding.PageSelectionListener
 import com.lenta.shared.utilities.extentions.combineLatest
 import com.lenta.shared.utilities.extentions.launchUITryCatch
 import com.lenta.shared.utilities.extentions.map
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyboardListener {

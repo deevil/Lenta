@@ -17,13 +17,11 @@ import com.lenta.shared.analytics.AnalyticsHelper
 import com.lenta.shared.analytics.FmpAnalytics
 import com.lenta.shared.analytics.IAnalytics
 import com.lenta.shared.analytics.db.FileArchivator
-import com.lenta.shared.analytics.db.dao.LogDao
 import com.lenta.shared.analytics.db.RoomAppDatabase
+import com.lenta.shared.analytics.db.dao.LogDao
 import com.lenta.shared.exception.CoreFailureInterpreter
 import com.lenta.shared.exception.IFailureInterpreter
 import com.lenta.shared.only_one_app.LockManager
-import com.lenta.shared.platform.network_state.INetworkStateMonitor
-import com.lenta.shared.platform.network_state.NetworkStateMonitor
 import com.lenta.shared.platform.activity.ForegroundActivityProvider
 import com.lenta.shared.platform.battery_state.BatteryStateMonitor
 import com.lenta.shared.platform.battery_state.IBatteryStateMonitor
@@ -35,6 +33,8 @@ import com.lenta.shared.platform.navigation.CoreNavigator
 import com.lenta.shared.platform.navigation.ICoreNavigator
 import com.lenta.shared.platform.navigation.pictogram.IIconDescriptionHelper
 import com.lenta.shared.platform.navigation.pictogram.IconDescriptionHelper
+import com.lenta.shared.platform.network_state.INetworkStateMonitor
+import com.lenta.shared.platform.network_state.NetworkStateMonitor
 import com.lenta.shared.platform.resources.ISharedStringResourceManager
 import com.lenta.shared.platform.resources.SharedStringResourceManager
 import com.lenta.shared.platform.sound.ISoundPlayer

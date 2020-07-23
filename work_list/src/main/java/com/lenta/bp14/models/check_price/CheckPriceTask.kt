@@ -7,16 +7,15 @@ import com.lenta.bp14.ml.CheckStatus
 import com.lenta.bp14.models.BaseProductInfo
 import com.lenta.bp14.models.ITask
 import com.lenta.bp14.models.ITaskDescription
-import com.lenta.bp14.models.check_price.repo.IActualPricesRepo
 import com.lenta.bp14.models.check_price.repo.CheckPriceResultsRepo
+import com.lenta.bp14.models.check_price.repo.IActualPricesRepo
 import com.lenta.bp14.models.data.GoodType
 import com.lenta.bp14.models.data.getGoodType
-import com.lenta.bp14.models.general.ITaskTypeInfo
 import com.lenta.bp14.models.general.AppTaskTypes
 import com.lenta.bp14.models.general.IGeneralRepo
+import com.lenta.bp14.models.general.ITaskTypeInfo
 import com.lenta.bp14.models.print.PriceTagType
 import com.lenta.bp14.platform.IVibrateHelper
-import com.lenta.shared.platform.sound.ISoundPlayer
 import com.lenta.bp14.requests.check_price.CheckPriceReport
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.functional.Either
@@ -25,6 +24,7 @@ import com.lenta.shared.functional.rightToLeft
 import com.lenta.shared.models.core.MatrixType
 import com.lenta.shared.models.core.StateFromToString
 import com.lenta.shared.models.core.getMatrixType
+import com.lenta.shared.platform.sound.ISoundPlayer
 import com.lenta.shared.requests.combined.scan_info.ScanCodeInfo
 import com.lenta.shared.utilities.extentions.combineLatest
 import com.lenta.shared.utilities.extentions.isSapTrue

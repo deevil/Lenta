@@ -10,22 +10,19 @@ import com.lenta.bp9.model.processing.ProcessNonExciseAlcoProductService
 import com.lenta.bp9.model.task.IReceivingTaskManager
 import com.lenta.bp9.model.task.TaskBatchInfo
 import com.lenta.bp9.model.task.TaskProductInfo
-import com.lenta.bp9.model.task.TaskType
 import com.lenta.bp9.platform.navigation.IScreenNavigator
 import com.lenta.bp9.repos.IDataBaseRepo
 import com.lenta.bp9.repos.IRepoInMemoryHolder
 import com.lenta.shared.models.core.Manufacturer
-import com.lenta.shared.platform.activity.OnBackPresserListener
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.requests.combined.scan_info.ScanInfoResult
 import com.lenta.shared.requests.combined.scan_info.pojo.QualityInfo
 import com.lenta.shared.requests.combined.scan_info.pojo.ReasonRejectionInfo
-import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.extentions.combineLatest
+import com.lenta.shared.utilities.extentions.launchUITryCatch
 import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.utilities.extentions.toStringFormatted
 import com.lenta.shared.view.OnPositionClickListener
-import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import javax.inject.Inject
 
@@ -154,7 +151,7 @@ class NonExciseAlcoInfoViewModel : CoreViewModel(), OnPositionClickListener {
             }
 
     init {
-        viewModelScope.launch {
+        launchUITryCatch {
             searchProductDelegate.init(viewModelScope = this@NonExciseAlcoInfoViewModel::viewModelScope,
                     scanResultHandler = this@NonExciseAlcoInfoViewModel::handleProductSearchResult)
 
@@ -285,14 +282,14 @@ class NonExciseAlcoInfoViewModel : CoreViewModel(), OnPositionClickListener {
     }
 
     fun onClickPositionSpinQuality(position: Int){
-        viewModelScope.launch {
+        launchUITryCatch {
             spinQualitySelectedPosition.value = position
             updateDataSpinReasonRejection(qualityInfo.value!![position].code)
         }
     }
 
     private suspend fun updateDataSpinReasonRejection(selectedQuality: String) {
-        viewModelScope.launch {
+        launchUITryCatch {
             screenNavigator.showProgressLoadingData(::handleFailure)
             reasonRejectionInfo.value = dataBase.getReasonRejectionInfoOfQuality(selectedQuality)
             spinReasonRejection.value = reasonRejectionInfo.value?.map {

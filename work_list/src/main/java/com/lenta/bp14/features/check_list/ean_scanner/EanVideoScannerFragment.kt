@@ -8,7 +8,6 @@ import com.lenta.bp14.databinding.FragmentEanVideoScannerBinding
 import com.lenta.bp14.di.CheckListComponent
 import com.lenta.bp14.ml.FireBaseMlScanHelper
 import com.lenta.bp14.ml.ScanType
-import com.lenta.bp14.platform.extentions.getAppComponent
 import com.lenta.shared.di.CoreInjectHelper
 import com.lenta.shared.platform.fragment.CoreFragment
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel

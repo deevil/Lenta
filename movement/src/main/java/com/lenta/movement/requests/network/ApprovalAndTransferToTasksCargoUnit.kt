@@ -1,9 +1,6 @@
 package com.lenta.movement.requests.network
 
-import com.google.gson.annotations.SerializedName
 import com.lenta.movement.exception.InfoFailure
-import com.lenta.movement.models.MovementType
-import com.lenta.movement.models.TaskType
 import com.lenta.movement.requests.network.models.approvalAndTransferToTasksCargoUnit.ApprovalAndTransferToTasksCargoUnitParams
 import com.lenta.movement.requests.network.models.approvalAndTransferToTasksCargoUnit.ApprovalAndTransferToTasksCargoUnitResult
 import com.lenta.shared.exception.Failure

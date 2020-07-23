@@ -1,7 +1,6 @@
 package com.lenta.bp12.features.open_task.task_card
 
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
 import com.lenta.bp12.model.IOpenTaskManager
 import com.lenta.bp12.platform.extention.isAlcohol
 import com.lenta.bp12.platform.extention.isCommon
@@ -16,7 +15,6 @@ import com.lenta.shared.settings.IAppSettings
 import com.lenta.shared.utilities.databinding.PageSelectionListener
 import com.lenta.shared.utilities.extentions.launchUITryCatch
 import com.lenta.shared.utilities.extentions.map
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class TaskCardOpenViewModel : CoreViewModel(), PageSelectionListener {

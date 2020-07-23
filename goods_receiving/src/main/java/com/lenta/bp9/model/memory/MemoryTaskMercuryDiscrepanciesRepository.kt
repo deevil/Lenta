@@ -4,7 +4,6 @@ import com.lenta.bp9.model.repositories.ITaskMercuryDiscrepanciesRepository
 import com.lenta.bp9.model.task.TaskMercuryDiscrepancies
 import com.lenta.bp9.model.task.TaskMercuryInfo
 import com.lenta.bp9.model.task.TaskProductInfo
-import com.lenta.shared.models.core.Uom
 
 class MemoryTaskMercuryDiscrepanciesRepository : ITaskMercuryDiscrepanciesRepository {
 

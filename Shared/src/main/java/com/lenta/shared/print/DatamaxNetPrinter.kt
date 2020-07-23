@@ -1,8 +1,8 @@
 package com.lenta.shared.print
 
+import com.google.common.base.Charsets.US_ASCII
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.functional.Either
-import com.google.common.base.Charsets.US_ASCII
 
 
 class DatamaxNetPrinter(override val ip: String) : INetPrinter() {

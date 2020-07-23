@@ -3,7 +3,6 @@ package com.lenta.bp9.features.goods_information.excise_alco_pge.excise_alco_box
 import android.annotation.SuppressLint
 import android.content.Context
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
 import com.lenta.bp9.R
 import com.lenta.bp9.model.processing.ProcessExciseAlcoBoxAccPGEService
 import com.lenta.bp9.model.task.IReceivingTaskManager
@@ -23,12 +22,11 @@ import com.lenta.shared.fmp.resources.slow.ZfmpUtz48V001
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.requests.combined.scan_info.pojo.QualityInfo
 import com.lenta.shared.utilities.extentions.combineLatest
+import com.lenta.shared.utilities.extentions.launchUITryCatch
 import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.utilities.extentions.toStringFormatted
-import com.lenta.shared.utilities.orIfNull
 import com.lenta.shared.view.OnPositionClickListener
 import com.mobrun.plugin.api.HyperHive
-import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import javax.inject.Inject
 
@@ -223,7 +221,7 @@ class ExciseAlcoBoxCardPGEViewModel : CoreViewModel(), OnPositionClickListener {
     private val formatterEN = SimpleDateFormat("yyyy-MM-dd")
 
     init {
-        viewModelScope.launch {
+        launchUITryCatch {
             count.value = COUNT_BOXES_DEFAULT
             suffix.value = productInfo.value?.purchaseOrderUnits?.name
 
@@ -517,7 +515,7 @@ class ExciseAlcoBoxCardPGEViewModel : CoreViewModel(), OnPositionClickListener {
     }
 
     private fun scannedBoxNotFound(boxNumber: String) {
-        viewModelScope.launch {
+        launchUITryCatch {
             screenNavigator.showProgressLoadingData(::handleFailure)
             taskManager.getReceivingTask()?.let { task ->
                 val params = ZmpUtzGrz31V001Params(

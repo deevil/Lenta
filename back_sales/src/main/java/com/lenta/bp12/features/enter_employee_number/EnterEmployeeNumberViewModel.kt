@@ -10,7 +10,6 @@ import com.lenta.shared.settings.IAppSettings
 import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
 import com.lenta.shared.utilities.extentions.launchUITryCatch
 import com.lenta.shared.utilities.extentions.map
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class EnterEmployeeNumberViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {

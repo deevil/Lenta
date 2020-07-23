@@ -1,35 +1,34 @@
 package com.lenta.bp14.features.not_exposed.goods_list
 
-import com.lenta.bp14.R
-import com.lenta.shared.platform.fragment.CoreFragment
-import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
-import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
-import com.lenta.shared.utilities.extentions.provideViewModel
 import android.os.Bundle
 import android.view.LayoutInflater
-import com.lenta.shared.utilities.databinding.ViewPagerSettings
-import android.view.ViewGroup
 import android.view.View
+import android.view.ViewGroup
 import android.widget.AdapterView
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import com.lenta.bp14.BR
-import com.lenta.bp14.models.data.GoodsListTab
+import com.lenta.bp14.R
 import com.lenta.bp14.databinding.*
 import com.lenta.bp14.di.NotExposedComponent
+import com.lenta.bp14.models.data.GoodsListTab
 import com.lenta.shared.di.CoreInjectHelper
 import com.lenta.shared.keys.KeyCode
 import com.lenta.shared.keys.OnKeyDownListener
+import com.lenta.shared.platform.fragment.CoreFragment
+import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListener
+import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
 import com.lenta.shared.scan.OnScanResultListener
 import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.databinding.DataBindingAdapter
 import com.lenta.shared.utilities.databinding.DataBindingRecyclerViewConfig
 import com.lenta.shared.utilities.databinding.RecyclerViewKeyHandler
+import com.lenta.shared.utilities.databinding.ViewPagerSettings
 import com.lenta.shared.utilities.extentions.connectLiveData
 import com.lenta.shared.utilities.extentions.debounce
-import java.lang.IllegalArgumentException
+import com.lenta.shared.utilities.extentions.provideViewModel
 
 class GoodsListNeFragment : CoreFragment<FragmentGoodsListNeBinding, GoodsListNeViewModel>(),
         ViewPagerSettings, ToolbarButtonsClickListener, OnKeyDownListener, OnScanResultListener {

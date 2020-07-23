@@ -3,7 +3,6 @@ package com.lenta.bp9.features.goods_information.excise_alco_receiving.excise_al
 import android.annotation.SuppressLint
 import android.content.Context
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
 import com.lenta.bp9.R
 import com.lenta.bp9.model.processing.ProcessExciseAlcoBoxAccService
 import com.lenta.bp9.model.task.IReceivingTaskManager
@@ -20,11 +19,11 @@ import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.requests.combined.scan_info.pojo.QualityInfo
 import com.lenta.shared.requests.combined.scan_info.pojo.ReasonRejectionInfo
 import com.lenta.shared.utilities.extentions.combineLatest
+import com.lenta.shared.utilities.extentions.launchUITryCatch
 import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.utilities.extentions.toStringFormatted
 import com.lenta.shared.view.OnPositionClickListener
 import com.mobrun.plugin.api.HyperHive
-import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import javax.inject.Inject
 
@@ -133,7 +132,7 @@ class ExciseAlcoBoxCardViewModel : CoreViewModel(), OnPositionClickListener {
     private val paramGrzCrGrundcatName: MutableLiveData<String> = MutableLiveData("")
 
     init {
-        viewModelScope.launch {
+        launchUITryCatch {
             count.value = initialCount.value
             suffix.value = productInfo.value?.purchaseOrderUnits?.name
 
@@ -422,7 +421,7 @@ class ExciseAlcoBoxCardViewModel : CoreViewModel(), OnPositionClickListener {
     }
 
     fun onClickPositionSpinQuality(position: Int) {
-        viewModelScope.launch {
+        launchUITryCatch {
             spinQualitySelectedPosition.value = position
             if (selectReasonRejectionCode.value != null) { //если это первый вход на экран, то в ф-ции init мы установили значение для spinReasonRejectionSelectedPosition, которое пришло
                 selectReasonRejectionCode.value = null //делаем, чтобы в последствии при выборе другого qualityInfo устанавливался первый элемент из списка spinReasonRejection
@@ -433,7 +432,7 @@ class ExciseAlcoBoxCardViewModel : CoreViewModel(), OnPositionClickListener {
     }
 
     private suspend fun updateDataSpinReasonRejection(selectedQuality: String) {
-        viewModelScope.launch {
+        launchUITryCatch {
             screenNavigator.showProgressLoadingData(::handleFailure)
             spinReasonRejectionSelectedPosition.value = 0
             reasonRejectionInfo.value = dataBase.getReasonRejectionInfoOfQuality(selectedQuality)

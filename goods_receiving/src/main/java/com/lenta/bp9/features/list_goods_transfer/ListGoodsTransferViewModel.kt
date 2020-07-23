@@ -1,17 +1,12 @@
 package com.lenta.bp9.features.list_goods_transfer
 
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
 import com.lenta.bp9.model.task.IReceivingTaskManager
 import com.lenta.bp9.model.task.TaskSectionInfo
 import com.lenta.bp9.platform.navigation.IScreenNavigator
-import com.lenta.shared.fmp.resources.dao_ext.getProductInfoByMaterial
-import com.lenta.shared.fmp.resources.slow.ZfmpUtz48V001
 import com.lenta.shared.platform.viewmodel.CoreViewModel
-import com.lenta.shared.utilities.Logg
+import com.lenta.shared.utilities.extentions.launchUITryCatch
 import com.lenta.shared.utilities.extentions.toStringFormatted
-import com.mobrun.plugin.api.HyperHive
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class ListGoodsTransferViewModel : CoreViewModel() {
@@ -33,7 +28,7 @@ class ListGoodsTransferViewModel : CoreViewModel() {
     }
 
     init {
-        viewModelScope.launch {
+        launchUITryCatch {
             listGoods.postValue(
                     taskManager.getReceivingTask()?.taskRepository?.getSections()?.findSectionProductsOfSection(sectionInfo.value!!)?.mapIndexed { index, taskSectionProducts ->
                         ListGoodsTransferItem(

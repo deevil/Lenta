@@ -5,7 +5,10 @@ import androidx.lifecycle.liveData
 import androidx.lifecycle.viewModelScope
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.platform.viewmodel.CoreViewModel
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.CoroutineStart
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 fun CoreViewModel.launchUITryCatch(
         start: CoroutineStart = CoroutineStart.DEFAULT,

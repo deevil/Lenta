@@ -1,7 +1,6 @@
 package com.lenta.bp16.features.good_weighing
 
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
 import com.lenta.bp16.data.IPrinter
 import com.lenta.bp16.data.IScales
 import com.lenta.bp16.data.LabelInfo
@@ -17,12 +16,8 @@ import com.lenta.shared.platform.constants.Constants
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.settings.IAppSettings
 import com.lenta.shared.utilities.Logg
-import com.lenta.shared.utilities.extentions.dropZeros
-import com.lenta.shared.utilities.extentions.isSapTrue
-import com.lenta.shared.utilities.extentions.map
-import com.lenta.shared.utilities.extentions.sumWith
+import com.lenta.shared.utilities.extentions.*
 import kotlinx.coroutines.Dispatchers.IO
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.text.SimpleDateFormat
 import java.util.*
@@ -120,7 +115,7 @@ class GoodWeighingViewModel : CoreViewModel() {
     // -----------------------------
 
     fun onClickComplete() {
-        viewModelScope.launch {
+        launchUITryCatch {
             navigator.showProgressLoadingData(::handleFailure)
 
             packCodeNetRequest(
@@ -152,7 +147,7 @@ class GoodWeighingViewModel : CoreViewModel() {
                     manager.onTaskChanged()
                 }
 
-                viewModelScope.launch {
+                launchUITryCatch {
                     val productTime = Calendar.getInstance()
                     productTime.add(Calendar.MINUTE, database.getPcpExpirTimeMm())
 
@@ -295,7 +290,7 @@ class GoodWeighingViewModel : CoreViewModel() {
     }
 
     fun onClickGetWeight() {
-        viewModelScope.launch {
+        launchUITryCatch {
             withContext(IO) {
                 navigator.showProgressLoadingData(::handleFailure)
                 scales.getWeight().also {
@@ -308,7 +303,7 @@ class GoodWeighingViewModel : CoreViewModel() {
     }
 
     private fun printLabel(labelInfo: LabelInfo) {
-        viewModelScope.launch {
+        launchUITryCatch {
             withContext(IO) {
                 manager.addLabelToList(labelInfo)
 

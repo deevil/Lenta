@@ -4,7 +4,6 @@ import android.content.Context
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.liveData
 import androidx.lifecycle.switchMap
-import androidx.lifecycle.viewModelScope
 import com.lenta.movement.models.ITaskManager
 import com.lenta.movement.models.SimpleListItem
 import com.lenta.movement.platform.IFormatter
@@ -18,7 +17,7 @@ import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.SelectionItemsHelper
 import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
-import kotlinx.coroutines.launch
+import com.lenta.shared.utilities.extentions.launchUITryCatch
 import javax.inject.Inject
 
 /** ViewModel экрана печати паллетной ведомости */
@@ -73,7 +72,7 @@ class TaskEOMergeFormedDocsViewModel : CoreViewModel(), OnOkInSoftKeyboardListen
     }
 
     fun onPrintBtnClick() {
-        viewModelScope.launch {
+        launchUITryCatch {
             docList.value?.let { docsListValue ->
                 screenNavigator.openTaskEoMergePrintConfirmationDialog(
                         eoGeQuantity = docsListValue.size,
@@ -95,7 +94,7 @@ class TaskEOMergeFormedDocsViewModel : CoreViewModel(), OnOkInSoftKeyboardListen
                 } else {
                     docListValue
                 }
-                viewModelScope.launch {
+                launchUITryCatch {
                     screenNavigator.showProgress(printDocumentsNetRequest)
                     val params = PrintDocumentsParams(
                             taskNum = taskManager.getTask().number,

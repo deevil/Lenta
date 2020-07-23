@@ -9,7 +9,6 @@ import com.lenta.bp9.platform.navigation.IScreenNavigator
 import com.lenta.bp9.platform.requestCodeAddGoodsSurplus
 import com.lenta.bp9.platform.requestCodeTypeBarCode
 import com.lenta.bp9.platform.requestCodeTypeSap
-import com.lenta.bp9.repos.IDataBaseRepo
 import com.lenta.bp9.repos.IRepoInMemoryHolder
 import com.lenta.bp9.requests.network.ZmpUtzGrz31V001NetRequest
 import com.lenta.bp9.requests.network.ZmpUtzGrz31V001Params
@@ -17,10 +16,11 @@ import com.lenta.bp9.requests.network.ZmpUtzGrz31V001Result
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.fmp.resources.dao_ext.getProductInfoByMaterial
-import com.lenta.shared.fmp.resources.dao_ext.getUomInfo
-import com.lenta.shared.fmp.resources.fast.ZmpUtz07V001
 import com.lenta.shared.fmp.resources.slow.ZfmpUtz48V001
-import com.lenta.shared.models.core.*
+import com.lenta.shared.models.core.MatrixType
+import com.lenta.shared.models.core.ProductType
+import com.lenta.shared.models.core.Uom
+import com.lenta.shared.models.core.getProductType
 import com.lenta.shared.requests.combined.scan_info.ScanInfoRequest
 import com.lenta.shared.requests.combined.scan_info.ScanInfoRequestParams
 import com.lenta.shared.requests.combined.scan_info.ScanInfoResult

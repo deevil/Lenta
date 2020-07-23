@@ -1,17 +1,14 @@
 package com.lenta.bp9.features.goods_information.excise_alco_receiving.excise_alco_box_acc.excise_alco_box_product_failure
 
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
 import com.lenta.bp9.model.processing.ProcessExciseAlcoBoxAccService
 import com.lenta.bp9.model.task.IReceivingTaskManager
 import com.lenta.bp9.model.task.TaskProductInfo
-import com.lenta.bp9.model.task.TaskType
 import com.lenta.bp9.platform.navigation.IScreenNavigator
 import com.lenta.bp9.repos.IDataBaseRepo
 import com.lenta.shared.platform.viewmodel.CoreViewModel
-import com.lenta.shared.utilities.Logg
+import com.lenta.shared.utilities.extentions.launchUITryCatch
 import com.lenta.shared.utilities.extentions.toStringFormatted
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class ExciseAlcoBoxProductFailureViewModel : CoreViewModel() {
@@ -47,7 +44,7 @@ class ExciseAlcoBoxProductFailureViewModel : CoreViewModel() {
     }
 
     init {
-        viewModelScope.launch {
+        launchUITryCatch {
             paramGrzCrGrundcatCode.value = dataBase.getParamGrzCrGrundcat() ?: ""
             paramGrzCrGrundcatName.value = dataBase.getGrzCrGrundcatName(paramGrzCrGrundcatCode.value!!) ?: ""
         }

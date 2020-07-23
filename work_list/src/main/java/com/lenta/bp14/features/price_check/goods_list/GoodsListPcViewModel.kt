@@ -22,6 +22,7 @@ import com.lenta.shared.utilities.SelectionItemsHelper
 import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
 import com.lenta.shared.utilities.databinding.PageSelectionListener
 import com.lenta.shared.utilities.extentions.combineLatest
+import com.lenta.shared.utilities.extentions.launchUITryCatch
 import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.view.OnPositionClickListener
 import kotlinx.coroutines.Dispatchers.IO
@@ -53,7 +54,7 @@ class GoodsListPcViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
         MutableLiveData<List<String>>(
                 emptyList()
         ).also { liveData ->
-            viewModelScope.launch {
+            launchUITryCatch {
                 tagTypes.clear()
                 liveData.value = printTask.getPriceTagTypes().map {
                     tagTypes.add(it)
@@ -145,7 +146,7 @@ class GoodsListPcViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
     // -----------------------------
 
     init {
-        viewModelScope.launch {
+        launchUITryCatch {
             requestFocusToNumberField.value = true
         }
     }
@@ -227,7 +228,7 @@ class GoodsListPcViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
 
     private fun showConfirmationForSentReportScreen() {
         navigator.showSetTaskToStatusCalculated {
-            viewModelScope.launch {
+            launchUITryCatch {
                 navigator.showProgressLoadingData(::handleFailure)
                 checkPriceReportNetRequest(
                         task.getReportData(
@@ -270,7 +271,7 @@ class GoodsListPcViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
     }
 
     fun onClickPrint() {
-        viewModelScope.launch {
+        launchUITryCatch {
             var printerName = ""
             withContext(IO) {
                 printerName = printTask.getPrinterTypes().firstOrNull { it.isStatic == true }?.name
@@ -301,7 +302,7 @@ class GoodsListPcViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
     }
 
     private fun print() {
-        viewModelScope.launch {
+        launchUITryCatch {
             navigator.showProgressLoadingData(::handleFailure)
             val selectedSearchTasks = getResultsForPrint()
             val printTasks = getPrintTasks()

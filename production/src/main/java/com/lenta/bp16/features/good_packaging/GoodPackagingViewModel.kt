@@ -1,7 +1,6 @@
 package com.lenta.bp16.features.good_packaging
 
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
 import com.lenta.bp16.model.ITaskManager
 import com.lenta.bp16.model.pojo.Pack
 import com.lenta.bp16.platform.navigation.IScreenNavigator
@@ -11,8 +10,8 @@ import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.extentions.dropZeros
+import com.lenta.shared.utilities.extentions.launchUITryCatch
 import com.lenta.shared.utilities.extentions.map
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class GoodPackagingViewModel : CoreViewModel() {
@@ -83,7 +82,7 @@ class GoodPackagingViewModel : CoreViewModel() {
     // -----------------------------
 
     fun onClickComplete() {
-        viewModelScope.launch {
+        launchUITryCatch {
             navigator.showProgressLoadingData(::handleFailure)
 
             packGoodNetRequest(

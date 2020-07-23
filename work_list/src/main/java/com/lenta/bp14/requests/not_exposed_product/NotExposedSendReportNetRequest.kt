@@ -3,7 +3,10 @@ package com.lenta.bp14.requests.not_exposed_product
 import com.google.gson.annotations.SerializedName
 import com.lenta.bp14.models.not_exposed.NotExposedTaskDescription
 import com.lenta.bp14.models.not_exposed.repo.NotExposedProductInfo
-import com.lenta.bp14.requests.pojo.*
+import com.lenta.bp14.requests.pojo.CheckPlace
+import com.lenta.bp14.requests.pojo.Position
+import com.lenta.bp14.requests.pojo.ReportSentStatus
+import com.lenta.bp14.requests.pojo.SentReportResult
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.functional.Either
 import com.lenta.shared.functional.map

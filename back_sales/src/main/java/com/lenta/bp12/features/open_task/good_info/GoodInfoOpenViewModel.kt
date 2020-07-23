@@ -1,7 +1,6 @@
 package com.lenta.bp12.features.open_task.good_info
 
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
 import com.lenta.bp12.model.*
 import com.lenta.bp12.model.pojo.Mark
 import com.lenta.bp12.model.pojo.Part
@@ -27,7 +26,6 @@ import com.lenta.shared.utilities.extentions.*
 import com.lenta.shared.utilities.getDateFromString
 import com.lenta.shared.utilities.isCommonFormatNumber
 import com.lenta.shared.view.OnPositionClickListener
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class GoodInfoOpenViewModel : CoreViewModel() {

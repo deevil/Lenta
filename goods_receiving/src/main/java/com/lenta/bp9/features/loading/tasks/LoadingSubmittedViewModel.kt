@@ -2,16 +2,19 @@ package com.lenta.bp9.features.loading.tasks
 
 import android.content.Context
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
-import com.lenta.bp9.model.task.*
+import com.lenta.bp9.model.task.IReceivingTaskManager
+import com.lenta.bp9.model.task.TaskDescription
+import com.lenta.bp9.model.task.TaskNotification
+import com.lenta.bp9.model.task.TaskSectionRestData
 import com.lenta.bp9.platform.navigation.IScreenNavigator
-import com.lenta.bp9.requests.network.*
+import com.lenta.bp9.requests.network.SubmittedNetRequest
+import com.lenta.bp9.requests.network.SubmittedParams
+import com.lenta.bp9.requests.network.SubmittedRestInfo
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.features.loading.CoreLoadingViewModel
-import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.extentions.getDeviceIp
-import kotlinx.coroutines.launch
+import com.lenta.shared.utilities.extentions.launchUITryCatch
 import javax.inject.Inject
 
 class LoadingSubmittedViewModel : CoreLoadingViewModel() {
@@ -33,7 +36,7 @@ class LoadingSubmittedViewModel : CoreLoadingViewModel() {
     override val sizeInMb: MutableLiveData<Float> = MutableLiveData()
 
     init {
-        viewModelScope.launch {
+        launchUITryCatch {
             progress.value = true
             taskManager.getReceivingTask()?.let { task ->
                 val params = SubmittedParams(

@@ -1,11 +1,10 @@
 package com.lenta.bp18.features.goods_info
 
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
 import com.lenta.bp18.platform.navigation.IScreenNavigator
 import com.lenta.shared.platform.viewmodel.CoreViewModel
+import com.lenta.shared.utilities.extentions.launchUITryCatch
 import com.lenta.shared.utilities.extentions.map
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class GoodsInfoViewModel : CoreViewModel() {
@@ -37,7 +36,7 @@ class GoodsInfoViewModel : CoreViewModel() {
     }
 
     fun onClickComplete(){
-        viewModelScope.launch {
+        launchUITryCatch {
             navigator.showProgressLoadingData(::handleFailure)
             //TODO Обработать клик
         }

@@ -11,8 +11,8 @@ import com.lenta.bp14.models.filter.IFilterable
 import com.lenta.bp14.models.general.AppTaskTypes
 import com.lenta.bp14.models.general.IGeneralRepo
 import com.lenta.bp14.models.general.ITaskTypeInfo
-import com.lenta.bp14.models.not_exposed.repo.NotExposedProductInfo
 import com.lenta.bp14.models.not_exposed.repo.INotExposedRepo
+import com.lenta.bp14.models.not_exposed.repo.NotExposedProductInfo
 import com.lenta.bp14.requests.not_exposed_product.*
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.functional.Either

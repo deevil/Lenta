@@ -25,11 +25,11 @@ import com.lenta.shared.utilities.SelectionItemsHelper
 import com.lenta.shared.utilities.databinding.Evenable
 import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
 import com.lenta.shared.utilities.extentions.combineLatest
+import com.lenta.shared.utilities.extentions.launchUITryCatch
 import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.utilities.extentions.toStringFormatted
 import com.lenta.shared.view.OnPositionClickListener
 import com.mobrun.plugin.api.HyperHive
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
@@ -92,7 +92,7 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
     }
 
     init {
-        viewModelScope.launch {
+        launchUITryCatch {
             searchProductDelegate.init(viewModelScope = this@GoodsListViewModel::viewModelScope,
                     scanResultHandler = this@GoodsListViewModel::handleProductSearchResult)
             updateCounted()
@@ -206,7 +206,7 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
 
     fun onClickPrint() {
         processServiceManager.getWriteOffTask()?.let {
-            viewModelScope.launch {
+            launchUITryCatch {
                 screenNavigator.showProgress(printTaskNetRequest)
                 printTaskNetRequest(it.getPrinterTask()).either(::handleFailure, ::handleSuccessPrint)
                 screenNavigator.hideProgress()
@@ -231,7 +231,7 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
     }
 
     private fun saveData() {
-        viewModelScope.launch {
+        launchUITryCatch {
             screenNavigator.showProgress(sendWriteOffReportRequest)
             processServiceManager.getWriteOffTask()?.let {
                 sendWriteOffReportRequest(it.getReport()).either(::handleFailure, ::handleSentSuccess)

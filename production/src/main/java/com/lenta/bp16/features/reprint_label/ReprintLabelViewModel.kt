@@ -1,6 +1,5 @@
 package com.lenta.bp16.features.reprint_label
 
-import androidx.lifecycle.viewModelScope
 import com.lenta.bp16.data.IPrinter
 import com.lenta.bp16.data.LabelInfo
 import com.lenta.bp16.model.ITaskManager
@@ -11,9 +10,9 @@ import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.settings.IAppSettings
 import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.SelectionItemsHelper
+import com.lenta.shared.utilities.extentions.launchUITryCatch
 import com.lenta.shared.utilities.extentions.map
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.text.SimpleDateFormat
 import java.util.*
@@ -77,7 +76,7 @@ class ReprintLabelViewModel : CoreViewModel() {
     }
 
     private fun printLabel(labelInfo: LabelInfo) {
-        viewModelScope.launch {
+        launchUITryCatch {
             withContext(Dispatchers.IO) {
                 appSettings.printerIpAddress.let { ipAddress ->
                     if (ipAddress == null) {

@@ -2,7 +2,6 @@ package com.lenta.inventory.features.loading.tasks
 
 import android.content.Context
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
 import com.lenta.inventory.features.task_list.StatusTask
 import com.lenta.inventory.models.RecountType
 import com.lenta.inventory.models.StorePlaceLockMode
@@ -19,7 +18,7 @@ import com.lenta.shared.platform.device_info.DeviceInfo
 import com.lenta.shared.platform.time.ITimeMonitor
 import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.extentions.getDeviceIp
-import kotlinx.coroutines.launch
+import com.lenta.shared.utilities.extentions.launchUITryCatch
 import javax.inject.Inject
 
 class LoadingTaskContentViewModel : CoreLoadingViewModel() {
@@ -51,7 +50,7 @@ class LoadingTaskContentViewModel : CoreLoadingViewModel() {
     override val sizeInMb: MutableLiveData<Float> = MutableLiveData()
 
     init {
-        viewModelScope.launch {
+        launchUITryCatch {
             progress.value = true
             val userNumber = if (recountType == RecountType.ParallelByPerNo) sessionInfo.personnelNumber else ""
             var needsRelock = false
@@ -95,7 +94,7 @@ class LoadingTaskContentViewModel : CoreLoadingViewModel() {
     }
 
     private fun unlockTaskAndGoBack() {
-        viewModelScope.launch {
+        launchUITryCatch {
             storePlaceLockNetRequest(StorePlaceLockParams(
                     ip = deviceInfo.getDeviceIp(),
                     taskNumber = taskInfo.taskNumber,

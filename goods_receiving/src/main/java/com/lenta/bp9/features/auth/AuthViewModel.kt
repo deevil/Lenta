@@ -1,12 +1,10 @@
 package com.lenta.bp9.features.auth
 
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
 import com.lenta.bp9.platform.navigation.IScreenNavigator
 import com.lenta.bp9.repos.IRepoInMemoryHolder
 import com.lenta.bp9.requests.network.PermissionsGrzRequest
 import com.lenta.bp9.requests.network.PermissionsGrzResult
-import com.lenta.shared.utilities.runIfDebug
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.features.login.CoreAuthViewModel
@@ -17,9 +15,10 @@ import com.lenta.shared.requests.network.AuthParams
 import com.lenta.shared.settings.IAppSettings
 import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.extentions.combineLatest
+import com.lenta.shared.utilities.extentions.launchUITryCatch
 import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.utilities.getBaseAuth
-import kotlinx.coroutines.launch
+import com.lenta.shared.utilities.runIfDebug
 import javax.inject.Inject
 
 
@@ -41,7 +40,7 @@ class AuthViewModel : CoreAuthViewModel() {
     val msgUserNoRights: MutableLiveData<String> = MutableLiveData()
 
     init {
-        viewModelScope.launch {
+        launchUITryCatch {
             if (!appSettings.lastLogin.isNullOrEmpty()) {
                 login.value = appSettings.lastLogin
             }
@@ -63,7 +62,7 @@ class AuthViewModel : CoreAuthViewModel() {
 
 
     override fun onClickEnter() {
-        viewModelScope.launch {
+        launchUITryCatch {
             progress.value = true
             auth(AuthParams(login.value!!, password.value!!)).either(::handleFailure, ::loadPermissions)
         }
@@ -77,7 +76,7 @@ class AuthViewModel : CoreAuthViewModel() {
             appSettings.lastLogin = it
         }
 
-        viewModelScope.launch {
+        launchUITryCatch {
             progress.value = true
             permissionsGrzRequest(null).either(::handleFailure, ::handleAuthSuccess)
             progress.value = false
@@ -116,7 +115,7 @@ class AuthViewModel : CoreAuthViewModel() {
     }
 
     override fun onResume() {
-        viewModelScope.launch {
+        launchUITryCatch {
             if (!appSettings.lastLogin.isNullOrEmpty()) {
                 login.value = appSettings.lastLogin
             }

@@ -19,6 +19,7 @@ import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
 import com.lenta.shared.utilities.databinding.PageSelectionListener
 import com.lenta.shared.utilities.extentions.combineLatest
 import com.lenta.shared.utilities.extentions.dropZeros
+import com.lenta.shared.utilities.extentions.launchUITryCatch
 import com.lenta.shared.utilities.extentions.map
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -88,7 +89,7 @@ class GoodsListWlViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
     // -----------------------------
 
     init {
-        viewModelScope.launch {
+        launchUITryCatch {
             task.loadMaxTaskPositions()
             if (!task.isLoadedTaskList) task.loadTaskList()
             if (!task.isEmpty()) task.currentGood.value = task.goods.value?.get(0)
@@ -119,7 +120,7 @@ class GoodsListWlViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
     private fun showConfirmationForSentReportScreen() {
         // Подтверждение - Перевести задание в статус "Подсчитано" и закрыть его для редактирования? - Назад / Да
         navigator.showSetTaskToStatusCalculated {
-            viewModelScope.launch {
+            launchUITryCatch {
                 navigator.showProgressLoadingData(::handleFailure)
                 sentReportRequest(task.getReportData(deviceInfo.getDeviceIp())).either(
                         {

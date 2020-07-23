@@ -2,7 +2,6 @@ package com.lenta.bp9.features.loading.tasks
 
 import android.content.Context
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
 import com.lenta.bp9.R
 import com.lenta.bp9.model.task.IReceivingTaskManager
 import com.lenta.bp9.model.task.TaskNotification
@@ -17,8 +16,8 @@ import com.lenta.shared.exception.Failure
 import com.lenta.shared.features.loading.CoreLoadingViewModel
 import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.extentions.getDeviceIp
+import com.lenta.shared.utilities.extentions.launchUITryCatch
 import com.mobrun.plugin.api.HyperHive
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class LoadingStartReviseViewModel : CoreLoadingViewModel() {
@@ -49,7 +48,7 @@ class LoadingStartReviseViewModel : CoreLoadingViewModel() {
     }
 
     init {
-        viewModelScope.launch {
+        launchUITryCatch {
             progress.value = true
             val params = StartReviseRequestParameters(
                     deviceIP = context.getDeviceIp(),
@@ -72,7 +71,7 @@ class LoadingStartReviseViewModel : CoreLoadingViewModel() {
 
     private fun handleSuccess(result: StartReviseRequestResult) {
         Logg.d { "Register arrival request result $result" }
-        viewModelScope.launch {
+        launchUITryCatch {
             //screenNavigator.goBack()
             //screenNavigator.goBack()
 

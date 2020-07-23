@@ -12,9 +12,7 @@ import com.lenta.shared.exception.Failure
 import com.lenta.shared.fmp.resources.dao_ext.getAllowedMatTypesINV
 import com.lenta.shared.fmp.resources.fast.ZmpUtz14V001
 import com.lenta.shared.models.core.GisControl
-import com.lenta.shared.models.core.ProductInfo
 import com.lenta.shared.models.core.ProductType
-import com.lenta.shared.models.core.isNormal
 import com.lenta.shared.requests.combined.scan_info.ScanInfoRequest
 import com.lenta.shared.requests.combined.scan_info.ScanInfoRequestParams
 import com.lenta.shared.requests.combined.scan_info.ScanInfoResult

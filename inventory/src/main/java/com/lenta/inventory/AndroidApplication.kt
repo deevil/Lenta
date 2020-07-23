@@ -5,8 +5,8 @@ import com.lenta.inventory.models.IPersistInventoryTask
 import com.lenta.inventory.models.task.IInventoryTaskManager
 import com.lenta.shared.CoreApplication
 import com.lenta.shared.settings.DefaultConnectionSettings
-import javax.inject.Inject
 import com.lenta.shared.utilities.Logg
+import javax.inject.Inject
 
 class AndroidApplication : CoreApplication() {
     override fun getDefaultConnectionSettings(): DefaultConnectionSettings {

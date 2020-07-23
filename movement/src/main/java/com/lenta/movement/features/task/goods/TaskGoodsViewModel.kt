@@ -2,7 +2,6 @@ package com.lenta.movement.features.task.goods
 
 import android.content.Context
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
 import com.lenta.movement.features.main.box.ScanInfoHelper
 import com.lenta.movement.models.*
 import com.lenta.movement.models.repositories.ITaskBasketsRepository
@@ -20,7 +19,6 @@ import com.lenta.shared.utilities.SelectionItemsHelper
 import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
 import com.lenta.shared.utilities.databinding.PageSelectionListener
 import com.lenta.shared.utilities.extentions.*
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class TaskGoodsViewModel : CoreViewModel(),
@@ -201,7 +199,7 @@ class TaskGoodsViewModel : CoreViewModel(),
     }
 
     private fun saveTask() {
-        viewModelScope.launch {
+        launchUITryCatch {
             screenNavigator.showProgress(saveTaskNetRequest)
             val task = taskManager.getTask()
             val params = SaveTaskParams(
@@ -264,7 +262,7 @@ class TaskGoodsViewModel : CoreViewModel(),
     }
 
     private fun searchCode(code: String, fromScan: Boolean, isBarCode: Boolean? = null) {
-        viewModelScope.launch {
+        launchUITryCatch {
             scanInfoHelper.searchCode(code, fromScan, isBarCode) { productInfo ->
                 screenNavigator.openTaskGoodsInfoScreen(productInfo)
             }

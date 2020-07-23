@@ -2,21 +2,17 @@ package com.lenta.bp9.features.mercury_list_irrelevant
 
 import android.content.Context
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
-import com.lenta.bp9.R
 import com.lenta.bp9.features.loading.tasks.TaskCardMode
-import com.lenta.bp9.features.reject.RejectType
 import com.lenta.bp9.model.task.*
 import com.lenta.bp9.platform.navigation.IScreenNavigator
 import com.lenta.bp9.repos.IRepoInMemoryHolder
 import com.lenta.bp9.requests.network.*
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.platform.viewmodel.CoreViewModel
-import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.extentions.getDeviceIp
+import com.lenta.shared.utilities.extentions.launchUITryCatch
 import com.lenta.shared.utilities.extentions.toStringFormatted
 import com.mobrun.plugin.api.HyperHive
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 const val ZMP_UTZ_GRZ_11_V001 = 11
@@ -73,7 +69,7 @@ class MercuryListIrrelevantViewModel : CoreViewModel() {
     fun onClickUntied() {
         when (netRestNumber.value) {
             ZMP_UTZ_GRZ_11_V001 -> {
-                viewModelScope.launch {
+                launchUITryCatch {
                     screenNavigator.showProgressLoadingData(::handleFailure)
 
                     taskManager.getReceivingTask()?.let { task ->
@@ -96,7 +92,7 @@ class MercuryListIrrelevantViewModel : CoreViewModel() {
                 }
             }
             ZMP_UTZ_GRZ_13_V001 -> {
-                viewModelScope.launch {
+                launchUITryCatch {
                     screenNavigator.showProgressLoadingData(::handleFailure)
                     taskManager.getReceivingTask()?.let { task ->
                         val params = TransmittedParams(
@@ -115,7 +111,7 @@ class MercuryListIrrelevantViewModel : CoreViewModel() {
     }
 
     private fun handleSuccessRecountStart(result: DirectSupplierStartRecountRestInfo) {
-        viewModelScope.launch {
+        launchUITryCatch {
             repoInMemoryHolder.manufacturers.value = result.manufacturers
             //todo закомичено, т.к. на проде этот фунционал пока не реализован repoInMemoryHolder.processOrderData.value = result.processOrderData.map { TaskProcessOrderDataInfo.from( it) }
             repoInMemoryHolder.sets.value = result.setsInfo.map { TaskSetsInfo.from(hyperHive, it) }
@@ -131,7 +127,7 @@ class MercuryListIrrelevantViewModel : CoreViewModel() {
     }
 
     fun onClickTemporary() {
-        viewModelScope.launch {
+        launchUITryCatch {
             screenNavigator.showProgress(rejectRequest)
             val params = RejectRequestParameters(
                     deviceIP = context.getDeviceIp(),

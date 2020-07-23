@@ -1,7 +1,6 @@
 package com.lenta.inventory.features.goods_details_storage
 
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
 import com.lenta.inventory.models.task.IInventoryTaskManager
 import com.lenta.inventory.models.task.ProcessExciseAlcoProductService
 import com.lenta.inventory.models.task.TaskProductInfo
@@ -9,9 +8,9 @@ import com.lenta.inventory.platform.navigation.IScreenNavigator
 import com.lenta.shared.models.core.EgaisStampVersion
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.SelectionItemsHelper
+import com.lenta.shared.utilities.extentions.launchUITryCatch
 import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.utilities.extentions.toStringFormatted
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class GoodsDetailsStorageViewModel : CoreViewModel() {
@@ -45,7 +44,7 @@ class GoodsDetailsStorageViewModel : CoreViewModel() {
     }
 
     init {
-        viewModelScope.launch {
+        launchUITryCatch {
             updateGoodsInfo()
         }
     }
