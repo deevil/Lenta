@@ -33,11 +33,7 @@
 
                 <TextView
                     android:id="@+id/tv_item_number"
-                    style="@style/CellTextStyle"
-                    android:layout_width="32dp"
-                    android:layout_height="32dp"
-                    android:background="@drawable/bg_border_circle_white_selectable_for_delete"
-                    android:gravity="center"
+                    style="@style/CellCircleNumberStyle"
                     android:text="@{String.valueOf(shelf.id)}"
                     app:selected="@{selectedForDelete}"
                     tools:text="1" />
