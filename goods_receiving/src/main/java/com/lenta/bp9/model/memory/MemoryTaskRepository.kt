@@ -36,6 +36,8 @@ class MemoryTaskRepository : ITaskRepository {
 
     private val taskTransportMarriageRepository: ITaskTransportMarriageRepository = MemoryTaskTransportMarriageRepository()
 
+    private val taskBlocksRepository: ITaskBlocksRepository = MemoryTaskBlocksRepository()
+
     override fun getProducts(): ITaskProductRepository {
         return taskProductRepository
     }
@@ -98,5 +100,9 @@ class MemoryTaskRepository : ITaskRepository {
 
     override fun getTransportMarriage(): ITaskTransportMarriageRepository {
         return taskTransportMarriageRepository
+    }
+
+    override fun getBlocks(): ITaskBlocksRepository {
+        return taskBlocksRepository
     }
 }

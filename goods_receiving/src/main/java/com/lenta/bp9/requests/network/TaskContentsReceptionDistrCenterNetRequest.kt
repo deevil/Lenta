@@ -95,6 +95,8 @@ data class TaskContentsReceptionDistrCenterResult(
         val manufacturers: List<Manufacturer>,
         @SerializedName("ET_TASK_SETS")//Список наборов
         val setsInfo: List<TaskSetsRestData>,
+        @SerializedName("ET_TASK_PACK")//Список блоков для маркированного товара
+        val taskBlock: List<TaskBlockInfoRestData>,
         @SerializedName("EV_RETCODE")
         override val retCode: Int,
         @SerializedName("EV_ERROR_TEXT")

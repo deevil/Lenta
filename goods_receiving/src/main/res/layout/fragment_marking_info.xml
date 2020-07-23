@@ -79,8 +79,33 @@
             app:suffix="@{vm.suffix}"
             app:cursorToLastPos="@{false}"
             app:requestFocus="@{vm.requestFocusToCount}"
-
             tools:text="1 бл" />
+
+        <ImageView
+            android:id="@+id/imgUnit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:visibility="@{!vm.visibilityImgUnit}"
+            android:onClick="@{(v) -> vm.onClickUnitChange()}"
+            android:src="@{@drawable/ic_block_24dp}"
+            app:layout_constraintBottom_toBottomOf="@+id/et_count"
+            app:layout_constraintEnd_toEndOf="@+id/et_count"
+            app:layout_constraintTop_toTopOf="@+id/et_count"
+            tools:src="@drawable/ic_block_24dp"/>
+
+        <ImageView
+            android:id="@+id/imgUnitDisabled"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:visibility="@{vm.visibilityImgUnit}"
+            android:onClick="@{(v) -> vm.onClickUnitChange()}"
+            android:src="@{@drawable/ic_block_disabled_24dp}"
+            app:layout_constraintBottom_toBottomOf="@+id/et_count"
+            app:layout_constraintEnd_toEndOf="@+id/et_count"
+            app:layout_constraintTop_toTopOf="@+id/et_count"
+            tools:src="@drawable/ic_block_disabled_24dp"/>
 
         <View
             android:id="@+id/div_hor2"
@@ -122,7 +147,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="@+id/guideline"
             app:layout_constraintTop_toBottomOf="@+id/div_hor2"
-            tools:text="+ 10 бл" />
+            tools:text="+ 10 шт" />
 
         <TextView
             android:id="@+id/tv_refusal"
@@ -150,7 +175,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="@+id/guideline"
             app:layout_constraintTop_toBottomOf="@+id/tv_accept_val"
-            tools:text="- 10 бл" />
+            tools:text="- 10 шт" />
 
         <View
             android:id="@+id/div_hor3"
@@ -359,7 +384,7 @@
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toEndOf="@+id/div_vert5"
                 app:layout_constraintTop_toTopOf="@+id/tv_mrc"
-                tools:text="150 р." />
+                tools:text="150" />
 
             <View
                 android:id="@+id/div_hor6"
@@ -405,9 +430,9 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="10dp"
-                android:checked="@{vm.checkBoxList}"
+                android:checked="@{vm.checkBoxStampList}"
                 android:enabled="false"
-                android:visibility="@{vm.checkBoxListVisibility}"
+                android:visibility="@{vm.checkBoxStampListVisibility}"
                 app:layout_constraintStart_toEndOf="@+id/div_vert3"
                 app:layout_constraintTop_toTopOf="parent" />
 
@@ -421,7 +446,7 @@
                 android:layout_marginEnd="8dp"
                 android:ellipsize="end"
                 android:maxLines="1"
-                android:text="@{vm.tvBoxListVal}"
+                android:text="@{vm.tvStampListVal}"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/checkBox_stamp_list"
                 app:layout_constraintTop_toTopOf="@+id/div_vert3"

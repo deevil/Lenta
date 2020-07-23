@@ -76,6 +76,7 @@ import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.progress.IProgressUseCaseInformator
 
 private const val PAGE_NUMBER_95 = "95"
+private const val PAGE_NUMBER_97 = "97"
 
 class ScreenNavigator(
         private val context: Context,
@@ -1517,6 +1518,28 @@ class ScreenNavigator(
         }
     }
 
+    override fun openAlertInvalidCodeScannedForCurrentModeScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    message = context.getString(R.string.invalid_code_scanned_for_current_mode),
+                    iconRes = R.drawable.ic_info_pink_80dp,
+                    textColor = ContextCompat.getColor(context, R.color.color_text_dialogWarning),
+                    pageNumber = PAGE_NUMBER_97)
+            )
+        }
+    }
+
+    override fun openAlertStampNotFoundReturnSupplierScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    message = context.getString(R.string.scanned_stamp_not_listed_in_current_delivery_return_supplier),
+                    iconRes = R.drawable.ic_info_pink_80dp,
+                    textColor = ContextCompat.getColor(context, R.color.color_text_dialogWarning),
+                    pageNumber = PAGE_NUMBER_97)
+            )
+        }
+    }
+
     private fun getFragmentStack() = foregroundActivityProvider.getActivity()?.fragmentStack
 }
 
@@ -1691,4 +1714,6 @@ interface IScreenNavigator : ICoreNavigator {
     fun openAlertOverLimitPlannedScreen()
     fun openAlertOverLimitPlannedBatchScreen()
     fun openMarkingInfoScreen(productInfo: TaskProductInfo, isDiscrepancy: Boolean)
+    fun openAlertInvalidCodeScannedForCurrentModeScreen()
+    fun openAlertStampNotFoundReturnSupplierScreen()
 }

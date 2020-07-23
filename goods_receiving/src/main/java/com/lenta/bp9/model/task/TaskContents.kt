@@ -52,6 +52,9 @@ class TaskContents
                 },
                 startRecountRestInfo.taskBoxesDiscrepancies.map {
                     TaskBoxDiscrepancies.from(it)
+                },
+                startRecountRestInfo.taskBlock.map {
+                    TaskBlockInfo.from(it)
                 }
         )
     }
@@ -85,6 +88,9 @@ class TaskContents
                 },
                 startRecountRestInfo.taskBoxesDiscrepancies.map {
                     TaskBoxDiscrepancies.from(it)
+                },
+                startRecountRestInfo.taskBlock.map {
+                    TaskBlockInfo.from(it)
                 }
         )
     }
@@ -123,6 +129,9 @@ class TaskContents
                 },
                 startRecountRestInfo.taskBoxesDiscrepancies.map {
                     TaskBoxDiscrepancies.from(it)
+                },
+                startRecountRestInfo.taskBlock.map {
+                    TaskBlockInfo.from(it)
                 }
         )
     }
@@ -161,6 +170,10 @@ class TaskContents
                 },
                 startRecountRestInfo.taskBoxesDiscrepancies.map {
                     TaskBoxDiscrepancies.from(it)
+                }
+                ,
+                startRecountRestInfo.taskBlock.map {
+                    TaskBlockInfo.from(it)
                 }
         )
     }
@@ -224,5 +237,6 @@ data class TaskContentsInfo(
         val taskExciseStampDiscrepancies: List<TaskExciseStampDiscrepancies>,
         val taskExciseStampBad: List<TaskExciseStampBad>,
         val taskBoxes: List<TaskBoxInfo>,
-        val taskBoxesDiscrepancies: List<TaskBoxDiscrepancies>
+        val taskBoxesDiscrepancies: List<TaskBoxDiscrepancies>,
+        val taskBlock: List<TaskBlockInfo>
 )

@@ -34,6 +34,14 @@ class ReceivingTask(val taskHeader: TaskInfo,
         return taskRepository.getBatches().getBatches()
     }
 
+    fun getProcessedBoxes(): List<TaskBoxInfo> {
+        return taskRepository.getBoxes().getBoxes()
+    }
+
+    fun getProcessedBlocks(): List<TaskBlockInfo> {
+        return taskRepository.getBlocks().getBlocks()
+    }
+
     fun getProcessedSections(): List<TaskSectionInfo> {
         return taskRepository.getSections().getSections()
     }
@@ -102,6 +110,9 @@ class ReceivingTask(val taskHeader: TaskInfo,
         taskRepository
                 .getBoxesDiscrepancies()
                 .updateBoxesDiscrepancies(taskContentsInfo.taskBoxesDiscrepancies)
+        taskRepository
+                .getBlocks()
+                .updateBlocks(taskContentsInfo.taskBlock)
     }
 
     //количество коробов для товара прошедших контроль
