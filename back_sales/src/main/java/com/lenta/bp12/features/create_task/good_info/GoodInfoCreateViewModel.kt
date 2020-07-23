@@ -481,11 +481,7 @@ class GoodInfoCreateViewModel : CoreViewModel() {
                 isExistUnsavedData = true
                 setGood(result = result, searchNumber = ean ?: (material.orEmpty()))
             } else {
-                if (manager.searchGoodFromList) {
-                    manager.searchGoodFromList = false
-                    manager.searchNumber = ""
-                    navigator.goBack()
-                }
+                goBackIfSearchFromList()
 
                 navigator.showGoodCannotBeAdded()
             }
@@ -494,12 +490,15 @@ class GoodInfoCreateViewModel : CoreViewModel() {
 
     override fun handleFailure(failure: Failure) {
         super.handleFailure(failure)
+        goBackIfSearchFromList()
+        navigator.openAlertScreen(failure)
+    }
+
+    private fun goBackIfSearchFromList() {
         if (manager.searchGoodFromList) {
             manager.clearSearchFromListParams()
             navigator.goBack()
         }
-
-        navigator.openAlertScreen(failure)
     }
 
     private fun setGood(result: GoodInfoResult, searchNumber: String) {
@@ -653,6 +652,10 @@ class GoodInfoCreateViewModel : CoreViewModel() {
         )).also {
             navigator.hideProgress()
         }
+    }
+
+    private fun handleCheckPartFailure(failure: Failure) {
+        navigator.openAlertScreen(failure)
     }
 
     private fun getProviderCode(): String {
@@ -850,7 +853,7 @@ class GoodInfoCreateViewModel : CoreViewModel() {
         when (screenStatus.value) {
             ScreenStatus.ALCOHOL, ScreenStatus.PART -> {
                 viewModelScope.launch {
-                    checkPart().either(::handleFailure) { result ->
+                    checkPart().either(::handleCheckPartFailure) { result ->
                         result.status.let { status ->
                             if (status == PartStatus.FOUND.code) {
                                 saveChangesAndExit()

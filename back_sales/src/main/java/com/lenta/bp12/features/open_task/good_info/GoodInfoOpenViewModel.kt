@@ -589,6 +589,10 @@ class GoodInfoOpenViewModel : CoreViewModel() {
         }
     }
 
+    private fun handleCheckPartFailure(failure: Failure) {
+        navigator.openAlertScreen(failure)
+    }
+
     private fun getProducerCode(): String {
         var producerCode = ""
         if (isProducerSelected.value == true) {
@@ -736,7 +740,7 @@ class GoodInfoOpenViewModel : CoreViewModel() {
         when (screenStatus.value) {
             ScreenStatus.ALCOHOL, ScreenStatus.PART -> {
                 viewModelScope.launch {
-                    checkPart().either(::handleFailure) { result ->
+                    checkPart().either(::handleCheckPartFailure) { result ->
                         result.status.let { status ->
                             if (status == PartStatus.FOUND.code) {
                                 saveChangesAndExit()
