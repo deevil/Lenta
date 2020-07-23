@@ -7,7 +7,7 @@ data class TaskListResult(
         val taskList: List<TaskListTask>,
 
         @SerializedName("EV_RETCODE")
-        var retCode: Int,
+        var retCode: String,
 
         @SerializedName("EV_ERROR_TEXT")
         var errorText: String

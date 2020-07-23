@@ -1,10 +1,7 @@
 package com.lenta.movement.features.task
 
 import android.content.Context
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MediatorLiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.*
 import com.lenta.movement.R
 import com.lenta.movement.exception.EmptyTaskFailure
 import com.lenta.movement.exception.PersonnelNumberFailure
@@ -12,7 +9,7 @@ import com.lenta.movement.models.*
 import com.lenta.movement.models.Task.Status.Companion.PROCESSING_ON_GZ
 import com.lenta.movement.models.repositories.ICargoUnitRepository
 import com.lenta.movement.platform.IFormatter
-import com.lenta.movement.platform.extensions.unsafeLazy
+import com.lenta.movement.platform.extensions.openAlertScreenWithFailure
 import com.lenta.movement.platform.navigation.IScreenNavigator
 import com.lenta.movement.requests.network.ApprovalAndTransferToTasksCargoUnit
 import com.lenta.movement.requests.network.StartConsolidation
@@ -30,9 +27,8 @@ import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.databinding.PageSelectionListener
 import com.lenta.shared.utilities.date_time.DateTimeUtil
-import com.lenta.shared.utilities.extentions.getDeviceIp
+import com.lenta.shared.utilities.extentions.*
 import com.lenta.shared.utilities.extentions.map
-import com.lenta.shared.utilities.extentions.toSapBooleanString
 import com.lenta.shared.utilities.orIfNull
 import com.lenta.shared.view.OnPositionClickListener
 import kotlinx.coroutines.Dispatchers
@@ -68,7 +64,9 @@ class TaskViewModel : CoreViewModel(), PageSelectionListener {
     @Inject
     lateinit var approvalAndTransferToTasksCargoUnit: ApprovalAndTransferToTasksCargoUnit
 
-    val task by unsafeLazy { MutableLiveData(taskManager.getTaskOrNull()) }
+    val task by unsafeLazy {
+        MutableLiveData(taskManager.getTaskOrNull())
+    }
 
     private val currentStatus: Task.Status
         get() = task.value?.currentStatus ?: Task.Status.Created()
@@ -83,8 +81,10 @@ class TaskViewModel : CoreViewModel(), PageSelectionListener {
         get() = task.value?.taskType ?: TaskType.TransferWithoutOrder
     private val movementType: MovementType
         get() = task.value?.movementType ?: MovementType.SS
-    private val setting: TaskSettings
-        get() = taskManager.getTaskSettings(taskType, movementType)
+
+    private suspend fun getSettings(): TaskSettings {
+        return taskManager.getTaskSettings(taskType, movementType)
+    }
 
     val selectedPagePosition = MutableLiveData(0)
 
@@ -93,15 +93,21 @@ class TaskViewModel : CoreViewModel(), PageSelectionListener {
 
     val taskTypeEnabled = MutableLiveData(false)
     val taskTypesFormatted by unsafeLazy {
-        MutableLiveData(TaskType.values().map { formatter.getTaskTypeNameDescription(it) })
+        asyncLiveData<List<String>> {
+            val taskType = TaskType.values().map { formatter.getTaskTypeNameDescription(it) }
+            emit(taskType)
+        }
     }
     val taskTypeSelectedPosition by unsafeLazy { MutableLiveData(taskType.ordinal) }
 
     val movementTypeEnabled = MutableLiveData(false)
     val movementTypesFormatted by unsafeLazy {
-        MutableLiveData(MovementType.values().map {
-            taskManager.getMovementType(it)
-        })
+        asyncLiveData<List<String>> {
+            val movementTypes = MovementType.values().map {
+                taskManager.getMovementType(it)
+            }
+            emit(movementTypes)
+        }
     }
     val movementSelectedPosition by unsafeLazy { MutableLiveData(movementType.ordinal) }
 
@@ -118,8 +124,12 @@ class TaskViewModel : CoreViewModel(), PageSelectionListener {
         }
     }
     val receivers by lazy {
-        task.map { taskOrNull ->
-            taskOrNull?.receiver?.let { listOf(it) } ?: taskManager.getAvailableReceivers()
+        task.switchMap { taskOrNull ->
+            asyncLiveData<List<String>> {
+                val tasks = taskOrNull?.receiver?.let { listOf(it) }
+                        ?: taskManager.getAvailableReceivers()
+                emit(tasks)
+            }
         }
     }
     val receiverSelectedPosition = MutableLiveData(0)
@@ -136,9 +146,13 @@ class TaskViewModel : CoreViewModel(), PageSelectionListener {
         }
     }
     val pikingStorageList by lazy {
-        task.map { taskOrNull ->
-            taskOrNull?.pikingStorage?.let { listOf(it) }
-                    ?: taskManager.getAvailablePikingStorageList(taskType, movementType).addFirstEmptyIfNeeded()
+        task.switchMap { taskOrNull ->
+            asyncLiveData<List<String>> {
+                val pikingStrorageList = taskOrNull?.pikingStorage?.let { listOf(it) }
+                        ?: taskManager.getAvailablePikingStorageList(taskType, movementType).addFirstEmptyIfNeeded()
+                emit(pikingStrorageList)
+            }
+
         }
     }
     val pikingStorageSelectedPosition = MutableLiveData(0)
@@ -154,13 +168,17 @@ class TaskViewModel : CoreViewModel(), PageSelectionListener {
             addSource(task) { value = it == null && shipmentStorageList.value?.size != 1 }
         }
     }
-    val shipmentStorageList by lazy {
-        task.map { taskOrNull ->
-            taskOrNull?.shipmentStorage
-                    ?.let { listOf(it) }
-                    ?: setting.shipmentStorageList
-                            .addFirstEmptyIfNeeded()
+    val shipmentStorageList by unsafeLazy {
+        task.switchMap { taskOrNull ->
+            asyncLiveData<List<String>> {
+                val shipmentList = taskOrNull?.shipmentStorage
+                        ?.let { listOf(it) }
+                        ?: getSettings().shipmentStorageList
+                                .addFirstEmptyIfNeeded()
+                emit(shipmentList)
+            }
         }
+
     }
 
     val shipmentStorageSelectedPosition = MutableLiveData(0)
@@ -171,7 +189,7 @@ class TaskViewModel : CoreViewModel(), PageSelectionListener {
     }
 
     val shipmentDateEnabled by unsafeLazy { task.map { it == null } }
-    val shipmentDate by unsafeLazy {
+    val shipmentDate by lazy {
         val date = task.value?.shipmentDate?.let {
             DateTimeUtil.formatDate(it, Constants.DATE_FORMAT_ddmmyy)
         }
@@ -179,14 +197,26 @@ class TaskViewModel : CoreViewModel(), PageSelectionListener {
         MutableLiveData(date ?: defaultDate)
     }
 
-    val description by unsafeLazy { MutableLiveData(setting.description) }
-    val comments by unsafeLazy { MutableLiveData(task.value?.comment.orEmpty()) }
+    val description by unsafeLazy {
+        asyncLiveData<String> {
+            val description = getSettings().description
+            emit(description)
+        }
+    }
+
+    val comments by lazy { MutableLiveData(task.value?.comment.orEmpty()) }
 
     val alcoVisible by unsafeLazy {
-        MutableLiveData(setting.gisControls.contains(GisControl.Alcohol))
+        asyncLiveData<Boolean> {
+            val isAlco = getSettings().gisControls.contains(GisControl.Alcohol)
+            emit(isAlco)
+        }
     }
     val generalVisible by unsafeLazy {
-        MutableLiveData(setting.gisControls.contains(GisControl.GeneralProduct))
+        asyncLiveData<Boolean> {
+            val isGeneral = getSettings().gisControls.contains(GisControl.GeneralProduct)
+            emit(isGeneral)
+        }
     }
 
     val nextEnabled by lazy {
@@ -200,10 +230,8 @@ class TaskViewModel : CoreViewModel(), PageSelectionListener {
         }
     }
 
-    fun onResume(){
-        task.value?.let {
-            taskManager.setTask(it)
-        }
+    fun onResume() {
+        task.value?.let( taskManager::setTask )
     }
 
     fun getTitle(): String {
@@ -252,15 +280,9 @@ class TaskViewModel : CoreViewModel(), PageSelectionListener {
             )
 
             either.either(
-                    fnL = { failure ->
-                        with(screenNavigator) {
-                            hideProgress()
-                            openAlertScreen(failure)
-                        }
-                    },
-                    fnR = { result ->
-                        updateCargoUnitRepository(result)
-                    })
+                    fnL = screenNavigator::openAlertScreenWithFailure,
+                    fnR = ::updateCargoUnitRepository
+            )
         }
     }
 
@@ -286,37 +308,33 @@ class TaskViewModel : CoreViewModel(), PageSelectionListener {
                             context.getString(R.string.alert_null_task)
                     )
             )
-            either.either({ failure ->
-                with(screenNavigator) {
-                    hideProgress()
-                    openAlertScreen(failure)
-                }
-            }, { result ->
-                screenNavigator.hideProgress()
-                val task = result.taskList?.first()?.toTask()
-                task?.let {
-                    taskManager.setTask(task)
-                    with(screenNavigator) {
-                        goBack()
-                        openTaskScreen(task)
-                    }
-                } ?: screenNavigator.openAlertScreen(Failure.ServerError)
-            })
+            either.either(
+                    fnL = screenNavigator::openAlertScreenWithFailure,
+                    fnR = { result ->
+                        screenNavigator.hideProgress()
+                        val task = result.taskList?.first()?.toTask()
+                        task?.let {
+                            taskManager.setTask(task)
+                            with(screenNavigator) {
+                                goBack()
+                                openTaskScreen(task)
+                            }
+                        } ?: screenNavigator.openAlertScreen(Failure.ServerError)
+                    })
         }
     }
 
     private fun updateCargoUnitRepository(result: StartConsolidationResult) {
         viewModelScope.launch {
-            screenNavigator.hideProgress()
             withContext(Dispatchers.IO) {
                 val goods = result.taskComposition
                 val eoList = result.eoList
                 val geList = result.geList
-                screenNavigator.hideProgress()
                 eoList?.let { eoListValue ->
                     geList?.let { geListValue ->
                         val eoListModelList = eoListValue.toModelList(goods)
                         val geListModelList = geListValue.toModelList()
+
                         cargoUnitRepository.setEOAndGE(
                                 inputEoList = eoListModelList,
                                 inputGeList = geListModelList,
@@ -325,7 +343,11 @@ class TaskViewModel : CoreViewModel(), PageSelectionListener {
                     } ?: Logg.e { "geList null" }
                 } ?: Logg.e { "eoList null" }
             }
-            screenNavigator.openTaskEoMergeScreen()
+
+            withContext(Dispatchers.Main){
+                screenNavigator.hideProgress()
+                screenNavigator.openTaskEoMergeScreen()
+            }
         }
     }
 
@@ -338,12 +360,13 @@ class TaskViewModel : CoreViewModel(), PageSelectionListener {
         return task.value?.let {
             it.currentStatus != Task.Status.ProcessingOnGz(PROCESSING_ON_GZ)
         }.orIfNull {
-            buildTask().let { task ->
-                task.name.isNotEmpty() &&
-                        task.receiver.isNotEmpty() &&
-                        task.pikingStorage.isNotEmpty() &&
-                        task.shipmentStorage.isNotEmpty() &&
-                        task.shipmentDate.after(DateTime.now().minusDays(1).toDate())
+            val task = buildTask()
+            with(task) {
+                name.isNotEmpty() &&
+                        receiver.isNotEmpty() &&
+                        pikingStorage.isNotEmpty() &&
+                        shipmentStorage.isNotEmpty() &&
+                        shipmentDate.after(DateTime.now().minusDays(1).toDate())
             }
         }
     }
@@ -368,6 +391,7 @@ class TaskViewModel : CoreViewModel(), PageSelectionListener {
                 isCons = false
         )
     }
+
 
     private fun String.toDate(): Date? {
         return try {

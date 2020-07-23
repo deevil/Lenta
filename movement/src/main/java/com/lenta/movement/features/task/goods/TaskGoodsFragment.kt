@@ -127,7 +127,7 @@ class TaskGoodsFragment: CoreFragment<FragmentTaskGoodsBinding, TaskGoodsViewMod
                         binding?.lifecycleOwner?.let { lifecycleOwner ->
                             basketRecyclerViewKeyHandler = RecyclerViewKeyHandler(
                                     recyclerView,
-                                    vm.basketList,
+                                    vm.basketItemList,
                                     lifecycleOwner,
                                     basketRecyclerViewKeyHandler?.posInfo?.value
                             )

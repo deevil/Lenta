@@ -21,6 +21,11 @@ fun Taskable.toTask(): Task {
         Task.Status.PROCESSING_ON_GZ_CODE -> Task.Status.ProcessingOnGz(currentStatusText)
         else -> Task.Status.Unknown(currentStatusText)
     }
+    val shipmentDate = dateShip.getSapDate(Constants.DATE_FORMAT_yyyy_mm_dd)
+            .orIfNull {
+                Logg.e { "Dateship null" }
+                Date()
+            }
     return Task(
             number = taskNumber,
             isCreated = notFinish.isSapTrue().not(),
@@ -33,13 +38,7 @@ fun Taskable.toTask(): Task {
             receiver = werksDstntnt,
             pikingStorage = lgortSrc, // Склад комплектации
             shipmentStorage = lgortTarget, // Склад отгрузки
-            shipmentDate = dateShip.getSapDate(Constants.DATE_FORMAT_yyyy_mm_dd).orIfNull {
-                Logg.e {
-                    "Dateship null"
-                }
-                Date()
-            },
-//                    ?: error("shipment date parse error (raw date: $dateShip)"),
+            shipmentDate = shipmentDate,
             blockType = blockType,
             quantity = quantityPosition,
             isNotFinish = notFinish.isSapTrue(),
@@ -47,7 +46,7 @@ fun Taskable.toTask(): Task {
     )
 }
 
-fun List<Taskable>.toTaskList() : List<Task> {
+fun List<Taskable>.toTaskList(): List<Task> {
     return this.map {
         it.toTask()
     }

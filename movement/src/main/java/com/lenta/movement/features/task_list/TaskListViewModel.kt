@@ -2,14 +2,11 @@ package com.lenta.movement.features.task_list
 
 import android.content.Context
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.liveData
 import androidx.lifecycle.switchMap
-import androidx.lifecycle.viewModelScope
 import com.lenta.movement.R
 import com.lenta.movement.features.main.box.ScanInfoHelper
 import com.lenta.movement.models.*
 import com.lenta.movement.platform.IFormatter
-import com.lenta.movement.platform.extensions.unsafeLazy
 import com.lenta.movement.platform.navigation.IScreenNavigator
 import com.lenta.movement.requests.network.ObtainingTaskListNetRequest
 import com.lenta.movement.requests.network.models.task_list.SearchTaskFilter
@@ -22,9 +19,13 @@ import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
 import com.lenta.shared.utilities.databinding.PageSelectionListener
+import com.lenta.shared.utilities.extentions.asyncLiveData
+import com.lenta.shared.utilities.extentions.launchUITryCatch
 import com.lenta.shared.utilities.extentions.mapSkipNulls
+import com.lenta.shared.utilities.extentions.unsafeLazy
 import com.lenta.shared.utilities.orIfNull
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyboardListener {
@@ -60,7 +61,7 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
 
     val taskItemList by unsafeLazy {
         taskList.switchMap { taskList ->
-            liveData {
+            asyncLiveData<List<TaskListItem>> {
                 val taskListMapped = taskList.mapIndexed { index, task ->
                     TaskListItem(
                             number = index + 1,
@@ -123,7 +124,7 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
     }
 
     private fun netRequest(mode: String, filter: SearchTaskFilter?, user: String) {
-        viewModelScope.launch {
+        launchUITryCatch {
             screenNavigator.showProgress(taskListNetRequest)
             sessionInfo.apply {
                 market?.let { marketNumber ->
@@ -135,8 +136,8 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
                                 personellNumber = personnelNumber,
                                 filter = filter
                         )
-                        val either = taskListNetRequest(params)
-                        either.either(
+                        val result = taskListNetRequest(params)
+                        result.either(
                                 fnL = ::onFailResultHandler,
                                 fnR = ::onSuccessResultHandler
                         )
@@ -155,9 +156,13 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
 
     private fun onSuccessResultHandler(result: TaskListResult) {
         val resultList = result.taskList
-        val taskListMappedFromRestModel = resultList.toTaskList()
-        taskList.value = taskListMappedFromRestModel
-        screenNavigator.hideProgress()
+        launchUITryCatch {
+            val taskListMappedFromRestModel =  withContext(Dispatchers.IO){
+                resultList.toTaskList()
+            }
+            taskList.value = taskListMappedFromRestModel
+            screenNavigator.hideProgress()
+        }
     }
 
     private fun chooseBlockTypeResId(blockType: String): Int {
@@ -178,9 +183,13 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
         taskListValue?.getOrNull(position)?.let { task ->
             screenNavigator.openTaskScreen(task)
         }.orIfNull {
-            Logg.e { "wrong position for task list" }
-            screenNavigator.openAlertScreen(Failure.ServerError)
+            showErrorIfPositionDoesNotExist()
         }
+    }
+
+    private fun showErrorIfPositionDoesNotExist() {
+        Logg.e { "wrong position for task list" }
+        screenNavigator.openAlertScreen(Failure.ServerError)
     }
 
     fun onBackPressed() {

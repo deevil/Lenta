@@ -7,10 +7,14 @@ import com.lenta.movement.models.SimpleListItem
 import com.lenta.movement.models.repositories.ITaskBasketsRepository
 import com.lenta.movement.platform.IFormatter
 import com.lenta.shared.platform.viewmodel.CoreViewModel
+import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.SelectionItemsHelper
 import com.lenta.shared.utilities.databinding.PageSelectionListener
+import com.lenta.shared.utilities.extentions.asyncLiveData
 import com.lenta.shared.utilities.extentions.combineLatest
 import com.lenta.shared.utilities.extentions.mapSkipNulls
+import com.lenta.shared.utilities.extentions.unsafeLazy
+import com.lenta.shared.utilities.orIfNull
 import javax.inject.Inject
 
 class TaskGoodsDetailsViewModel : CoreViewModel(), PageSelectionListener {
@@ -33,30 +37,44 @@ class TaskGoodsDetailsViewModel : CoreViewModel(), PageSelectionListener {
     val selectedPagePosition = MutableLiveData(0)
     val currentPage = selectedPagePosition.mapSkipNulls { TaskGoodsDetailsPage.values()[it] }
 
-    val basketList by lazy { MutableLiveData(getBasketSimpleList()) }
+    val basketList by unsafeLazy {
+        asyncLiveData<List<SimpleListItem>> {
+            val listOfItems = getBasketSimpleList()
+            emit(listOfItems)
+        }
+    }
     val boxList = MutableLiveData(listOf<SimpleListItem>())
 
     val deleteEnabled = combineLatest(
-        currentPage,
-        basketSelectionHelper.selectedPositions,
-        boxesSelectionHelper.selectedPositions
+            currentPage,
+            basketSelectionHelper.selectedPositions,
+            boxesSelectionHelper.selectedPositions
     )
-        .mapSkipNulls { (currentPage, basketSelectedPositions, boxSelectedPositions) ->
-            when (currentPage!!) {
-                TaskGoodsDetailsPage.BASKETS -> basketSelectedPositions.orEmpty().isNotEmpty()
-                TaskGoodsDetailsPage.BOXES -> boxSelectedPositions.orEmpty().isNotEmpty()
+            .mapSkipNulls { (currentPage, basketSelectedPositions, boxSelectedPositions) ->
+                when (currentPage) {
+                    TaskGoodsDetailsPage.BASKETS -> basketSelectedPositions.orEmpty().isNotEmpty()
+                    TaskGoodsDetailsPage.BOXES -> boxSelectedPositions.orEmpty().isNotEmpty()
+                    else -> {
+                        Logg.e { "u" }
+                        false
+                    }
+                }
             }
-        }
 
     override fun onPageSelected(position: Int) {
         selectedPagePosition.value = position
     }
 
     fun getAvailablePages(): List<TaskGoodsDetailsPage> {
-        return if (product!!.isExcise) {
-            listOf(TaskGoodsDetailsPage.BASKETS, TaskGoodsDetailsPage.BOXES)
-        } else {
-            listOf(TaskGoodsDetailsPage.BASKETS)
+        return product?.let { productInfo ->
+            if (productInfo.isExcise) {
+                listOf(TaskGoodsDetailsPage.BASKETS, TaskGoodsDetailsPage.BOXES)
+            } else {
+                listOf(TaskGoodsDetailsPage.BASKETS)
+            }
+        }.orIfNull {
+            Logg.e { "product is null" }
+            listOf()
         }
     }
 
@@ -65,20 +83,22 @@ class TaskGoodsDetailsViewModel : CoreViewModel(), PageSelectionListener {
     }
 
     fun onDeleteClick() {
-        when (currentPage.value!!) {
+        when (currentPage.value) {
             TaskGoodsDetailsPage.BASKETS -> {
                 val basketsOfProduct = taskBasketsRepository.getAll().filter { basket ->
-                    basket.containsKey(product!!)
+                    basket.containsKey(product)
                 }
                 val doRemoveBaskets = basketSelectionHelper.selectedPositions.value.orEmpty().map { doRemoveBasketIndex ->
                     basketsOfProduct[doRemoveBasketIndex]
                 }
 
                 doRemoveBaskets.forEach { doRemoveBasket ->
-                    taskBasketsRepository.removeProductFromBasket(doRemoveBasket.index, product!!)
+                    product?.let { product ->
+                        taskBasketsRepository.removeProductFromBasket(doRemoveBasket.index, product)
+                    }
                 }
 
-                basketList.postValue(getBasketSimpleList())
+         //       basketList.postValue(getBasketSimpleList())
                 basketSelectionHelper.clearPositions()
             }
             TaskGoodsDetailsPage.BOXES -> {
@@ -87,23 +107,25 @@ class TaskGoodsDetailsViewModel : CoreViewModel(), PageSelectionListener {
         }
     }
 
-    private fun getBasketSimpleList(): List<SimpleListItem> {
-        return taskBasketsRepository.getAll()
-            .filter { basket ->
-                basket.containsKey(product!!)
-            }
-            .mapIndexed { index, basket ->
-                SimpleListItem(
-                    number = index + 1,
-                    title = formatter.getBasketName(basket),
-                    subtitle = formatter.getBasketDescription(
-                        basket,
-                        taskManager.getTask(),
-                        taskManager.getTaskSettings()
-                    ),
-                    countWithUom = "${basket[product!!]}",
-                    isClickable = false
-                )
-            }
+    private suspend fun getBasketSimpleList(): List<SimpleListItem> {
+        return product?.let { product ->
+            taskBasketsRepository.getAll()
+                    .filter { basket ->
+                        basket.containsKey(product)
+                    }
+                    .mapIndexed { index, basket ->
+                        SimpleListItem(
+                                number = index + 1,
+                                title = formatter.getBasketName(basket),
+                                subtitle = formatter.getBasketDescription(
+                                        basket,
+                                        taskManager.getTask(),
+                                        taskManager.getTaskSettings()
+                                ),
+                                countWithUom = "${basket[product]}",
+                                isClickable = false
+                        )
+                    }
+        } ?: listOf()
     }
 }

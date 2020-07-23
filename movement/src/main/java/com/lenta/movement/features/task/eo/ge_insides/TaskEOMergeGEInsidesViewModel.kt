@@ -13,7 +13,6 @@ import com.lenta.movement.models.ITaskManager
 import com.lenta.movement.models.SimpleListItem
 import com.lenta.movement.models.repositories.ICargoUnitRepository
 import com.lenta.movement.platform.IFormatter
-import com.lenta.movement.platform.extensions.unsafeLazy
 import com.lenta.movement.platform.navigation.IScreenNavigator
 import com.lenta.movement.requests.network.ConsolidationNetRequest
 import com.lenta.movement.requests.network.models.RestCargoUnit
@@ -27,6 +26,7 @@ import com.lenta.shared.utilities.SelectionItemsHelper
 import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
 import com.lenta.shared.utilities.extentions.getDeviceIp
 import com.lenta.shared.utilities.extentions.map
+import com.lenta.shared.utilities.extentions.unsafeLazy
 import com.lenta.shared.utilities.orIfNull
 import kotlinx.coroutines.launch
 import javax.inject.Inject

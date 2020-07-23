@@ -57,7 +57,7 @@ class TaskBasketFragment: CoreFragment<FragmentTaskBasketBinding, TaskBasketView
     }
 
     override fun setupTopToolBar(topToolbarUiModel: TopToolbarUiModel) {
-        topToolbarUiModel.title.value = vm.getTitle()
+        topToolbarUiModel.title.value = vm.title.value
         topToolbarUiModel.description.value = getString(R.string.task_basket_title)
     }
 

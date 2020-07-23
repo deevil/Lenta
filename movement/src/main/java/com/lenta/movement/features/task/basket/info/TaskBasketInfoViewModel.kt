@@ -5,9 +5,10 @@ import com.lenta.movement.models.Basket
 import com.lenta.movement.models.ITaskManager
 import com.lenta.movement.models.repositories.ITaskBasketsRepository
 import com.lenta.movement.platform.IFormatter
-import com.lenta.movement.platform.extensions.unsafeLazy
 import com.lenta.shared.platform.viewmodel.CoreViewModel
+import com.lenta.shared.utilities.extentions.asyncLiveData
 import com.lenta.shared.utilities.extentions.map
+import com.lenta.shared.utilities.extentions.unsafeLazy
 import javax.inject.Inject
 import kotlin.properties.Delegates
 
@@ -34,12 +35,15 @@ class TaskBasketInfoViewModel: CoreViewModel() {
     val gisControlVisible by unsafeLazy { gisControl.map { it.isNullOrEmpty().not() } }
     val supplierVisible by unsafeLazy { MutableLiveData(basket.supplier != null) }
 
-    fun getTitle(): String {
-        return "${formatter.getBasketName(basket)}: ${formatter.getBasketDescription(
-            basket,
-            taskManager.getTask(),
-            taskManager.getTaskSettings()
-        )}"
+    val title by unsafeLazy {
+        asyncLiveData<String> {
+            val title = "${formatter.getBasketName(basket)}: ${formatter.getBasketDescription(
+                    basket = basket,
+                    task = taskManager.getTask(),
+                    settings = taskManager.getTaskSettings()
+            )}"
+            emit(title)
+        }
     }
 
     companion object {

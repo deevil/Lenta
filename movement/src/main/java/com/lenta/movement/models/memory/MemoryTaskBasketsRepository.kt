@@ -45,7 +45,7 @@ class MemoryTaskBasketsRepository(
         basketList.removeAll { it.isEmpty() }
     }
 
-    override fun addProduct(product: ProductInfo, supplier: Supplier?, count: Int) {
+    override suspend fun addProduct(product: ProductInfo, supplier: Supplier?, count: Int) {
         if (count == 0) return
 
         val suitableBasket = getSuitableBasketOrCreate(product, supplier)
@@ -61,7 +61,7 @@ class MemoryTaskBasketsRepository(
         addProduct(product, supplier, count - 1)
     }
 
-    override fun getSuitableBasketOrCreate(product: ProductInfo, supplier: Supplier?): Basket {
+    override suspend fun getSuitableBasketOrCreate(product: ProductInfo, supplier: Supplier?): Basket {
         val signOfDiv = taskManager.getTaskSettings().signsOfDiv
 
         return basketList.lastOrNull { basket ->
