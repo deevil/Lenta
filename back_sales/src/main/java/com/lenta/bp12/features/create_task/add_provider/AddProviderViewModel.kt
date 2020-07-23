@@ -8,7 +8,7 @@ import com.lenta.bp12.repository.DatabaseRepository
 import com.lenta.bp12.request.pojo.ProviderInfo
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
-import com.lenta.shared.utilities.extentions.launchAsyncTryCatch
+import com.lenta.shared.utilities.extentions.launchUITryCatch
 import com.lenta.shared.utilities.extentions.map
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -61,7 +61,7 @@ class AddProviderViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
     }
 
     private fun searchProvider(number: String) {
-        launchAsyncTryCatch {
+        launchUITryCatch {
             database.getProviderInfo(number)?.let { providerInfo ->
                 provider.value = providerInfo
             } ?: resetProvider()

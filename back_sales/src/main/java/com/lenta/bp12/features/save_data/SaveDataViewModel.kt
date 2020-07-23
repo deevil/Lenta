@@ -10,7 +10,7 @@ import com.lenta.bp12.request.pojo.SentTaskInfo
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.platform.viewmodel.CoreViewModel
-import com.lenta.shared.utilities.extentions.launchAsyncTryCatch
+import com.lenta.shared.utilities.extentions.launchUITryCatch
 import com.lenta.shared.utilities.extentions.map
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -52,7 +52,7 @@ class SaveDataViewModel : CoreViewModel() {
     // -----------------------------
 
     init {
-        launchAsyncTryCatch {
+        launchUITryCatch {
             sendTaskData()
         }
     }
@@ -60,7 +60,7 @@ class SaveDataViewModel : CoreViewModel() {
     // -----------------------------
 
     private fun sendTaskData() {
-        launchAsyncTryCatch {
+        launchUITryCatch {
             navigator.showProgressLoadingData(::handleFailure)
 
             sendTaskDataNetRequest(

@@ -17,7 +17,7 @@ import com.lenta.shared.platform.device_info.DeviceInfo
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.settings.IAppSettings
 import com.lenta.shared.utilities.databinding.PageSelectionListener
-import com.lenta.shared.utilities.extentions.launchAsyncTryCatch
+import com.lenta.shared.utilities.extentions.launchUITryCatch
 import com.lenta.shared.utilities.extentions.map
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -92,7 +92,7 @@ class TaskCardOpenViewModel : CoreViewModel(), PageSelectionListener {
     }
 
     private fun loadGoodList() {
-        launchAsyncTryCatch {
+        launchUITryCatch {
             navigator.showProgressLoadingData(::handleFailure)
 
             taskContentNetRequest(TaskContentParams(
@@ -103,7 +103,7 @@ class TaskCardOpenViewModel : CoreViewModel(), PageSelectionListener {
             )).also {
                 navigator.hideProgress()
             }.either(::handleFailure) { taskContentResult ->
-                launchAsyncTryCatch {
+                launchUITryCatch {
                     manager.addGoodsInCurrentTask(taskContentResult)
                     navigator.openGoodListScreen()
                 }
@@ -130,7 +130,7 @@ class TaskCardOpenViewModel : CoreViewModel(), PageSelectionListener {
     }
 
     fun onBackPressed() {
-        launchAsyncTryCatch {
+        launchUITryCatch {
             navigator.showProgressLoadingData(::handleFailure)
 
             unblockTaskNetRequest(

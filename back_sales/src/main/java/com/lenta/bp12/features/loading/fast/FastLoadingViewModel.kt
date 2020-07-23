@@ -10,7 +10,7 @@ import com.lenta.shared.exception.IFailureInterpreter
 import com.lenta.shared.features.loading.CoreLoadingViewModel
 import com.lenta.shared.platform.app_update.AppUpdateChecker
 import com.lenta.shared.requests.network.Auth
-import com.lenta.shared.utilities.extentions.launchAsyncTryCatch
+import com.lenta.shared.utilities.extentions.launchUITryCatch
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -36,7 +36,7 @@ class FastLoadingViewModel : CoreLoadingViewModel() {
     override val sizeInMb: MutableLiveData<Float> = MutableLiveData()
 
     init {
-        launchAsyncTryCatch {
+        launchUITryCatch {
             progress.value = true
             fastResourcesNetRequest(null).either(::handleFailure, ::handleSuccess)
             progress.value = false
@@ -49,7 +49,7 @@ class FastLoadingViewModel : CoreLoadingViewModel() {
     }
 
     private fun handleSuccess(notUsed: Boolean) {
-        launchAsyncTryCatch {
+        launchUITryCatch {
             if (appUpdateChecker.isNeedUpdate(repository.getAllowedAppVersion())) {
                 auth.cancelAuthorization()
                 navigator.closeAllScreen()

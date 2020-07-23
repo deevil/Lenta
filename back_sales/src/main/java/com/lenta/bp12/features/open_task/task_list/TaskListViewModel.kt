@@ -17,7 +17,7 @@ import com.lenta.shared.settings.IAppSettings
 import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
 import com.lenta.shared.utilities.databinding.PageSelectionListener
 import com.lenta.shared.utilities.extentions.combineLatest
-import com.lenta.shared.utilities.extentions.launchAsyncTryCatch
+import com.lenta.shared.utilities.extentions.launchUITryCatch
 import com.lenta.shared.utilities.extentions.map
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -128,7 +128,7 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
      */
 
     init {
-        launchAsyncTryCatch {
+        launchUITryCatch {
             onClickUpdate()
         }
     }
@@ -142,7 +142,7 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
     }
 
     private fun loadTaskList(value: String, userNumber: String = "") {
-        launchAsyncTryCatch {
+        launchUITryCatch {
             navigator.showProgressLoadingData(::handleFailure)
 
             taskListNetRequest(
@@ -155,7 +155,7 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
             ).also {
                 navigator.hideProgress()
             }.either(::handleFailure) { taskListResult ->
-                launchAsyncTryCatch {
+                launchUITryCatch {
                     manager.addTasks(taskListResult.tasks)
                 }
             }
@@ -164,7 +164,7 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
 
     private fun loadTaskListWithParams(value: String, userNumber: String = "") {
         manager.searchParams.value?.let { params ->
-            launchAsyncTryCatch {
+            launchUITryCatch {
                 navigator.showProgressLoadingData(::handleFailure)
 
                 taskListNetRequest(
@@ -178,7 +178,7 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
                 ).also {
                     navigator.hideProgress()
                 }.either(::handleFailure) { taskListResult ->
-                    launchAsyncTryCatch {
+                    launchUITryCatch {
                         manager.addFoundTasks(taskListResult.tasks)
                     }
                 }
