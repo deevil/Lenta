@@ -6,6 +6,7 @@ import com.lenta.bp16.R
 import com.lenta.bp16.data.IScales
 import com.lenta.bp16.model.ingredients.OrderIngredientDataInfo
 import com.lenta.bp16.platform.navigation.IScreenNavigator
+import com.lenta.bp16.request.PackIngredientNetRequest
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.extentions.*
@@ -24,6 +25,9 @@ class IngredientDetailsViewModel : CoreViewModel() {
 
     @Inject
     lateinit var scales: IScales
+
+    @Inject
+    lateinit var packIngredientsNetRequest: PackIngredientNetRequest
 
     // выбранный ингредиент
     val orderIngredient by unsafeLazy {
@@ -58,8 +62,8 @@ class IngredientDetailsViewModel : CoreViewModel() {
     }
 
     fun onCompleteClicked() = launchUITryCatch {
-        val weight = weightField.value.orEmpty()
-        if (weight == DEFAULT_WEIGHT || weight.isEmpty()) {
+        val weight = total.value
+        if (weight == 0.0) {
             navigator.showAlertWeightNotSet()
         } else {
             orderIngredient.value?.let {
@@ -69,16 +73,22 @@ class IngredientDetailsViewModel : CoreViewModel() {
     }
 
     fun onClickAdd() {
-        weighted.value = total.value!!
-        weightField.value = "0"
+        weighted.value = total.value
+        weightField.value = DEFAULT_WEIGHT
     }
 
     fun onClickGetWeight() = launchAsyncTryCatch {
-        navigator.showProgressLoadingData()
+        /*navigator.showProgressLoadingData()
         scales.getWeight().also {
             navigator.hideProgress()
         }.either(::handleFailure) { weight ->
             weightField.postValue(weight)
+        }*/
+    }
+
+    fun onBackPressed() {
+        navigator.showNotSavedDataWillBeLost {
+            navigator.goBack()
         }
     }
 

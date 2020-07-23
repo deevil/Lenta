@@ -24,7 +24,7 @@ class OrderIngredientsListFragment : CoreFragment<FragmentIngredientsByOrderBind
     // выбранный ранее ингредиент
     private val ingredientInfo: IngredientInfo by unsafeLazy {
         arguments?.getParcelable<IngredientInfo>(KEY_INGREDIENT)
-                ?: throw IllegalArgumentException("There is no argument value with key ${KEY_INGREDIENT}")
+                ?: throw IllegalArgumentException("There is no argument value with key $KEY_INGREDIENT")
     }
 
     // Вес, количество ингредиентов

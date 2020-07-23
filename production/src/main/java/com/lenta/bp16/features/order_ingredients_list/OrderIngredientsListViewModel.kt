@@ -3,25 +3,20 @@ package com.lenta.bp16.features.order_ingredients_list
 import android.content.Context
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.switchMap
-import androidx.lifecycle.viewModelScope
 import com.lenta.bp16.model.ingredients.IngredientInfo
 import com.lenta.bp16.model.ingredients.OrderIngredientDataInfo
 import com.lenta.bp16.model.ingredients.params.GetIngredientDataParams
 import com.lenta.bp16.model.ingredients.params.UnblockIngredientsParams
 import com.lenta.bp16.model.ingredients.ui.ItemOrderIngredientUi
-import com.lenta.bp16.platform.extention.getDoneCount
 import com.lenta.bp16.platform.extention.getItemName
 import com.lenta.bp16.platform.extention.getModeType
-import com.lenta.bp16.platform.extention.getPlanCount
 import com.lenta.bp16.platform.navigation.IScreenNavigator
 import com.lenta.bp16.request.GetOrderIngredientsDataNetRequest
 import com.lenta.bp16.request.UnblockIngredientNetRequest
-import com.lenta.bp16.request.UnblockTaskParams
 import com.lenta.shared.account.ISessionInfo
+import com.lenta.shared.exception.Failure
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.extentions.*
-import kotlinx.coroutines.cancel
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 import kotlin.properties.Delegates
 
@@ -59,9 +54,9 @@ class OrderIngredientsListViewModel : CoreViewModel() {
             navigator.showProgressLoadingData()
 
             val code = ingredient.value?.code.orEmpty()
-            val mode =  ingredient.value?.getModeType().orEmpty()
+            val mode = ingredient.value?.getModeType().orEmpty()
 
-            val result  = getIngredientData(
+            val result = getIngredientData(
                     params = GetIngredientDataParams(
                             tkMarket = sessionInfo.market.orEmpty(),
                             deviceIP = context.getDeviceIp(),
@@ -95,14 +90,16 @@ class OrderIngredientsListViewModel : CoreViewModel() {
     }
 
     fun onBackPressed() = launchAsyncTryCatch {
+        navigator.showProgressLoadingData()
         unblockIngredientNetRequest(
                 params = UnblockIngredientsParams(
                         code = ingredient.value?.code.orEmpty(),
                         mode = UnblockIngredientsParams.MODE_UNBLOCK_VP
                 )
-        ).either(fnL = ::handleFailure, fnR = {
+        ).also {
+            navigator.hideProgress()
             navigator.goBack()
-        })
+        }.either(fnL = ::handleFailure)
     }
 
     fun onClickItemPosition(position: Int) {

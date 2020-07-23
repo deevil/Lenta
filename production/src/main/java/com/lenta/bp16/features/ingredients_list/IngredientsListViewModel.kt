@@ -88,9 +88,10 @@ class IngredientsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInS
                 .filter { it.objType == type }
                 .mapIndexedNotNull { index, ingredientInfo ->
                     ingredientInfo.code?.run {
+                        val position = (index + 1).toString()
                         ItemIngredientUi(
                                 code = ingredientInfo.code,
-                                position = (index + 1).toString(),
+                                position = position,
                                 text1 = ingredientInfo.text1.orEmpty(),
                                 text2 = ingredientInfo.text2.orEmpty(),
                                 ingredientStatus = ingredientInfo.getIngredientStatus()

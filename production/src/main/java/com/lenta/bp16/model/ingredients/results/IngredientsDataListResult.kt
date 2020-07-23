@@ -5,6 +5,7 @@ import com.lenta.bp16.model.ingredients.MaterialIngredientDataInfo
 import com.lenta.bp16.model.ingredients.OrderByRemake
 import com.lenta.bp16.model.ingredients.OrderIngredientDataInfo
 import com.lenta.bp16.model.ingredients.ui.OrderByBarcode
+import com.lenta.bp16.platform.extention.IResultWithRetCodes
 import com.lenta.bp16.request.pojo.RetCode
 
 data class IngredientsDataListResult(
@@ -25,5 +26,5 @@ data class IngredientsDataListResult(
 
         /** Таблица возврата */
         @SerializedName("ET_RETCODE")
-        val retCodes: List<RetCode>
-)
+        override val retCodes: List<RetCode>
+) : IResultWithRetCodes

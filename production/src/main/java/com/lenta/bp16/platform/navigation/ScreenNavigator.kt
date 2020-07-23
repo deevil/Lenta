@@ -387,5 +387,4 @@ interface IScreenNavigator : ICoreNavigator {
     fun showLabelSentToPrint(nextCallback: () -> Unit)
     fun showAlertPartNotFound()
     fun showAlertWeightNotSet()
-
 }

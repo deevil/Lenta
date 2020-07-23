@@ -4,8 +4,9 @@ import android.view.View
 import androidx.core.os.bundleOf
 import com.lenta.bp16.R
 import com.lenta.bp16.databinding.FragmentIngredientDetailsBinding
-import com.lenta.bp16.platform.extention.getAppComponent
 import com.lenta.bp16.model.ingredients.OrderIngredientDataInfo
+import com.lenta.bp16.platform.extention.getAppComponent
+import com.lenta.shared.platform.activity.OnBackPresserListener
 import com.lenta.shared.platform.fragment.CoreFragment
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
@@ -14,7 +15,8 @@ import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
 import com.lenta.shared.utilities.extentions.provideViewModel
 import com.lenta.shared.utilities.extentions.unsafeLazy
 
-class IngredientDetailsFragment : CoreFragment<FragmentIngredientDetailsBinding, IngredientDetailsViewModel>(), ToolbarButtonsClickListener {
+class IngredientDetailsFragment : CoreFragment<FragmentIngredientDetailsBinding, IngredientDetailsViewModel>(),
+        ToolbarButtonsClickListener, OnBackPresserListener {
 
     override fun getLayoutId(): Int {
         return R.layout.fragment_ingredient_details
@@ -55,6 +57,11 @@ class IngredientDetailsFragment : CoreFragment<FragmentIngredientDetailsBinding,
             R.id.b_4 -> vm.onClickAdd()
             R.id.b_5 -> vm.onCompleteClicked()
         }
+    }
+
+    override fun onBackPressed(): Boolean {
+        vm.onBackPressed()
+        return false
     }
 
     companion object {

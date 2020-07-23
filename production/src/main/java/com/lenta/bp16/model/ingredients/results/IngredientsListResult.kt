@@ -3,6 +3,7 @@ package com.lenta.bp16.model.ingredients.results
 import com.google.gson.annotations.SerializedName
 import com.lenta.bp16.model.ingredients.GoodByOrder
 import com.lenta.bp16.model.ingredients.IngredientInfo
+import com.lenta.bp16.platform.extention.IResultWithRetCodes
 import com.lenta.bp16.request.pojo.RetCode
 
 data class IngredientsListResult(
@@ -15,5 +16,5 @@ data class IngredientsListResult(
 
         /** Таблица возврата */
         @SerializedName("ET_RETCODE")
-        val retCodes: List<RetCode>
-)
+        override val retCodes: List<RetCode>
+) : IResultWithRetCodes
