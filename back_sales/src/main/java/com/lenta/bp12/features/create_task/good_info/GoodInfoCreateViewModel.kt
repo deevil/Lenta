@@ -458,8 +458,10 @@ class GoodInfoCreateViewModel : CoreViewModel() {
             "At least one param must be not null - ean: $ean, material: $material"
         }
 
-        viewModelScope.launch {
-            navigator.showProgressLoadingData()
+        launchAsyncTryCatch {
+            navigator.showProgressLoadingData {
+                handleLoadingTimeOut { handleFailure(it) }
+            }
 
             goodInfoNetRequest(GoodInfoParams(
                     tkNumber = sessionInfo.market.orEmpty(),

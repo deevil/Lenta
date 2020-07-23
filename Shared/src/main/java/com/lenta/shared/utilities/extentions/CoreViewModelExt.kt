@@ -3,10 +3,7 @@ package com.lenta.shared.utilities.extentions
 import androidx.lifecycle.viewModelScope
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.platform.viewmodel.CoreViewModel
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.CoroutineStart
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 
 fun CoreViewModel.launchUITryCatch(
         start: CoroutineStart = CoroutineStart.DEFAULT,
@@ -32,4 +29,9 @@ fun CoreViewModel.launchAsyncTryCatch(catchBlock: ((Throwable) -> Unit)? = null,
     } catch (e: Throwable) {
         catchBlock?.invoke(e) ?: handleFailure(failure = Failure.ThrowableFailure(e))
     }
+}
+
+fun CoreViewModel.handleLoadingTimeOut(handleFailure: () -> Unit) {
+    viewModelScope.coroutineContext.cancel()
+    handleFailure.invoke()
 }

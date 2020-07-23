@@ -35,9 +35,10 @@ class MainViewModel : CoreMainViewModel() {
                         coroutineScope = this,
                         remainingTime = it.remainingTime,
                         timeoutInSec = 60,
-                        handleFailure = {
-                            handleFailure?.invoke(it)
-                            hideProgress() }
+                        handleFailure = { failure ->
+                            handleFailure?.invoke(failure)
+                            hideProgress()
+                        }
                 )
             }
         }
