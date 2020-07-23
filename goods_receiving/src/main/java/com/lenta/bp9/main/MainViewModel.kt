@@ -38,8 +38,8 @@ class MainViewModel : CoreMainViewModel() {
                     coroutineScope = this,
                     remainingTime = loadingViewModel.remainingTime,
                     timeoutInSec = Constants.ONE_MINUTE_TIMEOUT,
-                    hideProgress = { hideProgress() },
-                    handleFailure = { handleFailure?.invoke(it) }
+                    hideProgress = ::hideProgress,
+                    handleFailure = handleFailure
             )
         }
 
