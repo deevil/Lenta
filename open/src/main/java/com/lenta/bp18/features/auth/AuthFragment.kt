@@ -14,6 +14,7 @@ import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
 import com.lenta.shared.utilities.extentions.generateScreenNumberFromPostfix
 import com.lenta.shared.utilities.extentions.getAppInfo
 import com.lenta.shared.utilities.extentions.provideViewModel
+import com.lenta.shared.utilities.extentions.setInvisible
 
 class AuthFragment : CoreLoginFragment() {
 
@@ -41,6 +42,16 @@ class AuthFragment : CoreLoginFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         vm.appTitle.value = context?.getAppInfo(withHash = false)
+        hideLoginAndPassword()
+    }
+
+    private fun hideLoginAndPassword() {
+        binding?.layoutLogin?.apply {
+            tvLogin.setInvisible()
+            etLogin.setInvisible()
+            tvPassword.setInvisible()
+            etPassword.setInvisible()
+        }
     }
 
     override fun onToolbarButtonClick(view: View) {
