@@ -4,12 +4,11 @@ import android.content.Context
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.lenta.bp9.R
-import com.lenta.bp9.features.goods_information.excise_alco_pge.excise_alco_box_acc_pge.excise_alco_box_card.ExciseAlcoBoxCardPGEViewModel
-import com.lenta.bp9.features.goods_information.non_excise_sets_receiving.NonExciseSetsReceivingViewModel
 import com.lenta.bp9.features.goods_list.SearchProductDelegate
-import com.lenta.bp9.model.processing.ProcessExciseAlcoBoxAccService
 import com.lenta.bp9.model.processing.ProcessMarkingProductService
-import com.lenta.bp9.model.task.*
+import com.lenta.bp9.model.task.IReceivingTaskManager
+import com.lenta.bp9.model.task.TaskBlockInfo
+import com.lenta.bp9.model.task.TaskProductInfo
 import com.lenta.bp9.platform.TypeDiscrepanciesConstants
 import com.lenta.bp9.platform.navigation.IScreenNavigator
 import com.lenta.bp9.repos.IDataBaseRepo
@@ -24,14 +23,13 @@ import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.requests.combined.scan_info.ScanInfoResult
 import com.lenta.shared.requests.combined.scan_info.pojo.QualityInfo
 import com.lenta.shared.requests.combined.scan_info.pojo.ReasonRejectionInfo
-import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.extentions.combineLatest
 import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.utilities.extentions.toStringFormatted
 import com.lenta.shared.view.OnPositionClickListener
 import com.mobrun.plugin.api.HyperHive
 import kotlinx.coroutines.launch
-import java.math.BigInteger
+import java.lang.NumberFormatException
 import javax.inject.Inject
 
 //https://trello.com/c/NGsFfWgB
@@ -74,8 +72,8 @@ class MarkingInfoViewModel : CoreViewModel(),
     val productInfo: MutableLiveData<TaskProductInfo> = MutableLiveData()
     val tvAccept: MutableLiveData<String> = MutableLiveData("")
     val isDiscrepancy: MutableLiveData<Boolean> = MutableLiveData(false)
-    private val countExciseStampsScanned: MutableLiveData<Int> = MutableLiveData(0)
-    val spinQualityEnabled: MutableLiveData<Boolean> = countExciseStampsScanned.map {
+    private val countBlockScanned: MutableLiveData<Int> = MutableLiveData(0)
+    val spinQualityEnabled: MutableLiveData<Boolean> = countBlockScanned.map {
         it == 0
     }
     val spinQuality: MutableLiveData<List<String>> = MutableLiveData()
@@ -204,10 +202,10 @@ class MarkingInfoViewModel : CoreViewModel(),
 
     val tvStampControlVal: MutableLiveData<String> = acceptTotalCount
             .combineLatest(spinQualitySelectedPosition)
-            .combineLatest(countExciseStampsScanned)
+            .combineLatest(countBlockScanned)
             .map {
                 val acceptTotalCountVal = acceptTotalCount.value ?: 0.0
-                val countExciseStampsScannedVal = countExciseStampsScanned.value ?: 0
+                val countBlockScannedVal = countBlockScanned.value ?: 0
                 val qualityInfoCode = qualityInfo.value?.get(it?.second ?: 0)?.code.orEmpty()
                 val numberStampsControl = productInfo.value?.numberStampsControl?.toDouble() ?: 0.0
                 if (qualityInfoCode == TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_NORM) {
@@ -217,9 +215,9 @@ class MarkingInfoViewModel : CoreViewModel(),
                     } else {
                         checkStampControlVisibility.value = true
                         if (acceptTotalCountVal < numberStampsControl) {
-                            "${countExciseStampsScannedVal.toDouble().toStringFormatted()} ${context.getString(R.string.of)} ${acceptTotalCountVal.toStringFormatted()}"
+                            "${countBlockScannedVal.toDouble().toStringFormatted()} ${context.getString(R.string.of)} ${acceptTotalCountVal.toStringFormatted()}"
                         } else {
-                            "${countExciseStampsScannedVal.toDouble().toStringFormatted()} ${context.getString(R.string.of)} ${numberStampsControl.toStringFormatted()}"
+                            "${countBlockScannedVal.toDouble().toStringFormatted()} ${context.getString(R.string.of)} ${numberStampsControl.toStringFormatted()}"
                         }
                     }
                 } else {
@@ -228,31 +226,22 @@ class MarkingInfoViewModel : CoreViewModel(),
             }
 
     val checkStampControl: MutableLiveData<Boolean> = checkStampControlVisibility.map {
-        productInfo.value?.let {
-            taskManager.getReceivingTask()?.controlExciseStampsOfProduct(it)
-        } ?: false
+        val countBlockScannedVal = countBlockScanned.value?.toDouble() ?: 0.0
+        val numberStampsControl = productInfo.value?.numberStampsControl?.toDouble() ?: 0.0
+        countBlockScannedVal == numberStampsControl
     }
 
-    val checkBoxGtinControlVisibility: MutableLiveData<Boolean> = MutableLiveData(true)
+    val checkBoxGtinControl: MutableLiveData<Boolean> = MutableLiveData(false)
 
-    val checkBoxGtinControl: MutableLiveData<Boolean> = checkBoxGtinControlVisibility.map {
-        productInfo.value?.let {
-            taskManager
-                    .getReceivingTask()
-                    ?.controlBoxesOfProduct(it)
-        } ?: false
-    }
-
-    val checkBoxGtinStampControl: MutableLiveData<Boolean> = checkBoxGtinControlVisibility.map {
-        productInfo.value?.let {
-            taskManager
-                    .getReceivingTask()
-                    ?.controlBoxesOfProduct(it)
-        } ?: false
-    }
+    val checkBoxGtinStampControl: MutableLiveData<Boolean> = MutableLiveData(false)
 
     val tvMrcVal: MutableLiveData<String> by lazy {
-        MutableLiveData(productInfo.value?.upLimitCondAmount?.toDoubleOrNull().toStringFormatted())
+        MutableLiveData(
+                productInfo.value
+                        ?.upLimitCondAmount
+                        ?.toDoubleOrNull()
+                        .toStringFormatted()
+        )
     }
 
     val isVisibilityMRC: MutableLiveData<Boolean> by lazy {
@@ -261,42 +250,41 @@ class MarkingInfoViewModel : CoreViewModel(),
 
     val checkBoxStampListVisibility: MutableLiveData<Boolean> = MutableLiveData()
 
-    val tvStampListVal: MutableLiveData<String> = refusalTotalCount.combineLatest(spinQualitySelectedPosition).map {
-        val refusalTotalCountValue = it?.first ?: 0.0
-        val spinQualitySelectedPositionValue = it?.second ?: 0
-        val qualityInfoCode = qualityInfo.value?.get(spinQualitySelectedPositionValue)?.code
-        if (qualityInfoCode != TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_NORM) {
-            "test"
-            /**if (refusalTotalCountValue == 0.0 || refusalTotalCountValue.toInt() == processExciseAlcoBoxAccService.getCountUntreatedBoxes()) {
-                checkBoxListVisibility.value = false
-                context.getString(R.string.not_required)
-            } else {
-                checkBoxListVisibility.value = true
-                "${processExciseAlcoBoxAccService.getCountDefectBoxes()} ${context.getString(R.string.of)} ${refusalTotalCountValue.toStringFormatted()}"
-            }*/
-        } else "" //это поле отображается только при выбранной категории брака
-    }
+    val tvStampListVal: MutableLiveData<String> = refusalTotalCount
+            .combineLatest(spinQualitySelectedPosition)
+            .combineLatest(countBlockScanned)
+            .map {
+                val refusalTotalCountValue = it?.first?.first ?: 0.0
+                val spinQualitySelectedPositionValue = it?.first?.second ?: 0
+                val qualityInfoCode = qualityInfo.value?.get(spinQualitySelectedPositionValue)?.code.orEmpty()
+                if (qualityInfoCode != TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_NORM) {
+                    if (refusalTotalCountValue == 0.0 || refusalTotalCountValue == processMarkingProductService.getCountUntreatedBlock()) {
+                        checkBoxStampListVisibility.value = false
+                        context.getString(R.string.not_required)
+                    } else {
+                        checkBoxStampListVisibility.value = true
+                        "${processMarkingProductService.getCountUntreatedBlock()} ${context.getString(R.string.of)} ${refusalTotalCountValue.toStringFormatted()}"
+                    }
+                } else "" //это поле отображается только при выбранной категории брака
+            }
 
     val checkBoxStampList: MutableLiveData<Boolean> = checkBoxStampListVisibility.map {
-        //https://trello.com/c/lqyZlYQu, Устанавливать чекбокс, когда F (кол-во в Отказать) = Q (свободные/необработанные короба);
-        //refusalTotalCount.value == processExciseAlcoBoxAccService.getCountDefectBoxes().toDouble()
-        false
-    }
-
-    val enabledApplyButton: MutableLiveData<Boolean> = countValue.combineLatest(checkBoxStampList).map {
-        val totalCount = countValue.value ?: 0.0
         val spinQualitySelectedPositionValue = spinQualitySelectedPosition.value ?: 0
-        val qualityInfoCode = qualityInfo.value?.get(spinQualitySelectedPositionValue)?.code
-        if (qualityInfoCode == TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_NORM) {
-            totalCount != 0.0
+        val qualityInfoCode = qualityInfo.value?.get(spinQualitySelectedPositionValue)?.code.orEmpty()
+        if (qualityInfoCode.isNotEmpty()
+                && qualityInfoCode != TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_NORM
+                && checkBoxStampListVisibility.value == true) {
+            refusalTotalCount.value == processMarkingProductService.getCountUntreatedBlock()
         } else {
-            /**val someMinusValue = processExciseAlcoBoxAccService.getCountUntreatedBoxes() - totalCount.toInt()
-            (someMinusValue == 0 || it!!.second) && (totalCount > 0.0)*/
             false
         }
     }
 
-    val enabledRollbackBtn: MutableLiveData<Boolean> = countExciseStampsScanned.map {
+    val enabledApplyButton: MutableLiveData<Boolean> = checkStampControl.combineLatest(checkBoxStampList).map {
+        checkStampControl.value == true || checkBoxStampList.value == true
+    }
+
+    val enabledRollbackBtn: MutableLiveData<Boolean> = countBlockScanned.map {
         (it ?: 0) > 0
     }
 
@@ -329,7 +317,7 @@ class MarkingInfoViewModel : CoreViewModel(),
                         "${uom.value?.name.orEmpty()}=${productInfo.value?.nestingInOneBlock?.toDouble().toStringFormatted()} ${productInfo.value?.uom?.name}"
                 )
             }
-            suffix.value =uom.value?.name.orEmpty()
+            suffix.value = uom.value?.name.orEmpty()
 
             qualityInfo.value = dataBase.getQualityInfo() ?: emptyList()
             spinQuality.value = qualityInfo.value
@@ -356,9 +344,28 @@ class MarkingInfoViewModel : CoreViewModel(),
     }
 
     fun onClickRollback() {
-        //processExciseAlcoBoxAccPGEService.rollbackScannedExciseStamp()
-        //уменьшаем кол-во отсканированных марок на единицу в текущей сессии
-        countExciseStampsScanned.value = countExciseStampsScanned.value?.minus(1)
+        if (productInfo.value?.isControlGTIN == true) {
+            if (checkBoxGtinControl.value == false && checkBoxGtinStampControl.value == false) {
+                processMarkingProductService.rollbackScannedBlock()
+                processMarkingProductService.rollbackScannedGtin()
+                //уменьшаем кол-во отсканированных марок на единицу в текущей сессии
+                countBlockScanned.value = countBlockScanned.value?.minus(1)
+            } else {
+                if (checkBoxGtinControl.value == true) {
+                    processMarkingProductService.rollbackScannedGtin()
+                    checkBoxGtinControl.value = false
+                }
+                if (checkBoxGtinStampControl.value == true) {
+                    processMarkingProductService.rollbackScannedBlock()
+                    //уменьшаем кол-во отсканированных марок на единицу в текущей сессии
+                    countBlockScanned.value = countBlockScanned.value?.minus(1)
+                }
+            }
+        } else {
+            processMarkingProductService.rollbackScannedBlock()
+            //уменьшаем кол-во отсканированных марок на единицу в текущей сессии
+            countBlockScanned.value = countBlockScanned.value?.minus(1)
+        }
     }
 
     fun onClickDetails() {
@@ -367,14 +374,36 @@ class MarkingInfoViewModel : CoreViewModel(),
         }
     }
 
-    fun onClickAdd() {
+    fun onClickAdd() : Boolean {
+        val countVal = count.value.orEmpty()
+        return if (processMarkingProductService.overLimit(countVal.toDouble())) {
+            screenNavigator.openAlertOverLimitPlannedScreen()
+            false
+        } else {
+            val spinQualityPosition = spinQualitySelectedPosition.value ?: 0
+            val selectedQualityInfo = qualityInfo.value?.get(spinQualityPosition)
+            val spinRejectionPosition = spinReasonRejectionSelectedPosition.value ?: 0
+            val selectedReasonRejectionInfo = reasonRejectionInfo.value?.get(spinRejectionPosition)
+            val typeDiscrepancies = selectedQualityInfo?.code
+                    ?.takeIf { selectedQualityInfoCode ->
+                        selectedQualityInfoCode == TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_NORM
+                    }
+                    ?: selectedReasonRejectionInfo?.code
+            if (typeDiscrepancies != null) {
+                processMarkingProductService.addProduct(countVal, typeDiscrepancies)
+                processMarkingProductService.apply()
+                //обнуляем кол-во отсканированных марок
+                countBlockScanned.value = 0
+                true
+            } else {
+                false
+            }
 
+        }
     }
 
     fun onClickApply() {
-        //onScanResult("01046002660121422100000CS8005012345938000")
-        //onScanResult("01046002660121422100000CS.8005012345.938000.")
-        onScanResult("01046002660121422100000CS800501234593800092NGkg+wRXz36kBFjpfwOub5DBIIpD2iS/DMYpZuuDLU0Y3pZt1z20/1ksr4004wfhDhRxu4dgUV4QN96Qtdih9g==01046002660121422100000CS.8005012345.938000.92NGkg+wRXz36kBFjpfwOub5DBIIpD2iS/DMYpZuuDLU0Y3pZt1z20/1ksr4004wfhDhRxu4dgUV4QN96Qtdih9g==")
+        if (onClickAdd()) screenNavigator.goBack()
     }
 
     //https://trello.com/c/N6t51jru
@@ -391,7 +420,7 @@ class MarkingInfoViewModel : CoreViewModel(),
             }
             else -> { //марка/блок. отсканировано 41, 44 или более 44 символов
                 if (barcodeCheck(data)) {
-                    addExciseStamp(data.substring(0, 25)) //обрезаем криптохвост
+                    addBlock(data.substring(0, 25)) //обрезаем криптохвост
                 } else {
                     if (data.length == 41 || data.length == 44) {
                         screenNavigator.openAlertInvalidCodeScannedForCurrentModeScreen()
@@ -403,7 +432,7 @@ class MarkingInfoViewModel : CoreViewModel(),
         }
     }
 
-    private fun barcodeCheck(data: String) : Boolean {
+    private fun barcodeCheck(data: String): Boolean {
         val regex = """\w+""".toRegex()
         val barcode = when (data.length) {
             41 -> data
@@ -426,8 +455,8 @@ class MarkingInfoViewModel : CoreViewModel(),
             val isGtin = gtinCode.toLongOrNull() != null && gtinCode.length == 14
             val isSerialStartCode = barcode.substring(16, 18) == "21"
             val isSerial = barcode.substring(18, 25).length == 7
-            val isMrcStartCode = barcode. substring(25, 29) == "8005"
-            val mrcCode = barcode. substring(29, 35)
+            val isMrcStartCode = barcode.substring(25, 29) == "8005"
+            val mrcCode = barcode.substring(29, 35)
             val isMrc = mrcCode.toIntOrNull() != null && mrcCode.length == 6
             val isVerificationKeyStartCode = barcode.substring(35, 37) == "93"
             val isVerificationKey = barcode.substring(37, 41).length == 4
@@ -445,18 +474,13 @@ class MarkingInfoViewModel : CoreViewModel(),
         }
     }
 
-    private fun addExciseStamp(stampCode: String) {
-        val qualityInfoCode =
-                spinQualitySelectedPosition.value
-                        ?.let { position ->
-                            qualityInfo.value?.get(position)?.code.orEmpty()
-                        }
+    private fun addBlock(stampCode: String) {
         val spinQualityPosition = spinQualitySelectedPosition.value ?: 0
         val selectedQualityInfo = qualityInfo.value?.get(spinQualityPosition)
         val spinRejectionPosition = spinReasonRejectionSelectedPosition.value ?: 0
         val selectedReasonRejectionInfo = reasonRejectionInfo.value?.get(spinRejectionPosition)
         val typeDiscrepancies = selectedQualityInfo?.code
-                ?.takeIf {selectedQualityInfoCode ->
+                ?.takeIf { selectedQualityInfoCode ->
                     selectedQualityInfoCode == TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_NORM
                 }
                 ?: selectedReasonRejectionInfo?.code
@@ -484,15 +508,17 @@ class MarkingInfoViewModel : CoreViewModel(),
             } else {
                 //Отсканированная марка не числится в текущей поставке. Верните отсканированную марку обратно поставщику
                 screenNavigator.openAlertStampNotFoundReturnSupplierScreen()
+                if (selectedQualityInfo?.code == TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_NORM) {
+                    count.value?.let {
+                        if (it.toDouble() > 0.0) {
+                            count.value = count.value?.toDouble()?.minus(1)?.toStringFormatted()
+                            //Количество нормы будет уменьшено
+                            screenNavigator.openAlertAmountNormWillBeReduced()
+                        }
+                    }
+                }
                 return
             }
-        }
-
-        if (qualityInfoCode == TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_NORM) {
-            count.value = count.value?.toDouble()?.minus(1)?.toString()
-            //Количество нормы будет уменьшено
-            screenNavigator.openAlertAmountNormWillBeReduced()
-            return
         }
 
         //https://trello.com/c/N6t51jru далее все пункт 4
@@ -522,20 +548,22 @@ class MarkingInfoViewModel : CoreViewModel(),
                 }
             } else {
                 //выполнять проверки, описанные в разделе 2. MARK.ППП. Логика сверки GTIN. https://trello.com/c/y2ECoCw4
-                blockInfo?.let {currentBlock ->
-                    typeDiscrepancies?.let {currentTypeDiscrepancies ->
+                blockInfo?.let { currentBlock ->
+                    typeDiscrepancies?.let { currentTypeDiscrepancies ->
                         gtinControlCheck(currentBlock, currentTypeDiscrepancies)
                     }
                 }
             }
         } else {
             //добавлять блок по товару
-            blockInfo?.let {currentBlock ->
-                typeDiscrepancies?.let {currentTypeDiscrepancies ->
+            blockInfo?.let { currentBlock ->
+                typeDiscrepancies?.let { currentTypeDiscrepancies ->
                     processMarkingProductService.addBlocksDiscrepancies(
                             blockInfo = currentBlock,
                             typeDiscrepancies = currentTypeDiscrepancies
                     )
+                    //обновляем кол-во отсканированных марок/блоков для отображения на экране в поле «Контроль марок»
+                    countBlockScanned.value = countBlockScanned.value
                 }
             }
         }
@@ -588,7 +616,8 @@ class MarkingInfoViewModel : CoreViewModel(),
         if (lastScannedGtin == gtinCode) {
             checkBoxGtinStampControl.value = true //аналитики сказали сначала поставить чекбокс, а потом снять
             processMarkingProductService.addBlocksDiscrepancies(blockInfo, typeDiscrepancies)
-            //todo в поле «Контроль марок» увеличивать значение на 1 единицу
+            //обновляем кол-во отсканированных марок/блоков для отображения на экране в поле «Контроль марок»
+            countBlockScanned.value = countBlockScanned.value
             checkBoxGtinControl.value = false
             checkBoxGtinStampControl.value = false //аналитики сказали сначала поставить чекбокс, а потом снять
         } else {

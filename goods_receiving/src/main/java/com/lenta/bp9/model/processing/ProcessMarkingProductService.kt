@@ -45,6 +45,17 @@ class ProcessMarkingProductService
         else null
     }
 
+    fun apply() {
+        if (currentBlocksDiscrepancies.isNotEmpty()) {
+            currentBlocksDiscrepancies.map {
+                taskManager.getReceivingTask()
+                        ?.taskRepository
+                        ?.getBlocksDiscrepancies()
+                        ?.changeBlockDiscrepancy(it)
+            }
+        }
+    }
+
     fun addProduct(count: String, typeDiscrepancies: String) {
         val countAdd =
                 if (typeDiscrepancies == TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_NORM) {
@@ -147,42 +158,21 @@ class ProcessMarkingProductService
         addGtin(gtinCode)
     }
 
-    /**fun addExciseStampDiscrepancy(exciseStamp: TaskExciseStampInfo, typeDiscrepancies: String, isScan: Boolean) {
-        var foundExciseStampDiscrepancy = currentExciseStampsDiscrepancies.findLast {
-            it.code == exciseStamp.code
-        }
-
-        foundExciseStampDiscrepancy = foundExciseStampDiscrepancy?.copy(typeDiscrepancies = typeDiscrepancies, isScan = isScan)
-                ?: TaskExciseStampDiscrepancies(
-                        materialNumber = exciseStamp.materialNumber,
-                        code = exciseStamp.code,
-                        processingUnitNumber = exciseStamp.processingUnitNumber,
-                        typeDiscrepancies = typeDiscrepancies,
-                        isScan = isScan,
-                        boxNumber = exciseStamp.boxNumber,
-                        packNumber = "",
-                        isMSC = false,
-                        organizationCodeEGAIS = exciseStamp.organizationCodeEGAIS,
-                        bottlingDate = exciseStamp.bottlingDate,
-                        isUnknown = false
-                )
-
-        currentExciseStampsDiscrepancies.map { it }.filter { unitInfo ->
-            if (unitInfo.code == exciseStamp.code) {
-                currentExciseStampsDiscrepancies.remove(unitInfo)
-                return@filter true
-            }
-            return@filter false
-        }
-
-        currentExciseStampsDiscrepancies.add(foundExciseStampDiscrepancy)
+    fun getCountUntreatedBlock(): Double {
+        val origQuantity = productInfo.origQuantity.toDouble()
+        val countProcessedBlocks = currentBlocksDiscrepancies.filter { it.materialNumber == productInfo.materialNumber }.size.toDouble()
+        return origQuantity - countProcessedBlocks
     }
 
-    fun exciseStampIsAlreadyProcessed(code: String): Boolean {
-        return currentExciseStampsDiscrepancies.any {
-            it.code == code && it.isScan
-        }
-    }*/
+    fun rollbackScannedBlock() {
+        val block = currentBlocksDiscrepancies.last()
+        currentBlocksDiscrepancies.remove(block)
+    }
+
+    fun rollbackScannedGtin() {
+        val gtin = currentGtin.last()
+        currentGtin.remove(gtin)
+    }
 
     fun overLimit(count: Double): Boolean {
         return productInfo.origQuantity.toDouble() < (getCountAcceptOfProduct() + getCountRefusalOfProduct() + count)
@@ -214,8 +204,7 @@ class ProcessMarkingProductService
     }
 
     fun getCountAcceptOfProduct(): Double {
-        return taskManager
-                .getReceivingTask()
+        return taskManager.getReceivingTask()
                 ?.taskRepository
                 ?.getProductsDiscrepancies()
                 ?.findProductDiscrepanciesOfProduct(productInfo)
@@ -228,8 +217,7 @@ class ProcessMarkingProductService
     }
 
     fun getCountRefusalOfProduct(): Double {
-        return taskManager
-                .getReceivingTask()
+        return taskManager.getReceivingTask()
                 ?.taskRepository
                 ?.getProductsDiscrepancies()
                 ?.findProductDiscrepanciesOfProduct(productInfo)
@@ -241,37 +229,6 @@ class ProcessMarkingProductService
                 }
                 ?: 0.0
     }
-
-    /**fun getCountExciseStampDiscrepanciesOfBox(boxNumber: String, typeDiscrepancies: String): Int {
-        return currentExciseStampsDiscrepancies.filter {
-            it.boxNumber == boxNumber && it.typeDiscrepancies == typeDiscrepancies && it.isScan
-        }.size
-    }
-
-    fun stampControlOfBox(box: TaskBoxInfo): Boolean {
-        val countScannedExciseStampsDiscrepanciesOfBox = currentExciseStampsDiscrepancies.filter {
-            it.boxNumber == box.boxNumber && it.typeDiscrepancies == "1" && it.isScan
-        }.size
-
-        return countScannedExciseStampsDiscrepanciesOfBox >= productInfo.numberStampsControl.toInt()
-    }
-
-    fun rollbackScannedExciseStamp() {
-        val stamp = currentExciseStampsDiscrepancies.last {
-            it.isScan
-        }
-        currentExciseStampsDiscrepancies.remove(stamp)
-    }
-
-    fun getLastAddExciseStamp(): TaskExciseStampInfo? {
-        return if (currentExciseStampsDiscrepancies.isNotEmpty()) {
-            exciseStamps.findLast { stampInfo ->
-                stampInfo.code == currentExciseStampsDiscrepancies.last {
-                    it.isScan
-                }.code
-            }
-        } else null
-    }*/
 
     fun modifications(): Boolean {
         return currentBlocksDiscrepancies !=
