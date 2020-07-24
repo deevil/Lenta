@@ -74,17 +74,6 @@ class DatabaseRepo(
         }
     }
 
-    override suspend fun getTestData(ean: String?): Good? {
-        return Good(
-                ean = ean,
-                material = Constants.GOOD_MATERIAL,
-                matcode = Constants.GOOD_MATCODE,
-                name = Constants.GOOD_NAME,
-                uom = Uom(
-                        code = "ST",
-                        name = "шт"))
-    }
-
     override suspend fun getAllGoodCondition(): List<ConditionInfo> {
         return withContext(Dispatchers.IO) {
             conditionInfo.getAllConditions().toConditionInfoList()
@@ -102,6 +91,4 @@ interface IDatabaseRepo {
     suspend fun getAllMarkets(): List<MarketInfo>
     suspend fun getAllGoodCondition(): List<ConditionInfo>
     suspend fun getAllGoodGroup(): List<GroupInfo>
-
-    suspend fun getTestData(ean: String?): Good?
 }

@@ -20,9 +20,9 @@ fun List<ZmpUtz111V001.ItemLocal_ET_ST_COND>.toConditionInfoList(): List<Conditi
             ConditionInfo(
                     werks = it.werks.orEmpty(),
                     matnr = it.matnr,
-                    number = it.stcond.orEmpty(),
-                    name = it.stcondnam.orEmpty(),
-                    defCondition = it.defcond.orEmpty()
+                    number = it.stcond,
+                    name = it.stcondnam,
+                    defCondition = it.defcond
             )
     }
 }

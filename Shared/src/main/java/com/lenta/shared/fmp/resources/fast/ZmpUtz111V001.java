@@ -53,17 +53,17 @@ public class ZmpUtz111V001 {
 
         //  type: TEXT, source: {'name': 'SAP', 'type': 'C'}
         /*Код условия хранения*/
-        @SerializedName("ZST_COND")
+        @SerializedName("STCOND")
         public String stcond;
 
         //  type: TEXT, source: {'name': 'SAP', 'type': 'C'}
         /*Наименование условия хранения*/
-        @SerializedName("ZST_COND_NAM")
+        @SerializedName("STCONDNAM")
         public String stcondnam;
 
         //  type: TEXT, source: {'name': 'SAP', 'type': 'C'}
         /*Условия хранения по умолчанию*/
-        @SerializedName("ZSTDEF_COND")
+        @SerializedName("DEFCOND")
         public String defcond;
 
     }

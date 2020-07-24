@@ -3,6 +3,7 @@ package com.lenta.bp18.features.select_good
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.lenta.bp18.features.other.SendDataViewModel
+import com.lenta.bp18.platform.Constants
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.settings.IAppSettings
 import kotlinx.coroutines.launch
@@ -17,12 +18,12 @@ class SelectGoodViewModel : SendDataViewModel() {
 
     private val weightValue = listOf("23", "24", "27", "28")
 
-    val barcodeField:MutableLiveData<String> = MutableLiveData("")
+    val barcodeField:MutableLiveData<String> = MutableLiveData()
     val requestFocusToBarcode = MutableLiveData<Boolean>(true)
 
     fun onClickNext() {
         viewModelScope.launch {
-            ean.value = barcodeField.value ?: "0"
+            ean.value = barcodeField.value ?: Constants.GOOD_BARCODE
             val barcode = ean.value.toString()
             var weight: String? = null
             if (weightValue.contains(barcode.substring(0 until 2))) {
