@@ -12,11 +12,11 @@ interface IFormatter {
 
     fun getTaskStatusName(taskStatus: Task.Status): String
 
-    fun getMovementTypeNameDescription(movementType: MovementType): String
-
     fun getBasketName(basket: Basket): String
 
     fun getBasketDescription(basket: Basket, task: Task, settings: TaskSettings): String
+
+    fun getBasketTitle(basket: Basket, task: Task, taskSettings: TaskSettings) : String
 
     fun basketGisControl(basket: Basket): String
 

@@ -67,24 +67,18 @@ class TaskBasketViewModel() : CoreViewModel(),
 
     val title by unsafeLazy {
         asyncLiveData<String> {
-            val basketName = formatter.getBasketName(basket)
-            val basketDescription = formatter.getBasketDescription(
+            val task = taskManager.getTask()
+            val taskSettings = getSettings()
+            val innerTitle = formatter.getBasketTitle(
                     basket = basket,
-                    task = taskManager.getTask(),
-                    settings = getSettings()
+                    task = task,
+                    taskSettings = taskSettings
             )
-            val innerTitle = buildString {
-                append(basketName)
-                append(": ")
-                append(basketDescription)
-            }
             emit(innerTitle)
         }
     }
 
-    private suspend fun getSettings(): TaskSettings {
-        return taskManager.getTaskSettings()
-    }
+    private suspend fun getSettings() = taskManager.getTaskSettings()
 
     fun onDeleteClick() {
         selectionsHelper.selectedPositions.value.orEmpty()

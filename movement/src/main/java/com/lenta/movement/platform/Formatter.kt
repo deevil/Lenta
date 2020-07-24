@@ -33,15 +33,6 @@ class Formatter : IFormatter {
         }
     }
 
-    override fun getMovementTypeNameDescription(movementType: MovementType): String {
-        return when (movementType) {
-            MovementType.SS -> SS_MOVEMENT
-            MovementType.SCDS -> SCDS_MOVEMENT // TODO
-            MovementType.SCS -> SCS_MOVEMENT // TODO
-            MovementType.SCST -> SCST_MOVEMENT // TODO
-        }
-    }
-
     override fun getBasketName(basket: Basket): String {
         return "$BASKET ${String.format("%02d", basket.number)}"
     }
@@ -147,6 +138,18 @@ class Formatter : IFormatter {
         }
     }
 
+    override fun getBasketTitle(basket: Basket, task: Task, taskSettings: TaskSettings) = buildString {
+        val basketName = getBasketName(basket)
+        val basketDescription = getBasketDescription(
+                basket = basket,
+                task = task,
+                settings = taskSettings
+        )
+        append(basketName)
+        append(": ")
+        append(basketDescription)
+    }
+
     companion object {
         private const val A_AND_SLASH = "A/"
         private const val B_AND_SLASH = "B/"
@@ -154,11 +157,6 @@ class Formatter : IFormatter {
 
         private const val TK = "ТК"
         private const val GE = "ГЕ"
-
-        private const val SS_MOVEMENT = "Для перемещения на ТК"
-        private const val SCDS_MOVEMENT = "Для перемещения на ТК" //TODO
-        private const val SCS_MOVEMENT = "Для перемещения на ТК" // TODO
-        private const val SCST_MOVEMENT = "Для перемещения на ТК" // TODO
 
         private const val BASKET = "Корзина"
         private const val BASKET_DESC_FOOD_CHAR = "F"
