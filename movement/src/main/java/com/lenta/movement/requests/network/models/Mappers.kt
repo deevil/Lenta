@@ -6,8 +6,11 @@ import com.lenta.movement.models.Task
 import com.lenta.movement.requests.network.models.startConsolidation.StartConsolidationProcessingUnit
 import com.lenta.movement.requests.network.models.startConsolidation.StartConsolidationTaskComposition
 import com.lenta.shared.platform.constants.Constants
+import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.extentions.getSapDate
 import com.lenta.shared.utilities.extentions.isSapTrue
+import com.lenta.shared.utilities.orIfNull
+import java.util.*
 
 fun Taskable.toTask(): Task {
     val currentStatus = when (currentStatusCode) {
@@ -18,6 +21,11 @@ fun Taskable.toTask(): Task {
         Task.Status.PROCESSING_ON_GZ_CODE -> Task.Status.ProcessingOnGz(currentStatusText)
         else -> Task.Status.Unknown(currentStatusText)
     }
+    val shipmentDate = dateShip.getSapDate(Constants.DATE_FORMAT_yyyy_mm_dd)
+            .orIfNull {
+                Logg.e { "Dateship null" }
+                Date()
+            }
     return Task(
             number = taskNumber,
             isCreated = notFinish.isSapTrue().not(),
@@ -28,11 +36,20 @@ fun Taskable.toTask(): Task {
             taskType = taskType,
             movementType = movementType,
             receiver = werksDstntnt,
-            pikingStorage = lgortSrc,
-            shipmentStorage = lgortTarget,
-            shipmentDate = dateShip.getSapDate(Constants.DATE_FORMAT_yyyy_mm_dd)
-                    ?: error("shipment date parse error (raw date: $dateShip)")
+            pikingStorage = lgortSrc, // Склад комплектации
+            shipmentStorage = lgortTarget, // Склад отгрузки
+            shipmentDate = shipmentDate,
+            blockType = blockType,
+            quantity = quantityPosition,
+            isNotFinish = notFinish.isSapTrue(),
+            isCons = isCons.isSapTrue()
     )
+}
+
+fun List<Taskable>.toTaskList(): List<Task> {
+    return this.map {
+        it.toTask()
+    }
 }
 
 fun StartConsolidationProcessingUnit.convertToModel(goods: List<StartConsolidationTaskComposition>?): ProcessingUnit {

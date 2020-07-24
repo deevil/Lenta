@@ -7,6 +7,7 @@ import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.features.select_personnel_number.SelectPersonnelNumberDelegate
 import com.lenta.shared.platform.viewmodel.CoreViewModel
+import com.lenta.shared.settings.IAppSettings
 import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
 import com.lenta.shared.utilities.extentions.launchUITryCatch
 import com.lenta.shared.utilities.extentions.map
@@ -22,6 +23,9 @@ class SelectPersonnelNumberViewModel : CoreViewModel(), OnOkInSoftKeyboardListen
 
     @Inject
     lateinit var selectPersonnelNumberDelegate: SelectPersonnelNumberDelegate
+
+    @Inject
+    lateinit var appSettings: IAppSettings
 
     val personnelNumber = MutableLiveData("")
     val fullName = MutableLiveData("")
@@ -39,6 +43,10 @@ class SelectPersonnelNumberViewModel : CoreViewModel(), OnOkInSoftKeyboardListen
 
     init {
         launchUITryCatch {
+            val lastPersonnelNumber = appSettings.lastPersonnelNumber
+            lastPersonnelNumber?.let {
+                personnelNumber.value = lastPersonnelNumber
+            }
             selectPersonnelNumberDelegate.personnelNumber = personnelNumber
             selectPersonnelNumberDelegate.fullName = fullName
             selectPersonnelNumberDelegate.employeesPosition = employeesPosition

@@ -43,6 +43,6 @@ class FastDataLoadingFragment : CoreLoadingFragment() {
     }
 
     companion object {
-        private const val PAGE_NUMBER = "10/02"
+        private const val PAGE_NUMBER = "13/02"
     }
 }

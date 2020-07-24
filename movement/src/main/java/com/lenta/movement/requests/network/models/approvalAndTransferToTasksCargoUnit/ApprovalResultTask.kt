@@ -24,7 +24,7 @@ data class ApprovalResultTask(
 
         /**Натуральное число*/
         @SerializedName("QNT_POS")
-        val quantityPosition: String,
+        override val quantityPosition: String,
 
         /**Склад комплектации*/
         @SerializedName("LGORT_SRC")
@@ -40,7 +40,7 @@ data class ApprovalResultTask(
 
         /** Тип блокировки (своя/чужая) */
         @SerializedName("BLOCK_TYPE")
-        val blockType: String,
+        override val blockType: String,
 
         /** Имя пользователя */
         @SerializedName("LOCK_USER")
@@ -56,7 +56,7 @@ data class ApprovalResultTask(
 
         /** Общий флаг */
         @SerializedName("IS_CONS")
-        val isCons: String,
+        override val isCons: String,
 
         /** Тип ГИС-контроля */
         @SerializedName("TASK_CNTRL")

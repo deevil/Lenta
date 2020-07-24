@@ -17,6 +17,7 @@ import com.lenta.movement.features.task.eo.ge_insides.TaskEOMergeGEInsidesViewMo
 import com.lenta.movement.features.task.goods.TaskGoodsViewModel
 import com.lenta.movement.features.task.goods.details.TaskGoodsDetailsViewModel
 import com.lenta.movement.features.task.goods.info.TaskGoodsInfoViewModel
+import com.lenta.movement.features.task_list.TaskListViewModel
 import com.lenta.movement.main.MainActivity
 import com.lenta.movement.main.MainViewModel
 import com.lenta.shared.di.AppScope
@@ -45,4 +46,5 @@ interface AppComponent {
     fun inject(it: TaskEOMergeFormedDocsViewModel)
     fun inject(it: TaskEOMergeGEInsidesViewModel)
     fun inject(it: TaskEOMergeEOInsidesViewModel)
+    fun inject(it: TaskListViewModel)
 }
