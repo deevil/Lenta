@@ -634,6 +634,8 @@ class GoodInfoCreateViewModel : CoreViewModel() {
         isExistUnsavedData = true
         scanInfoResult.value = scanInfo
         quantityField.value = scanInfo.marks.size.toString()
+        date.value = getFormattedDate(scanInfo.producedDate, Constants.DATE_FORMAT_yyyy_mm_dd, Constants.DATE_FORMAT_dd_mm_yyyy)
+        updateProducers(scanInfo.producers.toMutableList())
     }
 
     private suspend fun checkPart(): Either<Failure, ScanInfoResult> {
@@ -741,7 +743,6 @@ class GoodInfoCreateViewModel : CoreViewModel() {
         good.value?.let { changedGood ->
             val mark = Mark(
                     number = lastSuccessSearchNumber.value.orEmpty(),
-                    material = changedGood.material,
                     isBadMark = scanInfoResult.value?.status == MarkStatus.BAD.code,
                     providerCode = getProviderCode()
             )
@@ -777,9 +778,7 @@ class GoodInfoCreateViewModel : CoreViewModel() {
                 marks.forEach { mark ->
                     val markFromBox = Mark(
                             number = mark.number,
-                            material = changedGood.material,
                             boxNumber = lastSuccessSearchNumber.value.orEmpty(),
-                            isBadMark = mark.isBadMark.isNotEmpty(),
                             providerCode = getProviderCode()
                     )
                     Logg.d { "--> add mark from box = $markFromBox" }
