@@ -76,11 +76,11 @@ class CodeViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
 
     fun onClickGoOver() {
         Logg.d { "PIN check: $pinCode" }
-     //   if (pinCode == number1.value + number2.value + number3.value + number4.value) {
+        if (pinCode == number1.value + number2.value + number3.value + number4.value) {
             navigator.openOptionScreen()
-/*        } else {
+        } else {
             navigator.openAlertScreen(message = incorrectCodeMessage.value!!, pageNumber = "95")
-        }*/
+        }
     }
 
     override fun onOkInSoftKeyboard(): Boolean {

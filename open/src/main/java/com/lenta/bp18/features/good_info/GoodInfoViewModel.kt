@@ -9,7 +9,9 @@ import com.lenta.shared.requests.combined.scan_info.pojo.ConditionInfo
 import com.lenta.shared.requests.combined.scan_info.pojo.GroupInfo
 import com.lenta.shared.settings.IAppSettings
 import com.lenta.shared.utilities.Logg
+import com.lenta.shared.utilities.extentions.launchUITryCatch
 import com.lenta.shared.utilities.extentions.map
+import com.lenta.shared.utilities.orIfNull
 import com.lenta.shared.view.OnPositionClickListener
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -19,8 +21,10 @@ class GoodInfoViewModel : SendDataViewModel(), OnPositionClickListener {
     @Inject
     lateinit var appSettings: IAppSettings
 
+    //TODO Удалить потом опилки и не опилки
     //val barcode = "2999999640343" //опилки
     //val barcode = "2425352000000" //не опилки
+
     val deviceIp = MutableLiveData("")
 
     var selectedEan = MutableLiveData("")
@@ -39,15 +43,15 @@ class GoodInfoViewModel : SendDataViewModel(), OnPositionClickListener {
     private val selectedPosition: MutableLiveData<Int> = MutableLiveData()
 
     val groupsNames: MutableLiveData<List<String>> = groups.map { group ->
-        group?.map { it.name }
+        group?.map { it.name }.orEmpty()
     }
 
     val conditionNames: MutableLiveData<List<String>> = conditions.map { condition ->
-        condition?.map { it.name }
+        condition?.map { it.name }.orEmpty()
     }
 
     init {
-        viewModelScope.launch {
+        launchUITryCatch {
             val good = database.getGoodByEan(selectedEan.value.toString())
             Logg.d { "good.ean:${good?.ean}" }
             Logg.d { "Good uom:${good?.uom}, ${good?.material}, ${good?.name}, ${good?.uom}, ${weight.value}" }
@@ -57,35 +61,36 @@ class GoodInfoViewModel : SendDataViewModel(), OnPositionClickListener {
                 }
 
                 good?.uom == Uom.ST -> {
-                    1
+                    Constants.QUANTITY_DEFAULT_VALUE_1
                 }
                 good?.uom == Uom.KAR -> {
                     val uom = database.getEanInfoByEan(good.ean)
-                    uom?.umrez?.div(uom.umren) ?: "0"
+                    uom?.umrez?.div(uom.umren) ?: Constants.QUANTITY_DEFAULT_VALUE_0
                 }
-                else -> 0
+                else -> Constants.QUANTITY_DEFAULT_VALUE_0
             }
 
             quantityField.value = quantity.toString()
 
+            /*Тут на самом деле не matcode, а ШК по индикатору (10). Осталось понять как его получить*/
             partNumberField.value = good?.matcode.orEmpty()
 
-            database.getAllGoodGroup().let { list ->
-                groups.value = list
-                if (selectedPosition.value == null) {
-                    if (appSettings.lastGroup != null) {
-                        list.forEachIndexed() { index, groupInfo ->
-                            if (groupInfo.number == appSettings.lastGroup)
-                                onClickPosition(index)
-                        }
-                    } else
-                        onClickPosition(0)
-                }
+            val groupList = database.getAllGoodGroup()
+
+            groups.value = groupList
+            selectedPosition.value?.let {
+                appSettings.lastGroup?.let { lGroup ->
+                    groupList.forEachIndexed() { index, groupInfo ->
+                        if (groupInfo.number == lGroup)
+                            onClickPosition(index)
+                        return@forEachIndexed
+                    }
+                }.orIfNull { onClickPosition(0) }
             }
 
-            database.getAllGoodCondition().let { list ->
-                conditions.value = list
-            }
+            val conditionList = database.getAllGoodCondition()
+
+            conditions.value = conditionList
         }
     }
 

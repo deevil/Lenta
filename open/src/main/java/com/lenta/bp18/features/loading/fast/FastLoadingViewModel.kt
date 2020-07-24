@@ -13,6 +13,7 @@ import com.lenta.shared.exception.IFailureInterpreter
 import com.lenta.shared.features.loading.CoreLoadingViewModel
 import com.lenta.shared.platform.resources.ISharedStringResourceManager
 import com.lenta.shared.requests.network.Auth
+import com.lenta.shared.utilities.extentions.launchUITryCatch
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -31,7 +32,7 @@ class FastLoadingViewModel : CoreLoadingViewModel() {
     override val sizeInMb: MutableLiveData<Float> = MutableLiveData()
 
     init {
-        viewModelScope.launch {
+        launchUITryCatch {
             progress.value = true
             fastResourcesNetRequest(null).either(::handleFailure, ::handleSuccess)
         }
@@ -43,7 +44,7 @@ class FastLoadingViewModel : CoreLoadingViewModel() {
         progress.value = false
     }
 
-    private fun handleSuccess(@Suppress("UNUSED_PARAMETER") b: Boolean) {
+    private fun handleSuccess(b: Boolean) {
         progress.value = false
         navigator.openSelectMarketScreen()
     }

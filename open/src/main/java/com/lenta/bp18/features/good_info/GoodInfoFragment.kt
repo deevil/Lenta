@@ -2,7 +2,7 @@ package com.lenta.bp18.features.good_info
 
 import android.view.View
 import androidx.core.os.bundleOf
-import androidx.lifecycle.Observer
+import androidx.lifecycle.observe
 import com.lenta.bp18.R
 import com.lenta.bp18.databinding.FragmentGoodInfoBinding
 import com.lenta.bp18.platform.Constants
@@ -15,15 +15,16 @@ import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
 import com.lenta.shared.utilities.extentions.generateScreenNumberFromPostfix
 import com.lenta.shared.utilities.extentions.getDeviceId
 import com.lenta.shared.utilities.extentions.provideViewModel
+import com.lenta.shared.utilities.extentions.unsafeLazy
 
 class GoodInfoFragment : CoreFragment<FragmentGoodInfoBinding, GoodInfoViewModel>(), ToolbarButtonsClickListener {
 
-    private val selectedEan by lazy {
-        arguments?.getString(KEY_EAN_VALUE)
+    private val selectedEan by unsafeLazy {
+        arguments?.getString(KEY_EAN_VALUE) ?: throw IllegalArgumentException("There is no data in bundle at key $KEY_EAN_VALUE")
     }
 
-    private val weight by lazy {
-        arguments?.getString(KEY_WEIGHT_VALUE)
+    private val weight by unsafeLazy {
+        arguments?.getString(KEY_WEIGHT_VALUE)?: throw IllegalArgumentException("There is no data in bundle at key $KEY_WEIGHT_VALUE")
     }
 
     override fun getLayoutId(): Int = R.layout.fragment_good_info
@@ -35,7 +36,7 @@ class GoodInfoFragment : CoreFragment<FragmentGoodInfoBinding, GoodInfoViewModel
             getAppComponent()?.inject(it)
             it.deviceIp.value = context!!.getDeviceId()
             it.selectedEan.value = selectedEan
-            it.weight.value = weight?.toInt()
+            it.weight.value = weight.toInt()
             return it
         }
     }
@@ -43,10 +44,12 @@ class GoodInfoFragment : CoreFragment<FragmentGoodInfoBinding, GoodInfoViewModel
     override fun setupTopToolBar(topToolbarUiModel: TopToolbarUiModel) {
         topToolbarUiModel.description.value = getString(R.string.good_card)
 
+
+
         viewLifecycleOwner.apply {
-            vm.good.observe(this, Observer { good ->
+            vm.good.observe(viewLifecycleOwner) { good ->
                 topToolbarUiModel.title.value = getString(R.string.title_good_sap_name, good.getFormattedMaterial(), good.name)
-            })
+            }
         }
     }
 

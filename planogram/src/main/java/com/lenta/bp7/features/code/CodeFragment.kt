@@ -43,8 +43,8 @@ class CodeFragment : CoreFragment<FragmentCodeBinding, CodeViewModel>(), Toolbar
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
         bottomToolbarUiModel.cleanAll()
         bottomToolbarUiModel.uiModelButton1.show(ButtonDecorationInfo.back)
-        bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.goOver/*, enabled = false*/)
-        //connectLiveData(vm.enabledGoOverBtn, bottomToolbarUiModel.uiModelButton5.enabled)
+        bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.goOver, enabled = false)
+        connectLiveData(vm.enabledGoOverBtn, bottomToolbarUiModel.uiModelButton5.enabled)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

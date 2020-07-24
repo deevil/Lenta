@@ -10,16 +10,14 @@ import javax.inject.Inject
 class PersistCheckResult @Inject constructor(
         private val hyperHive: HyperHive,
         private val gson: Gson
-): IPersistCheckResult{
-
-    private val keyForSave = Constants.KEY_FOR_SAVE
+) : IPersistCheckResult {
 
     override fun saveCheckResult(checkData: CheckData?) {
-        if(checkData==null || checkData.ean.isEmpty()){
+        if (checkData == null || checkData.ean.isEmpty()) {
             hyperHive.stateAPI.saveParamToDB(keyForSave, null)
-        }else{
+        } else {
             hyperHive.stateAPI.saveParamToDB(keyForSave, gson.toJson(CheckResultData(
-               good = checkData.good
+                    good = checkData.good
             )))
         }
     }
@@ -35,9 +33,13 @@ class PersistCheckResult @Inject constructor(
         saveCheckResult(null)
     }
 
+    companion object {
+        private const val keyForSave = Constants.KEY_FOR_SAVE
+    }
+
 }
 
-interface IPersistCheckResult{
+interface IPersistCheckResult {
     fun saveCheckResult(checkData: CheckData?)
     fun getSavedCheckResult(): CheckResultData?
     fun clearSavedData()

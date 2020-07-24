@@ -10,18 +10,18 @@ import javax.inject.Inject
 class CheckData @Inject constructor(
         private val persistCheckResult: IPersistCheckResult,
         private val timeMonitor: ITimeMonitor
-){
+) {
     val ean: MutableList<BarcodeInfo> = mutableListOf()
     val good: MutableList<Good> = mutableListOf()
 
     init {
         val savedResult = persistCheckResult.getSavedCheckResult()
-        if (savedResult != null){
+        if (savedResult != null) {
             restoreSavedCheckResult(savedResult)
         }
     }
 
-    fun saveCheckResult(){
+    fun saveCheckResult() {
         persistCheckResult.saveCheckResult(this)
     }
 
@@ -29,7 +29,7 @@ class CheckData @Inject constructor(
         good.addAll(checkResultData.good)
     }
 
-    fun clearSaveData(){
+    fun clearSaveData() {
         persistCheckResult.clearSavedData()
     }
 

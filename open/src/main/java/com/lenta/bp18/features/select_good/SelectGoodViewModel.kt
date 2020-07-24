@@ -6,6 +6,7 @@ import com.lenta.bp18.features.other.SendDataViewModel
 import com.lenta.bp18.platform.Constants
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.settings.IAppSettings
+import com.lenta.shared.utilities.extentions.launchUITryCatch
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -22,7 +23,7 @@ class SelectGoodViewModel : SendDataViewModel() {
     val requestFocusToBarcode = MutableLiveData<Boolean>(true)
 
     fun onClickNext() {
-        viewModelScope.launch {
+        launchUITryCatch {
             ean.value = barcodeField.value ?: Constants.GOOD_BARCODE
             val barcode = ean.value.toString()
             var weight: String? = null
@@ -35,7 +36,7 @@ class SelectGoodViewModel : SendDataViewModel() {
     }
 
     private fun searchEan(ean: String, weight: String?) {
-        viewModelScope.launch {
+        launchUITryCatch {
             when (database.getGoodByEan(ean)) {
                 null -> showError()
                 else -> openGoodInfoScreen(ean,weight)
