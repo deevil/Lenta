@@ -15,7 +15,7 @@ data class IngredientsDataListResult(
 
         /** Данные по материалу */
         @SerializedName("ET_MAT_DATA")
-        val materialsDataInfo: List<MaterialIngredientDataInfo>?,
+        val materialsIngredientsDataInfoList: List<MaterialIngredientDataInfo>?,
 
         /** Список заказов по переделу */
         @SerializedName("ET_AUFNR_LIST")

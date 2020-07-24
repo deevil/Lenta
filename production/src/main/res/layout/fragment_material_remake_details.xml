@@ -2,13 +2,13 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context=".features.ingredient_details.IngredientDetailsFragment">
+    tools:context=".features.material_remake_details.MaterialRemakeDetailsFragment">
 
     <data>
 
         <variable
             name="vm"
-            type="com.lenta.bp16.features.ingredient_details.IngredientDetailsViewModel" />
+            type="com.lenta.bp16.features.material_remake_details.MaterialRemakeDetailsViewModel" />
 
     </data>
 
@@ -85,8 +85,7 @@
         <View style="@style/HorizontalDivider" />
 
         <!-- Общее количество брака -->
-        <LinearLayout
-            style="@style/LinearRowStyle">
+        <LinearLayout style="@style/LinearRowStyle">
 
             <LinearLayout
                 style="@style/LinearCellStyle"
@@ -106,15 +105,14 @@
 
                 <TextView
                     style="@style/CellTextStyle"
-                    android:text="@{vm.orderIngredient.planCount}"
+                    android:text="@{vm.materialIngredient.plan_qnt}"
                     tools:text="70 кг" />
 
             </LinearLayout>
 
         </LinearLayout>
 
-        <View
-            style="@style/HorizontalDivider"/>
+        <View style="@style/HorizontalDivider" />
 
         <!-- Плановое количество -->
         <LinearLayout style="@style/LinearRowStyle">
@@ -137,7 +135,7 @@
 
                 <TextView
                     style="@style/CellTextStyle"
-                    android:text="@{vm.orderIngredient.doneCount}"
+                    android:text="@{vm.materialIngredient.done_qnt}"
                     tools:text="25 кг" />
 
             </LinearLayout>

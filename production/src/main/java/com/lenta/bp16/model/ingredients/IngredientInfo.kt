@@ -79,13 +79,16 @@ data class IngredientInfo(
         }
 
         companion object {
-                const val TYPE_ORDER = "4"
-                const val TYPE_MATERIAL = "5"
+            const val TYPE_ORDER = "4"
+            const val TYPE_MATERIAL = "5"
 
-                const val BLOCK_BY_MYSELF = "1"
-                const val BLOCK_BY_OTHER = "2"
+            const val BLOCK_BY_MYSELF = "1"
+            const val BLOCK_BY_OTHER = "2"
 
-                const val MODE_BLOCK_DATA = "5" // 5 – Получение данных с блокировкой заказа
-                const val MODE_RE_BLOCK_DATA = "6" // 6 – Получение данных с переблокировкой заказа
+            const val MODE_ORDER_BLOCK_DATA = "5" // 5 – Получение данных с блокировкой заказа
+            const val MODE_ORDER_RE_BLOCK_DATA = "6" // 6 – Получение данных с переблокировкой заказа
+
+            const val MODE_MATERIAL_BLOCK_DATA = "7" // 5 – Получение данных с блокировкой заказа
+            const val MODE_MATERIAL_RE_BLOCK_DATA = "8" // 6 – Получение данных с переблокировкой заказа
         }
 }

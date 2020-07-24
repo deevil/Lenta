@@ -18,7 +18,7 @@ data class IngredientDataCompleteParams(
         3 - Тара
          */
         @SerializedName("IV_MODE")
-        val mode: String,
+        val mode: String = "",
 
         /** Номер родительской связи  */
         @SerializedName("IV_PARENT")
@@ -26,7 +26,7 @@ data class IngredientDataCompleteParams(
 
         /** Номер технологического заказа  */
         @SerializedName("IV_AUFNR")
-        val aufnr: String,
+        val aufnr: String = "",
 
         /** SAP – код товара  */
         @SerializedName("IV_MATNR")
@@ -34,5 +34,13 @@ data class IngredientDataCompleteParams(
 
         /** Фактическое количество сырья  */
         @SerializedName("IV_FACT_QNT")
-        val fact: String
-)
+        val fact: Double,
+
+        /** Табельный номер */
+        @SerializedName("IV_PERNR")
+        val personnelNumber: String
+) {
+        companion object {
+                const val MODE_INGREDIENT = "4"
+        }
+}

@@ -7,10 +7,10 @@ import com.lenta.shared.functional.Either
 import com.lenta.shared.interactor.UseCase
 import javax.inject.Inject
 
-class PackIngredientNetRequest @Inject constructor(
+class CompleteIngredientByMaterialNetRequest @Inject constructor(
         private val ingredientsRepository: IIngredientsRepository
 ) : UseCase<Boolean, IngredientDataCompleteParams> {
     override suspend fun run(params: IngredientDataCompleteParams): Either<Failure, Boolean> {
-        return ingredientsRepository.completeToPackIngredientData(params)
+        return ingredientsRepository.completeToPackMaterialData(params)
     }
 }

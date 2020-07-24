@@ -1,28 +1,25 @@
-package com.lenta.bp16.features.order_ingredients_list
+package com.lenta.bp16.features.material_remake_list
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.switchMap
 import com.lenta.bp16.model.ingredients.IngredientInfo
-import com.lenta.bp16.model.ingredients.OrderIngredientDataInfo
+import com.lenta.bp16.model.ingredients.MaterialIngredientDataInfo
 import com.lenta.bp16.model.ingredients.params.GetIngredientDataParams
 import com.lenta.bp16.model.ingredients.params.UnblockIngredientsParams
-import com.lenta.bp16.model.ingredients.ui.ItemOrderIngredientUi
-import com.lenta.bp16.platform.extention.getItemName
+import com.lenta.bp16.model.ingredients.ui.ItemMaterialIngredientUi
 import com.lenta.bp16.platform.extention.getModeType
 import com.lenta.bp16.platform.navigation.IScreenNavigator
 import com.lenta.bp16.platform.resource.IResourceManager
-import com.lenta.bp16.request.GetOrderIngredientsDataNetRequest
+import com.lenta.bp16.request.GetMaterialIngredientsDataNetRequest
 import com.lenta.bp16.request.UnblockIngredientNetRequest
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.extentions.asyncLiveData
-import com.lenta.shared.utilities.extentions.launchAsyncTryCatch
 import com.lenta.shared.utilities.extentions.launchUITryCatch
 import com.lenta.shared.utilities.extentions.unsafeLazy
 import javax.inject.Inject
-import kotlin.properties.Delegates
 
-class OrderIngredientsListViewModel : CoreViewModel() {
+class MaterialRemakesListViewModel : CoreViewModel() {
 
     @Inject
     lateinit var navigator: IScreenNavigator
@@ -34,24 +31,21 @@ class OrderIngredientsListViewModel : CoreViewModel() {
     lateinit var resourceManager: IResourceManager
 
     @Inject
-    lateinit var unblockIngredientNetRequest: UnblockIngredientNetRequest
+    lateinit var getIngredientData: GetMaterialIngredientsDataNetRequest
 
-    // выбранное количество
-    var weight: String by Delegates.notNull()
+    @Inject
+    lateinit var unblockIngredientNetRequest: UnblockIngredientNetRequest
 
     // выбранный ингредиент
     val ingredient by unsafeLazy {
         MutableLiveData<IngredientInfo>()
     }
 
-    @Inject
-    lateinit var getIngredientData: GetOrderIngredientsDataNetRequest
-
-    private val allOrderIngredients: MutableLiveData<List<OrderIngredientDataInfo>> by unsafeLazy {
-        MutableLiveData<List<OrderIngredientDataInfo>>()
+    private val allMaterialIngredients: MutableLiveData<List<MaterialIngredientDataInfo>> by unsafeLazy {
+        MutableLiveData<List<MaterialIngredientDataInfo>>()
     }
 
-    fun loadOrderIngredientsList() = launchUITryCatch {
+    fun loadMaterialIngredients() = launchUITryCatch {
         navigator.showProgressLoadingData()
 
         val code = ingredient.value?.code.orEmpty()
@@ -63,26 +57,27 @@ class OrderIngredientsListViewModel : CoreViewModel() {
                         deviceIP = resourceManager.deviceIp,
                         code = code,
                         mode = mode,
-                        weight = weight
+                        weight = ""
                 )
         ).also {
             navigator.hideProgress()
         }
         result.either(::handleFailure, fnR = {
-            allOrderIngredients.value = it
+            allMaterialIngredients.value = it
             it
         })
     }
 
-    val orderIngredientsList by unsafeLazy {
-        allOrderIngredients.switchMap {
-            asyncLiveData<List<ItemOrderIngredientUi>> {
-                emit(it.mapIndexed { index, orderIngredientDataInfo ->
-                    ItemOrderIngredientUi(
-                            name = orderIngredientDataInfo.getItemName(),
+    val materialIngredients by unsafeLazy {
+        allMaterialIngredients.switchMap {
+            asyncLiveData<List<ItemMaterialIngredientUi>> {
+                emit(it.mapIndexed { index, materialIngredientDataInfo ->
+                    ItemMaterialIngredientUi(
+                            lgort = materialIngredientDataInfo.lgort,
+                            desc = materialIngredientDataInfo.name,
                             position = (index + 1).toString(),
-                            plan = orderIngredientDataInfo.getPlanCount(),
-                            fact = orderIngredientDataInfo.getDoneCount()
+                            plan = materialIngredientDataInfo.plan_qnt,
+                            fact = materialIngredientDataInfo.done_qnt
                     )
                 })
             }
@@ -103,10 +98,10 @@ class OrderIngredientsListViewModel : CoreViewModel() {
     }
 
     fun onClickItemPosition(position: Int) {
-        ingredient.value?.let { selectedIngredient ->
-            allOrderIngredients.value?.getOrNull(position)?.let {
-                navigator.openIngredientDetailsScreen(it, selectedIngredient.code.orEmpty())
-            }
-        }
+        allMaterialIngredients.value?.getOrNull(position)?.let { selectedMaterial ->
+            val code = ingredient.value?.code.orEmpty()
+            val name = ingredient.value?.nameMatnrOsn.orEmpty()
+            navigator.openMaterialRemakeDetailsScreen(selectedMaterial, code, name)
+        } ?: navigator.showAlertPartNotFound()
     }
 }

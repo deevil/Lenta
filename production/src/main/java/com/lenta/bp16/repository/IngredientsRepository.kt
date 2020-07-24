@@ -58,15 +58,30 @@ class IngredientsRepository @Inject constructor(
         }
     }
 
+    override suspend fun completeToPackMaterialData(params: IngredientDataCompleteParams): Either<Failure, Boolean> {
+        val result = fmpRequestsHelper.restRequest(FMP_MATERIAL_COMPLETE, params, IngredientDataCompleteStatus::class.java)
+                .getResult()
+
+        return result.flatMap {
+            Either.Right(true)
+        }
+    }
+
     companion object {
+        // получение компонентов по заказу и по материалу
         private const val FMP_ORDERS_RESOURCE_NAME = "ZMP_UTZ_PRO_10_V001"
+
+        // получение ингредиентов по заказу или по материалу
         private const val FMP_ORDERS_DATA_RESOURCE_NAME = "ZMP_UTZ_PRO_11_V001"
 
         // Разблокировка объекта
         private const val FMP_ORDERS_UNBLOCK_RESOURCE_NAME = "ZMP_UTZ_PRO_06_V001"
 
-        // Создание тары
+        // Создание тары для заказа
         private const val FMP_INGREDIENT_COMPLETE = "ZMP_UTZ_PRO_04_V001"
+
+        // сохранение результатов переделки материала
+        private const val FMP_MATERIAL_COMPLETE = "ZMP_UTZ_PRO_12_V001"
     }
 
     internal class IngredientsListStatus : ObjectRawStatus<IngredientsListResult>()
@@ -98,9 +113,16 @@ interface IIngredientsRepository {
     suspend fun unblockOrderIngredients(params: UnblockIngredientsParams): Either<Failure, Boolean>
 
     /**
-     * Создание тары для ингредиентов товара
+     * Сохранение данных для ингредиентов товара
      *
      * @param params - [IngredientDataCompleteParams]
      */
     suspend fun completeToPackIngredientData(params: IngredientDataCompleteParams): Either<Failure, Boolean>
+
+    /**
+     * Сохранение данных для материала ингредиента
+     *
+     * @param params - [IngredientDataCompleteParams]
+     */
+    suspend fun completeToPackMaterialData(params: IngredientDataCompleteParams): Either<Failure, Boolean>
 }

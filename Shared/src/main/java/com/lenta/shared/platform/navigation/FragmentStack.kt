@@ -1,20 +1,21 @@
 package com.lenta.shared.platform.navigation
 
+
 import android.os.Bundle
 import android.util.Log
-
-
-import java.util.HashSet
-import java.util.Random
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import com.lenta.shared.R
 import com.lenta.shared.analytics.AnalyticsHelper
 import com.lenta.shared.platform.fragment.CoreFragment
 import com.lenta.shared.utilities.extentions.implementationOf
+import java.util.*
 import javax.inject.Inject
 
-class FragmentStack(private val manager: FragmentManager, private val containerId: Int) {
+class FragmentStack(
+        private val manager: FragmentManager,
+        private val containerId: Int
+) {
     private val random: Random = Random(System.currentTimeMillis())
     private var listener: FragmentManager.OnBackStackChangedListener? = null
 
@@ -25,7 +26,7 @@ class FragmentStack(private val manager: FragmentManager, private val containerI
 
 
     fun setOnBackStackChangedListener(listener: FragmentManager.OnBackStackChangedListener) {
-        if (this.listener != null) manager.removeOnBackStackChangedListener(this.listener!!)
+        this.listener?.let(manager::removeOnBackStackChangedListener)
         this.listener = listener
         manager.addOnBackStackChangedListener(listener)
     }
@@ -46,8 +47,12 @@ class FragmentStack(private val manager: FragmentManager, private val containerI
         }
 
         val tag = setTag(fragment)
-        if (peek() != null)
-            fragment.arguments!!.putString("_before", peek()!!.arguments!!.getString("_tag"))
+        peek()?.let { currentFragment ->
+            currentFragment.arguments?.getString(KEY_FRAGMENT_TAG)?.let { keyTag ->
+                fragment.arguments?.putString(KEY_FRAGMENT_BEFORE, keyTag)
+            }
+        }
+
         transaction.replace(containerId, fragment, tag)
         transaction.addToBackStack(null)
         transaction.commit()
@@ -65,7 +70,7 @@ class FragmentStack(private val manager: FragmentManager, private val containerI
                 .replace(containerId, fragment, setTag(fragment))
                 .commit()
         executePendingTransactions()
-        if (listener != null) listener!!.onBackStackChanged()
+        listener?.onBackStackChanged()
     }
 
     /**
@@ -90,7 +95,7 @@ class FragmentStack(private val manager: FragmentManager, private val containerI
 
 
     fun popReturnArgs(args: Bundle) {
-        val tag = peek()!!.arguments!!.getString("_before", null)
+        val tag = peek()?.arguments?.getString(KEY_FRAGMENT_BEFORE, null)
                 ?: throw RuntimeException("Can not find link to previous fragment")
         val pre = manager.findFragmentByTag(tag)
                 ?: throw RuntimeException("Previous fragment not found")
@@ -105,7 +110,7 @@ class FragmentStack(private val manager: FragmentManager, private val containerI
             manager.popBackStack()
         }
         executePendingTransactions()
-        if (listener != null) listener!!.onBackStackChanged()
+        listener?.onBackStackChanged()
     }
 
     /**
@@ -120,7 +125,7 @@ class FragmentStack(private val manager: FragmentManager, private val containerI
         if (fragment.arguments == null) {
             fragment.arguments = Bundle()
         }
-        fragment.arguments!!.putString("_tag", tag)
+        fragment.arguments?.putString(KEY_FRAGMENT_TAG, tag)
         return tag
     }
 
@@ -134,14 +139,17 @@ class FragmentStack(private val manager: FragmentManager, private val containerI
     }
 
     companion object {
-        private val TAG = FragmentStack::class.java.simpleName
+        private const val TAG = "FragmentStack"
+        private const val KEY_FRAGMENT_TAG = "_tag"
+        private const val KEY_FRAGMENT_BEFORE = "_before"
+        private const val KEY_PREFIX = "_"
 
-        val SAVE_TAG_FOR_ARGUMENTS = "_SAVE_TAG_FOR_ARGUMENTS"
+        const val SAVE_TAG_FOR_ARGUMENTS = "_SAVE_TAG_FOR_ARGUMENTS"
 
         fun removeSystemTags(bundle: Bundle?) {
             if (bundle == null) return
             val keys = HashSet(bundle.keySet())
-            for (key in keys) if (key.startsWith("_")) bundle.remove(key)
+            for (key in keys) if (key.startsWith(KEY_PREFIX)) bundle.remove(key)
         }
     }
 }

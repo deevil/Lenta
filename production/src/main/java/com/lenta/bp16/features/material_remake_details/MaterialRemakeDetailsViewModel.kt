@@ -1,19 +1,19 @@
-package com.lenta.bp16.features.ingredient_details
+package com.lenta.bp16.features.material_remake_details
 
 import androidx.lifecycle.MutableLiveData
 import com.lenta.bp16.data.IScales
-import com.lenta.bp16.model.ingredients.OrderIngredientDataInfo
+import com.lenta.bp16.model.ingredients.MaterialIngredientDataInfo
 import com.lenta.bp16.model.ingredients.params.IngredientDataCompleteParams
 import com.lenta.bp16.platform.navigation.IScreenNavigator
 import com.lenta.bp16.platform.resource.IResourceManager
-import com.lenta.bp16.request.CompleteIngredientByOrderNetRequest
+import com.lenta.bp16.request.CompleteIngredientByMaterialNetRequest
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.extentions.*
 import javax.inject.Inject
 import kotlin.properties.Delegates
 
-class IngredientDetailsViewModel : CoreViewModel() {
+class MaterialRemakeDetailsViewModel : CoreViewModel() {
 
     @Inject
     lateinit var navigator: IScreenNavigator
@@ -28,14 +28,14 @@ class IngredientDetailsViewModel : CoreViewModel() {
     lateinit var scales: IScales
 
     @Inject
-    lateinit var packIngredientsNetRequest: CompleteIngredientByOrderNetRequest
+    lateinit var completePackMaterialNetRequest: CompleteIngredientByMaterialNetRequest
 
     // значение параметра OBJ_CODE из родительского компонента заказа
     var parentCode: String by Delegates.notNull()
 
     // выбранный ингредиент
-    val orderIngredient by unsafeLazy {
-        MutableLiveData<OrderIngredientDataInfo>()
+    val materialIngredient by unsafeLazy {
+        MutableLiveData<MaterialIngredientDataInfo>()
     }
 
     // Комплектация
@@ -62,7 +62,7 @@ class IngredientDetailsViewModel : CoreViewModel() {
     }
 
     val totalWithUnits = total.map {
-        "${it.dropZeros()} ${orderIngredient.value?.buom.orEmpty()}"
+        "${it.dropZeros()} ${resourceManager.kgSuffix()}"
     }
 
     fun onCompleteClicked() = launchUITryCatch {
@@ -70,25 +70,21 @@ class IngredientDetailsViewModel : CoreViewModel() {
         if (weight == 0.0) {
             navigator.showAlertWeightNotSet()
         } else {
-            orderIngredient.value?.let { ingredient ->
-                navigator.showProgressLoadingData()
-                val result = packIngredientsNetRequest(
-                        params = IngredientDataCompleteParams(
-                                tkMarket = sessionInfo.market.orEmpty(),
-                                deviceIP = resourceManager.deviceIp,
-                                mode = IngredientDataCompleteParams.MODE_INGREDIENT,
-                                parent = parentCode,
-                                aufnr = parentCode,
-                                matnr = ingredient.matnr,
-                                fact = weight,
-                                personnelNumber = sessionInfo.personnelNumber.orEmpty()
-                        )
-                )
-                result.also {
-                    navigator.hideProgress()
-                }.either(::handleFailure) {
-                    navigator.goBack()
-                }
+            navigator.showProgressLoadingData()
+            val result = completePackMaterialNetRequest(
+                    params = IngredientDataCompleteParams(
+                            tkMarket = sessionInfo.market.orEmpty(),
+                            deviceIP = resourceManager.deviceIp,
+                            parent = parentCode,
+                            matnr = parentCode,
+                            fact = weight,
+                            personnelNumber = sessionInfo.personnelNumber.orEmpty()
+                    )
+            )
+            result.also {
+                navigator.hideProgress()
+            }.either(::handleFailure) {
+                navigator.goBack()
             }
         }
     }
@@ -111,6 +107,10 @@ class IngredientDetailsViewModel : CoreViewModel() {
         navigator.showNotSavedDataWillBeLost {
             navigator.goBack()
         }
+    }
+
+    fun onClickOrders() {
+
     }
 
     companion object {

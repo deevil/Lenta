@@ -1,4 +1,4 @@
-package com.lenta.bp16.features.order_ingredients_list
+package com.lenta.bp16.features.material_remake_list
 
 import android.os.Bundle
 import android.view.View
@@ -6,7 +6,7 @@ import androidx.core.os.bundleOf
 import androidx.lifecycle.lifecycleScope
 import com.lenta.bp16.BR
 import com.lenta.bp16.R
-import com.lenta.bp16.databinding.FragmentIngredientsByOrderBinding
+import com.lenta.bp16.databinding.FragmentRemakesByMaterialBinding
 import com.lenta.bp16.databinding.ItemOrderIngredientBinding
 import com.lenta.bp16.model.ingredients.IngredientInfo
 import com.lenta.bp16.platform.extention.getAppComponent
@@ -17,55 +17,50 @@ import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
 import com.lenta.shared.utilities.extentions.provideViewModel
 import com.lenta.shared.utilities.extentions.unsafeLazy
-import com.lenta.shared.utilities.state.state
 
-class OrderIngredientsListFragment : CoreFragment<FragmentIngredientsByOrderBinding,
-        OrderIngredientsListViewModel>(), OnBackPresserListener {
+class MaterialRemakesListFragment : CoreFragment<FragmentRemakesByMaterialBinding,
+        MaterialRemakesListViewModel>(), OnBackPresserListener {
 
     // выбранный ранее ингредиент
     private val ingredientInfo: IngredientInfo by unsafeLazy {
-        arguments?.getParcelable<IngredientInfo>(KEY_INGREDIENT)
-                ?: throw IllegalArgumentException("There is no argument value with key $KEY_INGREDIENT")
-    }
-
-    // Вес, количество ингредиентов
-    var weight: String by state("")
-
-    init {
-        lifecycleScope.launchWhenResumed {
-            vm.loadOrderIngredientsList()
-        }
+        arguments?.getParcelable<IngredientInfo>(KEY_INGREDIENT_BY_MATERIAL)
+                ?: throw IllegalArgumentException("There is no argument value with key $KEY_INGREDIENT_BY_MATERIAL")
     }
 
     override fun getLayoutId(): Int {
-        return R.layout.fragment_ingredients_by_order
+        return R.layout.fragment_remakes_by_material
     }
 
     override fun getPageNumber(): String? {
         return SCREEN_NUMBER
     }
 
-    override fun getViewModel(): OrderIngredientsListViewModel {
-        provideViewModel(OrderIngredientsListViewModel::class.java).let {
+    override fun getViewModel(): MaterialRemakesListViewModel {
+        provideViewModel(MaterialRemakesListViewModel::class.java).let {
             getAppComponent()?.inject(it)
-            it.weight = weight
             it.ingredient.value = ingredientInfo
             return it
         }
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        initRvConfig()
+    init {
+        lifecycleScope.launchWhenResumed {
+            vm.loadMaterialIngredients()
+        }
     }
 
     override fun setupTopToolBar(topToolbarUiModel: TopToolbarUiModel) {
-        topToolbarUiModel.title.value = ingredientInfo.text3.orEmpty()
-        topToolbarUiModel.description.value = getString(R.string.desc_order_ingredients_list_by, weight)
+        topToolbarUiModel.title.value = "${ingredientInfo.code.orEmpty()} ${ingredientInfo.nameMatnrOsn}"
+        topToolbarUiModel.description.value = getString(R.string.desc_remakes_list)
     }
 
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
         bottomToolbarUiModel.uiModelButton1.show(ButtonDecorationInfo.back)
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        initRvConfig()
     }
 
     override fun onBackPressed(): Boolean {
@@ -76,13 +71,13 @@ class OrderIngredientsListFragment : CoreFragment<FragmentIngredientsByOrderBind
     private fun initRvConfig() {
         binding?.let { layoutBinding ->
             layoutBinding.rvConfig = initRecycleAdapterDataBinding<ItemOrderIngredientBinding>(
-                    layoutId = R.layout.item_order_ingredient,
+                    layoutId = R.layout.item_material_ingredient,
                     itemId = BR.item
             )
 
             recyclerViewKeyHandler = initRecyclerViewKeyHandler(
                     recyclerView = layoutBinding.rv,
-                    items = vm.orderIngredientsList,
+                    items = vm.materialIngredients,
                     previousPosInfo = recyclerViewKeyHandler?.posInfo?.value,
                     onClickHandler = vm::onClickItemPosition
             )
@@ -90,15 +85,13 @@ class OrderIngredientsListFragment : CoreFragment<FragmentIngredientsByOrderBind
     }
 
     companion object {
-        private const val SCREEN_NUMBER = "16/87"
-        private const val KEY_INGREDIENT = "KEY_INGREDIENT"
+        private const val SCREEN_NUMBER = "16/89"
+        private const val KEY_INGREDIENT_BY_MATERIAL = "KEY_INGREDIENT_BY_MATERIAL"
 
         fun newInstance(
-                weightCount: String,
                 selectedIngredient: IngredientInfo
-        ) = OrderIngredientsListFragment().apply {
-            weight = weightCount
-            arguments = bundleOf(KEY_INGREDIENT to selectedIngredient)
+        ) = MaterialRemakesListFragment().apply {
+            arguments = bundleOf(KEY_INGREDIENT_BY_MATERIAL to selectedIngredient)
         }
     }
 }

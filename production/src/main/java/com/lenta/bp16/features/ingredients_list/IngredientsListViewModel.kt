@@ -1,24 +1,23 @@
 package com.lenta.bp16.features.ingredients_list
 
-import android.content.Context
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.switchMap
 import com.lenta.bp16.features.ingredients_list.IngredientsListFragment.Companion.TAB_BY_MATERIALS
 import com.lenta.bp16.features.ingredients_list.IngredientsListFragment.Companion.TAB_BY_ORDER
+import com.lenta.bp16.model.ingredients.IngredientInfo
 import com.lenta.bp16.model.ingredients.params.GetIngredientsParams
-import com.lenta.bp16.model.ingredients.ui.ItemIngredientUi
 import com.lenta.bp16.model.ingredients.params.WarehouseParam
+import com.lenta.bp16.model.ingredients.ui.ItemIngredientUi
 import com.lenta.bp16.model.warehouse.IWarehousePersistStorage
 import com.lenta.bp16.platform.extention.getIngredientStatus
 import com.lenta.bp16.platform.navigation.IScreenNavigator
+import com.lenta.bp16.platform.resource.IResourceManager
 import com.lenta.bp16.request.GetIngredientsNetRequest
-import com.lenta.bp16.model.ingredients.IngredientInfo
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
 import com.lenta.shared.utilities.databinding.PageSelectionListener
 import com.lenta.shared.utilities.extentions.asyncLiveData
-import com.lenta.shared.utilities.extentions.getDeviceIp
 import com.lenta.shared.utilities.extentions.launchUITryCatch
 import com.lenta.shared.utilities.extentions.unsafeLazy
 import javax.inject.Inject
@@ -29,6 +28,9 @@ class IngredientsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInS
     lateinit var navigator: IScreenNavigator
 
     @Inject
+    lateinit var resourceManager: IResourceManager
+
+    @Inject
     lateinit var sessionInfo: ISessionInfo
 
     @Inject
@@ -36,9 +38,6 @@ class IngredientsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInS
 
     @Inject
     lateinit var getIngredientsRequest: GetIngredientsNetRequest
-
-    @Inject
-    lateinit var context: Context
 
     val selectedPage by unsafeLazy { MutableLiveData(0) }
     val numberField by unsafeLazy { MutableLiveData<String>("") }
@@ -64,17 +63,13 @@ class IngredientsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInS
         }
     }
 
-    init {
-        loadIngredients()
-    }
-
-    private fun loadIngredients() {
+    fun loadIngredients() {
         launchUITryCatch {
             navigator.showProgressLoadingData()
             getIngredientsRequest(
                     GetIngredientsParams(
                             tkMarket = sessionInfo.market.orEmpty(),
-                            deviceIP = context.getDeviceIp(),
+                            deviceIP = resourceManager.deviceIp,
                             workhousesList = warehouseStorage.getSelectedWarehouses().map { WarehouseParam(it) }
                     )
             ).also {
@@ -120,8 +115,12 @@ class IngredientsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInS
                 TAB_BY_MATERIALS -> ingredientsByMaterial.value?.get(position)
                 else -> null
             }?.let { ingredientUI ->
-                allIngredients.value?.find { it.code == ingredientUI.code }?.let {
-                    navigator.openOrderDetailsScreen(it)
+                allIngredients.value?.find { it.code == ingredientUI.code }?.let { selectedIngredient ->
+                    if (selectedIngredient.isByOrder) {
+                        navigator.openOrderDetailsScreen(selectedIngredient)
+                    } else {
+                        navigator.openMaterialRemakesScreen(selectedIngredient)
+                    }
                 }
             }
         }

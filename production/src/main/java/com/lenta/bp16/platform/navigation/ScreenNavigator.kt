@@ -17,6 +17,8 @@ import com.lenta.bp16.features.processing_unit_list.ProcessingUnitListFragment
 import com.lenta.bp16.features.ingredients_list.IngredientsListFragment
 import com.lenta.bp16.features.loading.fast.FastDataLoadingFragment
 import com.lenta.bp16.features.main_menu.MainMenuFragment
+import com.lenta.bp16.features.material_remake_details.MaterialRemakeDetailsFragment
+import com.lenta.bp16.features.material_remake_list.MaterialRemakesListFragment
 import com.lenta.bp16.features.order_details.OrderDetailsFragment
 import com.lenta.bp16.features.order_ingredients_list.OrderIngredientsListFragment
 import com.lenta.bp16.features.pack_good_list.PackGoodListFragment
@@ -30,6 +32,7 @@ import com.lenta.bp16.features.select_personnel_number.SelectPersonnelNumberFrag
 import com.lenta.bp16.platform.Constants
 import com.lenta.bp16.features.warehouse_selection.WarehouseSelectionFragment
 import com.lenta.bp16.model.ingredients.IngredientInfo
+import com.lenta.bp16.model.ingredients.MaterialIngredientDataInfo
 import com.lenta.bp16.model.ingredients.OrderIngredientDataInfo
 import com.lenta.shared.account.IAuthenticator
 import com.lenta.shared.features.alert.AlertFragment
@@ -197,10 +200,17 @@ class ScreenNavigator @Inject constructor(
         getFragmentStack()?.push(OrderIngredientsListFragment.newInstance(weight, selectedIngredient))
     }
 
-    override fun openIngredientDetailsScreen(selectedIngredient: OrderIngredientDataInfo) {
-        getFragmentStack()?.push(IngredientDetailsFragment.newInstance(selectedIngredient))
+    override fun openIngredientDetailsScreen(selectedIngredient: OrderIngredientDataInfo, parentCode: String) {
+        getFragmentStack()?.push(IngredientDetailsFragment.newInstance(selectedIngredient, parentCode))
     }
 
+    override fun openMaterialRemakesScreen(selectedIngredient: IngredientInfo) {
+        getFragmentStack()?.push(MaterialRemakesListFragment.newInstance(selectedIngredient))
+    }
+
+    override fun openMaterialRemakeDetailsScreen(selectedMaterial: MaterialIngredientDataInfo, parentCode: String, parentName: String) {
+        getFragmentStack()?.push(MaterialRemakeDetailsFragment.newInstance(selectedMaterial, parentCode, parentName))
+    }
 
     // Информационные экраны
     override fun showDefrostingPhaseIsCompleted(nextCallback: () -> Unit) {
@@ -372,8 +382,10 @@ interface IScreenNavigator : ICoreNavigator {
     fun openSelectGoodScreen()
     fun openIngredientsListScreen()
     fun openOrderDetailsScreen(selectedIngredient: IngredientInfo)
-    fun openIngredientDetailsScreen(selectedIngredient: OrderIngredientDataInfo)
+    fun openIngredientDetailsScreen(selectedIngredient: OrderIngredientDataInfo, parentCode: String)
     fun openOrderIngredientsListScreen(weight: String, selectedIngredient: IngredientInfo)
+    fun openMaterialRemakesScreen(selectedIngredient: IngredientInfo)
+    fun openMaterialRemakeDetailsScreen(selectedMaterial: MaterialIngredientDataInfo, parentCode: String, parentName: String)
 
     fun showDefrostingPhaseIsCompleted(nextCallback: () -> Unit)
     fun showFixStartNextStageSuccessful(nextCallback: () -> Unit)
@@ -387,4 +399,5 @@ interface IScreenNavigator : ICoreNavigator {
     fun showLabelSentToPrint(nextCallback: () -> Unit)
     fun showAlertPartNotFound()
     fun showAlertWeightNotSet()
+
 }

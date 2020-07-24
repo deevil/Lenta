@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.lifecycleScope
 import com.lenta.bp16.BR
 import com.lenta.bp16.R
 import com.lenta.bp16.databinding.*
@@ -37,6 +38,12 @@ class IngredientsListFragment :
         provideViewModel(IngredientsListViewModel::class.java).let {
             getAppComponent()?.inject(it)
             return it
+        }
+    }
+
+    init {
+        lifecycleScope.launchWhenResumed {
+            vm.loadIngredients()
         }
     }
 

@@ -11,7 +11,12 @@ fun IngredientInfo.isBlocked(): Boolean {
 }
 
 fun IngredientInfo.getModeType(): String {
-    return if(isBlocked()) IngredientInfo.MODE_RE_BLOCK_DATA else IngredientInfo.MODE_BLOCK_DATA
+    return if (isByOrder) {
+        if (isBlocked()) IngredientInfo.MODE_ORDER_RE_BLOCK_DATA else IngredientInfo.MODE_ORDER_BLOCK_DATA
+    } else {
+        if (isBlocked()) IngredientInfo.MODE_MATERIAL_RE_BLOCK_DATA else IngredientInfo.MODE_MATERIAL_BLOCK_DATA
+    }
+
 }
 
 fun IngredientInfo.getIngredientStatus(): IngredientStatus {

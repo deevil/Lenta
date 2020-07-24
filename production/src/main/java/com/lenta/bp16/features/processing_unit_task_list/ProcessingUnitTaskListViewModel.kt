@@ -18,10 +18,7 @@ import com.lenta.shared.exception.Failure
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
 import com.lenta.shared.utilities.databinding.PageSelectionListener
-import com.lenta.shared.utilities.extentions.combineLatest
-import com.lenta.shared.utilities.extentions.dropZeros
-import com.lenta.shared.utilities.extentions.isSapTrue
-import com.lenta.shared.utilities.extentions.map
+import com.lenta.shared.utilities.extentions.*
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -52,7 +49,7 @@ class ProcessingUnitTaskListViewModel : CoreViewModel(), PageSelectionListener, 
         }
     }
 
-    val title by lazy {
+    val title by unsafeLazy {
         "ТК - ${sessionInfo.market}"
     }
 
