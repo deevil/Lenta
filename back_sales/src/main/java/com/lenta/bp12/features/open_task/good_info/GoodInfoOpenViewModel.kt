@@ -25,6 +25,7 @@ import com.lenta.shared.requests.combined.scan_info.ScanCodeInfo
 import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.extentions.*
 import com.lenta.shared.utilities.getDateFromString
+import com.lenta.shared.utilities.getFormattedDate
 import com.lenta.shared.utilities.isCommonFormatNumber
 import com.lenta.shared.view.OnPositionClickListener
 import kotlinx.coroutines.launch
@@ -368,7 +369,7 @@ class GoodInfoOpenViewModel : CoreViewModel() {
     }
 
     private fun setScreenStatus(good: GoodOpen) {
-        good.apply {
+        with(good) {
             screenStatus.value = if (isCounted) {
                 ScreenStatus.COUNTED
             } else {
@@ -572,6 +573,8 @@ class GoodInfoOpenViewModel : CoreViewModel() {
         isExistUnsavedData = true
         scanInfoResult.value = scanInfo
         quantityField.value = scanInfo.marks.size.toString()
+        date.value = getFormattedDate(scanInfo.producedDate, Constants.DATE_FORMAT_yyyy_mm_dd, Constants.DATE_FORMAT_dd_mm_yyyy)
+        updateProducers(scanInfo.producers.toMutableList())
     }
 
     private suspend fun checkPart(): Either<Failure, ScanInfoResult> {
@@ -636,7 +639,6 @@ class GoodInfoOpenViewModel : CoreViewModel() {
             changedGood.isCounted = true
             val mark = Mark(
                     number = lastSuccessSearchNumber.value.orEmpty(),
-                    material = changedGood.material,
                     isBadMark = scanInfoResult.value?.status == MarkStatus.BAD.code,
                     providerCode = changedGood.provider.code
             )
@@ -672,9 +674,7 @@ class GoodInfoOpenViewModel : CoreViewModel() {
                 marks.forEach { mark ->
                     val markFromBox = Mark(
                             number = mark.number,
-                            material = changedGood.material,
                             boxNumber = lastSuccessSearchNumber.value.orEmpty(),
-                            isBadMark = mark.isBadMark.isNotEmpty(),
                             providerCode = changedGood.provider.code
                     )
                     Logg.d { "--> add mark from box = $markFromBox" }
