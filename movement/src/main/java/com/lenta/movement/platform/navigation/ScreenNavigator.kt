@@ -233,7 +233,7 @@ class ScreenNavigator(
                             iconRes = R.drawable.ic_info_green_80dp,
                             pageNumber = BOX_SAVED_DIALOG_PAGE_NUMBER,
                             leftButtonDecorationInfo = ButtonDecorationInfo.empty,
-                            timeAutoExitInMillis = 2000
+                            timeAutoExitInMillis = TWO_SECONDS_IN_MILLI
                     )
             )
         }
@@ -398,8 +398,7 @@ class ScreenNavigator(
 
 
     companion object {
-        private const val TWO_SECONDS_IN_MILLI = 2000L
-        private const val TASK_TO_MOVE = "Задания на перемещение"
+        private const val TWO_SECONDS_IN_MILLI = 2000
         private const val ZERO_SELECTED_EO_PAGE_NUMBER = "02"
         private const val SAVE_TASK_CONFIRM_DIALOG_PAGE_NUMBER = "06"
         private const val BOX_SAVED_DIALOG_PAGE_NUMBER = "02"
