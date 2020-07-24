@@ -1,8 +1,7 @@
 package com.lenta.bp9
 
+import org.junit.Assert.assertEquals
 import org.junit.Test
-
-import org.junit.Assert.*
 
 /**
  * Example local unit Testddi, which will execute on the development machine (host).

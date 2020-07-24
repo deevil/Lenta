@@ -1,9 +1,9 @@
 package com.lenta.bp10.di
 
 import android.content.Context
+import app_update.AppUpdateInstaller
 import app_update.AppUpdaterConfig
 import app_update.AppUpdaterInstallerFromFmp
-import app_update.AppUpdateInstaller
 import com.google.gson.Gson
 import com.lenta.bp10.BuildConfig.APPLICATION_ID
 import com.lenta.bp10.features.good_information.GoodInformationRepo

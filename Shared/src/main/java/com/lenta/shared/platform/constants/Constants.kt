@@ -6,6 +6,8 @@ object Constants {
 
     val DB_PATH = "${Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS).absolutePath}/FMP/db"
 
+    const val ONE_MINUTE_TIMEOUT = 60
+
     //---------Time formats---------//
     const val TIME_FORMAT_HHmm = "HH:mm"
     const val TIME_FORMAT_mmss = "mm:ss"

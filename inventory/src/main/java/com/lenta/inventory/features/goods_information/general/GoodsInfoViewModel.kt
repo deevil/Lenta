@@ -10,10 +10,10 @@ import com.lenta.inventory.platform.navigation.IScreenNavigator
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.requests.combined.scan_info.ScanInfoResult
 import com.lenta.shared.utilities.extentions.combineLatest
+import com.lenta.shared.utilities.extentions.launchUITryCatch
 import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.utilities.extentions.toStringFormatted
 import com.lenta.shared.view.OnPositionClickListener
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class GoodsInfoViewModel : CoreViewModel(), OnPositionClickListener {
@@ -53,7 +53,7 @@ class GoodsInfoViewModel : CoreViewModel(), OnPositionClickListener {
     }
 
     init {
-        viewModelScope.launch {
+        launchUITryCatch {
             suffix.value = productInfo.value?.uom?.name
             storePlaceNumber.value = productInfo.value?.placeCode
             searchProductDelegate.init(viewModelScope = this@GoodsInfoViewModel::viewModelScope,

@@ -10,7 +10,10 @@ import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import com.lenta.bp9.BR
 import com.lenta.bp9.R
-import com.lenta.bp9.databinding.*
+import com.lenta.bp9.databinding.FragmentNonExciseSetsReceivingBinding
+import com.lenta.bp9.databinding.ItemTileNonExciseSetsComponentsBinding
+import com.lenta.bp9.databinding.LayoutNonExciseSetsComponentsReceivingBinding
+import com.lenta.bp9.databinding.LayoutNonExciseSetsCountedReceivingBinding
 import com.lenta.bp9.model.task.TaskProductInfo
 import com.lenta.bp9.platform.extentions.getAppComponent
 import com.lenta.shared.platform.activity.OnBackPresserListener

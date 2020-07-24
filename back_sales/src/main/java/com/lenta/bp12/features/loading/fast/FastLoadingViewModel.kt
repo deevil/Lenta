@@ -1,7 +1,6 @@
 package com.lenta.bp12.features.loading.fast
 
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
 import com.lenta.bp12.platform.navigation.IScreenNavigator
 import com.lenta.bp12.repository.IDatabaseRepository
 import com.lenta.bp12.request.FastResourcesMultiRequest
@@ -10,7 +9,7 @@ import com.lenta.shared.exception.IFailureInterpreter
 import com.lenta.shared.features.loading.CoreLoadingViewModel
 import com.lenta.shared.platform.app_update.AppUpdateChecker
 import com.lenta.shared.requests.network.Auth
-import kotlinx.coroutines.launch
+import com.lenta.shared.utilities.extentions.launchUITryCatch
 import javax.inject.Inject
 
 class FastLoadingViewModel : CoreLoadingViewModel() {
@@ -35,7 +34,7 @@ class FastLoadingViewModel : CoreLoadingViewModel() {
     override val sizeInMb: MutableLiveData<Float> = MutableLiveData()
 
     init {
-        viewModelScope.launch {
+        launchUITryCatch {
             progress.value = true
             fastResourcesNetRequest(null).either(::handleFailure, ::handleSuccess)
             progress.value = false
@@ -48,7 +47,7 @@ class FastLoadingViewModel : CoreLoadingViewModel() {
     }
 
     private fun handleSuccess(notUsed: Boolean) {
-        viewModelScope.launch {
+        launchUITryCatch {
             if (appUpdateChecker.isNeedUpdate(repository.getAllowedAppVersion())) {
                 auth.cancelAuthorization()
                 navigator.closeAllScreen()

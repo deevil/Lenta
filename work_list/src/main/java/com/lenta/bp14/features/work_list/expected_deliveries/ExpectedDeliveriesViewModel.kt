@@ -1,7 +1,6 @@
 package com.lenta.bp14.features.work_list.expected_deliveries
 
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
 import com.lenta.bp14.models.work_list.Delivery
 import com.lenta.bp14.models.work_list.IWorkListTask
 import com.lenta.bp14.platform.navigation.IScreenNavigator
@@ -13,9 +12,7 @@ import com.lenta.shared.exception.Failure
 import com.lenta.shared.platform.constants.Constants
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.Logg
-import com.lenta.shared.utilities.date_time.DateTimeUtil
 import com.lenta.shared.utilities.extentions.*
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class ExpectedDeliveriesViewModel : CoreViewModel() {
@@ -51,15 +48,15 @@ class ExpectedDeliveriesViewModel : CoreViewModel() {
     }
 
     init {
-        viewModelScope.launch {
+        launchUITryCatch {
             title.value = task.currentGood.value?.getFormattedMaterialWithName()
             onClickUpdate()
         }
     }
 
     fun onClickUpdate() {
-        viewModelScope.launch {
-            navigator.showProgressLoadingData()
+        launchUITryCatch {
+            navigator.showProgressLoadingData(::handleFailure)
             expectedDeliveriesNetRequest(
                     ExpectedDeliveriesParams(
                             tkNumber = sessionInfo.market.orEmpty(),
@@ -77,7 +74,7 @@ class ExpectedDeliveriesViewModel : CoreViewModel() {
 
     private fun updateDeliveries(result: ExpectedDeliveriesResult) {
         Logg.d { "ExpectedDeliveriesResult: $result" }
-        viewModelScope.launch {
+        launchUITryCatch {
             task.currentGood.value?.deliveries?.value = result.deliveries.map { delivery ->
                 Delivery(
                         status = delivery.status,

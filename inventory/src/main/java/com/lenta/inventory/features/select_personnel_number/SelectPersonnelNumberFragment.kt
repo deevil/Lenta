@@ -1,6 +1,5 @@
 package com.lenta.inventory.features.select_personnel_number
 
-import android.os.Bundle
 import android.view.View
 import androidx.lifecycle.Observer
 import com.lenta.inventory.R

@@ -7,7 +7,6 @@ import com.lenta.shared.models.core.Uom
 import com.mobrun.plugin.api.HyperHive
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import javax.inject.Inject
 
 //ET_DOC_MATNR_CHK - Таблица для сверки документов поставки
 data class DeliveryProductDocumentRevise(

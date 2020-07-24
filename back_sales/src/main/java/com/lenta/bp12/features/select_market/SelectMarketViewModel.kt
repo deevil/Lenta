@@ -1,8 +1,6 @@
 package com.lenta.bp12.features.select_market
 
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
-
 import com.lenta.bp12.platform.navigation.IScreenNavigator
 import com.lenta.bp12.repository.IRepoInMemoryHolder
 import com.lenta.shared.account.ISessionInfo
@@ -14,9 +12,9 @@ import com.lenta.shared.requests.network.ServerTime
 import com.lenta.shared.requests.network.ServerTimeRequest
 import com.lenta.shared.requests.network.ServerTimeRequestParam
 import com.lenta.shared.settings.IAppSettings
+import com.lenta.shared.utilities.extentions.launchUITryCatch
 import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.view.OnPositionClickListener
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class SelectMarketViewModel : CoreViewModel(), OnPositionClickListener {
@@ -54,7 +52,13 @@ class SelectMarketViewModel : CoreViewModel(), OnPositionClickListener {
     // -----------------------------
 
     init {
-        viewModelScope.launch {
+        takeSelectedPositionForAction()
+    }
+
+    // -----------------------------
+
+    private fun takeSelectedPositionForAction() {
+        launchUITryCatch {
             repoInMemoryHolder.storesRequestResult?.marketInfos?.let { list ->
                 markets.value = list.map {
                     MarketUi(number = it.tkNumber, address = it.address)
@@ -79,10 +83,8 @@ class SelectMarketViewModel : CoreViewModel(), OnPositionClickListener {
         }
     }
 
-    // -----------------------------
-
     fun onClickNext() {
-        viewModelScope.launch {
+        launchUITryCatch {
             markets.value?.getOrNull(selectedPosition.value ?: -1)?.number?.let { tkNumber ->
                 if (appSettings.lastTK != tkNumber) {
                     printerManager.setDefaultPrinterForTk(tkNumber)

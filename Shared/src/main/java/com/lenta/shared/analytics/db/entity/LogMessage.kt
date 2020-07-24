@@ -1,6 +1,8 @@
 package com.lenta.shared.analytics.db.entity
 
-import androidx.room.*
+import androidx.room.ColumnInfo
+import androidx.room.Entity
+import androidx.room.TypeConverters
 import com.lenta.shared.analytics.db.converters.Converters
 import java.util.*
 

@@ -1,7 +1,6 @@
 package com.lenta.bp14.features.check_list.ean_scanner
 
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
 import com.lenta.bp14.ml.CheckStatus
 import com.lenta.bp14.models.check_list.GoodRequestResult
 import com.lenta.bp14.models.check_list.ICheckListTask
@@ -10,7 +9,7 @@ import com.lenta.bp14.platform.IVibrateHelper
 import com.lenta.shared.platform.sound.ISoundPlayer
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.Logg
-import kotlinx.coroutines.launch
+import com.lenta.shared.utilities.extentions.launchUITryCatch
 import javax.inject.Inject
 
 class EanVideoScannerViewModel : CoreViewModel() {
@@ -34,7 +33,7 @@ class EanVideoScannerViewModel : CoreViewModel() {
 
     fun checkStatus(rawCode: String): CheckStatus? {
         Logg.d { "rawCode: $rawCode" }
-        viewModelScope.launch {
+        launchUITryCatch {
             goodRequestResult = task.getGoodRequestResult(rawCode)
         }
 

@@ -1,7 +1,6 @@
 package com.lenta.movement.fmp.resources.fast;
 
 import com.google.gson.annotations.SerializedName;
-import com.lenta.movement.models.MovementType;
 import com.lenta.movement.models.TaskType;
 import com.mobrun.plugin.api.HyperHive;
 import com.mobrun.plugin.api.helper.LocalTableResourceHelper;

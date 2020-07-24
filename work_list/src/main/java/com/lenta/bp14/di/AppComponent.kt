@@ -9,10 +9,10 @@ import com.lenta.bp14.features.loading.fast.FastLoadingViewModel
 import com.lenta.bp14.features.main_menu.MainMenuViewModel
 import com.lenta.bp14.features.print_settings.PrintSettingsViewModel
 import com.lenta.bp14.features.report_result.ReportResultViewModel
+import com.lenta.bp14.features.search_filter.SearchFilterViewModel
 import com.lenta.bp14.features.select_market.SelectMarketViewModel
 import com.lenta.bp14.features.task_list.TaskListViewModel
 import com.lenta.bp14.features.task_list.search_filter.SearchFilterTlViewModel
-import com.lenta.bp14.features.search_filter.SearchFilterViewModel
 import com.lenta.bp14.main.MainActivity
 import com.lenta.bp14.main.MainViewModel
 import com.lenta.bp14.models.IGeneralTaskManager

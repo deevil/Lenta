@@ -10,7 +10,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.io.BufferedReader
 import java.io.InputStreamReader
-import java.lang.Exception
 import java.nio.charset.StandardCharsets
 import java.util.*
 import javax.inject.Inject

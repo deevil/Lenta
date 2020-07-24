@@ -23,6 +23,7 @@ package com.lenta.shared.exception
  */
 sealed class Failure {
     object NetworkConnection : Failure()
+    object TimeOutError : Failure()
     object WeighingError : Failure()
     object ServerError : Failure()
     object AuthError : Failure()

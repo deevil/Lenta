@@ -1,7 +1,6 @@
 package com.lenta.movement.features.task.basket
 
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
 import com.lenta.movement.features.main.box.ScanInfoHelper
 import com.lenta.movement.models.ITaskManager
 import com.lenta.movement.models.ProductInfo
@@ -13,6 +12,9 @@ import com.lenta.movement.platform.navigation.IScreenNavigator
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.SelectionItemsHelper
 import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
+import com.lenta.shared.utilities.extentions.launchUITryCatch
+import com.lenta.shared.utilities.extentions.map
+import com.lenta.shared.utilities.extentions.mapSkipNulls
 import com.lenta.shared.utilities.extentions.*
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -119,7 +121,7 @@ class TaskBasketViewModel() : CoreViewModel(),
     }
 
     private fun searchCode(code: String, fromScan: Boolean, isBarCode: Boolean? = null) {
-        viewModelScope.launch {
+        launchUITryCatch {
             scanInfoHelper.searchCode(code, fromScan, isBarCode) { productInfo ->
                 // TODO
             }

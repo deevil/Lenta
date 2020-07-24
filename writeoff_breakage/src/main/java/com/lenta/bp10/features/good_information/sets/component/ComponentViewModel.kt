@@ -15,9 +15,9 @@ import com.lenta.bp10.models.task.WriteOffReason
 import com.lenta.shared.models.core.ProductType
 import com.lenta.shared.requests.combined.scan_info.ScanInfoResult
 import com.lenta.shared.utilities.extentions.combineLatest
+import com.lenta.shared.utilities.extentions.launchUITryCatch
 import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.utilities.extentions.toStringFormatted
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class ComponentViewModel : BaseProductInfoViewModel() {
@@ -57,7 +57,7 @@ class ComponentViewModel : BaseProductInfoViewModel() {
     }
 
     init {
-        viewModelScope.launch {
+        launchUITryCatch {
             exciseAlcoDelegate.init(
                     viewModelScope = this@ComponentViewModel::viewModelScope,
                     handleNewStamp = this@ComponentViewModel::handleNewStamp,

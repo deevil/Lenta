@@ -1,17 +1,13 @@
 package com.lenta.shared.features.printer_change
 
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
-import com.lenta.shared.account.ISessionInfo
-import com.lenta.shared.fmp.resources.fast.ZmpUtz26V001
-import com.lenta.shared.requests.db.PrinterChangeDBRequest
 import com.lenta.shared.exception.Failure
+import com.lenta.shared.fmp.resources.fast.ZmpUtz26V001
 import com.lenta.shared.platform.navigation.ICoreNavigator
 import com.lenta.shared.platform.viewmodel.CoreViewModel
-import com.lenta.shared.settings.IAppSettings
+import com.lenta.shared.utilities.extentions.launchUITryCatch
 import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.view.OnPositionClickListener
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class PrinterChangeViewModel : CoreViewModel(), OnPositionClickListener {
@@ -40,13 +36,13 @@ class PrinterChangeViewModel : CoreViewModel(), OnPositionClickListener {
     }
 
     init {
-        viewModelScope.launch {
+        launchUITryCatch {
             handlePrinters(printerManager.getAllPrinters())
         }
     }
 
     private fun handlePrinters(list: List<ZmpUtz26V001.ItemLocal_ET_PRINTERS>) {
-        viewModelScope.launch {
+        launchUITryCatch {
             printers.value = list.mapIndexed { index, printerInfo ->
                 PrinterUi(
                         number = "${index + 1}",
@@ -80,7 +76,7 @@ class PrinterChangeViewModel : CoreViewModel(), OnPositionClickListener {
 
 
     fun onClickApply() {
-        viewModelScope.launch {
+        launchUITryCatch {
             printers.value?.getOrNull(selectedPosition.value!!).let {
                 printerManager.setPrinter(it?.number?.toIntOrNull())
                 screenNavigator.goBack()

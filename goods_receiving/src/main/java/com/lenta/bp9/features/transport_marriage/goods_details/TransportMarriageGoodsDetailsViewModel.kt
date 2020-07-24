@@ -1,13 +1,12 @@
 package com.lenta.bp9.features.transport_marriage.goods_details
 
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
 import com.lenta.bp9.features.goods_details.GoodsDetailsCategoriesItem
 import com.lenta.bp9.model.task.IReceivingTaskManager
 import com.lenta.bp9.repos.IDataBaseRepo
 import com.lenta.shared.platform.viewmodel.CoreViewModel
+import com.lenta.shared.utilities.extentions.launchUITryCatch
 import com.lenta.shared.utilities.extentions.toStringFormatted
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class TransportMarriageGoodsDetailsViewModel : CoreViewModel() {
@@ -34,7 +33,7 @@ class TransportMarriageGoodsDetailsViewModel : CoreViewModel() {
     }
 
     init {
-        viewModelScope.launch {
+        launchUITryCatch {
             dataBase.getQualityInfoTransportMarriage()?.map {
                 discrepanciesName.value = it.name
                 return@map

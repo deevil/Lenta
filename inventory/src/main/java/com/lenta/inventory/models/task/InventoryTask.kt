@@ -2,7 +2,10 @@ package com.lenta.inventory.models.task
 
 import com.lenta.inventory.models.RecountType
 import com.lenta.inventory.models.repositories.ITaskRepository
-import com.lenta.inventory.requests.network.*
+import com.lenta.inventory.requests.network.ExciseStampInfo
+import com.lenta.inventory.requests.network.InventoryReport
+import com.lenta.inventory.requests.network.MaterialNumber
+import com.lenta.inventory.requests.network.UntiedProduct
 import com.lenta.shared.utilities.date_time.DateTimeUtil.convertMillisecondsToHHMm
 
 class InventoryTask(val taskDescription: TaskDescription, val taskRepository: ITaskRepository) {

@@ -1,13 +1,11 @@
 package com.lenta.bp14.features.not_exposed.good_info
 
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
 import com.lenta.bp14.features.work_list.good_info.ItemStockUi
 import com.lenta.bp14.models.check_price.IPriceInfoParser
 import com.lenta.bp14.models.data.GoodType
 import com.lenta.bp14.models.data.getGoodType
 import com.lenta.bp14.models.not_exposed.INotExposedTask
-import com.lenta.shared.utilities.extentions.getQuantity
 import com.lenta.bp14.platform.navigation.IScreenNavigator
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.fmp.resources.dao_ext.getMaxPositionsProdWkl
@@ -22,7 +20,6 @@ import com.lenta.shared.requests.combined.scan_info.analyseCode
 import com.lenta.shared.utilities.databinding.PageSelectionListener
 import com.lenta.shared.utilities.extentions.*
 import com.mobrun.plugin.api.HyperHive
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class GoodInfoNeViewModel : CoreViewModel(), PageSelectionListener {
@@ -206,8 +203,8 @@ class GoodInfoNeViewModel : CoreViewModel(), PageSelectionListener {
     }
 
     private fun searchCode(code: String) {
-        viewModelScope.launch {
-            navigator.showProgressLoadingData()
+        launchUITryCatch {
+            navigator.showProgressLoadingData(::handleFailure)
 
             scanInfoRequest(
                     ScanInfoRequestParams(
@@ -232,9 +229,9 @@ class GoodInfoNeViewModel : CoreViewModel(), PageSelectionListener {
                     }
                 } else {
                     if (applyButtonEnabled.value == true) {
-                        viewModelScope.launch {
+                        launchUITryCatch {
                             if (task.isAllowedProduct(scanInfoResult.productInfo.materialNumber)) {
-                                navigator.showProgressLoadingData()
+                                navigator.showProgressLoadingData(::handleFailure)
                                 task.setCheckInfo(
                                         quantity = quantityField.value?.toDoubleOrNull() ?: 0.0,
                                         isEmptyPlaceMarked = null

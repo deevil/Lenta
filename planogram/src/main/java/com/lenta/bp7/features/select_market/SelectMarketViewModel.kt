@@ -1,7 +1,6 @@
 package com.lenta.bp7.features.select_market
 
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
 import app_update.AppUpdateInstaller
 import com.lenta.bp7.data.CheckType
 import com.lenta.bp7.data.model.CheckData
@@ -11,7 +10,6 @@ import com.lenta.bp7.repos.IRepoInMemoryHolder
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.exception.IFailureInterpreter
-import com.lenta.shared.fmp.resources.fast.ZmpUtz23V001
 import com.lenta.shared.functional.Either
 import com.lenta.shared.platform.resources.ISharedStringResourceManager
 import com.lenta.shared.platform.time.ITimeMonitor
@@ -22,11 +20,11 @@ import com.lenta.shared.requests.network.ServerTimeRequest
 import com.lenta.shared.requests.network.ServerTimeRequestParam
 import com.lenta.shared.settings.IAppSettings
 import com.lenta.shared.utilities.Logg
+import com.lenta.shared.utilities.extentions.launchUITryCatch
 import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.view.OnPositionClickListener
 import com.mobrun.plugin.api.HyperHive
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
@@ -69,7 +67,7 @@ class SelectMarketViewModel : CoreViewModel(), OnPositionClickListener {
     val title: MutableLiveData<String> = MutableLiveData()
 
     init {
-        viewModelScope.launch {
+        launchUITryCatch {
             database.getAllMarkets().let { list ->
                 markets.value = list
 
@@ -93,8 +91,8 @@ class SelectMarketViewModel : CoreViewModel(), OnPositionClickListener {
     }
 
     fun onClickNext() {
-        viewModelScope.launch {
-            navigator.showProgressLoadingData()
+        launchUITryCatch {
+            navigator.showProgressLoadingData(::handleFailure)
             markets.value?.getOrNull(selectedPosition.value ?: -1)?.number?.let { tkNumber ->
                 if (appSettings.lastTK != tkNumber) {
                     clearPrinters()
@@ -128,7 +126,7 @@ class SelectMarketViewModel : CoreViewModel(), OnPositionClickListener {
     }
 
     private fun getServerTime() {
-        viewModelScope.launch {
+        launchUITryCatch {
             serverTimeRequest(ServerTimeRequestParam(sessionInfo.market
                    .orEmpty())).either(::handleFailure, ::handleSuccessServerTime)
         }
@@ -169,7 +167,7 @@ class SelectMarketViewModel : CoreViewModel(), OnPositionClickListener {
     }
 
     private fun installUpdate(updateFileName: String) {
-        viewModelScope.launch {
+        launchUITryCatch {
             navigator.showProgress(resourceManager.loadingNewAppVersion())
             withContext(Dispatchers.IO) {
                 appUpdateInstaller.installUpdate(updateFileName)

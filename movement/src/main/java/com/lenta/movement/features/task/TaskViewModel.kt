@@ -1,6 +1,9 @@
 package com.lenta.movement.features.task
 
 import android.content.Context
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MediatorLiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.*
 import com.lenta.movement.R
 import com.lenta.movement.exception.EmptyTaskFailure
@@ -29,11 +32,12 @@ import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.databinding.PageSelectionListener
 import com.lenta.shared.utilities.date_time.DateTimeUtil
 import com.lenta.shared.utilities.extentions.*
+import com.lenta.shared.utilities.extentions.getDeviceIp
+import com.lenta.shared.utilities.extentions.launchUITryCatch
 import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.utilities.orIfNull
 import com.lenta.shared.view.OnPositionClickListener
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.joda.time.DateTime
 import java.util.*
@@ -179,7 +183,6 @@ class TaskViewModel : CoreViewModel(), PageSelectionListener {
                 emit(shipmentList)
             }
         }
-
     }
 
     val shipmentStorageSelectedPosition = MutableLiveData(0)
@@ -258,7 +261,7 @@ class TaskViewModel : CoreViewModel(), PageSelectionListener {
     }
 
     private fun startConsolidationRequest() {
-        viewModelScope.launch {
+        launchUITryCatch {
             screenNavigator.showProgress(startConsolidation)
             val either = task.value?.let { taskValue ->
                 sessionInfo.personnelNumber?.let { personnelNumber ->
@@ -290,7 +293,7 @@ class TaskViewModel : CoreViewModel(), PageSelectionListener {
     }
 
     private fun approvalAndTransferToTasksCargoUnitRequest() {
-        viewModelScope.launch {
+        launchUITryCatch {
             screenNavigator.showProgress(approvalAndTransferToTasksCargoUnit)
             val either = task.value?.let { taskValue ->
                 sessionInfo.personnelNumber?.let { personnelNumber ->
@@ -335,7 +338,7 @@ class TaskViewModel : CoreViewModel(), PageSelectionListener {
     }
 
     private fun updateCargoUnitRepository(result: StartConsolidationResult) {
-        viewModelScope.launch {
+        launchUITryCatch {
             withContext(Dispatchers.IO) {
                 val goods = result.taskComposition
                 val eoList = result.eoList
@@ -401,7 +404,6 @@ class TaskViewModel : CoreViewModel(), PageSelectionListener {
                 isCons = false
         )
     }
-
 
     private fun String.toDate(): Date? {
         return try {

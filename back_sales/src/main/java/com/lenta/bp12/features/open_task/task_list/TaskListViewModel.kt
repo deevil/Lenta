@@ -1,7 +1,6 @@
 package com.lenta.bp12.features.open_task.task_list
 
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
 import com.lenta.bp12.model.BlockType
 import com.lenta.bp12.model.IOpenTaskManager
 import com.lenta.bp12.model.TaskSearchMode
@@ -10,6 +9,7 @@ import com.lenta.bp12.platform.navigation.IScreenNavigator
 import com.lenta.bp12.platform.resource.IResourceManager
 import com.lenta.bp12.request.TaskListNetRequest
 import com.lenta.bp12.request.TaskListParams
+import com.lenta.bp12.request.TaskListResult
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.platform.viewmodel.CoreViewModel
@@ -17,8 +17,8 @@ import com.lenta.shared.settings.IAppSettings
 import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
 import com.lenta.shared.utilities.databinding.PageSelectionListener
 import com.lenta.shared.utilities.extentions.combineLatest
+import com.lenta.shared.utilities.extentions.launchUITryCatch
 import com.lenta.shared.utilities.extentions.map
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyboardListener {
@@ -127,7 +127,7 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
      */
 
     init {
-        viewModelScope.launch {
+        launchUITryCatch {
             onClickUpdate()
         }
     }
@@ -141,8 +141,8 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
     }
 
     private fun loadTaskList(value: String, userNumber: String = "") {
-        viewModelScope.launch {
-            navigator.showProgressLoadingData()
+        launchUITryCatch {
+            navigator.showProgressLoadingData(::handleFailure)
 
             taskListNetRequest(
                     TaskListParams(
@@ -153,18 +153,20 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
                     )
             ).also {
                 navigator.hideProgress()
-            }.either(::handleFailure) { taskListResult ->
-                viewModelScope.launch {
-                    manager.addTasks(taskListResult.tasks)
-                }
-            }
+            }.either(::handleFailure, ::handleTaskListResult)
+        }
+    }
+
+    private fun handleTaskListResult(result: TaskListResult) {
+        launchUITryCatch {
+            manager.addTasks(result.tasks)
         }
     }
 
     private fun loadTaskListWithParams(value: String, userNumber: String = "") {
         manager.searchParams.value?.let { params ->
-            viewModelScope.launch {
-                navigator.showProgressLoadingData()
+            launchUITryCatch {
+                navigator.showProgressLoadingData(::handleFailure)
 
                 taskListNetRequest(
                         TaskListParams(
@@ -176,12 +178,14 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
                         )
                 ).also {
                     navigator.hideProgress()
-                }.either(::handleFailure) { taskListResult ->
-                    viewModelScope.launch {
-                        manager.addFoundTasks(taskListResult.tasks)
-                    }
-                }
+                }.either(::handleFailure, ::handleTaskListResultWithParams)
             }
+        }
+    }
+
+    private fun handleTaskListResultWithParams(result: TaskListResult) {
+        launchUITryCatch {
+            manager.addFoundTasks(result.tasks)
         }
     }
 

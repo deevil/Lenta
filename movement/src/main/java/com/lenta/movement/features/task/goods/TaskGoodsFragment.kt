@@ -6,7 +6,9 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import com.lenta.movement.R
-import com.lenta.movement.databinding.*
+import com.lenta.movement.databinding.FragmentTaskGoodsBinding
+import com.lenta.movement.databinding.LayoutTaskGoodsBucketsTabBinding
+import com.lenta.movement.databinding.LayoutTaskGoodsProcessedTabBinding
 import com.lenta.movement.platform.extensions.getAppComponent
 import com.lenta.movement.view.simpleListRecyclerViewConfig
 import com.lenta.shared.keys.KeyCode
@@ -18,7 +20,8 @@ import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListener
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
 import com.lenta.shared.scan.OnScanResultListener
-import com.lenta.shared.utilities.databinding.*
+import com.lenta.shared.utilities.databinding.RecyclerViewKeyHandler
+import com.lenta.shared.utilities.databinding.ViewPagerSettings
 import com.lenta.shared.utilities.extentions.connectLiveData
 import com.lenta.shared.utilities.extentions.provideViewModel
 

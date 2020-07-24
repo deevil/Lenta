@@ -9,8 +9,8 @@ import com.lenta.shared.features.select_personnel_number.SelectPersonnelNumberDe
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.settings.IAppSettings
 import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
+import com.lenta.shared.utilities.extentions.launchUITryCatch
 import com.lenta.shared.utilities.extentions.map
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class SelectPersonnelNumberViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
@@ -42,7 +42,7 @@ class SelectPersonnelNumberViewModel : CoreViewModel(), OnOkInSoftKeyboardListen
     }
 
     init {
-        viewModelScope.launch {
+        launchUITryCatch {
             val lastPersonnelNumber = appSettings.lastPersonnelNumber
             lastPersonnelNumber?.let {
                 personnelNumber.value = lastPersonnelNumber

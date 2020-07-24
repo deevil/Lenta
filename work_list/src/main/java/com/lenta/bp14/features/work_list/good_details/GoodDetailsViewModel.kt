@@ -1,7 +1,6 @@
 package com.lenta.bp14.features.work_list.good_details
 
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
 import com.lenta.bp14.models.data.GoodDetailsTab
 import com.lenta.bp14.models.work_list.ScanResult
 import com.lenta.bp14.models.work_list.WorkListTask
@@ -9,11 +8,7 @@ import com.lenta.bp14.platform.navigation.IScreenNavigator
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.SelectionItemsHelper
 import com.lenta.shared.utilities.databinding.PageSelectionListener
-import com.lenta.shared.utilities.extentions.combineLatest
-import com.lenta.shared.utilities.extentions.dropZeros
-import com.lenta.shared.utilities.extentions.map
-import com.lenta.shared.utilities.extentions.sumWith
-import kotlinx.coroutines.launch
+import com.lenta.shared.utilities.extentions.*
 import javax.inject.Inject
 
 class GoodDetailsViewModel : CoreViewModel(), PageSelectionListener {
@@ -99,7 +94,7 @@ class GoodDetailsViewModel : CoreViewModel(), PageSelectionListener {
 // -----------------------------
 
     init {
-        viewModelScope.launch {
+        launchUITryCatch {
             title.value = task.currentGood.value?.getFormattedMaterialWithName()
         }
     }

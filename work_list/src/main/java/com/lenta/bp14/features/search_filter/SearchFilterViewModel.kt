@@ -1,7 +1,6 @@
 package com.lenta.bp14.features.search_filter
 
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
 import com.lenta.bp14.models.IGeneralTaskManager
 import com.lenta.bp14.models.filter.FilterFieldType
 import com.lenta.bp14.models.filter.FilterParameter
@@ -9,7 +8,7 @@ import com.lenta.bp14.models.filter.IFilterable
 import com.lenta.bp14.models.getTaskName
 import com.lenta.bp14.platform.navigation.IScreenNavigator
 import com.lenta.shared.platform.viewmodel.CoreViewModel
-import kotlinx.coroutines.launch
+import com.lenta.shared.utilities.extentions.launchUITryCatch
 import javax.inject.Inject
 
 class SearchFilterViewModel : CoreViewModel() {
@@ -53,7 +52,7 @@ class SearchFilterViewModel : CoreViewModel() {
     }
 
     init {
-        viewModelScope.launch {
+        launchUITryCatch {
             mapFieldsToTypes.forEach {
                 it.key.value = filterable.getFilterValue(it.value)
             }

@@ -18,10 +18,10 @@ import com.lenta.shared.models.core.Manufacturer
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.requests.combined.scan_info.ScanInfoResult
 import com.lenta.shared.utilities.extentions.combineLatest
+import com.lenta.shared.utilities.extentions.launchUITryCatch
 import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.utilities.extentions.toStringFormatted
 import com.lenta.shared.view.OnPositionClickListener
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class ExciseAlcoInfoViewModel : CoreViewModel(), OnPositionClickListener {
@@ -89,7 +89,7 @@ class ExciseAlcoInfoViewModel : CoreViewModel(), OnPositionClickListener {
     val enabledMissingButton: MutableLiveData<Boolean> = totalCount.map { it ?: 0.0 == 0.0 }
 
     init {
-        viewModelScope.launch {
+        launchUITryCatch {
             suffix.value = productInfo.value?.uom?.name
             storePlaceNumber.value = productInfo.value!!.placeCode
             searchProductDelegate.init(viewModelScope = this@ExciseAlcoInfoViewModel::viewModelScope,
@@ -154,7 +154,7 @@ class ExciseAlcoInfoViewModel : CoreViewModel(), OnPositionClickListener {
             return
         }
 
-        viewModelScope.launch {
+        launchUITryCatch {
             screenNavigator.showProgress(titleProgressScreen.value!!)
             obtainingDataExciseGoodsNetRequest(
                     ExciseGoodsParams(
@@ -221,7 +221,7 @@ class ExciseAlcoInfoViewModel : CoreViewModel(), OnPositionClickListener {
             return
         }
 
-        viewModelScope.launch {
+        launchUITryCatch {
             screenNavigator.showProgress(titleProgressScreen.value!!)
             obtainingDataExciseGoodsNetRequest(
                     ExciseGoodsParams(
@@ -277,7 +277,7 @@ class ExciseAlcoInfoViewModel : CoreViewModel(), OnPositionClickListener {
     fun onPartySignsResult(_manufacturerCode: String, _bottlingDate: String) {
         manufacturerCode.value = manufacturers.value!![_manufacturerCode.toInt()].code
         bottlingDate.value = _bottlingDate.substring(6, 10) + _bottlingDate.substring(3, 5) + _bottlingDate.substring(0, 2)
-        viewModelScope.launch {
+        launchUITryCatch {
             screenNavigator.showProgress(titleProgressScreen.value!!)
             obtainingDataExciseGoodsNetRequest(
                     ExciseGoodsParams(
@@ -325,7 +325,7 @@ class ExciseAlcoInfoViewModel : CoreViewModel(), OnPositionClickListener {
     }
 
     private fun checkExciseStampByCode(stampCode: String) {
-        viewModelScope.launch {
+        launchUITryCatch {
             screenNavigator.showProgress(titleProgressScreen.value!!)
             obtainingDataExciseGoodsNetRequest(
                     ExciseGoodsParams(
@@ -378,7 +378,7 @@ class ExciseAlcoInfoViewModel : CoreViewModel(), OnPositionClickListener {
     fun onPartySignsStamp68Result(_manufacturerCode: String, _bottlingDate: String) {
         manufacturerCode.value = manufacturers.value!![_manufacturerCode.toInt()].code
         bottlingDate.value = _bottlingDate.substring(6, 10) + _bottlingDate.substring(3, 5) + _bottlingDate.substring(0, 2)
-        viewModelScope.launch {
+        launchUITryCatch {
             screenNavigator.showProgress(titleProgressScreen.value!!)
             obtainingDataExciseGoodsNetRequest(
                     ExciseGoodsParams(

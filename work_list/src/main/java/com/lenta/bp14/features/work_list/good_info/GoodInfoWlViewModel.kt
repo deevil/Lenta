@@ -24,10 +24,7 @@ import com.lenta.shared.requests.combined.scan_info.analyseCode
 import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
 import com.lenta.shared.utilities.databinding.PageSelectionListener
-import com.lenta.shared.utilities.extentions.combineLatest
-import com.lenta.shared.utilities.extentions.dropZeros
-import com.lenta.shared.utilities.extentions.map
-import com.lenta.shared.utilities.extentions.sumWith
+import com.lenta.shared.utilities.extentions.*
 import com.lenta.shared.view.OnPositionClickListener
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
@@ -235,7 +232,7 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKe
     // -----------------------------
 
     init {
-        viewModelScope.launch {
+        launchUITryCatch {
             title.value = good.value?.getFormattedMaterialWithName()
             quantity.value = good.value?.defaultValue.dropZeros()
 
@@ -246,7 +243,7 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKe
     // -----------------------------
 
     private fun loadAdditionalInfo() {
-        viewModelScope.launch {
+        launchUITryCatch {
             additionalGoodInfoNetRequest(AdditionalGoodInfoParams(
                     tkNumber = sessionInfo.market.orEmpty(),
                     ean = good.value?.ean,
@@ -350,7 +347,7 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKe
                 "Only one param allowed - ean: $ean, material: $material"
             }
 
-            navigator.showProgressLoadingData()
+            navigator.showProgressLoadingData(::handleFailure)
 
             when {
                 !ean.isNullOrBlank() -> task.getGoodByEan(ean)
@@ -383,8 +380,8 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKe
                 task.deleteMark(goodMark)
             }
         } else {
-            viewModelScope.launch {
-                navigator.showProgressLoadingData()
+            launchUITryCatch {
+                navigator.showProgressLoadingData(::handleFailure)
 
                 checkMarkNetRequest(CheckMarkParams(
                         tkNumber = sessionInfo.market.orEmpty(),
@@ -411,8 +408,8 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKe
                 task.deleteMark(exciseMark)
             }
         } else {
-            viewModelScope.launch {
-                navigator.showProgressLoadingData()
+            launchUITryCatch {
+                navigator.showProgressLoadingData(::handleFailure)
 
                 checkMarkNetRequest(CheckMarkParams(
                         tkNumber = sessionInfo.market.orEmpty(),

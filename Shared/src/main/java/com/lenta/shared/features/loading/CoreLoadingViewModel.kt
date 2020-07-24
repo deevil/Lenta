@@ -1,16 +1,15 @@
 package com.lenta.shared.features.loading
 
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
 import com.lenta.shared.platform.viewmodel.CoreViewModel
-import kotlinx.coroutines.launch
+import com.lenta.shared.utilities.extentions.launchUITryCatch
 
 abstract class CoreLoadingViewModel : CoreViewModel(), ICoreLoadingViewModel {
     override val elapsedTime: MutableLiveData<Long> = MutableLiveData(0)
     override val remainingTime: MutableLiveData<Long> = MutableLiveData()
 
     init {
-        viewModelScope.launch {
+        launchUITryCatch {
             startProgressTimer(
                     coroutineScope = this,
                     elapsedTime = elapsedTime

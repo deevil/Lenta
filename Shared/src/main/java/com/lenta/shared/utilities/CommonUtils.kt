@@ -2,7 +2,6 @@ package com.lenta.shared.utilities
 
 import android.util.Base64
 import com.lenta.shared.BuildConfig
-import java.io.File
 
 
 inline fun runIfDebug(function: () -> Unit) {

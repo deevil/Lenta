@@ -1,13 +1,11 @@
 package com.lenta.bp14.features.auth
 
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
 import com.lenta.bp14.models.general.IGeneralRepo
 import com.lenta.bp14.platform.navigation.IScreenNavigator
 import com.lenta.bp14.repos.IRepoInMemoryHolder
 import com.lenta.bp14.requests.user_permitions.PermissionsRequestParams
 import com.lenta.bp14.requests.user_permitions.UserPermissionsNetRequest
-import com.lenta.shared.utilities.runIfDebug
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.features.login.CoreAuthViewModel
@@ -18,9 +16,10 @@ import com.lenta.shared.requests.network.AuthParams
 import com.lenta.shared.settings.IAppSettings
 import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.extentions.combineLatest
+import com.lenta.shared.utilities.extentions.launchUITryCatch
 import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.utilities.getBaseAuth
-import kotlinx.coroutines.launch
+import com.lenta.shared.utilities.runIfDebug
 import javax.inject.Inject
 
 
@@ -52,21 +51,21 @@ class AuthViewModel : CoreAuthViewModel() {
     val skipButtonEnabled = progress.map { it != true }
 
     init {
-        viewModelScope.launch {
+        launchUITryCatch {
             sessionInfo.isAuthSkipped.value = false
             sessionInfo.packageName = packageName.value
         }
     }
 
     override fun onClickEnter() {
-        viewModelScope.launch {
+        launchUITryCatch {
             progress.value = true
             auth(AuthParams(getLogin(), getPassword())).either(::handleFailure, ::loadPermissions)
         }
     }
 
     private fun loadPermissions(@Suppress("UNUSED_PARAMETER") b: Boolean) {
-        viewModelScope.launch {
+        launchUITryCatch {
             getLogin().let { login ->
                 sessionInfo.userName = login
                 sessionInfo.basicAuth = getBaseAuth(login, getPassword())
@@ -107,7 +106,7 @@ class AuthViewModel : CoreAuthViewModel() {
     }
 
     override fun onResume() {
-        viewModelScope.launch {
+        launchUITryCatch {
             if (!appSettings.lastLogin.isNullOrEmpty()) {
                 login.value = appSettings.lastLogin
             }

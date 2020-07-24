@@ -1,13 +1,12 @@
 package com.lenta.bp16.features.main_menu
 
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
 import com.lenta.bp16.model.ITaskManager
 import com.lenta.bp16.model.TaskType
 import com.lenta.bp16.platform.navigation.IScreenNavigator
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.platform.viewmodel.CoreViewModel
-import kotlinx.coroutines.launch
+import com.lenta.shared.utilities.extentions.launchUITryCatch
 import javax.inject.Inject
 
 class MainMenuViewModel : CoreViewModel() {
@@ -26,7 +25,7 @@ class MainMenuViewModel : CoreViewModel() {
     // -----------------------------
 
     init {
-        viewModelScope.launch {
+        launchUITryCatch {
             fio.value = sessionInfo.personnelFullName
             manager.getLabelList()
         }

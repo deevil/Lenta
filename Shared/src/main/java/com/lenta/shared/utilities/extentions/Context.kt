@@ -3,18 +3,17 @@ package com.lenta.shared.utilities.extentions
 import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.Intent
+import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
 import android.net.wifi.WifiManager
 import android.os.Build
 import android.provider.Settings
 import android.text.format.Formatter
 import android.util.TypedValue
-import kotlin.system.exitProcess
-import android.content.Intent
 import com.lenta.shared.utilities.Logg
-import java.lang.Exception
-import android.content.pm.ApplicationInfo
 import com.lenta.shared.utilities.runIfDebug
+import kotlin.system.exitProcess
 
 
 fun Context.getDeviceIp(): String {
