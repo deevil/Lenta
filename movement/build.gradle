@@ -59,6 +59,12 @@ android {
                 outputFileName = name.replace(".apk", "-${variant.versionName}-${variant.versionCode}.apk")
             }
         }
+        if (variant.buildType.name == "debug") {
+            variant.outputs.all {
+                def name = outputFileName.replace("app-", "LentaMovement-")
+                outputFileName = name.replace(".apk", "-${variant.versionName}-${variant.versionCode}.apk")
+            }
+        }
     }
 
     compileOptions {

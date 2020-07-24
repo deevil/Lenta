@@ -10,7 +10,9 @@ import com.lenta.movement.exception.EmptyTaskFailure
 import com.lenta.movement.exception.PersonnelNumberFailure
 import com.lenta.movement.models.*
 import com.lenta.movement.models.Task.Status.Companion.COUNTED
+import com.lenta.movement.models.Task.Status.Companion.CREATED
 import com.lenta.movement.models.Task.Status.Companion.PROCESSING_ON_GZ
+import com.lenta.movement.models.Task.Status.Companion.PUBLISHED
 import com.lenta.movement.models.repositories.ICargoUnitRepository
 import com.lenta.movement.platform.IFormatter
 import com.lenta.movement.platform.extensions.openAlertScreenWithFailure
@@ -75,7 +77,7 @@ class TaskViewModel : CoreViewModel(), PageSelectionListener {
     }
 
     private val currentStatus: Task.Status
-        get() = task.value?.currentStatus ?: Task.Status.Created()
+        get() = task.value?.currentStatus ?: Task.Status.Created(CREATED)
 
     private val currentStatusLD by unsafeLazy {
         MutableLiveData(currentStatus)
@@ -92,7 +94,9 @@ class TaskViewModel : CoreViewModel(), PageSelectionListener {
         return taskManager.getTaskSettings(taskType, movementType)
     }
 
-    val selectedPagePosition = MutableLiveData(0)
+    val selectedPagePosition by unsafeLazy {
+        MutableLiveData(0)
+    }
 
     val currentStatusText by unsafeLazy { formatter.getTaskStatusName(currentStatus) }
     val nextStatusText by unsafeLazy { formatter.getTaskStatusName(nextStatus) }
@@ -134,6 +138,7 @@ class TaskViewModel : CoreViewModel(), PageSelectionListener {
             asyncLiveData<List<String>> {
                 val tasks = taskOrNull?.receiver?.let { listOf(it) }
                         ?: taskManager.getAvailableReceivers()
+                                .addFirstEmptyIfNeeded()
                 emit(tasks)
             }
         }
@@ -198,7 +203,7 @@ class TaskViewModel : CoreViewModel(), PageSelectionListener {
         val date = task.value?.shipmentDate?.let {
             DateTimeUtil.formatDate(it, Constants.DATE_FORMAT_ddmmyy)
         }
-        val defaultDate = DateTimeUtil.formatDate(Date(), Constants.DATE_FORMAT_ddmmyy)
+        val defaultDate = DateTimeUtil.formatDate(Date(), Constants.DATE_FORMAT_dd_mm_yyyy)
         MutableLiveData(date ?: defaultDate)
     }
 
@@ -217,6 +222,7 @@ class TaskViewModel : CoreViewModel(), PageSelectionListener {
             emit(isAlco)
         }
     }
+
     val generalVisible by unsafeLazy {
         asyncLiveData<Boolean> {
             val isGeneral = getSettings().gisControls.contains(GisControl.GeneralProduct)
@@ -235,10 +241,19 @@ class TaskViewModel : CoreViewModel(), PageSelectionListener {
         }
     }
 
+    val isStrictList by unsafeLazy {
+        when (currentStatus) {
+            Task.Status.Created(CREATED), Task.Status.Published(PUBLISHED) -> false
+            else -> true
+        }
+    }
+
     fun onResume() {
-        task.value?.let(
-                taskManager::setTask
-        )
+        task.value?.let { task ->
+            taskManager.setTask(task)
+        }.orIfNull {
+            selectedPagePosition.value = 1
+        }
     }
 
     fun getTitle(): String {
@@ -322,7 +337,7 @@ class TaskViewModel : CoreViewModel(), PageSelectionListener {
         }
     }
 
-    private fun onApprovalAndTransferSuccessResult(result: ApprovalAndTransferToTasksCargoUnitResult){
+    private fun onApprovalAndTransferSuccessResult(result: ApprovalAndTransferToTasksCargoUnitResult) {
         screenNavigator.hideProgress()
         val task = result.taskList?.first()?.toTask()
         task?.let {

@@ -30,6 +30,7 @@ import com.lenta.shared.exception.Failure
 import com.lenta.shared.features.alert.AlertFragment
 import com.lenta.shared.interactor.UseCase
 import com.lenta.shared.platform.activity.ForegroundActivityProvider
+import com.lenta.shared.platform.navigation.CustomAnimation
 import com.lenta.shared.platform.navigation.ICoreNavigator
 import com.lenta.shared.platform.navigation.runOrPostpone
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
@@ -394,6 +395,22 @@ class ScreenNavigator(
         }
     }
 
+    override fun openGeneralGoodIconScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    message = context.getString(com.lenta.shared.R.string.general_product),
+                    iconRes = com.lenta.shared.R.drawable.ic_kandy_white_32dp), CustomAnimation.vertical)
+        }
+    }
+
+    override fun openAlcoGoodIconScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    message = context.getString(R.string.alco_good),
+                    iconRes = com.lenta.shared.R.drawable.ic_alcohol_white_32dp), CustomAnimation.vertical)
+        }
+    }
+
 
     companion object {
         private const val TASK_TO_MOVE = "Задания на перемещение"
@@ -446,4 +463,7 @@ interface IScreenNavigator : ICoreNavigator {
     fun openGEInsidesScreen(ge: CargoUnit)
     fun openEOInsidesScreen(eo: ProcessingUnit)
     fun openExcludeConfirmationDialog(yesCallbackFunc: () -> Unit)
+
+    fun openGeneralGoodIconScreen()
+    fun openAlcoGoodIconScreen()
 }
