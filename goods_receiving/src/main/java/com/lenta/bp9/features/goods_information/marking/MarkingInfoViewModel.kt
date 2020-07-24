@@ -9,16 +9,16 @@ import com.lenta.bp9.features.goods_information.non_excise_sets_receiving.NonExc
 import com.lenta.bp9.features.goods_list.SearchProductDelegate
 import com.lenta.bp9.model.processing.ProcessExciseAlcoBoxAccService
 import com.lenta.bp9.model.processing.ProcessMarkingProductService
-import com.lenta.bp9.model.task.IReceivingTaskManager
-import com.lenta.bp9.model.task.TaskProductInfo
-import com.lenta.bp9.model.task.TaskType
+import com.lenta.bp9.model.task.*
 import com.lenta.bp9.platform.TypeDiscrepanciesConstants
 import com.lenta.bp9.platform.navigation.IScreenNavigator
 import com.lenta.bp9.repos.IDataBaseRepo
+import com.lenta.shared.fmp.resources.dao_ext.getEanInfo
 import com.lenta.shared.fmp.resources.dao_ext.getProductInfoByMaterial
 import com.lenta.shared.fmp.resources.dao_ext.getUomInfo
 import com.lenta.shared.fmp.resources.fast.ZmpUtz07V001
 import com.lenta.shared.fmp.resources.slow.ZfmpUtz48V001
+import com.lenta.shared.fmp.resources.slow.ZmpUtz25V001
 import com.lenta.shared.models.core.Uom
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.requests.combined.scan_info.ScanInfoResult
@@ -61,6 +61,10 @@ class MarkingInfoViewModel : CoreViewModel(),
 
     private val zmpUtz07V001: ZmpUtz07V001 by lazy {
         ZmpUtz07V001(hyperHive)
+    }
+
+    private val zmpUtz25V001: ZmpUtz25V001 by lazy {
+        ZmpUtz25V001(hyperHive)
     }
 
     private val zfmpUtz48V001: ZfmpUtz48V001 by lazy {
@@ -376,15 +380,18 @@ class MarkingInfoViewModel : CoreViewModel(),
     //https://trello.com/c/N6t51jru
     fun onScanResult(data: String) {
         when (data.length) {
-            in 0..20 -> {
+            in 0..13, in 15..20 -> {
                 screenNavigator.openAlertInvalidBarcodeFormatScannedScreen()
             }
             in 21..40, 42, 43 -> {
                 screenNavigator.openAlertInvalidCodeScannedForCurrentModeScreen()
             }
-            else -> { //отсканировано 41, 44 или более 44 символов
+            14 -> {//GTIN
+                gtinScannedCheck(data)
+            }
+            else -> { //марка/блок. отсканировано 41, 44 или более 44 символов
                 if (barcodeCheck(data)) {
-                    addExciseStamp(data.substring(0, 25))
+                    addExciseStamp(data.substring(0, 25)) //обрезаем криптохвост
                 } else {
                     if (data.length == 41 || data.length == 44) {
                         screenNavigator.openAlertInvalidCodeScannedForCurrentModeScreen()
@@ -439,21 +446,33 @@ class MarkingInfoViewModel : CoreViewModel(),
     }
 
     private fun addExciseStamp(stampCode: String) {
-        if (processMarkingProductService.exciseStampIsAlreadyProcessed(stampCode)) {
+        val qualityInfoCode =
+                spinQualitySelectedPosition.value
+                        ?.let { position ->
+                            qualityInfo.value?.get(position)?.code.orEmpty()
+                        }
+        val spinQualityPosition = spinQualitySelectedPosition.value ?: 0
+        val selectedQualityInfo = qualityInfo.value?.get(spinQualityPosition)
+        val spinRejectionPosition = spinReasonRejectionSelectedPosition.value ?: 0
+        val selectedReasonRejectionInfo = reasonRejectionInfo.value?.get(spinRejectionPosition)
+        val typeDiscrepancies = selectedQualityInfo?.code
+                ?.takeIf {selectedQualityInfoCode ->
+                    selectedQualityInfoCode == TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_NORM
+                }
+                ?: selectedReasonRejectionInfo?.code
+        val blockInfo = processMarkingProductService.searchBlock(stampCode)
+
+        if (processMarkingProductService.blockIsAlreadyProcessed(stampCode)) {
             screenNavigator.openAlertScannedStampIsAlreadyProcessedScreen() //АМ уже обработана
             return
         }
 
-        val blockInfo = processMarkingProductService.searchBlock(stampCode)
-        if (blockInfo != null) {
-            if (productInfo.value?.isGrayZone == false) {
-                //Отсканированная марка не числится в текущей поставке. Верните отсканированную марку обратно поставщику
-                screenNavigator.openAlertStampNotFoundReturnSupplierScreen()
-            } else {
+        if (blockInfo == null) {
+            if (productInfo.value?.isGrayZone == true) {
                 //todo Если установлен Леша сказал пока не делать...
                 /**
                 Но вообще нужно вызывать 44 рест
-                        ZMP_UTZ_GRZ_44_V001
+                ZMP_UTZ_GRZ_44_V001
                 на вход заполнять:
                 iv_task_num   = iv_task_num (номер задания)
                 iv_box_num    = iv_box_num
@@ -461,14 +480,14 @@ class MarkingInfoViewModel : CoreViewModel(),
                 iv_mark_num   = iv_mark_num
                 iv_matnr      = iv_matnr (номер товара)
                 и если в этом ресте - пришел ev_stat=5
-                переходить к пункту 4*/
+                переходить далее*/
+            } else {
+                //Отсканированная марка не числится в текущей поставке. Верните отсканированную марку обратно поставщику
+                screenNavigator.openAlertStampNotFoundReturnSupplierScreen()
+                return
             }
-            return
         }
 
-        val qualityInfoCode = spinQualitySelectedPosition.value?.let { position ->
-            qualityInfo.value?.get(position)?.code.orEmpty()
-        }
         if (qualityInfoCode == TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_NORM) {
             count.value = count.value?.toDouble()?.minus(1)?.toString()
             //Количество нормы будет уменьшено
@@ -479,12 +498,14 @@ class MarkingInfoViewModel : CoreViewModel(),
         //https://trello.com/c/N6t51jru далее все пункт 4
         if (blockInfo?.materialNumber != productInfo.value?.materialNumber) {
             //Отсканированная марка принадлежит товару <SAP-код> <Название>"
+            val blockMaterialNumber = blockInfo?.materialNumber.orEmpty()
             screenNavigator.openAlertScannedStampBelongsAnotherProductScreen(
-                    materialNumber = blockInfo?.materialNumber.orEmpty(),
-                    materialName = zfmpUtz48V001.getProductInfoByMaterial(blockInfo?.materialNumber)?.name.orEmpty()
+                    materialNumber = blockMaterialNumber,
+                    materialName = zfmpUtz48V001.getProductInfoByMaterial(blockMaterialNumber)?.name.orEmpty()
             )
             return
         }
+
 
         if (productInfo.value?.isControlGTIN == true) {
             /**• Марка/блок соответствуют текущему товару – Проверять активен ли чекбокс контроля GTIN:
@@ -493,18 +514,86 @@ class MarkingInfoViewModel : CoreViewModel(),
             Если не начинается - устанавливать чек бокс в поле «Сверка КМ» в поле «Контроль GTIN», количество марок с пройденным контролем не увеличивать
             o чекбокс активен – выполнять проверки, описанные в разделе 2. MARK.ППП. Логика сверки GTIN.*/
             if (checkBoxGtinControl.value == false) {
-                if ( stampCode.substring(0, 2) == "0${paramGrzExclGtin.value}") {
+                if (stampCode.substring(0, 2) == "0${paramGrzExclGtin.value}") {
                     checkBoxGtinControl.value = true
                     checkBoxGtinStampControl.value = true
                 } else {
                     checkBoxGtinStampControl.value = true
                 }
             } else {
-                //todo Значение присутствует – выполнять проверки, описанные в разделе 2. MARK.ППП. Логика сверки GTIN. https://trello.com/c/y2ECoCw4
+                //выполнять проверки, описанные в разделе 2. MARK.ППП. Логика сверки GTIN. https://trello.com/c/y2ECoCw4
+                blockInfo?.let {currentBlock ->
+                    typeDiscrepancies?.let {currentTypeDiscrepancies ->
+                        gtinControlCheck(currentBlock, currentTypeDiscrepancies)
+                    }
+                }
             }
         } else {
-            //добавлять марку по товару
-            processMarkingProductService.searchExciseStamp(stampCode)
+            //добавлять блок по товару
+            blockInfo?.let {currentBlock ->
+                typeDiscrepancies?.let {currentTypeDiscrepancies ->
+                    processMarkingProductService.addBlocksDiscrepancies(
+                            blockInfo = currentBlock,
+                            typeDiscrepancies = currentTypeDiscrepancies
+                    )
+                }
+            }
+        }
+    }
+
+    //https://trello.com/c/y2ECoCw4
+    private fun gtinScannedCheck(gtinCode: String) {
+        if (checkBoxGtinControl.value == true) {
+            //выводить ошибку «Отсканируйте марку товара»
+            screenNavigator.openAlertScanProductBarcodeScreen()
+            return
+        }
+
+        val eanInfo = zmpUtz25V001.getEanInfo(ean = gtinCode)
+        if (eanInfo == null) {
+            screenNavigator.openAlertGtinDoesNotMatchProductScreen()
+            return
+        }
+
+        if (checkBoxGtinStampControl.value == true) { //а иначе ничего не делаем (else нету) https://trello.com/c/y2ECoCw4
+            val lastScannedGtin =
+                    processMarkingProductService.getLastScannedBlock()
+                            ?.blockNumber
+                            ?.substring(2, 16)
+                            .orEmpty()
+
+            if (gtinCode == lastScannedGtin) {
+                checkBoxGtinControl.value = true //аналитики сказали сначала поставить чекбокс, а потом снять
+                processMarkingProductService.addGtin(gtinCode)
+                checkBoxGtinControl.value = false
+                checkBoxGtinStampControl.value = false //аналитики сказали сначала поставить чекбокс, а потом снять
+            } else {
+                screenNavigator.openAlertDisparityGTINScreen()
+            }
+        }
+
+    }
+
+    //https://trello.com/c/y2ECoCw4
+    private fun gtinControlCheck(blockInfo: TaskBlockInfo, typeDiscrepancies: String) {
+        val gtinCode = blockInfo.blockNumber.substring(2, 16)
+        if (blockInfo.blockNumber.substring(0, 2) == "0${paramGrzExclGtin.value}") {
+            processMarkingProductService.replaceLastGtin(gtinCode)
+            checkBoxGtinControl.value = true
+            checkBoxGtinStampControl.value = true
+            return
+        }
+
+        val lastScannedGtin = processMarkingProductService.getLastScannedGtin().orEmpty()
+        if (lastScannedGtin == gtinCode) {
+            checkBoxGtinStampControl.value = true //аналитики сказали сначала поставить чекбокс, а потом снять
+            processMarkingProductService.addBlocksDiscrepancies(blockInfo, typeDiscrepancies)
+            //todo в поле «Контроль марок» увеличивать значение на 1 единицу
+            checkBoxGtinControl.value = false
+            checkBoxGtinStampControl.value = false //аналитики сказали сначала поставить чекбокс, а потом снять
+        } else {
+            //выводить ошибку «GTIN в марке не соответствует GTIN товара, оформите брак по данному товару»
+            screenNavigator.openAlertDisparityGTINScreen()
         }
     }
 

@@ -1540,6 +1540,39 @@ class ScreenNavigator(
         }
     }
 
+    override fun openAlertDisparityGTINScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    message = context.getString(R.string.disparity_gtin),
+                    iconRes = R.drawable.ic_info_pink_80dp,
+                    textColor = ContextCompat.getColor(context, R.color.color_text_dialogWarning),
+                    pageNumber = PAGE_NUMBER_97)
+            )
+        }
+    }
+
+    override fun openAlertScanProductBarcodeScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    message = context.getString(R.string.scan_product_barcode),
+                    iconRes = R.drawable.ic_info_pink_80dp,
+                    textColor = ContextCompat.getColor(context, R.color.color_text_dialogWarning),
+                    pageNumber = PAGE_NUMBER_97)
+            )
+        }
+    }
+
+    override fun openAlertGtinDoesNotMatchProductScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    message = context.getString(R.string.gtin_does_not_match_product),
+                    iconRes = R.drawable.ic_info_pink_80dp,
+                    textColor = ContextCompat.getColor(context, R.color.color_text_dialogWarning),
+                    pageNumber = PAGE_NUMBER_97)
+            )
+        }
+    }
+
     private fun getFragmentStack() = foregroundActivityProvider.getActivity()?.fragmentStack
 }
 
@@ -1716,4 +1749,7 @@ interface IScreenNavigator : ICoreNavigator {
     fun openMarkingInfoScreen(productInfo: TaskProductInfo, isDiscrepancy: Boolean)
     fun openAlertInvalidCodeScannedForCurrentModeScreen()
     fun openAlertStampNotFoundReturnSupplierScreen()
+    fun openAlertDisparityGTINScreen()
+    fun openAlertScanProductBarcodeScreen()
+    fun openAlertGtinDoesNotMatchProductScreen()
 }

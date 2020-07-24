@@ -331,4 +331,7 @@
     <string name="mrc_order">МРЦ заказа</string>
     <string name="invalid_code_scanned_for_current_mode">Отсканирован недопустимый код для текущего режима</string>
     <string name="scanned_stamp_not_listed_in_current_delivery_return_supplier">Отсканированная марка не числится в текущей поставке. Верните отсканированную марку обратно поставщику</string>
+    <string name="disparity_gtin">GTIN в марке не соответствует GTIN товара, оформите брак по данному товару</string>
+    <string name="scan_product_barcode">Отсканируйте марку товара</string>
+    <string name="gtin_does_not_match_product">GTIN не соответствует товару</string>
 </resources>
