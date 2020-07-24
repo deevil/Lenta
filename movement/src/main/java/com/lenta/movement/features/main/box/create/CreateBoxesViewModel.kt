@@ -8,12 +8,19 @@ import com.lenta.movement.models.ExciseBox
 import com.lenta.movement.models.ExciseStamp
 import com.lenta.movement.models.ProductInfo
 import com.lenta.movement.models.repositories.IBoxesRepository
+import com.lenta.movement.platform.Constants.EMPTY
 import com.lenta.movement.platform.navigation.IScreenNavigator
 import com.lenta.movement.requests.network.*
 import com.lenta.movement.requests.network.models.checkExciseBox.CheckExciseBoxParams
 import com.lenta.shared.account.ISessionInfo
+import com.lenta.shared.exception.Failure
+import com.lenta.shared.keys.KeyCode
+import com.lenta.shared.keys.OnKeyDownListener
 import com.lenta.shared.models.core.EgaisStampVersion
 import com.lenta.shared.models.core.ProductType
+import com.lenta.shared.platform.constants.Constants.BOX_26
+import com.lenta.shared.platform.constants.Constants.MARK_150
+import com.lenta.shared.platform.constants.Constants.MARK_68
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.requests.combined.scan_info.ScanCodeInfo
 import com.lenta.shared.utilities.Logg
@@ -61,7 +68,7 @@ class CreateBoxesViewModel : CoreViewModel(),
     val stampsQuantity by unsafeLazy {
         stamps.map { stampsList ->
             liveData {
-                val size = stampsList?.size ?: "0"
+                val size = stampsList?.size ?: 0
                 emit(size)
             }
         }
@@ -90,24 +97,27 @@ class CreateBoxesViewModel : CoreViewModel(),
 
     override fun onPageSelected(position: Int) {
         selectedPagePosition.value = position
-        selectedPage.value = CreateBoxesPage.values()[position]
+        selectedPage.value = CreateBoxesPage.values().getOrNull(position)
     }
 
-    fun onResume() {
-        updateBoxes()
-    }
+    fun onResume() = updateBoxes()
 
     fun getTitle(): String {
-        return productInfo.value?.let {
-            "${it.materialNumber.takeLast(6)} ${it.description}"
-        }.orEmpty()
+        return buildString {
+            productInfo.value?.let { product ->
+                val shortMaterialNumber = product.materialNumber.takeLast(6)
+                val description = product.description
+                append(shortMaterialNumber)
+                append(" ")
+                append(description)
+            }
+        }
     }
 
     fun onScanResult(data: String) {
         when (data.length) {
-            EgaisStampVersion.V2.version,
-            EgaisStampVersion.V3.version -> scanStamp(data)
-            SCAN_LENGTH_BOX -> scanBox(data)
+            MARK_68, MARK_150 -> scanStamp(data)
+            BOX_26 -> scanBox(data)
             else -> scanGoods(data)
         }
     }
@@ -115,7 +125,8 @@ class CreateBoxesViewModel : CoreViewModel(),
     fun onRollbackClick() {
         val stampList = stamps.value.orEmpty()
         if (stampList.isNotEmpty()) {
-            stamps.postValue(stampList.dropLast(1))
+            val stampListWithoutLastOne = stampList.dropLast(1)
+            stamps.value = stampListWithoutLastOne
         }
     }
 
@@ -130,53 +141,61 @@ class CreateBoxesViewModel : CoreViewModel(),
 
     fun onBackPressed() {
         if (haveUnsavedData) {
-            screenNavigator.openUnsavedDataDialog(yesCallbackFunc = {
-                screenNavigator.goBack()
-                screenNavigator.goBack()
-            })
-        } else {
-            screenNavigator.goBack()
-        }
+            screenNavigator.openUnsavedDataDialog(
+                    yesCallbackFunc = {
+                        screenNavigator.goBack()
+                        screenNavigator.goBack()
+                    })
+        } else screenNavigator.goBack()
     }
 
     fun onDeleteClick() {
         selectionsHelper.selectedPositions.value.orEmpty()
                 .forEach { doRemovePosition ->
                     productInfo.value?.let { productInfoValue ->
-                        val removeBoxTarget = boxesRepository.getBoxesByProduct(productInfoValue)[doRemovePosition]
-                        boxesRepository.removeBox(removeBoxTarget)
+                        val boxes = boxesRepository.getBoxesByProduct(productInfoValue)
+                        boxes.getOrNull(doRemovePosition)?.let {
+                            boxesRepository::removeBox
+                        }
                     }
                 }
         updateBoxes()
-
         selectionsHelper.clearPositions()
     }
 
     private fun deleteStamp(stamp: ExciseStamp) {
-        stamps.value?.let{ stampsValue ->
+        stamps.value?.let { stampsValue ->
             val newStampsList = stampsValue.toMutableList()
             newStampsList.remove(stamp)
-            stamps.postValue(newStampsList)
+            stamps.value = newStampsList
         }
     }
+
+    private fun isStampInAnotherBox(stampCode: String): Boolean {
+        val productInfoValue = productInfo.value
+        return productInfoValue?.let {
+            boxesRepository.getBoxesByProduct(it).any { box ->
+                box.stamps.any { stamp ->
+                    stamp.code == stampCode
+                }
+            }
+        }.orIfNull { false }
+    }
+
 
     private fun scanStamp(stampCode: String) {
         val stampList = stamps.value
         stampList?.let { stampListValue ->
             productInfo.value?.let { productInfo ->
 
-                stampListValue.find { it.code == stampCode }?.let {stamp ->
+                stampListValue.find { it.code == stampCode }?.let { stamp ->
                     screenNavigator.openStampWasAddedDialog(
                             yesCallbackFunc = { deleteStamp(stamp) }
                     )
                     return
                 }
 
-                boxesRepository.getBoxesByProduct(productInfo).find { box ->
-                    box.stamps.any { stamp ->
-                        stamp.code == stampCode
-                    }
-                }?.run {
+                if (isStampInAnotherBox(stampCode)) {
                     screenNavigator.openStampWasAddedDialogInAnotherBox()
                     return
                 }
@@ -186,7 +205,7 @@ class CreateBoxesViewModel : CoreViewModel(),
                     return
                 }
 
-                launchUITryCatch  {
+                launchUITryCatch {
                     screenNavigator.showProgress(LOADING_STAMP_INFO)
                     exciseStampNetRequest(
                             params = ExciseStampParams(
@@ -198,19 +217,23 @@ class CreateBoxesViewModel : CoreViewModel(),
                             fnL = { failure ->
                                 screenNavigator.openAlertScreen(failure)
                             },
-                            fnR = { exciseStamp ->
-
-                                if (stampListValue.isNotEmpty()
-                                        && stampListValue.first().manufacturerName == exciseStamp.manufacturerName
-                                ) {
-                                    stamps.postValue(stampListValue + exciseStamp)
-                                } else {
-                                    stamps.postValue(listOf(exciseStamp))
-                                }
-                            }
+                            fnR = ::onScanStampSuccess
                     )
                     screenNavigator.hideProgress()
                 }
+            }
+        }
+    }
+
+    private fun onScanStampSuccess(exciseStamp: ExciseStamp) {
+        val stampListValue = stamps.value
+        stampListValue?.let {
+            if (stampListValue.isNotEmpty() &&
+                    stampListValue.firstOrNull()?.manufacturerName == exciseStamp.manufacturerName
+            ) {
+                stamps.value = stampListValue + exciseStamp
+            } else {
+                stamps.value = listOf(exciseStamp)
             }
         }
     }
@@ -222,7 +245,6 @@ class CreateBoxesViewModel : CoreViewModel(),
                 return
             }
         }
-
         launchUITryCatch {
             screenNavigator.showProgress(checkExciseBoxNetRequest)
             checkExciseBoxNetRequest(
@@ -236,24 +258,28 @@ class CreateBoxesViewModel : CoreViewModel(),
                         screenNavigator.openAlertScreen(failure)
                     },
                     fnR = { checkExciseBoxStatus ->
-                        when (checkExciseBoxStatus) {
-                            CheckExciseBoxStatus.Correct -> {
-                                boxNumber.postValue(boxCode)
-                            }
-                            is CheckExciseBoxStatus.BoxFound -> {
-                                screenNavigator.openBoxRewriteDialog(
-                                        checkExciseBoxStatus.msg,
-                                        yesCallbackFunc = {
-                                            boxNumber.postValue(boxCode)
-                                        })
-                            }
-                            is CheckExciseBoxStatus.Other -> {
-                                screenNavigator.openAlertScreen(InfoFailure(checkExciseBoxStatus.msg))
-                            }
-                        }
+                        onScanBoxSuccess(boxCode, checkExciseBoxStatus)
                     }
             )
             screenNavigator.hideProgress()
+        }
+    }
+
+    private fun onScanBoxSuccess(boxCode: String, checkExciseBoxStatus: CheckExciseBoxStatus) {
+        when (checkExciseBoxStatus) {
+            CheckExciseBoxStatus.Correct -> {
+                boxNumber.postValue(boxCode)
+            }
+            is CheckExciseBoxStatus.BoxFound -> {
+                screenNavigator.openBoxRewriteDialog(
+                        checkExciseBoxStatus.msg,
+                        yesCallbackFunc = {
+                            boxNumber.postValue(boxCode)
+                        })
+            }
+            is CheckExciseBoxStatus.Other -> {
+                screenNavigator.openAlertScreen(InfoFailure(checkExciseBoxStatus.msg))
+            }
         }
     }
 
@@ -263,34 +289,42 @@ class CreateBoxesViewModel : CoreViewModel(),
         launchUITryCatch {
             screenNavigator.showProgress(scanInfoNetRequest)
             val scanCodeInfo = ScanCodeInfo(code, if (fromScan) null else 0.0)
-            scanInfoNetRequest(
+            val request = scanInfoNetRequest(
                     params = ScanInfoParams(
                             ean = scanCodeInfo.eanNumberForSearch.orEmpty(),
                             tk = sessionInfo.market.orEmpty(),
                             matNr = scanCodeInfo.materialNumberForSearch.orEmpty(),
                             codeEBP = CODE_EBP
                     )
-            ).either(
+            )
+            request.either(
                     fnL = { failure ->
                         screenNavigator.openAlertScreen(failure)
                     },
-                    fnR = { serverProductInfo ->
-                        productInfo.value?.let { productInfoValue ->
-                            if (productInfoValue.materialNumber == serverProductInfo.materialNumber) {
-                                return@either Unit
-                            }
-                        }
-
-                        if (serverProductInfo.type != ProductType.ExciseAlcohol) {
-                            screenNavigator.openProductIncorrectForCreateBox(serverProductInfo)
-                        } else {
-                            screenNavigator.goBack()
-                            screenNavigator.openCreateBoxByProduct(serverProductInfo)
-                            saveAndClearFields()
-                        }
-                    }
+                    fnR = ::onScanGoodsSuccess
             )
             screenNavigator.hideProgress()
+        }
+    }
+
+
+    private fun onScanGoodsSuccess(serverProductInfo: ProductInfo) {
+        val serverProductInfoMaterialNumber = serverProductInfo.materialNumber
+        val productInfoValue = productInfo.value
+        val serverProductInfoType = serverProductInfo.type
+        productInfoValue?.let {
+            val productInfoMaterialNumber = it.materialNumber
+            if (productInfoMaterialNumber == serverProductInfoMaterialNumber) {
+                return
+            }
+        }
+
+        if (serverProductInfoType != ProductType.ExciseAlcohol) {
+            screenNavigator.openProductIncorrectForCreateBox(serverProductInfo)
+        } else {
+            screenNavigator.goBack()
+            screenNavigator.openCreateBoxByProduct(serverProductInfo)
+            saveAndClearFields()
         }
     }
 
@@ -303,33 +337,49 @@ class CreateBoxesViewModel : CoreViewModel(),
             )
 
             boxesRepository.addBoxes(newBox)
-            stamps.postValue(emptyList())
-            boxNumber.postValue("")
+            stamps.value = emptyList()
+            boxNumber.value = EMPTY
             updateBoxes()
 
             screenNavigator.openBoxSavedDialog(newBox)
-        } ?: Logg.e {
-            "productInfo empty"
+        }.orIfNull {
+            Logg.e { "productInfo empty" }
+            screenNavigator.openAlertScreen(Failure.SapError("Ошибка значения товара"))
         }
     }
 
     private fun updateBoxes() {
         productInfo.value?.let { productInfoValue ->
             val boxes = boxesRepository.getBoxesByProduct(productInfoValue).mapIndexed { index, box ->
+                val title = buildString {
+                    val boxCodeFirstFive = box.code.take(5)
+                    val boxCodeLastFive = box.code.takeLast(5)
+                    val dateOfPour = box.stamps.firstOrNull()?.dateOfPour.orEmpty()
+                    when (box.code.length) {
+                        in 0..10 -> append(box.code)
+                        else -> {
+                            append(boxCodeFirstFive)
+                            append("...")
+                            append(boxCodeLastFive)
+                        }
+                    }
+                    append(" // ")
+                    append(dateOfPour)
+                }
                 BoxListItem(
                         number = (index + 1).toString(),
-                        title = "${box.code.take(5)}...${box.code.takeLast(5)} // ${box.stamps.first().dateOfPour}",
-                        subtitle = box.stamps.first().manufacturerName
+                        title = title,
+                        subtitle = box.stamps.firstOrNull()?.manufacturerName.orEmpty()
                 )
             }
-
-            boxList.postValue(boxes)
+            boxList.value = boxes
         }
     }
 
     companion object {
-        private const val SCAN_LENGTH_BOX = 26
         private const val CODE_EBP = "MVM"
         private const val LOADING_STAMP_INFO = "Загрузка информации о марке"
     }
+
+
 }
