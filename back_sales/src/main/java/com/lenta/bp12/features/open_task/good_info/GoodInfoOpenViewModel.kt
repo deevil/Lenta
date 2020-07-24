@@ -480,17 +480,26 @@ class GoodInfoOpenViewModel : CoreViewModel() {
         launchUITryCatch {
             result.status.let { status ->
                 when (status) {
-                    MarkStatus.OK.code, MarkStatus.BAD.code -> addMarkInfo(number, result)
+                    MarkStatus.OK.code -> addMarkInfo(number, result)
+                    MarkStatus.BAD.code -> {
+                        addMarkInfo(number, result)
+                        navigator.openAlertScreen(result.statusDescription)
+                    }
                     MarkStatus.UNKNOWN.code -> {
-                        database.getAlcoCodeInfoList(number.extractAlcoCode()).let { alcoCodeInfoList ->
-                            if (alcoCodeInfoList.isNotEmpty()) {
-                                if (alcoCodeInfoList.find { it.material == good.value!!.material } != null) {
-                                    addPartInfo(number, result)
-                                } else {
-                                    navigator.openAlertScreen(resource.alcocodeDoesNotApplyToThisGood())
+                        when(number.length){
+                            Constants.MARK_150 -> navigator.openAlertScreen(result.statusDescription)
+                            Constants.MARK_68 -> {
+                                database.getAlcoCodeInfoList(number.extractAlcoCode()).let { alcoCodeInfoList ->
+                                    if (alcoCodeInfoList.isNotEmpty()) {
+                                        if (alcoCodeInfoList.find { it.material == good.value!!.material } != null) {
+                                            addPartInfo(number, result)
+                                        } else {
+                                            navigator.openAlertScreen(resource.alcocodeDoesNotApplyToThisGood())
+                                        }
+                                    } else {
+                                        navigator.openAlertScreen(resource.unknownAlcocode())
+                                    }
                                 }
-                            } else {
-                                navigator.openAlertScreen(resource.unknownAlcocode())
                             }
                         }
                     }
