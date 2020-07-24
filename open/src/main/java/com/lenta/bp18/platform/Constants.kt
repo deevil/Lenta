@@ -4,12 +4,15 @@ object Constants {
 
     const val GOOD_MATERIAL = "000000000000000000"
     const val GOOD_MATCODE = "000000000000"
-    const val GOOD_INFO_NAME = "НЕ ОПРЕДЕЛЁН"
+    const val GOOD_NAME = "НЕ ОПРЕДЕЛЁН"
     const val DEF_PARTNUMBER = "1234567890"
 
     const val APP_FOLDER_NAME = "bp18"
 
+    const val KEY_FOR_SAVE = "OPEN_CHECK_RESULT"
+
     const val TIME_OUT_IN_SEC = 60
+    const val TIME_OUT = 2000
 
     //Номера экранов
     const val AUTH_FRAGMENT = "01"

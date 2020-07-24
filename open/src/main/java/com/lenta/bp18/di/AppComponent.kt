@@ -1,6 +1,7 @@
 package com.lenta.bp18.di
 
 import com.lenta.bp18.ExceptionHandler
+import com.lenta.bp18.data.model.CheckData
 import com.lenta.bp18.features.auth.AuthViewModel
 import com.lenta.bp18.features.good_info.GoodInfoViewModel
 import com.lenta.bp18.features.loading.fast.FastLoadingViewModel
@@ -21,6 +22,7 @@ interface AppComponent : FromParentToCoreProvider {
 
     fun getScreenNavigator(): IScreenNavigator
     fun getGeneralRepository(): IDatabaseRepo
+    fun getCheckStoreData(): CheckData
 
     fun inject(mainActivity: MainActivity)
     fun inject(mainViewModel: MainViewModel)

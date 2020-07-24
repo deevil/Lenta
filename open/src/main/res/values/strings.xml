@@ -9,6 +9,7 @@
     <string name="tw_unpucking_success">Вскрытие упаковки прошло успешно. Напечатайте дату и время вскрытия с помощью стикера-пистолета</string>
     <string name="tw_part_number_not_found">Введенный номер партии не найден</string>
     <string name="tw_good_not_found">Данный товар не найден в справочнике</string>
+    <string name="tw_server_no_available">Нет доступа к серверу</string>
     <string name="tw_quantity_goods">Количество</string>
     <string name="tw_part_number">Номер партии</string>
     <string name="tw_sync_contacts">Синхронизация справочников</string>

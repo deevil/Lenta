@@ -18,9 +18,10 @@ fun ZmpUtz110V001.getAllGroups(): List<ZmpUtz110V001.ItemLocal_ET_GR_WEIGHT> {
 fun List<ZmpUtz110V001.ItemLocal_ET_GR_WEIGHT>.toGroupInfoList(): List<GroupInfo> {
     return this.map {
         GroupInfo(
-                werks = it.werks,
+                werks = it.werks.orEmpty(),
                 number = it.grnum,
                 name = it.grname
         )
     }
+
 }

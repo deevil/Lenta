@@ -1,7 +1,7 @@
 package com.lenta.bp18.repository
 
-import com.lenta.bp18.model.pojo.EnteredCode
 import com.lenta.bp18.model.pojo.Good
+import com.lenta.bp18.platform.Constants
 import com.lenta.shared.di.AppScope
 import com.lenta.shared.fmp.resources.dao_ext.*
 import com.lenta.shared.fmp.resources.fast.*
@@ -26,7 +26,7 @@ class DatabaseRepo(
         val conditionInfo: ZmpUtz111V001 = ZmpUtz111V001(hyperHive) //Список условий хранения
 ) : IDatabaseRepo {
 
-    override suspend fun getGoodInfoByEan(ean: String): Good? {
+    override suspend fun getGoodByEan(ean: String): Good? {
         return withContext(Dispatchers.IO) {
             getEanInfoByEan(ean)?.run {
                 val productInfo = getProductInfoByMaterial(this.materialNumber)
@@ -35,7 +35,6 @@ class DatabaseRepo(
                         ean = ean,
                         material = this.materialNumber,
                         matcode = productInfo?.matcode.orEmpty(),
-                        enteredCode = EnteredCode.EAN,
                         name = productInfo?.name.orEmpty(),
                         uom = Uom(
                                 code = productInfo?.buom.orEmpty(),
@@ -46,6 +45,7 @@ class DatabaseRepo(
 
     override suspend fun getEanInfoByEan(ean: String?): EanInfo? {
         return withContext(Dispatchers.IO) {
+            //val allData = barCodeInfo.localHelper_ET_EANS.all.takeLast(100)
             barCodeInfo.getEanInfo(ean)?.toEanInfo()
         }
     }
@@ -74,11 +74,23 @@ class DatabaseRepo(
         }
     }
 
+    override suspend fun getTestData(ean: String?): Good? {
+        return Good(
+                ean = ean,
+                material = Constants.GOOD_MATERIAL,
+                matcode = Constants.GOOD_MATCODE,
+                name = Constants.GOOD_NAME,
+                uom = Uom(
+                        code = "ST",
+                        name = "шт"))
+    }
+
     override suspend fun getAllGoodCondition(): List<ConditionInfo> {
         return withContext(Dispatchers.IO) {
             conditionInfo.getAllConditions().toConditionInfoList()
         }
     }
+
 }
 
 
@@ -86,8 +98,10 @@ interface IDatabaseRepo {
     suspend fun getEanInfoByEan(ean: String?): EanInfo?
     suspend fun getProductInfoByMaterial(material: String?): ProductInfo?
     suspend fun getGoodUnitName(unitCode: String?): String?
-    suspend fun getGoodInfoByEan(ean: String): Good?
+    suspend fun getGoodByEan(ean: String): Good?
     suspend fun getAllMarkets(): List<MarketInfo>
     suspend fun getAllGoodCondition(): List<ConditionInfo>
     suspend fun getAllGoodGroup(): List<GroupInfo>
+
+    suspend fun getTestData(ean: String?): Good?
 }

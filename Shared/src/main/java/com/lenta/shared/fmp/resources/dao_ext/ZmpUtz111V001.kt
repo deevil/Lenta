@@ -17,12 +17,12 @@ fun ZmpUtz111V001.getAllConditions(): List<ZmpUtz111V001.ItemLocal_ET_ST_COND> {
 
 fun List<ZmpUtz111V001.ItemLocal_ET_ST_COND>.toConditionInfoList(): List<ConditionInfo> {
     return this.map {
-        ConditionInfo(
-                werks = it.werks,
-                matnr = it.matnr,
-                number = it.stcond,
-                name = it.stcondnam,
-                defCondition = it.defcond
-        )
+            ConditionInfo(
+                    werks = it.werks.orEmpty(),
+                    matnr = it.matnr,
+                    number = it.stcond.orEmpty(),
+                    name = it.stcondnam.orEmpty(),
+                    defCondition = it.defcond.orEmpty()
+            )
     }
 }

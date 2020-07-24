@@ -40,9 +40,9 @@ class ScreenNavigator @Inject constructor(
         }
     }
 
-    override fun openGoodsInfoScreen() {
+    override fun openGoodsInfoScreen(ean: String) {
         runOrPostpone {
-            getFragmentStack()?.push(GoodInfoFragment())
+            getFragmentStack()?.push(GoodInfoFragment.newInstance(ean))
         }
     }
 
@@ -56,37 +56,42 @@ class ScreenNavigator @Inject constructor(
         }
     }
 
+
     // Informational screens
-    override fun showConfirmOpeningPackage(/*confirmCallback: () -> Unit*/) {
+    override fun showConfirmOpeningPackage(confirmCallback: () -> Unit) {
         runOrPostpone {
             getFragmentStack()?.push(AlertFragment.create(
                     message = context.getString(R.string.tw_unpucking),
                     iconRes = R.drawable.ic_question_yellow_80dp,
                     pageNumber = Constants.CONFIRMATION_SCREEN,
-                    //codeConfirmForRight = backFragmentResultHelper.setFuncForResult(confirmCallback),
+                    codeConfirmForRight = backFragmentResultHelper.setFuncForResult(confirmCallback),
                     rightButtonDecorationInfo = ButtonDecorationInfo.confirm
             ))
         }
     }
 
-    override fun showConfirmSaveData(/*confirmCallback: () -> Unit*/) {
+    override fun showConfirmSaveData(goOverCallback: () -> Unit) {
         runOrPostpone {
             getFragmentStack()?.push(AlertFragment.create(
                     message = context.getString(R.string.tw_save_data),
                     iconRes = R.drawable.ic_question_yellow_80dp,
                     pageNumber = Constants.CONFIRMATION_SCREEN,
-                    //codeConfirmForRight = backFragmentResultHelper.setFuncForResult(confirmCallback),
+                    codeConfirmForLeft = backFragmentResultHelper.setFuncForResult(goOverCallback),
+                    leftButtonDecorationInfo = ButtonDecorationInfo.back,
+                    codeConfirmForRight = backFragmentResultHelper.setFuncForResult(goOverCallback),
                     rightButtonDecorationInfo = ButtonDecorationInfo.confirm
             ))
         }
     }
 
-    override fun showAlertSuccessfulOpeningPackage() {
+    override fun showAlertSuccessfulOpeningPackage(goOverCallback: () -> Unit) {
         runOrPostpone {
             getFragmentStack()?.push(AlertFragment.create(
                     message = context.getString(R.string.tw_unpucking_success),
                     iconRes = R.drawable.ic_info_green_80dp,
-                    pageNumber = Constants.ALERT_SCREEN_NUMBER
+                    pageNumber = Constants.ALERT_SCREEN_NUMBER,
+                    codeConfirmForLeft = backFragmentResultHelper.setFuncForResult(goOverCallback),
+                    leftButtonDecorationInfo = ButtonDecorationInfo.back
             ))
         }
     }
@@ -107,7 +112,20 @@ class ScreenNavigator @Inject constructor(
                     message = context.getString(R.string.tw_good_not_found),
                     iconRes = R.drawable.ic_warning_red_80dp,
                     pageNumber = Constants.ALERT_SCREEN_NUMBER,
-                    timeAutoExitInMillis = Constants.TIME_OUT_IN_SEC
+                    timeAutoExitInMillis = Constants.TIME_OUT
+            ))
+        }
+    }
+
+    override fun showAlertServerNotAvailable(goOverCallback: () -> Unit) {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    message = context.getString(R.string.tw_server_no_available),
+                    iconRes = R.drawable.ic_warning_red_80dp,
+                    pageNumber = Constants.ALERT_SCREEN_NUMBER,
+                    timeAutoExitInMillis = Constants.TIME_OUT,
+                    codeConfirmForLeft = backFragmentResultHelper.setFuncForResult(goOverCallback),
+                    leftButtonDecorationInfo = ButtonDecorationInfo.back
             ))
         }
     }
@@ -119,12 +137,13 @@ interface IScreenNavigator : ICoreNavigator {
     fun openAuthScreen()
     fun openSelectMarketScreen()
     fun openSelectGoodScreen()
-    fun openGoodsInfoScreen()
+    fun openGoodsInfoScreen(ean: String)
     fun openFastDataLoadingScreen()
 
-    fun showConfirmOpeningPackage(/*confirmCallback: () -> Unit*/)
-    fun showConfirmSaveData(/*confirmCallback: () -> Unit*/)
-    fun showAlertSuccessfulOpeningPackage()
+    fun showConfirmOpeningPackage(confirmCallback: () -> Unit)
+    fun showConfirmSaveData(goOverCallback: () -> Unit)
+    fun showAlertSuccessfulOpeningPackage(goOverCallback: () -> Unit)
     fun showAlertPartCodeNotFound()
     fun showAlertGoodsNotFound()
+    fun showAlertServerNotAvailable(goOverCallback: () -> Unit)
 }

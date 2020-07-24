@@ -48,7 +48,8 @@
                         android:paddingStart="@dimen/size_10dp"
                         android:paddingEnd="@dimen/size_10dp"
                         android:textSize="@dimen/text_14sp"
-                        android:text="@{vm.quantityField}"
+                        android:text="@={vm.quantityField}"
+                        app:requestFocus="@{vm.requestFocusToQuantityField}"
                         style="@style/CellEditTextStyle"
                         tools:text="10 кг"/>
 
@@ -87,7 +88,9 @@
                         android:paddingStart="@dimen/size_10dp"
                         android:paddingEnd="@dimen/size_10dp"
                         android:textSize="@dimen/text_14sp"
-                        android:text="@{vm.partNumberField}"
+                        android:enabled="@{vm.partNumberFieldEnabled}"
+                        app:requestFocus="@{vm.requestFocusToPartNumberField}"
+                        android:text="@={vm.partNumberField}"
                         style="@style/CellEditTextStyle"
                         tools:text="10 кг"/>
 

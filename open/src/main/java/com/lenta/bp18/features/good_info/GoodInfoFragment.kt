@@ -32,11 +32,11 @@ class GoodInfoFragment : CoreFragment<FragmentGoodInfoBinding, GoodInfoViewModel
     override fun setupTopToolBar(topToolbarUiModel: TopToolbarUiModel) {
         topToolbarUiModel.description.value = getString(R.string.good_card)
 
-/*        viewLifecycleOwner.apply {
+        viewLifecycleOwner.apply {
             vm.good.observe(this, Observer { good ->
                 topToolbarUiModel.title.value = getString(R.string.title_good_sap_name, good.getFormattedMaterial(), good.name)
             })
-        }*/
+        }
     }
 
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
@@ -46,13 +46,18 @@ class GoodInfoFragment : CoreFragment<FragmentGoodInfoBinding, GoodInfoViewModel
 
     override fun onToolbarButtonClick(view: View) {
         when(view.id){
-            R.id.b_5 -> vm.onClickComplete()
             R.id.b_1 -> vm.onClickBack()
+            R.id.b_5 -> vm.onClickComplete()
         }
     }
 
     companion object {
         const val SCREEN_NUMBER = Constants.GOODS_INFO_FRAGMENT
+        private const val KEY_EAN_VALUE = "KEY_EAN_VALUE"
+
+        fun newInstance(ean: String) = GoodInfoFragment().apply {
+            arguments = bundleOf(KEY_EAN_VALUE to ean)
+        }
     }
 
 }
