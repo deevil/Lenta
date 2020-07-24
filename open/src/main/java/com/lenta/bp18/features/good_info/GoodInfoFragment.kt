@@ -1,6 +1,7 @@
 package com.lenta.bp18.features.good_info
 
 import android.view.View
+import androidx.core.os.bundleOf
 import androidx.lifecycle.Observer
 import com.lenta.bp18.R
 import com.lenta.bp18.databinding.FragmentGoodInfoBinding
@@ -14,8 +15,13 @@ import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
 import com.lenta.shared.utilities.extentions.generateScreenNumberFromPostfix
 import com.lenta.shared.utilities.extentions.getDeviceId
 import com.lenta.shared.utilities.extentions.provideViewModel
+import com.lenta.shared.utilities.extentions.unsafeLazy
 
 class GoodInfoFragment : CoreFragment<FragmentGoodInfoBinding, GoodInfoViewModel>(), ToolbarButtonsClickListener {
+
+    val ean: String by unsafeLazy {
+        arguments?.getParcelable(KEY_EAN_VALUE)
+    }
 
     override fun getLayoutId(): Int = R.layout.fragment_good_info
 

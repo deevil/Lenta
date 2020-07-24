@@ -14,6 +14,7 @@ import com.lenta.shared.settings.IAppSettings
 import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.SelectionItemsHelper
 import com.lenta.shared.utilities.extentions.map
+import com.lenta.shared.utilities.extentions.unsafeLazy
 import com.lenta.shared.view.OnPositionClickListener
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -23,8 +24,6 @@ class GoodInfoViewModel : SendDataViewModel(), OnPositionClickListener {
 
     @Inject
     lateinit var appSettings: IAppSettings
-
-    private val selectedEan by lazy { arguments?.getParcelable<String>(KEY_EAN_VALUE) }
 
     //val barcode = "2999999640343" //опилки
     //val barcode = "2425352000000" //не опилки
