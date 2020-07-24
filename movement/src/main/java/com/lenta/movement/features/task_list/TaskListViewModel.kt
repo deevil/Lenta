@@ -182,9 +182,9 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
         val taskListValue = taskList.value
         taskListValue?.getOrNull(position)?.let { task ->
             screenNavigator.openTaskScreen(task)
-        }.orIfNull {
-            showErrorIfPositionDoesNotExist()
-        }
+        }.orIfNull (
+                ::showErrorIfPositionDoesNotExist
+        )
     }
 
     private fun showErrorIfPositionDoesNotExist() {

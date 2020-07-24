@@ -14,6 +14,7 @@ import com.lenta.movement.platform.navigation.IScreenNavigator
 import com.lenta.movement.requests.network.ApprovalAndTransferToTasksCargoUnit
 import com.lenta.movement.requests.network.StartConsolidation
 import com.lenta.movement.requests.network.models.approvalAndTransferToTasksCargoUnit.ApprovalAndTransferToTasksCargoUnitParams
+import com.lenta.movement.requests.network.models.approvalAndTransferToTasksCargoUnit.ApprovalAndTransferToTasksCargoUnitResult
 import com.lenta.movement.requests.network.models.startConsolidation.StartConsolidationParams
 import com.lenta.movement.requests.network.models.startConsolidation.StartConsolidationResult
 import com.lenta.movement.requests.network.models.toModelList
@@ -231,7 +232,9 @@ class TaskViewModel : CoreViewModel(), PageSelectionListener {
     }
 
     fun onResume() {
-        task.value?.let( taskManager::setTask )
+        task.value?.let(
+                taskManager::setTask
+        )
     }
 
     fun getTitle(): String {
@@ -311,16 +314,23 @@ class TaskViewModel : CoreViewModel(), PageSelectionListener {
             either.either(
                     fnL = screenNavigator::openAlertScreenWithFailure,
                     fnR = { result ->
-                        screenNavigator.hideProgress()
-                        val task = result.taskList?.first()?.toTask()
-                        task?.let {
-                            taskManager.setTask(task)
-                            with(screenNavigator) {
-                                goBack()
-                                openTaskScreen(task)
-                            }
-                        } ?: screenNavigator.openAlertScreen(Failure.ServerError)
-                    })
+                        onApprovalAndTransferSuccessResult(result)
+                    }
+            )
+        }
+    }
+
+    private fun onApprovalAndTransferSuccessResult(result: ApprovalAndTransferToTasksCargoUnitResult){
+        screenNavigator.hideProgress()
+        val task = result.taskList?.first()?.toTask()
+        task?.let {
+            taskManager.setTask(task)
+            with(screenNavigator) {
+                goBack()
+                openTaskScreen(task)
+            }
+        }.orIfNull {
+            screenNavigator.openAlertScreen(Failure.ServerError)
         }
     }
 
@@ -344,7 +354,7 @@ class TaskViewModel : CoreViewModel(), PageSelectionListener {
                 } ?: Logg.e { "eoList null" }
             }
 
-            withContext(Dispatchers.Main){
+            withContext(Dispatchers.Main) {
                 screenNavigator.hideProgress()
                 screenNavigator.openTaskEoMergeScreen()
             }

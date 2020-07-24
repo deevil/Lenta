@@ -65,8 +65,8 @@ class TaskManager(
                     .map {
                         it.lgortSource
                     }
-                    .toList()
                     .distinct()
+                    .toList()
         }
     }
 
@@ -124,10 +124,7 @@ class TaskManager(
                 )
                         .first()
                         .name
-            }.orIfNull {
-                Logg.e { "goodNumber null" }
-                ""
-            }
+            }.orEmpty()
         }
     }
 
@@ -137,8 +134,9 @@ class TaskManager(
             taskSettingsTable.getWhere(
                     GET_MVM_TYPE_BY_MVM_CODE.format(propertyName)
             )
-                    .first()
-                    .annotation
+                    .firstOrNull()
+                    ?.annotation
+                    .orEmpty()
         }
     }
 
@@ -148,8 +146,9 @@ class TaskManager(
             taskTypeTable.getWhere(
                     GET_MVM_SHORT_TYPE_BY_MVM_CODE.format(propertyName)
             )
-                    .first()
-                    .taskTypeTxt.orEmpty()
+                    .firstOrNull()
+                    ?.taskTypeTxt
+                    .orEmpty()
         }
     }
 

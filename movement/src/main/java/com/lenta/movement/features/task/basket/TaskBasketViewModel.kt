@@ -65,12 +65,12 @@ class TaskBasketViewModel() : CoreViewModel(),
 
     val title by unsafeLazy {
         asyncLiveData<String> {
-            val title = "${formatter.getBasketName(basket)}: ${formatter.getBasketDescription(
+            val innerTitle = "${formatter.getBasketName(basket)}: ${formatter.getBasketDescription(
                     basket = basket,
                     task = taskManager.getTask(),
                     settings = getSettings()
             )}"
-            emit(title)
+            emit(innerTitle)
         }
     }
 
