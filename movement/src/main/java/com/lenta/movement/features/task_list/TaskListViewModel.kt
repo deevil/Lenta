@@ -126,25 +126,43 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
     private fun netRequest(mode: String, filter: SearchTaskFilter?, user: String) {
         launchUITryCatch {
             screenNavigator.showProgress(taskListNetRequest)
-            sessionInfo.apply {
-                market?.let { marketNumber ->
-                    personnelNumber?.let { personnelNumber ->
-                        val params = TaskListParams(
-                                tkNumber = marketNumber,
-                                user = user,
-                                mode = mode,
-                                personellNumber = personnelNumber,
-                                filter = filter
-                        )
-                        val result = taskListNetRequest(params)
-                        result.either(
-                                fnL = ::onFailResultHandler,
-                                fnR = ::onSuccessResultHandler
-                        )
-                    }
-                }
+            val marketNumber = sessionInfo.market
+            if (marketNumber == null) {
+                showErrorMarketNumber()
+                return@launchUITryCatch
             }
+            val personnelNumber = sessionInfo.personnelNumber
+            if (personnelNumber == null) {
+                showErrorPersonnelNumber()
+                return@launchUITryCatch
+            }
+            val params = TaskListParams(
+                    tkNumber = marketNumber,
+                    user = user,
+                    mode = mode,
+                    personellNumber = personnelNumber,
+                    filter = filter
+            )
+            val result = taskListNetRequest(params)
+            result.either(
+                    fnL = ::onFailResultHandler,
+                    fnR = ::onSuccessResultHandler
+            )
         }
+    }
+
+    private fun showErrorMarketNumber(){
+        Logg.e {
+            "Market number null"
+        }
+        screenNavigator.openAlertScreen(Failure.SapError("Проблема получения номера ТК"))
+    }
+
+    private fun showErrorPersonnelNumber(){
+        Logg.e {
+            "Personnel number null"
+        }
+        screenNavigator.openAlertScreen(Failure.SapError("Проблема получения табельного номера"))
     }
 
     private fun onFailResultHandler(failure: Failure) {
@@ -157,7 +175,7 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
     private fun onSuccessResultHandler(result: TaskListResult) {
         val resultList = result.taskList
         launchUITryCatch {
-            val taskListMappedFromRestModel =  withContext(Dispatchers.IO){
+            val taskListMappedFromRestModel = withContext(Dispatchers.IO) {
                 resultList.toTaskList()
             }
             taskList.value = taskListMappedFromRestModel
@@ -182,7 +200,7 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
         val taskListValue = taskList.value
         taskListValue?.getOrNull(position)?.let { task ->
             screenNavigator.openTaskScreen(task)
-        }.orIfNull (
+        }.orIfNull(
                 ::showErrorIfPositionDoesNotExist
         )
     }

@@ -112,7 +112,7 @@ class TaskManager(
 
     override suspend fun getPrinterName(): String {
         return withContext(Dispatchers.IO) {
-            printerTable.all.first().printerName
+            printerTable.all.firstOrNull()?.printerName.orEmpty()
         }
     }
 
@@ -122,8 +122,8 @@ class TaskManager(
                 goodsTable.getWhere(
                         GET_GOODNAME_BY_GOODNUMBER.format(goodNumber)
                 )
-                        .first()
-                        .name
+                        .firstOrNull()
+                        ?.name
             }.orEmpty()
         }
     }
@@ -171,45 +171,44 @@ class TaskManager(
 
             val signOfDivision = mutableSetOf<GoodsSignOfDivision>()
 
-            if (results.first().divMarkParts.isSapTrue()) {
+            if (results.firstOrNull()?.divMarkParts.isSapTrue()) {
                 signOfDivision.add(GoodsSignOfDivision.MARK_PARTS)
             }
 
-            if (results.first().divAlco.isSapTrue()) {
+            if (results.firstOrNull()?.divAlco.isSapTrue()) {
                 signOfDivision.add(GoodsSignOfDivision.ALCO)
             }
 
-            if (results.first().divUsual.isSapTrue()) {
+            if (results.firstOrNull()?.divUsual.isSapTrue()) {
                 signOfDivision.add(GoodsSignOfDivision.USUAL)
             }
 
-            if (results.first().divVet.isSapTrue()) {
+            if (results.firstOrNull()?.divVet.isSapTrue()) {
                 signOfDivision.add(GoodsSignOfDivision.VET)
             }
 
-            if (results.first().divParts.isSapTrue()) {
+            if (results.firstOrNull()?.divParts.isSapTrue()) {
                 signOfDivision.add(GoodsSignOfDivision.PARTS)
             }
 
-            if (results.first().divMtart.isSapTrue()) {
+            if (results.firstOrNull()?.divMtart.isSapTrue()) {
                 signOfDivision.add(GoodsSignOfDivision.MTART)
             }
 
-            if (results.first().divFood.isSapTrue()) {
+            if (results.firstOrNull()?.divFood.isSapTrue()) {
                 signOfDivision.add(GoodsSignOfDivision.FOOD)
             }
 
-            if (results.first().divLifnr.isSapTrue()) {
+            if (results.firstOrNull()?.divLifnr.isSapTrue()) {
                 signOfDivision.add(GoodsSignOfDivision.LIF_NUMBER)
             }
 
-            if (results.first().divMatnr.isSapTrue()) {
+            if (results.firstOrNull()?.divMatnr.isSapTrue()) {
                 signOfDivision.add(GoodsSignOfDivision.MATERIAL_NUMBER)
             }
             TaskSettings(
-                    description = results.first().annotation,
+                    description = results.firstOrNull()?.annotation.orEmpty(),
                     shipmentStorageList = results.map { it.lgortTarget }.distinct(),
-                    //signsOfDiv = signOfDivision.toSet()
                     signsOfDiv = setOf(
                             GoodsSignOfDivision.ALCO,
                             GoodsSignOfDivision.VET,
