@@ -32,8 +32,10 @@ import javax.inject.Inject
 class SelectMarketViewModel : CoreViewModel(), OnPositionClickListener {
     @Inject
     lateinit var navigator: IScreenNavigator
+
     @Inject
     lateinit var sessionInfo: ISessionInfo
+
     @Inject
     lateinit var appSettings: IAppSettings
 
@@ -112,22 +114,21 @@ class SelectMarketViewModel : CoreViewModel(), OnPositionClickListener {
                                     .let { market ->
                                         val codeVersion = market?.version?.toIntOrNull()
                                         Logg.d { "codeVersion for update: $codeVersion" }
-                                        if (codeVersion == null) {
-                                            Either.Right("")
-                                        } else {
-                                            appUpdateInstaller.checkNeedAndHaveUpdate(codeVersion)
+                                        codeVersion?.run {
+                                            appUpdateInstaller.checkNeedAndHaveUpdate(this)
+                                                    ?: Either.Right("")
                                         }
                                     }
-                        }.either({
+                        }?.either({
                             Logg.e { "checkNeedAndHaveUpdate failure: $it" }
                             handleFailure(failure = it)
                         }) { updateFileName ->
                             Logg.d { "update fileName: $updateFileName" }
-                            if (updateFileName.isBlank()) {
-                                getServerTime()
-                            } else {
-                                installUpdate(updateFileName)
-                            }
+                            updateFileName.takeIf {
+                                it.isNotBlank()
+                            }?.let {
+                                installUpdate(it)
+                            } ?: getServerTime()
                         }
                     }
         }
