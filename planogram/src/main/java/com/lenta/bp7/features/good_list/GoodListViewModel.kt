@@ -1,15 +1,14 @@
 package com.lenta.bp7.features.good_list
 
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
 import com.lenta.bp7.data.model.Good
 import com.lenta.bp7.data.model.ShelfStatus
 import com.lenta.bp7.features.other.AddGoodViewModel
 import com.lenta.shared.platform.constants.Constants.SAP_6
 import com.lenta.shared.platform.constants.Constants.SAP_OR_BAR_12
 import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
+import com.lenta.shared.utilities.extentions.launchUITryCatch
 import com.lenta.shared.utilities.extentions.map
-import kotlinx.coroutines.launch
 
 class GoodListViewModel : AddGoodViewModel(), OnOkInSoftKeyboardListener {
 
@@ -27,7 +26,7 @@ class GoodListViewModel : AddGoodViewModel(), OnOkInSoftKeyboardListener {
     }
 
     init {
-        viewModelScope.launch {
+        launchUITryCatch {
             checkData.let {
                 segmentNumber.value = it.getCurrentSegment()?.number
                 shelfNumber.value = it.getCurrentShelf()?.number

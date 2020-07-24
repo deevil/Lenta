@@ -1,6 +1,5 @@
 package com.lenta.shared.utilities.databinding
 
-import android.widget.ImageView
 import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.databinding.BindingAdapter
@@ -10,9 +9,9 @@ import com.lenta.shared.models.core.isNormal
 import com.lenta.shared.platform.battery_state.getIconForStatus
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.utilities.date_time.DateTimeUtil
+import com.lenta.shared.utilities.extentions.selectableItemBackgroundResId
 import com.lenta.shared.utilities.extentions.setTextViewDrawableColor
 import com.lenta.shared.utilities.extentions.setVisible
-import com.lenta.shared.utilities.extentions.selectableItemBackgroundResId
 import com.lenta.shared.utilities.extentions.setVisibleGone
 
 

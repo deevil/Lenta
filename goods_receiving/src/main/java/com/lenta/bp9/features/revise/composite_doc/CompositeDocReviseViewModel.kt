@@ -1,15 +1,12 @@
 package com.lenta.bp9.features.revise.composite_doc
 
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
 import com.lenta.bp9.model.task.IReceivingTaskManager
-import com.lenta.bp9.model.task.revise.ComplexDocumentRevise
 import com.lenta.bp9.model.task.revise.DeliveryDocumentRevise
 import com.lenta.bp9.platform.navigation.IScreenNavigator
 import com.lenta.shared.platform.viewmodel.CoreViewModel
-import com.lenta.shared.utilities.Logg
+import com.lenta.shared.utilities.extentions.launchUITryCatch
 import com.lenta.shared.utilities.extentions.map
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class CompositeDocReviseViewModel : CoreViewModel() {
@@ -32,7 +29,7 @@ class CompositeDocReviseViewModel : CoreViewModel() {
     }
 
     init {
-        viewModelScope.launch {
+        launchUITryCatch {
             listComplexDoc.postValue(
                     taskManager.getReceivingTask()?.taskRepository?.getReviseDocuments()?.getComplexDocuments()?.filter {
                         it.documentID == document.value?.documentID

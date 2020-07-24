@@ -2,7 +2,6 @@ package com.lenta.bp9.features.loading.tasks
 
 import android.content.Context
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
 import com.lenta.bp9.model.task.IReceivingTaskManager
 import com.lenta.bp9.model.task.TaskContents
 import com.lenta.bp9.model.task.TaskDescription
@@ -16,7 +15,7 @@ import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.features.loading.CoreLoadingViewModel
 import com.lenta.shared.utilities.extentions.getDeviceIp
-import kotlinx.coroutines.launch
+import com.lenta.shared.utilities.extentions.launchUITryCatch
 import javax.inject.Inject
 
 class LoadingRecountStartPGEViewModel : CoreLoadingViewModel() {
@@ -47,7 +46,7 @@ class LoadingRecountStartPGEViewModel : CoreLoadingViewModel() {
     }
 
     init {
-        viewModelScope.launch {
+        launchUITryCatch {
             progress.value = true
             taskManager.getReceivingTask()?.let { task ->
                 val params = StartRecountPGEParams(
@@ -70,7 +69,7 @@ class LoadingRecountStartPGEViewModel : CoreLoadingViewModel() {
     }
 
     private fun handleSuccess(result: StartRecountPGERestInfo) {
-        viewModelScope.launch {
+        launchUITryCatch {
             repoInMemoryHolder.manufacturers.value = result.manufacturers
             taskManager.updateTaskDescription(TaskDescription.from(result.taskDescription))
             taskManager.getReceivingTask()?.updateTaskWithContents(taskContents.getTaskContentsPGEInfo(result))

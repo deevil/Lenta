@@ -1,7 +1,6 @@
 package com.lenta.bp16.features.auth
 
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
 import com.lenta.bp16.platform.navigation.IScreenNavigator
 import com.lenta.bp16.repository.IRepoInMemoryHolder
 import com.lenta.bp16.request.PermissionsRequestParams
@@ -16,10 +15,10 @@ import com.lenta.shared.requests.network.AuthParams
 import com.lenta.shared.settings.IAppSettings
 import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.extentions.combineLatest
+import com.lenta.shared.utilities.extentions.launchUITryCatch
 import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.utilities.getBaseAuth
 import com.lenta.shared.utilities.runIfDebug
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 
@@ -47,21 +46,21 @@ class AuthViewModel : CoreAuthViewModel() {
     }
 
     init {
-        viewModelScope.launch {
+        launchUITryCatch {
             sessionInfo.isAuthSkipped.value = false
             sessionInfo.packageName = packageName.value
         }
     }
 
     override fun onClickEnter() {
-        viewModelScope.launch {
+        launchUITryCatch {
             progress.value = true
             auth(AuthParams(getLogin(), getPassword())).either(::handleFailure, ::loadPermissions)
         }
     }
 
     private fun loadPermissions(@Suppress("UNUSED_PARAMETER") b: Boolean) {
-        viewModelScope.launch {
+        launchUITryCatch {
             getLogin().let { login ->
                 sessionInfo.userName = login
                 sessionInfo.basicAuth = getBaseAuth(login, getPassword())
@@ -101,7 +100,7 @@ class AuthViewModel : CoreAuthViewModel() {
     }
 
     override fun onResume() {
-        viewModelScope.launch {
+        launchUITryCatch {
             if (!appSettings.lastLogin.isNullOrEmpty()) {
                 login.value = appSettings.lastLogin
             }

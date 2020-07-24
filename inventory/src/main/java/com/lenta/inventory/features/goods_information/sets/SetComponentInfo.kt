@@ -3,7 +3,6 @@ package com.lenta.inventory.features.goods_information.sets
 import com.lenta.shared.models.core.MatrixType
 import com.lenta.shared.models.core.ProductType
 import com.lenta.shared.models.core.Uom
-import com.lenta.shared.requests.combined.scan_info.pojo.EanInfo
 
 data class SetComponentInfo(
         val setNumber: String, // Номер товара

@@ -1,7 +1,6 @@
 package com.lenta.bp9.model.repositories
 
 import com.lenta.bp9.model.task.TaskBoxInfo
-import com.lenta.bp9.model.task.TaskExciseStampInfo
 import com.lenta.bp9.model.task.TaskProductInfo
 
 interface ITaskBoxesRepository {

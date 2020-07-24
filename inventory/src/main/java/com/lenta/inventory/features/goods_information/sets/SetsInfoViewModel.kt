@@ -13,14 +13,13 @@ import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.requests.combined.scan_info.ScanInfoResult
-import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.SelectionItemsHelper
 import com.lenta.shared.utilities.extentions.combineLatest
+import com.lenta.shared.utilities.extentions.launchUITryCatch
 import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.utilities.extentions.toStringFormatted
 import com.lenta.shared.view.OnPositionClickListener
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.math.BigInteger
 import javax.inject.Inject
@@ -115,7 +114,7 @@ class SetsInfoViewModel : CoreViewModel(), OnPositionClickListener {
 
 
     init {
-        viewModelScope.launch {
+        launchUITryCatch {
             screenNavigator.showProgress(titleProgressScreen.value!!)
             suffix.value = productInfo.value?.uom?.name
             storePlaceNumber.value = productInfo.value!!.placeCode
@@ -201,7 +200,7 @@ class SetsInfoViewModel : CoreViewModel(), OnPositionClickListener {
         countRunRest = 0
         arrExciseGoodsRestInfo.clear()
 
-        viewModelScope.launch {
+        launchUITryCatch {
             screenNavigator.showProgress(titleProgressScreen.value!!)
             componentsInfo.map { componentInfo ->
                 obtainingDataExciseGoodsNetRequest(
@@ -265,7 +264,7 @@ class SetsInfoViewModel : CoreViewModel(), OnPositionClickListener {
             return
         }
 
-        viewModelScope.launch {
+        launchUITryCatch {
             screenNavigator.showProgress(titleProgressScreen.value!!)
             alcoCodeNetRequest(null).either(::handleFailure, ::alcoCodeHandleSuccess)
             screenNavigator.hideProgress()

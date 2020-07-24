@@ -1,7 +1,6 @@
 package com.lenta.bp14.features.work_list.good_sales
 
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
 import com.lenta.bp14.models.work_list.SalesStatistics
 import com.lenta.bp14.models.work_list.WorkListTask
 import com.lenta.bp14.platform.navigation.IScreenNavigator
@@ -13,9 +12,7 @@ import com.lenta.shared.exception.Failure
 import com.lenta.shared.platform.constants.Constants
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.Logg
-import com.lenta.shared.utilities.date_time.DateTimeUtil
 import com.lenta.shared.utilities.extentions.*
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class GoodSalesViewModel : CoreViewModel() {
@@ -46,7 +43,7 @@ class GoodSalesViewModel : CoreViewModel() {
     // -----------------------------
 
     init {
-        viewModelScope.launch {
+        launchUITryCatch {
             title.value = task.currentGood.value?.getFormattedMaterialWithName()
             onClickUpdate()
         }
@@ -55,8 +52,8 @@ class GoodSalesViewModel : CoreViewModel() {
     // -----------------------------
 
     fun onClickUpdate() {
-        viewModelScope.launch {
-            navigator.showProgressLoadingData()
+        launchUITryCatch {
+            navigator.showProgressLoadingData(::handleFailure)
             goodSalesNetRequest(
                     GoodSalesParams(
                             tkNumber = sessionInfo.market.orEmpty(),
@@ -74,7 +71,7 @@ class GoodSalesViewModel : CoreViewModel() {
 
     private fun updateSales(result: GoodSalesResult) {
         Logg.d { "GoodSalesResult: $result" }
-        viewModelScope.launch {
+        launchUITryCatch {
             val sales = result.sales.first()
             task.currentGood.value?.sales?.value = SalesStatistics(
                     lastSaleDate = "${sales.lastSaleDate}_${sales.lastSaleTime}".getDate(Constants.DATE_TIME_ONE),

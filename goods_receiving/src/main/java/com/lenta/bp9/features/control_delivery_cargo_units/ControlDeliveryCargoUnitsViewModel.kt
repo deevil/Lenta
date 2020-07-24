@@ -2,7 +2,6 @@ package com.lenta.bp9.features.control_delivery_cargo_units
 
 import android.content.Context
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
 import com.lenta.bp9.R
 import com.lenta.bp9.features.loading.tasks.TaskCardMode
 import com.lenta.bp9.model.processing.ProcessCargoUnitsService
@@ -21,26 +20,33 @@ import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
 import com.lenta.shared.utilities.databinding.PageSelectionListener
 import com.lenta.shared.utilities.extentions.combineLatest
 import com.lenta.shared.utilities.extentions.getDeviceIp
+import com.lenta.shared.utilities.extentions.launchUITryCatch
 import com.lenta.shared.utilities.extentions.map
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class ControlDeliveryCargoUnitsViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyboardListener {
 
     @Inject
     lateinit var screenNavigator: IScreenNavigator
+
     @Inject
     lateinit var taskManager: IReceivingTaskManager
+
     @Inject
     lateinit var processCargoUnitsService: ProcessCargoUnitsService
+
     @Inject
     lateinit var unloadingEndReceptionDistrCenter: UnloadingEndReceptionDistrCenterNetRequest
+
     @Inject
     lateinit var gettingDataNewCargoUnit: GettingDataNewCargoUnitNetRequest
+
     @Inject
     lateinit var context: Context
+
     @Inject
     lateinit var sessionInfo: ISessionInfo
+
     @Inject
     lateinit var dataBase: IDataBaseRepo
 
@@ -94,7 +100,7 @@ class ControlDeliveryCargoUnitsViewModel : CoreViewModel(), PageSelectionListene
     }
 
     init {
-        viewModelScope.launch {
+        launchUITryCatch {
             taskManager.getReceivingTask()?.getCargoUnits()?.let {
                 processCargoUnitsService.newProcessCargoUnitsService(it)
             }
@@ -147,19 +153,21 @@ class ControlDeliveryCargoUnitsViewModel : CoreViewModel(), PageSelectionListene
     }
 
     fun onClickSave() {
-        viewModelScope.launch {
+        launchUITryCatch {
             if (taskType == TaskType.ShipmentRC) {
                 processCargoUnitsService.save()
                 screenNavigator.openShipmentEndRecountLoadingScreen()
             } else {
-                screenNavigator.showProgressLoadingData()
+                screenNavigator.showProgressLoadingData(::handleFailure)
                 processCargoUnitsService.save()
                 val params = UnloadingEndReceptionDistrCenterParameters(
                         taskNumber = taskManager.getReceivingTask()?.taskHeader?.taskNumber ?: "",
                         deviceIP = context.getDeviceIp(),
                         personalNumber = sessionInfo.personnelNumber ?: "",
-                        transportConditions = taskManager.getReceivingTask()?.taskRepository?.getReviseDocuments()?.getTransportConditions()?.map { TransportConditionRestData.from(it) } ?: emptyList(),
-                        cargoUnits = taskManager.getReceivingTask()?.getCargoUnits()?.map { TaskCargoUnitInfoRestData.from(it) } ?: emptyList()
+                        transportConditions = taskManager.getReceivingTask()?.taskRepository?.getReviseDocuments()?.getTransportConditions()?.map { TransportConditionRestData.from(it) }
+                                ?: emptyList(),
+                        cargoUnits = taskManager.getReceivingTask()?.getCargoUnits()?.map { TaskCargoUnitInfoRestData.from(it) }
+                                ?: emptyList()
                 )
                 unloadingEndReceptionDistrCenter(params).either(::handleFailure, ::handleSuccess)
                 screenNavigator.hideProgress()
@@ -204,7 +212,7 @@ class ControlDeliveryCargoUnitsViewModel : CoreViewModel(), PageSelectionListene
 
         notProcessedSelectionsHelper.clearPositions()
 
-        viewModelScope.launch {
+        launchUITryCatch {
             moveToProcessedPageIfNeeded()
         }
     }
@@ -240,11 +248,13 @@ class ControlDeliveryCargoUnitsViewModel : CoreViewModel(), PageSelectionListene
 
     fun onClickItemPosition(position: Int) {
         if (selectedPage.value == 0) {
-            processCargoUnitsService.findCargoUnit(listNotProcessed.value?.get(position)?.name ?: "")?.let {
+            processCargoUnitsService.findCargoUnit(listNotProcessed.value?.get(position)?.name
+                    ?: "")?.let {
                 screenNavigator.openCargoUnitCardScreen(it, it.cargoUnitStatus == statusCodeSurplus.value)
             }
         } else {
-            processCargoUnitsService.findCargoUnit(listProcessed.value?.get(position)?.name ?: "")?.let {
+            processCargoUnitsService.findCargoUnit(listProcessed.value?.get(position)?.name
+                    ?: "")?.let {
                 screenNavigator.openCargoUnitCardScreen(it, it.cargoUnitStatus == statusCodeSurplus.value)
             }
         }
@@ -260,11 +270,11 @@ class ControlDeliveryCargoUnitsViewModel : CoreViewModel(), PageSelectionListene
     }
 
     private fun searchCargoUnit(data: String) {
-        viewModelScope.launch {
+        launchUITryCatch {
             searchCargoUnitNumber.value = data
             val findCargoUnit = processCargoUnitsService.findCargoUnit(data)
             if (findCargoUnit == null) {
-                screenNavigator.showProgressLoadingData()
+                screenNavigator.showProgressLoadingData(::handleFailure)
                 val params = GettingDataNewCargoUnitParameters(
                         taskNumber = taskManager.getReceivingTask()?.taskHeader?.taskNumber ?: "",
                         cargoUnitNumber = data
@@ -279,12 +289,17 @@ class ControlDeliveryCargoUnitsViewModel : CoreViewModel(), PageSelectionListene
 
     private fun handleSuccessNewCargoUnit(result: GettingDataNewCargoUnitResult) {
         when (result.cargoUnitType.toInt()) {
-            0 -> screenNavigator.openNewCargoUnitAnotherTransportationDialog(cargoUnitNumber = searchCargoUnitNumber.value ?: "", marketNumber = result.marketNumber, nextCallbackFunc = {
-                screenNavigator.openCargoUnitCardScreen(TaskNewCargoUnitInfoRestData.inCargoUnitInfo(result.cargoUnitStructure, searchCargoUnitNumber.value ?: ""), true)
+            0 -> screenNavigator.openNewCargoUnitAnotherTransportationDialog(cargoUnitNumber = searchCargoUnitNumber.value
+                    ?: "", marketNumber = result.marketNumber, nextCallbackFunc = {
+                screenNavigator.openCargoUnitCardScreen(TaskNewCargoUnitInfoRestData.inCargoUnitInfo(result.cargoUnitStructure, searchCargoUnitNumber.value
+                        ?: ""), true)
             })
-            1 -> screenNavigator.openAlertNewCargoUnitScreen(cargoUnitNumber = searchCargoUnitNumber.value ?: "", marketNumber = result.marketNumber)
-            2 -> screenNavigator.openNewCargoUnitCurrentTransportationDialog(cargoUnitNumber = searchCargoUnitNumber.value ?: "", marketNumber =result.marketNumber,  nextCallbackFunc = {
-                screenNavigator.openCargoUnitCardScreen(TaskNewCargoUnitInfoRestData.inCargoUnitInfo(result.cargoUnitStructure, searchCargoUnitNumber.value ?: ""), true)
+            1 -> screenNavigator.openAlertNewCargoUnitScreen(cargoUnitNumber = searchCargoUnitNumber.value
+                    ?: "", marketNumber = result.marketNumber)
+            2 -> screenNavigator.openNewCargoUnitCurrentTransportationDialog(cargoUnitNumber = searchCargoUnitNumber.value
+                    ?: "", marketNumber = result.marketNumber, nextCallbackFunc = {
+                screenNavigator.openCargoUnitCardScreen(TaskNewCargoUnitInfoRestData.inCargoUnitInfo(result.cargoUnitStructure, searchCargoUnitNumber.value
+                        ?: ""), true)
             })
         }
     }

@@ -1,11 +1,7 @@
 package com.lenta.bp12.request
 
 import com.google.gson.annotations.SerializedName
-import com.lenta.bp12.request.pojo.ProducerInfo
-import com.lenta.bp12.request.pojo.ProviderInfo
-import com.lenta.bp12.request.pojo.EanInfo
-import com.lenta.bp12.request.pojo.MaterialInfo
-import com.lenta.bp12.request.pojo.SetInfo
+import com.lenta.bp12.request.pojo.*
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.fmp.ObjectRawStatus
 import com.lenta.shared.functional.Either

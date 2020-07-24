@@ -2,7 +2,6 @@ package com.lenta.bp9.features.mercury_exception_integration
 
 import android.content.Context
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
 import com.lenta.bp9.model.task.IReceivingTaskManager
 import com.lenta.bp9.platform.navigation.IScreenNavigator
 import com.lenta.bp9.repos.IDataBaseRepo
@@ -14,8 +13,8 @@ import com.lenta.shared.exception.Failure
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.requests.combined.scan_info.pojo.QualityInfo
 import com.lenta.shared.utilities.extentions.getDeviceIp
+import com.lenta.shared.utilities.extentions.launchUITryCatch
 import com.lenta.shared.view.OnPositionClickListener
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class MercuryExceptionIntegrationViewModel : CoreViewModel(), OnPositionClickListener {
@@ -40,7 +39,7 @@ class MercuryExceptionIntegrationViewModel : CoreViewModel(), OnPositionClickLis
 
 
     init {
-        viewModelScope.launch {
+        launchUITryCatch {
             reasonsExclusionInfo.value = dataBase.getExclusionFromIntegration()
             spinReasonsExclusion.value = reasonsExclusionInfo.value?.map {
                 it.name
@@ -53,8 +52,8 @@ class MercuryExceptionIntegrationViewModel : CoreViewModel(), OnPositionClickLis
     }
 
     fun onClickNext() {
-        viewModelScope.launch {
-            screenNavigator.showProgressLoadingData()
+        launchUITryCatch {
+            screenNavigator.showProgressLoadingData(::handleFailure)
             taskManager.getReceivingTask()?.let { task ->
                 val params = ExclusionFromIntegrationParameters(
                         taskNumber = task.taskHeader.taskNumber,

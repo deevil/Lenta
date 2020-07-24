@@ -1,8 +1,8 @@
 package com.lenta.movement.models
 
-interface ITaskManager {
+interface ITaskManager{
 
-    fun getTaskSettings(
+    suspend fun getTaskSettings(
         taskType: TaskType = getTask().taskType,
         movementType: MovementType = getTask().movementType
     ): TaskSettings
@@ -13,19 +13,20 @@ interface ITaskManager {
 
     fun setTask(task: Task)
 
-    fun getAvailableReceivers(): List<String>
+    suspend fun getAvailableReceivers(): List<String>
 
-    fun getAvailablePikingStorageList(taskType: TaskType, movementType: MovementType): List<String>
+    suspend fun getAvailablePikingStorageList(taskType: TaskType, movementType: MovementType): List<String>
 
-    fun isAllowProduct(product: ProductInfo): Boolean
+    suspend fun isAllowProduct(product: ProductInfo): Boolean
 
-    fun isDisallowProduct(product: ProductInfo): Boolean
+    suspend fun isDisallowProduct(product: ProductInfo): Boolean
 
     fun clear()
 
-    fun getPrinterName() : String
+    suspend fun getPrinterName() : String
 
-    fun getGoodName(goodNumber: String?) : String
+    suspend fun getGoodName(goodNumber: String?) : String
 
-    fun getMovementType(movementType: MovementType) : String
+    suspend fun getMovementType(movementType: MovementType) : String
+    suspend fun getMovementTypeShort(movementType: MovementType) : String
 }

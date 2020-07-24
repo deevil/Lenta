@@ -1,7 +1,6 @@
 package com.lenta.bp10.features.loading.fast
 
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
 import app_update.AppUpdateInstaller
 import com.lenta.bp10.platform.navigation.IScreenNavigator
 import com.lenta.bp10.repos.IRepoInMemoryHolder
@@ -13,7 +12,6 @@ import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.exception.IFailureInterpreter
 import com.lenta.shared.features.loading.CoreLoadingViewModel
-import com.lenta.shared.fmp.resources.dao_ext.getAllowedWobAppVersion
 import com.lenta.shared.fmp.resources.fast.ZmpUtz14V001
 import com.lenta.shared.functional.Either
 import com.lenta.shared.platform.app_update.AppUpdateChecker
@@ -23,10 +21,9 @@ import com.lenta.shared.requests.network.ServerTime
 import com.lenta.shared.requests.network.ServerTimeRequest
 import com.lenta.shared.requests.network.ServerTimeRequestParam
 import com.lenta.shared.utilities.Logg
+import com.lenta.shared.utilities.extentions.launchUITryCatch
 import com.mobrun.plugin.api.HyperHive
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Dispatchers.IO
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
@@ -79,7 +76,7 @@ class FastLoadingViewModel : CoreLoadingViewModel() {
     override val sizeInMb: MutableLiveData<Float> = MutableLiveData()
 
     init {
-        viewModelScope.launch {
+        launchUITryCatch {
             progress.value = true
             withContext(IO) {
                 repoInMemoryHolder.storesRequestResult?.markets?.find { it.number == sessionInfo.market }.let { market ->
@@ -107,7 +104,7 @@ class FastLoadingViewModel : CoreLoadingViewModel() {
     }
 
     private fun installUpdate(updateFileName: String) {
-        viewModelScope.launch {
+        launchUITryCatch {
             title.value = resourceManager.loadingNewAppVersion()
             progress.value = true
             withContext(IO) {
@@ -120,7 +117,7 @@ class FastLoadingViewModel : CoreLoadingViewModel() {
     }
 
     private fun getServerTime() {
-        viewModelScope.launch {
+        launchUITryCatch {
             serverTimeRequest(ServerTimeRequestParam(sessionInfo.market.orEmpty()))
                     .either(::handleFailure, ::handleSuccessServerTime)
         }
@@ -128,13 +125,13 @@ class FastLoadingViewModel : CoreLoadingViewModel() {
 
     private fun handleSuccessServerTime(serverTime: ServerTime) {
         timeMonitor.setServerTime(time = serverTime.time, date = serverTime.date)
-        viewModelScope.launch {
+        launchUITryCatch {
             fastResourcesNetRequest(null).either(::handleFailure, ::loadStocks)
         }
     }
 
     private fun loadStocks(@Suppress("UNUSED_PARAMETER") b: Boolean) {
-        viewModelScope.launch {
+        launchUITryCatch {
             stockNetRequest(null).either(::handleFailure, ::handleSuccess)
         }
     }

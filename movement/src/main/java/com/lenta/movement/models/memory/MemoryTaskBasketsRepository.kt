@@ -9,6 +9,8 @@ import com.lenta.shared.fmp.resources.dao_ext.getEoVolume
 import com.lenta.shared.fmp.resources.fast.ZmpUtz14V001
 import com.lenta.shared.models.core.Supplier
 import com.mobrun.plugin.api.HyperHive
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 class MemoryTaskBasketsRepository(
     hyperHive: HyperHive,
@@ -45,7 +47,7 @@ class MemoryTaskBasketsRepository(
         basketList.removeAll { it.isEmpty() }
     }
 
-    override fun addProduct(product: ProductInfo, supplier: Supplier?, count: Int) {
+    override suspend fun addProduct(product: ProductInfo, supplier: Supplier?, count: Int) {
         if (count == 0) return
 
         val suitableBasket = getSuitableBasketOrCreate(product, supplier)
@@ -61,22 +63,24 @@ class MemoryTaskBasketsRepository(
         addProduct(product, supplier, count - 1)
     }
 
-    override fun getSuitableBasketOrCreate(product: ProductInfo, supplier: Supplier?): Basket {
+    override suspend fun getSuitableBasketOrCreate(product: ProductInfo, supplier: Supplier?): Basket {
         val signOfDiv = taskManager.getTaskSettings().signsOfDiv
 
-        return basketList.lastOrNull { basket ->
-            basket.checkSuitableProduct(product, supplier)
-        } ?: Basket(
-            index = basketList.size,
-            volume = zmpUtz14V001.getEoVolume() ?: error(NULL_BASKET_VOLUME),
-            supplier = supplier.takeIf { signOfDiv.contains(GoodsSignOfDivision.LIF_NUMBER) },
-            isAlco = product.isAlco.takeIf { signOfDiv.contains(GoodsSignOfDivision.ALCO) },
-            isExciseAlco = product.isExcise.takeIf { signOfDiv.contains(GoodsSignOfDivision.MARK_PARTS) },
-            isNotExciseAlco = product.isNotExcise.takeIf { signOfDiv.contains(GoodsSignOfDivision.PARTS) },
-            isUsual = product.isUsual.takeIf { signOfDiv.contains(GoodsSignOfDivision.USUAL) },
-            isVet = product.isVet.takeIf { signOfDiv.contains(GoodsSignOfDivision.VET) },
-            isFood = product.isFood.takeIf { signOfDiv.contains(GoodsSignOfDivision.FOOD) }
-        )
+        return withContext(Dispatchers.IO) {
+            basketList.lastOrNull { basket ->
+                basket.checkSuitableProduct(product, supplier)
+            } ?: Basket(
+                    index = basketList.size,
+                    volume = zmpUtz14V001.getEoVolume() ?: error(NULL_BASKET_VOLUME),
+                    supplier = supplier.takeIf { signOfDiv.contains(GoodsSignOfDivision.LIF_NUMBER) },
+                    isAlco = product.isAlco.takeIf { signOfDiv.contains(GoodsSignOfDivision.ALCO) },
+                    isExciseAlco = product.isExcise.takeIf { signOfDiv.contains(GoodsSignOfDivision.MARK_PARTS) },
+                    isNotExciseAlco = product.isNotExcise.takeIf { signOfDiv.contains(GoodsSignOfDivision.PARTS) },
+                    isUsual = product.isUsual.takeIf { signOfDiv.contains(GoodsSignOfDivision.USUAL) },
+                    isVet = product.isVet.takeIf { signOfDiv.contains(GoodsSignOfDivision.VET) },
+                    isFood = product.isFood.takeIf { signOfDiv.contains(GoodsSignOfDivision.FOOD) }
+            )
+        }
     }
 
     override fun clear() {

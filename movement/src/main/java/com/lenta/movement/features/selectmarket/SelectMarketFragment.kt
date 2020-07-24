@@ -47,6 +47,6 @@ class SelectMarketFragment : CoreFragment<FragmentSelectMarketBinding, SelectMar
     }
 
     companion object {
-        private const val PAGE_NUMBER = "10/03"
+        private const val PAGE_NUMBER = "13/03"
     }
 }

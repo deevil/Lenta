@@ -1,18 +1,16 @@
 package com.lenta.bp9.features.mercury_list
 
-import com.lenta.shared.platform.viewmodel.CoreViewModel
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
 import com.lenta.bp9.model.task.IReceivingTaskManager
 import com.lenta.bp9.model.task.revise.DeliveryProductDocumentRevise
 import com.lenta.bp9.model.task.revise.ProductVetDocumentRevise
 import com.lenta.bp9.platform.navigation.IScreenNavigator
-import com.lenta.shared.utilities.Logg
+import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.SelectionItemsHelper
 import com.lenta.shared.utilities.databinding.PageSelectionListener
+import com.lenta.shared.utilities.extentions.launchUITryCatch
 import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.utilities.extentions.toStringFormatted
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class MercuryListViewModel : CoreViewModel(), PageSelectionListener {
@@ -43,7 +41,7 @@ class MercuryListViewModel : CoreViewModel(), PageSelectionListener {
     }
 
     init {
-        viewModelScope.launch {
+        launchUITryCatch {
             origProductVetDocuments.value = taskManager.getReceivingTask()?.taskRepository?.getReviseDocuments()?.getProductVetDocuments()?.map {
                 it.copy()
             }

@@ -1,11 +1,10 @@
 package com.lenta.shared.features.fmp_settings
 
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
 import com.lenta.shared.platform.navigation.ICoreNavigator
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.settings.IAppSettings
-import kotlinx.coroutines.launch
+import com.lenta.shared.utilities.extentions.launchUITryCatch
 import javax.inject.Inject
 
 class FmpSettingsViewModel : CoreViewModel() {
@@ -22,7 +21,7 @@ class FmpSettingsViewModel : CoreViewModel() {
 
     init {
 
-        viewModelScope.launch {
+        launchUITryCatch {
             serverAddress.value = appSettings.getCurrentServerAddress()
             environment.value = appSettings.getCurrentEnvironment()
             project.value = appSettings.getCurrentProject()

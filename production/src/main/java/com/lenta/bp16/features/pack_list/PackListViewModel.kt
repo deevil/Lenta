@@ -1,17 +1,17 @@
 package com.lenta.bp16.features.pack_list
 
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
 import com.lenta.bp16.model.ITaskManager
 import com.lenta.bp16.platform.navigation.IScreenNavigator
-import com.lenta.bp16.request.*
+import com.lenta.bp16.request.EndDefrostingNetRequest
+import com.lenta.bp16.request.EndDefrostingParams
 import com.lenta.bp16.request.pojo.PackCode
 import com.lenta.shared.platform.device_info.DeviceInfo
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.extentions.dropZeros
 import com.lenta.shared.utilities.extentions.isSapTrue
+import com.lenta.shared.utilities.extentions.launchUITryCatch
 import com.lenta.shared.utilities.extentions.map
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class PackListViewModel : CoreViewModel() {
@@ -71,8 +71,8 @@ class PackListViewModel : CoreViewModel() {
 
     fun onClickComplete() {
         if (raw.value?.isWasDef == true) {
-            viewModelScope.launch {
-                navigator.showProgressLoadingData()
+            launchUITryCatch {
+                navigator.showProgressLoadingData(::handleFailure)
                 endDefrostingNetRequest(EndDefrostingParams(
                         deviceIp = deviceInfo.getDeviceIp(),
                         packCodes = packs.value?.map {

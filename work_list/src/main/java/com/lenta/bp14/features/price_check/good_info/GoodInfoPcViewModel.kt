@@ -89,7 +89,7 @@ class GoodInfoPcViewModel : CoreViewModel() {
             require((eanCode != null) xor (matNr != null) xor (qrCode != null)) {
                 "only one param allowed. eanCode: $eanCode, matNr: $matNr, qrCode: $qrCode "
             }
-            navigator.showProgressLoadingData()
+            navigator.showProgressLoadingData(::handleFailure)
 
             when {
                 !eanCode.isNullOrBlank() -> task.getActualPriceByEan(eanCode)

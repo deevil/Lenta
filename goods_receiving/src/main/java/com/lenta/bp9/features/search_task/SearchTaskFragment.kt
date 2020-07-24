@@ -2,8 +2,6 @@ package com.lenta.bp9.features.search_task
 
 import android.os.Bundle
 import android.view.View
-import android.widget.AdapterView
-import android.widget.EditText
 import com.lenta.bp9.R
 import com.lenta.bp9.databinding.FragmentSearchTaskBinding
 import com.lenta.bp9.features.loading.tasks.TaskListLoadingMode

@@ -16,9 +16,7 @@ import com.lenta.bp14.databinding.LayoutClGoodsListBinding
 import com.lenta.bp14.di.CheckListComponent
 import com.lenta.shared.di.CoreInjectHelper
 import com.lenta.shared.keys.KeyCode
-import com.lenta.shared.keys.OnKeyDownListener
 import com.lenta.shared.platform.activity.OnBackPresserListener
-import com.lenta.shared.platform.fragment.CoreFragment
 import com.lenta.shared.platform.fragment.KeyDownCoreFragment
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo

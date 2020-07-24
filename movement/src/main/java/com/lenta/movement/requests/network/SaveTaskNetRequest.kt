@@ -11,6 +11,7 @@ import com.lenta.shared.interactor.UseCase
 import com.lenta.shared.requests.FmpRequestsHelper
 import javax.inject.Inject
 
+/** ZMP_UTZ_MVM_04_V001 «Сохранение в SAP данных задания»*/
 class SaveTaskNetRequest @Inject constructor(
         private val fmpRequestsHelper: FmpRequestsHelper
 ) : UseCase<Task, SaveTaskParams> {

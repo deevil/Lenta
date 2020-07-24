@@ -76,7 +76,6 @@ private fun ScanInfoResult.getProductInfo(uomInfo: ZmpUtz07V001.ItemLocal_ET_UOM
         isVet = material.isVet.isSapTrue(),
         isFood = material.isFood.isSapTrue()
     )
-
 }
 
 data class ScanInfoParams(
@@ -87,8 +86,14 @@ data class ScanInfoParams(
     @SerializedName("IV_MATNR")
     val matNr: String,
     @SerializedName("IV_CODEBP")
-    val codeEBP: String
-)
+    val codeEBP: String,
+    @SerializedName("IV_MODE")
+    val mode: String = ONE_POSITION_INDICATOR
+) {
+    companion object {
+        private const val ONE_POSITION_INDICATOR = "1"
+    }
+}
 
 class ScanInfoStatus : ObjectRawStatus<ScanInfoResult>()
 

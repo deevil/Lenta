@@ -6,8 +6,6 @@ import android.view.View
 import android.widget.AdapterView
 import com.lenta.bp9.R
 import com.lenta.bp9.databinding.FragmentNonExciseSetComponentInfoReceivingBinding
-import com.lenta.bp9.features.goods_information.non_excise_sets_pge.set_component_pge.NonExciseSetComponentInfoPGEFragment
-import com.lenta.bp9.features.goods_information.non_excise_sets_pge.set_component_pge.NonExciseSetComponentInfoPGEViewModel
 import com.lenta.bp9.model.task.TaskProductInfo
 import com.lenta.bp9.model.task.TaskSetsInfo
 import com.lenta.bp9.platform.extentions.getAppComponent

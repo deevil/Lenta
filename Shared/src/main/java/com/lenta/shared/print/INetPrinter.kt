@@ -3,7 +3,6 @@ package com.lenta.shared.print
 import androidx.annotation.WorkerThread
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.functional.Either
-import java.lang.Exception
 import java.net.InetSocketAddress
 import java.net.Socket
 

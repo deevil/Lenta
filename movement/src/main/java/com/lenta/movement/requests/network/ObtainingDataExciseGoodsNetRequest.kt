@@ -10,6 +10,7 @@ import com.lenta.shared.models.core.Manufacturer
 import com.lenta.shared.requests.FmpRequestsHelper
 import javax.inject.Inject
 
+/** "ZMP_UTZ_100_V001" */
 class ObtainingDataExciseGoodsNetRequest @Inject constructor(
     private val fmpRequestsHelper: FmpRequestsHelper
 ) : UseCase<ExciseGoodsRestInfo, ExciseGoodsParams> {

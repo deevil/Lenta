@@ -21,6 +21,7 @@ import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.SelectionItemsHelper
 import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
 import com.lenta.shared.utilities.databinding.PageSelectionListener
+import com.lenta.shared.utilities.extentions.launchUITryCatch
 import com.lenta.shared.utilities.extentions.map
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -78,7 +79,7 @@ class GoodsListClViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
     // -----------------------------
 
     init {
-        viewModelScope.launch {
+        launchUITryCatch {
             task.loadMaxTaskPositions()
             requestFocusToNumberField.value = true
             taskName.value = "${task.getTaskType().taskType} // ${task.getTaskName()}"
@@ -95,8 +96,8 @@ class GoodsListClViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
     fun onClickSave() {
         // Подтверждение - Перевести задание в статус "Подсчитано" и закрыть его для редактирования? - Назад / Да
         navigator.showSetTaskToStatusCalculated {
-            viewModelScope.launch {
-                navigator.showProgressLoadingData()
+            launchUITryCatch {
+                navigator.showProgressLoadingData(::handleFailure)
                 sentReportRequest(task.getReportData(deviceInfo.getDeviceIp())).either(
                         {
                             navigator.openAlertScreen(failure = it)
@@ -146,7 +147,7 @@ class GoodsListClViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
                 "Only one param allowed - ean: $ean, material: $material"
             }
 
-            navigator.showProgressLoadingData()
+            navigator.showProgressLoadingData(::handleFailure)
 
             when {
                 !ean.isNullOrBlank() -> task.getGoodByEan(ean)
@@ -201,7 +202,7 @@ class GoodsListClViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
     }
 
     private fun clearCurrentTaskAndGoBack() {
-        viewModelScope.launch {
+        launchUITryCatch {
             generalTaskManager.getProcessedTask()?.getTaskNumber().let { taskNumber ->
                 if (taskNumber?.isNotBlank() == true) {
                     navigator.showProgress(unlockTaskNetRequest)

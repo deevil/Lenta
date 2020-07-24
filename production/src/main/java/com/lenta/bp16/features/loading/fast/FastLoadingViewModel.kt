@@ -1,7 +1,6 @@
 package com.lenta.bp16.features.loading.fast
 
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
 import app_update.AppUpdateInstaller
 import com.lenta.bp16.platform.navigation.IScreenNavigator
 import com.lenta.bp16.repository.IDatabaseRepository
@@ -16,8 +15,8 @@ import com.lenta.shared.platform.app_update.AppUpdateChecker
 import com.lenta.shared.platform.resources.ISharedStringResourceManager
 import com.lenta.shared.requests.network.Auth
 import com.lenta.shared.utilities.Logg
+import com.lenta.shared.utilities.extentions.launchUITryCatch
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
@@ -51,7 +50,7 @@ class FastLoadingViewModel : CoreLoadingViewModel() {
     override val sizeInMb: MutableLiveData<Float> = MutableLiveData()
 
     init {
-        viewModelScope.launch {
+        launchUITryCatch {
             progress.value = true
             withContext(Dispatchers.IO) {
                 repoInMemoryHolder.storesRequestResult?.markets?.find { it.tkNumber == sessionInfo.market }.let { market ->
@@ -78,7 +77,7 @@ class FastLoadingViewModel : CoreLoadingViewModel() {
     }
 
     private fun installUpdate(updateFileName: String) {
-        viewModelScope.launch {
+        launchUITryCatch {
             title.value = resourceManager.loadingNewAppVersion()
             progress.value = true
             withContext(Dispatchers.IO) {
@@ -91,7 +90,7 @@ class FastLoadingViewModel : CoreLoadingViewModel() {
     }
 
     private fun getFastResources() {
-        viewModelScope.launch {
+        launchUITryCatch {
             fastResourcesNetRequest(null).either(::handleFailure, ::handleSuccess)
         }
     }

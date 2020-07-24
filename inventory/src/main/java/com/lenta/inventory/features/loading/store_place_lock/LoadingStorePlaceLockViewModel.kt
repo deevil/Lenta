@@ -2,12 +2,9 @@ package com.lenta.inventory.features.loading.store_place_lock
 
 import android.content.Context
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
-import com.lenta.inventory.features.task_list.TaskItemVm
 import com.lenta.inventory.models.RecountType
 import com.lenta.inventory.models.StorePlaceLockMode
 import com.lenta.inventory.models.task.IInventoryTaskManager
-import com.lenta.inventory.models.task.TaskStorePlaceInfo
 import com.lenta.inventory.platform.navigation.IScreenNavigator
 import com.lenta.inventory.requests.network.StorePlaceLockNetRequest
 import com.lenta.inventory.requests.network.StorePlaceLockParams
@@ -17,7 +14,7 @@ import com.lenta.shared.exception.Failure
 import com.lenta.shared.features.loading.CoreLoadingViewModel
 import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.extentions.getDeviceIp
-import kotlinx.coroutines.launch
+import com.lenta.shared.utilities.extentions.launchUITryCatch
 import javax.inject.Inject
 
 class LoadingStorePlaceLockViewModel : CoreLoadingViewModel() {
@@ -43,7 +40,7 @@ class LoadingStorePlaceLockViewModel : CoreLoadingViewModel() {
     override val sizeInMb: MutableLiveData<Float> = MutableLiveData()
 
     init {
-        viewModelScope.launch {
+        launchUITryCatch {
             taskManager.getInventoryTask()?.let {
                 title.postValue(it.taskDescription.getTaskTypeAndNumber())
                 progress.value = true

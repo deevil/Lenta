@@ -3,7 +3,6 @@ package com.lenta.bp9.features.change_datetime
 import android.annotation.SuppressLint
 import android.content.Context
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
 import com.lenta.bp9.R
 import com.lenta.bp9.model.task.IReceivingTaskManager
 import com.lenta.bp9.model.task.TaskStatus
@@ -13,12 +12,8 @@ import com.lenta.bp9.repos.IDataBaseRepo
 import com.lenta.shared.platform.constants.Constants
 import com.lenta.shared.platform.time.ITimeMonitor
 import com.lenta.shared.platform.viewmodel.CoreViewModel
-import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.date_time.DateTimeUtil
-import com.lenta.shared.utilities.extentions.combineLatest
-import com.lenta.shared.utilities.extentions.getFormattedDate
-import com.lenta.shared.utilities.extentions.map
-import kotlinx.coroutines.launch
+import com.lenta.shared.utilities.extentions.launchUITryCatch
 import java.text.SimpleDateFormat
 import java.util.*
 import javax.inject.Inject
@@ -90,7 +85,7 @@ class ChangeDateTimeViewModel : CoreViewModel() {
     private val seconds: MutableLiveData<String> = MutableLiveData("")
 
     fun onResume() {
-        viewModelScope.launch {
+        launchUITryCatch {
             val milliseconds = timeMonitor.getUnixTime()
             days.value = DateTimeUtil.formatDate(milliseconds, Constants.DATE_FORMAT_dd)
             months.value = DateTimeUtil.formatDate(milliseconds, Constants.DATE_FORMAT_mm)

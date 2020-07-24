@@ -13,7 +13,10 @@ import com.lenta.bp14.models.not_exposed.repo.INotExposedRepo
 import com.lenta.bp14.models.not_exposed.repo.NotExposedRepo
 import com.lenta.bp14.requests.not_exposed_product.IProductInfoForNotExposedNetRequest
 import com.lenta.bp14.requests.not_exposed_product.ProductInfoForNotExposedNetRequest
-import dagger.*
+import dagger.Binds
+import dagger.Component
+import dagger.Module
+import dagger.Provides
 import javax.inject.Scope
 
 @NotExposedScope

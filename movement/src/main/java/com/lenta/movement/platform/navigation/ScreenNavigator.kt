@@ -22,9 +22,8 @@ import com.lenta.movement.features.task.eo.ge_insides.TaskEOMergeGEInsidesFragme
 import com.lenta.movement.features.task.goods.TaskGoodsFragment
 import com.lenta.movement.features.task.goods.details.TaskGoodsDetailsFragment
 import com.lenta.movement.features.task.goods.info.TaskGoodsInfoFragment
+import com.lenta.movement.features.task_list.TaskListFragment
 import com.lenta.movement.models.*
-import com.lenta.movement.models.Task.Status.Companion.CONSOLIDATED
-import com.lenta.movement.models.Task.Status.Companion.COUNTED
 import com.lenta.movement.progress.IWriteOffProgressUseCaseInformator
 import com.lenta.movement.requests.network.models.documentsToPrint.DocumentsToPrintDocument
 import com.lenta.shared.account.IAuthenticator
@@ -98,7 +97,9 @@ class ScreenNavigator(
     }
 
     override fun openTaskList() {
-        openNotImplementedScreenAlert(TASK_TO_MOVE)  //ЕTODO Работа с заданиями
+        runOrPostpone {
+            getFragmentStack()?.push(TaskListFragment())
+        }
     }
 
     override fun openUnsavedDataDialog(yesCallbackFunc: () -> Unit) {

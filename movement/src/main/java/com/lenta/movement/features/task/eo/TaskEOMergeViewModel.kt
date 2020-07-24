@@ -2,14 +2,12 @@ package com.lenta.movement.features.task.eo
 
 import android.content.Context
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
 import com.lenta.movement.R
 import com.lenta.movement.exception.PersonnelNumberFailure
 import com.lenta.movement.features.main.box.ScanInfoHelper
 import com.lenta.movement.models.*
 import com.lenta.movement.models.repositories.ICargoUnitRepository
 import com.lenta.movement.platform.IFormatter
-import com.lenta.movement.platform.extensions.unsafeLazy
 import com.lenta.movement.platform.navigation.IScreenNavigator
 import com.lenta.movement.requests.network.ConsolidationNetRequest
 import com.lenta.movement.requests.network.DocumentsToPrintNetRequest
@@ -30,10 +28,11 @@ import com.lenta.shared.utilities.SelectionItemsHelper
 import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
 import com.lenta.shared.utilities.databinding.PageSelectionListener
 import com.lenta.shared.utilities.extentions.getDeviceIp
+import com.lenta.shared.utilities.extentions.launchUITryCatch
 import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.utilities.extentions.mapSkipNulls
+import com.lenta.shared.utilities.extentions.unsafeLazy
 import com.lenta.shared.utilities.orIfNull
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class TaskEOMergeViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyboardListener {
@@ -221,7 +220,7 @@ class TaskEOMergeViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
     }
 
     private fun consolidate(sendEOList: List<ConsolidationProcessingUnit>, sendGEList: List<RestCargoUnit>, mode: String) {
-        viewModelScope.launch {
+        launchUITryCatch {
             screenNavigator.showProgress(consolidationNetRequest)
             val either = sessionInfo.personnelNumber?.let { personnelNumber ->
                 val params = ConsolidationParams(
@@ -307,7 +306,7 @@ class TaskEOMergeViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
     }
 
     private fun endConsolidation() {
-        viewModelScope.launch {
+        launchUITryCatch {
             screenNavigator.showProgress(endConsolidationNetRequest)
             val either = sessionInfo.personnelNumber?.let { personnelNumber ->
                 val params = EndConsolidationParams(
@@ -368,7 +367,7 @@ class TaskEOMergeViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
     }
 
     private fun searchCode(code: String, fromScan: Boolean, isBarCode: Boolean? = null) {
-        viewModelScope.launch {
+        launchUITryCatch {
             scanInfoHelper.searchCode(code, fromScan, isBarCode) { productInfo ->
                 screenNavigator.openTaskGoodsInfoScreen(productInfo)
             }
@@ -376,7 +375,7 @@ class TaskEOMergeViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
     }
 
     fun onPrintBtnClick() {
-        viewModelScope.launch {
+        launchUITryCatch {
             screenNavigator.showProgress(documentsToPrintNetRequest)
             val params = DocumentsToPrintParams(
                     taskManager.getTask().number

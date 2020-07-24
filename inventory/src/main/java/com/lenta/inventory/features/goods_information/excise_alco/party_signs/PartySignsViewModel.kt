@@ -9,7 +9,6 @@ import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.view.OnPositionClickListener
 import java.text.SimpleDateFormat
-import java.util.*
 import javax.inject.Inject
 
 class PartySignsViewModel : CoreViewModel(), OnPositionClickListener {

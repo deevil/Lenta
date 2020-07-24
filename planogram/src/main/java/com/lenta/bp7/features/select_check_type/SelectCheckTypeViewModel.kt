@@ -1,13 +1,12 @@
 package com.lenta.bp7.features.select_check_type
 
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
 import com.lenta.bp7.data.CheckType
 import com.lenta.bp7.data.model.CheckData
 import com.lenta.bp7.platform.navigation.IScreenNavigator
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.platform.viewmodel.CoreViewModel
-import kotlinx.coroutines.launch
+import com.lenta.shared.utilities.extentions.launchUITryCatch
 import javax.inject.Inject
 
 class SelectCheckTypeViewModel : CoreViewModel() {
@@ -24,7 +23,7 @@ class SelectCheckTypeViewModel : CoreViewModel() {
     val externalAuditButtonEnabled: MutableLiveData<Boolean> = MutableLiveData(true)
 
     init {
-        viewModelScope.launch {
+        launchUITryCatch {
             if (checkData.segments.isNotEmpty()) {
                 when (checkData.checkType) {
                     CheckType.SELF_CONTROL -> {

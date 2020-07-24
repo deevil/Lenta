@@ -35,6 +35,6 @@ class AuthFragment : CoreLoginFragment() {
     }
 
     companion object {
-        private const val PAGE_NUMBER = "10/01"
+        private const val PAGE_NUMBER = "13/01"
     }
 }

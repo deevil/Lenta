@@ -1,13 +1,11 @@
 package com.lenta.movement.features.loading.fast
 
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
 import com.lenta.movement.platform.navigation.IScreenNavigator
 import com.lenta.movement.repos.IRepoInMemoryHolder
 import com.lenta.movement.requests.network.FastResourcesMultiRequest
 import com.lenta.movement.requests.network.StockLockRequestResult
 import com.lenta.movement.requests.network.StockNetRequest
-import com.lenta.movement.requests.network.loader.ResourcesLoader
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.exception.IFailureInterpreter
@@ -19,9 +17,9 @@ import com.lenta.shared.platform.time.ITimeMonitor
 import com.lenta.shared.requests.network.ServerTime
 import com.lenta.shared.requests.network.ServerTimeRequest
 import com.lenta.shared.requests.network.ServerTimeRequestParam
+import com.lenta.shared.utilities.extentions.launchUITryCatch
 import com.mobrun.plugin.api.HyperHive
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
@@ -65,7 +63,7 @@ class FastLoadingViewModel : CoreLoadingViewModel() {
     override val sizeInMb: MutableLiveData<Float> = MutableLiveData()
 
     init {
-        viewModelScope.launch {
+        launchUITryCatch {
             progress.value = true
             serverTimeRequest(
                 ServerTimeRequestParam(
@@ -78,13 +76,13 @@ class FastLoadingViewModel : CoreLoadingViewModel() {
 
     private fun handleSuccessServerTime(serverTime: ServerTime) {
         timeMonitor.setServerTime(time = serverTime.time, date = serverTime.date)
-        viewModelScope.launch {
+        launchUITryCatch {
             fastResourcesNetRequest(null).either(::handleFailure, ::loadStocks)
         }
     }
 
     private fun loadStocks(@Suppress("UNUSED_PARAMETER") b: Boolean) {
-        viewModelScope.launch {
+        launchUITryCatch {
             stockNetRequest(null).either(::handleFailure, ::handleSuccess)
         }
     }
@@ -97,18 +95,15 @@ class FastLoadingViewModel : CoreLoadingViewModel() {
 
     private fun handleSuccess(stockLockRequestResult: StockLockRequestResult) {
         repoInMemoryHolder.stockLockRequestResult = stockLockRequestResult
-        viewModelScope.launch {
+        launchUITryCatch {
             if (appUpdateChecker.isNeedUpdate(withContext(Dispatchers.IO) {
                     return@withContext zmpUtz14V001.getAllowedWobAppVersion()
                 })) {
-
                 hyperHive.authAPI.unAuth()
                 screenNavigator.closeAllScreen()
                 screenNavigator.openLoginScreen()
                 screenNavigator.openNeedUpdateScreen()
             } else {
-                //TODO Вернуть загрузку в фоне slow data после доработки SDK
-                //resourceLoader.startLoadSlowResources()
                 screenNavigator.openSelectionPersonnelNumberScreen()
             }
             progress.value = false

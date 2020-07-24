@@ -14,19 +14,16 @@ import com.lenta.bp9.platform.navigation.IScreenNavigator
 import com.lenta.bp9.repos.IDataBaseRepo
 import com.lenta.bp9.repos.IRepoInMemoryHolder
 import com.lenta.shared.models.core.Uom
-import com.lenta.shared.platform.constants.Constants
 import com.lenta.shared.platform.time.ITimeMonitor
-import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo.Companion.add
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.requests.combined.scan_info.ScanInfoResult
 import com.lenta.shared.requests.combined.scan_info.pojo.QualityInfo
 import com.lenta.shared.requests.combined.scan_info.pojo.ReasonRejectionInfo
-import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.extentions.combineLatest
+import com.lenta.shared.utilities.extentions.launchUITryCatch
 import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.utilities.extentions.toStringFormatted
 import com.lenta.shared.view.OnPositionClickListener
-import kotlinx.coroutines.launch
 import org.joda.time.DateTime
 import org.joda.time.Days
 import java.text.SimpleDateFormat
@@ -244,7 +241,7 @@ class GoodsInfoViewModel : CoreViewModel(), OnPositionClickListener {
     }
 
     init {
-        viewModelScope.launch {
+        launchUITryCatch {
             searchProductDelegate.init(viewModelScope = this@GoodsInfoViewModel::viewModelScope,
                     scanResultHandler = this@GoodsInfoViewModel::handleProductSearchResult)
             if (taskManager.getReceivingTask()?.taskHeader?.taskType == TaskType.RecalculationCargoUnit) {
@@ -362,7 +359,7 @@ class GoodsInfoViewModel : CoreViewModel(), OnPositionClickListener {
     }
 
     fun onClickPositionSpinQuality(position: Int) {
-        viewModelScope.launch {
+        launchUITryCatch {
             spinQualitySelectedPosition.value = position
             updateDataSpinReasonRejection(qualityInfo.value!![position].code)
         }
@@ -373,7 +370,7 @@ class GoodsInfoViewModel : CoreViewModel(), OnPositionClickListener {
     }
 
     private suspend fun updateDataSpinReasonRejection(selectedQuality: String) {
-        viewModelScope.launch {
+        launchUITryCatch {
             if (isTaskPGE.value == true) {
                 spinReasonRejectionSelectedPosition.value = 0
                 processingUnitsOfProduct.value = taskManager.getReceivingTask()?.taskRepository?.getProducts()?.getProcessingUnitsOfProduct(productInfo.value!!.materialNumber)
@@ -381,7 +378,7 @@ class GoodsInfoViewModel : CoreViewModel(), OnPositionClickListener {
                     "ЕО - " + it.processingUnit
                 }
             } else {
-                screenNavigator.showProgressLoadingData()
+                screenNavigator.showProgressLoadingData(::handleFailure)
                 reasonRejectionInfo.value = dataBase.getReasonRejectionInfoOfQuality(selectedQuality)
                 spinReasonRejection.value = reasonRejectionInfo.value?.map {
                     it.name
@@ -912,8 +909,8 @@ class GoodsInfoViewModel : CoreViewModel(), OnPositionClickListener {
 
     fun onClickLabel() { //https://trello.com/c/LhzZRxzi
 
-        /**viewModelScope.launch {
-            navigator.showProgressLoadingData()
+        /**launchUITryCatch {
+            navigator.showProgressLoadingData(::handleFailure)
 
             packCodeNetRequest(
                     PackCodeParams(
@@ -949,7 +946,7 @@ class GoodsInfoViewModel : CoreViewModel(), OnPositionClickListener {
                     manager.onTaskChanged()
                 }
 
-                viewModelScope.launch {
+                launchUITryCatch {
                     val productTime = Calendar.getInstance()
                     productTime.add(Calendar.MINUTE, database.getPcpExpirTimeMm())
 
