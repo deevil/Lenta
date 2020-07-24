@@ -316,9 +316,7 @@ class TaskViewModel : CoreViewModel(), PageSelectionListener {
             )
             either.either(
                     fnL = screenNavigator::openAlertScreenWithFailure,
-                    fnR = { result ->
-                        onApprovalAndTransferSuccessResult(result)
-                    }
+                    fnR = ::onApprovalAndTransferSuccessResult
             )
         }
     }
