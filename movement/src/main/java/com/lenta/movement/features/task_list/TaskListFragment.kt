@@ -80,7 +80,6 @@ class TaskListFragment : CoreFragment<FragmentTaskListBinding, TaskListViewModel
                         container,
                         false
                 ).apply {
-                        executePendingBindings()
                         rvConfig = initRecycleAdapterDataBinding<LayoutItemTaskListBinding>(
                                 layoutId = R.layout.layout_item_task_list,
                                 itemId = BR.item,

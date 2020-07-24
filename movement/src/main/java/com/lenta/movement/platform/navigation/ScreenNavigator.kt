@@ -1,6 +1,7 @@
 package com.lenta.movement.platform.navigation
 
 import android.content.Context
+import android.os.Handler
 import androidx.core.content.ContextCompat
 import com.lenta.movement.R
 import com.lenta.movement.exception.InfoFailure
@@ -229,9 +230,10 @@ class ScreenNavigator(
             getFragmentStack()?.push(
                     AlertFragment.create(
                             message = context.getString(R.string.box_saved_msg, shortBoxCode),
-                            iconRes = R.drawable.ic_checkbox_green_32dp,
+                            iconRes = R.drawable.ic_info_green_80dp,
                             pageNumber = BOX_SAVED_DIALOG_PAGE_NUMBER,
-                            leftButtonDecorationInfo = ButtonDecorationInfo.back
+                            leftButtonDecorationInfo = ButtonDecorationInfo.empty,
+                            timeAutoExitInMillis = TWO_SECONDS_IN_MILLI
                     )
             )
         }
@@ -396,7 +398,7 @@ class ScreenNavigator(
 
 
     companion object {
-        private const val TASK_TO_MOVE = "Задания на перемещение"
+        private const val TWO_SECONDS_IN_MILLI = 2000
         private const val ZERO_SELECTED_EO_PAGE_NUMBER = "02"
         private const val SAVE_TASK_CONFIRM_DIALOG_PAGE_NUMBER = "06"
         private const val BOX_SAVED_DIALOG_PAGE_NUMBER = "02"
