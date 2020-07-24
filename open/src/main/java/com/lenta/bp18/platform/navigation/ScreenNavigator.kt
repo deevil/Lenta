@@ -40,9 +40,9 @@ class ScreenNavigator @Inject constructor(
         }
     }
 
-    override fun openGoodsInfoScreen(ean: String) {
+    override fun openGoodsInfoScreen(ean: String, weight: String?) {
         runOrPostpone {
-            getFragmentStack()?.push(GoodInfoFragment.newInstance(ean))
+            getFragmentStack()?.push(GoodInfoFragment.newInstance(ean, weight))
         }
     }
 
@@ -137,7 +137,7 @@ interface IScreenNavigator : ICoreNavigator {
     fun openAuthScreen()
     fun openSelectMarketScreen()
     fun openSelectGoodScreen()
-    fun openGoodsInfoScreen(ean: String)
+    fun openGoodsInfoScreen(ean: String, weight: String?)
     fun openFastDataLoadingScreen()
 
     fun showConfirmOpeningPackage(confirmCallback: () -> Unit)

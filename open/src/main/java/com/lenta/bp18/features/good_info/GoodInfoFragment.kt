@@ -15,12 +15,15 @@ import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
 import com.lenta.shared.utilities.extentions.generateScreenNumberFromPostfix
 import com.lenta.shared.utilities.extentions.getDeviceId
 import com.lenta.shared.utilities.extentions.provideViewModel
-import com.lenta.shared.utilities.extentions.unsafeLazy
 
 class GoodInfoFragment : CoreFragment<FragmentGoodInfoBinding, GoodInfoViewModel>(), ToolbarButtonsClickListener {
 
-    val ean: String by unsafeLazy {
-        arguments?.getParcelable(KEY_EAN_VALUE)
+    private val selectedEan by lazy {
+        arguments?.getString(KEY_EAN_VALUE)
+    }
+
+    private val weight by lazy {
+        arguments?.getString(KEY_WEIGHT_VALUE)
     }
 
     override fun getLayoutId(): Int = R.layout.fragment_good_info
@@ -31,6 +34,8 @@ class GoodInfoFragment : CoreFragment<FragmentGoodInfoBinding, GoodInfoViewModel
         provideViewModel(GoodInfoViewModel::class.java).let {
             getAppComponent()?.inject(it)
             it.deviceIp.value = context!!.getDeviceId()
+            it.selectedEan.value = selectedEan
+            it.weight.value = weight?.toInt()
             return it
         }
     }
@@ -60,9 +65,10 @@ class GoodInfoFragment : CoreFragment<FragmentGoodInfoBinding, GoodInfoViewModel
     companion object {
         const val SCREEN_NUMBER = Constants.GOODS_INFO_FRAGMENT
         private const val KEY_EAN_VALUE = "KEY_EAN_VALUE"
+        private const val KEY_WEIGHT_VALUE = "KEY_WEIGHT_VALUE"
 
-        fun newInstance(ean: String) = GoodInfoFragment().apply {
-            arguments = bundleOf(KEY_EAN_VALUE to ean)
+        fun newInstance(ean: String, weight: String?) = GoodInfoFragment().apply {
+            arguments = bundleOf(KEY_EAN_VALUE to ean, KEY_WEIGHT_VALUE to weight)
         }
     }
 

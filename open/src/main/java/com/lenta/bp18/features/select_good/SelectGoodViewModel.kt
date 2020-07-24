@@ -15,6 +15,8 @@ class SelectGoodViewModel : SendDataViewModel() {
     @Inject
     lateinit var appSettings: IAppSettings
 
+    private val weightValue = listOf("23", "24", "27", "28")
+
     val barcodeField:MutableLiveData<String> = MutableLiveData("")
     val requestFocusToBarcode = MutableLiveData<Boolean>(true)
 
@@ -22,25 +24,26 @@ class SelectGoodViewModel : SendDataViewModel() {
         viewModelScope.launch {
             ean.value = barcodeField.value ?: "0"
             val barcode = ean.value.toString()
+            var weight: String? = null
             if (weightValue.contains(barcode.substring(0 until 2))) {
                 ean.value = barcode.replace(barcode.takeLast(6), "000000")
+                weight = barcode.takeLast(6).take(5)
             }
-            searchEan(ean.value.toString())
+            searchEan(ean.value.toString(), weight)
         }
     }
 
-    private fun searchEan(ean: String) {
+    private fun searchEan(ean: String, weight: String?) {
         viewModelScope.launch {
-            good.value = database.getGoodByEan(ean)
-            when (good.value) {
+            when (database.getGoodByEan(ean)) {
                 null -> showError()
-                else -> openGoodInfoScreen(ean)
+                else -> openGoodInfoScreen(ean,weight)
             }
         }
     }
 
-    private fun openGoodInfoScreen(ean: String) {
-        navigator.openGoodsInfoScreen(ean)
+    private fun openGoodInfoScreen(ean: String, weight: String?) {
+        navigator.openGoodsInfoScreen(ean, weight)
     }
 
     private fun showError() {

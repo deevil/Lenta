@@ -25,8 +25,6 @@ abstract class SendDataViewModel : CoreViewModel() {
     @Inject
     lateinit var goodInfoNetRequest: GoodInfoNetRequest
 
-    val weightValue = listOf("23", "24", "27", "28")
-
     val good: MutableLiveData<Good> = MutableLiveData()
     val ean: MutableLiveData<String> = MutableLiveData()
 

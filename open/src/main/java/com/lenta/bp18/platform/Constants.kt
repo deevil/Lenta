@@ -14,6 +14,8 @@ object Constants {
     const val TIME_OUT_IN_SEC = 60
     const val TIME_OUT = 2000
 
+    const val CONVERT_TO_KG = 1000
+
     //Номера экранов
     const val AUTH_FRAGMENT = "01"
     const val SELECT_MARKET_FRAGMENT = "02"
