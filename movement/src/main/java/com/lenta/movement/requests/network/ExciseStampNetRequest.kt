@@ -2,9 +2,12 @@ package com.lenta.movement.requests.network
 
 import com.lenta.movement.exception.InfoFailure
 import com.lenta.movement.models.ExciseStamp
+import com.lenta.movement.utils.DateTimeUtils
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.functional.Either
 import com.lenta.shared.interactor.UseCase
+import com.lenta.shared.utilities.date_time.DateTimeUtil
+import java.util.*
 import javax.inject.Inject
 
 class ExciseStampNetRequest @Inject constructor(
@@ -34,11 +37,17 @@ class ExciseStampNetRequest @Inject constructor(
                 return Either.Left(InfoFailure(baseResult.b.statusTxt))
             }
 
+            val serverDate = baseResult.b.dateManufacture
+            val dateOfPour = DateTimeUtils.formatServerDate(
+                    serverDate = serverDate,
+                    serverDatePattern = DateTimeUtils.YYYY_MM_dd_DATE_PATTERN
+            )
+
             val exciseStamp = ExciseStamp(
                     code = params.stampCode,
                     materialNumber = params.materialNumber,
                     manufacturerName = baseResult.b.manufacturers.firstOrNull()?.name.orEmpty(),
-                    dateOfPour = baseResult.b.dateManufacture
+                    dateOfPour = dateOfPour
             )
 
             return Either.Right(exciseStamp)

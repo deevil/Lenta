@@ -71,7 +71,6 @@ class CreateBoxesFragment : CoreFragment<FragmentCreateBoxesBinding, CreateBoxes
                     bottomToolbarUiModel.uiModelButton1.show(ButtonDecorationInfo.back)
                     bottomToolbarUiModel.uiModelButton2.show(ButtonDecorationInfo.rollback)
                     bottomToolbarUiModel.uiModelButton4.show(ButtonDecorationInfo.add)
-
                     connectLiveData(vm.rollbackEnabled, bottomToolbarUiModel.uiModelButton2.enabled)
                     connectLiveData(vm.addAndApplyEnabled, bottomToolbarUiModel.uiModelButton4.enabled)
                 }

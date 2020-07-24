@@ -9,6 +9,7 @@ import com.lenta.movement.R
 import com.lenta.movement.exception.EmptyTaskFailure
 import com.lenta.movement.exception.PersonnelNumberFailure
 import com.lenta.movement.models.*
+import com.lenta.movement.models.Task.Status.Companion.COUNTED
 import com.lenta.movement.models.Task.Status.Companion.PROCESSING_ON_GZ
 import com.lenta.movement.models.repositories.ICargoUnitRepository
 import com.lenta.movement.platform.IFormatter
@@ -369,7 +370,8 @@ class TaskViewModel : CoreViewModel(), PageSelectionListener {
 
     private fun validate(): Boolean {
         return task.value?.let {
-            it.currentStatus != Task.Status.ProcessingOnGz(PROCESSING_ON_GZ)
+            it.currentStatus != Task.Status.Counted(COUNTED) &&
+                    it.currentStatus != Task.Status.ProcessingOnGz(PROCESSING_ON_GZ)
         }.orIfNull {
             val task = buildTask()
             with(task) {

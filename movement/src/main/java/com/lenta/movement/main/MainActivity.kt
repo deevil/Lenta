@@ -1,5 +1,6 @@
 package com.lenta.movement.main
 
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
 import com.lenta.movement.di.AppComponent
 import com.lenta.movement.platform.extensions.getAppComponent
@@ -20,8 +21,7 @@ class MainActivity: CoreMainActivity() {
         appComponent.let { component ->
             component.inject(this)
             foregroundActivityProvider.setActivity(this)
-
-            ViewModelProviders.of(this).get(MainViewModel::class.java).let {
+            ViewModelProvider(this).get(MainViewModel::class.java).let {
                 mainViewModel = it
                 component.inject(it)
             }
