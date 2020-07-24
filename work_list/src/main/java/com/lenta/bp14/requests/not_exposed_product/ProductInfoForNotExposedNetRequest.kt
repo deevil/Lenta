@@ -1,7 +1,10 @@
 package com.lenta.bp14.requests.not_exposed_product
 
 import com.lenta.bp14.models.general.AppTaskTypes
-import com.lenta.bp14.requests.*
+import com.lenta.bp14.requests.EanParam
+import com.lenta.bp14.requests.MatNrParam
+import com.lenta.bp14.requests.ProductInfoNetRequest
+import com.lenta.bp14.requests.ProductInfoParams
 import com.lenta.bp14.requests.pojo.ProductInfo
 import com.lenta.bp14.requests.pojo.Stock
 import com.lenta.shared.exception.Failure

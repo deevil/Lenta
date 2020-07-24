@@ -1,27 +1,15 @@
 package com.lenta.bp7.features.loading.fast
 
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
-import app_update.AppUpdateInstaller
-import com.lenta.bp7.data.CheckType
-import com.lenta.bp7.data.model.CheckData
 import com.lenta.bp7.platform.navigation.IScreenNavigator
-import com.lenta.bp7.repos.IDatabaseRepo
-import com.lenta.bp7.repos.IRepoInMemoryHolder
 import com.lenta.bp7.requests.network.FastResourcesMultiRequest
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.exception.IFailureInterpreter
 import com.lenta.shared.features.loading.CoreLoadingViewModel
-import com.lenta.shared.functional.Either
 import com.lenta.shared.platform.app_update.AppUpdateChecker
-import com.lenta.shared.platform.resources.ISharedStringResourceManager
-import com.lenta.shared.platform.time.ITimeMonitor
-import com.lenta.shared.requests.network.*
-import com.lenta.shared.utilities.Logg
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import com.lenta.shared.requests.network.Auth
+import com.lenta.shared.utilities.extentions.launchUITryCatch
 import javax.inject.Inject
 
 class FastLoadingViewModel : CoreLoadingViewModel() {
@@ -45,7 +33,7 @@ class FastLoadingViewModel : CoreLoadingViewModel() {
     override val sizeInMb: MutableLiveData<Float> = MutableLiveData()
 
     init {
-        viewModelScope.launch {
+        launchUITryCatch {
             progress.value = true
             fastResourcesNetRequest(null).either(::handleFailure, ::handleSuccess)
         }

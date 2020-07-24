@@ -2,7 +2,6 @@ package com.lenta.movement.features.main.box
 
 import android.content.Context
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
 import com.lenta.movement.models.repositories.IBoxesRepository
 import com.lenta.movement.platform.navigation.IScreenNavigator
 import com.lenta.movement.requests.network.SavePackagedExciseBoxesNetRequest
@@ -13,8 +12,8 @@ import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.SelectionItemsHelper
 import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
 import com.lenta.shared.utilities.extentions.getDeviceIp
+import com.lenta.shared.utilities.extentions.launchUITryCatch
 import com.lenta.shared.utilities.extentions.map
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
@@ -104,7 +103,7 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
     }
 
     fun onCompleteClick() {
-        viewModelScope.launch {
+        launchUITryCatch {
             screenNavigator.showProgress(savePackagedExciseBoxesNetRequest)
             savePackagedExciseBoxesNetRequest(
                 params = SavePackagedExciseBoxesParams(
@@ -139,7 +138,7 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
     }
 
     private fun searchCode(code: String, fromScan: Boolean, isBarCode: Boolean? = null) {
-        viewModelScope.launch {
+        launchUITryCatch {
             scanInfoHelper.searchCode(code, fromScan, isBarCode) { productInfo ->
                 if (productInfo.type != ProductType.ExciseAlcohol) {
                     screenNavigator.openProductIncorrectForCreateBox(productInfo)

@@ -2,10 +2,10 @@ package com.lenta.bp14.fmp.resources;
 
 import com.google.gson.annotations.SerializedName;
 import com.mobrun.plugin.api.HyperHive;
-import com.mobrun.plugin.api.request_assistant.CustomParameter;
-import com.mobrun.plugin.api.request_assistant.ScalarParameter;
-import com.mobrun.plugin.api.request_assistant.RequestBuilder;
 import com.mobrun.plugin.api.helper.LocalTableResourceHelper;
+import com.mobrun.plugin.api.request_assistant.CustomParameter;
+import com.mobrun.plugin.api.request_assistant.RequestBuilder;
+import com.mobrun.plugin.api.request_assistant.ScalarParameter;
 import com.mobrun.plugin.models.StatusSelectTable;
 
 //Получение доп.инфо по товару

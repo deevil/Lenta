@@ -1,7 +1,6 @@
 package com.lenta.bp9.features.select_market
 
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
 import com.lenta.bp9.platform.navigation.IScreenNavigator
 import com.lenta.bp9.repos.IRepoInMemoryHolder
 import com.lenta.bp9.requests.network.MarketOverIPRequest
@@ -9,9 +8,9 @@ import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.features.printer_change.PrinterManager
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.settings.IAppSettings
+import com.lenta.shared.utilities.extentions.launchUITryCatch
 import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.view.OnPositionClickListener
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class SelectMarketViewModel : CoreViewModel(), OnPositionClickListener {
@@ -42,7 +41,7 @@ class SelectMarketViewModel : CoreViewModel(), OnPositionClickListener {
     val deviceIp: MutableLiveData<String> = MutableLiveData()
 
     init {
-        viewModelScope.launch {
+        launchUITryCatch {
             repoInMemoryHolder.permissions?.markets?.let { list ->
 
                 markets.value = list.map { MarketUI(number = it.number, address = it.address) }
@@ -69,7 +68,7 @@ class SelectMarketViewModel : CoreViewModel(), OnPositionClickListener {
     }
 
     fun onClickNext() {
-        viewModelScope.launch {
+        launchUITryCatch {
             markets.value?.getOrNull(selectedPosition.value ?: -1)?.number?.let { tkNumber ->
                 if (appSettings.lastTK != tkNumber) {
                     printerManager.setDefaultPrinterForTk(tkNumber)

@@ -12,11 +12,10 @@ import com.lenta.bp9.platform.navigation.IScreenNavigator
 import com.lenta.shared.models.core.Uom
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.requests.combined.scan_info.ScanInfoResult
-import com.lenta.shared.utilities.extentions.combineLatest
+import com.lenta.shared.utilities.extentions.launchUITryCatch
 import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.utilities.extentions.toStringFormatted
 import com.lenta.shared.view.OnPositionClickListener
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class GoodsInfoShipmentPPViewModel : CoreViewModel(), OnPositionClickListener {
@@ -85,7 +84,7 @@ class GoodsInfoShipmentPPViewModel : CoreViewModel(), OnPositionClickListener {
     }
 
     init {
-        viewModelScope.launch {
+        launchUITryCatch {
             searchProductDelegate.init(viewModelScope = this@GoodsInfoShipmentPPViewModel::viewModelScope,
                     scanResultHandler = this@GoodsInfoShipmentPPViewModel::handleProductSearchResult)
 

@@ -12,7 +12,6 @@ import com.lenta.shared.utilities.extentions.hhive.toEither
 import com.mobrun.plugin.api.HyperHive
 import com.mobrun.plugin.api.callparams.WebCallParams
 import com.mobrun.plugin.models.BaseStatus
-import java.lang.Exception
 
 class FmpRequestsHelper(val hyperHive: HyperHive,
                         val defaultHeaders: Map<String, String>,

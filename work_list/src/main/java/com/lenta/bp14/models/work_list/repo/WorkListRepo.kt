@@ -4,7 +4,6 @@ import com.lenta.bp14.models.data.getGoodType
 import com.lenta.bp14.models.work_list.Good
 import com.lenta.bp14.models.work_list.GoodOptions
 import com.lenta.bp14.platform.extentions.WorkListGoodInfo
-import com.lenta.shared.utilities.extentions.getQuantity
 import com.lenta.bp14.platform.extentions.toWorkListGoodInfo
 import com.lenta.shared.fmp.resources.dao_ext.*
 import com.lenta.shared.fmp.resources.fast.ZmpUtz07V001
@@ -16,6 +15,7 @@ import com.lenta.shared.models.core.Uom
 import com.lenta.shared.models.core.getMatrixType
 import com.lenta.shared.requests.combined.scan_info.ScanCodeInfo
 import com.lenta.shared.requests.combined.scan_info.pojo.EanInfo
+import com.lenta.shared.utilities.extentions.getQuantity
 import com.lenta.shared.utilities.extentions.isSapTrue
 import com.mobrun.plugin.api.HyperHive
 import kotlinx.coroutines.Dispatchers

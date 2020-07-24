@@ -1,11 +1,10 @@
 package com.lenta.inventory.features.main_menu
 
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
 import com.lenta.inventory.platform.navigation.IScreenNavigator
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.platform.viewmodel.CoreViewModel
-import kotlinx.coroutines.launch
+import com.lenta.shared.utilities.extentions.launchUITryCatch
 import javax.inject.Inject
 
 class MainMenuViewModel : CoreViewModel() {
@@ -18,7 +17,7 @@ class MainMenuViewModel : CoreViewModel() {
     val fio = MutableLiveData("")
 
     init {
-        viewModelScope.launch {
+        launchUITryCatch {
             fio.value = sessionInfo.personnelFullName
         }
     }

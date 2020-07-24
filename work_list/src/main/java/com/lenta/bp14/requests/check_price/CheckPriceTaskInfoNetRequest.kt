@@ -1,9 +1,9 @@
 package com.lenta.bp14.requests.check_price
 
 import com.google.gson.annotations.SerializedName
+import com.lenta.bp14.requests.pojo.Position
 import com.lenta.bp14.requests.pojo.Price
 import com.lenta.bp14.requests.pojo.ProductInfo
-import com.lenta.bp14.requests.pojo.Position
 import com.lenta.bp14.requests.pojo.RetCode
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.fmp.ObjectRawStatus

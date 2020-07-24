@@ -1,7 +1,6 @@
 package com.lenta.inventory.features.job_card
 
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
 import com.lenta.inventory.models.IPersistInventoryTask
 import com.lenta.inventory.models.RecountType
 import com.lenta.inventory.models.StorePlaceLockMode
@@ -18,8 +17,8 @@ import com.lenta.shared.platform.device_info.DeviceInfo
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.date_time.DateTimeUtil.convertTimeString
+import com.lenta.shared.utilities.extentions.launchUITryCatch
 import com.lenta.shared.view.OnPositionClickListener
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class JobCardViewModel : CoreViewModel(), OnPositionClickListener {
@@ -157,7 +156,7 @@ class JobCardViewModel : CoreViewModel(), OnPositionClickListener {
     }
 
     private fun unlockTask() {
-        viewModelScope.launch {
+        launchUITryCatch {
             screenNavigator.showProgress(storePlaceLockNetRequest)
             storePlaceLockNetRequest(StorePlaceLockParams(
                     ip = deviceInfo.getDeviceIp(),

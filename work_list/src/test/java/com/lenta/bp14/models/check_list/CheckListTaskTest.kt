@@ -1,11 +1,7 @@
 package com.lenta.bp14.models.check_list
 
-import androidx.lifecycle.MutableLiveData
 import com.google.gson.GsonBuilder
-import com.lenta.shared.models.core.Uom
 import com.nhaarman.mockitokotlin2.mock
-import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 

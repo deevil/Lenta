@@ -6,7 +6,6 @@ import com.lenta.bp9.BR
 import com.lenta.bp9.R
 import com.lenta.bp9.databinding.FragmentTransportMarriageGoodsDetailsBinding
 import com.lenta.bp9.databinding.ItemTileGoodsDetailsBinding
-import com.lenta.bp9.model.task.TaskTransportMarriageInfo
 import com.lenta.bp9.platform.extentions.getAppComponent
 import com.lenta.shared.platform.fragment.CoreFragment
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel

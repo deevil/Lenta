@@ -1,7 +1,6 @@
 package com.lenta.bp9.features.transport_marriage.cargo_unit
 
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
 import com.lenta.bp9.features.transport_marriage.ActItem
 import com.lenta.bp9.model.task.IReceivingTaskManager
 import com.lenta.bp9.model.task.TaskTransportMarriageInfo
@@ -17,13 +16,12 @@ import com.lenta.shared.exception.Failure
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.requests.combined.scan_info.ScanInfoRequest
 import com.lenta.shared.requests.combined.scan_info.ScanInfoRequestParams
-import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.SelectionItemsHelper
 import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
+import com.lenta.shared.utilities.extentions.launchUITryCatch
 import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.utilities.extentions.toStringFormatted
 import com.mobrun.plugin.api.HyperHive
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class TransportMarriageCargoUnitViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
@@ -62,7 +60,7 @@ class TransportMarriageCargoUnitViewModel : CoreViewModel(), OnOkInSoftKeyboardL
     }
 
     init {
-        viewModelScope.launch {
+        launchUITryCatch {
             origTransportMarriage.value = taskManager.getReceivingTask()?.taskRepository?.getTransportMarriage()?.getTransportMarriage()?.filter {itFilter ->
                 itFilter.cargoUnitNumber == cargoUnitNumber.value
             }?.map {
@@ -94,8 +92,8 @@ class TransportMarriageCargoUnitViewModel : CoreViewModel(), OnOkInSoftKeyboardL
     }
 
     private fun searchProduct(materialNumber: String) {
-        viewModelScope.launch {
-            screenNavigator.showProgressLoadingData()
+        launchUITryCatch {
+            screenNavigator.showProgressLoadingData(::handleFailure)
             val foundTransportMarriageInfo = taskManager.getReceivingTask()?.taskRepository?.getTransportMarriage()?.findTransportMarriage(cargoUnitNumber.value ?: "", materialNumber)
             if (!foundTransportMarriageInfo.isNullOrEmpty()) {
                 foundTransportMarriageInfo.findLast {
@@ -118,7 +116,7 @@ class TransportMarriageCargoUnitViewModel : CoreViewModel(), OnOkInSoftKeyboardL
     }
 
     private fun handleSuccessSearchProduct(result: ZmpUtzGrz26V001Result) {
-        viewModelScope.launch {
+        launchUITryCatch {
             repoInMemoryHolder.manufacturers.value = result.manufacturers
             result.processingUnits.map {processingUnitInfo ->
                 val batchNumber = result.taskBatches.findLast {batchesInfo ->
@@ -143,9 +141,9 @@ class TransportMarriageCargoUnitViewModel : CoreViewModel(), OnOkInSoftKeyboardL
     }
 
     fun onScanResult(data: String) {
-        viewModelScope.launch {
+        launchUITryCatch {
             isScan.value = true
-            screenNavigator.showProgressLoadingData()
+            screenNavigator.showProgressLoadingData(::handleFailure)
 
             scanInfoRequest(
                     ScanInfoRequestParams(
@@ -227,8 +225,8 @@ class TransportMarriageCargoUnitViewModel : CoreViewModel(), OnOkInSoftKeyboardL
     }
 
     fun onClickEntirely() {
-        viewModelScope.launch {
-            screenNavigator.showProgressLoadingData()
+        launchUITryCatch {
+            screenNavigator.showProgressLoadingData(::handleFailure)
             taskManager.getReceivingTask()?.let { task ->
                 val params = ZmpUtzGrz26V001Params(
                         taskNumber = task.taskHeader.taskNumber,
@@ -242,7 +240,7 @@ class TransportMarriageCargoUnitViewModel : CoreViewModel(), OnOkInSoftKeyboardL
     }
 
     private fun handleSuccessEntirely(result: ZmpUtzGrz26V001Result) {
-        viewModelScope.launch {
+        launchUITryCatch {
             repoInMemoryHolder.manufacturers.value = result.manufacturers
             result.processingUnits.map {processingUnitInfo ->
                 val batchNumber = result.taskBatches.findLast {batchesInfo ->

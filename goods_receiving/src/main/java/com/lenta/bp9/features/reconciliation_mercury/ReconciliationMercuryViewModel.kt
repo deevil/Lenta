@@ -1,13 +1,12 @@
 package com.lenta.bp9.features.reconciliation_mercury
 
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
 import com.lenta.bp9.model.task.IReceivingTaskManager
 import com.lenta.bp9.model.task.revise.ProductVetDocumentRevise
 import com.lenta.bp9.platform.navigation.IScreenNavigator
 import com.lenta.shared.platform.viewmodel.CoreViewModel
+import com.lenta.shared.utilities.extentions.launchUITryCatch
 import com.lenta.shared.utilities.extentions.map
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class ReconciliationMercuryViewModel : CoreViewModel() {
@@ -30,7 +29,7 @@ class ReconciliationMercuryViewModel : CoreViewModel() {
     }
 
     init {
-        viewModelScope.launch {
+        launchUITryCatch {
             origProductVetDoc.value = productVetDoc.value?.copy()
         }
     }

@@ -22,8 +22,6 @@ import com.lenta.movement.features.task.goods.TaskGoodsFragment
 import com.lenta.movement.features.task.goods.details.TaskGoodsDetailsFragment
 import com.lenta.movement.features.task.goods.info.TaskGoodsInfoFragment
 import com.lenta.movement.models.*
-import com.lenta.movement.models.Task.Status.Companion.CONSOLIDATED
-import com.lenta.movement.models.Task.Status.Companion.COUNTED
 import com.lenta.movement.progress.IWriteOffProgressUseCaseInformator
 import com.lenta.movement.requests.network.models.documentsToPrint.DocumentsToPrintDocument
 import com.lenta.shared.account.IAuthenticator

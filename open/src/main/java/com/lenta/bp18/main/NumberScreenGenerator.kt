@@ -7,15 +7,11 @@ import com.lenta.bp18.features.select_market.SelectMarketFragment
 import com.lenta.bp18.platform.Constants
 import com.lenta.shared.features.alert.AlertFragment
 import com.lenta.shared.features.auxiliary_menu.AuxiliaryMenuFragment
-import com.lenta.shared.features.exit.ExitWithConfirmationFragment
-import com.lenta.shared.features.fmp_settings.FmpSettingsFragment
-import com.lenta.shared.features.printer_change.PrinterChangeFragment
 import com.lenta.shared.features.select_oper_mode.SelectOperModeFragment
 import com.lenta.shared.features.settings.SettingsFragment
 import com.lenta.shared.features.support.SupportFragment
 import com.lenta.shared.features.tech_login.TechLoginFragment
 import com.lenta.shared.features.test_environment.PinCodeFragment
-import com.lenta.shared.features.test_environment.failure.FailurePinCodeFragment
 import com.lenta.shared.platform.activity.INumberScreenGenerator
 import com.lenta.shared.platform.fragment.CoreFragment
 import javax.inject.Inject

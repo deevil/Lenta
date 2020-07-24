@@ -2,7 +2,6 @@ package com.lenta.bp9.features.loading.tasks
 
 import android.content.Context
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
 import com.lenta.bp9.model.task.IReceivingTaskManager
 import com.lenta.bp9.model.task.TaskDescription
 import com.lenta.bp9.model.task.TaskNotification
@@ -17,7 +16,7 @@ import com.lenta.shared.exception.Failure
 import com.lenta.shared.features.loading.CoreLoadingViewModel
 import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.extentions.getDeviceIp
-import kotlinx.coroutines.launch
+import com.lenta.shared.utilities.extentions.launchUITryCatch
 import javax.inject.Inject
 
 class LoadingFinishConditionsReviseViewModel : CoreLoadingViewModel() {
@@ -38,7 +37,7 @@ class LoadingFinishConditionsReviseViewModel : CoreLoadingViewModel() {
     override val sizeInMb: MutableLiveData<Float> = MutableLiveData()
 
     init {
-        viewModelScope.launch {
+        launchUITryCatch {
             progress.value = true
             taskManager.getReceivingTask()?.let { task ->
                 val params = FinishConditionsReviseRequestParameters(

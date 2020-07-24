@@ -2,9 +2,9 @@ package com.lenta.bp7.features.select_market
 
 import android.view.View
 import androidx.lifecycle.Observer
+import com.lenta.bp7.R
 import com.lenta.bp7.databinding.FragmentSelectMarketBinding
 import com.lenta.bp7.platform.extentions.getAppComponent
-import com.lenta.bp7.R
 import com.lenta.shared.platform.fragment.CoreFragment
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo

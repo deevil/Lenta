@@ -5,7 +5,6 @@ import com.lenta.bp7.activity.main.MainActivity
 import com.lenta.bp7.activity.main.MainViewModel
 import com.lenta.bp7.data.model.CheckData
 import com.lenta.bp7.features.auth.AuthViewModel
-import com.lenta.bp7.features.select_check_type.SelectCheckTypeViewModel
 import com.lenta.bp7.features.code.CodeViewModel
 import com.lenta.bp7.features.good_info.GoodInfoViewModel
 import com.lenta.bp7.features.good_info_facing.GoodInfoFacingViewModel
@@ -13,6 +12,7 @@ import com.lenta.bp7.features.good_list.GoodListViewModel
 import com.lenta.bp7.features.loading.fast.FastLoadingViewModel
 import com.lenta.bp7.features.option_info.OptionInfoViewModel
 import com.lenta.bp7.features.segment_list.SegmentListViewModel
+import com.lenta.bp7.features.select_check_type.SelectCheckTypeViewModel
 import com.lenta.bp7.features.select_market.SelectMarketViewModel
 import com.lenta.bp7.features.shelf_list.ShelfListViewModel
 import com.lenta.shared.di.AppScope

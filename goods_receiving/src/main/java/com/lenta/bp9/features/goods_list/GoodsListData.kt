@@ -1,6 +1,5 @@
 package com.lenta.bp9.features.goods_list
 
-import com.lenta.bp9.model.task.TaskBatchInfo
 import com.lenta.bp9.model.task.TaskProductInfo
 import com.lenta.shared.utilities.databinding.Evenable
 

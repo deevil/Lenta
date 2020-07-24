@@ -2,9 +2,9 @@ package com.lenta.shared.progress
 
 import android.content.Context
 import com.lenta.shared.R
-import com.lenta.shared.requests.network.PersonnelNumberNetRequest
 import com.lenta.shared.interactor.UseCase
 import com.lenta.shared.requests.combined.scan_info.ScanInfoRequest
+import com.lenta.shared.requests.network.PersonnelNumberNetRequest
 import javax.inject.Inject
 
 class CoreProgressUseCaseInformator @Inject constructor(private val context: Context) : IProgressUseCaseInformator {

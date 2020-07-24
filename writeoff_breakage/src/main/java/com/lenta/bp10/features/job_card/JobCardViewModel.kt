@@ -1,7 +1,6 @@
 package com.lenta.bp10.features.job_card
 
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
 import com.lenta.bp10.models.IPersistWriteOffTask
 import com.lenta.bp10.models.repositories.IWriteOffTaskManager
 import com.lenta.bp10.models.task.TaskDescription
@@ -12,9 +11,9 @@ import com.lenta.bp10.requests.db.TaskDescriptionDbRequest
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.settings.IAppSettings
+import com.lenta.shared.utilities.extentions.launchUITryCatch
 import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.view.OnPositionClickListener
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class JobCardViewModel : CoreViewModel() {
@@ -73,7 +72,7 @@ class JobCardViewModel : CoreViewModel() {
 
 
     init {
-        viewModelScope.launch {
+        launchUITryCatch {
             taskSettingsList.value =
                     mutableListOf(TaskSetting(name = stringResourceManager.selectTaskType(),
                             motionType = "",
@@ -116,7 +115,7 @@ class JobCardViewModel : CoreViewModel() {
     }
 
     fun onClickNext() {
-        viewModelScope.launch {
+        launchUITryCatch {
             getSelectedTaskSettings()?.let {
                 appSettings.lastJobType = it.taskType
                 taskDescriptionDbRequest(
@@ -172,7 +171,7 @@ class JobCardViewModel : CoreViewModel() {
 
 
     private fun updateStores(taskType: String?) {
-        viewModelScope.launch {
+        launchUITryCatch {
             storesNames.value = jobCardRepo.getStores(taskType)
             processServiceManager.getWriteOffTask()?.let { writeOffTask ->
                 storesNames.value?.let { list ->
@@ -184,7 +183,7 @@ class JobCardViewModel : CoreViewModel() {
     }
 
     private fun updateGisControls(taskType: String?) {
-        viewModelScope.launch {
+        launchUITryCatch {
             gisControls.value = jobCardRepo
                     .getGisControlList(taskType)
                     .joinToString(separator = "; ") { it.name }
@@ -193,7 +192,7 @@ class JobCardViewModel : CoreViewModel() {
     }
 
     private fun updateMaterialTypes(taskType: String?) {
-        viewModelScope.launch {
+        launchUITryCatch {
             materialTypes.value = jobCardRepo
                     .getMaterialTypes(taskType)
                     .joinToString(separator = "; ")

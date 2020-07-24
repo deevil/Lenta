@@ -1,15 +1,14 @@
 package com.lenta.bp7.features.segment_list
 
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
 import com.lenta.bp7.data.model.Segment
 import com.lenta.bp7.data.model.SegmentStatus
 import com.lenta.bp7.features.other.SendDataViewModel
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.analytics.AnalyticsHelper
 import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
+import com.lenta.shared.utilities.extentions.launchUITryCatch
 import com.lenta.shared.utilities.extentions.map
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class SegmentListViewModel : SendDataViewModel(), OnOkInSoftKeyboardListener {
@@ -35,7 +34,7 @@ class SegmentListViewModel : SendDataViewModel(), OnOkInSoftKeyboardListener {
     }
 
     init {
-        viewModelScope.launch {
+        launchUITryCatch {
             marketNumber.value = sessionInfo.market
             segments.value = checkData.segments
         }

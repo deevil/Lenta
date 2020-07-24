@@ -1,7 +1,6 @@
 package com.lenta.movement.features.main.box.create
 
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
 import com.lenta.movement.exception.InfoFailure
 import com.lenta.movement.models.ExciseBox
 import com.lenta.movement.models.ExciseStamp
@@ -18,8 +17,8 @@ import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.SelectionItemsHelper
 import com.lenta.shared.utilities.databinding.PageSelectionListener
 import com.lenta.shared.utilities.extentions.combineLatest
+import com.lenta.shared.utilities.extentions.launchUITryCatch
 import com.lenta.shared.utilities.extentions.map
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class CreateBoxesViewModel : CoreViewModel(),
@@ -160,7 +159,7 @@ class CreateBoxesViewModel : CoreViewModel(),
                 return
             }
 
-        viewModelScope.launch {
+        launchUITryCatch {
             screenNavigator.showProgress(LOADING_STAMP_INFO)
             exciseStampNetRequest(
                 params = ExciseStampParams(
@@ -196,7 +195,7 @@ class CreateBoxesViewModel : CoreViewModel(),
             }
         }
 
-        viewModelScope.launch {
+        launchUITryCatch {
             screenNavigator.showProgress(checkExciseBoxNetRequest)
             checkExciseBoxNetRequest(
                 params = CheckExciseBoxParams(
@@ -233,7 +232,7 @@ class CreateBoxesViewModel : CoreViewModel(),
     private fun scanGoods(code: String, fromScan: Boolean = true) {
         if (addAndApplyEnabled.value == false) return
 
-        viewModelScope.launch {
+        launchUITryCatch {
             screenNavigator.showProgress(scanInfoNetRequest)
             val scanCodeInfo = ScanCodeInfo(code, if (fromScan) null else 0.0)
             scanInfoNetRequest(

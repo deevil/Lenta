@@ -12,7 +12,10 @@ import com.lenta.inventory.models.task.IInventoryTaskManager
 import com.lenta.inventory.models.task.TaskContents
 import com.lenta.inventory.models.task.TaskStorePlaceInfo
 import com.lenta.inventory.platform.navigation.IScreenNavigator
-import com.lenta.inventory.requests.network.*
+import com.lenta.inventory.requests.network.StorePlaceLockNetRequest
+import com.lenta.inventory.requests.network.StorePlaceLockParams
+import com.lenta.inventory.requests.network.TaskContentNetRequest
+import com.lenta.inventory.requests.network.TaskContentParams
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.platform.viewmodel.CoreViewModel
@@ -21,8 +24,8 @@ import com.lenta.shared.utilities.SelectionItemsHelper
 import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
 import com.lenta.shared.utilities.extentions.combineLatest
 import com.lenta.shared.utilities.extentions.getDeviceIp
+import com.lenta.shared.utilities.extentions.launchUITryCatch
 import com.lenta.shared.utilities.extentions.map
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class StoragesListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
@@ -63,7 +66,7 @@ class StoragesListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
     private var needsUpdate: Boolean = false
 
     init {
-        viewModelScope.launch {
+        launchUITryCatch {
             dataSaver.setViewModelScopeFunc(::viewModelScope)
             updateUnprocessed()
             updateProcessed()
@@ -111,7 +114,7 @@ class StoragesListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
 
     fun onClickClean() {
         screenNavigator.openConfirmationClean(byStorage = true) {
-            viewModelScope.launch {
+            launchUITryCatch {
                 screenNavigator.showProgress(lockRequest)
                 Logg.d { "processedSelectionHelper.selectedPositions size: ${processedSelectionHelper.selectedPositions.value?.size}" }
                 val selectedPositions = processedSelectionHelper.selectedPositions.value
@@ -155,7 +158,7 @@ class StoragesListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
     }
 
     fun onClickRefresh() {
-        viewModelScope.launch {
+        launchUITryCatch {
             screenNavigator.showProgress(taskContentsRequest)
             val recountType = taskManager.getInventoryTask()?.taskDescription?.recountType
             val isNotFinish = taskManager.getInventoryTask()?.taskDescription?.isStarted
@@ -185,7 +188,7 @@ class StoragesListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
             it.updateTaskWithContents(taskContents)
             updateProcessed()
             updateUnprocessed()
-            viewModelScope.launch {
+            launchUITryCatch {
                 moveToPreviousPageIfNeeded()
             }
         }

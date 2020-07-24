@@ -1,7 +1,6 @@
 package com.lenta.bp9.features.cargo_unit_card
 
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
 import com.lenta.bp9.model.processing.ProcessCargoUnitsService
 import com.lenta.bp9.model.task.IReceivingTaskManager
 import com.lenta.bp9.model.task.TaskCargoUnitInfo
@@ -10,11 +9,10 @@ import com.lenta.bp9.platform.navigation.IScreenNavigator
 import com.lenta.bp9.repos.IDataBaseRepo
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.requests.combined.scan_info.pojo.QualityInfo
-import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.extentions.combineLatest
+import com.lenta.shared.utilities.extentions.launchUITryCatch
 import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.view.OnPositionClickListener
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class CargoUnitCardViewModel : CoreViewModel(), OnPositionClickListener {
@@ -100,7 +98,7 @@ class CargoUnitCardViewModel : CoreViewModel(), OnPositionClickListener {
     }
 
     init {
-        viewModelScope.launch {
+        launchUITryCatch {
             typePalletInfo.value = dataBase.getTypePalletInfo()
             if (isTaskShipmentRC) {
                 statusInfo.value = dataBase.getStatusInfoShipmentRC()

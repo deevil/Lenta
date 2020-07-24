@@ -7,7 +7,6 @@ import com.lenta.bp9.R
 import com.lenta.bp9.databinding.FragmentGoodsDetailsBinding
 import com.lenta.bp9.databinding.ItemTileGoodsDetailsBinding
 import com.lenta.bp9.databinding.ItemTileGoodsDetailsDelBinding
-import com.lenta.bp9.model.task.TaskBatchInfo
 import com.lenta.bp9.model.task.TaskProductInfo
 import com.lenta.bp9.platform.extentions.getAppComponent
 import com.lenta.shared.platform.fragment.CoreFragment

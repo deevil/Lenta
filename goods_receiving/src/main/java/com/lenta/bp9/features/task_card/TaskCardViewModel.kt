@@ -2,7 +2,6 @@ package com.lenta.bp9.features.task_card
 
 import android.content.Context
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
 import com.lenta.bp9.R
 import com.lenta.bp9.features.change_datetime.ChangeDateTimeMode
 import com.lenta.bp9.features.loading.tasks.TaskCardMode
@@ -14,14 +13,12 @@ import com.lenta.shared.exception.Failure
 import com.lenta.shared.platform.constants.Constants
 import com.lenta.shared.platform.time.ITimeMonitor
 import com.lenta.shared.platform.viewmodel.CoreViewModel
-import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.databinding.PageSelectionListener
 import com.lenta.shared.utilities.date_time.DateTimeUtil
 import com.lenta.shared.utilities.extentions.getDeviceIp
-import com.lenta.shared.utilities.extentions.map
+import com.lenta.shared.utilities.extentions.launchUITryCatch
 import com.lenta.shared.utilities.extentions.toStringFormatted
 import com.mobrun.plugin.api.HyperHive
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class TaskCardViewModel : CoreViewModel(), PageSelectionListener {
@@ -300,7 +297,7 @@ class TaskCardViewModel : CoreViewModel(), PageSelectionListener {
 
 
     init {
-        viewModelScope.launch {
+        launchUITryCatch {
             val timeInMillis = timeMonitor.getUnixTime()
             taskManager.getReceivingTask()?.taskDescription?.nextStatusDate = DateTimeUtil.formatDate(timeInMillis, Constants.DATE_FORMAT_yyyy_mm_dd)
             taskManager.getReceivingTask()?.taskDescription?.nextStatusTime = DateTimeUtil.formatDate(timeInMillis, Constants.TIME_FORMAT_hhmmss)
@@ -308,7 +305,7 @@ class TaskCardViewModel : CoreViewModel(), PageSelectionListener {
     }
 
     fun onResume() {
-        viewModelScope.launch {
+        launchUITryCatch {
             updateDateTimes()
          }
     }
@@ -505,8 +502,8 @@ class TaskCardViewModel : CoreViewModel(), PageSelectionListener {
     }
 
     private fun shipmentStartRecount() {
-        viewModelScope.launch {
-            screenNavigator.showProgressLoadingData()
+        launchUITryCatch {
+            screenNavigator.showProgressLoadingData(::handleFailure)
             val params = ZmpUtzGrz39V001Params(
                     taskNumber = taskManager.getReceivingTask()?.taskHeader?.taskNumber ?: "",
                     deviceIP = context.getDeviceIp(),
@@ -527,8 +524,8 @@ class TaskCardViewModel : CoreViewModel(), PageSelectionListener {
     }
 
     private fun fixationDeparture() {
-        viewModelScope.launch {
-            screenNavigator.showProgressLoadingData()
+        launchUITryCatch {
+            screenNavigator.showProgressLoadingData(::handleFailure)
             val params = FixationDepartureReceptionDistrCenterParameters(
                     taskNumber = taskManager.getReceivingTask()?.taskHeader?.taskNumber ?: "",
                     deviceIP = context.getDeviceIp(),
@@ -550,7 +547,7 @@ class TaskCardViewModel : CoreViewModel(), PageSelectionListener {
     }
 
     private fun shipmentSkipRecount() {
-        viewModelScope.launch {
+        launchUITryCatch {
             screenNavigator.showProgress(context.getString(R.string.skipping_recount))
             val params = SkipRecountParameters(
                     taskNumber = taskManager.getReceivingTask()?.taskHeader?.taskNumber ?: "",
@@ -564,7 +561,7 @@ class TaskCardViewModel : CoreViewModel(), PageSelectionListener {
     }
 
     private fun handleSuccessSkipRecount(result: SkipRecountResult) {
-        viewModelScope.launch {
+        launchUITryCatch {
             val notifications = result.notifications.map { TaskNotification.from(it) }
             val sectionInfo = result.sectionsInfo.map { TaskSectionInfo.from(it) }
             val sectionProducts = result.sectionProducts.map { TaskSectionProducts.from(hyperHive, it) }
@@ -576,8 +573,8 @@ class TaskCardViewModel : CoreViewModel(), PageSelectionListener {
     }
 
     private fun shipmentAllowedByGis() {
-        viewModelScope.launch {
-            screenNavigator.showProgressLoadingData()
+        launchUITryCatch {
+            screenNavigator.showProgressLoadingData(::handleFailure)
             val params = ZmpUtzGrz41V001Params(
                     deviceIP = context.getDeviceIp(),
                     taskNumber = taskManager.getReceivingTask()?.taskHeader?.taskNumber ?: "",
