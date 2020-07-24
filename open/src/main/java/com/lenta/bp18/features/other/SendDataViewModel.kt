@@ -28,6 +28,8 @@ abstract class SendDataViewModel : CoreViewModel() {
     val good: MutableLiveData<Good> = MutableLiveData()
     val ean: MutableLiveData<String> = MutableLiveData()
 
+    /*Тут пока не читай*/
+
 /*    fun sendCheckResult() {
         viewModelScope.launch {
             val goodInfoParams = "0"
