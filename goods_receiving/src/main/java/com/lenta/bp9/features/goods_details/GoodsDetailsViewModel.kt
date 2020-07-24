@@ -1,7 +1,6 @@
 package com.lenta.bp9.features.goods_details
 
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
 import com.lenta.bp9.features.loading.tasks.TaskListLoadingMode
 import com.lenta.bp9.model.processing.ProcessMercuryProductService
 import com.lenta.bp9.model.task.IReceivingTaskManager
@@ -14,9 +13,9 @@ import com.lenta.shared.models.core.Uom
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.requests.combined.scan_info.pojo.ReasonRejectionInfo
 import com.lenta.shared.utilities.SelectionItemsHelper
+import com.lenta.shared.utilities.extentions.launchUITryCatch
 import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.utilities.extentions.toStringFormatted
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class GoodsDetailsViewModel : CoreViewModel() {
@@ -58,7 +57,7 @@ class GoodsDetailsViewModel : CoreViewModel() {
     }
 
     init {
-        viewModelScope.launch {
+        launchUITryCatch {
             val task = taskManager.getReceivingTask()
             val taskType = task?.taskHeader?.taskType
             reasonRejectionInfo.value = if (taskType == TaskType.RecalculationCargoUnit) {

@@ -2,7 +2,6 @@ package com.lenta.bp9.features.reject
 
 import android.content.Context
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
 import com.lenta.bp9.R
 import com.lenta.bp9.features.loading.tasks.TaskListLoadingMode
 import com.lenta.bp9.model.task.IReceivingTaskManager
@@ -16,12 +15,11 @@ import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.requests.combined.scan_info.pojo.QualityInfo
-import com.lenta.shared.requests.combined.scan_info.pojo.ReasonRejectionInfo
 import com.lenta.shared.utilities.extentions.combineLatest
 import com.lenta.shared.utilities.extentions.getDeviceIp
+import com.lenta.shared.utilities.extentions.launchUITryCatch
 import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.view.OnPositionClickListener
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class RejectViewModel : CoreViewModel(), OnPositionClickListener {
@@ -67,7 +65,7 @@ class RejectViewModel : CoreViewModel(), OnPositionClickListener {
     }
 
     init {
-        viewModelScope.launch {
+        launchUITryCatch {
             failureReasonsInfo.value = dataBase.getFailureReasons()
             failureReasons.value = failureReasonsInfo.value?.map {
                 it.name
@@ -104,7 +102,7 @@ class RejectViewModel : CoreViewModel(), OnPositionClickListener {
                 rejectMode = type.rejectTypeString,
                 rejectReason = getRejectString()
         )
-        viewModelScope.launch {
+        launchUITryCatch {
             screenNavigator.showProgress(rejectRequest)
             rejectRequest(params).either(::handleFailure, ::handleSuccess)
             screenNavigator.hideProgress()

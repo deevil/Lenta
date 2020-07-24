@@ -3,7 +3,10 @@ package com.lenta.inventory
 import com.lenta.inventory.di.BaseUnitTest
 import com.lenta.inventory.di.DaggerTestComponent
 import com.lenta.inventory.models.RecountType
-import com.lenta.inventory.models.task.*
+import com.lenta.inventory.models.task.IInventoryTaskManager
+import com.lenta.inventory.models.task.ProcessGeneralProductService
+import com.lenta.inventory.models.task.TaskDescription
+import com.lenta.inventory.models.task.TaskProductInfo
 import com.lenta.shared.models.core.GisControl
 import com.lenta.shared.models.core.MatrixType
 import com.lenta.shared.models.core.ProductType

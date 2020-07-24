@@ -2,7 +2,6 @@ package com.lenta.inventory.features.task_list
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
 import com.lenta.inventory.models.RecountType
 import com.lenta.inventory.platform.navigation.IScreenNavigator
 import com.lenta.inventory.repos.IRepoInMemoryHolder
@@ -14,8 +13,8 @@ import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
+import com.lenta.shared.utilities.extentions.launchUITryCatch
 import com.lenta.shared.utilities.extentions.map
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class TaskListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
@@ -58,14 +57,14 @@ class TaskListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
 
 
     init {
-        viewModelScope.launch {
+        launchUITryCatch {
             filter.value = sessionInfo.userName
         }
     }
 
 
     fun onClickUpdate() {
-        viewModelScope.launch {
+        launchUITryCatch {
             screenNavigator.showProgress(taskListNetRequest)
             taskListNetRequest(
                     TasksListParams(

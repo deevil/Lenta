@@ -1,11 +1,8 @@
 package com.lenta.bp9.features.reconciliation_mercury
 
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import android.widget.CheckBox
-import androidx.lifecycle.Observer
 import com.lenta.bp9.R
 import com.lenta.bp9.databinding.FragmentReconciliationMercuryBinding
 import com.lenta.bp9.model.task.revise.ProductVetDocumentRevise

@@ -9,7 +9,7 @@ import com.lenta.shared.exception.Failure
 import com.lenta.shared.features.select_personnel_number.SelectPersonnelNumberDelegate
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
-import kotlinx.coroutines.launch
+import com.lenta.shared.utilities.extentions.launchUITryCatch
 import javax.inject.Inject
 
 class SelectPersonnelNumberViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
@@ -42,7 +42,7 @@ class SelectPersonnelNumberViewModel : CoreViewModel(), OnOkInSoftKeyboardListen
     }
 
     init {
-        viewModelScope.launch {
+        launchUITryCatch {
             selectPersonnelNumberDelegate.personnelNumber = personnelNumber
             selectPersonnelNumberDelegate.fullName = fullName
             selectPersonnelNumberDelegate.employeesPosition = employeesPosition

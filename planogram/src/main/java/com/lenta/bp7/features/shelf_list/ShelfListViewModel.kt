@@ -1,15 +1,14 @@
 package com.lenta.bp7.features.shelf_list
 
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
 import com.lenta.bp7.data.model.SegmentStatus
 import com.lenta.bp7.data.model.Shelf
 import com.lenta.bp7.data.model.ShelfStatus
 import com.lenta.bp7.features.other.SendDataViewModel
 import com.lenta.shared.utilities.SelectionItemsHelper
 import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
+import com.lenta.shared.utilities.extentions.launchUITryCatch
 import com.lenta.shared.utilities.extentions.map
-import kotlinx.coroutines.launch
 
 class ShelfListViewModel : SendDataViewModel(), OnOkInSoftKeyboardListener {
 
@@ -42,7 +41,7 @@ class ShelfListViewModel : SendDataViewModel(), OnOkInSoftKeyboardListener {
     }
 
     init {
-        viewModelScope.launch {
+        launchUITryCatch {
             checkData.let {
                 segmentNumber.value = it.getCurrentSegment()?.number
                 shelves.value = it.getCurrentSegment()?.shelves

@@ -10,7 +10,6 @@ import androidx.lifecycle.Observer
 import com.lenta.inventory.BR
 import com.lenta.inventory.R
 import com.lenta.inventory.databinding.*
-import com.lenta.inventory.models.StorePlaceStatus
 import com.lenta.inventory.platform.extentions.getAppComponent
 import com.lenta.shared.keys.KeyCode
 import com.lenta.shared.keys.OnKeyDownListener

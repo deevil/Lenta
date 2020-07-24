@@ -1,17 +1,17 @@
 package com.lenta.bp12.features.save_data
 
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
 import com.lenta.bp12.model.IGeneralTaskManager
 import com.lenta.bp12.platform.navigation.IScreenNavigator
 import com.lenta.bp12.platform.resource.IResourceManager
 import com.lenta.bp12.request.SendTaskDataNetRequest
+import com.lenta.bp12.request.SendTaskDataResult
 import com.lenta.bp12.request.pojo.SentTaskInfo
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.platform.viewmodel.CoreViewModel
+import com.lenta.shared.utilities.extentions.launchUITryCatch
 import com.lenta.shared.utilities.extentions.map
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class SaveDataViewModel : CoreViewModel() {
@@ -51,25 +51,25 @@ class SaveDataViewModel : CoreViewModel() {
     // -----------------------------
 
     init {
-        viewModelScope.launch {
-            sendTaskData()
-        }
+        sendTaskData()
     }
 
     // -----------------------------
 
     private fun sendTaskData() {
-        viewModelScope.launch {
-            navigator.showProgressLoadingData()
+        launchUITryCatch {
+            navigator.showProgressLoadingData(::handleFailure)
 
             sendTaskDataNetRequest(
                     generalTaskManager.getSendTaskDataParams()
             ).also {
                 navigator.hideProgress()
-            }.either(::handleFailure) { sendTaskDataResult ->
-                sentTaskInfoList.postValue(sendTaskDataResult.sentTasks)
-            }
+            }.either(::handleFailure, ::handleTaskDataResult)
         }
+    }
+
+    private fun handleTaskDataResult(result: SendTaskDataResult) {
+        sentTaskInfoList.postValue(result.sentTasks)
     }
 
     override fun handleFailure(failure: Failure) {

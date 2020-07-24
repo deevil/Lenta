@@ -2,7 +2,6 @@ package com.lenta.bp9.features.goods_information.excise_alco_receiving.excise_al
 
 import android.content.Context
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
 import com.lenta.bp9.R
 import com.lenta.bp9.features.goods_list.SearchProductDelegate
 import com.lenta.bp9.model.processing.ProcessExciseAlcoStampAccService
@@ -15,10 +14,10 @@ import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.requests.combined.scan_info.pojo.QualityInfo
 import com.lenta.shared.requests.combined.scan_info.pojo.ReasonRejectionInfo
 import com.lenta.shared.utilities.extentions.combineLatest
+import com.lenta.shared.utilities.extentions.launchUITryCatch
 import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.utilities.extentions.toStringFormatted
 import com.lenta.shared.view.OnPositionClickListener
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class ExciseAlcoStampAccInfoViewModel : CoreViewModel(), OnPositionClickListener {
@@ -113,7 +112,7 @@ class ExciseAlcoStampAccInfoViewModel : CoreViewModel(), OnPositionClickListener
             }
 
     init {
-        viewModelScope.launch {
+        launchUITryCatch {
             suffix.value = productInfo.value?.uom?.name
             qualityInfo.value = dataBase.getQualityInfo()
             spinQuality.value = qualityInfo.value?.map {
@@ -182,15 +181,15 @@ class ExciseAlcoStampAccInfoViewModel : CoreViewModel(), OnPositionClickListener
     }
 
     fun onClickPositionSpinQuality(position: Int){
-        viewModelScope.launch {
+        launchUITryCatch {
             spinQualitySelectedPosition.value = position
             updateDataSpinReasonRejection(qualityInfo.value!![position].code)
         }
     }
 
     private suspend fun updateDataSpinReasonRejection(selectedQuality: String) {
-        viewModelScope.launch {
-            screenNavigator.showProgressLoadingData()
+        launchUITryCatch {
+            screenNavigator.showProgressLoadingData(::handleFailure)
             spinReasonRejectionSelectedPosition.value = 0
             reasonRejectionInfo.value = dataBase.getReasonRejectionInfoOfQuality(selectedQuality)
             spinReasonRejection.value = reasonRejectionInfo.value?.map {

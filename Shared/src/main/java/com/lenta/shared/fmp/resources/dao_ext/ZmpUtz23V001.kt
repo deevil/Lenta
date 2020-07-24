@@ -2,7 +2,6 @@ package com.lenta.shared.fmp.resources.dao_ext
 
 import com.lenta.shared.fmp.resources.fast.ZmpUtz23V001
 import com.lenta.shared.requests.combined.scan_info.pojo.MarketInfo
-import com.lenta.shared.utilities.Logg
 
 fun ZmpUtz23V001.getRetailType(storeNumber: String): String? {
     @Suppress("INACCESSIBLE_TYPE")

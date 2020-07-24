@@ -3,7 +3,6 @@ package com.lenta.bp9.features.task_list
 import android.content.Context
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
 import com.lenta.bp9.features.loading.tasks.TaskCardMode
 import com.lenta.bp9.features.loading.tasks.TaskListLoadingMode
 import com.lenta.bp9.model.task.TaskInfo
@@ -23,8 +22,8 @@ import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
 import com.lenta.shared.utilities.databinding.PageSelectionListener
 import com.lenta.shared.utilities.extentions.combineLatest
 import com.lenta.shared.utilities.extentions.getDeviceIp
+import com.lenta.shared.utilities.extentions.launchUITryCatch
 import com.lenta.shared.utilities.extentions.map
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class TaskListViewModel : CoreViewModel(),
@@ -114,7 +113,7 @@ class TaskListViewModel : CoreViewModel(),
         if (selectedPage.value == TaskListViewPages.TASK_LIST_VIEW_PAGE_SEARCH) {
             screenNavigator.openTaskSearchScreen(taskListLoadingMode)
         } else {
-            viewModelScope.launch {
+            launchUITryCatch {
                 screenNavigator.showProgress(taskListNetRequest)
                 taskListNetRequest(
                         TaskListParams(

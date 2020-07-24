@@ -1,23 +1,20 @@
 package com.lenta.bp9.features.revise.invoice
 
 import android.content.Context
-import android.util.Log
-import com.lenta.shared.platform.viewmodel.CoreViewModel
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
 import com.lenta.bp9.R
 import com.lenta.bp9.model.task.IReceivingTaskManager
 import com.lenta.bp9.model.task.revise.DocumentType
 import com.lenta.bp9.platform.navigation.IScreenNavigator
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.platform.constants.Constants
-import com.lenta.shared.utilities.Logg
+import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.databinding.PageSelectionListener
 import com.lenta.shared.utilities.date_time.DateTimeUtil
 import com.lenta.shared.utilities.extentions.combineLatest
+import com.lenta.shared.utilities.extentions.launchUITryCatch
 import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.utilities.extentions.toStringFormatted
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class InvoiceReviseViewModel : CoreViewModel(), PageSelectionListener {
@@ -108,7 +105,7 @@ class InvoiceReviseViewModel : CoreViewModel(), PageSelectionListener {
     }
 
     init {
-        viewModelScope.launch {
+        launchUITryCatch {
             val document = taskManager.getReceivingTask()?.taskRepository?.getReviseDocuments()?.getDeliveryDocuments()?.findLast {
                 it.documentType == DocumentType.Invoice
             }

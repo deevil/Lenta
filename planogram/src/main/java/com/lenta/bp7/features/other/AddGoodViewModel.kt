@@ -1,6 +1,5 @@
 package com.lenta.bp7.features.other
 
-import androidx.lifecycle.viewModelScope
 import com.lenta.bp7.data.model.CheckData
 import com.lenta.bp7.data.model.EnteredCode
 import com.lenta.bp7.data.model.GoodInfo
@@ -8,7 +7,7 @@ import com.lenta.bp7.platform.navigation.IScreenNavigator
 import com.lenta.bp7.repos.IDatabaseRepo
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.Logg
-import kotlinx.coroutines.launch
+import com.lenta.shared.utilities.extentions.launchUITryCatch
 import javax.inject.Inject
 
 abstract class AddGoodViewModel : CoreViewModel() {
@@ -23,7 +22,7 @@ abstract class AddGoodViewModel : CoreViewModel() {
 
     protected fun addGoodByEan(ean: String) {
         Logg.d { "Entered EAN: $ean" }
-        viewModelScope.launch {
+        launchUITryCatch {
             val goodInfo = database.getGoodInfoByEan(ean)
             if (goodInfo != null) {
                 checkData.addGood(goodInfo)
@@ -45,7 +44,7 @@ abstract class AddGoodViewModel : CoreViewModel() {
 
     protected fun addGoodByMaterial(material: String) {
         Logg.d { "Entered MATERIAL: $material" }
-        viewModelScope.launch {
+        launchUITryCatch {
             val goodInfo: GoodInfo? = database.getGoodInfoByMaterial("000000000000$material")
             if (goodInfo != null) {
                 checkData.addGood(goodInfo)
@@ -59,7 +58,7 @@ abstract class AddGoodViewModel : CoreViewModel() {
 
     protected fun addGoodByMatcode(matcode: String) {
         Logg.d { "Entered MATCODE: $matcode" }
-        viewModelScope.launch {
+        launchUITryCatch {
             val goodInfo: GoodInfo? = database.getGoodInfoByMatcode(matcode)
             if (goodInfo != null) {
                 checkData.addGood(goodInfo)

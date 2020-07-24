@@ -2,7 +2,6 @@ package com.lenta.bp9.requests.network
 
 import com.google.gson.annotations.SerializedName
 import com.lenta.bp9.model.task.*
-import com.lenta.bp9.model.task.revise.*
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.fmp.ObjectRawStatus
 import com.lenta.shared.functional.Either

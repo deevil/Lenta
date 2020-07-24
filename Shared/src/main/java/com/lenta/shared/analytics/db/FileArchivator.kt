@@ -5,7 +5,6 @@ import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.date_time.DateTimeUtil
 import com.lenta.shared.utilities.prepareFolder
 import java.io.File
-import java.lang.Exception
 
 class FileArchivator(private val filePath: String,
                      private val archivePath: String,

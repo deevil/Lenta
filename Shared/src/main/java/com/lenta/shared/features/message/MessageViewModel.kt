@@ -1,7 +1,6 @@
 package com.lenta.shared.features.message
 
 import androidx.annotation.DrawableRes
-import androidx.lifecycle.viewModelScope
 import com.lenta.shared.analytics.AnalyticsHelper
 import com.lenta.shared.features.message.usecase.DelayGoBack
 import com.lenta.shared.features.message.usecase.GoBackParams
@@ -9,7 +8,7 @@ import com.lenta.shared.platform.navigation.ICoreNavigator
 import com.lenta.shared.platform.sound.ISoundPlayer
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.Logg
-import kotlinx.coroutines.launch
+import com.lenta.shared.utilities.extentions.launchUITryCatch
 import javax.inject.Inject
 
 open class MessageViewModel : CoreViewModel() {
@@ -39,7 +38,7 @@ open class MessageViewModel : CoreViewModel() {
     var soundType: SoundType? = null
 
     init {
-        viewModelScope.launch {
+        launchUITryCatch {
 
             Logg.d { "alert soundType: $soundType" }
             when (soundType) {

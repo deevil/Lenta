@@ -1,24 +1,19 @@
 package com.lenta.bp9.features.transport_marriage
 
 import android.content.Context
-import com.lenta.shared.platform.viewmodel.CoreViewModel
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
 import com.lenta.bp9.features.loading.tasks.TaskCardMode
 import com.lenta.bp9.model.task.*
 import com.lenta.bp9.platform.navigation.IScreenNavigator
 import com.lenta.bp9.requests.network.*
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.exception.Failure
+import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.SelectionItemsHelper
 import com.lenta.shared.utilities.databinding.Evenable
 import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
 import com.lenta.shared.utilities.databinding.PageSelectionListener
-import com.lenta.shared.utilities.extentions.combineLatest
-import com.lenta.shared.utilities.extentions.getDeviceIp
-import com.lenta.shared.utilities.extentions.map
-import com.lenta.shared.utilities.extentions.toStringFormatted
-import kotlinx.coroutines.launch
+import com.lenta.shared.utilities.extentions.*
 import javax.inject.Inject
 
 class TransportMarriageViewModel : CoreViewModel(), PageSelectionListener,
@@ -72,8 +67,8 @@ class TransportMarriageViewModel : CoreViewModel(), PageSelectionListener,
     }
 
     init {
-        viewModelScope.launch {
-            screenNavigator.showProgressLoadingData()
+        launchUITryCatch {
+            screenNavigator.showProgressLoadingData(::handleFailure)
             taskManager.getReceivingTask()?.let { task ->
                 val params = DeclareTransportDefectParams(
                         taskNumber = task.taskHeader.taskNumber,
@@ -120,8 +115,8 @@ class TransportMarriageViewModel : CoreViewModel(), PageSelectionListener,
     }
 
     fun onClickCancellation() {
-        viewModelScope.launch {
-            screenNavigator.showProgressLoadingData()
+        launchUITryCatch {
+            screenNavigator.showProgressLoadingData(::handleFailure)
             taskManager.getReceivingTask()?.let { task ->
                 val params = ZmpUtzGrz25V001Params(
                         taskNumber = task.taskHeader.taskNumber,
@@ -163,8 +158,8 @@ class TransportMarriageViewModel : CoreViewModel(), PageSelectionListener,
     }
 
     fun onClickProcess() {
-        viewModelScope.launch {
-            screenNavigator.showProgressLoadingData()
+        launchUITryCatch {
+            screenNavigator.showProgressLoadingData(::handleFailure)
             taskManager.getReceivingTask()?.let { task ->
                 val params = ZmpUtzGrz25V001Params(
                         taskNumber = task.taskHeader.taskNumber,

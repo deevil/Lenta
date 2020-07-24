@@ -1,12 +1,11 @@
 package com.lenta.bp7.features.good_info
 
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
 import com.lenta.bp7.data.model.Good
 import com.lenta.bp7.data.model.GoodStatus
 import com.lenta.bp7.features.other.AddGoodViewModel
+import com.lenta.shared.utilities.extentions.launchUITryCatch
 import com.lenta.shared.utilities.extentions.map
-import kotlinx.coroutines.launch
 
 class GoodInfoViewModel : AddGoodViewModel() {
 
@@ -20,7 +19,7 @@ class GoodInfoViewModel : AddGoodViewModel() {
     val applyButtonEnabled: MutableLiveData<Boolean> = good.map { it?.getStatus() == GoodStatus.CREATED }
 
     init {
-        viewModelScope.launch {
+        launchUITryCatch {
             good.value = checkData.getCurrentGood()
         }
     }

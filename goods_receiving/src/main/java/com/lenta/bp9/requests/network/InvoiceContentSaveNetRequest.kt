@@ -1,7 +1,6 @@
 package com.lenta.bp9.requests.network
 
 import com.google.gson.annotations.SerializedName
-import com.lenta.bp9.model.task.revise.CommentToVP
 import com.lenta.bp9.model.task.revise.CommentToVPRestData
 import com.lenta.bp9.model.task.revise.InvoiceContentEntryRestData
 import com.lenta.bp9.model.task.revise.InvoiceReviseRestData

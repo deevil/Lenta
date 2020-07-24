@@ -8,7 +8,6 @@ import com.lenta.shared.utilities.Logg
 import com.mobrun.plugin.api.HyperHive
 import java.util.*
 import javax.inject.Inject
-import kotlin.reflect.KFunction1
 
 class FmpAnalytics @Inject constructor(val hyperHive: HyperHive, val logDao: LogDao) : IAnalytics {
 

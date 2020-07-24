@@ -2,12 +2,11 @@ package com.lenta.shared.features.select_oper_mode
 
 import android.os.Bundle
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
 import com.lenta.shared.features.test_environment.PinCodeViewModel
 import com.lenta.shared.platform.navigation.ICoreNavigator
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.settings.IAppSettings
-import kotlinx.coroutines.launch
+import com.lenta.shared.utilities.extentions.launchUITryCatch
 import javax.inject.Inject
 
 class SelectOperModeViewModel : CoreViewModel() {
@@ -20,7 +19,7 @@ class SelectOperModeViewModel : CoreViewModel() {
     val buttonWorkEnvEnabled = MutableLiveData(false)
 
     init {
-        viewModelScope.launch {
+        launchUITryCatch {
             appSettings.isTest.let {
                 buttonWorkEnvEnabled.value = appSettings.isTest
             }

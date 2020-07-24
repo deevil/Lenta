@@ -7,10 +7,10 @@ import com.lenta.bp9.features.task_list.TaskPostponedStatus
 import com.lenta.bp9.model.task.NotificationIndicatorType
 import com.lenta.bp9.model.task.TaskLockStatus
 import com.lenta.bp9.model.task.revise.ConditionViewType
-import com.lenta.shared.utilities.extentions.setVisible
-import com.lenta.shared.utilities.extentions.setVisibleGone
 import com.lenta.bp9.model.task.revise.DocumentType
 import com.lenta.bp9.model.task.revise.ProductDocumentType
+import com.lenta.shared.utilities.extentions.setVisible
+import com.lenta.shared.utilities.extentions.setVisibleGone
 
 @BindingAdapter("postponedTaskStatusIcon")
 fun setPostponedStatusIcon(imageView: ImageView, statusType: TaskPostponedStatus?) {

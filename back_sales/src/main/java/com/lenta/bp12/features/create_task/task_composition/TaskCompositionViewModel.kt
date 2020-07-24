@@ -120,10 +120,11 @@ class TaskCompositionViewModel : CoreViewModel(), PageSelectionListener, OnOkInS
     }
 
     private fun openGoodInfoByNumber(number: String) {
+        numberField.value = ""
+
         if (isCommonFormatNumber(number)) {
             manager.searchNumber = number
             manager.searchGoodFromList = true
-            numberField.value = ""
             navigator.openGoodInfoCreateScreen()
         } else {
             navigator.showIncorrectEanFormat()

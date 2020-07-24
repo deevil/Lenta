@@ -20,6 +20,7 @@ import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.SelectionItemsHelper
 import com.lenta.shared.utilities.databinding.PageSelectionListener
 import com.lenta.shared.utilities.extentions.combineLatest
+import com.lenta.shared.utilities.extentions.launchUITryCatch
 import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.utilities.extentions.unsafeLazy
 import com.lenta.shared.utilities.orIfNull
@@ -185,7 +186,7 @@ class CreateBoxesViewModel : CoreViewModel(),
                     return
                 }
 
-                viewModelScope.launch {
+                launchUITryCatch  {
                     screenNavigator.showProgress(LOADING_STAMP_INFO)
                     exciseStampNetRequest(
                             params = ExciseStampParams(
@@ -222,7 +223,7 @@ class CreateBoxesViewModel : CoreViewModel(),
             }
         }
 
-        viewModelScope.launch {
+        launchUITryCatch {
             screenNavigator.showProgress(checkExciseBoxNetRequest)
             checkExciseBoxNetRequest(
                     params = CheckExciseBoxParams(
@@ -259,7 +260,7 @@ class CreateBoxesViewModel : CoreViewModel(),
     private fun scanGoods(code: String, fromScan: Boolean = true) {
         if (addAndApplyEnabled.value == false) return
 
-        viewModelScope.launch {
+        launchUITryCatch {
             screenNavigator.showProgress(scanInfoNetRequest)
             val scanCodeInfo = ScanCodeInfo(code, if (fromScan) null else 0.0)
             scanInfoNetRequest(

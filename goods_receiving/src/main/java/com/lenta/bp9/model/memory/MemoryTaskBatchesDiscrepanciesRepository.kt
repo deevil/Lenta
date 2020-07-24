@@ -3,7 +3,6 @@ package com.lenta.bp9.model.memory
 import com.lenta.bp9.model.repositories.ITaskBatchesDiscrepanciesRepository
 import com.lenta.bp9.model.task.TaskBatchInfo
 import com.lenta.bp9.model.task.TaskBatchesDiscrepancies
-import com.lenta.bp9.model.task.TaskProductInfo
 
 class MemoryTaskBatchesDiscrepanciesRepository : ITaskBatchesDiscrepanciesRepository {
 

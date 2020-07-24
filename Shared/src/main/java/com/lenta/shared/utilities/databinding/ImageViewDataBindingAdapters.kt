@@ -1,7 +1,8 @@
 package com.lenta.shared.utilities.databinding
 
 import android.os.Build
-import android.view.View.*
+import android.view.View.FOCUSABLE_AUTO
+import android.view.View.NOT_FOCUSABLE
 import android.widget.ImageView
 import androidx.databinding.BindingAdapter
 import com.lenta.shared.R

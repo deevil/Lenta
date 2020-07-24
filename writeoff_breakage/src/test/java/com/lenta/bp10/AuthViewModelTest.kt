@@ -5,11 +5,15 @@ import com.lenta.bp10.features.auth.AuthViewModel
 import com.lenta.shared.functional.Either
 import com.lenta.shared.requests.network.AuthParams
 import com.lenta.shared.utilities.tests_utils.observeOnce
-import com.nhaarman.mockitokotlin2.*
+import com.nhaarman.mockitokotlin2.mock
+import com.nhaarman.mockitokotlin2.whenever
 import io.mockk.every
 import io.mockk.mockkObject
 import junit.framework.TestCase.*
-import kotlinx.coroutines.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.ObsoleteCoroutinesApi
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.TestCoroutineDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.setMain

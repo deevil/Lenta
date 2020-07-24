@@ -1,16 +1,15 @@
 package com.lenta.inventory.features.select_market
 
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
 import com.lenta.inventory.platform.navigation.IScreenNavigator
 import com.lenta.inventory.repos.IRepoInMemoryHolder
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.features.printer_change.PrinterManager
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.settings.IAppSettings
+import com.lenta.shared.utilities.extentions.launchUITryCatch
 import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.view.OnPositionClickListener
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class SelectMarketViewModel : CoreViewModel(), OnPositionClickListener {
@@ -38,7 +37,7 @@ class SelectMarketViewModel : CoreViewModel(), OnPositionClickListener {
     }
 
     init {
-        viewModelScope.launch {
+        launchUITryCatch {
 
             repoInMemoryHolder.permissions?.markets?.let { list ->
 
@@ -69,7 +68,7 @@ class SelectMarketViewModel : CoreViewModel(), OnPositionClickListener {
 
 
     fun onClickNext() {
-        viewModelScope.launch {
+        launchUITryCatch {
             markets.value?.getOrNull(selectedPosition.value ?: -1)?.number?.let { tkNumber ->
                 if (appSettings.lastTK != tkNumber) {
                     printerManager.setDefaultPrinterForTk(tkNumber)
