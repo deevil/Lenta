@@ -61,7 +61,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
-                android:onClick="@{(v) -> vm.navigator.showAlcoholGoodInfoScreen()}"
+                android:onClick="@{(v) -> vm.navigator.showExciseAlcoholGoodInfoScreen()}"
                 android:src="@drawable/ic_excise_alcohol_white_32dp"
                 android:visibility="@{vm.alcohol}" />
 

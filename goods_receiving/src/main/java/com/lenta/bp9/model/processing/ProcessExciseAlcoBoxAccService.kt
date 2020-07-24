@@ -409,7 +409,7 @@ class ProcessExciseAlcoBoxAccService
 
     fun defectiveBox(boxNumber: String): Boolean {
         return currentBoxDiscrepancies.none {
-            it.boxNumber == boxNumber && it.typeDiscrepancies == "1"
+            it.boxNumber == boxNumber && it.typeDiscrepancies == TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_NORM
         }
     }
 
@@ -471,6 +471,13 @@ class ProcessExciseAlcoBoxAccService
 
     fun getCountAccept(): Double {
         return countAccept
+    }
+
+
+    fun searchCurrentBoxDiscrepancies(boxNumber: String): TaskBoxDiscrepancies? {
+        return currentBoxDiscrepancies.findLast {
+            it.boxNumber == boxNumber
+        }
     }
 
 }

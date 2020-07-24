@@ -3,7 +3,6 @@ package com.lenta.bp9.features.goods_information.non_excise_sets_pge.set_compone
 import android.annotation.SuppressLint
 import android.content.Context
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
 import com.lenta.bp9.R
 import com.lenta.bp9.model.processing.ProcessNonExciseSetsPGEProductService
 import com.lenta.bp9.model.task.IReceivingTaskManager
@@ -19,11 +18,11 @@ import com.lenta.shared.models.core.Manufacturer
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.requests.combined.scan_info.pojo.QualityInfo
 import com.lenta.shared.utilities.extentions.combineLatest
+import com.lenta.shared.utilities.extentions.launchUITryCatch
 import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.utilities.extentions.toStringFormatted
 import com.lenta.shared.view.OnPositionClickListener
 import com.mobrun.plugin.api.HyperHive
-import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import javax.inject.Inject
 
@@ -68,6 +67,7 @@ class NonExciseSetComponentInfoPGEViewModel : CoreViewModel(),
     val spinProcessingUnit: MutableLiveData<List<String>> = MutableLiveData()
     val spinProcessingUnitSelectedPosition: MutableLiveData<Int> = MutableLiveData(0)
     val suffix: MutableLiveData<String> = MutableLiveData()
+    val requestFocusToCount: MutableLiveData<Boolean> = MutableLiveData()
     val typeDiscrepancies: MutableLiveData<String> = MutableLiveData()
 
     private val qualityInfo: MutableLiveData<List<QualityInfo>> = MutableLiveData()
@@ -101,7 +101,7 @@ class NonExciseSetComponentInfoPGEViewModel : CoreViewModel(),
     }
 
     init {
-        viewModelScope.launch {
+        launchUITryCatch {
             suffix.value = setInfo.value?.uom?.name
             qualityInfo.value = dataBase.getQualityInfoPGE()
 
@@ -130,6 +130,9 @@ class NonExciseSetComponentInfoPGEViewModel : CoreViewModel(),
             }?.map {
                 it.key
             }
+
+            //эту строку необходимо прописывать только после того, как были установлены данные для переменных count  и suffix, а иначе фокус в поле et_count не установится
+            requestFocusToCount.value = true
         }
     }
 
@@ -145,7 +148,7 @@ class NonExciseSetComponentInfoPGEViewModel : CoreViewModel(),
             batch.egais == getManufactureCode(spinManufacturersSelectedPosition.value ?: 0) &&
                     batch.bottlingDate == bottlingDate &&
                     batch.processingUnitNumber == spinProcessingUnit.value?.get(spinProcessingUnitSelectedPosition.value
-                    ?: 0)?.substring(context.getString(R.string.spin_processing_unit).length)
+                    ?: 0)?.substring(context.getString(R.string.prefix_processing_unit).length)
         }
 
         if (batchSelected != null && count.value != null && setInfo.value != null && typeDiscrepancies.value != null) {
@@ -215,7 +218,7 @@ class NonExciseSetComponentInfoPGEViewModel : CoreViewModel(),
         }?.groupBy { gIt ->
             gIt.processingUnitNumber
         }?.map { mIt ->
-            "${context.getString(R.string.spin_processing_unit)}${mIt.key}"
+            "${context.getString(R.string.prefix_processing_unit)}${mIt.key}"
         }
         spinProcessingUnitSelectedPosition.value = 0
         spinProcessingUnit.value = listProcessingUnitNumber

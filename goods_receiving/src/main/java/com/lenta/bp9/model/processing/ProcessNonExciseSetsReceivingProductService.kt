@@ -1,13 +1,10 @@
 package com.lenta.bp9.model.processing
 
-import com.lenta.bp9.features.goods_information.non_excise_sets_pge.ListComponentsItem
 import com.lenta.bp9.model.task.*
 import com.lenta.bp9.repos.IDataBaseRepo
 import com.lenta.bp9.repos.IRepoInMemoryHolder
 import com.lenta.shared.di.AppScope
-import com.lenta.shared.fmp.resources.dao_ext.getProductInfoByMaterial
 import com.lenta.shared.models.core.ProductType
-import com.lenta.shared.utilities.extentions.toStringFormatted
 import javax.inject.Inject
 
 @AppScope

@@ -54,15 +54,15 @@
             app:onPositionClickListener="@{vm}"
             app:items="@{vm.spinQuality}"
             android:enabled="@{vm.enabledSpinQuality}"
-            app:layout_constraintBottom_toBottomOf="@+id/et_quantity"
+            app:layout_constraintBottom_toBottomOf="@+id/et_count"
             app:layout_constraintEnd_toStartOf="@+id/div_vert1"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/et_quantity"
+            app:layout_constraintTop_toTopOf="@+id/et_count"
             app:position="@{vm.spinQualitySelectedPosition}"
             tools:entries="@array/test_list" />
 
         <com.lenta.shared.view.EditTextWithSuffix
-            android:id="@+id/et_quantity"
+            android:id="@+id/et_count"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
@@ -90,9 +90,9 @@
             android:visibility="@{vm.visibilityImgUnit}"
             android:onClick="@{(v) -> vm.onClickUnitChange()}"
             android:src="@{vm.isEizUnit ? @drawable/ic_eiz_white_24dp : @drawable/ic_bei_white_24dp}"
-            app:layout_constraintBottom_toBottomOf="@+id/et_quantity"
-            app:layout_constraintEnd_toEndOf="@+id/et_quantity"
-            app:layout_constraintTop_toTopOf="@+id/et_quantity"
+            app:layout_constraintBottom_toBottomOf="@+id/et_count"
+            app:layout_constraintEnd_toEndOf="@+id/et_count"
+            app:layout_constraintTop_toTopOf="@+id/et_count"
             tools:src="@drawable/ic_eiz_white_24dp"/>
 
         <ImageView
@@ -102,9 +102,9 @@
             android:layout_marginEnd="8dp"
             android:visibility="@{!vm.visibilityImgUnit}"
             android:src="@{vm.isEizUnit ? @drawable/ic_eiz_disabled_24dp : @drawable/ic_bei_disabled_24dp}"
-            app:layout_constraintBottom_toBottomOf="@+id/et_quantity"
-            app:layout_constraintEnd_toEndOf="@+id/et_quantity"
-            app:layout_constraintTop_toTopOf="@+id/et_quantity"
+            app:layout_constraintBottom_toBottomOf="@+id/et_count"
+            app:layout_constraintEnd_toEndOf="@+id/et_count"
+            app:layout_constraintTop_toTopOf="@+id/et_count"
             tools:src="@drawable/ic_eiz_white_24dp"/>
 
         <View
@@ -115,7 +115,7 @@
             android:background="@color/color_divider"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/et_quantity" />
+            app:layout_constraintTop_toBottomOf="@+id/et_count" />
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/ConstraintEIZ"

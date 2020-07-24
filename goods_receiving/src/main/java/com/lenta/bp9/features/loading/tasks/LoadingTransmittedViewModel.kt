@@ -13,6 +13,7 @@ import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.features.loading.CoreLoadingViewModel
 import com.lenta.shared.utilities.extentions.getDeviceIp
+import com.lenta.shared.utilities.extentions.launchUITryCatch
 import com.mobrun.plugin.api.HyperHive
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -38,13 +39,14 @@ class LoadingTransmittedViewModel : CoreLoadingViewModel() {
     override val sizeInMb: MutableLiveData<Float> = MutableLiveData()
 
     init {
-        viewModelScope.launch {
+        launchUITryCatch {
             progress.value = true
             taskManager.getReceivingTask()?.let { task ->
                 val params = TransmittedParams(
                         taskNumber = task.taskHeader.taskNumber,
                         deviceIP = context.getDeviceIp(),
-                        personnelNumber = sessionInfo.personnelNumber ?: "",
+                        personnelNumber = sessionInfo.personnelNumber.orEmpty(),
+                        printerName = sessionInfo.printer.orEmpty(),
                         unbindVSD = ""
                 )
                 transmittedNetRequest(params).either(::handleFailure, ::handleSuccess)

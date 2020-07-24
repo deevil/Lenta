@@ -6,9 +6,9 @@ import androidx.lifecycle.viewModelScope
 import com.lenta.bp9.R
 import com.lenta.bp9.features.goods_list.SearchProductDelegate
 import com.lenta.bp9.model.processing.ProcessExciseAlcoBoxAccPGEService
-import com.lenta.bp9.model.processing.ProcessExciseAlcoBoxAccService
 import com.lenta.bp9.model.task.IReceivingTaskManager
 import com.lenta.bp9.model.task.TaskProductInfo
+import com.lenta.bp9.platform.TypeDiscrepanciesConstants
 import com.lenta.bp9.platform.navigation.IScreenNavigator
 import com.lenta.bp9.repos.IDataBaseRepo
 import com.lenta.bp9.requests.network.ZmpUtzGrz31V001NetRequest
@@ -17,13 +17,11 @@ import com.lenta.bp9.requests.network.ZmpUtzGrz31V001Result
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.fmp.resources.dao_ext.getProductInfoByMaterial
 import com.lenta.shared.fmp.resources.slow.ZfmpUtz48V001
-import com.lenta.shared.models.core.Uom
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.requests.combined.scan_info.ScanInfoResult
 import com.lenta.shared.requests.combined.scan_info.pojo.QualityInfo
-import com.lenta.shared.requests.combined.scan_info.pojo.ReasonRejectionInfo
-import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.extentions.combineLatest
+import com.lenta.shared.utilities.extentions.launchUITryCatch
 import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.utilities.extentions.toStringFormatted
 import com.lenta.shared.view.OnPositionClickListener
@@ -71,8 +69,10 @@ class ExciseAlcoBoxAccInfoPGEViewModel : CoreViewModel(), OnPositionClickListene
     val spinQuality: MutableLiveData<List<String>> = MutableLiveData()
     val spinQualitySelectedPosition: MutableLiveData<Int> = MutableLiveData(0)
     val suffix: MutableLiveData<String> = MutableLiveData()
+    val requestFocusToCount: MutableLiveData<Boolean> = MutableLiveData()
     val isDefect: MutableLiveData<Boolean> = spinQualitySelectedPosition.map {
-        !(qualityInfo.value?.get(it!!)?.code == "1" || qualityInfo.value?.get(it!!)?.code == "2")
+        !(qualityInfo.value?.get(it!!)?.code == TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_NORM
+                || qualityInfo.value?.get(it!!)?.code == TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_SURPLUS)
     }
 
     private val qualityInfo: MutableLiveData<List<QualityInfo>> = MutableLiveData()
@@ -202,6 +202,9 @@ class ExciseAlcoBoxAccInfoPGEViewModel : CoreViewModel(), OnPositionClickListene
 
             count.value = processExciseAlcoBoxAccPGEService.getInitialCount().toStringFormatted()
 
+            //эту строку необходимо прописывать только после того, как были установлены данные для переменных count  и suffix, а иначе фокус в поле et_count не установится
+            requestFocusToCount.value = true
+
         }
     }
 
@@ -321,8 +324,8 @@ class ExciseAlcoBoxAccInfoPGEViewModel : CoreViewModel(), OnPositionClickListene
     }
 
     private fun scannedBoxNotFound(boxNumber: String) {
-        viewModelScope.launch {
-            screenNavigator.showProgressLoadingData()
+        launchUITryCatch {
+            screenNavigator.showProgressLoadingData(::handleFailure)
             taskManager.getReceivingTask()?.let { task ->
                 val params = ZmpUtzGrz31V001Params(
                         taskNumber = task.taskHeader.taskNumber,

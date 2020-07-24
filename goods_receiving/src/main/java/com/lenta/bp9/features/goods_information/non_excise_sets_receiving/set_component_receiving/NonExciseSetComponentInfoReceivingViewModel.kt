@@ -2,7 +2,6 @@ package com.lenta.bp9.features.goods_information.non_excise_sets_receiving.set_c
 
 import android.annotation.SuppressLint
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
 import com.lenta.bp9.model.processing.ProcessNonExciseSetsReceivingProductService
 import com.lenta.bp9.model.task.IReceivingTaskManager
 import com.lenta.bp9.model.task.TaskBatchInfo
@@ -17,11 +16,11 @@ import com.lenta.shared.models.core.Manufacturer
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.requests.combined.scan_info.pojo.QualityInfo
 import com.lenta.shared.utilities.extentions.combineLatest
+import com.lenta.shared.utilities.extentions.launchUITryCatch
 import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.utilities.extentions.toStringFormatted
 import com.lenta.shared.view.OnPositionClickListener
 import com.mobrun.plugin.api.HyperHive
-import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import javax.inject.Inject
 
@@ -63,6 +62,7 @@ class NonExciseSetComponentInfoReceivingViewModel : CoreViewModel(),
     val spinAlcocode: MutableLiveData<List<String>> = MutableLiveData()
     val spinAlcocodeSelectedPosition: MutableLiveData<Int> = MutableLiveData(0)
     val suffix: MutableLiveData<String> = MutableLiveData()
+    val requestFocusToCount: MutableLiveData<Boolean> = MutableLiveData()
     val typeDiscrepancies: MutableLiveData<String> = MutableLiveData()
 
     private val qualityInfo: MutableLiveData<List<QualityInfo>> = MutableLiveData()
@@ -96,7 +96,7 @@ class NonExciseSetComponentInfoReceivingViewModel : CoreViewModel(),
     }
 
     init {
-        viewModelScope.launch {
+        launchUITryCatch {
             suffix.value = setInfo.value?.uom?.name
             qualityInfo.value = dataBase.getQualityInfo()
 
@@ -125,6 +125,9 @@ class NonExciseSetComponentInfoReceivingViewModel : CoreViewModel(),
             }?.map {
                 it.key
             }
+
+            //эту строку необходимо прописывать только после того, как были установлены данные для переменных count  и suffix, а иначе фокус в поле et_count не установится
+            requestFocusToCount.value = true
         }
     }
 

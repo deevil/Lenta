@@ -1,12 +1,11 @@
 package com.lenta.bp9.features.goods_information.non_excise_sets_receiving.set_component_receiving
 
 import android.os.Bundle
+import android.view.KeyEvent
 import android.view.View
 import android.widget.AdapterView
 import com.lenta.bp9.R
 import com.lenta.bp9.databinding.FragmentNonExciseSetComponentInfoReceivingBinding
-import com.lenta.bp9.features.goods_information.non_excise_sets_pge.set_component_pge.NonExciseSetComponentInfoPGEFragment
-import com.lenta.bp9.features.goods_information.non_excise_sets_pge.set_component_pge.NonExciseSetComponentInfoPGEViewModel
 import com.lenta.bp9.model.task.TaskProductInfo
 import com.lenta.bp9.model.task.TaskSetsInfo
 import com.lenta.bp9.platform.extentions.getAppComponent
@@ -97,6 +96,16 @@ class NonExciseSetComponentInfoReceivingFragment : CoreFragment<FragmentNonExcis
             override fun onNothingSelected(adapterView: AdapterView<*>) {
             }
         }
+
+        binding?.etCount?.setOnKeyListener(View.OnKeyListener { v, keyCode, event ->
+            if (keyCode == KeyEvent.KEYCODE_ENTER && event.action == KeyEvent.ACTION_UP) {
+                if (vm.enabledApplyButton.value == true) {
+                    vm.onClickApply()
+                }
+                return@OnKeyListener true
+            }
+            false
+        })
     }
 
     override fun onToolbarButtonClick(view: View) {

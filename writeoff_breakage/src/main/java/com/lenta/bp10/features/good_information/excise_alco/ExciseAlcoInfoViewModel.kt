@@ -10,9 +10,9 @@ import com.lenta.bp10.models.task.ProcessExciseAlcoProductService
 import com.lenta.bp10.models.task.TaskDescription
 import com.lenta.bp10.models.task.WriteOffReason
 import com.lenta.shared.requests.combined.scan_info.ScanInfoResult
+import com.lenta.shared.utilities.extentions.launchUITryCatch
 import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.utilities.extentions.toStringFormatted
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class ExciseAlcoInfoViewModel : BaseProductInfoViewModel() {
@@ -33,7 +33,7 @@ class ExciseAlcoInfoViewModel : BaseProductInfoViewModel() {
     }
 
     init {
-        viewModelScope.launch {
+        launchUITryCatch {
             exciseAlcoDelegate.init(
                     viewModelScope = this@ExciseAlcoInfoViewModel::viewModelScope,
                     handleNewStamp = this@ExciseAlcoInfoViewModel::handleNewStamp,

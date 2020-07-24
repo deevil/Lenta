@@ -1,35 +1,15 @@
 package com.lenta.bp14.features.select_market
 
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
-import com.google.gson.Gson
-import com.lenta.bp14.models.IGeneralTaskManager
-import com.lenta.bp14.models.ITask
-import com.lenta.bp14.models.ITaskDescription
-import com.lenta.bp14.models.ITaskManager
-import com.lenta.bp14.models.check_list.CheckListData
-import com.lenta.bp14.models.check_list.CheckListTaskManager
-import com.lenta.bp14.models.check_price.CheckPriceData
-import com.lenta.bp14.models.check_price.CheckPriceTaskManager
-import com.lenta.bp14.models.general.AppTaskTypes
-import com.lenta.bp14.models.not_exposed.NotExposedData
-import com.lenta.bp14.models.not_exposed.NotExposedTaskManager
-import com.lenta.bp14.models.work_list.WorkListData
-import com.lenta.bp14.models.work_list.WorkListTaskManager
 import com.lenta.bp14.platform.navigation.IScreenNavigator
 import com.lenta.bp14.repos.IRepoInMemoryHolder
 import com.lenta.shared.account.ISessionInfo
-import com.lenta.shared.exception.Failure
 import com.lenta.shared.features.printer_change.PrinterManager
-import com.lenta.shared.platform.time.ITimeMonitor
 import com.lenta.shared.platform.viewmodel.CoreViewModel
-import com.lenta.shared.requests.network.ServerTime
-import com.lenta.shared.requests.network.ServerTimeRequest
-import com.lenta.shared.requests.network.ServerTimeRequestParam
 import com.lenta.shared.settings.IAppSettings
+import com.lenta.shared.utilities.extentions.launchUITryCatch
 import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.view.OnPositionClickListener
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class SelectMarketViewModel : CoreViewModel(), OnPositionClickListener {
@@ -57,7 +37,7 @@ class SelectMarketViewModel : CoreViewModel(), OnPositionClickListener {
     }
 
     init {
-        viewModelScope.launch {
+        launchUITryCatch {
             repoInMemoryHolder.storesRequestResult?.markets?.let { list ->
                 markets.value = list.map { MarketUi(number = it.tkNumber, address = it.address) }
 
@@ -81,7 +61,7 @@ class SelectMarketViewModel : CoreViewModel(), OnPositionClickListener {
     }
 
     fun onClickNext() {
-        viewModelScope.launch {
+        launchUITryCatch {
             markets.value?.getOrNull(selectedPosition.value ?: -1)?.number?.let { tkNumber ->
                 if (appSettings.lastTK != tkNumber) {
                     printerManager.setDefaultPrinterForTk(tkNumber)

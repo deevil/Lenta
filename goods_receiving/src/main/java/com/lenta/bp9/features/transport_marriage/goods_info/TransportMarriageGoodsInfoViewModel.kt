@@ -1,11 +1,8 @@
 package com.lenta.bp9.features.transport_marriage.goods_info
 
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
-import com.lenta.bp9.features.transport_marriage.ActItem
 import com.lenta.bp9.model.task.IReceivingTaskManager
 import com.lenta.bp9.model.task.TaskTransportMarriageInfo
-import com.lenta.bp9.model.task.TaskTransportMarriageInfoRestData
 import com.lenta.bp9.platform.navigation.IScreenNavigator
 import com.lenta.bp9.repos.IDataBaseRepo
 import com.lenta.bp9.repos.IRepoInMemoryHolder
@@ -14,19 +11,14 @@ import com.lenta.bp9.requests.network.ZmpUtzGrz26V001Params
 import com.lenta.bp9.requests.network.ZmpUtzGrz26V001Result
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.exception.Failure
-import com.lenta.shared.models.core.Uom
 import com.lenta.shared.platform.viewmodel.CoreViewModel
-import com.lenta.shared.requests.combined.scan_info.ScanCodeInfo
 import com.lenta.shared.requests.combined.scan_info.ScanInfoRequest
 import com.lenta.shared.requests.combined.scan_info.ScanInfoRequestParams
-import com.lenta.shared.requests.combined.scan_info.ScanInfoResult
-import com.lenta.shared.utilities.Logg
-import com.lenta.shared.utilities.extentions.combineLatest
+import com.lenta.shared.utilities.extentions.launchUITryCatch
 import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.utilities.extentions.toStringFormatted
 import com.lenta.shared.view.OnPositionClickListener
 import com.mobrun.plugin.api.HyperHive
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class TransportMarriageGoodsInfoViewModel : CoreViewModel(), OnPositionClickListener {
@@ -91,8 +83,8 @@ class TransportMarriageGoodsInfoViewModel : CoreViewModel(), OnPositionClickList
     }
 
     init {
-        viewModelScope.launch {
-            screenNavigator.showProgressLoadingData()
+        launchUITryCatch {
+            screenNavigator.showProgressLoadingData(::handleFailure)
             suffix.value = transportMarriageInfoCurrent.value?.uom?.name
             spinQuality.value = dataBase.getQualityInfoTransportMarriage()?.map {
                 it.name
@@ -103,8 +95,8 @@ class TransportMarriageGoodsInfoViewModel : CoreViewModel(), OnPositionClickList
     }
 
     private fun searchProduct(materialNumber: String) {
-        viewModelScope.launch {
-            screenNavigator.showProgressLoadingData()
+        launchUITryCatch {
+            screenNavigator.showProgressLoadingData(::handleFailure)
             val foundTransportMarriageInfo = taskManager.getReceivingTask()?.taskRepository?.getTransportMarriage()?.findTransportMarriage(cargoUnitNumber ?: "", materialNumber)
             if (!foundTransportMarriageInfo.isNullOrEmpty()) {
                 transportMarriageOfProduct.value = foundTransportMarriageInfo
@@ -146,7 +138,7 @@ class TransportMarriageGoodsInfoViewModel : CoreViewModel(), OnPositionClickList
     }
 
     private fun handleSuccess(result: ZmpUtzGrz26V001Result) {
-        viewModelScope.launch {
+        launchUITryCatch {
             repoInMemoryHolder.manufacturers.value = result.manufacturers
             transportMarriageOfProduct.value = result.processingUnits.map {
                 val batchNumber = result.taskBatches.findLast {batchesInfo ->
@@ -219,8 +211,8 @@ class TransportMarriageGoodsInfoViewModel : CoreViewModel(), OnPositionClickList
     }
 
     fun onScanResult(data: String) {
-        viewModelScope.launch {
-            screenNavigator.showProgressLoadingData()
+        launchUITryCatch {
+            screenNavigator.showProgressLoadingData(::handleFailure)
 
             scanInfoRequest(
                     ScanInfoRequestParams(

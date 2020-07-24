@@ -1,8 +1,8 @@
 package com.lenta.bp9.features.goods_information.excise_alco_pge.excise_alco_box_acc_pge
 
 import android.os.Bundle
+import android.view.KeyEvent
 import android.view.View
-import android.widget.AdapterView
 import com.lenta.bp9.R
 import com.lenta.bp9.databinding.FragmentExciseAlcoBoxAccInfoPgeBinding
 import com.lenta.bp9.model.task.TaskProductInfo
@@ -57,6 +57,19 @@ class ExciseAlcoBoxAccInfoPGEFragment : CoreFragment<FragmentExciseAlcoBoxAccInf
         bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.apply)
 
         connectLiveData(vm.enabledApplyButton, bottomToolbarUiModel.uiModelButton5.enabled)
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        binding?.etCount?.setOnKeyListener(View.OnKeyListener { v, keyCode, event ->
+            if (keyCode == KeyEvent.KEYCODE_ENTER && event.action == KeyEvent.ACTION_UP) {
+                if (vm.enabledApplyButton.value == true) {
+                    vm.onClickApply()
+                }
+                return@OnKeyListener true
+            }
+            false
+        })
     }
 
     override fun onToolbarButtonClick(view: View) {

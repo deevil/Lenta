@@ -1,7 +1,8 @@
 package com.lenta.shared.utilities.databinding
 
 import android.os.Build
-import android.view.View.*
+import android.view.View.FOCUSABLE_AUTO
+import android.view.View.NOT_FOCUSABLE
 import android.widget.ImageView
 import androidx.databinding.BindingAdapter
 import com.lenta.shared.R
@@ -56,7 +57,7 @@ fun setStrictListIcon(imageView: ImageView, isStrictList: Boolean?) {
             if (hasIcon) {
                 imageView.setOnClickListener {
                     dataBindingHelpHolder.coreNavigator.openAlertScreen(
-                            message = imageView.context.getString(if (isStrictList == true) R.string.pictogram_strict_list else R.string.pictogram_not_strict_list),
+                            message = imageView.context.getString(if (isStrictList == true) R.string.strict_list else R.string.not_strict_list),
                             iconRes = iconRes
                     )
                 }

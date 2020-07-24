@@ -75,6 +75,7 @@ class NonExciseSetsPGEViewModel : CoreViewModel(),
     val listComponents: MutableLiveData<List<ListComponentsItem>> = MutableLiveData()
     val eanCode: MutableLiveData<String> = MutableLiveData()
     val requestFocusToEan: MutableLiveData<Boolean> = MutableLiveData()
+    val requestFocusToCount: MutableLiveData<Boolean> = MutableLiveData()
     val spinQuality: MutableLiveData<List<String>> = MutableLiveData()
     val spinQualitySelectedPosition: MutableLiveData<Int> = MutableLiveData(0)
     val spinProcessingUnit: MutableLiveData<List<String>> = MutableLiveData()
@@ -195,12 +196,21 @@ class NonExciseSetsPGEViewModel : CoreViewModel(),
                 it.name
             }
 
-            spinProcessingUnit.value = listOf("${context.getString(R.string.spin_processing_unit)}${productInfo.value!!.processingUnit}")
+            spinProcessingUnit.value = listOf("${context.getString(R.string.prefix_processing_unit)}${productInfo.value?.processingUnit.orEmpty()}")
 
-            if (processNonExciseSetsPGEProductService.newProcessNonExciseSetsPGEProductService(productInfo.value!!) == null) {
-                screenNavigator.goBack()
-                screenNavigator.openAlertWrongProductType()
+            //эту строку необходимо прописывать только после того, как были установлены данные для переменных count  и suffix, а иначе фокус в поле et_count не установится
+            requestFocusToCount.value = true
+
+            productInfo.value?.let {
+                if (processNonExciseSetsPGEProductService.newProcessNonExciseSetsPGEProductService(it) == null) {
+                    screenNavigator.goBack()
+                    screenNavigator.openAlertWrongProductType()
+                }
+                return@launch
             }
+
+            screenNavigator.goBack()
+
         }
     }
 
@@ -285,6 +295,20 @@ class NonExciseSetsPGEViewModel : CoreViewModel(),
     override fun onPageSelected(position: Int) {
         selectedPage.value = position
         updateListComponents()
+        setRequestFocus()
+    }
+
+    private fun setRequestFocus() {
+        when (selectedPage.value) {
+            0 -> {
+                requestFocusToEan.value = false
+                requestFocusToCount.value = true
+            }
+            1 -> {
+                requestFocusToCount.value = false
+                requestFocusToEan.value = true
+            }
+        }
     }
 
     fun onClickPositionSpinQuality(position: Int) {

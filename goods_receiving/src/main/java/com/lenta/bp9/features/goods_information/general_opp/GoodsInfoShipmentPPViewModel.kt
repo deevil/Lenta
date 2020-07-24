@@ -12,11 +12,10 @@ import com.lenta.bp9.platform.navigation.IScreenNavigator
 import com.lenta.shared.models.core.Uom
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.requests.combined.scan_info.ScanInfoResult
-import com.lenta.shared.utilities.extentions.combineLatest
+import com.lenta.shared.utilities.extentions.launchUITryCatch
 import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.utilities.extentions.toStringFormatted
 import com.lenta.shared.view.OnPositionClickListener
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class GoodsInfoShipmentPPViewModel : CoreViewModel(), OnPositionClickListener {
@@ -38,6 +37,7 @@ class GoodsInfoShipmentPPViewModel : CoreViewModel(), OnPositionClickListener {
     val spinQuality: MutableLiveData<List<String>> = MutableLiveData()
     val spinQualitySelectedPosition: MutableLiveData<Int> = MutableLiveData(0)
     val suffix: MutableLiveData<String> = MutableLiveData()
+    val requestFocusToCount: MutableLiveData<Boolean> = MutableLiveData()
     val isEizUnit: MutableLiveData<Boolean> by lazy {
         MutableLiveData(productInfo.value?.purchaseOrderUnits?.code != productInfo.value?.uom?.code)
     }
@@ -84,7 +84,7 @@ class GoodsInfoShipmentPPViewModel : CoreViewModel(), OnPositionClickListener {
     }
 
     init {
-        viewModelScope.launch {
+        launchUITryCatch {
             searchProductDelegate.init(viewModelScope = this@GoodsInfoShipmentPPViewModel::viewModelScope,
                     scanResultHandler = this@GoodsInfoShipmentPPViewModel::handleProductSearchResult)
 
@@ -93,6 +93,9 @@ class GoodsInfoShipmentPPViewModel : CoreViewModel(), OnPositionClickListener {
             if (isDiscrepancy.value!!) {
                 count.value = taskManager.getReceivingTask()?.taskRepository?.getProductsDiscrepancies()?.getCountProductNotProcessedOfProduct(productInfo.value!!).toStringFormatted()
             }
+
+            //эту строку необходимо прописывать только после того, как были установлены данные для переменных count  и suffix, а иначе фокус в поле et_count не установится
+            requestFocusToCount.value = true
 
             spinQuality.value = listOf(context.getString(R.string.quantity))
 

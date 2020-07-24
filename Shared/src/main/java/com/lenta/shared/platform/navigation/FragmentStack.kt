@@ -1,17 +1,15 @@
 package com.lenta.shared.platform.navigation
 
+
 import android.os.Bundle
 import android.util.Log
-
-
-import java.util.HashSet
-import java.util.Random
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import com.lenta.shared.R
 import com.lenta.shared.analytics.AnalyticsHelper
 import com.lenta.shared.platform.fragment.CoreFragment
 import com.lenta.shared.utilities.extentions.implementationOf
+import java.util.*
 import javax.inject.Inject
 
 class FragmentStack(private val manager: FragmentManager, private val containerId: Int) {

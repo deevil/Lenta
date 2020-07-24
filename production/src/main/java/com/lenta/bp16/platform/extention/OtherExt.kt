@@ -1,7 +1,6 @@
 package com.lenta.bp16.platform.extention
 
 import com.lenta.bp16.model.TaskStatus
-import com.lenta.bp16.model.TaskType
 import com.lenta.bp16.request.pojo.TaskInfo
 import com.lenta.shared.utilities.extentions.isSapTrue
 

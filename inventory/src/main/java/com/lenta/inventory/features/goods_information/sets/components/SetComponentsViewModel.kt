@@ -1,7 +1,6 @@
 package com.lenta.inventory.features.goods_information.sets.components
 
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
 import com.lenta.inventory.features.goods_information.sets.SetComponentInfo
 import com.lenta.inventory.models.task.ProcessSetsService
 import com.lenta.inventory.models.task.TaskExciseStamp
@@ -10,11 +9,10 @@ import com.lenta.inventory.requests.network.*
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.platform.viewmodel.CoreViewModel
-import com.lenta.shared.utilities.Logg
+import com.lenta.shared.utilities.extentions.launchUITryCatch
 import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.utilities.extentions.toStringFormatted
 import com.lenta.shared.view.OnPositionClickListener
-import kotlinx.coroutines.launch
 import java.math.BigInteger
 import javax.inject.Inject
 
@@ -70,7 +68,7 @@ class SetComponentsViewModel : CoreViewModel(), OnPositionClickListener {
     }
 
     init {
-        viewModelScope.launch {
+        launchUITryCatch {
             suffix.value = componentInfo.value?.uom?.name
             storePlaceNumber.value = componentInfo.value!!.placeCode
             topTitle.value = "${componentInfo.value!!.number.substring(componentInfo.value!!.number.length - 6)} ${componentInfo.value!!.name}"
@@ -115,7 +113,7 @@ class SetComponentsViewModel : CoreViewModel(), OnPositionClickListener {
             return
         }
 
-        viewModelScope.launch {
+        launchUITryCatch {
             screenNavigator.showProgress(titleProgressScreen.value!!)
             obtainingDataExciseGoodsNetRequest(
                     ExciseGoodsParams(
@@ -172,7 +170,7 @@ class SetComponentsViewModel : CoreViewModel(), OnPositionClickListener {
             return
         }
 
-        viewModelScope.launch {
+        launchUITryCatch {
             screenNavigator.showProgress(titleProgressScreen.value!!)
             alcoCodeNetRequest(null).either(::handleFailure, ::alcoCodeHandleSuccess)
             screenNavigator.hideProgress()

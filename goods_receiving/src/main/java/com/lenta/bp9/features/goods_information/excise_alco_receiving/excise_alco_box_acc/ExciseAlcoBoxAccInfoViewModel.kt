@@ -18,11 +18,11 @@ import com.lenta.shared.requests.combined.scan_info.ScanInfoResult
 import com.lenta.shared.requests.combined.scan_info.pojo.QualityInfo
 import com.lenta.shared.requests.combined.scan_info.pojo.ReasonRejectionInfo
 import com.lenta.shared.utilities.extentions.combineLatest
+import com.lenta.shared.utilities.extentions.launchUITryCatch
 import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.utilities.extentions.toStringFormatted
 import com.lenta.shared.view.OnPositionClickListener
 import com.mobrun.plugin.api.HyperHive
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class ExciseAlcoBoxAccInfoViewModel : CoreViewModel(), OnPositionClickListener {
@@ -61,6 +61,7 @@ class ExciseAlcoBoxAccInfoViewModel : CoreViewModel(), OnPositionClickListener {
     val spinReasonRejection: MutableLiveData<List<String>> = MutableLiveData()
     val spinReasonRejectionSelectedPosition: MutableLiveData<Int> = MutableLiveData(0)
     val suffix: MutableLiveData<String> = MutableLiveData()
+    val requestFocusToCount: MutableLiveData<Boolean> = MutableLiveData()
     val isDefect: MutableLiveData<Boolean> = spinQualitySelectedPosition.map {
         it != 0
     }
@@ -222,40 +223,41 @@ class ExciseAlcoBoxAccInfoViewModel : CoreViewModel(), OnPositionClickListener {
     val checkBoxListVisibility: MutableLiveData<Boolean> = MutableLiveData()
 
     val tvBoxListVal: MutableLiveData<String> = refusalTotalCount.combineLatest(spinQualitySelectedPosition).map {
-        if (qualityInfo.value?.get(it?.second ?: 0)?.code != "1") {
-            if (processExciseAlcoBoxAccService.getCountUntreatedBoxes() == 0) {
-                checkBoxListVisibility.value = true
-                "${processExciseAlcoBoxAccService.getCountDefectBoxes()} из ${processExciseAlcoBoxAccService.getCountDefectBoxes()}"
+        val refusalTotalCountValue = it?.first ?: 0.0
+        val spinQualitySelectedPositionValue = it?.second ?: 0
+        val qualityInfoCode = qualityInfo.value?.get(spinQualitySelectedPositionValue)?.code
+        if (qualityInfoCode != TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_NORM) {
+            if (refusalTotalCountValue == 0.0 || refusalTotalCountValue.toInt() == processExciseAlcoBoxAccService.getCountUntreatedBoxes()) {
+                checkBoxListVisibility.value = false
+                context.getString(R.string.not_required)
             } else {
-                if (it?.first?.toInt() == processExciseAlcoBoxAccService.getCountUntreatedBoxes()) {
-                    checkBoxListVisibility.value = false
-                    context.getString(R.string.not_required)
-                } else {
-                    checkBoxListVisibility.value = true
-                    "${it?.first.toStringFormatted()} из ${processExciseAlcoBoxAccService.getCountUntreatedBoxes()}"
-                }
+                checkBoxListVisibility.value = true
+                "${processExciseAlcoBoxAccService.getCountDefectBoxes()} ${context.getString(R.string.of)} ${refusalTotalCountValue.toStringFormatted()}"
             }
-        } else {
-            "" //это поле отображается только при выбранной категории брака
-        }
+        } else "" //это поле отображается только при выбранной категории брака
     }
 
     val checkBoxList: MutableLiveData<Boolean> = checkBoxListVisibility.map {
         //https://trello.com/c/lqyZlYQu, Устанавливать чекбокс, когда F (кол-во в Отказать) = Q (свободные/необработанные короба);
-        processExciseAlcoBoxAccService.getCountUntreatedBoxes() == 0
+        refusalTotalCount.value == processExciseAlcoBoxAccService.getCountDefectBoxes().toDouble()
     }
 
     val enabledApplyButton: MutableLiveData<Boolean> = countValue.combineLatest(checkBoxList).map {
-        if (qualityInfo.value?.get(spinQualitySelectedPosition.value ?: 0)?.code == "1") {
-            it!!.first != 0.0
+        val totalCount = countValue.value ?: 0.0
+        val spinQualitySelectedPositionValue = spinQualitySelectedPosition.value ?: 0
+        val qualityInfoCode = qualityInfo.value?.get(spinQualitySelectedPositionValue)?.code
+        if (qualityInfoCode == TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_NORM) {
+            totalCount != 0.0
         } else {
-            ((processExciseAlcoBoxAccService.getCountUntreatedBoxes() - (countValue.value?.toInt()
-                    ?: 0) == 0) || it!!.second) && ((countValue.value?.toInt() ?: 0) > 0)
+            val someMinusValue = processExciseAlcoBoxAccService.getCountUntreatedBoxes() - totalCount.toInt()
+            (someMinusValue == 0 || it!!.second) && (totalCount > 0.0)
         }
     }
 
+    private val isShowScreenNoBoxSelectionRequired: MutableLiveData<Boolean> = MutableLiveData(false)
+
     init {
-        viewModelScope.launch {
+        launchUITryCatch {
             searchProductDelegate.init(viewModelScope = this@ExciseAlcoBoxAccInfoViewModel::viewModelScope,
                     scanResultHandler = this@ExciseAlcoBoxAccInfoViewModel::handleProductSearchResult)
 
@@ -263,7 +265,11 @@ class ExciseAlcoBoxAccInfoViewModel : CoreViewModel(), OnPositionClickListener {
             qualityInfo.value = dataBase.getQualityInfo()
             spinQuality.value = qualityInfo.value?.map {
                 it.name
-            }
+            } ?: emptyList()
+
+            //эту строку необходимо прописывать только после того, как были установлены данные для переменных count  и suffix, а иначе фокус в поле et_count не установится
+            requestFocusToCount.value = true
+
             if (processExciseAlcoBoxAccService.newProcessExciseAlcoBoxService(productInfo.value!!) == null) {
                 screenNavigator.goBack()
                 screenNavigator.openAlertWrongProductType()
@@ -296,31 +302,52 @@ class ExciseAlcoBoxAccInfoViewModel : CoreViewModel(), OnPositionClickListener {
     }
 
     fun onClickAdd(): Boolean {
-        return if (processExciseAlcoBoxAccService.overLimit(countValue.value!!)) {
-            screenNavigator.openAlertOverLimit()
-            count.value = "0"
-            false
-        } else {
-            if (qualityInfo.value?.get(spinQualitySelectedPosition.value ?: 0)?.code == "1") {
-                processExciseAlcoBoxAccService.addProduct(acceptTotalCount.value!!.toString(), "1")
-            } else {
-                if (processExciseAlcoBoxAccService.getCountUntreatedBoxes() - (countValue.value?.toInt()
-                                ?: 0) == 0) { //https://trello.com/c/lqyZlYQu, Массовая обработка брака
-                    screenNavigator.openAlertGoodsNotInInvoiceScreen(productInfo.value!!.getMaterialLastSix(), productInfo.value!!.description) {
-                        processExciseAlcoBoxAccService.massProcessingRejectBoxes(reasonRejectionInfo.value!![spinReasonRejectionSelectedPosition.value!!].code)
-                        processExciseAlcoBoxAccService.addProduct(count.value!!, reasonRejectionInfo.value!![spinReasonRejectionSelectedPosition.value!!].code)
-                    }
+        val totalCount = countValue.value ?: 0.0
+        val spinQualitySelectedPositionValue = spinQualitySelectedPosition.value
+        val qualityInfoCode = spinQualitySelectedPositionValue?.let {
+            qualityInfo.value?.get(it)?.code
+        }
+        val acceptTotalCountValue = acceptTotalCount.value ?: 0.0
+        val spinReasonRejectionSelectedPositionValue = spinReasonRejectionSelectedPosition.value
+        val reasonRejectionInfoCode = spinReasonRejectionSelectedPositionValue?.let {
+            reasonRejectionInfo.value?.get(it)?.code
+        }
+        return productInfo.value?.let { product ->
+            reasonRejectionInfoCode?.let {typeDiscrepancies ->
+                if (processExciseAlcoBoxAccService.overLimit(totalCount)) {
+                    screenNavigator.openAlertOverLimit()
+                    count.value = "0"
+                    false
                 } else {
-                    processExciseAlcoBoxAccService.addProduct(count.value!!, reasonRejectionInfo.value!![spinReasonRejectionSelectedPosition.value!!].code)
+                    if (qualityInfoCode == TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_NORM) {
+                        processExciseAlcoBoxAccService.addProduct(acceptTotalCountValue.toString(), TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_NORM)
+                    } else {
+                        if (processExciseAlcoBoxAccService.getCountUntreatedBoxes() - totalCount.toInt() == 0) { //https://trello.com/c/lqyZlYQu, Массовая обработка брака
+                            screenNavigator.openAlertNoBoxSelectionRequiredScreen(
+                                    materialNumber = product.getMaterialLastSix(),
+                                    materialName = product.description,
+                                    callbackFunc = {
+                                        processExciseAlcoBoxAccService.massProcessingRejectBoxes(typeDiscrepancies)
+                                        processExciseAlcoBoxAccService.addProduct(totalCount.toString(), typeDiscrepancies)
+                                        screenNavigator.goBack()
+                                    }
+                            )
+                            isShowScreenNoBoxSelectionRequired.value = true
+                        } else {
+                            processExciseAlcoBoxAccService.addProduct(totalCount.toString(), typeDiscrepancies)
+                        }
+                    }
+                    count.value = "0"
+                    spinQualitySelectedPosition.value = 0
+                    true
                 }
             }
-            count.value = "0"
-            true
         }
+                ?: false
     }
 
     fun onClickApply() {
-        if (onClickAdd()) screenNavigator.goBack()
+        if (onClickAdd() && isShowScreenNoBoxSelectionRequired.value == false) screenNavigator.goBack()
     }
 
     fun onScanResult(data: String) {
@@ -430,15 +457,15 @@ class ExciseAlcoBoxAccInfoViewModel : CoreViewModel(), OnPositionClickListener {
     }
 
     fun onClickPositionSpinQuality(position: Int) {
-        viewModelScope.launch {
+        launchUITryCatch {
             spinQualitySelectedPosition.value = position
             updateDataSpinReasonRejection(qualityInfo.value!![position].code)
         }
     }
 
     private suspend fun updateDataSpinReasonRejection(selectedQuality: String) {
-        viewModelScope.launch {
-            screenNavigator.showProgressLoadingData()
+        launchUITryCatch {
+            screenNavigator.showProgressLoadingData(::handleFailure)
             spinReasonRejectionSelectedPosition.value = 0
             reasonRejectionInfo.value = dataBase.getReasonRejectionInfoOfQuality(selectedQuality)
             spinReasonRejection.value = reasonRejectionInfo.value?.map {

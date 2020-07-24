@@ -1,29 +1,29 @@
 package com.lenta.bp12.features.create_task.task_composition
 
-import com.lenta.bp12.R
-import com.lenta.shared.platform.fragment.CoreFragment
-import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
-import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
-import com.lenta.shared.utilities.extentions.provideViewModel
 import android.os.Bundle
 import android.view.LayoutInflater
-import com.lenta.shared.utilities.databinding.ViewPagerSettings
-import android.view.ViewGroup
 import android.view.View
+import android.view.ViewGroup
 import android.widget.AdapterView
 import androidx.databinding.DataBindingUtil
-import com.lenta.bp12.platform.extention.getAppComponent
 import com.lenta.bp12.BR
+import com.lenta.bp12.R
 import com.lenta.bp12.databinding.*
+import com.lenta.bp12.platform.extention.getAppComponent
 import com.lenta.shared.platform.activity.OnBackPresserListener
+import com.lenta.shared.platform.fragment.CoreFragment
+import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListener
+import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
 import com.lenta.shared.scan.OnScanResultListener
 import com.lenta.shared.utilities.databinding.DataBindingAdapter
 import com.lenta.shared.utilities.databinding.DataBindingRecyclerViewConfig
 import com.lenta.shared.utilities.databinding.RecyclerViewKeyHandler
+import com.lenta.shared.utilities.databinding.ViewPagerSettings
 import com.lenta.shared.utilities.extentions.connectLiveData
 import com.lenta.shared.utilities.extentions.generateScreenNumberFromPostfix
+import com.lenta.shared.utilities.extentions.provideViewModel
 
 class TaskCompositionFragment : CoreFragment<FragmentTaskCompositionBinding, TaskCompositionViewModel>(),
         ToolbarButtonsClickListener, ViewPagerSettings, OnBackPresserListener, OnScanResultListener {
@@ -61,6 +61,7 @@ class TaskCompositionFragment : CoreFragment<FragmentTaskCompositionBinding, Tas
         when (view.id) {
             R.id.b_3 -> vm.onClickDelete()
             R.id.b_5 -> vm.onClickSave()
+            //R.id.b_5 -> vm.onScanResult("03000042907513119000404111") // Коробка 082682
         }
     }
 

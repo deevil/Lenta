@@ -1,14 +1,13 @@
 package com.lenta.inventory.features.taken_to_work
 
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
 import com.lenta.inventory.models.RecountType
 import com.lenta.inventory.models.task.IInventoryTaskManager
 import com.lenta.inventory.platform.navigation.IScreenNavigator
 import com.lenta.shared.platform.time.ITimeMonitor
 import com.lenta.shared.platform.viewmodel.CoreViewModel
+import com.lenta.shared.utilities.extentions.launchUITryCatch
 import com.mobrun.plugin.api.HyperHive
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class TakenToWorkViewModel : CoreViewModel() {
@@ -28,7 +27,7 @@ class TakenToWorkViewModel : CoreViewModel() {
     val timeCount = MutableLiveData("")
 
     init {
-        viewModelScope.launch {
+        launchUITryCatch {
 
             timeCount.value = taskManager.getInventoryTask()?.getElapsedTimePrintable(timeMonitor.getUnixTime())
 

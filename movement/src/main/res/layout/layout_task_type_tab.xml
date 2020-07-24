@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+        <variable
+            name="vm"
+            type="com.lenta.movement.features.task.TaskViewModel" />
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <com.lenta.movement.view.BorderedTableLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:stretchColumns="*"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <TableRow>
+
+                <com.lenta.shared.view.ClickableSpinner
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="16dp"
+                    android:layout_span="2"
+                    android:enabled="@{vm.taskTypeEnabled}"
+                    app:items="@{vm.taskTypesFormatted}"
+                    app:position="@{vm.taskTypeSelectedPosition}"/>
+
+            </TableRow>
+
+            <TableRow>
+
+                <com.lenta.shared.view.ClickableSpinner
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="16dp"
+                    android:layout_span="2"
+                    android:enabled="@{vm.movementTypeEnabled}"
+                    app:items="@{vm.movementTypesFormatted}"
+                    app:position="@{vm.movementSelectedPosition}"/>
+
+            </TableRow>
+
+            <TableRow>
+
+                <EditText
+                    android:id="@+id/taskNameEditText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="16dp"
+                    android:layout_span="2"
+                    android:text="@={vm.taskName}"
+                    android:enabled="@{vm.taskNameEnabled}"/>
+
+            </TableRow>
+
+            <TableRow
+                android:gravity="center_vertical">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="16dp"
+                    android:text="@string/task_settings_task_type_receiver_title" />
+
+                <com.lenta.shared.view.ClickableSpinner
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="16dp"
+                    android:enabled="@{vm.receiversEnabled}"
+                    app:items="@{vm.receivers}"
+                    app:position="@{vm.receiverSelectedPosition}"
+                    app:onPositionClickListener="@{vm.receiverSelectedPositionListener}"/>
+
+            </TableRow>
+
+        </com.lenta.movement.view.BorderedTableLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

@@ -8,26 +8,26 @@ import com.lenta.bp12.request.pojo.ProducerInfo
 import com.lenta.bp12.request.pojo.ProviderInfo
 import com.lenta.shared.models.core.MatrixType
 import com.lenta.shared.models.core.Uom
+import com.lenta.shared.utilities.extentions.dropZeros
 import com.lenta.shared.utilities.extentions.sumList
 import com.lenta.shared.utilities.extentions.sumWith
 
 data class GoodOpen(
-        val ean: String,
+        var ean: String,
+        val allGoodEans: List<String> = emptyList(),
         val material: String,
         val name: String,
         val kind: GoodKind,
         val section: String,
         val matrix: MatrixType,
 
-        var planQuantity: Double = 0.0,
-        var factQuantity: Double = 0.0,
+        val planQuantity: Double = 0.0,
+        val factQuantity: Double = 0.0,
 
-        val commonUnits: Uom = Uom.ST,
-        val convertingUnits: Uom = Uom.ST,
+        val commonUnits: Uom,
+        val innerUnits: Uom,
         val innerQuantity: Double,
-        val convertingInfo: String = "",
 
-        var isDataLoaded: Boolean = false,
         var isCounted: Boolean = false,
         var isDeleted: Boolean = false,
         var isMissing: Boolean = false,
@@ -45,7 +45,15 @@ data class GoodOpen(
     }
 
     fun isDifferentUnits(): Boolean {
-        return commonUnits != convertingUnits
+        return commonUnits != innerUnits
+    }
+
+    fun getConvertingInfo(): String {
+        return if (isDifferentUnits()) " (${commonUnits.name} = ${innerQuantity.dropZeros()} ${innerUnits.name})" else ""
+    }
+
+    fun getQuantity(): Double {
+        return factQuantity.takeIf { it > 0.0 } ?: getTotalQuantity()
     }
 
     fun getTotalQuantity(): Double {
@@ -84,7 +92,7 @@ data class GoodOpen(
     }
 
     fun addPart(part: Part) {
-        parts.find { it.providerCode == part.providerCode && it.producerCode == part.producerCode && it.date == part.date}?.let { foundPart ->
+        parts.find { it.providerCode == part.providerCode && it.producerCode == part.producerCode && it.date == part.date }?.let { foundPart ->
             foundPart.quantity = foundPart.quantity.sumWith(part.quantity)
         } ?: parts.add(part)
     }

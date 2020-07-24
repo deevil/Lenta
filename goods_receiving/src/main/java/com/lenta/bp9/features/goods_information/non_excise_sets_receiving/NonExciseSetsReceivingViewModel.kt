@@ -5,9 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.lenta.bp9.R
 import com.lenta.bp9.features.goods_information.non_excise_sets_pge.ListComponentsItem
-import com.lenta.bp9.features.goods_list.ListWithoutBarcodeItem
 import com.lenta.bp9.features.goods_list.SearchProductDelegate
-import com.lenta.bp9.model.processing.ProcessNonExciseSetsPGEProductService
 import com.lenta.bp9.model.processing.ProcessNonExciseSetsReceivingProductService
 import com.lenta.bp9.model.task.IReceivingTaskManager
 import com.lenta.bp9.model.task.TaskProductInfo
@@ -78,6 +76,7 @@ class NonExciseSetsReceivingViewModel : CoreViewModel(),
     val listComponents: MutableLiveData<List<ListComponentsItem>> = MutableLiveData()
     val eanCode: MutableLiveData<String> = MutableLiveData()
     val requestFocusToEan: MutableLiveData<Boolean> = MutableLiveData()
+    val requestFocusToCount: MutableLiveData<Boolean> = MutableLiveData()
     val spinQuality: MutableLiveData<List<String>> = MutableLiveData()
     val spinQualitySelectedPosition: MutableLiveData<Int> = MutableLiveData(0)
     val spinProcessingUnit: MutableLiveData<List<String>> = MutableLiveData()
@@ -210,6 +209,9 @@ class NonExciseSetsReceivingViewModel : CoreViewModel(),
                 it.name
             }
 
+            //эту строку необходимо прописывать только после того, как были установлены данные для переменных count  и suffix, а иначе фокус в поле et_count не установится
+            requestFocusToCount.value = true
+
             productInfo.value?.let {
                 if (processNonExciseSetsReceivingProductService.newProcessNonExciseSetsReceivingProductService(it) == null) {
                     screenNavigator.goBack()
@@ -307,6 +309,20 @@ class NonExciseSetsReceivingViewModel : CoreViewModel(),
     override fun onPageSelected(position: Int) {
         selectedPage.value = position
         updateListComponents()
+        setRequestFocus()
+    }
+
+    private fun setRequestFocus() {
+        when (selectedPage.value) {
+            0 -> {
+                requestFocusToEan.value = false
+                requestFocusToCount.value = true
+            }
+            1 -> {
+                requestFocusToCount.value = false
+                requestFocusToEan.value = true
+            }
+        }
     }
 
     fun onClickPositionSpinQuality(position: Int) {

@@ -10,7 +10,6 @@ import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListener
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
-import com.lenta.shared.utilities.extentions.getAppInfo
 import com.lenta.shared.utilities.extentions.provideViewModel
 import com.lenta.shared.utilities.state.state
 

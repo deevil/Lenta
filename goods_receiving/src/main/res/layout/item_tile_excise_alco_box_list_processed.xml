@@ -33,11 +33,7 @@
 
                 <TextView
                     android:id="@+id/tv_item_number"
-                    style="@style/CellTextStyle"
-                    android:layout_width="32dp"
-                    android:layout_height="32dp"
-                    android:background="@drawable/bg_border_circle_white_selectable_for_delete"
-                    android:gravity="center"
+                    style="@style/CellCircleNumberStyle"
                     android:text='@{item.number + ""}'
                     app:selected="@{selectedForDelete}"
                     tools:text="1" />
@@ -53,6 +49,8 @@
                 <TextView
                     style="@style/CellTextStyle"
                     android:maxLines="2"
+                    android:lines="2"
+                    android:singleLine="false"
                     android:text="@{item.name}"
                     tools:text="000363 Салака" />
 
@@ -60,10 +58,7 @@
 
             <ImageView
                 android:id="@+id/iv_open"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:padding="5dp"
-                android:src="@drawable/ic_keyboard_arrow_right_white_16dp" />
+                style="@style/OpenItemButton" />
 
             <View style="@style/VerticalDivider" />
 

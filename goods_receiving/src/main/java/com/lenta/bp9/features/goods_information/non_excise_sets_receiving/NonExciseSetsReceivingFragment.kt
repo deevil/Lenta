@@ -1,6 +1,7 @@
 package com.lenta.bp9.features.goods_information.non_excise_sets_receiving
 
 import android.os.Bundle
+import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -9,7 +10,10 @@ import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import com.lenta.bp9.BR
 import com.lenta.bp9.R
-import com.lenta.bp9.databinding.*
+import com.lenta.bp9.databinding.FragmentNonExciseSetsReceivingBinding
+import com.lenta.bp9.databinding.ItemTileNonExciseSetsComponentsBinding
+import com.lenta.bp9.databinding.LayoutNonExciseSetsComponentsReceivingBinding
+import com.lenta.bp9.databinding.LayoutNonExciseSetsCountedReceivingBinding
 import com.lenta.bp9.model.task.TaskProductInfo
 import com.lenta.bp9.platform.extentions.getAppComponent
 import com.lenta.shared.platform.activity.OnBackPresserListener
@@ -111,6 +115,15 @@ class NonExciseSetsReceivingFragment : CoreFragment<FragmentNonExciseSetsReceivi
                                 override fun onNothingSelected(adapterView: AdapterView<*>) {
                                 }
                             }
+                            layoutBinding.etCount.setOnKeyListener(View.OnKeyListener { v, keyCode, event ->
+                                if (keyCode == KeyEvent.KEYCODE_ENTER && event.action == KeyEvent.ACTION_UP) {
+                                    if (vm.enabledApplyButton.value == true) {
+                                        vm.onClickApply()
+                                    }
+                                    return@OnKeyListener true
+                                }
+                                false
+                            })
                             return layoutBinding.root
                         }
             }
@@ -200,6 +213,11 @@ class NonExciseSetsReceivingFragment : CoreFragment<FragmentNonExciseSetsReceivi
 
     override fun onResume() {
         super.onResume()
+        if (vm.selectedPage.value == 0) {
+            vm.requestFocusToCount.value = true
+        } else {
+            vm.requestFocusToEan.value = true
+        }
         vm.onResume()
     }
 

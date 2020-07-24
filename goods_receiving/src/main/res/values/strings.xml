@@ -1,4 +1,4 @@
-<resources xmlns:tools="http://schemas.android.com/tools">
+<resources>
     <string name="app_name">Приемка товаров</string>
     <string name="task">Задание</string>
     <string name="SKUGE">SKU/ГЕ</string>
@@ -324,6 +324,7 @@
     <string name="over_limit_planned">Превышено плановое количество</string>
     <string name="over_limit_planned_batch">Превышено плановое количество по партии</string>
     <string name="code_with_12_digits">000000000000</string>
-    <string name="spin_processing_unit">ЕО - </string>
+    <string name="prefix_processing_unit">ЕО-</string>
     <string name="of">из</string>
+    <string name="selected_processing_unit">Выберите ЕО</string>
 </resources>

@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/vertical_guideline_1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.15" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/vertical_guideline_2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.60" />
+
+        <TextView
+            android:id="@+id/tv_number"
+            style="@style/TextTitle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/size_8dp"
+            android:layout_marginTop="@dimen/size_8dp"
+            android:layout_marginEnd="@dimen/size_8dp"
+            android:layout_marginBottom="@dimen/size_8dp"
+            android:ellipsize="end"
+            android:gravity="center"
+            android:maxLines="1"
+            android:text="@string/number"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/vertical_guideline_1"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="1.0" />
+
+        <TextView
+            android:id="@+id/tv_product"
+            style="@style/TextTitle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/size_8dp"
+            android:layout_marginTop="@dimen/size_8dp"
+            android:layout_marginEnd="@dimen/size_8dp"
+            android:layout_marginBottom="@dimen/size_8dp"
+            android:ellipsize="end"
+            android:gravity="center_vertical"
+            android:maxLines="1"
+            android:text="@string/eo"
+            app:layout_constraintBottom_toTopOf="@+id/div_hor_bottom"
+            app:layout_constraintEnd_toStartOf="@+id/vertical_guideline_2"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/vertical_guideline_1"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <View
+            android:id="@+id/div_hor_bottom"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/size_1dp"
+            android:background="@color/color_divider"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <TextView
+            android:id="@+id/tv_quantity"
+            style="@style/TextTitle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/size_8dp"
+            android:layout_marginTop="@dimen/size_8dp"
+            android:layout_marginEnd="@dimen/size_8dp"
+            android:layout_marginBottom="@dimen/size_8dp"
+            android:ellipsize="end"
+            android:gravity="center_vertical"
+            android:maxLines="1"
+            android:text="@string/of_goods"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/vertical_guideline_3"
+            app:layout_constraintStart_toEndOf="@+id/vertical_guideline_2"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/vertical_guideline_3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.8" />
+
+        <TextView
+            android:id="@+id/tv_tag"
+            style="@style/TextTitle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/size_8dp"
+            android:layout_marginTop="@dimen/size_8dp"
+            android:layout_marginEnd="@dimen/size_8dp"
+            android:layout_marginBottom="@dimen/size_8dp"
+            android:ellipsize="end"
+            android:gravity="center_vertical"
+            android:maxLines="1"
+            android:text="@string/tag"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/vertical_guideline_3"
+            app:layout_constraintTop_toTopOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</layout>

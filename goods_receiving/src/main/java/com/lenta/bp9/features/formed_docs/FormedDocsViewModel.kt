@@ -1,8 +1,6 @@
 package com.lenta.bp9.features.formed_docs
 
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
-import com.lenta.bp9.features.loading.tasks.TaskCardMode
 import com.lenta.bp9.model.task.IReceivingTaskManager
 import com.lenta.bp9.model.task.TaskDocumentsPrinting
 import com.lenta.bp9.platform.navigation.IScreenNavigator
@@ -10,10 +8,9 @@ import com.lenta.bp9.requests.network.*
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.platform.viewmodel.CoreViewModel
-import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.SelectionItemsHelper
+import com.lenta.shared.utilities.extentions.launchUITryCatch
 import com.lenta.shared.utilities.extentions.map
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class FormedDocsViewModel : CoreViewModel() {
@@ -41,8 +38,8 @@ class FormedDocsViewModel : CoreViewModel() {
     }
 
     init {
-        viewModelScope.launch {
-            screenNavigator.showProgressLoadingData()
+        launchUITryCatch {
+            screenNavigator.showProgressLoadingData(::handleFailure)
             taskManager.getReceivingTask()?.let { task ->
                 val params = DocsPrintingParams(
                         taskNumber = task.taskHeader.taskNumber
@@ -75,8 +72,8 @@ class FormedDocsViewModel : CoreViewModel() {
     }
 
     fun onClickPrint() {
-        viewModelScope.launch {
-            screenNavigator.showProgressLoadingData()
+        launchUITryCatch {
+            screenNavigator.showProgressLoadingData(::handleFailure)
             val params = PrintingDocsParams(
                     listDocumentsPrinting = docsSelectionsHelper.selectedPositions.value?.map { position ->
                         listDocs.value?.get(position)!!.taskDocumentsPrinting

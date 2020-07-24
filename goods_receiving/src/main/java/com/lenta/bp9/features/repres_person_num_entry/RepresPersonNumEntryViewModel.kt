@@ -1,7 +1,6 @@
 package com.lenta.bp9.features.repres_person_num_entry
 
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
 import com.lenta.bp9.model.task.IReceivingTaskManager
 import com.lenta.bp9.model.task.TaskSectionInfo
 import com.lenta.bp9.platform.navigation.IScreenNavigator
@@ -15,8 +14,8 @@ import com.lenta.shared.requests.network.TabNumberParams
 import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
 import com.lenta.shared.utilities.date_time.DateTimeUtil
+import com.lenta.shared.utilities.extentions.launchUITryCatch
 import com.lenta.shared.utilities.extentions.map
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class RepresPersonNumEntryViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
@@ -48,7 +47,7 @@ class RepresPersonNumEntryViewModel : CoreViewModel(), OnOkInSoftKeyboardListene
     }
 
     private fun searchPersonnelNumber() {
-        viewModelScope.launch {
+        launchUITryCatch {
             screenNavigator.showProgress(personnelNumberNetRequest)
             personnelNumberNetRequest(TabNumberParams(tabNumber = personnelNumber.value
                     ?: "")).either(::handleFailure, ::handleSuccess)
@@ -60,7 +59,7 @@ class RepresPersonNumEntryViewModel : CoreViewModel(), OnOkInSoftKeyboardListene
         Logg.d { "handleSuccess $personnelNumberInfo" }
         fullName.value = personnelNumberInfo.name
         employeesPosition.value = personnelNumberInfo.jobName
-        viewModelScope.launch {
+        launchUITryCatch {
             nextButtonFocus.postValue(true)
         }
     }

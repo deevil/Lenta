@@ -15,3 +15,10 @@ data class Uom(val code: String, val name: String) {
 fun Uom.isOnlyInt(): Boolean {
     return this.code != "KG"
 }
+
+fun getInnerUnits(units: Uom): Uom {
+    return when(units){
+        Uom.KG -> Uom.G
+        else -> Uom.ST
+    }
+}

@@ -1,15 +1,15 @@
 package com.lenta.bp12.features.open_task.task_list
 
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
 import com.lenta.bp12.model.BlockType
 import com.lenta.bp12.model.IOpenTaskManager
-import com.lenta.bp12.model.TaskStatus
+import com.lenta.bp12.model.TaskSearchMode
 import com.lenta.bp12.model.pojo.open_task.TaskOpen
 import com.lenta.bp12.platform.navigation.IScreenNavigator
 import com.lenta.bp12.platform.resource.IResourceManager
 import com.lenta.bp12.request.TaskListNetRequest
 import com.lenta.bp12.request.TaskListParams
+import com.lenta.bp12.request.TaskListResult
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.platform.viewmodel.CoreViewModel
@@ -17,8 +17,8 @@ import com.lenta.shared.settings.IAppSettings
 import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
 import com.lenta.shared.utilities.databinding.PageSelectionListener
 import com.lenta.shared.utilities.extentions.combineLatest
+import com.lenta.shared.utilities.extentions.launchUITryCatch
 import com.lenta.shared.utilities.extentions.map
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyboardListener {
@@ -85,7 +85,7 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
                                 number = task.number,
                                 name = task.getFormattedName(),
                                 provider = task.getProviderCodeWithName(),
-                                taskStatus = task.status,
+                                isFinished = task.isFinished,
                                 blockType = task.block.type,
                                 quantity = task.numberOfGoods.toString()
                         )
@@ -112,7 +112,7 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
                                 number = task.number,
                                 name = task.name,
                                 provider = task.getProviderCodeWithName(),
-                                taskStatus = task.status,
+                                isFinished = task.isFinished,
                                 blockType = task.block.type,
                                 quantity = task.numberOfGoods.toString()
                         )
@@ -127,7 +127,7 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
      */
 
     init {
-        viewModelScope.launch {
+        launchUITryCatch {
             onClickUpdate()
         }
     }
@@ -140,48 +140,52 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
         selectedPage.value = position
     }
 
-    private fun loadTaskList(user: String, userNumber: String) {
-        viewModelScope.launch {
-            navigator.showProgressLoadingData()
+    private fun loadTaskList(value: String, userNumber: String = "") {
+        launchUITryCatch {
+            navigator.showProgressLoadingData(::handleFailure)
 
             taskListNetRequest(
                     TaskListParams(
                             tkNumber = sessionInfo.market.orEmpty(),
-                            user = user,
+                            value = value,
                             userNumber = userNumber,
-                            mode = 1
+                            mode = TaskSearchMode.COMMON.mode
                     )
             ).also {
                 navigator.hideProgress()
-            }.either(::handleFailure) { taskListResult ->
-                viewModelScope.launch {
-                    manager.addTasks(taskListResult.tasks)
-                }
-            }
+            }.either(::handleFailure, ::handleTaskListResult)
         }
     }
 
-    private fun loadTaskListWithParams(user: String, userNumber: String) {
+    private fun handleTaskListResult(result: TaskListResult) {
+        launchUITryCatch {
+            manager.addTasks(result.tasks)
+        }
+    }
+
+    private fun loadTaskListWithParams(value: String, userNumber: String = "") {
         manager.searchParams.value?.let { params ->
-            viewModelScope.launch {
-                navigator.showProgressLoadingData()
+            launchUITryCatch {
+                navigator.showProgressLoadingData(::handleFailure)
 
                 taskListNetRequest(
                         TaskListParams(
                                 tkNumber = sessionInfo.market.orEmpty(),
-                                user = user,
+                                value = value,
                                 userNumber = userNumber,
-                                mode = 2,
+                                mode = TaskSearchMode.WITH_PARAMS.mode,
                                 taskSearchParams = params
                         )
                 ).also {
                     navigator.hideProgress()
-                }.either(::handleFailure) { taskListResult ->
-                    viewModelScope.launch {
-                        manager.addFoundTasks(taskListResult.tasks)
-                    }
-                }
+                }.either(::handleFailure, ::handleTaskListResultWithParams)
             }
+        }
+    }
+
+    private fun handleTaskListResultWithParams(result: TaskListResult) {
+        launchUITryCatch {
+            manager.addFoundTasks(result.tasks)
         }
     }
 
@@ -228,16 +232,19 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
     }
 
     override fun onOkInSoftKeyboard(): Boolean {
-        if (isEnteredLogin()) {
-            onClickUpdate()
-        }
-
+        onClickUpdate()
         return true
     }
 
     private fun isEnteredLogin(): Boolean {
         val entered = numberField.value.orEmpty()
         return entered.isNotEmpty() && !entered.all { it.isDigit() }
+    }
+
+    private fun isEnteredUnknownTaskNumber(): Boolean {
+        val entered = numberField.value.orEmpty()
+        val list = processing.value ?: emptyList()
+        return entered.isNotEmpty() && entered.all { it.isDigit() } && list.isEmpty()
     }
 
     /**
@@ -249,11 +256,22 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
     }
 
     fun onClickUpdate() {
-        val user = if (isEnteredLogin()) numberField.value.orEmpty() else sessionInfo.userName.orEmpty()
-        val userNumber = if (isEnteredLogin()) "" else sessionInfo.personnelNumber.orEmpty()
+        val entered = numberField.value.orEmpty()
 
-        loadTaskList(user, userNumber)
-        loadTaskListWithParams(user, userNumber)
+        if (isEnteredLogin() || isEnteredUnknownTaskNumber()) {
+            loadTaskList(entered)
+            loadTaskListWithParams(entered)
+        } else {
+            if (entered.isEmpty()) {
+                val currentUser = sessionInfo.userName.orEmpty()
+                val userNumber = sessionInfo.personnelNumber.orEmpty()
+
+                loadTaskList(currentUser, userNumber)
+                loadTaskListWithParams(currentUser, userNumber)
+
+                numberField.value = sessionInfo.userName.orEmpty()
+            }
+        }
     }
 
     fun onClickFilter() {
@@ -267,7 +285,7 @@ data class ItemTaskUi(
         val number: String,
         val name: String,
         val provider: String,
-        val taskStatus: TaskStatus,
+        val isFinished: Boolean,
         val blockType: BlockType,
         val quantity: String
 )

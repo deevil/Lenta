@@ -1,10 +1,5 @@
 package com.lenta.bp12.model
 
-enum class TaskStatus {
-    COMMON,
-    STARTED
-}
-
 enum class BlockType {
     SELF_LOCK,
     LOCK,
@@ -65,8 +60,9 @@ enum class PartStatus(val code: String){
     NOT_FOUND("201")
 }
 
-enum class ScanNumberType(val description: String){
+enum class ScreenStatus(val description: String){
     DEFAULT("Состояние до сканирование первого номера"),
+    COUNTED("Товар уже посчитан"),
     COMMON("Обычный товар"),
     ALCOHOL("Алкогольный немаркированный товар"),
     EXCISE("Акцизный алкоголь"),
@@ -74,4 +70,15 @@ enum class ScanNumberType(val description: String){
     MARK_68("Марка 68 символов"),
     PART("Партия"),
     BOX("Коробка")
+}
+
+enum class ScanInfoMode(val mode: Int){
+    MARK(1),
+    BOX(2),
+    PART(3)
+}
+
+enum class TaskSearchMode(val mode: Int){
+    COMMON(1),
+    WITH_PARAMS(2)
 }

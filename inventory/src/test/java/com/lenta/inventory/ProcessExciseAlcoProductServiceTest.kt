@@ -5,7 +5,10 @@ import com.lenta.inventory.di.DaggerTestComponent
 import com.lenta.inventory.features.goods_information.excise_alco.GoodsInfoCountType
 import com.lenta.inventory.models.RecountType
 import com.lenta.inventory.models.task.*
-import com.lenta.shared.models.core.*
+import com.lenta.shared.models.core.GisControl
+import com.lenta.shared.models.core.MatrixType
+import com.lenta.shared.models.core.ProductType
+import com.lenta.shared.models.core.Uom
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test

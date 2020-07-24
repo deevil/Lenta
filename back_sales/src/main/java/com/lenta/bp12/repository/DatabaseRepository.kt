@@ -1,8 +1,8 @@
 package com.lenta.bp12.repository
 
 import com.lenta.bp12.model.pojo.AlcoCodeInfo
-import com.lenta.bp12.model.pojo.TaskType
 import com.lenta.bp12.model.pojo.ReturnReason
+import com.lenta.bp12.model.pojo.TaskType
 import com.lenta.bp12.platform.extention.*
 import com.lenta.bp12.request.GoodInfoResult
 import com.lenta.bp12.request.pojo.GoodInfo
@@ -43,9 +43,10 @@ class DatabaseRepository @Inject constructor(
 
     override suspend fun getGoodInfoByMaterial(material: String): GoodInfo? {
         return withContext(Dispatchers.IO) {
-            return@withContext products.getProductInfoByMaterial(material)?.let { goodInfo ->
+            products.getProductInfoByMaterial(material)?.let { goodInfo ->
                 GoodInfo(
                         ean = getEanByMaterialUnits(material, goodInfo.buom),
+                        allGoodEans = getEanListByMaterialUnits(material, goodInfo.buom),
                         material = material,
                         name = goodInfo.name,
                         kind = goodInfo.getGoodKind(),
@@ -56,27 +57,27 @@ class DatabaseRepository @Inject constructor(
         }
     }
 
-    override suspend fun getEanByMaterialUnits(material: String, unitsCode: String): String {
+    private suspend fun getEanByMaterialUnits(material: String, unitsCode: String): String {
         return withContext(Dispatchers.IO) {
-            return@withContext eanInfo.getEanInfoByMaterialUnits(material, unitsCode)?.toEanInfo()?.ean.orEmpty()
+            eanInfo.getEanInfoByMaterialUnits(material, unitsCode)?.toEanInfo()?.ean.orEmpty()
         }
     }
 
-    override suspend fun getNameByMaterial(material: String): String {
+    private suspend fun getEanListByMaterialUnits(material: String, unitsCode: String): List<String> {
         return withContext(Dispatchers.IO) {
-            return@withContext products.getNameByMaterial(material).orEmpty()
+            eanInfo.getEanListByMaterialUnits(material, unitsCode)
         }
     }
 
     override suspend fun getAllowedAppVersion(): String? {
         return withContext(Dispatchers.IO) {
-            return@withContext settings.getAllowedBksAppVersion()
+            settings.getAllowedBksAppVersion()
         }
     }
 
     override suspend fun getUnitsByCode(code: String): Uom {
         return withContext(Dispatchers.IO) {
-            return@withContext units.getUnitName(code)?.toLowerCase(Locale.getDefault())?.let { name ->
+            units.getUnitName(code)?.toLowerCase(Locale.getDefault())?.let { name ->
                 Uom(code, name)
             } ?: Uom.ST
         }
@@ -84,49 +85,37 @@ class DatabaseRepository @Inject constructor(
 
     override suspend fun getTaskTypeList(): List<TaskType> {
         return withContext(Dispatchers.IO) {
-            return@withContext taskTypes.getTaskTypeList()
+            taskTypes.getTaskTypeList()
         }
     }
 
     override suspend fun getTaskType(code: String): TaskType? {
         return withContext(Dispatchers.IO) {
-            return@withContext taskTypes.getTaskType(code)
+            taskTypes.getTaskType(code)
         }
     }
 
     override suspend fun getStorageList(taskType: String): List<String> {
         return withContext(Dispatchers.IO) {
-            return@withContext storages.getStorageList(taskType)
+            storages.getStorageList(taskType)
         }
     }
 
     override suspend fun getReturnReason(taskType: String, reasonCode: String): ReturnReason? {
         return withContext(Dispatchers.IO) {
-            return@withContext returnReasons.getReturnReason(taskType, reasonCode)
+            returnReasons.getReturnReason(taskType, reasonCode)
         }
     }
 
     override suspend fun getReturnReasonList(taskType: String): List<ReturnReason> {
         return withContext(Dispatchers.IO) {
-            return@withContext returnReasons.getReturnReasonList(taskType)
+            returnReasons.getReturnReasonList(taskType)
         }
     }
 
     override suspend fun getTaskAttributes(taskType: String): Set<String> {
         return withContext(Dispatchers.IO) {
-            return@withContext allowed.getTaskAttributeList(taskType)
-        }
-    }
-
-    override suspend fun isGoodAllowed(gisControl: String, taskType: String, goodGroup: String?, purchaseGroup: String?): Boolean {
-        return withContext(Dispatchers.IO) {
-            return@withContext allowed.isGoodAllowed(gisControl, taskType, goodGroup, purchaseGroup)
-        }
-    }
-
-    override suspend fun isGoodForbidden(gisControl: String, taskType: String, goodGroup: String?, purchaseGroup: String?): Boolean {
-        return withContext(Dispatchers.IO) {
-            return@withContext forbidden.isGoodForbidden(gisControl, taskType, goodGroup, purchaseGroup)
+            allowed.getTaskAttributeList(taskType)
         }
     }
 
@@ -168,19 +157,19 @@ class DatabaseRepository @Inject constructor(
                 return@withContext false
             }
 
-            return@withContext true
+            true
         }
     }
 
     override suspend fun getProviderInfo(code: String): ProviderInfo? {
         return withContext(Dispatchers.IO) {
-            return@withContext providers.getProviderInfo(code)
+            providers.getProviderInfo(code)
         }
     }
 
     override suspend fun getAlcoCodeInfoList(alcoCode: String): List<AlcoCodeInfo> {
         return withContext(Dispatchers.IO) {
-            return@withContext alcoCodes.getAlcoCodeInfoList(alcoCode)
+            alcoCodes.getAlcoCodeInfoList(alcoCode)
         }
     }
 
@@ -189,8 +178,6 @@ class DatabaseRepository @Inject constructor(
 interface IDatabaseRepository {
 
     suspend fun getGoodInfoByMaterial(material: String): GoodInfo?
-    suspend fun getEanByMaterialUnits(material: String, unitsCode: String): String
-    suspend fun getNameByMaterial(material: String): String
     suspend fun getAllowedAppVersion(): String?
     suspend fun getUnitsByCode(code: String): Uom
     suspend fun getTaskTypeList(): List<TaskType>
@@ -198,8 +185,6 @@ interface IDatabaseRepository {
     suspend fun getStorageList(taskType: String): List<String>
     suspend fun getReturnReason(taskType: String, reasonCode: String): ReturnReason?
     suspend fun getReturnReasonList(taskType: String): List<ReturnReason>
-    suspend fun isGoodAllowed(gisControl: String, taskType: String, goodGroup: String?, purchaseGroup: String?): Boolean
-    suspend fun isGoodForbidden(gisControl: String, taskType: String, goodGroup: String?, purchaseGroup: String?): Boolean
     suspend fun getTaskAttributes(taskType: String): Set<String>
     suspend fun isGoodCanBeAdded(goodInfo: GoodInfoResult, taskType: String): Boolean
     suspend fun getProviderInfo(code: String): ProviderInfo?

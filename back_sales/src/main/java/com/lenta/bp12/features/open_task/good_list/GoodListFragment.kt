@@ -15,6 +15,7 @@ import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListener
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
+import com.lenta.shared.scan.OnScanResultListener
 import com.lenta.shared.utilities.databinding.DataBindingAdapter
 import com.lenta.shared.utilities.databinding.DataBindingRecyclerViewConfig
 import com.lenta.shared.utilities.databinding.RecyclerViewKeyHandler
@@ -24,7 +25,7 @@ import com.lenta.shared.utilities.extentions.generateScreenNumberFromPostfix
 import com.lenta.shared.utilities.extentions.provideViewModel
 
 class GoodListFragment : CoreFragment<FragmentGoodListBinding, GoodListViewModel>(),
-        ToolbarButtonsClickListener, ViewPagerSettings {
+        ToolbarButtonsClickListener, ViewPagerSettings, OnScanResultListener {
 
     private var notProcessedRecyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
     private var processedRecyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
@@ -51,8 +52,9 @@ class GoodListFragment : CoreFragment<FragmentGoodListBinding, GoodListViewModel
         bottomToolbarUiModel.uiModelButton3.show(ButtonDecorationInfo.delete, enabled = false)
         bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.save, enabled = false)
 
-        connectLiveData(vm.deleteEnabled, getBottomToolBarUIModel()!!.uiModelButton3.enabled)
-        connectLiveData(vm.saveEnabled, getBottomToolBarUIModel()!!.uiModelButton5.enabled)
+        connectLiveData(vm.deleteEnabled, bottomToolbarUiModel.uiModelButton3.enabled)
+        connectLiveData(vm.deleteVisible, bottomToolbarUiModel.uiModelButton3.visibility)
+        connectLiveData(vm.saveEnabled, bottomToolbarUiModel.uiModelButton5.enabled)
     }
 
     override fun onToolbarButtonClick(view: View) {
@@ -180,7 +182,7 @@ class GoodListFragment : CoreFragment<FragmentGoodListBinding, GoodListViewModel
 
     override fun getTextTitle(position: Int): String {
         return when (position) {
-            TAB_PROCESSING -> getString(R.string.not_processed)
+            TAB_PROCESSING -> getString(R.string.to_processing)
             TAB_PROCESSED -> getString(R.string.processed)
             else -> throw IllegalArgumentException("Wrong pager position!")
         }
@@ -193,6 +195,10 @@ class GoodListFragment : CoreFragment<FragmentGoodListBinding, GoodListViewModel
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding?.viewPagerSettings = this
+    }
+
+    override fun onScanResult(data: String) {
+        vm.onScanResult(data)
     }
 
     companion object {

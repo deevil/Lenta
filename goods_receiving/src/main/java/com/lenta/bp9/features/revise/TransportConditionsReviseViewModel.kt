@@ -1,10 +1,7 @@
 package com.lenta.bp9.features.revise
 
 import android.content.Context
-import com.lenta.shared.platform.viewmodel.CoreViewModel
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
-import com.lenta.shared.R
 import com.lenta.bp9.features.task_card.TaskCardViewModel
 import com.lenta.bp9.model.task.IReceivingTaskManager
 import com.lenta.bp9.model.task.TaskStatus
@@ -13,11 +10,12 @@ import com.lenta.bp9.model.task.revise.ConditionType
 import com.lenta.bp9.model.task.revise.ConditionViewType
 import com.lenta.bp9.model.task.revise.TransportCondition
 import com.lenta.bp9.platform.navigation.IScreenNavigator
+import com.lenta.shared.R
 import com.lenta.shared.account.ISessionInfo
-import com.lenta.shared.utilities.Logg
+import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.databinding.PageSelectionListener
+import com.lenta.shared.utilities.extentions.launchUITryCatch
 import com.lenta.shared.utilities.extentions.map
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class TransportConditionsReviseViewModel : CoreViewModel(), PageSelectionListener {
@@ -111,7 +109,7 @@ class TransportConditionsReviseViewModel : CoreViewModel(), PageSelectionListene
         conditionsToCheck.value = mapConditions(unchecked)
         checkedConditions.value = mapConditions(checked)
 
-        viewModelScope.launch {
+        launchUITryCatch {
             moveToPreviousPageIfNeeded()
         }
     }

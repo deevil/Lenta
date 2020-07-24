@@ -1,6 +1,7 @@
 package com.lenta.bp18.features.select_market
 
 import androidx.lifecycle.MutableLiveData
+import com.google.gson.Gson
 import androidx.lifecycle.viewModelScope
 import app_update.AppUpdateInstaller
 import com.lenta.bp18.platform.navigation.IScreenNavigator
@@ -19,21 +20,17 @@ import com.lenta.shared.requests.network.ServerTime
 import com.lenta.shared.requests.network.ServerTimeRequest
 import com.lenta.shared.requests.network.ServerTimeRequestParam
 import com.lenta.shared.settings.IAppSettings
-import com.lenta.shared.utilities.Logg
+import com.lenta.shared.utilities.extentions.launchUITryCatch
 import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.view.OnPositionClickListener
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 class SelectMarketViewModel : CoreViewModel(), OnPositionClickListener {
     @Inject
     lateinit var navigator: IScreenNavigator
-
     @Inject
     lateinit var sessionInfo: ISessionInfo
-
     @Inject
     lateinit var appSettings: IAppSettings
 
@@ -67,6 +64,7 @@ class SelectMarketViewModel : CoreViewModel(), OnPositionClickListener {
     }
 
     val selectedPosition: MutableLiveData<Int> = MutableLiveData()
+
     val selectedAddress: MutableLiveData<String> = selectedPosition.map {
         it?.let { position ->
             markets.value?.getOrNull(position)?.address
@@ -75,7 +73,7 @@ class SelectMarketViewModel : CoreViewModel(), OnPositionClickListener {
     val title: MutableLiveData<String> = MutableLiveData()
 
     init {
-        viewModelScope.launch {
+        launchUITryCatch {
             database.getAllMarkets().let { list ->
                 markets.value = list
                 if (selectedPosition.value == null) {
@@ -94,7 +92,7 @@ class SelectMarketViewModel : CoreViewModel(), OnPositionClickListener {
     }
 
     fun onClickNext() {
-        viewModelScope.launch {
+        launchUITryCatch {
             navigator.showProgressLoadingData()
             markets.value
                     ?.getOrNull(selectedPosition.value ?: -1)?.number

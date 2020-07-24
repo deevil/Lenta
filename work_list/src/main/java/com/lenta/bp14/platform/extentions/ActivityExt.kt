@@ -1,6 +1,8 @@
 package com.lenta.bp14.platform.extentions
 
-import com.lenta.bp14.di.*
+import com.lenta.bp14.di.AppComponent
+import com.lenta.bp14.di.AppModule
+import com.lenta.bp14.di.DaggerAppComponent
 import com.lenta.shared.di.CoreComponent
 import com.lenta.shared.di.CoreInjectHelper.createComponent
 import com.lenta.shared.di.CoreInjectHelper.getComponent

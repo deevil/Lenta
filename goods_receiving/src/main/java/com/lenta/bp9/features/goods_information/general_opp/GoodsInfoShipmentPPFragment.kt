@@ -1,5 +1,7 @@
 package com.lenta.bp9.features.goods_information.general_opp
 
+import android.os.Bundle
+import android.view.KeyEvent
 import android.view.View
 import com.lenta.bp9.R
 import com.lenta.bp9.databinding.FragmentGoodsInfoShipmentPpBinding
@@ -63,6 +65,19 @@ class GoodsInfoShipmentPPFragment : CoreFragment<FragmentGoodsInfoShipmentPpBind
 
         connectLiveData(vm.enabledMissingButton, bottomToolbarUiModel.uiModelButton4.enabled)
         connectLiveData(vm.enabledApplyButton, bottomToolbarUiModel.uiModelButton5.enabled)
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        binding?.etQuantity?.setOnKeyListener(View.OnKeyListener { v, keyCode, event ->
+            if (keyCode == KeyEvent.KEYCODE_ENTER && event.action == KeyEvent.ACTION_UP) {
+                if (vm.enabledApplyButton.value == true) {
+                    vm.onClickApply()
+                }
+                return@OnKeyListener true
+            }
+            false
+        })
     }
 
     override fun onToolbarButtonClick(view: View) {

@@ -4,15 +4,16 @@ import androidx.lifecycle.MutableLiveData
 import com.lenta.bp12.model.IOpenTaskManager
 import com.lenta.bp12.platform.navigation.IScreenNavigator
 import com.lenta.shared.account.ISessionInfo
-import com.lenta.shared.platform.constants.Constants
 import com.lenta.shared.platform.device_info.DeviceInfo
 import com.lenta.shared.platform.viewmodel.CoreViewModel
+import com.lenta.shared.requests.combined.scan_info.ScanCodeInfo
 import com.lenta.shared.utilities.SelectionItemsHelper
 import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
 import com.lenta.shared.utilities.databinding.PageSelectionListener
 import com.lenta.shared.utilities.extentions.combineLatest
 import com.lenta.shared.utilities.extentions.dropZeros
 import com.lenta.shared.utilities.extentions.map
+import com.lenta.shared.utilities.isCommonFormatNumber
 import javax.inject.Inject
 
 class GoodListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyboardListener {
@@ -59,7 +60,7 @@ class GoodListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
                     filtered.mapIndexed { index, good ->
                         ItemGoodProcessingUi(
                                 position = "${filtered.size - index}",
-                                name = good.name,
+                                name = good.getNameWithMaterial(),
                                 material = good.material,
                                 providerCode = good.provider.code
                         )
@@ -76,8 +77,8 @@ class GoodListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
                     filtered.mapIndexed { index, good ->
                         ItemGoodProcessedUi(
                                 position = "${filtered.size - index}",
-                                name = good.name,
-                                quantity = good.getTotalQuantity().dropZeros(),
+                                name = good.getNameWithMaterial(),
+                                quantity = "${good.getQuantity().dropZeros()} ${good.commonUnits.name}",
                                 material = good.material,
                                 providerCode = good.provider.code
                         )
@@ -90,6 +91,12 @@ class GoodListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
     /**
     Кнопки нижнего тулбара
      */
+
+    val deleteVisible by lazy {
+        task.map { task ->
+            task?.isStrict == false
+        }
+    }
 
     val deleteEnabled = selectedPage.combineLatest(processingSelectionsHelper.selectedPositions).combineLatest(processedSelectionsHelper.selectedPositions).map {
         it?.let {
@@ -138,19 +145,38 @@ class GoodListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
         }
     }
 
+    fun onScanResult(data: String) {
+        checkEnteredNumber(data)
+    }
+
     override fun onOkInSoftKeyboard(): Boolean {
         checkEnteredNumber(numberField.value.orEmpty())
         return true
     }
 
     private fun checkEnteredNumber(number: String) {
-        number.length.let { length ->
-            if (task.value?.isStrict == false && length >= Constants.SAP_6) {
-                manager.searchNumber = number
-                manager.searchGoodFromList = true
+        if (task.value?.isStrict == false) {
+            openGoodInfoByNumber(number)
+        } else {
+            val numberWithoutWeight = ScanCodeInfo(number).eanWithoutWeight
+            if (manager.isGoodExist(numberWithoutWeight)) {
+                openGoodInfoByNumber(number)
+            } else {
                 numberField.value = ""
-                navigator.openGoodInfoOpenScreen()
+                navigator.showGoodIsMissingInTask()
             }
+        }
+    }
+
+    private fun openGoodInfoByNumber(number: String) {
+        numberField.value = ""
+
+        if (isCommonFormatNumber(number)) {
+            manager.searchNumber = number
+            manager.searchGoodFromList = true
+            navigator.openGoodInfoOpenScreen()
+        } else {
+            navigator.showIncorrectEanFormat()
         }
     }
 

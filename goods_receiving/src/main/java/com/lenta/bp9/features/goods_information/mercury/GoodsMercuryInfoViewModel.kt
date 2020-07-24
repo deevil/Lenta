@@ -20,13 +20,12 @@ import com.lenta.shared.requests.combined.scan_info.ScanInfoResult
 import com.lenta.shared.requests.combined.scan_info.pojo.QualityInfo
 import com.lenta.shared.requests.combined.scan_info.pojo.ReasonRejectionInfo
 import com.lenta.shared.utilities.extentions.combineLatest
+import com.lenta.shared.utilities.extentions.launchUITryCatch
 import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.utilities.extentions.toStringFormatted
 import com.lenta.shared.view.OnPositionClickListener
-import kotlinx.coroutines.launch
 import org.joda.time.DateTime
 import org.joda.time.Days
-import java.text.DecimalFormat
 import java.text.SimpleDateFormat
 import java.util.*
 import javax.inject.Inject
@@ -51,6 +50,7 @@ class GoodsMercuryInfoViewModel : CoreViewModel(), OnPositionClickListener {
     lateinit var timeMonitor: ITimeMonitor
 
     val productInfo: MutableLiveData<TaskProductInfo> = MutableLiveData()
+    val requestFocusToCount: MutableLiveData<Boolean> = MutableLiveData()
     val uom: MutableLiveData<Uom?> by lazy {
         if (taskManager.getReceivingTask()?.taskHeader?.taskType == TaskType.DirectSupplier) {
             MutableLiveData(productInfo.value?.purchaseOrderUnits)
@@ -244,7 +244,7 @@ class GoodsMercuryInfoViewModel : CoreViewModel(), OnPositionClickListener {
     }
 
     init {
-        viewModelScope.launch {
+        launchUITryCatch {
             searchProductDelegate.init(viewModelScope = this@GoodsMercuryInfoViewModel::viewModelScope,
                     scanResultHandler = this@GoodsMercuryInfoViewModel::handleProductSearchResult)
             currentDate.value = timeMonitor.getServerDate()
@@ -298,6 +298,9 @@ class GoodsMercuryInfoViewModel : CoreViewModel(), OnPositionClickListener {
                 }
             }
 
+            //эту строку необходимо прописывать только после того, как были установлены данные для переменных count  и suffix, а иначе фокус в поле et_count не установится
+            requestFocusToCount.value = true
+
             spinQuality.value = qualityInfo.value?.map {
                 it.name
             }
@@ -323,7 +326,7 @@ class GoodsMercuryInfoViewModel : CoreViewModel(), OnPositionClickListener {
     }
 
     fun onClickPositionSpinQuality(position: Int){
-        viewModelScope.launch {
+        launchUITryCatch {
             spinQualitySelectedPosition.value = position
             updateDataSpinReasonRejection(qualityInfo.value!![position].code)
         }
@@ -338,12 +341,12 @@ class GoodsMercuryInfoViewModel : CoreViewModel(), OnPositionClickListener {
     }
 
     private suspend fun updateDataSpinReasonRejection(selectedQuality: String) {
-        viewModelScope.launch {
+        launchUITryCatch {
             if (isTaskPGE.value == true) {
                 spinReasonRejectionSelectedPosition.value = 0
                 spinReasonRejection.value = listOf("ЕО - " + productInfo.value!!.processingUnit)
             } else {
-                screenNavigator.showProgressLoadingData()
+                screenNavigator.showProgressLoadingData(::handleFailure)
                 reasonRejectionInfo.value = dataBase.getReasonRejectionInfoOfQuality(selectedQuality)
                 spinReasonRejection.value = reasonRejectionInfo.value?.map {
                     it.name

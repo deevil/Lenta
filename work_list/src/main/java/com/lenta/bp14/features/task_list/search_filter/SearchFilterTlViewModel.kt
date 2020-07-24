@@ -1,15 +1,14 @@
 package com.lenta.bp14.features.task_list.search_filter
 
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
 import com.lenta.bp14.models.general.IGeneralRepo
 import com.lenta.bp14.models.general.ITasksSearchHelper
 import com.lenta.bp14.platform.navigation.IScreenNavigator
 import com.lenta.bp14.requests.tasks.SearchTaskFilter
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.platform.viewmodel.CoreViewModel
+import com.lenta.shared.utilities.extentions.launchUITryCatch
 import com.lenta.shared.view.OnPositionClickListener
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class SearchFilterTlViewModel : CoreViewModel(), OnPositionClickListener {
@@ -28,7 +27,7 @@ class SearchFilterTlViewModel : CoreViewModel(), OnPositionClickListener {
 
     val taskTypeList: MutableLiveData<List<String>> by lazy {
         MutableLiveData<List<String>>().also { liveData ->
-            viewModelScope.launch {
+            launchUITryCatch {
                 liveData.value = generalRepo.getTasksTypes().map { it.taskName }
             }
         }
@@ -36,7 +35,7 @@ class SearchFilterTlViewModel : CoreViewModel(), OnPositionClickListener {
 
     val selectedPosition by lazy {
         MutableLiveData(0).also { liveData ->
-            viewModelScope.launch {
+            launchUITryCatch {
                 generalRepo.getTasksTypes().indexOfFirst {
                     it.taskType == tasksSearchHelper.filterParams?.taskType
                 }.let {
@@ -51,28 +50,28 @@ class SearchFilterTlViewModel : CoreViewModel(), OnPositionClickListener {
 
     val goodField by lazy {
         MutableLiveData<String>().also { liveData ->
-            viewModelScope.launch {
+            launchUITryCatch {
                 liveData.value = tasksSearchHelper.filterParams?.matNr.orEmpty()
             }
         }
     }
     val sectionField by lazy {
         MutableLiveData<String>().also { liveData ->
-            viewModelScope.launch {
+            launchUITryCatch {
                 liveData.value = tasksSearchHelper.filterParams?.sectionId.orEmpty()
             }
         }
     }
     val goodsGroupField by lazy {
         MutableLiveData<String>().also { liveData ->
-            viewModelScope.launch {
+            launchUITryCatch {
                 liveData.value = tasksSearchHelper.filterParams?.group.orEmpty()
             }
         }
     }
     val publicationDateField by lazy {
         MutableLiveData<String>().also { liveData ->
-            viewModelScope.launch {
+            launchUITryCatch {
                 liveData.value = tasksSearchHelper.filterParams?.dateOfPublic.orEmpty()
             }
         }
@@ -80,10 +79,10 @@ class SearchFilterTlViewModel : CoreViewModel(), OnPositionClickListener {
 
 
     fun onClickFind() {
-        viewModelScope.launch {
+        launchUITryCatch {
             tasksSearchHelper.filterParams = getFilterParams()
 
-            navigator.showProgressLoadingData()
+            navigator.showProgressLoadingData(::handleFailure)
             tasksSearchHelper.isNewSearchData = true
             tasksSearchHelper.updateFilteredTaskList().either(
                     {

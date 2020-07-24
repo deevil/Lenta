@@ -2,18 +2,17 @@ package com.lenta.bp9.features.loading.tasks
 
 import android.content.Context
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
 import com.lenta.bp9.model.task.*
-import com.lenta.bp9.model.task.revise.*
 import com.lenta.bp9.platform.navigation.IScreenNavigator
-import com.lenta.bp9.repos.IRepoInMemoryHolder
-import com.lenta.bp9.requests.network.*
+import com.lenta.bp9.requests.network.RegisterArrivalNetRequest
+import com.lenta.bp9.requests.network.RegisterArrivalRequestParameters
+import com.lenta.bp9.requests.network.RegisterArrivalRequestResult
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.features.loading.CoreLoadingViewModel
 import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.extentions.getDeviceIp
-import kotlinx.coroutines.launch
+import com.lenta.shared.utilities.extentions.launchUITryCatch
 import javax.inject.Inject
 
 class LoadingRegisterArrivalViewModel : CoreLoadingViewModel() {
@@ -42,7 +41,7 @@ class LoadingRegisterArrivalViewModel : CoreLoadingViewModel() {
     }
 
     init {
-        viewModelScope.launch {
+        launchUITryCatch {
             progress.value = true
             val params = RegisterArrivalRequestParameters(
                     deviceIP = context.getDeviceIp(),

@@ -5,7 +5,7 @@ import android.widget.Toast
 import androidx.lifecycle.MutableLiveData
 import com.honeywell.aidc.*
 import com.lenta.shared.scan.IScanHelper
-import java.util.HashMap
+import java.util.*
 
 class HoneywellScanHelper : IScanHelper {
 

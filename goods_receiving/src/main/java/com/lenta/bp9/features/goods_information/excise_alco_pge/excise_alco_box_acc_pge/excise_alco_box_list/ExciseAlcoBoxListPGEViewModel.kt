@@ -2,7 +2,6 @@ package com.lenta.bp9.features.goods_information.excise_alco_pge.excise_alco_box
 
 import android.content.Context
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
 import com.lenta.bp9.R
 import com.lenta.bp9.features.goods_information.excise_alco_receiving.excise_alco_box_acc.excise_alco_box_list.BoxListItem
 import com.lenta.bp9.model.processing.ProcessExciseAlcoBoxAccPGEService
@@ -19,11 +18,10 @@ import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.SelectionItemsHelper
 import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
 import com.lenta.shared.utilities.databinding.PageSelectionListener
-import com.lenta.shared.utilities.extentions.combineLatest
+import com.lenta.shared.utilities.extentions.launchUITryCatch
 import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.utilities.extentions.toStringFormatted
 import com.mobrun.plugin.api.HyperHive
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class ExciseAlcoBoxListPGEViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyboardListener {
@@ -240,8 +238,10 @@ class ExciseAlcoBoxListPGEViewModel : CoreViewModel(), PageSelectionListener, On
                     } else {
                         if (exciseStampInfo.materialNumber != productInfo.value!!.materialNumber) {
                             //Отсканированная марка принадлежит товару <SAP-код> <Название>"
-                            screenNavigator.openAlertScannedStampBelongsAnotherProductScreen(exciseStampInfo.materialNumber, zfmpUtz48V001.getProductInfoByMaterial(exciseStampInfo.materialNumber)?.name
-                                    ?: "")
+                            screenNavigator.openAlertScannedStampBelongsAnotherProductScreen(
+                                    materialNumber = exciseStampInfo.materialNumber,
+                                    materialName =zfmpUtz48V001.getProductInfoByMaterial(exciseStampInfo.materialNumber)?.name.orEmpty()
+                            )
                         } else {
                             screenNavigator.openExciseAlcoBoxCardPGEScreen(
                                     productInfo = productInfo.value!!,
@@ -288,8 +288,8 @@ class ExciseAlcoBoxListPGEViewModel : CoreViewModel(), PageSelectionListener, On
     }
 
     private fun scannedBoxNotFound(boxNumber: String) {
-        viewModelScope.launch {
-            screenNavigator.showProgressLoadingData()
+        launchUITryCatch {
+            screenNavigator.showProgressLoadingData(::handleFailure)
             taskManager.getReceivingTask()?.let { task ->
                 val params = ZmpUtzGrz31V001Params(
                         taskNumber = task.taskHeader.taskNumber,

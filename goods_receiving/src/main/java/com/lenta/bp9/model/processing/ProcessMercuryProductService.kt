@@ -4,12 +4,9 @@ import com.lenta.bp9.model.task.IReceivingTaskManager
 import com.lenta.bp9.model.task.TaskMercuryDiscrepancies
 import com.lenta.bp9.model.task.TaskProductDiscrepancies
 import com.lenta.bp9.model.task.TaskProductInfo
-import com.lenta.bp9.repos.IDataBaseRepo
 import com.lenta.bp9.repos.IRepoInMemoryHolder
 import com.lenta.shared.di.AppScope
-import java.text.DecimalFormat
 import javax.inject.Inject
-import kotlin.math.roundToLong
 
 const val PROCESSING_MERCURY_UNKNOWN = 0
 const val PROCESSING_MERCURY_SAVED = 1

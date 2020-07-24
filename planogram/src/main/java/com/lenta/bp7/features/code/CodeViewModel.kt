@@ -1,7 +1,6 @@
 package com.lenta.bp7.features.code
 
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
 import com.lenta.bp7.data.CheckType
 import com.lenta.bp7.data.model.CheckData
 import com.lenta.bp7.platform.navigation.IScreenNavigator
@@ -10,9 +9,9 @@ import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
 import com.lenta.shared.utilities.extentions.combineLatest
+import com.lenta.shared.utilities.extentions.launchUITryCatch
 import com.lenta.shared.utilities.extentions.map
 import com.mobrun.plugin.api.HyperHive
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class CodeViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
@@ -52,7 +51,7 @@ class CodeViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
             }
 
     init {
-        viewModelScope.launch {
+        launchUITryCatch {
             when (checkData.checkType) {
                 CheckType.SELF_CONTROL -> {
                     message.value = selfControlType.value

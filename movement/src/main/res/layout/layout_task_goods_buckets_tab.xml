@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="vm"
+            type="com.lenta.movement.features.task.goods.TaskGoodsViewModel" />
+
+        <variable
+            name="rvConfig"
+            type="com.lenta.shared.utilities.databinding.DataBindingRecyclerViewConfig" />
+    </data>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <include layout="@layout/layout_header_basket_list" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/basketRecyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:items="@{vm.basketItemList}"
+            app:rv_config="@{rvConfig}"
+            tools:itemCount="3"
+            tools:listitem="@layout/layout_item_simple" />
+
+    </LinearLayout>
+
+</layout>

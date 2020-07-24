@@ -2,7 +2,6 @@ package com.lenta.bp14.features.print_settings
 
 import android.content.SharedPreferences
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
 import com.lenta.bp14.models.IGeneralTaskManager
 import com.lenta.bp14.models.check_price.ICheckPriceTask
 import com.lenta.bp14.models.check_price.IPriceInfoParser
@@ -16,12 +15,8 @@ import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.requests.combined.scan_info.analyseCode
 import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
-import com.lenta.shared.utilities.extentions.combineLatest
-import com.lenta.shared.utilities.extentions.map
-import com.lenta.shared.utilities.extentions.toNullIfEmpty
-import com.lenta.shared.utilities.extentions.toSapBooleanString
+import com.lenta.shared.utilities.extentions.*
 import com.lenta.shared.view.OnPositionClickListener
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class PrintSettingsViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftKeyboardListener {
@@ -49,7 +44,7 @@ class PrintSettingsViewModel : CoreViewModel(), OnPositionClickListener, OnOkInS
 
     private val printerTypes by lazy {
         MutableLiveData<List<PrinterType>>().also {
-            viewModelScope.launch {
+            launchUITryCatch {
                 it.value = task.getPrinterTypes()
             }
         }
@@ -57,7 +52,7 @@ class PrintSettingsViewModel : CoreViewModel(), OnPositionClickListener, OnOkInS
 
     private val printerPriceTypes by lazy {
         MutableLiveData<List<PriceTagType>>().also {
-            viewModelScope.launch {
+            launchUITryCatch {
                 it.value = task.getPriceTagTypes()
 
             }
@@ -133,7 +128,7 @@ class PrintSettingsViewModel : CoreViewModel(), OnPositionClickListener, OnOkInS
     // -----------------------------
 
     init {
-        viewModelScope.launch {
+        launchUITryCatch {
             task.loadMaxPrintCopy()
             task.matNrForPrint?.let {
                 numberField.value
@@ -246,8 +241,8 @@ class PrintSettingsViewModel : CoreViewModel(), OnPositionClickListener, OnOkInS
 
     private fun searchCode(eanCode: String? = null, matNr: String? = null) {
         require((!eanCode.isNullOrBlank() xor !matNr.isNullOrBlank()))
-        viewModelScope.launch {
-            navigator.showProgressLoadingData()
+        launchUITryCatch {
+            navigator.showProgressLoadingData(::handleFailure)
 
             productInfoNetRequest(
                     ProductInfoParams(
@@ -289,7 +284,7 @@ class PrintSettingsViewModel : CoreViewModel(), OnPositionClickListener, OnOkInS
 
 
     private fun print() {
-        viewModelScope.launch {
+        launchUITryCatch {
 
 
             navigator.showProgressConnection()

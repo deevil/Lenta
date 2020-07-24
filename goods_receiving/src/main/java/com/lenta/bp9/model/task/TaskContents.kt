@@ -5,7 +5,9 @@ import com.lenta.shared.fmp.resources.dao_ext.getProductInfoByMaterial
 import com.lenta.shared.fmp.resources.dao_ext.getUomInfo
 import com.lenta.shared.fmp.resources.fast.ZmpUtz07V001
 import com.lenta.shared.fmp.resources.slow.ZfmpUtz48V001
-import com.lenta.shared.models.core.*
+import com.lenta.shared.models.core.Uom
+import com.lenta.shared.models.core.getMatrixType
+import com.lenta.shared.models.core.getProductType
 import com.mobrun.plugin.api.HyperHive
 import javax.inject.Inject
 
