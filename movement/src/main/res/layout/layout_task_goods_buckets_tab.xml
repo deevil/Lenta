@@ -25,7 +25,7 @@
             android:id="@+id/basketRecyclerView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:items="@{vm.basketList}"
+            app:items="@{vm.basketItemList}"
             app:rv_config="@{rvConfig}"
             tools:itemCount="3"
             tools:listitem="@layout/layout_item_simple" />

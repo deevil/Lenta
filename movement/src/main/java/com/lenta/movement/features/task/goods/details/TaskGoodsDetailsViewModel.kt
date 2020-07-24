@@ -7,10 +7,13 @@ import com.lenta.movement.models.SimpleListItem
 import com.lenta.movement.models.repositories.ITaskBasketsRepository
 import com.lenta.movement.platform.IFormatter
 import com.lenta.shared.platform.viewmodel.CoreViewModel
+import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.SelectionItemsHelper
 import com.lenta.shared.utilities.databinding.PageSelectionListener
-import com.lenta.shared.utilities.extentions.combineLatest
-import com.lenta.shared.utilities.extentions.mapSkipNulls
+import com.lenta.shared.utilities.extentions.*
+import com.lenta.shared.utilities.orIfNull
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 class TaskGoodsDetailsViewModel : CoreViewModel(), PageSelectionListener {
@@ -33,30 +36,45 @@ class TaskGoodsDetailsViewModel : CoreViewModel(), PageSelectionListener {
     val selectedPagePosition = MutableLiveData(0)
     val currentPage = selectedPagePosition.mapSkipNulls { TaskGoodsDetailsPage.values()[it] }
 
-    val basketList by lazy { MutableLiveData(getBasketSimpleList()) }
-    val boxList = MutableLiveData(listOf<SimpleListItem>())
+    init {
+        launchUITryCatch {
+            loadBasketSimpleList()
+        }
+    }
+
+    val basketList by unsafeLazy {
+        MutableLiveData<List<SimpleListItem>>()
+    }
 
     val deleteEnabled = combineLatest(
-        currentPage,
-        basketSelectionHelper.selectedPositions,
-        boxesSelectionHelper.selectedPositions
-    )
-        .mapSkipNulls { (currentPage, basketSelectedPositions, boxSelectedPositions) ->
-            when (currentPage!!) {
-                TaskGoodsDetailsPage.BASKETS -> basketSelectedPositions.orEmpty().isNotEmpty()
-                TaskGoodsDetailsPage.BOXES -> boxSelectedPositions.orEmpty().isNotEmpty()
+            currentPage,
+            basketSelectionHelper.selectedPositions,
+            boxesSelectionHelper.selectedPositions
+    ).mapSkipNulls { (currentPage, basketSelectedPositions, boxSelectedPositions) ->
+        when (currentPage) {
+            TaskGoodsDetailsPage.BASKETS -> basketSelectedPositions.orEmpty().isNotEmpty()
+            TaskGoodsDetailsPage.BOXES -> boxSelectedPositions.orEmpty().isNotEmpty()
+            else -> {
+                Logg.e { "currentpage not acceptable" }
+                false
             }
         }
+    }
 
     override fun onPageSelected(position: Int) {
         selectedPagePosition.value = position
     }
 
     fun getAvailablePages(): List<TaskGoodsDetailsPage> {
-        return if (product!!.isExcise) {
-            listOf(TaskGoodsDetailsPage.BASKETS, TaskGoodsDetailsPage.BOXES)
-        } else {
-            listOf(TaskGoodsDetailsPage.BASKETS)
+        return product?.let { productInfo ->
+            if (productInfo.isExcise) {
+                listOf(TaskGoodsDetailsPage.BASKETS, TaskGoodsDetailsPage.BOXES)
+            } else {
+                listOf(TaskGoodsDetailsPage.BASKETS)
+            }
+        }.orIfNull {
+            Logg.e { "product is null" }
+            listOf()
         }
     }
 
@@ -64,21 +82,23 @@ class TaskGoodsDetailsViewModel : CoreViewModel(), PageSelectionListener {
         return "${product?.getMaterialLastSix()} ${product?.description}"
     }
 
-    fun onDeleteClick() {
-        when (currentPage.value!!) {
+    fun onDeleteClick() = launchUITryCatch {
+        when (currentPage.value) {
             TaskGoodsDetailsPage.BASKETS -> {
                 val basketsOfProduct = taskBasketsRepository.getAll().filter { basket ->
-                    basket.containsKey(product!!)
+                    basket.containsKey(product)
                 }
                 val doRemoveBaskets = basketSelectionHelper.selectedPositions.value.orEmpty().map { doRemoveBasketIndex ->
                     basketsOfProduct[doRemoveBasketIndex]
                 }
 
                 doRemoveBaskets.forEach { doRemoveBasket ->
-                    taskBasketsRepository.removeProductFromBasket(doRemoveBasket.index, product!!)
+                    product?.let { product ->
+                        taskBasketsRepository.removeProductFromBasket(doRemoveBasket.index, product)
+                    }
                 }
 
-                basketList.postValue(getBasketSimpleList())
+                loadBasketSimpleList()
                 basketSelectionHelper.clearPositions()
             }
             TaskGoodsDetailsPage.BOXES -> {
@@ -87,23 +107,28 @@ class TaskGoodsDetailsViewModel : CoreViewModel(), PageSelectionListener {
         }
     }
 
-    private fun getBasketSimpleList(): List<SimpleListItem> {
-        return taskBasketsRepository.getAll()
-            .filter { basket ->
-                basket.containsKey(product!!)
-            }
-            .mapIndexed { index, basket ->
-                SimpleListItem(
-                    number = index + 1,
-                    title = formatter.getBasketName(basket),
-                    subtitle = formatter.getBasketDescription(
-                        basket,
-                        taskManager.getTask(),
-                        taskManager.getTaskSettings()
-                    ),
-                    countWithUom = "${basket[product!!]}",
-                    isClickable = false
-                )
-            }
+    private suspend fun loadBasketSimpleList() {
+        val basketFreshList = withContext(Dispatchers.IO) {
+            product?.let { product ->
+                taskBasketsRepository.getAll()
+                        .filter { basket ->
+                            basket.containsKey(product)
+                        }
+                        .mapIndexed { index, basket ->
+                            SimpleListItem(
+                                    number = index + 1,
+                                    title = formatter.getBasketName(basket),
+                                    subtitle = formatter.getBasketDescription(
+                                            basket,
+                                            taskManager.getTask(),
+                                            taskManager.getTaskSettings()
+                                    ),
+                                    countWithUom = "${basket[product]}",
+                                    isClickable = false
+                            )
+                        }
+            }.orEmpty()
+        }
+        basketList.value = basketFreshList
     }
 }

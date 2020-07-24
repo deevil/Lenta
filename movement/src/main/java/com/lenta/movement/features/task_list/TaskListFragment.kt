@@ -79,17 +79,11 @@ class TaskListFragment : CoreFragment<FragmentTaskListBinding, TaskListViewModel
                         R.layout.layout_task_list_to_process_tab,
                         container,
                         false
-                ).also {
-                    it.apply {
-                        rvConfig = initRecycleAdapterDataBinding(
+                ).apply {
+                        executePendingBindings()
+                        rvConfig = initRecycleAdapterDataBinding<LayoutItemTaskListBinding>(
                                 layoutId = R.layout.layout_item_task_list,
                                 itemId = BR.item,
-                                onAdapterItemBind = { binding: LayoutItemTaskListBinding, position ->
-                                    binding.tvCounter.tag = position
-                                    vm.taskItemList.value?.let { list ->
-                                        binding.item = list[position]
-                                    }
-                                },
                                 onAdapterItemClicked = { position ->
                                     taskListRecyclerViewKeyHandler?.onItemClicked(position)
                                 }
@@ -104,7 +98,6 @@ class TaskListFragment : CoreFragment<FragmentTaskListBinding, TaskListViewModel
                                 previousPosInfo = taskListRecyclerViewKeyHandler?.posInfo?.value,
                                 onClickHandler = vm::onClickTaskListItem
                         )
-                    }
                 }.root
             }
 

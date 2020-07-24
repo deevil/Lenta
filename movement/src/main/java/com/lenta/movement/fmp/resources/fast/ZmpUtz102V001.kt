@@ -45,7 +45,7 @@ class ZmpUtz102V001(private val hyperHive: HyperHive) {
         companion object {
             const val KEY_IV_NODEPLOY = "IV_NODEPLOY"
 
-            fun IV_NODEPLOY(value: String?): LimitedScalarParameter {
+            fun newInstance(value: String?): LimitedScalarParameter {
                 return LimitedScalarParameter(KEY_IV_NODEPLOY, value)
             }
         }

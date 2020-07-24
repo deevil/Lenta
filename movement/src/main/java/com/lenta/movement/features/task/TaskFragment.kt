@@ -10,7 +10,6 @@ import com.lenta.movement.R
 import com.lenta.movement.databinding.*
 import com.lenta.movement.models.Task
 import com.lenta.movement.platform.extensions.getAppComponent
-import com.lenta.movement.platform.extensions.unsafeLazy
 import com.lenta.shared.platform.activity.OnBackPresserListener
 import com.lenta.shared.platform.fragment.CoreFragment
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
@@ -20,6 +19,7 @@ import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
 import com.lenta.shared.utilities.databinding.ViewPagerSettings
 import com.lenta.shared.utilities.extentions.connectLiveData
 import com.lenta.shared.utilities.extentions.provideViewModel
+import com.lenta.shared.utilities.extentions.unsafeLazy
 
 class TaskFragment : CoreFragment<FragmentTaskBinding, TaskViewModel>(),
     ViewPagerSettings,

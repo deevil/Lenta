@@ -5,6 +5,7 @@ import com.lenta.movement.features.main.box.ScanInfoHelper
 import com.lenta.movement.models.ITaskManager
 import com.lenta.movement.models.ProductInfo
 import com.lenta.movement.models.SimpleListItem
+import com.lenta.movement.models.TaskSettings
 import com.lenta.movement.models.repositories.ITaskBasketsRepository
 import com.lenta.movement.platform.IFormatter
 import com.lenta.movement.platform.navigation.IScreenNavigator
@@ -14,6 +15,8 @@ import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
 import com.lenta.shared.utilities.extentions.launchUITryCatch
 import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.utilities.extentions.mapSkipNulls
+import com.lenta.shared.utilities.extentions.*
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 import kotlin.properties.Delegates
 
@@ -62,13 +65,20 @@ class TaskBasketViewModel() : CoreViewModel(),
         selectedPositions.orEmpty().isNotEmpty()
     }
 
-    fun getTitle(): String {
-        return "${formatter.getBasketName(basket)}: ${formatter.getBasketDescription(
-                basket,
-                taskManager.getTask(),
-                taskManager.getTaskSettings()
-        )}"
+    val title by unsafeLazy {
+        asyncLiveData<String> {
+            val task = taskManager.getTask()
+            val taskSettings = getSettings()
+            val innerTitle = formatter.getBasketTitle(
+                    basket = basket,
+                    task = task,
+                    taskSettings = taskSettings
+            )
+            emit(innerTitle)
+        }
     }
+
+    private suspend fun getSettings() = taskManager.getTaskSettings()
 
     fun onDeleteClick() {
         selectionsHelper.selectedPositions.value.orEmpty()

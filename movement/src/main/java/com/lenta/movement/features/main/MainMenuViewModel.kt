@@ -1,9 +1,10 @@
 package com.lenta.movement.features.main
 
-import com.lenta.movement.platform.extensions.unsafeLazy
+
 import com.lenta.movement.platform.navigation.IScreenNavigator
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.platform.viewmodel.CoreViewModel
+import com.lenta.shared.utilities.extentions.unsafeLazy
 import javax.inject.Inject
 
 class MainMenuViewModel: CoreViewModel() {
