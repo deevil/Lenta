@@ -53,8 +53,11 @@ class TaskContents
                 startRecountRestInfo.taskBoxesDiscrepancies.map {
                     TaskBoxDiscrepancies.from(it)
                 },
-                startRecountRestInfo.taskBlock.map {
+                startRecountRestInfo.taskBlocks.map {
                     TaskBlockInfo.from(it)
+                },
+                startRecountRestInfo.taskBlocksDiscrepancies.map {
+                    TaskBlockDiscrepancies.from(it)
                 }
         )
     }
@@ -89,8 +92,11 @@ class TaskContents
                 startRecountRestInfo.taskBoxesDiscrepancies.map {
                     TaskBoxDiscrepancies.from(it)
                 },
-                startRecountRestInfo.taskBlock.map {
+                startRecountRestInfo.taskBlocks.map {
                     TaskBlockInfo.from(it)
+                },
+                startRecountRestInfo.taskBlocksDiscrepancies.map {
+                    TaskBlockDiscrepancies.from(it)
                 }
         )
     }
@@ -130,8 +136,11 @@ class TaskContents
                 startRecountRestInfo.taskBoxesDiscrepancies.map {
                     TaskBoxDiscrepancies.from(it)
                 },
-                startRecountRestInfo.taskBlock.map {
+                startRecountRestInfo.taskBlocks.map {
                     TaskBlockInfo.from(it)
+                },
+                startRecountRestInfo.taskBlocksDiscrepancies.map {
+                    TaskBlockDiscrepancies.from(it)
                 }
         )
     }
@@ -170,10 +179,12 @@ class TaskContents
                 },
                 startRecountRestInfo.taskBoxesDiscrepancies.map {
                     TaskBoxDiscrepancies.from(it)
-                }
-                ,
-                startRecountRestInfo.taskBlock.map {
+                },
+                startRecountRestInfo.taskBlocks.map {
                     TaskBlockInfo.from(it)
+                },
+                startRecountRestInfo.taskBlocksDiscrepancies.map {
+                    TaskBlockDiscrepancies.from(it)
                 }
         )
     }
@@ -239,5 +250,6 @@ data class TaskContentsInfo(
         val taskExciseStampBad: List<TaskExciseStampBad>,
         val taskBoxes: List<TaskBoxInfo>,
         val taskBoxesDiscrepancies: List<TaskBoxDiscrepancies>,
-        val taskBlock: List<TaskBlockInfo>
+        val taskBlock: List<TaskBlockInfo>,
+        val taskBlockDiscrepancies: List<TaskBlockDiscrepancies>
 )

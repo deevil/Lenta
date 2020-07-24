@@ -113,6 +113,9 @@ class ReceivingTask(val taskHeader: TaskInfo,
         taskRepository
                 .getBlocks()
                 .updateBlocks(taskContentsInfo.taskBlock)
+        taskRepository
+                .getBlocksDiscrepancies()
+                .updateBlocksDiscrepancies(taskContentsInfo.taskBlockDiscrepancies)
     }
 
     //количество коробов для товара прошедших контроль

@@ -87,6 +87,7 @@ class MarkingInfoViewModel : CoreViewModel(),
     private val qualityInfo: MutableLiveData<List<QualityInfo>> = MutableLiveData()
     private val reasonRejectionInfo: MutableLiveData<List<ReasonRejectionInfo>> = MutableLiveData()
     private val paramGrzMeinsPack: MutableLiveData<String> = MutableLiveData("")
+    private val paramGrzExclGtin: MutableLiveData<String> = MutableLiveData("")
     private val isBlockMode: MutableLiveData<Boolean> = MutableLiveData(false)
     private val uom: MutableLiveData<Uom> = MutableLiveData()
     val isVisibilityControlGTIN: MutableLiveData<Boolean> by lazy {
@@ -333,6 +334,8 @@ class MarkingInfoViewModel : CoreViewModel(),
                     }
                     ?: emptyList()
 
+            paramGrzExclGtin.value = dataBase.getGrzExclGtin().orEmpty()
+
             //эту строку необходимо прописывать только после того, как были установлены данные для переменных count  и suffix, а иначе фокус в поле et_count не установится
             requestFocusToCount.value = true
 
@@ -473,6 +476,7 @@ class MarkingInfoViewModel : CoreViewModel(),
             return
         }
 
+        //https://trello.com/c/N6t51jru далее все пункт 4
         if (blockInfo?.materialNumber != productInfo.value?.materialNumber) {
             //Отсканированная марка принадлежит товару <SAP-код> <Название>"
             screenNavigator.openAlertScannedStampBelongsAnotherProductScreen(
@@ -482,11 +486,25 @@ class MarkingInfoViewModel : CoreViewModel(),
             return
         }
 
-        if (checkBoxGtinControl.value == false) {
-            //Значение отсутствует - устанавливать чек бокс в поле «Сверка КМ» в поле «Контроль GTIN», количество марок с пройденным контролем не увеличивать
-            checkBoxGtinControl.value = true
+        if (productInfo.value?.isControlGTIN == true) {
+            /**• Марка/блок соответствуют текущему товару – Проверять активен ли чекбокс контроля GTIN:
+            o чекбокс не активен - проверить начинается ли марка на <0GRZ_EXCL_GTIN> (GRZ_EXCL_GTIN параметр из 14 справочника):
+            Если начинается - то необходимо выбирать GTIN из марки подставлять его "как будто" отсканированный ШК=>проставлять чек-боксы в полях КМ и GTIN => проходить контроль GTIN
+            Если не начинается - устанавливать чек бокс в поле «Сверка КМ» в поле «Контроль GTIN», количество марок с пройденным контролем не увеличивать
+            o чекбокс активен – выполнять проверки, описанные в разделе 2. MARK.ППП. Логика сверки GTIN.*/
+            if (checkBoxGtinControl.value == false) {
+                if ( stampCode.substring(0, 2) == "0${paramGrzExclGtin.value}") {
+                    checkBoxGtinControl.value = true
+                    checkBoxGtinStampControl.value = true
+                } else {
+                    checkBoxGtinStampControl.value = true
+                }
+            } else {
+                //todo Значение присутствует – выполнять проверки, описанные в разделе 2. MARK.ППП. Логика сверки GTIN. https://trello.com/c/y2ECoCw4
+            }
         } else {
-            //todo Значение присутствует – выполнять проверки, описанные в разделе 2. MARK.ППП. Логика сверки GTIN. https://trello.com/c/y2ECoCw4
+            //добавлять марку по товару
+            processMarkingProductService.searchExciseStamp(stampCode)
         }
     }
 

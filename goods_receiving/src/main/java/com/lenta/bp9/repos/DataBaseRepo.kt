@@ -209,6 +209,10 @@ class DataBaseRepo(
     override suspend fun getGrzMeinsPack(): String? = withContext(Dispatchers.IO) {
         zmpUtz14V001.getGrzMeinsPack()
     }
+
+    override suspend fun getGrzExclGtin(): String? = withContext(Dispatchers.IO) {
+        zmpUtz14V001.getGrzExclGtin()
+    }
 }
 
 interface IDataBaseRepo {
@@ -248,4 +252,5 @@ interface IDataBaseRepo {
     suspend fun getQualityBoxesDefectInfo(): List<QualityInfo>?
     suspend fun getGrzCrGrundcatName(code: String): String?
     suspend fun getGrzMeinsPack(): String?
+    suspend fun getGrzExclGtin(): String?
 }

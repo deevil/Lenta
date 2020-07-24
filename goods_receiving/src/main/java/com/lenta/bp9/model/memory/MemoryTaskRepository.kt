@@ -38,6 +38,8 @@ class MemoryTaskRepository : ITaskRepository {
 
     private val taskBlocksRepository: ITaskBlocksRepository = MemoryTaskBlocksRepository()
 
+    private val taskBlocksDiscrepanciesRepository: ITaskBlocksDiscrepanciesRepository = MemoryTaskBlocksDiscrepanciesRepository()
+
     override fun getProducts(): ITaskProductRepository {
         return taskProductRepository
     }
@@ -104,5 +106,9 @@ class MemoryTaskRepository : ITaskRepository {
 
     override fun getBlocks(): ITaskBlocksRepository {
         return taskBlocksRepository
+    }
+
+    override fun getBlocksDiscrepancies(): ITaskBlocksDiscrepanciesRepository {
+        return taskBlocksDiscrepanciesRepository
     }
 }

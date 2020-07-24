@@ -70,7 +70,9 @@ data class DirectSupplierStartRecountRestInfo(
         @SerializedName("ET_TASK_SETS")//Список наборов
         val setsInfo: List<TaskSetsRestData>,
         @SerializedName("ET_TASK_PACK")//Список блоков для маркированного товара
-        val taskBlock: List<TaskBlockInfoRestData>,
+        val taskBlocks: List<TaskBlockInfoRestData>,
+        @SerializedName("ET_PACK_DIFF")//Список обработанных блоков для маркированного товара
+        val taskBlocksDiscrepancies: List<TaskBlockDiscrepanciesRestData>,
         @SerializedName("EV_RETCODE")
         override val retCode: Int,
         @SerializedName("EV_ERROR_TEXT")
