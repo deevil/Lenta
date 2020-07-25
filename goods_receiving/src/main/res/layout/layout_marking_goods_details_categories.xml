@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="vm"
+            type="com.lenta.bp9.features.goods_details.marking_goods_details.MarkingGoodsDetailsViewModel" />
+
+        <variable
+            name="rvConfig"
+            type="com.lenta.shared.utilities.databinding.DataBindingRecyclerViewConfig" />
+
+    </data>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <!-- Наименования колонок -->
+        <include
+            layout="@layout/item_title_goods_details"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <!-- Список элементов -->
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rv"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_marginBottom="8dp"
+            android:layout_weight="1"
+            app:items="@{vm.goodsDetails}"
+            app:rv_config="@{rvConfig}"
+            tools:listitem="@layout/item_tile_goods_details_del" />
+
+    </LinearLayout>
+
+</layout>

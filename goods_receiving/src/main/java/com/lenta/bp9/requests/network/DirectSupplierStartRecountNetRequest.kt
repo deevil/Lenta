@@ -73,6 +73,8 @@ data class DirectSupplierStartRecountRestInfo(
         val taskBlocks: List<TaskBlockInfoRestData>,
         @SerializedName("ET_PACK_DIFF")//Список обработанных блоков для маркированного товара
         val taskBlocksDiscrepancies: List<TaskBlockDiscrepanciesRestData>,
+        @SerializedName("ET_PROPERTIES")//таблица свойств для маркированного товара
+        val markingGoodsProperties: List<TaskMarkingGoodsPropertiesRestData>,
         @SerializedName("EV_RETCODE")
         override val retCode: Int,
         @SerializedName("EV_ERROR_TEXT")

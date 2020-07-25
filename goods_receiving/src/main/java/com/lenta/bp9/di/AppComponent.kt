@@ -11,6 +11,7 @@ import com.lenta.bp9.features.driver_data.DriverDataViewModel
 import com.lenta.bp9.features.editing_invoice.EditingInvoiceViewModel
 import com.lenta.bp9.features.formed_docs.FormedDocsViewModel
 import com.lenta.bp9.features.goods_details.GoodsDetailsViewModel
+import com.lenta.bp9.features.goods_details.marking_goods_details.MarkingGoodsDetailsViewModel
 import com.lenta.bp9.features.goods_information.excise_alco_pge.excise_alco_box_acc_pge.ExciseAlcoBoxAccInfoPGEViewModel
 import com.lenta.bp9.features.goods_information.excise_alco_pge.excise_alco_box_acc_pge.excise_alco_box_card.ExciseAlcoBoxCardPGEViewModel
 import com.lenta.bp9.features.goods_information.excise_alco_pge.excise_alco_box_acc_pge.excise_alco_box_list.ExciseAlcoBoxListPGEViewModel
@@ -152,4 +153,5 @@ interface AppComponent : FromParentToCoreProvider {
     fun inject(it: NonExciseSetComponentInfoPGEViewModel)
     fun inject(it: NonExciseSetComponentInfoReceivingViewModel)
     fun inject(it: MarkingInfoViewModel)
+    fun inject(it: MarkingGoodsDetailsViewModel)
 }

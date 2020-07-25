@@ -334,4 +334,7 @@
     <string name="disparity_gtin">GTIN в марке не соответствует GTIN товара, оформите брак по данному товару</string>
     <string name="scan_product_barcode">Отсканируйте марку товара</string>
     <string name="gtin_does_not_match_product">GTIN не соответствует товару</string>
+    <string name="gtin">GTIN</string>
+    <string name="value">Значение</string>
+    <string name="property">Свойство</string>
 </resources>

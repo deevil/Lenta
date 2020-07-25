@@ -12,6 +12,7 @@ import com.lenta.bp9.model.task.TaskProductInfo
 import com.lenta.bp9.platform.TypeDiscrepanciesConstants
 import com.lenta.bp9.platform.navigation.IScreenNavigator
 import com.lenta.bp9.repos.IDataBaseRepo
+import com.lenta.bp9.repos.IRepoInMemoryHolder
 import com.lenta.shared.fmp.resources.dao_ext.getEanInfo
 import com.lenta.shared.fmp.resources.dao_ext.getProductInfoByMaterial
 import com.lenta.shared.fmp.resources.dao_ext.getUomInfo
@@ -257,13 +258,13 @@ class MarkingInfoViewModel : CoreViewModel(),
                 val refusalTotalCountValue = it?.first?.first ?: 0.0
                 val spinQualitySelectedPositionValue = it?.first?.second ?: 0
                 val qualityInfoCode = qualityInfo.value?.get(spinQualitySelectedPositionValue)?.code.orEmpty()
-                if (qualityInfoCode != TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_NORM) {
+                if (qualityInfoCode.isNotEmpty() && qualityInfoCode != TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_NORM) {
                     if (refusalTotalCountValue == 0.0 || refusalTotalCountValue == processMarkingProductService.getCountUntreatedBlock()) {
                         checkBoxStampListVisibility.value = false
                         context.getString(R.string.not_required)
                     } else {
                         checkBoxStampListVisibility.value = true
-                        "${processMarkingProductService.getCountUntreatedBlock()} ${context.getString(R.string.of)} ${refusalTotalCountValue.toStringFormatted()}"
+                        "${processMarkingProductService.getCountUntreatedBlock().toStringFormatted()} ${context.getString(R.string.of)} ${refusalTotalCountValue.toStringFormatted()}"
                     }
                 } else "" //это поле отображается только при выбранной категории брака
             }
@@ -309,6 +310,8 @@ class MarkingInfoViewModel : CoreViewModel(),
                 )
             }
 
+
+
             tvAccept.value = if (isBlockMode.value == false) {
                 context.getString(R.string.accept_txt)
             } else {
@@ -317,15 +320,27 @@ class MarkingInfoViewModel : CoreViewModel(),
                         "${uom.value?.name.orEmpty()}=${productInfo.value?.nestingInOneBlock?.toDouble().toStringFormatted()} ${productInfo.value?.uom?.name}"
                 )
             }
-            suffix.value = uom.value?.name.orEmpty()
 
-            qualityInfo.value = dataBase.getQualityInfo() ?: emptyList()
+            if (isDiscrepancy.value == true) {
+                productInfo.value?.let {
+                    count.value = taskManager.getReceivingTask()
+                            ?.taskRepository
+                            ?.getProductsDiscrepancies()
+                            ?.getCountProductNotProcessedOfProduct(it)
+                            .toStringFormatted()
+                }
+                qualityInfo.value = dataBase.getQualityInfoForDiscrepancy() ?: emptyList()
+                spinQualitySelectedPosition.value = qualityInfo.value?.indexOfLast {it.code == TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_REASON_REJECTION_DELIVERY_ERRORS}
+            } else {
+                qualityInfo.value = dataBase.getQualityInfo() ?: emptyList()
+            }
             spinQuality.value = qualityInfo.value
                     ?.map {
                         it.name
                     }
                     ?: emptyList()
 
+            suffix.value = uom.value?.name.orEmpty()
             paramGrzExclGtin.value = dataBase.getGrzExclGtin().orEmpty()
 
             //эту строку необходимо прописывать только после того, как были установлены данные для переменных count  и suffix, а иначе фокус в поле et_count не установится
@@ -370,7 +385,7 @@ class MarkingInfoViewModel : CoreViewModel(),
 
     fun onClickDetails() {
         productInfo.value?.let {
-            screenNavigator.openGoodsDetailsScreen(it)
+            screenNavigator.openMarkingGoodsDetailsScreen(it)
         }
     }
 
@@ -392,6 +407,7 @@ class MarkingInfoViewModel : CoreViewModel(),
             if (typeDiscrepancies != null) {
                 processMarkingProductService.addProduct(countVal, typeDiscrepancies)
                 processMarkingProductService.apply()
+                processMarkingProductService.clearModifications()
                 //обнуляем кол-во отсканированных марок
                 countBlockScanned.value = 0
                 true

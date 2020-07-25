@@ -13,6 +13,7 @@ import com.lenta.bp9.features.driver_data.DriverDataFragment
 import com.lenta.bp9.features.editing_invoice.EditingInvoiceFragment
 import com.lenta.bp9.features.formed_docs.FormedDocsFragment
 import com.lenta.bp9.features.goods_details.GoodsDetailsFragment
+import com.lenta.bp9.features.goods_details.marking_goods_details.MarkingGoodsDetailsFragment
 import com.lenta.bp9.features.goods_information.excise_alco_pge.excise_alco_box_acc_pge.ExciseAlcoBoxAccInfoPGEFragment
 import com.lenta.bp9.features.goods_information.excise_alco_pge.excise_alco_box_acc_pge.excise_alco_box_card.ExciseAlcoBoxCardPGEFragment
 import com.lenta.bp9.features.goods_information.excise_alco_pge.excise_alco_box_acc_pge.excise_alco_box_list.ExciseAlcoBoxListPGEFragment
@@ -1573,6 +1574,12 @@ class ScreenNavigator(
         }
     }
 
+    override fun openMarkingGoodsDetailsScreen(productInfo: TaskProductInfo) {
+        runOrPostpone {
+            getFragmentStack()?.push(MarkingGoodsDetailsFragment.newInstance(productInfo))
+        }
+    }
+
     private fun getFragmentStack() = foregroundActivityProvider.getActivity()?.fragmentStack
 }
 
@@ -1752,4 +1759,5 @@ interface IScreenNavigator : ICoreNavigator {
     fun openAlertDisparityGTINScreen()
     fun openAlertScanProductBarcodeScreen()
     fun openAlertGtinDoesNotMatchProductScreen()
+    fun openMarkingGoodsDetailsScreen(productInfo: TaskProductInfo)
 }

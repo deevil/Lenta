@@ -238,4 +238,22 @@ class ProcessMarkingProductService
                         ?.getBlocksDiscrepancies()
     }
 
+    fun clearModifications() {
+        currentGtin.clear()
+        blocks.clear()
+        taskManager.getReceivingTask()
+                ?.getProcessedBlocks()
+                ?.map {
+                    blocks.add(it.copy())
+                }
+        currentBlocksDiscrepancies.clear()
+        taskManager.getReceivingTask()
+                ?.taskRepository
+                ?.getBlocksDiscrepancies()
+                ?.findBlocksDiscrepanciesOfProduct(productInfo)
+                ?.map {
+                    currentBlocksDiscrepancies.add(it.copy())
+                }
+    }
+
 }

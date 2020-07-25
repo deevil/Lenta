@@ -3,6 +3,7 @@ package com.lenta.bp9.repos
 import androidx.lifecycle.MutableLiveData
 import com.lenta.bp9.features.editing_invoice.EditingInvoiceItem
 import com.lenta.bp9.model.task.TaskList
+import com.lenta.bp9.model.task.TaskMarkingGoodsProperties
 import com.lenta.bp9.model.task.TaskProcessOrderDataInfo
 import com.lenta.bp9.model.task.TaskSetsInfo
 import com.lenta.bp9.model.task.revise.InvoiceContentEntry
@@ -17,6 +18,7 @@ class RepoInMemoryHolder : IRepoInMemoryHolder {
     override var manufacturers: MutableLiveData<List<Manufacturer>> = MutableLiveData()
     override var processOrderData: MutableLiveData<List<TaskProcessOrderDataInfo>> = MutableLiveData()
     override var sets: MutableLiveData<List<TaskSetsInfo>> = MutableLiveData()
+    override var markingGoodsProperties: MutableLiveData<List<TaskMarkingGoodsProperties>> = MutableLiveData()
 }
 
 interface IRepoInMemoryHolder {
@@ -27,4 +29,5 @@ interface IRepoInMemoryHolder {
     var manufacturers: MutableLiveData<List<Manufacturer>>
     var processOrderData: MutableLiveData<List<TaskProcessOrderDataInfo>>
     var sets: MutableLiveData<List<TaskSetsInfo>>
+    var markingGoodsProperties: MutableLiveData<List<TaskMarkingGoodsProperties>>
 }
