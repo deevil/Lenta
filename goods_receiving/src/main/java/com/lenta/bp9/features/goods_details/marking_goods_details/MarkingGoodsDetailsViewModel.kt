@@ -1,19 +1,19 @@
 package com.lenta.bp9.features.goods_details.marking_goods_details
 
-import com.lenta.shared.platform.viewmodel.CoreViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.lenta.bp9.features.goods_details.GoodsDetailsCategoriesItem
 import com.lenta.bp9.features.goods_details.GoodsDetailsPropertiesItem
-import com.lenta.bp9.features.loading.tasks.TaskListLoadingMode
 import com.lenta.bp9.model.processing.ProcessMercuryProductService
-import com.lenta.bp9.model.task.*
+import com.lenta.bp9.model.task.IReceivingTaskManager
+import com.lenta.bp9.model.task.TaskMarkingGoodsProperties
+import com.lenta.bp9.model.task.TaskProductInfo
 import com.lenta.bp9.platform.TypeDiscrepanciesConstants
 import com.lenta.bp9.repos.IDataBaseRepo
 import com.lenta.bp9.repos.IRepoInMemoryHolder
+import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.requests.combined.scan_info.pojo.ReasonRejectionInfo
 import com.lenta.shared.utilities.SelectionItemsHelper
-import com.lenta.shared.utilities.databinding.Evenable
 import com.lenta.shared.utilities.databinding.PageSelectionListener
 import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.utilities.extentions.toStringFormatted
@@ -63,7 +63,11 @@ class MarkingGoodsDetailsViewModel : CoreViewModel(), PageSelectionListener {
                                 it.convertToReasonRejectionInfo()
                             }.orEmpty()
             val allReasonRejectionInfo = dataBase.getAllReasonRejectionInfo().orEmpty()
-            reasonRejectionInfo.value = qualityInfoForDiscrepancy + allReasonRejectionInfo
+            val discrepancyErrorUPD = dataBase.getQualityErrorUPD()
+                    ?.map {
+                        it.convertToReasonRejectionInfo()
+                    }.orEmpty()
+            reasonRejectionInfo.value = qualityInfoForDiscrepancy + allReasonRejectionInfo + discrepancyErrorUPD
 
             updateData()
         }
@@ -75,35 +79,44 @@ class MarkingGoodsDetailsViewModel : CoreViewModel(), PageSelectionListener {
     }
 
     fun onClickDelete() {
-        if (productInfo.value != null && !productInfo.value!!.isNotEdit) {
-            categoriesSelectionsHelper.selectedPositions.value?.map { position ->
-                taskManager
-                        .getReceivingTask()
-                        ?.taskRepository
-                        ?.getProductsDiscrepancies()
-                        ?.deleteProductDiscrepancy(
-                                materialNumber = goodsDetails.value
+        if (productInfo.value != null && productInfo.value?.isNotEdit == false) {
+            categoriesSelectionsHelper.selectedPositions.value
+                    ?.map { position ->
+                        val isDiscrepanciesErrorUPD =
+                                (goodsDetails.value
                                         ?.get(position)
-                                        ?.materialNumber.orEmpty(),
-                                typeDiscrepancies = goodsDetails.value
-                                        ?.get(position)
-                                        ?.typeDiscrepancies.orEmpty()
-                        )
+                                        ?.typeDiscrepancies == TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_REASON_REJECTION_ERROR_UPD)
 
-                taskManager
-                        .getReceivingTask()
-                        ?.taskRepository
-                        ?.getBlocksDiscrepancies()
-                        ?.deleteBlocksDiscrepanciesForProductAndDiscrepancies(
-                                materialNumber = goodsDetails.value
-                                        ?.get(position)
-                                        ?.materialNumber.orEmpty(),
-                                typeDiscrepancies = goodsDetails.value
-                                        ?.get(position)
-                                        ?.typeDiscrepancies.orEmpty()
-                        )
+                        if (!isDiscrepanciesErrorUPD) {
+                            taskManager.getReceivingTask()
+                                    ?.taskRepository
+                                    ?.getProductsDiscrepancies()
+                                    ?.deleteProductDiscrepancy(
+                                            materialNumber = goodsDetails.value
+                                                    ?.get(position)
+                                                    ?.materialNumber
+                                                    .orEmpty(),
+                                            typeDiscrepancies = goodsDetails.value
+                                                    ?.get(position)
+                                                    ?.typeDiscrepancies
+                                                    .orEmpty()
+                                    )
 
-            }
+                            taskManager.getReceivingTask()
+                                    ?.taskRepository
+                                    ?.getBlocksDiscrepancies()
+                                    ?.deleteBlocksDiscrepanciesForProductAndDiscrepancies(
+                                            materialNumber = goodsDetails.value
+                                                    ?.get(position)
+                                                    ?.materialNumber
+                                                    .orEmpty(),
+                                            typeDiscrepancies = goodsDetails.value
+                                                    ?.get(position)
+                                                    ?.typeDiscrepancies
+                                                    .orEmpty()
+                                    )
+                        }
+                    }
         }
         updateData()
     }
@@ -115,7 +128,7 @@ class MarkingGoodsDetailsViewModel : CoreViewModel(), PageSelectionListener {
 
     private fun updateCategories() {
         productInfo.value
-                ?.let {product ->
+                ?.let { product ->
                     taskManager.getReceivingTask()
                             ?.taskRepository
                             ?.getProductsDiscrepancies()
@@ -136,7 +149,7 @@ class MarkingGoodsDetailsViewModel : CoreViewModel(), PageSelectionListener {
                     )
                 }?.reversed()
 
-    categoriesSelectionsHelper.clearPositions()
+        categoriesSelectionsHelper.clearPositions()
 
     }
 
