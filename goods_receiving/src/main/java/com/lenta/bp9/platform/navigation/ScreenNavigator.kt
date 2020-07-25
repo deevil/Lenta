@@ -77,6 +77,7 @@ import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.progress.IProgressUseCaseInformator
 
 private const val PAGE_NUMBER_95 = "95"
+private const val PAGE_NUMBER_96 = "96"
 private const val PAGE_NUMBER_97 = "97"
 
 class ScreenNavigator(
@@ -1580,6 +1581,22 @@ class ScreenNavigator(
         }
     }
 
+    override fun openAlertRequestCompleteRejectionMarkingGoods() {
+        openAlertScreen(message = context.getString(R.string.request_for_complete_rejection_of_marking_goods),
+                iconRes = R.drawable.ic_info_green_80dp,
+                pageNumber = PAGE_NUMBER_96,
+                timeAutoExitInMillis = 3000
+        )
+    }
+
+    override fun openAlertRejectSuccessFullMarkingGoods() {
+        openAlertScreen(message = context.getString(R.string.reject_success_full),
+                iconRes = R.drawable.ic_info_green_80dp,
+                pageNumber = PAGE_NUMBER_96,
+                timeAutoExitInMillis = 3000
+        )
+    }
+
     private fun getFragmentStack() = foregroundActivityProvider.getActivity()?.fragmentStack
 }
 
@@ -1760,4 +1777,6 @@ interface IScreenNavigator : ICoreNavigator {
     fun openAlertScanProductBarcodeScreen()
     fun openAlertGtinDoesNotMatchProductScreen()
     fun openMarkingGoodsDetailsScreen(productInfo: TaskProductInfo)
+    fun openAlertRequestCompleteRejectionMarkingGoods()
+    fun openAlertRejectSuccessFullMarkingGoods()
 }

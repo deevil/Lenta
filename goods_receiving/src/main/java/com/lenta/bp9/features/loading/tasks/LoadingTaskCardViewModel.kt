@@ -4,9 +4,11 @@ import android.content.Context
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.lenta.bp9.R
+import com.lenta.bp9.features.reject.RejectType
 import com.lenta.bp9.model.task.*
 import com.lenta.bp9.model.task.revise.*
 import com.lenta.bp9.platform.navigation.IScreenNavigator
+import com.lenta.bp9.repos.IDataBaseRepo
 import com.lenta.bp9.repos.IRepoInMemoryHolder
 import com.lenta.bp9.requests.network.*
 import com.lenta.shared.account.ISessionInfo
@@ -48,6 +50,12 @@ class LoadingTaskCardViewModel : CoreLoadingViewModel() {
 
     @Inject
     lateinit var taskContents: TaskContents
+
+    @Inject
+    lateinit var dataBase: IDataBaseRepo
+
+    @Inject
+    lateinit var rejectRequest: RejectNetRequest
 
     @Inject
     lateinit var hyperHive: HyperHive
@@ -214,7 +222,11 @@ class LoadingTaskCardViewModel : CoreLoadingViewModel() {
                 newTask?.updateTaskWithContents(taskContents.getTaskContentsInfo(result))
                 newTask?.taskRepository?.getSections()?.updateSections(sectionInfo, sectionProducts)
                 taskManager.setTask(newTask)
-                transferToNextScreen()
+                if (newTask?.taskDescription?.isMark == true)  { //https://trello.com/c/YL9D4v4t для маркированного товара
+                    checkMarkingTask()
+                } else {
+                    transferToNextScreen()
+                }
             }
         }
 
@@ -360,6 +372,39 @@ class LoadingTaskCardViewModel : CoreLoadingViewModel() {
                     screenNavigator.openTaskCardScreen(TaskCardMode.Full, taskManager.getReceivingTask()?.taskHeader?.taskType
                             ?: TaskType.None)
                 }
+            }
+        }
+    }
+
+    private fun checkMarkingTask() {
+        viewModelScope.launch {
+            screenNavigator.showProgress(rejectRequest)
+            val params = RejectRequestParameters(
+                    deviceIP = context.getDeviceIp(),
+                    personalNumber = sessionInfo.personnelNumber.orEmpty(),
+                    taskNumber = taskManager.getReceivingTask()?.taskHeader?.taskNumber.orEmpty(),
+                    rejectMode = "1",
+                    rejectReason = ""
+            )
+            rejectRequest(params).either(::handleFailure, ::handleSuccessReject)
+            screenNavigator.hideProgress()
+        }
+
+
+    }
+
+    private fun handleSuccessReject(result: RejectRequestResult) {
+        viewModelScope.launch {
+            if (result.retCode == 0) {
+                val paramGrzMarkRef = dataBase.getGrzMarkRef().orEmpty()
+                screenNavigator.openTaskListScreen()
+                if (paramGrzMarkRef.isEmpty()) {
+                    screenNavigator.openAlertRejectSuccessFullMarkingGoods()
+                } else {
+                    screenNavigator.openAlertRequestCompleteRejectionMarkingGoods()
+                }
+            } else {
+                transferToNextScreen()
             }
         }
     }
