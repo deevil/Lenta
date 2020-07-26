@@ -338,4 +338,7 @@
     <string name="value">Значение</string>
     <string name="property">Свойство</string>
     <string name="request_for_complete_rejection_of_marking_goods">Запрос на полный отказ в маркированной приемке успешно передан в ГИС-центр. Ожидайте решения</string>
+    <string name="marking_product_rejection_dialogue">Не обработано: %1$s из %2$s\nВозможные действия:\n ЧАСТИЧНЫЙ отказ по товару - будет принято только подтвержденное сканированием количество;\n ПОЛНЫЙ отказ по товару;\n НАЗАД - возврат к сканированию</string>
+    <string name="dialogue_partial_refusal_on_marking_goods">Подтверждено сканирование %1$s шт. Для неподтвержденного количества в %2$s шт. будет сформирован частичный акт о разногласии с причиной \"%3$s\"</string>
+
 </resources>

@@ -88,7 +88,7 @@ class DiscrepancyListFragment : CoreFragment<FragmentDiscrepancyListBinding, Dis
     }
 
     override fun getPagerItemView(container: ViewGroup, position: Int): View {
-        return if (vm.isAlco.value == true) {
+        return if (vm.isAlco.value == true || vm.isMark.value == true) {
             when(position) {
                 0 -> prepareNotProcessedView(container)
                 1 -> prepareControlView(container)
@@ -231,7 +231,7 @@ class DiscrepancyListFragment : CoreFragment<FragmentDiscrepancyListBinding, Dis
     }
 
     override fun getTextTitle(position: Int): String {
-        return if (vm.isAlco.value == true) {
+        return if (vm.isAlco.value == true || vm.isMark.value == true) {
             when (position) {
                 0 -> getString(R.string.not_processed)
                 1 -> getString(R.string.control)
@@ -248,7 +248,7 @@ class DiscrepancyListFragment : CoreFragment<FragmentDiscrepancyListBinding, Dis
     }
 
     override fun countTab(): Int {
-        return if (vm.isAlco.value == true) 3 else 2
+        return if (vm.isAlco.value == true || vm.isMark.value == true) 3 else 2
     }
 
     override fun onResume() {

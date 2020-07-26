@@ -101,6 +101,24 @@ class MemoryTaskBlocksDiscrepanciesRepository : ITaskBlocksDiscrepanciesReposito
         }
     }
 
+    override fun processedNumberOfStampsByProduct(product: TaskProductInfo): Int {
+        return findBlocksDiscrepanciesOfProduct(product)
+                .filter {
+                    it.isScan
+                }.size
+    }
+
+    override fun notProcessedNumberOfStampsByProduct(product: TaskProductInfo): Double {
+        val processedNumberOfStampsByProduct = findBlocksDiscrepanciesOfProduct(product)
+                .filter {
+                    it.isScan
+                }
+                .size
+                .toDouble()
+        val origQuantity = product.origQuantity.toDouble()
+        return origQuantity - processedNumberOfStampsByProduct
+    }
+
     override fun clear() {
         blocksDiscrepancies.clear()
     }

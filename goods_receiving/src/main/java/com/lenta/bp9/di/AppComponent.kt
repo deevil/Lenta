@@ -25,6 +25,7 @@ import com.lenta.bp9.features.goods_information.excise_alco_receiving.excise_alc
 import com.lenta.bp9.features.goods_information.general.GoodsInfoViewModel
 import com.lenta.bp9.features.goods_information.general_opp.GoodsInfoShipmentPPViewModel
 import com.lenta.bp9.features.goods_information.marking.MarkingInfoViewModel
+import com.lenta.bp9.features.goods_information.marking.marking_product_failure.MarkingProductFailureViewModel
 import com.lenta.bp9.features.goods_information.mercury.GoodsMercuryInfoViewModel
 import com.lenta.bp9.features.goods_information.non_excise_alco_pge.NonExciseAlcoInfoPGEViewModel
 import com.lenta.bp9.features.goods_information.non_excise_alco_receiving.NonExciseAlcoInfoViewModel
@@ -154,4 +155,5 @@ interface AppComponent : FromParentToCoreProvider {
     fun inject(it: NonExciseSetComponentInfoReceivingViewModel)
     fun inject(it: MarkingInfoViewModel)
     fun inject(it: MarkingGoodsDetailsViewModel)
+    fun inject(it: MarkingProductFailureViewModel)
 }

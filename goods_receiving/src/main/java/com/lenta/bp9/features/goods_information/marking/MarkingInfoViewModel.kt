@@ -12,7 +12,6 @@ import com.lenta.bp9.model.task.TaskProductInfo
 import com.lenta.bp9.platform.TypeDiscrepanciesConstants
 import com.lenta.bp9.platform.navigation.IScreenNavigator
 import com.lenta.bp9.repos.IDataBaseRepo
-import com.lenta.bp9.repos.IRepoInMemoryHolder
 import com.lenta.shared.fmp.resources.dao_ext.getEanInfo
 import com.lenta.shared.fmp.resources.dao_ext.getProductInfoByMaterial
 import com.lenta.shared.fmp.resources.dao_ext.getUomInfo
@@ -30,7 +29,6 @@ import com.lenta.shared.utilities.extentions.toStringFormatted
 import com.lenta.shared.view.OnPositionClickListener
 import com.mobrun.plugin.api.HyperHive
 import kotlinx.coroutines.launch
-import java.lang.NumberFormatException
 import javax.inject.Inject
 
 //https://trello.com/c/NGsFfWgB
@@ -333,7 +331,7 @@ class MarkingInfoViewModel : CoreViewModel(),
                             .toStringFormatted()
                 }
                 qualityInfo.value = dataBase.getQualityInfoForDiscrepancy() ?: emptyList()
-                spinQualitySelectedPosition.value = qualityInfo.value?.indexOfLast {it.code == TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_REASON_REJECTION_DELIVERY_ERRORS}
+                spinQualitySelectedPosition.value = qualityInfo.value?.indexOfLast { it.code == TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_REASON_REJECTION_DELIVERY_ERRORS }
             } else {
                 qualityInfo.value = dataBase.getQualityInfo() ?: emptyList()
             }
@@ -392,7 +390,7 @@ class MarkingInfoViewModel : CoreViewModel(),
         }
     }
 
-    fun onClickAdd() : Boolean {
+    fun onClickAdd(): Boolean {
         val countVal = count.value.orEmpty()
         return if (processMarkingProductService.overLimit(countVal.toDouble())) {
             screenNavigator.openAlertOverLimitPlannedScreen()
@@ -579,7 +577,8 @@ class MarkingInfoViewModel : CoreViewModel(),
                 typeDiscrepancies?.let { currentTypeDiscrepancies ->
                     processMarkingProductService.addBlocksDiscrepancies(
                             blockInfo = currentBlock,
-                            typeDiscrepancies = currentTypeDiscrepancies
+                            typeDiscrepancies = currentTypeDiscrepancies,
+                            isScan = true
                     )
                     //обновляем кол-во отсканированных марок/блоков для отображения на экране в поле «Контроль марок»
                     countBlockScanned.value = countBlockScanned.value
@@ -634,7 +633,11 @@ class MarkingInfoViewModel : CoreViewModel(),
         val lastScannedGtin = processMarkingProductService.getLastScannedGtin().orEmpty()
         if (lastScannedGtin == gtinCode) {
             checkBoxGtinStampControl.value = true //аналитики сказали сначала поставить чекбокс, а потом снять
-            processMarkingProductService.addBlocksDiscrepancies(blockInfo, typeDiscrepancies)
+            processMarkingProductService.addBlocksDiscrepancies(
+                    blockInfo = blockInfo,
+                    typeDiscrepancies = typeDiscrepancies,
+                    isScan = true
+            )
             //обновляем кол-во отсканированных марок/блоков для отображения на экране в поле «Контроль марок»
             countBlockScanned.value = countBlockScanned.value
             checkBoxGtinControl.value = false

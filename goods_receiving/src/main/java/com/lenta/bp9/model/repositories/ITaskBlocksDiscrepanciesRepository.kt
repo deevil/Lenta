@@ -15,5 +15,7 @@ interface ITaskBlocksDiscrepanciesRepository {
     fun deleteBlocksDiscrepanciesForProduct(product: TaskProductInfo): Boolean
     fun deleteBlocksDiscrepanciesForProductAndDiscrepancies(materialNumber: String, typeDiscrepancies: String): Boolean
     fun deleteBlocksDiscrepanciesNotNormForProduct(materialNumber: String): Boolean
+    fun processedNumberOfStampsByProduct(product: TaskProductInfo): Int
+    fun notProcessedNumberOfStampsByProduct(product: TaskProductInfo): Double
     fun clear()
 }

@@ -27,6 +27,7 @@ import com.lenta.bp9.features.goods_information.excise_alco_receiving.excise_alc
 import com.lenta.bp9.features.goods_information.general.GoodsInfoFragment
 import com.lenta.bp9.features.goods_information.general_opp.GoodsInfoShipmentPPFragment
 import com.lenta.bp9.features.goods_information.marking.MarkingInfoFragment
+import com.lenta.bp9.features.goods_information.marking.marking_product_failure.MarkingProductFailureFragment
 import com.lenta.bp9.features.goods_information.mercury.GoodsMercuryInfoFragment
 import com.lenta.bp9.features.goods_information.non_excise_alco_pge.NonExciseAlcoInfoPGEFragment
 import com.lenta.bp9.features.goods_information.non_excise_alco_receiving.NonExciseAlcoInfoFragment
@@ -76,6 +77,7 @@ import com.lenta.shared.platform.navigation.runOrPostpone
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.progress.IProgressUseCaseInformator
 
+private const val PAGE_NUMBER_94 = "94"
 private const val PAGE_NUMBER_95 = "95"
 private const val PAGE_NUMBER_96 = "96"
 private const val PAGE_NUMBER_97 = "97"
@@ -1597,6 +1599,40 @@ class ScreenNavigator(
         )
     }
 
+    override fun openMarkingProductFailureScreen(productInfo: TaskProductInfo) {
+        runOrPostpone {
+            getFragmentStack()?.push(MarkingProductFailureFragment.newInstance(productInfo))
+        }
+    }
+
+    override fun openCompleteRejectionOfMarkingGoodsDialog(applyCallbackFunc: () -> Unit, title: String, countBlocks: String, paramGrzGrundMarkName: String) {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    message = context.getString(R.string.dialogue_complete_rejection_of_goods, countBlocks, paramGrzGrundMarkName),
+                    title = title,
+                    description = context.getString(R.string.complete_rejection),
+                    iconRes = R.drawable.ic_question_yellow_80dp,
+                    codeConfirmForRight = backFragmentResultHelper.setFuncForResult(applyCallbackFunc),
+                    rightButtonDecorationInfo = ButtonDecorationInfo.apply,
+                    pageNumber = PAGE_NUMBER_94)
+            )
+        }
+    }
+
+    override fun openPartialRefusalOnMarkingGoodsDialog(applyCallbackFunc: () -> Unit, title: String, countScanBlocks: String, unconfirmedQuantity: String, paramGrzGrundMarkName: String) {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    message = context.getString(R.string.dialogue_partial_refusal_on_marking_goods, countScanBlocks, unconfirmedQuantity, paramGrzGrundMarkName),
+                    title = title,
+                    description = context.getString(R.string.partial_failure),
+                    iconRes = R.drawable.ic_question_yellow_80dp,
+                    codeConfirmForRight = backFragmentResultHelper.setFuncForResult(applyCallbackFunc),
+                    rightButtonDecorationInfo = ButtonDecorationInfo.apply,
+                    pageNumber = PAGE_NUMBER_94)
+            )
+        }
+    }
+
     private fun getFragmentStack() = foregroundActivityProvider.getActivity()?.fragmentStack
 }
 
@@ -1779,4 +1815,7 @@ interface IScreenNavigator : ICoreNavigator {
     fun openMarkingGoodsDetailsScreen(productInfo: TaskProductInfo)
     fun openAlertRequestCompleteRejectionMarkingGoods()
     fun openAlertRejectSuccessFullMarkingGoods()
+    fun openMarkingProductFailureScreen(productInfo: TaskProductInfo)
+    fun openCompleteRejectionOfMarkingGoodsDialog(applyCallbackFunc: () -> Unit, title: String, countBlocks: String, paramGrzGrundMarkName: String)
+    fun openPartialRefusalOnMarkingGoodsDialog(applyCallbackFunc: () -> Unit, title: String, countScanBlocks: String, unconfirmedQuantity: String, paramGrzGrundMarkName: String)
 }

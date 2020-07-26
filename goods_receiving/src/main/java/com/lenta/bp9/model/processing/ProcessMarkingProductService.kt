@@ -26,8 +26,8 @@ class ProcessMarkingProductService
         this.productInfo = productInfo.copy()
     }
 
-    fun newProcessMarkingProductService(productInfo: TaskProductInfo) : ProcessMarkingProductService? {
-        return if (productInfo.type == ProductType.General){
+    fun newProcessMarkingProductService(productInfo: TaskProductInfo): ProcessMarkingProductService? {
+        return if (productInfo.type == ProductType.General) {
             this.productInfo = productInfo.copy()
             currentGtin.clear()
             blocks.clear()
@@ -45,8 +45,7 @@ class ProcessMarkingProductService
                         currentBlocksDiscrepancies.add(it.copy())
                     }
             this
-        }
-        else null
+        } else null
     }
 
     fun apply() {
@@ -79,16 +78,16 @@ class ProcessMarkingProductService
                         }
 
         foundDiscrepancy = foundDiscrepancy?.copy(numberDiscrepancies = countAdd.toString())
-                        ?: TaskProductDiscrepancies(
-                                materialNumber = productInfo.materialNumber,
-                                processingUnitNumber = productInfo.processingUnit,
-                                numberDiscrepancies = countAdd.toString(),
-                                uom = productInfo.uom,
-                                typeDiscrepancies = typeDiscrepancies,
-                                isNotEdit = false,
-                                isNew = false,
-                                notEditNumberDiscrepancies = ""
-                        )
+                ?: TaskProductDiscrepancies(
+                        materialNumber = productInfo.materialNumber,
+                        processingUnitNumber = productInfo.processingUnit,
+                        numberDiscrepancies = countAdd.toString(),
+                        uom = productInfo.uom,
+                        typeDiscrepancies = typeDiscrepancies,
+                        isNotEdit = false,
+                        isNew = false,
+                        notEditNumberDiscrepancies = ""
+                )
 
         taskManager.getReceivingTask()
                 ?.taskRepository
@@ -96,7 +95,7 @@ class ProcessMarkingProductService
                 ?.changeProductDiscrepancy(foundDiscrepancy)
     }
 
-    fun addBlocksDiscrepancies(blockInfo: TaskBlockInfo, typeDiscrepancies: String) {
+    fun addBlocksDiscrepancies(blockInfo: TaskBlockInfo, typeDiscrepancies: String, isScan: Boolean) {
         var foundBlockDiscrepancy =
                 currentBlocksDiscrepancies.findLast {
                     it.blockNumber == blockInfo.blockNumber
@@ -109,7 +108,7 @@ class ProcessMarkingProductService
                         blockNumber = blockInfo.blockNumber,
                         boxNumber = "",
                         typeDiscrepancies = typeDiscrepancies,
-                        isScan = true,
+                        isScan = isScan,
                         isMsc = false,
                         isUnknown = false,
                         isGrayZone = false
@@ -128,7 +127,7 @@ class ProcessMarkingProductService
         currentBlocksDiscrepancies.add(foundBlockDiscrepancy)
     }
 
-    fun getLastScannedBlock() : TaskBlockDiscrepancies? {
+    fun getLastScannedBlock(): TaskBlockDiscrepancies? {
         return currentBlocksDiscrepancies.last()
     }
 
@@ -145,13 +144,13 @@ class ProcessMarkingProductService
         }
     }
 
-    fun getLastScannedGtin() : String? {
+    fun getLastScannedGtin(): String? {
         return currentGtin.last()
     }
 
     fun replaceLastGtin(gtinCode: String) {
         currentGtin.map { it }
-                .findLast {lastGtin ->
+                .findLast { lastGtin ->
                     if (lastGtin == gtinCode) {
                         currentGtin.remove(lastGtin)
                         return@findLast true
@@ -232,6 +231,46 @@ class ProcessMarkingProductService
                     it.numberDiscrepancies.toDouble()
                 }
                 ?: 0.0
+    }
+
+    fun denialOfFullProductAcceptance(typeDiscrepancies: String) {
+        //https://trello.com/c/vcymT9Kp
+        //отмечаем все блоки/марки для продукта категорией для брака из параметра GRZ_GRUND_MARK
+        blocks.asSequence()
+                .filter { block ->
+                    block.materialNumber == productInfo.materialNumber
+                }
+                .map { blockInfo ->
+                    addBlocksDiscrepancies(
+                            blockInfo = blockInfo,
+                            typeDiscrepancies = typeDiscrepancies,
+                            isScan = false //передаем false, т.к. эта ф-ция (denialOfFullProductAcceptance) вызывается с экрана Обнаружены расхождения по клику на блок на вкладке Не обработаны
+                    )
+                    apply()
+                }
+
+        //отмечаем продукт
+        addProduct(productInfo.origQuantity, typeDiscrepancies)
+    }
+
+    fun refusalToAcceptPartlyByProduct(typeDiscrepancies: String) {
+        //https://trello.com/c/vcymT9Kp
+        //отмечаем все не обработанные блоки/марки для продукта категорией для брака из параметра GRZ_GRUND_MARK
+        blocks.asSequence()
+                .filter { block ->
+                    block.materialNumber == productInfo.materialNumber
+                            && currentBlocksDiscrepancies.findLast { it.blockNumber == block.blockNumber } == null
+                }.map { blockInfo ->
+                    addBlocksDiscrepancies(
+                            blockInfo = blockInfo,
+                            typeDiscrepancies = typeDiscrepancies,
+                            isScan = false //передаем false, т.к. эта ф-ция (denialOfFullProductAcceptance) вызывается с экрана Обнаружены расхождения по клику на блок на вкладке Не обработаны
+                    )
+                    apply()
+                }
+
+        //отмечаем продукт
+        addProduct((productInfo.origQuantity.toDouble() - getCountAcceptOfProduct() - getCountRefusalOfProduct()).toString(), typeDiscrepancies)
     }
 
     fun modifications(): Boolean {

@@ -31,7 +31,8 @@ import javax.inject.Inject
 
 private const val SELECTED_PAGE_NOT_PROCESSED = 0
 private const val SELECTED_PAGE_CONTROL = 1
-private const val SELECTED_PAGE_PROCESSED = 2
+private const val PAGE_PROCESSED_WITHOUT_CONTROL = 1
+private const val PAGE_PROCESSED_WITH_CONTROL = 2
 
 class DiscrepancyListViewModel : CoreViewModel(), PageSelectionListener {
 
@@ -74,11 +75,17 @@ class DiscrepancyListViewModel : CoreViewModel(), PageSelectionListener {
         }.isNullOrEmpty() && taskManager.getReceivingTask()?.taskDescription?.isAlco == true)
     }
 
+    //https://trello.com/c/74l1kXcn
+    val isMark: MutableLiveData<Boolean> by lazy {
+        //проверяем, стоит ли признак isMark в задании (значит есть маркированные товары)
+        MutableLiveData(taskManager.getReceivingTask()?.taskDescription?.isMark == true)
+    }
+
     val visibilityCleanButton: MutableLiveData<Boolean> = selectedPage.map {
-        if (isAlco.value == false) {
-            it == 1
+        if (isAlco.value == true || isMark.value == true) {
+            it == PAGE_PROCESSED_WITH_CONTROL
         } else {
-            it == 2
+            it == PAGE_PROCESSED_WITHOUT_CONTROL
         }
     }
 
@@ -172,6 +179,7 @@ class DiscrepancyListViewModel : CoreViewModel(), PageSelectionListener {
                                                 productInfo = productInfo,
                                                 productDiscrepancies = null,
                                                 batchInfo = null,
+                                                visibilityCheckBoxControl = true,
                                                 checkBoxControl = false,
                                                 checkStampControl = false,
                                                 even = index % 2 == 0
@@ -209,6 +217,7 @@ class DiscrepancyListViewModel : CoreViewModel(), PageSelectionListener {
                                             productInfo = productInfo,
                                             productDiscrepancies = null,
                                             batchInfo = null,
+                                            visibilityCheckBoxControl = true,
                                             checkBoxControl = false,
                                             checkStampControl = false,
                                             even = index % 2 == 0
@@ -292,6 +301,7 @@ class DiscrepancyListViewModel : CoreViewModel(), PageSelectionListener {
                                                     productInfo = productInfo,
                                                     productDiscrepancies = productDiscrepancies,
                                                     batchInfo = null,
+                                                    visibilityCheckBoxControl = true,
                                                     checkBoxControl = false,
                                                     checkStampControl = false,
                                                     even = index % 2 == 0
@@ -314,6 +324,7 @@ class DiscrepancyListViewModel : CoreViewModel(), PageSelectionListener {
                                             productInfo = productInfo,
                                             productDiscrepancies = productDiscrepancies,
                                             batchInfo = null,
+                                            visibilityCheckBoxControl = true,
                                             checkBoxControl = false,
                                             checkStampControl = false,
                                             even = index % 2 == 0
@@ -333,23 +344,32 @@ class DiscrepancyListViewModel : CoreViewModel(), PageSelectionListener {
 
     private fun updateCountControl() {
         taskManager.getReceivingTask()?.let { task ->
-            countControl.postValue( //https://trello.com/c/9K1FZnUU, отображать перечень маркированных товаров, по которым не пройден хотя бы один из видов контроля
+            //https://trello.com/c/9K1FZnUU, отображать перечень товаров (марочного алкоголя), по которым не пройден хотя бы один из видов контроля
+            //https://trello.com/c/vcymT9Kp отображать перечень товаров (маркированный товар, сигареты, обувь), по которым не пройден хотя бы один из видов контроля (пока сделано только для одного режима)
+            countControl.postValue(
                     task.getProcessedProducts()
                             .filter { goodsInfo ->
-                                normEnteredButControlNotPassed(goodsInfo)
+                                if (goodsInfo.markType != MarkType.None) { //маркированный товар (сигареты, обувь)
+                                    markingProductControlNotPassed(goodsInfo)
+                                } else { //марочный алкоголь
+                                    normEnteredButControlNotPassed(goodsInfo)
+                                }
                             }
                             .sortedByDescending {
                                 it.materialNumber
                             }
                             .mapIndexed { index, productInfo ->
-                                val isControlBoxesOfProduct = taskManager
-                                        .getReceivingTask()
-                                        ?.controlBoxesOfProduct(productInfo)
-                                        ?: false
-                                val isControlExciseStampsOfProduct = taskManager
-                                        .getReceivingTask()
-                                        ?.controlExciseStampsOfProduct(productInfo)
-                                        ?: false
+                                val isControlBoxesOfProduct = if (productInfo.markType == MarkType.None) {
+                                    taskManager.getReceivingTask()?.controlBoxesOfProduct(productInfo) ?: false
+                                } else {
+                                    false
+                                }
+
+                                val isControlExciseStampsOfProduct = if (productInfo.markType == MarkType.None) {
+                                    taskManager.getReceivingTask()?.controlExciseStampsOfProduct(productInfo) ?: false
+                                } else {
+                                    false
+                                }
                                 GoodsDiscrepancyItem(
                                         number = index + 1,
                                         name = "${productInfo.getMaterialLastSix()} ${productInfo.description}",
@@ -362,6 +382,7 @@ class DiscrepancyListViewModel : CoreViewModel(), PageSelectionListener {
                                         productInfo = productInfo,
                                         productDiscrepancies = null,
                                         batchInfo = null,
+                                        visibilityCheckBoxControl = productInfo.markType == MarkType.None, //скрываем для маркированного товара, это пока реализовано для режима TASK_MARK не пустая, BSTME=ST и признак IS_USE_ALTERN_MEINS не установлен (режимы https://trello.com/c/NGsFfWgB), остальные режимы еще будут дорабатываться
                                         checkBoxControl = isControlBoxesOfProduct,
                                         checkStampControl = isControlExciseStampsOfProduct,
                                         even = index % 2 == 0)
@@ -379,44 +400,49 @@ class DiscrepancyListViewModel : CoreViewModel(), PageSelectionListener {
     }
 
     fun onClickItemPosition(position: Int) {
-        val selectedNotProcessedProduct = countNotProcessed
-                .value
-                ?.get(position)
-                ?.productInfo
-        val selectedMaterialNumber: String? = if (selectedPage.value == SELECTED_PAGE_NOT_PROCESSED) {
-            selectedNotProcessedProduct?.materialNumber
-        } else {
-            if ((isAlco.value == true && selectedPage.value == SELECTED_PAGE_PROCESSED)
-                    || (isAlco.value == false && selectedPage.value == SELECTED_PAGE_CONTROL)) {
-                countProcessed
-                        .value
-                        ?.get(position)
-                        ?.productInfo
-                        ?.materialNumber
-            } else {
-                countControl
-                        .value
-                        ?.get(position)
-                        ?.productInfo
-                        ?.materialNumber
-            }
-        }
+        val selectedNotProcessedProduct = countNotProcessed.value?.get(position)?.productInfo
+        val selectedMaterialNumber: String? =
+                if (selectedPage.value == SELECTED_PAGE_NOT_PROCESSED) {
+                    selectedNotProcessedProduct?.materialNumber
+                } else {
+                    if (((isAlco.value == true || isMark.value == true) && selectedPage.value == PAGE_PROCESSED_WITH_CONTROL)
+                            || ((isAlco.value == false && isMark.value == false) && selectedPage.value == PAGE_PROCESSED_WITHOUT_CONTROL)) {
+                        countProcessed.value
+                                ?.get(position)
+                                ?.productInfo
+                                ?.materialNumber
+                    } else {
+                        countControl.value
+                                ?.get(position)
+                                ?.productInfo
+                                ?.materialNumber
+                    }
+                }
 
-        val mode = repoInMemoryHolder
-                .taskList
-                .value
-                ?.taskListLoadingMode
+        val mode = repoInMemoryHolder.taskList.value?.taskListLoadingMode
+
+        //коробочный учет для ПРИЕМКИ https://trello.com/c/WeGFSdAW
         if (mode == TaskListLoadingMode.Receiving
                 && selectedNotProcessedProduct?.isBoxFl == true
-                && selectedPage.value == SELECTED_PAGE_NOT_PROCESSED) { //коробочный учет для ПРИЕМКИ https://trello.com/c/WeGFSdAW
+                && selectedPage.value == SELECTED_PAGE_NOT_PROCESSED) {
             screenNavigator.openExciseAlcoBoxProductFailureScreen(selectedNotProcessedProduct)
-        } else {
-            searchProductDelegate.searchCode(
-                    code = selectedMaterialNumber.orEmpty(),
-                    fromScan = false,
-                    isDiscrepancy = true
-            )
+            return
         }
+
+        //https://trello.com/c/vcymT9Kp маркированый товар ППП
+        if (mode == TaskListLoadingMode.Receiving
+                && selectedNotProcessedProduct?.markType != MarkType.None
+                && selectedPage.value == SELECTED_PAGE_NOT_PROCESSED
+                && selectedNotProcessedProduct != null) {
+            screenNavigator.openMarkingProductFailureScreen(selectedNotProcessedProduct)
+            return
+        }
+
+        searchProductDelegate.searchCode(
+                code = selectedMaterialNumber.orEmpty(),
+                fromScan = false,
+                isDiscrepancy = true
+        )
     }
 
     fun onClickClean() {
@@ -680,30 +706,30 @@ class DiscrepancyListViewModel : CoreViewModel(), PageSelectionListener {
         10 шт
         контроль 2 шт,
         а по факту мы ввели 1 норму (и подтвердили сканированием) и 9 брака то контроль считается пройден*/
-        val countAcceptOfProduct = taskManager
-                .getReceivingTask()
-                ?.taskRepository
-                ?.getProductsDiscrepancies()
-                ?.getCountAcceptOfProduct(productInfo)
-                ?: 0.0
-        val countRefusalOfProduct = taskManager
-                .getReceivingTask()
-                ?.taskRepository
-                ?.getProductsDiscrepancies()
-                ?.getCountRefusalOfProduct(productInfo)
-                ?: 0.0
-        val isControlBoxesOfProduct = taskManager
-                .getReceivingTask()
-                ?.controlBoxesOfProduct(productInfo)
-                ?: false
-        val isControlExciseStampsOfProduct = taskManager
-                .getReceivingTask()
-                ?.controlExciseStampsOfProduct(productInfo)
-                ?: false
-        val countBoxesPassedControlOfProduct = taskManager
-                .getReceivingTask()
-                ?.countBoxesPassedControlOfProduct(productInfo)
-                ?: 0
+        val countAcceptOfProduct =
+                taskManager.getReceivingTask()
+                        ?.taskRepository
+                        ?.getProductsDiscrepancies()
+                        ?.getCountAcceptOfProduct(productInfo)
+                        ?: 0.0
+        val countRefusalOfProduct =
+                taskManager.getReceivingTask()
+                        ?.taskRepository
+                        ?.getProductsDiscrepancies()
+                        ?.getCountRefusalOfProduct(productInfo)
+                        ?: 0.0
+        val isControlBoxesOfProduct =
+                taskManager.getReceivingTask()
+                        ?.controlBoxesOfProduct(productInfo)
+                        ?: false
+        val isControlExciseStampsOfProduct =
+                taskManager.getReceivingTask()
+                        ?.controlExciseStampsOfProduct(productInfo)
+                        ?: false
+        val countBoxesPassedControlOfProduct =
+                taskManager.getReceivingTask()
+                        ?.countBoxesPassedControlOfProduct(productInfo)
+                        ?: 0
 
         return if (countAcceptOfProduct <= 0 || (isControlExciseStampsOfProduct && isControlBoxesOfProduct)) {
             false
@@ -712,27 +738,50 @@ class DiscrepancyListViewModel : CoreViewModel(), PageSelectionListener {
         }
     }
 
+    private fun markingProductControlNotPassed(productInfo: TaskProductInfo): Boolean {
+        val countStampsScanned =
+                taskManager.getReceivingTask()
+                        ?.taskRepository
+                        ?.getBlocksDiscrepancies()
+                        ?.processedNumberOfStampsByProduct(productInfo)
+                        ?.toDouble()
+                        ?: 0.0
+        val numberStampsControl = productInfo.numberStampsControl.toDouble()
+        return countStampsScanned != numberStampsControl
+    }
+
     private fun getManufacturerName(batchInfo: TaskBatchInfo?): String {
-        return repoInMemoryHolder.manufacturers.value?.findLast { manufacture ->
-            manufacture.code == batchInfo?.egais
-        }?.name ?: ""
+        return repoInMemoryHolder.manufacturers.value
+                ?.findLast { manufacture ->
+                    manufacture.code == batchInfo?.egais
+                }
+                ?.name.orEmpty()
     }
 
     private fun getRefusalTotalCountWithUomBatch(batchInfo: TaskBatchInfo?, uom: Uom?): String {
         val refusalTotalCountBatch = batchInfo?.let {
             if (taskManager.getReceivingTask()?.taskHeader?.taskType == TaskType.RecalculationCargoUnit) {
-                taskManager.getReceivingTask()?.taskRepository?.getBatchesDiscrepancies()?.getCountRefusalOfBatchPGE(batchInfo)
+                taskManager.getReceivingTask()
+                        ?.taskRepository
+                        ?.getBatchesDiscrepancies()
+                        ?.getCountRefusalOfBatchPGE(batchInfo)
             } else {
-                taskManager.getReceivingTask()?.taskRepository?.getBatchesDiscrepancies()?.getCountRefusalOfBatch(batchInfo)
+                taskManager.getReceivingTask()
+                        ?.taskRepository
+                        ?.getBatchesDiscrepancies()
+                        ?.getCountRefusalOfBatch(batchInfo)
             }
         }
-        return "- ${refusalTotalCountBatch.toStringFormatted()} ${uom?.name}"
+        return "- ${refusalTotalCountBatch.toStringFormatted()} ${uom?.name.orEmpty()}"
     }
 
     private fun moveToProcessedPageIfNeeded() {
-        selectedPage.value = if (countNotProcessed.value?.size == 0) {
-            if (isAlco.value == true) 2 else 1
-        } else 0
+        selectedPage.value =
+                if (countNotProcessed.value?.size == 0) {
+                    if (isAlco.value == true || isMark.value == true) 2 else 1
+                } else {
+                    0
+                }
     }
 
 }

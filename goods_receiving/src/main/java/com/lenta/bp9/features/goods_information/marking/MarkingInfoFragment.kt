@@ -6,7 +6,6 @@ import android.view.View
 import android.widget.AdapterView
 import com.lenta.bp9.R
 import com.lenta.bp9.databinding.FragmentMarkingInfoBinding
-import com.lenta.bp9.features.goods_information.excise_alco_receiving.excise_alco_box_acc.ExciseAlcoBoxAccInfoFragment
 import com.lenta.bp9.model.task.TaskProductInfo
 import com.lenta.bp9.platform.extentions.getAppComponent
 import com.lenta.shared.platform.fragment.CoreFragment
@@ -32,7 +31,7 @@ class MarkingInfoFragment : CoreFragment<FragmentMarkingInfoBinding, MarkingInfo
     override fun getPageNumber(): String = PAGE_NUMBER
 
     override fun getViewModel(): MarkingInfoViewModel {
-        provideViewModel(MarkingInfoViewModel::class.java).let {vm ->
+        provideViewModel(MarkingInfoViewModel::class.java).let { vm ->
             getAppComponent()?.inject(vm)
             vm.productInfo.value = this.productInfo
             vm.productInfo.value?.let {
