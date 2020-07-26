@@ -35,6 +35,9 @@ class MarkingInfoFragment : CoreFragment<FragmentMarkingInfoBinding, MarkingInfo
         provideViewModel(MarkingInfoViewModel::class.java).let {vm ->
             getAppComponent()?.inject(vm)
             vm.productInfo.value = this.productInfo
+            vm.productInfo.value?.let {
+                vm.processMarkingProductService.initProduct(it)
+            }
             vm.isDiscrepancy.value = this.isDiscrepancy
             return vm
         }

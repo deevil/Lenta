@@ -222,11 +222,14 @@ class LoadingTaskCardViewModel : CoreLoadingViewModel() {
                 newTask?.updateTaskWithContents(taskContents.getTaskContentsInfo(result))
                 newTask?.taskRepository?.getSections()?.updateSections(sectionInfo, sectionProducts)
                 taskManager.setTask(newTask)
-                if (newTask?.taskDescription?.isMark == true)  { //https://trello.com/c/YL9D4v4t для маркированного товара
+
+                transferToNextScreen()
+                //todo
+                /**if (newTask?.taskDescription?.isMark == true)  { //https://trello.com/c/YL9D4v4t для маркированного товара
                     checkMarkingTask()
                 } else {
                     transferToNextScreen()
-                }
+                }*/
             }
         }
 

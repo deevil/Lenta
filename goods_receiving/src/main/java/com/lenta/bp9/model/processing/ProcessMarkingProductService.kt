@@ -22,6 +22,10 @@ class ProcessMarkingProductService
     private val currentBlocksDiscrepancies: ArrayList<TaskBlockDiscrepancies> = ArrayList()
     private val currentGtin: ArrayList<String> = ArrayList()
 
+    fun initProduct(productInfo: TaskProductInfo) {
+        this.productInfo = productInfo.copy()
+    }
+
     fun newProcessMarkingProductService(productInfo: TaskProductInfo) : ProcessMarkingProductService? {
         return if (productInfo.type == ProductType.General){
             this.productInfo = productInfo.copy()

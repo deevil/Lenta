@@ -222,6 +222,7 @@ class MarkingInfoViewModel : CoreViewModel(),
                         }
                     }
                 } else {
+                    checkStampControlVisibility.value = false
                     "" //это поле отображается только при выбранной категории "Норма"
                 }
             }
@@ -258,31 +259,35 @@ class MarkingInfoViewModel : CoreViewModel(),
                 val refusalTotalCountValue = it?.first?.first ?: 0.0
                 val spinQualitySelectedPositionValue = it?.first?.second ?: 0
                 val qualityInfoCode = qualityInfo.value?.get(spinQualitySelectedPositionValue)?.code.orEmpty()
-                if (qualityInfoCode.isNotEmpty() && qualityInfoCode != TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_NORM) {
-                    if (refusalTotalCountValue == 0.0 || refusalTotalCountValue == processMarkingProductService.getCountUntreatedBlock()) {
-                        checkBoxStampListVisibility.value = false
-                        context.getString(R.string.not_required)
-                    } else {
-                        checkBoxStampListVisibility.value = true
-                        "${processMarkingProductService.getCountUntreatedBlock().toStringFormatted()} ${context.getString(R.string.of)} ${refusalTotalCountValue.toStringFormatted()}"
-                    }
-                } else "" //это поле отображается только при выбранной категории брака
+                //проверяем productInfo т.к. он используется в processMarkingProductService.getCountUntreatedBlock() и если он null, тогда он неинициализирован в processMarkingProductService, и получим lateinit property productInfo has not been initialized
+                productInfo.value
+                        ?.let {
+                            if (qualityInfoCode != TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_NORM) {
+                                if (refusalTotalCountValue == 0.0 || refusalTotalCountValue == processMarkingProductService.getCountUntreatedBlock()) {
+                                    checkBoxStampListVisibility.value = false
+                                    context.getString(R.string.not_required)
+                                } else {
+                                    checkBoxStampListVisibility.value = true
+                                    "${processMarkingProductService.getCountUntreatedBlock().toStringFormatted()} ${context.getString(R.string.of)} ${refusalTotalCountValue.toStringFormatted()}"
+                                }
+                            } else {
+                                checkBoxStampListVisibility.value = false
+                                "" //это поле отображается только при выбранной категории брака
+                            }
+                        }.orEmpty()
+
             }
 
     val checkBoxStampList: MutableLiveData<Boolean> = checkBoxStampListVisibility.map {
-        val spinQualitySelectedPositionValue = spinQualitySelectedPosition.value ?: 0
-        val qualityInfoCode = qualityInfo.value?.get(spinQualitySelectedPositionValue)?.code.orEmpty()
-        if (qualityInfoCode.isNotEmpty()
-                && qualityInfoCode != TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_NORM
-                && checkBoxStampListVisibility.value == true) {
+        //проверяем productInfo т.к. он используется в processMarkingProductService.getCountUntreatedBlock() и если он null, тогда он неинициализирован в processMarkingProductService, и получим lateinit property productInfo has not been initialized
+        productInfo.value?.let {
             refusalTotalCount.value == processMarkingProductService.getCountUntreatedBlock()
-        } else {
-            false
-        }
+        } ?: false
+
     }
 
     val enabledApplyButton: MutableLiveData<Boolean> = checkStampControl.combineLatest(checkBoxStampList).map {
-        checkStampControl.value == true || checkBoxStampList.value == true
+        it?.first == true || it?.second == true
     }
 
     val enabledRollbackBtn: MutableLiveData<Boolean> = countBlockScanned.map {
@@ -309,8 +314,6 @@ class MarkingInfoViewModel : CoreViewModel(),
                         name = productInfo.value?.purchaseOrderUnits?.name.orEmpty()
                 )
             }
-
-
 
             tvAccept.value = if (isBlockMode.value == false) {
                 context.getString(R.string.accept_txt)
