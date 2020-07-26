@@ -13,23 +13,23 @@ import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.Observer
-import app_update.AppUpdateInstaller
 import com.lenta.shared.R
 import com.lenta.shared.analytics.AnalyticsHelper
 import com.lenta.shared.databinding.ActivityMainBinding
 import com.lenta.shared.di.FromParentToCoreProvider
+import com.lenta.shared.exception.Failure
 import com.lenta.shared.keys.KeyCode
 import com.lenta.shared.keys.OnKeyDownListener
 import com.lenta.shared.keys.OnKeyUpListener
-import com.lenta.shared.platform.network_state.NetworkStateMonitor
 import com.lenta.shared.platform.activity.CoreActivity
 import com.lenta.shared.platform.activity.ForegroundActivityProvider
 import com.lenta.shared.platform.activity.INumberScreenGenerator
 import com.lenta.shared.platform.activity.OnBackPresserListener
-import com.lenta.shared.platform.app_update.AppUpdateChecker
 import com.lenta.shared.platform.battery_state.BatteryStateMonitor
 import com.lenta.shared.platform.fragment.CoreFragment
 import com.lenta.shared.platform.navigation.FragmentStack
+import com.lenta.shared.platform.navigation.ICoreNavigator
+import com.lenta.shared.platform.network_state.NetworkStateMonitor
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListener
@@ -37,16 +37,17 @@ import com.lenta.shared.platform.toolbar.top_toolbar.ImageButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
 import com.lenta.shared.scan.IScanHelper
 import com.lenta.shared.scan.OnScanResultListener
-import com.lenta.shared.scan.honeywell.HoneywellScanHelper
-import com.lenta.shared.scan.newland.NewLandScanHelper
-import com.lenta.shared.utilities.Logg
-import javax.inject.Inject
-import com.lenta.shared.platform.navigation.ICoreNavigator
 import com.lenta.shared.scan.atol.AtolScanHelper
 import com.lenta.shared.scan.cipherlab.CipherLabScanHelper
+import com.lenta.shared.scan.honeywell.HoneywellScanHelper
+import com.lenta.shared.scan.newland.NewLandScanHelper
 import com.lenta.shared.scan.zebra.ZebraScanHelper
-import com.lenta.shared.utilities.extentions.*
+import com.lenta.shared.utilities.Logg
+import com.lenta.shared.utilities.extentions.getNotGrantedPermissions
 import com.lenta.shared.utilities.extentions.hhive.ANALYTICS_HELPER
+import com.lenta.shared.utilities.extentions.hideKeyboard
+import com.lenta.shared.utilities.extentions.implementationOf
+import javax.inject.Inject
 
 abstract class CoreMainActivity : CoreActivity<ActivityMainBinding>(), ToolbarButtonsClickListener, INumberScreenGenerator {
 
@@ -290,8 +291,8 @@ abstract class CoreMainActivity : CoreActivity<ActivityMainBinding>(), ToolbarBu
         vm.onNewEnter()
     }
 
-    fun showSimpleProgress(title: String) {
-        vm.showSimpleProgress(title)
+    fun showSimpleProgress(title: String, handleFailure: ((Failure) -> Unit)? = null) {
+        vm.showSimpleProgress(title, handleFailure)
     }
 
     fun hideProgress() {

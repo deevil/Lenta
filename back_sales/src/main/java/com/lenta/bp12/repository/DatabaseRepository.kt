@@ -1,8 +1,8 @@
 package com.lenta.bp12.repository
 
 import com.lenta.bp12.model.pojo.AlcoCodeInfo
-import com.lenta.bp12.model.pojo.TaskType
 import com.lenta.bp12.model.pojo.ReturnReason
+import com.lenta.bp12.model.pojo.TaskType
 import com.lenta.bp12.platform.extention.*
 import com.lenta.bp12.request.GoodInfoResult
 import com.lenta.bp12.request.pojo.GoodInfo
@@ -46,6 +46,7 @@ class DatabaseRepository @Inject constructor(
             products.getProductInfoByMaterial(material)?.let { goodInfo ->
                 GoodInfo(
                         ean = getEanByMaterialUnits(material, goodInfo.buom),
+                        allGoodEans = getEanListByMaterialUnits(material, goodInfo.buom),
                         material = material,
                         name = goodInfo.name,
                         kind = goodInfo.getGoodKind(),
@@ -56,15 +57,15 @@ class DatabaseRepository @Inject constructor(
         }
     }
 
-    override suspend fun getEanByMaterialUnits(material: String, unitsCode: String): String {
+    private suspend fun getEanByMaterialUnits(material: String, unitsCode: String): String {
         return withContext(Dispatchers.IO) {
             eanInfo.getEanInfoByMaterialUnits(material, unitsCode)?.toEanInfo()?.ean.orEmpty()
         }
     }
 
-    override suspend fun getNameByMaterial(material: String): String {
+    private suspend fun getEanListByMaterialUnits(material: String, unitsCode: String): List<String> {
         return withContext(Dispatchers.IO) {
-            products.getNameByMaterial(material).orEmpty()
+            eanInfo.getEanListByMaterialUnits(material, unitsCode)
         }
     }
 
@@ -115,18 +116,6 @@ class DatabaseRepository @Inject constructor(
     override suspend fun getTaskAttributes(taskType: String): Set<String> {
         return withContext(Dispatchers.IO) {
             allowed.getTaskAttributeList(taskType)
-        }
-    }
-
-    override suspend fun isGoodAllowed(gisControl: String, taskType: String, goodGroup: String?, purchaseGroup: String?): Boolean {
-        return withContext(Dispatchers.IO) {
-            allowed.isGoodAllowed(gisControl, taskType, goodGroup, purchaseGroup)
-        }
-    }
-
-    override suspend fun isGoodForbidden(gisControl: String, taskType: String, goodGroup: String?, purchaseGroup: String?): Boolean {
-        return withContext(Dispatchers.IO) {
-            forbidden.isGoodForbidden(gisControl, taskType, goodGroup, purchaseGroup)
         }
     }
 
@@ -189,8 +178,6 @@ class DatabaseRepository @Inject constructor(
 interface IDatabaseRepository {
 
     suspend fun getGoodInfoByMaterial(material: String): GoodInfo?
-    suspend fun getEanByMaterialUnits(material: String, unitsCode: String): String
-    suspend fun getNameByMaterial(material: String): String
     suspend fun getAllowedAppVersion(): String?
     suspend fun getUnitsByCode(code: String): Uom
     suspend fun getTaskTypeList(): List<TaskType>
@@ -198,8 +185,6 @@ interface IDatabaseRepository {
     suspend fun getStorageList(taskType: String): List<String>
     suspend fun getReturnReason(taskType: String, reasonCode: String): ReturnReason?
     suspend fun getReturnReasonList(taskType: String): List<ReturnReason>
-    suspend fun isGoodAllowed(gisControl: String, taskType: String, goodGroup: String?, purchaseGroup: String?): Boolean
-    suspend fun isGoodForbidden(gisControl: String, taskType: String, goodGroup: String?, purchaseGroup: String?): Boolean
     suspend fun getTaskAttributes(taskType: String): Set<String>
     suspend fun isGoodCanBeAdded(goodInfo: GoodInfoResult, taskType: String): Boolean
     suspend fun getProviderInfo(code: String): ProviderInfo?

@@ -1,7 +1,6 @@
 package com.lenta.bp9.repos
 
 import androidx.lifecycle.MutableLiveData
-import com.lenta.bp9.features.editing_invoice.EditingInvoiceItem
 import com.lenta.bp9.model.task.TaskList
 import com.lenta.bp9.model.task.TaskMarkingGoodsProperties
 import com.lenta.bp9.model.task.TaskProcessOrderDataInfo

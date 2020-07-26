@@ -1,7 +1,6 @@
 package com.lenta.bp7.features.other
 
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
 import com.lenta.bp7.data.CheckType
 import com.lenta.bp7.data.model.CheckData
 import com.lenta.bp7.platform.navigation.IScreenNavigator
@@ -12,7 +11,7 @@ import com.lenta.bp7.requests.network.SaveExternalAuditDataNetRequest
 import com.lenta.bp7.requests.network.SaveSelfControlDataNetRequest
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.platform.viewmodel.CoreViewModel
-import kotlinx.coroutines.launch
+import com.lenta.shared.utilities.extentions.launchUITryCatch
 import javax.inject.Inject
 
 abstract class SendDataViewModel : CoreViewModel() {
@@ -33,7 +32,7 @@ abstract class SendDataViewModel : CoreViewModel() {
     val terminalId: MutableLiveData<String> = MutableLiveData("")
 
     fun sendCheckResult() {
-        viewModelScope.launch {
+        launchUITryCatch {
             val saveCheckDataParams = SaveCheckDataParams(
                     shop = checkData.getFormattedMarketNumber(),
                     terminalId = terminalId.value.orEmpty(),

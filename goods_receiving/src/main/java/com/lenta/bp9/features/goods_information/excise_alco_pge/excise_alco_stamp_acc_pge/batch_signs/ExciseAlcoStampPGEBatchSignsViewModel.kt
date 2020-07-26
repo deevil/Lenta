@@ -3,14 +3,13 @@ package com.lenta.bp9.features.goods_information.excise_alco_pge.excise_alco_sta
 import android.annotation.SuppressLint
 import android.os.Bundle
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
 import com.lenta.bp9.platform.navigation.IScreenNavigator
 import com.lenta.bp9.repos.IRepoInMemoryHolder
 import com.lenta.shared.platform.time.ITimeMonitor
 import com.lenta.shared.platform.viewmodel.CoreViewModel
+import com.lenta.shared.utilities.extentions.launchUITryCatch
 import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.view.OnPositionClickListener
-import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import javax.inject.Inject
 
@@ -36,7 +35,7 @@ class ExciseAlcoStampPGEBatchSignsViewModel : CoreViewModel(), OnPositionClickLi
     }
 
     init {
-        viewModelScope.launch {
+        launchUITryCatch {
             manufacturersName.value = repoInMemoryHolder.manufacturers.value?.map {
                 it.name
             }

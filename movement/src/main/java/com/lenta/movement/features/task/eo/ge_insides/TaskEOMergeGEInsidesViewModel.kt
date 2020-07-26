@@ -4,7 +4,6 @@ import android.content.Context
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.liveData
 import androidx.lifecycle.switchMap
-import androidx.lifecycle.viewModelScope
 import com.lenta.movement.R
 import com.lenta.movement.exception.PersonnelNumberFailure
 import com.lenta.movement.features.main.box.ScanInfoHelper
@@ -13,7 +12,6 @@ import com.lenta.movement.models.ITaskManager
 import com.lenta.movement.models.SimpleListItem
 import com.lenta.movement.models.repositories.ICargoUnitRepository
 import com.lenta.movement.platform.IFormatter
-import com.lenta.movement.platform.extensions.unsafeLazy
 import com.lenta.movement.platform.navigation.IScreenNavigator
 import com.lenta.movement.requests.network.ConsolidationNetRequest
 import com.lenta.movement.requests.network.models.RestCargoUnit
@@ -26,9 +24,10 @@ import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.SelectionItemsHelper
 import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
 import com.lenta.shared.utilities.extentions.getDeviceIp
+import com.lenta.shared.utilities.extentions.launchUITryCatch
 import com.lenta.shared.utilities.extentions.map
+import com.lenta.shared.utilities.extentions.unsafeLazy
 import com.lenta.shared.utilities.orIfNull
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class TaskEOMergeGEInsidesViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
@@ -134,7 +133,7 @@ class TaskEOMergeGEInsidesViewModel : CoreViewModel(), OnOkInSoftKeyboardListene
     }
 
     private fun searchCode(code: String, fromScan: Boolean, isBarCode: Boolean? = null) {
-        viewModelScope.launch {
+        launchUITryCatch {
             scanInfoHelper.searchCode(code, fromScan, isBarCode) { productInfo ->
                 screenNavigator.openTaskGoodsInfoScreen(productInfo)
             }
@@ -152,7 +151,7 @@ class TaskEOMergeGEInsidesViewModel : CoreViewModel(), OnOkInSoftKeyboardListene
     }
 
     private fun consolidate(sendEOList: List<ConsolidationProcessingUnit>, sendGEList: List<RestCargoUnit>) {
-        viewModelScope.launch {
+        launchUITryCatch {
             screenNavigator.showProgress(consolidationNetRequest)
             val either = sessionInfo.personnelNumber?.let { personnelNumber ->
                 val params = ConsolidationParams(

@@ -5,6 +5,7 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import com.google.android.material.tabs.TabLayout
 import com.lenta.shared.R
+import com.lenta.shared.requests.combined.scan_info.ScanCodeInfo
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -40,4 +41,8 @@ fun getStringFromDate(date: Date, pattern: String): String {
 
 fun getFormattedDate(date: String, sourcePattern: String, targetPattern: String): String {
     return getStringFromDate(getDateFromString(date, sourcePattern), targetPattern)
+}
+
+fun isCommonFormatNumber(number: String): Boolean {
+    return ScanCodeInfo(number).isEnterCodeValid
 }

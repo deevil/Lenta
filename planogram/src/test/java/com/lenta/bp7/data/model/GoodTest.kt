@@ -1,9 +1,10 @@
 package com.lenta.bp7.data.model
 
 import com.lenta.shared.models.core.Uom
-import org.junit.jupiter.api.*
 import org.junit.jupiter.api.Assertions.assertAll
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.function.Executable
 
 internal class GoodTest {

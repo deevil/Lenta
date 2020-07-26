@@ -3,7 +3,6 @@ package com.lenta.bp9.features.goods_information.excise_alco_pge.excise_alco_box
 import android.os.Bundle
 import android.view.KeyEvent
 import android.view.View
-import android.widget.AdapterView
 import com.lenta.bp9.R
 import com.lenta.bp9.databinding.FragmentExciseAlcoBoxAccInfoPgeBinding
 import com.lenta.bp9.model.task.TaskProductInfo

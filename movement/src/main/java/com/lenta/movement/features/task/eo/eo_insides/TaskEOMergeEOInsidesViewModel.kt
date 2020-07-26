@@ -2,19 +2,24 @@ package com.lenta.movement.features.task.eo.eo_insides
 
 import android.content.Context
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.switchMap
 import com.lenta.movement.models.ITaskManager
 import com.lenta.movement.models.ProcessingUnit
 import com.lenta.movement.models.SimpleListItem
 import com.lenta.movement.models.repositories.ITaskBasketsRepository
 import com.lenta.movement.platform.IFormatter
-import com.lenta.movement.platform.extensions.unsafeLazy
 import com.lenta.movement.platform.navigation.IScreenNavigator
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
+import com.lenta.shared.utilities.extentions.asyncLiveData
 import com.lenta.shared.utilities.extentions.map
+import com.lenta.shared.utilities.extentions.unsafeLazy
 import com.lenta.shared.utilities.orIfNull
+import kotlinx.coroutines.suspendCancellableCoroutine
 import javax.inject.Inject
+import kotlin.coroutines.resume
+import kotlin.coroutines.suspendCoroutine
 
 class TaskEOMergeEOInsidesViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
 
@@ -39,20 +44,22 @@ class TaskEOMergeEOInsidesViewModel : CoreViewModel(), OnOkInSoftKeyboardListene
     val eo by unsafeLazy { MutableLiveData<ProcessingUnit>() }
 
     val goodsItemList by unsafeLazy {
-        eo.map { eo ->
-            eo?.let { eoValue ->
-                eoValue.goods?.mapIndexed { index, good ->
-                    val goodNumber = good.materialNumber
-                    val goodTitle = getGoodTitle(goodNumber)
-                    val orderUnits = getOrderUnits(good.orderUnits)
-                    val quantity = getQuantity(good.quantity)
-                    SimpleListItem(
-                            number = index + 1,
-                            title = goodTitle,
-                            subtitle = "",
-                            countWithUom = "$quantity $orderUnits",
-                            isClickable = false
-                    )
+        eo.switchMap { eo->
+            asyncLiveData<List<SimpleListItem>> {
+                eo?.let { eoValue ->
+                    eoValue.goods?.mapIndexed { index, good ->
+                        val goodNumber = good.materialNumber
+                        val goodTitle = getGoodTitle(goodNumber)
+                        val orderUnits = getOrderUnits(good.orderUnits)
+                        val quantity = getQuantity(good.quantity)
+                        SimpleListItem(
+                                number = index + 1,
+                                title = goodTitle,
+                                subtitle = "",
+                                countWithUom = "$quantity $orderUnits",
+                                isClickable = false
+                        )
+                    }
                 }
             }
         }
@@ -67,8 +74,10 @@ class TaskEOMergeEOInsidesViewModel : CoreViewModel(), OnOkInSoftKeyboardListene
         }.toString()
     }
 
-    private fun getGoodTitle(goodNumber: String?)
-            = "${getMaterialLastSix(goodNumber)} ${taskManager.getGoodName(goodNumber)}"
+    private suspend fun getGoodTitle(goodNumber: String?): String {
+        return "${getMaterialLastSix(goodNumber)} ${taskManager.getGoodName(goodNumber)}"
+    }
+
 
     private fun getMaterialLastSix(materialNumber: String?): String {
         return materialNumber?.let {

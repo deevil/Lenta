@@ -4,7 +4,6 @@ import android.widget.EditText
 import androidx.core.content.ContextCompat
 import androidx.databinding.BindingAdapter
 import com.lenta.bp12.R
-import com.lenta.shared.models.core.Uom
 
 @BindingAdapter("quantityTypeIcon")
 fun setQuantityTypeIcon(editText: EditText, differentUnits: Boolean) {

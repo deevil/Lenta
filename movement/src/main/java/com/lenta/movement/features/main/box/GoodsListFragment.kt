@@ -72,7 +72,7 @@ class GoodsListFragment : CoreFragment<FragmentGoodsListBinding, GoodsListViewMo
 
         binding?.rvConfig = initRecycleAdapterDataBinding(
                 layoutId = R.layout.layout_item_goods_list,
-                itemId = BR.vm,
+                itemId = BR.item,
                 onAdapterItemBind = { binding : LayoutItemGoodsListBinding , position ->
                     binding.tvCounter.tag = position
                     binding.tvCounter.setOnClickListener(onClickSelectionListener)
@@ -129,6 +129,6 @@ class GoodsListFragment : CoreFragment<FragmentGoodsListBinding, GoodsListViewMo
     }
 
     companion object {
-        private const val PAGE_NUMBER = "10/06"
+        private const val PAGE_NUMBER = "13/06"
     }
 }

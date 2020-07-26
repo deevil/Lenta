@@ -1,12 +1,11 @@
 package com.lenta.shared.features.printer_address
 
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
 import com.lenta.shared.platform.navigation.ICoreNavigator
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.settings.IAppSettings
+import com.lenta.shared.utilities.extentions.launchUITryCatch
 import com.lenta.shared.utilities.extentions.map
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class EnterPrinterAddressViewModel : CoreViewModel() {
@@ -23,7 +22,7 @@ class EnterPrinterAddressViewModel : CoreViewModel() {
     }
 
     init {
-        viewModelScope.launch {
+        launchUITryCatch {
             printerIpAddressField.value = appSettings.printerIpAddress
         }
     }

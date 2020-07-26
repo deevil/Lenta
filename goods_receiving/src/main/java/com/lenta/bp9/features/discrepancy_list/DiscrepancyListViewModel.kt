@@ -24,9 +24,9 @@ import com.lenta.shared.requests.combined.scan_info.pojo.QualityInfo
 import com.lenta.shared.utilities.SelectionItemsHelper
 import com.lenta.shared.utilities.databinding.PageSelectionListener
 import com.lenta.shared.utilities.extentions.getDeviceIp
+import com.lenta.shared.utilities.extentions.launchUITryCatch
 import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.utilities.extentions.toStringFormatted
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 private const val SELECTED_PAGE_NOT_PROCESSED = 0
@@ -102,7 +102,7 @@ class DiscrepancyListViewModel : CoreViewModel(), PageSelectionListener {
     }
 
     init {
-        viewModelScope.launch {
+        launchUITryCatch {
             searchProductDelegate.init(viewModelScope = this@DiscrepancyListViewModel::viewModelScope,
                     scanResultHandler = this@DiscrepancyListViewModel::handleProductSearchResult)
         }
@@ -113,8 +113,8 @@ class DiscrepancyListViewModel : CoreViewModel(), PageSelectionListener {
     }
 
     fun onResume() {
-        viewModelScope.launch {
-            screenNavigator.showProgressLoadingData()
+        launchUITryCatch {
+            screenNavigator.showProgressLoadingData(::handleFailure)
             if (taskManager.getReceivingTask()?.taskHeader?.taskType == TaskType.RecalculationCargoUnit) {
                 qualityInfo.value = dataBase.getQualityInfoPGE()
             } else {
@@ -232,7 +232,7 @@ class DiscrepancyListViewModel : CoreViewModel(), PageSelectionListener {
                 arrayNotCounted.reversed()
         )
 
-        viewModelScope.launch {
+        launchUITryCatch {
             moveToProcessedPageIfNeeded()
         }
     }
@@ -596,8 +596,8 @@ class DiscrepancyListViewModel : CoreViewModel(), PageSelectionListener {
     }
 
     fun onClickSave() {
-        viewModelScope.launch {
-            screenNavigator.showProgressLoadingData()
+        launchUITryCatch {
+            screenNavigator.showProgressLoadingData(::handleFailure)
             //очищаем таблицу ET_TASK_DIFF от не акцизного (партионного) алкоголя, т.к. для этих товаров необходимо передавать только данные из таблицы ET_PARTS_DIFF
             taskManager.getReceivingTask()
                     ?.taskRepository

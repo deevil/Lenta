@@ -8,7 +8,6 @@ import com.lenta.bp14.requests.EanParam
 import com.lenta.bp14.requests.MatNrParam
 import com.lenta.bp14.requests.ProductInfoNetRequest
 import com.lenta.bp14.requests.ProductInfoParams
-import com.lenta.bp14.requests.pojo.Place
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.functional.Either
 import com.lenta.shared.functional.map

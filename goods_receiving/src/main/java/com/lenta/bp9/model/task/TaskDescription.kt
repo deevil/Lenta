@@ -1,10 +1,6 @@
 package com.lenta.bp9.model.task
 
 import com.google.gson.annotations.SerializedName
-import com.lenta.shared.platform.constants.Constants
-import com.lenta.shared.utilities.date_time.DateTimeUtil
-import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
 
 //Таблица ES_TASK Структура карточки задания
 data class TaskDescription(val currentStatus: TaskStatus,   //Код текущего статуса (CUR_STAT)

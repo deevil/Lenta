@@ -1,7 +1,6 @@
 package com.lenta.bp16.features.external_supply_task_list
 
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
 import com.lenta.bp16.model.ITaskManager
 import com.lenta.bp16.model.Tabs
 import com.lenta.bp16.model.TaskStatus
@@ -18,11 +17,7 @@ import com.lenta.shared.exception.Failure
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
 import com.lenta.shared.utilities.databinding.PageSelectionListener
-import com.lenta.shared.utilities.extentions.combineLatest
-import com.lenta.shared.utilities.extentions.dropZeros
-import com.lenta.shared.utilities.extentions.isSapTrue
-import com.lenta.shared.utilities.extentions.map
-import kotlinx.coroutines.launch
+import com.lenta.shared.utilities.extentions.*
 import javax.inject.Inject
 
 class ExternalSupplyTaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyboardListener {
@@ -109,8 +104,8 @@ class ExternalSupplyTaskListViewModel : CoreViewModel(), PageSelectionListener, 
     }
 
     fun loadTaskList() {
-        viewModelScope.launch {
-            navigator.showProgressLoadingData()
+        launchUITryCatch {
+            navigator.showProgressLoadingData(::handleFailure)
 
             taskListNetRequest(
                     TaskListParams(
@@ -182,8 +177,8 @@ class ExternalSupplyTaskListViewModel : CoreViewModel(), PageSelectionListener, 
         if (task.isProcessed) {
             openTaskByType(task)
         } else {
-            viewModelScope.launch {
-                navigator.showProgressLoadingData()
+            launchUITryCatch {
+                navigator.showProgressLoadingData(::handleFailure)
                 taskInfoNetRequest(
                         TaskInfoParams(
                                 marketNumber = sessionInfo.market.orEmpty(),
@@ -194,7 +189,7 @@ class ExternalSupplyTaskListViewModel : CoreViewModel(), PageSelectionListener, 
                 ).also {
                     navigator.hideProgress()
                 }.either(::handleFailure) { taskInfoResult ->
-                    viewModelScope.launch {
+                    launchUITryCatch {
                         manager.addTaskInfoToCurrentTask(taskInfoResult)
                         openTaskByType(task)
                     }

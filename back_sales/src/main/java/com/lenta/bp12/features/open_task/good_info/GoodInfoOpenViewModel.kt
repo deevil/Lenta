@@ -1,7 +1,6 @@
 package com.lenta.bp12.features.open_task.good_info
 
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
 import com.lenta.bp12.model.*
 import com.lenta.bp12.model.pojo.Mark
 import com.lenta.bp12.model.pojo.Part
@@ -25,8 +24,8 @@ import com.lenta.shared.requests.combined.scan_info.ScanCodeInfo
 import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.extentions.*
 import com.lenta.shared.utilities.getDateFromString
+import com.lenta.shared.utilities.isCommonFormatNumber
 import com.lenta.shared.view.OnPositionClickListener
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class GoodInfoOpenViewModel : CoreViewModel() {
@@ -269,7 +268,7 @@ class GoodInfoOpenViewModel : CoreViewModel() {
      */
 
     init {
-        viewModelScope.launch {
+        launchUITryCatch {
             manager.clearCurrentGood()
             checkSearchNumber(manager.searchNumber)
         }
@@ -299,23 +298,28 @@ class GoodInfoOpenViewModel : CoreViewModel() {
     }
 
     private fun checkSearchNumber(number: String) {
-        number.length.let { length ->
-            Logg.d { "--> number length: $length" }
-            if (length >= Constants.SAP_6) {
-                when (length) {
-                    Constants.SAP_6 -> getGoodByMaterial(number)
-                    Constants.SAP_18 -> getGoodByMaterial(number)
-                    Constants.SAP_OR_BAR_12 -> {
-                        navigator.showTwelveCharactersEntered(
-                                sapCallback = { getGoodByMaterial(number) },
-                                barCallback = { getGoodByEan(number) }
-                        )
-                    }
-                    Constants.MARK_150 -> loadMarkInfo(number)
-                    Constants.MARK_68 -> loadMarkInfo(number)
-                    Constants.BOX_26 -> loadBoxInfo(number)
-                    else -> getGoodByEan(number)
+        val numberLength = number.length
+
+        Logg.d { "--> checked number = $numberLength / $number" }
+
+        if (isCommonFormatNumber(number)) {
+            when (numberLength) {
+                Constants.SAP_6 -> getGoodByMaterial(number)
+                Constants.SAP_18 -> getGoodByMaterial(number)
+                Constants.SAP_OR_BAR_12 -> {
+                    navigator.showTwelveCharactersEntered(
+                            sapCallback = { getGoodByMaterial(number) },
+                            barCallback = { getGoodByEan(number) }
+                    )
                 }
+                else -> getGoodByEan(number)
+            }
+        } else {
+            when (numberLength) {
+                Constants.MARK_150 -> loadMarkInfo(number)
+                Constants.MARK_68 -> loadMarkInfo(number)
+                Constants.BOX_26 -> loadBoxInfo(number)
+                else -> navigator.showIncorrectEanFormat()
             }
         }
     }
@@ -380,8 +384,8 @@ class GoodInfoOpenViewModel : CoreViewModel() {
             "At least one param must be not null - ean: $ean, material: $material"
         }
 
-        viewModelScope.launch {
-            navigator.showProgressLoadingData()
+        launchUITryCatch {
+            navigator.showProgressLoadingData(::handleFailure)
 
             goodInfoNetRequest(GoodInfoParams(
                     tkNumber = sessionInfo.market.orEmpty(),
@@ -397,7 +401,7 @@ class GoodInfoOpenViewModel : CoreViewModel() {
     }
 
     private fun handleLoadGoodInfoResult(result: GoodInfoResult, ean: String?, material: String?) {
-        viewModelScope.launch {
+        launchUITryCatch {
             if (manager.isGoodCorrespondToTask(result)) {
                 if (manager.isGoodCanBeAdded(result)) {
                     isEanLastScanned = ean != null
@@ -423,7 +427,7 @@ class GoodInfoOpenViewModel : CoreViewModel() {
     }
 
     private fun setGood(result: GoodInfoResult, searchNumber: String) {
-        viewModelScope.launch {
+        launchUITryCatch {
             with(result) {
                 good.value = GoodOpen(
                         ean = eanInfo.ean,
@@ -454,8 +458,8 @@ class GoodInfoOpenViewModel : CoreViewModel() {
     }
 
     private fun loadMarkInfo(number: String) {
-        viewModelScope.launch {
-            navigator.showProgressLoadingData()
+        launchUITryCatch {
+            navigator.showProgressLoadingData(::handleFailure)
 
             scanInfoNetRequest(ScanInfoParams(
                     tkNumber = sessionInfo.market.orEmpty(),
@@ -472,7 +476,7 @@ class GoodInfoOpenViewModel : CoreViewModel() {
     }
 
     private fun handleLoadMarkInfoResult(result: ScanInfoResult, number: String) {
-        viewModelScope.launch {
+        launchUITryCatch {
             result.status.let { status ->
                 when (status) {
                     MarkStatus.OK.code, MarkStatus.BAD.code -> addMarkInfo(number, result)
@@ -524,8 +528,8 @@ class GoodInfoOpenViewModel : CoreViewModel() {
     }
 
     private fun loadBoxInfo(number: String) {
-        viewModelScope.launch {
-            navigator.showProgressLoadingData()
+        launchUITryCatch {
+            navigator.showProgressLoadingData(::handleFailure)
 
             scanInfoNetRequest(ScanInfoParams(
                     tkNumber = sessionInfo.market.orEmpty(),
@@ -542,7 +546,7 @@ class GoodInfoOpenViewModel : CoreViewModel() {
     }
 
     private fun handleLoadBoxInfoResult(result: ScanInfoResult, number: String) {
-        viewModelScope.launch {
+        launchUITryCatch {
             when (result.status) {
                 BoxStatus.OK.code -> addBoxInfo(number, result)
                 else -> navigator.openAlertScreen(result.statusDescription)
@@ -569,7 +573,7 @@ class GoodInfoOpenViewModel : CoreViewModel() {
     }
 
     private suspend fun checkPart(): Either<Failure, ScanInfoResult> {
-        navigator.showProgressLoadingData()
+        navigator.showProgressLoadingData(::handleFailure)
 
         return scanInfoNetRequest(ScanInfoParams(
                 tkNumber = sessionInfo.market.orEmpty(),
@@ -581,6 +585,10 @@ class GoodInfoOpenViewModel : CoreViewModel() {
         )).also {
             navigator.hideProgress()
         }
+    }
+
+    private fun handleCheckPartFailure(failure: Failure) {
+        navigator.openAlertScreen(failure)
     }
 
     private fun getProducerCode(): String {
@@ -729,8 +737,8 @@ class GoodInfoOpenViewModel : CoreViewModel() {
     fun onClickApply() {
         when (screenStatus.value) {
             ScreenStatus.ALCOHOL, ScreenStatus.PART -> {
-                viewModelScope.launch {
-                    checkPart().either(::handleFailure) { result ->
+                launchUITryCatch {
+                    checkPart().either(::handleCheckPartFailure) { result ->
                         result.status.let { status ->
                             if (status == PartStatus.FOUND.code) {
                                 saveChangesAndExit()

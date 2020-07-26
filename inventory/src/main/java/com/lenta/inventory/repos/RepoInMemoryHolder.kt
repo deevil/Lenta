@@ -1,8 +1,8 @@
 package com.lenta.inventory.repos
 
 import androidx.lifecycle.MutableLiveData
-import com.lenta.shared.requests.PermissionsResult
 import com.lenta.inventory.requests.network.TasksListRestInfo
+import com.lenta.shared.requests.PermissionsResult
 
 class RepoInMemoryHolder : IRepoInMemoryHolder {
     override var permissions: PermissionsResult? = null

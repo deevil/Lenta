@@ -1,7 +1,6 @@
 package com.lenta.bp16.features.pack_good_list
 
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
 import com.lenta.bp16.model.ITaskManager
 import com.lenta.bp16.platform.navigation.IScreenNavigator
 import com.lenta.bp16.request.EndProcessingNetRequest
@@ -11,8 +10,8 @@ import com.lenta.bp16.request.UnblockTaskParams
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.extentions.dropZeros
+import com.lenta.shared.utilities.extentions.launchUITryCatch
 import com.lenta.shared.utilities.extentions.map
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class PackGoodListViewModel : CoreViewModel() {
@@ -62,7 +61,7 @@ class PackGoodListViewModel : CoreViewModel() {
     // -----------------------------
 
     init {
-        viewModelScope.launch {
+        launchUITryCatch {
             checkTaskForCorrectness()
         }
     }
@@ -99,7 +98,7 @@ class PackGoodListViewModel : CoreViewModel() {
     }
 
     fun onBackPressed() {
-        viewModelScope.launch {
+        launchUITryCatch {
             unblockTaskNetRequest(
                     UnblockTaskParams(
                             taskNumber = task.value!!.taskInfo.number,
@@ -113,8 +112,8 @@ class PackGoodListViewModel : CoreViewModel() {
 
     fun onClickComplete() {
         navigator.showConfirmNoRawItem(manager.taskType.abbreviation) {
-            viewModelScope.launch {
-                navigator.showProgressLoadingData()
+            launchUITryCatch {
+                navigator.showProgressLoadingData(::handleFailure)
 
                 endProcessingNetRequest(
                         EndProcessingParams(

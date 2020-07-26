@@ -2,7 +2,6 @@ package com.lenta.inventory.features.goods_information.excise_alco
 
 import android.os.Bundle
 import android.view.View
-import androidx.core.content.ContextCompat
 import com.lenta.inventory.R
 import com.lenta.inventory.databinding.FragmentExciseAlcoInfoBinding
 import com.lenta.inventory.models.task.TaskProductInfo

@@ -2,7 +2,6 @@ package com.lenta.bp9.features.input_outgoing_fillings
 
 import android.content.Context
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
 import com.lenta.bp9.features.loading.tasks.TaskCardMode
 import com.lenta.bp9.model.task.*
 import com.lenta.bp9.platform.navigation.IScreenNavigator
@@ -12,10 +11,8 @@ import com.lenta.bp9.requests.network.FixationDepartureReceptionDistrCenterResul
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.platform.viewmodel.CoreViewModel
-import com.lenta.shared.utilities.Logg
-import com.lenta.shared.utilities.databinding.Evenable
 import com.lenta.shared.utilities.extentions.getDeviceIp
-import kotlinx.coroutines.launch
+import com.lenta.shared.utilities.extentions.launchUITryCatch
 import javax.inject.Inject
 
 class InputOutgoingFillingsViewModel : CoreViewModel() {
@@ -44,7 +41,7 @@ class InputOutgoingFillingsViewModel : CoreViewModel() {
     }
 
     init {
-        viewModelScope.launch {
+        launchUITryCatch {
             val quantityOutgoingFillings = if (taskManager.getReceivingTask()?.taskHeader?.taskType == TaskType.ShipmentRC) {
                 3
             } else {
@@ -65,8 +62,8 @@ class InputOutgoingFillingsViewModel : CoreViewModel() {
     }
 
     fun onClickSave() {
-        viewModelScope.launch {
-            screenNavigator.showProgressLoadingData()
+        launchUITryCatch {
+            screenNavigator.showProgressLoadingData(::handleFailure)
             val params = FixationDepartureReceptionDistrCenterParameters(
                     taskNumber = taskManager.getReceivingTask()?.taskHeader?.taskNumber ?: "",
                     deviceIP = context.getDeviceIp(),

@@ -4,15 +4,16 @@ import androidx.lifecycle.MutableLiveData
 import com.lenta.bp12.model.IOpenTaskManager
 import com.lenta.bp12.platform.navigation.IScreenNavigator
 import com.lenta.shared.account.ISessionInfo
-import com.lenta.shared.platform.constants.Constants
 import com.lenta.shared.platform.device_info.DeviceInfo
 import com.lenta.shared.platform.viewmodel.CoreViewModel
+import com.lenta.shared.requests.combined.scan_info.ScanCodeInfo
 import com.lenta.shared.utilities.SelectionItemsHelper
 import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
 import com.lenta.shared.utilities.databinding.PageSelectionListener
 import com.lenta.shared.utilities.extentions.combineLatest
 import com.lenta.shared.utilities.extentions.dropZeros
 import com.lenta.shared.utilities.extentions.map
+import com.lenta.shared.utilities.isCommonFormatNumber
 import javax.inject.Inject
 
 class GoodListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyboardListener {
@@ -157,7 +158,8 @@ class GoodListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
         if (task.value?.isStrict == false) {
             openGoodInfoByNumber(number)
         } else {
-            if (isGoodExist(number)) {
+            val numberWithoutWeight = ScanCodeInfo(number).eanWithoutWeight
+            if (manager.isGoodExist(numberWithoutWeight)) {
                 openGoodInfoByNumber(number)
             } else {
                 numberField.value = ""
@@ -166,19 +168,15 @@ class GoodListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
         }
     }
 
-    private fun isGoodExist(number: String): Boolean {
-        return manager.findGoodByMaterial(number) ?: manager.findGoodByEan(number) != null
-    }
-
     private fun openGoodInfoByNumber(number: String) {
-        number.length.let { length ->
-            if (length >= Constants.SAP_6 && length != Constants.BOX_26 &&
-                    length != Constants.MARK_68 && length != Constants.MARK_150) {
-                manager.searchNumber = number
-                manager.searchGoodFromList = true
-                numberField.value = ""
-                navigator.openGoodInfoOpenScreen()
-            }
+        numberField.value = ""
+
+        if (isCommonFormatNumber(number)) {
+            manager.searchNumber = number
+            manager.searchGoodFromList = true
+            navigator.openGoodInfoOpenScreen()
+        } else {
+            navigator.showIncorrectEanFormat()
         }
     }
 

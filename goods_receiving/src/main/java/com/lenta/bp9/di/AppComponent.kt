@@ -1,7 +1,6 @@
 package com.lenta.bp9.di
 
 import com.lenta.bp9.ExceptionHandler
-import com.lenta.bp9.features.supply_results.SupplyResultsViewModel
 import com.lenta.bp9.features.auth.AuthViewModel
 import com.lenta.bp9.features.cargo_unit_card.CargoUnitCardViewModel
 import com.lenta.bp9.features.change_datetime.ChangeDateTimeViewModel
@@ -17,11 +16,11 @@ import com.lenta.bp9.features.goods_information.excise_alco_pge.excise_alco_box_
 import com.lenta.bp9.features.goods_information.excise_alco_pge.excise_alco_box_acc_pge.excise_alco_box_list.ExciseAlcoBoxListPGEViewModel
 import com.lenta.bp9.features.goods_information.excise_alco_pge.excise_alco_stamp_acc_pge.ExciseAlcoStampAccInfoPGEViewModel
 import com.lenta.bp9.features.goods_information.excise_alco_pge.excise_alco_stamp_acc_pge.batch_signs.ExciseAlcoStampPGEBatchSignsViewModel
-import com.lenta.bp9.features.goods_information.excise_alco_receiving.excise_alco_stamp_acc.ExciseAlcoStampAccInfoViewModel
 import com.lenta.bp9.features.goods_information.excise_alco_receiving.excise_alco_box_acc.ExciseAlcoBoxAccInfoViewModel
 import com.lenta.bp9.features.goods_information.excise_alco_receiving.excise_alco_box_acc.excise_alco_box_card.ExciseAlcoBoxCardViewModel
 import com.lenta.bp9.features.goods_information.excise_alco_receiving.excise_alco_box_acc.excise_alco_box_list.ExciseAlcoBoxListViewModel
 import com.lenta.bp9.features.goods_information.excise_alco_receiving.excise_alco_box_acc.excise_alco_box_product_failure.ExciseAlcoBoxProductFailureViewModel
+import com.lenta.bp9.features.goods_information.excise_alco_receiving.excise_alco_stamp_acc.ExciseAlcoStampAccInfoViewModel
 import com.lenta.bp9.features.goods_information.general.GoodsInfoViewModel
 import com.lenta.bp9.features.goods_information.general_opp.GoodsInfoShipmentPPViewModel
 import com.lenta.bp9.features.goods_information.marking.MarkingInfoViewModel
@@ -36,7 +35,6 @@ import com.lenta.bp9.features.goods_information.non_excise_sets_receiving.set_co
 import com.lenta.bp9.features.goods_list.GoodsListViewModel
 import com.lenta.bp9.features.input_outgoing_fillings.InputOutgoingFillingsViewModel
 import com.lenta.bp9.features.list_goods_transfer.ListGoodsTransferViewModel
-import com.lenta.bp9.features.task_list.TaskListViewModel
 import com.lenta.bp9.features.loading.fast.FastDataLoadingViewModel
 import com.lenta.bp9.features.loading.tasks.*
 import com.lenta.bp9.features.main_menu.MainMenuViewModel
@@ -53,12 +51,14 @@ import com.lenta.bp9.features.search_task.SearchTaskViewModel
 import com.lenta.bp9.features.select_market.SelectMarketViewModel
 import com.lenta.bp9.features.select_personnel_number.SelectPersonnelNumberViewModel
 import com.lenta.bp9.features.skip_recount.SkipRecountViewModel
+import com.lenta.bp9.features.supply_results.SupplyResultsViewModel
 import com.lenta.bp9.features.task_card.TaskCardViewModel
+import com.lenta.bp9.features.task_list.TaskListViewModel
 import com.lenta.bp9.features.transfer_goods_section.TransferGoodsSectionViewModel
 import com.lenta.bp9.features.transport_marriage.TransportMarriageViewModel
+import com.lenta.bp9.features.transport_marriage.cargo_unit.TransportMarriageCargoUnitViewModel
 import com.lenta.bp9.features.transport_marriage.goods_details.TransportMarriageGoodsDetailsViewModel
 import com.lenta.bp9.features.transport_marriage.goods_info.TransportMarriageGoodsInfoViewModel
-import com.lenta.bp9.features.transport_marriage.cargo_unit.TransportMarriageCargoUnitViewModel
 import com.lenta.bp9.features.transportation_number.TransportationNumberViewModel
 import com.lenta.bp9.main.MainActivity
 import com.lenta.bp9.main.MainViewModel

@@ -15,6 +15,8 @@
  */
 package com.lenta.shared.functional
 
+import com.lenta.shared.functional.Either.Left
+import com.lenta.shared.functional.Either.Right
 import com.lenta.shared.utilities.Logg
 
 /**

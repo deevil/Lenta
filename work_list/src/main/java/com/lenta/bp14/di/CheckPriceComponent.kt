@@ -6,10 +6,16 @@ import com.lenta.bp14.features.price_check.price_scanner.PriceScannerViewModel
 import com.lenta.bp14.models.check_price.CheckPriceTask
 import com.lenta.bp14.models.check_price.CheckPriceTaskDescription
 import com.lenta.bp14.models.check_price.ICheckPriceTask
-import com.lenta.bp14.models.check_price.repo.*
+import com.lenta.bp14.models.check_price.repo.ActualPriceRepo
+import com.lenta.bp14.models.check_price.repo.CheckPriceResultsRepo
+import com.lenta.bp14.models.check_price.repo.IActualPricesRepo
+import com.lenta.bp14.models.check_price.repo.ICheckPriceResultsRepo
 import com.lenta.bp14.requests.check_price.CheckPriceNetRequest
 import com.lenta.bp14.requests.check_price.ICheckPriceNetRequest
-import dagger.*
+import dagger.Binds
+import dagger.Component
+import dagger.Module
+import dagger.Provides
 import javax.inject.Scope
 
 @CheckPriceScope

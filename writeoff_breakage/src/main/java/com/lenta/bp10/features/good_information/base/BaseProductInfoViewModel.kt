@@ -17,11 +17,11 @@ import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.requests.combined.scan_info.ScanInfoResult
 import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.extentions.combineLatest
+import com.lenta.shared.utilities.extentions.launchUITryCatch
 import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.utilities.extentions.toStringFormatted
 import com.lenta.shared.view.OnPositionClickListener
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 abstract class BaseProductInfoViewModel : CoreViewModel(), OnPositionClickListener {
@@ -85,7 +85,7 @@ abstract class BaseProductInfoViewModel : CoreViewModel(), OnPositionClickListen
 
 
     init {
-        viewModelScope.launch {
+        launchUITryCatch {
 
             limitsChecker = LimitsChecker(
                     limit = goodInformationRepo.getLimit(getTaskDescription().taskType.code, productInfo.value!!.type),
@@ -182,7 +182,7 @@ abstract class BaseProductInfoViewModel : CoreViewModel(), OnPositionClickListen
     abstract fun onScanResult(data: String)
 
     fun initCount(it: Double) {
-        viewModelScope.launch {
+        launchUITryCatch {
             delay(100)
             count.postValue(it.toStringFormatted())
         }

@@ -1,9 +1,9 @@
 package com.lenta.bp10.requests.network
 
 import com.lenta.bp10.fmp.resources.fast.*
-import com.lenta.shared.fmp.resources.fast.ZmpUtz26V001
 import com.lenta.shared.fmp.resources.fast.ZmpUtz07V001
 import com.lenta.shared.fmp.resources.fast.ZmpUtz14V001
+import com.lenta.shared.fmp.resources.fast.ZmpUtz26V001
 import com.lenta.shared.fmp.resources.fast.ZmpUtz38V001
 import com.lenta.shared.fmp.resources.slow.ZfmpUtz48V001
 import com.lenta.shared.fmp.resources.slow.ZmpUtz25V001

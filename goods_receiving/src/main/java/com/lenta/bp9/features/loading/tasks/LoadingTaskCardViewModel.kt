@@ -2,7 +2,6 @@ package com.lenta.bp9.features.loading.tasks
 
 import android.content.Context
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
 import com.lenta.bp9.R
 import com.lenta.bp9.features.reject.RejectType
 import com.lenta.bp9.model.task.*
@@ -16,8 +15,8 @@ import com.lenta.shared.exception.Failure
 import com.lenta.shared.features.loading.CoreLoadingViewModel
 import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.extentions.getDeviceIp
+import com.lenta.shared.utilities.extentions.launchUITryCatch
 import com.mobrun.plugin.api.HyperHive
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class LoadingTaskCardViewModel : CoreLoadingViewModel() {
@@ -70,7 +69,7 @@ class LoadingTaskCardViewModel : CoreLoadingViewModel() {
     var loadFullData: Boolean = false
 
     init {
-        viewModelScope.launch {
+        launchUITryCatch {
             progress.value = true
             val params = TaskContentRequestParameters(mode = mode.TaskCardModeString,
                     deviceIP = context.getDeviceIp(),
@@ -171,7 +170,7 @@ class LoadingTaskCardViewModel : CoreLoadingViewModel() {
     private fun handleFullDataSuccess(result: TaskContentsRequestResult) {
         Logg.d { "Task card request result ${result}" }
         //screenNavigator.goBack()
-        viewModelScope.launch {
+        launchUITryCatch {
             repoInMemoryHolder.manufacturers.value = result.manufacturers
             repoInMemoryHolder.markingGoodsProperties.value = result.markingGoodsProperties.map { TaskMarkingGoodsProperties.from(it) }
             //todo закомичено, т.к. на проде этот фунционал пока не реализован repoInMemoryHolder.processOrderData.value = result.processOrderData.map { TaskProcessOrderDataInfo.from(it) }
@@ -236,7 +235,7 @@ class LoadingTaskCardViewModel : CoreLoadingViewModel() {
     private fun handleSuccessRDS(result: TaskContentsReceptionDistrCenterResult) {
         Logg.d { "handleSuccessRDS $result" }
         //screenNavigator.goBack()
-        viewModelScope.launch {
+        launchUITryCatch {
             repoInMemoryHolder.manufacturers.value = result.manufacturers
             repoInMemoryHolder.markingGoodsProperties.value = result.markingGoodsProperties.map { TaskMarkingGoodsProperties.from(it) }
             repoInMemoryHolder.sets.value = result.setsInfo.map { TaskSetsInfo.from(hyperHive, it) }
@@ -295,7 +294,7 @@ class LoadingTaskCardViewModel : CoreLoadingViewModel() {
     }
 
     private fun handleSuccessShipmentRC(result: ZmpUtzGrz43V001Result) {
-        viewModelScope.launch {
+        launchUITryCatch {
             val taskHeader = repoInMemoryHolder.taskList.value
                     ?.tasks
                     ?.findLast { it.taskNumber == taskNumber }

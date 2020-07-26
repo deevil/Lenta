@@ -1,8 +1,7 @@
 package com.lenta.bp9.model.repositories
 
-import com.lenta.bp9.model.task.TaskBoxInfo
-import com.lenta.bp9.model.task.TaskProductInfo
 import com.lenta.bp9.model.task.TaskExciseStampDiscrepancies
+import com.lenta.bp9.model.task.TaskProductInfo
 
 interface ITaskExciseStampDiscrepanciesRepository {
     fun getExciseStampDiscrepancies(): List<TaskExciseStampDiscrepancies>

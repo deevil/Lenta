@@ -1,7 +1,6 @@
 package com.lenta.bp9.features.loading.fast
 
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
 import app_update.AppUpdateInstaller
 import com.lenta.bp9.platform.navigation.IScreenNavigator
 import com.lenta.bp9.repos.IRepoInMemoryHolder
@@ -17,8 +16,8 @@ import com.lenta.shared.requests.network.ServerTime
 import com.lenta.shared.requests.network.ServerTimeRequest
 import com.lenta.shared.requests.network.ServerTimeRequestParam
 import com.lenta.shared.utilities.Logg
+import com.lenta.shared.utilities.extentions.launchUITryCatch
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
@@ -49,7 +48,7 @@ class FastDataLoadingViewModel : CoreLoadingViewModel() {
     override val sizeInMb: MutableLiveData<Float> = MutableLiveData()
 
     init {
-        viewModelScope.launch {
+        launchUITryCatch {
             progress.value = true
             withContext(Dispatchers.IO) {
                 repoInMemoryHolder.permissions?.markets?.find { it.number == sessionInfo.market }.let { market ->
@@ -76,7 +75,7 @@ class FastDataLoadingViewModel : CoreLoadingViewModel() {
     }
 
     private fun installUpdate(updateFileName: String) {
-        viewModelScope.launch {
+        launchUITryCatch {
             title.value = resourceManager.loadingNewAppVersion()
             progress.value = true
             withContext(Dispatchers.IO) {
@@ -89,7 +88,7 @@ class FastDataLoadingViewModel : CoreLoadingViewModel() {
     }
 
     private fun getServerTime() {
-        viewModelScope.launch {
+        launchUITryCatch {
             serverTimeRequest(ServerTimeRequestParam(sessionInfo.market
                     ?: "")).either(::handleFailure, ::handleSuccessServerTime)
         }
@@ -97,7 +96,7 @@ class FastDataLoadingViewModel : CoreLoadingViewModel() {
 
     private fun handleSuccessServerTime(serverTime: ServerTime) {
         timeMonitor.setServerTime(time = serverTime.time, date = serverTime.date)
-        viewModelScope.launch {
+        launchUITryCatch {
             fastResourcesNetRequest(null).either(::handleFailure, ::handleSuccess)
         }
     }

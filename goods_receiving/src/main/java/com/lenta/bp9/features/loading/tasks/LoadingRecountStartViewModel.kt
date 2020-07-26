@@ -2,10 +2,8 @@ package com.lenta.bp9.features.loading.tasks
 
 import android.content.Context
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
 import com.lenta.bp9.features.mercury_list_irrelevant.ZMP_UTZ_GRZ_11_V001
 import com.lenta.bp9.model.task.*
-import com.lenta.bp9.model.task.revise.InvoiceContentEntry
 import com.lenta.bp9.platform.navigation.IScreenNavigator
 import com.lenta.bp9.repos.IRepoInMemoryHolder
 import com.lenta.bp9.requests.network.DirectSupplierStartRecountNetRequest
@@ -15,8 +13,8 @@ import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.features.loading.CoreLoadingViewModel
 import com.lenta.shared.utilities.extentions.getDeviceIp
+import com.lenta.shared.utilities.extentions.launchUITryCatch
 import com.mobrun.plugin.api.HyperHive
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class LoadingRecountStartViewModel : CoreLoadingViewModel() {
@@ -52,7 +50,7 @@ class LoadingRecountStartViewModel : CoreLoadingViewModel() {
     }
 
     init {
-        viewModelScope.launch {
+        launchUITryCatch {
             progress.value = true
             taskManager.getReceivingTask()?.let { task ->
                 val params = DirectSupplierStartRecountParams(
@@ -76,7 +74,7 @@ class LoadingRecountStartViewModel : CoreLoadingViewModel() {
     }
 
     private fun handleSuccess(result: DirectSupplierStartRecountRestInfo) {
-        viewModelScope.launch {
+        launchUITryCatch {
             repoInMemoryHolder.manufacturers.value = result.manufacturers
             repoInMemoryHolder.markingGoodsProperties.value = result.markingGoodsProperties.map { TaskMarkingGoodsProperties.from(it) }
             //todo закомичено, т.к. на проде этот фунционал пока не реализован repoInMemoryHolder.processOrderData.value = result.processOrderData.map { TaskProcessOrderDataInfo.from( it) }

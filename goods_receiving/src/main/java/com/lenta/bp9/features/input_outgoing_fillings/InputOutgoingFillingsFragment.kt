@@ -15,7 +15,6 @@ import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
 import com.lenta.shared.utilities.databinding.DataBindingAdapter
 import com.lenta.shared.utilities.databinding.DataBindingRecyclerViewConfig
 import com.lenta.shared.utilities.extentions.provideViewModel
-import com.lenta.shared.utilities.state.state
 
 class InputOutgoingFillingsFragment : CoreFragment<FragmentInputOutgoingFillingsBinding, InputOutgoingFillingsViewModel>(), ToolbarButtonsClickListener {
 

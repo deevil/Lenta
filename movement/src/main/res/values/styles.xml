@@ -7,4 +7,12 @@
         <item name="colorAccent">@color/teal200</item>
     </style>
 
+    <style name="DisabledEditText">
+        <item name="android:textColor">@color/color_text_blue</item>
+        <item name="android:background">@drawable/disabled_border</item>
+        <item name="android:focusable">false</item>
+        <item name="android:clickable">false</item>
+        <item name="android:inputType">textNoSuggestions</item>
+    </style>
+
 </resources>

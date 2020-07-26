@@ -2,20 +2,22 @@ package com.lenta.movement.features.task.goods.info
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.switchMap
 import com.google.common.base.Optional
 import com.lenta.movement.models.Basket
 import com.lenta.movement.models.GoodsSignOfDivision
 import com.lenta.movement.models.ITaskManager
 import com.lenta.movement.models.ProductInfo
 import com.lenta.movement.models.repositories.ITaskBasketsRepository
-import com.lenta.movement.platform.extensions.unsafeLazy
 import com.lenta.movement.platform.navigation.IScreenNavigator
 import com.lenta.shared.models.core.Supplier
 import com.lenta.shared.models.core.Uom
 import com.lenta.shared.platform.viewmodel.CoreViewModel
-import com.lenta.shared.utilities.extentions.combineLatest
-import com.lenta.shared.utilities.extentions.mapSkipNulls
+import com.lenta.shared.utilities.Logg
+import com.lenta.shared.utilities.extentions.*
 import com.lenta.shared.view.OnPositionClickListener
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 class TaskGoodsInfoViewModel : CoreViewModel() {
@@ -33,14 +35,18 @@ class TaskGoodsInfoViewModel : CoreViewModel() {
 
     val quantityList = MutableLiveData<List<String>>()
 
-    val quantity = MutableLiveData("")
+    val quantity = MutableLiveData("0")
     val quantityUom = MutableLiveData(Uom.DEFAULT)
 
     private val supplierSelected = MutableLiveData(Optional.absent<Supplier>())
     val supplierListVisible by lazy {
-        val settings = taskManager.getTaskSettings()
-        MutableLiveData(productInfo.suppliers.size > 1 && settings.signsOfDiv.contains(GoodsSignOfDivision.LIF_NUMBER))
+        asyncLiveData<Boolean> {
+            val settings = taskManager.getTaskSettings()
+            val isSupplierListVisible = productInfo.suppliers.size > 1 && settings.signsOfDiv.contains(GoodsSignOfDivision.LIF_NUMBER)
+            emit(isSupplierListVisible)
+        }
     }
+
     val supplierList by unsafeLazy { MutableLiveData(productInfo.suppliers.map { it.name }) }
     val supplierSelectedListener = object : OnPositionClickListener {
         override fun onClickPosition(position: Int) {
@@ -49,9 +55,12 @@ class TaskGoodsInfoViewModel : CoreViewModel() {
         }
     }
 
-    val currentBasket: LiveData<Basket> by lazy {
-        supplierSelected.mapSkipNulls { selectedSupplier ->
-            taskBasketsRepository.getSuitableBasketOrCreate(productInfo, selectedSupplier.orNull())
+    val currentBasket: LiveData<Basket> by unsafeLazy {
+        supplierSelected.switchMap { selectedSupplier ->
+            asyncLiveData<Basket> {
+                val basket = taskBasketsRepository.getSuitableBasketOrCreate(productInfo, selectedSupplier.orNull())
+                emit(basket)
+            }
         }
     }
 
@@ -88,17 +97,24 @@ class TaskGoodsInfoViewModel : CoreViewModel() {
     }
 
     fun onApplyClick() {
-        taskBasketsRepository.addProduct(
-            product = productInfo,
-            supplier = supplierSelected.value?.orNull(),
-            count = quantity.value?.toIntOrNull() ?: 0
-        )
-
+        launchAsyncTryCatch {
+            addProductToRepository()
+        }
         screenNavigator.goBack()
         currentBasket.value?.let { basketValue ->
             screenNavigator.openTaskBasketScreen(basketValue.index)
         }
     }
+
+    private suspend fun addProductToRepository() =
+        withContext(Dispatchers.IO) {
+            taskBasketsRepository.addProduct(
+                    product = productInfo,
+                    supplier = supplierSelected.value?.orNull(),
+                    count = quantity.value?.toIntOrNull() ?: 0
+            )
+        }
+
 
     fun onDetailsClick() {
         screenNavigator.openTaskGoodsDetailsScreen(productInfo)
