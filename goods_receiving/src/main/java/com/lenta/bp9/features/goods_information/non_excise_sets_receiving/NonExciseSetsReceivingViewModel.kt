@@ -26,6 +26,7 @@ import com.lenta.shared.utilities.SelectionItemsHelper
 import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
 import com.lenta.shared.utilities.databinding.PageSelectionListener
 import com.lenta.shared.utilities.extentions.combineLatest
+import com.lenta.shared.utilities.extentions.launchUITryCatch
 import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.utilities.extentions.toStringFormatted
 import com.lenta.shared.view.OnPositionClickListener
@@ -190,7 +191,7 @@ class NonExciseSetsReceivingViewModel : CoreViewModel(),
     }
 
     init {
-        viewModelScope.launch {
+        launchUITryCatch {
             searchProductDelegate.init(viewModelScope = this@NonExciseSetsReceivingViewModel::viewModelScope,
                     scanResultHandler = this@NonExciseSetsReceivingViewModel::handleProductSearchResult)
 
@@ -217,7 +218,7 @@ class NonExciseSetsReceivingViewModel : CoreViewModel(),
                     screenNavigator.goBack()
                     screenNavigator.openAlertWrongProductType()
                 }
-                return@launch
+                return@launchUITryCatch
             }
 
             screenNavigator.goBack()

@@ -184,7 +184,7 @@ class ExciseAlcoBoxAccInfoPGEViewModel : CoreViewModel(), OnPositionClickListene
     private val scannedBoxNumber: MutableLiveData<String> = MutableLiveData("")
 
     init {
-        viewModelScope.launch {
+        launchUITryCatch {
             searchProductDelegate.init(viewModelScope = this@ExciseAlcoBoxAccInfoPGEViewModel::viewModelScope,
                     scanResultHandler = this@ExciseAlcoBoxAccInfoPGEViewModel::handleProductSearchResult)
 
@@ -197,7 +197,7 @@ class ExciseAlcoBoxAccInfoPGEViewModel : CoreViewModel(), OnPositionClickListene
             if (processExciseAlcoBoxAccPGEService.newProcessExciseAlcoBoxPGEService(productInfo.value!!) == null) {
                 screenNavigator.goBack()
                 screenNavigator.openAlertWrongProductType()
-                return@launch
+                return@launchUITryCatch
             }
 
             count.value = processExciseAlcoBoxAccPGEService.getInitialCount().toStringFormatted()

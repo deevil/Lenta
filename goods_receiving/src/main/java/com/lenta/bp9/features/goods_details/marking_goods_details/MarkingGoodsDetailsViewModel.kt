@@ -15,6 +15,7 @@ import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.requests.combined.scan_info.pojo.ReasonRejectionInfo
 import com.lenta.shared.utilities.SelectionItemsHelper
 import com.lenta.shared.utilities.databinding.PageSelectionListener
+import com.lenta.shared.utilities.extentions.launchUITryCatch
 import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.utilities.extentions.toStringFormatted
 import kotlinx.coroutines.launch
@@ -56,7 +57,7 @@ class MarkingGoodsDetailsViewModel : CoreViewModel(), PageSelectionListener {
     }
 
     init {
-        viewModelScope.launch {
+        launchUITryCatch {
             val qualityInfoForDiscrepancy =
                     dataBase.getQualityInfoForDiscrepancy()
                             ?.map {

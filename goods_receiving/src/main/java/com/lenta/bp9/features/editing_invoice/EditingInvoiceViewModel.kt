@@ -263,14 +263,14 @@ class EditingInvoiceViewModel : CoreViewModel(), PageSelectionListener, OnOkInSo
 
     private val isClickSave: MutableLiveData<Boolean> = MutableLiveData(false) //чтобы при нажатии на Save и если был по какому-то товару превышен лимит, то будет вызыван диалог и выход из Save, после вызова диалога и нажатия Да опять вызывается Save, но уже при этом данный товар будет помечен как разрешенный на превышение количества
     fun onClickSave() {
-        viewModelScope.launch {
+        launchUITryCatch {
             isClickSave.value = true
             repoInMemoryHolder.invoiceContents.value!!.map {invoice ->
                 listTotal.value?.findLast {item ->
                     item.invoiceContent.materialNumber == invoice.materialNumber
                 }?.let {
                     if (isShownDialog.value == true) { //если при нажатии на Save был по какому-то товару превышен лимит и открылся диалог, то выходим из Save, если на диалоге будет нажата кнопка Да, то Save опять будет вызыван и во второй раз уже пойдет сохранение
-                        return@launch
+                        return@launchUITryCatch
                     } else {
                         invoice.originalQuantity = it.quantity.toDouble()
                     }

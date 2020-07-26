@@ -377,7 +377,7 @@ class LoadingTaskCardViewModel : CoreLoadingViewModel() {
     }
 
     private fun checkMarkingTask() {
-        viewModelScope.launch {
+        launchUITryCatch {
             screenNavigator.showProgress(rejectRequest)
             val params = RejectRequestParameters(
                     deviceIP = context.getDeviceIp(),
@@ -394,7 +394,7 @@ class LoadingTaskCardViewModel : CoreLoadingViewModel() {
     }
 
     private fun handleSuccessReject(result: RejectRequestResult) {
-        viewModelScope.launch {
+        launchUITryCatch {
             if (result.retCode == 0) {
                 val paramGrzMarkRef = dataBase.getGrzMarkRef().orEmpty()
                 screenNavigator.openTaskListScreen()

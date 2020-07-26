@@ -25,6 +25,7 @@ import com.lenta.shared.utilities.databinding.Evenable
 import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
 import com.lenta.shared.utilities.databinding.PageSelectionListener
 import com.lenta.shared.utilities.extentions.combineLatest
+import com.lenta.shared.utilities.extentions.launchUITryCatch
 import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.utilities.extentions.toStringFormatted
 import com.lenta.shared.view.OnPositionClickListener
@@ -146,7 +147,7 @@ class NonExciseSetsPGEViewModel : CoreViewModel(),
     }
 
     init {
-        viewModelScope.launch {
+        launchUITryCatch {
             searchProductDelegate.init(viewModelScope = this@NonExciseSetsPGEViewModel::viewModelScope,
                     scanResultHandler = this@NonExciseSetsPGEViewModel::handleProductSearchResult)
 
@@ -206,7 +207,7 @@ class NonExciseSetsPGEViewModel : CoreViewModel(),
                     screenNavigator.goBack()
                     screenNavigator.openAlertWrongProductType()
                 }
-                return@launch
+                return@launchUITryCatch
             }
 
             screenNavigator.goBack()

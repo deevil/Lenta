@@ -233,7 +233,7 @@ class ExciseAlcoStampAccInfoPGEViewModel : CoreViewModel(), OnPositionClickListe
     private val formatterEN = SimpleDateFormat("yyyy-MM-dd")
 
     init {
-        viewModelScope.launch {
+        launchUITryCatch {
             searchProductDelegate.init(viewModelScope = this@ExciseAlcoStampAccInfoPGEViewModel::viewModelScope,
                     scanResultHandler = this@ExciseAlcoStampAccInfoPGEViewModel::handleProductSearchResult)
 
@@ -252,7 +252,7 @@ class ExciseAlcoStampAccInfoPGEViewModel : CoreViewModel(), OnPositionClickListe
             if (processExciseAlcoStampAccPGEService.newProcessExciseAlcoStampPGEService(productInfo.value!!) == null) {
                 screenNavigator.goBack()
                 screenNavigator.openAlertWrongProductType()
-                return@launch
+                return@launchUITryCatch
             }
 
             count.value = count.value //почему-то без этой строки не выводится в tvBoxControlVal Не требуется, если включить дебаггер, то все отрабатывается, а без дебаггера пришлось дописать эту строчку

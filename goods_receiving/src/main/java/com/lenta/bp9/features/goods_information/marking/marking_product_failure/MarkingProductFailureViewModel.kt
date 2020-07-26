@@ -10,6 +10,7 @@ import com.lenta.bp9.model.task.TaskProductInfo
 import com.lenta.bp9.platform.navigation.IScreenNavigator
 import com.lenta.bp9.repos.IDataBaseRepo
 import com.lenta.shared.platform.viewmodel.CoreViewModel
+import com.lenta.shared.utilities.extentions.launchUITryCatch
 import com.lenta.shared.utilities.extentions.toStringFormatted
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -74,7 +75,7 @@ class MarkingProductFailureViewModel : CoreViewModel() {
     private val paramGrzGrundMarkName: MutableLiveData<String> = MutableLiveData("")
 
     init {
-        viewModelScope.launch {
+        launchUITryCatch {
             paramGrzGrundMarkCode.value = dataBase.getGrzGrundMark().orEmpty()
             paramGrzGrundMarkName.value = dataBase.getGrzGrundMarkName(paramGrzGrundMarkCode.value.orEmpty()).orEmpty()
         }
