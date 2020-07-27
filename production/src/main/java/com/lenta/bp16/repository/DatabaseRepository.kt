@@ -1,10 +1,15 @@
 package com.lenta.bp16.repository
 
+import com.lenta.bp16.model.pojo.Good
+import com.lenta.bp16.model.pojo.GoodInfo
 import com.lenta.shared.fmp.resources.dao_ext.*
 import com.lenta.shared.fmp.resources.fast.ZmpUtz07V001
 import com.lenta.shared.fmp.resources.fast.ZmpUtz14V001
 import com.lenta.shared.fmp.resources.fast.ZmpUtz17V001
+import com.lenta.shared.fmp.resources.slow.ZfmpUtz48V001
+import com.lenta.shared.fmp.resources.slow.ZmpUtz25V001
 import com.lenta.shared.models.core.Uom
+import com.lenta.shared.requests.combined.scan_info.pojo.EanInfo
 import com.mobrun.plugin.api.HyperHive
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -18,6 +23,8 @@ class DatabaseRepository @Inject constructor(
     private val units: ZmpUtz07V001 by lazy { ZmpUtz07V001(hyperHive) } // Единицы измерения
     private val settings: ZmpUtz14V001 by lazy { ZmpUtz14V001(hyperHive) } // Настройки
     private val dictonary: ZmpUtz17V001 by lazy { ZmpUtz17V001(hyperHive) } // Справочник с наборами данных
+    private val barcodeInfo: ZmpUtz25V001 by lazy {ZmpUtz25V001(hyperHive)} // Информация о  штрихкоде
+    private val productInfo: ZfmpUtz48V001 by lazy { ZfmpUtz48V001(hyperHive) } // Информация о товаре
 
     override suspend fun getAllowedAppVersion(): String? {
         return withContext(Dispatchers.IO) {
@@ -103,6 +110,30 @@ class DatabaseRepository @Inject constructor(
         }
     }
 
+    override suspend fun getGoodByEan(ean: String): GoodInfo? {
+        return withContext(Dispatchers.IO){
+            getEanInfoByEan(ean)?.run {
+                val product = productInfo.getProductInfoByMaterial(this.materialNumber)
+                val unitName = units.getUnitName(product?.buom)
+                GoodInfo(
+                        ean = ean,
+                        material = this.materialNumber,
+                        matcode = product?.matcode.orEmpty(),
+                        name = product?.name.orEmpty(),
+                        uom = Uom(
+                                code = product?.buom.orEmpty(),
+                                name = unitName.orEmpty()))
+            }
+        }
+    }
+
+    override suspend fun getEanInfoByEan(ean: String): EanInfo? {
+        return withContext(Dispatchers.IO){
+            barcodeInfo.getEanInfo(ean)?.toEanInfo()
+        }
+    }
+
+
 }
 
 interface IDatabaseRepository {
@@ -118,5 +149,7 @@ interface IDatabaseRepository {
     suspend fun getDefectList(): List<DictElement>
     suspend fun getCategory(categoryCode: String): DictElement?
     suspend fun getDefect(defectCode: String): DictElement?
+    suspend fun getGoodByEan(ean: String): GoodInfo?
+    suspend fun getEanInfoByEan(ean: String): EanInfo?
 
 }

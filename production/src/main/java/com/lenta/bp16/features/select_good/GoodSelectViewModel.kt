@@ -13,13 +13,20 @@ class GoodSelectViewModel : CoreViewModel() {
 
     val deviceIp = MutableLiveData("")
 
+    val enteredEanField = MutableLiveData("")
+    val requestFocusEnteredEanField = MutableLiveData(true)
+
     fun onClickNext(){
         launchUITryCatch {
-            navigator.showProgressLoadingData(::handleFailure)
+
             //TODO Заполнить форму данными по запросу номера штрихкода
             /*Допустим, пока так, потом с появлением ТП пропишу логику*/
             navigator.openGoodInfoScreen()
         }
+    }
+
+    fun onClickMenu(){
+        /*Выход в главное меню*/
     }
 
 }

@@ -16,6 +16,11 @@ class GoodInfoViewModel : CoreViewModel() {
 
     val weightField = MutableLiveData("0")
 
+    val quantityField = MutableLiveData("")
+    val requestFocusQuantityField = MutableLiveData("")
+
+    val manufactureName: MutableLiveData<List<String>> = MutableLiveData()
+
     private val entered = weightField.map{
         it?.toDoubleOrNull() ?: 0.0
     }
@@ -26,7 +31,6 @@ class GoodInfoViewModel : CoreViewModel() {
 
     fun onClickComplete(){
         launchUITryCatch {
-            navigator.showProgressLoadingData(::handleFailure)
             //TODO показать сообщение
             navigator.goBack()
         }

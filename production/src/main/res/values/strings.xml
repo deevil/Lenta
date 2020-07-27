@@ -10,7 +10,7 @@
     <string name="good_list">Список товаров</string>
     <string name="pu_number">ЕО %1$s</string>
     <string name="good_card">Карточка товара</string>
-    <string name="good_search">Поиск товара</string>
+    <string name="good_select">Выбор товара</string>
     <string name="defect_detail">Детализация брака</string>
     <string name="pack_list">Список тар</string>
 

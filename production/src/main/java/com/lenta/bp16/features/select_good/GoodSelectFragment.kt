@@ -3,6 +3,7 @@ package com.lenta.bp16.features.select_good
 import android.view.View
 import com.lenta.bp16.R
 import com.lenta.bp16.databinding.FragmentGoodSelectBinding
+import com.lenta.bp16.platform.Constants
 import com.lenta.bp16.platform.extention.getAppComponent
 import com.lenta.shared.platform.fragment.CoreFragment
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
@@ -27,22 +28,23 @@ class GoodSelectFragment : CoreFragment<FragmentGoodSelectBinding, GoodSelectVie
     }
 
     override fun setupTopToolBar(topToolbarUiModel: TopToolbarUiModel) {
-        topToolbarUiModel.description.value = getString(R.string.good_search)
+        topToolbarUiModel.description.value = getString(R.string.good_select)
     }
 
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
         bottomToolbarUiModel.uiModelButton1.show(ButtonDecorationInfo.menu)
-        bottomToolbarUiModel.uiModelButton1.show(ButtonDecorationInfo.next)
+        bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.next)
     }
 
     override fun onToolbarButtonClick(view: View) {
         when(view.id){
+            R.id.b_1 -> vm.onClickMenu()
             R.id.b_5 -> vm.onClickNext()
         }
     }
 
     companion object{
-        const val SCREEN_NUMBER = com.lenta.bp16.platform.Constants.SELECT_GOODS_FRAGMENT
+        const val SCREEN_NUMBER = Constants.SELECT_GOODS_FRAGMENT
     }
 
 }
