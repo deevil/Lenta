@@ -98,12 +98,7 @@ class MarkingInfoViewModel : CoreViewModel(),
 
     val count: MutableLiveData<String> = MutableLiveData("0")
     private val countValue: MutableLiveData<Double> = count.map {
-        val nestingInOneBlock = productInfo.value?.nestingInOneBlock?.toDouble() ?: 0.0
-        if (isBlockMode.value == true) {
-            (it?.toDoubleOrNull() ?: 0.0) * nestingInOneBlock
-        } else {
-            it?.toDoubleOrNull() ?: 0.0
-        }
+        getCountAttachmentInBlock(it)
     }
 
     val visibilityImgUnit: MutableLiveData<Boolean> = MutableLiveData(true)
@@ -206,8 +201,15 @@ class MarkingInfoViewModel : CoreViewModel(),
             .map {
                 val acceptTotalCountVal = acceptTotalCount.value ?: 0.0
                 val countBlockScannedVal = countBlockScanned.value ?: 0
-                val qualityInfoCode = qualityInfo.value?.get(it?.second ?: 0)?.code.orEmpty()
-                val numberStampsControl = productInfo.value?.numberStampsControl?.toDouble() ?: 0.0
+                val spinQualitySelectedPositionVal = spinQualitySelectedPosition.value ?: 0
+                val qualityInfoCode = qualityInfo.value
+                        ?.get(spinQualitySelectedPositionVal)
+                        ?.code
+                        .orEmpty()
+                val numberStampsControl = productInfo.value
+                        ?.numberStampsControl
+                        ?.toDouble()
+                        ?: 0.0
                 if (qualityInfoCode == TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_NORM) {
                     if (numberStampsControl == 0.0 || acceptTotalCountVal <= 0.0) {
                         checkStampControlVisibility.value = false
@@ -251,23 +253,32 @@ class MarkingInfoViewModel : CoreViewModel(),
 
     val checkBoxStampListVisibility: MutableLiveData<Boolean> = MutableLiveData()
 
-    val tvStampListVal: MutableLiveData<String> = count
+    val tvStampListVal: MutableLiveData<String> = refusalTotalCount
             .combineLatest(spinQualitySelectedPosition)
             .combineLatest(countBlockScanned)
             .map {
-                val enteredCount = it?.first?.first?.toDoubleOrNull() ?: 0.0
-                val spinQualitySelectedPositionValue = it?.first?.second ?: 0
-                val qualityInfoCode = qualityInfo.value?.get(spinQualitySelectedPositionValue)?.code.orEmpty()
+                val enteredCount = count.value?.toDoubleOrNull() ?: 0.0
+                val refusalTotalCountVal = refusalTotalCount.value ?: 0.0
+                val spinQualitySelectedPositionValue = spinQualitySelectedPosition.value ?: 0
+                val qualityInfoCode =
+                        qualityInfo.value
+                                ?.get(spinQualitySelectedPositionValue)
+                                ?.code
+                                .orEmpty()
+                val productOrigQuantity = productInfo.value?.origQuantity
+                val unprocessedAmountOfProduct = getCountBlocksByAttachments(productOrigQuantity) - processMarkingProductService.getCountProcessedBlock()
                 //проверяем productInfo т.к. он используется в processMarkingProductService.getCountProcessedBlockForDiscrepancies() и если он null, тогда он неинициализирован в processMarkingProductService, и получим lateinit property productInfo has not been initialized
                 productInfo.value
                         ?.let {
                             if (qualityInfoCode != TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_NORM) {
-                                if (enteredCount == 0.0 || enteredCount == processMarkingProductService.getCountProcessedBlockForDiscrepancies(qualityInfoCode)) {
+                                if (unprocessedAmountOfProduct <= enteredCount || refusalTotalCountVal <= 0.0) {
                                     checkBoxStampListVisibility.value = false
                                     context.getString(R.string.not_required)
                                 } else {
                                     checkBoxStampListVisibility.value = true
-                                    "${processMarkingProductService.getCountProcessedBlockForDiscrepancies(qualityInfoCode).toStringFormatted()} ${context.getString(R.string.of)} ${count.value.orEmpty()}"
+                                    "${processMarkingProductService.getRefusalCountProcessedBlock().toStringFormatted()} " +
+                                            "${context.getString(R.string.of)} " +
+                                            getCountBlocksByAttachments(refusalTotalCountVal.toString()).toStringFormatted()
                                 }
                             } else {
                                 checkBoxStampListVisibility.value = false
@@ -279,11 +290,10 @@ class MarkingInfoViewModel : CoreViewModel(),
 
     val checkBoxStampList: MutableLiveData<Boolean> = checkBoxStampListVisibility.map {
         //проверяем productInfo т.к. он используется в processMarkingProductService.getCountProcessedBlockForDiscrepancies() и если он null, тогда он неинициализирован в processMarkingProductService, и получим lateinit property productInfo has not been initialized
-        productInfo.value?.let {
+        productInfo.value?.let { product ->
             val enteredCount = count.value?.toDoubleOrNull() ?: 0.0
-            val spinQualitySelectedPositionValue = spinQualitySelectedPosition.value ?: 0
-            val qualityInfoCode = qualityInfo.value?.get(spinQualitySelectedPositionValue)?.code.orEmpty()
-            enteredCount == processMarkingProductService.getCountProcessedBlockForDiscrepancies(qualityInfoCode)
+            val unprocessedAmountOfProduct = getCountBlocksByAttachments(product.origQuantity) - processMarkingProductService.getCountProcessedBlock()
+            unprocessedAmountOfProduct <= enteredCount
         } ?: false
 
     }
@@ -400,9 +410,11 @@ class MarkingInfoViewModel : CoreViewModel(),
     }
 
     fun onClickDetails() {
-        productInfo.value?.let {
+        //todo
+        /**productInfo.value?.let {
             screenNavigator.openMarkingGoodsDetailsScreen(it)
-        }
+        }*/
+        onScanResult("01046002660121422100000Ga.8005012345.938000.92NGkg+wRXz36kBFjpfwOub5DBIIpD2iS/DMYpZuuDLU0Y3pZt1z20/1ksr4004wfhDhRxu4dgUV4QN96Qtdih9g==")
     }
 
     fun onClickAdd(): Boolean {
@@ -435,20 +447,27 @@ class MarkingInfoViewModel : CoreViewModel(),
     }
 
     fun onClickApply() {
-        if (onClickAdd()) screenNavigator.goBack()
+        //todo if (onClickAdd()) screenNavigator.goBack()
+        onScanResult("04600266012142")
     }
 
     //https://trello.com/c/N6t51jru
     fun onScanResult(data: String) {
+        val enteredCount = count.value?.toDoubleOrNull() ?: 0.0
+        if (enteredCount <= 0.0) {
+            screenNavigator.openAlertMustEnterQuantityInfoGreenScreen()
+            return
+        }
+
         when (data.length) {
-            in 0..13, in 15..20 -> {
+            in 0..7, in 9..11, in 15..20 -> {
                 screenNavigator.openAlertInvalidBarcodeFormatScannedScreen()
             }
             in 21..40, 42, 43 -> {
                 screenNavigator.openAlertInvalidCodeScannedForCurrentModeScreen()
             }
-            14 -> {//GTIN
-                gtinScannedCheck(data)
+            8, in 12..14 -> {//GTIN
+                gtinScannedCheck(data.padStart(14, '0'))
             }
             else -> { //марка/блок. отсканировано 41, 44 или более 44 символов
                 if (barcodeCheck(data)) {
@@ -546,7 +565,7 @@ class MarkingInfoViewModel : CoreViewModel(),
                                     if (it.toDouble() > 0.0) {
                                         count.value = count.value?.toDouble()?.minus(1)?.toStringFormatted()
                                         //Количество нормы будет уменьшено
-                                        screenNavigator.openAlertAmountNormWillBeReduced()
+                                        screenNavigator.openAlertAmountNormWillBeReducedMarkingScreen()
                                     }
                                 }
                             }
@@ -590,7 +609,7 @@ class MarkingInfoViewModel : CoreViewModel(),
                         isScan = true
                 )
                 //обновляем кол-во отсканированных марок/блоков для отображения на экране в поле «Контроль марок»
-                countBlockScanned.value = countBlockScanned.value
+                countBlockScanned.value = countBlockScanned.value?.plus(1)
             }
         }
     }
@@ -672,13 +691,7 @@ class MarkingInfoViewModel : CoreViewModel(),
         val lastScannedGtin = processMarkingProductService.getLastScannedGtin().orEmpty()
         if (lastScannedGtin == gtinCode) {
             checkBoxGtinStampControl.value = true //аналитики сказали сначала поставить чекбокс, а потом снять
-            processMarkingProductService.addBlocksDiscrepancies(
-                    blockInfo = blockInfo,
-                    typeDiscrepancies = typeDiscrepancies,
-                    isScan = true
-            )
-            //обновляем кол-во отсканированных марок/блоков для отображения на экране в поле «Контроль марок»
-            countBlockScanned.value = countBlockScanned.value
+            addBlock(blockInfo, typeDiscrepancies)
             checkBoxGtinControl.value = false
             checkBoxGtinStampControl.value = false //аналитики сказали сначала поставить чекбокс, а потом снять
         } else {
@@ -708,6 +721,32 @@ class MarkingInfoViewModel : CoreViewModel(),
             } ?: emptyList()
             count.value = count.value
             screenNavigator.hideProgress()
+        }
+    }
+
+    private fun getCountAttachmentInBlock(count: String?) : Double {
+        val nestingInOneBlock =
+                productInfo.value
+                        ?.nestingInOneBlock
+                        ?.toDouble()
+                        ?: 0.0
+        return if (isBlockMode.value == true) {
+            (count?.toDoubleOrNull() ?: 0.0) * nestingInOneBlock
+        } else {
+            count?.toDoubleOrNull() ?: 0.0
+        }
+    }
+
+    private fun getCountBlocksByAttachments(count: String?) : Double {
+        val nestingInOneBlock =
+                productInfo.value
+                        ?.nestingInOneBlock
+                        ?.toDouble()
+                        ?: 0.0
+        return if (isBlockMode.value == true) {
+            (count?.toDoubleOrNull() ?: 0.0) / nestingInOneBlock
+        } else {
+            count?.toDoubleOrNull() ?: 0.0
         }
     }
 

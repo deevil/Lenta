@@ -1538,7 +1538,7 @@ class ScreenNavigator(
             getFragmentStack()?.push(AlertFragment.create(
                     message = context.getString(R.string.scanned_stamp_not_listed_in_current_delivery_return_supplier),
                     codeConfirmForLeft = backFragmentResultHelper.setFuncForResult(backCallbackFunc),
-                    iconRes = R.drawable.ic_info_pink_80dp,
+                    iconRes = R.drawable.ic_warning_red_80dp,
                     textColor = ContextCompat.getColor(context, R.color.color_text_dialogWarning),
                     pageNumber = PAGE_NUMBER_97,
                     leftButtonDecorationInfo = ButtonDecorationInfo.back)
@@ -1622,6 +1622,27 @@ class ScreenNavigator(
                     rightButtonDecorationInfo = ButtonDecorationInfo.next,
                     pageNumber = PAGE_NUMBER_94)
             )
+        }
+    }
+
+    override fun openAlertMustEnterQuantityInfoGreenScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    message = context.getString(R.string.must_enter_quantity),
+                    iconRes = R.drawable.ic_info_green_80dp,
+                    pageNumber = PAGE_NUMBER_96,
+                    timeAutoExitInMillis = 3000)
+            )
+        }
+    }
+
+    override fun openAlertAmountNormWillBeReducedMarkingScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    message = context.getString(R.string.amount_of_norm_will_be_reduced),
+                    iconRes = R.drawable.ic_info_green_80dp,
+                    pageNumber = PAGE_NUMBER_97,
+                    timeAutoExitInMillis = 3000))
         }
     }
 
@@ -1809,4 +1830,6 @@ interface IScreenNavigator : ICoreNavigator {
     fun openMarkingProductFailureScreen(productInfo: TaskProductInfo)
     fun openCompleteRejectionOfMarkingGoodsDialog(nextCallbackFunc: () -> Unit, title: String, countBlocks: String, paramGrzGrundMarkName: String)
     fun openPartialRefusalOnMarkingGoodsDialog(nextCallbackFunc: () -> Unit, title: String, countScanBlocks: String, unconfirmedQuantity: String, paramGrzGrundMarkName: String)
+    fun openAlertMustEnterQuantityInfoGreenScreen()
+    fun openAlertAmountNormWillBeReducedMarkingScreen()
 }
