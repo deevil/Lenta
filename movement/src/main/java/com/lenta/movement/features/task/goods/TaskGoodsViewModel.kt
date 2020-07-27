@@ -130,12 +130,7 @@ class TaskGoodsViewModel : CoreViewModel(),
 
     override fun onOkInSoftKeyboard(): Boolean {
         searchCode(eanCode.value.orEmpty(), fromScan = false)
-
         return true
-    }
-
-    fun onScanResult(data: String) {
-        searchCode(code = data, fromScan = true, isBarCode = true)
     }
 
     fun onDigitPressed(digit: Int) {
@@ -266,6 +261,10 @@ class TaskGoodsViewModel : CoreViewModel(),
 
             screenNavigator.hideProgress()
         }
+    }
+
+    fun onScanResult(data: String) {
+        searchCode(code = data, fromScan = true, isBarCode = true)
     }
 
     private fun searchCode(code: String, fromScan: Boolean, isBarCode: Boolean? = null) {

@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.switchMap
 import com.google.common.base.Optional
+import com.lenta.movement.features.main.box.ScanInfoHelper
 import com.lenta.movement.models.Basket
 import com.lenta.movement.models.GoodsSignOfDivision
 import com.lenta.movement.models.ITaskManager
@@ -13,14 +14,16 @@ import com.lenta.movement.platform.navigation.IScreenNavigator
 import com.lenta.shared.models.core.Supplier
 import com.lenta.shared.models.core.Uom
 import com.lenta.shared.platform.viewmodel.CoreViewModel
+import com.lenta.shared.scan.mobilbase.BarcodeDeclaration
 import com.lenta.shared.utilities.Logg
+import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
 import com.lenta.shared.utilities.extentions.*
 import com.lenta.shared.view.OnPositionClickListener
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
-class TaskGoodsInfoViewModel : CoreViewModel() {
+class TaskGoodsInfoViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
 
     @Inject
     lateinit var screenNavigator: IScreenNavigator
@@ -32,6 +35,9 @@ class TaskGoodsInfoViewModel : CoreViewModel() {
     lateinit var taskBasketsRepository: ITaskBasketsRepository
 
     lateinit var productInfo: ProductInfo
+
+    @Inject
+    lateinit var scanInfoHelper: ScanInfoHelper
 
     val quantityList = MutableLiveData<List<String>>()
 
@@ -115,8 +121,38 @@ class TaskGoodsInfoViewModel : CoreViewModel() {
             )
         }
 
-
     fun onDetailsClick() {
         screenNavigator.openTaskGoodsDetailsScreen(productInfo)
+    }
+
+    fun onScanResult(data: String) {
+        applyEnabled.value?.let { isApplyEnabled ->
+            if (isApplyEnabled) {
+                launchAsyncTryCatch {
+                    addProductToRepository()
+                }
+                searchCode(data)
+            }
+        }
+    }
+
+    private fun searchCode(code: String) {
+        launchUITryCatch {
+            scanInfoHelper.searchCode(code, fromScan = true, isBarCode = true) {
+                with(screenNavigator) {
+                    goBack()
+                    openTaskGoodsInfoScreen(it)
+                }
+            }
+        }
+    }
+
+    override fun onOkInSoftKeyboard(): Boolean {
+        applyEnabled.value?.let { isApplyEnabled ->
+            if (isApplyEnabled) {
+                onApplyClick()
+            }
+        }
+        return true
     }
 }
