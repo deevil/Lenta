@@ -538,7 +538,7 @@ class MarkingInfoViewModel : CoreViewModel(),
         val blockInfo = processMarkingProductService.searchBlock(stampCode)
 
         if (processMarkingProductService.blockIsAlreadyProcessed(stampCode)) {
-            screenNavigator.openAlertScannedStampIsAlreadyProcessedScreen() //АМ уже обработана
+            screenNavigator.openAlertScannedStampIsAlreadyProcessedAlternativeScreen() //АМ уже обработана
             return
         }
 

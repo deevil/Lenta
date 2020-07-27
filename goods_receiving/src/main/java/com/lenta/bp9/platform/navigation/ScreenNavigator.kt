@@ -1646,6 +1646,17 @@ class ScreenNavigator(
         }
     }
 
+    override fun openAlertScannedStampIsAlreadyProcessedAlternativeScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    message = context.getString(R.string.scanned_stamp_is_already_processed_alternative),
+                    iconRes = R.drawable.ic_warning_red_80dp,
+                    textColor = ContextCompat.getColor(context, R.color.color_text_dialogWarning),
+                    pageNumber = PAGE_NUMBER_97)
+            )
+        }
+    }
+
     private fun getFragmentStack() = foregroundActivityProvider.getActivity()?.fragmentStack
 }
 
@@ -1832,4 +1843,5 @@ interface IScreenNavigator : ICoreNavigator {
     fun openPartialRefusalOnMarkingGoodsDialog(nextCallbackFunc: () -> Unit, title: String, countScanBlocks: String, unconfirmedQuantity: String, paramGrzGrundMarkName: String)
     fun openAlertMustEnterQuantityInfoGreenScreen()
     fun openAlertAmountNormWillBeReducedMarkingScreen()
+    fun openAlertScannedStampIsAlreadyProcessedAlternativeScreen()
 }
