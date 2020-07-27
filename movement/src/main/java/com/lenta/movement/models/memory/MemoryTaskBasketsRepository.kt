@@ -21,8 +21,8 @@ class MemoryTaskBasketsRepository(
 
     private val basketList = mutableListOf<Basket>()
 
-    override fun getBasketByIndex(basketIndex: Int): Basket {
-        return basketList[basketIndex]
+    override fun getBasketByIndex(basketIndex: Int): Basket? {
+        return basketList.getOrNull(basketIndex)
     }
 
     override fun getAll(): List<Basket> {

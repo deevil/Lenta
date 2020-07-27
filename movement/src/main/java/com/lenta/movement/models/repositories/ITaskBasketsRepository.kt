@@ -6,7 +6,7 @@ import com.lenta.shared.models.core.Supplier
 
 interface ITaskBasketsRepository {
 
-    fun getBasketByIndex(basketIndex: Int): Basket
+    fun getBasketByIndex(basketIndex: Int): Basket?
 
     fun getAll(): List<Basket>
 
