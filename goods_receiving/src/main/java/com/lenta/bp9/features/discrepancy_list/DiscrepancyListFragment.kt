@@ -236,14 +236,14 @@ class DiscrepancyListFragment : CoreFragment<FragmentDiscrepancyListBinding, Dis
     override fun getTextTitle(position: Int): String {
         return if (vm.isAlco.value == true || vm.isMark.value == true) {
             when (position) {
-                0 -> getString(R.string.not_processed)
+                0 -> getString(R.string.to_processing)
                 1 -> getString(R.string.control)
                 2 -> getString(R.string.processed)
                 else -> ""
             }
         } else {
             when (position) {
-                0 -> getString(R.string.not_processed)
+                0 -> getString(R.string.to_processing)
                 1 -> getString(R.string.processed)
                 else -> ""
             }

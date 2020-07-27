@@ -739,6 +739,13 @@ class DiscrepancyListViewModel : CoreViewModel(), PageSelectionListener {
     }
 
     private fun markingProductControlNotPassed(productInfo: TaskProductInfo): Boolean {
+        val isProcessedProduct =
+                taskManager.getReceivingTask()
+                        ?.taskRepository
+                        ?.getProductsDiscrepancies()
+                        ?.findProductDiscrepanciesOfProduct(productInfo)
+                        ?.isNotEmpty()
+                        ?: false
         val countStampsScanned =
                 taskManager.getReceivingTask()
                         ?.taskRepository
@@ -747,7 +754,7 @@ class DiscrepancyListViewModel : CoreViewModel(), PageSelectionListener {
                         ?.toDouble()
                         ?: 0.0
         val numberStampsControl = productInfo.numberStampsControl.toDouble()
-        return countStampsScanned != numberStampsControl
+        return isProcessedProduct && countStampsScanned != numberStampsControl
     }
 
     private fun getManufacturerName(batchInfo: TaskBatchInfo?): String {
