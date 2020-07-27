@@ -54,8 +54,8 @@ class GoodInfoFragment : CoreFragment<FragmentGoodInfoBinding, GoodInfoViewModel
         private const val KEY_MATERIAL = "KEY_MATERIAL"
         private const val KEY_EAN = "KEY_EAN"
 
-        fun newInstance(material: String, ean: String) = GoodInfoFragment.apply {
-            arguments = bundleOf(KEY_MATERIAL to material, KEY_EAN to ean)
+        fun newInstance(material: String?, ean: String?) = GoodInfoFragment.apply {
+            //arguments = bundleOf(KEY_MATERIAL to material, KEY_EAN to ean)
         }
     }
 
