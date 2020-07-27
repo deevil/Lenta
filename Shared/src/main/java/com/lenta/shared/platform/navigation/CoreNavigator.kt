@@ -485,6 +485,14 @@ class CoreNavigator @Inject constructor(
         }
     }
 
+    override fun openExceptionsShelfLifeScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(message = iconDescriptionHelper.getDescription(IconCode.EXCEPTIONS_SHELF_LIFE)
+                    ?: context.getString(R.string.exceptions_shelf_life),
+                    iconRes = R.drawable.ic_exceptions_shelf_life_48dp), CustomAnimation.vertical)
+        }
+    }
+
 }
 
 fun ICoreNavigator.runOrPostpone(function: () -> Unit) {
@@ -549,6 +557,7 @@ interface ICoreNavigator {
     fun showAlertBlockedTaskByMe(userName: String, yesCallback: () -> Unit)
     fun openGS128InfoScreen()
     fun openUpdateAppScreen()
+    fun openExceptionsShelfLifeScreen()
 }
 
 class FunctionsCollector(private val needCollectLiveData: LiveData<Boolean>) {
