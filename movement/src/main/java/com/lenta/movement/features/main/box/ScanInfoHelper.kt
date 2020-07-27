@@ -5,7 +5,9 @@ import com.lenta.movement.platform.navigation.IScreenNavigator
 import com.lenta.movement.requests.network.ScanInfoNetRequest
 import com.lenta.movement.requests.network.ScanInfoParams
 import com.lenta.shared.account.ISessionInfo
+import com.lenta.shared.platform.constants.Constants.SAP_OR_BAR_12
 import com.lenta.shared.requests.combined.scan_info.ScanCodeInfo
+import com.lenta.shared.utilities.orIfNull
 import kotlinx.coroutines.CompletableDeferred
 import javax.inject.Inject
 
@@ -39,15 +41,11 @@ class ScanInfoHelper @Inject constructor(
         isBarCode: Boolean? = null,
         onResult: ((ProductInfo) -> Unit)? = null
     ) {
-        val codeType = if (isBarCode == null && code.length == 12) {
-            selectCodeType()
-        } else if (isBarCode == true) {
-            CodeType.BAR
-        } else {
-            CodeType.SAP
-        }
-
-        if (codeType == null) return
+        val codeType = when {
+        (isBarCode == null && code.length == SAP_OR_BAR_12) -> selectCodeType()
+        (isBarCode == true) -> CodeType.BAR
+        else -> CodeType.SAP
+    }.orIfNull { return }
 
         val number = when (codeType) {
             CodeType.SAP -> "000000000000${code.takeLast(6)}"
