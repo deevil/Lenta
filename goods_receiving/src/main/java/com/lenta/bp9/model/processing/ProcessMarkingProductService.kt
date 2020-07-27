@@ -169,10 +169,12 @@ class ProcessMarkingProductService
         addGtin(gtinCode)
     }
 
-    fun getCountUntreatedBlock(): Double {
-        val origQuantity = productInfo.origQuantity.toDouble()
-        val countProcessedBlocks = currentBlocksDiscrepancies.filter { it.materialNumber == productInfo.materialNumber }.size.toDouble()
-        return origQuantity - countProcessedBlocks
+    fun getCountProcessedBlockForDiscrepancies(typeDiscrepancies: String): Double {
+        val countProcessedBlocks = currentBlocksDiscrepancies
+                .filter {
+                    it.typeDiscrepancies == typeDiscrepancies
+                }.size
+        return countProcessedBlocks.toDouble()
     }
 
     fun rollbackScannedBlock() {

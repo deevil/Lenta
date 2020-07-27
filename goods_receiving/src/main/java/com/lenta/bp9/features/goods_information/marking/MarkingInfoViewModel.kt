@@ -251,23 +251,23 @@ class MarkingInfoViewModel : CoreViewModel(),
 
     val checkBoxStampListVisibility: MutableLiveData<Boolean> = MutableLiveData()
 
-    val tvStampListVal: MutableLiveData<String> = refusalTotalCount
+    val tvStampListVal: MutableLiveData<String> = count
             .combineLatest(spinQualitySelectedPosition)
             .combineLatest(countBlockScanned)
             .map {
-                val refusalTotalCountValue = it?.first?.first ?: 0.0
+                val enteredCount = it?.first?.first?.toDoubleOrNull() ?: 0.0
                 val spinQualitySelectedPositionValue = it?.first?.second ?: 0
                 val qualityInfoCode = qualityInfo.value?.get(spinQualitySelectedPositionValue)?.code.orEmpty()
-                //проверяем productInfo т.к. он используется в processMarkingProductService.getCountUntreatedBlock() и если он null, тогда он неинициализирован в processMarkingProductService, и получим lateinit property productInfo has not been initialized
+                //проверяем productInfo т.к. он используется в processMarkingProductService.getCountProcessedBlockForDiscrepancies() и если он null, тогда он неинициализирован в processMarkingProductService, и получим lateinit property productInfo has not been initialized
                 productInfo.value
                         ?.let {
                             if (qualityInfoCode != TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_NORM) {
-                                if (refusalTotalCountValue == 0.0 || refusalTotalCountValue == processMarkingProductService.getCountUntreatedBlock()) {
+                                if (enteredCount == 0.0 || enteredCount == processMarkingProductService.getCountProcessedBlockForDiscrepancies(qualityInfoCode)) {
                                     checkBoxStampListVisibility.value = false
                                     context.getString(R.string.not_required)
                                 } else {
                                     checkBoxStampListVisibility.value = true
-                                    "${processMarkingProductService.getCountUntreatedBlock().toStringFormatted()} ${context.getString(R.string.of)} ${refusalTotalCountValue.toStringFormatted()}"
+                                    "${processMarkingProductService.getCountProcessedBlockForDiscrepancies(qualityInfoCode).toStringFormatted()} ${context.getString(R.string.of)} ${count.value.orEmpty()}"
                                 }
                             } else {
                                 checkBoxStampListVisibility.value = false
@@ -278,9 +278,12 @@ class MarkingInfoViewModel : CoreViewModel(),
             }
 
     val checkBoxStampList: MutableLiveData<Boolean> = checkBoxStampListVisibility.map {
-        //проверяем productInfo т.к. он используется в processMarkingProductService.getCountUntreatedBlock() и если он null, тогда он неинициализирован в processMarkingProductService, и получим lateinit property productInfo has not been initialized
+        //проверяем productInfo т.к. он используется в processMarkingProductService.getCountProcessedBlockForDiscrepancies() и если он null, тогда он неинициализирован в processMarkingProductService, и получим lateinit property productInfo has not been initialized
         productInfo.value?.let {
-            refusalTotalCount.value == processMarkingProductService.getCountUntreatedBlock()
+            val enteredCount = count.value?.toDoubleOrNull() ?: 0.0
+            val spinQualitySelectedPositionValue = spinQualitySelectedPosition.value ?: 0
+            val qualityInfoCode = qualityInfo.value?.get(spinQualitySelectedPositionValue)?.code.orEmpty()
+            enteredCount == processMarkingProductService.getCountProcessedBlockForDiscrepancies(qualityInfoCode)
         } ?: false
 
     }
