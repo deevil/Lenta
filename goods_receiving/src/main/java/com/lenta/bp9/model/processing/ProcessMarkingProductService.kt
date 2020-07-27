@@ -62,7 +62,7 @@ class ProcessMarkingProductService
     fun addProduct(count: String, typeDiscrepancies: String) {
         val countAdd =
                 if (typeDiscrepancies == TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_NORM) {
-                    count.toDouble()
+                    getCountAcceptOfProduct() + count.toDouble()
                 } else {
                     getCountOfDiscrepanciesOfProduct(typeDiscrepancies) + count.toDouble()
                 }

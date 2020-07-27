@@ -303,14 +303,16 @@ class MarkingInfoViewModel : CoreViewModel(),
                     .combineLatest(checkStampControl)
                     .combineLatest(checkBoxStampList)
                     .map {
+                        val enteredCount = count.value?.toDoubleOrNull() ?: 0.0
                         val spinQualitySelectedPositionValue = it?.first?.first ?: 0
                         val qualityInfoCode = qualityInfo.value?.get(spinQualitySelectedPositionValue)?.code.orEmpty()
                         val checkStampControlValue = it?.first?.second ?: false
                         val checkBoxStampListValue = it?.second ?: false
 
-                        qualityInfoCode == TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_NORM
+                        enteredCount > 0.0
+                                && (qualityInfoCode == TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_NORM
                                 || checkStampControlValue
-                                || checkBoxStampListValue
+                                || checkBoxStampListValue)
                     }
 
     val enabledRollbackBtn: MutableLiveData<Boolean> = countBlockScanned.map {
@@ -434,6 +436,7 @@ class MarkingInfoViewModel : CoreViewModel(),
                 processMarkingProductService.addProduct(countVal.toStringFormatted(), typeDiscrepancies)
                 processMarkingProductService.apply()
                 processMarkingProductService.clearModifications()
+                count.value = "0"
                 //обнуляем кол-во отсканированных марок
                 countBlockScanned.value = 0
                 true
