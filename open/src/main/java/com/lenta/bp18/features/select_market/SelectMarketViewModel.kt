@@ -116,10 +116,9 @@ class SelectMarketViewModel : CoreViewModel(), OnPositionClickListener {
                                         Logg.d { "codeVersion for update: $codeVersion" }
                                         codeVersion?.run {
                                             appUpdateInstaller.checkNeedAndHaveUpdate(this)
-                                                    ?: Either.Right("")
-                                        }
+                                        }?: Either.Right("")
                                     }
-                        }?.either({
+                        }.either({
                             Logg.e { "checkNeedAndHaveUpdate failure: $it" }
                             handleFailure(failure = it)
                         }) { updateFileName ->

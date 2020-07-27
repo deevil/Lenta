@@ -1,13 +1,11 @@
 package com.lenta.bp18.features.select_good
 
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
 import com.lenta.bp18.features.other.SendDataViewModel
 import com.lenta.bp18.platform.Constants
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.settings.IAppSettings
 import com.lenta.shared.utilities.extentions.launchUITryCatch
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class SelectGoodViewModel : SendDataViewModel() {
