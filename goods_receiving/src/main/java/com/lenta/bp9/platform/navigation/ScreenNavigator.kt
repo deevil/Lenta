@@ -1591,14 +1591,6 @@ class ScreenNavigator(
         )
     }
 
-    override fun openAlertRejectSuccessFullMarkingGoods() {
-        openAlertScreen(message = context.getString(R.string.reject_success_full),
-                iconRes = R.drawable.ic_info_green_80dp,
-                pageNumber = PAGE_NUMBER_96,
-                timeAutoExitInMillis = 3000
-        )
-    }
-
     override fun openMarkingProductFailureScreen(productInfo: TaskProductInfo) {
         runOrPostpone {
             getFragmentStack()?.push(MarkingProductFailureFragment.newInstance(productInfo))
@@ -1814,7 +1806,6 @@ interface IScreenNavigator : ICoreNavigator {
     fun openAlertGtinDoesNotMatchProductScreen()
     fun openMarkingGoodsDetailsScreen(productInfo: TaskProductInfo)
     fun openAlertRequestCompleteRejectionMarkingGoods()
-    fun openAlertRejectSuccessFullMarkingGoods()
     fun openMarkingProductFailureScreen(productInfo: TaskProductInfo)
     fun openCompleteRejectionOfMarkingGoodsDialog(applyCallbackFunc: () -> Unit, title: String, countBlocks: String, paramGrzGrundMarkName: String)
     fun openPartialRefusalOnMarkingGoodsDialog(applyCallbackFunc: () -> Unit, title: String, countScanBlocks: String, unconfirmedQuantity: String, paramGrzGrundMarkName: String)
