@@ -2,13 +2,13 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context=".features.ingredients_list.IngredientsListFragment">
+    tools:context=".features.tech_orders_list.TechOrdersListFragment">
 
     <data>
 
         <variable
             name="vm"
-            type="com.lenta.bp16.features.order_ingredients_list.OrderIngredientsListViewModel" />
+            type="com.lenta.bp16.features.tech_orders_list.TechOrdersListViewModel" />
 
         <variable
             name="rvConfig"
@@ -31,7 +31,7 @@
 
                 <LinearLayout
                     style="@style/LinearCellStyle"
-                    android:layout_weight="@integer/four_three_1">
+                    android:layout_weight="@integer/three_two_1">
 
                     <TextView
                         style="@style/FirstRowTextStyle"
@@ -42,31 +42,21 @@
 
                 <LinearLayout
                     style="@style/LinearCellStyle"
-                    android:layout_weight="@integer/four_three_2">
+                    android:layout_weight="@integer/three_two_2">
 
                     <TextView
                         style="@style/FirstRowTextStyle"
-                        android:text="@string/column_name_good" />
+                        android:text="@string/column_name_order_tech" />
 
                 </LinearLayout>
 
                 <LinearLayout
                     style="@style/LinearCellStyle"
-                    android:layout_weight="@integer/four_three_3">
+                    android:layout_weight="@integer/three_two_3">
 
                     <TextView
                         style="@style/FirstRowTextStyle"
-                        android:text="@string/column_name_plan" />
-
-                </LinearLayout>
-
-                <LinearLayout
-                    style="@style/LinearCellStyle"
-                    android:layout_weight="@integer/four_three_4">
-
-                    <TextView
-                        style="@style/FirstRowTextStyle"
-                        android:text="@string/column_name_fact" />
+                        android:text="@string/column_name_plan_value" />
 
                 </LinearLayout>
 
@@ -83,9 +73,9 @@
             android:layout_height="0dp"
             android:layout_marginBottom="8dp"
             android:layout_weight="1"
-            app:items="@{vm.orderIngredientsList}"
+            app:items="@{vm.allTechOrdersList}"
             app:rv_config="@{rvConfig}"
-            tools:listitem="@layout/item_order_ingredient" />
+            tools:listitem="@layout/item_tech_order" />
 
     </LinearLayout>
 

@@ -2,7 +2,7 @@ package com.lenta.bp16.model.ingredients.results
 
 import com.google.gson.annotations.SerializedName
 import com.lenta.bp16.model.ingredients.MaterialIngredientDataInfo
-import com.lenta.bp16.model.ingredients.OrderByRemake
+import com.lenta.bp16.model.ingredients.TechOrderDataInfo
 import com.lenta.bp16.model.ingredients.OrderIngredientDataInfo
 import com.lenta.bp16.model.ingredients.ui.OrderByBarcode
 import com.lenta.bp16.platform.extention.IResultWithRetCodes
@@ -19,12 +19,12 @@ data class IngredientsDataListResult(
 
         /** Список заказов по переделу */
         @SerializedName("ET_AUFNR_LIST")
-        val ordersByRemakeList: List<OrderByRemake>?,
+        val techOrdersDataInfoList: List<TechOrderDataInfo>?,
 
         @SerializedName("ET_EAN")
         val orderByBarcode: List<OrderByBarcode>?,
 
         /** Таблица возврата */
         @SerializedName("ET_RETCODE")
-        override val retCodes: List<RetCode>
+        override val retCodes: List<RetCode>?
 ) : IResultWithRetCodes

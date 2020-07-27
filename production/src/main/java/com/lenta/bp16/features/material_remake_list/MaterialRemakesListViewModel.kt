@@ -7,6 +7,7 @@ import com.lenta.bp16.model.ingredients.MaterialIngredientDataInfo
 import com.lenta.bp16.model.ingredients.params.GetIngredientDataParams
 import com.lenta.bp16.model.ingredients.params.UnblockIngredientsParams
 import com.lenta.bp16.model.ingredients.ui.ItemMaterialIngredientUi
+import com.lenta.bp16.platform.extention.getFieldWithSuffix
 import com.lenta.bp16.platform.extention.getModeType
 import com.lenta.bp16.platform.navigation.IScreenNavigator
 import com.lenta.bp16.platform.resource.IResourceManager
@@ -45,6 +46,11 @@ class MaterialRemakesListViewModel : CoreViewModel() {
         MutableLiveData<List<MaterialIngredientDataInfo>>()
     }
 
+    // суффикс
+    val suffix: String by unsafeLazy {
+        resourceManager.kgSuffix()
+    }
+
     fun loadMaterialIngredients() = launchUITryCatch {
         navigator.showProgressLoadingData()
 
@@ -73,11 +79,11 @@ class MaterialRemakesListViewModel : CoreViewModel() {
             asyncLiveData<List<ItemMaterialIngredientUi>> {
                 emit(it.mapIndexed { index, materialIngredientDataInfo ->
                     ItemMaterialIngredientUi(
-                            lgort = materialIngredientDataInfo.lgort,
-                            desc = materialIngredientDataInfo.name,
+                            lgort = materialIngredientDataInfo.lgort.orEmpty(),
+                            desc = materialIngredientDataInfo.name.orEmpty(),
                             position = (index + 1).toString(),
-                            plan = materialIngredientDataInfo.plan_qnt,
-                            fact = materialIngredientDataInfo.done_qnt
+                            plan = getFieldWithSuffix(materialIngredientDataInfo.plan_qnt, suffix),
+                            fact = getFieldWithSuffix(materialIngredientDataInfo.done_qnt, suffix)
                     )
                 })
             }

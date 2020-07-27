@@ -2,6 +2,7 @@ package com.lenta.bp16.features.order_details
 
 import android.view.View
 import androidx.core.os.bundleOf
+import androidx.lifecycle.lifecycleScope
 import com.lenta.bp16.R
 import com.lenta.bp16.databinding.FragmentOrderDetailsBinding
 import com.lenta.bp16.platform.extention.getAppComponent
@@ -34,6 +35,12 @@ class OrderDetailsFragment : CoreFragment<FragmentOrderDetailsBinding, OrderDeta
             getAppComponent()?.inject(it)
             it.ingredient.value = ingredientInfo
             return it
+        }
+    }
+
+    init {
+        lifecycleScope.launchWhenResumed {
+            vm.requestFocusToCount.value = true
         }
     }
 

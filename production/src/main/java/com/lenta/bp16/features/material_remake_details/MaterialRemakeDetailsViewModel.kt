@@ -110,7 +110,9 @@ class MaterialRemakeDetailsViewModel : CoreViewModel() {
     }
 
     fun onClickOrders() {
-
+        materialIngredient.value?.let {
+            navigator.openTechOrdersScreen(it, parentCode)
+        }
     }
 
     companion object {

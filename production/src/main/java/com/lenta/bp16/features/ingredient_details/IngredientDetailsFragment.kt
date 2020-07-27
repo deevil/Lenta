@@ -2,6 +2,7 @@ package com.lenta.bp16.features.ingredient_details
 
 import android.view.View
 import androidx.core.os.bundleOf
+import androidx.lifecycle.lifecycleScope
 import com.lenta.bp16.R
 import com.lenta.bp16.databinding.FragmentIngredientDetailsBinding
 import com.lenta.bp16.model.ingredients.OrderIngredientDataInfo
@@ -37,6 +38,12 @@ class IngredientDetailsFragment : CoreFragment<FragmentIngredientDetailsBinding,
             it.orderIngredient.value = orderIngredientDataInfo
             it.parentCode = arguments?.getString(KEY_PARENT_CODE, "").orEmpty()
             return it
+        }
+    }
+
+    init {
+        lifecycleScope.launchWhenResumed {
+            vm.requestFocusToNumberField.value = true
         }
     }
 

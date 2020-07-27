@@ -41,15 +41,10 @@ class IngredientsListFragment :
         }
     }
 
-    init {
-        lifecycleScope.launchWhenResumed {
-            vm.loadIngredients()
-        }
-    }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding?.viewPagerSettings = this
+        vm.loadIngredients()
     }
 
     override fun setupTopToolBar(topToolbarUiModel: TopToolbarUiModel) {

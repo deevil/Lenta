@@ -78,12 +78,15 @@
     <string name="warehouse_all">Выбрать все</string>
     <string name="desc_ingredients_list">Список ингредиентов</string>
     <string name="desc_order_ingredients_list_by">Список ингредиентов на %s кг</string>
+    <string name="desc_tech_order_list_by">Список технологических заказов</string>
     <string name="desc_ingredient_detail">Детализация заказа</string>
     <string name="desc_remakes_list">Список переделов</string>
     <string name="column_name_two">Заказ/Склад/ПФ</string>
     <string name="column_name_good">Товар</string>
+    <string name="column_name_order_tech">Заказ/ПФ</string>
     <string name="column_name_remake">Склад/Передел</string>
     <string name="column_name_plan">План</string>
+    <string name="column_name_plan_value">План сырья</string>
     <string name="column_name_fact">Факт</string>
     <string name="column_name_amount">Итого</string>
     <string name="tab_name_by_order">По Заказу</string>

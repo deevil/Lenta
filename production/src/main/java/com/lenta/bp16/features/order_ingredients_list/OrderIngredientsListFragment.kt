@@ -31,12 +31,6 @@ class OrderIngredientsListFragment : CoreFragment<FragmentIngredientsByOrderBind
     // Вес, количество ингредиентов
     var weight: String by state("")
 
-    init {
-        lifecycleScope.launchWhenResumed {
-            vm.loadOrderIngredientsList()
-        }
-    }
-
     override fun getLayoutId(): Int {
         return R.layout.fragment_ingredients_by_order
     }
@@ -57,6 +51,7 @@ class OrderIngredientsListFragment : CoreFragment<FragmentIngredientsByOrderBind
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initRvConfig()
+        vm.loadOrderIngredientsList()
     }
 
     override fun setupTopToolBar(topToolbarUiModel: TopToolbarUiModel) {

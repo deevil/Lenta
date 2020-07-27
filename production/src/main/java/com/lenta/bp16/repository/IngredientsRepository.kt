@@ -1,6 +1,7 @@
 package com.lenta.bp16.repository
 
 import com.lenta.bp16.model.ingredients.IngredientInfo
+import com.lenta.bp16.model.ingredients.TechOrderDataInfo
 import com.lenta.bp16.model.ingredients.params.GetIngredientDataParams
 import com.lenta.bp16.model.ingredients.params.GetIngredientsParams
 import com.lenta.bp16.model.ingredients.params.IngredientDataCompleteParams
@@ -22,6 +23,7 @@ class IngredientsRepository @Inject constructor(
 ) : IIngredientsRepository {
 
     private val allIngredients: MutableList<IngredientInfo> = mutableListOf()
+    private val ordersByRemake: MutableList<TechOrderDataInfo> = mutableListOf()
 
     override suspend fun getAllIngredients(params: GetIngredientsParams): Either<Failure, List<IngredientInfo>> {
         val result = fmpRequestsHelper.restRequest(FMP_ORDERS_RESOURCE_NAME, params, IngredientsListStatus::class.java)
@@ -29,7 +31,7 @@ class IngredientsRepository @Inject constructor(
 
         return result.flatMap {
             allIngredients.clear()
-            allIngredients.addAll(it.ingredientsList)
+            allIngredients.addAll(it.ingredientsList.orEmpty())
             Either.Right(allIngredients)
         }
     }
@@ -37,7 +39,10 @@ class IngredientsRepository @Inject constructor(
     override suspend fun getIngredientListData(params: GetIngredientDataParams): Either<Failure, IngredientsDataListResult> {
         val result = fmpRequestsHelper.restRequest(FMP_ORDERS_DATA_RESOURCE_NAME, params, IngredientsDataListStatus::class.java)
                 .getResult()
-        return result
+        return result.flatMap { result ->
+            addOrdersByRemake(result)
+            Either.Right(result)
+        }
     }
 
     override suspend fun unblockOrderIngredients(params: UnblockIngredientsParams): Either<Failure, Boolean> {
@@ -52,7 +57,7 @@ class IngredientsRepository @Inject constructor(
     override suspend fun completeToPackIngredientData(params: IngredientDataCompleteParams): Either<Failure, Boolean> {
         val result = fmpRequestsHelper.restRequest(FMP_INGREDIENT_COMPLETE, params, IngredientDataCompleteStatus::class.java)
                 .getResult()
-
+        // TODO: Send to print pack label
         return result.flatMap {
             Either.Right(true)
         }
@@ -64,6 +69,19 @@ class IngredientsRepository @Inject constructor(
 
         return result.flatMap {
             Either.Right(true)
+        }
+    }
+
+    override suspend fun getTechOrdersByRemake(): List<TechOrderDataInfo> {
+        return ordersByRemake
+    }
+
+    private fun addOrdersByRemake(ingredientsResult: IngredientsDataListResult) {
+        ingredientsResult.techOrdersDataInfoList?.let { list ->
+            if (list.isNotEmpty()) {
+                ordersByRemake.clear()
+                ordersByRemake.addAll(list)
+            }
         }
     }
 
@@ -125,4 +143,9 @@ interface IIngredientsRepository {
      * @param params - [IngredientDataCompleteParams]
      */
     suspend fun completeToPackMaterialData(params: IngredientDataCompleteParams): Either<Failure, Boolean>
+
+    /**
+     * Получаем список переделов
+     */
+    suspend fun getTechOrdersByRemake(): List<TechOrderDataInfo>
 }

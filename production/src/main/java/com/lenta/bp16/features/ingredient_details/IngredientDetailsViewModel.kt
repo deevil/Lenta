@@ -47,9 +47,7 @@ class IngredientDetailsViewModel : CoreViewModel() {
     }
 
     // Focus by request
-    val requestFocusToCount: MutableLiveData<Boolean> by unsafeLazy {
-        MutableLiveData(true)
-    }
+    val requestFocusToNumberField by unsafeLazy { MutableLiveData(false) }
 
     private val entered = weightField.map {
         it?.toDoubleOrNull() ?: 0.0
@@ -79,7 +77,7 @@ class IngredientDetailsViewModel : CoreViewModel() {
                                 mode = IngredientDataCompleteParams.MODE_INGREDIENT,
                                 parent = parentCode,
                                 aufnr = parentCode,
-                                matnr = ingredient.matnr,
+                                matnr = ingredient.matnr.orEmpty(),
                                 fact = weight,
                                 personnelNumber = sessionInfo.personnelNumber.orEmpty()
                         )
@@ -96,6 +94,7 @@ class IngredientDetailsViewModel : CoreViewModel() {
     fun onClickAdd() {
         weighted.value = total.value
         weightField.value = DEFAULT_WEIGHT
+        requestFocusToNumberField.value = true
     }
 
     fun onClickGetWeight() = launchAsyncTryCatch {

@@ -6,8 +6,8 @@ import com.google.gson.annotations.SerializedName
 data class GoodByOrder(
         /** Номер технологического заказа */
         @SerializedName("AUFNR")
-        val aufnr: String,
+        val aufnr: String?,
         /** SAP-код ингредиента */
         @SerializedName("MATNR")
-        val matnr: String
+        val matnr: String?
 )

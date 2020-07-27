@@ -13,35 +13,35 @@ data class MaterialIngredientDataInfo(
          * Код передела (ключ образца)
          */
         @SerializedName("KTSCH")
-        val ktsch: String,
+        val ktsch: String?,
 
         /**
          * Склад
          */
         @SerializedName("LGORT")
-        val lgort: String,
+        val lgort: String?,
 
         /**
          * Наименование операции (краткий текст операции)
          */
         @SerializedName("LTXA1")
-        val ltxa1: String,
+        val ltxa1: String?,
 
         /**
          * Наименование товара (ингредиент)
          */
         @SerializedName("NAME_MATNR")
-        val name: String,
+        val name: String?,
 
         /**
          * Расчетное количество ингредиента в технологическом заказе
          */
         @SerializedName("PLAN_QNT")
-        val plan_qnt: String,
+        val plan_qnt: String?,
 
         /**
          * Скомплектованное количество ингредиента в рамках данного заказа
          */
         @SerializedName("DONE_QNT")
-        val done_qnt: String
+        val done_qnt: String?
 ) : Parcelable

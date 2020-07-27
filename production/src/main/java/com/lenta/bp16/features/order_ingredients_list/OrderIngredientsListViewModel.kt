@@ -7,6 +7,7 @@ import com.lenta.bp16.model.ingredients.OrderIngredientDataInfo
 import com.lenta.bp16.model.ingredients.params.GetIngredientDataParams
 import com.lenta.bp16.model.ingredients.params.UnblockIngredientsParams
 import com.lenta.bp16.model.ingredients.ui.ItemOrderIngredientUi
+import com.lenta.bp16.platform.extention.getFieldWithSuffix
 import com.lenta.bp16.platform.extention.getItemName
 import com.lenta.bp16.platform.extention.getModeType
 import com.lenta.bp16.platform.navigation.IScreenNavigator
@@ -15,10 +16,7 @@ import com.lenta.bp16.request.GetOrderIngredientsDataNetRequest
 import com.lenta.bp16.request.UnblockIngredientNetRequest
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.platform.viewmodel.CoreViewModel
-import com.lenta.shared.utilities.extentions.asyncLiveData
-import com.lenta.shared.utilities.extentions.launchAsyncTryCatch
-import com.lenta.shared.utilities.extentions.launchUITryCatch
-import com.lenta.shared.utilities.extentions.unsafeLazy
+import com.lenta.shared.utilities.extentions.*
 import javax.inject.Inject
 import kotlin.properties.Delegates
 
@@ -70,7 +68,7 @@ class OrderIngredientsListViewModel : CoreViewModel() {
         }
         result.either(::handleFailure, fnR = {
             allOrderIngredients.value = it
-            it
+            Unit
         })
     }
 
@@ -81,8 +79,8 @@ class OrderIngredientsListViewModel : CoreViewModel() {
                     ItemOrderIngredientUi(
                             name = orderIngredientDataInfo.getItemName(),
                             position = (index + 1).toString(),
-                            plan = orderIngredientDataInfo.getPlanCount(),
-                            fact = orderIngredientDataInfo.getDoneCount()
+                            plan = getFieldWithSuffix(orderIngredientDataInfo.plan_qnt.dropZeros(), orderIngredientDataInfo.getSuffix()),
+                            fact = getFieldWithSuffix(orderIngredientDataInfo.done_qnt.dropZeros(), orderIngredientDataInfo.getSuffix())
                     )
                 })
             }

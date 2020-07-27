@@ -3,7 +3,6 @@ package com.lenta.bp16.features.material_remake_details
 import android.view.View
 import androidx.core.os.bundleOf
 import com.lenta.bp16.R
-import com.lenta.bp16.databinding.FragmentIngredientDetailsBinding
 import com.lenta.bp16.databinding.FragmentMaterialRemakeDetailsBinding
 import com.lenta.bp16.model.ingredients.MaterialIngredientDataInfo
 import com.lenta.bp16.platform.extention.getAppComponent
@@ -27,11 +26,12 @@ class MaterialRemakeDetailsFragment : CoreFragment<FragmentMaterialRemakeDetails
         return SCREEN_NUMBER
     }
 
-    private val orderIngredientDataInfo: MaterialIngredientDataInfo by unsafeLazy {
+    private val materialIngredientDataInfo: MaterialIngredientDataInfo by unsafeLazy {
         arguments?.getParcelable<MaterialIngredientDataInfo>(KEY_INGREDIENT)
                 ?: throw IllegalArgumentException("There is no argument value with key $KEY_INGREDIENT")
     }
 
+    // name of parent component
     private val parentName: String by unsafeLazy {
         arguments?.getString(KEY_PARENT_NAME)
                 ?: throw IllegalArgumentException("There is no argument value with key $KEY_PARENT_NAME")
@@ -45,7 +45,7 @@ class MaterialRemakeDetailsFragment : CoreFragment<FragmentMaterialRemakeDetails
     override fun getViewModel(): MaterialRemakeDetailsViewModel {
         provideViewModel(MaterialRemakeDetailsViewModel::class.java).let {
             getAppComponent()?.inject(it)
-            it.materialIngredient.value = orderIngredientDataInfo
+            it.materialIngredient.value = materialIngredientDataInfo
             it.parentCode = arguments?.getString(KEY_PARENT_CODE, "").orEmpty()
             return it
         }
@@ -57,7 +57,7 @@ class MaterialRemakeDetailsFragment : CoreFragment<FragmentMaterialRemakeDetails
             append(" ")
             append(parentName)
         }
-        topToolbarUiModel.description.value = orderIngredientDataInfo.name
+        topToolbarUiModel.description.value = materialIngredientDataInfo.name
     }
 
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {

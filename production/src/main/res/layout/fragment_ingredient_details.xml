@@ -43,7 +43,7 @@
                     android:text="@={vm.weightField}"
                     app:suffix="@{vm.suffix}"
                     app:cursorToLastPos="@{false}"
-                    app:requestFocus="@{vm.requestFocusToCount}"
+                    app:requestFocus="@{vm.requestFocusToNumberField}"
                     tools:text="0 кг" />
 
             </LinearLayout>

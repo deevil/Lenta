@@ -2,6 +2,7 @@ package com.lenta.bp16.model.ingredients
 
 import android.os.Parcelable
 import com.google.gson.annotations.SerializedName
+import com.lenta.shared.models.core.toUom
 import com.lenta.shared.utilities.extentions.dropZeros
 import kotlinx.android.parcel.Parcelize
 
@@ -14,38 +15,42 @@ data class OrderIngredientDataInfo(
          * SAP – код товара (ингредиент)
          */
         @SerializedName("MATNR")
-        val matnr: String,
+        val matnr: String?,
 
         /**
          * Наименование товара (ингредиент)
          */
         @SerializedName("NAME_MATNR")
-        val name: String,
+        val name: String?,
 
         /**
          * Единица измерения товара
          */
         @SerializedName("BUOM")
-        val buom: String,
+        val buom: String?,
 
         /**
          * Расчетное количество ингредиента в технологическом заказе
          */
         @SerializedName("PLAN_QNT")
-        val plan_qnt: Double,
+        val plan_qnt: Double?,
 
         /**
          * Скомплектованное количество ингредиента в рамках данного заказа
          */
         @SerializedName("DONE_QNT")
-        val done_qnt: Double
+        val done_qnt: Double?
 ) : Parcelable {
+
+        fun getSuffix(): String {
+                return buom?.toUom()?.name.orEmpty()
+        }
 
         fun getPlanCount(): String {
                 return buildString {
                         append(plan_qnt.dropZeros())
                         append(" ")
-                        append(buom)
+                        append(getSuffix())
                 }
         }
 
@@ -53,8 +58,7 @@ data class OrderIngredientDataInfo(
                 return buildString {
                         append(done_qnt.dropZeros())
                         append(" ")
-                        append(buom)
+                        append(getSuffix())
                 }
         }
-
 }

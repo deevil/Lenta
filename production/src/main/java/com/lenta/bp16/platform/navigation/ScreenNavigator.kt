@@ -13,7 +13,6 @@ import com.lenta.bp16.features.good_packaging.GoodPackagingFragment
 import com.lenta.bp16.features.good_weighing.GoodWeighingFragment
 import com.lenta.bp16.features.good_without_manufacturer.GoodWithoutManufacturerFragment
 import com.lenta.bp16.features.ingredient_details.IngredientDetailsFragment
-import com.lenta.bp16.features.processing_unit_list.ProcessingUnitListFragment
 import com.lenta.bp16.features.ingredients_list.IngredientsListFragment
 import com.lenta.bp16.features.loading.fast.FastDataLoadingFragment
 import com.lenta.bp16.features.main_menu.MainMenuFragment
@@ -30,11 +29,12 @@ import com.lenta.bp16.features.reprint_label.ReprintLabelFragment
 import com.lenta.bp16.features.select_good.GoodSelectFragment
 import com.lenta.bp16.features.select_market.SelectMarketFragment
 import com.lenta.bp16.features.select_personnel_number.SelectPersonnelNumberFragment
-import com.lenta.bp16.platform.Constants
+import com.lenta.bp16.features.tech_orders_list.TechOrdersListFragment
 import com.lenta.bp16.features.warehouse_selection.WarehouseSelectionFragment
 import com.lenta.bp16.model.ingredients.IngredientInfo
 import com.lenta.bp16.model.ingredients.MaterialIngredientDataInfo
 import com.lenta.bp16.model.ingredients.OrderIngredientDataInfo
+import com.lenta.bp16.platform.Constants
 import com.lenta.shared.account.IAuthenticator
 import com.lenta.shared.features.alert.AlertFragment
 import com.lenta.shared.platform.activity.ForegroundActivityProvider
@@ -214,6 +214,10 @@ class ScreenNavigator @Inject constructor(
         getFragmentStack()?.push(MaterialRemakeDetailsFragment.newInstance(selectedMaterial, parentCode, parentName))
     }
 
+    override fun openTechOrdersScreen(selectedMaterial: MaterialIngredientDataInfo, parentCode: String) {
+        getFragmentStack()?.push(TechOrdersListFragment.newInstance(selectedMaterial, parentCode))
+    }
+
     // Информационные экраны
     override fun showDefrostingPhaseIsCompleted(nextCallback: () -> Unit) {
         runOrPostpone {
@@ -388,6 +392,7 @@ interface IScreenNavigator : ICoreNavigator {
     fun openOrderIngredientsListScreen(weight: String, selectedIngredient: IngredientInfo)
     fun openMaterialRemakesScreen(selectedIngredient: IngredientInfo)
     fun openMaterialRemakeDetailsScreen(selectedMaterial: MaterialIngredientDataInfo, parentCode: String, parentName: String)
+    fun openTechOrdersScreen(selectedMaterial: MaterialIngredientDataInfo, parentCode: String)
 
     fun showDefrostingPhaseIsCompleted(nextCallback: () -> Unit)
     fun showFixStartNextStageSuccessful(nextCallback: () -> Unit)
@@ -401,5 +406,4 @@ interface IScreenNavigator : ICoreNavigator {
     fun showLabelSentToPrint(nextCallback: () -> Unit)
     fun showAlertPartNotFound()
     fun showAlertWeightNotSet()
-
 }

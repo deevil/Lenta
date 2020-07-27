@@ -37,7 +37,7 @@ class OrderDetailsViewModel : CoreViewModel() {
 
     // Focus by request
     val requestFocusToCount: MutableLiveData<Boolean> by unsafeLazy {
-        MutableLiveData(true)
+        MutableLiveData(false)
     }
 
     fun onClickNext() = launchUITryCatch {

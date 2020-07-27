@@ -26,7 +26,7 @@ fun TaskInfo.getTaskStatus(): TaskStatus {
 fun <R : IResultWithRetCodes> Either<Failure, R>.getResult(): Either<Failure, R> {
     return this.rightToLeft(
             fnRtoL = { result ->
-                result.retCodes.firstOrNull { retCode ->
+                result.retCodes?.firstOrNull { retCode ->
                     retCode.retCode == 1
                 }?.let { retCode ->
                     return@rightToLeft Failure.SapError(retCode.errorText)
@@ -35,6 +35,16 @@ fun <R : IResultWithRetCodes> Either<Failure, R>.getResult(): Either<Failure, R>
     )
 }
 
+fun getFieldWithSuffix(field: String?, suffix: String): String {
+    return field?.takeIf { it.isNotEmpty() }?.run {
+        buildString {
+            append(field)
+            append(" ")
+            append(suffix)
+        }
+    }.orEmpty()
+}
+
 interface IResultWithRetCodes {
-    val retCodes: List<RetCode>
+    val retCodes: List<RetCode>?
 }

@@ -30,6 +30,7 @@ import com.lenta.bp16.features.reprint_label.ReprintLabelViewModel
 import com.lenta.bp16.features.select_good.GoodSelectViewModel
 import com.lenta.bp16.features.select_market.SelectMarketViewModel
 import com.lenta.bp16.features.select_personnel_number.SelectPersonnelNumberViewModel
+import com.lenta.bp16.features.tech_orders_list.TechOrdersListViewModel
 import com.lenta.bp16.features.warehouse_selection.WarehouseSelectionViewModel
 import com.lenta.bp16.main.MainActivity
 import com.lenta.bp16.main.MainViewModel
@@ -88,4 +89,5 @@ interface AppComponent : CoreComponent, FromParentToCoreProvider {
     fun inject(it: IngredientDetailsViewModel)
     fun inject(it: MaterialRemakesListViewModel)
     fun inject(it: MaterialRemakeDetailsViewModel)
+    fun inject(it: TechOrdersListViewModel)
 }
