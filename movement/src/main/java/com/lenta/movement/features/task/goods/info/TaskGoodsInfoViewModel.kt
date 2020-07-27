@@ -125,22 +125,20 @@ class TaskGoodsInfoViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
 
     fun onScanResult(data: String) {
         if (applyEnabled.value == true) {
-            launchAsyncTryCatch {
+            launchUITryCatch {
                 addProductToRepository()
+                searchCode(data)
             }
-            searchCode(data)
         }
     }
 
-    private fun searchCode(code: String) {
-        launchUITryCatch {
+    private suspend fun searchCode(code: String) {
             scanInfoHelper.searchCode(code, fromScan = true, isBarCode = true) {
                 with(screenNavigator) {
                     goBack()
                     openTaskGoodsInfoScreen(it)
                 }
             }
-        }
     }
 
     override fun onOkInSoftKeyboard(): Boolean {
