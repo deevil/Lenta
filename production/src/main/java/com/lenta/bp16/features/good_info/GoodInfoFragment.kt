@@ -1,8 +1,10 @@
 package com.lenta.bp16.features.good_info
 
 import android.view.View
+import androidx.core.os.bundleOf
 import com.lenta.bp16.R
 import com.lenta.bp16.databinding.FragmentGoodInfoBinding
+import com.lenta.bp16.platform.Constants
 import com.lenta.bp16.platform.extention.getAppComponent
 import com.lenta.shared.platform.fragment.CoreFragment
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
@@ -48,7 +50,13 @@ class GoodInfoFragment : CoreFragment<FragmentGoodInfoBinding, GoodInfoViewModel
     }
 
     companion object {
-        const val SCREEN_NUMBER = com.lenta.bp16.platform.Constants.GOODS_INFO_FRAGMENT
+        const val SCREEN_NUMBER = Constants.GOODS_INFO_FRAGMENT
+        private const val KEY_MATERIAL = "KEY_MATERIAL"
+        private const val KEY_EAN = "KEY_EAN"
+
+        fun newInstance(material: String, ean: String) = GoodInfoFragment.apply {
+            arguments = bundleOf(KEY_MATERIAL to material, KEY_EAN to ean)
+        }
     }
 
 }

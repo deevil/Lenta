@@ -293,13 +293,13 @@ class ScreenNavigator @Inject constructor(
         }
     }
 
-    override fun showAlertGoodNotFound() {
+    override fun showAlertGoodNotFound(backCallback: () -> Unit) {
         getFragmentStack()?.push(AlertFragment.create(
                 pageNumber = Constants.ALERT_FRAGMENT,
                 message = context.getString(R.string.tw_alert_good_not_found),
                 iconRes = R.drawable.ic_warning_red_80dp,
                 leftButtonDecorationInfo = ButtonDecorationInfo.back,
-                codeConfirmForLeft = backFragmentResultHelper.setFuncForResult(/*TODO Возвращение на выбор товара*/)
+                codeConfirmForLeft = backFragmentResultHelper.setFuncForResult(backCallback)
         ))
     }
 
@@ -339,5 +339,5 @@ interface IScreenNavigator : ICoreNavigator {
     fun showAlertNoIpPrinter()
     fun showLabelSentToPrint(nextCallback: () -> Unit)
     fun showAlertPartNotFound()
-    fun showAlertGoodNotFound()
+    fun showAlertGoodNotFound(backCallback: () -> Unit)
 }
