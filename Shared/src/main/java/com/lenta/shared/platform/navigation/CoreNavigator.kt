@@ -485,6 +485,14 @@ class CoreNavigator @Inject constructor(
         }
     }
 
+    override fun openMarkingGoodsInfoScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(message = iconDescriptionHelper.getDescription(IconCode.MARKING_GOODS)
+                    ?: context.getString(R.string.marking_goods),
+                    iconRes = R.drawable.ic_marked_white_80dp), CustomAnimation.vertical)
+        }
+    }
+
 }
 
 fun ICoreNavigator.runOrPostpone(function: () -> Unit) {
@@ -549,6 +557,7 @@ interface ICoreNavigator {
     fun showAlertBlockedTaskByMe(userName: String, yesCallback: () -> Unit)
     fun openGS128InfoScreen()
     fun openUpdateAppScreen()
+    fun openMarkingGoodsInfoScreen()
 }
 
 class FunctionsCollector(private val needCollectLiveData: LiveData<Boolean>) {

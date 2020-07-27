@@ -522,6 +522,7 @@
 
             <ImageView
                 style="@style/BottomIconStyle"
+                android:onClick="@{(v) -> vm.screenNavigator.openMarkingGoodsInfoScreen()}"
                 android:src="@drawable/ic_marked_white_32dp" />
 
             <View style="@style/BottomIconEmptyPlaceStyle" />
