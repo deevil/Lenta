@@ -97,8 +97,8 @@ class RejectViewModel : CoreViewModel(), OnPositionClickListener {
         currentRejectionType = type
         val params = RejectRequestParameters(
                 deviceIP = context.getDeviceIp(),
-                personalNumber = sessionInfo.personnelNumber ?: "",
-                taskNumber = taskManager.getReceivingTask()?.taskHeader?.taskNumber ?: "",
+                personalNumber = sessionInfo.personnelNumber.orEmpty(),
+                taskNumber = taskManager.getReceivingTask()?.taskHeader?.taskNumber.orEmpty(),
                 rejectMode = type.rejectTypeString,
                 rejectReason = getRejectString()
         )
@@ -120,17 +120,30 @@ class RejectViewModel : CoreViewModel(), OnPositionClickListener {
     }
 
     fun handleSuccess(result: RejectRequestResult) {
-        when (currentRejectionType) {
-            RejectType.Temporary -> screenNavigator.openAlertWithoutConfirmation(context.getString(R.string.reject_success_temp)) { goToTaskList()}
-            RejectType.Full -> {
-                if (taskManager.getReceivingTask()?.taskDescription?.isAlco == true) {
-                    screenNavigator.openAlertWithoutConfirmation(context.getString(R.string.reject_success_full_alco)) { goToTaskList()}
-                } else {
+        launchUITryCatch{
+            when (currentRejectionType) {
+                RejectType.Temporary -> screenNavigator.openAlertWithoutConfirmation(context.getString(R.string.reject_success_temp)) { goToTaskList()}
+                RejectType.Full -> {
+                    val paramGrzMarkRef = dataBase.getGrzMarkRef().orEmpty()
+                    val taskDescription = taskManager.getReceivingTask()?.taskDescription
+                    val isAlcoProduct = taskDescription?.isAlco ?: false
+                    val isMarkProduct = taskDescription?.isMark ?: false
+
+                    if (isMarkProduct && paramGrzMarkRef.isNotEmpty()) {
+                        screenNavigator.openAlertRequestCompleteRejectionMarkingGoods()
+                        return@launchUITryCatch
+                    }
+
+                    if (isAlcoProduct) {
+                        screenNavigator.openAlertWithoutConfirmation(context.getString(R.string.reject_success_full_alco)) { goToTaskList()}
+                        return@launchUITryCatch
+                    }
+
                     screenNavigator.openAlertWithoutConfirmation(context.getString(R.string.reject_success_full)) { goToTaskList()}
                 }
             }
+            currentRejectionType = null
         }
-        currentRejectionType = null
     }
 }
 

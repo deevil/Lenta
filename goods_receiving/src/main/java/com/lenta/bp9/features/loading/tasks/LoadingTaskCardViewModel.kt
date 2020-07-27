@@ -54,9 +54,6 @@ class LoadingTaskCardViewModel : CoreLoadingViewModel() {
     lateinit var dataBase: IDataBaseRepo
 
     @Inject
-    lateinit var rejectRequest: RejectNetRequest
-
-    @Inject
     lateinit var hyperHive: HyperHive
 
     override val title: MutableLiveData<String> = MutableLiveData()
@@ -221,12 +218,7 @@ class LoadingTaskCardViewModel : CoreLoadingViewModel() {
                 newTask?.updateTaskWithContents(taskContents.getTaskContentsInfo(result))
                 newTask?.taskRepository?.getSections()?.updateSections(sectionInfo, sectionProducts)
                 taskManager.setTask(newTask)
-
-                if (newTask?.taskDescription?.isMark == true)  { //https://trello.com/c/YL9D4v4t для маркированного товара
-                    checkMarkingTask()
-                } else {
-                    transferToNextScreen()
-                }
+                transferToNextScreen()
             }
         }
 
@@ -372,39 +364,6 @@ class LoadingTaskCardViewModel : CoreLoadingViewModel() {
                     screenNavigator.openTaskCardScreen(TaskCardMode.Full, taskManager.getReceivingTask()?.taskHeader?.taskType
                             ?: TaskType.None)
                 }
-            }
-        }
-    }
-
-    private fun checkMarkingTask() {
-        launchUITryCatch {
-            screenNavigator.showProgress(rejectRequest)
-            val params = RejectRequestParameters(
-                    deviceIP = context.getDeviceIp(),
-                    personalNumber = sessionInfo.personnelNumber.orEmpty(),
-                    taskNumber = taskManager.getReceivingTask()?.taskHeader?.taskNumber.orEmpty(),
-                    rejectMode = "1",
-                    rejectReason = ""
-            )
-            rejectRequest(params).either(::handleFailure, ::handleSuccessReject)
-            screenNavigator.hideProgress()
-        }
-
-
-    }
-
-    private fun handleSuccessReject(result: RejectRequestResult) {
-        launchUITryCatch {
-            if (result.retCode == 0) {
-                val paramGrzMarkRef = dataBase.getGrzMarkRef().orEmpty()
-                screenNavigator.openTaskListScreen()
-                if (paramGrzMarkRef.isEmpty()) {
-                    screenNavigator.openAlertRejectSuccessFullMarkingGoods()
-                } else {
-                    screenNavigator.openAlertRequestCompleteRejectionMarkingGoods()
-                }
-            } else {
-                transferToNextScreen()
             }
         }
     }
