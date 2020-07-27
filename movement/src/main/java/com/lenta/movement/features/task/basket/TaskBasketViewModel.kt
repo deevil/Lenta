@@ -82,18 +82,16 @@ class TaskBasketViewModel() : CoreViewModel(),
     private suspend fun getSettings() = taskManager.getTaskSettings()
 
     fun onDeleteClick() {
+        val basket = taskBasketsRepository.getBasketByIndex(basketIndex)
         selectionsHelper.selectedPositions.value.orEmpty()
                 .map { doRemoveProductIndex ->
-                    taskBasketsRepository.getBasketByIndex(basketIndex)
-                            ?.getByIndex(doRemoveProductIndex)
+                    basket?.getByIndex(doRemoveProductIndex)
                 }
                 .forEach { doRemoveProduct ->
-                    taskBasketsRepository.getBasketByIndex(basketIndex)
-                            ?.remove(doRemoveProduct)
+                    basket?.remove(doRemoveProduct)
                 }
-
         selectionsHelper.clearPositions()
-        goods.postValue(getGoods())
+        goods.value = getGoods()
     }
 
     fun onCharacteristicsClick() {
@@ -143,8 +141,12 @@ class TaskBasketViewModel() : CoreViewModel(),
             withContext(Dispatchers.IO){
                 taskBasketsRepository.addProduct(
                         product = productInfo,
-                        count = 1)
+                        count = ONE_PRODUCT_TO_ADD)
             }
         }
+    }
+
+    companion object {
+        private const val ONE_PRODUCT_TO_ADD = 1
     }
 }

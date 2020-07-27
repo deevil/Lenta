@@ -6,9 +6,11 @@ import com.lenta.movement.models.ITaskManager
 import com.lenta.movement.models.repositories.ITaskBasketsRepository
 import com.lenta.movement.platform.IFormatter
 import com.lenta.shared.platform.viewmodel.CoreViewModel
+import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.extentions.asyncLiveData
 import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.utilities.extentions.unsafeLazy
+import com.lenta.shared.utilities.orIfNull
 import javax.inject.Inject
 import kotlin.properties.Delegates
 
@@ -30,7 +32,7 @@ class TaskBasketInfoViewModel: CoreViewModel() {
 
     val size by unsafeLazy { MutableLiveData("${basket?.size} $PCS_ABBREVIATION") }
     val gisControl by unsafeLazy {
-        val gis = basket?.let { formatter.basketGisControl(it) }
+        val gis = basket?.let ( formatter::basketGisControl )
         MutableLiveData(gis)
     }
     val supplier by unsafeLazy { MutableLiveData(basket?.supplier?.name.orEmpty()) }
@@ -49,6 +51,8 @@ class TaskBasketInfoViewModel: CoreViewModel() {
                         taskSettings = taskSettings
                 )
                 emit(innerTitle)
+            }.orIfNull {
+                Logg.e { "NO SUCH BASKET IN REPO" }
             }
         }
     }
