@@ -39,8 +39,8 @@ class MarkingProductFailureFragment : CoreFragment<FragmentMarkingProductFailure
 
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
         bottomToolbarUiModel.uiModelButton1.show(ButtonDecorationInfo.back)
-        bottomToolbarUiModel.uiModelButton3.show(ButtonDecorationInfo.completeRejection)
-        bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.partialFailure)
+        bottomToolbarUiModel.uiModelButton3.show(ButtonDecorationInfo.completeRejectionMarking)
+        bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.partialFailureMarking)
         connectLiveData(vm.enabledPartialFailureBtn, bottomToolbarUiModel.uiModelButton5.enabled)
     }
 

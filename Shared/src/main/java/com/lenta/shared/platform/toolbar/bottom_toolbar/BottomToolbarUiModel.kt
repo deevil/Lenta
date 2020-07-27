@@ -399,6 +399,14 @@ data class ButtonDecorationInfo(
         val reset: ButtonDecorationInfo by lazy {
             ButtonDecorationInfo(R.drawable.ic_rollback_white_24dp, R.string.reset)
         }
+
+        val completeRejectionMarking: ButtonDecorationInfo by lazy {
+            ButtonDecorationInfo(R.drawable.ic_complete_rejection_marking, R.string.complete_rejection)
+        }
+
+        val partialFailureMarking: ButtonDecorationInfo by lazy {
+            ButtonDecorationInfo(R.drawable.ic_partial_failure_marking, R.string.partial_failure)
+        }
     }
 
 }

@@ -17,6 +17,7 @@ import com.lenta.shared.utilities.extentions.getDeviceIp
 import com.lenta.shared.utilities.extentions.launchUITryCatch
 import com.lenta.shared.utilities.extentions.toStringFormatted
 import kotlinx.coroutines.launch
+import java.util.*
 import javax.inject.Inject
 
 class MarkingProductFailureViewModel : CoreViewModel() {
@@ -55,7 +56,8 @@ class MarkingProductFailureViewModel : CoreViewModel() {
                                     .toStringFormatted()
                         }.orEmpty()
 
-        MutableLiveData(context.getString(R.string.marking_product_rejection_dialogue, notProcessedNumberOfStamps, origQuantity))
+        val unit = productInfo.value?.purchaseOrderUnits?.name?.toLowerCase(Locale.getDefault()).orEmpty()
+        MutableLiveData(context.getString(R.string.marking_product_rejection_dialogue, notProcessedNumberOfStamps, "$origQuantity $unit"))
     }
 
     val enabledPartialFailureBtn: MutableLiveData<Boolean> by lazy {
@@ -92,12 +94,12 @@ class MarkingProductFailureViewModel : CoreViewModel() {
                         screenNavigator.openAlertWrongProductType()
                     } else {
                         screenNavigator.openCompleteRejectionOfMarkingGoodsDialog(
-                                applyCallbackFunc = {
+                                nextCallbackFunc = {
                                     screenNavigator.goBack()
                                     processMarkingProductService.denialOfFullProductAcceptance(paramGrzGrundMarkCode.value.orEmpty())
                                 },
                                 title = "${productInfo.getMaterialLastSix()} ${productInfo.description}",
-                                countBlocks = productInfo.origQuantity.toDouble().toStringFormatted(),
+                                countBlocks = "${productInfo.origQuantity.toDouble().toStringFormatted()} ${productInfo.purchaseOrderUnits.name.toLowerCase(Locale.getDefault())}",
                                 paramGrzGrundMarkName = paramGrzGrundMarkName.value.orEmpty()
                         )
                     }
@@ -125,13 +127,13 @@ class MarkingProductFailureViewModel : CoreViewModel() {
                                         ?.notProcessedNumberOfStampsByProduct(productInfo)
                                         .toStringFormatted()
                         screenNavigator.openPartialRefusalOnMarkingGoodsDialog(
-                                applyCallbackFunc = {
+                                nextCallbackFunc = {
                                     screenNavigator.goBack()
                                     processMarkingProductService.refusalToAcceptPartlyByProduct(paramGrzGrundMarkCode.value.orEmpty())
                                 },
                                 title = "${productInfo.getMaterialLastSix()} ${productInfo.description}",
-                                countScanBlocks = processedNumberOfStamps,
-                                unconfirmedQuantity = notProcessedNumberOfStamps,
+                                countScanBlocks = "$processedNumberOfStamps ${productInfo.purchaseOrderUnits.name.toLowerCase(Locale.getDefault())}",
+                                unconfirmedQuantity = "$notProcessedNumberOfStamps ${productInfo.purchaseOrderUnits.name.toLowerCase(Locale.getDefault())}",
                                 paramGrzGrundMarkName = paramGrzGrundMarkName.value.orEmpty()
                         )
                     }

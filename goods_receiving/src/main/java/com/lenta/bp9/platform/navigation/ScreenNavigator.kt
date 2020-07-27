@@ -1599,29 +1599,27 @@ class ScreenNavigator(
         }
     }
 
-    override fun openCompleteRejectionOfMarkingGoodsDialog(applyCallbackFunc: () -> Unit, title: String, countBlocks: String, paramGrzGrundMarkName: String) {
+    override fun openCompleteRejectionOfMarkingGoodsDialog(nextCallbackFunc: () -> Unit, title: String, countBlocks: String, paramGrzGrundMarkName: String) {
         runOrPostpone {
             getFragmentStack()?.push(AlertFragment.create(
                     message = context.getString(R.string.dialogue_complete_rejection_of_goods, countBlocks, paramGrzGrundMarkName),
                     title = title,
-                    description = context.getString(R.string.complete_rejection),
                     iconRes = R.drawable.ic_question_yellow_80dp,
-                    codeConfirmForRight = backFragmentResultHelper.setFuncForResult(applyCallbackFunc),
-                    rightButtonDecorationInfo = ButtonDecorationInfo.apply,
+                    codeConfirmForRight = backFragmentResultHelper.setFuncForResult(nextCallbackFunc),
+                    rightButtonDecorationInfo = ButtonDecorationInfo.next,
                     pageNumber = PAGE_NUMBER_94)
             )
         }
     }
 
-    override fun openPartialRefusalOnMarkingGoodsDialog(applyCallbackFunc: () -> Unit, title: String, countScanBlocks: String, unconfirmedQuantity: String, paramGrzGrundMarkName: String) {
+    override fun openPartialRefusalOnMarkingGoodsDialog(nextCallbackFunc: () -> Unit, title: String, countScanBlocks: String, unconfirmedQuantity: String, paramGrzGrundMarkName: String) {
         runOrPostpone {
             getFragmentStack()?.push(AlertFragment.create(
                     message = context.getString(R.string.dialogue_partial_refusal_on_marking_goods, countScanBlocks, unconfirmedQuantity, paramGrzGrundMarkName),
                     title = title,
-                    description = context.getString(R.string.partial_failure),
                     iconRes = R.drawable.ic_question_yellow_80dp,
-                    codeConfirmForRight = backFragmentResultHelper.setFuncForResult(applyCallbackFunc),
-                    rightButtonDecorationInfo = ButtonDecorationInfo.apply,
+                    codeConfirmForRight = backFragmentResultHelper.setFuncForResult(nextCallbackFunc),
+                    rightButtonDecorationInfo = ButtonDecorationInfo.next,
                     pageNumber = PAGE_NUMBER_94)
             )
         }
@@ -1809,6 +1807,6 @@ interface IScreenNavigator : ICoreNavigator {
     fun openMarkingGoodsDetailsScreen(productInfo: TaskProductInfo)
     fun openAlertRequestCompleteRejectionMarkingGoods()
     fun openMarkingProductFailureScreen(productInfo: TaskProductInfo)
-    fun openCompleteRejectionOfMarkingGoodsDialog(applyCallbackFunc: () -> Unit, title: String, countBlocks: String, paramGrzGrundMarkName: String)
-    fun openPartialRefusalOnMarkingGoodsDialog(applyCallbackFunc: () -> Unit, title: String, countScanBlocks: String, unconfirmedQuantity: String, paramGrzGrundMarkName: String)
+    fun openCompleteRejectionOfMarkingGoodsDialog(nextCallbackFunc: () -> Unit, title: String, countBlocks: String, paramGrzGrundMarkName: String)
+    fun openPartialRefusalOnMarkingGoodsDialog(nextCallbackFunc: () -> Unit, title: String, countScanBlocks: String, unconfirmedQuantity: String, paramGrzGrundMarkName: String)
 }
