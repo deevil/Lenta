@@ -449,6 +449,10 @@ class GoodsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKey
                     taskRepository
                             .getExciseStampsBad()
                             .deleteExciseStampBadForProduct(product.materialNumber)
+
+                    taskRepository
+                            .getBlocksDiscrepancies()
+                            .deleteBlocksDiscrepanciesForProduct(product)
                 }
     }
 

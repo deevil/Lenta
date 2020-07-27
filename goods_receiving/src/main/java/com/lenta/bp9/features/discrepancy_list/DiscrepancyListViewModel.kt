@@ -588,6 +588,7 @@ class DiscrepancyListViewModel : CoreViewModel(), PageSelectionListener {
                     taskRepository
                             .getExciseStampsBad()
                             .deleteExciseStampBadNotNormForProduct(product.materialNumber)
+
                     taskRepository
                             .getBlocksDiscrepancies()
                             .deleteBlocksDiscrepanciesNotNormForProduct(product.materialNumber)
