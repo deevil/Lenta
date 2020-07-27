@@ -163,7 +163,6 @@ class MarkingGoodsDetailsFragment : CoreFragment<FragmentMarkingGoodsDetailsBind
     }
 
     companion object {
-        const val tabProperties = false
         private const val PAGE_NUMBER = "09/25"
         private const val PAGE_PROPERTIES = 0
         private const val PAGE_CATEGORIES = 1

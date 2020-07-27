@@ -128,27 +128,29 @@ class MarkingGoodsDetailsViewModel : CoreViewModel(), PageSelectionListener {
     }
 
     private fun updateCategories() {
-        productInfo.value
-                ?.let { product ->
-                    taskManager.getReceivingTask()
-                            ?.taskRepository
-                            ?.getProductsDiscrepancies()
-                            ?.findProductDiscrepanciesOfProduct(product)
-                }?.mapIndexed { index, discrepancy ->
-                    val isNormDiscrepancies = discrepancy.typeDiscrepancies == TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_NORM
-                    GoodsDetailsCategoriesItem(
-                            number = index + 1,
-                            name = reasonRejectionInfo.value?.firstOrNull { it.code == discrepancy.typeDiscrepancies }?.name.orEmpty(),
-                            nameBatch = "",
-                            visibilityNameBatch = false,
-                            quantityWithUom = "${discrepancy.numberDiscrepancies.toDouble().toStringFormatted()} ${productInfo.value?.purchaseOrderUnits?.name.orEmpty()}",
-                            isNormDiscrepancies = isNormDiscrepancies,
-                            typeDiscrepancies = discrepancy.typeDiscrepancies,
-                            materialNumber = discrepancy.materialNumber,
-                            batchDiscrepancies = null,
-                            even = index % 2 == 0
-                    )
-                }?.reversed()
+        goodsDetails.postValue(
+                productInfo.value
+                        ?.let { product ->
+                            taskManager.getReceivingTask()
+                                    ?.taskRepository
+                                    ?.getProductsDiscrepancies()
+                                    ?.findProductDiscrepanciesOfProduct(product)
+                        }?.mapIndexed { index, discrepancy ->
+                            val isNormDiscrepancies = discrepancy.typeDiscrepancies == TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_NORM
+                            GoodsDetailsCategoriesItem(
+                                    number = index + 1,
+                                    name = reasonRejectionInfo.value?.firstOrNull { it.code == discrepancy.typeDiscrepancies }?.name.orEmpty(),
+                                    nameBatch = "",
+                                    visibilityNameBatch = false,
+                                    quantityWithUom = "${discrepancy.numberDiscrepancies.toDouble().toStringFormatted()} ${productInfo.value?.purchaseOrderUnits?.name.orEmpty()}",
+                                    isNormDiscrepancies = isNormDiscrepancies,
+                                    typeDiscrepancies = discrepancy.typeDiscrepancies,
+                                    materialNumber = discrepancy.materialNumber,
+                                    batchDiscrepancies = null,
+                                    even = index % 2 == 0
+                            )
+                        }?.reversed()
+        )
 
         categoriesSelectionsHelper.clearPositions()
 

@@ -410,11 +410,9 @@ class MarkingInfoViewModel : CoreViewModel(),
     }
 
     fun onClickDetails() {
-        //todo
-        /**productInfo.value?.let {
+        productInfo.value?.let {
             screenNavigator.openMarkingGoodsDetailsScreen(it)
-        }*/
-        onScanResult("01046002660121422100000Ga.8005012345.938000.92NGkg+wRXz36kBFjpfwOub5DBIIpD2iS/DMYpZuuDLU0Y3pZt1z20/1ksr4004wfhDhRxu4dgUV4QN96Qtdih9g==")
+        }
     }
 
     fun onClickAdd(): Boolean {
@@ -447,8 +445,7 @@ class MarkingInfoViewModel : CoreViewModel(),
     }
 
     fun onClickApply() {
-        //todo if (onClickAdd()) screenNavigator.goBack()
-        onScanResult("04600266012142")
+        if (onClickAdd()) screenNavigator.goBack()
     }
 
     //https://trello.com/c/N6t51jru
