@@ -222,7 +222,11 @@ class SearchProductDelegate @Inject constructor(
 
     private fun openProductScreen(taskProductInfo: TaskProductInfo) {
         if (taskProductInfo.isNotEdit) {
-            screenNavigator.openGoodsDetailsScreen(taskProductInfo)
+            if (taskProductInfo.markType != MarkType.None) {
+                screenNavigator.openMarkingGoodsDetailsScreen(taskProductInfo)
+            } else {
+                screenNavigator.openGoodsDetailsScreen(taskProductInfo)
+            }
             return
         }
 

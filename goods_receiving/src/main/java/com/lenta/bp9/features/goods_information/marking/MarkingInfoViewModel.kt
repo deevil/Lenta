@@ -400,11 +400,9 @@ class MarkingInfoViewModel : CoreViewModel(),
     }
 
     fun onClickDetails() {
-        //todo
-        /**productInfo.value?.let {
+        productInfo.value?.let {
             screenNavigator.openMarkingGoodsDetailsScreen(it)
-        }*/
-        onScanResult("01046000660121422100000Ga.8005012345.938000.92NGkg+wRXz36kBFjpfwOub5DBIIpD2iS/DMYpZuuDLU0Y3pZt1z20/1ksr4004wfhDhRxu4dgUV4QN96Qtdih9g==")
+        }
     }
 
     fun onClickAdd(): Boolean {
