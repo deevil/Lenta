@@ -12,7 +12,9 @@ open class ProductInfo(
         sectionId: String,
         matrixType: MatrixType,
         materialType: String,
+        /** Группа закупок */
         val ekGroup: String,
+        /** Группа товаров */
         val matkl: String,
         val volume: Double,
         val quantityInvestments: Int,
@@ -20,6 +22,7 @@ open class ProductInfo(
         val isRus: Boolean,
         val isVet: Boolean,
         val isFood: Boolean
+
 ): ProductInfo(materialNumber, description, uom, type, isSet, sectionId, matrixType, materialType) {
 
     val isAlco: Boolean

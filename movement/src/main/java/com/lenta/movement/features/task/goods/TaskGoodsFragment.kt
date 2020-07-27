@@ -91,7 +91,7 @@ class TaskGoodsFragment: CoreFragment<FragmentTaskGoodsBinding, TaskGoodsViewMod
                         recyclerView = dataBinding?.processedRecyclerView,
                         selectionItemsHelper = vm.processedSelectionHelper,
                         recyclerViewKeyHandler = processedRecyclerViewKeyHandler,
-                        onClickItem = { position -> vm.onClickProcessedItem(position) }
+                        onClickItem = vm::onClickProcessedItem
                     )
 
                     dataBinding.vm = vm
