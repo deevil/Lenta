@@ -408,8 +408,8 @@ class MarkingInfoViewModel : CoreViewModel(),
     }
 
     fun onClickAdd(): Boolean {
-        val countVal = count.value.orEmpty()
-        return if (processMarkingProductService.overLimit(countVal.toDouble())) {
+        val countVal = countValue.value ?: 0.0
+        return if (processMarkingProductService.overLimit(countVal)) {
             screenNavigator.openAlertOverLimitPlannedScreen()
             false
         } else {
@@ -423,7 +423,7 @@ class MarkingInfoViewModel : CoreViewModel(),
                     }
                     ?: selectedReasonRejectionInfo?.code
             if (typeDiscrepancies != null) {
-                processMarkingProductService.addProduct(countVal, typeDiscrepancies)
+                processMarkingProductService.addProduct(countVal.toStringFormatted(), typeDiscrepancies)
                 processMarkingProductService.apply()
                 processMarkingProductService.clearModifications()
                 //обнуляем кол-во отсканированных марок
@@ -437,8 +437,7 @@ class MarkingInfoViewModel : CoreViewModel(),
     }
 
     fun onClickApply() {
-        //todo if (onClickAdd()) screenNavigator.goBack()
-        onScanResult("04600266012142")
+        if (onClickAdd()) screenNavigator.goBack()
     }
 
     //https://trello.com/c/N6t51jru
