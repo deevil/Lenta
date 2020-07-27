@@ -111,4 +111,8 @@ data class GoodOpen(
         parts.clear()
     }
 
+    fun isEmpty(): Boolean {
+        return positions.isEmpty() && marks.isEmpty() && parts.isEmpty()
+    }
+
 }

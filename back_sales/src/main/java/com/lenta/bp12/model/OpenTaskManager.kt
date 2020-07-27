@@ -221,45 +221,57 @@ class OpenTaskManager @Inject constructor(
             val parts = mutableListOf<PartInfo>()
 
             task.goods.forEach { good ->
-                val isDeleted = good.isDeleted
-
-                good.positions.forEach { position ->
+                if (good.isEmpty() || good.isDeleted) {
                     positions.add(
                             PositionInfo(
                                     material = good.material,
-                                    providerCode = position.provider.code,
-                                    factQuantity = if (isDeleted) "0" else position.quantity.dropZeros(),
+                                    providerCode = task.provider.code,
+                                    factQuantity = "0",
                                     isCounted = good.isCounted.toSapBooleanString(),
-                                    isDeleted = isDeleted.toSapBooleanString(),
+                                    isDeleted = good.isDeleted.toSapBooleanString(),
                                     innerQuantity = good.innerQuantity.dropZeros(),
                                     unitsCode = good.commonUnits.code
                             )
                     )
-                }
+                } else {
+                    good.positions.forEach { position ->
+                        positions.add(
+                                PositionInfo(
+                                        material = good.material,
+                                        providerCode = position.provider.code,
+                                        factQuantity = position.quantity.dropZeros(),
+                                        isCounted = good.isCounted.toSapBooleanString(),
+                                        isDeleted = good.isDeleted.toSapBooleanString(),
+                                        innerQuantity = good.innerQuantity.dropZeros(),
+                                        unitsCode = good.commonUnits.code
+                                )
+                        )
+                    }
 
-                good.marks.map { mark ->
-                    marks.add(
-                            MarkInfo(
-                                    material = good.material,
-                                    number = mark.number,
-                                    boxNumber = mark.boxNumber,
-                                    isBadMark = mark.isBadMark.toSapBooleanString(),
-                                    providerCode = mark.providerCode
-                            )
-                    )
-                }
+                    good.marks.map { mark ->
+                        marks.add(
+                                MarkInfo(
+                                        material = good.material,
+                                        number = mark.number,
+                                        boxNumber = mark.boxNumber,
+                                        isBadMark = mark.isBadMark.toSapBooleanString(),
+                                        providerCode = mark.providerCode
+                                )
+                        )
+                    }
 
-                good.parts.map { part ->
-                    parts.add(
-                            PartInfo(
-                                    material = good.material,
-                                    producerCode = part.producerCode,
-                                    productionDate = getStringFromDate(part.date, Constants.DATE_FORMAT_yyyyMMdd),
-                                    quantity = part.quantity.dropZeros(),
-                                    partNumber = part.number,
-                                    providerCode = part.providerCode
-                            )
-                    )
+                    good.parts.map { part ->
+                        parts.add(
+                                PartInfo(
+                                        material = good.material,
+                                        producerCode = part.producerCode,
+                                        productionDate = getStringFromDate(part.date, Constants.DATE_FORMAT_yyyyMMdd),
+                                        quantity = part.quantity.dropZeros(),
+                                        partNumber = part.number,
+                                        providerCode = part.providerCode
+                                )
+                        )
+                    }
                 }
             }
 
