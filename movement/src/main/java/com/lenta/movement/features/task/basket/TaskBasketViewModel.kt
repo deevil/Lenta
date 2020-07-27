@@ -52,7 +52,7 @@ class TaskBasketViewModel() : CoreViewModel(),
                         number = index + 1,
                         title = formatter.getProductName(product),
                         countWithUom = "$count $PCS_ABBREVIATION", // TODO
-                        isClickable = false
+                        isClickable = true
                 )
             }
         }
@@ -87,7 +87,8 @@ class TaskBasketViewModel() : CoreViewModel(),
                             .getByIndex(doRemoveProductIndex)
                 }
                 .forEach { doRemoveProduct ->
-                    taskBasketsRepository.getBasketByIndex(basketIndex).remove(doRemoveProduct)
+                    taskBasketsRepository.getBasketByIndex(basketIndex)
+                            .remove(doRemoveProduct)
                 }
 
         selectionsHelper.clearPositions()
@@ -100,6 +101,14 @@ class TaskBasketViewModel() : CoreViewModel(),
 
     fun onNextClick() {
         screenNavigator.goBack()
+    }
+
+    fun onItemClick(position: Int) {
+        goods.value?.let { list ->
+            list.getOrNull(position)?.also { (product, _) ->
+                screenNavigator.openTaskGoodsInfoScreen(product)
+            }
+        }
     }
 
     override fun onOkInSoftKeyboard(): Boolean {
