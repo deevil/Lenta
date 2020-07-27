@@ -68,6 +68,6 @@ class TaskGoodsInfoFragment : CoreFragment<FragmentTaskGoodsInfoBinding, TaskGoo
     }
 
     override fun onScanResult(data: String) {
-        vm::onScanResult
+        vm.onScanResult(data)
     }
 }

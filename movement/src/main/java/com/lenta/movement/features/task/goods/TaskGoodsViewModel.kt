@@ -3,7 +3,6 @@ package com.lenta.movement.features.task.goods
 import android.content.Context
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.switchMap
-import androidx.lifecycle.viewModelScope
 import com.lenta.movement.features.main.box.ScanInfoHelper
 import com.lenta.movement.models.*
 import com.lenta.movement.models.repositories.ITaskBasketsRepository
@@ -270,8 +269,14 @@ class TaskGoodsViewModel : CoreViewModel(),
     private fun searchCode(code: String, fromScan: Boolean, isBarCode: Boolean? = null) {
         launchUITryCatch {
             scanInfoHelper.searchCode(code, fromScan, isBarCode) { productInfo ->
-                screenNavigator.openTaskGoodsInfoScreen(productInfo)
+                onSearchResult(productInfo)
             }
+        }
+    }
+
+    private fun onSearchResult(productInfo: ProductInfo) {
+        launchUITryCatch {
+            screenNavigator.openTaskGoodsInfoScreen(productInfo)
         }
     }
 

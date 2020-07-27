@@ -14,8 +14,6 @@ import com.lenta.movement.platform.navigation.IScreenNavigator
 import com.lenta.shared.models.core.Supplier
 import com.lenta.shared.models.core.Uom
 import com.lenta.shared.platform.viewmodel.CoreViewModel
-import com.lenta.shared.scan.mobilbase.BarcodeDeclaration
-import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
 import com.lenta.shared.utilities.extentions.*
 import com.lenta.shared.view.OnPositionClickListener
@@ -57,7 +55,7 @@ class TaskGoodsInfoViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
     val supplierSelectedListener = object : OnPositionClickListener {
         override fun onClickPosition(position: Int) {
             supplierSelected.value =
-                Optional.fromNullable(productInfo.suppliers.getOrNull(position))
+                    Optional.fromNullable(productInfo.suppliers.getOrNull(position))
         }
     }
 
@@ -78,18 +76,18 @@ class TaskGoodsInfoViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
 
     val totalQuantity: LiveData<Int> by lazy {
         forBasketQuantity.combineLatest(currentBasket)
-            .mapSkipNulls { (forBasketQuantity, currentBasket) ->
-                taskBasketsRepository.getAll()
-                    .filter { basket ->
-                        basket.index != currentBasket.index
-                    }
-                    .flatMap { basket ->
-                        basket.filterKeys { basketEntity ->
-                            basketEntity.materialNumber == productInfo.materialNumber
-                        }.values
-                    }
-                    .sum() + forBasketQuantity
-            }
+                .mapSkipNulls { (forBasketQuantity, currentBasket) ->
+                    taskBasketsRepository.getAll()
+                            .filter { basket ->
+                                basket.index != currentBasket.index
+                            }
+                            .flatMap { basket ->
+                                basket.filterKeys { basketEntity ->
+                                    basketEntity.materialNumber == productInfo.materialNumber
+                                }.values
+                            }
+                            .sum() + forBasketQuantity
+                }
     }
 
     val applyEnabled: LiveData<Boolean> by lazy {
@@ -113,26 +111,24 @@ class TaskGoodsInfoViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
     }
 
     private suspend fun addProductToRepository() =
-        withContext(Dispatchers.IO) {
-            taskBasketsRepository.addProduct(
-                    product = productInfo,
-                    supplier = supplierSelected.value?.orNull(),
-                    count = quantity.value?.toIntOrNull() ?: 0
-            )
-        }
+            withContext(Dispatchers.IO) {
+                taskBasketsRepository.addProduct(
+                        product = productInfo,
+                        supplier = supplierSelected.value?.orNull(),
+                        count = quantity.value?.toIntOrNull() ?: 0
+                )
+            }
 
     fun onDetailsClick() {
         screenNavigator.openTaskGoodsDetailsScreen(productInfo)
     }
 
     fun onScanResult(data: String) {
-        applyEnabled.value?.let { isApplyEnabled ->
-            if (isApplyEnabled) {
-                launchAsyncTryCatch {
-                    addProductToRepository()
-                }
-                searchCode(data)
+        if (applyEnabled.value == true) {
+            launchAsyncTryCatch {
+                addProductToRepository()
             }
+            searchCode(data)
         }
     }
 
@@ -148,10 +144,8 @@ class TaskGoodsInfoViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
     }
 
     override fun onOkInSoftKeyboard(): Boolean {
-        applyEnabled.value?.let { isApplyEnabled ->
-            if (isApplyEnabled) {
-                onApplyClick()
-            }
+        if (applyEnabled.value == true) {
+            onApplyClick()
         }
         return true
     }
