@@ -25,26 +25,31 @@ class TaskBasketInfoViewModel: CoreViewModel() {
     @Inject
     lateinit var formatter: IFormatter
 
-    private val basket: Basket
+    private val basket: Basket?
         get() = taskBasketsRepository.getBasketByIndex(basketIndex)
 
-    val size by unsafeLazy { MutableLiveData("${basket.size} $PCS_ABBREVIATION") }
-    val gisControl by unsafeLazy { MutableLiveData(formatter.basketGisControl(basket)) }
-    val supplier by unsafeLazy { MutableLiveData(basket.supplier?.name.orEmpty()) }
+    val size by unsafeLazy { MutableLiveData("${basket?.size} $PCS_ABBREVIATION") }
+    val gisControl by unsafeLazy {
+        val gis = basket?.let { formatter.basketGisControl(it) }
+        MutableLiveData(gis)
+    }
+    val supplier by unsafeLazy { MutableLiveData(basket?.supplier?.name.orEmpty()) }
 
     val gisControlVisible by unsafeLazy { gisControl.map { it.isNullOrEmpty().not() } }
-    val supplierVisible by unsafeLazy { MutableLiveData(basket.supplier != null) }
+    val supplierVisible by unsafeLazy { MutableLiveData(basket?.supplier != null) }
 
     val title by unsafeLazy {
         asyncLiveData<String> {
-            val task = taskManager.getTask()
-            val taskSettings = taskManager.getTaskSettings()
-            val innerTitle = formatter.getBasketTitle(
-                    basket = basket,
-                    task = task,
-                    taskSettings = taskSettings
-            )
-            emit(innerTitle)
+            basket?.let {
+                val task = taskManager.getTask()
+                val taskSettings = taskManager.getTaskSettings()
+                val innerTitle = formatter.getBasketTitle(
+                        basket = it,
+                        task = task,
+                        taskSettings = taskSettings
+                )
+                emit(innerTitle)
+            }
         }
     }
 
