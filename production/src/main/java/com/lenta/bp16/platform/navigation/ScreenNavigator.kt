@@ -8,10 +8,8 @@ import com.lenta.bp16.features.defect_list.DefectListFragment
 import com.lenta.bp16.features.external_supply_list.ExternalSupplyListFragment
 import com.lenta.bp16.features.external_supply_task_list.ExternalSupplyTaskListFragment
 import com.lenta.bp16.features.good_info.GoodInfoFragment
-import com.lenta.bp16.features.good_irrelevant_info.IrrelevantGoodInfoFragment
 import com.lenta.bp16.features.good_packaging.GoodPackagingFragment
 import com.lenta.bp16.features.good_weighing.GoodWeighingFragment
-import com.lenta.bp16.features.good_without_manufacturer.GoodWithoutManufacturerFragment
 import com.lenta.bp16.features.loading.fast.FastDataLoadingFragment
 import com.lenta.bp16.features.main_menu.MainMenuFragment
 import com.lenta.bp16.features.pack_good_list.PackGoodListFragment
@@ -163,14 +161,6 @@ class ScreenNavigator @Inject constructor(
         getFragmentStack()?.push(GoodInfoFragment())
     }
 
-    override fun openGoodIrrelevantInfoScreen() {
-        getFragmentStack()?.push(IrrelevantGoodInfoFragment())
-    }
-
-    override fun openGoodWithoutManufacturerScreen() {
-        getFragmentStack()?.push(GoodWithoutManufacturerFragment())
-    }
-
 
     // Информационные экраны
     override fun showDefrostingPhaseIsCompleted(nextCallback: () -> Unit) {
@@ -303,6 +293,17 @@ class ScreenNavigator @Inject constructor(
         }
     }
 
+    override fun showAlertGoodNotFound() {
+        getFragmentStack()?.push(AlertFragment.create(
+                pageNumber = Constants.ALERT_FRAGMENT,
+                message = context.getString(R.string.tw_alert_good_not_found),
+                iconRes = R.drawable.ic_warning_red_80dp,
+                leftButtonDecorationInfo = ButtonDecorationInfo.back,
+                codeConfirmForLeft = backFragmentResultHelper.setFuncForResult(/*TODO Возвращение на выбор товара*/)
+        ))
+    }
+
+
 }
 
 interface IScreenNavigator : ICoreNavigator {
@@ -325,8 +326,6 @@ interface IScreenNavigator : ICoreNavigator {
     fun openDefectInfoScreen()
     fun openDefectListScreen()
     fun openGoodInfoScreen()
-    fun openGoodIrrelevantInfoScreen()
-    fun openGoodWithoutManufacturerScreen()
     fun openSelectGoodScreen()
 
     fun showDefrostingPhaseIsCompleted(nextCallback: () -> Unit)
@@ -340,4 +339,5 @@ interface IScreenNavigator : ICoreNavigator {
     fun showAlertNoIpPrinter()
     fun showLabelSentToPrint(nextCallback: () -> Unit)
     fun showAlertPartNotFound()
+    fun showAlertGoodNotFound()
 }
