@@ -26,7 +26,7 @@ data class TaskBlockDiscrepancies(
                     isScan = restData.isScan.isNotEmpty(),
                     isMsc = restData.isMsc.isNotEmpty(),
                     isUnknown = restData.isUnknown.isNotEmpty(),
-                    isGrayZone = restData.isGrayZone.isNotEmpty()
+                    isGrayZone = restData.isGrayZone?.isNotEmpty() ?: false
             )
         }
     }
@@ -50,7 +50,7 @@ data class TaskBlockDiscrepanciesRestData(
         @SerializedName("IS_UNKNOWN")
         val isUnknown: String,
         @SerializedName("IS_GRAYZONE")
-        val isGrayZone: String
+        val isGrayZone: String?
 ) {
 
     companion object {
