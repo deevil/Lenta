@@ -24,7 +24,7 @@ class SelectGoodViewModel : SendDataViewModel() {
         launchUITryCatch {
             ean.value = barcodeField.value ?: Constants.GOOD_BARCODE
             val barcode = ean.value.toString()
-            var weight: String? = null
+            var weight: String? = "0"
             if (weightValue.contains(barcode.substring(0 until 2))) {
                 ean.value = barcode.replace(barcode.takeLast(6), "000000")
                 weight = barcode.takeLast(6).take(5)

@@ -56,7 +56,7 @@ class GoodInfoViewModel : SendDataViewModel(), OnPositionClickListener {
             Logg.d { "good.ean:${good?.ean}" }
             Logg.d { "Good uom:${good?.uom}, ${good?.material}, ${good?.name}, ${good?.uom}, ${weight.value}" }
             val quantity = when {
-                weight.value != null -> {
+                weight.value != 0 -> {
                     weight.value?.div(Constants.CONVERT_TO_KG)
                 }
 
