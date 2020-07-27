@@ -91,6 +91,7 @@
 
                     <com.lenta.shared.view.ClickableSpinner
                         android:id="@+id/spin_production_date"
+                        app:items="@{vm.dateInfo}"
                         style="@style/CellSpinnerStyle"
                         android:layout_height="match_parent"
                         tools:entries="@array/date_list" />
@@ -105,12 +106,13 @@
                     android:layout_weight="1">
 
                     <EditText
-                        android:id="@+id/et_production_date"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:paddingStart="@dimen/size_10dp"
                         android:paddingEnd="@dimen/size_10dp"
                         android:textSize="@dimen/text_14sp"
+                        android:text="@={vm.dateInfoField}"
+                        app:requestFocus="@{vm.requestFocusDateInfoField}"
                         style="@style/CellEditTextStyle"
                         tools:text="21.06.2020"/>
 
@@ -144,6 +146,7 @@
                     <com.lenta.shared.view.ClickableSpinner
                         android:id="@+id/spin_storage_sender"
                         style="@style/CellSpinnerStyle"
+                        app:items="@{vm.warehouseSender}"
                         android:layout_height="match_parent"
                         tools:entries="@array/storage_list" />
 
@@ -177,6 +180,7 @@
                     <com.lenta.shared.view.ClickableSpinner
                         android:id="@+id/spin_storage_receiver"
                         style="@style/CellSpinnerStyle"
+                        app:items="@{vm.warehouseReceiver}"
                         android:layout_height="match_parent"
                         tools:entries="@array/storage_list" />
 
@@ -208,12 +212,12 @@
                     android:layout_weight="1">
 
                     <EditText
-                        android:id="@+id/et_сontainer"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:paddingStart="@dimen/size_10dp"
                         android:paddingEnd="@dimen/size_10dp"
                         android:textSize="@dimen/text_14sp"
+                        android:text="@={vm.containerField}"
                         style="@style/CellEditTextStyle"
                         tools:text="123"/>
 

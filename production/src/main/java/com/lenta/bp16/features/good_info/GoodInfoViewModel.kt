@@ -16,10 +16,27 @@ class GoodInfoViewModel : CoreViewModel() {
 
     val weightField = MutableLiveData("0")
 
+    /**Количество*/
     val quantityField = MutableLiveData("")
-    val requestFocusQuantityField = MutableLiveData("")
+    val requestFocusQuantityField = MutableLiveData(true)
 
+    /**Производитель*/
     val manufactureName: MutableLiveData<List<String>> = MutableLiveData()
+
+    /**Дата производства и срок годности*/
+    val dateInfoField = MutableLiveData("")
+    val dateInfo: MutableLiveData<List<String>> = MutableLiveData()
+    val requestFocusDateInfoField = MutableLiveData(true)
+
+    /**Склад отправитель*/
+    val warehouseSender: MutableLiveData<List<String>> = MutableLiveData()
+
+    /**Склад получатель*/
+    val warehouseReceiver: MutableLiveData<List<String>> = MutableLiveData()
+
+    /**Тара*/
+    val containerField = MutableLiveData("")
+
 
     private val entered = weightField.map{
         it?.toDoubleOrNull() ?: 0.0
