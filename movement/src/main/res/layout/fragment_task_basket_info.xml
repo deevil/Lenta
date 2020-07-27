@@ -15,7 +15,7 @@
         <com.lenta.movement.view.BorderedTableLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
+            android:layout_marginTop="@dimen/size_16dp"
             android:stretchColumns="*">
 
             <TableRow>
@@ -23,15 +23,15 @@
                 <TextView
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:text="Объём корзины"
-                    android:layout_margin="16dp"/>
+                    android:text="@string/basket_value"
+                    android:layout_margin="@dimen/size_16dp"/>
 
                 <TextView
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     tools:text="60 шт"
                     android:text="@{vm.size}"
-                    android:layout_margin="16dp"/>
+                    android:layout_margin="@dimen/size_16dp"/>
 
             </TableRow>
 
@@ -40,15 +40,15 @@
                 <TextView
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:text="ГИС-контроль"
-                    android:layout_margin="16dp"/>
+                    android:text="@string/gis_control"
+                    android:layout_margin="@dimen/size_16dp"/>
 
                 <TextView
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     tools:text="Обычный товар"
                     android:text="@{vm.gisControl}"
-                    android:layout_margin="16dp"/>
+                    android:layout_margin="@dimen/size_16dp"/>
 
             </TableRow>
 
@@ -57,15 +57,15 @@
                 <TextView
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:text="Поставщик"
-                    android:layout_margin="16dp"/>
+                    android:text="@string/provider"
+                    android:layout_margin="@dimen/size_16dp"/>
 
                 <TextView
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     tools:text="106453 Поставщик 4"
                     android:text="@{vm.supplier}"
-                    android:layout_margin="16dp"/>
+                    android:layout_margin="@dimen/size_16dp"/>
 
             </TableRow>
 

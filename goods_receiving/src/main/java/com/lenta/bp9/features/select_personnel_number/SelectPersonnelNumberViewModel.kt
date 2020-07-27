@@ -5,14 +5,12 @@ import androidx.lifecycle.viewModelScope
 import com.lenta.bp9.platform.navigation.IScreenNavigator
 import com.lenta.bp9.repos.IDataBaseRepo
 import com.lenta.shared.account.ISessionInfo
-import com.lenta.shared.exception.Failure
 import com.lenta.shared.features.select_personnel_number.SelectPersonnelNumberDelegate
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.settings.IAppSettings
-import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
+import com.lenta.shared.utilities.extentions.launchUITryCatch
 import com.lenta.shared.utilities.extentions.map
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class SelectPersonnelNumberViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
@@ -41,7 +39,7 @@ class SelectPersonnelNumberViewModel : CoreViewModel(), OnOkInSoftKeyboardListen
     val enabledNextButton = fullName.map { !it.isNullOrBlank() }
 
     init {
-        viewModelScope.launch {
+        launchUITryCatch {
             if (dataBase.getParamGrzWerksOwnpr()?.findLast {it == sessionInfo.market}?.isNotEmpty() == true) { //https://trello.com/c/KccNFbXR
                 screenNavigator.openMainMenuScreen()
             } else {

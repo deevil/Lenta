@@ -5,7 +5,6 @@ import com.lenta.shared.functional.Either
 import com.lenta.shared.functional.flatMap
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import java.lang.IllegalArgumentException
 import javax.inject.Inject
 
 class PrintPriceNetService @Inject constructor(private val priceTagGenerator: IPriceTagGenerator) : IPrintPriceNetService {

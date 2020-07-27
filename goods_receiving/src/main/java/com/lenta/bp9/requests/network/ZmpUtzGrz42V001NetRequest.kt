@@ -1,7 +1,6 @@
 package com.lenta.bp9.requests.network
 
 import com.google.gson.annotations.SerializedName
-import com.lenta.bp9.model.task.TaskCargoUnitInfoRestData
 import com.lenta.bp9.model.task.TaskDescriptionRestInfo
 import com.lenta.bp9.model.task.TaskNotificationRestInfo
 import com.lenta.shared.exception.Failure

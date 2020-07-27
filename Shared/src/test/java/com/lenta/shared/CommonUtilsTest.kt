@@ -6,8 +6,8 @@ import com.nhaarman.mockitokotlin2.mock
 import io.mockk.every
 import io.mockk.mockkStatic
 import io.mockk.unmockkAll
-import junit.framework.TestCase.assertNull
 import junit.framework.TestCase.assertEquals
+import junit.framework.TestCase.assertNull
 import org.junit.After
 import org.junit.Before
 import org.junit.Test

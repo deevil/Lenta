@@ -1,4 +1,4 @@
-<resources xmlns:tools="http://schemas.android.com/tools">
+<resources>
     <string name="app_name">Приемка товаров</string>
     <string name="task">Задание</string>
     <string name="SKUGE">SKU/ГЕ</string>

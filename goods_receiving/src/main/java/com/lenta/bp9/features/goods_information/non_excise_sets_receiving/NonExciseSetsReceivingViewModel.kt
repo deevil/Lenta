@@ -5,9 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.lenta.bp9.R
 import com.lenta.bp9.features.goods_information.non_excise_sets_pge.ListComponentsItem
-import com.lenta.bp9.features.goods_list.ListWithoutBarcodeItem
 import com.lenta.bp9.features.goods_list.SearchProductDelegate
-import com.lenta.bp9.model.processing.ProcessNonExciseSetsPGEProductService
 import com.lenta.bp9.model.processing.ProcessNonExciseSetsReceivingProductService
 import com.lenta.bp9.model.task.IReceivingTaskManager
 import com.lenta.bp9.model.task.TaskProductInfo

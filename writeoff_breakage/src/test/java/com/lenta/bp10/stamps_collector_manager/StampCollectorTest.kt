@@ -10,14 +10,17 @@ import com.lenta.bp10.models.repositories.ITaskExciseStampRepository
 import com.lenta.bp10.models.repositories.ITaskProductRepository
 import com.lenta.bp10.models.repositories.ITaskRepository
 import com.lenta.bp10.models.repositories.ITaskWriteOffReasonRepository
-import com.lenta.bp10.models.task.*
+import com.lenta.bp10.models.task.ProcessExciseAlcoProductService
+import com.lenta.bp10.models.task.TaskDescription
+import com.lenta.bp10.models.task.TaskType
+import com.lenta.bp10.models.task.WriteOffReason
 import com.lenta.shared.models.core.MatrixType
 import com.lenta.shared.models.core.ProductInfo
 import com.lenta.shared.models.core.ProductType
 import com.lenta.shared.models.core.Uom
 import com.lenta.shared.utilities.tests_utils.observeOnce
-import io.mockk.mockk
-import junit.framework.TestCase.*
+import junit.framework.TestCase.assertEquals
+import junit.framework.TestCase.assertTrue
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.ObsoleteCoroutinesApi
@@ -31,7 +34,6 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.junit.MockitoJUnitRunner
-import java.lang.UnsupportedOperationException
 import java.util.*
 
 

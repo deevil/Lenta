@@ -2,7 +2,6 @@ package com.lenta.bp9.features.loading.tasks
 
 import android.content.Context
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
 import com.lenta.bp9.model.task.*
 import com.lenta.bp9.model.task.revise.*
 import com.lenta.bp9.platform.navigation.IScreenNavigator
@@ -14,9 +13,8 @@ import com.lenta.shared.exception.Failure
 import com.lenta.shared.features.loading.CoreLoadingViewModel
 import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.extentions.getDeviceIp
+import com.lenta.shared.utilities.extentions.launchUITryCatch
 import com.mobrun.plugin.api.HyperHive
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.newCoroutineContext
 import javax.inject.Inject
 
 class LoadingFinishReviseViewModel : CoreLoadingViewModel() {
@@ -42,7 +40,7 @@ class LoadingFinishReviseViewModel : CoreLoadingViewModel() {
     }
 
     init {
-        viewModelScope.launch {
+        launchUITryCatch {
             progress.value = true
             taskManager.getReceivingTask()?.let { task ->
                 val params = FinishReviseRequestParameters(
@@ -72,7 +70,7 @@ class LoadingFinishReviseViewModel : CoreLoadingViewModel() {
 
     private fun handleSuccess(result: FinishReviseRequestResult) {
         Logg.d { "Finish revise request result $result" }
-        viewModelScope.launch {
+        launchUITryCatch {
             screenNavigator.openMainMenuScreen()
             screenNavigator.openTaskListScreen()
             taskManager.updateTaskDescription(TaskDescription.from(result.taskDescription))

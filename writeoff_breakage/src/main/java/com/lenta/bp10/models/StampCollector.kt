@@ -7,7 +7,6 @@ import com.lenta.bp10.models.task.ProcessExciseAlcoProductService
 import com.lenta.bp10.models.task.TaskExciseStamp
 import com.lenta.bp10.models.task.WriteOffReason
 import com.lenta.shared.utilities.extentions.map
-import java.lang.UnsupportedOperationException
 
 class StampCollector(private val processExciseAlcoProductService: ProcessExciseAlcoProductService) {
     private val countLiveData: MutableLiveData<Double> = MutableLiveData()

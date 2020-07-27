@@ -2,6 +2,7 @@ package com.lenta.movement.features.task.goods
 
 import android.content.Context
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.switchMap
 import androidx.lifecycle.viewModelScope
 import com.lenta.movement.features.main.box.ScanInfoHelper
 import com.lenta.movement.models.*
@@ -20,7 +21,6 @@ import com.lenta.shared.utilities.SelectionItemsHelper
 import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
 import com.lenta.shared.utilities.databinding.PageSelectionListener
 import com.lenta.shared.utilities.extentions.*
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class TaskGoodsViewModel : CoreViewModel(),
@@ -70,19 +70,24 @@ class TaskGoodsViewModel : CoreViewModel(),
     }
 
     private val baskets = MutableLiveData<List<Basket>>()
-    val basketList = baskets.mapSkipNulls { baskets ->
-        baskets.map { basket ->
-            SimpleListItem(
-                    number = basket.number,
-                    title = formatter.getBasketName(basket),
-                    subtitle = formatter.getBasketDescription(
-                            basket,
-                            taskManager.getTask(),
-                            taskManager.getTaskSettings()
-                    ),
-                    countWithUom = basket.keys.size.toString(),
-                    isClickable = true
-            )
+    val basketItemList by unsafeLazy {
+        baskets.switchMap { list ->
+            asyncLiveData<List<SimpleListItem>> {
+                val mappedList = list.map { basket ->
+                    SimpleListItem(
+                            number = basket.number,
+                            title = formatter.getBasketName(basket),
+                            subtitle = formatter.getBasketDescription(
+                                    basket,
+                                    taskManager.getTask(),
+                                    taskManager.getTaskSettings()
+                            ),
+                            countWithUom = basket.keys.size.toString(),
+                            isClickable = true
+                    )
+                }
+                emit(mappedList)
+            }
         }
     }
 
@@ -201,7 +206,7 @@ class TaskGoodsViewModel : CoreViewModel(),
     }
 
     private fun saveTask() {
-        viewModelScope.launch {
+        launchUITryCatch {
             screenNavigator.showProgress(saveTaskNetRequest)
             val task = taskManager.getTask()
             val params = SaveTaskParams(
@@ -264,7 +269,7 @@ class TaskGoodsViewModel : CoreViewModel(),
     }
 
     private fun searchCode(code: String, fromScan: Boolean, isBarCode: Boolean? = null) {
-        viewModelScope.launch {
+        launchUITryCatch {
             scanInfoHelper.searchCode(code, fromScan, isBarCode) { productInfo ->
                 screenNavigator.openTaskGoodsInfoScreen(productInfo)
             }

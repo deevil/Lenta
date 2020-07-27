@@ -1,8 +1,6 @@
 package com.lenta.bp9.model.memory
 
 import com.lenta.bp9.model.repositories.ITaskCargoUnitsRepository
-import com.lenta.bp9.model.task.TaskProductInfo
-import com.lenta.bp9.model.repositories.ITaskProductRepository
 import com.lenta.bp9.model.task.TaskCargoUnitInfo
 
 class MemoryTaskCargoUnitsRepository : ITaskCargoUnitsRepository {

@@ -1,7 +1,6 @@
 package com.lenta.bp14.features.task_list
 
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
 import com.lenta.bp14.models.data.TaskListTab
 import com.lenta.bp14.models.general.ITasksSearchHelper
 import com.lenta.bp14.models.general.TaskInfo
@@ -12,8 +11,8 @@ import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
 import com.lenta.shared.utilities.databinding.PageSelectionListener
 import com.lenta.shared.utilities.extentions.combineLatest
+import com.lenta.shared.utilities.extentions.launchUITryCatch
 import com.lenta.shared.utilities.extentions.map
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyboardListener {
@@ -68,7 +67,7 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
     // -----------------------------
 
     init {
-        viewModelScope.launch {
+        launchUITryCatch {
             updateProcessing()
         }
     }
@@ -94,8 +93,8 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
     }
 
     private fun updateProcessing() {
-        viewModelScope.launch {
-            navigator.showProgressLoadingData()
+        launchUITryCatch {
+            navigator.showProgressLoadingData(::handleFailure)
             tasksSearchHelper.processedFilter = searchFieldProcessing.value
             tasksSearchHelper.updateTaskList().either({
                 navigator.openAlertScreen(it)

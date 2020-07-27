@@ -1,8 +1,10 @@
 package com.lenta.bp9.requests.network
 
 import com.google.gson.annotations.SerializedName
-import com.lenta.bp9.model.task.*
-import com.lenta.bp9.model.task.revise.*
+import com.lenta.bp9.model.task.TaskBatchInfoRestData
+import com.lenta.bp9.model.task.TaskBoxInfoRestData
+import com.lenta.bp9.model.task.TaskExciseStampInfoRestData
+import com.lenta.bp9.model.task.TaskProcessingUnitInfoRestData
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.fmp.ObjectRawStatus
 import com.lenta.shared.functional.Either

@@ -1,7 +1,6 @@
 package com.lenta.inventory.models.repositories
 
 import com.lenta.inventory.models.task.TaskProductInfo
-import com.lenta.inventory.requests.network.UntiedProduct
 
 interface ITaskProductRepository {
     fun getProducts(): List<TaskProductInfo>

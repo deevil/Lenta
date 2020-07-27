@@ -4,12 +4,12 @@ import androidx.annotation.NonNull;
 
 import com.google.gson.annotations.SerializedName;
 import com.mobrun.plugin.api.HyperHive;
+import com.mobrun.plugin.api.helper.LocalTableResourceHelper;
 import com.mobrun.plugin.api.request_assistant.ConvertableToArray;
 import com.mobrun.plugin.api.request_assistant.CustomParameter;
-import com.mobrun.plugin.api.request_assistant.ScalarParameter;
 import com.mobrun.plugin.api.request_assistant.ParameterField;
 import com.mobrun.plugin.api.request_assistant.RequestBuilder;
-import com.mobrun.plugin.api.helper.LocalTableResourceHelper;
+import com.mobrun.plugin.api.request_assistant.ScalarParameter;
 import com.mobrun.plugin.models.StatusSelectTable;
 
 //Сохранение данных задания - ЧКЛ

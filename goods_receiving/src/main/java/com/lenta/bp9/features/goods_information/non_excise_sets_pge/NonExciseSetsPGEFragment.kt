@@ -10,8 +10,10 @@ import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import com.lenta.bp9.BR
 import com.lenta.bp9.R
-import com.lenta.bp9.databinding.*
-import com.lenta.bp9.features.goods_information.general.GoodsInfoFragment
+import com.lenta.bp9.databinding.FragmentNonExciseSetsPgeBinding
+import com.lenta.bp9.databinding.ItemTileNonExciseSetsComponentsBinding
+import com.lenta.bp9.databinding.LayoutNonExciseSetsComponentsPgeBinding
+import com.lenta.bp9.databinding.LayoutNonExciseSetsCountedPgeBinding
 import com.lenta.bp9.model.task.TaskProductInfo
 import com.lenta.bp9.platform.extentions.getAppComponent
 import com.lenta.shared.platform.activity.OnBackPresserListener
@@ -21,7 +23,6 @@ import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListener
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
 import com.lenta.shared.scan.OnScanResultListener
-import com.lenta.shared.utilities.DateInputMask
 import com.lenta.shared.utilities.databinding.DataBindingAdapter
 import com.lenta.shared.utilities.databinding.DataBindingRecyclerViewConfig
 import com.lenta.shared.utilities.databinding.RecyclerViewKeyHandler

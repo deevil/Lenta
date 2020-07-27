@@ -2,7 +2,6 @@ package com.lenta.bp9.features.revise
 
 import android.content.Context
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
 import com.lenta.bp9.features.task_card.TaskCardViewModel
 import com.lenta.bp9.model.task.IReceivingTaskManager
 import com.lenta.bp9.model.task.TaskType
@@ -13,9 +12,9 @@ import com.lenta.shared.fmp.resources.dao_ext.getProductInfoByMaterial
 import com.lenta.shared.fmp.resources.slow.ZfmpUtz48V001
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.databinding.PageSelectionListener
+import com.lenta.shared.utilities.extentions.launchUITryCatch
 import com.lenta.shared.utilities.extentions.map
 import com.mobrun.plugin.api.HyperHive
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class ProductDocumentsReviseViewModel : CoreViewModel(), PageSelectionListener {
@@ -115,7 +114,7 @@ class ProductDocumentsReviseViewModel : CoreViewModel(), PageSelectionListener {
             }
         }
 
-        viewModelScope.launch {
+        launchUITryCatch {
             moveToPreviousPageIfNeeded()
         }
     }

@@ -21,19 +21,19 @@ fun CoreViewModel.launchUITryCatch(
     }
 }
 
-fun CoreViewModel.launchAsync(
-        start: CoroutineStart = CoroutineStart.DEFAULT,
-        block: suspend CoroutineScope.() -> Unit
-) {
-    viewModelScope.launch(viewModelScope.coroutineContext + Dispatchers.IO, start, block)
-}
-
 fun CoreViewModel.launchAsyncTryCatch(catchBlock: ((Throwable) -> Unit)? = null, tryBlock: suspend CoroutineScope.() -> Unit) {
     try {
         launchAsync(CoroutineStart.DEFAULT, tryBlock)
     } catch (e: Throwable) {
         catchBlock?.invoke(e) ?: handleFailure(failure = Failure.ThrowableFailure(e))
     }
+}
+
+fun CoreViewModel.launchAsync(
+        start: CoroutineStart = CoroutineStart.DEFAULT,
+        block: suspend CoroutineScope.() -> Unit
+) {
+    viewModelScope.launch(viewModelScope.coroutineContext + Dispatchers.IO, start, block)
 }
 
 inline fun <reified T> CoreViewModel.asyncLiveData(

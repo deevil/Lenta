@@ -2,7 +2,6 @@ package com.lenta.bp9.features.skip_recount
 
 import android.content.Context
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
 import com.lenta.bp9.R
 import com.lenta.bp9.features.loading.tasks.TaskCardMode
 import com.lenta.bp9.model.task.*
@@ -10,16 +9,13 @@ import com.lenta.bp9.platform.navigation.IScreenNavigator
 import com.lenta.bp9.requests.network.SkipRecountNetRequest
 import com.lenta.bp9.requests.network.SkipRecountParameters
 import com.lenta.bp9.requests.network.SkipRecountResult
-import com.lenta.bp9.requests.network.TaskContentsReceptionDistrCenterParameters
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.platform.viewmodel.CoreViewModel
-import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.extentions.getDeviceIp
+import com.lenta.shared.utilities.extentions.launchUITryCatch
 import com.lenta.shared.utilities.extentions.map
 import com.mobrun.plugin.api.HyperHive
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class SkipRecountViewModel : CoreViewModel() {
@@ -48,7 +44,7 @@ class SkipRecountViewModel : CoreViewModel() {
     }
 
     fun onClickSave() {
-        viewModelScope.launch {
+        launchUITryCatch {
             screenNavigator.showProgress(context.getString(R.string.skipping_recount))
             val params = SkipRecountParameters(
                     taskNumber = taskManager.getReceivingTask()?.taskHeader?.taskNumber ?: "",
@@ -66,7 +62,7 @@ class SkipRecountViewModel : CoreViewModel() {
     }
 
     private fun handleSuccess(result: SkipRecountResult) {
-        viewModelScope.launch {
+        launchUITryCatch {
             val notifications = result.notifications.map { TaskNotification.from(it) }
             val sectionInfo = result.sectionsInfo.map { TaskSectionInfo.from(it) }
             val sectionProducts = result.sectionProducts.map { TaskSectionProducts.from(hyperHive, it) }

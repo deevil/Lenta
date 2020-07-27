@@ -1,11 +1,10 @@
 package com.lenta.bp16.features.good_irrelevant_info
 
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
 import com.lenta.bp16.platform.navigation.IScreenNavigator
 import com.lenta.shared.platform.viewmodel.CoreViewModel
+import com.lenta.shared.utilities.extentions.launchUITryCatch
 import com.lenta.shared.utilities.extentions.map
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class IrrelevantGoodInfoViewModel : CoreViewModel() {
@@ -25,8 +24,8 @@ class IrrelevantGoodInfoViewModel : CoreViewModel() {
     }
 
     fun onClickComplete(){
-        viewModelScope.launch {
-            navigator.showProgressLoadingData()
+        launchUITryCatch {
+            navigator.showProgressLoadingData(::handleFailure)
             //TODO Обработать клик
             navigator.goBack()
         }

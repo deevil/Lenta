@@ -2,7 +2,6 @@ package com.lenta.shared.features.test_environment
 
 import android.os.Bundle
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.exception.IFailureInterpreter
 import com.lenta.shared.platform.navigation.ICoreNavigator
@@ -12,8 +11,8 @@ import com.lenta.shared.requests.network.PinCodeNetRequest
 import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
 import com.lenta.shared.utilities.extentions.combineLatest
+import com.lenta.shared.utilities.extentions.launchUITryCatch
 import com.lenta.shared.utilities.extentions.map
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class PinCodeViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
@@ -59,7 +58,7 @@ class PinCodeViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
     }
 
     fun onClickGoOver() {
-        viewModelScope.launch {
+        launchUITryCatch {
             progress.value = true
             pinCodeNetRequest(null).either(::handleFailure, ::handleSuccess)
             progress.value = false

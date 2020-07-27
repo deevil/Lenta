@@ -9,6 +9,7 @@ interface Taskable {
     val taskNumber: String
     val description: String
     val notFinish: String
+    val isCons : String
     val currentStatusCode: String
     val currentStatusText: String
     val nextStatusText: String
@@ -19,4 +20,6 @@ interface Taskable {
     val lgortSrc: String
     val lgortTarget: String
     val dateShip: String
+    val blockType: String
+    val quantityPosition: String
 }

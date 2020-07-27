@@ -1,8 +1,8 @@
 package com.lenta.bp16.request
 
 import com.google.gson.annotations.SerializedName
-import com.lenta.bp16.request.pojo.TaskInfo
 import com.lenta.bp16.request.pojo.RetCode
+import com.lenta.bp16.request.pojo.TaskInfo
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.fmp.ObjectRawStatus
 import com.lenta.shared.functional.Either

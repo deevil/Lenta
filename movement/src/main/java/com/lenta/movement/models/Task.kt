@@ -6,19 +6,28 @@ import java.util.*
 
 @Parcelize
 data class Task(
-    val number: String,
-    val isCreated: Boolean,
-    val currentStatus: Status,
-    val nextStatus: Status,
-    val name: String,
-    val comment: String,
-    val taskType: TaskType,
-    val movementType: MovementType,
-    val receiver: String,
-    val pikingStorage: String,
-    val shipmentStorage: String,
-    val shipmentDate: Date
+        val number: String,
+        val isCreated: Boolean,
+        val currentStatus: Status,
+        val nextStatus: Status,
+        val name: String,
+        val comment: String,
+        val taskType: TaskType,
+        val movementType: MovementType,
+        val receiver: String,
+        val pikingStorage: String,
+        val shipmentStorage: String,
+        val shipmentDate: Date,
+        val blockType: String,
+        val quantity: String,
+        val isNotFinish : Boolean,
+        val isCons: Boolean
 ) : Parcelable {
+
+    companion object {
+        const val SELF_BLOCK_TYPE = "1"
+        const val ALIEN_BLOCK_TYPE = "2"
+    }
 
     sealed class Status : Parcelable {
 

@@ -1,7 +1,8 @@
 package com.lenta.bp14.requests.user_permitions
 
 import com.google.gson.annotations.SerializedName
-import com.lenta.bp14.requests.pojo.*
+import com.lenta.bp14.requests.pojo.Market
+import com.lenta.bp14.requests.pojo.RetCode
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.fmp.ObjectRawStatus
 import com.lenta.shared.functional.Either

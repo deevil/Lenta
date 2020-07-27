@@ -1,14 +1,13 @@
 package com.lenta.bp7.features.good_info_facing
 
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
 import com.lenta.bp7.data.model.Good
 import com.lenta.bp7.data.model.GoodStatus
 import com.lenta.bp7.features.other.AddGoodViewModel
 import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
 import com.lenta.shared.utilities.extentions.combineLatest
+import com.lenta.shared.utilities.extentions.launchUITryCatch
 import com.lenta.shared.utilities.extentions.map
-import kotlinx.coroutines.launch
 
 class GoodInfoFacingViewModel : AddGoodViewModel(), OnOkInSoftKeyboardListener {
 
@@ -46,7 +45,7 @@ class GoodInfoFacingViewModel : AddGoodViewModel(), OnOkInSoftKeyboardListener {
     }
 
     init {
-        viewModelScope.launch {
+        launchUITryCatch {
             good.value = checkData.getCurrentGood()
             facings.value = "" + if (isGoodJustCreated()) 1 else good.value?.facings
             selectFacingsField.value = true

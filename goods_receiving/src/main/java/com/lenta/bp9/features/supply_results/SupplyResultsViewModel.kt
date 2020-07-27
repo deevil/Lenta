@@ -2,7 +2,6 @@ package com.lenta.bp9.features.supply_results
 
 import android.content.Context
 import androidx.lifecycle.MutableLiveData
-import com.lenta.bp9.R
 import com.lenta.bp9.model.task.IReceivingTaskManager
 import com.lenta.bp9.platform.navigation.IScreenNavigator
 import com.lenta.shared.platform.viewmodel.CoreViewModel

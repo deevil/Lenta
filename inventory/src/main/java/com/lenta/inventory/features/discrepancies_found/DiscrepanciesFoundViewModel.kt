@@ -17,8 +17,8 @@ import com.lenta.shared.platform.device_info.DeviceInfo
 import com.lenta.shared.platform.time.ITimeMonitor
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.SelectionItemsHelper
-import kotlinx.coroutines.launch
 import com.lenta.shared.utilities.extentions.combineLatest
+import com.lenta.shared.utilities.extentions.launchUITryCatch
 import com.lenta.shared.utilities.extentions.map
 import javax.inject.Inject
 
@@ -69,7 +69,7 @@ class DiscrepanciesFoundViewModel : CoreViewModel() {
     val isNotEmpty: MutableLiveData<Boolean> = discrepanciesByGoods.map { it?.size != 0 }
 
     init {
-        viewModelScope.launch {
+        launchUITryCatch {
             dataSaver.setViewModelScopeFunc(::viewModelScope)
             update()
         }
@@ -172,7 +172,7 @@ class DiscrepanciesFoundViewModel : CoreViewModel() {
 
     private fun checkIsHaveAnotherUsersNow() {
 
-        viewModelScope.launch {
+        launchUITryCatch {
             screenNavigator.showProgress(lockRequest)
             taskManager.getInventoryTask()?.let {
                 val userNumber = sessionInfo.personnelNumber!!

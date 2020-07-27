@@ -6,6 +6,7 @@ import com.lenta.bp12.platform.navigation.IScreenNavigator
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.platform.device_info.DeviceInfo
 import com.lenta.shared.platform.viewmodel.CoreViewModel
+import com.lenta.shared.requests.combined.scan_info.ScanCodeInfo
 import com.lenta.shared.utilities.SelectionItemsHelper
 import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
 import com.lenta.shared.utilities.databinding.PageSelectionListener
@@ -157,7 +158,8 @@ class GoodListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
         if (task.value?.isStrict == false) {
             openGoodInfoByNumber(number)
         } else {
-            if (manager.isGoodExist(number)) {
+            val numberWithoutWeight = ScanCodeInfo(number).eanWithoutWeight
+            if (manager.isGoodExist(numberWithoutWeight)) {
                 openGoodInfoByNumber(number)
             } else {
                 numberField.value = ""
@@ -167,10 +169,11 @@ class GoodListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
     }
 
     private fun openGoodInfoByNumber(number: String) {
+        numberField.value = ""
+
         if (isCommonFormatNumber(number)) {
             manager.searchNumber = number
             manager.searchGoodFromList = true
-            numberField.value = ""
             navigator.openGoodInfoOpenScreen()
         } else {
             navigator.showIncorrectEanFormat()

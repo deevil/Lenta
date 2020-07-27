@@ -1,13 +1,12 @@
 package com.lenta.shared.features.settings
 
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.platform.navigation.ICoreNavigator
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.PackageName
+import com.lenta.shared.utilities.extentions.launchUITryCatch
 import com.mobrun.plugin.api.HyperHive
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class SettingsViewModel : CoreViewModel(){
@@ -31,7 +30,7 @@ class SettingsViewModel : CoreViewModel(){
     var updateAppButtonVisibility = MutableLiveData(true)
 
     init {
-        viewModelScope.launch {
+        launchUITryCatch {
             when (sessionInfo.packageName) {
                 PackageName.PLE.path -> {
                     selectPrinterButtonVisibility.value = false

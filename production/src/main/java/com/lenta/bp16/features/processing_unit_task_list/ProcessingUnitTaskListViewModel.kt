@@ -1,7 +1,6 @@
 package com.lenta.bp16.features.processing_unit_task_list
 
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
 import com.lenta.bp16.model.ITaskManager
 import com.lenta.bp16.model.Tabs
 import com.lenta.bp16.model.TaskStatus
@@ -19,7 +18,6 @@ import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
 import com.lenta.shared.utilities.databinding.PageSelectionListener
 import com.lenta.shared.utilities.extentions.*
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class ProcessingUnitTaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyboardListener {
@@ -49,7 +47,7 @@ class ProcessingUnitTaskListViewModel : CoreViewModel(), PageSelectionListener, 
         }
     }
 
-    val title by unsafeLazy {
+    val title by lazy {
         "ТК - ${sessionInfo.market}"
     }
 
@@ -108,8 +106,8 @@ class ProcessingUnitTaskListViewModel : CoreViewModel(), PageSelectionListener, 
     }
 
     fun loadTaskList() {
-        viewModelScope.launch {
-            navigator.showProgressLoadingData()
+        launchUITryCatch {
+            navigator.showProgressLoadingData(::handleFailure)
 
             taskListNetRequest(
                     TaskListParams(
@@ -185,8 +183,8 @@ class ProcessingUnitTaskListViewModel : CoreViewModel(), PageSelectionListener, 
         if (task.isProcessed) {
             openTaskByType(task)
         } else {
-            viewModelScope.launch {
-                navigator.showProgressLoadingData()
+            launchUITryCatch {
+                navigator.showProgressLoadingData(::handleFailure)
                 taskInfoNetRequest(
                         TaskInfoParams(
                                 marketNumber = sessionInfo.market.orEmpty(),
@@ -197,7 +195,7 @@ class ProcessingUnitTaskListViewModel : CoreViewModel(), PageSelectionListener, 
                 ).also {
                     navigator.hideProgress()
                 }.either(::handleFailure) { taskInfoResult ->
-                    viewModelScope.launch {
+                    launchUITryCatch {
                         manager.addTaskInfoToCurrentTask(taskInfoResult)
                         openTaskByType(task)
                     }

@@ -1,32 +1,29 @@
 package com.lenta.bp14.features.not_exposed.goods_list
 
 import androidx.lifecycle.LiveData
-import com.lenta.shared.platform.viewmodel.CoreViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.lenta.bp14.features.common_ui_model.SimpleProductUi
 import com.lenta.bp14.models.IGeneralTaskManager
 import com.lenta.bp14.models.check_price.IPriceInfoParser
+import com.lenta.bp14.models.data.GoodsListTab
 import com.lenta.bp14.models.filter.FilterFieldType
 import com.lenta.bp14.models.filter.FilterParameter
-import com.lenta.bp14.models.data.GoodsListTab
 import com.lenta.bp14.models.getTaskName
 import com.lenta.bp14.models.not_exposed.INotExposedTask
 import com.lenta.bp14.models.not_exposed.repo.NotExposedProductInfo
-import com.lenta.shared.utilities.extentions.getQuantity
 import com.lenta.bp14.platform.navigation.IScreenNavigator
 import com.lenta.bp14.requests.not_exposed_product.NotExposedSendReportNetRequest
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.platform.device_info.DeviceInfo
+import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.requests.combined.scan_info.*
 import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.SelectionItemsHelper
 import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
 import com.lenta.shared.utilities.databinding.PageSelectionListener
-import com.lenta.shared.utilities.extentions.combineLatest
-import com.lenta.shared.utilities.extentions.map
-import com.lenta.shared.utilities.extentions.toStringFormatted
+import com.lenta.shared.utilities.extentions.*
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -128,7 +125,7 @@ class GoodsListNeViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
     val thirdButtonVisibility = correctedSelectedPage.map { it != GoodsListTab.PROCESSING.position }
 
     init {
-        viewModelScope.launch {
+        launchUITryCatch {
             requestFocusToNumberField.value = true
         }
     }
@@ -167,7 +164,7 @@ class GoodsListNeViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
     private fun searchCode(eanCode: String? = null, matNr: String? = null) {
         require((!eanCode.isNullOrBlank() xor !matNr.isNullOrBlank()))
         viewModelScope.launch {
-            navigator.showProgressLoadingData()
+            navigator.showProgressLoadingData(::handleFailure)
 
             var scanInfoResult: ScanInfoResult? = null
             var quantity = 0.0
@@ -230,8 +227,8 @@ class GoodsListNeViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
 
     private fun showConfirmationForSave() {
         navigator.showSetTaskToStatusCalculated {
-            viewModelScope.launch {
-                navigator.showProgressLoadingData()
+            launchUITryCatch {
+                navigator.showProgressLoadingData(::handleFailure)
                 sentReportRequest(task.getReportData(
                         ip = deviceInfo.getDeviceIp()
                 )).either(

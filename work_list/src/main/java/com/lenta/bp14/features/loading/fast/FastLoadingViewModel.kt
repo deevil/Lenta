@@ -1,7 +1,6 @@
 package com.lenta.bp14.features.loading.fast
 
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
 import app_update.AppUpdateInstaller
 import com.google.gson.Gson
 import com.lenta.bp14.models.IGeneralTaskManager
@@ -34,8 +33,8 @@ import com.lenta.shared.requests.network.ServerTime
 import com.lenta.shared.requests.network.ServerTimeRequest
 import com.lenta.shared.requests.network.ServerTimeRequestParam
 import com.lenta.shared.utilities.Logg
+import com.lenta.shared.utilities.extentions.launchUITryCatch
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
@@ -85,7 +84,7 @@ class FastLoadingViewModel : CoreLoadingViewModel() {
     override val sizeInMb: MutableLiveData<Float> = MutableLiveData()
 
     init {
-        viewModelScope.launch {
+        launchUITryCatch {
             progress.value = true
             withContext(Dispatchers.IO) {
                 repoInMemoryHolder.storesRequestResult?.markets?.find { it.tkNumber == sessionInfo.market }.let { market ->
@@ -112,7 +111,7 @@ class FastLoadingViewModel : CoreLoadingViewModel() {
     }
 
     private fun installUpdate(updateFileName: String) {
-        viewModelScope.launch {
+        launchUITryCatch {
             title.value = resourceManager.loadingNewAppVersion()
             progress.value = true
             withContext(Dispatchers.IO) {
@@ -125,7 +124,7 @@ class FastLoadingViewModel : CoreLoadingViewModel() {
     }
 
     private fun getServerTime() {
-        viewModelScope.launch {
+        launchUITryCatch {
             serverTimeRequest(ServerTimeRequestParam(sessionInfo.market
                    .orEmpty())).either(::handleFailure, ::handleSuccessServerTime)
         }
@@ -133,7 +132,7 @@ class FastLoadingViewModel : CoreLoadingViewModel() {
 
     private fun handleSuccessServerTime(serverTime: ServerTime) {
         timeMonitor.setServerTime(time = serverTime.time, date = serverTime.date)
-        viewModelScope.launch {
+        launchUITryCatch {
             fastResourcesNetRequest(null).either(::handleFailure, ::handleSuccess)
         }
     }
@@ -145,7 +144,7 @@ class FastLoadingViewModel : CoreLoadingViewModel() {
     }
 
     private fun handleSuccess(notUsed: Boolean) {
-        viewModelScope.launch {
+        launchUITryCatch {
             generalRepo.onDbReady()
             if (generalTaskManager.isExistSavedTaskData()) {
                 navigator.showUnsavedDataFoundOnDevice(

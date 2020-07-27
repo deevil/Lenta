@@ -26,7 +26,7 @@ class TaskBasketInfoFragment: CoreFragment<FragmentTaskBasketInfoBinding, TaskBa
     }
 
     override fun setupTopToolBar(topToolbarUiModel: TopToolbarUiModel) {
-        topToolbarUiModel.title.value = vm.getTitle()
+        topToolbarUiModel.title.value = vm.title.value
         topToolbarUiModel.description.value = getString(R.string.task_basket_info_title)
     }
 
@@ -37,7 +37,7 @@ class TaskBasketInfoFragment: CoreFragment<FragmentTaskBasketInfoBinding, TaskBa
     }
 
     companion object {
-        private const val PAGE_NUMBER = "10/06"
+        private const val PAGE_NUMBER = "13/06"
         private const val DEFAULT_BASKET_INDEX = -1
 
         fun newInstance(basketIndex: Int): TaskBasketInfoFragment {

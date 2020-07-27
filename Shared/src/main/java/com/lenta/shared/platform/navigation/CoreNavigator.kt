@@ -179,6 +179,15 @@ class CoreNavigator @Inject constructor(
         }
     }
 
+    override fun showProgressLoadingData(handleFailure: ((Failure) -> Unit)?) {
+        runOrPostpone {
+            foregroundActivityProvider.getActivity()?.showSimpleProgress(
+                    title = context.getString(R.string.data_loading),
+                    handleFailure = handleFailure
+            )
+        }
+    }
+
     override fun showProgressConnection() {
         runOrPostpone {
             showProgress(context.getString(R.string.connection_setup))
@@ -504,6 +513,7 @@ interface ICoreNavigator {
     fun <Params> showProgress(useCase: UseCase<Any, Params>)
     fun showProgress(title: String)
     fun showProgressLoadingData()
+    fun showProgressLoadingData(handleFailure: ((Failure) -> Unit)? = null)
     fun hideProgress()
     fun openTechLoginScreen()
     fun openConnectionsSettingsScreen()
