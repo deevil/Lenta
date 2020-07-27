@@ -160,7 +160,7 @@ class TaskViewModel : CoreViewModel(), PageSelectionListener {
         task.switchMap { taskOrNull ->
             asyncLiveData<List<String>> {
                 val pikingStrorageList = taskOrNull?.pikingStorage?.let { listOf(it) }
-                        ?: taskManager.getAvailablePikingStorageList(taskType, movementType).addFirstEmptyIfNeeded()
+                        ?: taskManager.getAvailablePikingStorageList(taskType, movementType)
                 emit(pikingStrorageList)
             }
 
@@ -242,23 +242,12 @@ class TaskViewModel : CoreViewModel(), PageSelectionListener {
     }
 
     val isStrictList by unsafeLazy {
-        when (currentStatus) {
-            Task.Status.Created(CREATED), Task.Status.Published(PUBLISHED) -> false
-            else -> true
-        }
+        currentStatus != Task.Status.Created(CREATED) || currentStatus != Task.Status.Published(PUBLISHED)
     }
 
-    fun onResume() {
-        task.value?.let { task ->
-            taskManager.setTask(task)
-        }.orIfNull {
-            selectedPagePosition.value = 1
-        }
-    }
+    fun onResume() = task.value?.let(taskManager::setTask).orIfNull{ selectedPagePosition.value = 1 }
 
-    fun getTitle(): String {
-        return formatter.formatMarketName(sessionInfo.market.orEmpty())
-    }
+    fun getTitle() = formatter.formatMarketName(sessionInfo.market.orEmpty())
 
     override fun onPageSelected(position: Int) {
         selectedPagePosition.value = position
