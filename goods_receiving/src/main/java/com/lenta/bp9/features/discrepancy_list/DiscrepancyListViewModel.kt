@@ -101,10 +101,14 @@ class DiscrepancyListViewModel : CoreViewModel(), PageSelectionListener {
         MutableLiveData(taskManager.getReceivingTask()?.taskDescription?.isAlco == true && !(taskManager.getReceivingTask()?.taskHeader?.taskType == TaskType.ShipmentPP || taskManager.getReceivingTask()?.taskHeader?.taskType == TaskType.ShipmentRC)) //для заданий ОПП и ОРЦ не показываем кнопку Партия, уточнил у Артема
     }
 
+    private val paramGrzGrundMarkCode: MutableLiveData<String> = MutableLiveData("")
+
     init {
         launchUITryCatch {
             searchProductDelegate.init(viewModelScope = this@DiscrepancyListViewModel::viewModelScope,
                     scanResultHandler = this@DiscrepancyListViewModel::handleProductSearchResult)
+
+            paramGrzGrundMarkCode.value = dataBase.getGrzGrundMark().orEmpty()
         }
     }
 
@@ -744,7 +748,9 @@ class DiscrepancyListViewModel : CoreViewModel(), PageSelectionListener {
                         ?.taskRepository
                         ?.getProductsDiscrepancies()
                         ?.findProductDiscrepanciesOfProduct(productInfo)
-                        ?.isNotEmpty()
+                        ?.any {
+                            it.typeDiscrepancies != paramGrzGrundMarkCode.value
+                        }
                         ?: false
         val countStampsScanned =
                 taskManager.getReceivingTask()
