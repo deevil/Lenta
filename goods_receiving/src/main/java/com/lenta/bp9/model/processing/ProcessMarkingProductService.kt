@@ -128,7 +128,11 @@ class ProcessMarkingProductService
     }
 
     fun getLastScannedBlock(): TaskBlockDiscrepancies? {
-        return currentBlocksDiscrepancies.last()
+        return if (currentBlocksDiscrepancies.isNullOrEmpty()) {
+            null
+        } else {
+            currentBlocksDiscrepancies.last()
+        }
     }
 
     fun addGtin(gtinCode: String) {
@@ -145,7 +149,11 @@ class ProcessMarkingProductService
     }
 
     fun getLastScannedGtin(): String? {
-        return currentGtin.last()
+        return if (currentGtin.isNullOrEmpty()) {
+            null
+        } else {
+            currentGtin.last()
+        }
     }
 
     fun replaceLastGtin(gtinCode: String) {

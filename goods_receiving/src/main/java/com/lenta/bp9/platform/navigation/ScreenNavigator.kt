@@ -1533,13 +1533,15 @@ class ScreenNavigator(
         }
     }
 
-    override fun openAlertStampNotFoundReturnSupplierScreen() {
+    override fun openAlertStampNotFoundReturnSupplierScreen(backCallbackFunc: () -> Unit) {
         runOrPostpone {
             getFragmentStack()?.push(AlertFragment.create(
                     message = context.getString(R.string.scanned_stamp_not_listed_in_current_delivery_return_supplier),
+                    codeConfirmForLeft = backFragmentResultHelper.setFuncForResult(backCallbackFunc),
                     iconRes = R.drawable.ic_info_pink_80dp,
                     textColor = ContextCompat.getColor(context, R.color.color_text_dialogWarning),
-                    pageNumber = PAGE_NUMBER_97)
+                    pageNumber = PAGE_NUMBER_97,
+                    leftButtonDecorationInfo = ButtonDecorationInfo.back)
             )
         }
     }
@@ -1800,7 +1802,7 @@ interface IScreenNavigator : ICoreNavigator {
     fun openAlertOverLimitPlannedBatchScreen()
     fun openMarkingInfoScreen(productInfo: TaskProductInfo, isDiscrepancy: Boolean)
     fun openAlertInvalidCodeScannedForCurrentModeScreen()
-    fun openAlertStampNotFoundReturnSupplierScreen()
+    fun openAlertStampNotFoundReturnSupplierScreen(backCallbackFunc: () -> Unit)
     fun openAlertDisparityGTINScreen()
     fun openAlertScanProductBarcodeScreen()
     fun openAlertGtinDoesNotMatchProductScreen()
