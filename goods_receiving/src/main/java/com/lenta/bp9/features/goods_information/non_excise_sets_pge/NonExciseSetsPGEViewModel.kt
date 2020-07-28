@@ -28,6 +28,7 @@ import com.lenta.shared.utilities.extentions.combineLatest
 import com.lenta.shared.utilities.extentions.launchUITryCatch
 import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.utilities.extentions.toStringFormatted
+import com.lenta.shared.utilities.orIfNull
 import com.lenta.shared.view.OnPositionClickListener
 import com.mobrun.plugin.api.HyperHive
 import kotlinx.coroutines.launch
@@ -202,16 +203,16 @@ class NonExciseSetsPGEViewModel : CoreViewModel(),
             //эту строку необходимо прописывать только после того, как были установлены данные для переменных count  и suffix, а иначе фокус в поле et_count не установится
             requestFocusToCount.value = true
 
-            productInfo.value?.let {
-                if (processNonExciseSetsPGEProductService.newProcessNonExciseSetsPGEProductService(it) == null) {
-                    screenNavigator.goBack()
-                    screenNavigator.openAlertWrongProductType()
-                }
-                return@launchUITryCatch
-            }
-
-            screenNavigator.goBack()
-
+            productInfo.value
+                    ?.let {
+                        if (processNonExciseSetsPGEProductService.newProcessNonExciseSetsPGEProductService(it) == null) {
+                            screenNavigator.goBack()
+                            screenNavigator.openAlertWrongProductType()
+                        }
+                    }.orIfNull {
+                        screenNavigator.goBack()
+                        screenNavigator.openAlertWrongProductType()
+                    }
         }
     }
 

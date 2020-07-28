@@ -1599,10 +1599,10 @@ class ScreenNavigator(
         }
     }
 
-    override fun openCompleteRejectionOfMarkingGoodsDialog(nextCallbackFunc: () -> Unit, title: String, countBlocks: String, paramGrzGrundMarkName: String) {
+    override fun openCompleteRejectionOfMarkingGoodsDialog(nextCallbackFunc: () -> Unit, title: String, productOrigQuantity: String, paramGrzGrundMarkName: String) {
         runOrPostpone {
             getFragmentStack()?.push(AlertFragment.create(
-                    message = context.getString(R.string.dialogue_complete_rejection_of_goods, countBlocks, paramGrzGrundMarkName),
+                    message = context.getString(R.string.dialogue_complete_rejection_of_goods, productOrigQuantity, paramGrzGrundMarkName),
                     title = title,
                     iconRes = R.drawable.ic_question_yellow_80dp,
                     codeConfirmForRight = backFragmentResultHelper.setFuncForResult(nextCallbackFunc),
@@ -1612,10 +1612,10 @@ class ScreenNavigator(
         }
     }
 
-    override fun openPartialRefusalOnMarkingGoodsDialog(nextCallbackFunc: () -> Unit, title: String, countScanBlocks: String, unconfirmedQuantity: String, paramGrzGrundMarkName: String) {
+    override fun openPartialRefusalOnMarkingGoodsDialog(nextCallbackFunc: () -> Unit, title: String, countProductProcessed: String, countProductNotProcessed: String, paramGrzGrundMarkName: String) {
         runOrPostpone {
             getFragmentStack()?.push(AlertFragment.create(
-                    message = context.getString(R.string.dialogue_partial_refusal_on_marking_goods, countScanBlocks, unconfirmedQuantity, paramGrzGrundMarkName),
+                    message = context.getString(R.string.dialogue_partial_refusal_on_marking_goods, countProductProcessed, countProductNotProcessed, paramGrzGrundMarkName),
                     title = title,
                     iconRes = R.drawable.ic_question_yellow_80dp,
                     codeConfirmForRight = backFragmentResultHelper.setFuncForResult(nextCallbackFunc),
@@ -1839,8 +1839,8 @@ interface IScreenNavigator : ICoreNavigator {
     fun openMarkingGoodsDetailsScreen(productInfo: TaskProductInfo)
     fun openAlertRequestCompleteRejectionMarkingGoods()
     fun openMarkingProductFailureScreen(productInfo: TaskProductInfo)
-    fun openCompleteRejectionOfMarkingGoodsDialog(nextCallbackFunc: () -> Unit, title: String, countBlocks: String, paramGrzGrundMarkName: String)
-    fun openPartialRefusalOnMarkingGoodsDialog(nextCallbackFunc: () -> Unit, title: String, countScanBlocks: String, unconfirmedQuantity: String, paramGrzGrundMarkName: String)
+    fun openCompleteRejectionOfMarkingGoodsDialog(nextCallbackFunc: () -> Unit, title: String, productOrigQuantity: String, paramGrzGrundMarkName: String)
+    fun openPartialRefusalOnMarkingGoodsDialog(nextCallbackFunc: () -> Unit, title: String, countProductProcessed: String, countProductNotProcessed: String, paramGrzGrundMarkName: String)
     fun openAlertMustEnterQuantityInfoGreenScreen()
     fun openAlertAmountNormWillBeReducedMarkingScreen()
     fun openAlertScannedStampIsAlreadyProcessedAlternativeScreen()

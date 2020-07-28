@@ -1,5 +1,6 @@
 package com.lenta.bp9.model.processing
 
+import androidx.lifecycle.MutableLiveData
 import com.lenta.bp9.model.task.*
 import com.lenta.bp9.platform.TypeDiscrepanciesConstants
 import com.lenta.bp9.repos.IDataBaseRepo
@@ -19,6 +20,7 @@ class ProcessMarkingProductService
     lateinit var dataBase: IDataBaseRepo
 
     private lateinit var productInfo: TaskProductInfo
+    private var isBlockMode: Boolean = false
     private val blocks: ArrayList<TaskBlockInfo> = ArrayList()
     private val currentBlocksDiscrepancies: ArrayList<TaskBlockDiscrepancies> = ArrayList()
     private val currentGtin: ArrayList<String> = ArrayList()
@@ -30,6 +32,10 @@ class ProcessMarkingProductService
     fun newProcessMarkingProductService(productInfo: TaskProductInfo): ProcessMarkingProductService? {
         return if (productInfo.type == ProductType.General) {
             this.productInfo = productInfo.copy()
+            isBlockMode =
+                    (this.productInfo.purchaseOrderUnits.code == "ST"
+                            || this.productInfo.purchaseOrderUnits.code == "P09")
+                            && this.productInfo.isCountingBoxes == false
             currentGtin.clear()
             blocks.clear()
             taskManager.getReceivingTask()
@@ -291,6 +297,28 @@ class ProcessMarkingProductService
         currentBlocksDiscrepancies.removeItemFromListWithPredicate {
             it.typeDiscrepancies == typeDiscrepancies
         }
+    }
+
+    fun getCountAttachmentInBlock(count: String?): Double {
+        val nestingInOneBlock = productInfo.nestingInOneBlock.toDouble()
+        return if (isBlockMode) {
+            (count?.toDoubleOrNull() ?: 0.0) * nestingInOneBlock
+        } else {
+            count?.toDoubleOrNull() ?: 0.0
+        }
+    }
+
+    fun getCountBlocksByAttachments(count: String?): Double {
+        val nestingInOneBlock = productInfo.nestingInOneBlock.toDouble()
+        return if (isBlockMode) {
+            (count?.toDoubleOrNull() ?: 0.0) / nestingInOneBlock
+        } else {
+            count?.toDoubleOrNull() ?: 0.0
+        }
+    }
+
+    fun getIsBlockMode() : Boolean {
+        return isBlockMode
     }
 
     fun modifications(): Boolean {

@@ -288,7 +288,7 @@
     <string name="accounting_of_marriage_completed">Учет брака выполнен</string>
     <string name="product_rejection_dialogue">Не обработано!\nВозможные действия:\n ЧАСТИЧНЫЙ отказ по товару - будет принято только подтвержденное сканированием количество;\n ПОЛНЫЙ отказ по товару;\n НАЗАД - возврат к сканированию</string>
     <string name="dialogue_complete_rejection_of_goods">По товару будет произведен отказ в приемке планового количества %1$s. ПОЛНОСТЬЮ с регистрацией расхождения \"%2$s\"</string>
-    <string name="dialogue_partial_refusal_on_goods">Подтверждено сканирование %1$s кор. Для неподтвержденного количества в %2$s кор. будет сформирован частичный акт о разногласии с причиной \"%3$s\"</string>
+    <string name="dialogue_partial_refusal_on_goods">Подтверждено сканированием %1$s кор. Для неподтвержденного количества в %2$s кор. будет сформирован частичный акт о разногласии с причиной \"%3$s\"</string>
     <string name="ip_plan">ИП план</string>
     <string name="order_plan">Заказ план</string>
     <string name="total">Итого</string>
@@ -339,7 +339,7 @@
     <string name="property">Свойство</string>
     <string name="request_for_complete_rejection_of_marking_goods">Запрос на полный отказ в маркированной приемке успешно передан в ГИС-центр. Ожидайте решения</string>
     <string name="marking_product_rejection_dialogue">Не обработано: %1$s из %2$s\nВозможные действия:\n ЧАСТИЧНЫЙ отказ по товару - будет принято только подтвержденное сканированием количество;\n ПОЛНЫЙ отказ по товару;\n НАЗАД - возврат к сканированию</string>
-    <string name="dialogue_partial_refusal_on_marking_goods">Подтверждено сканирование %1$s. Для неподтвержденного количества в %2$s. будет сформирован частичный акт о разногласии с причиной \"%3$s\"</string>
+    <string name="dialogue_partial_refusal_on_marking_goods">Подтверждено сканированием %1$s. Для неподтвержденного количества в %2$s. будет сформирован частичный акт о разногласии с причиной \"%3$s\"</string>
     <string name="scanned_stamp_is_already_processed_alternative">Марка уже обработана</string>
 
 </resources>

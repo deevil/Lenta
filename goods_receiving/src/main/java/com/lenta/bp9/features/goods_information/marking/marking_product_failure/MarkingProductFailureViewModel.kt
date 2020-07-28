@@ -16,6 +16,7 @@ import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.extentions.getDeviceIp
 import com.lenta.shared.utilities.extentions.launchUITryCatch
 import com.lenta.shared.utilities.extentions.toStringFormatted
+import com.lenta.shared.utilities.orIfNull
 import kotlinx.coroutines.launch
 import java.util.*
 import javax.inject.Inject
@@ -40,24 +41,31 @@ class MarkingProductFailureViewModel : CoreViewModel() {
     val productInfo: MutableLiveData<TaskProductInfo> = MutableLiveData()
 
     val tvMessage: MutableLiveData<String> by lazy {
-        val origQuantity =
+
+        val countProductNotProcessed =
+                productInfo.value
+                        ?.let {
+                            taskManager.getReceivingTask()
+                                    ?.taskRepository
+                                    ?.getProductsDiscrepancies()
+                                    ?.getCountProductNotProcessedOfProduct(it)
+                                    ?: 0.0
+                        }
+                        ?: 0.0
+
+        val productOrigQuantity =
                 productInfo.value
                         ?.origQuantity
                         ?.toDouble()
                         .toStringFormatted()
 
-        val notProcessedNumberOfStamps =
+        val unit =
                 productInfo.value
-                        ?.let { productInfo ->
-                            taskManager.getReceivingTask()
-                                    ?.taskRepository
-                                    ?.getBlocksDiscrepancies()
-                                    ?.notProcessedNumberOfStampsByProduct(productInfo)
-                                    .toStringFormatted()
-                        }.orEmpty()
-
-        val unit = productInfo.value?.purchaseOrderUnits?.name?.toLowerCase(Locale.getDefault()).orEmpty()
-        MutableLiveData(context.getString(R.string.marking_product_rejection_dialogue, notProcessedNumberOfStamps, "$origQuantity $unit"))
+                        ?.purchaseOrderUnits
+                        ?.name
+                        ?.toLowerCase(Locale.getDefault())
+                        .orEmpty()
+        MutableLiveData(context.getString(R.string.marking_product_rejection_dialogue, countProductNotProcessed.toStringFormatted(), "$productOrigQuantity $unit"))
     }
 
     val enabledPartialFailureBtn: MutableLiveData<Boolean> by lazy {
@@ -65,15 +73,22 @@ class MarkingProductFailureViewModel : CoreViewModel() {
          * Частичный отказ. Кнопка доступна для нажатия, если обработана хотя бы одна марка по товару.
          */
         MutableLiveData(
-                (taskManager.getReceivingTask()
-                        ?.taskRepository
-                        ?.getBlocksDiscrepancies()
-                        ?.findBlocksDiscrepanciesOfProduct(productInfo.value!!)
-                        ?.filter { blockDiscrepancies ->
-                            blockDiscrepancies.isScan
-                        }?.size
-                        ?: 0
-                        ) > 0
+                productInfo.value
+                        ?.let {
+                            (taskManager
+                                    .getReceivingTask()
+                                    ?.taskRepository
+                                    ?.getBlocksDiscrepancies()
+                                    ?.findBlocksDiscrepanciesOfProduct(it)
+                                    ?.filter { blockDiscrepancies ->
+                                        blockDiscrepancies.isScan
+                                    }?.size
+                                    ?: 0
+                                    ) > 0
+                        }
+                        .orIfNull {
+                            false
+                        }
         )
     }
 
@@ -84,6 +99,18 @@ class MarkingProductFailureViewModel : CoreViewModel() {
         launchUITryCatch {
             paramGrzGrundMarkCode.value = dataBase.getGrzGrundMark().orEmpty()
             paramGrzGrundMarkName.value = dataBase.getGrzGrundMarkName(paramGrzGrundMarkCode.value.orEmpty()).orEmpty()
+
+            productInfo.value
+                    ?.let {
+                        if (processMarkingProductService.newProcessMarkingProductService(it) == null) {
+                            screenNavigator.goBack()
+                            screenNavigator.openAlertWrongProductType()
+                        }
+                    }.orIfNull {
+                        screenNavigator.goBack()
+                        screenNavigator.openAlertWrongProductType()
+                    }
+
         }
     }
 
@@ -93,13 +120,15 @@ class MarkingProductFailureViewModel : CoreViewModel() {
                     if (processMarkingProductService.newProcessMarkingProductService(productInfo) == null) {
                         screenNavigator.openAlertWrongProductType()
                     } else {
+                        val productOrigQuantity = productInfo.origQuantity.toDouble().toStringFormatted()
+                        val unitName = productInfo.purchaseOrderUnits.name.toLowerCase(Locale.getDefault())
                         screenNavigator.openCompleteRejectionOfMarkingGoodsDialog(
                                 nextCallbackFunc = {
                                     screenNavigator.goBack()
                                     processMarkingProductService.denialOfFullProductAcceptance(paramGrzGrundMarkCode.value.orEmpty())
                                 },
                                 title = "${productInfo.getMaterialLastSix()} ${productInfo.description}",
-                                countBlocks = "${productInfo.origQuantity.toDouble().toStringFormatted()} ${productInfo.purchaseOrderUnits.name.toLowerCase(Locale.getDefault())}",
+                                productOrigQuantity = "$productOrigQuantity $unitName",
                                 paramGrzGrundMarkName = paramGrzGrundMarkName.value.orEmpty()
                         )
                     }
@@ -112,28 +141,22 @@ class MarkingProductFailureViewModel : CoreViewModel() {
                     if (processMarkingProductService.newProcessMarkingProductService(productInfo) == null) {
                         screenNavigator.openAlertWrongProductType()
                     } else {
-                        val processedNumberOfStamps =
+                        val countProductNotProcessed =
                                 taskManager.getReceivingTask()
                                         ?.taskRepository
-                                        ?.getBlocksDiscrepancies()
-                                        ?.processedNumberOfStampsByProduct(productInfo)
-                                        ?.toDouble()
-                                        .toStringFormatted()
-
-                        val notProcessedNumberOfStamps =
-                                taskManager.getReceivingTask()
-                                        ?.taskRepository
-                                        ?.getBlocksDiscrepancies()
-                                        ?.notProcessedNumberOfStampsByProduct(productInfo)
-                                        .toStringFormatted()
+                                        ?.getProductsDiscrepancies()
+                                        ?.getCountProductNotProcessedOfProduct(productInfo)
+                                        ?: 0.0
+                        val countProductProcessed = productInfo.origQuantity.toDouble() - countProductNotProcessed
+                        val unitName = productInfo.purchaseOrderUnits.name.toLowerCase(Locale.getDefault())
                         screenNavigator.openPartialRefusalOnMarkingGoodsDialog(
                                 nextCallbackFunc = {
                                     screenNavigator.goBack()
                                     processMarkingProductService.refusalToAcceptPartlyByProduct(paramGrzGrundMarkCode.value.orEmpty())
                                 },
                                 title = "${productInfo.getMaterialLastSix()} ${productInfo.description}",
-                                countScanBlocks = "$processedNumberOfStamps ${productInfo.purchaseOrderUnits.name.toLowerCase(Locale.getDefault())}",
-                                unconfirmedQuantity = "$notProcessedNumberOfStamps ${productInfo.purchaseOrderUnits.name.toLowerCase(Locale.getDefault())}",
+                                countProductProcessed = "${countProductProcessed.toStringFormatted()} $unitName",
+                                countProductNotProcessed = "${countProductNotProcessed.toStringFormatted()} $unitName",
                                 paramGrzGrundMarkName = paramGrzGrundMarkName.value.orEmpty()
                         )
                     }

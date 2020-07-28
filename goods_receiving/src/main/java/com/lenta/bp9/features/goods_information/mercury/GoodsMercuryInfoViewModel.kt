@@ -23,6 +23,7 @@ import com.lenta.shared.utilities.extentions.combineLatest
 import com.lenta.shared.utilities.extentions.launchUITryCatch
 import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.utilities.extentions.toStringFormatted
+import com.lenta.shared.utilities.orIfNull
 import com.lenta.shared.view.OnPositionClickListener
 import org.joda.time.DateTime
 import org.joda.time.Days
@@ -309,10 +310,16 @@ class GoodsMercuryInfoViewModel : CoreViewModel(), OnPositionClickListener {
             paramGrzRoundLackUnit.value = dataBase.getParamGrzRoundLackUnit()
             paramGrzRoundHeapRatio.value = dataBase.getParamGrzRoundHeapRatio()
 
-            if (processMercuryProductService.newProcessMercuryProductService(productInfo.value!!) == null) {
-                screenNavigator.goBack()
-                screenNavigator.openAlertWrongProductType()
-            }
+            productInfo.value
+                    ?.let {
+                        if (processMercuryProductService.newProcessMercuryProductService(it) == null) {
+                            screenNavigator.goBack()
+                            screenNavigator.openAlertWrongProductType()
+                        }
+                    }.orIfNull {
+                        screenNavigator.goBack()
+                        screenNavigator.openAlertWrongProductType()
+                    }
         }
     }
 
