@@ -33,7 +33,7 @@ class GoodInfoViewModel : SendDataViewModel(), OnPositionClickListener {
     val requestFocusToQuantityField: MutableLiveData<Boolean> = MutableLiveData(true)
     val requestFocusToPartNumberField: MutableLiveData<Boolean> = MutableLiveData(true)
 
-    val partNumberFieldEnabled: MutableLiveData<Boolean> = MutableLiveData(false)
+    val partNumberFieldEnabled: MutableLiveData<Boolean> = MutableLiveData(true)
 
     private val groups: MutableLiveData<List<GroupInfo>> = MutableLiveData()
     private val conditions: MutableLiveData<List<ConditionInfo>> = MutableLiveData()
@@ -77,7 +77,7 @@ class GoodInfoViewModel : SendDataViewModel(), OnPositionClickListener {
             quantityField.value = "$quantity $uom"
 
             /*Тут на самом деле не matcode, а ШК по индикатору (10). Осталось понять как его получить*/
-            partNumberField.value = good?.matcode.orEmpty()
+            //partNumberField.value = good?.matcode.orEmpty()
 
             val groupList = database.getAllGoodGroup()
 
