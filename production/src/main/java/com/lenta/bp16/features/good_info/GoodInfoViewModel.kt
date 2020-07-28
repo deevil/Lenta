@@ -16,6 +16,9 @@ class GoodInfoViewModel : CoreViewModel() {
 
     val weightField = MutableLiveData("0")
 
+    val material = MutableLiveData("")
+    val selectedEan = MutableLiveData("")
+
     /**Количество*/
     val quantityField = MutableLiveData("")
     val requestFocusQuantityField = MutableLiveData(true)
@@ -38,13 +41,6 @@ class GoodInfoViewModel : CoreViewModel() {
     val containerField = MutableLiveData("")
 
 
-    private val entered = weightField.map{
-        it?.toDoubleOrNull() ?: 0.0
-    }
-
-    val completeEnabled = entered.map{
-        it ?: 0.0 != 0.0
-    }
 
     fun onClickComplete(){
         launchUITryCatch {

@@ -1,6 +1,7 @@
 package com.lenta.bp16.features.select_good
 
 import android.view.View
+import androidx.lifecycle.observe
 import com.lenta.bp16.R
 import com.lenta.bp16.databinding.FragmentGoodSelectBinding
 import com.lenta.bp16.platform.Constants
@@ -10,6 +11,7 @@ import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListener
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
+import com.lenta.shared.utilities.extentions.connectLiveData
 import com.lenta.shared.utilities.extentions.generateScreenNumberFromPostfix
 import com.lenta.shared.utilities.extentions.getDeviceId
 import com.lenta.shared.utilities.extentions.provideViewModel
@@ -33,7 +35,15 @@ class GoodSelectFragment : CoreFragment<FragmentGoodSelectBinding, GoodSelectVie
 
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
         bottomToolbarUiModel.uiModelButton1.show(ButtonDecorationInfo.menu)
-        bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.next)
+        bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.next, enabled = false)
+
+        viewLifecycleOwner.apply {
+            vm.enteredEanField.observe(viewLifecycleOwner) {
+                bottomToolbarUiModel.uiModelButton5.requestFocus()
+            }
+        }
+
+        connectLiveData(vm.enabledNextButton, bottomToolbarUiModel.uiModelButton5.enabled)
     }
 
     override fun onToolbarButtonClick(view: View) {

@@ -11,12 +11,20 @@ import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListener
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
-import com.lenta.shared.utilities.extentions.connectLiveData
 import com.lenta.shared.utilities.extentions.generateScreenNumberFromPostfix
 import com.lenta.shared.utilities.extentions.getDeviceId
 import com.lenta.shared.utilities.extentions.provideViewModel
+import com.lenta.shared.utilities.extentions.unsafeLazy
 
 class GoodInfoFragment : CoreFragment<FragmentGoodInfoBinding, GoodInfoViewModel>(), ToolbarButtonsClickListener {
+
+    private val material by unsafeLazy {
+        arguments?.getString(KEY_MATERIAL) ?: throw IllegalArgumentException("There is no data in bundle at key $KEY_MATERIAL")
+    }
+
+    private val selectedEan by unsafeLazy {
+        arguments?.getString(KEY_EAN) ?: throw IllegalArgumentException("There is no data in bundle at key $KEY_EAN")
+    }
 
     override fun getLayoutId(): Int = R.layout.fragment_good_info
 
@@ -26,6 +34,8 @@ class GoodInfoFragment : CoreFragment<FragmentGoodInfoBinding, GoodInfoViewModel
         provideViewModel(GoodInfoViewModel::class.java).let {
             getAppComponent()?.inject(it)
             it.deviceIp.value = context!!.getDeviceId()
+            it.material.value = material
+            it.selectedEan.value = selectedEan
             return it
         }
     }
@@ -40,7 +50,7 @@ class GoodInfoFragment : CoreFragment<FragmentGoodInfoBinding, GoodInfoViewModel
         bottomToolbarUiModel.uiModelButton1.show(ButtonDecorationInfo.back)
         bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.complete, enabled = false)
 
-        connectLiveData(vm.completeEnabled, getBottomToolBarUIModel()!!.uiModelButton5.enabled)
+        //connectLiveData(vm.completeEnabled, getBottomToolBarUIModel()!!.uiModelButton5.enabled)
     }
 
     override fun onToolbarButtonClick(view: View) {
@@ -54,8 +64,8 @@ class GoodInfoFragment : CoreFragment<FragmentGoodInfoBinding, GoodInfoViewModel
         private const val KEY_MATERIAL = "KEY_MATERIAL"
         private const val KEY_EAN = "KEY_EAN"
 
-        fun newInstance(material: String?, ean: String?) = GoodInfoFragment.apply {
-            //arguments = bundleOf(KEY_MATERIAL to material, KEY_EAN to ean)
+        fun newInstance(material: String?, ean: String?) = GoodInfoFragment().apply {
+            arguments = bundleOf(KEY_MATERIAL to material, KEY_EAN to ean)
         }
     }
 

@@ -5,6 +5,7 @@ import com.lenta.bp16.platform.navigation.IScreenNavigator
 import com.lenta.bp16.repository.DatabaseRepository
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.extentions.launchUITryCatch
+import com.lenta.shared.utilities.extentions.map
 import javax.inject.Inject
 
 class GoodSelectViewModel : CoreViewModel() {
@@ -18,6 +19,8 @@ class GoodSelectViewModel : CoreViewModel() {
 
     val enteredEanField = MutableLiveData("")
     val requestFocusEnteredEanField = MutableLiveData(true)
+
+    val enabledNextButton = enteredEanField.map { !it.isNullOrBlank() }
 
     fun onClickNext(){
         launchUITryCatch {

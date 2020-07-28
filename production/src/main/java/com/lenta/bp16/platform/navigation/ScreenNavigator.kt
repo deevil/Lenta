@@ -159,7 +159,7 @@ class ScreenNavigator @Inject constructor(
         }
     }
 
-    override fun openGoodInfoScreen(ean: String?, material: String) {
+    override fun openGoodInfoScreen(ean: String?, material: String?) {
         runOrPostpone {
             getFragmentStack()?.push(GoodInfoFragment.newInstance(ean, material))
         }
@@ -329,7 +329,7 @@ interface IScreenNavigator : ICoreNavigator {
     fun openReprintLabelScreen()
     fun openDefectInfoScreen()
     fun openDefectListScreen()
-    fun openGoodInfoScreen(ean: String?, material: String)
+    fun openGoodInfoScreen(ean: String?, material: String?)
     fun openSelectGoodScreen()
 
     fun showDefrostingPhaseIsCompleted(nextCallback: () -> Unit)
