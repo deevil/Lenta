@@ -209,10 +209,10 @@ class MarkingInfoViewModel : CoreViewModel(),
                         ?.get(spinQualitySelectedPositionVal)
                         ?.code
                         .orEmpty()
-                val numberStampsControl = 1.0/**todo productInfo.value
+                val numberStampsControl = productInfo.value
                         ?.numberStampsControl
                         ?.toDouble()
-                        ?: 0.0*/
+                        ?: 0.0
                 if (qualityInfoCode == TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_NORM) {
                     if (numberStampsControl == 0.0 || acceptTotalCountVal <= 0.0) {
                         checkStampControlVisibility.value = false
@@ -245,7 +245,7 @@ class MarkingInfoViewModel : CoreViewModel(),
 
     val checkStampControl: MutableLiveData<Boolean> = checkStampControlVisibility.map {
         val countBlockScanned = processMarkingProductService.getCountProcessedBlockForDiscrepancies(TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_NORM).toDouble()
-        val numberStampsControl = 1.0 //todo productInfo.value?.numberStampsControl?.toDouble() ?: 0.0
+        val numberStampsControl = productInfo.value?.numberStampsControl?.toDouble() ?: 0.0
         countBlockScanned >= numberStampsControl
     }
 
@@ -577,7 +577,7 @@ class MarkingInfoViewModel : CoreViewModel(),
             return
         }
 
-        if (productInfo.value?.isControlGTIN == false) { //todo поставить обратно true
+        if (productInfo.value?.isControlGTIN == true) {
             gtinControlValueCheck(
                     stampCode = stampCode,
                     blockInfo = blockInfo,
@@ -588,6 +588,8 @@ class MarkingInfoViewModel : CoreViewModel(),
                     blockInfo = blockInfo,
                     typeDiscrepancies = typeDiscrepancies
             )
+            //обновляем кол-во отсканированных марок/блоков для отображения на экране в поле «Контроль марок»
+            countBlockScanned.value = countBlockScanned.value?.plus(1)
         }
     }
 
@@ -599,8 +601,6 @@ class MarkingInfoViewModel : CoreViewModel(),
                         typeDiscrepancies = currentTypeDiscrepancies,
                         isScan = true
                 )
-                //обновляем кол-во отсканированных марок/блоков для отображения на экране в поле «Контроль марок»
-                countBlockScanned.value = countBlockScanned.value?.plus(1)
             }
         }
     }
@@ -650,7 +650,7 @@ class MarkingInfoViewModel : CoreViewModel(),
             return
         }
 
-        if (checkBoxGtinStampControl.value == true) { //а иначе ничего не делаем (else нету) https://trello.com/c/y2ECoCw4
+        if (checkBoxGtinStampControl.value == true) {
             val lastScannedGtin =
                     processMarkingProductService.getLastScannedBlock()
                             ?.blockNumber
@@ -660,6 +660,8 @@ class MarkingInfoViewModel : CoreViewModel(),
             if (gtinCode == lastScannedGtin) {
                 checkBoxGtinControl.value = true //аналитики сказали сначала поставить чекбокс, а потом снять
                 processMarkingProductService.addGtin(gtinCode)
+                //обновляем кол-во отсканированных марок/блоков для отображения на экране в поле «Контроль марок»
+                countBlockScanned.value = countBlockScanned.value?.plus(1)
                 checkBoxGtinControl.value = false
                 checkBoxGtinStampControl.value = false //аналитики сказали сначала поставить чекбокс, а потом снять
             } else {
@@ -685,6 +687,8 @@ class MarkingInfoViewModel : CoreViewModel(),
         val lastScannedGtin = processMarkingProductService.getLastScannedGtin().orEmpty()
         if (lastScannedGtin == gtinCode) {
             checkBoxGtinStampControl.value = true //аналитики сказали сначала поставить чекбокс, а потом снять
+            //обновляем кол-во отсканированных марок/блоков для отображения на экране в поле «Контроль марок»
+            countBlockScanned.value = countBlockScanned.value?.plus(1)
             addBlock(blockInfo, typeDiscrepancies)
             checkBoxGtinControl.value = false
             checkBoxGtinStampControl.value = false //аналитики сказали сначала поставить чекбокс, а потом снять
