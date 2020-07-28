@@ -546,7 +546,7 @@ class GoodInfoOpenViewModel : CoreViewModel() {
         isExistUnsavedData = true
         scanInfoResult.value = result
         quantityField.value = "1"
-        updateProducers(result.producers.toMutableList())
+        //updateProducers(result.producers.toMutableList())
     }
 
     private fun loadBoxInfo(number: String) {
