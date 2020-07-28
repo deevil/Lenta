@@ -49,26 +49,32 @@ class GoodInfoViewModel : SendDataViewModel(), OnPositionClickListener {
 
     init {
         launchUITryCatch {
-            Logg.d { "selectedEan:${selectedEan.value} " }
             val good = database.getGoodByEan(selectedEan.value.toString())
-            Logg.d { "good.ean:${good?.ean}" }
-            Logg.d { "Good uom:${good?.uom}, ${good?.material}, ${good?.name}, ${good?.uom}, ${weight.value}" }
-            val quantity = when {
-                weight.value != 0 -> {
-                    weight.value?.div(Constants.CONVERT_TO_KG)
+            val uom: String
+            val quantity: Int?
+            if (weight.value != 0) {
+                quantity = weight.value?.div(Constants.CONVERT_TO_KG)
+                uom = Uom.KG.name
+            } else {
+                when (good?.uom) {
+                    Uom.ST -> {
+                        quantity = Constants.QUANTITY_DEFAULT_VALUE_1
+                        uom = Uom.ST.name
+                    }
+                    Uom.KAR -> {
+                        val uomInfo = database.getEanInfoByEan(good.ean)
+                        quantity = uomInfo?.umrez?.div(uomInfo.umren)
+                                ?: Constants.QUANTITY_DEFAULT_VALUE_0
+                        uom = Uom.KAR.name
+                    }
+                    else -> {
+                        quantity = Constants.QUANTITY_DEFAULT_VALUE_0
+                        uom = Constants.UNKNOWN_UOM
+                    }
                 }
-
-                good?.uom == Uom.ST -> {
-                    Constants.QUANTITY_DEFAULT_VALUE_1
-                }
-                good?.uom == Uom.KAR -> {
-                    val uom = database.getEanInfoByEan(good.ean)
-                    uom?.umrez?.div(uom.umren) ?: Constants.QUANTITY_DEFAULT_VALUE_0
-                }
-                else -> Constants.QUANTITY_DEFAULT_VALUE_0
             }
 
-            quantityField.value = quantity.toString()
+            quantityField.value = "$quantity $uom"
 
             /*Тут на самом деле не matcode, а ШК по индикатору (10). Осталось понять как его получить*/
             partNumberField.value = good?.matcode.orEmpty()
