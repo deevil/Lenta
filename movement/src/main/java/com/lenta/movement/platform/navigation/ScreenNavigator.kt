@@ -1,6 +1,7 @@
 package com.lenta.movement.platform.navigation
 
 import android.content.Context
+import android.os.Handler
 import androidx.core.content.ContextCompat
 import com.lenta.movement.R
 import com.lenta.movement.exception.InfoFailure
@@ -30,6 +31,7 @@ import com.lenta.shared.exception.Failure
 import com.lenta.shared.features.alert.AlertFragment
 import com.lenta.shared.interactor.UseCase
 import com.lenta.shared.platform.activity.ForegroundActivityProvider
+import com.lenta.shared.platform.navigation.CustomAnimation
 import com.lenta.shared.platform.navigation.ICoreNavigator
 import com.lenta.shared.platform.navigation.runOrPostpone
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
@@ -170,7 +172,7 @@ class ScreenNavigator(
     override fun openBoxRewriteDialog(msg: String, yesCallbackFunc: () -> Unit) {
         runOrPostpone {
             getFragmentStack()?.push(
-                    AlertFragment.create(
+                    fragment = AlertFragment.create(
                             message = msg,
                             codeConfirmForRight = backFragmentResultHelper.setFuncForResult(yesCallbackFunc),
                             iconRes = R.drawable.ic_question_yellow_80dp,
@@ -186,15 +188,34 @@ class ScreenNavigator(
         openInfoScreen(context.getString(R.string.stamp_max_count))
     }
 
-    override fun openStampWasAddedDialog(exciseBox: ExciseBox?) {
-        if (exciseBox != null) {
-            val shortBoxCode = "${exciseBox.code.take(5)}...${exciseBox.code.takeLast(5)}"
-
-            openInfoScreen(context.getString(R.string.stamp_was_added_to_box_msg, shortBoxCode))
-        } else {
-            openInfoScreen(context.getString(R.string.stamp_was_added_msg))
-        }
+    override fun openStampWasAddedDialog(yesCallbackFunc: () -> Unit) {
+            runOrPostpone {
+                getFragmentStack()?.push(
+                        fragment = AlertFragment.create(
+                                message = context.getString(R.string.stamp_was_added_msg),
+                                codeConfirmForRight = backFragmentResultHelper.setFuncForResult(yesCallbackFunc),
+                                iconRes = R.drawable.ic_question_yellow_80dp,
+                                pageNumber = OPEN_BOX_REWRITE_DIALOG_PAGE_NUMBER,
+                                leftButtonDecorationInfo = ButtonDecorationInfo.no,
+                                rightButtonDecorationInfo = ButtonDecorationInfo.yes
+                        )
+                )
+            }
     }
+    override fun openStampWasAddedDialogInAnotherBox() {
+            runOrPostpone {
+                getFragmentStack()?.push(
+                        fragment = AlertFragment.create(
+                                message = context.getString(R.string.stamp_was_added_to_box_msg),
+                                iconRes = R.drawable.ic_warning_red_80dp,
+                                pageNumber = OPEN_BOX_REWRITE_DIALOG_PAGE_NUMBER,
+                                leftButtonDecorationInfo = ButtonDecorationInfo.back
+                        )
+                )
+            }
+    }
+
+
 
     override fun openBoxNumberWasUsedDialog() {
         openInfoScreen(context.getString(R.string.box_number_was_used_msg))
@@ -210,9 +231,10 @@ class ScreenNavigator(
             getFragmentStack()?.push(
                     AlertFragment.create(
                             message = context.getString(R.string.box_saved_msg, shortBoxCode),
-                            iconRes = R.drawable.ic_checkbox_green_32dp,
+                            iconRes = R.drawable.ic_info_green_80dp,
                             pageNumber = BOX_SAVED_DIALOG_PAGE_NUMBER,
-                            leftButtonDecorationInfo = ButtonDecorationInfo.back
+                            leftButtonDecorationInfo = ButtonDecorationInfo.empty,
+                            timeAutoExitInMillis = TWO_SECONDS_IN_MILLI
                     )
             )
         }
@@ -375,9 +397,25 @@ class ScreenNavigator(
         }
     }
 
+    override fun openGeneralGoodIconScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    message = context.getString(com.lenta.shared.R.string.general_product),
+                    iconRes = com.lenta.shared.R.drawable.ic_kandy_white_32dp), CustomAnimation.vertical)
+        }
+    }
+
+    override fun openAlcoGoodIconScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    message = context.getString(R.string.alco_good),
+                    iconRes = com.lenta.shared.R.drawable.ic_alcohol_white_32dp), CustomAnimation.vertical)
+        }
+    }
+
 
     companion object {
-        private const val TASK_TO_MOVE = "Задания на перемещение"
+        private const val TWO_SECONDS_IN_MILLI = 2000
         private const val ZERO_SELECTED_EO_PAGE_NUMBER = "02"
         private const val SAVE_TASK_CONFIRM_DIALOG_PAGE_NUMBER = "06"
         private const val BOX_SAVED_DIALOG_PAGE_NUMBER = "02"
@@ -398,14 +436,19 @@ interface IScreenNavigator : ICoreNavigator {
     fun openGoodsList()
     fun openUnsavedDataDialog(yesCallbackFunc: () -> Unit)
     fun openSelectTypeCodeScreen(codeConfirmationForSap: Int, codeConfirmationForBarCode: Int)
+
     fun openProductIncorrectForCreateBox(productInfo: ProductInfo)
     fun openCreateBoxByProduct(productInfo: ProductInfo)
     fun openBoxRewriteDialog(msg: String, yesCallbackFunc: () -> Unit)
-    fun openStampMaxCountDialog()
-    fun openStampWasAddedDialog(exciseBox: ExciseBox? = null)
     fun openBoxNumberWasUsedDialog()
-    fun openEanInvalidDialog()
     fun openBoxSavedDialog(box: ExciseBox)
+
+    fun openStampMaxCountDialog()
+    fun openStampWasAddedDialog(yesCallbackFunc: () -> Unit)
+    fun openStampWasAddedDialogInAnotherBox()
+
+    fun openEanInvalidDialog()
+
     fun openTaskScreen(task: Task?)
     fun openTaskCompositionScreen()
     fun openTaskGoodsInfoScreen(productInfo: ProductInfo)
@@ -422,4 +465,7 @@ interface IScreenNavigator : ICoreNavigator {
     fun openGEInsidesScreen(ge: CargoUnit)
     fun openEOInsidesScreen(eo: ProcessingUnit)
     fun openExcludeConfirmationDialog(yesCallbackFunc: () -> Unit)
+
+    fun openGeneralGoodIconScreen()
+    fun openAlcoGoodIconScreen()
 }

@@ -27,7 +27,8 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_margin="@dimen/size_16dp"
-                    app:items="@{vm.quantityList}" />
+                    app:items="@{vm.quantityList}"
+                    />
 
                 <com.lenta.shared.view.EditTextWithSuffix
                     android:layout_width="0dp"
@@ -91,13 +92,13 @@
                 android:id="@+id/tv_matrix"
                 android:layout_width="@dimen/round_btn_size"
                 android:layout_height="@dimen/round_btn_size"
-                android:autoSizeTextType="uniform"
                 android:fontFamily="@font/tahoma_bold"
-                android:gravity="center"
-                android:textSize="@dimen/text_18sp"
+                android:gravity="center_horizontal"
+                android:textSize="@dimen/text_20sp"
+                android:textColor="@color/colorNumSectionTxt"
                 app:matrixType="@{vm.productInfo.matrixType}"
                 tools:background="@drawable/bg_white_circle"
-                tools:text="A" />
+                tools:text="B" />
         </FrameLayout>
 
         <FrameLayout
@@ -127,7 +128,6 @@
         <FrameLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:padding="@dimen/size_8dp"
             android:layout_marginStart="@dimen/size_8dp"
             android:foreground="?selectableItemBackground"
             app:layout_constraintBottom_toBottomOf="@+id/b_scan"
@@ -135,20 +135,21 @@
             app:layout_constraintTop_toTopOf="@+id/b_scan">
 
             <ImageView
-                android:layout_width="@dimen/round_btn_size"
-                android:layout_height="@dimen/round_btn_size"
-                android:src="@drawable/ic_basket_24dp"
+                android:layout_width="@dimen/square_btn_size"
+                android:layout_height="@dimen/square_btn_size"
+                android:src="@drawable/ic_clear_basket_32dp"
                 android:tint="@color/color_white"
                 android:layout_gravity="center_horizontal"
                 android:contentDescription="@string/basket" />
 
             <TextView
-                android:layout_width="@dimen/round_btn_size"
-                android:layout_height="@dimen/round_btn_size"
+                android:layout_width="@dimen/square_btn_size"
+                android:layout_height="@dimen/square_btn_size"
                 android:textColor="@color/color_background"
                 android:fontFamily="@font/tahoma_bold"
-                android:textSize="@dimen/text_16sp"
+                android:textSize="@dimen/text_14sp"
                 android:gravity="center"
+                android:paddingTop="@dimen/size_4dp"
                 android:text="@{@string/task_goods_basket_number_format(vm.currentBasket.number)}"
                 tools:text="01" />
         </FrameLayout>

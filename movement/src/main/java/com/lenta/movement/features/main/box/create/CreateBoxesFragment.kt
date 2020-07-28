@@ -15,8 +15,6 @@ import com.lenta.movement.databinding.LayoutBoxCreatePuckerTabBinding
 import com.lenta.movement.databinding.LayoutItemBoxListBinding
 import com.lenta.movement.models.ProductInfo
 import com.lenta.movement.platform.extensions.getAppComponent
-import com.lenta.shared.keys.KeyCode
-import com.lenta.shared.keys.OnKeyDownListener
 import com.lenta.shared.platform.activity.OnBackPresserListener
 import com.lenta.shared.platform.fragment.CoreFragment
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
@@ -34,8 +32,7 @@ class CreateBoxesFragment : CoreFragment<FragmentCreateBoxesBinding, CreateBoxes
         ToolbarButtonsClickListener,
         ViewPagerSettings,
         OnScanResultListener,
-        OnBackPresserListener,
-        OnKeyDownListener {
+        OnBackPresserListener {
 
     private var productInfo: ProductInfo? by state(null)
 
@@ -71,7 +68,6 @@ class CreateBoxesFragment : CoreFragment<FragmentCreateBoxesBinding, CreateBoxes
                     bottomToolbarUiModel.uiModelButton1.show(ButtonDecorationInfo.back)
                     bottomToolbarUiModel.uiModelButton2.show(ButtonDecorationInfo.rollback)
                     bottomToolbarUiModel.uiModelButton4.show(ButtonDecorationInfo.add)
-
                     connectLiveData(vm.rollbackEnabled, bottomToolbarUiModel.uiModelButton2.enabled)
                     connectLiveData(vm.addAndApplyEnabled, bottomToolbarUiModel.uiModelButton4.enabled)
                 }
@@ -214,21 +210,6 @@ class CreateBoxesFragment : CoreFragment<FragmentCreateBoxesBinding, CreateBoxes
             return CreateBoxesFragment().apply {
                 this.productInfo = productInfo
             }
-        }
-    }
-
-    //Для тестов
-    override fun onKeyDown(keyCode: KeyCode): Boolean {
-        when (keyCode) {
-            KeyCode.KEYCODE_0 -> {
-                vm.onScanResult("136301689336770119001JM2C7LN6L4M4G6XI5I5X7NO3XQGFVDHTIVIV3VSWTFKUF72JF5LS6F7367HVIN6USTMEUGVN3VS43EG77IQRYGNG23HFYQOMLCVUPOZB7DQ7LY7YCEH2Y2LVE6KMY3SUI")
-                return true
-            }
-            KeyCode.KEYCODE_1 -> {
-                vm.onScanResult("01000000014011219000536300")
-                return true
-            }
-            else -> return false
         }
     }
 }
