@@ -5,6 +5,7 @@ import com.lenta.bp9.platform.TypeDiscrepanciesConstants
 import com.lenta.bp9.repos.IDataBaseRepo
 import com.lenta.shared.di.AppScope
 import com.lenta.shared.models.core.ProductType
+import com.lenta.shared.utilities.extentions.removeItemFromListWithPredicate
 import javax.inject.Inject
 
 @AppScope
@@ -176,15 +177,6 @@ class ProcessMarkingProductService
                 }.size
     }
 
-    fun getRefusalCountProcessedBlock(): Double {
-        return currentBlocksDiscrepancies
-                .filter {
-                    it.typeDiscrepancies != TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_NORM
-                }
-                .size
-                .toDouble()
-    }
-
     fun rollbackScannedBlock() {
         if (currentBlocksDiscrepancies.isNotEmpty()) {
             val block = currentBlocksDiscrepancies.last()
@@ -293,6 +285,12 @@ class ProcessMarkingProductService
 
         //отмечаем продукт
         addProduct((productInfo.origQuantity.toDouble() - getCountAcceptOfProduct() - getCountRefusalOfProduct()).toString(), typeDiscrepancies)
+    }
+
+    fun delBlockDiscrepancy(typeDiscrepancies: String) {
+        currentBlocksDiscrepancies.removeItemFromListWithPredicate {
+            it.typeDiscrepancies == typeDiscrepancies
+        }
     }
 
     fun modifications(): Boolean {

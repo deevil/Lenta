@@ -4,6 +4,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.lenta.bp9.features.goods_details.GoodsDetailsCategoriesItem
 import com.lenta.bp9.features.goods_details.GoodsDetailsPropertiesItem
+import com.lenta.bp9.model.processing.ProcessMarkingProductService
 import com.lenta.bp9.model.processing.ProcessMercuryProductService
 import com.lenta.bp9.model.task.IReceivingTaskManager
 import com.lenta.bp9.model.task.TaskMarkingGoodsProperties
@@ -30,7 +31,7 @@ class MarkingGoodsDetailsViewModel : CoreViewModel(), PageSelectionListener {
     lateinit var dataBase: IDataBaseRepo
 
     @Inject
-    lateinit var processMercuryProductService: ProcessMercuryProductService
+    lateinit var processMarkingProductService: ProcessMarkingProductService
 
     @Inject
     lateinit var repoInMemoryHolder: IRepoInMemoryHolder
@@ -116,6 +117,13 @@ class MarkingGoodsDetailsViewModel : CoreViewModel(), PageSelectionListener {
                                                     ?.typeDiscrepancies
                                                     .orEmpty()
                                     )
+
+                            processMarkingProductService.delBlockDiscrepancy(
+                                    typeDiscrepancies = goodsDetails.value
+                                            ?.get(position)
+                                            ?.typeDiscrepancies
+                                            .orEmpty()
+                            )
                         }
                     }
         }
