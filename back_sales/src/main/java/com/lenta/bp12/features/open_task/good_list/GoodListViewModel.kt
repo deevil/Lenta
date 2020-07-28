@@ -6,7 +6,6 @@ import com.lenta.bp12.platform.navigation.IScreenNavigator
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.platform.device_info.DeviceInfo
 import com.lenta.shared.platform.viewmodel.CoreViewModel
-import com.lenta.shared.requests.combined.scan_info.ScanCodeInfo
 import com.lenta.shared.utilities.SelectionItemsHelper
 import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
 import com.lenta.shared.utilities.databinding.PageSelectionListener
@@ -138,7 +137,7 @@ class GoodListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
         task.value?.let { task ->
             task.goods.find { it.material == material }?.let { good ->
                 manager.searchNumber = material
-                manager.searchGoodFromList = true
+                manager.searchFromList = true
                 manager.updateCurrentGood(good)
                 navigator.openGoodInfoOpenScreen()
             }
@@ -146,26 +145,12 @@ class GoodListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
     }
 
     fun onScanResult(data: String) {
-        checkEnteredNumber(data)
+        openGoodInfoByNumber(data)
     }
 
     override fun onOkInSoftKeyboard(): Boolean {
-        checkEnteredNumber(numberField.value.orEmpty())
+        openGoodInfoByNumber(numberField.value.orEmpty())
         return true
-    }
-
-    private fun checkEnteredNumber(number: String) {
-        if (task.value?.isStrict == false) {
-            openGoodInfoByNumber(number)
-        } else {
-            val numberWithoutWeight = ScanCodeInfo(number).eanWithoutWeight
-            if (manager.isGoodExist(numberWithoutWeight)) {
-                openGoodInfoByNumber(number)
-            } else {
-                numberField.value = ""
-                navigator.showGoodIsMissingInTask()
-            }
-        }
     }
 
     private fun openGoodInfoByNumber(number: String) {
@@ -173,7 +158,7 @@ class GoodListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
 
         if (isCommonFormatNumber(number)) {
             manager.searchNumber = number
-            manager.searchGoodFromList = true
+            manager.searchFromList = true
             navigator.openGoodInfoOpenScreen()
         } else {
             navigator.showIncorrectEanFormat()

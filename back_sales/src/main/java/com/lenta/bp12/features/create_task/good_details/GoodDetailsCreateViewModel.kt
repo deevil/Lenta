@@ -61,7 +61,7 @@ class GoodDetailsCreateViewModel : CoreViewModel(), PageSelectionListener {
                             basket = basket,
                             position = "${list.size - index}",
                             name = resource.basket("${manager.getBasketPosition(basket)}"),
-                            description = basket.getDescription(task.taskType.isDivBySection),
+                            description = basket.getDescription(task.type.isDivBySection),
                             quantity = task.getQuantityByBasket(basket).dropZeros()
                     )
                 }

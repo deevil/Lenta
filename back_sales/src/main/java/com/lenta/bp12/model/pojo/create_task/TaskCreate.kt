@@ -10,7 +10,7 @@ data class TaskCreate(
         val name: String,
         val storage: String,
         val reason: ReturnReason,
-        val taskType: TaskType,
+        val type: TaskType,
         val control: ControlType = ControlType.UNKNOWN,
         var isProcessed: Boolean = false,
 
@@ -19,7 +19,7 @@ data class TaskCreate(
 ) {
 
     fun getFormattedName(): String {
-        return "${taskType.code} // $name"
+        return "${type.code} // $name"
     }
 
     fun getQuantityByBasket(basket: Basket): Double {

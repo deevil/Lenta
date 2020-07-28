@@ -26,7 +26,7 @@ class OpenTaskManager @Inject constructor(
 
     override var searchNumber = ""
 
-    override var searchGoodFromList = false
+    override var searchFromList = false
 
     override val searchParams = MutableLiveData<TaskSearchParams>()
 
@@ -161,28 +161,7 @@ class OpenTaskManager @Inject constructor(
     }
 
     override fun findGoodByMaterial(material: String): GoodOpen? {
-        val formattedMaterial = if (material.length == Constants.SAP_6) "000000000000$material" else material
-        return currentTask.value?.goods?.find { it.material == formattedMaterial }
-    }
-
-    override fun isGoodExist(number: String): Boolean {
-        currentTask.value?.let { task ->
-            task.goods.find { good ->
-                good.material.contains(number)
-            }?.also {
-                return true
-            }
-
-            task.goods.find { good ->
-                good.allGoodEans.contains(number)
-            }?.also { found ->
-                found.ean = number
-                updateCurrentTask(task)
-                return true
-            }
-        }
-
-        return false
+        return currentTask.value?.goods?.find { it.material == material }
     }
 
     override fun isGoodCorrespondToTask(goodInfo: GoodInfoResult): Boolean {
@@ -315,7 +294,7 @@ class OpenTaskManager @Inject constructor(
     }
 
     override fun clearSearchFromListParams() {
-        searchGoodFromList = false
+        searchFromList = false
         searchNumber = ""
     }
 
@@ -325,7 +304,7 @@ class OpenTaskManager @Inject constructor(
 interface IOpenTaskManager {
 
     var searchNumber: String
-    var searchGoodFromList: Boolean
+    var searchFromList: Boolean
 
     val searchParams: MutableLiveData<TaskSearchParams>
     val tasks: MutableLiveData<List<TaskOpen>>
@@ -341,7 +320,6 @@ interface IOpenTaskManager {
     fun saveGoodInTask(good: GoodOpen)
     fun findGoodByEan(ean: String): GoodOpen?
     fun findGoodByMaterial(material: String): GoodOpen?
-    fun isGoodExist(number: String): Boolean
     fun isGoodCorrespondToTask(goodInfo: GoodInfoResult): Boolean
     suspend fun isGoodCanBeAdded(goodInfo: GoodInfoResult): Boolean
     fun finishCurrentTask()

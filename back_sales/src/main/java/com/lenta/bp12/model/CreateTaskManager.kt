@@ -23,7 +23,7 @@ class CreateTaskManager @Inject constructor(
 
     override var searchNumber = ""
 
-    override var searchGoodFromList = false
+    override var searchFromList = false
 
     override var isWasAddedProvider = false
 
@@ -71,7 +71,7 @@ class CreateTaskManager @Inject constructor(
     }
 
     override suspend fun isGoodCanBeAdded(goodInfo: GoodInfoResult): Boolean {
-        return database.isGoodCanBeAdded(goodInfo, currentTask.value!!.taskType.code)
+        return database.isGoodCanBeAdded(goodInfo, currentTask.value!!.type.code)
     }
 
     override fun addBasket(basket: Basket) {
@@ -199,7 +199,7 @@ class CreateTaskManager @Inject constructor(
                             deviceIp = deviceIp,
                             userNumber = userNumber,
                             taskName = task.name,
-                            taskType = task.taskType.code,
+                            taskType = task.type.code,
                             tkNumber = tkNumber,
                             storage = task.storage,
                             reasonCode = task.reason.code,
@@ -215,7 +215,7 @@ class CreateTaskManager @Inject constructor(
     }
 
     override fun clearSearchFromListParams() {
-        searchGoodFromList = false
+        searchFromList = false
         searchNumber = ""
     }
 
@@ -225,7 +225,7 @@ class CreateTaskManager @Inject constructor(
 interface ICreateTaskManager {
 
     var searchNumber: String
-    var searchGoodFromList: Boolean
+    var searchFromList: Boolean
     var isWasAddedProvider: Boolean
 
     val currentTask: MutableLiveData<TaskCreate>

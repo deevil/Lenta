@@ -25,7 +25,6 @@ import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.extentions.*
 import com.lenta.shared.utilities.getDateFromString
 import com.lenta.shared.utilities.getFormattedDate
-import com.lenta.shared.utilities.isCommonFormatNumber
 import com.lenta.shared.view.OnPositionClickListener
 import javax.inject.Inject
 
@@ -71,7 +70,9 @@ class GoodInfoOpenViewModel : CoreViewModel() {
         }
     }
 
-    private val lastSuccessSearchNumber = MutableLiveData("")
+    private var originalSearchNumber = ""
+
+    private var lastSuccessSearchNumber = ""
 
     val isCompactMode by lazy {
         good.map { good ->
@@ -98,8 +99,6 @@ class GoodInfoOpenViewModel : CoreViewModel() {
     }
 
     private val scanInfoResult = MutableLiveData<ScanInfoResult>()
-
-    private var scanCodeInfo: ScanCodeInfo? = null
 
     private var isExistUnsavedData = false
 
@@ -280,67 +279,72 @@ class GoodInfoOpenViewModel : CoreViewModel() {
      */
 
     fun onScanResult(number: String) {
-        if (task.value?.isStrict == true && (number.length < Constants.SAP_6 || number.length > Constants.MARK_150)) {
-            return
-        }
+        good.value?.let { good ->
+            if (applyEnabled.value == true || good.kind == GoodKind.EXCISE && isExciseNumber(number)) {
+                if (!thereWasRollback) {
+                    saveChanges()
+                } else {
+                    thereWasRollback = false
+                }
 
-        if (applyEnabled.value!! || good.value!!.kind == GoodKind.EXCISE &&
-                (number.length == Constants.MARK_150 || number.length == Constants.MARK_68 || number.length == Constants.BOX_26)) {
-            if (!thereWasRollback) {
-                saveChanges()
-            } else {
-                thereWasRollback = false
+                manager.clearSearchFromListParams()
+                checkSearchNumber(number)
             }
+        }
+    }
 
-            manager.searchGoodFromList = false
-            manager.searchNumber = number
-            checkSearchNumber(number)
+    private fun isExciseNumber(number: String): Boolean {
+        return when (number.length) {
+            Constants.MARK_150, Constants.MARK_68, Constants.BOX_26 -> true
+            else -> false
         }
     }
 
     private fun checkSearchNumber(number: String) {
-        val numberLength = number.length
+        originalSearchNumber = number
 
-        Logg.d { "--> checked number = $numberLength / $number" }
-
-        if (isCommonFormatNumber(number)) {
-            when (numberLength) {
-                Constants.SAP_6 -> getGoodByMaterial(number)
-                Constants.SAP_18 -> getGoodByMaterial(number)
-                Constants.SAP_OR_BAR_12 -> {
-                    navigator.showTwelveCharactersEntered(
-                            sapCallback = { getGoodByMaterial(number) },
-                            barCallback = { getGoodByEan(number) }
-                    )
+        actionByNumberLength(
+                number = number,
+                funcForEan = { ean -> getGoodByEan(ean) },
+                funcForMaterial = { material -> getGoodByMaterial(material) },
+                funcForSapOrBar = navigator::showTwelveCharactersEntered,
+                funcForExcise = { exciseNumber -> loadMarkInfo(exciseNumber) },
+                funcForBox = { boxNumber -> loadBoxInfo(boxNumber) },
+                funcForNotValidFormat = {
+                    goBackIfSearchFromList()
+                    navigator.showIncorrectEanFormat()
                 }
-                else -> getGoodByEan(number)
-            }
+        )
+    }
+
+    private fun getGoodByEan(ean: String) {
+        val foundGood = manager.findGoodByEan(ean)
+        if (foundGood != null) {
+            lastSuccessSearchNumber = ean
+            setFoundGood(foundGood)
         } else {
-            when (numberLength) {
-                Constants.MARK_150 -> loadMarkInfo(number)
-                Constants.MARK_68 -> loadMarkInfo(number)
-                Constants.BOX_26 -> loadBoxInfo(number)
-                else -> navigator.showIncorrectEanFormat()
+            if (task.value?.isStrict == false) {
+                loadGoodInfoByEan(ean)
+            } else {
+                goBackIfSearchFromList()
+                navigator.showGoodIsMissingInTask()
             }
         }
     }
 
-    private fun getGoodByEan(ean: String) {
-        isEanLastScanned = true
-        scanCodeInfo = ScanCodeInfo(ean)
-        val eanWithoutWeight = scanCodeInfo?.eanWithoutWeight ?: ean
-
-        manager.findGoodByEan(eanWithoutWeight)?.let { foundGood ->
-            lastSuccessSearchNumber.value = eanWithoutWeight
-            setFoundGood(foundGood)
-        } ?: loadGoodInfo(ean = eanWithoutWeight)
-    }
-
     private fun getGoodByMaterial(material: String) {
-        manager.findGoodByMaterial(material)?.let { foundGood ->
-            lastSuccessSearchNumber.value = material
+        val foundGood = manager.findGoodByMaterial(material)
+        if (foundGood != null) {
+            lastSuccessSearchNumber = material
             setFoundGood(foundGood)
-        } ?: loadGoodInfo(material = material)
+        } else {
+            if (task.value?.isStrict == false) {
+                loadGoodInfoByMaterial(material)
+            } else {
+                goBackIfSearchFromList()
+                navigator.showGoodIsMissingInTask()
+            }
+        }
     }
 
     private fun setFoundGood(foundGood: GoodOpen) {
@@ -355,7 +359,7 @@ class GoodInfoOpenViewModel : CoreViewModel() {
             good.isCounted -> quantityField.value = good.getQuantity().dropZeros()
             good.kind == GoodKind.COMMON -> {
                 if (good.isDifferentUnits()) {
-                    val converted = scanCodeInfo?.getConvertedQuantity(good.innerQuantity) ?: 0.0
+                    val converted = ScanCodeInfo(originalSearchNumber).getConvertedQuantity(good.innerQuantity)
                     quantityField.value = converted.dropZeros()
                 } else {
                     if (isEanLastScanned) {
@@ -380,54 +384,69 @@ class GoodInfoOpenViewModel : CoreViewModel() {
         }
     }
 
-    private fun loadGoodInfo(ean: String? = null, material: String? = null) {
-        require((ean != null) || (material != null)) {
-            "At least one param must be not null - ean: $ean, material: $material"
-        }
-
+    private fun loadGoodInfoByEan(ean: String) {
         launchUITryCatch {
             navigator.showProgressLoadingData(::handleFailure)
-
             goodInfoNetRequest(GoodInfoParams(
                     tkNumber = sessionInfo.market.orEmpty(),
-                    ean = ean.orEmpty(),
-                    material = material.orEmpty(),
+                    ean = ean,
                     taskType = task.value?.type?.code.orEmpty()
             )).also {
                 navigator.hideProgress()
-            }.either(::handleFailure) { goodInfoResult ->
-                handleLoadGoodInfoResult(goodInfoResult, ean, material)
+            }.either(::handleFailure) { result ->
+                isEanLastScanned = true
+                handleLoadGoodInfoResult(result, ean)
             }
         }
     }
 
-    private fun handleLoadGoodInfoResult(result: GoodInfoResult, ean: String?, material: String?) {
+    private fun loadGoodInfoByMaterial(material: String) {
+        launchUITryCatch {
+            navigator.showProgressLoadingData(::handleFailure)
+            goodInfoNetRequest(GoodInfoParams(
+                    tkNumber = sessionInfo.market.orEmpty(),
+                    material = material,
+                    taskType = task.value?.type?.code.orEmpty()
+            )).also {
+                navigator.hideProgress()
+            }.either(::handleFailure) { result ->
+                isEanLastScanned = false
+                handleLoadGoodInfoResult(result, material)
+            }
+        }
+    }
+
+    private fun handleLoadGoodInfoResult(result: GoodInfoResult, number: String) {
         launchUITryCatch {
             if (manager.isGoodCorrespondToTask(result)) {
                 if (manager.isGoodCanBeAdded(result)) {
-                    isEanLastScanned = ean != null
                     isExistUnsavedData = true
-                    setGood(result = result, searchNumber = ean ?: (material.orEmpty()))
+                    setGood(result, number)
                 } else {
-                    goBackFromScreen()
+                    goBackIfSearchFromList()
                     navigator.showGoodCannotBeAdded()
                 }
             } else {
-                goBackFromScreen()
+                goBackIfSearchFromList()
                 navigator.showNotMatchTaskSettingsAddingNotPossible()
             }
         }
     }
 
-    private fun goBackFromScreen() {
-        if (manager.searchGoodFromList) {
-            manager.clearSearchFromListParams()
-        }
-
-        navigator.goBack()
+    override fun handleFailure(failure: Failure) {
+        super.handleFailure(failure)
+        goBackIfSearchFromList()
+        navigator.openAlertScreen(failure)
     }
 
-    private fun setGood(result: GoodInfoResult, searchNumber: String) {
+    private fun goBackIfSearchFromList() {
+        if (manager.searchFromList) {
+            manager.clearSearchFromListParams()
+            navigator.goBack()
+        }
+    }
+
+    private fun setGood(result: GoodInfoResult, number: String) {
         launchUITryCatch {
             with(result) {
                 good.value = GoodOpen(
@@ -446,7 +465,7 @@ class GoodInfoOpenViewModel : CoreViewModel() {
             }
 
             good.value?.let { good ->
-                lastSuccessSearchNumber.value = searchNumber
+                lastSuccessSearchNumber = number
                 updateProducers(good.producers)
                 setScreenStatus(good)
                 setDefaultQuantity(good)
@@ -455,6 +474,8 @@ class GoodInfoOpenViewModel : CoreViewModel() {
                     navigator.showForExciseGoodNeedScanFirstMark()
                 }
             }
+
+            manager.clearSearchFromListParams()
         }
     }
 
@@ -480,19 +501,19 @@ class GoodInfoOpenViewModel : CoreViewModel() {
         launchUITryCatch {
             result.status.let { status ->
                 when (status) {
-                    MarkStatus.OK.code -> addMarkInfo(number, result)
+                    MarkStatus.OK.code -> addMarkInfo(result)
                     MarkStatus.BAD.code -> {
-                        addMarkInfo(number, result)
+                        addMarkInfo(result)
                         navigator.openAlertScreen(result.statusDescription)
                     }
                     MarkStatus.UNKNOWN.code -> {
-                        when(number.length){
+                        when (number.length) {
                             Constants.MARK_150 -> navigator.openAlertScreen(result.statusDescription)
                             Constants.MARK_68 -> {
                                 database.getAlcoCodeInfoList(number.extractAlcoCode()).let { alcoCodeInfoList ->
                                     if (alcoCodeInfoList.isNotEmpty()) {
                                         if (alcoCodeInfoList.find { it.material == good.value!!.material } != null) {
-                                            addPartInfo(number, result)
+                                            addPartInfo(result)
                                         } else {
                                             navigator.openAlertScreen(resource.alcocodeDoesNotApplyToThisGood())
                                         }
@@ -509,18 +530,18 @@ class GoodInfoOpenViewModel : CoreViewModel() {
         }
     }
 
-    private fun addMarkInfo(number: String, scanInfo: ScanInfoResult) {
-        clearSearchFromListParams()
-        lastSuccessSearchNumber.value = number
+    private fun addMarkInfo(result: ScanInfoResult) {
+        manager.clearSearchFromListParams()
+        lastSuccessSearchNumber = originalSearchNumber
         isExistUnsavedData = true
-        scanInfoResult.value = scanInfo
+        scanInfoResult.value = result
         quantityField.value = "1"
 
-        when (number.length) {
+        when (originalSearchNumber.length) {
             Constants.MARK_150 -> {
                 screenStatus.value = ScreenStatus.MARK_150
-                updateProducers(scanInfo.producers.toMutableList())
-                date.value = scanInfo.producedDate
+                updateProducers(result.producers.toMutableList())
+                date.value = result.producedDate
             }
             Constants.MARK_68 -> {
                 screenStatus.value = ScreenStatus.MARK_68
@@ -528,13 +549,13 @@ class GoodInfoOpenViewModel : CoreViewModel() {
         }
     }
 
-    private fun addPartInfo(number: String, scanInfo: ScanInfoResult) {
+    private fun addPartInfo(result: ScanInfoResult) {
         screenStatus.value = ScreenStatus.PART
-        lastSuccessSearchNumber.value = number
+        lastSuccessSearchNumber = originalSearchNumber
         isExistUnsavedData = true
-        scanInfoResult.value = scanInfo
+        scanInfoResult.value = result
         quantityField.value = "1"
-        updateProducers(scanInfo.producers.toMutableList())
+        updateProducers(result.producers.toMutableList())
     }
 
     private fun loadBoxInfo(number: String) {
@@ -549,39 +570,27 @@ class GoodInfoOpenViewModel : CoreViewModel() {
                     quantity = 0.0
             )).also {
                 navigator.hideProgress()
-            }.either(::handleFailure) { result ->
-                handleLoadBoxInfoResult(result, number)
-            }
+            }.either(::handleFailure, ::handleLoadBoxInfoResult)
         }
     }
 
-    private fun handleLoadBoxInfoResult(result: ScanInfoResult, number: String) {
+    private fun handleLoadBoxInfoResult(result: ScanInfoResult) {
         launchUITryCatch {
             when (result.status) {
-                BoxStatus.OK.code -> addBoxInfo(number, result)
+                BoxStatus.OK.code -> addBoxInfo(result)
                 else -> navigator.openAlertScreen(result.statusDescription)
             }
         }
     }
 
-    override fun handleFailure(failure: Failure) {
-        super.handleFailure(failure)
-        if (manager.searchGoodFromList) {
-            manager.clearSearchFromListParams()
-            navigator.goBack()
-        }
-
-        navigator.openAlertScreen(failure)
-    }
-
-    private fun addBoxInfo(number: String, scanInfo: ScanInfoResult) {
+    private fun addBoxInfo(result: ScanInfoResult) {
         screenStatus.value = ScreenStatus.BOX
-        lastSuccessSearchNumber.value = number
+        lastSuccessSearchNumber = originalSearchNumber
         isExistUnsavedData = true
-        scanInfoResult.value = scanInfo
-        quantityField.value = scanInfo.marks.size.toString()
-        date.value = getFormattedDate(scanInfo.producedDate, Constants.DATE_FORMAT_yyyy_mm_dd, Constants.DATE_FORMAT_dd_mm_yyyy)
-        updateProducers(scanInfo.producers.toMutableList())
+        scanInfoResult.value = result
+        quantityField.value = result.marks.size.toString()
+        date.value = getFormattedDate(result.producedDate, Constants.DATE_FORMAT_yyyy_mm_dd, Constants.DATE_FORMAT_dd_mm_yyyy)
+        updateProducers(result.producers.toMutableList())
     }
 
     private suspend fun checkPart(): Either<Failure, ScanInfoResult> {
@@ -649,7 +658,7 @@ class GoodInfoOpenViewModel : CoreViewModel() {
         good.value?.let { changedGood ->
             changedGood.isCounted = true
             val mark = Mark(
-                    number = lastSuccessSearchNumber.value.orEmpty(),
+                    number = lastSuccessSearchNumber,
                     isBadMark = scanInfoResult.value?.status == MarkStatus.BAD.code,
                     providerCode = changedGood.provider.code
             )
@@ -664,7 +673,7 @@ class GoodInfoOpenViewModel : CoreViewModel() {
         good.value?.let { changedGood ->
             changedGood.isCounted = true
             val part = Part(
-                    number = lastSuccessSearchNumber.value.orEmpty(),
+                    number = lastSuccessSearchNumber,
                     material = changedGood.material,
                     quantity = quantity.value ?: 0.0,
                     providerCode = changedGood.provider.code,
@@ -685,7 +694,7 @@ class GoodInfoOpenViewModel : CoreViewModel() {
                 marks.forEach { mark ->
                     val markFromBox = Mark(
                             number = mark.number,
-                            boxNumber = lastSuccessSearchNumber.value.orEmpty(),
+                            boxNumber = lastSuccessSearchNumber,
                             providerCode = changedGood.provider.code
                     )
                     Logg.d { "--> add mark from box = $markFromBox" }
@@ -695,11 +704,6 @@ class GoodInfoOpenViewModel : CoreViewModel() {
 
             manager.updateCurrentGood(changedGood)
         }
-    }
-
-    private fun clearSearchFromListParams() {
-        manager.searchGoodFromList = false
-        manager.searchNumber = ""
     }
 
     /**

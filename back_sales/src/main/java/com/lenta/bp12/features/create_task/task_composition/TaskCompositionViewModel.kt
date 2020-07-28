@@ -82,7 +82,7 @@ class TaskCompositionViewModel : CoreViewModel(), PageSelectionListener, OnOkInS
                             basket = basket,
                             position = "$position",
                             name = resource.basket("$position"),
-                            description = basket.getDescription(task.taskType.isDivBySection),
+                            description = basket.getDescription(task.type.isDivBySection),
                             quantity = "${task.getCountByBasket(basket)}"
                     )
                 }
@@ -124,7 +124,7 @@ class TaskCompositionViewModel : CoreViewModel(), PageSelectionListener, OnOkInS
 
         if (isCommonFormatNumber(number)) {
             manager.searchNumber = number
-            manager.searchGoodFromList = true
+            manager.searchFromList = true
             navigator.openGoodInfoCreateScreen()
         } else {
             navigator.showIncorrectEanFormat()
@@ -136,7 +136,7 @@ class TaskCompositionViewModel : CoreViewModel(), PageSelectionListener, OnOkInS
             when (page) {
                 0 -> {
                     manager.searchNumber = goods.value!![position].material
-                    manager.searchGoodFromList = true
+                    manager.searchFromList = true
                     navigator.openGoodInfoCreateScreen()
                 }
                 1 -> {
