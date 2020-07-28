@@ -9,18 +9,23 @@ import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.settings.IAppSettings
 import com.lenta.shared.utilities.extentions.launchUITryCatch
 import com.lenta.shared.utilities.extentions.map
+import com.lenta.shared.utilities.extentions.unsafeLazy
 import com.lenta.shared.view.OnPositionClickListener
 import javax.inject.Inject
 
 class SelectMarketViewModel : CoreViewModel(), OnPositionClickListener {
     @Inject
     lateinit var repoInMemoryHolder: IRepoInMemoryHolder
+
     @Inject
     lateinit var screenNavigator: IScreenNavigator
+
     @Inject
     lateinit var sessionInfo: ISessionInfo
+
     @Inject
     lateinit var appSettings: IAppSettings
+
     @Inject
     lateinit var printerManager: PrinterManager
 
@@ -30,35 +35,41 @@ class SelectMarketViewModel : CoreViewModel(), OnPositionClickListener {
         markets?.map { it.number }
     }
     val selectedPosition: MutableLiveData<Int> = MutableLiveData()
-    val selectedAddress: MutableLiveData<String> = selectedPosition.map {
-        it?.let { position ->
-            markets.value?.getOrNull(position)?.address
+    val selectedAddress: MutableLiveData<String> by unsafeLazy {
+        selectedPosition.map {
+            it?.let { position ->
+                markets.value?.getOrNull(position)?.address
+            }
         }
     }
 
     init {
         launchUITryCatch {
             repoInMemoryHolder.storesRequestResult?.let { storesRequestResult ->
-                markets.value = storesRequestResult.markets.map { MarketUi(number = it.number, address = it.address) }.also {
-                    if (selectedPosition.value == null) {
-                        if (appSettings.lastTK != null) {
-                            it.forEachIndexed { index, itemLocal_ET_WERKS ->
-                                if (itemLocal_ET_WERKS.number == appSettings.lastTK) {
-                                    onClickPosition(index)
-                                }
+                val listOfMarkets = storesRequestResult.markets.map {
+                    MarketUi(number = it.number, address = it.address)
+                }
+                markets.value = listOfMarkets
+                if (selectedPosition.value == null) {
+                    if (appSettings.lastTK != null) {
+                        listOfMarkets.forEachIndexed { index, itemLocal_ET_WERKS ->
+                            if (itemLocal_ET_WERKS.number == appSettings.lastTK) {
+                                onClickPosition(index)
                             }
-                        } else {
-                            onClickPosition(0)
                         }
-                    }
-
-                    if (it.size == 1) {
-                        onClickNext()
+                    } else {
+                        onClickPosition(0)
                     }
                 }
+
+                if (listOfMarkets.size == 1) {
+                    onClickNext()
+                }
+
             }
         }
     }
+
 
     fun onClickNext() {
         launchUITryCatch {

@@ -37,35 +37,63 @@ class Formatter : IFormatter {
         return "$BASKET ${String.format("%02d", basket.number)}"
     }
 
+    /** <Тип ГИС-контроля>/<Вид товара>/ПП – <номер задания>/ С-<номер секции>/<Группа закупок>/
+     * <Марочный или партионный>/<Номер партии>/<Еда/не еда>/<SAP-код товара>>. */
     override fun getBasketDescription(basket: Basket, task: Task, settings: TaskSettings): String {
         if (basket.keys.isEmpty()) return ""
 
         return buildString {
             val signsOfDiv = settings.signsOfDiv
 
+            /** <Тип ГИС-контроля> - если в справочнике установлен признак «DIV_ALCO»,
+             * то отображать <А> для алкогольной корзины, если установлен признак «DIV_VET»,
+             * то отображать <В> для ветеринарных товаров и <О> для обычных товаров, если
+             * установлен признак «DIV_USUAL». */
             if (signsOfDiv.contains(GoodsSignOfDivision.ALCO) && basket.keys.first().isAlco) {
                 append(A_AND_SLASH)
             } else if (signsOfDiv.contains(GoodsSignOfDivision.VET) && basket.keys.first().isVet) {
                 append(B_AND_SLASH)
             } else if (signsOfDiv.contains(GoodsSignOfDivision.USUAL) && basket.keys.first().isUsual) {
-                append(C_AND_SLASH)
+                append(O_AND_SLASH)
+            }
+            //<Вид товара>
+            if (signsOfDiv.contains(GoodsSignOfDivision.MTART)){
+                append("${basket.keys.first().materialType}/")
+            }
+            //ПП – <номер поставщика>
+            if (signsOfDiv.contains(GoodsSignOfDivision.LIF_NUMBER)) {
+                val supplier = basket.keys.firstOrNull()?.suppliers?.firstOrNull()
+                val supplierCode = supplier?.code
+                if (supplierCode != null && supplierCode.isNotEmpty()){
+                    append("$PP - ${supplierCode}/")
+                }
             }
 
-            append("${basket.keys.first().materialType}/")
-
-            if (task.isCreated) {
-                TODO("добавить 'ПП – <номер задания>/'")
+            //С-<номер секции>
+            if (signsOfDiv.contains(GoodsSignOfDivision.SECTION)) {
+                append("$SECTION_CHAR - ${basket.keys.first().sectionId}/")
             }
 
-            append("C - ${basket.keys.first().sectionId}/")
+            /**<Марочный или партионный> - отображать как <М> (марочный, есть признак IS_EXC)
+             * или <П> (партионный, нет признака IS_EXC)*/
+            if (signsOfDiv.contains(GoodsSignOfDivision.MARK_PARTS)) {
+                if (basket.keys.first().isExcise) {
+                    append(M_AND_SLASH)
+                } else if (basket.keys.first().isNotExcise) {
+                    append(P_AND_SLASH)
+                }
+            }
 
-            append("${basket.keys.first().ekGroup}/")
+            //<Номер партии>
+//            if (signsOfDiv.contains(GoodsSignOfDivision.PARTS)) {
+//                append(basket.keys.firstOrNull().)
+//            }
 
             if (signsOfDiv.contains(GoodsSignOfDivision.FOOD)) {
                 if (basket.keys.first().isFood) {
-                    append(BASKET_DESC_FOOD_CHAR)
+                    append(BASKET_DESC_FOOD_CHAR_AND_SLASH)
                 } else {
-                    append(BASKET_DESC_NOT_FOOD_CHAR)
+                    append(BASKET_DESC_NOT_FOOD_CHAR_AND_SLASH)
                 }
             }
 
@@ -151,16 +179,19 @@ class Formatter : IFormatter {
     }
 
     companion object {
-        private const val A_AND_SLASH = "A/"
-        private const val B_AND_SLASH = "B/"
-        private const val C_AND_SLASH = "C/"
+        private const val A_AND_SLASH = "А/"
+        private const val B_AND_SLASH = "В/"
+        private const val O_AND_SLASH = "О/"
+        private const val M_AND_SLASH = "М/"
+        private const val P_AND_SLASH = "П/"
 
         private const val TK = "ТК"
         private const val GE = "ГЕ"
+        private const val PP = "ПП"
 
         private const val BASKET = "Корзина"
-        private const val BASKET_DESC_FOOD_CHAR = "F"
-        private const val BASKET_DESC_NOT_FOOD_CHAR = "NF"
+        private const val BASKET_DESC_FOOD_CHAR_AND_SLASH = "F/"
+        private const val BASKET_DESC_NOT_FOOD_CHAR_AND_SLASH = "NF/"
 
         private const val ALCO = "Алкоголь"
         private const val SLASH_AND_ALCO_CHAR = "/А"
@@ -170,6 +201,8 @@ class Formatter : IFormatter {
         private const val SLASH_AND_USUAL_CHAR = "/О"
         private const val VET = "Меркурианский товар"
         private const val FOOD = "Еда"
+
+        private const val SECTION_CHAR = "С"
 
         private const val TRANSFER_WITH_ORDER = "Трансфер с заказа"
         private const val TRANSFER_WITHOUT_ORDER = "Трансфер без заказа"
