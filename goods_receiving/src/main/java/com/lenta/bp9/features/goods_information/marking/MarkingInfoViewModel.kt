@@ -12,7 +12,6 @@ import com.lenta.bp9.model.task.TaskProductInfo
 import com.lenta.bp9.platform.TypeDiscrepanciesConstants
 import com.lenta.bp9.platform.navigation.IScreenNavigator
 import com.lenta.bp9.repos.IDataBaseRepo
-import com.lenta.shared.fmp.resources.dao_ext.getEanInfo
 import com.lenta.shared.fmp.resources.dao_ext.getEansFromMaterial
 import com.lenta.shared.fmp.resources.dao_ext.getProductInfoByMaterial
 import com.lenta.shared.fmp.resources.dao_ext.getUomInfo
@@ -278,10 +277,12 @@ class MarkingInfoViewModel : CoreViewModel(),
                             val enteredCount = count.value?.toDoubleOrNull() ?: 0.0
                             val typeDiscrepancies = getCurrentTypeDiscrepancies()
                             val productOrigQuantity = product.origQuantity
-                            val numberStampsControl = 1.0/**todo productInfo.value
-                        ?.numberStampsControl
-                        ?.toDouble()
-                        ?: 0.0*/
+                            val numberStampsControl = 1.0
+
+                            /**todo productInfo.value
+                            ?.numberStampsControl
+                            ?.toDouble()
+                            ?: 0.0*/
                             val unprocessedAmountOfProduct = getCountBlocksByAttachments(productOrigQuantity) -
                                     processMarkingProductService.getCountProcessedBlockForDiscrepancies(typeDiscrepancies)
                             if (typeDiscrepancies != TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_NORM) {
@@ -321,16 +322,18 @@ class MarkingInfoViewModel : CoreViewModel(),
             spinQualitySelectedPosition
                     .combineLatest(checkStampControl)
                     .combineLatest(checkBoxStampList)
+                    .combineLatest(acceptTotalCount)
                     .map {
                         val enteredCount = count.value?.toDoubleOrNull() ?: 0.0
-                        val spinQualitySelectedPositionValue = it?.first?.first ?: 0
-                        val qualityInfoCode = qualityInfo.value?.get(spinQualitySelectedPositionValue)?.code.orEmpty()
-                        val checkStampControlValue = it?.first?.second ?: false
-                        val checkBoxStampListValue = it?.second ?: false
+                        val spinQualitySelectedPositionValue = spinQualitySelectedPosition.value ?: 0 //it?.first?.first ?: 0
+                        val typeDiscrepancies = getCurrentTypeDiscrepancies()
+                        val checkStampControlValue = checkStampControl.value ?: false //it?.first?.second ?: false
+                        val checkBoxStampListValue = checkBoxStampList.value ?: false //it?.second ?: false
+                        val acceptTotalCountValue = acceptTotalCount.value ?: 0.0
 
-                        enteredCount > 0.0
-                                && (qualityInfoCode == TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_NORM
-                                || checkStampControlValue
+                        (enteredCount > 0.0 || (acceptTotalCountValue > 0.0 && typeDiscrepancies == TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_NORM))
+                                && (typeDiscrepancies == TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_NORM
+                                ||checkStampControlValue
                                 || checkBoxStampListValue)
                     }
 
@@ -453,9 +456,13 @@ class MarkingInfoViewModel : CoreViewModel(),
     //https://trello.com/c/N6t51jru
     fun onScanResult(data: String) {
         val enteredCount = count.value?.toDoubleOrNull() ?: 0.0
+        val acceptTotalCountValue = acceptTotalCount.value ?: 0.0
         if (enteredCount <= 0.0) {
-            screenNavigator.openAlertMustEnterQuantityInfoGreenScreen()
-            return
+            if (!(getCurrentTypeDiscrepancies() == TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_NORM
+                            && acceptTotalCountValue > 0.0)) {
+                screenNavigator.openAlertMustEnterQuantityInfoGreenScreen()
+                return
+            }
         }
 
         when (data.length) {
@@ -466,7 +473,9 @@ class MarkingInfoViewModel : CoreViewModel(),
                 screenNavigator.openAlertInvalidCodeScannedForCurrentModeScreen()
             }
             8, in 12..14 -> {//GTIN
-                gtinScannedCheck(data.padStart(14, '0'))
+                if (getCurrentTypeDiscrepancies() == TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_NORM) {
+                    gtinScannedCheck(data.padStart(14, '0'))
+                }
             }
             else -> { //марка/блок. отсканировано 41, 44 или более 44 символов
                 if (barcodeCheck(data)) {
@@ -577,7 +586,8 @@ class MarkingInfoViewModel : CoreViewModel(),
             return
         }
 
-        if (productInfo.value?.isControlGTIN == true) {
+        if (productInfo.value?.isControlGTIN == true
+                && getCurrentTypeDiscrepancies() == TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_NORM) {
             gtinControlValueCheck(
                     stampCode = stampCode,
                     blockInfo = blockInfo,
@@ -724,7 +734,7 @@ class MarkingInfoViewModel : CoreViewModel(),
         }
     }
 
-    private fun getCountAttachmentInBlock(count: String?) : Double {
+    private fun getCountAttachmentInBlock(count: String?): Double {
         val nestingInOneBlock =
                 productInfo.value
                         ?.nestingInOneBlock
@@ -737,7 +747,7 @@ class MarkingInfoViewModel : CoreViewModel(),
         }
     }
 
-    private fun getCountBlocksByAttachments(count: String?) : Double {
+    private fun getCountBlocksByAttachments(count: String?): Double {
         val nestingInOneBlock =
                 productInfo.value
                         ?.nestingInOneBlock
@@ -750,17 +760,17 @@ class MarkingInfoViewModel : CoreViewModel(),
         }
     }
 
-    private fun getCurrentTypeDiscrepancies() : String {
+    private fun getCurrentTypeDiscrepancies(): String {
         val spinQualityPosition = spinQualitySelectedPosition.value ?: 0
         val spinRejectionPosition = spinReasonRejectionSelectedPosition.value ?: 0
         val selectedQualityInfo = qualityInfo.value?.get(spinQualityPosition)
         val selectedReasonRejectionInfo = reasonRejectionInfo.value?.get(spinRejectionPosition)
         return selectedQualityInfo
-                        ?.code
-                        ?.takeIf { qualityInfoCode ->
-                            qualityInfoCode == TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_NORM
-                        }
-                        ?: selectedReasonRejectionInfo?.code.orEmpty()
+                ?.code
+                ?.takeIf { qualityInfoCode ->
+                    qualityInfoCode == TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_NORM
+                }
+                ?: selectedReasonRejectionInfo?.code.orEmpty()
     }
 
     fun onClickUnitChange() {
@@ -771,6 +781,7 @@ class MarkingInfoViewModel : CoreViewModel(),
     fun scanMark1() {
         onScanResult("01046002660121422100000CS.8005012345.938000.92NGkg+wRXz36kBFjpfwOub5DBIIpD2iS/DMYpZuuDLU0Y3pZt1z20/1ksr4004wfhDhRxu4dgUV4QN96Qtdih9g==")
     }
+
     fun scanMark2() {
         onScanResult("04600266012142")
     }
