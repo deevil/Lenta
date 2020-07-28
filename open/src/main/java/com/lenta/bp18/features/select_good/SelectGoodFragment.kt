@@ -1,6 +1,7 @@
 package com.lenta.bp18.features.select_good
 
 import android.view.View
+import androidx.lifecycle.observe
 import com.lenta.bp18.R
 import com.lenta.bp18.databinding.FragmentSelectGoodsBinding
 import com.lenta.bp18.platform.Constants
@@ -34,12 +35,15 @@ class SelectGoodFragment : CoreFragment<FragmentSelectGoodsBinding, SelectGoodVi
     }
 
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
-        //TODO Потом изменить enabled на false
-        bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.next, enabled = true)
+        bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.next, enabled = false)
 
-        bottomToolbarUiModel.uiModelButton5.requestFocus()
+        viewLifecycleOwner.apply {
+            vm.barcodeField.observe(viewLifecycleOwner){
+                bottomToolbarUiModel.uiModelButton5.requestFocus()
+            }
+        }
 
-       // connectLiveData(vm.nextButtonEnabled, bottomToolbarUiModel.uiModelButton5.enabled)
+        connectLiveData(vm.nextButtonEnabled, bottomToolbarUiModel.uiModelButton5.enabled)
     }
 
     override fun onToolbarButtonClick(view: View) {

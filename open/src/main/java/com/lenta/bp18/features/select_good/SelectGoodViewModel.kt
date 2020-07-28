@@ -6,6 +6,7 @@ import com.lenta.bp18.platform.Constants
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.settings.IAppSettings
 import com.lenta.shared.utilities.extentions.launchUITryCatch
+import com.lenta.shared.utilities.extentions.map
 import javax.inject.Inject
 
 class SelectGoodViewModel : SendDataViewModel() {
@@ -18,6 +19,8 @@ class SelectGoodViewModel : SendDataViewModel() {
     private val weightValue = listOf("23", "24", "27", "28")
 
     val barcodeField:MutableLiveData<String> = MutableLiveData()
+
+    val nextButtonEnabled = barcodeField.map { !it.isNullOrBlank() }
     val requestFocusToBarcode = MutableLiveData<Boolean>(true)
 
     fun onClickNext() {
