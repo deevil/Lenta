@@ -141,13 +141,21 @@ class MarkingProductFailureViewModel : CoreViewModel() {
                     if (processMarkingProductService.newProcessMarkingProductService(productInfo) == null) {
                         screenNavigator.openAlertWrongProductType()
                     } else {
-                        val countProductNotProcessed =
-                                taskManager.getReceivingTask()
-                                        ?.taskRepository
-                                        ?.getProductsDiscrepancies()
-                                        ?.getCountProductNotProcessedOfProduct(productInfo)
-                                        ?: 0.0
-                        val countProductProcessed = productInfo.origQuantity.toDouble() - countProductNotProcessed
+                        val confirmedByScanning =
+                                processMarkingProductService.getCountAttachmentInBlock(
+                                        taskManager
+                                                .getReceivingTask()
+                                                ?.taskRepository
+                                                ?.getBlocksDiscrepancies()
+                                                ?.findBlocksDiscrepanciesOfProduct(productInfo)
+                                                ?.filter {
+                                                    it.isScan
+                                                }
+                                                ?.size
+                                                .toString()
+                                )
+
+                        val notConfirmedByScanning = productInfo.origQuantity.toDouble() - confirmedByScanning
                         val unitName = productInfo.purchaseOrderUnits.name.toLowerCase(Locale.getDefault())
                         screenNavigator.openPartialRefusalOnMarkingGoodsDialog(
                                 nextCallbackFunc = {
@@ -155,8 +163,8 @@ class MarkingProductFailureViewModel : CoreViewModel() {
                                     processMarkingProductService.refusalToAcceptPartlyByProduct(paramGrzGrundMarkCode.value.orEmpty())
                                 },
                                 title = "${productInfo.getMaterialLastSix()} ${productInfo.description}",
-                                countProductProcessed = "${countProductProcessed.toStringFormatted()} $unitName",
-                                countProductNotProcessed = "${countProductNotProcessed.toStringFormatted()} $unitName",
+                                confirmedByScanning = "${confirmedByScanning.toStringFormatted()} $unitName",
+                                notConfirmedByScanning = "${notConfirmedByScanning.toStringFormatted()} $unitName",
                                 paramGrzGrundMarkName = paramGrzGrundMarkName.value.orEmpty()
                         )
                     }
