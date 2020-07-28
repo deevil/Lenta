@@ -1516,9 +1516,9 @@ class ScreenNavigator(
         }
     }
 
-    override fun openMarkingInfoScreen(productInfo: TaskProductInfo, isDiscrepancy: Boolean) {
+    override fun openMarkingInfoScreen(productInfo: TaskProductInfo) {
         runOrPostpone {
-            getFragmentStack()?.push(MarkingInfoFragment.newInstance(productInfo, isDiscrepancy))
+            getFragmentStack()?.push(MarkingInfoFragment.newInstance(productInfo))
         }
     }
 
@@ -1830,7 +1830,7 @@ interface IScreenNavigator : ICoreNavigator {
     fun openAlertAlcocodeNotFoundTaskScreen()
     fun openAlertOverLimitPlannedScreen()
     fun openAlertOverLimitPlannedBatchScreen()
-    fun openMarkingInfoScreen(productInfo: TaskProductInfo, isDiscrepancy: Boolean)
+    fun openMarkingInfoScreen(productInfo: TaskProductInfo)
     fun openAlertInvalidCodeScannedForCurrentModeScreen()
     fun openAlertStampNotFoundReturnSupplierScreen(backCallbackFunc: () -> Unit)
     fun openAlertDisparityGTINScreen()

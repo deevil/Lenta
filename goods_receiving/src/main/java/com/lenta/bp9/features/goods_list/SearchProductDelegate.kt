@@ -246,7 +246,7 @@ class SearchProductDelegate @Inject constructor(
                     && taskProductInfo.isMarkFl
                     && !taskProductInfo.isCountingBoxes
                     && taskProductInfo.purchaseOrderUnits.name == "ШТ") {
-                screenNavigator.openMarkingInfoScreen(productInfo = taskProductInfo, isDiscrepancy = isDiscrepancy)
+                screenNavigator.openMarkingInfoScreen(productInfo = taskProductInfo)
                 return
             }
 

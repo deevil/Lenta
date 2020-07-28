@@ -24,7 +24,6 @@ class MarkingInfoFragment : CoreFragment<FragmentMarkingInfoBinding, MarkingInfo
         OnScanResultListener {
 
     private var productInfo by state<TaskProductInfo?>(null)
-    private var isDiscrepancy by state<Boolean?>(null)
 
     override fun getLayoutId(): Int = R.layout.fragment_marking_info
 
@@ -37,7 +36,6 @@ class MarkingInfoFragment : CoreFragment<FragmentMarkingInfoBinding, MarkingInfo
             vm.productInfo.value?.let {
                 vm.processMarkingProductService.initProduct(it)
             }
-            vm.isDiscrepancy.value = this.isDiscrepancy
             return vm
         }
     }
@@ -96,10 +94,9 @@ class MarkingInfoFragment : CoreFragment<FragmentMarkingInfoBinding, MarkingInfo
 
     companion object {
         private const val PAGE_NUMBER = "09/44"
-        fun newInstance(productInfo: TaskProductInfo, isDiscrepancy: Boolean): MarkingInfoFragment {
+        fun newInstance(productInfo: TaskProductInfo): MarkingInfoFragment {
             MarkingInfoFragment().let {
                 it.productInfo = productInfo
-                it.isDiscrepancy = isDiscrepancy
                 return it
             }
         }

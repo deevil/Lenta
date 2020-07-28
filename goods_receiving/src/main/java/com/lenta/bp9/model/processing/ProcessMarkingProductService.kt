@@ -169,8 +169,11 @@ class ProcessMarkingProductService
         addGtin(gtinCode)
     }
 
-    fun getCountProcessedBlock(): Int {
-        return currentBlocksDiscrepancies.size
+    fun getCountProcessedBlockForDiscrepancies(typeDiscrepancies: String): Int {
+        return currentBlocksDiscrepancies
+                .filter {
+                    it.typeDiscrepancies == typeDiscrepancies
+                }.size
     }
 
     fun getRefusalCountProcessedBlock(): Double {
@@ -183,13 +186,17 @@ class ProcessMarkingProductService
     }
 
     fun rollbackScannedBlock() {
-        val block = currentBlocksDiscrepancies.last()
-        currentBlocksDiscrepancies.remove(block)
+        if (currentBlocksDiscrepancies.isNotEmpty()) {
+            val block = currentBlocksDiscrepancies.last()
+            currentBlocksDiscrepancies.remove(block)
+        }
     }
 
     fun rollbackScannedGtin() {
-        val gtin = currentGtin.last()
-        currentGtin.remove(gtin)
+        if (currentGtin.isNotEmpty()) {
+            val gtin = currentGtin.last()
+            currentGtin.remove(gtin)
+        }
     }
 
     fun overLimit(count: Double): Boolean {
