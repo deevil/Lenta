@@ -19,16 +19,14 @@ import com.lenta.shared.utilities.extentions.unsafeLazy
 
 class GoodInfoFragment : CoreFragment<FragmentGoodInfoBinding, GoodInfoViewModel>(), ToolbarButtonsClickListener {
 
-/*    private val selectedEan by unsafeLazy {
-        arguments?.getString(KEY_EAN_VALUE) ?: throw IllegalArgumentException("There is no data in bundle at key $KEY_EAN_VALUE")
-    }*/
-
     private val weight by unsafeLazy {
-        arguments?.getString(KEY_WEIGHT_VALUE) ?: throw IllegalArgumentException("There is no data in bundle at key $KEY_WEIGHT_VALUE")
+        arguments?.getString(KEY_WEIGHT_VALUE)
+                ?: throw IllegalArgumentException("There is no data in bundle at key $KEY_WEIGHT_VALUE")
     }
 
     private val goodInfo by unsafeLazy {
-       arguments?.getBundle(KEY_GOOD_INFO) ?: throw  IllegalArgumentException("There is no data in bundle at key $KEY_GOOD_INFO")
+        arguments?.getBundle(KEY_GOOD_INFO)
+                ?: throw  IllegalArgumentException("There is no data in bundle at key $KEY_GOOD_INFO")
     }
 
     override fun getLayoutId(): Int = R.layout.fragment_good_info
@@ -39,7 +37,7 @@ class GoodInfoFragment : CoreFragment<FragmentGoodInfoBinding, GoodInfoViewModel
         provideViewModel(GoodInfoViewModel::class.java).let {
             getAppComponent()?.inject(it)
             it.deviceIp.value = context!!.getDeviceId()
-            it.selectedEan.value = goodInfo.getString("EAN")
+            it.selectedEan.value = goodInfo.getString(Constants.GOOD_INFO_EAN)
             it.weight.value = weight.toInt()
             return it
         }
@@ -47,8 +45,10 @@ class GoodInfoFragment : CoreFragment<FragmentGoodInfoBinding, GoodInfoViewModel
 
     override fun setupTopToolBar(topToolbarUiModel: TopToolbarUiModel) {
         topToolbarUiModel.description.value = getString(R.string.good_card)
-        topToolbarUiModel.title.value = getString(R.string.title_good_sap_name,goodInfo.getString("MATERIAL") , goodInfo.getString("NAME"))
-        }
+        topToolbarUiModel.title.value = getString(R.string.title_good_sap_name,
+                goodInfo.getString(Constants.GOOD_INFO_MATERIAL),
+                goodInfo.getString(Constants.GOOD_INFO_NAME))
+    }
 
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
         bottomToolbarUiModel.uiModelButton1.show(ButtonDecorationInfo.back)
@@ -56,7 +56,7 @@ class GoodInfoFragment : CoreFragment<FragmentGoodInfoBinding, GoodInfoViewModel
     }
 
     override fun onToolbarButtonClick(view: View) {
-        when(view.id){
+        when (view.id) {
             R.id.b_1 -> vm.onClickBack()
             R.id.b_5 -> vm.onClickComplete()
         }

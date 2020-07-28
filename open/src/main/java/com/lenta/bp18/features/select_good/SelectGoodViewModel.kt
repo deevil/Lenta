@@ -43,9 +43,9 @@ class SelectGoodViewModel : SendDataViewModel() {
                 null -> showError()
                 else -> {
                     val goodInfo = Bundle()
-                    goodInfo.putString("EAN", good.ean)
-                    goodInfo.putString("MATERIAL", good.getFormattedMaterial())
-                    goodInfo.putString("NAME", good.name)
+                    goodInfo.putString(Constants.GOOD_INFO_EAN, good.ean)
+                    goodInfo.putString(Constants.GOOD_INFO_MATERIAL, good.getFormattedMaterial())
+                    goodInfo.putString(Constants.GOOD_INFO_NAME, good.name)
                     openGoodInfoScreen(goodInfo,weight)
                 }
             }
