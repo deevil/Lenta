@@ -1,8 +1,8 @@
 package com.lenta.bp18.features.good_info
 
+import android.os.Bundle
 import android.view.View
 import androidx.core.os.bundleOf
-import androidx.lifecycle.observe
 import com.lenta.bp18.R
 import com.lenta.bp18.databinding.FragmentGoodInfoBinding
 import com.lenta.bp18.platform.Constants
@@ -19,12 +19,16 @@ import com.lenta.shared.utilities.extentions.unsafeLazy
 
 class GoodInfoFragment : CoreFragment<FragmentGoodInfoBinding, GoodInfoViewModel>(), ToolbarButtonsClickListener {
 
-    private val selectedEan by unsafeLazy {
+/*    private val selectedEan by unsafeLazy {
         arguments?.getString(KEY_EAN_VALUE) ?: throw IllegalArgumentException("There is no data in bundle at key $KEY_EAN_VALUE")
-    }
+    }*/
 
     private val weight by unsafeLazy {
-        arguments?.getString(KEY_WEIGHT_VALUE)?: throw IllegalArgumentException("There is no data in bundle at key $KEY_WEIGHT_VALUE")
+        arguments?.getString(KEY_WEIGHT_VALUE) ?: throw IllegalArgumentException("There is no data in bundle at key $KEY_WEIGHT_VALUE")
+    }
+
+    private val goodInfo by unsafeLazy {
+       arguments?.getBundle(KEY_GOOD_INFO) ?: throw  IllegalArgumentException("There is no data in bundle at key $KEY_GOOD_INFO")
     }
 
     override fun getLayoutId(): Int = R.layout.fragment_good_info
@@ -35,7 +39,7 @@ class GoodInfoFragment : CoreFragment<FragmentGoodInfoBinding, GoodInfoViewModel
         provideViewModel(GoodInfoViewModel::class.java).let {
             getAppComponent()?.inject(it)
             it.deviceIp.value = context!!.getDeviceId()
-            it.selectedEan.value = selectedEan
+            it.selectedEan.value = goodInfo.getString("EAN")
             it.weight.value = weight.toInt()
             return it
         }
@@ -43,15 +47,8 @@ class GoodInfoFragment : CoreFragment<FragmentGoodInfoBinding, GoodInfoViewModel
 
     override fun setupTopToolBar(topToolbarUiModel: TopToolbarUiModel) {
         topToolbarUiModel.description.value = getString(R.string.good_card)
-
-
-
-        viewLifecycleOwner.apply {
-            vm.good.observe(viewLifecycleOwner) { good ->
-                topToolbarUiModel.title.value = getString(R.string.title_good_sap_name, good.getFormattedMaterial(), good.name)
-            }
+        topToolbarUiModel.title.value = getString(R.string.title_good_sap_name,goodInfo.getString("MATERIAL") , goodInfo.getString("NAME"))
         }
-    }
 
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
         bottomToolbarUiModel.uiModelButton1.show(ButtonDecorationInfo.back)
@@ -67,11 +64,11 @@ class GoodInfoFragment : CoreFragment<FragmentGoodInfoBinding, GoodInfoViewModel
 
     companion object {
         const val SCREEN_NUMBER = Constants.GOODS_INFO_FRAGMENT
-        private const val KEY_EAN_VALUE = "KEY_EAN_VALUE"
         private const val KEY_WEIGHT_VALUE = "KEY_WEIGHT_VALUE"
+        private const val KEY_GOOD_INFO = "KEY_GOOD_INFO"
 
-        fun newInstance(ean: String, weight: String?) = GoodInfoFragment().apply {
-            arguments = bundleOf(KEY_EAN_VALUE to ean, KEY_WEIGHT_VALUE to weight)
+        fun newInstance(goodInfo: Bundle, weight: String?) = GoodInfoFragment().apply {
+            arguments = bundleOf(KEY_GOOD_INFO to goodInfo, KEY_WEIGHT_VALUE to weight)
         }
     }
 

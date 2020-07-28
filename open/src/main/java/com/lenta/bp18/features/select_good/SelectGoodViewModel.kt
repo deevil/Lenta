@@ -1,5 +1,6 @@
 package com.lenta.bp18.features.select_good
 
+import android.os.Bundle
 import androidx.lifecycle.MutableLiveData
 import com.lenta.bp18.features.other.SendDataViewModel
 import com.lenta.bp18.platform.Constants
@@ -38,15 +39,21 @@ class SelectGoodViewModel : SendDataViewModel() {
 
     private fun searchEan(ean: String, weight: String?) {
         launchUITryCatch {
-            when (database.getGoodByEan(ean)) {
+            when (val good = database.getGoodByEan(ean)) {
                 null -> showError()
-                else -> openGoodInfoScreen(ean,weight)
+                else -> {
+                    val goodInfo = Bundle()
+                    goodInfo.putString("EAN", good.ean)
+                    goodInfo.putString("MATERIAL", good.getFormattedMaterial())
+                    goodInfo.putString("NAME", good.name)
+                    openGoodInfoScreen(goodInfo,weight)
+                }
             }
         }
     }
 
-    private fun openGoodInfoScreen(ean: String, weight: String?) {
-        navigator.openGoodsInfoScreen(ean, weight)
+    private fun openGoodInfoScreen(goodInfo: Bundle, weight: String? ) {
+        navigator.openGoodsInfoScreen(goodInfo, weight)
     }
 
     private fun showError() {

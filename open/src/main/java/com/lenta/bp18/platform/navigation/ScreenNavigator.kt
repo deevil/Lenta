@@ -1,6 +1,7 @@
 package com.lenta.bp18.platform.navigation
 
 import android.content.Context
+import android.os.Bundle
 import com.lenta.bp18.R
 import com.lenta.bp18.features.auth.AuthFragment
 import com.lenta.bp18.features.good_info.GoodInfoFragment
@@ -40,9 +41,9 @@ class ScreenNavigator @Inject constructor(
         }
     }
 
-    override fun openGoodsInfoScreen(ean: String, weight: String?) {
+    override fun openGoodsInfoScreen(goodInfo: Bundle, weight: String?) {
         runOrPostpone {
-            getFragmentStack()?.push(GoodInfoFragment.newInstance(ean, weight))
+            getFragmentStack()?.push(GoodInfoFragment.newInstance(goodInfo, weight))
         }
     }
 
@@ -137,7 +138,7 @@ interface IScreenNavigator : ICoreNavigator {
     fun openAuthScreen()
     fun openSelectMarketScreen()
     fun openSelectGoodScreen()
-    fun openGoodsInfoScreen(ean: String, weight: String?)
+    fun openGoodsInfoScreen(goodInfo: Bundle, weight: String?)
     fun openFastDataLoadingScreen()
 
     fun showConfirmOpeningPackage(confirmCallback: () -> Unit)

@@ -3,6 +3,7 @@ package com.lenta.bp18.features.good_info
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.lenta.bp18.features.other.SendDataViewModel
+import com.lenta.bp18.model.pojo.Good
 import com.lenta.bp18.platform.Constants
 import com.lenta.shared.models.core.Uom
 import com.lenta.shared.requests.combined.scan_info.pojo.ConditionInfo
@@ -21,13 +22,9 @@ class GoodInfoViewModel : SendDataViewModel(), OnPositionClickListener {
     @Inject
     lateinit var appSettings: IAppSettings
 
-    //TODO Удалить потом опилки и не опилки
-    //val barcode = "2999999640343" //опилки
-    //val barcode = "2425352000000" //не опилки
-
     val deviceIp = MutableLiveData("")
 
-    var selectedEan = MutableLiveData("")
+    val selectedEan = MutableLiveData("")
     var weight = MutableLiveData(0)
 
     val quantityField: MutableLiveData<String> = MutableLiveData("")
@@ -52,6 +49,7 @@ class GoodInfoViewModel : SendDataViewModel(), OnPositionClickListener {
 
     init {
         launchUITryCatch {
+            Logg.d { "selectedEan:${selectedEan.value} " }
             val good = database.getGoodByEan(selectedEan.value.toString())
             Logg.d { "good.ean:${good?.ean}" }
             Logg.d { "Good uom:${good?.uom}, ${good?.material}, ${good?.name}, ${good?.uom}, ${weight.value}" }
