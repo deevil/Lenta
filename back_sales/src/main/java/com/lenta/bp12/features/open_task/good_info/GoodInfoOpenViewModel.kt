@@ -80,7 +80,7 @@ class GoodInfoOpenViewModel : CoreViewModel() {
         }
     }
 
-    private val screenStatus = MutableLiveData(ScreenStatus.DEFAULT)
+    private val screenStatus = MutableLiveData(ScreenStatus.COMMON)
 
     val accountingType by lazy {
         screenStatus.map { status ->
@@ -139,7 +139,7 @@ class GoodInfoOpenViewModel : CoreViewModel() {
         good.combineLatest(quantity).map {
             it?.let {
                 val (good, entered) = it
-                if (good.isCounted) good.getQuantity() else entered.sumWith(good.getTotalQuantity())
+                entered.sumWith(good.getTotalQuantity())
             }
         }
     }
@@ -355,32 +355,23 @@ class GoodInfoOpenViewModel : CoreViewModel() {
     }
 
     private fun setDefaultQuantity(good: GoodOpen) {
-        when {
-            good.isCounted -> quantityField.value = good.getQuantity().dropZeros()
-            good.kind == GoodKind.COMMON -> {
-                if (good.isDifferentUnits()) {
-                    val converted = ScanCodeInfo(originalSearchNumber).getConvertedQuantity(good.innerQuantity)
-                    quantityField.value = converted.dropZeros()
-                } else {
-                    if (isEanLastScanned) {
-                        quantityField.value = "1"
-                    }
+        if(good.kind == GoodKind.COMMON) {
+            if (good.isDifferentUnits()) {
+                val converted = ScanCodeInfo(originalSearchNumber).getConvertedQuantity(good.innerQuantity)
+                quantityField.value = converted.dropZeros()
+            } else {
+                if (isEanLastScanned) {
+                    quantityField.value = "1"
                 }
             }
         }
     }
 
     private fun setScreenStatus(good: GoodOpen) {
-        with(good) {
-            screenStatus.value = if (isCounted) {
-                ScreenStatus.COUNTED
-            } else {
-                when (kind) {
-                    GoodKind.COMMON -> ScreenStatus.COMMON
-                    GoodKind.ALCOHOL -> ScreenStatus.ALCOHOL
-                    GoodKind.EXCISE -> ScreenStatus.EXCISE
-                }
-            }
+        screenStatus.value = when (good.kind) {
+            GoodKind.COMMON -> ScreenStatus.COMMON
+            GoodKind.ALCOHOL -> ScreenStatus.ALCOHOL
+            GoodKind.EXCISE -> ScreenStatus.EXCISE
         }
     }
 

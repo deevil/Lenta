@@ -52,12 +52,8 @@ data class GoodOpen(
         return if (isDifferentUnits()) " (${commonUnits.name} = ${innerQuantity.dropZeros()} ${innerUnits.name})" else ""
     }
 
-    fun getQuantity(): Double {
-        return factQuantity.takeIf { it > 0.0 } ?: getTotalQuantity()
-    }
-
     fun getTotalQuantity(): Double {
-        return getPositionQuantity() + getMarkQuantity() + getPartQuantity()
+        return factQuantity + getPositionQuantity() + getMarkQuantity() + getPartQuantity()
     }
 
     fun getPositionQuantity(): Double {

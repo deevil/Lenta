@@ -82,7 +82,7 @@ class GoodInfoCreateViewModel : CoreViewModel() {
         }
     }
 
-    private val screenStatus = MutableLiveData(ScreenStatus.DEFAULT)
+    private val screenStatus = MutableLiveData(ScreenStatus.COMMON)
 
     val accountingType by lazy {
         screenStatus.map { status ->

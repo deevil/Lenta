@@ -77,7 +77,7 @@ class GoodListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
                         ItemGoodProcessedUi(
                                 position = "${filtered.size - index}",
                                 name = good.getNameWithMaterial(),
-                                quantity = "${good.getQuantity().dropZeros()} ${good.commonUnits.name}",
+                                quantity = "${good.getTotalQuantity().dropZeros()} ${good.commonUnits.name}",
                                 material = good.material,
                                 providerCode = good.provider.code
                         )
@@ -133,17 +133,6 @@ class GoodListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
         }
     }
 
-    private fun openGoodByMaterial(material: String) {
-        task.value?.let { task ->
-            task.goods.find { it.material == material }?.let { good ->
-                manager.searchNumber = material
-                manager.searchFromList = true
-                manager.updateCurrentGood(good)
-                navigator.openGoodInfoOpenScreen()
-            }
-        }
-    }
-
     fun onScanResult(data: String) {
         openGoodInfoByNumber(data)
     }
@@ -151,6 +140,17 @@ class GoodListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
     override fun onOkInSoftKeyboard(): Boolean {
         openGoodInfoByNumber(numberField.value.orEmpty())
         return true
+    }
+
+    private fun openGoodByMaterial(material: String) {
+        task.value?.let { task ->
+            task.goods.find { it.material == material }?.let { good ->
+                manager.searchNumber = material
+                manager.searchFromList = true
+                //manager.updateCurrentGood(good)
+                navigator.openGoodInfoOpenScreen()
+            }
+        }
     }
 
     private fun openGoodInfoByNumber(number: String) {

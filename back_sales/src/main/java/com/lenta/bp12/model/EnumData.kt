@@ -61,8 +61,6 @@ enum class PartStatus(val code: String){
 }
 
 enum class ScreenStatus(val description: String){
-    DEFAULT("Состояние до сканирование первого номера"),
-    COUNTED("Товар уже посчитан"),
     COMMON("Обычный товар"),
     ALCOHOL("Алкогольный немаркированный товар"),
     EXCISE("Акцизный алкоголь"),
