@@ -546,6 +546,9 @@ class GoodInfoOpenViewModel : CoreViewModel() {
         isExistUnsavedData = true
         scanInfoResult.value = result
         quantityField.value = "1"
+
+        // todo Возможно ошибка в логике
+        // потому что тогда непонятно зачем приходит новый список при запросе по марке
         //updateProducers(result.producers.toMutableList())
     }
 

@@ -606,7 +606,10 @@ class GoodInfoCreateViewModel : CoreViewModel() {
         isExistUnsavedData = true
         scanInfoResult.value = result
         quantityField.value = "1"
-        updateProducers(result.producers.toMutableList())
+
+        // todo Возможно ошибка в логике
+        // потому что тогда непонятно зачем приходит новый список при запросе по марке
+        //updateProducers(result.producers.toMutableList())
     }
 
     private fun loadBoxInfo(number: String) {
