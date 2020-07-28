@@ -350,8 +350,16 @@ class GoodInfoOpenViewModel : CoreViewModel() {
     private fun setFoundGood(foundGood: GoodOpen) {
         manager.updateCurrentGood(foundGood)
         setScreenStatus(foundGood)
-        updateProducers(foundGood.producers)
+        setProducerList(foundGood)
         setDefaultQuantity(foundGood)
+    }
+
+    private fun setProducerList(good: GoodOpen) {
+        if (good.kind == GoodKind.EXCISE) {
+            updateProducers(emptyList())
+        } else {
+            updateProducers(good.producers)
+        }
     }
 
     private fun setDefaultQuantity(good: GoodOpen) {
@@ -457,7 +465,7 @@ class GoodInfoOpenViewModel : CoreViewModel() {
 
             good.value?.let { good ->
                 lastSuccessSearchNumber = number
-                updateProducers(good.producers)
+                setProducerList(good)
                 setScreenStatus(good)
                 setDefaultQuantity(good)
 
