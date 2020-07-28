@@ -76,8 +76,8 @@ class GoodInfoViewModel : SendDataViewModel(), OnPositionClickListener {
 
             quantityField.value = "$quantity $uom"
 
-            /*Тут на самом деле не matcode, а ШК по индикатору (10). Осталось понять как его получить*/
-            //partNumberField.value = good?.matcode.orEmpty()
+            /*ШК по индикатору (10). Осталось понять как его получить*/
+            //partNumberField.value = /*значение*/
 
             val groupList = database.getAllGoodGroup()
 
@@ -93,7 +93,6 @@ class GoodInfoViewModel : SendDataViewModel(), OnPositionClickListener {
             }
 
             val conditionList = database.getAllGoodCondition()
-
             conditions.value = conditionList
         }
     }
@@ -103,14 +102,28 @@ class GoodInfoViewModel : SendDataViewModel(), OnPositionClickListener {
     }
 
     fun onClickBack() {
-        navigator.showConfirmSaveData {
-            navigator.openSelectMarketScreen()
-        }
+        navigator.showConfirmSaveData(
+                backCallback = {
+                    navigator.goBack()
+                },
+                confirmCallback = {
+                    navigator.goBack()
+                    navigator.openSelectGoodScreen()
+                }
+        )
     }
 
     fun onClickComplete() {
-        navigator.showConfirmOpeningPackage {
-            /*Подтверждение вскрытия упаковки*/
-        }
+        navigator.showConfirmOpeningPackage(
+                noCallback = {
+                    navigator.goBack()
+                },
+                yesCallback = {
+                    /*Отправка данных*/
+                    navigator.showAlertSuccessfulOpeningPackage {
+                        navigator.openSelectGoodScreen()
+                    }
+                }
+        )
     }
 }

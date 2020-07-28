@@ -59,27 +59,29 @@ class ScreenNavigator @Inject constructor(
 
 
     // Informational screens
-    override fun showConfirmOpeningPackage(confirmCallback: () -> Unit) {
+    override fun showConfirmOpeningPackage(noCallback: () -> Unit ,yesCallback: () -> Unit) {
         runOrPostpone {
             getFragmentStack()?.push(AlertFragment.create(
                     message = context.getString(R.string.tw_unpucking),
                     iconRes = R.drawable.ic_question_yellow_80dp,
                     pageNumber = Constants.CONFIRMATION_SCREEN,
-                    codeConfirmForRight = backFragmentResultHelper.setFuncForResult(confirmCallback),
+                    codeConfirmForLeft = backFragmentResultHelper.setFuncForResult(noCallback),
+                    leftButtonDecorationInfo = ButtonDecorationInfo.back,
+                    codeConfirmForRight = backFragmentResultHelper.setFuncForResult(yesCallback),
                     rightButtonDecorationInfo = ButtonDecorationInfo.confirm
             ))
         }
     }
 
-    override fun showConfirmSaveData(goOverCallback: () -> Unit) {
+    override fun showConfirmSaveData(backCallback: () -> Unit, confirmCallback: () -> Unit) {
         runOrPostpone {
             getFragmentStack()?.push(AlertFragment.create(
                     message = context.getString(R.string.tw_save_data),
                     iconRes = R.drawable.ic_question_yellow_80dp,
                     pageNumber = Constants.CONFIRMATION_SCREEN,
-                    codeConfirmForLeft = backFragmentResultHelper.setFuncForResult(goOverCallback),
+                    codeConfirmForLeft = backFragmentResultHelper.setFuncForResult(backCallback),
                     leftButtonDecorationInfo = ButtonDecorationInfo.back,
-                    codeConfirmForRight = backFragmentResultHelper.setFuncForResult(goOverCallback),
+                    codeConfirmForRight = backFragmentResultHelper.setFuncForResult(confirmCallback),
                     rightButtonDecorationInfo = ButtonDecorationInfo.confirm
             ))
         }
@@ -141,8 +143,8 @@ interface IScreenNavigator : ICoreNavigator {
     fun openGoodsInfoScreen(goodInfo: Bundle, weight: String?)
     fun openFastDataLoadingScreen()
 
-    fun showConfirmOpeningPackage(confirmCallback: () -> Unit)
-    fun showConfirmSaveData(goOverCallback: () -> Unit)
+    fun showConfirmOpeningPackage(noCallback: () -> Unit ,yesCallback: () -> Unit)
+    fun showConfirmSaveData(backCallback: () -> Unit, confirmCallback: () -> Unit)
     fun showAlertSuccessfulOpeningPackage(goOverCallback: () -> Unit)
     fun showAlertPartCodeNotFound()
     fun showAlertGoodsNotFound()

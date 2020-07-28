@@ -17,7 +17,7 @@ class SelectGoodViewModel : SendDataViewModel() {
     @Inject
     lateinit var appSettings: IAppSettings
 
-    private val weightValue = listOf("23", "24", "27", "28")
+    private val weightValue = listOf(VALUE_23, VALUE_24, VALUE_27, VALUE_28)
 
     val barcodeField:MutableLiveData<String> = MutableLiveData()
 
@@ -62,5 +62,12 @@ class SelectGoodViewModel : SendDataViewModel() {
 
     fun onClickExit() {
         /*Выход из приложения*/
+    }
+
+    companion object{
+        const val VALUE_23 = "23"
+        const val VALUE_24 = "24"
+        const val VALUE_27 = "27"
+        const val VALUE_28 = "28"
     }
 }

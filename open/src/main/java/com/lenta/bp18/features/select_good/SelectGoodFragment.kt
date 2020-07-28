@@ -24,7 +24,7 @@ class SelectGoodFragment : CoreFragment<FragmentSelectGoodsBinding, SelectGoodVi
     override fun getPageNumber(): String? = generateScreenNumberFromPostfix(SCREEN_NUMBER)
 
     override fun getViewModel(): SelectGoodViewModel {
-        provideViewModel(SelectGoodViewModel::class.java).let{
+        provideViewModel(SelectGoodViewModel::class.java).let {
             getAppComponent()?.inject(it)
             return it
         }
@@ -40,7 +40,7 @@ class SelectGoodFragment : CoreFragment<FragmentSelectGoodsBinding, SelectGoodVi
         bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.next, enabled = false)
 
         viewLifecycleOwner.apply {
-            vm.barcodeField.observe(viewLifecycleOwner){
+            vm.barcodeField.observe(viewLifecycleOwner) {
                 bottomToolbarUiModel.uiModelButton5.requestFocus()
             }
         }
@@ -49,7 +49,7 @@ class SelectGoodFragment : CoreFragment<FragmentSelectGoodsBinding, SelectGoodVi
     }
 
     override fun onToolbarButtonClick(view: View) {
-        when(view.id){
+        when (view.id) {
             R.id.b_topbar_2 -> vm.onClickExit()
             R.id.b_5 -> vm.onClickNext()
         }

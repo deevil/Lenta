@@ -116,7 +116,7 @@ class SelectMarketViewModel : CoreViewModel(), OnPositionClickListener {
                                         Logg.d { "codeVersion for update: $codeVersion" }
                                         codeVersion?.run {
                                             appUpdateInstaller.checkNeedAndHaveUpdate(this)
-                                        }?: Either.Right("")
+                                        } ?: Either.Right("")
                                     }
                         }.either({
                             Logg.e { "checkNeedAndHaveUpdate failure: $it" }
@@ -125,9 +125,7 @@ class SelectMarketViewModel : CoreViewModel(), OnPositionClickListener {
                             Logg.d { "update fileName: $updateFileName" }
                             updateFileName.takeIf {
                                 it.isNotBlank()
-                            }?.let {
-                                installUpdate(it)
-                            } ?: getServerTime()
+                            }?.let(::installUpdate) ?: getServerTime()
                         }
                     }
         }
