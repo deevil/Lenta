@@ -55,10 +55,6 @@ class MainActivity : CoreMainActivity() {
         return numberScreenGenerator.getPrefixScreen(fragment)
     }
 
-    override fun getAdditionalListOfRequiredPermissions(): List<String> {
-        return emptyList()
-    }
-
     override fun provideFromParentToCoreProvider(): FromParentToCoreProvider? {
         return getAppComponent(coreComponent)
     }
