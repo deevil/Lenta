@@ -75,6 +75,9 @@ class MarkingInfoViewModel : CoreViewModel(),
     val spinQualityEnabled: MutableLiveData<Boolean> = countBlockScanned.map {
         it == 0
     }
+    val spinReasonRejectionEnabled: MutableLiveData<Boolean> = countBlockScanned.map {
+        it == 0
+    }
     val spinQuality: MutableLiveData<List<String>> = MutableLiveData()
     val spinQualitySelectedPosition: MutableLiveData<Int> = MutableLiveData(0)
     val spinReasonRejection: MutableLiveData<List<String>> = MutableLiveData()
@@ -90,6 +93,7 @@ class MarkingInfoViewModel : CoreViewModel(),
     private val paramGrzMeinsPack: MutableLiveData<String> = MutableLiveData("")
     private val paramGrzExclGtin: MutableLiveData<String> = MutableLiveData("")
     private val uom: MutableLiveData<Uom> = MutableLiveData()
+    private val unprocessedQuantityOfBlocks: MutableLiveData<Double> = MutableLiveData(0.0)
     val isVisibilityControlGTIN: MutableLiveData<Boolean> by lazy {
         MutableLiveData(productInfo.value?.isControlGTIN == true)
     }
@@ -282,34 +286,30 @@ class MarkingInfoViewModel : CoreViewModel(),
 
     val tvStampListVal: MutableLiveData<String> = refusalTotalCount
             .combineLatest(spinQualitySelectedPosition)
+            .combineLatest(spinReasonRejectionSelectedPosition)
             .combineLatest(countBlockScanned)
             .map {
                 //проверяем productInfo т.к. он используется в processMarkingProductService.getCountProcessedBlockForDiscrepancies() и если он null, тогда он неинициализирован в processMarkingProductService, и получим lateinit property productInfo has not been initialized
                 productInfo.value
                         ?.let { product ->
                             val enteredCount = count.value?.toDoubleOrNull() ?: 0.0
+                            val countBlockScannedValue = countBlockScanned.value ?: 0
                             val typeDiscrepancies = getCurrentTypeDiscrepancies()
                             val productOrigQuantity = product.origQuantity
-                            val numberStampsControl = 1.0
-
-                            /**todo productInfo.value
-                            ?.numberStampsControl
-                            ?.toDouble()
-                            ?: 0.0*/
-                            val unprocessedAmountOfProduct = processMarkingProductService.getCountBlocksByAttachments(productOrigQuantity) -
-                                    processMarkingProductService.getCountProcessedBlockForDiscrepancies(typeDiscrepancies)
+                            val totalBlocksProduct = processMarkingProductService.getCountBlocksByAttachments(productOrigQuantity)
+                            val countProcessedBlocksCurrentDiscrepancies = processMarkingProductService.getCountProcessedBlockForDiscrepancies(typeDiscrepancies)
+                            if (countBlockScannedValue <= 0) { //фиксируем необработанное количество после первого сканирования марок, чтобы не учитывать их в текущей сессии, иначе это кол-во будет уменьшаться и появиться текст Не требуется
+                                unprocessedQuantityOfBlocks.value = totalBlocksProduct - countProcessedBlocksCurrentDiscrepancies
+                            }
+                            val unprocessedQuantityOfBlocksVal = unprocessedQuantityOfBlocks.value ?: 0.0
                             if (typeDiscrepancies != TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_NORM) {
-                                if (unprocessedAmountOfProduct == enteredCount) {
+                                if (unprocessedQuantityOfBlocksVal == enteredCount) {
                                     checkBoxStampListVisibility.value = false
                                     context.getString(R.string.not_required)
                                 } else {
                                     checkBoxStampListVisibility.value = true
                                     buildString {
-                                        append(processMarkingProductService
-                                                .getCountProcessedBlockForDiscrepancies(typeDiscrepancies)
-                                                .toDouble()
-                                                .toStringFormatted()
-                                        )
+                                        append(countProcessedBlocksCurrentDiscrepancies.toDouble().toStringFormatted())
                                         append(" ")
                                         append(context.getString(R.string.of))
                                         append(" ")
@@ -326,14 +326,13 @@ class MarkingInfoViewModel : CoreViewModel(),
 
     val checkBoxStampList: MutableLiveData<Boolean> = checkBoxStampListVisibility.map {
         //проверяем productInfo т.к. он используется в processMarkingProductService.getCountProcessedBlockForDiscrepancies() и если он null, тогда он неинициализирован в processMarkingProductService, и получим lateinit property productInfo has not been initialized
-        productInfo.value?.let { product ->
-            val enteredCount = count.value?.toDoubleOrNull() ?: 0.0
-            val typeDiscrepancies = getCurrentTypeDiscrepancies()
-            val unprocessedAmountOfProduct = processMarkingProductService.getCountBlocksByAttachments(product.origQuantity) -
-                    processMarkingProductService.getCountProcessedBlockForDiscrepancies(typeDiscrepancies)
-            unprocessedAmountOfProduct == enteredCount
-        } ?: false
-
+        productInfo.value
+                ?.let {
+                    val enteredCount = count.value?.toDoubleOrNull() ?: 0.0
+                    val countBlockScanned = countBlockScanned.value?.toDouble() ?: 0.0
+                    countBlockScanned == enteredCount && enteredCount > 0.0
+                }
+                ?: false
     }
 
     val enabledApplyButton: MutableLiveData<Boolean> =
@@ -360,6 +359,19 @@ class MarkingInfoViewModel : CoreViewModel(),
 
     init {
         launchUITryCatch {
+            productInfo.value
+                    ?.let {
+                        if (processMarkingProductService.newProcessMarkingProductService(it) == null) {
+                            screenNavigator.goBack()
+                            screenNavigator.openAlertWrongProductType()
+                            return@launchUITryCatch
+                        }
+                    }.orIfNull {
+                        screenNavigator.goBack()
+                        screenNavigator.openAlertWrongProductType()
+                        return@launchUITryCatch
+                    }
+
             searchProductDelegate.init(viewModelScope = this@MarkingInfoViewModel::viewModelScope,
                     scanResultHandler = this@MarkingInfoViewModel::handleProductSearchResult)
 
@@ -404,17 +416,6 @@ class MarkingInfoViewModel : CoreViewModel(),
 
             //эту строку необходимо прописывать только после того, как были установлены данные для переменных count  и suffix, а иначе фокус в поле et_count не установится
             requestFocusToCount.value = true
-
-            productInfo.value?.let {
-                if (processMarkingProductService.newProcessMarkingProductService(it) == null) {
-                    screenNavigator.goBack()
-                    screenNavigator.openAlertWrongProductType()
-                }
-            }.orIfNull {
-                screenNavigator.goBack()
-                screenNavigator.openAlertWrongProductType()
-            }
-
         }
     }
 
@@ -465,6 +466,7 @@ class MarkingInfoViewModel : CoreViewModel(),
                 processMarkingProductService.addProduct(countVal.toStringFormatted(), typeDiscrepancies)
                 processMarkingProductService.apply()
                 processMarkingProductService.clearModifications()
+                spinQualitySelectedPosition.value = 0
                 count.value = "0"
                 //обнуляем кол-во отсканированных марок
                 countBlockScanned.value = 0
@@ -772,19 +774,6 @@ class MarkingInfoViewModel : CoreViewModel(),
                     qualityInfoCode == TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_NORM
                 }
                 ?: selectedReasonRejectionInfo?.code.orEmpty()
-    }
-
-    fun onClickUnitChange() {
-
-    }
-
-    //todo
-    fun scanMark1() {
-        onScanResult("01046002660121422100000CS.8005012345.938000.92NGkg+wRXz36kBFjpfwOub5DBIIpD2iS/DMYpZuuDLU0Y3pZt1z20/1ksr4004wfhDhRxu4dgUV4QN96Qtdih9g==")
-    }
-
-    fun scanMark2() {
-        onScanResult("04600266012142")
     }
 
 }

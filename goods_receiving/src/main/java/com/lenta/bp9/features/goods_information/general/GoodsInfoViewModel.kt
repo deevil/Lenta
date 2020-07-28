@@ -243,8 +243,22 @@ class GoodsInfoViewModel : CoreViewModel(), OnPositionClickListener {
 
     init {
         launchUITryCatch {
+            productInfo.value
+                    ?.let {
+                        if (processGeneralProductService.newProcessGeneralProductService(it) == null) {
+                            screenNavigator.goBack()
+                            screenNavigator.openAlertWrongProductType()
+                            return@launchUITryCatch
+                        }
+                    }.orIfNull {
+                        screenNavigator.goBack()
+                        screenNavigator.openAlertWrongProductType()
+                        return@launchUITryCatch
+                    }
+
             searchProductDelegate.init(viewModelScope = this@GoodsInfoViewModel::viewModelScope,
                     scanResultHandler = this@GoodsInfoViewModel::handleProductSearchResult)
+
             if (taskManager.getReceivingTask()?.taskHeader?.taskType == TaskType.RecalculationCargoUnit) {
                 paramGrwOlGrundcat.value = dataBase.getParamGrwOlGrundcat() ?: ""
                 paramGrwUlGrundcat.value = dataBase.getParamGrwUlGrundcat() ?: ""
@@ -321,17 +335,6 @@ class GoodsInfoViewModel : CoreViewModel(), OnPositionClickListener {
                     remainingShelfLife.value = productInfo.value?.mhdrzDays.toString()
                 }
             }
-
-            productInfo.value
-                    ?.let {
-                        if (processGeneralProductService.newProcessGeneralProductService(it) == null) {
-                            screenNavigator.goBack()
-                            screenNavigator.openAlertWrongProductType()
-                        }
-                    }.orIfNull {
-                        screenNavigator.goBack()
-                        screenNavigator.openAlertWrongProductType()
-                    }
         }
     }
 

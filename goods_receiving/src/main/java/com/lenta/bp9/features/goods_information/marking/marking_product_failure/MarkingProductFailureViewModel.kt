@@ -97,20 +97,21 @@ class MarkingProductFailureViewModel : CoreViewModel() {
 
     init {
         launchUITryCatch {
-            paramGrzGrundMarkCode.value = dataBase.getGrzGrundMark().orEmpty()
-            paramGrzGrundMarkName.value = dataBase.getGrzGrundMarkName(paramGrzGrundMarkCode.value.orEmpty()).orEmpty()
-
             productInfo.value
                     ?.let {
                         if (processMarkingProductService.newProcessMarkingProductService(it) == null) {
                             screenNavigator.goBack()
                             screenNavigator.openAlertWrongProductType()
+                            return@launchUITryCatch
                         }
                     }.orIfNull {
                         screenNavigator.goBack()
                         screenNavigator.openAlertWrongProductType()
+                        return@launchUITryCatch
                     }
 
+            paramGrzGrundMarkCode.value = dataBase.getGrzGrundMark().orEmpty()
+            paramGrzGrundMarkName.value = dataBase.getGrzGrundMarkName(paramGrzGrundMarkCode.value.orEmpty()).orEmpty()
         }
     }
 

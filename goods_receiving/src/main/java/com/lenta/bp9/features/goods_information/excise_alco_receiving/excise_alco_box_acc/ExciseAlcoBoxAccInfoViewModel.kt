@@ -259,6 +259,19 @@ class ExciseAlcoBoxAccInfoViewModel : CoreViewModel(), OnPositionClickListener {
 
     init {
         launchUITryCatch {
+            productInfo.value
+                    ?.let {
+                        if (processExciseAlcoBoxAccService.newProcessExciseAlcoBoxService(it) == null) {
+                            screenNavigator.goBack()
+                            screenNavigator.openAlertWrongProductType()
+                            return@launchUITryCatch
+                        }
+                    }.orIfNull {
+                        screenNavigator.goBack()
+                        screenNavigator.openAlertWrongProductType()
+                        return@launchUITryCatch
+                    }
+
             searchProductDelegate.init(viewModelScope = this@ExciseAlcoBoxAccInfoViewModel::viewModelScope,
                     scanResultHandler = this@ExciseAlcoBoxAccInfoViewModel::handleProductSearchResult)
 
@@ -270,17 +283,6 @@ class ExciseAlcoBoxAccInfoViewModel : CoreViewModel(), OnPositionClickListener {
 
             //эту строку необходимо прописывать только после того, как были установлены данные для переменных count  и suffix, а иначе фокус в поле et_count не установится
             requestFocusToCount.value = true
-
-            productInfo.value
-                    ?.let {
-                        if (processExciseAlcoBoxAccService.newProcessExciseAlcoBoxService(it) == null) {
-                            screenNavigator.goBack()
-                            screenNavigator.openAlertWrongProductType()
-                        }
-                    }.orIfNull {
-                        screenNavigator.goBack()
-                        screenNavigator.openAlertWrongProductType()
-                    }
         }
     }
 

@@ -235,6 +235,19 @@ class ExciseAlcoStampAccInfoPGEViewModel : CoreViewModel(), OnPositionClickListe
 
     init {
         launchUITryCatch {
+            productInfo.value
+                    ?.let {
+                        if (processExciseAlcoStampAccPGEService.newProcessExciseAlcoStampPGEService(it) == null) {
+                            screenNavigator.goBack()
+                            screenNavigator.openAlertWrongProductType()
+                            return@launchUITryCatch
+                        }
+                    }.orIfNull {
+                        screenNavigator.goBack()
+                        screenNavigator.openAlertWrongProductType()
+                        return@launchUITryCatch
+                    }
+
             searchProductDelegate.init(viewModelScope = this@ExciseAlcoStampAccInfoPGEViewModel::viewModelScope,
                     scanResultHandler = this@ExciseAlcoStampAccInfoPGEViewModel::handleProductSearchResult)
 
@@ -251,17 +264,6 @@ class ExciseAlcoStampAccInfoPGEViewModel : CoreViewModel(), OnPositionClickListe
             }
 
             count.value = count.value //почему-то без этой строки не выводится в tvBoxControlVal Не требуется, если включить дебаггер, то все отрабатывается, а без дебаггера пришлось дописать эту строчку
-
-            productInfo.value
-                    ?.let {
-                        if (processExciseAlcoStampAccPGEService.newProcessExciseAlcoStampPGEService(it) == null) {
-                            screenNavigator.goBack()
-                            screenNavigator.openAlertWrongProductType()
-                        }
-                    }.orIfNull {
-                        screenNavigator.goBack()
-                        screenNavigator.openAlertWrongProductType()
-                    }
         }
     }
 

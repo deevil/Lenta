@@ -246,8 +246,22 @@ class GoodsMercuryInfoViewModel : CoreViewModel(), OnPositionClickListener {
 
     init {
         launchUITryCatch {
+            productInfo.value
+                    ?.let {
+                        if (processMercuryProductService.newProcessMercuryProductService(it) == null) {
+                            screenNavigator.goBack()
+                            screenNavigator.openAlertWrongProductType()
+                            return@launchUITryCatch
+                        }
+                    }.orIfNull {
+                        screenNavigator.goBack()
+                        screenNavigator.openAlertWrongProductType()
+                        return@launchUITryCatch
+                    }
+
             searchProductDelegate.init(viewModelScope = this@GoodsMercuryInfoViewModel::viewModelScope,
                     scanResultHandler = this@GoodsMercuryInfoViewModel::handleProductSearchResult)
+
             currentDate.value = timeMonitor.getServerDate()
             expirationDate.value = Calendar.getInstance()
             if (taskManager.getReceivingTask()?.taskHeader?.taskType == TaskType.RecalculationCargoUnit) {
@@ -309,17 +323,6 @@ class GoodsMercuryInfoViewModel : CoreViewModel(), OnPositionClickListener {
             paramGrzRoundLackRatio.value = dataBase.getParamGrzRoundLackRatio()
             paramGrzRoundLackUnit.value = dataBase.getParamGrzRoundLackUnit()
             paramGrzRoundHeapRatio.value = dataBase.getParamGrzRoundHeapRatio()
-
-            productInfo.value
-                    ?.let {
-                        if (processMercuryProductService.newProcessMercuryProductService(it) == null) {
-                            screenNavigator.goBack()
-                            screenNavigator.openAlertWrongProductType()
-                        }
-                    }.orIfNull {
-                        screenNavigator.goBack()
-                        screenNavigator.openAlertWrongProductType()
-                    }
         }
     }
 

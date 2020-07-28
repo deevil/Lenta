@@ -15,6 +15,7 @@ import com.lenta.shared.requests.combined.scan_info.ScanInfoResult
 import com.lenta.shared.utilities.extentions.launchUITryCatch
 import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.utilities.extentions.toStringFormatted
+import com.lenta.shared.utilities.orIfNull
 import com.lenta.shared.view.OnPositionClickListener
 import javax.inject.Inject
 
@@ -85,6 +86,19 @@ class GoodsInfoShipmentPPViewModel : CoreViewModel(), OnPositionClickListener {
 
     init {
         launchUITryCatch {
+            productInfo.value
+                    ?.let {
+                        if (processGeneralProductService.newProcessGeneralProductService(it) == null) {
+                            screenNavigator.goBack()
+                            screenNavigator.openAlertWrongProductType()
+                            return@launchUITryCatch
+                        }
+                    }.orIfNull {
+                        screenNavigator.goBack()
+                        screenNavigator.openAlertWrongProductType()
+                        return@launchUITryCatch
+                    }
+
             searchProductDelegate.init(viewModelScope = this@GoodsInfoShipmentPPViewModel::viewModelScope,
                     scanResultHandler = this@GoodsInfoShipmentPPViewModel::handleProductSearchResult)
 
@@ -98,11 +112,6 @@ class GoodsInfoShipmentPPViewModel : CoreViewModel(), OnPositionClickListener {
             requestFocusToCount.value = true
 
             spinQuality.value = listOf(context.getString(R.string.quantity))
-
-            if (processGeneralProductService.newProcessGeneralProductService(productInfo.value!!) == null) {
-                screenNavigator.goBack()
-                screenNavigator.openAlertWrongProductType()
-            }
         }
     }
 

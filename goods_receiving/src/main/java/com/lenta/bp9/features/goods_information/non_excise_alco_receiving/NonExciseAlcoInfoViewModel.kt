@@ -22,6 +22,7 @@ import com.lenta.shared.utilities.extentions.combineLatest
 import com.lenta.shared.utilities.extentions.launchUITryCatch
 import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.utilities.extentions.toStringFormatted
+import com.lenta.shared.utilities.orIfNull
 import com.lenta.shared.view.OnPositionClickListener
 import java.text.SimpleDateFormat
 import javax.inject.Inject
@@ -152,6 +153,19 @@ class NonExciseAlcoInfoViewModel : CoreViewModel(), OnPositionClickListener {
 
     init {
         launchUITryCatch {
+            productInfo.value
+                    ?.let {
+                        if (processNonExciseAlcoProductService.newProcessNonExciseAlcoProductService(it) == null) {
+                            screenNavigator.goBack()
+                            screenNavigator.openAlertWrongProductType()
+                            return@launchUITryCatch
+                        }
+                    }.orIfNull {
+                        screenNavigator.goBack()
+                        screenNavigator.openAlertWrongProductType()
+                        return@launchUITryCatch
+                    }
+
             searchProductDelegate.init(viewModelScope = this@NonExciseAlcoInfoViewModel::viewModelScope,
                     scanResultHandler = this@NonExciseAlcoInfoViewModel::handleProductSearchResult)
 
@@ -188,11 +202,6 @@ class NonExciseAlcoInfoViewModel : CoreViewModel(), OnPositionClickListener {
 
             //эту строку необходимо прописывать только после того, как были установлены данные для переменных count  и suffix, а иначе фокус в поле et_count не установится
             requestFocusToCount.value = true
-
-            if (processNonExciseAlcoProductService.newProcessNonExciseAlcoProductService(productInfo.value!!) == null) {
-                screenNavigator.goBack()
-                screenNavigator.openAlertWrongProductType()
-            }
         }
     }
 

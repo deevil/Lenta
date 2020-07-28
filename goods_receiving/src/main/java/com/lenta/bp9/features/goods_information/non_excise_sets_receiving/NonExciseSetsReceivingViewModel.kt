@@ -193,6 +193,17 @@ class NonExciseSetsReceivingViewModel : CoreViewModel(),
 
     init {
         launchUITryCatch {
+            productInfo.value
+                    ?.let {if (processNonExciseSetsReceivingProductService.newProcessNonExciseSetsReceivingProductService(it) == null) {
+                        screenNavigator.goBack()
+                        screenNavigator.openAlertWrongProductType()
+                        return@launchUITryCatch
+                    }}.orIfNull {
+                        screenNavigator.goBack()
+                        screenNavigator.openAlertWrongProductType()
+                        return@launchUITryCatch
+                    }
+
             searchProductDelegate.init(viewModelScope = this@NonExciseSetsReceivingViewModel::viewModelScope,
                     scanResultHandler = this@NonExciseSetsReceivingViewModel::handleProductSearchResult)
 
@@ -213,15 +224,6 @@ class NonExciseSetsReceivingViewModel : CoreViewModel(),
 
             //эту строку необходимо прописывать только после того, как были установлены данные для переменных count  и suffix, а иначе фокус в поле et_count не установится
             requestFocusToCount.value = true
-
-            productInfo.value
-                    ?.let {if (processNonExciseSetsReceivingProductService.newProcessNonExciseSetsReceivingProductService(it) == null) {
-                        screenNavigator.goBack()
-                        screenNavigator.openAlertWrongProductType()
-                    }}.orIfNull {
-                        screenNavigator.goBack()
-                        screenNavigator.openAlertWrongProductType()
-                    }
         }
     }
 
