@@ -47,9 +47,7 @@ class MaterialRemakeDetailsViewModel : CoreViewModel() {
     }
 
     // Focus by request
-    val requestFocusToCount: MutableLiveData<Boolean> by unsafeLazy {
-        MutableLiveData(true)
-    }
+    val requestFocusToCount: MutableLiveData<Boolean> = MutableLiveData(false)
 
     private val entered = weightField.map {
         it?.toDoubleOrNull() ?: 0.0
@@ -92,6 +90,7 @@ class MaterialRemakeDetailsViewModel : CoreViewModel() {
     fun onClickAdd() {
         weighted.value = total.value
         weightField.value = DEFAULT_WEIGHT
+        requestFocusToCount.value = true
     }
 
     fun onClickGetWeight() = launchAsyncTryCatch {

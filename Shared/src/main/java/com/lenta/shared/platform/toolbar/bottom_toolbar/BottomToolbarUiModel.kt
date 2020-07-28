@@ -140,6 +140,10 @@ data class ButtonDecorationInfo(
             ButtonDecorationInfo(R.drawable.ic_details_white_24dp, R.string.details)
         }
 
+        val orders: ButtonDecorationInfo by lazy {
+            ButtonDecorationInfo(R.drawable.ic_details_white_24dp, R.string.orders)
+        }
+
         val goOver: ButtonDecorationInfo by lazy {
             ButtonDecorationInfo(R.drawable.ic_send_white_24dp, R.string.go_over)
         }

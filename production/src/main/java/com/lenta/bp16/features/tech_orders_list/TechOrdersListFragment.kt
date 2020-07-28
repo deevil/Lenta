@@ -1,8 +1,12 @@
 package com.lenta.bp16.features.tech_orders_list
 
+import android.os.Bundle
+import android.view.View
 import androidx.core.os.bundleOf
+import com.lenta.bp16.BR
 import com.lenta.bp16.R
 import com.lenta.bp16.databinding.FragmentTechOrdersListBinding
+import com.lenta.bp16.databinding.ItemTechOrderBinding
 import com.lenta.bp16.model.ingredients.MaterialIngredientDataInfo
 import com.lenta.bp16.platform.extention.getAppComponent
 import com.lenta.shared.platform.fragment.CoreFragment
@@ -50,6 +54,26 @@ class TechOrdersListFragment : CoreFragment<FragmentTechOrdersListBinding, TechO
 
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
         bottomToolbarUiModel.uiModelButton1.show(ButtonDecorationInfo.back)
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        initRvConfig()
+    }
+
+    private fun initRvConfig() {
+        binding?.let { layoutBinding ->
+            layoutBinding.rvConfig = initRecycleAdapterDataBinding<ItemTechOrderBinding>(
+                    layoutId = R.layout.item_tech_order,
+                    itemId = BR.item
+            )
+
+            recyclerViewKeyHandler = initRecyclerViewKeyHandler(
+                    recyclerView = layoutBinding.rv,
+                    items = vm.allTechOrdersList,
+                    previousPosInfo = recyclerViewKeyHandler?.posInfo?.value
+            )
+        }
     }
 
     companion object {

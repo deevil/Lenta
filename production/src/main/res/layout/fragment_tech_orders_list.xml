@@ -31,7 +31,7 @@
 
                 <LinearLayout
                     style="@style/LinearCellStyle"
-                    android:layout_weight="@integer/three_two_1">
+                    android:layout_weight="@integer/three_four_1">
 
                     <TextView
                         style="@style/FirstRowTextStyle"
@@ -42,7 +42,7 @@
 
                 <LinearLayout
                     style="@style/LinearCellStyle"
-                    android:layout_weight="@integer/three_two_2">
+                    android:layout_weight="@integer/three_four_2">
 
                     <TextView
                         style="@style/FirstRowTextStyle"
@@ -52,7 +52,7 @@
 
                 <LinearLayout
                     style="@style/LinearCellStyle"
-                    android:layout_weight="@integer/three_two_3">
+                    android:layout_weight="@integer/three_four_3">
 
                     <TextView
                         style="@style/FirstRowTextStyle"

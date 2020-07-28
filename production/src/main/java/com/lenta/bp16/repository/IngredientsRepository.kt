@@ -39,9 +39,9 @@ class IngredientsRepository @Inject constructor(
     override suspend fun getIngredientListData(params: GetIngredientDataParams): Either<Failure, IngredientsDataListResult> {
         val result = fmpRequestsHelper.restRequest(FMP_ORDERS_DATA_RESOURCE_NAME, params, IngredientsDataListStatus::class.java)
                 .getResult()
-        return result.flatMap { result ->
-            addOrdersByRemake(result)
-            Either.Right(result)
+        return result.flatMap {
+            addOrdersByRemake(it)
+            Either.Right(it)
         }
     }
 

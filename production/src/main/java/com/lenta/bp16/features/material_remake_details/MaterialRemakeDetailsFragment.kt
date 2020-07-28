@@ -2,6 +2,7 @@ package com.lenta.bp16.features.material_remake_details
 
 import android.view.View
 import androidx.core.os.bundleOf
+import androidx.lifecycle.lifecycleScope
 import com.lenta.bp16.R
 import com.lenta.bp16.databinding.FragmentMaterialRemakeDetailsBinding
 import com.lenta.bp16.model.ingredients.MaterialIngredientDataInfo
@@ -42,6 +43,12 @@ class MaterialRemakeDetailsFragment : CoreFragment<FragmentMaterialRemakeDetails
                 ?: throw IllegalArgumentException("There is no argument value with key $KEY_PARENT_CODE")
     }
 
+    init {
+        lifecycleScope.launchWhenResumed {
+            vm.requestFocusToCount.value = true
+        }
+    }
+
     override fun getViewModel(): MaterialRemakeDetailsViewModel {
         provideViewModel(MaterialRemakeDetailsViewModel::class.java).let {
             getAppComponent()?.inject(it)
@@ -62,7 +69,7 @@ class MaterialRemakeDetailsFragment : CoreFragment<FragmentMaterialRemakeDetails
 
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
         bottomToolbarUiModel.uiModelButton1.show(ButtonDecorationInfo.back)
-        bottomToolbarUiModel.uiModelButton2.show(ButtonDecorationInfo.details)
+        bottomToolbarUiModel.uiModelButton2.show(ButtonDecorationInfo.orders)
         bottomToolbarUiModel.uiModelButton3.show(ButtonDecorationInfo.getWeight)
         bottomToolbarUiModel.uiModelButton4.show(ButtonDecorationInfo.add)
         bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.complete)
