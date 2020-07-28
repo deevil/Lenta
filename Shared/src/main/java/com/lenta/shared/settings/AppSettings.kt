@@ -107,6 +107,11 @@ class AppSettings(
         set(value) {
             sharedPrefferences.edit().putString("lastTK$lastLogin", value).commit()
         }
+    override var lastGroup: String?
+        get() = sharedPrefferences.getString("lastGroup$lastLogin",null)
+        set(value) {
+            sharedPrefferences.edit().putString("lastGroup$lastLogin",null).commit()
+        }
 
     override var lastPersonnelNumber: String?
         get() = sharedPrefferences.getString("lastPersonnelNumber$lastLogin", null)
@@ -186,6 +191,7 @@ interface IAppSettings {
     var techPassword: String
 
     var lastTK: String?
+    var lastGroup: String?
     var lastPersonnelNumber: String?
     var lastPersonnelFullName: String?
 

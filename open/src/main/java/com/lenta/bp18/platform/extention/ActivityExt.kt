@@ -8,17 +8,14 @@ import com.lenta.shared.di.CoreInjectHelper.createComponent
 import com.lenta.shared.di.CoreInjectHelper.getComponent
 
 
-fun getAppComponent(coreComponent: CoreComponent?): AppComponent {
-    AppComponent::class.java.let { clazz ->
-        getComponent(clazz)?.let {
-            return it
-        }
-        return createComponent(clazz) {
-            DaggerAppComponent.builder()
-                    .appModule(AppModule())
-                    .coreComponent(coreComponent).build()
-        }
-    }
+var appComponent: AppComponent? = null
 
+fun getAppComponent(coreComponent: CoreComponent): AppComponent {
+    if (appComponent == null) {
+        appComponent = DaggerAppComponent.builder()
+                .appModule(AppModule())
+                .coreComponent(coreComponent).build()
+    }
+    return appComponent!!
 }
 
