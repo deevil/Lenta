@@ -24,7 +24,7 @@ class GoodSelectFragment : CoreFragment<FragmentGoodSelectBinding, GoodSelectVie
     override fun getViewModel(): GoodSelectViewModel {
         provideViewModel(GoodSelectViewModel::class.java).let{
             getAppComponent()?.inject(it)
-            it.deviceIp.value = context!!.getDeviceId()
+            it.deviceIp.value = context?.getDeviceId()
             return it
         }
     }

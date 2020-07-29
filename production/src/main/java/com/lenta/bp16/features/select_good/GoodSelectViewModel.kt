@@ -25,13 +25,12 @@ class GoodSelectViewModel : CoreViewModel() {
     fun onClickNext(){
         launchUITryCatch {
             val goodEan = database.getGoodByEan(enteredEanField.value.toString())
-            val ean = goodEan?.ean
-            val material = goodEan?.material.orEmpty()
-            when(goodEan){
-                null -> navigator.showAlertGoodNotFound {
-                    navigator.openSelectGoodScreen()
-                }
-                else -> navigator.openGoodInfoScreen(ean, material)
+            goodEan?.let {
+                val ean = it.ean
+                val material = it.material
+                navigator.openGoodInfoScreen(ean, material)
+            } ?: navigator.showAlertGoodNotFound {
+                navigator.openSelectGoodScreen()
             }
         }
     }

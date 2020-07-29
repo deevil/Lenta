@@ -23,18 +23,18 @@ class DatabaseRepository @Inject constructor(
     private val units: ZmpUtz07V001 by lazy { ZmpUtz07V001(hyperHive) } // Единицы измерения
     private val settings: ZmpUtz14V001 by lazy { ZmpUtz14V001(hyperHive) } // Настройки
     private val dictonary: ZmpUtz17V001 by lazy { ZmpUtz17V001(hyperHive) } // Справочник с наборами данных
-    private val barcodeInfo: ZmpUtz25V001 by lazy {ZmpUtz25V001(hyperHive)} // Информация о  штрихкоде
+    private val barcodeInfo: ZmpUtz25V001 by lazy { ZmpUtz25V001(hyperHive) } // Информация о  штрихкоде
     private val productInfo: ZfmpUtz48V001 by lazy { ZfmpUtz48V001(hyperHive) } // Информация о товаре
 
     override suspend fun getAllowedAppVersion(): String? {
         return withContext(Dispatchers.IO) {
-            return@withContext settings.getAllowedProAppVersion()
+            settings.getAllowedProAppVersion()
         }
     }
 
     override suspend fun getUnitsByCode(code: String): Uom {
         return withContext(Dispatchers.IO) {
-            return@withContext units.getUnitName(code)?.toLowerCase(Locale.getDefault())?.let { name ->
+            units.getUnitName(code)?.toLowerCase(Locale.getDefault())?.let { name ->
                 Uom(code, name)
             } ?: Uom.KG
         }
@@ -42,31 +42,32 @@ class DatabaseRepository @Inject constructor(
 
     override suspend fun getServerAddress(): String? {
         return withContext(Dispatchers.IO) {
-            return@withContext settings.getServerAddress()
+            settings.getServerAddress()
         }
     }
 
     override suspend fun getPcpContTimeMm(): Int {
         return withContext(Dispatchers.IO) {
-            return@withContext settings.getPcpContTimeMm()?.toIntOrNull() ?: 0
+            settings.getPcpContTimeMm()?.toIntOrNull() ?: 0
         }
     }
 
     override suspend fun getPcpExpirTimeMm(): Int {
         return withContext(Dispatchers.IO) {
-            return@withContext settings.getPcpExpirTimeMm()?.toIntOrNull() ?: 0
+            settings.getPcpExpirTimeMm()?.toIntOrNull() ?: 0
         }
     }
 
     override suspend fun getLabelLimit(): Int {
         return withContext(Dispatchers.IO) {
-            return@withContext settings.getLabelLimit()?.toIntOrNull() ?: 0
+            settings.getLabelLimit()?.toIntOrNull() ?: 0
         }
     }
 
     override suspend fun getCategoryList(): List<DictElement> {
         return withContext(Dispatchers.IO) {
-            val list = dictonary.getItemsByTidSorted("025")?.toElementList()?.toMutableList() ?: mutableListOf()
+            val list = dictonary.getItemsByTidSorted("025")?.toElementList()?.toMutableList()
+                    ?: mutableListOf()
             if (list.size > 1) {
                 list.add(0, DictElement(
                         code = "0",
@@ -75,13 +76,14 @@ class DatabaseRepository @Inject constructor(
                 ))
             }
 
-            return@withContext list
+            list
         }
     }
 
     override suspend fun getDefectList(): List<DictElement> {
         return withContext(Dispatchers.IO) {
-            val list = dictonary.getItemsByTidSorted("024")?.toElementList()?.toMutableList() ?: mutableListOf()
+            val list = dictonary.getItemsByTidSorted("024")?.toElementList()?.toMutableList()
+                    ?: mutableListOf()
             if (list.size > 1) {
                 list.add(0, DictElement(
                         code = "0",
@@ -90,13 +92,13 @@ class DatabaseRepository @Inject constructor(
                 ))
             }
 
-            return@withContext list
+            list
         }
     }
 
     override suspend fun getCategory(categoryCode: String): DictElement? {
         return withContext(Dispatchers.IO) {
-            return@withContext getCategoryList().find { it.code == categoryCode }
+            getCategoryList().find { it.code == categoryCode }
         }
     }
 
@@ -106,12 +108,12 @@ class DatabaseRepository @Inject constructor(
             while (formattedCode.startsWith("0")) {
                 formattedCode = formattedCode.substring(1)
             }
-            return@withContext getDefectList().find { it.code == formattedCode }
+            getDefectList().find { it.code == formattedCode }
         }
     }
 
     override suspend fun getGoodByEan(ean: String): GoodInfo? {
-        return withContext(Dispatchers.IO){
+        return withContext(Dispatchers.IO) {
             getEanInfoByEan(ean)?.run {
                 val product = productInfo.getProductInfoByMaterial(this.materialNumber)
                 val unitName = units.getUnitName(product?.buom)
@@ -122,13 +124,14 @@ class DatabaseRepository @Inject constructor(
                         name = product?.name.orEmpty(),
                         uom = Uom(
                                 code = product?.buom.orEmpty(),
-                                name = unitName.orEmpty()))
+                                name = unitName.orEmpty())
+                )
             }
         }
     }
 
     override suspend fun getEanInfoByEan(ean: String): EanInfo? {
-        return withContext(Dispatchers.IO){
+        return withContext(Dispatchers.IO) {
             barcodeInfo.getEanInfo(ean)?.toEanInfo()
         }
     }
