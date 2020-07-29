@@ -50,10 +50,12 @@ class GoodDetailsCreateViewModel : CoreViewModel(), PageSelectionListener {
     val selectedPage = MutableLiveData(0)
 
     val baskets by lazy {
-        good.map { good ->
-            task.value?.let { task ->
-                val list = task.baskets.filter {
-                    it.section == good?.section && it.goodType == good.type && it.control == good.control
+        task.combineLatest(good).map {
+            it?.let {
+                val (task, good) = it
+
+                val list = task.baskets.filter { basket ->
+                    basket.section == good.section && basket.goodType == good.type && basket.control == good.control
                 }
 
                 list.mapIndexed { index, basket ->
