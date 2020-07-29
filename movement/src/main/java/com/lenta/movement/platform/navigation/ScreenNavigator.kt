@@ -1,7 +1,6 @@
 package com.lenta.movement.platform.navigation
 
 import android.content.Context
-import android.os.Handler
 import androidx.core.content.ContextCompat
 import com.lenta.movement.R
 import com.lenta.movement.exception.InfoFailure
@@ -138,10 +137,16 @@ class ScreenNavigator(
     }
 
     override fun openProductIncorrectForCreateBox(productInfo: ProductInfo) {
+        val productNumber = when(productInfo.materialNumber.length) {
+            in 0..6 -> productInfo.materialNumber
+            else -> productInfo.getMaterialLastSix()
+        }
+        val productName = productInfo.description
+        val productTitle = "$productNumber $productName"
         openAlertScreen(
                 message = context.getString(
                         R.string.alert_product_incorrect_for_create_box,
-                        productInfo.materialNumber
+                        productTitle
                 ),
                 iconRes = com.lenta.shared.R.drawable.ic_warning_red_80dp
         )

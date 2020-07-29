@@ -10,7 +10,10 @@ import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.SelectionItemsHelper
 import com.lenta.shared.utilities.databinding.PageSelectionListener
-import com.lenta.shared.utilities.extentions.*
+import com.lenta.shared.utilities.extentions.combineLatest
+import com.lenta.shared.utilities.extentions.launchUITryCatch
+import com.lenta.shared.utilities.extentions.mapSkipNulls
+import com.lenta.shared.utilities.extentions.unsafeLazy
 import com.lenta.shared.utilities.orIfNull
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -89,12 +92,14 @@ class TaskGoodsDetailsViewModel : CoreViewModel(), PageSelectionListener {
                     basket.containsKey(product)
                 }
                 val doRemoveBaskets = basketSelectionHelper.selectedPositions.value.orEmpty().map { doRemoveBasketIndex ->
-                    basketsOfProduct[doRemoveBasketIndex]
+                    basketsOfProduct.getOrNull(doRemoveBasketIndex)
                 }
 
                 doRemoveBaskets.forEach { doRemoveBasket ->
                     product?.let { product ->
-                        taskBasketsRepository.removeProductFromBasket(doRemoveBasket.index, product)
+                        doRemoveBasket?.index?.let{
+                            taskBasketsRepository.removeProductFromBasket(it, product)
+                        }
                     }
                 }
 

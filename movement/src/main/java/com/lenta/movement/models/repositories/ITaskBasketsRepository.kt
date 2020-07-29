@@ -10,6 +10,7 @@ interface ITaskBasketsRepository {
     fun getBasketByIndex(basketIndex: Int): Basket?
 
     fun getAll(): List<Basket>
+    fun getLastIndexOfProduct(product: ProductInfo) : Int
 
     fun removeBasket(basket: Basket)
 

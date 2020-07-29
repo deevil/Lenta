@@ -32,7 +32,7 @@ class CreateBoxesFragment : CoreFragment<FragmentCreateBoxesBinding, CreateBoxes
         ToolbarButtonsClickListener,
         ViewPagerSettings,
         OnScanResultListener,
-        OnBackPresserListener {
+        OnBackPresserListener{
 
     private var productInfo: ProductInfo? by state(null)
 

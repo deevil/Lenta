@@ -5,8 +5,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
+import com.lenta.movement.BR
 import com.lenta.movement.R
 import com.lenta.movement.databinding.FragmentTaskGoodsBinding
+import com.lenta.movement.databinding.LayoutItemSimpleBinding
 import com.lenta.movement.databinding.LayoutTaskGoodsBucketsTabBinding
 import com.lenta.movement.databinding.LayoutTaskGoodsProcessedTabBinding
 import com.lenta.movement.platform.extensions.getAppComponent
@@ -25,12 +27,12 @@ import com.lenta.shared.utilities.databinding.ViewPagerSettings
 import com.lenta.shared.utilities.extentions.connectLiveData
 import com.lenta.shared.utilities.extentions.provideViewModel
 
-class TaskGoodsFragment: CoreFragment<FragmentTaskGoodsBinding, TaskGoodsViewModel>(),
-    ViewPagerSettings,
-    ToolbarButtonsClickListener,
-    OnBackPresserListener,
-    OnScanResultListener,
-    OnKeyDownListener {
+class TaskGoodsFragment : CoreFragment<FragmentTaskGoodsBinding, TaskGoodsViewModel>(),
+        ViewPagerSettings,
+        ToolbarButtonsClickListener,
+        OnBackPresserListener,
+        OnScanResultListener,
+        OnKeyDownListener {
 
     private var processedRecyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
     private var basketRecyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
@@ -82,45 +84,53 @@ class TaskGoodsFragment: CoreFragment<FragmentTaskGoodsBinding, TaskGoodsViewMod
         return when (TaskGoodsPage.values()[position]) {
             TaskGoodsPage.PROCESSED -> {
                 DataBindingUtil.inflate<LayoutTaskGoodsProcessedTabBinding>(
-                    LayoutInflater.from(context),
-                    R.layout.layout_task_goods_processed_tab,
-                    container,
-                    false
-                ).also { dataBinding ->
-                    dataBinding?.rvConfig = simpleListRecyclerViewConfig(
-                        recyclerView = dataBinding?.processedRecyclerView,
-                        selectionItemsHelper = vm.processedSelectionHelper,
-                        recyclerViewKeyHandler = processedRecyclerViewKeyHandler,
-                        onClickItem = vm::onClickProcessedItem
+                        LayoutInflater.from(context),
+                        R.layout.layout_task_goods_processed_tab,
+                        container,
+                        false
+                ).apply {
+                    val vm = this@TaskGoodsFragment.vm
+
+                    val onClickSelectionListener = View.OnClickListener { clickListener ->
+                        val itemPosition = clickListener.tag as Int
+                        vm.processedSelectionHelper.revert(position = itemPosition)
+                        processedRecyclerView.adapter?.notifyItemChanged(itemPosition)
+                    }
+
+                    rvConfig = initRecycleAdapterDataBinding(
+                            layoutId = R.layout.layout_item_simple,
+                            itemId = BR.item,
+                            onAdapterItemBind = { binding: LayoutItemSimpleBinding, position ->
+                                binding.tvCounter.tag = position
+                                binding.tvCounter.setOnClickListener(onClickSelectionListener)
+                                binding.selectedForDelete = vm.processedSelectionHelper.isSelected(position)
+                                binding.root.isSelected = processedRecyclerView.isSelected
+                            }
                     )
 
-                    dataBinding.vm = vm
-                    dataBinding.lifecycleOwner = binding?.lifecycleOwner
+                    this.vm = vm
 
-                    dataBinding?.processedRecyclerView?.let { recyclerView ->
-                        binding?.lifecycleOwner?.let { lifecycleOwner ->
-                            processedRecyclerViewKeyHandler = RecyclerViewKeyHandler(
-                                    recyclerView,
-                                    vm.processedList,
-                                    lifecycleOwner,
-                                    processedRecyclerViewKeyHandler?.posInfo?.value
-                            )
-                        }
-                    }
+                    processedRecyclerViewKeyHandler = initRecyclerViewKeyHandler(
+                            recyclerView = processedRecyclerView,
+                            items = vm.processedList,
+                            previousPosInfo = recyclerViewKeyHandler?.posInfo?.value,
+                            onClickHandler = vm::onClickProcessedItem
+                    )
+
                 }.root
             }
             TaskGoodsPage.BASKETS -> {
                 DataBindingUtil.inflate<LayoutTaskGoodsBucketsTabBinding>(
-                    LayoutInflater.from(context),
-                    R.layout.layout_task_goods_buckets_tab,
-                    container,
-                    false
+                        LayoutInflater.from(context),
+                        R.layout.layout_task_goods_buckets_tab,
+                        container,
+                        false
                 ).also { dataBinding ->
                     dataBinding?.rvConfig = simpleListRecyclerViewConfig(
-                        recyclerView = dataBinding?.basketRecyclerView,
-                        selectionItemsHelper = vm.basketSelectionHelper,
-                        recyclerViewKeyHandler = basketRecyclerViewKeyHandler,
-                        onClickItem = { position -> vm.onClickBasketItem(position) }
+                            recyclerView = dataBinding?.basketRecyclerView,
+                            selectionItemsHelper = vm.basketSelectionHelper,
+                            recyclerViewKeyHandler = basketRecyclerViewKeyHandler,
+                            onClickItem = { position -> vm.onClickBasketItem(position) }
                     )
 
                     dataBinding.vm = vm

@@ -122,8 +122,9 @@ class TaskGoodsInfoViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
             addProductToRepository()
             screenNavigator.hideProgress()
             screenNavigator.goBack()
-            currentBasket.value?.let { basketValue ->
-                screenNavigator.openTaskBasketScreen(basketValue.index)
+            productInfo.value?.let { productInfoValue ->
+                val indexOfLastProduct = taskBasketsRepository.getLastIndexOfProduct(productInfoValue)
+                screenNavigator.openTaskBasketScreen(indexOfLastProduct)
             }
         }
     }

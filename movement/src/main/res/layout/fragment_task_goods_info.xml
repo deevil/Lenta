@@ -41,7 +41,8 @@
                     android:text="@={vm.quantity}"
                     app:digitsForUom="@{vm.quantityUom}"
                     app:suffix="@{vm.quantityUom.name}"
-                    app:cursorToLastPos="@{false}"
+                    onOkInSoftKeyboard="@{vm}"
+                    requestFocus="@{false}"
                     tools:text="50 шт."
                     android:drawableEnd="@drawable/ic_bei_disabled_24dp"/>
             </TableRow>
@@ -136,7 +137,8 @@
             app:layout_constraintBottom_toBottomOf="@id/b_scan"
             android:layout_marginStart="@dimen/size_8dp"
             alcoIcon="@{vm.productInfo.type}"
-            tools:src="@drawable/ic_excise_alcohol_white_32dp"/>
+            tools:src="@drawable/ic_excise_alcohol_white_32dp"
+            android:contentDescription="@string/alco_good" />
 
         <FrameLayout
             android:id="@+id/basketImage"

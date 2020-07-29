@@ -29,6 +29,10 @@ class MemoryTaskBasketsRepository(
         return basketList
     }
 
+    override fun getLastIndexOfProduct(product: ProductInfo): Int {
+        return basketList.last { it.containsKey(product) }.index
+    }
+
     override fun removeBasket(basket: Basket) {
         basketList.remove(basket)
     }
@@ -42,8 +46,7 @@ class MemoryTaskBasketsRepository(
     }
 
     override fun removeProductFromBasket(basketIndex: Int, product: ProductInfo) {
-        basketList[basketIndex].remove(product)
-
+        basketList.find { it.index == basketIndex }?.remove(product)
         basketList.removeAll { it.isEmpty() }
     }
 
