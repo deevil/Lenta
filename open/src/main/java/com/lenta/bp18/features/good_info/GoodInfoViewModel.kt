@@ -71,6 +71,10 @@ class GoodInfoViewModel : SendDataViewModel(), OnPositionClickListener {
                                 ?: Constants.QUANTITY_DEFAULT_VALUE_0
                         uom = Uom.KAR.name
                     }
+                    Uom.G -> {
+                        quantity = Constants.QUANTITY_DEFAULT_VALUE_0
+                        uom = Uom.G.name
+                    }
                     else -> {
                         quantity = Constants.QUANTITY_DEFAULT_VALUE_0
                         uom = Uom.DEFAULT.name
