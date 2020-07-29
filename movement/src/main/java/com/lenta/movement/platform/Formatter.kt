@@ -57,7 +57,7 @@ class Formatter : IFormatter {
                 append(O_AND_SLASH)
             }
             //<Вид товара>
-            if (signsOfDiv.contains(GoodsSignOfDivision.MTART)){
+            if (signsOfDiv.contains(GoodsSignOfDivision.MTART)) {
                 append("${basket.keys.first().materialType}/")
             }
             //ПП – <номер поставщика>
@@ -76,24 +76,24 @@ class Formatter : IFormatter {
             /**<Марочный или партионный> - отображать как <М> (марочный, есть признак IS_EXC)
              * или <П> (партионный, нет признака IS_EXC)*/
             if (signsOfDiv.contains(GoodsSignOfDivision.MARK_PARTS)) {
-                if (basket.keys.first().isExcise) {
-                    append(M_AND_SLASH)
-                } else if (basket.keys.first().isNotExcise) {
-                    append(P_AND_SLASH)
+                val firstKey = basket.keys.first()
+                val splashToAppend = when {
+                    firstKey.isExcise -> M_AND_SLASH
+                    firstKey.isNotExcise -> P_AND_SLASH
+                    else -> ""
                 }
+                append(splashToAppend)
             }
 
-            //<Номер партии>
-//            if (signsOfDiv.contains(GoodsSignOfDivision.PARTS)) {
-//                append(basket.keys.firstOrNull().)
-//            }
+           //TODO <Номер партии> когда появится деление товаров по категориям
+            if (signsOfDiv.contains(GoodsSignOfDivision.PARTS)) {
+                append(basket.keys.firstOrNull()?.batchNumber)
+            }
 
             if (signsOfDiv.contains(GoodsSignOfDivision.FOOD)) {
-                if (basket.keys.first().isFood) {
-                    append(BASKET_DESC_FOOD_CHAR_AND_SLASH)
-                } else {
-                    append(BASKET_DESC_NOT_FOOD_CHAR_AND_SLASH)
-                }
+                val charToAppend = if (basket.keys.first().isFood) BASKET_DESC_FOOD_CHAR_AND_SLASH
+                else BASKET_DESC_NOT_FOOD_CHAR_AND_SLASH
+                append(charToAppend)
             }
 
             if (signsOfDiv.contains(GoodsSignOfDivision.MATERIAL_NUMBER)) {

@@ -236,7 +236,7 @@ class TaskGoodsViewModel : CoreViewModel(),
                                     basketNumber = basket.number.toString(),
                                     materialNumber = product.materialNumber,
                                     quantity = count.toString(),
-                                    uom = product.uom.code,  // TODO Базисная единица измерения
+                                    uom = product.uom.code,
                                     materialType = "",
                                     lifNr = basket.supplier?.code.orEmpty(),
                                     zcharg = "", // TODO Номер партии

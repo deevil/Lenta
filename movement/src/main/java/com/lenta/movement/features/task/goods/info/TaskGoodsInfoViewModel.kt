@@ -13,8 +13,10 @@ import com.lenta.movement.models.repositories.ITaskBasketsRepository
 import com.lenta.movement.platform.navigation.IScreenNavigator
 import com.lenta.shared.models.core.Supplier
 import com.lenta.shared.platform.viewmodel.CoreViewModel
+import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
 import com.lenta.shared.utilities.extentions.*
+import com.lenta.shared.utilities.orIfNull
 import com.lenta.shared.view.OnPositionClickListener
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -54,7 +56,7 @@ class TaskGoodsInfoViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
         }
     }
 
-    val supplierList by unsafeLazy { MutableLiveData(productInfo.value?.suppliers?.map { it.name }) }
+    val supplierList by unsafeLazy { MutableLiveData(productInfo.value?.suppliers?.map { it.name }.orEmpty()) }
     val supplierSelectedListener = object : OnPositionClickListener {
         override fun onClickPosition(position: Int) {
             supplierSelected.value =
@@ -68,6 +70,10 @@ class TaskGoodsInfoViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
                 productInfo.value?.let {
                     val basket = taskBasketsRepository.getSuitableBasketOrCreate(it, selectedSupplier.orNull())
                     emit(basket)
+                }.orIfNull {
+                    Logg.e {
+                        "ProductInfo null"
+                    }
                 }
             }
         }
