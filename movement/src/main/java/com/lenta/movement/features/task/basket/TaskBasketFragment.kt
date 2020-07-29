@@ -56,12 +56,7 @@ class TaskBasketFragment: CoreFragment<FragmentTaskBasketBinding, TaskBasketView
                         binding.tvCounter.tag = position
                         binding.tvCounter.setOnClickListener(onClickSelectionListener)
                         binding.selectedForDelete = vm.selectionsHelper.isSelected(position)
-                        recyclerViewKeyHandler?.let { recyclerViewKeyHandler ->
-                            binding.root.isSelected = recyclerViewKeyHandler.isSelected(position)
-                        }
-                    },
-                    onAdapterItemClicked = { position ->
-                        recyclerViewKeyHandler?.onItemClicked(position)
+                        super.onAdapterBindHandler(binding, position)
                     }
             )
 

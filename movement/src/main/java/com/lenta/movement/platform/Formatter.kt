@@ -63,8 +63,7 @@ class Formatter : IFormatter {
             //ПП – <номер поставщика>
             if (signsOfDiv.contains(GoodsSignOfDivision.LIF_NUMBER)) {
                 val supplier = basket.keys.firstOrNull()?.suppliers?.firstOrNull()
-                val supplierCode = supplier?.code
-                if (supplierCode != null && supplierCode.isNotEmpty()){
+                supplier?.code?.takeIf { it.isNotEmpty() }?.let { supplierCode ->
                     append("$PP - ${supplierCode}/")
                 }
             }

@@ -36,10 +36,10 @@ class TaskBasketViewModel() : CoreViewModel(),
     lateinit var formatter: IFormatter
 
     val basketIndex by unsafeLazy {
-        MutableLiveData(0)
+        MutableLiveData(DEFAULT_BASKET_INDEX)
     }
 
-    val basket by lazy {
+    val basket by unsafeLazy {
         basketIndex.value?.let {
             taskBasketsRepository.getBasketByIndex(it)
         }
@@ -47,8 +47,8 @@ class TaskBasketViewModel() : CoreViewModel(),
 
     val selectionsHelper = SelectionItemsHelper()
 
-    val goods by lazy { MutableLiveData(getGoods()) }
-    val goodsItemList by lazy {
+    val goods by unsafeLazy { MutableLiveData(getGoods()) }
+    val goodsItemList by unsafeLazy {
         goods.mapSkipNulls { goods ->
             goods.mapIndexed { index, (product, count) ->
                 val uom = product.uom.name.toLowerCase(Locale.getDefault())
@@ -90,7 +90,7 @@ class TaskBasketViewModel() : CoreViewModel(),
         basketIndex.value?.let { basketIndexValue ->
             val basket = taskBasketsRepository.getBasketByIndex(basketIndexValue)
             selectionsHelper.selectedPositions.value.orEmpty()
-                    .map { doRemoveProductIndex ->
+                    .mapNotNull { doRemoveProductIndex ->
                         basket?.getByIndex(doRemoveProductIndex)
                     }
                     .forEach { doRemoveProduct ->
@@ -158,6 +158,7 @@ class TaskBasketViewModel() : CoreViewModel(),
     }
 
     companion object {
+        private const val DEFAULT_BASKET_INDEX = 0
         private const val ONE_PRODUCT_TO_ADD = 1
     }
 }

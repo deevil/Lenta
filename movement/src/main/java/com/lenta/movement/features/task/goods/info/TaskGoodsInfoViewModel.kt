@@ -38,7 +38,7 @@ class TaskGoodsInfoViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
 
     val quantityList = MutableLiveData<List<String>>()
 
-    val quantity = MutableLiveData("0")
+    val quantity = MutableLiveData(DEFAULT_QUANTITY_VALUE)
     val quantityUom by unsafeLazy {
         MutableLiveData(productInfo.value?.uom)
     }
@@ -76,7 +76,7 @@ class TaskGoodsInfoViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
     val forBasketQuantity by unsafeLazy {
         productInfo.value?.let {
             currentBasket.combineLatest(quantity).mapSkipNulls { (currentBasket, quantityString) ->
-                (currentBasket.getOrElse(it) { 0 }) + (quantityString.toIntOrNull() ?: 0)
+                (currentBasket.getOrElse(it) { DEFAULT_ZERO_PRODUCTS }) + (quantityString.toIntOrNull() ?: DEFAULT_ZERO_PRODUCTS)
             }
         }
     }
@@ -99,7 +99,7 @@ class TaskGoodsInfoViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
 
     val applyEnabled: LiveData<Boolean> by lazy {
         quantity.mapSkipNulls { quantity ->
-            (quantity.toIntOrNull() ?: 0) > 0
+            (quantity.toIntOrNull() ?: DEFAULT_ZERO_PRODUCTS) > 0
         }
     }
 
@@ -127,7 +127,7 @@ class TaskGoodsInfoViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
                     taskBasketsRepository.addProduct(
                             product = productInfoValue,
                             supplier = supplierSelected.value?.orNull(),
-                            count = quantity.value?.toIntOrNull() ?: 0
+                            count = quantity.value?.toIntOrNull() ?: DEFAULT_ZERO_PRODUCTS
                     )
                 }
             }
@@ -162,5 +162,10 @@ class TaskGoodsInfoViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
             return true
         }
         return false
+    }
+
+    companion object {
+        private const val DEFAULT_QUANTITY_VALUE = "0"
+        private const val DEFAULT_ZERO_PRODUCTS = 0
     }
 }

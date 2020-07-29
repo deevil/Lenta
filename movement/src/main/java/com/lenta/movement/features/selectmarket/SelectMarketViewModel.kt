@@ -52,9 +52,10 @@ class SelectMarketViewModel : CoreViewModel(), OnPositionClickListener {
                 markets.value = listOfMarkets
                 if (selectedPosition.value == null) {
                     if (appSettings.lastTK != null) {
-                        listOfMarkets.forEachIndexed { index, itemLocal_ET_WERKS ->
-                            if (itemLocal_ET_WERKS.number == appSettings.lastTK) {
-                                onClickPosition(index)
+                        for (i in listOfMarkets.indices) {
+                            if (listOfMarkets[i].number == appSettings.lastTK) {
+                                onClickPosition(i)
+                                break
                             }
                         }
                     } else {

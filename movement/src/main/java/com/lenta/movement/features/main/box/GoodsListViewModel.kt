@@ -57,11 +57,10 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
 
     override fun onOkInSoftKeyboard(): Boolean {
         val eanCodeValue = eanCode.value
-        return if (eanCodeValue != null && eanCodeValue.isNotEmpty()) {
+        return eanCodeValue?.takeIf { it.isNotEmpty() }?.run{
             searchCode(eanCodeValue, fromScan = false)
             true
-        }
-        else false
+        } ?: false
     }
 
     fun onScanResult(data: String) {
