@@ -14,15 +14,14 @@ import com.lenta.bp9.platform.navigation.IScreenNavigator
 import com.lenta.bp9.repos.IDataBaseRepo
 import com.lenta.bp9.repos.IRepoInMemoryHolder
 import com.lenta.shared.models.core.Uom
+import com.lenta.shared.platform.constants.Constants
 import com.lenta.shared.platform.time.ITimeMonitor
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.requests.combined.scan_info.ScanInfoResult
 import com.lenta.shared.requests.combined.scan_info.pojo.QualityInfo
 import com.lenta.shared.requests.combined.scan_info.pojo.ReasonRejectionInfo
-import com.lenta.shared.utilities.extentions.combineLatest
-import com.lenta.shared.utilities.extentions.launchUITryCatch
-import com.lenta.shared.utilities.extentions.map
-import com.lenta.shared.utilities.extentions.toStringFormatted
+import com.lenta.shared.utilities.date_time.DateTimeUtil
+import com.lenta.shared.utilities.extentions.*
 import com.lenta.shared.utilities.orIfNull
 import com.lenta.shared.view.OnPositionClickListener
 import org.joda.time.DateTime
@@ -314,26 +313,37 @@ class GoodsInfoViewModel : CoreViewModel(), OnPositionClickListener {
             //эту строку необходимо прописывать только после того, как были установлены данные для переменных count  и suffix, а иначе фокус в поле et_count не установится
             requestFocusToCount.value = true
 
-            spinQuality.value = qualityInfo.value?.map {
-                it.name
-            }
-            paramGrsGrundNeg.value = dataBase.getParamGrsGrundNeg() ?: ""
+            spinQuality.value =
+                    qualityInfo.value
+                            ?.map {
+                                it.name
+                            }
+                            ?: emptyList()
+            paramGrsGrundNeg.value = dataBase.getParamGrsGrundNeg().orEmpty()
 
             /** определяем, что товар скоропорт https://trello.com/c/8sOTWtB7 */
             val paramGrzUffMhdhb = dataBase.getParamGrzUffMhdhb()?.toInt() ?: 60
-            isPerishable.value = (productInfo.value?.generalShelfLife?.toInt() ?: 0) > 0 ||
-                    (productInfo.value?.remainingShelfLife?.toInt() ?: 0) > 0 ||
-                    ((productInfo.value?.mhdhbDays ?: 0) > 0 && (productInfo.value?.mhdhbDays ?: 0) < paramGrzUffMhdhb )
+            val productGeneralShelfLifeInt = productInfo.value?.generalShelfLife?.toInt() ?: 0
+            val productRemainingShelfLifeInt = productInfo.value?.remainingShelfLife?.toInt() ?: 0
+            val productMhdhbDays = productInfo.value?.mhdhbDays ?: 0
+            isPerishable.value =
+                    productGeneralShelfLifeInt > 0
+                            || productRemainingShelfLifeInt > 0
+                            || (productMhdhbDays in 1 until paramGrzUffMhdhb)
             if (isPerishable.value == true) {
                 shelfLifeInfo.value = dataBase.getTermControlInfo()
-                spinShelfLife.value = shelfLifeInfo.value?.map {
-                    it.name
-                }
+                spinShelfLife.value = shelfLifeInfo.value?.map {it.name}.orEmpty()
                 currentDate.value = timeMonitor.getServerDate()
                 expirationDate.value = Calendar.getInstance()
-                if ( (productInfo.value?.generalShelfLife?.toInt() ?: 0) > 0 || (productInfo.value?.remainingShelfLife?.toInt() ?: 0) > 0 ) { //https://trello.com/c/XSAxdgjt
-                    generalShelfLife.value = productInfo.value?.generalShelfLife
-                    remainingShelfLife.value = productInfo.value?.remainingShelfLife
+                shelfLifeDate.value =
+                        currentDate.value
+                                ?.let {
+                                    DateTimeUtil.formatDate(it, Constants.DATE_FORMAT_dd_mm_yyyy)
+                                }
+                                .orEmpty()
+                if ( productGeneralShelfLifeInt > 0 || productRemainingShelfLifeInt > 0 ) { //https://trello.com/c/XSAxdgjt
+                    generalShelfLife.value = productInfo.value?.generalShelfLife.orEmpty()
+                    remainingShelfLife.value = productInfo.value?.remainingShelfLife.orEmpty()
                 } else {
                     generalShelfLife.value = productInfo.value?.mhdhbDays.toString()
                     remainingShelfLife.value = productInfo.value?.mhdrzDays.toString()
