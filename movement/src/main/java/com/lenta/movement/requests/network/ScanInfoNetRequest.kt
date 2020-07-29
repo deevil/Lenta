@@ -1,14 +1,14 @@
 package com.lenta.movement.requests.network
 
-import com.google.gson.annotations.SerializedName
 import com.lenta.movement.models.ProductInfo
+import com.lenta.movement.requests.network.models.scanInfoNetRequest.ScanInfoParams
+import com.lenta.movement.requests.network.models.scanInfoNetRequest.ScanInfoResult
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.fmp.ObjectRawStatus
 import com.lenta.shared.fmp.resources.dao_ext.getUomInfo
 import com.lenta.shared.fmp.resources.fast.ZmpUtz07V001
 import com.lenta.shared.functional.Either
 import com.lenta.shared.interactor.UseCase
-import com.lenta.shared.models.core.Supplier
 import com.lenta.shared.models.core.Uom
 import com.lenta.shared.models.core.getMatrixType
 import com.lenta.shared.models.core.getProductType
@@ -39,11 +39,7 @@ class ScanInfoNetRequest @Inject constructor(
 
             val productInfo = getProductInfo(status, units.getUomInfo(status.material?.buom))
 
-            if (productInfo != null) {
-                result.right(productInfo)
-            } else {
-                Either.Left(Failure.GoodNotFound)
-            }
+            productInfo?.let(result::right) ?: Either.Left(Failure.GoodNotFound)
         }
     }
 
@@ -52,31 +48,34 @@ class ScanInfoNetRequest @Inject constructor(
         val set = status.set
         val suppliers = status.suppliers
 
-        if (material?.material == null || uomInfo == null) {
-            return null
+        return material?.let { product ->
+            product.material?.let { productNumber ->
+                uomInfo?.let { actualUom ->
+                    ProductInfo(
+                            materialNumber = productNumber,
+                            description = product.name.orEmpty(),
+                            uom = Uom(code = actualUom.uom, name = actualUom.name),
+                            type = getProductType(
+                                    isAlco = product.isAlco?.isNotEmpty() ?: false,
+                                    isExcise = product.isExcise?.isNotEmpty() ?: false
+                            ),
+                            isSet = !set.isNullOrEmpty(),
+                            sectionId = product.abtnr.orEmpty(),
+                            matrixType = getMatrixType(product.matrixType.orEmpty()),
+                            materialType = product.materialType.orEmpty(),
+                            suppliers = suppliers.orEmpty(),
+                            ekGroup = product.ekgrp.orEmpty(),
+                            matkl = product.matkl.orEmpty(),
+                            volume = product.volume?.toDoubleOrNull() ?: 0.0,
+                            quantityInvestments = material.quantityInvestments?.toDoubleOrNull()?.toInt()
+                                    ?: 0,
+                            isRus = product.isRus.isSapTrue(),
+                            isVet = product.isVet.isSapTrue(),
+                            isFood = product.isFood.isSapTrue()
+                    )
+                }
+            }
         }
-
-        return ProductInfo(
-                materialNumber = material.material,
-                description = material.name,
-                uom = Uom(code = uomInfo.uom, name = uomInfo.name),
-                type = getProductType(
-                        isAlco = material.isAlco.isNotEmpty(),
-                        isExcise = material.isExcise.isNotEmpty()
-                ),
-                isSet = !set.isNullOrEmpty(),
-                sectionId = material.abtnr,
-                matrixType = getMatrixType(material.matrixType),
-                materialType = material.materialType,
-                suppliers = suppliers.orEmpty(),
-                ekGroup = material.ekgrp,
-                matkl = material.matkl,
-                volume = material.volume.toDoubleOrNull() ?: 0.0,
-                quantityInvestments = material.quantityInvestments.toDoubleOrNull()?.toInt() ?: 0,
-                isRus = material.isRus.isSapTrue(),
-                isVet = material.isVet.isSapTrue(),
-                isFood = material.isFood.isSapTrue()
-        )
     }
 
     companion object {
@@ -84,104 +83,5 @@ class ScanInfoNetRequest @Inject constructor(
     }
 }
 
-data class ScanInfoParams(
-        @SerializedName("IV_EAN")
-        val ean: String,
-        @SerializedName("IV_WERKS")
-        val tk: String,
-        @SerializedName("IV_MATNR")
-        val matNr: String,
-        @SerializedName("IV_CODEBP")
-        val codeEBP: String,
-        @SerializedName("IV_MODE")
-        val mode: String = ONE_POSITION_INDICATOR
-) {
-    companion object {
-        private const val ONE_POSITION_INDICATOR = "1"
-    }
-}
-
 class ScanInfoStatus : ObjectRawStatus<ScanInfoResult>()
 
-data class ScanInfoResult(
-        @SerializedName("ES_EAN")
-        val ean: Ean?,
-        @SerializedName("ES_MATERIAL")
-        val material: Material?,
-        @SerializedName("ET_LIFNR")
-        val suppliers: List<Supplier>?,
-        @SerializedName("ET_SET")
-        val set: List<Set>?,
-        @SerializedName("ET_PROD")
-        val egaisOrg: List<EgaisOrg>?,
-        @SerializedName("EV_ERROR_TEXT")
-        val errorText: String?,
-        @SerializedName("EV_RETCODE")
-        val retCode: Int?
-)
-
-data class Material(
-        @SerializedName("ABTNR")
-        val abtnr: String,
-        @SerializedName("BUOM")
-        val buom: String,
-        @SerializedName("EKGRP")
-        val ekgrp: String,
-        @SerializedName("MATERIAL")
-        val material: String,
-        @SerializedName("MATKL")
-        val matkl: String,
-        @SerializedName("MATR_TYPE")
-        val matrixType: String,
-        @SerializedName("MATYPE")
-        val materialType: String,
-        @SerializedName("NAME")
-        val name: String,
-        @SerializedName("QNTINCL")
-        val quantityInvestments: String,
-        @SerializedName("VOLUM")
-        val volume: String,
-        @SerializedName("IS_RUS")
-        val isRus: String,
-        @SerializedName("IS_ALCO")
-        val isAlco: String,
-        @SerializedName("IS_EXC")
-        val isExcise: String,
-        @SerializedName("IS_RETURN")
-        val isReturn: String,
-        @SerializedName("IS_VET")
-        val isVet: String,
-        @SerializedName("IS_FOOD")
-        val isFood: String
-)
-
-data class Ean(
-        @SerializedName("EAN")
-        val ean: String,
-        @SerializedName("MATERIAL")
-        val materialNumber: String,
-        @SerializedName("UMREN")
-        val umren: Int,
-        @SerializedName("UMREZ")
-        val umrez: Int,
-        @SerializedName("UOM")
-        val uom: String
-)
-
-data class EgaisOrg(
-        @SerializedName("ZPROD")
-        val egaisOrgCode: String,
-        @SerializedName("PROD_NAME")
-        val egaisOrgName: String
-)
-
-data class Set(
-        @SerializedName("MATNR")
-        val matNr: String,
-        @SerializedName("MATNR_OSN")
-        val matNrOsn: String,
-        @SerializedName("MEINS")
-        val meins: String,
-        @SerializedName("MENGE")
-        val menge: String
-)

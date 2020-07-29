@@ -148,7 +148,7 @@ class TaskBasketViewModel() : CoreViewModel(),
     }
 
     private fun addProductToRep(productInfo: ProductInfo) {
-        launchUITryCatch {
+        launchAsyncTryCatch {
             withContext(Dispatchers.IO) {
                 taskBasketsRepository.addProduct(
                         product = productInfo,
