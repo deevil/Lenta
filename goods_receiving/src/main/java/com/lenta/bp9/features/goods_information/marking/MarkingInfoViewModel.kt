@@ -224,11 +224,11 @@ class MarkingInfoViewModel : CoreViewModel(),
                                 ?.get(spinQualitySelectedPositionVal)
                                 ?.code
                                 .orEmpty()
-                val numberStampsControl =
-                        productInfo.value
+                val numberStampsControl = 1.0 //todo
+                        /**productInfo.value
                                 ?.numberStampsControl
                                 ?.toDouble()
-                                ?: 0.0
+                                ?: 0.0*/
                 if (qualityInfoCode == TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_NORM) {
                     if (numberStampsControl == 0.0 || acceptTotalCountVal <= 0.0) {
                         checkStampControlVisibility.value = false
@@ -261,7 +261,7 @@ class MarkingInfoViewModel : CoreViewModel(),
 
     val checkStampControl: MutableLiveData<Boolean> = checkStampControlVisibility.map {
         val countBlockScanned = processMarkingProductService.getCountProcessedBlockForDiscrepancies(TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_NORM).toDouble()
-        val numberStampsControl = productInfo.value?.numberStampsControl?.toDouble() ?: 0.0
+        val numberStampsControl = 1.0 //todo productInfo.value?.numberStampsControl?.toDouble() ?: 0.0
         countBlockScanned >= numberStampsControl
     }
 
@@ -785,6 +785,14 @@ class MarkingInfoViewModel : CoreViewModel(),
                     qualityInfoCode == TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_NORM
                 }
                 ?: selectedReasonRejectionInfo?.code.orEmpty()
+    }
+
+    fun scanMark1() {
+        onScanResult("4600266012142")
+    }
+
+    fun scanMark2() {
+        onScanResult("01046002660121422100000Ga.8005012345.938000.92NGkg+wRXz36kBFjpfwOub5DBIIpD2iS/DMYpZuuDLU0Y3pZt1z20/1ksr4004wfhDhRxu4dgUV4QN96Qtdih9g==")
     }
 
 }

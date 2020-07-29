@@ -122,7 +122,8 @@ class ProcessMarkingProductService
                         isGrayZone = false
                 )
 
-        currentBlocksDiscrepancies.asSequence()
+        currentBlocksDiscrepancies
+                .asSequence()
                 .map { it }
                 .filter { block ->
                     if (block.blockNumber == blockInfo.blockNumber) {

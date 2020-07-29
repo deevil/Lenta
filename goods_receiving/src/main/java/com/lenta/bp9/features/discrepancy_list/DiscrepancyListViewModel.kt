@@ -30,7 +30,6 @@ import com.lenta.shared.utilities.extentions.toStringFormatted
 import javax.inject.Inject
 
 private const val SELECTED_PAGE_NOT_PROCESSED = 0
-private const val SELECTED_PAGE_CONTROL = 1
 private const val PAGE_PROCESSED_WITHOUT_CONTROL = 1
 private const val PAGE_PROCESSED_WITH_CONTROL = 2
 
@@ -145,7 +144,6 @@ class DiscrepancyListViewModel : CoreViewModel(), PageSelectionListener {
                 ?.let { task ->
                     val taskProductDiscrepancies = task.taskRepository.getProductsDiscrepancies()
                     task.getProcessedProducts()
-                            .asSequence()
                             .filter {
                                 if (task.taskHeader.taskType == TaskType.RecalculationCargoUnit) {
                                     taskProductDiscrepancies.getCountProductNotProcessedOfProductPGE(it) > 0.0
@@ -326,10 +324,7 @@ class DiscrepancyListViewModel : CoreViewModel(), PageSelectionListener {
         taskManager
                 .getReceivingTask()
                 ?.let { task ->
-                    task.taskRepository
-                            .getProductsDiscrepancies()
-                            .getProductsDiscrepancies()
-                            .asSequence()
+                    task.getProcessedProductsDiscrepancies()
                             .filter {
                                 filterCountProcessedProduct(it)
                             }
@@ -705,18 +700,19 @@ class DiscrepancyListViewModel : CoreViewModel(), PageSelectionListener {
             taskManager
                     .getReceivingTask()
                     ?.getProcessedProductsDiscrepancies()
-                    ?.asSequence()
                     ?.map { productDiscr ->
                         taskManager.getReceivingTask()
                                 ?.taskRepository
                                 ?.getProducts()
                                 ?.findProduct(productDiscr.materialNumber)
-                    }?.filter { filterProduct ->
+                    }
+                    ?.filter { filterProduct ->
                         //партионный - это помеченный IS_ALCO и не помеченный IS_BOX_FL, IS_MARK_FL (Артем)
                         filterProduct?.type == ProductType.NonExciseAlcohol
                                 && !filterProduct.isBoxFl
                                 && !filterProduct.isMarkFl
-                    }?.map { mapProduct ->
+                    }
+                    ?.map { mapProduct ->
                         mapProduct?.let { productForDel ->
                             taskManager.getReceivingTask()
                                     ?.taskRepository
