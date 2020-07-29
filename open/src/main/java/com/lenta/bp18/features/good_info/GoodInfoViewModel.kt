@@ -73,7 +73,7 @@ class GoodInfoViewModel : SendDataViewModel(), OnPositionClickListener {
                     }
                     else -> {
                         quantity = Constants.QUANTITY_DEFAULT_VALUE_0
-                        uom = Constants.UNKNOWN_UOM
+                        uom = Uom.DEFAULT.name
                     }
                 }
             }
