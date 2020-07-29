@@ -16,6 +16,8 @@ import com.lenta.shared.platform.navigation.ICoreNavigator
 import com.lenta.shared.platform.navigation.runOrPostpone
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.progress.IProgressUseCaseInformator
+import com.lenta.shared.utilities.extentions.getAppInfo
+import com.lenta.shared.utilities.extentions.getApplicationName
 import javax.inject.Inject
 
 class ScreenNavigator @Inject constructor(
@@ -63,6 +65,7 @@ class ScreenNavigator @Inject constructor(
         runOrPostpone {
             getFragmentStack()?.push(AlertFragment.create(
                     message = context.getString(R.string.tw_unpucking),
+                    title = context.getAppInfo(),
                     iconRes = R.drawable.ic_question_yellow_80dp,
                     pageNumber = Constants.CONFIRMATION_SCREEN,
                     codeConfirmForLeft = backFragmentResultHelper.setFuncForResult(noCallback),
@@ -77,6 +80,7 @@ class ScreenNavigator @Inject constructor(
         runOrPostpone {
             getFragmentStack()?.push(AlertFragment.create(
                     message = context.getString(R.string.tw_save_data),
+                    title = context.getAppInfo(),
                     iconRes = R.drawable.ic_question_yellow_80dp,
                     pageNumber = Constants.CONFIRMATION_SCREEN,
                     codeConfirmForLeft = backFragmentResultHelper.setFuncForResult(backCallback),
@@ -91,6 +95,7 @@ class ScreenNavigator @Inject constructor(
         runOrPostpone {
             getFragmentStack()?.push(AlertFragment.create(
                     message = context.getString(R.string.tw_unpucking_success),
+                    title = context.getAppInfo(),
                     iconRes = R.drawable.ic_info_green_80dp,
                     pageNumber = Constants.ALERT_SCREEN_NUMBER,
                     codeConfirmForLeft = backFragmentResultHelper.setFuncForResult(goOverCallback),
