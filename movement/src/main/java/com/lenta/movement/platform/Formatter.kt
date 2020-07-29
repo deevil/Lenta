@@ -85,10 +85,10 @@ class Formatter : IFormatter {
                 append(splashToAppend)
             }
 
-           //TODO <Номер партии> когда появится деление товаров по категориям
-            if (signsOfDiv.contains(GoodsSignOfDivision.PARTS)) {
-                append(basket.keys.firstOrNull()?.batchNumber)
-            }
+           //<Номер партии>
+//            if (signsOfDiv.contains(GoodsSignOfDivision.PARTS)) {
+//                append(basket.keys.firstOrNull()?.batchNumber) TODO добавить когда появится деление товаров по категориям
+//            }
 
             if (signsOfDiv.contains(GoodsSignOfDivision.FOOD)) {
                 val charToAppend = if (basket.keys.first().isFood) BASKET_DESC_FOOD_CHAR_AND_SLASH
