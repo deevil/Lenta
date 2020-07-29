@@ -59,7 +59,7 @@ class ScreenNavigator @Inject constructor(
 
 
     // Informational screens
-    override fun showConfirmOpeningPackage(noCallback: () -> Unit ,yesCallback: () -> Unit) {
+    override fun showConfirmOpeningPackage(noCallback: () -> Unit, yesCallback: () -> Unit) {
         runOrPostpone {
             getFragmentStack()?.push(AlertFragment.create(
                     message = context.getString(R.string.tw_unpucking),
@@ -143,7 +143,7 @@ interface IScreenNavigator : ICoreNavigator {
     fun openGoodsInfoScreen(goodInfo: Bundle, weight: String?)
     fun openFastDataLoadingScreen()
 
-    fun showConfirmOpeningPackage(noCallback: () -> Unit ,yesCallback: () -> Unit)
+    fun showConfirmOpeningPackage(noCallback: () -> Unit, yesCallback: () -> Unit)
     fun showConfirmSaveData(backCallback: () -> Unit, confirmCallback: () -> Unit)
     fun showAlertSuccessfulOpeningPackage(goOverCallback: () -> Unit)
     fun showAlertPartCodeNotFound()

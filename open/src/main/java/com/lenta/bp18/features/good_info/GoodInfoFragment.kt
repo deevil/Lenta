@@ -29,25 +29,34 @@ class GoodInfoFragment : CoreFragment<FragmentGoodInfoBinding, GoodInfoViewModel
                 ?: throw  IllegalArgumentException("There is no data in bundle at key $KEY_GOOD_INFO")
     }
 
+
+
+
     override fun getLayoutId(): Int = R.layout.fragment_good_info
 
     override fun getPageNumber(): String? = generateScreenNumberFromPostfix(SCREEN_NUMBER)
 
     override fun getViewModel(): GoodInfoViewModel {
+
+        val selectedEan = goodInfo.getString(Constants.GOOD_INFO_EAN)
+
         provideViewModel(GoodInfoViewModel::class.java).let {
             getAppComponent()?.inject(it)
             it.deviceIp.value = context!!.getDeviceId()
-            it.selectedEan.value = goodInfo.getString(Constants.GOOD_INFO_EAN)
+            it.selectedEan.value = selectedEan
             it.weight.value = weight.toInt()
             return it
         }
     }
 
     override fun setupTopToolBar(topToolbarUiModel: TopToolbarUiModel) {
+        val material = goodInfo.getString(Constants.GOOD_INFO_MATERIAL)
+        val name = goodInfo.getString(Constants.GOOD_INFO_NAME)
+
         topToolbarUiModel.description.value = getString(R.string.good_card)
         topToolbarUiModel.title.value = getString(R.string.title_good_sap_name,
-                goodInfo.getString(Constants.GOOD_INFO_MATERIAL),
-                goodInfo.getString(Constants.GOOD_INFO_NAME))
+                material,
+                name)
     }
 
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {

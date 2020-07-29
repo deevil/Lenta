@@ -1,6 +1,7 @@
 package com.lenta.bp18.features.select_good
 
 import android.os.Bundle
+import androidx.core.os.bundleOf
 import androidx.lifecycle.MutableLiveData
 import com.lenta.bp18.features.other.SendDataViewModel
 import com.lenta.bp18.platform.Constants
@@ -14,12 +15,13 @@ class SelectGoodViewModel : SendDataViewModel() {
 
     @Inject
     lateinit var sessionInfo: ISessionInfo
+
     @Inject
     lateinit var appSettings: IAppSettings
 
     private val weightValue = listOf(VALUE_23, VALUE_24, VALUE_27, VALUE_28)
 
-    val barcodeField:MutableLiveData<String> = MutableLiveData()
+    val barcodeField: MutableLiveData<String> = MutableLiveData()
 
     val nextButtonEnabled = barcodeField.map { !it.isNullOrBlank() }
     val requestFocusToBarcode = MutableLiveData<Boolean>(true)
@@ -42,17 +44,19 @@ class SelectGoodViewModel : SendDataViewModel() {
             when (val good = database.getGoodByEan(ean)) {
                 null -> showError()
                 else -> {
-                    val goodInfo = Bundle()
-                    goodInfo.putString(Constants.GOOD_INFO_EAN, good.ean)
-                    goodInfo.putString(Constants.GOOD_INFO_MATERIAL, good.getFormattedMaterial())
-                    goodInfo.putString(Constants.GOOD_INFO_NAME, good.name)
-                    openGoodInfoScreen(goodInfo,weight)
+                    val goodInfo =
+                            bundleOf(
+                                    Constants.GOOD_INFO_EAN to good.ean,
+                                    Constants.GOOD_INFO_MATERIAL to good.getFormattedMaterial(),
+                                    Constants.GOOD_INFO_NAME to good.name
+                            )
+                    openGoodInfoScreen(goodInfo, weight)
                 }
             }
         }
     }
 
-    private fun openGoodInfoScreen(goodInfo: Bundle, weight: String? ) {
+    private fun openGoodInfoScreen(goodInfo: Bundle, weight: String?) {
         navigator.openGoodsInfoScreen(goodInfo, weight)
     }
 
@@ -64,7 +68,7 @@ class SelectGoodViewModel : SendDataViewModel() {
         /*Выход из приложения*/
     }
 
-    companion object{
+    companion object {
         const val VALUE_23 = "23"
         const val VALUE_24 = "24"
         const val VALUE_27 = "27"

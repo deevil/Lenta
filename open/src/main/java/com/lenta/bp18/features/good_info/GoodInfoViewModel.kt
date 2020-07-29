@@ -48,6 +48,10 @@ class GoodInfoViewModel : SendDataViewModel(), OnPositionClickListener {
     }
 
     init {
+        setGoodInfo()
+    }
+
+    private fun setGoodInfo(){
         launchUITryCatch {
             val good = database.getGoodByEan(selectedEan.value.toString())
             val uom: String
@@ -75,7 +79,6 @@ class GoodInfoViewModel : SendDataViewModel(), OnPositionClickListener {
             }
 
             quantityField.value = "$quantity $uom"
-
             /*ШК по индикатору (10). Осталось понять как его получить*/
             //partNumberField.value = /*значение*/
 
@@ -95,6 +98,7 @@ class GoodInfoViewModel : SendDataViewModel(), OnPositionClickListener {
             val conditionList = database.getAllGoodCondition()
             conditions.value = conditionList
         }
+
     }
 
     override fun onClickPosition(position: Int) {
@@ -102,28 +106,20 @@ class GoodInfoViewModel : SendDataViewModel(), OnPositionClickListener {
     }
 
     fun onClickBack() {
-        navigator.showConfirmSaveData(
-                backCallback = {
-                    navigator.goBack()
-                },
-                confirmCallback = {
-                    navigator.goBack()
-                    navigator.openSelectGoodScreen()
-                }
-        )
+        with(navigator) {
+            showConfirmSaveData(::goBack) {
+                goBack()
+                openSelectGoodScreen()
+            }
+        }
     }
 
     fun onClickComplete() {
-        navigator.showConfirmOpeningPackage(
-                noCallback = {
-                    navigator.goBack()
-                },
-                yesCallback = {
-                    /*Отправка данных*/
-                    navigator.showAlertSuccessfulOpeningPackage {
-                        navigator.openSelectGoodScreen()
-                    }
-                }
-        )
+        with(navigator) {
+            showConfirmOpeningPackage(::goBack) {
+                showAlertSuccessfulOpeningPackage(::openSelectGoodScreen)
+            }
+        }
+
     }
 }
