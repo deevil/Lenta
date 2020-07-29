@@ -423,6 +423,7 @@ class GoodInfoCreateViewModel : CoreViewModel() {
         setScreenStatus(foundGood)
         updateProviders(foundGood.providers)
         updateProducers(foundGood.producers)
+        clearSpinnerPositions()
         setDefaultQuantity(foundGood)
 
         Logg.d { "--> found good: $foundGood" }
@@ -449,6 +450,11 @@ class GoodInfoCreateViewModel : CoreViewModel() {
             GoodKind.ALCOHOL -> ScreenStatus.ALCOHOL
             GoodKind.EXCISE -> ScreenStatus.EXCISE
         }
+    }
+
+    private fun clearSpinnerPositions() {
+        providerPosition.value = 0
+        producerPosition.value = 0
     }
 
     private fun loadGoodInfoByEan(ean: String) {
@@ -532,6 +538,7 @@ class GoodInfoCreateViewModel : CoreViewModel() {
                 lastSuccessSearchNumber = number
                 updateProviders(good.providers)
                 updateProducers(good.producers)
+                clearSpinnerPositions()
                 setScreenStatus(good)
                 setDefaultQuantity(good)
 
@@ -747,6 +754,11 @@ class GoodInfoCreateViewModel : CoreViewModel() {
                 ScreenStatus.ALCOHOL, ScreenStatus.PART -> addPart()
                 ScreenStatus.BOX -> addBox()
             }
+
+            good.value?.let { good ->
+                manager.saveGoodInTask(good)
+                isExistUnsavedData = false
+            }
         }
     }
 
@@ -893,9 +905,6 @@ class GoodInfoCreateViewModel : CoreViewModel() {
 
     private fun saveChangesAndExit() {
         saveChanges()
-        manager.saveGoodInTask(good.value!!)
-        isExistUnsavedData = false
-
         navigator.goBack()
         navigator.openBasketGoodListScreen()
     }

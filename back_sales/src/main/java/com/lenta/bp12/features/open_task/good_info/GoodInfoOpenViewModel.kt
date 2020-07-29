@@ -353,6 +353,7 @@ class GoodInfoOpenViewModel : CoreViewModel() {
         manager.updateCurrentGood(foundGood)
         setScreenStatus(foundGood)
         setProducerList(foundGood)
+        clearSpinnerPositions()
         setDefaultQuantity(foundGood)
 
         Logg.d { "--> found good: $foundGood" }
@@ -387,6 +388,10 @@ class GoodInfoOpenViewModel : CoreViewModel() {
             GoodKind.ALCOHOL -> ScreenStatus.ALCOHOL
             GoodKind.EXCISE -> ScreenStatus.EXCISE
         }
+    }
+
+    private fun clearSpinnerPositions() {
+        producerPosition.value = 0
     }
 
     private fun loadGoodInfoByEan(ean: String) {
@@ -472,6 +477,7 @@ class GoodInfoOpenViewModel : CoreViewModel() {
             good.value?.let { good ->
                 lastSuccessSearchNumber = number
                 setProducerList(good)
+                clearSpinnerPositions()
                 setScreenStatus(good)
                 setDefaultQuantity(good)
 
@@ -647,6 +653,11 @@ class GoodInfoOpenViewModel : CoreViewModel() {
                 ScreenStatus.ALCOHOL, ScreenStatus.PART -> addPart()
                 ScreenStatus.BOX -> addBox()
             }
+
+            good.value?.let { good ->
+                manager.saveGoodInTask(good)
+                isExistUnsavedData = false
+            }
         }
     }
 
@@ -778,8 +789,6 @@ class GoodInfoOpenViewModel : CoreViewModel() {
 
     private fun saveChangesAndExit() {
         saveChanges()
-        manager.saveGoodInTask(good.value!!)
-        isExistUnsavedData = false
         navigator.goBack()
     }
 
