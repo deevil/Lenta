@@ -170,9 +170,12 @@ class GoodListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
             when (page) {
                 0 -> {
                     val materials = mutableListOf<String>()
-                    processingSelectionsHelper.selectedPositions.value?.forEach { position ->
-                        processing.value?.get(position)?.let { item ->
-                            materials.add(item.material)
+                    with(processingSelectionsHelper) {
+                        selectedPositions.value?.forEach { position ->
+                            processing.value?.get(position)?.let { item ->
+                                materials.add(item.material)
+                                remove(position)
+                            }
                         }
                     }
 
@@ -180,9 +183,12 @@ class GoodListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
                 }
                 1 -> {
                     val materials = mutableListOf<String>()
-                    processedSelectionsHelper.selectedPositions.value?.forEach { position ->
-                        processed.value?.get(position)?.let { item ->
-                            materials.add(item.material)
+                    with(processedSelectionsHelper) {
+                        selectedPositions.value?.forEach { position ->
+                            processed.value?.get(position)?.let { item ->
+                                materials.add(item.material)
+                                remove(position)
+                            }
                         }
                     }
 
