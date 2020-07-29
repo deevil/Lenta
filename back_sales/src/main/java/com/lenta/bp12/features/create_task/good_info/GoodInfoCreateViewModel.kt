@@ -414,13 +414,17 @@ class GoodInfoCreateViewModel : CoreViewModel() {
         updateProviders(foundGood.providers)
         updateProducers(foundGood.producers)
         setDefaultQuantity(foundGood)
+
+        Logg.d { "--> found good: $foundGood" }
     }
 
     private fun setDefaultQuantity(good: GoodCreate) {
         if (good.kind == GoodKind.COMMON) {
             if (good.isDifferentUnits()) {
-                val converted = ScanCodeInfo(originalSearchNumber).getConvertedQuantity(good.innerQuantity)
-                quantityField.value = converted.dropZeros()
+                with(ScanCodeInfo(originalSearchNumber)) {
+                    val converted = if (weight > 0.0) getConvertedQuantity(good.innerQuantity) else 0.0
+                    quantityField.value = converted.dropZeros()
+                }
             } else {
                 if (isEanLastScanned) {
                     quantityField.value = "1"
@@ -524,6 +528,8 @@ class GoodInfoCreateViewModel : CoreViewModel() {
                 if (good.kind == GoodKind.EXCISE) {
                     navigator.showForExciseGoodNeedScanFirstMark()
                 }
+
+                Logg.d { "--> added good: $good" }
             }
 
             manager.clearSearchFromListParams()

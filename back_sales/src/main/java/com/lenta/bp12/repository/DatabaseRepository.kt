@@ -77,7 +77,7 @@ class DatabaseRepository @Inject constructor(
 
     override suspend fun getUnitsByCode(code: String): Uom {
         return withContext(Dispatchers.IO) {
-            units.getUnitName(code)?.toLowerCase(Locale.getDefault())?.let { name ->
+            units.getUnitName(code)?.let { name ->
                 Uom(code, name)
             } ?: Uom.ST
         }
