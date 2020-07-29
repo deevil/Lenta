@@ -27,7 +27,7 @@ class TaskGoodsInfoFragment : CoreFragment<FragmentTaskGoodsInfoBinding, TaskGoo
     override fun getViewModel(): TaskGoodsInfoViewModel {
         return provideViewModel(TaskGoodsInfoViewModel::class.java).also { vm ->
             productInfo?.let {
-                vm.productInfo = it
+                vm.productInfo.value = it
             }
             getAppComponent()?.inject(vm)
 
@@ -44,7 +44,7 @@ class TaskGoodsInfoFragment : CoreFragment<FragmentTaskGoodsInfoBinding, TaskGoo
         bottomToolbarUiModel.cleanAll()
 
         bottomToolbarUiModel.uiModelButton1.show(ButtonDecorationInfo.back)
-        bottomToolbarUiModel.uiModelButton3.show(ButtonDecorationInfo.details)
+        bottomToolbarUiModel.uiModelButton3.show(ButtonDecorationInfo.detail)
         bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.apply)
 
         connectLiveData(vm.applyEnabled, bottomToolbarUiModel.uiModelButton5.enabled)

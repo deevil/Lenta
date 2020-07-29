@@ -16,7 +16,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.util.*
 import javax.inject.Inject
-import kotlin.properties.Delegates
 
 class TaskBasketViewModel() : CoreViewModel(),
         OnOkInSoftKeyboardListener {
@@ -36,14 +35,20 @@ class TaskBasketViewModel() : CoreViewModel(),
     @Inject
     lateinit var formatter: IFormatter
 
-    var basketIndex by Delegates.notNull<Int>()
+    val basketIndex by unsafeLazy {
+        MutableLiveData(DEFAULT_BASKET_INDEX)
+    }
 
-    val basket by lazy { taskBasketsRepository.getBasketByIndex(basketIndex) }
+    val basket by unsafeLazy {
+        basketIndex.value?.let {
+            taskBasketsRepository.getBasketByIndex(it)
+        }
+    }
 
-    private val selectionsHelper = SelectionItemsHelper()
+    val selectionsHelper = SelectionItemsHelper()
 
-    val goods by lazy { MutableLiveData(getGoods()) }
-    val goodsItemList by lazy {
+    val goods by unsafeLazy { MutableLiveData(getGoods()) }
+    val goodsItemList by unsafeLazy {
         goods.mapSkipNulls { goods ->
             goods.mapIndexed { index, (product, count) ->
                 val uom = product.uom.name.toLowerCase(Locale.getDefault())
@@ -68,7 +73,7 @@ class TaskBasketViewModel() : CoreViewModel(),
         asyncLiveData<String> {
             val task = taskManager.getTask()
             val taskSettings = getSettings()
-            basket?.let{
+            basket?.let {
                 val innerTitle = formatter.getBasketTitle(
                         basket = it,
                         task = task,
@@ -82,20 +87,24 @@ class TaskBasketViewModel() : CoreViewModel(),
     private suspend fun getSettings() = taskManager.getTaskSettings()
 
     fun onDeleteClick() {
-        val basket = taskBasketsRepository.getBasketByIndex(basketIndex)
-        selectionsHelper.selectedPositions.value.orEmpty()
-                .map { doRemoveProductIndex ->
-                    basket?.getByIndex(doRemoveProductIndex)
-                }
-                .forEach { doRemoveProduct ->
-                    basket?.remove(doRemoveProduct)
-                }
-        selectionsHelper.clearPositions()
-        goods.value = getGoods()
+        basketIndex.value?.let { basketIndexValue ->
+            val basket = taskBasketsRepository.getBasketByIndex(basketIndexValue)
+            selectionsHelper.selectedPositions.value.orEmpty()
+                    .mapNotNull { doRemoveProductIndex ->
+                        basket?.getByIndex(doRemoveProductIndex)
+                    }
+                    .forEach { doRemoveProduct ->
+                        basket?.remove(doRemoveProduct)
+                    }
+            selectionsHelper.clearPositions()
+            goods.value = getGoods()
+        }
     }
 
     fun onCharacteristicsClick() {
-        screenNavigator.openTaskBasketCharacteristicsScreen(basketIndex)
+        basketIndex.value?.let{
+            screenNavigator.openTaskBasketCharacteristicsScreen(it)
+        }
     }
 
     fun onNextClick() {
@@ -116,7 +125,7 @@ class TaskBasketViewModel() : CoreViewModel(),
     }
 
     fun onScanResult(data: String) {
-            searchCode(code = data, fromScan = true, isBarCode = true)
+        searchCode(code = data, fromScan = true, isBarCode = true)
     }
 
     fun onDigitPressed(digit: Int) {
@@ -125,7 +134,9 @@ class TaskBasketViewModel() : CoreViewModel(),
     }
 
     private fun getGoods(): List<Pair<ProductInfo, Int>> {
-        return taskBasketsRepository.getBasketByIndex(basketIndex)?.toList().orEmpty()
+        return basketIndex.value?.let{ basketIndexValue ->
+            taskBasketsRepository.getBasketByIndex(basketIndexValue)?.toList()
+        }.orEmpty()
     }
 
     private fun searchCode(code: String, fromScan: Boolean, isBarCode: Boolean? = null) {
@@ -138,7 +149,7 @@ class TaskBasketViewModel() : CoreViewModel(),
 
     private fun addProductToRep(productInfo: ProductInfo) {
         launchUITryCatch {
-            withContext(Dispatchers.IO){
+            withContext(Dispatchers.IO) {
                 taskBasketsRepository.addProduct(
                         product = productInfo,
                         count = ONE_PRODUCT_TO_ADD)
@@ -147,6 +158,7 @@ class TaskBasketViewModel() : CoreViewModel(),
     }
 
     companion object {
+        private const val DEFAULT_BASKET_INDEX = 0
         private const val ONE_PRODUCT_TO_ADD = 1
     }
 }
