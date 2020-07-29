@@ -116,7 +116,7 @@ class OpenTaskManager @Inject constructor(
                         val commonUnits = database.getUnitsByCode(unitsCode)
                         val good = GoodOpen(
                                 ean = goodInfo.ean,
-                                allGoodEans = goodInfo.allGoodEans,
+                                eans = goodInfo.eans,
                                 material = material,
                                 name = goodInfo.name,
                                 section = goodInfo.section,
@@ -152,7 +152,7 @@ class OpenTaskManager @Inject constructor(
     override fun findGoodByEan(ean: String): GoodOpen? {
         return currentTask.value?.let { task ->
             task.goods.find { good ->
-                good.allGoodEans.contains(ean)
+                good.eans.contains(ean)
             }?.also { found ->
                 found.ean = ean
                 updateCurrentTask(task)

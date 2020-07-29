@@ -519,6 +519,7 @@ class GoodInfoCreateViewModel : CoreViewModel() {
             with(result) {
                 good.value = GoodCreate(
                         ean = eanInfo.ean,
+                        eans = database.getEanListByMaterialUnits(materialInfo.material, materialInfo.commonUnitsCode),
                         material = materialInfo.material,
                         name = materialInfo.name,
                         kind = getGoodKind(),

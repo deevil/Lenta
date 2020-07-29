@@ -62,12 +62,18 @@ class CreateTaskManager @Inject constructor(
     }
 
     override fun findGoodByEan(ean: String): GoodCreate? {
-        return currentTask.value?.goods?.find { it.ean == ean }
+        return currentTask.value?.let { task ->
+            task.goods.find { good ->
+                good.eans.contains(ean)
+            }?.also { found ->
+                found.ean = ean
+                updateCurrentTask(task)
+            }
+        }
     }
 
     override fun findGoodByMaterial(material: String): GoodCreate? {
-        val formattedMaterial = if (material.length == Constants.SAP_6) "000000000000$material" else material
-        return currentTask.value?.goods?.find { it.material == formattedMaterial }
+        return currentTask.value?.goods?.find { it.material == material }
     }
 
     override suspend fun isGoodCanBeAdded(goodInfo: GoodInfoResult): Boolean {
