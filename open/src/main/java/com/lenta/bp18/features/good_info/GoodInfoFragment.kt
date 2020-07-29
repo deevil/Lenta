@@ -7,6 +7,7 @@ import com.lenta.bp18.R
 import com.lenta.bp18.databinding.FragmentGoodInfoBinding
 import com.lenta.bp18.platform.Constants
 import com.lenta.bp18.platform.extention.getAppComponent
+import com.lenta.shared.platform.activity.OnBackPresserListener
 import com.lenta.shared.platform.fragment.CoreFragment
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
@@ -17,7 +18,7 @@ import com.lenta.shared.utilities.extentions.getDeviceId
 import com.lenta.shared.utilities.extentions.provideViewModel
 import com.lenta.shared.utilities.extentions.unsafeLazy
 
-class GoodInfoFragment : CoreFragment<FragmentGoodInfoBinding, GoodInfoViewModel>(), ToolbarButtonsClickListener {
+class GoodInfoFragment : CoreFragment<FragmentGoodInfoBinding, GoodInfoViewModel>(), ToolbarButtonsClickListener, OnBackPresserListener {
 
     private val weight by unsafeLazy {
         arguments?.getString(KEY_WEIGHT_VALUE)
@@ -28,9 +29,6 @@ class GoodInfoFragment : CoreFragment<FragmentGoodInfoBinding, GoodInfoViewModel
         arguments?.getBundle(KEY_GOOD_INFO)
                 ?: throw  IllegalArgumentException("There is no data in bundle at key $KEY_GOOD_INFO")
     }
-
-
-
 
     override fun getLayoutId(): Int = R.layout.fragment_good_info
 
@@ -71,14 +69,20 @@ class GoodInfoFragment : CoreFragment<FragmentGoodInfoBinding, GoodInfoViewModel
         }
     }
 
+    override fun onBackPressed(): Boolean {
+        vm.onClickBack()
+        return false
+    }
+
     companion object {
         const val SCREEN_NUMBER = Constants.GOODS_INFO_FRAGMENT
         private const val KEY_WEIGHT_VALUE = "KEY_WEIGHT_VALUE"
-        private const val KEY_GOOD_INFO = "KEY_GOOD_INFO"
 
+        private const val KEY_GOOD_INFO = "KEY_GOOD_INFO"
         fun newInstance(goodInfo: Bundle, weight: String?) = GoodInfoFragment().apply {
             arguments = bundleOf(KEY_GOOD_INFO to goodInfo, KEY_WEIGHT_VALUE to weight)
         }
+
     }
 
 }
