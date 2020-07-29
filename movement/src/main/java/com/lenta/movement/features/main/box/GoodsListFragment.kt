@@ -110,8 +110,9 @@ class GoodsListFragment : CoreFragment<FragmentGoodsListBinding, GoodsListViewMo
     }
 
     override fun onResume() {
-        vm.onResume()
         super.onResume()
+        vm.requestFocusToEan.value = true
+        vm.onResume()
     }
 
     override fun onKeyDown(keyCode: KeyCode): Boolean {

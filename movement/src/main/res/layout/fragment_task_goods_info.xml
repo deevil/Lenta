@@ -41,6 +41,8 @@
                     android:text="@={vm.quantity}"
                     app:digitsForUom="@{vm.quantityUom}"
                     app:suffix="@{vm.quantityUom.name}"
+                    app:cursorToLastPos="@{false}"
+                    app:requestFocus="@{vm.requestFocusToCount}"
                     tools:text="50 шт."
                     android:drawableEnd="@drawable/ic_bei_disabled_24dp"/>
             </TableRow>

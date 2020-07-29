@@ -62,7 +62,12 @@ class TaskGoodsInfoViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
     val currentBasket: LiveData<Basket> by unsafeLazy {
         supplierSelected.switchMap { selectedSupplier ->
             asyncLiveData<Basket> {
-                val basket = taskBasketsRepository.getSuitableBasketOrCreate(productInfo, selectedSupplier.orNull())
+                val signOfDiv = taskManager.getTaskSettings().signsOfDiv
+                val basket = taskBasketsRepository.getSuitableBasketOrCreate(
+                        productInfo,
+                        selectedSupplier.orNull(),
+                        signOfDiv
+                )
                 emit(basket)
             }
         }
@@ -101,12 +106,14 @@ class TaskGoodsInfoViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
     }
 
     fun onApplyClick() {
-        launchAsyncTryCatch {
+        launchUITryCatch {
+            screenNavigator.showProgressLoadingData()
             addProductToRepository()
-        }
-        screenNavigator.goBack()
-        currentBasket.value?.let { basketValue ->
-            screenNavigator.openTaskBasketScreen(basketValue.index)
+            screenNavigator.hideProgress()
+            screenNavigator.goBack()
+            currentBasket.value?.let { basketValue ->
+                screenNavigator.openTaskBasketScreen(basketValue.index)
+            }
         }
     }
 
@@ -133,12 +140,12 @@ class TaskGoodsInfoViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
     }
 
     private suspend fun searchCode(code: String) {
-            scanInfoHelper.searchCode(code, fromScan = true, isBarCode = true) {
-                with(screenNavigator) {
-                    goBack()
-                    openTaskGoodsInfoScreen(it)
-                }
+        scanInfoHelper.searchCode(code, fromScan = true, isBarCode = true) {
+            with(screenNavigator) {
+                goBack()
+                openTaskGoodsInfoScreen(it)
             }
+        }
     }
 
     override fun onOkInSoftKeyboard(): Boolean {

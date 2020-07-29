@@ -13,9 +13,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
 class MemoryTaskBasketsRepository(
-    hyperHive: HyperHive,
-    private val taskManager: ITaskManager
-): ITaskBasketsRepository {
+        hyperHive: HyperHive,
+        private val taskManager: ITaskManager
+) : ITaskBasketsRepository {
 
     private val zmpUtz14V001 = ZmpUtz14V001(hyperHive)
 
@@ -48,23 +48,25 @@ class MemoryTaskBasketsRepository(
     }
 
     override suspend fun addProduct(product: ProductInfo, supplier: Supplier?, count: Int) {
-        if (count == 0) return
+        val signOfDiv = taskManager.getTaskSettings().signsOfDiv
 
-        val suitableBasket = getSuitableBasketOrCreate(product, supplier)
+        for (i in count downTo 1) {
+            val suitableBasket = getSuitableBasketOrCreate(product, supplier, signOfDiv)
 
-        suitableBasket[product] = (suitableBasket[product] ?: 0) + 1
+            suitableBasket[product] = (suitableBasket[product] ?: 0) + 1
 
-        if (basketList.contains(suitableBasket)) {
-            basketList[suitableBasket.index] = suitableBasket
-        } else {
-            basketList.add(suitableBasket.index, suitableBasket)
+            if (basketList.contains(suitableBasket)) {
+                basketList[suitableBasket.index] = suitableBasket
+            } else {
+                basketList.add(suitableBasket.index, suitableBasket)
+            }
         }
-
-        addProduct(product, supplier, count - 1)
     }
 
-    override suspend fun getSuitableBasketOrCreate(product: ProductInfo, supplier: Supplier?): Basket {
-        val signOfDiv = taskManager.getTaskSettings().signsOfDiv
+    override suspend fun getSuitableBasketOrCreate(
+            product: ProductInfo,
+            supplier: Supplier?,
+            signOfDiv: Set<GoodsSignOfDivision>): Basket {
 
         return withContext(Dispatchers.IO) {
             basketList.lastOrNull { basket ->
