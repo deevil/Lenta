@@ -39,9 +39,9 @@
     <string name="task_settings_task_type_receiver_title">Получатель</string>
 
     <string name="task_settings_properties_tab_title">Свойства</string>
-    <string name="task_settings_properties_piker_storage_title">Склад \nКомплектации</string>
-    <string name="task_settings_properties_shipment_storage_title">Склад \nОтгрузки</string>
-    <string name="task_settings_properties_shipment_date_title">Дата \nОтгрузки</string>
+    <string name="task_settings_properties_piker_storage_title">Склад \nкомплектации</string>
+    <string name="task_settings_properties_shipment_storage_title">Склад \nотгрузки</string>
+    <string name="task_settings_properties_shipment_date_title">Дата \nотгрузки</string>
 
     <string name="task_settings_comments_tab_title">Комментарий</string>
     <string name="task_settings_comments_description_title">Описание</string>
@@ -59,7 +59,8 @@
     <string name="basket">Корзина</string>
     <string name="baskets">Корзины</string>
     <string name="eo">ЕО</string>
-    <string name="boxes">Коробки</string>
+    <string name="boxes">Короба</string>
+    <string name="good_is_not_allowed_in_task_alert_msg">Товар запрещен для добавления в данный тип задания. Добавление товара невозможно.</string>
     <string name="task_save_confirmation_msg">Перевести задание в статус «%1$s» и закрыть его для редактирования?</string>
 
     <string name="process">Обработать</string>
@@ -93,4 +94,5 @@
     <string name="to_process">К обработке</string>
     <string name="tasks_to_move">Задания на перемещение</string>
     <string name="enter_task_num_or_login">Введите номер задания или адресата</string>
+    <string name="alco_good">Алкогольный товар</string>
 </resources>
