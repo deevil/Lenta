@@ -81,16 +81,12 @@ data class TaskCreate(
         removeEmptyGoods()
     }
 
-    private fun removeEmptyGoods() {
-        goods.filter { it.getTotalQuantity() == 0.0 }.let { goodsForRemove ->
-            goodsForRemove.forEach { good ->
-                goods.remove(good)
-            }
-        }
+    fun removeEmptyGoods() {
+        goods.removeAll(goods.filter { it.getTotalQuantity() == 0.0 })
     }
 
-    private fun removeEmptyBaskets() {
-        baskets.removeAll(baskets.filter { getQuantityByBasket(it) == 0.0 })
+    fun removeEmptyBaskets() {
+        baskets.removeAll(baskets.filter { getGoodListByBasket(it).isEmpty() })
     }
 
     fun isExistBasket(basket: Basket): Boolean {

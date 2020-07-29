@@ -216,22 +216,24 @@ class GoodInfoOpenViewModel : CoreViewModel() {
      */
 
     val applyEnabled by lazy {
-        screenStatus.combineLatest(quantity)
-                .combineLatest(isProducerSelected)
-                .combineLatest(isCorrectDate).map {
+        screenStatus.combineLatest(quantity).combineLatest(totalQuantity)
+                .combineLatest(isProducerSelected).combineLatest(isCorrectDate).map {
                     it?.let {
-                        val status = it.first.first.first
-                        val isEnteredQuantity = it.first.first.second > 0.0
+                        val status = it.first.first.first.first
+                        val enteredQuantity = it.first.first.first.second
+                        val totalQuantity = it.first.first.second
                         val isProducerSelected = it.first.second
                         val isDateEntered = it.second
 
+                        val isEnteredMoreThenZero = enteredQuantity > 0.0
+
                         when (status) {
-                            ScreenStatus.COMMON -> isEnteredQuantity
-                            ScreenStatus.ALCOHOL -> isEnteredQuantity && isProducerSelected && isDateEntered
-                            ScreenStatus.MARK_150 -> isEnteredQuantity && isProducerSelected
-                            ScreenStatus.MARK_68 -> isEnteredQuantity && isProducerSelected
-                            ScreenStatus.PART -> isEnteredQuantity && isProducerSelected && isDateEntered
-                            ScreenStatus.BOX -> isEnteredQuantity && isProducerSelected
+                            ScreenStatus.COMMON -> enteredQuantity != 0.0 && totalQuantity > 0.0
+                            ScreenStatus.ALCOHOL -> isEnteredMoreThenZero && isProducerSelected && isDateEntered
+                            ScreenStatus.MARK_150 -> isEnteredMoreThenZero && isProducerSelected
+                            ScreenStatus.MARK_68 -> isEnteredMoreThenZero && isProducerSelected
+                            ScreenStatus.PART -> isEnteredMoreThenZero && isProducerSelected && isDateEntered
+                            ScreenStatus.BOX -> isEnteredMoreThenZero && isProducerSelected
                             else -> false
                         }
                     } ?: false

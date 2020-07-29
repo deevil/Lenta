@@ -93,7 +93,7 @@
 
                     <TextView
                         style="@style/CellTextStyle"
-                        android:text="@{vm.basketQuantity}"
+                        android:text="@{vm.basketQuantityWithUnits}"
                         tools:text="1 шт" />
 
                 </LinearLayout>

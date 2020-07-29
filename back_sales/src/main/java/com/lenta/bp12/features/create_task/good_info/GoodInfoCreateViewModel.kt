@@ -182,18 +182,23 @@ class GoodInfoCreateViewModel : CoreViewModel() {
         good.combineLatest(quantity).combineLatest(isProviderSelected).map {
             it?.let {
                 val good = it.first.first
-                val quantity = it.first.second
+                val enteredQuantity = it.first.second
                 val isProviderSelected = it.second
-
-                val units = good.commonUnits.name
 
                 if (isProviderSelected) {
                     getBasket()?.let { basket ->
-                        "${good.getQuantityByProvider(basket.provider.code).sumWith(quantity).dropZeros()} $units"
-                    } ?: "${quantity.dropZeros()} $units"
-                } else {
-                    "0 $units"
-                }
+                        good.getQuantityByProvider(basket.provider.code).sumWith(enteredQuantity)
+                    } ?: enteredQuantity
+                } else 0.0
+            }
+        }
+    }
+
+    val basketQuantityWithUnits by lazy {
+        good.combineLatest(basketQuantity).map {
+            it?.let {
+                val (good, quantity) = it
+                "${quantity.dropZeros()} ${good.commonUnits.name}"
             }
         }
     }
@@ -308,21 +313,26 @@ class GoodInfoCreateViewModel : CoreViewModel() {
      */
 
     val applyEnabled by lazy {
-        screenStatus.combineLatest(quantity).combineLatest(isProviderSelected).combineLatest(isProducerSelected).combineLatest(isCorrectDate).map {
+        screenStatus.combineLatest(quantity).combineLatest(totalQuantity).combineLatest(basketQuantity)
+                .combineLatest(isProviderSelected).combineLatest(isProducerSelected).combineLatest(isCorrectDate).map {
             it?.let {
-                val status = it.first.first.first.first
-                val isEnteredQuantity = it.first.first.first.second > 0.0
+                val status = it.first.first.first.first.first.first
+                val enteredQuantity = it.first.first.first.first.first.second
+                val totalQuantity = it.first.first.first.first.second
+                val basketQuantity = it.first.first.first.second
                 val isProviderSelected = it.first.first.second
                 val isProducerSelected = it.first.second
                 val isDateEntered = it.second
 
+                val isEnteredMoreThenZero = enteredQuantity > 0.0
+
                 when (status) {
-                    ScreenStatus.COMMON -> isEnteredQuantity && isProviderSelected
-                    ScreenStatus.ALCOHOL -> isEnteredQuantity && isProviderSelected && isProducerSelected && isDateEntered
-                    ScreenStatus.MARK_150 -> isEnteredQuantity && isProviderSelected
-                    ScreenStatus.MARK_68 -> isEnteredQuantity && isProviderSelected && isProducerSelected
-                    ScreenStatus.PART -> isEnteredQuantity && isProviderSelected && isProducerSelected && isDateEntered
-                    ScreenStatus.BOX -> isEnteredQuantity && isProviderSelected && isProducerSelected
+                    ScreenStatus.COMMON -> enteredQuantity != 0.0 && totalQuantity > 0.0 && basketQuantity > 0.0 && isProviderSelected
+                    ScreenStatus.ALCOHOL -> isEnteredMoreThenZero && isProviderSelected && isProducerSelected && isDateEntered
+                    ScreenStatus.MARK_150 -> isEnteredMoreThenZero && isProviderSelected
+                    ScreenStatus.MARK_68 -> isEnteredMoreThenZero && isProviderSelected && isProducerSelected
+                    ScreenStatus.PART -> isEnteredMoreThenZero && isProviderSelected && isProducerSelected && isDateEntered
+                    ScreenStatus.BOX -> isEnteredMoreThenZero && isProviderSelected && isProducerSelected
                     else -> false
                 }
             } ?: false
@@ -807,13 +817,16 @@ class GoodInfoCreateViewModel : CoreViewModel() {
     }
 
     private fun createBasket(changedGood: GoodCreate) {
-        if (getBasket() == null) {
+        val basket = getBasket()
+        if (basket == null) {
             manager.addBasket(Basket(
                     section = changedGood.section,
                     goodType = changedGood.type,
                     control = changedGood.control,
                     provider = getProvider()
             ))
+        } else {
+            manager.updateCurrentBasket(basket)
         }
     }
 
