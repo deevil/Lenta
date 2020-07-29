@@ -66,7 +66,7 @@
                     android:id="@+id/checkBox"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginEnd="20dp"
+                    android:layout_marginEnd="@dimen/size_20dp"
                     android:visibility="@{item.visibilityCheckBoxControl}"
                     android:checked="@{item.checkBoxControl}"
                     android:enabled="false" />

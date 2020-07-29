@@ -246,13 +246,17 @@ class GoodsInfoViewModel : CoreViewModel(), OnPositionClickListener {
             productInfo.value
                     ?.let {
                         if (processGeneralProductService.newProcessGeneralProductService(it) == null) {
-                            screenNavigator.goBack()
-                            screenNavigator.openAlertWrongProductType()
+                            with(screenNavigator) {
+                                goBack()
+                                openAlertWrongProductType()
+                            }
                             return@launchUITryCatch
                         }
                     }.orIfNull {
-                        screenNavigator.goBack()
-                        screenNavigator.openAlertWrongProductType()
+                        with(screenNavigator) {
+                            goBack()
+                            openAlertWrongProductType()
+                        }
                         return@launchUITryCatch
                     }
 
@@ -362,8 +366,10 @@ class GoodsInfoViewModel : CoreViewModel(), OnPositionClickListener {
             tvAccept.value = context.getString(R.string.accept, "${productInfo.value?.purchaseOrderUnits?.name}=${productInfo.value?.quantityInvest?.toDouble().toStringFormatted()} ${productInfo.value?.uom?.name}")
 
             if (processGeneralProductService.newProcessGeneralProductService(productInfo.value!!) == null) {
-                screenNavigator.goBack()
-                screenNavigator.openAlertWrongProductType()
+                with(screenNavigator) {
+                    goBack()
+                    openAlertWrongProductType()
+                }
             }
         }
     }

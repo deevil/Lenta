@@ -262,13 +262,17 @@ class ExciseAlcoBoxAccInfoViewModel : CoreViewModel(), OnPositionClickListener {
             productInfo.value
                     ?.let {
                         if (processExciseAlcoBoxAccService.newProcessExciseAlcoBoxService(it) == null) {
-                            screenNavigator.goBack()
-                            screenNavigator.openAlertWrongProductType()
+                            with(screenNavigator) {
+                                goBack()
+                                openAlertWrongProductType()
+                            }
                             return@launchUITryCatch
                         }
                     }.orIfNull {
-                        screenNavigator.goBack()
-                        screenNavigator.openAlertWrongProductType()
+                        with(screenNavigator) {
+                            goBack()
+                            openAlertWrongProductType()
+                        }
                         return@launchUITryCatch
                     }
 

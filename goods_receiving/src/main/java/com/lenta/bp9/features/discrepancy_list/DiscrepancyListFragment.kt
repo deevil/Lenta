@@ -114,29 +114,24 @@ class DiscrepancyListFragment : CoreFragment<FragmentDiscrepancyListBinding, Dis
                         container,
                         false).let { layoutBinding ->
 
-                    layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
+                    layoutBinding.rvConfig = initRecycleAdapterDataBinding(
                             layoutId = R.layout.item_tile_discrepancy_list_not_processed,
                             itemId = BR.item,
-                            realisation = object : DataBindingAdapter<ItemTileDiscrepancyListNotProcessedBinding> {
-                                override fun onCreate(binding: ItemTileDiscrepancyListNotProcessedBinding) {
-                                }
-
-                                override fun onBind(binding: ItemTileDiscrepancyListNotProcessedBinding, position: Int) {
-                                    notProcessedRecyclerViewKeyHandler?.let {
-                                        binding.root.isSelected = it.isSelected(position)
-                                    }
-                                }
-
-                            },
-                            onItemClickListener = AdapterView.OnItemClickListener { _, _, position, _ ->
+                            onAdapterItemBind = { binding: ItemTileDiscrepancyListNotProcessedBinding, position: Int ->
                                 notProcessedRecyclerViewKeyHandler?.let {
-                                    if (it.isSelected(position)) {
-                                        vm.onClickItemPosition(position)
-                                    } else {
-                                        it.selectPosition(position)
-                                    }
+                                    binding.root.isSelected = it.isSelected(position)
                                 }
-
+                                onAdapterBindHandler(binding, position)
+                            },
+                            onAdapterItemClicked = { position ->
+                                notProcessedRecyclerViewKeyHandler
+                                        ?.let {
+                                            if (it.isSelected(position)) {
+                                                vm.onClickItemPosition(position)
+                                            } else {
+                                                it.selectPosition(position)
+                                            }
+                                        }
                             }
                     )
 
@@ -166,19 +161,14 @@ class DiscrepancyListFragment : CoreFragment<FragmentDiscrepancyListBinding, Dis
                         }
                     }
 
-                    layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
+                    layoutBinding.rvConfig = initRecycleAdapterDataBinding(
                             layoutId = R.layout.item_tile_discrepancy_list_processed,
                             itemId = BR.item,
-                            realisation = object : DataBindingAdapter<ItemTileDiscrepancyListProcessedBinding> {
-                                override fun onCreate(binding: ItemTileDiscrepancyListProcessedBinding) {
-                                }
-
-                                override fun onBind(binding: ItemTileDiscrepancyListProcessedBinding, position: Int) {
-                                    binding.tvItemNumber.tag = position
-                                    binding.tvItemNumber.setOnClickListener(onClickSelectionListener)
-                                    binding.selectedForDelete = vm.processedSelectionsHelper.isSelected(position)
-                                }
-
+                            onAdapterItemBind = { binding: ItemTileDiscrepancyListProcessedBinding, position: Int ->
+                                binding.tvItemNumber.tag = position
+                                binding.tvItemNumber.setOnClickListener(onClickSelectionListener)
+                                binding.selectedForDelete = vm.processedSelectionsHelper.isSelected(position)
+                                onAdapterBindHandler(binding, position)
                             }
                     )
 
@@ -195,29 +185,24 @@ class DiscrepancyListFragment : CoreFragment<FragmentDiscrepancyListBinding, Dis
                         container,
                         false).let { layoutBinding ->
 
-                    layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
+                    layoutBinding.rvConfig = initRecycleAdapterDataBinding(
                             layoutId = R.layout.item_tile_discrepancy_list_control,
                             itemId = BR.item,
-                            realisation = object : DataBindingAdapter<ItemTileDiscrepancyListControlBinding> {
-                                override fun onCreate(binding: ItemTileDiscrepancyListControlBinding) {
-                                }
-
-                                override fun onBind(binding: ItemTileDiscrepancyListControlBinding, position: Int) {
-                                    controlRecyclerViewKeyHandler?.let {
-                                        binding.root.isSelected = it.isSelected(position)
-                                    }
-                                }
-
-                            },
-                            onItemClickListener = AdapterView.OnItemClickListener { _, _, position, _ ->
+                            onAdapterItemBind = { binding: ItemTileDiscrepancyListControlBinding, position: Int ->
                                 controlRecyclerViewKeyHandler?.let {
-                                    if (it.isSelected(position)) {
-                                        vm.onClickItemPosition(position)
-                                    } else {
-                                        it.selectPosition(position)
-                                    }
+                                    binding.root.isSelected = it.isSelected(position)
                                 }
-
+                                onAdapterBindHandler(binding, position)
+                            },
+                            onAdapterItemClicked = { position ->
+                                controlRecyclerViewKeyHandler
+                                        ?.let {
+                                            if (it.isSelected(position)) {
+                                                vm.onClickItemPosition(position)
+                                            } else {
+                                                it.selectPosition(position)
+                                            }
+                                        }
                             }
                     )
 

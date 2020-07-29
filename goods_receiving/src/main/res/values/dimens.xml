@@ -1,5 +1,15 @@
 <resources>
     <dimen name="size_8dp">8dp</dimen>
+    <dimen name="size_10dp">10dp</dimen>
+    <dimen name="size_12dp">12dp</dimen>
+    <dimen name="size_16dp">16dp</dimen>
+    <dimen name="size_20dp">20dp</dimen>
+    <dimen name="size_24dp">24dp</dimen>
+    <dimen name="size_28dp">28dp</dimen>
+    <dimen name="size_32dp">32dp</dimen>
+    <dimen name="tv_product_section_id_30dp">28dp</dimen>
+    <dimen name="spinner_quality_height">32dp</dimen>
+    <dimen name="text_size_12sp">12sp</dimen>
 
     <!-- Две колонки / Тип 1  -->
     <integer name="two_one_1">15</integer>

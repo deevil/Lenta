@@ -9,10 +9,7 @@ import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import com.lenta.bp9.BR
 import com.lenta.bp9.R
-import com.lenta.bp9.databinding.FragmentMercuryListBinding
-import com.lenta.bp9.databinding.ItemTileMercuryListBinding
-import com.lenta.bp9.databinding.LayoutMercuryListTiedBinding
-import com.lenta.bp9.databinding.LayoutMercuryListUntiedBinding
+import com.lenta.bp9.databinding.*
 import com.lenta.bp9.model.task.revise.DeliveryProductDocumentRevise
 import com.lenta.bp9.platform.extentions.getAppComponent
 import com.lenta.shared.platform.activity.OnBackPresserListener
@@ -107,32 +104,28 @@ class MercuryListFragment : CoreFragment<FragmentMercuryListBinding, MercuryList
                             }
                         }
 
-                        layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
+                        layoutBinding.rvConfig = initRecycleAdapterDataBinding(
                                 layoutId = R.layout.item_tile_mercury_list,
                                 itemId = BR.item,
-                                realisation = object : DataBindingAdapter<ItemTileMercuryListBinding> {
-                                    override fun onCreate(binding: ItemTileMercuryListBinding) {
-                                    }
-
-                                    override fun onBind(binding: ItemTileMercuryListBinding, position: Int) {
-                                        binding.tvItemNumber.tag = position
-                                        binding.tvItemNumber.setOnClickListener(onClickSelectionListener)
-                                        binding.selectedForDelete = vm.tiedSelectionsHelper.isSelected(position)
-                                        tiedRecyclerViewKeyHandler?.let {
-                                            binding.root.isSelected = it.isSelected(position)
-                                        }
-                                    }
-
+                                onAdapterItemBind = { binding: ItemTileMercuryListBinding, position: Int ->
+                                    binding.tvItemNumber.tag = position
+                                    binding.tvItemNumber.setOnClickListener(onClickSelectionListener)
+                                    binding.selectedForDelete = vm.tiedSelectionsHelper.isSelected(position)
+                                    tiedRecyclerViewKeyHandler
+                                            ?.let {
+                                                binding.root.isSelected = it.isSelected(position)
+                                            }
+                                    onAdapterBindHandler(binding, position)
                                 },
-                                onItemClickListener = AdapterView.OnItemClickListener { _, _, position, _ ->
-                                    tiedRecyclerViewKeyHandler?.let {
-                                        if (it.isSelected(position)) {
-                                            vm.onClickItemPosition(position)
-                                        } else {
-                                            it.selectPosition(position)
-                                        }
-                                    }
-
+                                onAdapterItemClicked = { position ->
+                                    tiedRecyclerViewKeyHandler
+                                            ?.let {
+                                                if (it.isSelected(position)) {
+                                                    vm.onClickItemPosition(position)
+                                                } else {
+                                                    it.selectPosition(position)
+                                                }
+                                            }
                                 }
                         )
 
@@ -161,32 +154,28 @@ class MercuryListFragment : CoreFragment<FragmentMercuryListBinding, MercuryList
                         }
                     }
 
-                    layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
+                    layoutBinding.rvConfig = initRecycleAdapterDataBinding(
                             layoutId = R.layout.item_tile_mercury_list,
                             itemId = BR.item,
-                            realisation = object : DataBindingAdapter<ItemTileMercuryListBinding> {
-                                override fun onCreate(binding: ItemTileMercuryListBinding) {
-                                }
-
-                                override fun onBind(binding: ItemTileMercuryListBinding, position: Int) {
-                                    binding.tvItemNumber.tag = position
-                                    binding.tvItemNumber.setOnClickListener(onClickSelectionListener)
-                                    binding.selectedForDelete = vm.untiedSelectionsHelper.isSelected(position)
-                                    untiedRecyclerViewKeyHandler?.let {
-                                        binding.root.isSelected = it.isSelected(position)
-                                    }
-                                }
-
+                            onAdapterItemBind = { binding: ItemTileMercuryListBinding, position: Int ->
+                                binding.tvItemNumber.tag = position
+                                binding.tvItemNumber.setOnClickListener(onClickSelectionListener)
+                                binding.selectedForDelete = vm.untiedSelectionsHelper.isSelected(position)
+                                untiedRecyclerViewKeyHandler
+                                        ?.let {
+                                            binding.root.isSelected = it.isSelected(position)
+                                        }
+                                onAdapterBindHandler(binding, position)
                             },
-                            onItemClickListener = AdapterView.OnItemClickListener { _, _, position, _ ->
-                                untiedRecyclerViewKeyHandler?.let {
-                                    if (it.isSelected(position)) {
-                                        vm.onClickItemPosition(position)
-                                    } else {
-                                        it.selectPosition(position)
-                                    }
-                                }
-
+                            onAdapterItemClicked = { position ->
+                                untiedRecyclerViewKeyHandler
+                                        ?.let {
+                                            if (it.isSelected(position)) {
+                                                vm.onClickItemPosition(position)
+                                            } else {
+                                                it.selectPosition(position)
+                                            }
+                                        }
                             }
                     )
 

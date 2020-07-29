@@ -5,6 +5,7 @@ import android.view.View
 import com.lenta.bp9.BR
 import com.lenta.bp9.R
 import com.lenta.bp9.databinding.FragmentInputOutgoingFillingsBinding
+import com.lenta.bp9.databinding.ItemTileGoodsDetailsBinding
 import com.lenta.bp9.databinding.ItemTileInputOutgoingFillingsBinding
 import com.lenta.bp9.platform.extentions.getAppComponent
 import com.lenta.shared.platform.fragment.CoreFragment
@@ -45,18 +46,14 @@ class InputOutgoingFillingsFragment : CoreFragment<FragmentInputOutgoingFillings
 
     private fun initRvConfig() {
         binding?.let { layoutBinding ->
-            layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
+            layoutBinding.rvConfig = initRecycleAdapterDataBinding(
                     layoutId = R.layout.item_tile_input_outgoing_fillings,
                     itemId = BR.item,
-                    realisation = object : DataBindingAdapter<ItemTileInputOutgoingFillingsBinding> {
-                        override fun onCreate(binding: ItemTileInputOutgoingFillingsBinding) {
-                        }
-
-                        override fun onBind(binding: ItemTileInputOutgoingFillingsBinding, position: Int) {
-                        }
-
+                    onAdapterItemBind = { binding: ItemTileInputOutgoingFillingsBinding, position: Int ->
+                        onAdapterBindHandler(binding, position)
                     }
             )
+
             layoutBinding.vm = vm
             layoutBinding.lifecycleOwner = viewLifecycleOwner
         }

@@ -116,16 +116,12 @@ class InvoiceReviseFragment : CoreFragment<FragmentInvoiceReviseBinding, Invoice
                         container,
                         false).let { layoutBinding ->
 
-                    layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
+                    layoutBinding.rvConfig = initRecycleAdapterDataBinding(
                             layoutId = R.layout.item_tile_notes,
                             itemId = BR.item,
-                            realisation = object : DataBindingAdapter<ItemTileNotesBinding> {
-                                override fun onCreate(binding: ItemTileNotesBinding) {
-                                }
-
-                                override fun onBind(binding: ItemTileNotesBinding, position: Int) {
-                                    binding.tvItemNumber.tag = position
-                                }
+                            onAdapterItemBind = { binding: ItemTileNotesBinding, position: Int ->
+                                binding.tvItemNumber.tag = position
+                                onAdapterBindHandler(binding, position)
                             }
                     )
 

@@ -73,16 +73,12 @@ class ProductDocumentsReviseFragment : CoreFragment<FragmentProductDocumentsRevi
                         container,
                         false).let { layoutBinding ->
 
-                    layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
+                    layoutBinding.rvConfig = initRecycleAdapterDataBinding(
                             layoutId = R.layout.item_tile_notifications,
                             itemId = BR.item,
-                            realisation = object : DataBindingAdapter<ItemTileNotificationsBinding> {
-                                override fun onCreate(binding: ItemTileNotificationsBinding) {
-                                }
-
-                                override fun onBind(binding: ItemTileNotificationsBinding, position: Int) {
-                                    binding.tvItemNumber.tag = position
-                                }
+                            onAdapterItemBind = { binding: ItemTileNotificationsBinding, position: Int ->
+                                binding.tvItemNumber.tag = position
+                                onAdapterBindHandler(binding, position)
                             }
                     )
 
@@ -105,32 +101,29 @@ class ProductDocumentsReviseFragment : CoreFragment<FragmentProductDocumentsRevi
                         container,
                         false).let { layoutBinding ->
 
-                    layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
+                    layoutBinding.rvConfig = initRecycleAdapterDataBinding(
                             layoutId = R.layout.item_tile_product_documents,
                             itemId = BR.item,
-                            realisation = object : DataBindingAdapter<ItemTileProductDocumentsBinding> {
-                                override fun onCreate(binding: ItemTileProductDocumentsBinding) {
+                            onAdapterItemBind = { binding: ItemTileProductDocumentsBinding, position: Int ->
+                                binding.tvItemNumber.tag = position
+                                binding.cbChecked.setOnClickListener { view ->
+                                    val cb = view as? CheckBox
+                                    cb?.let { vm.checkedChanged(position, it.isChecked) }
                                 }
-
-                                override fun onBind(binding: ItemTileProductDocumentsBinding, position: Int) {
-                                    binding.tvItemNumber.tag = position
-                                    binding.cbChecked.setOnClickListener { view ->
-                                        val cb = view as? CheckBox
-                                        cb?.let { vm.checkedChanged(position, it.isChecked) }
-                                    }
-                                    checkedRecyclerViewKeyHandler?.let {
-                                        binding.root.isSelected = it.isSelected(position)
-                                    }
-                                }
-                            },
-                            onItemClickListener = AdapterView.OnItemClickListener { _, _, position, _ ->
                                 checkedRecyclerViewKeyHandler?.let {
-                                    if (it.isSelected(position)) {
-                                        vm.onClickCheckedPosition(position)
-                                    } else {
-                                        it.selectPosition(position)
-                                    }
+                                    binding.root.isSelected = it.isSelected(position)
                                 }
+                                onAdapterBindHandler(binding, position)
+                            },
+                            onAdapterItemClicked = { position ->
+                                checkedRecyclerViewKeyHandler
+                                        ?.let {
+                                            if (it.isSelected(position)) {
+                                                vm.onClickCheckedPosition(position)
+                                            } else {
+                                                it.selectPosition(position)
+                                            }
+                                        }
                             }
                     )
 
@@ -154,32 +147,29 @@ class ProductDocumentsReviseFragment : CoreFragment<FragmentProductDocumentsRevi
                         container,
                         false).let { layoutBinding ->
 
-                    layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
+                    layoutBinding.rvConfig = initRecycleAdapterDataBinding(
                             layoutId = R.layout.item_tile_product_documents,
                             itemId = BR.item,
-                            realisation = object : DataBindingAdapter<ItemTileProductDocumentsBinding> {
-                                override fun onCreate(binding: ItemTileProductDocumentsBinding) {
+                            onAdapterItemBind = { binding: ItemTileProductDocumentsBinding, position: Int ->
+                                binding.tvItemNumber.tag = position
+                                binding.cbChecked.setOnClickListener { view ->
+                                    val cb = view as? CheckBox
+                                    cb?.let { vm.checkedChanged(position, it.isChecked) }
                                 }
-
-                                override fun onBind(binding: ItemTileProductDocumentsBinding, position: Int) {
-                                    binding.tvItemNumber.tag = position
-                                    binding.cbChecked.setOnClickListener { view ->
-                                        val cb = view as? CheckBox
-                                        cb?.let { vm.checkedChanged(position, it.isChecked) }
-                                    }
-                                    toCheckRecyclerViewKeyHandler?.let {
-                                        binding.root.isSelected = it.isSelected(position)
-                                    }
-                                }
-                            },
-                            onItemClickListener = AdapterView.OnItemClickListener { _, _, position, _ ->
                                 toCheckRecyclerViewKeyHandler?.let {
-                                    if (it.isSelected(position)) {
-                                        vm.onClickUncheckedPosition(position)
-                                    } else {
-                                        it.selectPosition(position)
-                                    }
+                                    binding.root.isSelected = it.isSelected(position)
                                 }
+                                onAdapterBindHandler(binding, position)
+                            },
+                            onAdapterItemClicked = { position ->
+                                toCheckRecyclerViewKeyHandler
+                                        ?.let {
+                                            if (it.isSelected(position)) {
+                                                vm.onClickUncheckedPosition(position)
+                                            } else {
+                                                it.selectPosition(position)
+                                            }
+                                        }
                             }
                     )
 

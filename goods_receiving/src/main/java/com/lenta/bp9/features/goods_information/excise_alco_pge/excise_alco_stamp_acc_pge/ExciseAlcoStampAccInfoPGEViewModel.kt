@@ -238,13 +238,17 @@ class ExciseAlcoStampAccInfoPGEViewModel : CoreViewModel(), OnPositionClickListe
             productInfo.value
                     ?.let {
                         if (processExciseAlcoStampAccPGEService.newProcessExciseAlcoStampPGEService(it) == null) {
-                            screenNavigator.goBack()
-                            screenNavigator.openAlertWrongProductType()
+                            with(screenNavigator) {
+                                goBack()
+                                openAlertWrongProductType()
+                            }
                             return@launchUITryCatch
                         }
                     }.orIfNull {
-                        screenNavigator.goBack()
-                        screenNavigator.openAlertWrongProductType()
+                        with(screenNavigator) {
+                            goBack()
+                            openAlertWrongProductType()
+                        }
                         return@launchUITryCatch
                     }
 

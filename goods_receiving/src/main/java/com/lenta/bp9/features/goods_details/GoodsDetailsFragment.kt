@@ -7,6 +7,7 @@ import com.lenta.bp9.R
 import com.lenta.bp9.databinding.FragmentGoodsDetailsBinding
 import com.lenta.bp9.databinding.ItemTileGoodsDetailsBinding
 import com.lenta.bp9.databinding.ItemTileGoodsDetailsDelBinding
+import com.lenta.bp9.databinding.ItemTileNonExciseSetsComponentsBinding
 import com.lenta.bp9.model.task.TaskProductInfo
 import com.lenta.bp9.platform.extentions.getAppComponent
 import com.lenta.shared.platform.fragment.CoreFragment
@@ -69,23 +70,19 @@ class GoodsDetailsFragment : CoreFragment<FragmentGoodsDetailsBinding, GoodsDeta
 
     //это view без удаления
     private fun initRvConfig() {
-        binding?.let { layoutBinding ->
-            layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
-                    layoutId = R.layout.item_tile_goods_details,
-                    itemId = BR.item,
-                    realisation = object : DataBindingAdapter<ItemTileGoodsDetailsBinding> {
-                        override fun onCreate(binding: ItemTileGoodsDetailsBinding) {
-                        }
+        binding
+                ?.let { layoutBinding ->
+                    layoutBinding.rvConfig = initRecycleAdapterDataBinding(
+                            layoutId = R.layout.item_tile_goods_details,
+                            itemId = BR.item,
+                            onAdapterItemBind = { binding: ItemTileGoodsDetailsBinding, position: Int ->
+                                onAdapterBindHandler(binding, position)
+                            }
+                    )
 
-                        override fun onBind(binding: ItemTileGoodsDetailsBinding, position: Int) {
-                        }
-
-                    }
-            )
-
-            layoutBinding.vm = vm
-            layoutBinding.lifecycleOwner = viewLifecycleOwner
-        }
+                    layoutBinding.vm = vm
+                    layoutBinding.lifecycleOwner = viewLifecycleOwner
+                }
     }
 
     private fun initRvConfigWithDel() {
@@ -97,19 +94,14 @@ class GoodsDetailsFragment : CoreFragment<FragmentGoodsDetailsBinding, GoodsDeta
                 }
             }
 
-            layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
+            layoutBinding.rvConfig = initRecycleAdapterDataBinding(
                     layoutId = R.layout.item_tile_goods_details_del,
                     itemId = BR.item,
-                    realisation = object : DataBindingAdapter<ItemTileGoodsDetailsDelBinding> {
-                        override fun onCreate(binding: ItemTileGoodsDetailsDelBinding) {
-                        }
-
-                        override fun onBind(binding: ItemTileGoodsDetailsDelBinding, position: Int) {
-                            binding.tvItemNumber.tag = position
-                            binding.tvItemNumber.setOnClickListener(onClickSelectionListener)
-                            binding.selectedForDelete = vm.categoriesSelectionsHelper.isSelected(position)
-                        }
-
+                    onAdapterItemBind = { binding: ItemTileGoodsDetailsDelBinding, position: Int ->
+                        binding.tvItemNumber.tag = position
+                        binding.tvItemNumber.setOnClickListener(onClickSelectionListener)
+                        binding.selectedForDelete = vm.categoriesSelectionsHelper.isSelected(position)
+                        onAdapterBindHandler(binding, position)
                     }
             )
 

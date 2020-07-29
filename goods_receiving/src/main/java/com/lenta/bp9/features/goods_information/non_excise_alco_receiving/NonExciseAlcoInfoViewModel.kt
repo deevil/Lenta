@@ -156,13 +156,17 @@ class NonExciseAlcoInfoViewModel : CoreViewModel(), OnPositionClickListener {
             productInfo.value
                     ?.let {
                         if (processNonExciseAlcoProductService.newProcessNonExciseAlcoProductService(it) == null) {
-                            screenNavigator.goBack()
-                            screenNavigator.openAlertWrongProductType()
+                            with(screenNavigator) {
+                                goBack()
+                                openAlertWrongProductType()
+                            }
                             return@launchUITryCatch
                         }
                     }.orIfNull {
-                        screenNavigator.goBack()
-                        screenNavigator.openAlertWrongProductType()
+                        with(screenNavigator) {
+                            goBack()
+                            openAlertWrongProductType()
+                        }
                         return@launchUITryCatch
                     }
 

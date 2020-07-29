@@ -362,13 +362,17 @@ class MarkingInfoViewModel : CoreViewModel(),
             productInfo.value
                     ?.let {
                         if (processMarkingProductService.newProcessMarkingProductService(it) == null) {
-                            screenNavigator.goBack()
-                            screenNavigator.openAlertWrongProductType()
+                            with(screenNavigator) {
+                                goBack()
+                                openAlertWrongProductType()
+                            }
                             return@launchUITryCatch
                         }
                     }.orIfNull {
-                        screenNavigator.goBack()
-                        screenNavigator.openAlertWrongProductType()
+                        with(screenNavigator) {
+                            goBack()
+                            openAlertWrongProductType()
+                        }
                         return@launchUITryCatch
                     }
 
@@ -426,23 +430,30 @@ class MarkingInfoViewModel : CoreViewModel(),
 
     fun onClickRollback() {
         if (productInfo.value?.isControlGTIN == true) {
-            if (checkBoxGtinControl.value == false && checkBoxGtinStampControl.value == false) {
-                processMarkingProductService.rollbackScannedBlock()
-                processMarkingProductService.rollbackScannedGtin()
-                //уменьшаем кол-во отсканированных марок на единицу в текущей сессии
-                countBlockScanned.value = countBlockScanned.value?.minus(1)
-            } else {
-                if (checkBoxGtinControl.value == true) {
-                    processMarkingProductService.rollbackScannedGtin()
-                    checkBoxGtinControl.value = false
-                }
-                if (checkBoxGtinStampControl.value == true) {
-                    processMarkingProductService.rollbackScannedBlock()
-                    //уменьшаем кол-во отсканированных марок на единицу в текущей сессии
-                    countBlockScanned.value = countBlockScanned.value?.minus(1)
-                }
-            }
-        } else {
+            rollbackControlGtin()
+            return
+        }
+
+        processMarkingProductService.rollbackScannedBlock()
+        //уменьшаем кол-во отсканированных марок на единицу в текущей сессии
+        countBlockScanned.value = countBlockScanned.value?.minus(1)
+    }
+
+    private fun rollbackControlGtin() {
+        if (checkBoxGtinControl.value == false && checkBoxGtinStampControl.value == false) {
+            processMarkingProductService.rollbackScannedBlock()
+            processMarkingProductService.rollbackScannedGtin()
+            //уменьшаем кол-во отсканированных марок на единицу в текущей сессии
+            countBlockScanned.value = countBlockScanned.value?.minus(1)
+            return
+        }
+
+        if (checkBoxGtinControl.value == true) {
+            processMarkingProductService.rollbackScannedGtin()
+            checkBoxGtinControl.value = false
+        }
+
+        if (checkBoxGtinStampControl.value == true) {
             processMarkingProductService.rollbackScannedBlock()
             //уменьшаем кол-во отсканированных марок на единицу в текущей сессии
             countBlockScanned.value = countBlockScanned.value?.minus(1)

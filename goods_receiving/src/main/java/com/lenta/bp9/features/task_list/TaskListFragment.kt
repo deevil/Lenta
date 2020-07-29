@@ -108,27 +108,25 @@ class TaskListFragment : CoreFragment<FragmentTaskListBinding, TaskListViewModel
                         container,
                         false).let { layoutBinding ->
 
-                    layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
+                    layoutBinding.rvConfig = initRecycleAdapterDataBinding(
                             layoutId = R.layout.item_tile_tasks,
                             itemId = BR.item,
-                            realisation = object : DataBindingAdapter<ItemTileTasksBinding> {
-                                override fun onCreate(binding: ItemTileTasksBinding) {
-                                }
-
-                                override fun onBind(binding: ItemTileTasksBinding, position: Int) {
-                                    toProcessRecyclerViewKeyHandler?.let {
-                                        binding.root.isSelected = it.isSelected(position)
-                                    }
-                                }
+                            onAdapterItemBind = { binding: ItemTileTasksBinding, position: Int ->
+                                toProcessRecyclerViewKeyHandler
+                                        ?.let {
+                                            binding.root.isSelected = it.isSelected(position)
+                                        }
+                                onAdapterBindHandler(binding, position)
                             },
-                            onItemClickListener = AdapterView.OnItemClickListener { _, _, position, _ ->
-                                toProcessRecyclerViewKeyHandler?.let {
-                                    if (it.isSelected(position)) {
-                                        vm.onClickItemPosition(position)
-                                    } else {
-                                        it.selectPosition(position)
-                                    }
-                                }
+                            onAdapterItemClicked = { position ->
+                                toProcessRecyclerViewKeyHandler
+                                        ?.let {
+                                            if (it.isSelected(position)) {
+                                                vm.onClickItemPosition(position)
+                                            } else {
+                                                it.selectPosition(position)
+                                            }
+                                        }
                             }
                     )
 
@@ -152,27 +150,25 @@ class TaskListFragment : CoreFragment<FragmentTaskListBinding, TaskListViewModel
                         container,
                         false).let { layoutBinding ->
 
-                    layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
+                    layoutBinding.rvConfig = initRecycleAdapterDataBinding(
                             layoutId = R.layout.item_tile_tasks,
                             itemId = BR.item,
-                            realisation = object : DataBindingAdapter<ItemTileTasksBinding> {
-                                override fun onCreate(binding: ItemTileTasksBinding) {
-                                }
-
-                                override fun onBind(binding: ItemTileTasksBinding, position: Int) {
-                                    searchRecyclerViewKeyHandler?.let {
-                                        binding.root.isSelected = it.isSelected(position)
-                                    }
-                                }
+                            onAdapterItemBind = { binding: ItemTileTasksBinding, position: Int ->
+                                searchRecyclerViewKeyHandler
+                                        ?.let {
+                                            binding.root.isSelected = it.isSelected(position)
+                                        }
+                                onAdapterBindHandler(binding, position)
                             },
-                            onItemClickListener = AdapterView.OnItemClickListener { _, _, position, _ ->
-                                searchRecyclerViewKeyHandler?.let {
-                                    if (it.isSelected(position)) {
-                                        vm.onClickItemPosition(position)
-                                    } else {
-                                        it.selectPosition(position)
-                                    }
-                                }
+                            onAdapterItemClicked = { position ->
+                                searchRecyclerViewKeyHandler
+                                        ?.let {
+                                            if (it.isSelected(position)) {
+                                                vm.onClickItemPosition(position)
+                                            } else {
+                                                it.selectPosition(position)
+                                            }
+                                        }
                             }
                     )
 
@@ -196,27 +192,25 @@ class TaskListFragment : CoreFragment<FragmentTaskListBinding, TaskListViewModel
                         container,
                         false).let { layoutBinding ->
 
-                    layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
+                    layoutBinding.rvConfig = initRecycleAdapterDataBinding(
                             layoutId = R.layout.item_tile_tasks,
                             itemId = BR.item,
-                            realisation = object : DataBindingAdapter<ItemTileTasksBinding> {
-                                override fun onCreate(binding: ItemTileTasksBinding) {
-                                }
-
-                                override fun onBind(binding: ItemTileTasksBinding, position: Int) {
-                                    postponedRecyclerViewKeyHandler?.let {
-                                        binding.root.isSelected = it.isSelected(position)
-                                    }
-                                }
+                            onAdapterItemBind = { binding: ItemTileTasksBinding, position: Int ->
+                                postponedRecyclerViewKeyHandler
+                                        ?.let {
+                                            binding.root.isSelected = it.isSelected(position)
+                                        }
+                                onAdapterBindHandler(binding, position)
                             },
-                            onItemClickListener = AdapterView.OnItemClickListener { _, _, position, _ ->
-                                postponedRecyclerViewKeyHandler?.let {
-                                    if (it.isSelected(position)) {
-                                        vm.onClickItemPosition(position)
-                                    } else {
-                                        it.selectPosition(position)
-                                    }
-                                }
+                            onAdapterItemClicked = { position ->
+                                postponedRecyclerViewKeyHandler
+                                        ?.let {
+                                            if (it.isSelected(position)) {
+                                                vm.onClickItemPosition(position)
+                                            } else {
+                                                it.selectPosition(position)
+                                            }
+                                        }
                             }
                     )
 

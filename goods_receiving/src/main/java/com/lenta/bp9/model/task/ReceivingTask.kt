@@ -30,12 +30,40 @@ class ReceivingTask(val taskHeader: TaskInfo,
         return taskRepository.getProducts().getProducts()
     }
 
+    fun getProcessedProductsDiscrepancies(): List<TaskProductDiscrepancies> {
+        return taskRepository.getProductsDiscrepancies().getProductsDiscrepancies()
+    }
+
     fun getProcessedBatches(): List<TaskBatchInfo> {
         return taskRepository.getBatches().getBatches()
     }
 
+    fun getProcessedBatchesDiscrepancies(): List<TaskBatchesDiscrepancies> {
+        return taskRepository.getBatchesDiscrepancies().getBatchesDiscrepancies()
+    }
+
     fun getProcessedBoxes(): List<TaskBoxInfo> {
         return taskRepository.getBoxes().getBoxes()
+    }
+
+    fun getProcessedBoxesDiscrepancies(): List<TaskBoxDiscrepancies> {
+        return taskRepository.getBoxesDiscrepancies().getBoxesDiscrepancies()
+    }
+
+    fun getProcessedExciseStampsBad(): List<TaskExciseStampBad> {
+        return taskRepository.getExciseStampsBad().getExciseStampsBad()
+    }
+
+    fun getProcessedMercuryDiscrepancies(): List<TaskMercuryDiscrepancies> {
+        return taskRepository.getMercuryDiscrepancies().getMercuryDiscrepancies()
+    }
+
+    fun getProcessedBlocksDiscrepancies(): List<TaskBlockDiscrepancies> {
+        return taskRepository.getBlocksDiscrepancies().getBlocksDiscrepancies()
+    }
+
+    fun getProcessedExciseStampsDiscrepancies(): List<TaskExciseStampDiscrepancies> {
+        return taskRepository.getExciseStampsDiscrepancies().getExciseStampDiscrepancies()
     }
 
     fun getProcessedBlocks(): List<TaskBlockInfo> {

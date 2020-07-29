@@ -85,29 +85,24 @@ class ControlDeliveryCargoUnitsFragment : CoreFragment<FragmentControlDeliveryCa
                             container,
                             false).let { layoutBinding ->
 
-                        layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
+                        layoutBinding.rvConfig = initRecycleAdapterDataBinding(
                                 layoutId = R.layout.item_tile_control_delivery_cu,
                                 itemId = BR.item,
-                                realisation = object : DataBindingAdapter<ItemTileControlDeliveryCuBinding> {
-                                    override fun onCreate(binding: ItemTileControlDeliveryCuBinding) {
-                                    }
-
-                                    override fun onBind(binding: ItemTileControlDeliveryCuBinding, position: Int) {
-                                        notProcessedRecyclerViewKeyHandler?.let {
-                                            binding.root.isSelected = it.isSelected(position)
-                                        }
-                                    }
-
-                                },
-                                onItemClickListener = AdapterView.OnItemClickListener { _, _, position, _ ->
+                                onAdapterItemBind = { binding: ItemTileControlDeliveryCuBinding, position: Int ->
                                     notProcessedRecyclerViewKeyHandler?.let {
-                                        if (it.isSelected(position)) {
-                                            vm.onClickItemPosition(position)
-                                        } else {
-                                            it.selectPosition(position)
-                                        }
+                                        binding.root.isSelected = it.isSelected(position)
                                     }
-
+                                    onAdapterBindHandler(binding, position)
+                                },
+                                onAdapterItemClicked = { position ->
+                                    notProcessedRecyclerViewKeyHandler
+                                            ?.let {
+                                                if (it.isSelected(position)) {
+                                                    vm.onClickItemPosition(position)
+                                                } else {
+                                                    it.selectPosition(position)
+                                                }
+                                            }
                                 }
                         )
 
@@ -129,29 +124,24 @@ class ControlDeliveryCargoUnitsFragment : CoreFragment<FragmentControlDeliveryCa
                         container,
                         false).let { layoutBinding ->
 
-                    layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
+                    layoutBinding.rvConfig = initRecycleAdapterDataBinding(
                             layoutId = R.layout.item_tile_control_delivery_cu,
                             itemId = BR.item,
-                            realisation = object : DataBindingAdapter<ItemTileControlDeliveryCuBinding> {
-                                override fun onCreate(binding: ItemTileControlDeliveryCuBinding) {
-                                }
-
-                                override fun onBind(binding: ItemTileControlDeliveryCuBinding, position: Int) {
-                                    processedRecyclerViewKeyHandler?.let {
-                                        binding.root.isSelected = it.isSelected(position)
-                                    }
-                                }
-
-                            },
-                            onItemClickListener = AdapterView.OnItemClickListener { _, _, position, _ ->
+                            onAdapterItemBind = { binding: ItemTileControlDeliveryCuBinding, position: Int ->
                                 processedRecyclerViewKeyHandler?.let {
-                                    if (it.isSelected(position)) {
-                                        vm.onClickItemPosition(position)
-                                    } else {
-                                        it.selectPosition(position)
-                                    }
+                                    binding.root.isSelected = it.isSelected(position)
                                 }
-
+                                onAdapterBindHandler(binding, position)
+                            },
+                            onAdapterItemClicked = { position ->
+                                processedRecyclerViewKeyHandler
+                                        ?.let {
+                                            if (it.isSelected(position)) {
+                                                vm.onClickItemPosition(position)
+                                            } else {
+                                                it.selectPosition(position)
+                                            }
+                                        }
                             }
                     )
 
@@ -175,29 +165,24 @@ class ControlDeliveryCargoUnitsFragment : CoreFragment<FragmentControlDeliveryCa
                             container,
                             false).let { layoutBinding ->
 
-                        layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
+                        layoutBinding.rvConfig = initRecycleAdapterDataBinding(
                                 layoutId = R.layout.item_tile_control_delivery_cu,
                                 itemId = BR.item,
-                                realisation = object : DataBindingAdapter<ItemTileControlDeliveryCuBinding> {
-                                    override fun onCreate(binding: ItemTileControlDeliveryCuBinding) {
-                                    }
-
-                                    override fun onBind(binding: ItemTileControlDeliveryCuBinding, position: Int) {
-                                        notProcessedRecyclerViewKeyHandler?.let {
-                                            binding.root.isSelected = it.isSelected(position)
-                                        }
-                                    }
-
-                                },
-                                onItemClickListener = AdapterView.OnItemClickListener { _, _, position, _ ->
+                                onAdapterItemBind = { binding: ItemTileControlDeliveryCuBinding, position: Int ->
                                     notProcessedRecyclerViewKeyHandler?.let {
-                                        if (it.isSelected(position)) {
-                                            vm.onClickItemPosition(position)
-                                        } else {
-                                            it.selectPosition(position)
-                                        }
+                                        binding.root.isSelected = it.isSelected(position)
                                     }
-
+                                    onAdapterBindHandler(binding, position)
+                                },
+                                onAdapterItemClicked = { position ->
+                                    notProcessedRecyclerViewKeyHandler
+                                            ?.let {
+                                                if (it.isSelected(position)) {
+                                                    vm.onClickItemPosition(position)
+                                                } else {
+                                                    it.selectPosition(position)
+                                                }
+                                            }
                                 }
                         )
 
@@ -219,29 +204,24 @@ class ControlDeliveryCargoUnitsFragment : CoreFragment<FragmentControlDeliveryCa
                         container,
                         false).let { layoutBinding ->
 
-                    layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
+                    layoutBinding.rvConfig = initRecycleAdapterDataBinding(
                             layoutId = R.layout.item_tile_control_delivery_cu,
                             itemId = BR.item,
-                            realisation = object : DataBindingAdapter<ItemTileControlDeliveryCuBinding> {
-                                override fun onCreate(binding: ItemTileControlDeliveryCuBinding) {
-                                }
-
-                                override fun onBind(binding: ItemTileControlDeliveryCuBinding, position: Int) {
-                                    processedRecyclerViewKeyHandler?.let {
-                                        binding.root.isSelected = it.isSelected(position)
-                                    }
-                                }
-
-                            },
-                            onItemClickListener = AdapterView.OnItemClickListener { _, _, position, _ ->
+                            onAdapterItemBind = { binding: ItemTileControlDeliveryCuBinding, position: Int ->
                                 processedRecyclerViewKeyHandler?.let {
-                                    if (it.isSelected(position)) {
-                                        vm.onClickItemPosition(position)
-                                    } else {
-                                        it.selectPosition(position)
-                                    }
+                                    binding.root.isSelected = it.isSelected(position)
                                 }
-
+                                onAdapterBindHandler(binding, position)
+                            },
+                            onAdapterItemClicked = { position ->
+                                processedRecyclerViewKeyHandler
+                                        ?.let {
+                                            if (it.isSelected(position)) {
+                                                vm.onClickItemPosition(position)
+                                            } else {
+                                                it.selectPosition(position)
+                                            }
+                                        }
                             }
                     )
 
@@ -272,32 +252,27 @@ class ControlDeliveryCargoUnitsFragment : CoreFragment<FragmentControlDeliveryCa
                             }
                         }
 
-                        layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
+                        layoutBinding.rvConfig = initRecycleAdapterDataBinding(
                                 layoutId = R.layout.item_tile_control_delivery_shipment_cu,
                                 itemId = BR.item,
-                                realisation = object : DataBindingAdapter<ItemTileControlDeliveryShipmentCuBinding> {
-                                    override fun onCreate(binding: ItemTileControlDeliveryShipmentCuBinding) {
-                                    }
-
-                                    override fun onBind(binding: ItemTileControlDeliveryShipmentCuBinding, position: Int) {
-                                        binding.tvItemNumber.tag = position
-                                        binding.tvItemNumber.setOnClickListener(onClickSelectionListener)
-                                        binding.selectedForDelete = vm.notProcessedSelectionsHelper.isSelected(position)
-                                        notProcessedRecyclerViewKeyHandler?.let {
-                                            binding.root.isSelected = it.isSelected(position)
-                                        }
-                                    }
-
-                                },
-                                onItemClickListener = AdapterView.OnItemClickListener { _, _, position, _ ->
+                                onAdapterItemBind = { binding: ItemTileControlDeliveryShipmentCuBinding, position: Int ->
+                                    binding.tvItemNumber.tag = position
+                                    binding.tvItemNumber.setOnClickListener(onClickSelectionListener)
+                                    binding.selectedForDelete = vm.notProcessedSelectionsHelper.isSelected(position)
                                     notProcessedRecyclerViewKeyHandler?.let {
-                                        if (it.isSelected(position)) {
-                                            vm.onClickItemPosition(position)
-                                        } else {
-                                            it.selectPosition(position)
-                                        }
+                                        binding.root.isSelected = it.isSelected(position)
                                     }
-
+                                    onAdapterBindHandler(binding, position)
+                                },
+                                onAdapterItemClicked = { position ->
+                                    notProcessedRecyclerViewKeyHandler
+                                            ?.let {
+                                                if (it.isSelected(position)) {
+                                                    vm.onClickItemPosition(position)
+                                                } else {
+                                                    it.selectPosition(position)
+                                                }
+                                            }
                                 }
                         )
 
@@ -319,29 +294,24 @@ class ControlDeliveryCargoUnitsFragment : CoreFragment<FragmentControlDeliveryCa
                         container,
                         false).let { layoutBinding ->
 
-                    layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
+                    layoutBinding.rvConfig = initRecycleAdapterDataBinding(
                             layoutId = R.layout.item_tile_control_delivery_cu,
                             itemId = BR.item,
-                            realisation = object : DataBindingAdapter<ItemTileControlDeliveryCuBinding> {
-                                override fun onCreate(binding: ItemTileControlDeliveryCuBinding) {
-                                }
-
-                                override fun onBind(binding: ItemTileControlDeliveryCuBinding, position: Int) {
-                                    processedRecyclerViewKeyHandler?.let {
-                                        binding.root.isSelected = it.isSelected(position)
-                                    }
-                                }
-
-                            },
-                            onItemClickListener = AdapterView.OnItemClickListener { _, _, position, _ ->
+                            onAdapterItemBind = { binding: ItemTileControlDeliveryCuBinding, position: Int ->
                                 processedRecyclerViewKeyHandler?.let {
-                                    if (it.isSelected(position)) {
-                                        vm.onClickItemPosition(position)
-                                    } else {
-                                        it.selectPosition(position)
-                                    }
+                                    binding.root.isSelected = it.isSelected(position)
                                 }
-
+                                onAdapterBindHandler(binding, position)
+                            },
+                            onAdapterItemClicked = { position ->
+                                processedRecyclerViewKeyHandler
+                                        ?.let {
+                                            if (it.isSelected(position)) {
+                                                vm.onClickItemPosition(position)
+                                            } else {
+                                                it.selectPosition(position)
+                                            }
+                                        }
                             }
                     )
 

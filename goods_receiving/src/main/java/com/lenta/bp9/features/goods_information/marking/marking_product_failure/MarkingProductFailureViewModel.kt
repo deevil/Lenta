@@ -13,6 +13,7 @@ import com.lenta.bp9.requests.network.RejectNetRequest
 import com.lenta.bp9.requests.network.RejectRequestParameters
 import com.lenta.bp9.requests.network.RejectRequestResult
 import com.lenta.shared.platform.viewmodel.CoreViewModel
+import com.lenta.shared.utilities.extentions.asyncLiveData
 import com.lenta.shared.utilities.extentions.getDeviceIp
 import com.lenta.shared.utilities.extentions.launchUITryCatch
 import com.lenta.shared.utilities.extentions.toStringFormatted
@@ -100,13 +101,17 @@ class MarkingProductFailureViewModel : CoreViewModel() {
             productInfo.value
                     ?.let {
                         if (processMarkingProductService.newProcessMarkingProductService(it) == null) {
-                            screenNavigator.goBack()
-                            screenNavigator.openAlertWrongProductType()
+                            with(screenNavigator) {
+                                goBack()
+                                openAlertWrongProductType()
+                            }
                             return@launchUITryCatch
                         }
                     }.orIfNull {
-                        screenNavigator.goBack()
-                        screenNavigator.openAlertWrongProductType()
+                        with(screenNavigator) {
+                            goBack()
+                            openAlertWrongProductType()
+                        }
                         return@launchUITryCatch
                     }
 

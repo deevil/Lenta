@@ -141,32 +141,28 @@ class NonExciseSetsPGEFragment : CoreFragment<FragmentNonExciseSetsPgeBinding, N
                                 }
                             }
 
-                            layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
+                            layoutBinding.rvConfig = initRecycleAdapterDataBinding(
                                     layoutId = R.layout.item_tile_non_excise_sets_components,
                                     itemId = BR.item,
-                                    realisation = object : DataBindingAdapter<ItemTileNonExciseSetsComponentsBinding> {
-                                        override fun onCreate(binding: ItemTileNonExciseSetsComponentsBinding) {
-                                        }
-
-                                        override fun onBind(binding: ItemTileNonExciseSetsComponentsBinding, position: Int) {
-                                            binding.tvItemNumber.tag = position
-                                            binding.tvItemNumber.setOnClickListener(onClickSelectionListener)
-                                            binding.selectedForDelete = vm.componentsSelectionsHelper.isSelected(position)
-                                            componentsRecyclerViewKeyHandler?.let {
-                                                binding.root.isSelected = it.isSelected(position)
-                                            }
-                                        }
-
+                                    onAdapterItemBind = { binding: ItemTileNonExciseSetsComponentsBinding, position: Int ->
+                                        binding.tvItemNumber.tag = position
+                                        binding.tvItemNumber.setOnClickListener(onClickSelectionListener)
+                                        binding.selectedForDelete = vm.componentsSelectionsHelper.isSelected(position)
+                                        componentsRecyclerViewKeyHandler
+                                                ?.let {
+                                                    binding.root.isSelected = it.isSelected(position)
+                                                }
+                                        onAdapterBindHandler(binding, position)
                                     },
-                                    onItemClickListener = AdapterView.OnItemClickListener { _, _, position, _ ->
-                                        componentsRecyclerViewKeyHandler?.let {
-                                            if (it.isSelected(position)) {
-                                                vm.onClickItemPosition(position)
-                                            } else {
-                                                it.selectPosition(position)
-                                            }
-                                        }
-
+                                    onAdapterItemClicked = { position ->
+                                        componentsRecyclerViewKeyHandler
+                                                ?.let {
+                                                    if (it.isSelected(position)) {
+                                                        vm.onClickItemPosition(position)
+                                                    } else {
+                                                        it.selectPosition(position)
+                                                    }
+                                                }
                                     }
                             )
 

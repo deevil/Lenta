@@ -1,17 +1,20 @@
 package com.lenta.bp9.model.task
 
+private const val MARK_TYPE_TOBACCO = "TOBACCO"
+private const val MARK_TYPE_SHOES = "SHOES"
 enum class MarkType(val markTypeString: String) {
     None(""),
     /** TOBACCO*/
-    Tobacco("TOBACCO"),
+    Tobacco(MARK_TYPE_TOBACCO),
     /** SHOES*/
-    Shoes("SHOES");
+    Shoes(MARK_TYPE_SHOES);
 
     companion object {
+
         fun from(markTypeString: String): MarkType {
             return when(markTypeString) {
-                "TOBACCO" -> Tobacco
-                "SHOES" -> Shoes
+                MARK_TYPE_TOBACCO -> Tobacco
+                MARK_TYPE_SHOES -> Shoes
                 else -> None
             }
         }
@@ -20,8 +23,8 @@ enum class MarkType(val markTypeString: String) {
 
 fun getMarkType(code: String): MarkType {
     return when (code) {
-        "TOBACCO" -> MarkType.Tobacco
-        "SHOES" -> MarkType.Shoes
+        MARK_TYPE_TOBACCO -> MarkType.Tobacco
+        MARK_TYPE_SHOES -> MarkType.Shoes
         else -> MarkType.None
     }
 }

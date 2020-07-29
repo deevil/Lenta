@@ -152,13 +152,17 @@ class NonExciseSetsPGEViewModel : CoreViewModel(),
             productInfo.value
                     ?.let {
                         if (processNonExciseSetsPGEProductService.newProcessNonExciseSetsPGEProductService(it) == null) {
-                            screenNavigator.goBack()
-                            screenNavigator.openAlertWrongProductType()
+                            with(screenNavigator) {
+                                goBack()
+                                openAlertWrongProductType()
+                            }
                             return@launchUITryCatch
                         }
                     }.orIfNull {
-                        screenNavigator.goBack()
-                        screenNavigator.openAlertWrongProductType()
+                        with(screenNavigator) {
+                            goBack()
+                            openAlertWrongProductType()
+                        }
                         return@launchUITryCatch
                     }
 

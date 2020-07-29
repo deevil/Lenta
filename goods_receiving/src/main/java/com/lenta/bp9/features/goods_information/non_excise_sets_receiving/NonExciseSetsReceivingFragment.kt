@@ -10,10 +10,7 @@ import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import com.lenta.bp9.BR
 import com.lenta.bp9.R
-import com.lenta.bp9.databinding.FragmentNonExciseSetsReceivingBinding
-import com.lenta.bp9.databinding.ItemTileNonExciseSetsComponentsBinding
-import com.lenta.bp9.databinding.LayoutNonExciseSetsComponentsReceivingBinding
-import com.lenta.bp9.databinding.LayoutNonExciseSetsCountedReceivingBinding
+import com.lenta.bp9.databinding.*
 import com.lenta.bp9.model.task.TaskProductInfo
 import com.lenta.bp9.platform.extentions.getAppComponent
 import com.lenta.shared.platform.activity.OnBackPresserListener
@@ -23,8 +20,6 @@ import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListener
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
 import com.lenta.shared.scan.OnScanResultListener
-import com.lenta.shared.utilities.databinding.DataBindingAdapter
-import com.lenta.shared.utilities.databinding.DataBindingRecyclerViewConfig
 import com.lenta.shared.utilities.databinding.RecyclerViewKeyHandler
 import com.lenta.shared.utilities.databinding.ViewPagerSettings
 import com.lenta.shared.utilities.extentions.connectLiveData
@@ -141,32 +136,28 @@ class NonExciseSetsReceivingFragment : CoreFragment<FragmentNonExciseSetsReceivi
                                 }
                             }
 
-                            layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
+                            layoutBinding.rvConfig = initRecycleAdapterDataBinding(
                                     layoutId = R.layout.item_tile_non_excise_sets_components,
                                     itemId = BR.item,
-                                    realisation = object : DataBindingAdapter<ItemTileNonExciseSetsComponentsBinding> {
-                                        override fun onCreate(binding: ItemTileNonExciseSetsComponentsBinding) {
-                                        }
-
-                                        override fun onBind(binding: ItemTileNonExciseSetsComponentsBinding, position: Int) {
-                                            binding.tvItemNumber.tag = position
-                                            binding.tvItemNumber.setOnClickListener(onClickSelectionListener)
-                                            binding.selectedForDelete = vm.componentsSelectionsHelper.isSelected(position)
-                                            componentsRecyclerViewKeyHandler?.let {
-                                                binding.root.isSelected = it.isSelected(position)
-                                            }
-                                        }
-
+                                    onAdapterItemBind = { binding: ItemTileNonExciseSetsComponentsBinding, position: Int ->
+                                        binding.tvItemNumber.tag = position
+                                        binding.tvItemNumber.setOnClickListener(onClickSelectionListener)
+                                        binding.selectedForDelete = vm.componentsSelectionsHelper.isSelected(position)
+                                        componentsRecyclerViewKeyHandler
+                                                ?.let {
+                                                    binding.root.isSelected = it.isSelected(position)
+                                                }
+                                        onAdapterBindHandler(binding, position)
                                     },
-                                    onItemClickListener = AdapterView.OnItemClickListener { _, _, position, _ ->
-                                        componentsRecyclerViewKeyHandler?.let {
-                                            if (it.isSelected(position)) {
-                                                vm.onClickItemPosition(position)
-                                            } else {
-                                                it.selectPosition(position)
-                                            }
-                                        }
-
+                                    onAdapterItemClicked = { position ->
+                                        componentsRecyclerViewKeyHandler
+                                                ?.let {
+                                                    if (it.isSelected(position)) {
+                                                        vm.onClickItemPosition(position)
+                                                    } else {
+                                                        it.selectPosition(position)
+                                                    }
+                                                }
                                     }
                             )
 

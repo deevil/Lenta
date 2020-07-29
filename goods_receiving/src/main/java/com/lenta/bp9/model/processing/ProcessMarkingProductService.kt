@@ -29,30 +29,31 @@ class ProcessMarkingProductService
         this.productInfo = productInfo.copy()
     }
 
-    fun newProcessMarkingProductService(productInfo: TaskProductInfo): ProcessMarkingProductService? {
-        return if (productInfo.type == ProductType.General) {
-            this.productInfo = productInfo.copy()
-            isBlockMode =
-                    (this.productInfo.purchaseOrderUnits.code == "ST"
-                            || this.productInfo.purchaseOrderUnits.code == "P09")
-                            && this.productInfo.isCountingBoxes == false
-            currentGtin.clear()
-            blocks.clear()
-            taskManager.getReceivingTask()
-                    ?.getProcessedBlocks()
-                    ?.map {
-                        blocks.add(it.copy())
-                    }
-            currentBlocksDiscrepancies.clear()
-            taskManager.getReceivingTask()
-                    ?.taskRepository
-                    ?.getBlocksDiscrepancies()
-                    ?.findBlocksDiscrepanciesOfProduct(productInfo)
-                    ?.map {
-                        currentBlocksDiscrepancies.add(it.copy())
-                    }
-            this
-        } else null
+    fun newProcessMarkingProductService(inputProductInfo: TaskProductInfo): ProcessMarkingProductService? {
+        return this
+                .takeIf { inputProductInfo.type == ProductType.General }
+                ?.apply {
+                    this.productInfo = inputProductInfo.copy()
+                    isBlockMode =
+                            (this.productInfo.purchaseOrderUnits.code == UNIT_ST
+                                    || this.productInfo.purchaseOrderUnits.code == UNIT_P09)
+                                    && this.productInfo.isCountingBoxes == false
+                    currentGtin.clear()
+                    blocks.clear()
+                    taskManager.getReceivingTask()
+                            ?.getProcessedBlocks()
+                            ?.map {
+                                blocks.add(it.copy())
+                            }
+                    currentBlocksDiscrepancies.clear()
+                    taskManager.getReceivingTask()
+                            ?.taskRepository
+                            ?.getBlocksDiscrepancies()
+                            ?.findBlocksDiscrepanciesOfProduct(productInfo)
+                            ?.map {
+                                currentBlocksDiscrepancies.add(it.copy())
+                            }
+                }
     }
 
     fun apply() {
@@ -144,9 +145,11 @@ class ProcessMarkingProductService
 
     fun addGtin(gtinCode: String) {
         var index = -1
-        for (i in currentGtin.indices) {
+        val currentGtinIndecis = currentGtin.indices
+        for (i in currentGtinIndecis) {
             if (gtinCode == currentGtin[i]) {
                 index = i
+                break
             }
         }
 
@@ -334,17 +337,22 @@ class ProcessMarkingProductService
         blocks.clear()
         taskManager.getReceivingTask()
                 ?.getProcessedBlocks()
-                ?.map {
-                    blocks.add(it.copy())
+                ?.mapTo(blocks) {
+                    it.copy()
                 }
         currentBlocksDiscrepancies.clear()
         taskManager.getReceivingTask()
                 ?.taskRepository
                 ?.getBlocksDiscrepancies()
                 ?.findBlocksDiscrepanciesOfProduct(productInfo)
-                ?.map {
-                    currentBlocksDiscrepancies.add(it.copy())
+                ?.mapTo(currentBlocksDiscrepancies) {
+                    it.copy()
                 }
+    }
+
+    companion object {
+        private const val UNIT_ST = "ST"
+        private const val UNIT_P09 = "P09"
     }
 
 }

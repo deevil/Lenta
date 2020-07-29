@@ -80,16 +80,11 @@ class MarkingGoodsDetailsFragment : CoreFragment<FragmentMarkingGoodsDetailsBind
                         container,
                         false).let { layoutBinding ->
 
-                    layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
+                    layoutBinding.rvConfig = initRecycleAdapterDataBinding(
                             layoutId = R.layout.item_tile_marking_goods_details_properties,
                             itemId = BR.item,
-                            realisation = object : DataBindingAdapter<ItemTileMarkingGoodsDetailsPropertiesBinding> {
-                                override fun onCreate(binding: ItemTileMarkingGoodsDetailsPropertiesBinding) {
-                                }
-
-                                override fun onBind(binding: ItemTileMarkingGoodsDetailsPropertiesBinding, position: Int) {
-                                }
-
+                            onAdapterItemBind = { binding: ItemTileMarkingGoodsDetailsPropertiesBinding, position: Int ->
+                                onAdapterBindHandler(binding, position)
                             }
                     )
 
@@ -113,19 +108,14 @@ class MarkingGoodsDetailsFragment : CoreFragment<FragmentMarkingGoodsDetailsBind
                         }
                     }
 
-                    layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
+                    layoutBinding.rvConfig = initRecycleAdapterDataBinding(
                             layoutId = R.layout.item_tile_goods_details_del,
                             itemId = BR.item,
-                            realisation = object : DataBindingAdapter<ItemTileGoodsDetailsDelBinding> {
-                                override fun onCreate(binding: ItemTileGoodsDetailsDelBinding) {
-                                }
-
-                                override fun onBind(binding: ItemTileGoodsDetailsDelBinding, position: Int) {
-                                    binding.tvItemNumber.tag = position
-                                    binding.tvItemNumber.setOnClickListener(onClickSelectionListener)
-                                    binding.selectedForDelete = vm.categoriesSelectionsHelper.isSelected(position)
-                                }
-
+                            onAdapterItemBind = { binding: ItemTileFormedDocsBinding, position: Int ->
+                                binding.tvItemNumber.tag = position
+                                binding.tvItemNumber.setOnClickListener(onClickSelectionListener)
+                                binding.selectedForDelete = vm.categoriesSelectionsHelper.isSelected(position)
+                                onAdapterBindHandler(binding, position)
                             }
                     )
 

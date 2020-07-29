@@ -229,16 +229,12 @@ class TaskCardFragment : CoreFragment<FragmentTaskCardBinding, TaskCardViewModel
                         container,
                         false).let { layoutBinding ->
 
-                    layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
+                    layoutBinding.rvConfig = initRecycleAdapterDataBinding(
                             layoutId = R.layout.item_tile_notifications,
                             itemId = BR.item,
-                            realisation = object : DataBindingAdapter<ItemTileNotificationsBinding> {
-                                override fun onCreate(binding: ItemTileNotificationsBinding) {
-                                }
-
-                                override fun onBind(binding: ItemTileNotificationsBinding, position: Int) {
-                                    binding.tvItemNumber.tag = position
-                                }
+                            onAdapterItemBind = { binding: ItemTileNotificationsBinding, position: Int ->
+                                binding.tvItemNumber.tag = position
+                                onAdapterBindHandler(binding, position)
                             }
                     )
 
