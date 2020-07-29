@@ -112,17 +112,17 @@ class BasketGoodListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
     }
 
     fun onClickDelete() {
-        val materialList = mutableListOf<String>()
-        selectionsHelper.selectedPositions.value?.map { position ->
+        val materials = mutableListOf<String>()
+        selectionsHelper.selectedPositions.value?.forEach { position ->
             goods.value?.get(position)?.material?.let {
-                materialList.add(it)
+                materials.add(it)
             }
         }
 
         selectionsHelper.clearPositions()
 
         basket.value?.let { basket ->
-            manager.removeGoodByBasketAndMaterials(basket, materialList)
+            manager.removeGoodByBasketAndMaterials(basket, materials)
             manager.updateCurrentBasket(manager.currentBasket.value)
 
             task.value?.let { task ->

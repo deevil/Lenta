@@ -103,6 +103,7 @@ class DiscrepancyListViewModel : CoreViewModel() {
                 }
             }
 
+            selectionsHelper.clearPositions()
             manager.updateCurrentTask(task)
         }
     }
@@ -117,6 +118,7 @@ class DiscrepancyListViewModel : CoreViewModel() {
                 }
             }
 
+            selectionsHelper.clearPositions()
             manager.updateCurrentTask(task)
         }
     }

@@ -170,28 +170,24 @@ class GoodListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
             when (page) {
                 0 -> {
                     val materials = mutableListOf<String>()
-                    with(processingSelectionsHelper) {
-                        selectedPositions.value?.forEach { position ->
-                            processing.value?.get(position)?.let { item ->
-                                materials.add(item.material)
-                                remove(position)
-                            }
+                    processingSelectionsHelper.selectedPositions.value?.forEach { position ->
+                        processing.value?.get(position)?.let { item ->
+                            materials.add(item.material)
                         }
                     }
 
+                    processingSelectionsHelper.clearPositions()
                     manager.markGoodsDeleted(materials)
                 }
                 1 -> {
                     val materials = mutableListOf<String>()
-                    with(processedSelectionsHelper) {
-                        selectedPositions.value?.forEach { position ->
-                            processed.value?.get(position)?.let { item ->
-                                materials.add(item.material)
-                                remove(position)
-                            }
+                    processedSelectionsHelper.selectedPositions.value?.forEach { position ->
+                        processed.value?.get(position)?.let { item ->
+                            materials.add(item.material)
                         }
                     }
 
+                    processedSelectionsHelper.clearPositions()
                     manager.markGoodsUncounted(materials)
                 }
                 else -> throw IllegalArgumentException("Wrong pager position!")

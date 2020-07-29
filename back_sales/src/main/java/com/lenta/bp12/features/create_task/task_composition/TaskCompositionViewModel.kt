@@ -153,7 +153,7 @@ class TaskCompositionViewModel : CoreViewModel(), PageSelectionListener, OnOkInS
             when (page) {
                 0 -> {
                     val materialList = mutableListOf<String>()
-                    goodSelectionsHelper.selectedPositions.value?.map { position ->
+                    goodSelectionsHelper.selectedPositions.value?.forEach { position ->
                         goods.value?.get(position)?.material?.let {
                             materialList.add(it)
                         }
@@ -164,7 +164,7 @@ class TaskCompositionViewModel : CoreViewModel(), PageSelectionListener, OnOkInS
                 }
                 1 -> {
                     val basketList = mutableListOf<Basket>()
-                    basketSelectionsHelper.selectedPositions.value?.map { position ->
+                    basketSelectionsHelper.selectedPositions.value?.forEach { position ->
                         baskets.value?.get(position)?.basket?.let {
                             basketList.add(it)
                         }

@@ -124,7 +124,7 @@ class GoodDetailsCreateViewModel : CoreViewModel(), PageSelectionListener {
             when (page) {
                 0 -> {
                     val basketList = mutableListOf<Basket>()
-                    basketSelectionsHelper.selectedPositions.value?.map { position ->
+                    basketSelectionsHelper.selectedPositions.value?.forEach { position ->
                         baskets.value?.get(position)?.basket?.let {
                             basketList.add(it)
                         }
@@ -135,7 +135,7 @@ class GoodDetailsCreateViewModel : CoreViewModel(), PageSelectionListener {
                 }
                 1 -> {
                     good.value?.let { changedGood ->
-                        categorySelectionsHelper.selectedPositions.value?.map { position ->
+                        categorySelectionsHelper.selectedPositions.value?.forEach { position ->
                             categories.value?.get(position)?.type?.let { category ->
                                 when (category) {
                                     CategoryType.MARK.description -> changedGood.removeAllMark()
@@ -144,6 +144,7 @@ class GoodDetailsCreateViewModel : CoreViewModel(), PageSelectionListener {
                             }
                         }
 
+                        categorySelectionsHelper.clearPositions()
                         manager.updateCurrentGood(changedGood)
                         manager.saveGoodInTask(changedGood)
                     }
