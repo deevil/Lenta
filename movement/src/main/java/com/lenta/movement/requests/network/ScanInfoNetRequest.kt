@@ -15,6 +15,7 @@ import com.lenta.shared.models.core.getProductType
 import com.lenta.shared.requests.FmpRequestsHelper
 import com.lenta.shared.utilities.extentions.isSapTrue
 import com.mobrun.plugin.api.HyperHive
+import java.util.*
 import javax.inject.Inject
 
 class ScanInfoNetRequest @Inject constructor(
@@ -58,7 +59,7 @@ private fun ScanInfoResult.getProductInfo(uomInfo: ZmpUtz07V001.ItemLocal_ET_UOM
     return ProductInfo(
         materialNumber = material.material,
         description = material.name,
-        uom = Uom(code = uomInfo.uom, name = uomInfo.name),
+        uom = Uom(code = uomInfo.uom, name = uomInfo.name.toLowerCase(Locale.getDefault())),
         type = getProductType(
             isAlco = material.isAlco.isNotEmpty(),
             isExcise = material.isExcise.isNotEmpty()

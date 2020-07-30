@@ -207,11 +207,11 @@ class ScreenNavigator(
                 )
             }
     }
-    override fun openStampWasAddedDialogInAnotherBox() {
+    override fun openStampWasAddedDialogInAnotherBox(box: ExciseBox) {
             runOrPostpone {
                 getFragmentStack()?.push(
                         fragment = AlertFragment.create(
-                                message = context.getString(R.string.stamp_was_added_to_box_msg),
+                                message = context.getString(R.string.stamp_was_added_to_box_msg, box.code),
                                 iconRes = R.drawable.ic_warning_red_80dp,
                                 pageNumber = OPEN_BOX_REWRITE_DIALOG_PAGE_NUMBER,
                                 leftButtonDecorationInfo = ButtonDecorationInfo.back
@@ -450,7 +450,7 @@ interface IScreenNavigator : ICoreNavigator {
 
     fun openStampMaxCountDialog()
     fun openStampWasAddedDialog(yesCallbackFunc: () -> Unit)
-    fun openStampWasAddedDialogInAnotherBox()
+    fun openStampWasAddedDialogInAnotherBox(box: ExciseBox)
 
     fun openEanInvalidDialog()
 

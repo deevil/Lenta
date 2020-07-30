@@ -12,7 +12,6 @@ import com.lenta.movement.databinding.LayoutItemSimpleBinding
 import com.lenta.movement.databinding.LayoutTaskGoodsBucketsTabBinding
 import com.lenta.movement.databinding.LayoutTaskGoodsProcessedTabBinding
 import com.lenta.movement.platform.extensions.getAppComponent
-import com.lenta.movement.view.simpleListRecyclerViewConfig
 import com.lenta.shared.keys.KeyCode
 import com.lenta.shared.keys.OnKeyDownListener
 import com.lenta.shared.platform.activity.OnBackPresserListener
@@ -104,11 +103,22 @@ class TaskGoodsFragment : CoreFragment<FragmentTaskGoodsBinding, TaskGoodsViewMo
                                 binding.tvCounter.tag = position
                                 binding.tvCounter.setOnClickListener(onClickSelectionListener)
                                 binding.selectedForDelete = vm.processedSelectionHelper.isSelected(position)
-                                binding.root.isSelected = processedRecyclerView.isSelected
+                                processedRecyclerViewKeyHandler?.let {
+                                    binding.root.isSelected = it.isSelected(position)
+                                }
+                            },
+                            onAdapterItemClicked = { position ->
+                                processedRecyclerViewKeyHandler?.let {
+                                    if (it.isSelected(position)) {
+                                        vm.onClickProcessedItem(position)
+                                    } else {
+                                        it.selectPosition(position)
+                                    }
+                                }
                             }
                     )
-
                     this.vm = vm
+                    this.lifecycleOwner = viewLifecycleOwner
 
                     processedRecyclerViewKeyHandler = initRecyclerViewKeyHandler(
                             recyclerView = processedRecyclerView,
@@ -125,27 +135,41 @@ class TaskGoodsFragment : CoreFragment<FragmentTaskGoodsBinding, TaskGoodsViewMo
                         R.layout.layout_task_goods_buckets_tab,
                         container,
                         false
-                ).also { dataBinding ->
-                    dataBinding?.rvConfig = simpleListRecyclerViewConfig(
-                            recyclerView = dataBinding?.basketRecyclerView,
-                            selectionItemsHelper = vm.basketSelectionHelper,
-                            recyclerViewKeyHandler = basketRecyclerViewKeyHandler,
-                            onClickItem = { position -> vm.onClickBasketItem(position) }
+                ).apply {
+                    val vm = this@TaskGoodsFragment.vm
+
+                    val onClickSelectionListener = View.OnClickListener { clickListener ->
+                        val itemPosition = clickListener.tag as Int
+                        vm.processedSelectionHelper.revert(position = itemPosition)
+                        basketRecyclerView.adapter?.notifyItemChanged(itemPosition)
+                    }
+
+                    rvConfig = initRecycleAdapterDataBinding(
+                            layoutId = R.layout.layout_item_simple,
+                            itemId = BR.item,
+                            onAdapterItemBind = { binding: LayoutItemSimpleBinding, position ->
+                                binding.tvCounter.tag = position
+                                binding.tvCounter.setOnClickListener(onClickSelectionListener)
+                                binding.selectedForDelete = vm.basketSelectionHelper.isSelected(position)
+                                basketRecyclerViewKeyHandler?.let {
+                                    binding.root.isSelected = it.isSelected(position)
+                                }
+                            },
+                            onAdapterItemClicked = { position ->
+                                basketRecyclerViewKeyHandler?.onItemClicked(position)
+                            }
                     )
 
-                    dataBinding.vm = vm
-                    dataBinding.lifecycleOwner = binding?.lifecycleOwner
+                    this.vm = vm
+                    this.lifecycleOwner = binding?.lifecycleOwner
 
-                    dataBinding?.basketRecyclerView?.let { recyclerView ->
-                        binding?.lifecycleOwner?.let { lifecycleOwner ->
-                            basketRecyclerViewKeyHandler = RecyclerViewKeyHandler(
-                                    recyclerView,
-                                    vm.basketItemList,
-                                    lifecycleOwner,
-                                    basketRecyclerViewKeyHandler?.posInfo?.value
-                            )
-                        }
-                    }
+                    basketRecyclerViewKeyHandler = initRecyclerViewKeyHandler(
+                            recyclerView = basketRecyclerView,
+                            items = vm.basketItemList,
+                            previousPosInfo = basketRecyclerViewKeyHandler?.posInfo?.value,
+                            onClickHandler = vm::onClickBasketItem
+                    )
+
 
                 }.root
             }
