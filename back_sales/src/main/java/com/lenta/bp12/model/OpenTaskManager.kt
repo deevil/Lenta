@@ -2,6 +2,7 @@ package com.lenta.bp12.model
 
 import androidx.lifecycle.MutableLiveData
 import com.lenta.bp12.model.pojo.Block
+import com.lenta.bp12.model.pojo.Position
 import com.lenta.bp12.model.pojo.open_task.GoodOpen
 import com.lenta.bp12.model.pojo.open_task.TaskOpen
 import com.lenta.bp12.platform.extention.getControlType
@@ -116,6 +117,8 @@ class OpenTaskManager @Inject constructor(
                 with(positionInfo) {
                     database.getGoodInfoByMaterial(material)?.let { goodInfo ->
                         val commonUnits = database.getUnitsByCode(unitsCode)
+                        val provider = ProviderInfo(providerCode, providerName)
+
                         val good = GoodOpen(
                                 ean = goodInfo.ean,
                                 eans = goodInfo.eans,
@@ -131,7 +134,7 @@ class OpenTaskManager @Inject constructor(
                                 innerQuantity = innerQuantity.toDoubleOrNull() ?: 1.0,
                                 isCounted = isCounted.isSapTrue(),
                                 isDeleted = isDeleted.isSapTrue(),
-                                provider = ProviderInfo(providerCode, providerName),
+                                provider = provider,
                                 producers = taskContentResult.producers.filter { it.material == goodInfo.material }.map {
                                     ProducerInfo(
                                             code = it.code,
@@ -139,6 +142,15 @@ class OpenTaskManager @Inject constructor(
                                     )
                                 }
                         )
+
+                        factQuantity.toDoubleOrNull()?.let { factQuantity ->
+                            if (factQuantity != 0.0) {
+                                good.addPosition(Position(
+                                        quantity = factQuantity,
+                                        provider = provider
+                                ))
+                            }
+                        }
 
                         task.goods.add(good)
 
@@ -207,6 +219,7 @@ class OpenTaskManager @Inject constructor(
                             PositionInfo(
                                     material = good.material,
                                     providerCode = task.provider.code,
+                                    providerName = task.provider.name,
                                     factQuantity = "0",
                                     isCounted = good.isCounted.toSapBooleanString(),
                                     isDeleted = good.isDeleted.toSapBooleanString(),
@@ -216,11 +229,14 @@ class OpenTaskManager @Inject constructor(
                     )
                 } else {
                     good.positions.forEach { position ->
+                        val quantity = if (position.quantity > 0.0) position.quantity else good.getTotalQuantity()
+
                         positions.add(
                                 PositionInfo(
                                         material = good.material,
                                         providerCode = position.provider.code,
-                                        factQuantity = position.quantity.dropZeros(),
+                                        providerName = position.provider.name,
+                                        factQuantity = quantity.dropZeros(),
                                         isCounted = good.isCounted.toSapBooleanString(),
                                         isDeleted = good.isDeleted.toSapBooleanString(),
                                         innerQuantity = good.innerQuantity.dropZeros(),

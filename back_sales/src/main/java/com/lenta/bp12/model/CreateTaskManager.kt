@@ -160,11 +160,14 @@ class CreateTaskManager @Inject constructor(
 
             task.goods.forEach { good ->
                 good.positions.forEach { position ->
+                    val quantity = if (position.quantity > 0.0) position.quantity else good.getTotalQuantity()
+
                     positions.add(
                             PositionInfo(
                                     material = good.material,
                                     providerCode = position.provider.code,
-                                    factQuantity = position.quantity.dropZeros(),
+                                    providerName = position.provider.name,
+                                    factQuantity = quantity.dropZeros(),
                                     isCounted = true.toSapBooleanString(),
                                     innerQuantity = good.innerQuantity.dropZeros(),
                                     unitsCode = good.commonUnits.code

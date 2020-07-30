@@ -683,7 +683,8 @@ class GoodInfoOpenViewModel : CoreViewModel() {
 
     private fun addMark() {
         good.value?.let { changedGood ->
-            changedGood.isCounted = true
+            addEmptyPosition(changedGood)
+
             val mark = Mark(
                     number = lastSuccessSearchNumber,
                     isBadMark = scanInfoResult.value?.status == MarkStatus.BAD.code,
@@ -698,7 +699,8 @@ class GoodInfoOpenViewModel : CoreViewModel() {
 
     private fun addPart() {
         good.value?.let { changedGood ->
-            changedGood.isCounted = true
+            addEmptyPosition(changedGood)
+
             val part = Part(
                     number = lastSuccessSearchNumber,
                     material = changedGood.material,
@@ -716,7 +718,8 @@ class GoodInfoOpenViewModel : CoreViewModel() {
 
     private fun addBox() {
         good.value?.let { changedGood ->
-            changedGood.isCounted = true
+            addEmptyPosition(changedGood)
+
             scanInfoResult.value?.marks?.let { marks ->
                 marks.forEach { mark ->
                     val markFromBox = Mark(
@@ -731,6 +734,16 @@ class GoodInfoOpenViewModel : CoreViewModel() {
 
             manager.updateCurrentGood(changedGood)
         }
+    }
+
+    private fun addEmptyPosition(changedGood: GoodOpen) {
+        changedGood.isCounted = true
+        val position = Position(
+                quantity = 0.0,
+                provider = changedGood.provider
+        )
+        Logg.d { "--> add position = $position" }
+        changedGood.addPosition(position)
     }
 
     /**

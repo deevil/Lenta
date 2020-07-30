@@ -53,7 +53,9 @@ data class GoodOpen(
     }
 
     fun getTotalQuantity(): Double {
-        return factQuantity + getPositionQuantity() + getMarkQuantity() + getPartQuantity()
+        // todo Возможно придется вернуть логику использования factQuantity
+        //return factQuantity + getPositionQuantity() + getMarkQuantity() + getPartQuantity()
+        return getPositionQuantity() + getMarkQuantity() + getPartQuantity()
     }
 
     fun getPositionQuantity(): Double {
@@ -66,13 +68,6 @@ data class GoodOpen(
 
     fun getPartQuantity(): Double {
         return parts.map { it.quantity }.sumList()
-    }
-
-    fun getQuantityByProvider(providerCode: String?): Double {
-        val positionQuantity = positions.filter { it.provider.code == providerCode }.map { it.quantity }.sumList()
-        val partQuantity = parts.filter { it.providerCode == providerCode }.map { it.quantity }.sumList()
-
-        return positionQuantity.sumWith(partQuantity)
     }
 
     fun addPosition(position: Position) {
@@ -91,12 +86,6 @@ data class GoodOpen(
         parts.find { it.providerCode == part.providerCode && it.producerCode == part.producerCode && it.date == part.date }?.let { foundPart ->
             foundPart.quantity = foundPart.quantity.sumWith(part.quantity)
         } ?: parts.add(part)
-    }
-
-    fun removeMark(number: String) {
-        marks.find { it.number == number }?.let { mark ->
-            marks.remove(mark)
-        }
     }
 
     fun removeAllMark() {

@@ -57,6 +57,7 @@ class GoodInfoCreateFragment : CoreFragment<FragmentGoodInfoCreateBinding, GoodI
             //R.id.b_3 -> vm.onScanResult("22N00001CRDKFRWFBZ90123456789012345678901234567890123456789000000001") // Марка 377456
             //R.id.b_3 -> vm.onScanResult("22N00002NWKKIF6RWF30123456789012345678901234567890123456789000000004") // Партия
             //R.id.b_3 -> vm.onScanResult("03000048752210319000100516") // Коробка
+            //R.id.b_3 -> vm.onScanResult("01000000637810119000001340") // Коробка
             //R.id.b_3 -> vm.onScanResult("03000042907513119000404111") // Коробка 082682
             //R.id.b_3 -> vm.onScanResult("4607055090121") // ШК
             R.id.b_5 -> vm.onClickApply()

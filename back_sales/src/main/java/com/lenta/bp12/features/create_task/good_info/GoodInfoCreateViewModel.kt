@@ -779,6 +779,8 @@ class GoodInfoCreateViewModel : CoreViewModel() {
 
     private fun addMark() {
         good.value?.let { changedGood ->
+            addEmptyPosition(changedGood)
+
             val mark = Mark(
                     number = lastSuccessSearchNumber,
                     isBadMark = scanInfoResult.value?.status == MarkStatus.BAD.code,
@@ -794,6 +796,8 @@ class GoodInfoCreateViewModel : CoreViewModel() {
 
     private fun addPart() {
         good.value?.let { changedGood ->
+            addEmptyPosition(changedGood)
+
             val part = Part(
                     number = lastSuccessSearchNumber,
                     material = changedGood.material,
@@ -812,6 +816,8 @@ class GoodInfoCreateViewModel : CoreViewModel() {
 
     private fun addBox() {
         good.value?.let { changedGood ->
+            addEmptyPosition(changedGood)
+
             scanInfoResult.value?.marks?.let { marks ->
                 marks.forEach { mark ->
                     val markFromBox = Mark(
@@ -827,6 +833,15 @@ class GoodInfoCreateViewModel : CoreViewModel() {
             createBasket(changedGood)
             manager.updateCurrentGood(changedGood)
         }
+    }
+
+    private fun addEmptyPosition(changedGood: GoodCreate) {
+        val position = Position(
+                quantity = 0.0,
+                provider = getProvider()
+        )
+        Logg.d { "--> add position = $position" }
+        changedGood.addPosition(position)
     }
 
     private fun createBasket(changedGood: GoodCreate) {
