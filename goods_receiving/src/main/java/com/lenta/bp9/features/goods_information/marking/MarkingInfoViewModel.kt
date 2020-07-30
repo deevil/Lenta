@@ -23,6 +23,7 @@ import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.requests.combined.scan_info.ScanInfoResult
 import com.lenta.shared.requests.combined.scan_info.pojo.QualityInfo
 import com.lenta.shared.requests.combined.scan_info.pojo.ReasonRejectionInfo
+import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.extentions.combineLatest
 import com.lenta.shared.utilities.extentions.launchUITryCatch
 import com.lenta.shared.utilities.extentions.map
@@ -71,11 +72,12 @@ class MarkingInfoViewModel : CoreViewModel(),
 
     val productInfo: MutableLiveData<TaskProductInfo> = MutableLiveData()
     val tvAccept: MutableLiveData<String> = MutableLiveData("")
-    private val countBlockScanned: MutableLiveData<Int> = MutableLiveData(0)
-    val spinQualityEnabled: MutableLiveData<Boolean> = countBlockScanned.map {
+    private val countScannedBlocks: MutableLiveData<Int> = MutableLiveData(0) //только блоки, переменная используется для отображения счетчика в поле Контроль марок
+    private val countScannedStamps: MutableLiveData<Int> = MutableLiveData(0) //блоки и GTINы, переменная используется для кнопки Откатить
+    val spinQualityEnabled: MutableLiveData<Boolean> = countScannedBlocks.map {
         it == 0
     }
-    val spinReasonRejectionEnabled: MutableLiveData<Boolean> = countBlockScanned.map {
+    val spinReasonRejectionEnabled: MutableLiveData<Boolean> = countScannedBlocks.map {
         it == 0
     }
     val spinQuality: MutableLiveData<List<String>> = MutableLiveData()
@@ -210,14 +212,16 @@ class MarkingInfoViewModel : CoreViewModel(),
 
     val tvStampControlVal: MutableLiveData<String> = acceptTotalCount
             .combineLatest(spinQualitySelectedPosition)
-            .combineLatest(countBlockScanned)
+            .combineLatest(countScannedBlocks)
             .map {
                 val acceptTotalCountVal = acceptTotalCount.value ?: 0.0
-                val countBlockScanned = productInfo.value
-                        ?.let {//проверяем productInfo т.к. он используется в processMarkingProductService.getCountProcessedBlockForDiscrepancies() и если он null, тогда он неинициализирован в processMarkingProductService, и получим lateinit property productInfo has not been initialized
-                            processMarkingProductService.getCountProcessedBlockForDiscrepancies(TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_NORM).toDouble()
-                        }
-                        ?: 0.0
+                val acceptTotalCountBlock = processMarkingProductService.getCountBlocksByAttachments(acceptTotalCountVal.toStringFormatted())
+                val countBlockScanned =
+                        productInfo.value
+                                ?.let {//проверяем productInfo т.к. он используется в processMarkingProductService.getCountProcessedBlockForDiscrepancies() и если он null, тогда он неинициализирован в processMarkingProductService, и получим lateinit property productInfo has not been initialized
+                                    processMarkingProductService.getCountProcessedBlockForDiscrepancies(TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_NORM).toDouble()
+                                }
+                                ?: 0.0
                 val spinQualitySelectedPositionVal = spinQualitySelectedPosition.value ?: 0
                 val qualityInfoCode =
                         qualityInfo.value
@@ -235,13 +239,13 @@ class MarkingInfoViewModel : CoreViewModel(),
                         context.getString(R.string.not_required)
                     } else {
                         checkStampControlVisibility.value = true
-                        if (acceptTotalCountVal < numberStampsControl) {
+                        if (acceptTotalCountBlock < numberStampsControl) {
                             buildString {
                                 append(countBlockScanned.toStringFormatted())
                                 append(" ")
                                 append(context.getString(R.string.of))
                                 append(" ")
-                                append(acceptTotalCountVal.toStringFormatted())
+                                append(acceptTotalCountBlock.toStringFormatted())
                             }
                         } else {
                             buildString {
@@ -287,13 +291,13 @@ class MarkingInfoViewModel : CoreViewModel(),
     val tvStampListVal: MutableLiveData<String> = refusalTotalCount
             .combineLatest(spinQualitySelectedPosition)
             .combineLatest(spinReasonRejectionSelectedPosition)
-            .combineLatest(countBlockScanned)
+            .combineLatest(countScannedBlocks)
             .map {
                 //проверяем productInfo т.к. он используется в processMarkingProductService.getCountProcessedBlockForDiscrepancies() и если он null, тогда он неинициализирован в processMarkingProductService, и получим lateinit property productInfo has not been initialized
                 productInfo.value
                         ?.let { product ->
                             val enteredCount = count.value?.toDoubleOrNull() ?: 0.0
-                            val countBlockScannedValue = countBlockScanned.value ?: 0
+                            val countBlockScannedValue = countScannedBlocks.value ?: 0
                             val typeDiscrepancies = getCurrentTypeDiscrepancies()
                             val productOrigQuantity = product.origQuantity
                             val totalBlocksProduct = processMarkingProductService.getCountBlocksByAttachments(productOrigQuantity)
@@ -329,8 +333,8 @@ class MarkingInfoViewModel : CoreViewModel(),
         productInfo.value
                 ?.let {
                     val enteredCount = count.value?.toDoubleOrNull() ?: 0.0
-                    val countBlockScanned = countBlockScanned.value?.toDouble() ?: 0.0
-                    countBlockScanned == enteredCount && enteredCount > 0.0
+                    val countBlockScanned = processMarkingProductService.getCountProcessedBlockForDiscrepancies(getCurrentTypeDiscrepancies()).toDouble()
+                    countBlockScanned >= enteredCount && enteredCount > 0.0
                 }
                 ?: false
     }
@@ -353,7 +357,7 @@ class MarkingInfoViewModel : CoreViewModel(),
                                 || checkBoxStampListValue)
                     }
 
-    val enabledRollbackBtn: MutableLiveData<Boolean> = countBlockScanned.map {
+    val enabledRollbackBtn: MutableLiveData<Boolean> = countScannedStamps.map {
         (it ?: 0) > 0
     }
 
@@ -434,30 +438,76 @@ class MarkingInfoViewModel : CoreViewModel(),
             return
         }
 
-        processMarkingProductService.rollbackScannedBlock()
-        //уменьшаем кол-во отсканированных марок на единицу в текущей сессии
-        countBlockScanned.value = countBlockScanned.value?.minus(1)
+        processMarkingProductService.rollbackTypeLastStampScanned()
+        //уменьшаем кол-во отсканированных марок (блок/gtin) на единицу в текущей сессии
+        countScannedStamps.value = countScannedStamps.value?.minus(1)
+        //уменьшаем кол-во отсканированных блоков на единицу в текущей сессии
+        countScannedBlocks.value = countScannedBlocks.value?.minus(1)
     }
 
     private fun rollbackControlGtin() {
         if (checkBoxGtinControl.value == false && checkBoxGtinStampControl.value == false) {
-            processMarkingProductService.rollbackScannedBlock()
-            processMarkingProductService.rollbackScannedGtin()
-            //уменьшаем кол-во отсканированных марок на единицу в текущей сессии
-            countBlockScanned.value = countBlockScanned.value?.minus(1)
+            /**Чек-боксы не установлены -
+             * По кнопке удалять последний отсканированный блок.
+             * Уменьшать количество в поле "Список марок",
+             * "Контроль марок" на 1 блок. (Очищать этот блок и его GTIN)
+             * */
+            with(processMarkingProductService) {
+                //уменьшаем кол-во отсканированных блоков
+                rollbackTypeLastStampScanned()
+                //уменьшаем кол-во отсканированных GTIN
+                rollbackTypeLastStampScanned()
+            }
+            //уменьшаем кол-во отсканированных марок (блок/gtin) на два (один блок и один gtin) в текущей сессии
+            minusScannedStamps(2)
+            //уменьшаем кол-во отсканированных блоков на единицу в текущей сессии
+            minusScannedBlocks()
             return
         }
 
         if (checkBoxGtinControl.value == true) {
-            processMarkingProductService.rollbackScannedGtin()
+            /**Установлен чек-бокс GTIN (первый чек-бокс) -
+             * удалять отсканированный GTIN из локальной стуктуры,
+             * очищать активный чек-бокс для GTIN
+             * */
+            processMarkingProductService.rollbackTypeLastStampScanned()
             checkBoxGtinControl.value = false
+            //уменьшаем кол-во отсканированных марок (блок/gtin) на единицу в текущей сессии
+            minusScannedStamps(1)
         }
 
         if (checkBoxGtinStampControl.value == true) {
-            processMarkingProductService.rollbackScannedBlock()
-            //уменьшаем кол-во отсканированных марок на единицу в текущей сессии
-            countBlockScanned.value = countBlockScanned.value?.minus(1)
+            /**Установлен чек-бокс марки (второй чек-бокс) -
+             * удалять отсканированный блок из локальной структуры,
+             * очищать активный чек-бокс для марки
+             * */
+            processMarkingProductService.rollbackTypeLastStampScanned()
+            checkBoxGtinStampControl.value = false
+            //уменьшаем кол-во отсканированных марок (блок/gtin) на единицу в текущей сессии
+            minusScannedStamps(1)
+            //уменьшаем кол-во отсканированных блоков на единицу в текущей сессии
+            minusScannedBlocks()
         }
+    }
+
+    private fun minusScannedStamps(count: Int) {
+        countScannedStamps.value
+                ?.takeIf {
+                    it > 0
+                }
+                ?.run {
+                    countScannedStamps.value = countScannedStamps.value?.minus(count)
+                }
+    }
+
+    private fun minusScannedBlocks() {
+        countScannedBlocks.value
+                ?.takeIf {
+                    it > 0
+                }
+                ?.run {
+                    countScannedBlocks.value = countScannedBlocks.value?.minus(1)
+                }
     }
 
     fun onClickDetails() {
@@ -467,20 +517,27 @@ class MarkingInfoViewModel : CoreViewModel(),
     }
 
     fun onClickAdd(): Boolean {
-        val countVal = countValue.value ?: 0.0
-        return if (processMarkingProductService.overLimit(countVal)) {
+        var enteredCount = countValue.value ?: 0.0
+        return if (processMarkingProductService.overLimit(enteredCount)) {
             screenNavigator.openAlertOverLimitPlannedScreen()
             false
         } else {
             val typeDiscrepancies = getCurrentTypeDiscrepancies()
             if (typeDiscrepancies.isNotEmpty()) {
-                processMarkingProductService.addProduct(countVal.toStringFormatted(), typeDiscrepancies)
+                val countProcessedBlock = processMarkingProductService.getCountProcessedBlockForDiscrepancies(getCurrentTypeDiscrepancies()).toDouble()
+                val countProcessedProduct = processMarkingProductService.getCountAttachmentInBlock(countProcessedBlock.toStringFormatted())
+                if (countProcessedProduct > enteredCount && enteredCount > 0.0) {
+                    enteredCount = countProcessedProduct
+                }
+                processMarkingProductService.addProduct(enteredCount.toStringFormatted(), typeDiscrepancies)
                 processMarkingProductService.apply()
                 processMarkingProductService.clearModifications()
                 spinQualitySelectedPosition.value = 0
                 count.value = "0"
-                //обнуляем кол-во отсканированных марок
-                countBlockScanned.value = 0
+                //обнуляем кол-во отсканированных марок (блок/gtin)
+                countScannedStamps.value = 0
+                //обнуляем кол-во отсканированных блоков
+                countScannedBlocks.value = 0
                 true
             } else {
                 false
@@ -627,7 +684,7 @@ class MarkingInfoViewModel : CoreViewModel(),
         }
 
         if (productInfo.value?.isControlGTIN == true
-                && getCurrentTypeDiscrepancies() == TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_NORM) {
+                && typeDiscrepancies == TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_NORM) {
             gtinControlValueCheck(
                     stampCode = stampCode,
                     blockInfo = blockInfo,
@@ -639,7 +696,7 @@ class MarkingInfoViewModel : CoreViewModel(),
                     typeDiscrepancies = typeDiscrepancies
             )
             //обновляем кол-во отсканированных марок/блоков для отображения на экране в поле «Контроль марок»
-            countBlockScanned.value = countBlockScanned.value?.plus(1)
+            countScannedBlocks.value = countScannedBlocks.value?.plus(1)
         }
     }
 
@@ -651,8 +708,14 @@ class MarkingInfoViewModel : CoreViewModel(),
                         typeDiscrepancies = currentTypeDiscrepancies,
                         isScan = true
                 )
+                countScannedStamps.value = countScannedStamps.value?.plus(1)
             }
         }
+    }
+
+    private fun addGtin(gtinCode: String) {
+        processMarkingProductService.addGtin(gtinCode)
+        countScannedStamps.value = countScannedStamps.value?.plus(1)
     }
 
     private fun gtinControlValueCheck(stampCode: String, blockInfo: TaskBlockInfo?, typeDiscrepancies: String?) {
@@ -663,12 +726,20 @@ class MarkingInfoViewModel : CoreViewModel(),
         o чекбокс активен – выполнять проверки, описанные в разделе 2. MARK.ППП. Логика сверки GTIN.*/
         if (checkBoxGtinControl.value == false) {
             if (stampCode.substring(0, 2) == "0${paramGrzExclGtin.value}") {
-                checkBoxGtinControl.value = true
-                checkBoxGtinStampControl.value = true
+                checkBoxGtinControl.value = true //аналитики сказали сначала поставить чекбокс, а потом снять
+                checkBoxGtinStampControl.value = true //аналитики сказали сначала поставить чекбокс, а потом снять
+                val gtinCode = stampCode.substring(2, 16)
+                addGtin(gtinCode)
+                addBlock(blockInfo, typeDiscrepancies)
+                checkBoxGtinControl.value = false //аналитики сказали сначала поставить чекбокс, а потом снять
+                checkBoxGtinStampControl.value = false //аналитики сказали сначала поставить чекбокс, а потом снять
+                //обновляем кол-во отсканированных марок/блоков для отображения на экране в поле «Контроль марок»
+                countScannedBlocks.value = countScannedBlocks.value?.plus(1)
             } else {
                 checkBoxGtinStampControl.value = true
+                //обновляем кол-во отсканированных марок/блоков НО на экране в поле «Контроль марок» кол-во не обновляем, т.е. countScannedBlocks не увеличиваем на единицу
+                addBlock(blockInfo, typeDiscrepancies)
             }
-            addBlock(blockInfo, typeDiscrepancies)
         } else {
             //выполнять проверки, описанные в разделе 2. MARK.ППП. Логика сверки GTIN. https://trello.com/c/y2ECoCw4
             blockInfo?.let { currentBlock ->
@@ -696,52 +767,60 @@ class MarkingInfoViewModel : CoreViewModel(),
                 }.orEmpty()
 
         if (eanInfo.isEmpty()) {
+            //GTIN не соответствует товару
             screenNavigator.openAlertGtinDoesNotMatchProductScreen()
             return
         }
 
         if (checkBoxGtinStampControl.value == true) {
-            val lastScannedGtin =
-                    processMarkingProductService.getLastScannedBlock()
-                            ?.blockNumber
-                            ?.substring(2, 16)
-                            .orEmpty()
-
-            if (gtinCode == lastScannedGtin) {
-                checkBoxGtinControl.value = true //аналитики сказали сначала поставить чекбокс, а потом снять
-                processMarkingProductService.addGtin(gtinCode)
-                //обновляем кол-во отсканированных марок/блоков для отображения на экране в поле «Контроль марок»
-                countBlockScanned.value = countBlockScanned.value?.plus(1)
-                checkBoxGtinControl.value = false
-                checkBoxGtinStampControl.value = false //аналитики сказали сначала поставить чекбокс, а потом снять
-            } else {
-                screenNavigator.openAlertDisparityGTINScreen()
-            }
+            checkGtinLastGtin(gtinCode)
         } else {
             checkBoxGtinControl.value = true
-            processMarkingProductService.addGtin(gtinCode)
+            addGtin(gtinCode)
         }
 
+    }
+
+    private fun checkGtinLastGtin(gtinCode: String) {
+        val lastScannedBlockInfo = processMarkingProductService.getLastScannedBlock()
+        val lastScannedGtin = lastScannedBlockInfo?.blockNumber?.substring(2, 16).orEmpty()
+        if (gtinCode == lastScannedGtin) {
+            lastScannedBlockInfo?.let { blockInfo ->
+                checkBoxGtinControl.value = true //аналитики сказали сначала поставить чекбокс, а потом снять чисто для показа пользователю на мгновение
+                addGtin(gtinCode)
+                checkBoxGtinControl.value = false //аналитики сказали сначала поставить чекбокс, а потом снять чисто для показа пользователю на мгновение
+                checkBoxGtinStampControl.value = false //аналитики сказали сначала поставить чекбокс, а потом снять чисто для показа пользователю на мгновение
+                //обновляем кол-во отсканированных марок/блоков для отображения на экране в поле «Контроль марок»
+                countScannedBlocks.value = countScannedBlocks.value?.plus(1)
+            }
+        } else {
+            screenNavigator.openAlertDisparityGTINScreen()
+        }
     }
 
     //https://trello.com/c/y2ECoCw4
     private fun gtinControlCheck(blockInfo: TaskBlockInfo, typeDiscrepancies: String) {
         val gtinCode = blockInfo.blockNumber.substring(2, 16)
         if (blockInfo.blockNumber.substring(0, 2) == "0${paramGrzExclGtin.value}") {
+            checkBoxGtinControl.value = true //аналитики сказали сначала поставить чекбокс, а потом снять чисто для показа пользователю на мгновение
+            checkBoxGtinStampControl.value = true //аналитики сказали сначала поставить чекбокс, а потом снять чисто для показа пользователю на мгновение
             processMarkingProductService.replaceLastGtin(gtinCode)
-            checkBoxGtinControl.value = true
-            checkBoxGtinStampControl.value = true
+            addBlock(blockInfo, typeDiscrepancies)
+            checkBoxGtinControl.value = false //аналитики сказали сначала поставить чекбокс, а потом снять чисто для показа пользователю на мгновение
+            checkBoxGtinStampControl.value = false //аналитики сказали сначала поставить чекбокс, а потом снять чисто для показа пользователю на мгновение
+            //обновляем кол-во отсканированных марок/блоков для отображения на экране в поле «Контроль марок»
+            countScannedBlocks.value = countScannedBlocks.value?.plus(1)
             return
         }
 
         val lastScannedGtin = processMarkingProductService.getLastScannedGtin().orEmpty()
         if (lastScannedGtin == gtinCode) {
+            checkBoxGtinStampControl.value = true //аналитики сказали сначала поставить чекбокс, а потом снять чисто для показа пользователю на мгновение
             addBlock(blockInfo, typeDiscrepancies)
-            //обновляем кол-во отсканированных марок/блоков для отображения на экране в поле «Контроль марок»
-            countBlockScanned.value = countBlockScanned.value?.plus(1)
-            checkBoxGtinStampControl.value = true //аналитики сказали сначала поставить чекбокс, а потом снять
             checkBoxGtinControl.value = false
-            checkBoxGtinStampControl.value = false //аналитики сказали сначала поставить чекбокс, а потом снять
+            checkBoxGtinStampControl.value = false //аналитики сказали сначала поставить чекбокс, а потом снять чисто для показа пользователю на мгновение
+            //обновляем кол-во отсканированных марок/блоков для отображения на экране в поле «Контроль марок»
+            countScannedBlocks.value = countScannedBlocks.value?.plus(1)
         } else {
             //выводить ошибку «GTIN в марке не соответствует GTIN товара, оформите брак по данному товару»
             screenNavigator.openAlertDisparityGTINScreen()
@@ -785,6 +864,32 @@ class MarkingInfoViewModel : CoreViewModel(),
                     qualityInfoCode == TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_NORM
                 }
                 ?: selectedReasonRejectionInfo?.code.orEmpty()
+    }
+
+    fun onBackPressed() {
+        if (processMarkingProductService.modifications()) {
+            screenNavigator.openUnsavedDataDialog(
+                    yesCallbackFunc = {
+                        processMarkingProductService.clearModifications()
+                        screenNavigator.goBack()
+                    }
+            )
+            return
+        }
+
+        screenNavigator.goBack()
+    }
+
+    fun scanMark1() {//todo
+        onScanResult("010460026601136721000004G.8005012345.938000.92NGkg+wRXz36kBFjpfwOub5DBIIpD2iS/DMYpZuuDLU0Y3pZt1z20/1ksr4004wfhDhRxu4dgUV4QN96Qtdih9g==")
+    }
+
+    fun scanMark2() {//todo
+        onScanResult("010460026601136721000003Z.8005012345.938000.92NGkg+wRXz36kBFjpfwOub5DBIIpD2iS/DMYpZuuDLU0Y3pZt1z20/1ksr4004wfhDhRxu4dgUV4QN96Qtdih9g==")
+    }
+
+    fun scanMark3() {//todo
+        onScanResult("010460026601136721000003Y.8005012345.938000.92NGkg+wRXz36kBFjpfwOub5DBIIpD2iS/DMYpZuuDLU0Y3pZt1z20/1ksr4004wfhDhRxu4dgUV4QN96Qtdih9g==")
     }
 
 }

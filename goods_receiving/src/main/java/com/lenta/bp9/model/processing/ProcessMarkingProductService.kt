@@ -1,6 +1,7 @@
 package com.lenta.bp9.model.processing
 
 import androidx.lifecycle.MutableLiveData
+import com.lenta.bp9.features.goods_information.marking.TypeLastStampScanned
 import com.lenta.bp9.model.task.*
 import com.lenta.bp9.platform.TypeDiscrepanciesConstants
 import com.lenta.bp9.repos.IDataBaseRepo
@@ -24,6 +25,7 @@ class ProcessMarkingProductService
     private val blocks: ArrayList<TaskBlockInfo> = ArrayList()
     private val currentBlocksDiscrepancies: ArrayList<TaskBlockDiscrepancies> = ArrayList()
     private val currentGtin: ArrayList<String> = ArrayList()
+    private val currentScannedTypesStamps: ArrayList<TypeLastStampScanned> = ArrayList()
 
     fun initProduct(productInfo: TaskProductInfo) {
         this.productInfo = productInfo.copy()
@@ -39,6 +41,7 @@ class ProcessMarkingProductService
                                     || this.productInfo.purchaseOrderUnits.code == UNIT_P09)
                                     && this.productInfo.isCountingBoxes == false
                     currentGtin.clear()
+                    currentScannedTypesStamps.clear()
                     blocks.clear()
                     taskManager.getReceivingTask()
                             ?.getProcessedBlocks()
@@ -134,13 +137,15 @@ class ProcessMarkingProductService
                 }
 
         currentBlocksDiscrepancies.add(foundBlockDiscrepancy)
+
+        addTypeLastStampScanned(TypeLastStampScanned.BLOCK)
     }
 
-    fun getLastScannedBlock(): TaskBlockDiscrepancies? {
+    fun getLastScannedBlock(): TaskBlockInfo? {
         return if (currentBlocksDiscrepancies.isNullOrEmpty()) {
             null
         } else {
-            currentBlocksDiscrepancies.last()
+            searchBlock(currentBlocksDiscrepancies.last().blockNumber)
         }
     }
 
@@ -156,6 +161,7 @@ class ProcessMarkingProductService
 
         if (index == -1) {
             currentGtin.add(gtinCode)
+            addTypeLastStampScanned(TypeLastStampScanned.GTIN)
         }
     }
 
@@ -187,14 +193,14 @@ class ProcessMarkingProductService
                 }.size
     }
 
-    fun rollbackScannedBlock() {
+    private fun rollbackScannedBlock() {
         if (currentBlocksDiscrepancies.isNotEmpty()) {
             val block = currentBlocksDiscrepancies.last()
             currentBlocksDiscrepancies.remove(block)
         }
     }
 
-    fun rollbackScannedGtin() {
+    private fun rollbackScannedGtin() {
         if (currentGtin.isNotEmpty()) {
             val gtin = currentGtin.last()
             currentGtin.remove(gtin)
@@ -325,16 +331,34 @@ class ProcessMarkingProductService
         return isBlockMode
     }
 
+    private fun addTypeLastStampScanned(typeLastStampScanned: TypeLastStampScanned) {
+        currentScannedTypesStamps.add(typeLastStampScanned)
+    }
+
+    fun rollbackTypeLastStampScanned() {
+        if (currentScannedTypesStamps.isNotEmpty()) {
+            val stamp = currentScannedTypesStamps.last()
+            if (stamp == TypeLastStampScanned.BLOCK) {
+                rollbackScannedBlock()
+            } else {
+                rollbackScannedGtin()
+            }
+            currentScannedTypesStamps.remove(stamp)
+        }
+    }
+
     fun modifications(): Boolean {
         return currentBlocksDiscrepancies !=
-                taskManager.getReceivingTask()
+                taskManager
+                        .getReceivingTask()
                         ?.taskRepository
                         ?.getBlocksDiscrepancies()
-                        ?.getBlocksDiscrepancies()
+                        ?.findBlocksDiscrepanciesOfProduct(productInfo)
     }
 
     fun clearModifications() {
         currentGtin.clear()
+        currentScannedTypesStamps.clear()
         blocks.clear()
         taskManager.getReceivingTask()
                 ?.getProcessedBlocks()
