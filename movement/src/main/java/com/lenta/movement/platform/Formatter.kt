@@ -17,6 +17,7 @@ class Formatter : IFormatter {
         return when (taskType) {
             TaskType.TransferWithOrder -> TRANSFER_WITH_ORDER
             TaskType.TransferWithoutOrder -> TRANSFER_WITHOUT_ORDER
+            TaskType.UnknownTaskType -> TaskType.UnknownTaskType.shortName
         }
     }
 

@@ -1,8 +1,6 @@
 package com.lenta.movement.requests.network.models
 
-import com.lenta.movement.models.CargoUnit
-import com.lenta.movement.models.ProcessingUnit
-import com.lenta.movement.models.Task
+import com.lenta.movement.models.*
 import com.lenta.movement.requests.network.models.startConsolidation.StartConsolidationProcessingUnit
 import com.lenta.movement.requests.network.models.startConsolidation.StartConsolidationTaskComposition
 import com.lenta.shared.platform.constants.Constants
@@ -19,28 +17,28 @@ fun Taskable.toTask(): Task {
         Task.Status.TO_CONSOLIDATION_CODE -> Task.Status.ToConsolidation(currentStatusText)
         Task.Status.CONSOLIDATED_CODE -> Task.Status.Consolidated(currentStatusText)
         Task.Status.PROCESSING_ON_GZ_CODE -> Task.Status.ProcessingOnGz(currentStatusText)
-        else -> Task.Status.Unknown(currentStatusText)
+        else -> Task.Status.Unknown(currentStatusText.orEmpty())
     }
-    val shipmentDate = dateShip.getSapDate(Constants.DATE_FORMAT_yyyy_mm_dd)
+    val shipmentDate = dateShip?.getSapDate(Constants.DATE_FORMAT_yyyy_mm_dd)
             .orIfNull {
                 Logg.e { "Dateship null" }
                 Date()
             }
     return Task(
-            number = taskNumber,
+            number = taskNumber.orEmpty(),
             isCreated = notFinish.isSapTrue().not(),
             currentStatus = currentStatus,
-            nextStatus = Task.Status.Unknown(nextStatusText),
-            name = description,
-            comment = taskComment,
-            taskType = taskType,
-            movementType = movementType,
-            receiver = werksDstntnt,
-            pikingStorage = lgortSrc, // Склад комплектации
-            shipmentStorage = lgortTarget, // Склад отгрузки
+            nextStatus = Task.Status.Unknown(nextStatusText.orEmpty()),
+            name = description.orEmpty(),
+            comment = taskComment.orEmpty(),
+            taskType = taskType ?: TaskType.UnknownTaskType,
+            movementType = movementType ?: MovementType.UnknownMovementType,
+            receiver = werksDstntnt.orEmpty(),
+            pikingStorage = lgortSrc.orEmpty(), // Склад комплектации
+            shipmentStorage = lgortTarget.orEmpty(), // Склад отгрузки
             shipmentDate = shipmentDate,
-            blockType = blockType,
-            quantity = quantityPosition,
+            blockType = blockType.orEmpty(),
+            quantity = quantityPosition.orEmpty(),
             isNotFinish = notFinish.isSapTrue(),
             isCons = isCons.isSapTrue()
     )
@@ -73,14 +71,20 @@ fun List<StartConsolidationProcessingUnit>.toModelList(goods: List<StartConsolid
 
 fun List<RestCargoUnit>.toModelList(): MutableList<CargoUnit> {
     return this.groupBy { it.cargoUnitNumber }
-            .mapValues { it.value.map { it.processingUnitNumber } }
+            .mapValues {
+                it.value.map { cargoUnit ->
+                    cargoUnit.processingUnitNumber
+                }
+            }
             .map { map ->
                 CargoUnit(
                         number = map.key,
                         eoList = map.value
                                 .mapNotNullTo(mutableListOf()) { processingUnitNumber ->
                                     processingUnitNumber
-                                            ?.takeIf { it.isNotEmpty() }
+                                            ?.takeIf {
+                                                it.isNotEmpty()
+                                            }
                                             ?.let {
                                                 ProcessingUnit(
                                                         processingUnitNumber = it,

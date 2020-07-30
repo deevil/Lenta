@@ -10,5 +10,6 @@ enum class MovementType(val propertyName: String) {
     @SerializedName("SCS")
     SCS("SCS"),
     @SerializedName("SCST")
-    SCST("SCST")
+    SCST("SCST"),
+    UnknownMovementType("Ошибка сервера")
 }

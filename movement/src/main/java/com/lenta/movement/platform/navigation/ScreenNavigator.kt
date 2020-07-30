@@ -1,7 +1,6 @@
 package com.lenta.movement.platform.navigation
 
 import android.content.Context
-import android.os.Handler
 import androidx.core.content.ContextCompat
 import com.lenta.movement.R
 import com.lenta.movement.exception.InfoFailure
@@ -215,8 +214,6 @@ class ScreenNavigator(
             }
     }
 
-
-
     override fun openBoxNumberWasUsedDialog() {
         openInfoScreen(context.getString(R.string.box_number_was_used_msg))
     }
@@ -413,6 +410,19 @@ class ScreenNavigator(
         }
     }
 
+    override fun openNotEnoughGoodsInTKAlertScreen(message: String) {
+        runOrPostpone {
+            getFragmentStack()?.push(
+                    fragment = AlertFragment.create(
+                            message = message,
+                            iconRes = R.drawable.ic_warning_red_80dp,
+                            pageNumber = SAVE_TASK_CONFIRM_DIALOG_PAGE_NUMBER,
+                            leftButtonDecorationInfo = ButtonDecorationInfo.back
+                    )
+            )
+        }
+    }
+
 
     companion object {
         private const val TWO_SECONDS_IN_MILLI = 2000
@@ -468,4 +478,6 @@ interface IScreenNavigator : ICoreNavigator {
 
     fun openGeneralGoodIconScreen()
     fun openAlcoGoodIconScreen()
+
+    fun openNotEnoughGoodsInTKAlertScreen(message: String)
 }

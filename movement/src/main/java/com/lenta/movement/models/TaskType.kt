@@ -6,5 +6,6 @@ enum class TaskType(val shortName: String) {
     @SerializedName("ТРЗ")
     TransferWithOrder("ТРЗ"),
     @SerializedName("ТРБ")
-    TransferWithoutOrder("ТРБ")
+    TransferWithoutOrder("ТРБ"),
+    UnknownTaskType("Ошибка сервера")
 }
