@@ -12,12 +12,13 @@ import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListener
 import com.lenta.shared.platform.toolbar.top_toolbar.ImageButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
+import com.lenta.shared.scan.OnScanResultListener
 import com.lenta.shared.utilities.extentions.connectLiveData
 import com.lenta.shared.utilities.extentions.generateScreenNumberFromPostfix
 import com.lenta.shared.utilities.extentions.getAppInfo
 import com.lenta.shared.utilities.extentions.provideViewModel
 
-class SelectGoodFragment : CoreFragment<FragmentSelectGoodsBinding, SelectGoodViewModel>(), ToolbarButtonsClickListener {
+class SelectGoodFragment : CoreFragment<FragmentSelectGoodsBinding, SelectGoodViewModel>(), ToolbarButtonsClickListener, OnScanResultListener {
 
     override fun getLayoutId(): Int = R.layout.fragment_select_goods
 
@@ -39,20 +40,21 @@ class SelectGoodFragment : CoreFragment<FragmentSelectGoodsBinding, SelectGoodVi
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
         bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.next, enabled = false)
 
-        viewLifecycleOwner.apply {
             vm.barcodeField.observe(viewLifecycleOwner) {
                 bottomToolbarUiModel.uiModelButton5.requestFocus()
             }
-        }
 
         connectLiveData(vm.nextButtonEnabled, bottomToolbarUiModel.uiModelButton5.enabled)
     }
 
     override fun onToolbarButtonClick(view: View) {
         when (view.id) {
-            R.id.b_topbar_2 -> vm.onClickExit()
             R.id.b_5 -> vm.onClickNext()
         }
+    }
+
+    override fun onScanResult(data: String){
+        vm.onScanResult(data)
     }
 
     companion object {

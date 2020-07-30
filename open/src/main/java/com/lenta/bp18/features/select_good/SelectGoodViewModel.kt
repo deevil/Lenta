@@ -27,16 +27,23 @@ class SelectGoodViewModel : SendDataViewModel() {
     val requestFocusToBarcode = MutableLiveData<Boolean>(true)
 
     fun onClickNext() {
-        launchUITryCatch {
-            ean.value = barcodeField.value ?: Constants.GOOD_BARCODE
-            val barcode = ean.value.toString()
-            var weight: String? = "0"
-            if (weightValue.contains(barcode.substring(0 until 2))) {
-                ean.value = barcode.replace(barcode.takeLast(6), "000000")
-                weight = barcode.takeLast(6).take(5)
-            }
-            searchEan(ean.value.toString(), weight)
+        ean.value = barcodeField.value ?: Constants.GOOD_BARCODE
+        preparationEanForSearch()
+    }
+
+    fun onScanResult(data: String) {
+        ean.value = data
+        preparationEanForSearch()
+    }
+
+    private fun preparationEanForSearch() {
+        val barcode = ean.value.toString()
+        var weight: String? = "0"
+        if (weightValue.contains(barcode.substring(0 until 2))) {
+            ean.value = barcode.replace(barcode.takeLast(6), "000000")
+            weight = barcode.takeLast(6).take(5)
         }
+        searchEan(ean.value.toString(), weight)
     }
 
     private fun searchEan(ean: String, weight: String?) {
@@ -62,10 +69,6 @@ class SelectGoodViewModel : SendDataViewModel() {
 
     private fun showError() {
         navigator.showAlertGoodsNotFound()
-    }
-
-    fun onClickExit() {
-        /*Выход из приложения*/
     }
 
     companion object {
