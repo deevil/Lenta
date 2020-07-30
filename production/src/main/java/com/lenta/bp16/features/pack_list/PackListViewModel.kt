@@ -8,6 +8,7 @@ import com.lenta.bp16.request.EndDefrostingParams
 import com.lenta.bp16.request.pojo.PackCode
 import com.lenta.shared.platform.device_info.DeviceInfo
 import com.lenta.shared.platform.viewmodel.CoreViewModel
+import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.extentions.dropZeros
 import com.lenta.shared.utilities.extentions.isSapTrue
 import com.lenta.shared.utilities.extentions.launchUITryCatch
@@ -82,6 +83,9 @@ class PackListViewModel : CoreViewModel() {
                 ).either({ failure ->
                     navigator.openAlertScreen(failure)
                 }) { result ->
+
+                    Logg.d { "--> isAutofix = ${result.isAutofix}" }
+
                     if (result.isAutofix.isSapTrue()) {
                         navigator.showFixStartNextStageSuccessful {
                             navigator.goBack()

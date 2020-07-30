@@ -198,6 +198,8 @@ class GoodWeighingViewModel : CoreViewModel() {
                     total.value = 0.0
                     weightField.value = "0"
 
+                    Logg.d { "--> isAutofix = ${packCodeResult.isAutofix}" }
+
                     if (packCodeResult.isAutofix.isSapTrue()) {
                         navigator.showFixStartNextStageSuccessful {
                             navigator.openPackListScreen()
