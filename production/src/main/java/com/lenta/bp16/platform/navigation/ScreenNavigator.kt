@@ -1,6 +1,7 @@
 package com.lenta.bp16.platform.navigation
 
 import android.content.Context
+import android.os.Bundle
 import com.lenta.bp16.R
 import com.lenta.bp16.features.auth.AuthFragment
 import com.lenta.bp16.features.defect_info.DefectInfoFragment
@@ -159,9 +160,9 @@ class ScreenNavigator @Inject constructor(
         }
     }
 
-    override fun openGoodInfoScreen(ean: String?, material: String?) {
+    override fun openGoodInfoScreen(goodInfo: Bundle) {
         runOrPostpone {
-            getFragmentStack()?.push(GoodInfoFragment.newInstance(ean, material))
+            getFragmentStack()?.push(GoodInfoFragment.newInstance(goodInfo))
         }
     }
 
@@ -288,25 +289,53 @@ class ScreenNavigator @Inject constructor(
         }
     }
 
-    override fun showAlertPartNotFound() {
+    override fun showAlertPartNotFound(backCallback: () -> Unit) {
         runOrPostpone {
             getFragmentStack()?.push(AlertFragment.create(
+                    pageNumber = Constants.ALERT_FRAGMENT,
                     message = context.getString(R.string.tw_alert_part_not_found),
                     iconRes = R.drawable.ic_warning_red_80dp,
-                    pageNumber = Constants.ALERT_FRAGMENT))
+                    leftButtonDecorationInfo = ButtonDecorationInfo.back,
+                    codeConfirmForLeft = backFragmentResultHelper.setFuncForResult(backCallback)
+            ))
         }
     }
 
     override fun showAlertGoodNotFound(backCallback: () -> Unit) {
-        getFragmentStack()?.push(AlertFragment.create(
-                pageNumber = Constants.ALERT_FRAGMENT,
-                message = context.getString(R.string.tw_alert_good_not_found),
-                iconRes = R.drawable.ic_warning_red_80dp,
-                leftButtonDecorationInfo = ButtonDecorationInfo.back,
-                codeConfirmForLeft = backFragmentResultHelper.setFuncForResult(backCallback)
-        ))
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    pageNumber = Constants.ALERT_FRAGMENT,
+                    message = context.getString(R.string.tw_alert_good_not_found),
+                    iconRes = R.drawable.ic_warning_red_80dp,
+                    leftButtonDecorationInfo = ButtonDecorationInfo.back,
+                    codeConfirmForLeft = backFragmentResultHelper.setFuncForResult(backCallback)
+            ))
+        }
     }
 
+    override fun showMovingSuccessful(nextCallback: () -> Unit) {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    pageNumber = Constants.ALERT_FRAGMENT,
+                    message = context.getString(R.string.tw_moving_successful),
+                    iconRes = R.drawable.ic_info_green_80dp,
+                    rightButtonDecorationInfo = ButtonDecorationInfo.next,
+                    codeConfirmForRight = backFragmentResultHelper.setFuncForResult(nextCallback)
+            ))
+        }
+    }
+
+    override fun showAlertExceededLimit(backCallback: () -> Unit) {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    pageNumber = Constants.ALERT_FRAGMENT,
+                    message = context.getString(R.string.tw_exceeded_limit),
+                    iconRes = R.drawable.ic_warning_red_80dp,
+                    leftButtonDecorationInfo = ButtonDecorationInfo.back,
+                    codeConfirmForLeft = backFragmentResultHelper.setFuncForResult(backCallback)
+            ))
+        }
+    }
 
 }
 
@@ -329,7 +358,7 @@ interface IScreenNavigator : ICoreNavigator {
     fun openReprintLabelScreen()
     fun openDefectInfoScreen()
     fun openDefectListScreen()
-    fun openGoodInfoScreen(ean: String?, material: String?)
+    fun openGoodInfoScreen(goodInfo: Bundle)
     fun openSelectGoodScreen()
 
     fun showDefrostingPhaseIsCompleted(nextCallback: () -> Unit)
@@ -342,6 +371,8 @@ interface IScreenNavigator : ICoreNavigator {
     fun showNotSavedDataWillBeLost(yesCallback: () -> Unit)
     fun showAlertNoIpPrinter()
     fun showLabelSentToPrint(nextCallback: () -> Unit)
-    fun showAlertPartNotFound()
+    fun showAlertPartNotFound(backCallback: () -> Unit)
     fun showAlertGoodNotFound(backCallback: () -> Unit)
+    fun showMovingSuccessful(nextCallback: () -> Unit)
+    fun showAlertExceededLimit(backCallback: () -> Unit)
 }

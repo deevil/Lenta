@@ -1,6 +1,8 @@
 package com.lenta.bp16.features.select_good
 
+import androidx.core.os.bundleOf
 import androidx.lifecycle.MutableLiveData
+import com.lenta.bp16.platform.Constants
 import com.lenta.bp16.platform.navigation.IScreenNavigator
 import com.lenta.bp16.repository.DatabaseRepository
 import com.lenta.shared.platform.viewmodel.CoreViewModel
@@ -12,31 +14,50 @@ class GoodSelectViewModel : CoreViewModel() {
 
     @Inject
     lateinit var navigator: IScreenNavigator
+
     @Inject
     lateinit var database: DatabaseRepository
 
     val deviceIp = MutableLiveData("")
+
+    val eanValue = MutableLiveData("")
 
     val enteredEanField = MutableLiveData("")
     val requestFocusEnteredEanField = MutableLiveData(true)
 
     val enabledNextButton = enteredEanField.map { !it.isNullOrBlank() }
 
-    fun onClickNext(){
+    private fun searchGood() {
         launchUITryCatch {
-            val goodEan = database.getGoodByEan(enteredEanField.value.toString())
+            val goodEan = database.getGoodByEan(eanValue.value.toString())
             goodEan?.let {
                 val ean = it.ean
-                val material = it.material
-                navigator.openGoodInfoScreen(ean, material)
+                val material = it.getFormattedMaterial()
+                val name = it.name
+                val goodInfo = bundleOf(
+                        Constants.GOOD_INFO_EAN to ean,
+                        Constants.GOOD_INFO_MATERIAL to material,
+                        Constants.GOOD_INFO_NAME to name
+                )
+                navigator.openGoodInfoScreen(goodInfo)
             } ?: navigator.showAlertGoodNotFound {
                 navigator.openSelectGoodScreen()
             }
         }
     }
 
-    fun onClickMenu(){
-        /*Выход в главное меню*/
+    fun onClickNext() {
+        eanValue.value = enteredEanField.value
+        searchGood()
+    }
+
+    fun onScanResult(data: String) {
+        eanValue.value = data
+        searchGood()
+    }
+
+    fun onClickMenu() {
+        navigator.openMainMenuScreen()
     }
 
 }
