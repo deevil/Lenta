@@ -104,6 +104,7 @@ class TaskCardOpenViewModel : CoreViewModel(), PageSelectionListener {
     private fun handleTaskContentResult(result: TaskContentResult) {
         launchUITryCatch {
             manager.addGoodsInCurrentTask(result)
+            manager.saveStartCurrentTaskInfo()
             navigator.openGoodListScreen()
         }
     }
@@ -127,12 +128,24 @@ class TaskCardOpenViewModel : CoreViewModel(), PageSelectionListener {
     }
 
     fun onBackPressed() {
+        task.value?.let { task ->
+            if (manager.isCurrentTaskWasChanged()) {
+                navigator.showTaskUnsentDataWillBeDeleted(task.name) {
+                    unblockTaskAndExit(task.number)
+                }
+            } else {
+                unblockTaskAndExit(task.number)
+            }
+        }
+    }
+
+    private fun unblockTaskAndExit(taskNumber: String) {
         launchUITryCatch {
             navigator.showProgressLoadingData(::handleFailure)
 
             unblockTaskNetRequest(
                     UnblockTaskParams(
-                            taskNumber = task.value!!.number,
+                            taskNumber = taskNumber,
                             userNumber = sessionInfo.personnelNumber.orEmpty(),
                             deviceIp = deviceInfo.getDeviceIp()
                     )

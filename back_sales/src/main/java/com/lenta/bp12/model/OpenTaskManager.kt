@@ -28,6 +28,8 @@ class OpenTaskManager @Inject constructor(
 
     override var searchFromList = false
 
+    private var startCurrentTaskInfo = ""
+
     override val searchParams = MutableLiveData<TaskSearchParams>()
 
     override val tasks = MutableLiveData<List<TaskOpen>>(emptyList())
@@ -286,7 +288,10 @@ class OpenTaskManager @Inject constructor(
     override fun markGoodsUncounted(materials: List<String>) {
         currentTask.value?.let { task ->
             materials.forEach { material ->
-                task.goods.find { it.material == material }?.isCounted = false
+                task.goods.find { it.material == material }?.let {good ->
+                    good.isCounted = false
+                    good.isMissing = false
+                }
             }
 
             updateCurrentTask(task)
@@ -296,6 +301,16 @@ class OpenTaskManager @Inject constructor(
     override fun clearSearchFromListParams() {
         searchFromList = false
         searchNumber = ""
+    }
+
+    override fun saveStartCurrentTaskInfo() {
+        startCurrentTaskInfo = currentTask.value.toString()
+    }
+
+    override fun isCurrentTaskWasChanged(): Boolean {
+        return if (startCurrentTaskInfo.isNotEmpty()) {
+            currentTask.value.toString() != startCurrentTaskInfo
+        } else false
     }
 
 }
@@ -331,5 +346,7 @@ interface IOpenTaskManager {
     fun markGoodsUncounted(materials: List<String>)
     fun clearSearchFromListParams()
     fun clearCurrentGood()
+    fun saveStartCurrentTaskInfo()
+    fun isCurrentTaskWasChanged(): Boolean
 
 }
