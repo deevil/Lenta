@@ -768,7 +768,9 @@ class GoodInfoOpenViewModel : CoreViewModel() {
     fun onClickMissing() {
         good.value?.let { changedGood ->
             changedGood.isMissing = true
+            changedGood.isCounted = true
             manager.updateCurrentGood(changedGood)
+            manager.updateCurrentTask(task.value)
         }
 
         navigator.goBack()
