@@ -877,16 +877,4 @@ class MarkingInfoViewModel : CoreViewModel(),
         screenNavigator.goBack()
     }
 
-    fun scanMark1() {//todo
-        onScanResult("010460026601136721000004G.8005012345.938000.92NGkg+wRXz36kBFjpfwOub5DBIIpD2iS/DMYpZuuDLU0Y3pZt1z20/1ksr4004wfhDhRxu4dgUV4QN96Qtdih9g==")
-    }
-
-    fun scanMark2() {//todo
-        onScanResult("010460026601136721000003Z.8005012345.938000.92NGkg+wRXz36kBFjpfwOub5DBIIpD2iS/DMYpZuuDLU0Y3pZt1z20/1ksr4004wfhDhRxu4dgUV4QN96Qtdih9g==")
-    }
-
-    fun scanMark3() {//todo
-        onScanResult("010460026601136721000003Y.8005012345.938000.92NGkg+wRXz36kBFjpfwOub5DBIIpD2iS/DMYpZuuDLU0Y3pZt1z20/1ksr4004wfhDhRxu4dgUV4QN96Qtdih9g==")
-    }
-
 }
