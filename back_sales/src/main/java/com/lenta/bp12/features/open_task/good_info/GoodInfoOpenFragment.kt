@@ -45,6 +45,7 @@ class GoodInfoOpenFragment : CoreFragment<FragmentGoodInfoOpenBinding, GoodInfoO
         connectLiveData(vm.rollbackVisibility, getBottomToolBarUIModel()!!.uiModelButton2.visibility)
         connectLiveData(vm.detailsVisibility, getBottomToolBarUIModel()!!.uiModelButton3.visibility)
         connectLiveData(vm.missingVisibility, getBottomToolBarUIModel()!!.uiModelButton4.visibility)
+        connectLiveData(vm.missingEnabled, getBottomToolBarUIModel()!!.uiModelButton4.enabled)
         connectLiveData(vm.rollbackEnabled, getBottomToolBarUIModel()!!.uiModelButton2.enabled)
         connectLiveData(vm.applyEnabled, getBottomToolBarUIModel()!!.uiModelButton5.enabled)
     }

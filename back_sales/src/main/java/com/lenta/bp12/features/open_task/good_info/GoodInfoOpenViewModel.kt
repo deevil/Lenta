@@ -265,6 +265,12 @@ class GoodInfoOpenViewModel : CoreViewModel() {
         }
     }
 
+    val missingEnabled by lazy {
+        quantity.map {
+            it ?: 0.0 == 0.0
+        }
+    }
+
     /**
     Блок инициализации
      */
