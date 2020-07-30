@@ -83,9 +83,6 @@ class PackListViewModel : CoreViewModel() {
                 ).either({ failure ->
                     navigator.openAlertScreen(failure)
                 }) { result ->
-
-                    Logg.d { "--> isAutofix = ${result.isAutofix}" }
-
                     if (result.isAutofix.isSapTrue()) {
                         navigator.showFixStartNextStageSuccessful {
                             navigator.goBack()
