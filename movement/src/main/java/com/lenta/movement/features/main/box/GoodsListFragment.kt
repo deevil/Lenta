@@ -20,10 +20,10 @@ import com.lenta.shared.utilities.extentions.connectLiveData
 import com.lenta.shared.utilities.extentions.provideViewModel
 
 class GoodsListFragment : CoreFragment<FragmentGoodsListBinding, GoodsListViewModel>(),
-    OnScanResultListener,
-    OnBackPresserListener,
-    OnKeyDownListener,
-    ToolbarButtonsClickListener {
+        OnScanResultListener,
+        OnBackPresserListener,
+        OnKeyDownListener,
+        ToolbarButtonsClickListener {
 
     override fun getLayoutId() = R.layout.fragment_goods_list
 
@@ -62,41 +62,41 @@ class GoodsListFragment : CoreFragment<FragmentGoodsListBinding, GoodsListViewMo
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val onClickSelectionListener = View.OnClickListener { clickListener ->
-            clickListener?.let {
-                val position = it.tag as Int
-                vm.selectionsHelper.revert(position = position)
-                binding?.rv?.adapter?.notifyItemChanged(position)
+        binding?.apply {
+            val vm = this@GoodsListFragment.vm
+            val onClickSelectionListener = View.OnClickListener { clickListener ->
+                clickListener?.let {
+                    val position = it.tag as Int
+                    vm.selectionsHelper.revert(position = position)
+                    binding?.rv?.adapter?.notifyItemChanged(position)
+                }
             }
-        }
 
-        binding?.rvConfig = initRecycleAdapterDataBinding(
-                layoutId = R.layout.layout_item_goods_list,
-                itemId = BR.item,
-                onAdapterItemBind = { binding : LayoutItemGoodsListBinding , position ->
-                    binding.tvCounter.tag = position
-                    binding.tvCounter.setOnClickListener(onClickSelectionListener)
-                    binding.selectedForDelete = vm.selectionsHelper.isSelected(position)
-                    recyclerViewKeyHandler?.let {
-                        binding.root.isSelected = it.isSelected(position)
-                    }
-                },
-                onAdapterItemClicked = { position ->
-                    recyclerViewKeyHandler?.let {
-                        if (it.isSelected(position).not()) {
-                            it.selectPosition(position)
+            rvConfig = initRecycleAdapterDataBinding(
+                    layoutId = R.layout.layout_item_goods_list,
+                    itemId = BR.item,
+                    onAdapterItemBind = { binding: LayoutItemGoodsListBinding, position ->
+                        binding.tvCounter.tag = position
+                        binding.tvCounter.setOnClickListener(onClickSelectionListener)
+                        binding.selectedForDelete = vm.selectionsHelper.isSelected(position)
+                        super.onAdapterBindHandler(binding, position)
+                    },
+                    onAdapterItemClicked = { position ->
+                        recyclerViewKeyHandler?.let {
+                            if (it.isSelected(position).not()) {
+                                it.selectPosition(position)
+                            }
                         }
                     }
-                }
 
-        )
+            )
 
-        binding?.apply {
-                recyclerViewKeyHandler = initRecyclerViewKeyHandler(
-                        recyclerView = rv,
-                        items = this@GoodsListFragment.vm.goodsList,
-                        previousPosInfo = recyclerViewKeyHandler?.posInfo?.value
-                )
+            recyclerViewKeyHandler = initRecyclerViewKeyHandler(
+                    recyclerView = rv,
+                    items = this@GoodsListFragment.vm.goodsList,
+                    previousPosInfo = recyclerViewKeyHandler?.posInfo?.value
+            )
+
         }
     }
 
@@ -110,8 +110,9 @@ class GoodsListFragment : CoreFragment<FragmentGoodsListBinding, GoodsListViewMo
     }
 
     override fun onResume() {
-        vm.onResume()
         super.onResume()
+        vm.requestFocusToEan.value = true
+        vm.onResume()
     }
 
     override fun onKeyDown(keyCode: KeyCode): Boolean {

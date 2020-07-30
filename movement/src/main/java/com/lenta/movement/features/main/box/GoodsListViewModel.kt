@@ -75,6 +75,7 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
     fun onResume() {
         updateGoodsList()
         eanCode.postValue("")
+        requestFocusToEan.value = true
     }
 
     fun onBackPressed() {

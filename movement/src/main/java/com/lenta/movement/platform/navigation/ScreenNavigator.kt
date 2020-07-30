@@ -1,7 +1,6 @@
 package com.lenta.movement.platform.navigation
 
 import android.content.Context
-import android.os.Handler
 import androidx.core.content.ContextCompat
 import com.lenta.movement.R
 import com.lenta.movement.exception.InfoFailure
@@ -138,10 +137,16 @@ class ScreenNavigator(
     }
 
     override fun openProductIncorrectForCreateBox(productInfo: ProductInfo) {
+        val productNumber = when(productInfo.materialNumber.length) {
+            in 0..6 -> productInfo.materialNumber
+            else -> productInfo.getMaterialLastSix()
+        }
+        val productName = productInfo.description
+        val productTitle = "$productNumber $productName"
         openAlertScreen(
                 message = context.getString(
                         R.string.alert_product_incorrect_for_create_box,
-                        productInfo.materialNumber
+                        productTitle
                 ),
                 iconRes = com.lenta.shared.R.drawable.ic_warning_red_80dp
         )
@@ -202,11 +207,11 @@ class ScreenNavigator(
                 )
             }
     }
-    override fun openStampWasAddedDialogInAnotherBox() {
+    override fun openStampWasAddedDialogInAnotherBox(box: ExciseBox) {
             runOrPostpone {
                 getFragmentStack()?.push(
                         fragment = AlertFragment.create(
-                                message = context.getString(R.string.stamp_was_added_to_box_msg),
+                                message = context.getString(R.string.stamp_was_added_to_box_msg, box.code),
                                 iconRes = R.drawable.ic_warning_red_80dp,
                                 pageNumber = OPEN_BOX_REWRITE_DIALOG_PAGE_NUMBER,
                                 leftButtonDecorationInfo = ButtonDecorationInfo.back
@@ -445,7 +450,7 @@ interface IScreenNavigator : ICoreNavigator {
 
     fun openStampMaxCountDialog()
     fun openStampWasAddedDialog(yesCallbackFunc: () -> Unit)
-    fun openStampWasAddedDialogInAnotherBox()
+    fun openStampWasAddedDialogInAnotherBox(box: ExciseBox)
 
     fun openEanInvalidDialog()
 

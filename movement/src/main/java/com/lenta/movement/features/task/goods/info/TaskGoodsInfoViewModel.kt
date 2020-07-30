@@ -68,7 +68,12 @@ class TaskGoodsInfoViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
         supplierSelected.switchMap { selectedSupplier ->
             asyncLiveData<Basket> {
                 productInfo.value?.let {
-                    val basket = taskBasketsRepository.getSuitableBasketOrCreate(it, selectedSupplier.orNull())
+                    val signOfDiv = taskManager.getTaskSettings().signsOfDiv
+                    val basket = taskBasketsRepository.getSuitableBasketOrCreate(
+                            it,
+                            selectedSupplier.orNull(),
+                            signOfDiv
+                    )
                     emit(basket)
                 }.orIfNull {
                     Logg.e {
@@ -119,10 +124,13 @@ class TaskGoodsInfoViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
 
     fun onApplyClick() {
         launchUITryCatch {
+            screenNavigator.showProgressLoadingData()
             addProductToRepository()
+            screenNavigator.hideProgress()
             screenNavigator.goBack()
-            currentBasket.value?.let { basketValue ->
-                screenNavigator.openTaskBasketScreen(basketValue.index)
+            productInfo.value?.let { productInfoValue ->
+                val indexOfLastProduct = taskBasketsRepository.getLastIndexOfProduct(productInfoValue)
+                screenNavigator.openTaskBasketScreen(indexOfLastProduct)
             }
         }
     }
@@ -154,12 +162,12 @@ class TaskGoodsInfoViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
     }
 
     private suspend fun searchCode(code: String) {
-            scanInfoHelper.searchCode(code, fromScan = true, isBarCode = true) {
-                with(screenNavigator) {
-                    goBack()
-                    openTaskGoodsInfoScreen(it)
-                }
+        scanInfoHelper.searchCode(code, fromScan = true, isBarCode = true) {
+            with(screenNavigator) {
+                goBack()
+                openTaskGoodsInfoScreen(it)
             }
+        }
     }
 
     override fun onOkInSoftKeyboard(): Boolean {
