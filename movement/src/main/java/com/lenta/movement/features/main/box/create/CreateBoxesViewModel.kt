@@ -11,6 +11,7 @@ import com.lenta.movement.platform.Constants.EMPTY
 import com.lenta.movement.platform.navigation.IScreenNavigator
 import com.lenta.movement.requests.network.*
 import com.lenta.movement.requests.network.models.checkExciseBox.CheckExciseBoxParams
+import com.lenta.movement.requests.network.models.scanInfoNetRequest.ScanInfoParams
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.models.core.ProductType

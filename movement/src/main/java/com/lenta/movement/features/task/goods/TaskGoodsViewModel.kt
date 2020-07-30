@@ -74,9 +74,9 @@ class TaskGoodsViewModel : CoreViewModel(),
     val basketItemList by unsafeLazy {
         baskets.switchMap { list ->
             asyncLiveData<List<SimpleListItem>> {
-                val mappedList = list.map { basket ->
+                val mappedList = list.mapIndexed { index, basket ->
                     SimpleListItem(
-                            number = basket.number,
+                            number = index + 1,
                             title = formatter.getBasketName(basket),
                             subtitle = formatter.getBasketDescription(
                                     basket,
@@ -262,7 +262,7 @@ class TaskGoodsViewModel : CoreViewModel(),
         }
     }
 
-    fun onSaveTaskSuccess(inputTask: SaveTaskResultTask) {
+    private fun onSaveTaskSuccess(inputTask: SaveTaskResultTask) {
         val savedTask = inputTask.toTask()
         taskBasketsRepository.clear()
         screenNavigator.goBack()

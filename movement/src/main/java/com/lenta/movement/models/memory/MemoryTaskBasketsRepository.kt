@@ -22,7 +22,7 @@ class MemoryTaskBasketsRepository(
     private val basketList = mutableListOf<Basket>()
 
     override fun getBasketByIndex(basketIndex: Int): Basket? {
-        return basketList.getOrNull(basketIndex)
+        return basketList.find { it.index == basketIndex }
     }
 
     override fun getAll(): List<Basket> {
@@ -59,9 +59,8 @@ class MemoryTaskBasketsRepository(
             suitableBasket[product] = (suitableBasket[product] ?: 0) + 1
 
             if (basketList.contains(suitableBasket)) {
-                basketList[suitableBasket.index] = suitableBasket
-            } else {
-                basketList.add(suitableBasket.index, suitableBasket)
+                val indexOfSuitable = basketList.indexOf(suitableBasket)
+                basketList[indexOfSuitable] = suitableBasket
             }
         }
     }
@@ -74,17 +73,22 @@ class MemoryTaskBasketsRepository(
         return withContext(Dispatchers.IO) {
             basketList.lastOrNull { basket ->
                 basket.checkSuitableProduct(product, supplier)
-            } ?: Basket(
-                    index = basketList.size,
-                    volume = zmpUtz14V001.getEoVolume() ?: error(NULL_BASKET_VOLUME),
-                    supplier = supplier.takeIf { signOfDiv.contains(GoodsSignOfDivision.LIF_NUMBER) },
-                    isAlco = product.isAlco.takeIf { signOfDiv.contains(GoodsSignOfDivision.ALCO) },
-                    isExciseAlco = product.isExcise.takeIf { signOfDiv.contains(GoodsSignOfDivision.MARK_PARTS) },
-                    isNotExciseAlco = product.isNotExcise.takeIf { signOfDiv.contains(GoodsSignOfDivision.PARTS) },
-                    isUsual = product.isUsual.takeIf { signOfDiv.contains(GoodsSignOfDivision.USUAL) },
-                    isVet = product.isVet.takeIf { signOfDiv.contains(GoodsSignOfDivision.VET) },
-                    isFood = product.isFood.takeIf { signOfDiv.contains(GoodsSignOfDivision.FOOD) }
-            )
+            } ?: let {
+                val index = basketList.lastOrNull()?.index?.plus(1) ?: 0
+                Basket(
+                        index = index,
+                        volume = zmpUtz14V001.getEoVolume() ?: error(NULL_BASKET_VOLUME),
+                        supplier = supplier.takeIf { signOfDiv.contains(GoodsSignOfDivision.LIF_NUMBER) },
+                        isAlco = product.isAlco.takeIf { signOfDiv.contains(GoodsSignOfDivision.ALCO) },
+                        isExciseAlco = product.isExcise.takeIf { signOfDiv.contains(GoodsSignOfDivision.MARK_PARTS) },
+                        isNotExciseAlco = product.isNotExcise.takeIf { signOfDiv.contains(GoodsSignOfDivision.PARTS) },
+                        isUsual = product.isUsual.takeIf { signOfDiv.contains(GoodsSignOfDivision.USUAL) },
+                        isVet = product.isVet.takeIf { signOfDiv.contains(GoodsSignOfDivision.VET) },
+                        isFood = product.isFood.takeIf { signOfDiv.contains(GoodsSignOfDivision.FOOD) }
+                ).also {
+                    basketList.add(it)
+                }
+            }
         }
     }
 
