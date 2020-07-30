@@ -114,6 +114,7 @@ class DiscrepancyListViewModel : CoreViewModel() {
                 goods.value?.get(position)?.material?.let { material ->
                     task.goods.find { it.material == material }?.let { good ->
                         good.isMissing = true
+                        good.isCounted = true
                     }
                 }
             }
