@@ -141,6 +141,10 @@ class ProcessMarkingProductService
         addTypeLastStampScanned(TypeLastStampScanned.BLOCK)
     }
 
+    fun getTotalScannedBlocks() : Int {
+        return currentBlocksDiscrepancies.size
+    }
+
     fun getLastScannedBlock(): TaskBlockInfo? {
         return if (currentBlocksDiscrepancies.isNullOrEmpty()) {
             null
@@ -265,6 +269,12 @@ class ProcessMarkingProductService
 
     fun denialOfFullProductAcceptance(typeDiscrepancies: String) {
         //https://trello.com/c/vcymT9Kp
+        //удаляем всю информацию по блокам
+        taskManager
+                .getReceivingTask()
+                ?.taskRepository
+                ?.getBlocksDiscrepancies()
+                ?.clear()
         //отмечаем все блоки/марки для продукта категорией для брака из параметра GRZ_GRUND_MARK
         blocks.asSequence()
                 .filter { block ->
@@ -279,7 +289,13 @@ class ProcessMarkingProductService
                     apply()
                 }
 
-        //отмечаем продукт
+        //удаляем всю информацию по продукту
+        taskManager
+                .getReceivingTask()
+                ?.taskRepository
+                ?.getProductsDiscrepancies()
+                ?.clear()
+        //отмечаем по продукту все кол-во с категорией из параметра GRZ_GRUND_MARK
         addProduct(productInfo.origQuantity, typeDiscrepancies)
     }
 

@@ -840,7 +840,7 @@ class DiscrepancyListViewModel : CoreViewModel(), PageSelectionListener {
                         ?.toDouble()
                         ?: 0.0
         val numberStampsControl = productInfo.numberStampsControl.toDouble()
-        return isProcessedProduct && countStampsScanned != numberStampsControl
+        return isProcessedProduct && countStampsScanned < numberStampsControl
     }
 
     private fun getManufacturerName(batchInfo: TaskBatchInfo?): String {

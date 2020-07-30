@@ -43,14 +43,21 @@ class MarkingProductFailureViewModel : CoreViewModel() {
 
     val tvMessage: MutableLiveData<String> by lazy {
 
-        val countProductNotProcessed =
+        val confirmedByScanning =
                 productInfo.value
-                        ?.let {
-                            taskManager.getReceivingTask()
-                                    ?.taskRepository
-                                    ?.getProductsDiscrepancies()
-                                    ?.getCountProductNotProcessedOfProduct(it)
-                                    ?: 0.0
+                        ?.let { product ->
+                            val countProcessedBlocks =
+                                    taskManager
+                                            .getReceivingTask()
+                                            ?.taskRepository
+                                            ?.getBlocksDiscrepancies()
+                                            ?.findBlocksDiscrepanciesOfProduct(product)
+                                            ?.filter { block ->
+                                                block.isScan
+                                            }
+                                            ?.size
+                                            .toString()
+                            processMarkingProductService.getCountAttachmentInBlock(countProcessedBlocks)
                         }
                         ?: 0.0
 
@@ -58,7 +65,9 @@ class MarkingProductFailureViewModel : CoreViewModel() {
                 productInfo.value
                         ?.origQuantity
                         ?.toDouble()
-                        .toStringFormatted()
+                        ?: 0.0
+
+        val notConfirmedByScanning = productOrigQuantity - confirmedByScanning
 
         val unit =
                 productInfo.value
@@ -66,7 +75,7 @@ class MarkingProductFailureViewModel : CoreViewModel() {
                         ?.name
                         ?.toLowerCase(Locale.getDefault())
                         .orEmpty()
-        MutableLiveData(context.getString(R.string.marking_product_rejection_dialogue, countProductNotProcessed.toStringFormatted(), "$productOrigQuantity $unit"))
+        MutableLiveData(context.getString(R.string.marking_product_rejection_dialogue, notConfirmedByScanning.toStringFormatted(), "${productOrigQuantity.toStringFormatted()} $unit"))
     }
 
     val enabledPartialFailureBtn: MutableLiveData<Boolean> by lazy {

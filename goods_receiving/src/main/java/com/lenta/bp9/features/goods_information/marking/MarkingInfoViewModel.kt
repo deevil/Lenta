@@ -301,7 +301,7 @@ class MarkingInfoViewModel : CoreViewModel(),
                             val typeDiscrepancies = getCurrentTypeDiscrepancies()
                             val productOrigQuantity = product.origQuantity
                             val totalBlocksProduct = processMarkingProductService.getCountBlocksByAttachments(productOrigQuantity)
-                            val countProcessedBlocksCurrentDiscrepancies = processMarkingProductService.getCountProcessedBlockForDiscrepancies(typeDiscrepancies)
+                            val countProcessedBlocksCurrentDiscrepancies = processMarkingProductService.getTotalScannedBlocks()
                             if (countBlockScannedValue <= 0) { //фиксируем необработанное количество после первого сканирования марок, чтобы не учитывать их в текущей сессии, иначе это кол-во будет уменьшаться и появиться текст Не требуется
                                 unprocessedQuantityOfBlocks.value = totalBlocksProduct - countProcessedBlocksCurrentDiscrepancies
                             }
@@ -313,7 +313,7 @@ class MarkingInfoViewModel : CoreViewModel(),
                                 } else {
                                     checkBoxStampListVisibility.value = true
                                     buildString {
-                                        append(countProcessedBlocksCurrentDiscrepancies.toDouble().toStringFormatted())
+                                        append(countBlockScannedValue.toDouble().toStringFormatted())
                                         append(" ")
                                         append(context.getString(R.string.of))
                                         append(" ")
@@ -329,14 +329,11 @@ class MarkingInfoViewModel : CoreViewModel(),
             }
 
     val checkBoxStampList: MutableLiveData<Boolean> = checkBoxStampListVisibility.map {
-        //проверяем productInfo т.к. он используется в processMarkingProductService.getCountProcessedBlockForDiscrepancies() и если он null, тогда он неинициализирован в processMarkingProductService, и получим lateinit property productInfo has not been initialized
-        productInfo.value
-                ?.let {
-                    val enteredCount = count.value?.toDoubleOrNull() ?: 0.0
-                    val countBlockScanned = processMarkingProductService.getCountProcessedBlockForDiscrepancies(getCurrentTypeDiscrepancies()).toDouble()
-                    countBlockScanned >= enteredCount && enteredCount > 0.0
-                }
-                ?: false
+        val enteredCount = count.value?.toDoubleOrNull() ?: 0.0
+        val countBlockScanned = countScannedBlocks.value ?: 0
+        val typeDiscrepancies = getCurrentTypeDiscrepancies()
+        (typeDiscrepancies != TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_NORM && it == false)
+                || (countBlockScanned >= enteredCount && enteredCount > 0.0)
     }
 
     val enabledApplyButton: MutableLiveData<Boolean> =
