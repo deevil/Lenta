@@ -7,7 +7,6 @@ import androidx.lifecycle.switchMap
 import com.lenta.movement.models.ITaskManager
 import com.lenta.movement.models.SimpleListItem
 import com.lenta.movement.platform.IFormatter
-import com.lenta.movement.platform.extensions.unsafeLazy
 import com.lenta.movement.platform.navigation.IScreenNavigator
 import com.lenta.movement.requests.network.PrintDocumentsNetRequest
 import com.lenta.movement.requests.network.models.documentsToPrint.DocumentsToPrintDocument
@@ -18,6 +17,8 @@ import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.SelectionItemsHelper
 import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
 import com.lenta.shared.utilities.extentions.launchUITryCatch
+import com.lenta.shared.utilities.extentions.unsafeLazy
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 /** ViewModel экрана печати паллетной ведомости */

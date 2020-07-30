@@ -64,7 +64,7 @@ class SelectPersonnelNumberFragment : CoreFragment<FragmentSelectPersonnelNumber
     }
 
     companion object {
-        private const val PAGE_NUMBER = "10/12"
+        private const val PAGE_NUMBER = "13/12"
 
         fun create(codeConfirmation: Int): SelectPersonnelNumberFragment {
             SelectPersonnelNumberFragment().let {

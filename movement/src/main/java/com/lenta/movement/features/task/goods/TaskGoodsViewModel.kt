@@ -2,6 +2,7 @@ package com.lenta.movement.features.task.goods
 
 import android.content.Context
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.switchMap
 import com.lenta.movement.features.main.box.ScanInfoHelper
 import com.lenta.movement.models.*
 import com.lenta.movement.models.repositories.ITaskBasketsRepository
@@ -68,19 +69,24 @@ class TaskGoodsViewModel : CoreViewModel(),
     }
 
     private val baskets = MutableLiveData<List<Basket>>()
-    val basketList = baskets.mapSkipNulls { baskets ->
-        baskets.map { basket ->
-            SimpleListItem(
-                    number = basket.number,
-                    title = formatter.getBasketName(basket),
-                    subtitle = formatter.getBasketDescription(
-                            basket,
-                            taskManager.getTask(),
-                            taskManager.getTaskSettings()
-                    ),
-                    countWithUom = basket.keys.size.toString(),
-                    isClickable = true
-            )
+    val basketItemList by unsafeLazy {
+        baskets.switchMap { list ->
+            asyncLiveData<List<SimpleListItem>> {
+                val mappedList = list.map { basket ->
+                    SimpleListItem(
+                            number = basket.number,
+                            title = formatter.getBasketName(basket),
+                            subtitle = formatter.getBasketDescription(
+                                    basket,
+                                    taskManager.getTask(),
+                                    taskManager.getTaskSettings()
+                            ),
+                            countWithUom = basket.keys.size.toString(),
+                            isClickable = true
+                    )
+                }
+                emit(mappedList)
+            }
         }
     }
 
@@ -123,12 +129,7 @@ class TaskGoodsViewModel : CoreViewModel(),
 
     override fun onOkInSoftKeyboard(): Boolean {
         searchCode(eanCode.value.orEmpty(), fromScan = false)
-
         return true
-    }
-
-    fun onScanResult(data: String) {
-        searchCode(code = data, fromScan = true, isBarCode = true)
     }
 
     fun onDigitPressed(digit: Int) {
@@ -261,11 +262,21 @@ class TaskGoodsViewModel : CoreViewModel(),
         }
     }
 
+    fun onScanResult(data: String) {
+        searchCode(code = data, fromScan = true, isBarCode = true)
+    }
+
     private fun searchCode(code: String, fromScan: Boolean, isBarCode: Boolean? = null) {
         launchUITryCatch {
             scanInfoHelper.searchCode(code, fromScan, isBarCode) { productInfo ->
-                screenNavigator.openTaskGoodsInfoScreen(productInfo)
+                onSearchResult(productInfo)
             }
+        }
+    }
+
+    private fun onSearchResult(productInfo: ProductInfo) {
+        launchUITryCatch {
+            screenNavigator.openTaskGoodsInfoScreen(productInfo)
         }
     }
 

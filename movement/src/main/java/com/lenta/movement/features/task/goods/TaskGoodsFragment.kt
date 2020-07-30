@@ -91,7 +91,7 @@ class TaskGoodsFragment: CoreFragment<FragmentTaskGoodsBinding, TaskGoodsViewMod
                         recyclerView = dataBinding?.processedRecyclerView,
                         selectionItemsHelper = vm.processedSelectionHelper,
                         recyclerViewKeyHandler = processedRecyclerViewKeyHandler,
-                        onClickItem = { position -> vm.onClickProcessedItem(position) }
+                        onClickItem = vm::onClickProcessedItem
                     )
 
                     dataBinding.vm = vm
@@ -130,7 +130,7 @@ class TaskGoodsFragment: CoreFragment<FragmentTaskGoodsBinding, TaskGoodsViewMod
                         binding?.lifecycleOwner?.let { lifecycleOwner ->
                             basketRecyclerViewKeyHandler = RecyclerViewKeyHandler(
                                     recyclerView,
-                                    vm.basketList,
+                                    vm.basketItemList,
                                     lifecycleOwner,
                                     basketRecyclerViewKeyHandler?.posInfo?.value
                             )

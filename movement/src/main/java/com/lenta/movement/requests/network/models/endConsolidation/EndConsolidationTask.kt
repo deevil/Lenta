@@ -24,7 +24,7 @@ data class EndConsolidationTask(
 
         /**Натуральное число*/
         @SerializedName("QNT_POS")
-        val quantityPosition: String,
+        override val quantityPosition: String,
 
         /**Склад комплектации*/
         @SerializedName("LGORT_SRC")
@@ -40,7 +40,7 @@ data class EndConsolidationTask(
 
         /** Тип блокировки (своя/чужая) */
         @SerializedName("BLOCK_TYPE")
-        val blockType: String,
+        override val blockType: String,
 
         /** Имя пользователя */
         @SerializedName("LOCK_USER")
@@ -56,7 +56,7 @@ data class EndConsolidationTask(
 
         /** Общий флаг */
         @SerializedName("IS_CONS")
-        val isCons: String,
+        override val isCons: String,
 
         /** Статус задания */
         @SerializedName("CUR_STAT")

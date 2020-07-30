@@ -127,6 +127,6 @@ class TaskGoodsDetailsFragment :
             }
         }
 
-        private const val PAGE_NUMBER = "10/06"
+        private const val PAGE_NUMBER = "13/06"
     }
 }

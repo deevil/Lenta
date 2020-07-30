@@ -44,6 +44,6 @@ class MainMenuFragment : CoreFragment<FragmentMainMenuBinding, MainMenuViewModel
     }
 
     companion object {
-        private const val PAGE_NUMBER = "10/04"
+        private const val PAGE_NUMBER = "13/04"
     }
 }

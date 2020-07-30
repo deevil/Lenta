@@ -8,7 +8,6 @@ import com.lenta.movement.R
 import com.lenta.movement.databinding.FragmentTaskEoMergeDocsBinding
 import com.lenta.movement.databinding.LayoutItemDocsListBinding
 import com.lenta.movement.platform.extensions.getAppComponent
-import com.lenta.movement.platform.extensions.unsafeLazy
 import com.lenta.movement.requests.network.models.documentsToPrint.DocumentsToPrintDocument
 import com.lenta.shared.platform.activity.OnBackPresserListener
 import com.lenta.shared.platform.fragment.CoreFragment
@@ -17,6 +16,7 @@ import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListener
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
 import com.lenta.shared.utilities.extentions.provideViewModel
+import com.lenta.shared.utilities.extentions.unsafeLazy
 import kotlinx.android.synthetic.main.fragment_task_eo_merge_docs.*
 
 /** Фрагмент печати паллетной ведомости */

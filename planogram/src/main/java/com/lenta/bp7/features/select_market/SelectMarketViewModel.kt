@@ -70,7 +70,6 @@ class SelectMarketViewModel : CoreViewModel(), OnPositionClickListener {
         launchUITryCatch {
             database.getAllMarkets().let { list ->
                 markets.value = list
-
                 if (selectedPosition.value == null) {
                     if (appSettings.lastTK != null) {
                         list.forEachIndexed { index, market ->

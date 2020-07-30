@@ -29,10 +29,10 @@ import com.lenta.shared.utilities.extentions.provideViewModel
 import com.lenta.shared.utilities.state.state
 
 class CreateBoxesFragment : CoreFragment<FragmentCreateBoxesBinding, CreateBoxesViewModel>(),
-    ToolbarButtonsClickListener,
-    ViewPagerSettings,
-    OnScanResultListener,
-    OnBackPresserListener {
+        ToolbarButtonsClickListener,
+        ViewPagerSettings,
+        OnScanResultListener,
+        OnBackPresserListener {
 
     private var productInfo: ProductInfo? by state(null)
 
@@ -68,7 +68,6 @@ class CreateBoxesFragment : CoreFragment<FragmentCreateBoxesBinding, CreateBoxes
                     bottomToolbarUiModel.uiModelButton1.show(ButtonDecorationInfo.back)
                     bottomToolbarUiModel.uiModelButton2.show(ButtonDecorationInfo.rollback)
                     bottomToolbarUiModel.uiModelButton4.show(ButtonDecorationInfo.add)
-
                     connectLiveData(vm.rollbackEnabled, bottomToolbarUiModel.uiModelButton2.enabled)
                     connectLiveData(vm.addAndApplyEnabled, bottomToolbarUiModel.uiModelButton4.enabled)
                 }
@@ -119,10 +118,10 @@ class CreateBoxesFragment : CoreFragment<FragmentCreateBoxesBinding, CreateBoxes
         return when (CreateBoxesPage.values()[position]) {
             CreateBoxesPage.FILLING -> {
                 DataBindingUtil.inflate<LayoutBoxCreatePuckerTabBinding>(
-                    LayoutInflater.from(container.context),
-                    R.layout.layout_box_create_pucker_tab,
-                    container,
-                    false
+                        LayoutInflater.from(container.context),
+                        R.layout.layout_box_create_pucker_tab,
+                        container,
+                        false
                 ).also { layoutBinding ->
                     layoutBinding.vm = vm
                     layoutBinding.lifecycleOwner = viewLifecycleOwner
@@ -130,10 +129,10 @@ class CreateBoxesFragment : CoreFragment<FragmentCreateBoxesBinding, CreateBoxes
             }
             CreateBoxesPage.BOX_LIST -> {
                 DataBindingUtil.inflate<LayoutBoxCreateBoxListTabBinding>(
-                    LayoutInflater.from(container.context),
-                    R.layout.layout_box_create_box_list_tab,
-                    container,
-                    false
+                        LayoutInflater.from(container.context),
+                        R.layout.layout_box_create_box_list_tab,
+                        container,
+                        false
                 ).also { layoutBinding ->
                     vm.boxList.observe(this, Observer {
                         setupRecyclerView(layoutBinding.recyclerView, it, layoutBinding.rvConfig)
@@ -148,29 +147,29 @@ class CreateBoxesFragment : CoreFragment<FragmentCreateBoxesBinding, CreateBoxes
 
                     layoutBinding.vm = vm
                     layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
-                        layoutId = R.layout.layout_item_box_list,
-                        itemId = BR.item,
-                        realisation = object : DataBindingAdapter<LayoutItemBoxListBinding> {
-                            override fun onCreate(binding: LayoutItemBoxListBinding) = Unit
+                            layoutId = R.layout.layout_item_box_list,
+                            itemId = BR.item,
+                            realisation = object : DataBindingAdapter<LayoutItemBoxListBinding> {
+                                override fun onCreate(binding: LayoutItemBoxListBinding) = Unit
 
-                            override fun onBind(binding: LayoutItemBoxListBinding, position: Int) {
-                                binding.counterText.tag = position
-                                binding.counterText.setOnClickListener(onClickSelectionListener)
-                                binding.selectedForDelete = vm.selectionsHelper.isSelected(position)
+                                override fun onBind(binding: LayoutItemBoxListBinding, position: Int) {
+                                    binding.counterText.tag = position
+                                    binding.counterText.setOnClickListener(onClickSelectionListener)
+                                    binding.selectedForDelete = vm.selectionsHelper.isSelected(position)
+                                    recyclerViewKeyHandler?.let {
+                                        binding.root.isSelected = it.isSelected(position)
+                                    }
+                                }
+                            },
+                            onItemClickListener = AdapterView.OnItemClickListener { _, _, position, _ ->
                                 recyclerViewKeyHandler?.let {
-                                    binding.root.isSelected = it.isSelected(position)
+                                    if (it.isSelected(position)) {
+                                        //vm.onClickItemPosition(position)
+                                    } else {
+                                        it.selectPosition(position)
+                                    }
                                 }
                             }
-                        },
-                        onItemClickListener = AdapterView.OnItemClickListener { _, _, position, _ ->
-                            recyclerViewKeyHandler?.let {
-                                if (it.isSelected(position)) {
-                                    //vm.onClickItemPosition(position)
-                                } else {
-                                    it.selectPosition(position)
-                                }
-                            }
-                        }
                     )
 
                     binding?.lifecycleOwner?.let { lifecycleOwner ->
