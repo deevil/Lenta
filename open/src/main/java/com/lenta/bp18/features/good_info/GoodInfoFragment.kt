@@ -25,9 +25,19 @@ class GoodInfoFragment : CoreFragment<FragmentGoodInfoBinding, GoodInfoViewModel
                 ?: throw IllegalArgumentException("There is no data in bundle at key $KEY_WEIGHT_VALUE")
     }
 
-    private val goodInfo by unsafeLazy {
-        arguments?.getBundle(KEY_GOOD_INFO)
-                ?: throw  IllegalArgumentException("There is no data in bundle at key $KEY_GOOD_INFO")
+    private val selectedEan by unsafeLazy {
+        arguments?.getString(KEY_GOOD_EAN)
+                ?: throw  IllegalArgumentException("There is no data in bundle at key $KEY_GOOD_EAN")
+    }
+
+    private val material by unsafeLazy {
+        arguments?.getString(KEY_GOOD_MATERIAL)
+                ?: throw  IllegalArgumentException("There is no data in bundle at key $KEY_GOOD_MATERIAL")
+    }
+
+    private val name by unsafeLazy {
+        arguments?.getString(KEY_GOOD_NAME)
+                ?: throw  IllegalArgumentException("There is no data in bundle at key $KEY_GOOD_NAME")
     }
 
     override fun getLayoutId(): Int = R.layout.fragment_good_info
@@ -35,8 +45,6 @@ class GoodInfoFragment : CoreFragment<FragmentGoodInfoBinding, GoodInfoViewModel
     override fun getPageNumber(): String? = generateScreenNumberFromPostfix(SCREEN_NUMBER)
 
     override fun getViewModel(): GoodInfoViewModel {
-
-        val selectedEan = goodInfo.getString(Constants.GOOD_INFO_EAN)
 
         provideViewModel(GoodInfoViewModel::class.java).let {
             getAppComponent()?.inject(it)
@@ -48,9 +56,6 @@ class GoodInfoFragment : CoreFragment<FragmentGoodInfoBinding, GoodInfoViewModel
     }
 
     override fun setupTopToolBar(topToolbarUiModel: TopToolbarUiModel) {
-        val material = goodInfo.getString(Constants.GOOD_INFO_MATERIAL)
-        val name = goodInfo.getString(Constants.GOOD_INFO_NAME)
-
         topToolbarUiModel.description.value = getString(R.string.good_card)
         topToolbarUiModel.title.value = getString(R.string.title_good_sap_name,
                 material,
@@ -79,8 +84,15 @@ class GoodInfoFragment : CoreFragment<FragmentGoodInfoBinding, GoodInfoViewModel
         private const val KEY_WEIGHT_VALUE = "KEY_WEIGHT_VALUE"
 
         private const val KEY_GOOD_INFO = "KEY_GOOD_INFO"
+        private const val KEY_GOOD_MATERIAL = "KEY_GOOD_MATERIAL"
+        private const val KEY_GOOD_NAME = "KEY_GOOD_NAME"
+        private const val KEY_GOOD_EAN = "KEY_GOOD_EAN"
         fun newInstance(goodInfo: Bundle, weight: String?) = GoodInfoFragment().apply {
-            arguments = bundleOf(KEY_GOOD_INFO to goodInfo, KEY_WEIGHT_VALUE to weight)
+            arguments = bundleOf(KEY_GOOD_EAN to goodInfo.getString(Constants.GOOD_INFO_EAN),
+                                        KEY_GOOD_MATERIAL to goodInfo.getString(Constants.GOOD_INFO_MATERIAL),
+                                        KEY_GOOD_NAME to goodInfo.getString(Constants.GOOD_INFO_NAME),
+                                        KEY_WEIGHT_VALUE to weight
+            )
         }
 
     }
