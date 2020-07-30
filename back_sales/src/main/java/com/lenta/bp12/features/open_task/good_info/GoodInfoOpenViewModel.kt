@@ -738,7 +738,8 @@ class GoodInfoOpenViewModel : CoreViewModel() {
      */
 
     fun onBackPressed() {
-        if (isExistUnsavedData) {
+        val enteredQuantity = quantity.value ?: 0.0
+        if (isExistUnsavedData || enteredQuantity != 0.0) {
             navigator.showUnsavedDataWillBeLost {
                 manager.clearSearchFromListParams()
                 navigator.goBack()
