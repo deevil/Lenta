@@ -533,12 +533,12 @@
 
             <ImageView
                 style="@style/BottomIconStyle"
-                android:onClick="@{(v) -> vm.scanMark1()}"
+                android:onClick="@{(v) -> vm.screenNavigator.openESInfoScreen()}"
                 android:src="@drawable/ic_scan_barcode_es_white_32dp" />
 
             <ImageView
                 style="@style/BottomIconStyle"
-                android:onClick="@{(v) -> vm.scanMark2()}"
+                android:onClick="@{(v) -> vm.screenNavigator.openEanInfoScreen()}"
                 android:src="@drawable/ic_scan_barcode_white_32dp" />
 
         </LinearLayout>

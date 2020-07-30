@@ -7,7 +7,7 @@
     <dimen name="size_24dp">24dp</dimen>
     <dimen name="size_28dp">28dp</dimen>
     <dimen name="size_32dp">32dp</dimen>
-    <dimen name="tv_product_section_id_30dp">28dp</dimen>
+    <dimen name="tv_product_section_id_30dp">30dp</dimen>
     <dimen name="spinner_quality_height">32dp</dimen>
     <dimen name="text_size_12sp">12sp</dimen>
 
