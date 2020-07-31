@@ -61,9 +61,7 @@ class GoodsListFragment : CoreFragment<FragmentGoodsListBinding, GoodsListViewMo
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
         binding?.let { layoutBinding ->
-
             val onClickSelectionListener = View.OnClickListener { clickListener ->
                 clickListener?.let {
                     val position = it.tag as Int
@@ -79,15 +77,8 @@ class GoodsListFragment : CoreFragment<FragmentGoodsListBinding, GoodsListViewMo
                         binding.tvCounter.tag = position
                         binding.tvCounter.setOnClickListener(onClickSelectionListener)
                         binding.selectedForDelete = vm.selectionsHelper.isSelected(position)
-                    },
-                    onAdapterItemClicked = { position ->
-                        recyclerViewKeyHandler?.let {
-                            if (it.isSelected(position).not()) {
-                                it.selectPosition(position)
-                            }
-                        }
+                        onAdapterBindHandler(binding, position)
                     }
-
             )
 
             recyclerViewKeyHandler = initRecyclerViewKeyHandler(
@@ -95,7 +86,6 @@ class GoodsListFragment : CoreFragment<FragmentGoodsListBinding, GoodsListViewMo
                     items = vm.goodsList,
                     previousPosInfo = recyclerViewKeyHandler?.posInfo?.value
             )
-
         }
     }
 

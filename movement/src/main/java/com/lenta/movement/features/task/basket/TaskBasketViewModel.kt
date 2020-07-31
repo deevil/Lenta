@@ -94,9 +94,9 @@ class TaskBasketViewModel() : CoreViewModel(),
                     .forEach { doRemoveProduct ->
                         basket?.remove(doRemoveProduct)
                     }
-            basket.takeIf { it.isNullOrEmpty() }?.let{
-                taskBasketsRepository::removeBasket
-            }
+            basket.takeIf { it.isNullOrEmpty() }?.let(
+                    taskBasketsRepository::removeBasket
+            )
             selectionsHelper.clearPositions()
             goods.value = getGoods()
         }
