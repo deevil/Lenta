@@ -4,11 +4,12 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.AdapterView
 import androidx.databinding.DataBindingUtil
 import com.lenta.movement.BR
 import com.lenta.movement.R
-import com.lenta.movement.databinding.*
+import com.lenta.movement.databinding.FragmentTaskListBinding
+import com.lenta.movement.databinding.LayoutItemTaskListBinding
+import com.lenta.movement.databinding.LayoutTaskListToProcessTabBinding
 import com.lenta.movement.platform.extensions.getAppComponent
 import com.lenta.shared.keys.KeyCode
 import com.lenta.shared.keys.OnKeyDownListener
@@ -18,8 +19,6 @@ import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListener
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
-import com.lenta.shared.utilities.databinding.DataBindingAdapter
-import com.lenta.shared.utilities.databinding.DataBindingRecyclerViewConfig
 import com.lenta.shared.utilities.databinding.RecyclerViewKeyHandler
 import com.lenta.shared.utilities.databinding.ViewPagerSettings
 import com.lenta.shared.utilities.extentions.provideViewModel
@@ -73,37 +72,46 @@ class TaskListFragment : CoreFragment<FragmentTaskListBinding, TaskListViewModel
 
     override fun getPagerItemView(container: ViewGroup, position: Int): View {
         return when (TaskListPage.values()[position]) {
-            TaskListPage.TO_PROCESS -> {
-                DataBindingUtil.inflate<LayoutTaskListToProcessTabBinding>(
-                        LayoutInflater.from(context),
-                        R.layout.layout_task_list_to_process_tab,
-                        container,
-                        false
-                ).apply {
-                        rvConfig = initRecycleAdapterDataBinding<LayoutItemTaskListBinding>(
-                                layoutId = R.layout.layout_item_task_list,
-                                itemId = BR.item,
-                                onAdapterItemClicked = { position ->
-                                    taskListRecyclerViewKeyHandler?.onItemClicked(position)
-                                }
-                        )
-
-                        dataBindingViewModel = this@TaskListFragment.vm
-                        lifecycleOwner = viewLifecycleOwner
-
-                        taskListRecyclerViewKeyHandler = initRecyclerViewKeyHandler(
-                                recyclerView = recyclerView,
-                                items = vm.taskItemList,
-                                previousPosInfo = taskListRecyclerViewKeyHandler?.posInfo?.value,
-                                onClickHandler = vm::onClickTaskListItem
-                        )
-                }.root
-            }
-
-            TaskListPage.SEARCH -> {
-                View(context)
-            }
+            TaskListPage.TO_PROCESS -> inflateToProcessTab(container)
+            TaskListPage.SEARCH -> inflateSearchTab(container)
         }
+    }
+
+    private fun inflateToProcessTab(container: ViewGroup?) : View {
+        return DataBindingUtil.inflate<LayoutTaskListToProcessTabBinding>(
+                LayoutInflater.from(context),
+                R.layout.layout_task_list_to_process_tab,
+                container,
+                false
+        ).let { layoutBinding ->
+            layoutBinding.rvConfig = initRecycleAdapterDataBinding(
+                    layoutId = R.layout.layout_item_task_list,
+                    itemId = BR.item,
+                    onAdapterItemBind = { binding: LayoutItemTaskListBinding, position ->
+                        taskListRecyclerViewKeyHandler?.let {
+                            binding.root.isSelected = it.isSelected(position)
+                        }
+                    },
+                    onAdapterItemClicked = { position ->
+                        taskListRecyclerViewKeyHandler?.onItemClicked(position)
+                    }
+            )
+
+            layoutBinding.dataBindingViewModel = vm
+            layoutBinding.lifecycleOwner = viewLifecycleOwner
+
+            taskListRecyclerViewKeyHandler = initRecyclerViewKeyHandler(
+                    recyclerView = layoutBinding.recyclerView,
+                    items = vm.taskItemList,
+                    previousPosInfo = taskListRecyclerViewKeyHandler?.posInfo?.value,
+                    onClickHandler = vm::onClickTaskListItem
+            )
+            layoutBinding.root
+        }
+    }
+
+    private fun inflateSearchTab(container: ViewGroup?): View {
+        return View(context) //TODO 
     }
 
     override fun getTextTitle(position: Int): String {
