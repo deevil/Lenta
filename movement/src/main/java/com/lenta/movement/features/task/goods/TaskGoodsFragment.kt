@@ -87,16 +87,14 @@ class TaskGoodsFragment : CoreFragment<FragmentTaskGoodsBinding, TaskGoodsViewMo
                         R.layout.layout_task_goods_processed_tab,
                         container,
                         false
-                ).apply {
-                    val vm = this@TaskGoodsFragment.vm
-
+                ).let { layoutBinding ->
                     val onClickSelectionListener = View.OnClickListener { clickListener ->
                         val itemPosition = clickListener.tag as Int
                         vm.processedSelectionHelper.revert(position = itemPosition)
-                        processedRecyclerView.adapter?.notifyItemChanged(itemPosition)
+                        layoutBinding.processedRecyclerView.adapter?.notifyItemChanged(itemPosition)
                     }
 
-                    rvConfig = initRecycleAdapterDataBinding(
+                    layoutBinding.rvConfig = initRecycleAdapterDataBinding(
                             layoutId = R.layout.layout_item_simple,
                             itemId = BR.item,
                             onAdapterItemBind = { binding: LayoutItemSimpleBinding, position ->
@@ -117,17 +115,17 @@ class TaskGoodsFragment : CoreFragment<FragmentTaskGoodsBinding, TaskGoodsViewMo
                                 }
                             }
                     )
-                    this.vm = vm
-                    this.lifecycleOwner = viewLifecycleOwner
+                    layoutBinding.vm = vm
+                    layoutBinding.lifecycleOwner = viewLifecycleOwner
 
                     processedRecyclerViewKeyHandler = initRecyclerViewKeyHandler(
-                            recyclerView = processedRecyclerView,
+                            recyclerView = layoutBinding.processedRecyclerView,
                             items = vm.processedList,
                             previousPosInfo = recyclerViewKeyHandler?.posInfo?.value,
                             onClickHandler = vm::onClickProcessedItem
                     )
-
-                }.root
+                    layoutBinding.root
+                }
             }
             TaskGoodsPage.BASKETS -> {
                 DataBindingUtil.inflate<LayoutTaskGoodsBucketsTabBinding>(
@@ -135,16 +133,14 @@ class TaskGoodsFragment : CoreFragment<FragmentTaskGoodsBinding, TaskGoodsViewMo
                         R.layout.layout_task_goods_buckets_tab,
                         container,
                         false
-                ).apply {
-                    val vm = this@TaskGoodsFragment.vm
-
+                ).let { layoutBinding ->
                     val onClickSelectionListener = View.OnClickListener { clickListener ->
                         val itemPosition = clickListener.tag as Int
                         vm.processedSelectionHelper.revert(position = itemPosition)
-                        basketRecyclerView.adapter?.notifyItemChanged(itemPosition)
+                        layoutBinding.basketRecyclerView.adapter?.notifyItemChanged(itemPosition)
                     }
 
-                    rvConfig = initRecycleAdapterDataBinding(
+                    layoutBinding.rvConfig = initRecycleAdapterDataBinding(
                             layoutId = R.layout.layout_item_simple,
                             itemId = BR.item,
                             onAdapterItemBind = { binding: LayoutItemSimpleBinding, position ->
@@ -160,18 +156,17 @@ class TaskGoodsFragment : CoreFragment<FragmentTaskGoodsBinding, TaskGoodsViewMo
                             }
                     )
 
-                    this.vm = vm
-                    this.lifecycleOwner = binding?.lifecycleOwner
+                    layoutBinding.vm = vm
+                    layoutBinding.lifecycleOwner = viewLifecycleOwner
 
                     basketRecyclerViewKeyHandler = initRecyclerViewKeyHandler(
-                            recyclerView = basketRecyclerView,
+                            recyclerView = layoutBinding.basketRecyclerView,
                             items = vm.basketItemList,
                             previousPosInfo = basketRecyclerViewKeyHandler?.posInfo?.value,
                             onClickHandler = vm::onClickBasketItem
                     )
-
-
-                }.root
+                    layoutBinding.root
+                }
             }
         }
     }

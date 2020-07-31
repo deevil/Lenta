@@ -167,7 +167,7 @@ class CreateBoxesViewModel : CoreViewModel(),
         }
     }
 
-    private fun findAnotherBoxWithThisStamp(stampCode: String): ExciseBox? {
+    private fun findBoxByStampCode(stampCode: String): ExciseBox? {
         val productInfoValue = productInfo.value
         return productInfoValue?.let {
              boxesRepository.getBoxesByProduct(it).find { box ->
@@ -191,7 +191,7 @@ class CreateBoxesViewModel : CoreViewModel(),
                     return
                 }
 
-                findAnotherBoxWithThisStamp(stampCode)?.let {
+                findBoxByStampCode(stampCode)?.let {
                     screenNavigator.openStampWasAddedDialogInAnotherBox(it)
                     return
                 }
