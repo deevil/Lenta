@@ -1,5 +1,6 @@
 package com.lenta.bp18.features.select_market
 
+import android.content.Context
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import app_update.AppUpdateInstaller
@@ -21,6 +22,7 @@ import com.lenta.shared.requests.network.ServerTimeRequest
 import com.lenta.shared.requests.network.ServerTimeRequestParam
 import com.lenta.shared.settings.IAppSettings
 import com.lenta.shared.utilities.Logg
+import com.lenta.shared.utilities.extentions.getDeviceIp
 import com.lenta.shared.utilities.extentions.launchUITryCatch
 import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.view.OnPositionClickListener
@@ -64,6 +66,9 @@ class SelectMarketViewModel : CoreViewModel(), OnPositionClickListener {
     @Inject
     lateinit var resourceManager: ISharedStringResourceManager
 
+    @Inject
+    lateinit var context: Context
+
     private val markets: MutableLiveData<List<MarketUI>> = MutableLiveData()
     val marketsNames: MutableLiveData<List<String>> = markets.map { markets ->
         markets?.map { it.number }
@@ -79,11 +84,9 @@ class SelectMarketViewModel : CoreViewModel(), OnPositionClickListener {
 
     val currentMarket = MutableLiveData("")
 
-    val deviceIp = MutableLiveData("")
-
     init {
         launchUITryCatch {
-            currentMarket.value = MarketInfoParams(deviceIp.value.toString(), "1", "").toString()
+            currentMarket.value = MarketInfoParams(context.getDeviceIp(), "1", "").toString()
             Logg.d { "Current market:${currentMarket.value}" }
             database.getAllMarkets().let { list ->
 
@@ -156,8 +159,6 @@ class SelectMarketViewModel : CoreViewModel(), OnPositionClickListener {
         navigator.hideProgress()
         timeMonitor.setServerTime(time = serverTime.time, date = serverTime.date)
 
-        // Раскомментировать для удаление сохраненных данных
-        //checkData.clearSavedData()
         navigator.openSelectGoodScreen()
 
     }
