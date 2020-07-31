@@ -1,7 +1,7 @@
 package com.lenta.bp18.request.network
 
-import com.lenta.bp18.request.model.GoodInfoParams
-import com.lenta.bp18.request.model.GoodInfoResult
+import com.lenta.bp18.request.model.params.GoodInfoParams
+import com.lenta.bp18.request.model.result.GoodInfoResult
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.fmp.ObjectRawStatus
 import com.lenta.shared.functional.Either
