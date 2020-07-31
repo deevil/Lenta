@@ -150,9 +150,7 @@ class CreateBoxesViewModel : CoreViewModel(),
                 .forEach { doRemovePosition ->
                     productInfo.value?.let { productInfoValue ->
                         val boxes = boxesRepository.getBoxesByProduct(productInfoValue)
-                        boxes.getOrNull(doRemovePosition)?.let {
-                            boxesRepository.removeBox(it)
-                        }
+                        boxes.getOrNull(doRemovePosition)?.let (boxesRepository::removeBox)
                     }
                 }
         updateBoxes()
