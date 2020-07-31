@@ -12,8 +12,6 @@ import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.SelectionItemsHelper
 import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
 import com.lenta.shared.utilities.extentions.*
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 import java.util.*
 import javax.inject.Inject
 
@@ -105,7 +103,7 @@ class TaskBasketViewModel() : CoreViewModel(),
     }
 
     fun onCharacteristicsClick() {
-        basketIndex.value?.let{
+        basketIndex.value?.let {
             screenNavigator.openTaskBasketCharacteristicsScreen(it)
         }
     }
@@ -137,7 +135,7 @@ class TaskBasketViewModel() : CoreViewModel(),
     }
 
     private fun getGoods(): List<Pair<ProductInfo, Int>> {
-        return basketIndex.value?.let{ basketIndexValue ->
+        return basketIndex.value?.let { basketIndexValue ->
             taskBasketsRepository.getBasketByIndex(basketIndexValue)?.toList()
         }.orEmpty()
     }
@@ -151,12 +149,10 @@ class TaskBasketViewModel() : CoreViewModel(),
     }
 
     private fun addProductToRep(productInfo: ProductInfo) {
-        launchUITryCatch {
-            withContext(Dispatchers.IO) {
-                taskBasketsRepository.addProduct(
-                        product = productInfo,
-                        count = ONE_PRODUCT_TO_ADD)
-            }
+        launchAsyncTryCatch {
+            taskBasketsRepository.addProduct(
+                    product = productInfo,
+                    count = ONE_PRODUCT_TO_ADD)
         }
     }
 

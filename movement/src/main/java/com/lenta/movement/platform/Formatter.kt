@@ -44,60 +44,72 @@ class Formatter : IFormatter {
 
         return buildString {
             val signsOfDiv = settings.signsOfDiv
+            val firstProductInBasket = basket.keys.firstOrNull()
 
             /** <Тип ГИС-контроля> - если в справочнике установлен признак «DIV_ALCO»,
              * то отображать <А> для алкогольной корзины, если установлен признак «DIV_VET»,
              * то отображать <В> для ветеринарных товаров и <О> для обычных товаров, если
              * установлен признак «DIV_USUAL». */
-            if (signsOfDiv.contains(GoodsSignOfDivision.ALCO) && basket.keys.first().isAlco) {
-                append(A_AND_SLASH)
-            } else if (signsOfDiv.contains(GoodsSignOfDivision.VET) && basket.keys.first().isVet) {
-                append(B_AND_SLASH)
-            } else if (signsOfDiv.contains(GoodsSignOfDivision.USUAL) && basket.keys.first().isUsual) {
-                append(O_AND_SLASH)
+            val isAlcoInSigns = signsOfDiv.contains(GoodsSignOfDivision.ALCO)
+            val isVetInSigns = signsOfDiv.contains(GoodsSignOfDivision.VET)
+            val isUsualInSigns = signsOfDiv.contains(GoodsSignOfDivision.USUAL)
+
+            val symbolToAppend = when {
+                isAlcoInSigns && firstProductInBasket?.isAlco == true -> A_AND_SLASH
+                isVetInSigns && firstProductInBasket?.isVet == true -> B_AND_SLASH
+                isUsualInSigns && firstProductInBasket?.isUsual == true -> O_AND_SLASH
+                else -> ""
             }
+            append(symbolToAppend)
+
             //<Вид товара>
-            if (signsOfDiv.contains(GoodsSignOfDivision.MTART)){
-                append("${basket.keys.first().materialType}/")
+            val isMtartInSigns = signsOfDiv.contains(GoodsSignOfDivision.MTART)
+            if (isMtartInSigns) {
+                append("${firstProductInBasket?.materialType}/")
             }
             //ПП – <номер поставщика>
-            if (signsOfDiv.contains(GoodsSignOfDivision.LIF_NUMBER)) {
-                val supplier = basket.keys.firstOrNull()?.suppliers?.firstOrNull()
+            val isLifNumberInSigns = signsOfDiv.contains(GoodsSignOfDivision.LIF_NUMBER)
+            if (isLifNumberInSigns) {
+                val supplier = firstProductInBasket?.suppliers?.firstOrNull()
                 supplier?.code?.takeIf { it.isNotEmpty() }?.let { supplierCode ->
                     append("$PP - ${supplierCode}/")
                 }
             }
 
             //С-<номер секции>
-            if (signsOfDiv.contains(GoodsSignOfDivision.SECTION)) {
-                append("$SECTION_CHAR - ${basket.keys.first().sectionId}/")
+            val isSectionInSigns = signsOfDiv.contains(GoodsSignOfDivision.SECTION)
+            if (isSectionInSigns) {
+                append("$SECTION_CHAR - ${firstProductInBasket?.sectionId}/")
             }
 
             /**<Марочный или партионный> - отображать как <М> (марочный, есть признак IS_EXC)
              * или <П> (партионный, нет признака IS_EXC)*/
-            if (signsOfDiv.contains(GoodsSignOfDivision.MARK_PARTS)) {
-                if (basket.keys.first().isExcise) {
-                    append(M_AND_SLASH)
-                } else if (basket.keys.first().isNotExcise) {
-                    append(P_AND_SLASH)
+            val isMarkPartsInSigns = signsOfDiv.contains(GoodsSignOfDivision.MARK_PARTS)
+            if (isMarkPartsInSigns && firstProductInBasket != null) {
+                val charToAppend = when {
+                    firstProductInBasket.isExcise -> M_AND_SLASH
+                    firstProductInBasket.isNotExcise -> P_AND_SLASH
+                    else -> ""
                 }
+                append(charToAppend)
             }
 
             //<Номер партии>
 //            if (signsOfDiv.contains(GoodsSignOfDivision.PARTS)) {
-//                append(basket.keys.firstOrNull().)
+//                append(basket.keys.firstOrNull()?.batchNumber) TODO добавить когда появится деление товаров по категориям
 //            }
 
-            if (signsOfDiv.contains(GoodsSignOfDivision.FOOD)) {
-                if (basket.keys.first().isFood) {
-                    append(BASKET_DESC_FOOD_CHAR_AND_SLASH)
-                } else {
-                    append(BASKET_DESC_NOT_FOOD_CHAR_AND_SLASH)
-                }
+            //Еда/Не еда
+            val isFoodInSigns = signsOfDiv.contains(GoodsSignOfDivision.FOOD)
+            if (isFoodInSigns && firstProductInBasket != null) {
+                val charToAppend = if (firstProductInBasket.isFood) BASKET_DESC_FOOD_CHAR_AND_SLASH
+                else BASKET_DESC_NOT_FOOD_CHAR_AND_SLASH
+                append(charToAppend)
             }
 
-            if (signsOfDiv.contains(GoodsSignOfDivision.MATERIAL_NUMBER)) {
-                append(basket.keys.first().getMaterialLastSix())
+            val isMaterialNumberInSigns = signsOfDiv.contains(GoodsSignOfDivision.MATERIAL_NUMBER)
+            if (isMaterialNumberInSigns) {
+                append(firstProductInBasket?.getMaterialLastSix())
             }
         }
     }
