@@ -25,7 +25,6 @@ class SelectMarketFragment : CoreFragment<FragmentSelectMarketBinding, SelectMar
     override fun getViewModel(): SelectMarketViewModel {
         provideViewModel(SelectMarketViewModel::class.java).let {
             getAppComponent()?.inject(it)
-            it.deviceIp.value = requireContext().getDeviceIp()
             return it
         }
     }
