@@ -57,6 +57,7 @@ class GoodInfoOpenFragment : CoreFragment<FragmentGoodInfoOpenBinding, GoodInfoO
             R.id.b_4 -> vm.onClickMissing()
             //R.id.b_4 -> vm.onScanResult("147300249826851018001FZSIZAB5I6KZKWEQKPKZJHW6MYKVGAETXLPV7M5AIF7OXTQFIM347EWQGXAK65QGJFKTR7EQDHJQTJFSW5DNWTBU3BRLKVM7D6YZMYRBV6IOQY5ZXLPKLBHUZPBTRFTLQ")
             //R.id.b_4 -> vm.onScanResult("22N00001CRDKFRWFBZ90123456789012345678901234567890123456789000000001") // Марка 156641
+            //R.id.b_4 -> vm.onScanResult("4607149780488") // ШК
             R.id.b_5 -> vm.onClickApply()
         }
     }

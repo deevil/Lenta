@@ -430,18 +430,16 @@ class GoodInfoCreateViewModel : CoreViewModel() {
     }
 
     private fun setDefaultQuantity(good: GoodCreate) {
-        if (good.kind == GoodKind.COMMON) {
+        quantityField.value = if (good.kind == GoodKind.COMMON) {
             if (good.isDifferentUnits()) {
                 with(ScanCodeInfo(originalSearchNumber)) {
                     val converted = if (weight > 0.0) getConvertedQuantity(good.innerQuantity) else 0.0
-                    quantityField.value = converted.dropZeros()
+                    converted.dropZeros()
                 }
             } else {
-                if (isEanLastScanned) {
-                    quantityField.value = "1"
-                }
+                if (isEanLastScanned) "1" else "0"
             }
-        }
+        } else "0"
     }
 
     private fun setScreenStatus(good: GoodCreate) {
