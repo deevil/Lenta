@@ -5,6 +5,7 @@ import android.view.View
 import androidx.core.os.bundleOf
 import com.lenta.bp18.R
 import com.lenta.bp18.databinding.FragmentGoodInfoBinding
+import com.lenta.bp18.model.pojo.GoodParams
 import com.lenta.bp18.platform.Constants
 import com.lenta.bp18.platform.extention.getAppComponent
 import com.lenta.shared.platform.activity.OnBackPresserListener
@@ -13,31 +14,13 @@ import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListener
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
-import com.lenta.shared.utilities.extentions.generateScreenNumberFromPostfix
-import com.lenta.shared.utilities.extentions.getDeviceId
-import com.lenta.shared.utilities.extentions.provideViewModel
-import com.lenta.shared.utilities.extentions.unsafeLazy
+import com.lenta.shared.utilities.extentions.*
 
 class GoodInfoFragment : CoreFragment<FragmentGoodInfoBinding, GoodInfoViewModel>(), ToolbarButtonsClickListener, OnBackPresserListener {
 
-    private val weight by unsafeLazy {
-        arguments?.getString(KEY_WEIGHT_VALUE)
-                ?: throw IllegalArgumentException("There is no data in bundle at key $KEY_WEIGHT_VALUE")
-    }
-
-    private val selectedEan by unsafeLazy {
-        arguments?.getString(KEY_GOOD_EAN)
-                ?: throw  IllegalArgumentException("There is no data in bundle at key $KEY_GOOD_EAN")
-    }
-
-    private val material by unsafeLazy {
-        arguments?.getString(KEY_GOOD_MATERIAL)
-                ?: throw  IllegalArgumentException("There is no data in bundle at key $KEY_GOOD_MATERIAL")
-    }
-
-    private val name by unsafeLazy {
-        arguments?.getString(KEY_GOOD_NAME)
-                ?: throw  IllegalArgumentException("There is no data in bundle at key $KEY_GOOD_NAME")
+    private val goodParams by unsafeLazy {
+        arguments?.getParcelable<GoodParams>(KEY_GOOD_PARAMS)
+                ?: throw IllegalArgumentException("There is no data in bundle at key $KEY_GOOD_PARAMS")
     }
 
     override fun getLayoutId(): Int = R.layout.fragment_good_info
@@ -48,14 +31,17 @@ class GoodInfoFragment : CoreFragment<FragmentGoodInfoBinding, GoodInfoViewModel
 
         provideViewModel(GoodInfoViewModel::class.java).let {
             getAppComponent()?.inject(it)
-            it.deviceIp.value = context!!.getDeviceId()
-            it.selectedEan.value = selectedEan
-            it.weight.value = weight.toInt()
+            it.deviceIp.value = requireContext().getDeviceIp()
+            it.selectedEan.value = goodParams.ean
+            it.weight.value = goodParams.weight.toInt()
             return it
         }
     }
 
     override fun setupTopToolBar(topToolbarUiModel: TopToolbarUiModel) {
+        val material = goodParams.material
+        val name = goodParams.name
+
         topToolbarUiModel.description.value = getString(R.string.good_card)
         topToolbarUiModel.title.value = getString(R.string.title_good_sap_name,
                 material,
@@ -81,18 +67,11 @@ class GoodInfoFragment : CoreFragment<FragmentGoodInfoBinding, GoodInfoViewModel
 
     companion object {
         const val SCREEN_NUMBER = Constants.GOODS_INFO_FRAGMENT
-        private const val KEY_WEIGHT_VALUE = "KEY_WEIGHT_VALUE"
 
-        private const val KEY_GOOD_INFO = "KEY_GOOD_INFO"
-        private const val KEY_GOOD_MATERIAL = "KEY_GOOD_MATERIAL"
-        private const val KEY_GOOD_NAME = "KEY_GOOD_NAME"
-        private const val KEY_GOOD_EAN = "KEY_GOOD_EAN"
-        fun newInstance(goodInfo: Bundle, weight: String?) = GoodInfoFragment().apply {
-            arguments = bundleOf(KEY_GOOD_EAN to goodInfo.getString(Constants.GOOD_INFO_EAN),
-                                        KEY_GOOD_MATERIAL to goodInfo.getString(Constants.GOOD_INFO_MATERIAL),
-                                        KEY_GOOD_NAME to goodInfo.getString(Constants.GOOD_INFO_NAME),
-                                        KEY_WEIGHT_VALUE to weight
-            )
+        private const val KEY_GOOD_PARAMS = "KEY_GOOD_PARAMS"
+
+        fun newInstance(goodParams: GoodParams) = GoodInfoFragment().apply {
+            arguments = bundleOf(KEY_GOOD_PARAMS to goodParams)
         }
 
     }

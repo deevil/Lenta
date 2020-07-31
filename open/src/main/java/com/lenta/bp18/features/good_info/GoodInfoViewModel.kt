@@ -54,36 +54,28 @@ class GoodInfoViewModel : SendDataViewModel(), OnPositionClickListener {
     private fun setGoodInfo(){
         launchUITryCatch {
             val good = database.getGoodByEan(selectedEan.value.toString())
-            val uom: String
-            val quantity: Int?
-            if (weight.value != 0) {
-                quantity = weight.value?.div(Constants.CONVERT_TO_KG)
-                uom = Uom.KG.name
+            val (quantity: Int?, uom: String?) = if (weight.value != 0) {
+                weight.value?.div(Constants.CONVERT_TO_KG) to Uom.KG.name
             } else {
                 when (good?.uom) {
-                    Uom.ST -> {
-                        quantity = Constants.QUANTITY_DEFAULT_VALUE_1
-                        uom = Uom.ST.name
-                    }
+                    Uom.ST -> Constants.QUANTITY_DEFAULT_VALUE_1 to Uom.ST.name
                     Uom.KAR -> {
                         val uomInfo = database.getEanInfoByEan(good.ean)
-                        quantity = uomInfo?.umrez?.div(uomInfo.umren)
+                        val uomDiv= uomInfo?.umrez?.div(uomInfo.umren)
                                 ?: Constants.QUANTITY_DEFAULT_VALUE_0
-                        uom = Uom.KAR.name
+                        uomDiv  to Uom.KAR.name
                     }
                     Uom.G -> {
-                        quantity = Constants.QUANTITY_DEFAULT_VALUE_0
-                        uom = Uom.G.name
+                        Constants.QUANTITY_DEFAULT_VALUE_0 to Uom.G.name
                     }
                     else -> {
-                        quantity = Constants.QUANTITY_DEFAULT_VALUE_0
-                        uom = Uom.DEFAULT.name
+                        Constants.QUANTITY_DEFAULT_VALUE_0 to  Uom.DEFAULT.name
                     }
                 }
             }
 
             quantityField.value = "$quantity $uom"
-            /*ШК по индикатору (10). Осталось понять как его получить*/
+            /*ШК по индикатору (10) для GS1, для EAN13 не заполнять*/
             //partNumberField.value = /*значение*/
 
             val groupList = database.getAllGoodGroup()
@@ -111,7 +103,7 @@ class GoodInfoViewModel : SendDataViewModel(), OnPositionClickListener {
 
     fun onClickBack() {
         with(navigator) {
-            showConfirmSaveData(::goBack) {
+            showConfirmSaveData{
                 goBack()
                 openSelectGoodScreen()
             }
@@ -120,7 +112,7 @@ class GoodInfoViewModel : SendDataViewModel(), OnPositionClickListener {
 
     fun onClickComplete() {
         with(navigator) {
-            showConfirmOpeningPackage(::goBack) {
+            showConfirmOpeningPackage {
                 showAlertSuccessfulOpeningPackage(::openSelectGoodScreen)
             }
         }

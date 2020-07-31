@@ -32,7 +32,7 @@ class SelectGoodFragment : CoreFragment<FragmentSelectGoodsBinding, SelectGoodVi
     }
 
     override fun setupTopToolBar(topToolbarUiModel: TopToolbarUiModel) {
-        topToolbarUiModel.title.value = context?.getAppInfo()
+        topToolbarUiModel.title.value = requireContext().getAppInfo()
         topToolbarUiModel.description.value = getString(R.string.select_goods)
         topToolbarUiModel.uiModelButton2.show(ImageButtonDecorationInfo.exitFromApp)
     }

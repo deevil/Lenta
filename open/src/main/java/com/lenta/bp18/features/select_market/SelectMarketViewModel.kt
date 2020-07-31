@@ -1,12 +1,12 @@
 package com.lenta.bp18.features.select_market
 
 import androidx.lifecycle.MutableLiveData
-import com.google.gson.Gson
 import androidx.lifecycle.viewModelScope
 import app_update.AppUpdateInstaller
+import com.lenta.bp18.model.pojo.MarketUI
 import com.lenta.bp18.platform.navigation.IScreenNavigator
 import com.lenta.bp18.repository.IDatabaseRepo
-import com.lenta.bp18.repository.IRepoInMemoryHolder
+import com.lenta.bp18.request.network.MarketOverIPRequest
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.exception.IFailureInterpreter
@@ -15,7 +15,6 @@ import com.lenta.shared.functional.Either
 import com.lenta.shared.platform.resources.ISharedStringResourceManager
 import com.lenta.shared.platform.time.ITimeMonitor
 import com.lenta.shared.platform.viewmodel.CoreViewModel
-import com.lenta.shared.requests.combined.scan_info.pojo.MarketInfo
 import com.lenta.shared.requests.network.ServerTime
 import com.lenta.shared.requests.network.ServerTimeRequest
 import com.lenta.shared.requests.network.ServerTimeRequestParam
@@ -30,6 +29,7 @@ import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 class SelectMarketViewModel : CoreViewModel(), OnPositionClickListener {
+
     @Inject
     lateinit var navigator: IScreenNavigator
 
@@ -40,10 +40,13 @@ class SelectMarketViewModel : CoreViewModel(), OnPositionClickListener {
     lateinit var appSettings: IAppSettings
 
     @Inject
+    lateinit var database: IDatabaseRepo
+
+    @Inject
     lateinit var failureInterpreter: IFailureInterpreter
 
     @Inject
-    lateinit var repoInMemoryHolder: IRepoInMemoryHolder
+    lateinit var marketOverIPRequest: MarketOverIPRequest
 
     @Inject
     lateinit var timeMonitor: ITimeMonitor
@@ -55,15 +58,12 @@ class SelectMarketViewModel : CoreViewModel(), OnPositionClickListener {
     lateinit var printerManager: PrinterManager
 
     @Inject
-    lateinit var database: IDatabaseRepo
-
-    @Inject
     lateinit var appUpdateInstaller: AppUpdateInstaller
 
     @Inject
     lateinit var resourceManager: ISharedStringResourceManager
 
-    private val markets: MutableLiveData<List<MarketInfo>> = MutableLiveData()
+    private val markets: MutableLiveData<List<MarketUI>> = MutableLiveData()
     val marketsNames: MutableLiveData<List<String>> = markets.map { markets ->
         markets?.map { it.number }
     }
@@ -75,23 +75,29 @@ class SelectMarketViewModel : CoreViewModel(), OnPositionClickListener {
             markets.value?.getOrNull(position)?.address
         }
     }
-    val title: MutableLiveData<String> = MutableLiveData()
 
     init {
         launchUITryCatch {
             database.getAllMarkets().let { list ->
-                markets.value = list
+
+                markets.value = list.map { MarketUI(number = it.number, address = it.address) }
+
                 if (selectedPosition.value == null) {
+
                     if (appSettings.lastTK != null) {
                         list.forEachIndexed { index, market ->
-                            if (market.number == appSettings.lastTK)
+                            if (market.number == appSettings.lastTK) {
                                 onClickPosition(index)
+                            }
                         }
-                    } else
+                    } else {
                         onClickPosition(0)
+                    }
                 }
-                if (list.size == 1)
+
+                if (list.size == 1) {
                     onClickNext()
+                }
             }
         }
     }
@@ -109,24 +115,27 @@ class SelectMarketViewModel : CoreViewModel(), OnPositionClickListener {
                         appSettings.lastTK = tkNumber
 
                         withContext(Dispatchers.IO) {
-                            database.getAllMarkets()
-                                    .find { it.number == sessionInfo.market }
-                                    .let { market ->
-                                        val codeVersion = market?.version?.toIntOrNull()
-                                        Logg.d { "codeVersion for update: $codeVersion" }
-                                        codeVersion?.run {
-                                            appUpdateInstaller.checkNeedAndHaveUpdate(this)
-                                        } ?: Either.Right("")
-                                    }
-                        }.either({
-                            Logg.e { "checkNeedAndHaveUpdate failure: $it" }
-                            handleFailure(failure = it)
-                        }) { updateFileName ->
-                            Logg.d { "update fileName: $updateFileName" }
-                            updateFileName.takeIf {
-                                it.isNotBlank()
-                            }?.let(::installUpdate) ?: getServerTime()
+                            database.getAllMarkets().let { list ->
+                                list.find { it.number == sessionInfo.market }
+                                        .let { market ->
+                                            val codeVersion = market?.version?.toIntOrNull()
+                                            Logg.d { "codeVersion for update: $codeVersion" }
+                                            codeVersion?.run {
+                                                appUpdateInstaller.checkNeedAndHaveUpdate(this)
+                                            } ?: Either.Right("")
+                                        }
+                            }.either({
+                                Logg.e { "checkNeedAndHaveUpdate failure: $it" }
+                                handleFailure(failure = it)
+                            }) { updateFileName ->
+                                Logg.d { "update fileName: $updateFileName" }
+                                updateFileName.takeIf {
+                                    it.isNotBlank()
+                                }?.let(::installUpdate) ?: getServerTime()
+                            }
+
                         }
+
                     }
         }
     }
