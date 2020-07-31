@@ -6,6 +6,7 @@ import app_update.AppUpdateInstaller
 import com.lenta.bp18.model.pojo.MarketUI
 import com.lenta.bp18.platform.navigation.IScreenNavigator
 import com.lenta.bp18.repository.IDatabaseRepo
+import com.lenta.bp18.request.model.params.MarketInfoParams
 import com.lenta.bp18.request.network.MarketOverIPRequest
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.exception.Failure
@@ -76,14 +77,19 @@ class SelectMarketViewModel : CoreViewModel(), OnPositionClickListener {
         }
     }
 
+    val currentMarket = MutableLiveData("")
+
+    val deviceIp = MutableLiveData("")
+
     init {
         launchUITryCatch {
+            currentMarket.value = MarketInfoParams(deviceIp.value.toString(), "1", "").toString()
+            Logg.d { "Current market:${currentMarket.value}" }
             database.getAllMarkets().let { list ->
 
                 markets.value = list.map { MarketUI(number = it.number, address = it.address) }
 
                 if (selectedPosition.value == null) {
-
                     if (appSettings.lastTK != null) {
                         list.forEachIndexed { index, market ->
                             if (market.number == appSettings.lastTK) {
@@ -91,6 +97,7 @@ class SelectMarketViewModel : CoreViewModel(), OnPositionClickListener {
                             }
                         }
                     } else {
+
                         onClickPosition(0)
                     }
                 }
@@ -115,29 +122,27 @@ class SelectMarketViewModel : CoreViewModel(), OnPositionClickListener {
                         appSettings.lastTK = tkNumber
 
                         withContext(Dispatchers.IO) {
-                            database.getAllMarkets().let { list ->
-                                list.find { it.number == sessionInfo.market }
-                                        .let { market ->
-                                            val codeVersion = market?.version?.toIntOrNull()
-                                            Logg.d { "codeVersion for update: $codeVersion" }
-                                            codeVersion?.run {
-                                                appUpdateInstaller.checkNeedAndHaveUpdate(this)
-                                            } ?: Either.Right("")
-                                        }
-                            }.either({
-                                Logg.e { "checkNeedAndHaveUpdate failure: $it" }
-                                handleFailure(failure = it)
-                            }) { updateFileName ->
-                                Logg.d { "update fileName: $updateFileName" }
-                                updateFileName.takeIf {
-                                    it.isNotBlank()
-                                }?.let(::installUpdate) ?: getServerTime()
+                            val marketList = database.getAllMarkets()
+                            val market = marketList.find { it.number == sessionInfo.market }
+                            market?.let {
+                                val codeVersion = it.version.toIntOrNull()
+                                Logg.d { "codeVersion for update: $codeVersion" }
+                                codeVersion?.run {
+                                    appUpdateInstaller.checkNeedAndHaveUpdate(this)
+                                } ?: Either.Right("")
                             }
-
+                        }?.either({
+                            Logg.e { "checkNeedAndHaveUpdate failure: $it" }
+                            handleFailure(failure = it)
+                        }) { updateFileName ->
+                            Logg.d { "update fileName: $updateFileName" }
+                            updateFileName.takeIf {
+                                it.isNotBlank()
+                            }?.let(::installUpdate) ?: getServerTime()
                         }
-
                     }
         }
+
     }
 
     private fun getServerTime() {

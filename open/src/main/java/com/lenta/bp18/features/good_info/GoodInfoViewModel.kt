@@ -104,7 +104,6 @@ class GoodInfoViewModel : SendDataViewModel(), OnPositionClickListener {
     fun onClickBack() {
         with(navigator) {
             showConfirmSaveData{
-                goBack()
                 openSelectGoodScreen()
             }
         }

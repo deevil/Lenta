@@ -48,24 +48,16 @@ class SelectGoodViewModel : SendDataViewModel() {
     private fun searchEan(ean: String, weight: String) {
         launchUITryCatch {
             when (val good = database.getGoodByEan(ean)) {
-                null -> showError()
+                null -> navigator.showAlertGoodsNotFound()
                 else -> {
                     val goodParams = GoodParams(ean = good.ean,
                             material = good.getFormattedMaterial(),
                             name = good.name,
                             weight = weight)
-                    openGoodInfoScreen(goodParams)
+                    navigator.openGoodsInfoScreen(goodParams)
                 }
             }
         }
-    }
-
-    private fun openGoodInfoScreen(goodParams: GoodParams) {
-        navigator.openGoodsInfoScreen(goodParams)
-    }
-
-    private fun showError() {
-        navigator.showAlertGoodsNotFound()
     }
 
     companion object {

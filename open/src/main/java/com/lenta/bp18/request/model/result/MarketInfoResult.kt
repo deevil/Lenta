@@ -5,9 +5,9 @@ import com.lenta.shared.requests.SapResponse
 
 data class MarketInfoResult (
         @SerializedName("EV_WERKS")
-        val marketNumber: String,
+        val marketNumber: String?,
         @SerializedName("EV_ERROR_TEXT")
-        override val errorText: String,
+        override val errorText: String?,
         @SerializedName("EV_RETCODE")
         override val retCode: Int
 ): SapResponse
