@@ -124,7 +124,7 @@ class TaskCompositionViewModel : CoreViewModel(), PageSelectionListener, OnOkInS
 
         if (isCommonFormatNumber(number)) {
             manager.searchNumber = number
-            manager.searchFromList = true
+            manager.isSearchFromList = true
             navigator.openGoodInfoCreateScreen()
         } else {
             navigator.showIncorrectEanFormat()
@@ -136,7 +136,7 @@ class TaskCompositionViewModel : CoreViewModel(), PageSelectionListener, OnOkInS
             when (page) {
                 0 -> {
                     manager.searchNumber = goods.value!![position].material
-                    manager.searchFromList = true
+                    manager.isSearchFromList = true
                     navigator.openGoodInfoCreateScreen()
                 }
                 1 -> {
@@ -152,22 +152,18 @@ class TaskCompositionViewModel : CoreViewModel(), PageSelectionListener, OnOkInS
         selectedPage.value?.let { page ->
             when (page) {
                 0 -> {
-                    val materialList = mutableListOf<String>()
-                    goodSelectionsHelper.selectedPositions.value?.forEach { position ->
-                        goods.value?.get(position)?.material?.let {
-                            materialList.add(it)
-                        }
+                    val materials = mutableListOf<String>()
+                    goodSelectionsHelper.selectedPositions.value?.mapNotNullTo(materials) { position ->
+                        goods.value?.get(position)?.material
                     }
 
                     goodSelectionsHelper.clearPositions()
-                    manager.removeGoodByMaterials(materialList)
+                    manager.removeGoodByMaterials(materials)
                 }
                 1 -> {
                     val basketList = mutableListOf<Basket>()
-                    basketSelectionsHelper.selectedPositions.value?.forEach { position ->
-                        baskets.value?.get(position)?.basket?.let {
-                            basketList.add(it)
-                        }
+                    basketSelectionsHelper.selectedPositions.value?.mapNotNullTo(basketList) { position ->
+                        baskets.value?.get(position)?.basket
                     }
 
                     basketSelectionsHelper.clearPositions()

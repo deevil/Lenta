@@ -27,7 +27,7 @@ class OpenTaskManager @Inject constructor(
 
     override var searchNumber = ""
 
-    override var searchFromList = false
+    override var isSearchFromList = false
 
     private var startCurrentTaskInfo = ""
 
@@ -228,45 +228,38 @@ class OpenTaskManager @Inject constructor(
                             )
                     )
                 } else {
-                    good.positions.forEach { position ->
+                    good.positions.mapTo(positions) { position ->
                         val quantity = if (position.quantity > 0.0) position.quantity else good.getTotalQuantity()
-
-                        positions.add(
-                                PositionInfo(
-                                        material = good.material,
-                                        providerCode = position.provider.code,
-                                        providerName = position.provider.name,
-                                        factQuantity = quantity.dropZeros(),
-                                        isCounted = good.isCounted.toSapBooleanString(),
-                                        isDeleted = good.isDeleted.toSapBooleanString(),
-                                        innerQuantity = good.innerQuantity.dropZeros(),
-                                        unitsCode = good.commonUnits.code
-                                )
+                        PositionInfo(
+                                material = good.material,
+                                providerCode = position.provider.code,
+                                providerName = position.provider.name,
+                                factQuantity = quantity.dropZeros(),
+                                isCounted = good.isCounted.toSapBooleanString(),
+                                isDeleted = good.isDeleted.toSapBooleanString(),
+                                innerQuantity = good.innerQuantity.dropZeros(),
+                                unitsCode = good.commonUnits.code
                         )
                     }
 
-                    good.marks.map { mark ->
-                        marks.add(
-                                MarkInfo(
-                                        material = good.material,
-                                        number = mark.number,
-                                        boxNumber = mark.boxNumber,
-                                        isBadMark = mark.isBadMark.toSapBooleanString(),
-                                        providerCode = mark.providerCode
-                                )
+                    good.marks.mapTo(marks) { mark ->
+                        MarkInfo(
+                                material = good.material,
+                                number = mark.number,
+                                boxNumber = mark.boxNumber,
+                                isBadMark = mark.isBadMark.toSapBooleanString(),
+                                providerCode = mark.providerCode
                         )
                     }
 
-                    good.parts.map { part ->
-                        parts.add(
-                                PartInfo(
-                                        material = good.material,
-                                        producerCode = part.producerCode,
-                                        productionDate = getStringFromDate(part.date, Constants.DATE_FORMAT_yyyyMMdd),
-                                        quantity = part.quantity.dropZeros(),
-                                        partNumber = part.number,
-                                        providerCode = part.providerCode
-                                )
+                    good.parts.mapTo(parts) { part ->
+                        PartInfo(
+                                material = good.material,
+                                producerCode = part.producerCode,
+                                productionDate = getStringFromDate(part.date, Constants.DATE_FORMAT_yyyyMMdd),
+                                quantity = part.quantity.dropZeros(),
+                                partNumber = part.number,
+                                providerCode = part.providerCode
                         )
                     }
                 }
@@ -304,7 +297,7 @@ class OpenTaskManager @Inject constructor(
     override fun markGoodsUncounted(materials: List<String>) {
         currentTask.value?.let { task ->
             materials.forEach { material ->
-                task.goods.find { it.material == material }?.let {good ->
+                task.goods.find { it.material == material }?.let { good ->
                     good.isCounted = false
                     good.isMissing = false
                 }
@@ -315,7 +308,7 @@ class OpenTaskManager @Inject constructor(
     }
 
     override fun clearSearchFromListParams() {
-        searchFromList = false
+        isSearchFromList = false
         searchNumber = ""
     }
 
@@ -335,7 +328,7 @@ class OpenTaskManager @Inject constructor(
 interface IOpenTaskManager {
 
     var searchNumber: String
-    var searchFromList: Boolean
+    var isSearchFromList: Boolean
 
     val searchParams: MutableLiveData<TaskSearchParams>
     val tasks: MutableLiveData<List<TaskOpen>>

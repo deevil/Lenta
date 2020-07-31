@@ -87,7 +87,7 @@ class BasketGoodListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
         number.length.let { length ->
             if (length >= Constants.SAP_6) {
                 manager.searchNumber = number
-                manager.searchFromList = true
+                manager.isSearchFromList = true
                 navigator.goBack()
                 navigator.openGoodInfoCreateScreen()
             }
@@ -97,7 +97,7 @@ class BasketGoodListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
     fun onClickItemPosition(position: Int) {
         goods.value?.get(position)?.material?.let { material ->
             manager.searchNumber = material
-            manager.searchFromList = true
+            manager.isSearchFromList = true
             navigator.goBack()
             navigator.openGoodInfoCreateScreen()
         }
@@ -113,10 +113,8 @@ class BasketGoodListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
 
     fun onClickDelete() {
         val materials = mutableListOf<String>()
-        selectionsHelper.selectedPositions.value?.forEach { position ->
-            goods.value?.get(position)?.material?.let {
-                materials.add(it)
-            }
+        selectionsHelper.selectedPositions.value?.mapNotNullTo(materials) { position ->
+            goods.value?.get(position)?.material
         }
 
         selectionsHelper.clearPositions()

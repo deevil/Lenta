@@ -146,7 +146,7 @@ class GoodListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
         task.value?.let { task ->
             task.goods.find { it.material == material }?.let { good ->
                 manager.searchNumber = material
-                manager.searchFromList = true
+                manager.isSearchFromList = true
                 //manager.updateCurrentGood(good)
                 navigator.openGoodInfoOpenScreen()
             }
@@ -158,7 +158,7 @@ class GoodListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
 
         if (isCommonFormatNumber(number)) {
             manager.searchNumber = number
-            manager.searchFromList = true
+            manager.isSearchFromList = true
             navigator.openGoodInfoOpenScreen()
         } else {
             navigator.showIncorrectEanFormat()
@@ -170,10 +170,8 @@ class GoodListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
             when (page) {
                 0 -> {
                     val materials = mutableListOf<String>()
-                    processingSelectionsHelper.selectedPositions.value?.forEach { position ->
-                        processing.value?.get(position)?.let { item ->
-                            materials.add(item.material)
-                        }
+                    processingSelectionsHelper.selectedPositions.value?.mapNotNullTo(materials) { position ->
+                        processing.value?.get(position)?.material
                     }
 
                     processingSelectionsHelper.clearPositions()
@@ -181,10 +179,8 @@ class GoodListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
                 }
                 1 -> {
                     val materials = mutableListOf<String>()
-                    processedSelectionsHelper.selectedPositions.value?.forEach { position ->
-                        processed.value?.get(position)?.let { item ->
-                            materials.add(item.material)
-                        }
+                    processedSelectionsHelper.selectedPositions.value?.mapNotNullTo(materials) { position ->
+                        processed.value?.get(position)?.material
                     }
 
                     processedSelectionsHelper.clearPositions()

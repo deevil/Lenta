@@ -38,13 +38,13 @@ fun actionByNumberLength(
     } else {
         when (numberLength) {
             Constants.MARK_150, Constants.MARK_68 -> {
-                if (funcForExcise != null) funcForExcise(number) else funcForNotValidFormat()
+                funcForExcise?.invoke(number) ?: funcForNotValidFormat()
             }
             Constants.MARK_134, Constants.MARK_39 -> {
-                if (funcForMark != null) funcForMark(number) else funcForNotValidFormat()
+                funcForMark?.invoke(number) ?: funcForNotValidFormat()
             }
             Constants.BOX_26 -> {
-                if (funcForBox != null) funcForBox(number) else funcForNotValidFormat()
+                funcForBox?.invoke(number) ?: funcForNotValidFormat()
             }
             else -> funcForNotValidFormat()
         }

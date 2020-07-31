@@ -315,28 +315,28 @@ class GoodInfoCreateViewModel : CoreViewModel() {
     val applyEnabled by lazy {
         screenStatus.combineLatest(quantity).combineLatest(totalQuantity).combineLatest(basketQuantity)
                 .combineLatest(isProviderSelected).combineLatest(isProducerSelected).combineLatest(isCorrectDate).map {
-            it?.let {
-                val status = it.first.first.first.first.first.first
-                val enteredQuantity = it.first.first.first.first.first.second
-                val totalQuantity = it.first.first.first.first.second
-                val basketQuantity = it.first.first.first.second
-                val isProviderSelected = it.first.first.second
-                val isProducerSelected = it.first.second
-                val isDateEntered = it.second
+                    it?.let {
+                        val status = it.first.first.first.first.first.first
+                        val enteredQuantity = it.first.first.first.first.first.second
+                        val totalQuantity = it.first.first.first.first.second
+                        val basketQuantity = it.first.first.first.second
+                        val isProviderSelected = it.first.first.second
+                        val isProducerSelected = it.first.second
+                        val isDateEntered = it.second
 
-                val isEnteredMoreThenZero = enteredQuantity > 0.0
+                        val isEnteredMoreThenZero = enteredQuantity > 0.0
 
-                when (status) {
-                    ScreenStatus.COMMON -> enteredQuantity != 0.0 && totalQuantity > 0.0 && basketQuantity > 0.0 && isProviderSelected
-                    ScreenStatus.ALCOHOL -> isEnteredMoreThenZero && isProviderSelected && isProducerSelected && isDateEntered
-                    ScreenStatus.MARK_150 -> isEnteredMoreThenZero && isProviderSelected
-                    ScreenStatus.MARK_68 -> isEnteredMoreThenZero && isProviderSelected && isProducerSelected
-                    ScreenStatus.PART -> isEnteredMoreThenZero && isProviderSelected && isProducerSelected && isDateEntered
-                    ScreenStatus.BOX -> isEnteredMoreThenZero && isProviderSelected && isProducerSelected
-                    else -> false
+                        when (status) {
+                            ScreenStatus.COMMON -> enteredQuantity != 0.0 && totalQuantity > 0.0 && basketQuantity > 0.0 && isProviderSelected
+                            ScreenStatus.ALCOHOL -> isEnteredMoreThenZero && isProviderSelected && isProducerSelected && isDateEntered
+                            ScreenStatus.MARK_150 -> isEnteredMoreThenZero && isProviderSelected
+                            ScreenStatus.MARK_68 -> isEnteredMoreThenZero && isProviderSelected && isProducerSelected
+                            ScreenStatus.PART -> isEnteredMoreThenZero && isProviderSelected && isProducerSelected && isDateEntered
+                            ScreenStatus.BOX -> isEnteredMoreThenZero && isProviderSelected && isProducerSelected
+                            else -> false
+                        }
+                    } ?: false
                 }
-            } ?: false
-        }
     }
 
     val rollbackVisibility = screenStatus.map { status ->
@@ -367,7 +367,7 @@ class GoodInfoCreateViewModel : CoreViewModel() {
 
     fun onScanResult(number: String) {
         good.value?.let { good ->
-            if (applyEnabled.value == true || good.kind == GoodKind.EXCISE && isExciseNumber(number)) {
+            if (applyEnabled.value == true || (good.kind == GoodKind.EXCISE && isExciseNumber(number))) {
                 if (!thereWasRollback) {
                     saveChanges()
                 } else {
@@ -392,11 +392,11 @@ class GoodInfoCreateViewModel : CoreViewModel() {
 
         actionByNumberLength(
                 number = number,
-                funcForEan = { ean -> getGoodByEan(ean) },
-                funcForMaterial = { material -> getGoodByMaterial(material) },
+                funcForEan = ::getGoodByEan,
+                funcForMaterial = ::getGoodByMaterial,
                 funcForSapOrBar = navigator::showTwelveCharactersEntered,
-                funcForExcise = { exciseNumber -> loadMarkInfo(exciseNumber) },
-                funcForBox = { boxNumber -> loadBoxInfo(boxNumber) },
+                funcForExcise = ::loadMarkInfo,
+                funcForBox = ::loadBoxInfo,
                 funcForNotValidFormat = {
                     goBackIfSearchFromList()
                     navigator.showIncorrectEanFormat()
@@ -508,7 +508,7 @@ class GoodInfoCreateViewModel : CoreViewModel() {
     }
 
     private fun goBackIfSearchFromList() {
-        if (manager.searchFromList) {
+        if (manager.isSearchFromList) {
             manager.clearSearchFromListParams()
             navigator.goBack()
         }
@@ -581,25 +581,26 @@ class GoodInfoCreateViewModel : CoreViewModel() {
                         addMarkInfo(result)
                         navigator.openAlertScreen(result.statusDescription)
                     }
-                    MarkStatus.UNKNOWN.code -> {
-                        when (number.length) {
-                            Constants.MARK_150 -> navigator.openAlertScreen(result.statusDescription)
-                            Constants.MARK_68 -> {
-                                database.getAlcoCodeInfoList(number.extractAlcoCode()).let { alcoCodeInfoList ->
-                                    if (alcoCodeInfoList.isNotEmpty()) {
-                                        if (alcoCodeInfoList.find { it.material == good.value!!.material } != null) {
-                                            addPartInfo(result)
-                                        } else {
-                                            navigator.openAlertScreen(resource.alcocodeDoesNotApplyToThisGood())
-                                        }
-                                    } else {
-                                        navigator.openAlertScreen(resource.unknownAlcocode())
-                                    }
-                                }
-                            }
-                        }
-                    }
+                    MarkStatus.UNKNOWN.code -> handleUnknownMark(number, result)
                     else -> navigator.openAlertScreen(result.statusDescription)
+                }
+            }
+        }
+    }
+
+    private suspend fun handleUnknownMark(number: String, result: ScanInfoResult) {
+        when (number.length) {
+            Constants.MARK_150 -> navigator.openAlertScreen(result.statusDescription)
+            Constants.MARK_68 -> {
+                val alcoCodeInfoList = database.getAlcoCodeInfoList(number.extractAlcoCode())
+                if (alcoCodeInfoList.isNotEmpty()) {
+                    if (alcoCodeInfoList.find { it.material == good.value?.material } != null) {
+                        addPartInfo(result)
+                    } else {
+                        navigator.openAlertScreen(resource.alcocodeDoesNotApplyToThisGood())
+                    }
+                } else {
+                    navigator.openAlertScreen(resource.unknownAlcocode())
                 }
             }
         }

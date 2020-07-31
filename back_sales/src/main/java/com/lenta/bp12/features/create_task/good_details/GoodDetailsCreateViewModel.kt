@@ -126,10 +126,8 @@ class GoodDetailsCreateViewModel : CoreViewModel(), PageSelectionListener {
             when (page) {
                 0 -> {
                     val basketList = mutableListOf<Basket>()
-                    basketSelectionsHelper.selectedPositions.value?.forEach { position ->
-                        baskets.value?.get(position)?.basket?.let {
-                            basketList.add(it)
-                        }
+                    basketSelectionsHelper.selectedPositions.value?.mapNotNullTo(basketList) { position ->
+                        baskets.value?.get(position)?.basket
                     }
 
                     basketSelectionsHelper.clearPositions()
