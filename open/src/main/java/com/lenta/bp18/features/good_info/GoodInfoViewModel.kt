@@ -1,5 +1,6 @@
 package com.lenta.bp18.features.good_info
 
+import android.content.Context
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.lenta.bp18.features.other.SendDataViewModel
@@ -22,7 +23,8 @@ class GoodInfoViewModel : SendDataViewModel(), OnPositionClickListener {
     @Inject
     lateinit var appSettings: IAppSettings
 
-    val deviceIp = MutableLiveData("")
+    @Inject
+    lateinit var context: Context
 
     val selectedEan = MutableLiveData("")
     var weight = MutableLiveData(0)
