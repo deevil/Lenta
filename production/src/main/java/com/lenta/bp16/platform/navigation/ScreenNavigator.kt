@@ -1,6 +1,7 @@
 package com.lenta.bp16.platform.navigation
 
 import android.content.Context
+import android.os.Bundle
 import com.lenta.bp16.R
 import com.lenta.bp16.features.auth.AuthFragment
 import com.lenta.bp16.features.defect_info.DefectInfoFragment
@@ -8,10 +9,8 @@ import com.lenta.bp16.features.defect_list.DefectListFragment
 import com.lenta.bp16.features.external_supply_list.ExternalSupplyListFragment
 import com.lenta.bp16.features.external_supply_task_list.ExternalSupplyTaskListFragment
 import com.lenta.bp16.features.good_info.GoodInfoFragment
-import com.lenta.bp16.features.good_irrelevant_info.IrrelevantGoodInfoFragment
 import com.lenta.bp16.features.good_packaging.GoodPackagingFragment
 import com.lenta.bp16.features.good_weighing.GoodWeighingFragment
-import com.lenta.bp16.features.good_without_manufacturer.GoodWithoutManufacturerFragment
 import com.lenta.bp16.features.loading.fast.FastDataLoadingFragment
 import com.lenta.bp16.features.main_menu.MainMenuFragment
 import com.lenta.bp16.features.pack_good_list.PackGoodListFragment
@@ -23,6 +22,7 @@ import com.lenta.bp16.features.reprint_label.ReprintLabelFragment
 import com.lenta.bp16.features.select_good.GoodSelectFragment
 import com.lenta.bp16.features.select_market.SelectMarketFragment
 import com.lenta.bp16.features.select_personnel_number.SelectPersonnelNumberFragment
+import com.lenta.bp16.model.pojo.GoodParams
 import com.lenta.bp16.platform.Constants
 import com.lenta.shared.account.IAuthenticator
 import com.lenta.shared.features.alert.AlertFragment
@@ -156,19 +156,15 @@ class ScreenNavigator @Inject constructor(
     }
 
     override fun openSelectGoodScreen() {
-        getFragmentStack()?.push(GoodSelectFragment())
+        runOrPostpone {
+            getFragmentStack()?.push(GoodSelectFragment())
+        }
     }
 
-    override fun openGoodInfoScreen() {
-        getFragmentStack()?.push(GoodInfoFragment())
-    }
-
-    override fun openGoodIrrelevantInfoScreen() {
-        getFragmentStack()?.push(IrrelevantGoodInfoFragment())
-    }
-
-    override fun openGoodWithoutManufacturerScreen() {
-        getFragmentStack()?.push(GoodWithoutManufacturerFragment())
+    override fun openGoodInfoScreen(goodParams: GoodParams) {
+        runOrPostpone {
+            getFragmentStack()?.push(GoodInfoFragment.newInstance(goodParams))
+        }
     }
 
 
@@ -294,12 +290,51 @@ class ScreenNavigator @Inject constructor(
         }
     }
 
-    override fun showAlertPartNotFound() {
+    override fun showAlertPartNotFound(backCallback: () -> Unit) {
         runOrPostpone {
             getFragmentStack()?.push(AlertFragment.create(
+                    pageNumber = Constants.ALERT_FRAGMENT,
                     message = context.getString(R.string.tw_alert_part_not_found),
                     iconRes = R.drawable.ic_warning_red_80dp,
-                    pageNumber = Constants.ALERT_FRAGMENT))
+                    leftButtonDecorationInfo = ButtonDecorationInfo.back,
+                    codeConfirmForLeft = backFragmentResultHelper.setFuncForResult(backCallback)
+            ))
+        }
+    }
+
+    override fun showAlertGoodNotFound(backCallback: () -> Unit) {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    pageNumber = Constants.ALERT_FRAGMENT,
+                    message = context.getString(R.string.tw_alert_good_not_found),
+                    iconRes = R.drawable.ic_warning_red_80dp,
+                    leftButtonDecorationInfo = ButtonDecorationInfo.back,
+                    codeConfirmForLeft = backFragmentResultHelper.setFuncForResult(backCallback)
+            ))
+        }
+    }
+
+    override fun showMovingSuccessful(nextCallback: () -> Unit) {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    pageNumber = Constants.ALERT_FRAGMENT,
+                    message = context.getString(R.string.tw_moving_successful),
+                    iconRes = R.drawable.ic_info_green_80dp,
+                    rightButtonDecorationInfo = ButtonDecorationInfo.next,
+                    codeConfirmForRight = backFragmentResultHelper.setFuncForResult(nextCallback)
+            ))
+        }
+    }
+
+    override fun showAlertExceededLimit(backCallback: () -> Unit) {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    pageNumber = Constants.ALERT_FRAGMENT,
+                    message = context.getString(R.string.tw_exceeded_limit),
+                    iconRes = R.drawable.ic_warning_red_80dp,
+                    leftButtonDecorationInfo = ButtonDecorationInfo.back,
+                    codeConfirmForLeft = backFragmentResultHelper.setFuncForResult(backCallback)
+            ))
         }
     }
 
@@ -324,9 +359,7 @@ interface IScreenNavigator : ICoreNavigator {
     fun openReprintLabelScreen()
     fun openDefectInfoScreen()
     fun openDefectListScreen()
-    fun openGoodInfoScreen()
-    fun openGoodIrrelevantInfoScreen()
-    fun openGoodWithoutManufacturerScreen()
+    fun openGoodInfoScreen(goodParams: GoodParams)
     fun openSelectGoodScreen()
 
     fun showDefrostingPhaseIsCompleted(nextCallback: () -> Unit)
@@ -339,5 +372,8 @@ interface IScreenNavigator : ICoreNavigator {
     fun showNotSavedDataWillBeLost(yesCallback: () -> Unit)
     fun showAlertNoIpPrinter()
     fun showLabelSentToPrint(nextCallback: () -> Unit)
-    fun showAlertPartNotFound()
+    fun showAlertPartNotFound(backCallback: () -> Unit)
+    fun showAlertGoodNotFound(backCallback: () -> Unit)
+    fun showMovingSuccessful(nextCallback: () -> Unit)
+    fun showAlertExceededLimit(backCallback: () -> Unit)
 }

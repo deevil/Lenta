@@ -37,40 +37,79 @@ class Formatter : IFormatter {
         return "$BASKET ${String.format("%02d", basket.number)}"
     }
 
+    /** <Тип ГИС-контроля>/<Вид товара>/ПП – <номер задания>/ С-<номер секции>/<Группа закупок>/
+     * <Марочный или партионный>/<Номер партии>/<Еда/не еда>/<SAP-код товара>>. */
     override fun getBasketDescription(basket: Basket, task: Task, settings: TaskSettings): String {
         if (basket.keys.isEmpty()) return ""
 
         return buildString {
             val signsOfDiv = settings.signsOfDiv
+            val firstProductInBasket = basket.keys.firstOrNull()
 
-            if (signsOfDiv.contains(GoodsSignOfDivision.ALCO) && basket.keys.first().isAlco) {
-                append(A_AND_SLASH)
-            } else if (signsOfDiv.contains(GoodsSignOfDivision.VET) && basket.keys.first().isVet) {
-                append(B_AND_SLASH)
-            } else if (signsOfDiv.contains(GoodsSignOfDivision.USUAL) && basket.keys.first().isUsual) {
-                append(C_AND_SLASH)
+            /** <Тип ГИС-контроля> - если в справочнике установлен признак «DIV_ALCO»,
+             * то отображать <А> для алкогольной корзины, если установлен признак «DIV_VET»,
+             * то отображать <В> для ветеринарных товаров и <О> для обычных товаров, если
+             * установлен признак «DIV_USUAL». */
+            val isAlcoInSigns = signsOfDiv.contains(GoodsSignOfDivision.ALCO)
+            val isVetInSigns = signsOfDiv.contains(GoodsSignOfDivision.VET)
+            val isUsualInSigns = signsOfDiv.contains(GoodsSignOfDivision.USUAL)
+
+            val symbolToAppend = when {
+                isAlcoInSigns && firstProductInBasket?.isAlco == true -> A_AND_SLASH
+                isVetInSigns && firstProductInBasket?.isVet == true -> B_AND_SLASH
+                isUsualInSigns && firstProductInBasket?.isUsual == true -> O_AND_SLASH
+                else -> ""
             }
+            append(symbolToAppend)
 
-            append("${basket.keys.first().materialType}/")
-
-            if (task.isCreated) {
-                TODO("добавить 'ПП – <номер задания>/'")
+            //<Вид товара>
+            val isMtartInSigns = signsOfDiv.contains(GoodsSignOfDivision.MTART)
+            if (isMtartInSigns) {
+                append("${firstProductInBasket?.materialType}/")
             }
-
-            append("C - ${basket.keys.first().sectionId}/")
-
-            append("${basket.keys.first().ekGroup}/")
-
-            if (signsOfDiv.contains(GoodsSignOfDivision.FOOD)) {
-                if (basket.keys.first().isFood) {
-                    append(BASKET_DESC_FOOD_CHAR)
-                } else {
-                    append(BASKET_DESC_NOT_FOOD_CHAR)
+            //ПП – <номер поставщика>
+            val isLifNumberInSigns = signsOfDiv.contains(GoodsSignOfDivision.LIF_NUMBER)
+            if (isLifNumberInSigns) {
+                val supplier = firstProductInBasket?.suppliers?.firstOrNull()
+                supplier?.code?.takeIf { it.isNotEmpty() }?.let { supplierCode ->
+                    append("$PP - ${supplierCode}/")
                 }
             }
 
-            if (signsOfDiv.contains(GoodsSignOfDivision.MATERIAL_NUMBER)) {
-                append(basket.keys.first().getMaterialLastSix())
+            //С-<номер секции>
+            val isSectionInSigns = signsOfDiv.contains(GoodsSignOfDivision.SECTION)
+            if (isSectionInSigns) {
+                append("$SECTION_CHAR - ${firstProductInBasket?.sectionId}/")
+            }
+
+            /**<Марочный или партионный> - отображать как <М> (марочный, есть признак IS_EXC)
+             * или <П> (партионный, нет признака IS_EXC)*/
+            val isMarkPartsInSigns = signsOfDiv.contains(GoodsSignOfDivision.MARK_PARTS)
+            if (isMarkPartsInSigns && firstProductInBasket != null) {
+                val charToAppend = when {
+                    firstProductInBasket.isExcise -> M_AND_SLASH
+                    firstProductInBasket.isNotExcise -> P_AND_SLASH
+                    else -> ""
+                }
+                append(charToAppend)
+            }
+
+            //<Номер партии>
+//            if (signsOfDiv.contains(GoodsSignOfDivision.PARTS)) {
+//                append(basket.keys.firstOrNull()?.batchNumber) TODO добавить когда появится деление товаров по категориям
+//            }
+
+            //Еда/Не еда
+            val isFoodInSigns = signsOfDiv.contains(GoodsSignOfDivision.FOOD)
+            if (isFoodInSigns && firstProductInBasket != null) {
+                val charToAppend = if (firstProductInBasket.isFood) BASKET_DESC_FOOD_CHAR_AND_SLASH
+                else BASKET_DESC_NOT_FOOD_CHAR_AND_SLASH
+                append(charToAppend)
+            }
+
+            val isMaterialNumberInSigns = signsOfDiv.contains(GoodsSignOfDivision.MATERIAL_NUMBER)
+            if (isMaterialNumberInSigns) {
+                append(firstProductInBasket?.getMaterialLastSix())
             }
         }
     }
@@ -151,16 +190,19 @@ class Formatter : IFormatter {
     }
 
     companion object {
-        private const val A_AND_SLASH = "A/"
-        private const val B_AND_SLASH = "B/"
-        private const val C_AND_SLASH = "C/"
+        private const val A_AND_SLASH = "А/"
+        private const val B_AND_SLASH = "В/"
+        private const val O_AND_SLASH = "О/"
+        private const val M_AND_SLASH = "М/"
+        private const val P_AND_SLASH = "П/"
 
         private const val TK = "ТК"
         private const val GE = "ГЕ"
+        private const val PP = "ПП"
 
         private const val BASKET = "Корзина"
-        private const val BASKET_DESC_FOOD_CHAR = "F"
-        private const val BASKET_DESC_NOT_FOOD_CHAR = "NF"
+        private const val BASKET_DESC_FOOD_CHAR_AND_SLASH = "F/"
+        private const val BASKET_DESC_NOT_FOOD_CHAR_AND_SLASH = "NF/"
 
         private const val ALCO = "Алкоголь"
         private const val SLASH_AND_ALCO_CHAR = "/А"
@@ -170,6 +212,8 @@ class Formatter : IFormatter {
         private const val SLASH_AND_USUAL_CHAR = "/О"
         private const val VET = "Меркурианский товар"
         private const val FOOD = "Еда"
+
+        private const val SECTION_CHAR = "С"
 
         private const val TRANSFER_WITH_ORDER = "Трансфер с заказа"
         private const val TRANSFER_WITHOUT_ORDER = "Трансфер без заказа"

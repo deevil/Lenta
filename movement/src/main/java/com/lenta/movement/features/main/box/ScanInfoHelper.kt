@@ -3,7 +3,7 @@ package com.lenta.movement.features.main.box
 import com.lenta.movement.models.ProductInfo
 import com.lenta.movement.platform.navigation.IScreenNavigator
 import com.lenta.movement.requests.network.ScanInfoNetRequest
-import com.lenta.movement.requests.network.ScanInfoParams
+import com.lenta.movement.requests.network.models.scanInfoNetRequest.ScanInfoParams
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.platform.constants.Constants.SAP_OR_BAR_12
 import com.lenta.shared.requests.combined.scan_info.ScanCodeInfo

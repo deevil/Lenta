@@ -111,6 +111,7 @@ class TaskGoodsViewModel : CoreViewModel(),
     }
 
     fun onResume() {
+        eanCode.value = ""
         processed.postValue(getProcessed())
         baskets.postValue(getBaskets())
     }
@@ -128,8 +129,12 @@ class TaskGoodsViewModel : CoreViewModel(),
     }
 
     override fun onOkInSoftKeyboard(): Boolean {
-        searchCode(eanCode.value.orEmpty(), fromScan = false)
-        return true
+        val eanCodeValue = eanCode.value
+        return if (eanCodeValue != null && eanCodeValue.isNotEmpty()) {
+            searchCode(eanCodeValue, fromScan = false)
+            true
+        }
+        else false
     }
 
     fun onDigitPressed(digit: Int) {
@@ -149,13 +154,13 @@ class TaskGoodsViewModel : CoreViewModel(),
     }
 
     fun onClickProcessedItem(position: Int) {
-        processed.value.orEmpty().getOrNull(position)?.also { (product, _) ->
+        processed.value.orEmpty().getOrNull(position)?.let { (product, _) ->
             screenNavigator.openTaskGoodsInfoScreen(product)
         }
     }
 
     fun onClickBasketItem(position: Int) {
-        baskets.value.orEmpty().getOrNull(position)?.also { basket ->
+        baskets.value.orEmpty().getOrNull(position)?.let { basket ->
             screenNavigator.openTaskBasketScreen(basket.index)
         }
     }
@@ -231,7 +236,7 @@ class TaskGoodsViewModel : CoreViewModel(),
                                     basketNumber = basket.number.toString(),
                                     materialNumber = product.materialNumber,
                                     quantity = count.toString(),
-                                    uom = Uom.ST.code,  // TODO Базисная единица измерения
+                                    uom = product.uom.code,
                                     materialType = "",
                                     lifNr = basket.supplier?.code.orEmpty(),
                                     zcharg = "", // TODO Номер партии

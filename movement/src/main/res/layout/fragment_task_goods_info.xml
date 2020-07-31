@@ -118,21 +118,34 @@
                 style="@style/NumberSectionTxt"
                 android:layout_width="@dimen/round_btn_size"
                 android:layout_height="@dimen/round_btn_size"
-                android:autoSizeTextType="uniform"
                 android:gravity="center"
+                android:lines="1"
+                android:textSize="@dimen/text_14sp"
                 android:text='@{"" + vm.productInfo.sectionId}'
                 tools:text="02" />
 
         </FrameLayout>
 
+        <ImageView
+            android:id="@+id/alcoImage"
+            android:layout_width="@dimen/square_btn_size"
+            android:layout_height="@dimen/square_btn_size"
+            app:layout_constraintStart_toEndOf="@id/sectionLayout"
+            app:layout_constraintTop_toTopOf="@id/b_scan"
+            app:layout_constraintBottom_toBottomOf="@id/b_scan"
+            android:layout_marginStart="@dimen/size_8dp"
+            alcoIcon="@{vm.productInfo.type}"
+            tools:src="@drawable/ic_excise_alcohol_white_32dp"/>
+
         <FrameLayout
+            android:id="@+id/basketImage"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/size_8dp"
             android:foreground="?selectableItemBackground"
+            app:layout_constraintTop_toTopOf="@+id/b_scan"
             app:layout_constraintBottom_toBottomOf="@+id/b_scan"
-            app:layout_constraintStart_toEndOf="@+id/sectionLayout"
-            app:layout_constraintTop_toTopOf="@+id/b_scan">
+            app:layout_constraintStart_toEndOf="@+id/alcoImage">
 
             <ImageView
                 android:layout_width="@dimen/square_btn_size"
@@ -153,6 +166,31 @@
                 android:text="@{@string/task_goods_basket_number_format(vm.currentBasket.number)}"
                 tools:text="01" />
         </FrameLayout>
+
+        <ImageView
+            android:id="@+id/box_scanImage"
+            android:layout_width="@dimen/square_btn_size"
+            android:layout_height="@dimen/square_btn_size"
+            app:layout_constraintEnd_toStartOf="@id/mark_scanImage"
+            app:layout_constraintBottom_toBottomOf="@id/b_scan"
+            android:layout_marginEnd="@dimen/size_8dp"
+            android:visibility="@{vm.isMarkScanAndBoxVisible}"
+            android:onClick="@{() -> vm.screenNavigator.openBoxInfoScreen()}"
+            android:src="@drawable/ic_scan_box_white_32dp"
+            android:contentDescription="@string/box_info" />
+
+        <ImageView
+            android:id="@+id/mark_scanImage"
+            android:layout_width="@dimen/square_btn_size"
+            android:layout_height="@dimen/square_btn_size"
+            app:layout_constraintEnd_toStartOf="@id/b_scan"
+            app:layout_constraintTop_toTopOf="@id/b_scan"
+            app:layout_constraintBottom_toBottomOf="@id/b_scan"
+            android:layout_marginEnd="@dimen/size_8dp"
+            android:src="@drawable/ic_scan_barcode_es_white_32dp"
+            android:onClick="@{() -> vm.screenNavigator.openESInfoScreen()}"
+            android:visibility="@{vm.isMarkScanAndBoxVisible}"
+            android:contentDescription="@string/mark" />
 
         <ImageButton
             android:id="@+id/b_scan"

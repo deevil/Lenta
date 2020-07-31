@@ -43,10 +43,6 @@ class SelectPersonnelNumberViewModel : CoreViewModel(), OnOkInSoftKeyboardListen
 
     init {
         launchUITryCatch {
-            val lastPersonnelNumber = appSettings.lastPersonnelNumber
-            lastPersonnelNumber?.let {
-                personnelNumber.value = lastPersonnelNumber
-            }
             selectPersonnelNumberDelegate.personnelNumber = personnelNumber
             selectPersonnelNumberDelegate.fullName = fullName
             selectPersonnelNumberDelegate.employeesPosition = employeesPosition
@@ -59,6 +55,11 @@ class SelectPersonnelNumberViewModel : CoreViewModel(), OnOkInSoftKeyboardListen
                     }
             )
             selectPersonnelNumberDelegate.codeConfirm = codeConfirm
+            val lastPersonnelNumber = appSettings.lastPersonnelNumber
+            lastPersonnelNumber?.let {
+                personnelNumber.value = lastPersonnelNumber
+                selectPersonnelNumberDelegate.onOkInSoftKeyboard()
+            }
         }
     }
 
