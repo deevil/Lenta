@@ -31,7 +31,6 @@ class GoodInfoFragment : CoreFragment<FragmentGoodInfoBinding, GoodInfoViewModel
 
         provideViewModel(GoodInfoViewModel::class.java).let {
             getAppComponent()?.inject(it)
-            it.deviceIp.value = requireContext().getDeviceIp()
             it.selectedEan.value = goodParams.ean
             it.weight.value = goodParams.weight.toInt()
             return it
