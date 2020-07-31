@@ -19,10 +19,3 @@ data class ScanInfoResult(
         @SerializedName("EV_RETCODE")
         val retCode: Int?
 )
-
-
-
-
-
-
-
