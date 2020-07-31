@@ -15,6 +15,9 @@ import com.lenta.shared.scan.OnScanResultListener
 import com.lenta.shared.utilities.extentions.*
 
 class GoodSelectFragment : CoreFragment<FragmentGoodSelectBinding, GoodSelectViewModel>(), ToolbarButtonsClickListener, OnScanResultListener {
+
+    val deviceIp: String by unsafeLazy { requireContext().getDeviceIp() }
+
     override fun getLayoutId(): Int = R.layout.fragment_good_select
 
     override fun getPageNumber(): String? = generateScreenNumberFromPostfix(SCREEN_NUMBER)
@@ -22,7 +25,7 @@ class GoodSelectFragment : CoreFragment<FragmentGoodSelectBinding, GoodSelectVie
     override fun getViewModel(): GoodSelectViewModel {
         provideViewModel(GoodSelectViewModel::class.java).let{
             getAppComponent()?.inject(it)
-            it.deviceIp.value = context?.getDeviceId()
+            it.deviceIp.value = deviceIp
             return it
         }
     }

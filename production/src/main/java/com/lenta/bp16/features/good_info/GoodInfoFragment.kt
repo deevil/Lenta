@@ -6,6 +6,7 @@ import androidx.core.os.bundleOf
 import androidx.lifecycle.observe
 import com.lenta.bp16.R
 import com.lenta.bp16.databinding.FragmentGoodInfoBinding
+import com.lenta.bp16.model.pojo.GoodParams
 import com.lenta.bp16.platform.Constants
 import com.lenta.bp16.platform.extention.getAppComponent
 import com.lenta.shared.platform.fragment.CoreFragment
@@ -17,20 +18,14 @@ import com.lenta.shared.utilities.extentions.*
 
 class GoodInfoFragment : CoreFragment<FragmentGoodInfoBinding, GoodInfoViewModel>(), ToolbarButtonsClickListener {
 
-    private val material by unsafeLazy {
-        arguments?.getString(KEY_MATERIAL)
-                ?: throw IllegalArgumentException("There is no data in bundle at key $KEY_MATERIAL")
+    private val goodParams by unsafeLazy {
+        arguments?.getParcelable<GoodParams>(KEY_GOOD_PARAMS)
+                ?: throw IllegalArgumentException("There is no data in bundle at key $KEY_GOOD_PARAMS")
     }
-
-    private val name by unsafeLazy {
-        arguments?.getString(KEY_NAME)
-                ?: throw IllegalArgumentException("There is no data in bundle at key $KEY_NAME")
-    }
-
-    private val selectedEan by unsafeLazy {
-        arguments?.getString(KEY_EAN)
-                ?: throw IllegalArgumentException("There is no data in bundle at key $KEY_EAN")
-    }
+    val deviceIp: String by unsafeLazy { requireContext().getDeviceIp() }
+    private val selectedEan: String by unsafeLazy { goodParams.ean }
+    val material: String by unsafeLazy { goodParams.material }
+    val name: String by unsafeLazy { goodParams.name }
 
     override fun getLayoutId(): Int = R.layout.fragment_good_info
 
@@ -39,8 +34,7 @@ class GoodInfoFragment : CoreFragment<FragmentGoodInfoBinding, GoodInfoViewModel
     override fun getViewModel(): GoodInfoViewModel {
         provideViewModel(GoodInfoViewModel::class.java).let {
             getAppComponent()?.inject(it)
-            it.deviceIp.value = context?.getDeviceId()
-            it.material.value = material
+            it.deviceIp.value = deviceIp
             it.selectedEan.value = selectedEan
             return it
         }
@@ -71,15 +65,11 @@ class GoodInfoFragment : CoreFragment<FragmentGoodInfoBinding, GoodInfoViewModel
 
     companion object {
         const val SCREEN_NUMBER = Constants.GOODS_INFO_FRAGMENT
-        private const val KEY_MATERIAL = "KEY_MATERIAL"
-        private const val KEY_EAN = "KEY_EAN"
-        private const val KEY_NAME = "KEY_NAME"
+        private const val KEY_GOOD_PARAMS = "KEY_GOOD_PARAMS"
 
-        fun newInstance(goodInfo: Bundle) = GoodInfoFragment().apply {
-            arguments = bundleOf(KEY_MATERIAL to goodInfo.getString(Constants.GOOD_INFO_MATERIAL),
-                                        KEY_EAN to goodInfo.getString(Constants.GOOD_INFO_EAN),
-                                        KEY_NAME to goodInfo.getString(Constants.GOOD_INFO_NAME)
-            )
+
+        fun newInstance(goodParams: GoodParams) = GoodInfoFragment().apply {
+            arguments = bundleOf(KEY_GOOD_PARAMS to goodParams)
         }
     }
 

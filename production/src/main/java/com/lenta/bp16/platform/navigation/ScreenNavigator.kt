@@ -22,6 +22,7 @@ import com.lenta.bp16.features.reprint_label.ReprintLabelFragment
 import com.lenta.bp16.features.select_good.GoodSelectFragment
 import com.lenta.bp16.features.select_market.SelectMarketFragment
 import com.lenta.bp16.features.select_personnel_number.SelectPersonnelNumberFragment
+import com.lenta.bp16.model.pojo.GoodParams
 import com.lenta.bp16.platform.Constants
 import com.lenta.shared.account.IAuthenticator
 import com.lenta.shared.features.alert.AlertFragment
@@ -160,9 +161,9 @@ class ScreenNavigator @Inject constructor(
         }
     }
 
-    override fun openGoodInfoScreen(goodInfo: Bundle) {
+    override fun openGoodInfoScreen(goodParams: GoodParams) {
         runOrPostpone {
-            getFragmentStack()?.push(GoodInfoFragment.newInstance(goodInfo))
+            getFragmentStack()?.push(GoodInfoFragment.newInstance(goodParams))
         }
     }
 
@@ -358,7 +359,7 @@ interface IScreenNavigator : ICoreNavigator {
     fun openReprintLabelScreen()
     fun openDefectInfoScreen()
     fun openDefectListScreen()
-    fun openGoodInfoScreen(goodInfo: Bundle)
+    fun openGoodInfoScreen(goodParams: GoodParams)
     fun openSelectGoodScreen()
 
     fun showDefrostingPhaseIsCompleted(nextCallback: () -> Unit)

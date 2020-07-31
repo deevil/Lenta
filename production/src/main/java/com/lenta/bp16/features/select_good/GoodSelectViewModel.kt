@@ -2,6 +2,7 @@ package com.lenta.bp16.features.select_good
 
 import androidx.core.os.bundleOf
 import androidx.lifecycle.MutableLiveData
+import com.lenta.bp16.model.pojo.GoodParams
 import com.lenta.bp16.platform.Constants
 import com.lenta.bp16.platform.navigation.IScreenNavigator
 import com.lenta.bp16.repository.DatabaseRepository
@@ -34,12 +35,8 @@ class GoodSelectViewModel : CoreViewModel() {
                 val ean = it.ean
                 val material = it.getFormattedMaterial()
                 val name = it.name
-                val goodInfo = bundleOf(
-                        Constants.GOOD_INFO_EAN to ean,
-                        Constants.GOOD_INFO_MATERIAL to material,
-                        Constants.GOOD_INFO_NAME to name
-                )
-                navigator.openGoodInfoScreen(goodInfo)
+                val goodParams = GoodParams(ean = ean, material = material, name = name)
+                navigator.openGoodInfoScreen(goodParams)
             } ?: navigator.showAlertGoodNotFound {
                 navigator.openSelectGoodScreen()
             }

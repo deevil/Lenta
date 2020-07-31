@@ -22,9 +22,6 @@ class GoodInfoViewModel : CoreViewModel() {
 
     val weightBarcode = listOf(CONST_VALUE_23, CONST_VALUE_24, CONST_VALUE_27, CONST_VALUE_28)
 
-    val weightField = MutableLiveData("")
-
-    val material = MutableLiveData("")
     val selectedEan = MutableLiveData("")
 
     /**Количество*/
