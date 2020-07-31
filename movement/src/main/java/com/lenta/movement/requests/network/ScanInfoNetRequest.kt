@@ -13,6 +13,7 @@ import com.lenta.shared.models.core.Uom
 import com.lenta.shared.models.core.getMatrixType
 import com.lenta.shared.models.core.getProductType
 import com.lenta.shared.requests.FmpRequestsHelper
+import com.lenta.shared.utilities.extentions.isSapTrue
 import com.mobrun.plugin.api.HyperHive
 import javax.inject.Inject
 
@@ -65,7 +66,7 @@ class ScanInfoNetRequest @Inject constructor(
                             ekGroup = product.ekgrp.orEmpty(),
                             matkl = product.matkl.orEmpty(),
                             volume = product.volume?.toDoubleOrNull() ?: 0.0,
-                            quantityInvestments = material.quantityInvestments?.toDoubleOrNull()?.toInt()
+                            quantityInvestments = product.quantityInvestments?.toDoubleOrNull()?.toInt()
                                     ?: 0,
                             isRus = product.isRus.isSapTrue(),
                             isVet = product.isVet.isSapTrue(),
