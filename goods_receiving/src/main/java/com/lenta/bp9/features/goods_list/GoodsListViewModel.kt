@@ -533,10 +533,7 @@ class GoodsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKey
                 screenNavigator.showProgressLoadingData(::handleFailure)
                 //очищаем таблицу ET_TASK_DIFF от не акцизного (партионного) алкоголя, т.к. для этих товаров необходимо передавать только данные из таблицы ET_PARTS_DIFF
                 taskManager.getReceivingTask()
-                        ?.taskRepository
-                        ?.getProductsDiscrepancies()
-                        ?.getProductsDiscrepancies()
-                        ?.asSequence()
+                        ?.getProcessedProductsDiscrepancies()
                         ?.map { productDiscr ->
                             taskManager.getReceivingTask()
                                     ?.taskRepository

@@ -701,7 +701,8 @@ class DiscrepancyListViewModel : CoreViewModel(), PageSelectionListener {
                     .getReceivingTask()
                     ?.getProcessedProductsDiscrepancies()
                     ?.map { productDiscr ->
-                        taskManager.getReceivingTask()
+                        taskManager
+                                .getReceivingTask()
                                 ?.taskRepository
                                 ?.getProducts()
                                 ?.findProduct(productDiscr.materialNumber)
@@ -714,7 +715,8 @@ class DiscrepancyListViewModel : CoreViewModel(), PageSelectionListener {
                     }
                     ?.map { mapProduct ->
                         mapProduct?.let { productForDel ->
-                            taskManager.getReceivingTask()
+                            taskManager
+                                    .getReceivingTask()
                                     ?.taskRepository
                                     ?.getProductsDiscrepancies()
                                     ?.deleteProductsDiscrepanciesForProduct(productForDel.materialNumber)

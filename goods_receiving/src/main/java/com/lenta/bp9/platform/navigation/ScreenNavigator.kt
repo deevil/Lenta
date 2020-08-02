@@ -1498,7 +1498,7 @@ class ScreenNavigator(
         runOrPostpone {
             getFragmentStack()?.push(AlertFragment.create(
                     message = context.getString(R.string.over_limit_planned),
-                    iconRes = R.drawable.ic_info_pink_80dp,
+                    iconRes = R.drawable.ic_warning_red_80dp,
                     textColor = ContextCompat.getColor(context, R.color.color_text_dialogWarning),
                     pageNumber = "97")
             )
@@ -1526,7 +1526,7 @@ class ScreenNavigator(
         runOrPostpone {
             getFragmentStack()?.push(AlertFragment.create(
                     message = context.getString(R.string.invalid_code_scanned_for_current_mode),
-                    iconRes = R.drawable.ic_info_pink_80dp,
+                    iconRes = R.drawable.ic_warning_red_80dp,
                     textColor = ContextCompat.getColor(context, R.color.color_text_dialogWarning),
                     pageNumber = PAGE_NUMBER_97)
             )
@@ -1550,7 +1550,7 @@ class ScreenNavigator(
         runOrPostpone {
             getFragmentStack()?.push(AlertFragment.create(
                     message = context.getString(R.string.disparity_gtin),
-                    iconRes = R.drawable.ic_info_pink_80dp,
+                    iconRes = R.drawable.ic_warning_red_80dp,
                     textColor = ContextCompat.getColor(context, R.color.color_text_dialogWarning),
                     pageNumber = PAGE_NUMBER_97)
             )
@@ -1561,7 +1561,7 @@ class ScreenNavigator(
         runOrPostpone {
             getFragmentStack()?.push(AlertFragment.create(
                     message = context.getString(R.string.scan_product_barcode),
-                    iconRes = R.drawable.ic_info_pink_80dp,
+                    iconRes = R.drawable.ic_warning_red_80dp,
                     textColor = ContextCompat.getColor(context, R.color.color_text_dialogWarning),
                     pageNumber = PAGE_NUMBER_97)
             )
@@ -1572,7 +1572,7 @@ class ScreenNavigator(
         runOrPostpone {
             getFragmentStack()?.push(AlertFragment.create(
                     message = context.getString(R.string.gtin_does_not_match_product),
-                    iconRes = R.drawable.ic_info_pink_80dp,
+                    iconRes = R.drawable.ic_warning_red_80dp,
                     textColor = ContextCompat.getColor(context, R.color.color_text_dialogWarning),
                     pageNumber = PAGE_NUMBER_97)
             )
@@ -1654,6 +1654,17 @@ class ScreenNavigator(
         runOrPostpone {
             getFragmentStack()?.push(AlertFragment.create(
                     message = context.getString(R.string.scanned_stamp_is_already_processed_alternative),
+                    iconRes = R.drawable.ic_warning_red_80dp,
+                    textColor = ContextCompat.getColor(context, R.color.color_text_dialogWarning),
+                    pageNumber = PAGE_NUMBER_97)
+            )
+        }
+    }
+
+    override fun openAlertScanProductGtinScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    message = context.getString(R.string.scan_product_gtin),
                     iconRes = R.drawable.ic_warning_red_80dp,
                     textColor = ContextCompat.getColor(context, R.color.color_text_dialogWarning),
                     pageNumber = PAGE_NUMBER_97)
@@ -1848,4 +1859,5 @@ interface IScreenNavigator : ICoreNavigator {
     fun openAlertMustEnterQuantityInfoGreenScreen()
     fun openAlertAmountNormWillBeReducedMarkingScreen()
     fun openAlertScannedStampIsAlreadyProcessedAlternativeScreen()
+    fun openAlertScanProductGtinScreen()
 }
