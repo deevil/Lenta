@@ -156,20 +156,18 @@ class MarkingProductFailureViewModel : CoreViewModel() {
                     if (processMarkingProductService.newProcessMarkingProductService(productInfo) == null) {
                         screenNavigator.openAlertWrongProductType()
                     } else {
-                        val confirmedByScanning =
-                                processMarkingProductService.getCountAttachmentInBlock(
-                                        taskManager
-                                                .getReceivingTask()
-                                                ?.taskRepository
-                                                ?.getBlocksDiscrepancies()
-                                                ?.findBlocksDiscrepanciesOfProduct(productInfo)
-                                                ?.filter {
-                                                    it.isScan
-                                                }
-                                                ?.size
-                                                .toString()
-                                )
-
+                        val countProcessedBlocks =
+                                taskManager
+                                        .getReceivingTask()
+                                        ?.taskRepository
+                                        ?.getBlocksDiscrepancies()
+                                        ?.findBlocksDiscrepanciesOfProduct(productInfo)
+                                        ?.filter {
+                                            it.isScan
+                                        }
+                                        ?.size
+                                        .toString()
+                        val confirmedByScanning = processMarkingProductService.getCountAttachmentInBlock(countProcessedBlocks)
                         val notConfirmedByScanning = productInfo.origQuantity.toDouble() - confirmedByScanning
                         val unitName = productInfo.purchaseOrderUnits.name.toLowerCase(Locale.getDefault())
                         screenNavigator.openPartialRefusalOnMarkingGoodsDialog(

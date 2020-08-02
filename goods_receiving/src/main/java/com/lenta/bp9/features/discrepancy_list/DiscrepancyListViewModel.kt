@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.lenta.bp9.features.goods_list.SearchProductDelegate
 import com.lenta.bp9.features.loading.tasks.TaskCardMode
 import com.lenta.bp9.features.loading.tasks.TaskListLoadingMode
+import com.lenta.bp9.model.processing.ProcessMarkingProductService
 import com.lenta.bp9.model.task.*
 import com.lenta.bp9.platform.TypeDiscrepanciesConstants
 import com.lenta.bp9.platform.navigation.IScreenNavigator
@@ -27,6 +28,7 @@ import com.lenta.shared.utilities.extentions.getDeviceIp
 import com.lenta.shared.utilities.extentions.launchUITryCatch
 import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.utilities.extentions.toStringFormatted
+import com.lenta.shared.utilities.orIfNull
 import javax.inject.Inject
 
 private const val SELECTED_PAGE_NOT_PROCESSED = 0
@@ -40,6 +42,9 @@ class DiscrepancyListViewModel : CoreViewModel(), PageSelectionListener {
 
     @Inject
     lateinit var taskManager: IReceivingTaskManager
+
+    @Inject
+    lateinit var processMarkingProductService: ProcessMarkingProductService
 
     @Inject
     lateinit var endRecountDirectDeliveries: EndRecountDirectDeliveriesNetRequest
@@ -66,6 +71,7 @@ class DiscrepancyListViewModel : CoreViewModel(), PageSelectionListener {
     val countControl: MutableLiveData<List<GoodsDiscrepancyItem>> = MutableLiveData()
     private val isBatches: MutableLiveData<Boolean> = MutableLiveData(false)
     private val qualityInfo: MutableLiveData<List<QualityInfo>> = MutableLiveData()
+    private val paramGrzGrundMarkCode: MutableLiveData<String> = MutableLiveData("")
 
     val isAlco: MutableLiveData<Boolean> by lazy {
         //проверяем, есть ли алкогольные акцизные товары в задании и стоит ли признак isAlco в задании
@@ -104,6 +110,8 @@ class DiscrepancyListViewModel : CoreViewModel(), PageSelectionListener {
         launchUITryCatch {
             searchProductDelegate.init(viewModelScope = this@DiscrepancyListViewModel::viewModelScope,
                     scanResultHandler = this@DiscrepancyListViewModel::handleProductSearchResult)
+
+            paramGrzGrundMarkCode.value = dataBase.getGrzGrundMark().orEmpty()
         }
     }
 
@@ -825,24 +833,43 @@ class DiscrepancyListViewModel : CoreViewModel(), PageSelectionListener {
     }
 
     private fun markingProductControlNotPassed(productInfo: TaskProductInfo): Boolean {
-        val isProcessedProduct =
-                taskManager.getReceivingTask()
-                        ?.taskRepository
-                        ?.getProductsDiscrepancies()
-                        ?.findProductDiscrepanciesOfProduct(productInfo)
-                        ?.any {
-                            it.typeDiscrepancies == TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_NORM
-                        }
-                        ?: false
-        val countStampsScanned =
-                taskManager.getReceivingTask()
-                        ?.taskRepository
-                        ?.getBlocksDiscrepancies()
-                        ?.processedNumberOfStampsByProduct(productInfo)
-                        ?.toDouble()
-                        ?: 0.0
-        val numberStampsControl = productInfo.numberStampsControl.toDouble()
-        return isProcessedProduct && countStampsScanned < numberStampsControl
+        return processMarkingProductService
+                .newProcessMarkingProductService(productInfo)
+                ?.let { processMarking ->
+                    val isProcessedProduct =
+                            taskManager
+                                    .getReceivingTask()
+                                    ?.taskRepository
+                                    ?.getProductsDiscrepancies()
+                                    ?.findProductDiscrepanciesOfProduct(productInfo)
+                                    ?.any {
+                                        it.typeDiscrepancies == TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_NORM
+                                    }
+                                    ?: false
+                    val countStampsScanned =
+                            taskManager
+                                    .getReceivingTask()
+                                    ?.taskRepository
+                                    ?.getBlocksDiscrepancies()
+                                    ?.processedNumberOfStampsByProduct(productInfo)
+                                    ?.toDouble()
+                                    ?: 0.0
+                    val countUnderload =
+                            taskManager
+                                    .getReceivingTask()
+                                    ?.taskRepository
+                                    ?.getProductsDiscrepancies()
+                                    ?.findProductDiscrepanciesOfProduct(productInfo)
+                                    ?.findLast {
+                                        it.typeDiscrepancies == paramGrzGrundMarkCode.value
+                                    }
+                                    ?.numberDiscrepancies?.toDouble()
+                                    ?: 0.0
+                    val countBlocksUnderload = processMarking.getCountBlocksByAttachments(countUnderload.toString())
+                    val numberStampsControl =  productInfo.numberStampsControl.toDouble() - countBlocksUnderload
+                    isProcessedProduct && countStampsScanned < numberStampsControl
+                }
+                ?: false
     }
 
     private fun getManufacturerName(batchInfo: TaskBatchInfo?): String {

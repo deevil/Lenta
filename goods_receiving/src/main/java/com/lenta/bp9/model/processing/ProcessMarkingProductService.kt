@@ -344,6 +344,20 @@ class ProcessMarkingProductService
 
     fun refusalToAcceptPartlyByProduct(typeDiscrepancies: String) {
         //https://trello.com/c/vcymT9Kp
+        val countProcessedBlocks =
+                taskManager
+                        .getReceivingTask()
+                        ?.taskRepository
+                        ?.getBlocksDiscrepancies()
+                        ?.findBlocksDiscrepanciesOfProduct(productInfo)
+                        ?.filter {
+                            it.isScan
+                        }
+                        ?.size
+                        .toString()
+        val confirmedByScanning = getCountAttachmentInBlock(countProcessedBlocks)
+        val notConfirmedByScanning = productInfo.origQuantity.toDouble() - confirmedByScanning
+
         //отмечаем все не обработанные блоки/марки для продукта категорией для брака из параметра GRZ_GRUND_MARK
         blocks
                 .filter { block ->
@@ -359,8 +373,14 @@ class ProcessMarkingProductService
                     apply()
                 }
 
-        //отмечаем продукт
-        addProduct((productInfo.origQuantity.toDouble() - getCountAcceptOfProduct() - getCountRefusalOfProduct()).toString(), typeDiscrepancies)
+        //отмечаем продукт (https://trello.com/c/r4kofgtQ в комментарии смотреть логику)
+        taskManager
+                .getReceivingTask()
+                ?.taskRepository
+                ?.getProductsDiscrepancies()
+                ?.deleteProductDiscrepancy(productInfo.materialNumber, TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_NORM)
+        addProduct(confirmedByScanning.toString(), TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_NORM)
+        addProduct(notConfirmedByScanning.toString(), typeDiscrepancies)
     }
 
     fun delBlockDiscrepancy(typeDiscrepancies: String) {

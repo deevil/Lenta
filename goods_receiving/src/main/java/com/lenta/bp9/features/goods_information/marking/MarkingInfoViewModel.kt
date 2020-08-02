@@ -228,11 +228,11 @@ class MarkingInfoViewModel : CoreViewModel(),
                                 ?.get(spinQualitySelectedPositionVal)
                                 ?.code
                                 .orEmpty()
-                val numberStampsControl = 1.0 //todo
-                        /**productInfo.value
+                val numberStampsControl =
+                        productInfo.value
                                 ?.numberStampsControl
                                 ?.toDouble()
-                                ?: 0.0*/
+                                ?: 0.0
                 if (qualityInfoCode == TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_NORM) {
                     if (numberStampsControl == 0.0 || acceptTotalCountVal <= 0.0) {
                         checkStampControlVisibility.value = false
@@ -265,7 +265,7 @@ class MarkingInfoViewModel : CoreViewModel(),
 
     val checkStampControl: MutableLiveData<Boolean> = checkStampControlVisibility.map {
         val countBlockScanned = processMarkingProductService.getCountProcessedBlockForDiscrepancies(TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_NORM).toDouble()
-        val numberStampsControl = 1.0 //todo productInfo.value?.numberStampsControl?.toDouble() ?: 0.0
+        val numberStampsControl = productInfo.value?.numberStampsControl?.toDouble() ?: 0.0
         countBlockScanned >= numberStampsControl
     }
 
@@ -731,7 +731,7 @@ class MarkingInfoViewModel : CoreViewModel(),
                     typeDiscrepancies = typeDiscrepancies
             )
         } else {
-            //todo этот блок считается обработанным, т.к. здесь нету контроля gtin, сохраняем его для erp
+            //этот блок считается обработанным, т.к. здесь нету контроля gtin, сохраняем его для erp
             addBlock(
                     blockInfo = blockInfo,
                     typeDiscrepancies = typeDiscrepancies,
@@ -775,7 +775,7 @@ class MarkingInfoViewModel : CoreViewModel(),
                 checkBoxGtinStampControl.value = true //аналитики сказали сначала поставить чекбокс, а потом снять
                 val gtinCode = stampCode.substring(2, 16)
                 addGtin(gtinCode)
-                //todo этот блок считается обработанным, сохраняем его для erp
+                //этот блок считается обработанным, сохраняем его для erp
                 addBlock(
                         blockInfo = blockInfo,
                         typeDiscrepancies = typeDiscrepancies,
@@ -787,7 +787,7 @@ class MarkingInfoViewModel : CoreViewModel(),
                 countScannedBlocks.value = countScannedBlocks.value?.plus(1)
             } else {
                 checkBoxGtinStampControl.value = true
-                //todo этот блок считается НЕ обработанным, помечаем его как не прошедшего контроль GTIN, и на экране в поле «Контроль марок» кол-во не обновляем, т.е. countScannedBlocks не увеличиваем на единицу
+                //этот блок считается НЕ обработанным, помечаем его как не прошедшего контроль GTIN, и на экране в поле «Контроль марок» кол-во не обновляем, т.е. countScannedBlocks не увеличиваем на единицу
                 addBlock(
                         blockInfo = blockInfo,
                         typeDiscrepancies = typeDiscrepancies,
@@ -846,7 +846,7 @@ class MarkingInfoViewModel : CoreViewModel(),
         if (gtinCode == lastScannedGtin) {
             lastScannedBlockInfo?.let { blockInfo ->
                 checkBoxGtinControl.value = true //аналитики сказали сначала поставить чекбокс, а потом снять чисто для показа пользователю на мгновение
-                //todo код по сохранению блока для передачи в erp, т.к. он считается обработанным
+                //код по сохранению блока для передачи в erp, т.к. он считается обработанным
                 processMarkingProductService.markPassageControlBlock(blockInfo.blockNumber)
                 addGtin(gtinCode)
                 checkBoxGtinControl.value = false //аналитики сказали сначала поставить чекбокс, а потом снять чисто для показа пользователю на мгновение
@@ -866,7 +866,7 @@ class MarkingInfoViewModel : CoreViewModel(),
             checkBoxGtinControl.value = true //аналитики сказали сначала поставить чекбокс, а потом снять чисто для показа пользователю на мгновение
             checkBoxGtinStampControl.value = true //аналитики сказали сначала поставить чекбокс, а потом снять чисто для показа пользователю на мгновение
             processMarkingProductService.replaceLastGtin(gtinCode)
-            //todo этот блок считается обработанным, сохраняем его для erp
+            //этот блок считается обработанным, сохраняем его для erp
             addBlock(
                     blockInfo = blockInfo,
                     typeDiscrepancies = typeDiscrepancies,
@@ -882,7 +882,7 @@ class MarkingInfoViewModel : CoreViewModel(),
         val lastScannedGtin = processMarkingProductService.getLastScannedGtin().orEmpty()
         if (lastScannedGtin == gtinCode) {
             checkBoxGtinStampControl.value = true //аналитики сказали сначала поставить чекбокс, а потом снять чисто для показа пользователю на мгновение
-            //todo этот блок считается обработанным, сохраняем его для erp
+            //этот блок считается обработанным, сохраняем его для erp
             addBlock(
                     blockInfo = blockInfo,
                     typeDiscrepancies = typeDiscrepancies,
@@ -949,19 +949,6 @@ class MarkingInfoViewModel : CoreViewModel(),
         }
 
         screenNavigator.goBack()
-    }
-
-    //todo
-    fun scanMark1() {
-        onScanResult("04600266012142")
-    }
-
-    fun scanMark2() {
-        onScanResult("01046002660121422100000Ga.8005012345.938000.92NGkg+wRXz36kBFjpfwOub5DBIIpD2iS/DMYpZuuDLU0Y3pZt1z20/1ksr4004wfhDhRxu4dgUV4QN96Qtdih9g==")
-    }
-
-    fun scanMark3() {
-        onScanResult("010460026601136721000003Y.8005012345.938000.92NGkg+wRXz36kBFjpfwOub5DBIIpD2iS/DMYpZuuDLU0Y3pZt1z20/1ksr4004wfhDhRxu4dgUV4QN96Qtdih9g==")
     }
 
 }
