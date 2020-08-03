@@ -329,6 +329,7 @@ class GoodInfoOpenViewModel : CoreViewModel() {
         val foundGood = manager.findGoodByEan(ean)
         if (foundGood != null) {
             lastSuccessSearchNumber = ean
+            isEanLastScanned = true
             setFoundGood(foundGood)
         } else {
             if (task.value?.isStrict == false) {
@@ -344,6 +345,7 @@ class GoodInfoOpenViewModel : CoreViewModel() {
         val foundGood = manager.findGoodByMaterial(material)
         if (foundGood != null) {
             lastSuccessSearchNumber = material
+            isEanLastScanned = false
             setFoundGood(foundGood)
         } else {
             if (task.value?.isStrict == false) {

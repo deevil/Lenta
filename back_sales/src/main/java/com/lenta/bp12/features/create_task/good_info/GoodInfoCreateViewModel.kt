@@ -407,6 +407,7 @@ class GoodInfoCreateViewModel : CoreViewModel() {
     private fun getGoodByEan(ean: String) {
         manager.findGoodByEan(ean)?.let { foundGood ->
             lastSuccessSearchNumber = ean
+            isEanLastScanned = true
             setFoundGood(foundGood)
         } ?: loadGoodInfoByEan(ean)
     }
@@ -414,6 +415,7 @@ class GoodInfoCreateViewModel : CoreViewModel() {
     private fun getGoodByMaterial(material: String) {
         manager.findGoodByMaterial(material)?.let { foundGood ->
             lastSuccessSearchNumber = material
+            isEanLastScanned = false
             setFoundGood(foundGood)
         } ?: loadGoodInfoByMaterial(material)
     }
