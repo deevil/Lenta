@@ -13,20 +13,24 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
 class MemoryTaskBasketsRepository(
-    hyperHive: HyperHive,
-    private val taskManager: ITaskManager
-): ITaskBasketsRepository {
+        hyperHive: HyperHive,
+        private val taskManager: ITaskManager
+) : ITaskBasketsRepository {
 
     private val zmpUtz14V001 = ZmpUtz14V001(hyperHive)
 
     private val basketList = mutableListOf<Basket>()
 
     override fun getBasketByIndex(basketIndex: Int): Basket? {
-        return basketList.getOrNull(basketIndex)
+        return basketList.find { it.index == basketIndex }
     }
 
     override fun getAll(): List<Basket> {
         return basketList
+    }
+
+    override fun getLastIndexOfProduct(product: ProductInfo): Int {
+        return basketList.last { it.containsKey(product) }.index
     }
 
     override fun removeBasket(basket: Basket) {
@@ -42,44 +46,49 @@ class MemoryTaskBasketsRepository(
     }
 
     override fun removeProductFromBasket(basketIndex: Int, product: ProductInfo) {
-        basketList[basketIndex].remove(product)
-
+        basketList.find { it.index == basketIndex }?.remove(product)
         basketList.removeAll { it.isEmpty() }
     }
 
     override suspend fun addProduct(product: ProductInfo, supplier: Supplier?, count: Int) {
-        if (count == 0) return
-
-        val suitableBasket = getSuitableBasketOrCreate(product, supplier)
-
-        suitableBasket[product] = (suitableBasket[product] ?: 0) + 1
-
-        if (basketList.contains(suitableBasket)) {
-            basketList[suitableBasket.index] = suitableBasket
-        } else {
-            basketList.add(suitableBasket.index, suitableBasket)
-        }
-
-        addProduct(product, supplier, count - 1)
-    }
-
-    override suspend fun getSuitableBasketOrCreate(product: ProductInfo, supplier: Supplier?): Basket {
         val signOfDiv = taskManager.getTaskSettings().signsOfDiv
+
+        for (i in count downTo 1) {
+            val suitableBasket = getOrCreateSuitableBasket(product, supplier, signOfDiv)
+
+            suitableBasket[product] = (suitableBasket[product] ?: 0) + 1
+
+            if (basketList.contains(suitableBasket)) {
+                val indexOfSuitable = basketList.indexOf(suitableBasket)
+                basketList[indexOfSuitable] = suitableBasket
+            }
+        }
+    }
+    
+    override suspend fun getOrCreateSuitableBasket(
+            product: ProductInfo,
+            supplier: Supplier?,
+            signOfDiv: Set<GoodsSignOfDivision>): Basket {
 
         return withContext(Dispatchers.IO) {
             basketList.lastOrNull { basket ->
                 basket.checkSuitableProduct(product, supplier)
-            } ?: Basket(
-                    index = basketList.size,
-                    volume = zmpUtz14V001.getEoVolume() ?: error(NULL_BASKET_VOLUME),
-                    supplier = supplier.takeIf { signOfDiv.contains(GoodsSignOfDivision.LIF_NUMBER) },
-                    isAlco = product.isAlco.takeIf { signOfDiv.contains(GoodsSignOfDivision.ALCO) },
-                    isExciseAlco = product.isExcise.takeIf { signOfDiv.contains(GoodsSignOfDivision.MARK_PARTS) },
-                    isNotExciseAlco = product.isNotExcise.takeIf { signOfDiv.contains(GoodsSignOfDivision.PARTS) },
-                    isUsual = product.isUsual.takeIf { signOfDiv.contains(GoodsSignOfDivision.USUAL) },
-                    isVet = product.isVet.takeIf { signOfDiv.contains(GoodsSignOfDivision.VET) },
-                    isFood = product.isFood.takeIf { signOfDiv.contains(GoodsSignOfDivision.FOOD) }
-            )
+            } ?: let {
+                val index = basketList.lastOrNull()?.index?.plus(1) ?: 0
+                Basket(
+                        index = index,
+                        volume = zmpUtz14V001.getEoVolume() ?: error(NULL_BASKET_VOLUME),
+                        supplier = supplier.takeIf { signOfDiv.contains(GoodsSignOfDivision.LIF_NUMBER) },
+                        isAlco = product.isAlco.takeIf { signOfDiv.contains(GoodsSignOfDivision.ALCO) },
+                        isExciseAlco = product.isExcise.takeIf { signOfDiv.contains(GoodsSignOfDivision.MARK_PARTS) },
+                        isNotExciseAlco = product.isNotExcise.takeIf { signOfDiv.contains(GoodsSignOfDivision.PARTS) },
+                        isUsual = product.isUsual.takeIf { signOfDiv.contains(GoodsSignOfDivision.USUAL) },
+                        isVet = product.isVet.takeIf { signOfDiv.contains(GoodsSignOfDivision.VET) },
+                        isFood = product.isFood.takeIf { signOfDiv.contains(GoodsSignOfDivision.FOOD) }
+                ).also {
+                    basketList.add(it)
+                }
+            }
         }
     }
 

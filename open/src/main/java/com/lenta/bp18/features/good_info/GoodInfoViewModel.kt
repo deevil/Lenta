@@ -1,8 +1,10 @@
 package com.lenta.bp18.features.good_info
 
+import android.content.Context
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.lenta.bp18.features.other.SendDataViewModel
+import com.lenta.bp18.model.pojo.Good
 import com.lenta.bp18.platform.Constants
 import com.lenta.shared.models.core.Uom
 import com.lenta.shared.requests.combined.scan_info.pojo.ConditionInfo
@@ -21,13 +23,10 @@ class GoodInfoViewModel : SendDataViewModel(), OnPositionClickListener {
     @Inject
     lateinit var appSettings: IAppSettings
 
-    //TODO Удалить потом опилки и не опилки
-    //val barcode = "2999999640343" //опилки
-    //val barcode = "2425352000000" //не опилки
+    @Inject
+    lateinit var context: Context
 
-    val deviceIp = MutableLiveData("")
-
-    var selectedEan = MutableLiveData("")
+    val selectedEan = MutableLiveData("")
     var weight = MutableLiveData(0)
 
     val quantityField: MutableLiveData<String> = MutableLiveData("")
@@ -36,7 +35,7 @@ class GoodInfoViewModel : SendDataViewModel(), OnPositionClickListener {
     val requestFocusToQuantityField: MutableLiveData<Boolean> = MutableLiveData(true)
     val requestFocusToPartNumberField: MutableLiveData<Boolean> = MutableLiveData(true)
 
-    val partNumberFieldEnabled: MutableLiveData<Boolean> = MutableLiveData(false)
+    val partNumberFieldEnabled: MutableLiveData<Boolean> = MutableLiveData(true)
 
     private val groups: MutableLiveData<List<GroupInfo>> = MutableLiveData()
     private val conditions: MutableLiveData<List<ConditionInfo>> = MutableLiveData()
@@ -51,29 +50,35 @@ class GoodInfoViewModel : SendDataViewModel(), OnPositionClickListener {
     }
 
     init {
+        setGoodInfo()
+    }
+
+    private fun setGoodInfo(){
         launchUITryCatch {
             val good = database.getGoodByEan(selectedEan.value.toString())
-            Logg.d { "good.ean:${good?.ean}" }
-            Logg.d { "Good uom:${good?.uom}, ${good?.material}, ${good?.name}, ${good?.uom}, ${weight.value}" }
-            val quantity = when {
-                weight.value != 0 -> {
-                    weight.value?.div(Constants.CONVERT_TO_KG)
+            val (quantity: Int?, uom: String?) = if (weight.value != 0) {
+                weight.value?.div(Constants.CONVERT_TO_KG) to Uom.KG.name
+            } else {
+                when (good?.uom) {
+                    Uom.ST -> Constants.QUANTITY_DEFAULT_VALUE_1 to Uom.ST.name
+                    Uom.KAR -> {
+                        val uomInfo = database.getEanInfoByEan(good.ean)
+                        val uomDiv= uomInfo?.umrez?.div(uomInfo.umren)
+                                ?: Constants.QUANTITY_DEFAULT_VALUE_0
+                        uomDiv  to Uom.KAR.name
+                    }
+                    Uom.G -> {
+                        Constants.QUANTITY_DEFAULT_VALUE_0 to Uom.G.name
+                    }
+                    else -> {
+                        Constants.QUANTITY_DEFAULT_VALUE_0 to  Uom.DEFAULT.name
+                    }
                 }
-
-                good?.uom == Uom.ST -> {
-                    Constants.QUANTITY_DEFAULT_VALUE_1
-                }
-                good?.uom == Uom.KAR -> {
-                    val uom = database.getEanInfoByEan(good.ean)
-                    uom?.umrez?.div(uom.umren) ?: Constants.QUANTITY_DEFAULT_VALUE_0
-                }
-                else -> Constants.QUANTITY_DEFAULT_VALUE_0
             }
 
-            quantityField.value = quantity.toString()
-
-            /*Тут на самом деле не matcode, а ШК по индикатору (10). Осталось понять как его получить*/
-            partNumberField.value = good?.matcode.orEmpty()
+            quantityField.value = "$quantity $uom"
+            /*ШК по индикатору (10) для GS1, для EAN13 не заполнять*/
+            //partNumberField.value = /*значение*/
 
             val groupList = database.getAllGoodGroup()
 
@@ -89,9 +94,9 @@ class GoodInfoViewModel : SendDataViewModel(), OnPositionClickListener {
             }
 
             val conditionList = database.getAllGoodCondition()
-
             conditions.value = conditionList
         }
+
     }
 
     override fun onClickPosition(position: Int) {
@@ -99,14 +104,19 @@ class GoodInfoViewModel : SendDataViewModel(), OnPositionClickListener {
     }
 
     fun onClickBack() {
-        navigator.showConfirmSaveData {
-            navigator.openSelectMarketScreen()
+        with(navigator) {
+            showConfirmSaveData{
+                openSelectGoodScreen()
+            }
         }
     }
 
     fun onClickComplete() {
-        navigator.showConfirmOpeningPackage {
-            /*Подтверждение вскрытия упаковки*/
+        with(navigator) {
+            showConfirmOpeningPackage {
+                showAlertSuccessfulOpeningPackage(::openSelectGoodScreen)
+            }
         }
+
     }
 }

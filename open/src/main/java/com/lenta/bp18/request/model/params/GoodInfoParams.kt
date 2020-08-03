@@ -1,4 +1,4 @@
-package com.lenta.bp18.request.model
+package com.lenta.bp18.request.model.params
 
 import com.google.gson.annotations.SerializedName
 

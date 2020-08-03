@@ -20,7 +20,7 @@
     <string name="create_boxes_box_list_tab_box_number">Номер короба</string>
     <string name="stamp_max_count">Достигнуто максимальное количество марок для комплектации текущего короба. Завершите комплектацию этого короба и продолжите добавление марок в следующий короб.</string>
     <string name="stamp_was_added_msg">Отсканированная марка уже добавлена. Удалить марку?</string>
-    <string name="stamp_was_added_to_box_msg">Указанный номер был использован ранее при создании другого короба.</string>
+    <string name="stamp_was_added_to_box_msg">Отсканированная марка была добавлена в короб %s. Перепривязка невозможна.</string>
     <string name="box_number_was_used_msg">Указанный номер был использован ранее при создании другого короба</string>
     <string name="ean_invalid_msg">Неверный формат штрихкода</string>
 
