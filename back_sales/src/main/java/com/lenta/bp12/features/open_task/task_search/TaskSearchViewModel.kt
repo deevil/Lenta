@@ -75,7 +75,7 @@ class TaskSearchViewModel : CoreViewModel() {
                 exciseMark = mark.value.orEmpty()
         )
 
-        manager.isNeedUpdateTaskList = true
+        manager.isNeedLoadTaskListByParams = true
         navigator.goBack()
     }
 

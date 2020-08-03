@@ -31,7 +31,7 @@ class OpenTaskManager @Inject constructor(
 
     override var isSearchFromList = false
 
-    override var isNeedUpdateTaskList: Boolean = false
+    override var isNeedLoadTaskListByParams: Boolean = false
 
     private var startStateCurrentTask: TaskOpen? = null
 
@@ -353,7 +353,7 @@ interface IOpenTaskManager {
 
     var searchNumber: String
     var isSearchFromList: Boolean
-    var isNeedUpdateTaskList: Boolean
+    var isNeedLoadTaskListByParams: Boolean
     var searchParams: TaskSearchParams?
 
     val tasks: MutableLiveData<List<TaskOpen>>

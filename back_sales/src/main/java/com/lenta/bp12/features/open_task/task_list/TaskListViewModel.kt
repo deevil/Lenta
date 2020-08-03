@@ -163,7 +163,7 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
         }
     }
 
-    private fun loadTaskListWithParams(value: String, userNumber: String = "") {
+    private fun loadTaskListWithParams() {
         manager.searchParams?.let { params ->
             launchUITryCatch {
                 navigator.showProgressLoadingData(::handleFailure)
@@ -171,8 +171,6 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
                 taskListNetRequest(
                         TaskListParams(
                                 tkNumber = sessionInfo.market.orEmpty(),
-                                value = value,
-                                userNumber = userNumber,
                                 mode = TaskSearchMode.WITH_PARAMS.mode,
                                 taskSearchParams = params
                         )
@@ -248,9 +246,9 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
     }
 
     fun updateTaskList() {
-        if (manager.isNeedUpdateTaskList) {
-            manager.isNeedUpdateTaskList = false
-            onClickUpdate()
+        if (manager.isNeedLoadTaskListByParams) {
+            manager.isNeedLoadTaskListByParams = false
+            loadTaskListWithParams()
         }
     }
 
@@ -267,16 +265,13 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
 
         if (isEnteredLogin() || isEnteredUnknownTaskNumber()) {
             loadTaskList(entered)
-            loadTaskListWithParams(entered)
         } else {
             if (entered.isEmpty()) {
                 val currentUser = sessionInfo.userName.orEmpty()
                 val userNumber = sessionInfo.personnelNumber.orEmpty()
 
                 loadTaskList(currentUser, userNumber)
-                loadTaskListWithParams(currentUser, userNumber)
-
-                numberField.value = sessionInfo.userName.orEmpty()
+                numberField.value = currentUser
             }
         }
     }
