@@ -31,7 +31,6 @@ class ScanInfoNetRequest @Inject constructor(
                 clazz = ScanInfoStatus::class.java
         )
 
-
         return if (result is Either.Left) {
             result
         } else {
@@ -67,7 +66,7 @@ class ScanInfoNetRequest @Inject constructor(
                             ekGroup = product.ekgrp.orEmpty(),
                             matkl = product.matkl.orEmpty(),
                             volume = product.volume?.toDoubleOrNull() ?: 0.0,
-                            quantityInvestments = material.quantityInvestments?.toDoubleOrNull()?.toInt()
+                            quantityInvestments = product.quantityInvestments?.toDoubleOrNull()?.toInt()
                                     ?: 0,
                             isRus = product.isRus.isSapTrue(),
                             isVet = product.isVet.isSapTrue(),

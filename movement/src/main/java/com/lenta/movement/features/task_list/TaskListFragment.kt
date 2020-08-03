@@ -72,42 +72,46 @@ class TaskListFragment : CoreFragment<FragmentTaskListBinding, TaskListViewModel
 
     override fun getPagerItemView(container: ViewGroup, position: Int): View {
         return when (TaskListPage.values()[position]) {
-            TaskListPage.TO_PROCESS -> {
-                DataBindingUtil.inflate<LayoutTaskListToProcessTabBinding>(
-                        LayoutInflater.from(context),
-                        R.layout.layout_task_list_to_process_tab,
-                        container,
-                        false
-                ).apply {
-                        rvConfig = initRecycleAdapterDataBinding(
-                                layoutId = R.layout.layout_item_task_list,
-                                itemId = BR.item,
-                                onAdapterItemBind = { binding: LayoutItemTaskListBinding, position ->
-                                  taskListRecyclerViewKeyHandler?.let {
-                                      binding.root.isSelected = it.isSelected(position)
-                                  }
-                                },
-                                onAdapterItemClicked = { position ->
-                                    taskListRecyclerViewKeyHandler?.onItemClicked(position)
-                                }
-                        )
-
-                        dataBindingViewModel = this@TaskListFragment.vm
-                        lifecycleOwner = viewLifecycleOwner
-
-                        taskListRecyclerViewKeyHandler = initRecyclerViewKeyHandler(
-                                recyclerView = recyclerView,
-                                items = vm.taskItemList,
-                                previousPosInfo = taskListRecyclerViewKeyHandler?.posInfo?.value,
-                                onClickHandler = vm::onClickTaskListItem
-                        )
-                }.root
-            }
-
-            TaskListPage.SEARCH -> {
-                View(context)
-            }
+            TaskListPage.TO_PROCESS -> inflateToProcessTab(container)
+            TaskListPage.SEARCH -> inflateSearchTab(container)
         }
+    }
+
+    private fun inflateToProcessTab(container: ViewGroup?) : View {
+        return DataBindingUtil.inflate<LayoutTaskListToProcessTabBinding>(
+                LayoutInflater.from(context),
+                R.layout.layout_task_list_to_process_tab,
+                container,
+                false
+        ).let { layoutBinding ->
+            layoutBinding.rvConfig = initRecycleAdapterDataBinding(
+                    layoutId = R.layout.layout_item_task_list,
+                    itemId = BR.item,
+                    onAdapterItemBind = { binding: LayoutItemTaskListBinding, position ->
+                        taskListRecyclerViewKeyHandler?.let {
+                            binding.root.isSelected = it.isSelected(position)
+                        }
+                    },
+                    onAdapterItemClicked = { position ->
+                        taskListRecyclerViewKeyHandler?.onItemClicked(position)
+                    }
+            )
+
+            layoutBinding.dataBindingViewModel = vm
+            layoutBinding.lifecycleOwner = viewLifecycleOwner
+
+            taskListRecyclerViewKeyHandler = initRecyclerViewKeyHandler(
+                    recyclerView = layoutBinding.recyclerView,
+                    items = vm.taskItemList,
+                    previousPosInfo = taskListRecyclerViewKeyHandler?.posInfo?.value,
+                    onClickHandler = vm::onClickTaskListItem
+            )
+            layoutBinding.root
+        }
+    }
+
+    private fun inflateSearchTab(container: ViewGroup?): View {
+        return View(context) //TODO 
     }
 
     override fun getTextTitle(position: Int): String {

@@ -2,6 +2,8 @@ package com.lenta.movement.requests.network
 
 import com.lenta.movement.exception.InfoFailure
 import com.lenta.movement.models.ExciseStamp
+import com.lenta.movement.requests.network.models.obtainingDataExciseGoodsNetRequest.ExciseGoodsParams
+import com.lenta.movement.requests.network.models.obtainingDataExciseGoodsNetRequest.ExciseGoodsRestInfo
 import com.lenta.movement.utils.DateTimeUtils
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.functional.Either

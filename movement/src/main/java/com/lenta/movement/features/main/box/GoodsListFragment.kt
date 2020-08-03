@@ -61,9 +61,7 @@ class GoodsListFragment : CoreFragment<FragmentGoodsListBinding, GoodsListViewMo
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        binding?.apply {
-            val vm = this@GoodsListFragment.vm
+        binding?.let { layoutBinding ->
             val onClickSelectionListener = View.OnClickListener { clickListener ->
                 clickListener?.let {
                     val position = it.tag as Int
@@ -72,31 +70,22 @@ class GoodsListFragment : CoreFragment<FragmentGoodsListBinding, GoodsListViewMo
                 }
             }
 
-            rvConfig = initRecycleAdapterDataBinding(
+            layoutBinding.rvConfig = initRecycleAdapterDataBinding(
                     layoutId = R.layout.layout_item_goods_list,
                     itemId = BR.item,
                     onAdapterItemBind = { binding: LayoutItemGoodsListBinding, position ->
                         binding.tvCounter.tag = position
                         binding.tvCounter.setOnClickListener(onClickSelectionListener)
                         binding.selectedForDelete = vm.selectionsHelper.isSelected(position)
-                        super.onAdapterBindHandler(binding, position)
-                    },
-                    onAdapterItemClicked = { position ->
-                        recyclerViewKeyHandler?.let {
-                            if (it.isSelected(position).not()) {
-                                it.selectPosition(position)
-                            }
-                        }
+                        onAdapterBindHandler(binding, position)
                     }
-
             )
 
             recyclerViewKeyHandler = initRecyclerViewKeyHandler(
-                    recyclerView = rv,
-                    items = this@GoodsListFragment.vm.goodsList,
+                    recyclerView = layoutBinding.rv,
+                    items = vm.goodsList,
                     previousPosInfo = recyclerViewKeyHandler?.posInfo?.value
             )
-
         }
     }
 

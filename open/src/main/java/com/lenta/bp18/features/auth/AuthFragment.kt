@@ -23,7 +23,7 @@ class AuthFragment : CoreLoginFragment() {
     override fun getViewModel(): CoreAuthViewModel {
         provideViewModel(AuthViewModel::class.java).let {
             getAppComponent()?.inject(it)
-            it.packageName.value = context!!.packageName
+            it.packageName.value = requireContext().packageName
             return it
         }
     }
@@ -41,7 +41,7 @@ class AuthFragment : CoreLoginFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        vm.appTitle.value = context?.getAppInfo(withHash = false)
+        vm.appTitle.value = requireContext().getAppInfo(withHash = false)
         hideLoginAndPassword()
     }
 

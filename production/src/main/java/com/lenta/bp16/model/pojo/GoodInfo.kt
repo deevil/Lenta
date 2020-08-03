@@ -1,9 +1,9 @@
-package com.lenta.bp18.model.pojo
+package com.lenta.bp16.model.pojo
 
-import com.lenta.bp18.platform.Constants
+import com.lenta.bp16.platform.Constants
 import com.lenta.shared.models.core.Uom
 
-data class Good(
+data class GoodInfo(
         val ean: String,
         val material: String = Constants.GOOD_MATERIAL,
         val matcode: String = Constants.GOOD_MATCODE,

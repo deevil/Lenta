@@ -37,14 +37,14 @@ class SelectPersonnelNumberFragment : CoreFragment<FragmentSelectPersonnelNumber
 
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
         bottomToolbarUiModel.uiModelButton1.show(ButtonDecorationInfo.back, enabled = false)
-        bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.next)
+        bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.next, enabled = true)
 
         vm.fullName.observe(viewLifecycleOwner, Observer {
             bottomToolbarUiModel.uiModelButton5.requestFocus()
         })
 
-        connectLiveData(vm.enabledBackButton, bottomToolbarUiModel.uiModelButton1.enabled)
-        connectLiveData(vm.enabledNextButton, bottomToolbarUiModel.uiModelButton5.enabled)
+        //connectLiveData(vm.enabledBackButton, bottomToolbarUiModel.uiModelButton1.enabled)
+        //connectLiveData(vm.enabledNextButton, bottomToolbarUiModel.uiModelButton5.enabled)
     }
 
     override fun onToolbarButtonClick(view: View) {

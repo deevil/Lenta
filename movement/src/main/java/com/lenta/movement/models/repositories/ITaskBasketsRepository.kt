@@ -20,7 +20,7 @@ interface ITaskBasketsRepository {
 
     suspend fun addProduct(product: ProductInfo, supplier: Supplier? = null, count: Int)
 
-    suspend fun getSuitableBasketOrCreate(product: ProductInfo, supplier: Supplier? = null, signOfDiv: Set<GoodsSignOfDivision>): Basket
+    suspend fun getOrCreateSuitableBasket(product: ProductInfo, supplier: Supplier? = null, signOfDiv: Set<GoodsSignOfDivision>): Basket
 
     fun clear()
 }

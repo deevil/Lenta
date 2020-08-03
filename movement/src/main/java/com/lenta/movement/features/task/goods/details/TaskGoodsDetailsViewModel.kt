@@ -95,12 +95,17 @@ class TaskGoodsDetailsViewModel : CoreViewModel(), PageSelectionListener {
                     basketsOfProduct.getOrNull(doRemoveBasketIndex)
                 }
 
-                doRemoveBaskets.forEach { doRemoveBasket ->
-                    product?.let { product ->
-                        doRemoveBasket?.index?.let{
-                            taskBasketsRepository.removeProductFromBasket(it, product)
+                product?.let { product ->
+                    doRemoveBaskets.forEach { doRemoveBasket ->
+                        val indexOfRemovingBasket = doRemoveBasket?.index
+                        indexOfRemovingBasket?.let { indexToRemove ->
+                            taskBasketsRepository.removeProductFromBasket(indexToRemove, product)
+                        }.orIfNull {
+                            Logg.e { "baskets index is null" }
                         }
                     }
+                }.orIfNull {
+                    Logg.e { "product is null" }
                 }
 
                 loadBasketSimpleList()

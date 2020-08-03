@@ -54,7 +54,7 @@ class MemoryTaskBasketsRepository(
         val signOfDiv = taskManager.getTaskSettings().signsOfDiv
 
         for (i in count downTo 1) {
-            val suitableBasket = getSuitableBasketOrCreate(product, supplier, signOfDiv)
+            val suitableBasket = getOrCreateSuitableBasket(product, supplier, signOfDiv)
 
             suitableBasket[product] = (suitableBasket[product] ?: 0) + 1
 
@@ -64,8 +64,8 @@ class MemoryTaskBasketsRepository(
             }
         }
     }
-
-    override suspend fun getSuitableBasketOrCreate(
+    
+    override suspend fun getOrCreateSuitableBasket(
             product: ProductInfo,
             supplier: Supplier?,
             signOfDiv: Set<GoodsSignOfDivision>): Basket {
