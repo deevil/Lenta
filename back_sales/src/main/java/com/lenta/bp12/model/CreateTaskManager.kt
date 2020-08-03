@@ -64,7 +64,7 @@ class CreateTaskManager @Inject constructor(
     override fun findGoodByEan(ean: String): GoodCreate? {
         return currentTask.value?.let { task ->
             task.goods.find { good ->
-                good.eans.contains(ean)
+                good.ean == ean || good.eans.contains(ean)
             }?.also { found ->
                 found.ean = ean
                 updateCurrentTask(task)
