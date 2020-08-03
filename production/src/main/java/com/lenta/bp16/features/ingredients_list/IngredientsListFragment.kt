@@ -18,6 +18,7 @@ import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
 import com.lenta.shared.utilities.databinding.RecyclerViewKeyHandler
 import com.lenta.shared.utilities.databinding.ViewPagerSettings
 import com.lenta.shared.utilities.extentions.provideViewModel
+import com.lenta.shared.utilities.extentions.unsafeLazy
 
 class IngredientsListFragment :
         CoreFragment<FragmentIgredientsListBinding, IngredientsListViewModel>(),
@@ -48,6 +49,8 @@ class IngredientsListFragment :
     }
 
     override fun setupTopToolBar(topToolbarUiModel: TopToolbarUiModel) {
+        val marketNumber = vm.marketNumber
+        topToolbarUiModel.title.value = getString(R.string.market_number, marketNumber)
         topToolbarUiModel.description.value = getString(R.string.desc_ingredients_list)
     }
 

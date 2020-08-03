@@ -105,7 +105,7 @@ class MaterialRemakesListViewModel : CoreViewModel() {
 
     fun onClickItemPosition(position: Int) {
         allMaterialIngredients.value?.getOrNull(position)?.let { selectedMaterial ->
-            val code = ingredient.value?.code.orEmpty()
+            val code = ingredient.value?.getFormattedCode().orEmpty()
             val name = ingredient.value?.nameMatnrOsn.orEmpty()
             navigator.openMaterialRemakeDetailsScreen(selectedMaterial, code, name)
         } ?: navigator.showAlertPartNotFound()

@@ -50,7 +50,7 @@ class MaterialRemakesListFragment : CoreFragment<FragmentRemakesByMaterialBindin
     }
 
     override fun setupTopToolBar(topToolbarUiModel: TopToolbarUiModel) {
-        topToolbarUiModel.title.value = "${ingredientInfo.code.orEmpty()} ${ingredientInfo.nameMatnrOsn}"
+        topToolbarUiModel.title.value = "${ingredientInfo.getFormattedCode().orEmpty()} ${ingredientInfo.nameMatnrOsn}"
         topToolbarUiModel.description.value = getString(R.string.desc_remakes_list)
     }
 

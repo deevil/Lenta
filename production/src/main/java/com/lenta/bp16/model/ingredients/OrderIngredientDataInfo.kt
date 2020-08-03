@@ -61,4 +61,8 @@ data class OrderIngredientDataInfo(
                         append(getSuffix())
                 }
         }
+
+        fun getFormattedMaterial() : String{
+                return matnr?.takeLast(6).orEmpty()
+        }
 }

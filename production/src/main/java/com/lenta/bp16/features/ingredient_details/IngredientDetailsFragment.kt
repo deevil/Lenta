@@ -48,8 +48,12 @@ class IngredientDetailsFragment : CoreFragment<FragmentIngredientDetailsBinding,
     }
 
     override fun setupTopToolBar(topToolbarUiModel: TopToolbarUiModel) {
-        topToolbarUiModel.title.value = orderIngredientDataInfo.matnr
-        topToolbarUiModel.description.value = orderIngredientDataInfo.name
+        topToolbarUiModel.title.value = buildString {
+            append(orderIngredientDataInfo.getFormattedMaterial())
+            append(" ")
+            append(orderIngredientDataInfo.name)
+        }
+        topToolbarUiModel.description.value = arguments?.getString(KEY_PARENT_CODE, "").orEmpty()
     }
 
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {

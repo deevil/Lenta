@@ -103,7 +103,7 @@ class OrderIngredientsListViewModel : CoreViewModel() {
     fun onClickItemPosition(position: Int) {
         ingredient.value?.let { selectedIngredient ->
             allOrderIngredients.value?.getOrNull(position)?.let {
-                navigator.openIngredientDetailsScreen(it, selectedIngredient.code.orEmpty())
+                navigator.openIngredientDetailsScreen(it, selectedIngredient.text3.orEmpty())
             }
         }
     }

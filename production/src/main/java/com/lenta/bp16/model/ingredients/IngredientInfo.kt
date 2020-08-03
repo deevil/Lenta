@@ -78,6 +78,10 @@ data class IngredientInfo(
                 return planQnt.dropZeros()
         }
 
+    fun getFormattedCode(): String?{
+        return code?.takeLast(6)
+    }
+
         companion object {
             const val TYPE_ORDER = "4"
             const val TYPE_MATERIAL = "5"
