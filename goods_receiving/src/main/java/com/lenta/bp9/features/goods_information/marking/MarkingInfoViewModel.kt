@@ -405,7 +405,7 @@ class MarkingInfoViewModel : CoreViewModel(),
             } else {
                 context.getString(
                         R.string.accept,
-                        "${uom.value?.name.orEmpty()}=${productInfo.value?.nestingInOneBlock?.toDouble().toStringFormatted()} ${productInfo.value?.uom?.name}"
+                        "${uom.value?.name.orEmpty()}=${productInfo.value?.nestingInOneBlock?.toDouble().toStringFormatted()} ${productInfo.value?.uom?.name.orEmpty()}"
                 )
             }
 
