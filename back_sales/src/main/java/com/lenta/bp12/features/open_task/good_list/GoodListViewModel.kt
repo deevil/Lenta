@@ -97,15 +97,16 @@ class GoodListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
         }
     }
 
-    val deleteEnabled = selectedPage.combineLatest(processingSelectionsHelper.selectedPositions).combineLatest(processedSelectionsHelper.selectedPositions).map {
-        it?.let {
-            val page = it.first.first
-            val isSelectedProcessing = it.first.second.isNotEmpty()
-            val isSelectedProcessed = it.second.isNotEmpty()
+    val deleteEnabled = selectedPage.combineLatest(processingSelectionsHelper.selectedPositions)
+            .combineLatest(processedSelectionsHelper.selectedPositions).map {
+                it?.let {
+                    val page = it.first.first
+                    val isSelectedProcessing = it.first.second.isNotEmpty()
+                    val isSelectedProcessed = it.second.isNotEmpty()
 
-            task.value?.isStrict == false && (page == 0 && isSelectedProcessing || page == 1 && isSelectedProcessed)
-        }
-    }
+                    (page == 0 && isSelectedProcessing) || (page == 1 && isSelectedProcessed)
+                }
+            }
 
     val saveEnabled by lazy {
         task.map {
