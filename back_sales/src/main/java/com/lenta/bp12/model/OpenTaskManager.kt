@@ -1,6 +1,7 @@
 package com.lenta.bp12.model
 
 import androidx.lifecycle.MutableLiveData
+import com.google.gson.Gson
 import com.lenta.bp12.model.pojo.Block
 import com.lenta.bp12.model.pojo.Position
 import com.lenta.bp12.model.pojo.open_task.GoodOpen
@@ -22,14 +23,15 @@ import javax.inject.Inject
 
 class OpenTaskManager @Inject constructor(
         private val database: IDatabaseRepository,
-        private val generalTaskManager: IGeneralTaskManager
+        private val generalTaskManager: IGeneralTaskManager,
+        private val gson: Gson
 ) : IOpenTaskManager {
 
     override var searchNumber = ""
 
     override var isSearchFromList = false
 
-    private var startCurrentTaskInfo = ""
+    private var startStateCurrentTask: TaskOpen? = null
 
     override val searchParams = MutableLiveData<TaskSearchParams>()
 
@@ -312,14 +314,34 @@ class OpenTaskManager @Inject constructor(
         searchNumber = ""
     }
 
-    override fun saveStartCurrentTaskInfo() {
-        startCurrentTaskInfo = currentTask.value.toString()
+    override fun isExistStartTaskInfo(): Boolean {
+        return startStateCurrentTask != null
     }
 
-    override fun isCurrentTaskWasChanged(): Boolean {
-        return if (startCurrentTaskInfo.isNotEmpty()) {
-            currentTask.value.toString() != startCurrentTaskInfo
+    override fun saveStartTaskInfo() {
+        val currentTask = gson.toJson(currentTask.value)
+        startStateCurrentTask = gson.fromJson(currentTask, TaskOpen::class.java)
+    }
+
+    override fun isTaskWasChanged(): Boolean {
+        return if (startStateCurrentTask != null) {
+            currentTask.value != startStateCurrentTask
         } else false
+    }
+
+    override fun clearStartTaskInfo() {
+        startStateCurrentTask = null
+    }
+
+    override fun clearCurrentTask() {
+        tasks.value?.let { tasks ->
+            currentTask.value?.let { task ->
+                tasks.find { it.number == task.number }?.goods?.clear()
+            }
+
+            updateCurrentTask(null)
+            updateTasks(tasks)
+        }
     }
 
 }
@@ -355,7 +377,10 @@ interface IOpenTaskManager {
     fun markGoodsUncounted(materials: List<String>)
     fun clearSearchFromListParams()
     fun clearCurrentGood()
-    fun saveStartCurrentTaskInfo()
-    fun isCurrentTaskWasChanged(): Boolean
+    fun isExistStartTaskInfo(): Boolean
+    fun saveStartTaskInfo()
+    fun isTaskWasChanged(): Boolean
+    fun clearStartTaskInfo()
+    fun clearCurrentTask()
 
 }

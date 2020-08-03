@@ -217,7 +217,7 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
     }
 
     private fun prepareToOpenTask(task: TaskOpen) {
-        task.apply {
+        with(task) {
             when (block.type) {
                 BlockType.LOCK -> navigator.showAlertBlockedTaskAnotherUser(block.user, block.ip)
                 BlockType.SELF_LOCK -> navigator.showAlertBlockedTaskByMe(block.user) { openTask(task) }
