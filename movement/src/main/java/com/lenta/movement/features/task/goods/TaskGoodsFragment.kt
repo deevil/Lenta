@@ -136,7 +136,7 @@ class TaskGoodsFragment : CoreFragment<FragmentTaskGoodsBinding, TaskGoodsViewMo
                 ).let { layoutBinding ->
                     val onClickSelectionListener = View.OnClickListener { clickListener ->
                         val itemPosition = clickListener.tag as Int
-                        vm.processedSelectionHelper.revert(position = itemPosition)
+                        vm.basketSelectionHelper.revert(position = itemPosition)
                         layoutBinding.basketRecyclerView.adapter?.notifyItemChanged(itemPosition)
                     }
 
