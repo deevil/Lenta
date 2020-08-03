@@ -2,7 +2,6 @@ package com.lenta.movement.features.main.box.create
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.liveData
-import androidx.lifecycle.viewModelScope
 import com.lenta.movement.exception.InfoFailure
 import com.lenta.movement.models.ExciseBox
 import com.lenta.movement.models.ExciseStamp
@@ -12,11 +11,9 @@ import com.lenta.movement.platform.Constants.EMPTY
 import com.lenta.movement.platform.navigation.IScreenNavigator
 import com.lenta.movement.requests.network.*
 import com.lenta.movement.requests.network.models.checkExciseBox.CheckExciseBoxParams
+import com.lenta.movement.requests.network.models.scanInfoNetRequest.ScanInfoParams
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.exception.Failure
-import com.lenta.shared.keys.KeyCode
-import com.lenta.shared.keys.OnKeyDownListener
-import com.lenta.shared.models.core.EgaisStampVersion
 import com.lenta.shared.models.core.ProductType
 import com.lenta.shared.platform.constants.Constants.BOX_26
 import com.lenta.shared.platform.constants.Constants.MARK_150
@@ -31,7 +28,6 @@ import com.lenta.shared.utilities.extentions.launchUITryCatch
 import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.utilities.extentions.unsafeLazy
 import com.lenta.shared.utilities.orIfNull
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class CreateBoxesViewModel : CoreViewModel(),
@@ -154,9 +150,7 @@ class CreateBoxesViewModel : CoreViewModel(),
                 .forEach { doRemovePosition ->
                     productInfo.value?.let { productInfoValue ->
                         val boxes = boxesRepository.getBoxesByProduct(productInfoValue)
-                        boxes.getOrNull(doRemovePosition)?.let {
-                            boxesRepository::removeBox
-                        }
+                        boxes.getOrNull(doRemovePosition)?.let (boxesRepository::removeBox)
                     }
                 }
         updateBoxes()
@@ -171,15 +165,15 @@ class CreateBoxesViewModel : CoreViewModel(),
         }
     }
 
-    private fun isStampInAnotherBox(stampCode: String): Boolean {
+    private fun findBoxByStampCode(stampCode: String): ExciseBox? {
         val productInfoValue = productInfo.value
         return productInfoValue?.let {
-            boxesRepository.getBoxesByProduct(it).any { box ->
+             boxesRepository.getBoxesByProduct(it).find { box ->
                 box.stamps.any { stamp ->
                     stamp.code == stampCode
                 }
             }
-        }.orIfNull { false }
+        }
     }
 
 
@@ -195,8 +189,8 @@ class CreateBoxesViewModel : CoreViewModel(),
                     return
                 }
 
-                if (isStampInAnotherBox(stampCode)) {
-                    screenNavigator.openStampWasAddedDialogInAnotherBox()
+                findBoxByStampCode(stampCode)?.let {
+                    screenNavigator.openStampWasAddedDialogInAnotherBox(it)
                     return
                 }
 
