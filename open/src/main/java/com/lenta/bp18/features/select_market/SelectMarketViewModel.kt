@@ -7,6 +7,7 @@ import app_update.AppUpdateInstaller
 import com.lenta.bp18.model.pojo.MarketUI
 import com.lenta.bp18.platform.navigation.IScreenNavigator
 import com.lenta.bp18.repository.IDatabaseRepo
+import com.lenta.bp18.request.SlowResourcesMultiRequest
 import com.lenta.bp18.request.model.params.MarketInfoParams
 import com.lenta.bp18.request.model.result.MarketInfoResult
 import com.lenta.bp18.request.network.MarketOverIPRequest
@@ -71,6 +72,9 @@ class SelectMarketViewModel : CoreViewModel(), OnPositionClickListener {
     @Inject
     lateinit var context: Context
 
+    @Inject
+    lateinit var slowResourcesMultiRequest: SlowResourcesMultiRequest
+
     private val markets: MutableLiveData<List<MarketUI>> = MutableLiveData()
     val marketsNames: MutableLiveData<List<String>> = markets.map { markets ->
         markets?.map { it.number }
@@ -90,6 +94,11 @@ class SelectMarketViewModel : CoreViewModel(), OnPositionClickListener {
 
     init {
         launchUITryCatch {
+
+            /**Загрузка медленных справочников*/
+            slowResourcesMultiRequest(null).either(::handleFailure, ::handleSuccess)
+
+            /**Выполнение запроса получения номера ТК*/
             marketOverIPRequest(MarketInfoParams(
                     ipAdress = context.getDeviceIp(),
                     mode = MODE_1
@@ -184,6 +193,10 @@ class SelectMarketViewModel : CoreViewModel(), OnPositionClickListener {
         navigator.openSelectMarketScreen()
         navigator.openAlertScreen(failureInterpreter.getFailureDescription(failure).message)
         navigator.hideProgress()
+    }
+
+    private fun handleSuccess(b: Boolean){
+        //
     }
 
     private fun installUpdate(updateFileName: String) {
