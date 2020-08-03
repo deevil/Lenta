@@ -6,6 +6,7 @@ import com.lenta.bp18.model.pojo.Good
 import com.lenta.bp18.platform.navigation.IScreenNavigator
 import com.lenta.bp18.repository.IDatabaseRepo
 import com.lenta.bp18.request.network.GoodInfoNetRequest
+import com.lenta.shared.account.SessionInfo
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import javax.inject.Inject
 

@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.lenta.bp18.features.other.SendDataViewModel
 import com.lenta.bp18.model.pojo.Good
 import com.lenta.bp18.platform.Constants
+import com.lenta.bp18.request.model.params.GoodInfoParams
 import com.lenta.shared.models.core.Uom
 import com.lenta.shared.requests.combined.scan_info.pojo.ConditionInfo
 import com.lenta.shared.requests.combined.scan_info.pojo.GroupInfo
