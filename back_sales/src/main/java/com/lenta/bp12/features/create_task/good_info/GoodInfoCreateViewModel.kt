@@ -846,14 +846,16 @@ class GoodInfoCreateViewModel : CoreViewModel() {
     }
 
     private fun createBasket(changedGood: GoodCreate) {
-        val basket = getBasket()
+        var basket = getBasket()
         if (basket == null) {
-            manager.addBasket(Basket(
+            basket = Basket(
                     section = changedGood.section,
                     goodType = changedGood.type,
                     control = changedGood.control,
                     provider = getProvider()
-            ))
+            )
+            Logg.d { "--> add basket = $basket" }
+            manager.addBasket(basket)
         } else {
             manager.updateCurrentBasket(basket)
         }

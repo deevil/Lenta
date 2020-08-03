@@ -54,14 +54,12 @@ class GoodDetailsCreateViewModel : CoreViewModel(), PageSelectionListener {
             it?.let {
                 val (task, good) = it
 
-                val list = task.baskets.filter { basket ->
-                    basket.section == good.section && basket.goodType == good.type && basket.control == good.control
-                }
+                val baskets = task.getBasketsByGood(good)
 
-                list.mapIndexed { index, basket ->
+                baskets.mapIndexed { index, basket ->
                     ItemBasketUi(
                             basket = basket,
-                            position = "${list.size - index}",
+                            position = "${baskets.size - index}",
                             name = resource.basket("${manager.getBasketPosition(basket)}"),
                             description = basket.getDescription(task.type.isDivBySection),
                             quantity = "${task.getCountByBasket(basket)}"

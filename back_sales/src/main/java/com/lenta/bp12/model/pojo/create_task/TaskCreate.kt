@@ -41,6 +41,13 @@ data class TaskCreate(
         }
     }
 
+    fun getBasketsByGood(good: GoodCreate): List<Basket> {
+        return baskets.filter { basket ->
+            basket.section == good.section && basket.goodType == good.type && basket.control == good.control &&
+                    good.positions.find { it.provider == basket.provider } != null
+        }
+    }
+
     fun getCountByBasket(basket: Basket): Int {
         return getGoodListByBasket(basket).size
     }
