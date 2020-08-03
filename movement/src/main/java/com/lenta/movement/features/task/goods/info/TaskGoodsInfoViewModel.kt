@@ -69,7 +69,7 @@ class TaskGoodsInfoViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
             asyncLiveData<Basket> {
                 productInfo.value?.let {
                     val signOfDiv = taskManager.getTaskSettings().signsOfDiv
-                    val basket = taskBasketsRepository.getSuitableBasketOrCreate(
+                    val basket = taskBasketsRepository.getOrCreateSuitableBasket(
                             it,
                             selectedSupplier.orNull(),
                             signOfDiv
