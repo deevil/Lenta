@@ -542,6 +542,11 @@ class MarkingInfoViewModel : CoreViewModel(),
         val checkBoxGtinStampControl = checkBoxGtinStampControl.value ?: false
 
         with(processMarkingProductService) {
+            if (typeDiscrepancies != TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_NORM
+                    && checkBoxStampListVisibility.value == false) {//выбрана категория брака и в поле Список марок отображается Не требуется
+                //сохраняем все необработанные блоки с текущей категорией брака
+                addAllUntreatedBlocksAsDefect(typeDiscrepancies)
+            }
             addProduct(enteredCount.toStringFormatted(), typeDiscrepancies)
             apply()
         }

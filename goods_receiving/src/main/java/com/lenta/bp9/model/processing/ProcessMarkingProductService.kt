@@ -64,15 +64,17 @@ class ProcessMarkingProductService
                     it.isNotEmpty()
                 }
                 ?.run {
-                    this.filter { blockDiscrepanciesInfo ->
-                        blockDiscrepanciesInfo.isGtinControlPassed
-                    }.map { block ->
-                        taskManager
-                                .getReceivingTask()
-                                ?.taskRepository
-                                ?.getBlocksDiscrepancies()
-                                ?.changeBlockDiscrepancy(block.blockDiscrepancies)
-                    }
+                    this.asSequence()
+                            .filter { blockDiscrepanciesInfo ->
+                                blockDiscrepanciesInfo.isGtinControlPassed
+                            }.map { block ->
+                                taskManager
+                                        .getReceivingTask()
+                                        ?.taskRepository
+                                        ?.getBlocksDiscrepancies()
+                                        ?.changeBlockDiscrepancy(block.blockDiscrepancies)
+                            }
+                            .toList()
                 }
     }
 
@@ -173,6 +175,22 @@ class ProcessMarkingProductService
                 }
             }
         }
+    }
+
+    fun addAllUntreatedBlocksAsDefect(typeDiscrepancies: String) {
+        //отмечаем все не обработанные блоки/марки для продукта категорией выбранной категорией для брака
+        blocks
+                .filter { block ->
+                    block.materialNumber == productInfo.materialNumber
+                            && currentBlocksDiscrepancies.findLast { it.blockDiscrepancies.blockNumber == block.blockNumber } == null
+                }.map { blockInfo ->
+                    addBlockDiscrepancies(
+                            blockInfo = blockInfo,
+                            typeDiscrepancies = typeDiscrepancies,
+                            isScan = false, //передаем false, т.к. эта ф-ция вызывается при сохранении всех необработанных блоков в брак без сканирования
+                            isGtinControlPassed = true
+                    )
+                }
     }
 
     fun getTotalScannedBlocks(): Int {
@@ -327,7 +345,7 @@ class ProcessMarkingProductService
                             blockInfo = blockInfo,
                             typeDiscrepancies = typeDiscrepancies,
                             isScan = false, //передаем false, т.к. эта ф-ция (denialOfFullProductAcceptance) вызывается с экрана Обнаружены расхождения по клику на блок на вкладке Не обработаны
-                            isGtinControlPassed = false
+                            isGtinControlPassed = true
                     )
                     apply()
                 }
@@ -368,7 +386,7 @@ class ProcessMarkingProductService
                             blockInfo = blockInfo,
                             typeDiscrepancies = typeDiscrepancies,
                             isScan = false, //передаем false, т.к. эта ф-ция (refusalToAcceptPartlyByProduct) вызывается с экрана Обнаружены расхождения по клику на блок на вкладке Не обработаны
-                            isGtinControlPassed = false
+                            isGtinControlPassed = true
                     )
                     apply()
                 }
