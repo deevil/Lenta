@@ -116,29 +116,23 @@ class TaskListFragment : CoreFragment<FragmentTaskListBinding, TaskListViewModel
                                         ?.let {
                                             binding.root.isSelected = it.isSelected(position)
                                         }
-                                onAdapterBindHandler(binding, position)
                             },
-                            onAdapterItemClicked = { position ->
-                                toProcessRecyclerViewKeyHandler
-                                        ?.let {
-                                            if (it.isSelected(position)) {
-                                                vm.onClickItemPosition(position)
-                                            } else {
-                                                it.selectPosition(position)
-                                            }
-                                        }
+                            onAdapterItemClicked = {position ->
+                                toProcessRecyclerViewKeyHandler?.onItemClicked(position)
                             }
+
                     )
 
                     layoutBinding.vm = vm
                     layoutBinding.lifecycleOwner = viewLifecycleOwner
-                    val rvKeyHandler = RecyclerViewKeyHandler(
-                            rv = layoutBinding.rv,
+
+                    toProcessRecyclerViewKeyHandler  = initRecyclerViewKeyHandler(
+                            recyclerView = layoutBinding.rv,
+                            previousPosInfo  = toProcessRecyclerViewKeyHandler?.posInfo?.value,
                             items = vm.getTasksForPage(0),
-                            lifecycleOwner = layoutBinding.lifecycleOwner!!,
-                            initPosInfo = toProcessRecyclerViewKeyHandler?.posInfo?.value
+                            onClickHandler = vm::onClickItemPosition
                     )
-                    toProcessRecyclerViewKeyHandler = rvKeyHandler
+
                     return layoutBinding.root
                 }
     }
@@ -158,29 +152,22 @@ class TaskListFragment : CoreFragment<FragmentTaskListBinding, TaskListViewModel
                                         ?.let {
                                             binding.root.isSelected = it.isSelected(position)
                                         }
-                                onAdapterBindHandler(binding, position)
                             },
-                            onAdapterItemClicked = { position ->
-                                searchRecyclerViewKeyHandler
-                                        ?.let {
-                                            if (it.isSelected(position)) {
-                                                vm.onClickItemPosition(position)
-                                            } else {
-                                                it.selectPosition(position)
-                                            }
-                                        }
+                            onAdapterItemClicked = {position ->
+                                searchRecyclerViewKeyHandler?.onItemClicked(position)
                             }
                     )
 
                     layoutBinding.vm = vm
                     layoutBinding.lifecycleOwner = viewLifecycleOwner
-                    val rvKeyHandler = RecyclerViewKeyHandler(
-                            rv = layoutBinding.rv,
+
+                    searchRecyclerViewKeyHandler = initRecyclerViewKeyHandler(
+                            recyclerView = layoutBinding.rv,
+                            previousPosInfo = searchRecyclerViewKeyHandler?.posInfo?.value,
                             items = vm.getTasksForPage(1),
-                            lifecycleOwner = layoutBinding.lifecycleOwner!!,
-                            initPosInfo = searchRecyclerViewKeyHandler?.posInfo?.value
+                            onClickHandler = vm::onClickItemPosition
                     )
-                    searchRecyclerViewKeyHandler = rvKeyHandler
+
                     return layoutBinding.root
                 }
     }
@@ -200,29 +187,22 @@ class TaskListFragment : CoreFragment<FragmentTaskListBinding, TaskListViewModel
                                         ?.let {
                                             binding.root.isSelected = it.isSelected(position)
                                         }
-                                onAdapterBindHandler(binding, position)
                             },
-                            onAdapterItemClicked = { position ->
-                                postponedRecyclerViewKeyHandler
-                                        ?.let {
-                                            if (it.isSelected(position)) {
-                                                vm.onClickItemPosition(position)
-                                            } else {
-                                                it.selectPosition(position)
-                                            }
-                                        }
+                            onAdapterItemClicked = {position ->
+                                postponedRecyclerViewKeyHandler?.onItemClicked(position)
                             }
                     )
 
                     layoutBinding.vm = vm
                     layoutBinding.lifecycleOwner = viewLifecycleOwner
-                    val rvKeyHandler = RecyclerViewKeyHandler(
-                            rv = layoutBinding.rv,
+
+                    postponedRecyclerViewKeyHandler = initRecyclerViewKeyHandler(
+                            recyclerView = layoutBinding.rv,
+                            previousPosInfo = postponedRecyclerViewKeyHandler?.posInfo?.value,
                             items = vm.getTasksForPage(2),
-                            lifecycleOwner = layoutBinding.lifecycleOwner!!,
-                            initPosInfo = postponedRecyclerViewKeyHandler?.posInfo?.value
+                            onClickHandler = vm::onClickItemPosition
                     )
-                    postponedRecyclerViewKeyHandler = rvKeyHandler
+
                     return layoutBinding.root
                 }
     }
