@@ -71,7 +71,6 @@
             android:layout_marginTop="@dimen/size_16dp"
             android:layout_marginEnd="@dimen/size_8dp"
             android:layout_marginBottom="@dimen/size_16dp"
-            android:foreground="?selectableItemBackground"
             android:gravity="center"
             android:maxLines="1"
             android:text='@{item.number + ""}'
@@ -79,8 +78,6 @@
             app:layout_constraintEnd_toStartOf="@+id/div_vert1"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:selected="@{selectedToProcess}"
-            tools:ignore="UnusedAttribute"
             tools:text="2" />
 
         <TextView
@@ -143,11 +140,12 @@
             android:gravity="center|center_vertical"
             android:maxLines="1"
             app:imageResource="@{item.blockTypeResId1}"
+            android:visibility="@{item.blockTypeResId1 != 0}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@id/iv_tag_2"
             app:layout_constraintStart_toEndOf="@+id/div_vert2"
             app:layout_constraintTop_toTopOf="parent"
-            tools:src="@drawable/ic_top_level_processing_unit_32dp" />
+            tools:src="@drawable/ic_lock_white_24dp" />
 
         <ImageView
             android:id="@+id/iv_tag_2"

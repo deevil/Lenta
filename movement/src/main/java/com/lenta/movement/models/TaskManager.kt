@@ -4,16 +4,10 @@ import com.lenta.movement.fmp.resources.fast.*
 import com.lenta.shared.fmp.resources.fast.ZmpUtz26V001
 import com.lenta.shared.fmp.resources.slow.ZmpUtz30V001
 import com.lenta.shared.models.core.GisControl
-import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.extentions.isSapTrue
-import com.lenta.shared.utilities.orIfNull
 import com.mobrun.plugin.api.HyperHive
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.async
 import kotlinx.coroutines.withContext
-import kotlin.coroutines.CoroutineContext
-import kotlin.coroutines.suspendCoroutine
 
 @Suppress("INACCESSIBLE_TYPE")
 class TaskManager(
@@ -206,16 +200,18 @@ class TaskManager(
             if (results.firstOrNull()?.divMatnr.isSapTrue()) {
                 signOfDivision.add(GoodsSignOfDivision.MATERIAL_NUMBER)
             }
+
+            if (results.firstOrNull()?.divAbtnr.isSapTrue()) {
+                signOfDivision.add(GoodsSignOfDivision.SECTION)
+            }
+
             TaskSettings(
                     description = results.firstOrNull()?.annotation.orEmpty(),
                     shipmentStorageList = results.map { it.lgortTarget }.distinct(),
-                    signsOfDiv = setOf(
-                            GoodsSignOfDivision.ALCO,
-                            GoodsSignOfDivision.VET,
-                            GoodsSignOfDivision.FOOD
-                    ),
+                    signsOfDiv = signOfDivision,
                     gisControls = gisControls
             )
+
         }
     }
 

@@ -89,6 +89,7 @@
                         android:paddingStart="@dimen/size_10dp"
                         android:paddingEnd="@dimen/size_10dp"
                         android:textSize="@dimen/text_14sp"
+                        android:inputType="number"
                         android:enabled="@{vm.partNumberFieldEnabled}"
                         app:requestFocus="@{vm.requestFocusToPartNumberField}"
                         android:text="@={vm.partNumberField}"

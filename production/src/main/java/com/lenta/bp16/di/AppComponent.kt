@@ -9,10 +9,8 @@ import com.lenta.bp16.features.defect_list.DefectListViewModel
 import com.lenta.bp16.features.external_supply_list.ExternalSupplyListViewModel
 import com.lenta.bp16.features.external_supply_task_list.ExternalSupplyTaskListViewModel
 import com.lenta.bp16.features.good_info.GoodInfoViewModel
-import com.lenta.bp16.features.good_irrelevant_info.IrrelevantGoodInfoViewModel
 import com.lenta.bp16.features.good_packaging.GoodPackagingViewModel
 import com.lenta.bp16.features.good_weighing.GoodWeighingViewModel
-import com.lenta.bp16.features.good_without_manufacturer.GoodWithoutManufacturerViewModel
 import com.lenta.bp16.features.loading.fast.FastLoadingViewModel
 import com.lenta.bp16.features.main_menu.MainMenuViewModel
 import com.lenta.bp16.features.pack_good_list.PackGoodListViewModel
@@ -67,9 +65,6 @@ interface AppComponent : CoreComponent, FromParentToCoreProvider {
     fun inject(it: DefectInfoViewModel)
     fun inject(it: DefectListViewModel)
     fun inject(it: SelectPersonnelNumberViewModel)
-
     fun inject(it: GoodInfoViewModel)
-    fun inject(it: IrrelevantGoodInfoViewModel)
     fun inject(it: GoodSelectViewModel)
-    fun inject(it: GoodWithoutManufacturerViewModel)
 }

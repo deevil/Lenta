@@ -25,7 +25,6 @@ class SelectMarketFragment : CoreFragment<FragmentSelectMarketBinding, SelectMar
             return it
         }
     }
-
     override fun setupTopToolBar(topToolbarUiModel: TopToolbarUiModel) {
         topToolbarUiModel.description.value = getString(R.string.tk_selection)
         topToolbarUiModel.uiModelButton2.show(ImageButtonDecorationInfo.exitFromApp)
