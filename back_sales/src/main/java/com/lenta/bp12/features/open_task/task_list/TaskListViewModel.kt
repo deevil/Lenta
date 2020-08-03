@@ -110,7 +110,7 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
                         ItemTaskUi(
                                 position = "${taskListSize - index}",
                                 number = task.number,
-                                name = task.name,
+                                name = task.getFormattedName(),
                                 provider = task.getProviderCodeWithName(),
                                 isFinished = task.isFinished,
                                 blockType = task.block.type,
@@ -164,7 +164,7 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
     }
 
     private fun loadTaskListWithParams(value: String, userNumber: String = "") {
-        manager.searchParams.value?.let { params ->
+        manager.searchParams?.let { params ->
             launchUITryCatch {
                 navigator.showProgressLoadingData(::handleFailure)
 
@@ -245,6 +245,13 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
         val entered = numberField.value.orEmpty()
         val list = processing.value ?: emptyList()
         return entered.isNotEmpty() && entered.all { it.isDigit() } && list.isEmpty()
+    }
+
+    fun updateTaskList() {
+        if (manager.isNeedUpdateTaskList) {
+            manager.isNeedUpdateTaskList = false
+            onClickUpdate()
+        }
     }
 
     /**

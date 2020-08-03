@@ -179,6 +179,11 @@ class TaskListFragment : CoreFragment<FragmentTaskListBinding, TaskListViewModel
         binding?.viewPagerSettings = this
     }
 
+    override fun onResume() {
+        super.onResume()
+        vm.updateTaskList()
+    }
+
     companion object {
         const val SCREEN_NUMBER = "25"
 

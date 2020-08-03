@@ -20,7 +20,7 @@
     <string name="enter">Войти</string>
     <string name="go_over">Перейти</string>
     <string name="error_server">Ошибка сервера</string>
-    <string name="time_out_error">Превышено время ожидания ответа</string>
+    <string name="time_out_error">Превышено время ожидания ответа сервера</string>
     <string name="error_network">Ошибка подключения</string>
     <string name="error_auth">Неправильно введен пользователь или пароль SAP</string>
     <string name="error_connect_weight_equipment">Не найдено наименование или IP-адрес весового оборудования</string>
