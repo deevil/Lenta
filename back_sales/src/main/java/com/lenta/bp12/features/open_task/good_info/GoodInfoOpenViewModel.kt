@@ -326,34 +326,34 @@ class GoodInfoOpenViewModel : CoreViewModel() {
     }
 
     private fun getGoodByEan(ean: String) {
-        val foundGood = manager.findGoodByEan(ean)
-        if (foundGood != null) {
+        manager.findGoodByEan(ean)?.let { foundGood ->
             lastSuccessSearchNumber = ean
             isEanLastScanned = true
             setFoundGood(foundGood)
+            return
+        }
+
+        if (task.value?.isStrict == false) {
+            loadGoodInfoByEan(ean)
         } else {
-            if (task.value?.isStrict == false) {
-                loadGoodInfoByEan(ean)
-            } else {
-                goBackIfSearchFromList()
-                navigator.showGoodIsMissingInTask()
-            }
+            goBackIfSearchFromList()
+            navigator.showGoodIsMissingInTask()
         }
     }
 
     private fun getGoodByMaterial(material: String) {
-        val foundGood = manager.findGoodByMaterial(material)
-        if (foundGood != null) {
+        manager.findGoodByMaterial(material)?.let { foundGood ->
             lastSuccessSearchNumber = material
             isEanLastScanned = false
             setFoundGood(foundGood)
+            return
+        }
+
+        if (task.value?.isStrict == false) {
+            loadGoodInfoByMaterial(material)
         } else {
-            if (task.value?.isStrict == false) {
-                loadGoodInfoByMaterial(material)
-            } else {
-                goBackIfSearchFromList()
-                navigator.showGoodIsMissingInTask()
-            }
+            goBackIfSearchFromList()
+            navigator.showGoodIsMissingInTask()
         }
     }
 
@@ -537,14 +537,16 @@ class GoodInfoOpenViewModel : CoreViewModel() {
             Constants.MARK_150 -> navigator.openAlertScreen(result.statusDescription)
             Constants.MARK_68 -> {
                 val alcoCodeInfoList = database.getAlcoCodeInfoList(number.extractAlcoCode())
-                if (alcoCodeInfoList.isNotEmpty()) {
-                    if (alcoCodeInfoList.find { it.material == good.value?.material } != null) {
-                        addPartInfo(result)
-                    } else {
-                        navigator.openAlertScreen(resource.alcocodeDoesNotApplyToThisGood())
-                    }
-                } else {
+
+                if (alcoCodeInfoList.isEmpty()) {
                     navigator.openAlertScreen(resource.unknownAlcocode())
+                    return
+                }
+
+                if (alcoCodeInfoList.find { it.material == good.value?.material } != null) {
+                    addPartInfo(result)
+                } else {
+                    navigator.openAlertScreen(resource.alcocodeDoesNotApplyToThisGood())
                 }
             }
         }

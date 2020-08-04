@@ -593,14 +593,16 @@ class GoodInfoCreateViewModel : CoreViewModel() {
             Constants.MARK_150 -> navigator.openAlertScreen(result.statusDescription)
             Constants.MARK_68 -> {
                 val alcoCodeInfoList = database.getAlcoCodeInfoList(number.extractAlcoCode())
-                if (alcoCodeInfoList.isNotEmpty()) {
-                    if (alcoCodeInfoList.find { it.material == good.value?.material } != null) {
-                        addPartInfo(result)
-                    } else {
-                        navigator.openAlertScreen(resource.alcocodeDoesNotApplyToThisGood())
-                    }
-                } else {
+
+                if (alcoCodeInfoList.isEmpty()) {
                     navigator.openAlertScreen(resource.unknownAlcocode())
+                    return
+                }
+
+                if (alcoCodeInfoList.find { it.material == good.value?.material } != null) {
+                    addPartInfo(result)
+                } else {
+                    navigator.openAlertScreen(resource.alcocodeDoesNotApplyToThisGood())
                 }
             }
         }

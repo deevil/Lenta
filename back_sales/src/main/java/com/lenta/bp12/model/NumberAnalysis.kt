@@ -26,12 +26,10 @@ fun actionByNumberLength(
             Constants.SAP_6 -> funcForMaterial(getMaterialInCommonFormat(number))
             Constants.SAP_18 -> funcForMaterial(number)
             Constants.SAP_OR_BAR_12 -> {
-                if (funcForSapOrBar != null) {
-                    funcForSapOrBar(
-                            { funcForMaterial(getMaterialInCommonFormat(number)) },
-                            { funcForEan(numberInfo.eanWithoutWeight) }
-                    )
-                } else funcForNotValidFormat()
+                funcForSapOrBar?.invoke(
+                        { funcForMaterial(getMaterialInCommonFormat(number)) },
+                        { funcForEan(numberInfo.eanWithoutWeight) }
+                ) ?: funcForNotValidFormat()
             }
             else -> funcForEan(numberInfo.eanWithoutWeight)
         }
