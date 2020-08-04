@@ -122,11 +122,13 @@ class MarkingGoodsDetailsFragment : CoreFragment<FragmentMarkingGoodsDetailsBind
     }
 
     override fun getTextTitle(position: Int): String {
-        return if (vm.markingGoodsProperties.value.isNullOrEmpty()) {
-            getString(R.string.categories)
-        } else {
-            getString(if (position == PAGE_PROPERTIES) R.string.properties else R.string.categories)
-        }
+        val titleTextResId =
+                if (vm.markingGoodsProperties.value.isNullOrEmpty()) {
+                    R.string.categories
+                } else {
+                    if (position == PAGE_PROPERTIES) R.string.properties else R.string.categories
+                }
+        return getString(titleTextResId)
     }
 
     override fun countTab(): Int {
