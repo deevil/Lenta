@@ -26,7 +26,6 @@ import com.lenta.shared.utilities.extentions.provideViewModel
 
 class ProductDocumentsReviseFragment : CoreFragment<FragmentProductDocumentsReviseBinding, ProductDocumentsReviseViewModel>(), ViewPagerSettings, ToolbarButtonsClickListener {
 
-    var notificationsRecyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
     var toCheckRecyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
     var checkedRecyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
 
@@ -71,25 +70,15 @@ class ProductDocumentsReviseFragment : CoreFragment<FragmentProductDocumentsRevi
                 .inflate<LayoutProductsReviseInformationBinding>(LayoutInflater.from(container.context),
                         R.layout.layout_products_revise_information,
                         container,
-                        false).let { layoutBinding ->
-
-                    layoutBinding.rvConfig = initRecycleAdapterDataBinding(
+                        false)
+                .let { layoutBinding ->
+                    layoutBinding.rvConfig = initRecycleAdapterDataBinding<ItemTileNotificationsBinding>(
                             layoutId = R.layout.item_tile_notifications,
-                            itemId = BR.item,
-                            onAdapterItemBind = { binding: ItemTileNotificationsBinding, position: Int ->
-                                binding.tvItemNumber.tag = position
-                                onAdapterBindHandler(binding, position)
-                            }
+                            itemId = BR.item
                     )
 
                     layoutBinding.vm = vm
                     layoutBinding.lifecycleOwner = viewLifecycleOwner
-                    val rvKeyHandler = RecyclerViewKeyHandler(
-                            rv = layoutBinding.rv,
-                            items = vm.notifications,
-                            lifecycleOwner = layoutBinding.lifecycleOwner!!
-                    )
-                    notificationsRecyclerViewKeyHandler = rvKeyHandler
                     return layoutBinding.root
                 }
     }
@@ -99,8 +88,8 @@ class ProductDocumentsReviseFragment : CoreFragment<FragmentProductDocumentsRevi
                 .inflate<LayoutProductsCheckedDocumentsBinding>(LayoutInflater.from(container.context),
                         R.layout.layout_products_checked_documents,
                         container,
-                        false).let { layoutBinding ->
-
+                        false)
+                .let { layoutBinding ->
                     layoutBinding.rvConfig = initRecycleAdapterDataBinding(
                             layoutId = R.layout.item_tile_product_documents,
                             itemId = BR.item,
@@ -113,29 +102,22 @@ class ProductDocumentsReviseFragment : CoreFragment<FragmentProductDocumentsRevi
                                 checkedRecyclerViewKeyHandler?.let {
                                     binding.root.isSelected = it.isSelected(position)
                                 }
-                                onAdapterBindHandler(binding, position)
                             },
-                            onAdapterItemClicked = { position ->
-                                checkedRecyclerViewKeyHandler
-                                        ?.let {
-                                            if (it.isSelected(position)) {
-                                                vm.onClickCheckedPosition(position)
-                                            } else {
-                                                it.selectPosition(position)
-                                            }
-                                        }
+                            onAdapterItemClicked = {position ->
+                                checkedRecyclerViewKeyHandler?.onItemClicked(position)
                             }
                     )
 
                     layoutBinding.vm = vm
                     layoutBinding.lifecycleOwner = viewLifecycleOwner
-                    val rvKeyHandler = RecyclerViewKeyHandler(
-                            rv = layoutBinding.rv,
+
+                    checkedRecyclerViewKeyHandler = initRecyclerViewKeyHandler(
+                            recyclerView = layoutBinding.rv,
+                            previousPosInfo = checkedRecyclerViewKeyHandler?.posInfo?.value,
                             items = vm.checkedDocs,
-                            lifecycleOwner = layoutBinding.lifecycleOwner!!,
-                            initPosInfo = checkedRecyclerViewKeyHandler?.posInfo?.value
+                            onClickHandler = vm::onClickCheckedPosition
                     )
-                    checkedRecyclerViewKeyHandler = rvKeyHandler
+
                     return layoutBinding.root
                 }
     }
@@ -145,8 +127,8 @@ class ProductDocumentsReviseFragment : CoreFragment<FragmentProductDocumentsRevi
                 .inflate<LayoutProductsDocumentsBinding>(LayoutInflater.from(container.context),
                         R.layout.layout_products_documents,
                         container,
-                        false).let { layoutBinding ->
-
+                        false)
+                .let { layoutBinding ->
                     layoutBinding.rvConfig = initRecycleAdapterDataBinding(
                             layoutId = R.layout.item_tile_product_documents,
                             itemId = BR.item,
@@ -159,29 +141,22 @@ class ProductDocumentsReviseFragment : CoreFragment<FragmentProductDocumentsRevi
                                 toCheckRecyclerViewKeyHandler?.let {
                                     binding.root.isSelected = it.isSelected(position)
                                 }
-                                onAdapterBindHandler(binding, position)
                             },
-                            onAdapterItemClicked = { position ->
-                                toCheckRecyclerViewKeyHandler
-                                        ?.let {
-                                            if (it.isSelected(position)) {
-                                                vm.onClickUncheckedPosition(position)
-                                            } else {
-                                                it.selectPosition(position)
-                                            }
-                                        }
+                            onAdapterItemClicked = {position ->
+                                toCheckRecyclerViewKeyHandler?.onItemClicked(position)
                             }
                     )
 
                     layoutBinding.vm = vm
                     layoutBinding.lifecycleOwner = viewLifecycleOwner
-                    val rvKeyHandler = RecyclerViewKeyHandler(
-                            rv = layoutBinding.rv,
+
+                    toCheckRecyclerViewKeyHandler = initRecyclerViewKeyHandler(
+                            recyclerView = layoutBinding.rv,
+                            previousPosInfo = toCheckRecyclerViewKeyHandler?.posInfo?.value,
                             items = vm.docsToCheck,
-                            lifecycleOwner = layoutBinding.lifecycleOwner!!,
-                            initPosInfo = toCheckRecyclerViewKeyHandler?.posInfo?.value
+                            onClickHandler = vm::onClickUncheckedPosition
                     )
-                    toCheckRecyclerViewKeyHandler = rvKeyHandler
+
                     return layoutBinding.root
                 }
     }

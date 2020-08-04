@@ -95,8 +95,8 @@ class MercuryListFragment : CoreFragment<FragmentMercuryListBinding, MercuryList
                     .inflate<LayoutMercuryListTiedBinding>(LayoutInflater.from(container.context),
                             R.layout.layout_mercury_list_tied,
                             container,
-                            false).let { layoutBinding ->
-
+                            false)
+                    .let { layoutBinding ->
                         val onClickSelectionListener = View.OnClickListener {
                             (it!!.tag as Int).let { position ->
                                 vm.tiedSelectionsHelper.revert(position = position)
@@ -115,28 +115,22 @@ class MercuryListFragment : CoreFragment<FragmentMercuryListBinding, MercuryList
                                             ?.let {
                                                 binding.root.isSelected = it.isSelected(position)
                                             }
-                                    onAdapterBindHandler(binding, position)
                                 },
-                                onAdapterItemClicked = { position ->
-                                    tiedRecyclerViewKeyHandler
-                                            ?.let {
-                                                if (it.isSelected(position)) {
-                                                    vm.onClickItemPosition(position)
-                                                } else {
-                                                    it.selectPosition(position)
-                                                }
-                                            }
+                                onAdapterItemClicked = {position ->
+                                    tiedRecyclerViewKeyHandler?.onItemClicked(position)
                                 }
                         )
 
                         layoutBinding.vm = vm
                         layoutBinding.lifecycleOwner = viewLifecycleOwner
-                        tiedRecyclerViewKeyHandler = RecyclerViewKeyHandler(
-                                rv = layoutBinding.rv,
+
+                        tiedRecyclerViewKeyHandler = initRecyclerViewKeyHandler(
+                                recyclerView = layoutBinding.rv,
+                                previousPosInfo = tiedRecyclerViewKeyHandler?.posInfo?.value,
                                 items = vm.listTied,
-                                lifecycleOwner = layoutBinding.lifecycleOwner!!,
-                                initPosInfo = tiedRecyclerViewKeyHandler?.posInfo?.value
+                                onClickHandler = vm::onClickItemPosition
                         )
+
                         return layoutBinding.root
                     }
         }
@@ -145,8 +139,8 @@ class MercuryListFragment : CoreFragment<FragmentMercuryListBinding, MercuryList
                 .inflate<LayoutMercuryListUntiedBinding>(LayoutInflater.from(container.context),
                         R.layout.layout_mercury_list_untied,
                         container,
-                        false).let { layoutBinding ->
-
+                        false)
+                .let { layoutBinding ->
                     val onClickSelectionListener = View.OnClickListener {
                         (it!!.tag as Int).let { position ->
                             vm.untiedSelectionsHelper.revert(position = position)
@@ -165,28 +159,22 @@ class MercuryListFragment : CoreFragment<FragmentMercuryListBinding, MercuryList
                                         ?.let {
                                             binding.root.isSelected = it.isSelected(position)
                                         }
-                                onAdapterBindHandler(binding, position)
                             },
-                            onAdapterItemClicked = { position ->
-                                untiedRecyclerViewKeyHandler
-                                        ?.let {
-                                            if (it.isSelected(position)) {
-                                                vm.onClickItemPosition(position)
-                                            } else {
-                                                it.selectPosition(position)
-                                            }
-                                        }
+                            onAdapterItemClicked = {position ->
+                                untiedRecyclerViewKeyHandler?.onItemClicked(position)
                             }
                     )
 
                     layoutBinding.vm = vm
                     layoutBinding.lifecycleOwner = viewLifecycleOwner
-                    untiedRecyclerViewKeyHandler = RecyclerViewKeyHandler(
-                            rv = layoutBinding.rv,
+
+                    untiedRecyclerViewKeyHandler = initRecyclerViewKeyHandler(
+                            recyclerView = layoutBinding.rv,
+                            previousPosInfo = untiedRecyclerViewKeyHandler?.posInfo?.value,
                             items = vm.listUntied,
-                            lifecycleOwner = layoutBinding.lifecycleOwner!!,
-                            initPosInfo = untiedRecyclerViewKeyHandler?.posInfo?.value
+                            onClickHandler = vm::onClickItemPosition
                     )
+
                     return layoutBinding.root
                 }
     }

@@ -73,7 +73,6 @@ class CompositeDocReviseFragment : CoreFragment<FragmentCompositeDocReviseBindin
                             val cb = view as? CheckBox
                             cb?.let { vm.checkedChanged(position, it.isChecked) }
                         }
-                        onAdapterBindHandler(binding, position)
                     }
             )
 

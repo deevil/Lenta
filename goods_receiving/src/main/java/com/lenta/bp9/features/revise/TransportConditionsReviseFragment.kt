@@ -31,7 +31,6 @@ class TransportConditionsReviseFragment : CoreFragment<FragmentTransportConditio
         ToolbarButtonsClickListener,
         OnBackPresserListener {
 
-    private var notificationsRecyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
     private var toCheckRecyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
     private var checkedRecyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
 
@@ -83,8 +82,8 @@ class TransportConditionsReviseFragment : CoreFragment<FragmentTransportConditio
                 .inflate<LayoutTransportConditionsUncheckedBinding>(LayoutInflater.from(container.context),
                         R.layout.layout_transport_conditions_unchecked,
                         container,
-                        false).let { layoutBinding ->
-
+                        false)
+                .let { layoutBinding ->
                     layoutBinding.rvConfig = initRecycleAdapterDataBinding(
                             layoutId = R.layout.item_tile_transport_condition,
                             itemId = BR.item,
@@ -110,28 +109,32 @@ class TransportConditionsReviseFragment : CoreFragment<FragmentTransportConditio
                                 }
                                 val conditionsToCheckSize = vm.conditionsToCheck.value?.size ?: 0
                                 if (conditionsToCheckSize-1 >= position) {
-                                    binding.cbChecked.visibility = when (vm.conditionsToCheck.value?.get(position)?.conditionType) {
-                                        ConditionType.Checkbox -> View.VISIBLE
-                                        else -> View.INVISIBLE
-                                    }
-                                    binding.etEditText.visibility = when (vm.conditionsToCheck.value?.get(position)?.conditionType) {
-                                        ConditionType.Input -> View.VISIBLE
-                                        else -> View.INVISIBLE
-                                    }
+                                    binding.cbChecked.visibility =
+                                            when (vm.conditionsToCheck.value?.get(position)?.conditionType) {
+                                                ConditionType.Checkbox -> View.VISIBLE
+                                                else -> View.INVISIBLE
+                                            }
+                                    binding.etEditText.visibility =
+                                            when (vm.conditionsToCheck.value?.get(position)?.conditionType) {
+                                                ConditionType.Input -> View.VISIBLE
+                                                else -> View.INVISIBLE
+                                            }
                                 }
-                                onAdapterBindHandler(binding, position)
+                                toCheckRecyclerViewKeyHandler?.let {
+                                    binding.root.isSelected = it.isSelected(position)
+                                }
                             }
                     )
 
                     layoutBinding.vm = vm
                     layoutBinding.lifecycleOwner = viewLifecycleOwner
-                    val rvKeyHandler = RecyclerViewKeyHandler(
-                            rv = layoutBinding.rv,
-                            items = vm.conditionsToCheck,
-                            lifecycleOwner = layoutBinding.lifecycleOwner!!,
-                            initPosInfo = toCheckRecyclerViewKeyHandler?.posInfo?.value
+
+                    toCheckRecyclerViewKeyHandler = initRecyclerViewKeyHandler(
+                            recyclerView = layoutBinding.rv,
+                            previousPosInfo = toCheckRecyclerViewKeyHandler?.posInfo?.value,
+                            items = vm.conditionsToCheck
                     )
-                    toCheckRecyclerViewKeyHandler = rvKeyHandler
+
                     return layoutBinding.root
                 }
     }
@@ -141,8 +144,8 @@ class TransportConditionsReviseFragment : CoreFragment<FragmentTransportConditio
                 .inflate<LayoutTransportConditionsCheckedBinding>(LayoutInflater.from(container.context),
                         R.layout.layout_transport_conditions_checked,
                         container,
-                        false).let { layoutBinding ->
-
+                        false)
+                .let { layoutBinding ->
                     layoutBinding.rvConfig = initRecycleAdapterDataBinding(
                             layoutId = R.layout.item_tile_transport_condition_checked,
                             itemId = BR.item,
@@ -178,19 +181,21 @@ class TransportConditionsReviseFragment : CoreFragment<FragmentTransportConditio
                                         else -> return@setOnEditorActionListener false
                                     }
                                 }
-                                onAdapterBindHandler(binding, position)
+                                checkedRecyclerViewKeyHandler?.let {
+                                    binding.root.isSelected = it.isSelected(position)
+                                }
                             }
                     )
 
                     layoutBinding.vm = vm
                     layoutBinding.lifecycleOwner = viewLifecycleOwner
-                    val rvKeyHandler = RecyclerViewKeyHandler(
-                            rv = layoutBinding.rv,
-                            items = vm.checkedConditions,
-                            lifecycleOwner = layoutBinding.lifecycleOwner!!,
-                            initPosInfo = checkedRecyclerViewKeyHandler?.posInfo?.value
+
+                    checkedRecyclerViewKeyHandler = initRecyclerViewKeyHandler(
+                            recyclerView = layoutBinding.rv,
+                            previousPosInfo = checkedRecyclerViewKeyHandler?.posInfo?.value,
+                            items = vm.checkedConditions
                     )
-                    checkedRecyclerViewKeyHandler = rvKeyHandler
+
                     return layoutBinding.root
                 }
     }
@@ -200,25 +205,15 @@ class TransportConditionsReviseFragment : CoreFragment<FragmentTransportConditio
                 .inflate<LayoutTransportConditionsInformationBinding>(LayoutInflater.from(container.context),
                         R.layout.layout_transport_conditions_information,
                         container,
-                        false).let { layoutBinding ->
-
-                    layoutBinding.rvConfig = initRecycleAdapterDataBinding(
+                        false)
+                .let { layoutBinding ->
+                    layoutBinding.rvConfig = initRecycleAdapterDataBinding<ItemTileNotificationsBinding>(
                             layoutId = R.layout.item_tile_notifications,
-                            itemId = BR.item,
-                            onAdapterItemBind = { binding: ItemTileNotificationsBinding, position: Int ->
-                                binding.tvItemNumber.tag = position
-                                onAdapterBindHandler(binding, position)
-                            }
+                            itemId = BR.item
                     )
 
                     layoutBinding.vm = vm
                     layoutBinding.lifecycleOwner = viewLifecycleOwner
-                    val rvKeyHandler = RecyclerViewKeyHandler(
-                            rv = layoutBinding.rv,
-                            items = vm.notifications,
-                            lifecycleOwner = layoutBinding.lifecycleOwner!!
-                    )
-                    notificationsRecyclerViewKeyHandler = rvKeyHandler
                     return layoutBinding.root
                 }
     }

@@ -72,12 +72,9 @@ class GoodsDetailsFragment : CoreFragment<FragmentGoodsDetailsBinding, GoodsDeta
     private fun initRvConfig() {
         binding
                 ?.let { layoutBinding ->
-                    layoutBinding.rvConfig = initRecycleAdapterDataBinding(
+                    layoutBinding.rvConfig = initRecycleAdapterDataBinding<ItemTileGoodsDetailsBinding>(
                             layoutId = R.layout.item_tile_goods_details,
-                            itemId = BR.item,
-                            onAdapterItemBind = { binding: ItemTileGoodsDetailsBinding, position: Int ->
-                                onAdapterBindHandler(binding, position)
-                            }
+                            itemId = BR.item
                     )
 
                     layoutBinding.vm = vm
@@ -85,6 +82,7 @@ class GoodsDetailsFragment : CoreFragment<FragmentGoodsDetailsBinding, GoodsDeta
                 }
     }
 
+    //это view с удалением
     private fun initRvConfigWithDel() {
         binding?.let { layoutBinding ->
             val onClickSelectionListener = View.OnClickListener {
@@ -101,7 +99,6 @@ class GoodsDetailsFragment : CoreFragment<FragmentGoodsDetailsBinding, GoodsDeta
                         binding.tvItemNumber.tag = position
                         binding.tvItemNumber.setOnClickListener(onClickSelectionListener)
                         binding.selectedForDelete = vm.categoriesSelectionsHelper.isSelected(position)
-                        onAdapterBindHandler(binding, position)
                     }
             )
 

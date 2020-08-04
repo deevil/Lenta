@@ -68,12 +68,9 @@ class ListGoodsTransferFragment : CoreFragment<FragmentListGoodsTransferBinding,
 
     private fun initRvConfig() {
         binding?.let { layoutBinding ->
-            layoutBinding.rvConfig = initRecycleAdapterDataBinding(
+            layoutBinding.rvConfig = initRecycleAdapterDataBinding<ItemTileListGoodsTransferBinding>(
                     layoutId = R.layout.item_tile_list_goods_transfer,
-                    itemId = BR.item,
-                    onAdapterItemBind = { binding: ItemTileListGoodsTransferBinding, position: Int ->
-                        onAdapterBindHandler(binding, position)
-                    }
+                    itemId = BR.item
             )
 
             layoutBinding.vm = vm

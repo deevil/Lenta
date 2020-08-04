@@ -131,13 +131,14 @@ class GoodsListFragment : CoreFragment<FragmentGoodsListBinding, GoodsListViewMo
                 .inflate<LayoutGoodsListCountedBinding>(LayoutInflater.from(container.context),
                         R.layout.layout_goods_list_counted,
                         container,
-                        false).let { layoutBinding ->
-
+                        false)
+                .let { layoutBinding ->
                     val onClickSelectionListener = View.OnClickListener {
-                        (it!!.tag as Int).let { position ->
-                            vm.countedSelectionsHelper.revert(position = position)
-                            layoutBinding.rv.adapter?.notifyItemChanged(position)
-                        }
+                        (it!!.tag as Int)
+                                .let { position ->
+                                    vm.countedSelectionsHelper.revert(position = position)
+                                    layoutBinding.rv.adapter?.notifyItemChanged(position)
+                                }
                     }
 
                     layoutBinding.rvConfig = initRecycleAdapterDataBinding(
@@ -174,8 +175,8 @@ class GoodsListFragment : CoreFragment<FragmentGoodsListBinding, GoodsListViewMo
                 .inflate<LayoutGoodsListWithoutBarcodeBinding>(LayoutInflater.from(container.context),
                         R.layout.layout_goods_list_without_barcode,
                         container,
-                        false).let { layoutBinding ->
-
+                        false)
+                .let { layoutBinding ->
                     layoutBinding.rvConfig = initRecycleAdapterDataBinding(
                             layoutId = R.layout.item_tile_goods_list_without_barcode,
                             itemId = BR.item,
@@ -207,13 +208,14 @@ class GoodsListFragment : CoreFragment<FragmentGoodsListBinding, GoodsListViewMo
                 .inflate<LayoutGoodsListToProcessingBinding>(LayoutInflater.from(container.context),
                         R.layout.layout_goods_list_to_processing,
                         container,
-                        false).let { layoutBinding ->
-
+                        false)
+                .let { layoutBinding ->
                     val onClickSelectionListener = View.OnClickListener {
-                        (it!!.tag as Int).let { position ->
-                            vm.toProcessingSelectionsHelper.revert(position = position)
-                            layoutBinding.rv.adapter?.notifyItemChanged(position)
-                        }
+                        (it!!.tag as Int)
+                                .let { position ->
+                                    vm.toProcessingSelectionsHelper.revert(position = position)
+                                    layoutBinding.rv.adapter?.notifyItemChanged(position)
+                                }
                     }
 
                     layoutBinding.rvConfig = initRecycleAdapterDataBinding(
@@ -251,13 +253,14 @@ class GoodsListFragment : CoreFragment<FragmentGoodsListBinding, GoodsListViewMo
                 .inflate<LayoutGoodsListProcessedBinding>(LayoutInflater.from(container.context),
                         R.layout.layout_goods_list_processed,
                         container,
-                        false).let { layoutBinding ->
-
+                        false)
+                .let { layoutBinding ->
                     val onClickSelectionListener = View.OnClickListener {
-                        (it!!.tag as Int).let { position ->
-                            vm.processedSelectionsHelper.revert(position = position)
-                            layoutBinding.rv.adapter?.notifyItemChanged(position)
-                        }
+                        (it!!.tag as Int)
+                                .let { position ->
+                                    vm.processedSelectionsHelper.revert(position = position)
+                                    layoutBinding.rv.adapter?.notifyItemChanged(position)
+                                }
                     }
 
                     layoutBinding.rvConfig = initRecycleAdapterDataBinding(

@@ -84,7 +84,8 @@ class EditingInvoiceFragment : CoreFragment<FragmentEditingInvoiceBinding, Editi
                         .inflate<LayoutEditingInvoiceTotalBinding>(LayoutInflater.from(container.context),
                                 R.layout.layout_editing_invoice_total,
                                 container,
-                                false).let { layoutBinding ->
+                                false)
+                        .let { layoutBinding ->
 
                             val onClickSelectionListener = View.OnClickListener {
                                 (it!!.tag as Int).let { position ->
@@ -109,7 +110,6 @@ class EditingInvoiceFragment : CoreFragment<FragmentEditingInvoiceBinding, Editi
                                                 ?.let {
                                                     binding.root.isSelected = it.isSelected(position)
                                                 }
-                                        onAdapterBindHandler(binding, position)
                                     },
                                     onAdapterItemClicked = { position ->
                                         totalRecyclerViewKeyHandler?.selectPosition(position)
@@ -118,12 +118,13 @@ class EditingInvoiceFragment : CoreFragment<FragmentEditingInvoiceBinding, Editi
 
                             layoutBinding.vm = vm
                             layoutBinding.lifecycleOwner = viewLifecycleOwner
-                            totalRecyclerViewKeyHandler = RecyclerViewKeyHandler(
-                                    rv = layoutBinding.rv,
-                                    items = vm.listTotal,
-                                    lifecycleOwner = layoutBinding.lifecycleOwner!!,
-                                    initPosInfo = totalRecyclerViewKeyHandler?.posInfo?.value
+
+                            totalRecyclerViewKeyHandler = initRecyclerViewKeyHandler(
+                                    recyclerView = layoutBinding.rv,
+                                    previousPosInfo = totalRecyclerViewKeyHandler?.posInfo?.value,
+                                    items = vm.listTotal
                             )
+
                             return layoutBinding.root
                         }
             }
@@ -132,8 +133,8 @@ class EditingInvoiceFragment : CoreFragment<FragmentEditingInvoiceBinding, Editi
                         .inflate<LayoutEditingInvoiceDelBinding>(LayoutInflater.from(container.context),
                                 R.layout.layout_editing_invoice_del,
                                 container,
-                                false).let { layoutBinding ->
-
+                                false)
+                        .let { layoutBinding ->
                             val onClickSelectionListener = View.OnClickListener {
                                 (it!!.tag as Int).let { position ->
                                     vm.delSelectionsHelper.revert(position = position)
@@ -151,7 +152,6 @@ class EditingInvoiceFragment : CoreFragment<FragmentEditingInvoiceBinding, Editi
                                         delRecyclerViewKeyHandler?.let {
                                             binding.root.isSelected = it.isSelected(position)
                                         }
-                                        onAdapterBindHandler(binding, position)
                                     },
                                     onAdapterItemClicked = { position ->
                                         delRecyclerViewKeyHandler?.selectPosition(position)
@@ -160,12 +160,13 @@ class EditingInvoiceFragment : CoreFragment<FragmentEditingInvoiceBinding, Editi
 
                             layoutBinding.vm = vm
                             layoutBinding.lifecycleOwner = viewLifecycleOwner
-                            delRecyclerViewKeyHandler = RecyclerViewKeyHandler(
-                                    rv = layoutBinding.rv,
-                                    items = vm.listDelItem,
-                                    lifecycleOwner = layoutBinding.lifecycleOwner!!,
-                                    initPosInfo = delRecyclerViewKeyHandler?.posInfo?.value
+
+                            delRecyclerViewKeyHandler = initRecyclerViewKeyHandler(
+                                    recyclerView = layoutBinding.rv,
+                                    previousPosInfo = delRecyclerViewKeyHandler?.posInfo?.value,
+                                    items = vm.listDelItem
                             )
+
                             return layoutBinding.root
                         }
             }
@@ -174,8 +175,8 @@ class EditingInvoiceFragment : CoreFragment<FragmentEditingInvoiceBinding, Editi
                         .inflate<LayoutEditingInvoiceAddBinding>(LayoutInflater.from(container.context),
                                 R.layout.layout_editing_invoice_add,
                                 container,
-                                false).let { layoutBinding ->
-
+                                false)
+                        .let { layoutBinding ->
                             val onClickSelectionListener = View.OnClickListener {
                                 (it!!.tag as Int).let { position ->
                                     vm.addSelectionsHelper.revert(position = position)
@@ -193,7 +194,6 @@ class EditingInvoiceFragment : CoreFragment<FragmentEditingInvoiceBinding, Editi
                                         addRecyclerViewKeyHandler?.let {
                                             binding.root.isSelected = it.isSelected(position)
                                         }
-                                        onAdapterBindHandler(binding, position)
                                     },
                                     onAdapterItemClicked = { position ->
                                         addRecyclerViewKeyHandler?.selectPosition(position)
@@ -202,12 +202,13 @@ class EditingInvoiceFragment : CoreFragment<FragmentEditingInvoiceBinding, Editi
 
                             layoutBinding.vm = vm
                             layoutBinding.lifecycleOwner = viewLifecycleOwner
-                            addRecyclerViewKeyHandler = RecyclerViewKeyHandler(
-                                    rv = layoutBinding.rv,
-                                    items = vm.listAddItem,
-                                    lifecycleOwner = layoutBinding.lifecycleOwner!!,
-                                    initPosInfo = addRecyclerViewKeyHandler?.posInfo?.value
+
+                            addRecyclerViewKeyHandler = initRecyclerViewKeyHandler(
+                                    recyclerView = layoutBinding.rv,
+                                    previousPosInfo = addRecyclerViewKeyHandler?.posInfo?.value,
+                                    items = vm.listAddItem
                             )
+
                             return layoutBinding.root
                         }
             }
@@ -216,8 +217,8 @@ class EditingInvoiceFragment : CoreFragment<FragmentEditingInvoiceBinding, Editi
                         .inflate<LayoutEditingInvoiceNotesBinding>(LayoutInflater.from(container.context),
                                 R.layout.layout_editing_invoice_notes,
                                 container,
-                                false).let { layoutBinding ->
-
+                                false)
+                        .let { layoutBinding ->
                             val onClickSelectionListener = View.OnClickListener {
                                 (it!!.tag as Int).let { position ->
                                     vm.notesSelectionsHelper.revert(position = position)
@@ -235,7 +236,6 @@ class EditingInvoiceFragment : CoreFragment<FragmentEditingInvoiceBinding, Editi
                                         notesRecyclerViewKeyHandler?.let {
                                             binding.root.isSelected = it.isSelected(position)
                                         }
-                                        onAdapterBindHandler(binding, position)
                                     },
                                     onAdapterItemClicked = { position ->
                                         notesRecyclerViewKeyHandler?.selectPosition(position)
@@ -244,12 +244,13 @@ class EditingInvoiceFragment : CoreFragment<FragmentEditingInvoiceBinding, Editi
 
                             layoutBinding.vm = vm
                             layoutBinding.lifecycleOwner = viewLifecycleOwner
-                            notesRecyclerViewKeyHandler = RecyclerViewKeyHandler(
-                                    rv = layoutBinding.rv,
-                                    items = vm.listNotes,
-                                    lifecycleOwner = layoutBinding.lifecycleOwner!!,
-                                    initPosInfo = notesRecyclerViewKeyHandler?.posInfo?.value
+
+                            notesRecyclerViewKeyHandler = initRecyclerViewKeyHandler(
+                                    recyclerView = layoutBinding.rv,
+                                    previousPosInfo = notesRecyclerViewKeyHandler?.posInfo?.value,
+                                    items = vm.listNotes
                             )
+
                             return layoutBinding.root
                         }
             }

@@ -106,16 +106,15 @@ class TaskListFragment : CoreFragment<FragmentTaskListBinding, TaskListViewModel
                 .inflate<LayoutTasksToProcessBinding>(LayoutInflater.from(container.context),
                         R.layout.layout_tasks_to_process,
                         container,
-                        false).let { layoutBinding ->
-
+                        false)
+                .let { layoutBinding ->
                     layoutBinding.rvConfig = initRecycleAdapterDataBinding(
                             layoutId = R.layout.item_tile_tasks,
                             itemId = BR.item,
                             onAdapterItemBind = { binding: ItemTileTasksBinding, position: Int ->
-                                toProcessRecyclerViewKeyHandler
-                                        ?.let {
-                                            binding.root.isSelected = it.isSelected(position)
-                                        }
+                                toProcessRecyclerViewKeyHandler?.let {
+                                    binding.root.isSelected = it.isSelected(position)
+                                }
                             },
                             onAdapterItemClicked = {position ->
                                 toProcessRecyclerViewKeyHandler?.onItemClicked(position)
@@ -142,16 +141,15 @@ class TaskListFragment : CoreFragment<FragmentTaskListBinding, TaskListViewModel
                 .inflate<LayoutTasksSearchBinding>(LayoutInflater.from(container.context),
                         R.layout.layout_tasks_search,
                         container,
-                        false).let { layoutBinding ->
-
+                        false)
+                .let { layoutBinding ->
                     layoutBinding.rvConfig = initRecycleAdapterDataBinding(
                             layoutId = R.layout.item_tile_tasks,
                             itemId = BR.item,
                             onAdapterItemBind = { binding: ItemTileTasksBinding, position: Int ->
-                                searchRecyclerViewKeyHandler
-                                        ?.let {
-                                            binding.root.isSelected = it.isSelected(position)
-                                        }
+                                searchRecyclerViewKeyHandler?.let {
+                                    binding.root.isSelected = it.isSelected(position)
+                                }
                             },
                             onAdapterItemClicked = {position ->
                                 searchRecyclerViewKeyHandler?.onItemClicked(position)
@@ -177,16 +175,15 @@ class TaskListFragment : CoreFragment<FragmentTaskListBinding, TaskListViewModel
                 .inflate<LayoutTasksPostponedBinding>(LayoutInflater.from(container.context),
                         R.layout.layout_tasks_postponed,
                         container,
-                        false).let { layoutBinding ->
-
+                        false)
+                .let { layoutBinding ->
                     layoutBinding.rvConfig = initRecycleAdapterDataBinding(
                             layoutId = R.layout.item_tile_tasks,
                             itemId = BR.item,
                             onAdapterItemBind = { binding: ItemTileTasksBinding, position: Int ->
-                                postponedRecyclerViewKeyHandler
-                                        ?.let {
-                                            binding.root.isSelected = it.isSelected(position)
-                                        }
+                                postponedRecyclerViewKeyHandler?.let {
+                                    binding.root.isSelected = it.isSelected(position)
+                                }
                             },
                             onAdapterItemClicked = {position ->
                                 postponedRecyclerViewKeyHandler?.onItemClicked(position)

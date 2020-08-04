@@ -50,8 +50,6 @@ class NonExciseSetsPGEFragment : CoreFragment<FragmentNonExciseSetsPgeBinding, N
     private var isDiscrepancy by state<Boolean?>(null)
     private var productInfo by state<TaskProductInfo?>(null)
 
-    private var componentsRecyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
-
     override fun getLayoutId(): Int = R.layout.fragment_non_excise_sets_pge
 
     override fun getPageNumber(): String = "09/39"
@@ -104,9 +102,8 @@ class NonExciseSetsPGEFragment : CoreFragment<FragmentNonExciseSetsPgeBinding, N
                         .inflate<LayoutNonExciseSetsCountedPgeBinding>(LayoutInflater.from(container.context),
                                 R.layout.layout_non_excise_sets_counted_pge,
                                 container,
-                                false).let { layoutBinding ->
-                            layoutBinding.vm = vm
-                            layoutBinding.lifecycleOwner = viewLifecycleOwner
+                                false)
+                        .let { layoutBinding ->
                             layoutBinding.spinnerQuality.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
                                 override fun onItemSelected(adapterView: AdapterView<*>, view: View?, position: Int, l: Long) {
                                     vm.onClickPositionSpinQuality(position)
@@ -115,6 +112,7 @@ class NonExciseSetsPGEFragment : CoreFragment<FragmentNonExciseSetsPgeBinding, N
                                 override fun onNothingSelected(adapterView: AdapterView<*>) {
                                 }
                             }
+
                             layoutBinding.etCount.setOnKeyListener(View.OnKeyListener { v, keyCode, event ->
                                 if (keyCode == KeyEvent.KEYCODE_ENTER && event.action == KeyEvent.ACTION_UP) {
                                     if (vm.enabledApplyButton.value == true) {
@@ -124,6 +122,10 @@ class NonExciseSetsPGEFragment : CoreFragment<FragmentNonExciseSetsPgeBinding, N
                                 }
                                 false
                             })
+
+                            layoutBinding.vm = vm
+                            layoutBinding.lifecycleOwner = viewLifecycleOwner
+
                             return layoutBinding.root
                         }
             }
@@ -132,8 +134,8 @@ class NonExciseSetsPGEFragment : CoreFragment<FragmentNonExciseSetsPgeBinding, N
                         .inflate<LayoutNonExciseSetsComponentsPgeBinding>(LayoutInflater.from(container.context),
                                 R.layout.layout_non_excise_sets_components_pge,
                                 container,
-                                false).let { layoutBinding ->
-
+                                false)
+                        .let { layoutBinding ->
                             val onClickSelectionListener = View.OnClickListener {
                                 (it!!.tag as Int).let { position ->
                                     vm.componentsSelectionsHelper.revert(position = position)
@@ -148,32 +150,23 @@ class NonExciseSetsPGEFragment : CoreFragment<FragmentNonExciseSetsPgeBinding, N
                                         binding.tvItemNumber.tag = position
                                         binding.tvItemNumber.setOnClickListener(onClickSelectionListener)
                                         binding.selectedForDelete = vm.componentsSelectionsHelper.isSelected(position)
-                                        componentsRecyclerViewKeyHandler
-                                                ?.let {
-                                                    binding.root.isSelected = it.isSelected(position)
-                                                }
                                         onAdapterBindHandler(binding, position)
                                     },
-                                    onAdapterItemClicked = { position ->
-                                        componentsRecyclerViewKeyHandler
-                                                ?.let {
-                                                    if (it.isSelected(position)) {
-                                                        vm.onClickItemPosition(position)
-                                                    } else {
-                                                        it.selectPosition(position)
-                                                    }
-                                                }
+                                    onAdapterItemClicked = {position ->
+                                        recyclerViewKeyHandler?.onItemClicked(position)
                                     }
                             )
 
                             layoutBinding.vm = vm
                             layoutBinding.lifecycleOwner = viewLifecycleOwner
-                            componentsRecyclerViewKeyHandler = RecyclerViewKeyHandler(
-                                    rv = layoutBinding.rv,
+
+                            recyclerViewKeyHandler = initRecyclerViewKeyHandler(
+                                    recyclerView = layoutBinding.rv,
+                                    previousPosInfo = recyclerViewKeyHandler?.posInfo?.value,
                                     items = vm.listComponents,
-                                    lifecycleOwner = layoutBinding.lifecycleOwner!!,
-                                    initPosInfo = componentsRecyclerViewKeyHandler?.posInfo?.value
+                                    onClickHandler = vm::onClickItemPosition
                             )
+
                             return layoutBinding.root
                         }
             }

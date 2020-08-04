@@ -112,8 +112,8 @@ class DiscrepancyListFragment : CoreFragment<FragmentDiscrepancyListBinding, Dis
                 .inflate<LayoutDiscrepancyListNotProcessedBinding>(LayoutInflater.from(container.context),
                         R.layout.layout_discrepancy_list_not_processed,
                         container,
-                        false).let { layoutBinding ->
-
+                        false)
+                .let { layoutBinding ->
                     layoutBinding.rvConfig = initRecycleAdapterDataBinding(
                             layoutId = R.layout.item_tile_discrepancy_list_not_processed,
                             itemId = BR.item,
@@ -121,28 +121,22 @@ class DiscrepancyListFragment : CoreFragment<FragmentDiscrepancyListBinding, Dis
                                 notProcessedRecyclerViewKeyHandler?.let {
                                     binding.root.isSelected = it.isSelected(position)
                                 }
-                                onAdapterBindHandler(binding, position)
                             },
-                            onAdapterItemClicked = { position ->
-                                notProcessedRecyclerViewKeyHandler
-                                        ?.let {
-                                            if (it.isSelected(position)) {
-                                                vm.onClickItemPosition(position)
-                                            } else {
-                                                it.selectPosition(position)
-                                            }
-                                        }
+                            onAdapterItemClicked = {position ->
+                                notProcessedRecyclerViewKeyHandler?.onItemClicked(position)
                             }
                     )
 
                     layoutBinding.vm = vm
                     layoutBinding.lifecycleOwner = viewLifecycleOwner
-                    notProcessedRecyclerViewKeyHandler = RecyclerViewKeyHandler(
-                            rv = layoutBinding.rv,
+
+                    notProcessedRecyclerViewKeyHandler = initRecyclerViewKeyHandler(
+                            recyclerView = layoutBinding.rv,
+                            previousPosInfo = notProcessedRecyclerViewKeyHandler?.posInfo?.value,
                             items = vm.countNotProcessed,
-                            lifecycleOwner = layoutBinding.lifecycleOwner!!,
-                            initPosInfo = notProcessedRecyclerViewKeyHandler?.posInfo?.value
+                            onClickHandler = vm::onClickItemPosition
                     )
+
                     return layoutBinding.root
                 }
     }
@@ -152,8 +146,8 @@ class DiscrepancyListFragment : CoreFragment<FragmentDiscrepancyListBinding, Dis
                 .inflate<LayoutDiscrepancyListProcessedBinding>(LayoutInflater.from(container.context),
                         R.layout.layout_discrepancy_list_processed,
                         container,
-                        false).let { layoutBinding ->
-
+                        false)
+                .let { layoutBinding ->
                     val onClickSelectionListener = View.OnClickListener {
                         (it!!.tag as Int).let { position ->
                             vm.processedSelectionsHelper.revert(position = position)
@@ -168,7 +162,6 @@ class DiscrepancyListFragment : CoreFragment<FragmentDiscrepancyListBinding, Dis
                                 binding.tvItemNumber.tag = position
                                 binding.tvItemNumber.setOnClickListener(onClickSelectionListener)
                                 binding.selectedForDelete = vm.processedSelectionsHelper.isSelected(position)
-                                onAdapterBindHandler(binding, position)
                             }
                     )
 
@@ -183,8 +176,8 @@ class DiscrepancyListFragment : CoreFragment<FragmentDiscrepancyListBinding, Dis
                 .inflate<LayoutDiscrepancyListControlBinding>(LayoutInflater.from(container.context),
                         R.layout.layout_discrepancy_list_control,
                         container,
-                        false).let { layoutBinding ->
-
+                        false)
+                .let { layoutBinding ->
                     layoutBinding.rvConfig = initRecycleAdapterDataBinding(
                             layoutId = R.layout.item_tile_discrepancy_list_control,
                             itemId = BR.item,
@@ -192,28 +185,22 @@ class DiscrepancyListFragment : CoreFragment<FragmentDiscrepancyListBinding, Dis
                                 controlRecyclerViewKeyHandler?.let {
                                     binding.root.isSelected = it.isSelected(position)
                                 }
-                                onAdapterBindHandler(binding, position)
                             },
-                            onAdapterItemClicked = { position ->
-                                controlRecyclerViewKeyHandler
-                                        ?.let {
-                                            if (it.isSelected(position)) {
-                                                vm.onClickItemPosition(position)
-                                            } else {
-                                                it.selectPosition(position)
-                                            }
-                                        }
+                            onAdapterItemClicked = {position ->
+                                controlRecyclerViewKeyHandler?.onItemClicked(position)
                             }
                     )
 
                     layoutBinding.vm = vm
                     layoutBinding.lifecycleOwner = viewLifecycleOwner
-                    controlRecyclerViewKeyHandler = RecyclerViewKeyHandler(
-                            rv = layoutBinding.rv,
+
+                    controlRecyclerViewKeyHandler = initRecyclerViewKeyHandler(
+                            recyclerView = layoutBinding.rv,
+                            previousPosInfo = controlRecyclerViewKeyHandler?.posInfo?.value,
                             items = vm.countControl,
-                            lifecycleOwner = layoutBinding.lifecycleOwner!!,
-                            initPosInfo = controlRecyclerViewKeyHandler?.posInfo?.value
+                            onClickHandler = vm::onClickItemPosition
                     )
+
                     return layoutBinding.root
                 }
     }
