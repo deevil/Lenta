@@ -31,7 +31,7 @@ class GoodInfoViewModel : SendDataViewModel(), OnPositionClickListener {
     val selectedEan = MutableLiveData("")
     var weight = MutableLiveData(0)
 
-    val quantityField: MutableLiveData<Int> = MutableLiveData(0)
+    val quantityField: MutableLiveData<String> = MutableLiveData(DEF_WEIGHT)
     val partNumberField: MutableLiveData<String> = MutableLiveData("")
 
     val requestFocusToQuantityField: MutableLiveData<Boolean> = MutableLiveData(true)
@@ -71,16 +71,13 @@ class GoodInfoViewModel : SendDataViewModel(), OnPositionClickListener {
                                 ?: Constants.QUANTITY_DEFAULT_VALUE_0
                         uomDiv  to Uom.KAR.name
                     }
-                    Uom.G -> {
-                        Constants.QUANTITY_DEFAULT_VALUE_0 to Uom.G.name
-                    }
                     else -> {
                         Constants.QUANTITY_DEFAULT_VALUE_0 to  Uom.DEFAULT.name
                     }
                 }
             }
 
-            quantityField.value = quantity
+            quantityField.value = quantity.toString()
             suffix.value = uom
             /*ШК по индикатору (10) для GS1, для EAN13 не заполнять*/
             //partNumberField.value = /*значение*/
@@ -122,6 +119,10 @@ class GoodInfoViewModel : SendDataViewModel(), OnPositionClickListener {
                 showAlertSuccessfulOpeningPackage(::openSelectGoodScreen)
             }
         }
-
     }
+
+    companion object{
+        private const val DEF_WEIGHT = "0"
+    }
+
 }
