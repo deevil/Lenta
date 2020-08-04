@@ -112,7 +112,9 @@ class ProcessingUnitTaskListFragment : KeyDownCoreFragment<FragmentProcessingUni
                             bindItem.root.isSelected = it.isSelected(position)
                         }
                     },
-                    onAdapterItemClicked = processedRecyclerViewKeyHandler?.run { ::onItemClicked }
+                    onAdapterItemClicked = { position ->
+                        processedRecyclerViewKeyHandler?.onItemClicked(position)
+                    }
             )
 
             layoutBinding.vm = vm
