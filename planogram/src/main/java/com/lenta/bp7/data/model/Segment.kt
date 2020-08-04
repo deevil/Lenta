@@ -33,6 +33,7 @@ data class Segment(
         shelves.clear()
     }
 
+    fun getNumberForXML() = number.replace("-", " ")
 }
 
 enum class SegmentStatus {
