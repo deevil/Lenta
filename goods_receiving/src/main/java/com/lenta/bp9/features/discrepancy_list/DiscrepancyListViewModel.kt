@@ -188,9 +188,7 @@ class DiscrepancyListViewModel : CoreViewModel(), PageSelectionListener {
                             .toList()
                 }
 
-        countNotProcessed.postValue(
-                arrayNotCounted.reversed()
-        )
+        countNotProcessed.value = arrayNotCounted.reversed()
 
         launchUITryCatch {
             moveToProcessedPageIfNeeded()
@@ -412,9 +410,7 @@ class DiscrepancyListViewModel : CoreViewModel(), PageSelectionListener {
                             }
                 }
 
-        countProcessed.postValue(
-                arrayCounted.reversed()
-        )
+        countProcessed.value = arrayCounted.reversed()
 
         processedSelectionsHelper.clearPositions()
     }
@@ -494,60 +490,68 @@ class DiscrepancyListViewModel : CoreViewModel(), PageSelectionListener {
     }
 
     private fun updateCountControl() {
-        taskManager.getReceivingTask()?.let { task ->
-            //https://trello.com/c/9K1FZnUU, отображать перечень товаров (марочного алкоголя), по которым не пройден хотя бы один из видов контроля
-            //https://trello.com/c/vcymT9Kp отображать перечень товаров (маркированный товар, сигареты, обувь), по которым не пройден хотя бы один из видов контроля (пока сделано только для одного режима)
-            countControl.postValue(
-                    task.getProcessedProducts()
-                            .filter { goodsInfo ->
-                                if (goodsInfo.markType != MarkType.None) { //маркированный товар (сигареты, обувь)
-                                    markingProductControlNotPassed(goodsInfo)
-                                } else { //марочный алкоголь
-                                    normEnteredButControlNotPassed(goodsInfo)
-                                }
+        //https://trello.com/c/9K1FZnUU, отображать перечень товаров (марочного алкоголя), по которым не пройден хотя бы один из видов контроля
+        //https://trello.com/c/vcymT9Kp отображать перечень товаров (маркированный товар, сигареты, обувь), по которым не пройден хотя бы один из видов контроля (пока сделано только для одного режима)
+        countControl.value =
+                taskManager
+                        .getReceivingTask()
+                        ?.getProcessedProducts()
+                        ?.asSequence()
+                        ?.filter { goodsInfo ->
+                            if (goodsInfo.markType != MarkType.None) { //маркированный товар (сигареты, обувь)
+                                markingProductControlNotPassed(goodsInfo)
+                            } else { //марочный алкоголь
+                                normEnteredButControlNotPassed(goodsInfo)
                             }
-                            .sortedByDescending {
-                                it.materialNumber
-                            }
-                            .mapIndexed { index, productInfo ->
-                                val isControlBoxesOfProduct =
-                                        if (productInfo.markType == MarkType.None) {
-                                            taskManager
-                                                    .getReceivingTask()
-                                                    ?.controlBoxesOfProduct(productInfo)
-                                                    ?: false
-                                        } else {
-                                            false
-                                        }
+                        }
+                        ?.sortedByDescending {
+                            it.materialNumber
+                        }
+                        ?.mapIndexed { index, productInfo ->
+                            getItemControlProduct(productInfo, index)
+                        }
+                        ?.toList()
+                        ?.reversed()
+    }
 
-                                val isControlExciseStampsOfProduct =
-                                        if (productInfo.markType == MarkType.None) {
-                                            taskManager
-                                                    .getReceivingTask()
-                                                    ?.controlExciseStampsOfProduct(productInfo)
-                                                    ?: false
-                                        } else {
-                                            false
-                                        }
-                                GoodsDiscrepancyItem(
-                                        number = index + 1,
-                                        name = "${productInfo.getMaterialLastSix()} ${productInfo.description}",
-                                        nameMaxLines = 2,
-                                        nameBatch = "",
-                                        visibilityNameBatch = false,
-                                        countRefusalWithUom = "",
-                                        quantityNotProcessedWithUom = "",
-                                        discrepanciesName = "",
-                                        productInfo = productInfo,
-                                        productDiscrepancies = null,
-                                        batchInfo = null,
-                                        visibilityCheckBoxControl = productInfo.markType == MarkType.None, //скрываем для маркированного товара, это пока реализовано для режима TASK_MARK не пустая, BSTME=ST и признак IS_USE_ALTERN_MEINS не установлен (режимы https://trello.com/c/NGsFfWgB), остальные режимы еще будут дорабатываться
-                                        checkBoxControl = isControlBoxesOfProduct,
-                                        checkStampControl = isControlExciseStampsOfProduct,
-                                        even = index % 2 == 0)
-                            }
-                            .reversed())
-        }
+    private fun getItemControlProduct(product: TaskProductInfo, index: Int) : GoodsDiscrepancyItem {
+        val isControlBoxesOfProduct =
+                if (product.markType == MarkType.None) {
+                    taskManager
+                            .getReceivingTask()
+                            ?.controlBoxesOfProduct(product)
+                            ?: false
+                } else {
+                    false
+                }
+
+        val isControlExciseStampsOfProduct =
+                if (product.markType == MarkType.None) {
+                    taskManager
+                            .getReceivingTask()
+                            ?.controlExciseStampsOfProduct(product)
+                            ?: false
+                } else {
+                    false
+                }
+
+        return GoodsDiscrepancyItem(
+                number = index + 1,
+                name = "${product.getMaterialLastSix()} ${product.description}",
+                nameMaxLines = 2,
+                nameBatch = "",
+                visibilityNameBatch = false,
+                countRefusalWithUom = "",
+                quantityNotProcessedWithUom = "",
+                discrepanciesName = "",
+                productInfo = product,
+                productDiscrepancies = null,
+                batchInfo = null,
+                visibilityCheckBoxControl = product.markType == MarkType.None, //скрываем для маркированного товара, это пока реализовано для режима TASK_MARK не пустая, BSTME=ST и признак IS_USE_ALTERN_MEINS не установлен (режимы https://trello.com/c/NGsFfWgB), остальные режимы еще будут дорабатываться
+                checkBoxControl = isControlBoxesOfProduct,
+                checkStampControl = isControlExciseStampsOfProduct,
+                even = index % 2 == 0
+        )
     }
 
     fun getTitle(): String {
@@ -841,9 +845,17 @@ class DiscrepancyListViewModel : CoreViewModel(), PageSelectionListener {
     }
 
     private fun handleSuccess(result: EndRecountDDResult) {
+        val taskType =
+                taskManager
+                        .getReceivingTask()
+                        ?.taskHeader
+                        ?.taskType
+                        ?: TaskType.None
         taskManager.updateTaskDescription(TaskDescription.from(result.taskDescription))
-        screenNavigator.openTaskCardScreen(TaskCardMode.Full, taskManager.getReceivingTask()?.taskHeader?.taskType
-                ?: TaskType.None)
+        screenNavigator.openTaskCardScreen(
+                mode = TaskCardMode.Full,
+                taskType = taskType
+        )
     }
 
     override fun handleFailure(failure: Failure) {
