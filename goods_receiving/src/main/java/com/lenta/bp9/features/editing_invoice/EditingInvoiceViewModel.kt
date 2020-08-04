@@ -265,17 +265,21 @@ class EditingInvoiceViewModel : CoreViewModel(), PageSelectionListener, OnOkInSo
     fun onClickSave() {
         launchUITryCatch {
             isClickSave.value = true
-            repoInMemoryHolder.invoiceContents.value!!.map {invoice ->
-                listTotal.value?.findLast {item ->
-                    item.invoiceContent.materialNumber == invoice.materialNumber
-                }?.let {
-                    if (isShownDialog.value == true) { //если при нажатии на Save был по какому-то товару превышен лимит и открылся диалог, то выходим из Save, если на диалоге будет нажата кнопка Да, то Save опять будет вызыван и во второй раз уже пойдет сохранение
-                        return@launchUITryCatch
-                    } else {
-                        invoice.originalQuantity = it.quantity.toDouble()
+            repoInMemoryHolder
+                    .invoiceContents.value
+                    ?.map {invoice ->
+                        listTotal.value
+                                ?.findLast {item ->
+                                    item.invoiceContent.materialNumber == invoice.materialNumber
+                                }
+                                ?.let {
+                                    if (isShownDialog.value == true) { //если при нажатии на Save был по какому-то товару превышен лимит и открылся диалог, то выходим из Save, если на диалоге будет нажата кнопка Да, то Save опять будет вызыван и во второй раз уже пойдет сохранение
+                                        return@launchUITryCatch
+                                    } else {
+                                        invoice.originalQuantity = it.quantity.toDouble()
+                                    }
+                                }
                     }
-                }
-            }
 
             val invoiceNotes: ArrayList<CommentToVP> = ArrayList()
             listNotes.value?.filter {notes ->
