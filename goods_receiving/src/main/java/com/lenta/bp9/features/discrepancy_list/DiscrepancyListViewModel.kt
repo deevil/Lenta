@@ -941,7 +941,7 @@ class DiscrepancyListViewModel : CoreViewModel(), PageSelectionListener {
     private fun moveToProcessedPageIfNeeded() {
         selectedPage.value =
                 if (countNotProcessed.value?.size == 0) {
-                    if (isAlco.value == true || isMark.value == true) 2 else 1
+                    if (isAlco.value == true || isMark.value == true) PAGE_PROCESSED_WITH_CONTROL else PAGE_PROCESSED_WITHOUT_CONTROL
                 } else {
                     0
                 }
