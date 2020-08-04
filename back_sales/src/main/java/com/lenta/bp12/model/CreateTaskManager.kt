@@ -23,7 +23,7 @@ class CreateTaskManager @Inject constructor(
 
     override var searchNumber = ""
 
-    override var searchGoodFromList = false
+    override var isSearchFromList = false
 
     override var isWasAddedProvider = false
 
@@ -62,16 +62,22 @@ class CreateTaskManager @Inject constructor(
     }
 
     override fun findGoodByEan(ean: String): GoodCreate? {
-        return currentTask.value?.goods?.find { it.ean == ean }
+        return currentTask.value?.let { task ->
+            task.goods.find { good ->
+                good.ean == ean || good.eans.contains(ean)
+            }?.also { found ->
+                found.ean = ean
+                updateCurrentTask(task)
+            }
+        }
     }
 
     override fun findGoodByMaterial(material: String): GoodCreate? {
-        val formattedMaterial = if (material.length == Constants.SAP_6) "000000000000$material" else material
-        return currentTask.value?.goods?.find { it.material == formattedMaterial }
+        return currentTask.value?.goods?.find { it.material == material }
     }
 
     override suspend fun isGoodCanBeAdded(goodInfo: GoodInfoResult): Boolean {
-        return database.isGoodCanBeAdded(goodInfo, currentTask.value!!.taskType.code)
+        return database.isGoodCanBeAdded(goodInfo, currentTask.value!!.type.code)
     }
 
     override fun addBasket(basket: Basket) {
@@ -141,55 +147,49 @@ class CreateTaskManager @Inject constructor(
                         )
                 )
 
-                task.getGoodListByBasket(basket).forEach { good ->
-                    basketPositions.add(
-                            BasketPositionInfo(
-                                    material = good.material,
-                                    basketNumber = basketNumber,
-                                    quantity = good.getQuantityByProvider(basket.provider.code).dropZeros()
-                            )
+                task.getGoodListByBasket(basket).mapTo(basketPositions) { good ->
+                    BasketPositionInfo(
+                            material = good.material,
+                            basketNumber = basketNumber,
+                            quantity = good.getQuantityByProvider(basket.provider.code).dropZeros()
                     )
                 }
             }
 
             task.goods.forEach { good ->
-                good.positions.forEach { position ->
-                    positions.add(
-                            PositionInfo(
-                                    material = good.material,
-                                    providerCode = position.provider.code,
-                                    factQuantity = position.quantity.dropZeros(),
-                                    isCounted = true.toSapBooleanString(),
-                                    innerQuantity = good.innerQuantity.dropZeros(),
-                                    unitsCode = good.commonUnits.code
-                            )
+                good.positions.mapTo(positions) { position ->
+                    val quantity = if (position.quantity > 0.0) position.quantity else good.getTotalQuantity()
+                    PositionInfo(
+                            material = good.material,
+                            providerCode = position.provider.code,
+                            providerName = position.provider.name,
+                            factQuantity = quantity.dropZeros(),
+                            isCounted = true.toSapBooleanString(),
+                            innerQuantity = good.innerQuantity.dropZeros(),
+                            unitsCode = good.commonUnits.code
                     )
                 }
 
-                good.marks.map { mark ->
-                    marks.add(
-                            MarkInfo(
-                                    material = good.material,
-                                    number = mark.number,
-                                    boxNumber = mark.boxNumber,
-                                    isBadMark = mark.isBadMark.toSapBooleanString(),
-                                    providerCode = mark.providerCode,
-                                    basketNumber = task.getBasketNumber(good, mark.providerCode)
-                            )
+                good.marks.mapTo(marks) { mark ->
+                    MarkInfo(
+                            material = good.material,
+                            number = mark.number,
+                            boxNumber = mark.boxNumber,
+                            isBadMark = mark.isBadMark.toSapBooleanString(),
+                            providerCode = mark.providerCode,
+                            basketNumber = task.getBasketNumber(good, mark.providerCode)
                     )
                 }
 
-                good.parts.map { part ->
-                    parts.add(
-                            PartInfo(
-                                    material = good.material,
-                                    producerCode = part.producerCode,
-                                    productionDate = getStringFromDate(part.date, Constants.DATE_FORMAT_yyyyMMdd),
-                                    quantity = part.quantity.dropZeros(),
-                                    partNumber = part.number,
-                                    providerCode = part.providerCode,
-                                    basketNumber = task.getBasketNumber(good, part.providerCode)
-                            )
+                good.parts.mapTo(parts) { part ->
+                    PartInfo(
+                            material = good.material,
+                            producerCode = part.producerCode,
+                            productionDate = getStringFromDate(part.date, Constants.DATE_FORMAT_yyyyMMdd),
+                            quantity = part.quantity.dropZeros(),
+                            partNumber = part.number,
+                            providerCode = part.providerCode,
+                            basketNumber = task.getBasketNumber(good, part.providerCode)
                     )
                 }
             }
@@ -199,7 +199,7 @@ class CreateTaskManager @Inject constructor(
                             deviceIp = deviceIp,
                             userNumber = userNumber,
                             taskName = task.name,
-                            taskType = task.taskType.code,
+                            taskType = task.type.code,
                             tkNumber = tkNumber,
                             storage = task.storage,
                             reasonCode = task.reason.code,
@@ -215,7 +215,7 @@ class CreateTaskManager @Inject constructor(
     }
 
     override fun clearSearchFromListParams() {
-        searchGoodFromList = false
+        isSearchFromList = false
         searchNumber = ""
     }
 
@@ -225,7 +225,7 @@ class CreateTaskManager @Inject constructor(
 interface ICreateTaskManager {
 
     var searchNumber: String
-    var searchGoodFromList: Boolean
+    var isSearchFromList: Boolean
     var isWasAddedProvider: Boolean
 
     val currentTask: MutableLiveData<TaskCreate>

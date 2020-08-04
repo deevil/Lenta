@@ -15,6 +15,7 @@ class FastResourcesMultiRequest @Inject constructor(val hyperHive: HyperHive) : 
 
     override fun getMapOfRequests(): Map<String, RequestBuilder<out CustomParameter, out ScalarParameter<Any>>> {
         return mapOf(
+                ZmpUtz07V001.NAME_RESOURCE to ZmpUtz07V001(hyperHive).newRequest(), // ZMP_UTZ_07_V001 Единицы измерения
                 ZmpUtz14V001.NAME_RESOURCE to ZmpUtz14V001(hyperHive).newRequest(), // ZMP_UTZ_14_V001 Настройки
                 ZmpUtz17V001.NAME_RESOURCE to ZmpUtz17V001(hyperHive).newRequest(), // ZMP_UTZ_17_V001 Список значений словаря данных УТЗ ТСД
                 ZmpUtz26V001.NAME_RESOURCE to ZmpUtz26V001(hyperHive).newRequest(), // ZMP_UTZ_26_V001 Справочник принтеров

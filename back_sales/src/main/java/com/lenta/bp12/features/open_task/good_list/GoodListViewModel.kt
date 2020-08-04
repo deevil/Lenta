@@ -6,7 +6,6 @@ import com.lenta.bp12.platform.navigation.IScreenNavigator
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.platform.device_info.DeviceInfo
 import com.lenta.shared.platform.viewmodel.CoreViewModel
-import com.lenta.shared.requests.combined.scan_info.ScanCodeInfo
 import com.lenta.shared.utilities.SelectionItemsHelper
 import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
 import com.lenta.shared.utilities.databinding.PageSelectionListener
@@ -56,7 +55,7 @@ class GoodListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
     val processing by lazy {
         task.map { currentTask ->
             currentTask?.let { task ->
-                task.goods.filter { !it.isDeleted && !it.isCounted && !it.isMissing }.let { filtered ->
+                task.goods.filter { !it.isDeleted && !it.isCounted }.let { filtered ->
                     filtered.mapIndexed { index, good ->
                         ItemGoodProcessingUi(
                                 position = "${filtered.size - index}",
@@ -73,12 +72,12 @@ class GoodListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
     val processed by lazy {
         task.map { currentTask ->
             currentTask?.let { task ->
-                task.goods.filter { !it.isDeleted && (it.isMissing || it.isCounted) }.let { filtered ->
+                task.goods.filter { it.isCounted }.let { filtered ->
                     filtered.mapIndexed { index, good ->
                         ItemGoodProcessedUi(
                                 position = "${filtered.size - index}",
                                 name = good.getNameWithMaterial(),
-                                quantity = "${good.getQuantity().dropZeros()} ${good.commonUnits.name}",
+                                quantity = "${good.getTotalQuantity().dropZeros()} ${good.commonUnits.name}",
                                 material = good.material,
                                 providerCode = good.provider.code
                         )
@@ -98,15 +97,16 @@ class GoodListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
         }
     }
 
-    val deleteEnabled = selectedPage.combineLatest(processingSelectionsHelper.selectedPositions).combineLatest(processedSelectionsHelper.selectedPositions).map {
-        it?.let {
-            val page = it.first.first
-            val isSelectedProcessing = it.first.second.isNotEmpty()
-            val isSelectedProcessed = it.second.isNotEmpty()
+    val deleteEnabled = selectedPage.combineLatest(processingSelectionsHelper.selectedPositions)
+            .combineLatest(processedSelectionsHelper.selectedPositions).map {
+                it?.let {
+                    val page = it.first.first
+                    val isSelectedProcessing = it.first.second.isNotEmpty()
+                    val isSelectedProcessed = it.second.isNotEmpty()
 
-            task.value?.isStrict == false && (page == 0 && isSelectedProcessing || page == 1 && isSelectedProcessed)
-        }
-    }
+                    (page == 0 && isSelectedProcessing) || (page == 1 && isSelectedProcessed)
+                }
+            }
 
     val saveEnabled by lazy {
         task.map {
@@ -134,36 +134,21 @@ class GoodListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
         }
     }
 
+    fun onScanResult(data: String) {
+        openGoodInfoByNumber(data)
+    }
+
+    override fun onOkInSoftKeyboard(): Boolean {
+        openGoodInfoByNumber(numberField.value.orEmpty())
+        return true
+    }
+
     private fun openGoodByMaterial(material: String) {
         task.value?.let { task ->
             task.goods.find { it.material == material }?.let { good ->
                 manager.searchNumber = material
-                manager.searchGoodFromList = true
-                manager.updateCurrentGood(good)
+                manager.isSearchFromList = true
                 navigator.openGoodInfoOpenScreen()
-            }
-        }
-    }
-
-    fun onScanResult(data: String) {
-        checkEnteredNumber(data)
-    }
-
-    override fun onOkInSoftKeyboard(): Boolean {
-        checkEnteredNumber(numberField.value.orEmpty())
-        return true
-    }
-
-    private fun checkEnteredNumber(number: String) {
-        if (task.value?.isStrict == false) {
-            openGoodInfoByNumber(number)
-        } else {
-            val numberWithoutWeight = ScanCodeInfo(number).eanWithoutWeight
-            if (manager.isGoodExist(numberWithoutWeight)) {
-                openGoodInfoByNumber(number)
-            } else {
-                numberField.value = ""
-                navigator.showGoodIsMissingInTask()
             }
         }
     }
@@ -173,7 +158,7 @@ class GoodListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
 
         if (isCommonFormatNumber(number)) {
             manager.searchNumber = number
-            manager.searchGoodFromList = true
+            manager.isSearchFromList = true
             navigator.openGoodInfoOpenScreen()
         } else {
             navigator.showIncorrectEanFormat()
@@ -185,22 +170,20 @@ class GoodListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
             when (page) {
                 0 -> {
                     val materials = mutableListOf<String>()
-                    processingSelectionsHelper.selectedPositions.value?.forEach { position ->
-                        processing.value?.get(position)?.let { item ->
-                            materials.add(item.material)
-                        }
+                    processingSelectionsHelper.selectedPositions.value?.mapNotNullTo(materials) { position ->
+                        processing.value?.get(position)?.material
                     }
 
+                    processingSelectionsHelper.clearPositions()
                     manager.markGoodsDeleted(materials)
                 }
                 1 -> {
                     val materials = mutableListOf<String>()
-                    processedSelectionsHelper.selectedPositions.value?.forEach { position ->
-                        processed.value?.get(position)?.let { item ->
-                            materials.add(item.material)
-                        }
+                    processedSelectionsHelper.selectedPositions.value?.mapNotNullTo(materials) { position ->
+                        processed.value?.get(position)?.material
                     }
 
+                    processedSelectionsHelper.clearPositions()
                     manager.markGoodsUncounted(materials)
                 }
                 else -> throw IllegalArgumentException("Wrong pager position!")
