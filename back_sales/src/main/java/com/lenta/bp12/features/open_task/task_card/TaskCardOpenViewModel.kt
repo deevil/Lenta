@@ -103,7 +103,10 @@ class TaskCardOpenViewModel : CoreViewModel(), PageSelectionListener {
 
     private fun handleTaskContentResult(result: TaskContentResult) {
         launchUITryCatch {
+            navigator.showProgressLoadingData()
             manager.addGoodsInCurrentTask(result)
+            navigator.hideProgress()
+
             openGoodListScreen()
         }
     }
