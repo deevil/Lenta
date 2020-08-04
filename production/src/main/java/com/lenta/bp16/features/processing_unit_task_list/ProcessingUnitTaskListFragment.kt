@@ -4,11 +4,13 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.AdapterView
 import androidx.databinding.DataBindingUtil
 import com.lenta.bp16.BR
 import com.lenta.bp16.R
-import com.lenta.bp16.databinding.*
+import com.lenta.bp16.databinding.FragmentProcessingUnitTaskListBinding
+import com.lenta.bp16.databinding.ItemPuTaskBinding
+import com.lenta.bp16.databinding.LayoutPuTaskListProcessedBinding
+import com.lenta.bp16.databinding.LayoutPuTaskListProcessingBinding
 import com.lenta.bp16.platform.extention.getAppComponent
 import com.lenta.shared.keys.KeyCode
 import com.lenta.shared.platform.fragment.KeyDownCoreFragment
@@ -17,8 +19,6 @@ import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListener
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
 import com.lenta.shared.scan.OnScanResultListener
-import com.lenta.shared.utilities.databinding.DataBindingAdapter
-import com.lenta.shared.utilities.databinding.DataBindingRecyclerViewConfig
 import com.lenta.shared.utilities.databinding.RecyclerViewKeyHandler
 import com.lenta.shared.utilities.databinding.ViewPagerSettings
 import com.lenta.shared.utilities.extentions.connectLiveData
@@ -29,7 +29,6 @@ import com.lenta.shared.utilities.extentions.provideViewModel
 class ProcessingUnitTaskListFragment : KeyDownCoreFragment<FragmentProcessingUnitTaskListBinding, ProcessingUnitTaskListViewModel>(),
         ViewPagerSettings, ToolbarButtonsClickListener, OnScanResultListener {
 
-    private var processingRecyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
     private var processedRecyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
 
     override fun getLayoutId(): Int = R.layout.fragment_processing_unit_task_list
@@ -81,39 +80,19 @@ class ProcessingUnitTaskListFragment : KeyDownCoreFragment<FragmentProcessingUni
                 false
         ).let { layoutBinding ->
 
-            layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
+            layoutBinding.rvConfig = initRecycleAdapterDataBinding<ItemPuTaskBinding>(
                     layoutId = R.layout.item_pu_task,
-                    itemId = BR.item,
-                    realisation = object : DataBindingAdapter<ItemPuTaskBinding> {
-                        override fun onCreate(binding: ItemPuTaskBinding) {
-                        }
-
-                        override fun onBind(binding: ItemPuTaskBinding, position: Int) {
-                            processingRecyclerViewKeyHandler?.let {
-                                binding.root.isSelected = it.isSelected(position)
-                            }
-                        }
-                    },
-                    onItemClickListener = AdapterView.OnItemClickListener { _, _, position, _ ->
-                        processingRecyclerViewKeyHandler?.let {
-                            if (it.isSelected(position)) {
-                                vm.onClickItemPosition(position)
-                            } else {
-                                it.selectPosition(position)
-                            }
-                        }
-                    })
+                    itemId = BR.item
+            )
 
             layoutBinding.vm = vm
             layoutBinding.lifecycleOwner = viewLifecycleOwner
-            processingRecyclerViewKeyHandler = RecyclerViewKeyHandler(
-                    rv = layoutBinding.rv,
-                    items = vm.processing,
-                    lifecycleOwner = layoutBinding.lifecycleOwner!!,
-                    initPosInfo = processingRecyclerViewKeyHandler?.posInfo?.value,
-                    onClickPositionFunc = vm::onClickItemPosition
-            )
 
+            recyclerViewKeyHandler = initRecyclerViewKeyHandler(
+                    recyclerView = layoutBinding.rv,
+                    items = vm.processing,
+                    onClickHandler = vm::onClickItemPosition
+            )
             return layoutBinding.root
         }
     }
@@ -125,37 +104,25 @@ class ProcessingUnitTaskListFragment : KeyDownCoreFragment<FragmentProcessingUni
                 false
         ).let { layoutBinding ->
 
-            layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
+            layoutBinding.rvConfig = initRecycleAdapterDataBinding<ItemPuTaskBinding>(
                     layoutId = R.layout.item_pu_task,
                     itemId = BR.item,
-                    realisation = object : DataBindingAdapter<ItemPuTaskBinding> {
-                        override fun onCreate(binding: ItemPuTaskBinding) {
-                        }
-
-                        override fun onBind(binding: ItemPuTaskBinding, position: Int) {
-                            processedRecyclerViewKeyHandler?.let {
-                                binding.root.isSelected = it.isSelected(position)
-                            }
+                    onAdapterItemBind = { bindItem, position ->
+                        processedRecyclerViewKeyHandler?.let {
+                            bindItem.root.isSelected = it.isSelected(position)
                         }
                     },
-                    onItemClickListener = AdapterView.OnItemClickListener { _, _, position, _ ->
-                        processedRecyclerViewKeyHandler?.let {
-                            if (it.isSelected(position)) {
-                                vm.onClickItemPosition(position)
-                            } else {
-                                it.selectPosition(position)
-                            }
-                        }
-                    })
+                    onAdapterItemClicked = processedRecyclerViewKeyHandler?.run { ::onItemClicked }
+            )
 
             layoutBinding.vm = vm
             layoutBinding.lifecycleOwner = viewLifecycleOwner
-            processedRecyclerViewKeyHandler = RecyclerViewKeyHandler(
-                    rv = layoutBinding.rv,
+
+            processedRecyclerViewKeyHandler = initRecyclerViewKeyHandler(
+                    recyclerView = layoutBinding.rv,
+                    previousPosInfo = processedRecyclerViewKeyHandler?.posInfo?.value,
                     items = vm.processed,
-                    lifecycleOwner = layoutBinding.lifecycleOwner!!,
-                    initPosInfo = processedRecyclerViewKeyHandler?.posInfo?.value,
-                    onClickPositionFunc = vm::onClickItemPosition
+                    onClickHandler = vm::onClickItemPosition
             )
 
             return layoutBinding.root
