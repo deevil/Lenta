@@ -2,31 +2,36 @@ package com.lenta.bp18.features.good_info
 
 import android.content.Context
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
-import com.lenta.bp18.features.other.SendDataViewModel
-import com.lenta.bp18.model.pojo.Good
 import com.lenta.bp18.platform.Constants
-import com.lenta.bp18.request.model.params.GoodInfoParams
+import com.lenta.bp18.platform.navigation.IScreenNavigator
+import com.lenta.bp18.repository.IDatabaseRepo
+import com.lenta.bp18.request.network.GoodInfoNetRequest
 import com.lenta.shared.models.core.Uom
+import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.requests.combined.scan_info.pojo.ConditionInfo
 import com.lenta.shared.requests.combined.scan_info.pojo.GroupInfo
 import com.lenta.shared.settings.IAppSettings
-import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.extentions.launchUITryCatch
 import com.lenta.shared.utilities.extentions.map
-import com.lenta.shared.utilities.extentions.unsafeLazy
 import com.lenta.shared.utilities.orIfNull
 import com.lenta.shared.view.OnPositionClickListener
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-class GoodInfoViewModel : SendDataViewModel(), OnPositionClickListener {
+class GoodInfoViewModel : CoreViewModel(), OnPositionClickListener {
 
     @Inject
     lateinit var appSettings: IAppSettings
 
     @Inject
     lateinit var context: Context
+
+    @Inject
+    lateinit var navigator: IScreenNavigator
+    @Inject
+    lateinit var database: IDatabaseRepo
+
+    @Inject
+    lateinit var goodInfoNetRequest: GoodInfoNetRequest
 
     val selectedEan = MutableLiveData("")
     var weight = MutableLiveData(0)
