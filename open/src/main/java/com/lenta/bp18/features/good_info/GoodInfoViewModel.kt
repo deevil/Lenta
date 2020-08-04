@@ -14,6 +14,7 @@ import com.lenta.shared.settings.IAppSettings
 import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.extentions.launchUITryCatch
 import com.lenta.shared.utilities.extentions.map
+import com.lenta.shared.utilities.extentions.unsafeLazy
 import com.lenta.shared.utilities.orIfNull
 import com.lenta.shared.view.OnPositionClickListener
 import kotlinx.coroutines.launch
@@ -30,7 +31,7 @@ class GoodInfoViewModel : SendDataViewModel(), OnPositionClickListener {
     val selectedEan = MutableLiveData("")
     var weight = MutableLiveData(0)
 
-    val quantityField: MutableLiveData<String> = MutableLiveData("")
+    val quantityField: MutableLiveData<Int> = MutableLiveData(0)
     val partNumberField: MutableLiveData<String> = MutableLiveData("")
 
     val requestFocusToQuantityField: MutableLiveData<Boolean> = MutableLiveData(true)
@@ -49,6 +50,8 @@ class GoodInfoViewModel : SendDataViewModel(), OnPositionClickListener {
     val conditionNames: MutableLiveData<List<String>> = conditions.map { condition ->
         condition?.map { it.name }.orEmpty()
     }
+
+    val suffix = MutableLiveData("")
 
     init {
         setGoodInfo()
@@ -77,7 +80,8 @@ class GoodInfoViewModel : SendDataViewModel(), OnPositionClickListener {
                 }
             }
 
-            quantityField.value = "$quantity $uom"
+            quantityField.value = quantity
+            suffix.value = uom
             /*ШК по индикатору (10) для GS1, для EAN13 не заполнять*/
             //partNumberField.value = /*значение*/
 
