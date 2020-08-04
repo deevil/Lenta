@@ -195,7 +195,7 @@ class DiscrepancyListViewModel : CoreViewModel(), PageSelectionListener {
         }
     }
 
-    private fun getUomForTaskType(product: TaskProductInfo) : Uom {
+    private fun getUomForTaskType(product: TaskProductInfo): Uom {
         val taskType =
                 taskManager
                         .getReceivingTask()
@@ -208,7 +208,7 @@ class DiscrepancyListViewModel : CoreViewModel(), PageSelectionListener {
         }
     }
 
-    private fun getItemNotProcessedBatch(task: ReceivingTask, batch: TaskBatchInfo, product: TaskProductInfo, index: Int) : GoodsDiscrepancyItem {
+    private fun getItemNotProcessedBatch(task: ReceivingTask, batch: TaskBatchInfo, product: TaskProductInfo, index: Int): GoodsDiscrepancyItem {
         val uom = getUomForTaskType(product)
         val taskRepository = task.taskRepository
         val batchInfo =
@@ -245,7 +245,7 @@ class DiscrepancyListViewModel : CoreViewModel(), PageSelectionListener {
         )
     }
 
-    private fun getItemNotProcessedProduct(task: ReceivingTask, product: TaskProductInfo, index: Int) : GoodsDiscrepancyItem {
+    private fun getItemNotProcessedProduct(task: ReceivingTask, product: TaskProductInfo, index: Int): GoodsDiscrepancyItem {
         val uom = getUomForTaskType(product)
         val quantityNotProcessedProduct = getQuantityNotProcessedProduct(task, product)
         return GoodsDiscrepancyItem(
@@ -267,7 +267,7 @@ class DiscrepancyListViewModel : CoreViewModel(), PageSelectionListener {
         )
     }
 
-    private fun getQuantityNotProcessedProduct(task: ReceivingTask, product: TaskProductInfo) : String {
+    private fun getQuantityNotProcessedProduct(task: ReceivingTask, product: TaskProductInfo): String {
         val taskProductDiscrepancies = task.taskRepository.getProductsDiscrepancies()
 
         return if (task.taskHeader.taskType == TaskType.RecalculationCargoUnit) {
@@ -279,7 +279,7 @@ class DiscrepancyListViewModel : CoreViewModel(), PageSelectionListener {
         }
     }
 
-    private fun getCountProductNotProcessedOfProductPGE(task: ReceivingTask, product: TaskProductInfo) : String {
+    private fun getCountProductNotProcessedOfProductPGE(task: ReceivingTask, product: TaskProductInfo): String {
         val taskRepository = task.taskRepository
         val taskProductDiscrepancies = taskRepository.getProductsDiscrepancies()
 
@@ -311,7 +311,7 @@ class DiscrepancyListViewModel : CoreViewModel(), PageSelectionListener {
         }
     }
 
-    private fun filterCountProcessedProduct(productDiscrepancies: TaskProductDiscrepancies) : Boolean {
+    private fun filterCountProcessedProduct(productDiscrepancies: TaskProductDiscrepancies): Boolean {
         val isComponent = repoInMemoryHolder.sets.value?.any { set ->
             set.componentNumber == productDiscrepancies.materialNumber
         }
@@ -324,7 +324,7 @@ class DiscrepancyListViewModel : CoreViewModel(), PageSelectionListener {
         }
     }
 
-    private fun filterBatchOfProduct(batchInfo: TaskBatchInfo) : Boolean {
+    private fun filterBatchOfProduct(batchInfo: TaskBatchInfo): Boolean {
         val batchDiscrepanciesOfBatch =
                 taskManager
                         .getReceivingTask()
@@ -397,7 +397,7 @@ class DiscrepancyListViewModel : CoreViewModel(), PageSelectionListener {
                                                         }
                                             }
                                 } else {
-                                    productInfo?.let { product->
+                                    productInfo?.let { product ->
                                         index += 1
                                         val itemProcessedProduct = getItemProcessedProduct(
                                                 product = product,
@@ -415,13 +415,13 @@ class DiscrepancyListViewModel : CoreViewModel(), PageSelectionListener {
         processedSelectionsHelper.clearPositions()
     }
 
-    private fun getProductInfoForProcessedProduct(task: ReceivingTask, materialNumber: String) : TaskProductInfo? {
+    private fun getProductInfoForProcessedProduct(task: ReceivingTask, materialNumber: String): TaskProductInfo? {
         return task.taskRepository
                 .getProducts()
                 .findProduct(materialNumber)
     }
 
-    private fun getBatchesInfoOfProcessedBatches(task: ReceivingTask, product: TaskProductInfo) : List<TaskBatchInfo>? {
+    private fun getBatchesInfoOfProcessedBatches(task: ReceivingTask, product: TaskProductInfo): List<TaskBatchInfo>? {
         return task.taskRepository
                 .getBatches()
                 .findBatchOfProduct(product)
@@ -430,7 +430,7 @@ class DiscrepancyListViewModel : CoreViewModel(), PageSelectionListener {
                 }
     }
 
-    private fun getItemProcessedBatch(task: ReceivingTask, batch: TaskBatchInfo, product: TaskProductInfo, productDiscrepancies: TaskProductDiscrepancies, index: Int) : GoodsDiscrepancyItem {
+    private fun getItemProcessedBatch(task: ReceivingTask, batch: TaskBatchInfo, product: TaskProductInfo, productDiscrepancies: TaskProductDiscrepancies, index: Int): GoodsDiscrepancyItem {
         val uom = getUomForTaskType(product)
         val batchInfo =
                 task.taskRepository
@@ -460,7 +460,7 @@ class DiscrepancyListViewModel : CoreViewModel(), PageSelectionListener {
         )
     }
 
-    private fun getItemProcessedProduct(product: TaskProductInfo, productDiscrepancies: TaskProductDiscrepancies, index: Int) : GoodsDiscrepancyItem {
+    private fun getItemProcessedProduct(product: TaskProductInfo, productDiscrepancies: TaskProductDiscrepancies, index: Int): GoodsDiscrepancyItem {
         val uom = getUomForTaskType(product)
         val discrepanciesName =
                 qualityInfo.value
@@ -514,7 +514,7 @@ class DiscrepancyListViewModel : CoreViewModel(), PageSelectionListener {
                         ?.reversed()
     }
 
-    private fun getItemControlProduct(product: TaskProductInfo, index: Int) : GoodsDiscrepancyItem {
+    private fun getItemControlProduct(product: TaskProductInfo, index: Int): GoodsDiscrepancyItem {
         val isControlBoxesOfProduct =
                 if (product.markType == MarkType.None) {
                     taskManager
@@ -793,52 +793,42 @@ class DiscrepancyListViewModel : CoreViewModel(), PageSelectionListener {
                         }
                     }
 
+            val receivingTask = taskManager.getReceivingTask()
             endRecountDirectDeliveries(EndRecountDDParameters(
-                    taskNumber = taskManager.getReceivingTask()?.taskHeader?.taskNumber.orEmpty(),
+                    taskNumber = receivingTask
+                            ?.taskHeader
+                            ?.taskNumber
+                            .orEmpty(),
                     deviceIP = context.getDeviceIp(),
                     personalNumber = sessionInfo.personnelNumber.orEmpty(),
-                    discrepanciesProduct = taskManager.getReceivingTask()
+                    discrepanciesProduct = receivingTask
                             ?.getProcessedProductsDiscrepancies()
-                            ?.map {
-                                TaskProductDiscrepanciesRestData.from(it)
-                            }
-                            ?: emptyList(),
-                    discrepanciesBatches = taskManager.getReceivingTask()
+                            ?.map { TaskProductDiscrepanciesRestData.from(it) }
+                            .orEmpty(),
+                    discrepanciesBatches = receivingTask
                             ?.getProcessedBatchesDiscrepancies()
-                            ?.map {
-                                TaskBatchesDiscrepanciesRestData.from(it)
-                            }
-                            ?: emptyList(),
-                    discrepanciesBoxes = taskManager.getReceivingTask()
+                            ?.map { TaskBatchesDiscrepanciesRestData.from(it) }
+                            .orEmpty(),
+                    discrepanciesBoxes = receivingTask
                             ?.getProcessedBoxesDiscrepancies()
-                            ?.map {
-                                TaskBoxDiscrepanciesRestData.from(it)
-                            }
-                            ?: emptyList(),
-                    discrepanciesExciseStamp = taskManager.getReceivingTask()
+                            ?.map { TaskBoxDiscrepanciesRestData.from(it) }
+                            .orEmpty(),
+                    discrepanciesExciseStamp = receivingTask
                             ?.getProcessedExciseStampsDiscrepancies()
-                            ?.map {
-                                TaskExciseStampDiscrepanciesRestData.from(it)
-                            }
-                            ?: emptyList(),
-                    exciseStampBad = taskManager.getReceivingTask()
+                            ?.map { TaskExciseStampDiscrepanciesRestData.from(it) }
+                            .orEmpty(),
+                    exciseStampBad = receivingTask
                             ?.getProcessedExciseStampsBad()
-                            ?.map {
-                                TaskExciseStampBadRestData.from(it)
-                            }
-                            ?: emptyList(),
-                    discrepanciesMercury = taskManager.getReceivingTask()
+                            ?.map { TaskExciseStampBadRestData.from(it) }
+                            .orEmpty(),
+                    discrepanciesMercury = receivingTask
                             ?.getProcessedMercuryDiscrepancies()
-                            ?.map {
-                                TaskMercuryDiscrepanciesRestData.from(it)
-                            }
-                            ?: emptyList(),
-                    discrepanciesBlocks = taskManager.getReceivingTask()
+                            ?.map { TaskMercuryDiscrepanciesRestData.from(it) }
+                            .orEmpty(),
+                    discrepanciesBlocks = receivingTask
                             ?.getProcessedBlocksDiscrepancies()
-                            ?.map {
-                                TaskBlockDiscrepanciesRestData.from(it)
-                            }
-                            ?: emptyList()
+                            ?.map { TaskBlockDiscrepanciesRestData.from(it) }
+                            .orEmpty()
             )).either(::handleFailure, ::handleSuccess)
             screenNavigator.hideProgress()
         }
