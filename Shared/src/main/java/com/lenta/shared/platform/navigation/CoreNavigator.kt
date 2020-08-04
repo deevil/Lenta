@@ -487,16 +487,18 @@ class CoreNavigator @Inject constructor(
 
     override fun openMarkingGoodsInfoScreen() {
         runOrPostpone {
-            getFragmentStack()?.push(AlertFragment.create(message = iconDescriptionHelper.getDescription(IconCode.MARKING_GOODS)
-                    ?: context.getString(R.string.marking_goods),
+            val inputMessage = iconDescriptionHelper.getDescription(IconCode.MARKING_GOODS) ?: context.getString(R.string.marking_goods)
+            getFragmentStack()?.push(AlertFragment.create(
+                    message = inputMessage,
                     iconRes = R.drawable.ic_marked_white_80dp), CustomAnimation.vertical)
         }
     }
 
     override fun openExceptionsShelfLifeScreen() {
         runOrPostpone {
-            getFragmentStack()?.push(AlertFragment.create(message = iconDescriptionHelper.getDescription(IconCode.EXCEPTIONS_SHELF_LIFE)
-                    ?: context.getString(R.string.exceptions_shelf_life),
+            val inputMessage = iconDescriptionHelper.getDescription(IconCode.EXCEPTIONS_SHELF_LIFE) ?: context.getString(R.string.exceptions_shelf_life)
+            getFragmentStack()?.push(AlertFragment.create(
+                    message = inputMessage,
                     iconRes = R.drawable.ic_exceptions_shelf_life_48dp), CustomAnimation.vertical)
         }
     }
