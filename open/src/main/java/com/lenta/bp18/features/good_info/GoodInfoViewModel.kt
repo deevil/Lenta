@@ -51,7 +51,9 @@ class GoodInfoViewModel : SendDataViewModel(), OnPositionClickListener {
         condition?.map { it.name }.orEmpty()
     }
 
-    val suffix = MutableLiveData("")
+    var suffix: String = Uom.KG.name
+
+    val completeButtonEnabled = partNumberField.map { !it.isNullOrBlank()  }
 
     init {
         setGoodInfo()
@@ -72,13 +74,13 @@ class GoodInfoViewModel : SendDataViewModel(), OnPositionClickListener {
                         uomDiv  to Uom.KAR.name
                     }
                     else -> {
-                        Constants.QUANTITY_DEFAULT_VALUE_0 to  Uom.DEFAULT.name
+                        Constants.QUANTITY_DEFAULT_VALUE_0 to  Uom.KG.name
                     }
                 }
             }
 
             quantityField.value = quantity.toString()
-            suffix.value = uom
+            suffix = uom
             /*ШК по индикатору (10) для GS1, для EAN13 не заполнять*/
             //partNumberField.value = /*значение*/
 
