@@ -231,8 +231,9 @@ class CheckData @Inject constructor(
 
         for (segment in segments) {
             if (segment.getStatus() != SegmentStatus.UNFINISHED) {
+                val segmentNumberFormatted = segment.getNumberForXML()
                 val segmentSend = SegmentSend(
-                        number = segment.number,
+                        number = segmentNumberFormatted,
                         startTime = SimpleDateFormat(CHECK_DATA_TIME_FORMAT, Locale.getDefault()).format(segment.checkStart),
                         completionTime = SimpleDateFormat(CHECK_DATA_TIME_FORMAT, Locale.getDefault()).format(segment.checkFinish),
                         canceled = if (segment.getStatus() == SegmentStatus.DELETED) 1 else null
