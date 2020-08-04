@@ -206,7 +206,6 @@ class OpenTaskManager @Inject constructor(
     override fun finishCurrentTask() {
         currentTask.value?.let { task ->
             task.isFinished = true
-
             updateCurrentTask(task)
         }
     }
@@ -301,10 +300,7 @@ class OpenTaskManager @Inject constructor(
     override fun markGoodsUncounted(materials: List<String>) {
         currentTask.value?.let { task ->
             materials.forEach { material ->
-                task.goods.find { it.material == material }?.let { good ->
-                    good.isCounted = false
-                    good.isMissing = false
-                }
+                task.goods.find { it.material == material }?.isCounted = false
             }
 
             updateCurrentTask(task)

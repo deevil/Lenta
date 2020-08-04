@@ -55,7 +55,7 @@ class GoodListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
     val processing by lazy {
         task.map { currentTask ->
             currentTask?.let { task ->
-                task.goods.filter { !it.isDeleted && !it.isCounted && !it.isMissing }.let { filtered ->
+                task.goods.filter { !it.isDeleted && !it.isCounted }.let { filtered ->
                     filtered.mapIndexed { index, good ->
                         ItemGoodProcessingUi(
                                 position = "${filtered.size - index}",
@@ -72,7 +72,7 @@ class GoodListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
     val processed by lazy {
         task.map { currentTask ->
             currentTask?.let { task ->
-                task.goods.filter { !it.isDeleted && (it.isMissing || it.isCounted) }.let { filtered ->
+                task.goods.filter { it.isCounted }.let { filtered ->
                     filtered.mapIndexed { index, good ->
                         ItemGoodProcessedUi(
                                 position = "${filtered.size - index}",
@@ -148,7 +148,6 @@ class GoodListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
             task.goods.find { it.material == material }?.let { good ->
                 manager.searchNumber = material
                 manager.isSearchFromList = true
-                //manager.updateCurrentGood(good)
                 navigator.openGoodInfoOpenScreen()
             }
         }
