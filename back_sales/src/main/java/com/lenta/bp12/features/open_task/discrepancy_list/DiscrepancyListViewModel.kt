@@ -127,13 +127,15 @@ class DiscrepancyListViewModel : CoreViewModel() {
     }
 
     fun onClickSkip() {
-        if (goods.value?.isNotEmpty() == true) {
-            navigator.showRawGoodsRemainedInTask {
+        goods.value?.let { goods ->
+            if (goods.isNotEmpty()) {
+                navigator.showRawGoodsRemainedInTask {
+                    prepareToSaveAndOpenNextScreen()
+                }
+            } else {
+                manager.finishCurrentTask()
                 prepareToSaveAndOpenNextScreen()
             }
-        } else {
-            manager.finishCurrentTask()
-            prepareToSaveAndOpenNextScreen()
         }
     }
 
