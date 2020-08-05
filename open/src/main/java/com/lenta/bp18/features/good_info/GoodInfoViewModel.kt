@@ -11,6 +11,7 @@ import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.requests.combined.scan_info.pojo.ConditionInfo
 import com.lenta.shared.requests.combined.scan_info.pojo.GroupInfo
 import com.lenta.shared.settings.IAppSettings
+import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.extentions.launchUITryCatch
 import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.utilities.orIfNull
@@ -27,6 +28,7 @@ class GoodInfoViewModel : CoreViewModel(), OnPositionClickListener {
 
     @Inject
     lateinit var navigator: IScreenNavigator
+
     @Inject
     lateinit var database: IDatabaseRepo
 
@@ -47,26 +49,30 @@ class GoodInfoViewModel : CoreViewModel(), OnPositionClickListener {
     private val groups: MutableLiveData<List<GroupInfo>> = MutableLiveData()
     private val conditions: MutableLiveData<List<ConditionInfo>> = MutableLiveData()
     private val selectedPosition: MutableLiveData<Int> = MutableLiveData()
+    private val selectedCondition: MutableLiveData<Int> = MutableLiveData()
 
-    val groupsNames: MutableLiveData<List<String>> = groups.map { group ->
+    val groupsNames: MutableLiveData<List<String?>> = groups.map { group ->
         group?.map { it.name }.orEmpty()
     }
 
-    val conditionNames: MutableLiveData<List<String>> = conditions.map { condition ->
+    val conditionNames: MutableLiveData<List<String?>> = conditions.map { condition ->
         condition?.map { it.name }.orEmpty()
     }
 
+    var currentCondition: String? = ""
+
     var suffix: String = Uom.KG.name
 
-    val completeButtonEnabled = partNumberField.map { !it.isNullOrBlank()  }
+    val completeButtonEnabled = partNumberField.map { !it.isNullOrBlank() }
 
     init {
         setGoodInfo()
     }
 
-    private fun setGoodInfo(){
+    private fun setGoodInfo() {
         launchUITryCatch {
             val good = database.getGoodByEan(selectedEan.value.toString())
+            Logg.d { "$good" }
             val (quantity: Int?, uom: String?) = if (weight.value != 0) {
                 weight.value?.div(Constants.CONVERT_TO_KG) to Uom.KG.name
             } else {
@@ -74,12 +80,12 @@ class GoodInfoViewModel : CoreViewModel(), OnPositionClickListener {
                     Uom.ST -> Constants.QUANTITY_DEFAULT_VALUE_1 to Uom.ST.name
                     Uom.KAR -> {
                         val uomInfo = database.getEanInfoByEan(good.ean)
-                        val uomDiv= uomInfo?.umrez?.div(uomInfo.umren)
+                        val uomDiv = uomInfo?.umrez?.div(uomInfo.umren)
                                 ?: Constants.QUANTITY_DEFAULT_VALUE_0
-                        uomDiv  to Uom.KAR.name
+                        uomDiv to Uom.KAR.name
                     }
                     else -> {
-                        Constants.QUANTITY_DEFAULT_VALUE_0 to  Uom.KG.name
+                        Constants.QUANTITY_DEFAULT_VALUE_0 to Uom.KG.name
                     }
                 }
             }
@@ -90,7 +96,7 @@ class GoodInfoViewModel : CoreViewModel(), OnPositionClickListener {
             //partNumberField.value = /*значение*/
 
             val groupList = database.getAllGoodGroup()
-
+            /**Добавить выборку групп*/
             groups.value = groupList
             selectedPosition.value?.let {
                 appSettings.lastGroup?.let { lGroup ->
@@ -102,8 +108,21 @@ class GoodInfoViewModel : CoreViewModel(), OnPositionClickListener {
                 }.orIfNull { onClickPosition(0) }
             }
 
-            val conditionList = database.getAllGoodCondition()
-            conditions.value = conditionList
+            database.getConditionByName(good?.matcode).let { list ->
+                conditions.value = list.map { ConditionInfo(name = it.name) }
+                selectedCondition.value?.let {
+                    list.forEachIndexed { index, conditionInfo ->
+                        if (conditionInfo.defCondition == DEF_COND_FLAG) {
+                            currentCondition = conditionInfo.name
+                            onClickCondition(index)
+                        }
+                        else{
+                            onClickCondition(0)
+                        }
+                    }
+                }
+            }
+
         }
 
     }
@@ -112,9 +131,13 @@ class GoodInfoViewModel : CoreViewModel(), OnPositionClickListener {
         selectedPosition.value = position
     }
 
+    fun onClickCondition(position: Int) {
+        selectedCondition.value = position
+    }
+
     fun onClickBack() {
         with(navigator) {
-            showConfirmSaveData{
+            showConfirmSaveData {
                 openSelectGoodScreen()
             }
         }
@@ -128,8 +151,9 @@ class GoodInfoViewModel : CoreViewModel(), OnPositionClickListener {
         }
     }
 
-    companion object{
+    companion object {
         private const val DEF_WEIGHT = "0"
+        private const val DEF_COND_FLAG = "X"
     }
 
 }
