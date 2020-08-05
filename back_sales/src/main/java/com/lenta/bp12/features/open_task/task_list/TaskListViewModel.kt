@@ -110,7 +110,7 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
                         ItemTaskUi(
                                 position = "${taskListSize - index}",
                                 number = task.number,
-                                name = task.name,
+                                name = task.getFormattedName(),
                                 provider = task.getProviderCodeWithName(),
                                 isFinished = task.isFinished,
                                 blockType = task.block.type,
@@ -163,16 +163,14 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
         }
     }
 
-    private fun loadTaskListWithParams(value: String, userNumber: String = "") {
-        manager.searchParams.value?.let { params ->
+    private fun loadTaskListWithParams() {
+        manager.searchParams?.let { params ->
             launchUITryCatch {
                 navigator.showProgressLoadingData(::handleFailure)
 
                 taskListNetRequest(
                         TaskListParams(
                                 tkNumber = sessionInfo.market.orEmpty(),
-                                value = value,
-                                userNumber = userNumber,
                                 mode = TaskSearchMode.WITH_PARAMS.mode,
                                 taskSearchParams = params
                         )
@@ -217,7 +215,7 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
     }
 
     private fun prepareToOpenTask(task: TaskOpen) {
-        task.apply {
+        with(task) {
             when (block.type) {
                 BlockType.LOCK -> navigator.showAlertBlockedTaskAnotherUser(block.user, block.ip)
                 BlockType.SELF_LOCK -> navigator.showAlertBlockedTaskByMe(block.user) { openTask(task) }
@@ -247,6 +245,13 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
         return entered.isNotEmpty() && entered.all { it.isDigit() } && list.isEmpty()
     }
 
+    fun updateTaskList() {
+        if (manager.isNeedLoadTaskListByParams) {
+            manager.isNeedLoadTaskListByParams = false
+            loadTaskListWithParams()
+        }
+    }
+
     /**
     Обработка нажатий кнопок
      */
@@ -260,16 +265,13 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
 
         if (isEnteredLogin() || isEnteredUnknownTaskNumber()) {
             loadTaskList(entered)
-            loadTaskListWithParams(entered)
         } else {
             if (entered.isEmpty()) {
                 val currentUser = sessionInfo.userName.orEmpty()
                 val userNumber = sessionInfo.personnelNumber.orEmpty()
 
                 loadTaskList(currentUser, userNumber)
-                loadTaskListWithParams(currentUser, userNumber)
-
-                numberField.value = sessionInfo.userName.orEmpty()
+                numberField.value = currentUser
             }
         }
     }

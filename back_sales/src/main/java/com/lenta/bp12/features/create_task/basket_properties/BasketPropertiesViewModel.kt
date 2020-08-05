@@ -30,7 +30,7 @@ class BasketPropertiesViewModel : CoreViewModel() {
     val title by lazy {
         basket.map { basket ->
             val position = manager.getBasketPosition(basket)
-            val description = basket?.getDescription(task.value?.taskType?.isDivBySection ?: false)
+            val description = basket?.getDescription(task.value?.type?.isDivBySection ?: false)
             resource.basket("$position: $description")
         }
     }

@@ -1,4 +1,4 @@
-package com.lenta.bp18.request.model
+package com.lenta.bp18.request.model.result
 
 import com.lenta.bp18.request.pojo.GoodInfo
 import com.lenta.bp18.request.pojo.RetCode

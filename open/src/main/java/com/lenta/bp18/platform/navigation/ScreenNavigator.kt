@@ -7,6 +7,7 @@ import com.lenta.bp18.features.good_info.GoodInfoFragment
 import com.lenta.bp18.features.loading.fast.FastDataLoadingFragment
 import com.lenta.bp18.features.select_good.SelectGoodFragment
 import com.lenta.bp18.features.select_market.SelectMarketFragment
+import com.lenta.bp18.model.pojo.GoodParams
 import com.lenta.bp18.platform.Constants
 import com.lenta.shared.account.IAuthenticator
 import com.lenta.shared.features.alert.AlertFragment
@@ -15,6 +16,7 @@ import com.lenta.shared.platform.navigation.ICoreNavigator
 import com.lenta.shared.platform.navigation.runOrPostpone
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.progress.IProgressUseCaseInformator
+import com.lenta.shared.utilities.extentions.getAppInfo
 import javax.inject.Inject
 
 class ScreenNavigator @Inject constructor(
@@ -40,9 +42,9 @@ class ScreenNavigator @Inject constructor(
         }
     }
 
-    override fun openGoodsInfoScreen(ean: String, weight: String?) {
+    override fun openGoodsInfoScreen(goodParams: GoodParams) {
         runOrPostpone {
-            getFragmentStack()?.push(GoodInfoFragment.newInstance(ean, weight))
+            getFragmentStack()?.push(GoodInfoFragment.newInstance(goodParams))
         }
     }
 
@@ -58,27 +60,27 @@ class ScreenNavigator @Inject constructor(
 
 
     // Informational screens
-    override fun showConfirmOpeningPackage(confirmCallback: () -> Unit) {
+    override fun showConfirmOpeningPackage(yesCallback: () -> Unit) {
         runOrPostpone {
             getFragmentStack()?.push(AlertFragment.create(
                     message = context.getString(R.string.tw_unpucking),
+                    title = context.getAppInfo(),
                     iconRes = R.drawable.ic_question_yellow_80dp,
                     pageNumber = Constants.CONFIRMATION_SCREEN,
-                    codeConfirmForRight = backFragmentResultHelper.setFuncForResult(confirmCallback),
+                    codeConfirmForRight = backFragmentResultHelper.setFuncForResult(yesCallback),
                     rightButtonDecorationInfo = ButtonDecorationInfo.confirm
             ))
         }
     }
 
-    override fun showConfirmSaveData(goOverCallback: () -> Unit) {
+    override fun showConfirmSaveData(confirmCallback: () -> Unit) {
         runOrPostpone {
             getFragmentStack()?.push(AlertFragment.create(
                     message = context.getString(R.string.tw_save_data),
+                    title = context.getAppInfo(),
                     iconRes = R.drawable.ic_question_yellow_80dp,
                     pageNumber = Constants.CONFIRMATION_SCREEN,
-                    codeConfirmForLeft = backFragmentResultHelper.setFuncForResult(goOverCallback),
-                    leftButtonDecorationInfo = ButtonDecorationInfo.back,
-                    codeConfirmForRight = backFragmentResultHelper.setFuncForResult(goOverCallback),
+                    codeConfirmForRight = backFragmentResultHelper.setFuncForResult(confirmCallback),
                     rightButtonDecorationInfo = ButtonDecorationInfo.confirm
             ))
         }
@@ -88,6 +90,7 @@ class ScreenNavigator @Inject constructor(
         runOrPostpone {
             getFragmentStack()?.push(AlertFragment.create(
                     message = context.getString(R.string.tw_unpucking_success),
+                    title = context.getAppInfo(),
                     iconRes = R.drawable.ic_info_green_80dp,
                     pageNumber = Constants.ALERT_SCREEN_NUMBER,
                     codeConfirmForLeft = backFragmentResultHelper.setFuncForResult(goOverCallback),
@@ -137,11 +140,11 @@ interface IScreenNavigator : ICoreNavigator {
     fun openAuthScreen()
     fun openSelectMarketScreen()
     fun openSelectGoodScreen()
-    fun openGoodsInfoScreen(ean: String, weight: String?)
+    fun openGoodsInfoScreen(goodParams: GoodParams)
     fun openFastDataLoadingScreen()
 
-    fun showConfirmOpeningPackage(confirmCallback: () -> Unit)
-    fun showConfirmSaveData(goOverCallback: () -> Unit)
+    fun showConfirmOpeningPackage(yesCallback: () -> Unit)
+    fun showConfirmSaveData(confirmCallback: () -> Unit)
     fun showAlertSuccessfulOpeningPackage(goOverCallback: () -> Unit)
     fun showAlertPartCodeNotFound()
     fun showAlertGoodsNotFound()

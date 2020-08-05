@@ -11,7 +11,7 @@ data class PositionInfo(
         var providerCode: String,
         /** Наименование поставщика */
         @SerializedName("LIFNR_NAME")
-        var providerName: String = "",
+        var providerName: String,
         /** Плановое количество */
         @SerializedName("PLAN_QNT")
         var planQuantity: String = "",

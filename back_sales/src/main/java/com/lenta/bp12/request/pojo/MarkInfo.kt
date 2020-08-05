@@ -18,7 +18,7 @@ data class MarkInfo(
         /** Проблемная марка */
         @SerializedName("IS_MARK_BAD")
         var isBadMark: String,
-        /** Код производителя */
+        /** Код поставщика */
         @SerializedName("LIFNR")
         var providerCode: String,
         /** Номер корзины */
