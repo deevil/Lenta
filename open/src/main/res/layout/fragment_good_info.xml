@@ -49,7 +49,7 @@
                         android:paddingEnd="@dimen/size_10dp"
                         android:textSize="@dimen/text_14sp"
                         android:text="@={vm.quantityField}"
-                        app:suffix="@={vm.suffix}"
+                        app:suffix="@{vm.suffix}"
                         app:requestFocus="@{vm.requestFocusToQuantityField}"
                         app:cursorToLastPos="@{false}"
                         style="@style/CellEditTextStyle"
