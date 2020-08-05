@@ -59,7 +59,7 @@ class NonExciseAlcoInfoViewModel : CoreViewModel(), OnPositionClickListener {
     val spinReasonRejection: MutableLiveData<List<String>> = MutableLiveData()
     val spinReasonRejectionSelectedPosition: MutableLiveData<Int> = MutableLiveData(0)
     val suffix: MutableLiveData<String> = MutableLiveData()
-    val requestFocusToCount: MutableLiveData<Boolean> = MutableLiveData()
+    val requestFocusToCount: MutableLiveData<Boolean> = MutableLiveData(false)
 
     val isDefect: MutableLiveData<Boolean> = spinQualitySelectedPosition.combineLatest(isDiscrepancy).map {
         if (!it!!.second) {
@@ -156,17 +156,11 @@ class NonExciseAlcoInfoViewModel : CoreViewModel(), OnPositionClickListener {
             productInfo.value
                     ?.let {
                         if (processNonExciseAlcoProductService.newProcessNonExciseAlcoProductService(it) == null) {
-                            with(screenNavigator) {
-                                goBack()
-                                openAlertWrongProductType()
-                            }
+                            screenNavigator.goBackAndShowAlertWrongProductType()
                             return@launchUITryCatch
                         }
                     }.orIfNull {
-                        with(screenNavigator) {
-                            goBack()
-                            openAlertWrongProductType()
-                        }
+                        screenNavigator.goBackAndShowAlertWrongProductType()
                         return@launchUITryCatch
                     }
 
@@ -203,9 +197,6 @@ class NonExciseAlcoInfoViewModel : CoreViewModel(), OnPositionClickListener {
             }?.map {
                 it.key
             }
-
-            //эту строку необходимо прописывать только после того, как были установлены данные для переменных count  и suffix, а иначе фокус в поле et_count не установится
-            requestFocusToCount.value = true
         }
     }
 

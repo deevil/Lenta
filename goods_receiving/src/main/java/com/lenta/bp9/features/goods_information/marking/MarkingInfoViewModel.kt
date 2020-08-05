@@ -83,7 +83,7 @@ class MarkingInfoViewModel : CoreViewModel(),
     val spinReasonRejection: MutableLiveData<List<String>> = MutableLiveData()
     val spinReasonRejectionSelectedPosition: MutableLiveData<Int> = MutableLiveData(0)
     val suffix: MutableLiveData<String> = MutableLiveData()
-    val requestFocusToCount: MutableLiveData<Boolean> = MutableLiveData()
+    val requestFocusToCount: MutableLiveData<Boolean> = MutableLiveData(false)
     val isDefect: MutableLiveData<Boolean> = spinQualitySelectedPosition.map {
         it != 0
     }
@@ -362,17 +362,11 @@ class MarkingInfoViewModel : CoreViewModel(),
             productInfo.value
                     ?.let {
                         if (processMarkingProductService.newProcessMarkingProductService(it) == null) {
-                            with(screenNavigator) {
-                                goBack()
-                                openAlertWrongProductType()
-                            }
+                            screenNavigator.goBackAndShowAlertWrongProductType()
                             return@launchUITryCatch
                         }
                     }.orIfNull {
-                        with(screenNavigator) {
-                            goBack()
-                            openAlertWrongProductType()
-                        }
+                        screenNavigator.goBackAndShowAlertWrongProductType()
                         return@launchUITryCatch
                     }
 
@@ -408,18 +402,15 @@ class MarkingInfoViewModel : CoreViewModel(),
                 )
             }
 
-            qualityInfo.value = dataBase.getQualityInfo() ?: emptyList()
+            qualityInfo.value = dataBase.getQualityInfo().orEmpty()
             spinQuality.value = qualityInfo.value
                     ?.map {
                         it.name
                     }
-                    ?: emptyList()
+                    .orEmpty()
 
             suffix.value = uom.value?.name.orEmpty()
             paramGrzExclGtin.value = dataBase.getGrzExclGtin().orEmpty()
-
-            //эту строку необходимо прописывать только после того, как были установлены данные для переменных count  и suffix, а иначе фокус в поле et_count не установится
-            requestFocusToCount.value = true
         }
     }
 
@@ -768,7 +759,7 @@ class MarkingInfoViewModel : CoreViewModel(),
                     ?.map {
                         it.name
                     }
-                    ?: emptyList()
+                    .orEmpty()
             count.value = count.value
             screenNavigator.hideProgress()
         }

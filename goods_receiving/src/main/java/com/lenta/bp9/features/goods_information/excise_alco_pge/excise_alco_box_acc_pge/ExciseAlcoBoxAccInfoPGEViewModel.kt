@@ -70,7 +70,7 @@ class ExciseAlcoBoxAccInfoPGEViewModel : CoreViewModel(), OnPositionClickListene
     val spinQuality: MutableLiveData<List<String>> = MutableLiveData()
     val spinQualitySelectedPosition: MutableLiveData<Int> = MutableLiveData(0)
     val suffix: MutableLiveData<String> = MutableLiveData()
-    val requestFocusToCount: MutableLiveData<Boolean> = MutableLiveData()
+    val requestFocusToCount: MutableLiveData<Boolean> = MutableLiveData(false)
     val isDefect: MutableLiveData<Boolean> = spinQualitySelectedPosition.map {
         !(qualityInfo.value?.get(it!!)?.code == TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_NORM
                 || qualityInfo.value?.get(it!!)?.code == TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_SURPLUS)
@@ -189,18 +189,12 @@ class ExciseAlcoBoxAccInfoPGEViewModel : CoreViewModel(), OnPositionClickListene
             productInfo.value
                     ?.let {
                         if (processExciseAlcoBoxAccPGEService.newProcessExciseAlcoBoxPGEService(it) == null) {
-                            with(screenNavigator) {
-                                goBack()
-                                openAlertWrongProductType()
-                            }
+                            screenNavigator.goBackAndShowAlertWrongProductType()
                             return@launchUITryCatch
                         }
                     }
                     .orIfNull {screenNavigator.goBack()
-                        with(screenNavigator) {
-                            goBack()
-                            openAlertWrongProductType()
-                        }
+                        screenNavigator.goBackAndShowAlertWrongProductType()
                         return@launchUITryCatch
                     }
 
@@ -214,14 +208,12 @@ class ExciseAlcoBoxAccInfoPGEViewModel : CoreViewModel(), OnPositionClickListene
             }
 
             count.value = processExciseAlcoBoxAccPGEService.getInitialCount().toStringFormatted()
-
-            //эту строку необходимо прописывать только после того, как были установлены данные для переменных count  и suffix, а иначе фокус в поле et_count не установится
-            requestFocusToCount.value = true
         }
     }
 
     fun onResume() {
         count.value = processExciseAlcoBoxAccPGEService.getInitialCount().toStringFormatted()
+        requestFocusToCount.value = true
     }
 
     private fun handleProductSearchResult(@Suppress("UNUSED_PARAMETER") scanInfoResult: ScanInfoResult?): Boolean {

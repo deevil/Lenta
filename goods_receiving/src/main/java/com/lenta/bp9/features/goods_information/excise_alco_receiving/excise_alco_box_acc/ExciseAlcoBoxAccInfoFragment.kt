@@ -96,4 +96,9 @@ class ExciseAlcoBoxAccInfoFragment : CoreFragment<FragmentExciseAlcoBoxAccInfoBi
         vm.onScanResult(data)
     }
 
+    override fun onResume() {
+        super.onResume()
+        vm.requestFocusToCount.value = true
+    }
+
 }

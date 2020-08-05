@@ -152,17 +152,11 @@ class NonExciseSetsPGEViewModel : CoreViewModel(),
             productInfo.value
                     ?.let {
                         if (processNonExciseSetsPGEProductService.newProcessNonExciseSetsPGEProductService(it) == null) {
-                            with(screenNavigator) {
-                                goBack()
-                                openAlertWrongProductType()
-                            }
+                            screenNavigator.goBackAndShowAlertWrongProductType()
                             return@launchUITryCatch
                         }
                     }.orIfNull {
-                        with(screenNavigator) {
-                            goBack()
-                            openAlertWrongProductType()
-                        }
+                        screenNavigator.goBackAndShowAlertWrongProductType()
                         return@launchUITryCatch
                     }
 
@@ -216,9 +210,6 @@ class NonExciseSetsPGEViewModel : CoreViewModel(),
             }
 
             spinProcessingUnit.value = listOf("${context.getString(R.string.prefix_processing_unit)}${productInfo.value?.processingUnit.orEmpty()}")
-
-            //эту строку необходимо прописывать только после того, как были установлены данные для переменных count  и suffix, а иначе фокус в поле et_count не установится
-            requestFocusToCount.value = true
         }
     }
 

@@ -101,17 +101,11 @@ class MarkingProductFailureViewModel : CoreViewModel() {
             productInfo.value
                     ?.let {
                         if (processMarkingProductService.newProcessMarkingProductService(it) == null) {
-                            with(screenNavigator) {
-                                goBack()
-                                openAlertWrongProductType()
-                            }
+                            screenNavigator.goBackAndShowAlertWrongProductType()
                             return@launchUITryCatch
                         }
                     }.orIfNull {
-                        with(screenNavigator) {
-                            goBack()
-                            openAlertWrongProductType()
-                        }
+                        screenNavigator.goBackAndShowAlertWrongProductType()
                         return@launchUITryCatch
                     }
 

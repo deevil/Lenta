@@ -68,7 +68,7 @@ class GoodsInfoViewModel : CoreViewModel(), OnPositionClickListener {
     val spinShelfLife: MutableLiveData<List<String>> = MutableLiveData()
     val spinShelfLifeSelectedPosition: MutableLiveData<Int> = MutableLiveData(0)
     val suffix: MutableLiveData<String> = MutableLiveData()
-    val requestFocusToCount: MutableLiveData<Boolean> = MutableLiveData()
+    val requestFocusToCount: MutableLiveData<Boolean> = MutableLiveData(false)
     private val countOverdelivery: MutableLiveData<Double> = MutableLiveData()
     private val isClickApply: MutableLiveData<Boolean> = MutableLiveData(false)
     val isDiscrepancy: MutableLiveData<Boolean> = MutableLiveData(false)
@@ -245,17 +245,11 @@ class GoodsInfoViewModel : CoreViewModel(), OnPositionClickListener {
             productInfo.value
                     ?.let {
                         if (processGeneralProductService.newProcessGeneralProductService(it) == null) {
-                            with(screenNavigator) {
-                                goBack()
-                                openAlertWrongProductType()
-                            }
+                            screenNavigator.goBackAndShowAlertWrongProductType()
                             return@launchUITryCatch
                         }
                     }.orIfNull {
-                        with(screenNavigator) {
-                            goBack()
-                            openAlertWrongProductType()
-                        }
+                        screenNavigator.goBackAndShowAlertWrongProductType()
                         return@launchUITryCatch
                     }
 
@@ -309,9 +303,6 @@ class GoodsInfoViewModel : CoreViewModel(), OnPositionClickListener {
                     qualityInfo.value = dataBase.getQualityInfo()
                 }
             }
-
-            //эту строку необходимо прописывать только после того, как были установлены данные для переменных count  и suffix, а иначе фокус в поле et_count не установится
-            requestFocusToCount.value = true
 
             spinQuality.value =
                     qualityInfo.value
@@ -375,12 +366,15 @@ class GoodsInfoViewModel : CoreViewModel(), OnPositionClickListener {
             productInfo.value = processingUnitsOfProduct.value?.get(position)
             tvAccept.value = context.getString(R.string.accept, "${productInfo.value?.purchaseOrderUnits?.name}=${productInfo.value?.quantityInvest?.toDouble().toStringFormatted()} ${productInfo.value?.uom?.name}")
 
-            if (processGeneralProductService.newProcessGeneralProductService(productInfo.value!!) == null) {
-                with(screenNavigator) {
-                    goBack()
-                    openAlertWrongProductType()
-                }
-            }
+            productInfo.value
+                    ?.let {
+                        if (processGeneralProductService.newProcessGeneralProductService(it) == null) {
+                            screenNavigator.goBackAndShowAlertWrongProductType()
+                        }
+                    }
+                    ?.orIfNull {
+                        screenNavigator.goBackAndShowAlertWrongProductType()
+                    }
         }
     }
 

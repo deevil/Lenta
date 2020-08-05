@@ -1657,6 +1657,11 @@ class ScreenNavigator(
         }
     }
 
+    override fun goBackAndShowAlertWrongProductType() {
+        goBack()
+        openAlertWrongProductType()
+    }
+
     private fun getFragmentStack() = foregroundActivityProvider.getActivity()?.fragmentStack
 }
 
@@ -1844,4 +1849,5 @@ interface IScreenNavigator : ICoreNavigator {
     fun openAlertMustEnterQuantityInfoGreenScreen()
     fun openAlertAmountNormWillBeReducedMarkingScreen()
     fun openAlertScannedStampIsAlreadyProcessedAlternativeScreen()
+    fun goBackAndShowAlertWrongProductType()
 }

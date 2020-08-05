@@ -194,17 +194,14 @@ class NonExciseSetsReceivingViewModel : CoreViewModel(),
     init {
         launchUITryCatch {
             productInfo.value
-                    ?.let {if (processNonExciseSetsReceivingProductService.newProcessNonExciseSetsReceivingProductService(it) == null) {
-                        with(screenNavigator) {
-                            goBack()
-                            openAlertWrongProductType()
+                    ?.let {
+                        if (processNonExciseSetsReceivingProductService.newProcessNonExciseSetsReceivingProductService(it) == null) {
+                            screenNavigator.goBackAndShowAlertWrongProductType()
+                            return@launchUITryCatch
                         }
-                        return@launchUITryCatch
-                    }}.orIfNull {
-                        with(screenNavigator) {
-                            goBack()
-                            openAlertWrongProductType()
-                        }
+                    }
+                    .orIfNull {
+                        screenNavigator.goBackAndShowAlertWrongProductType()
                         return@launchUITryCatch
                     }
 
@@ -225,9 +222,6 @@ class NonExciseSetsReceivingViewModel : CoreViewModel(),
             spinQuality.value = qualityInfo.value?.map {
                 it.name
             }
-
-            //эту строку необходимо прописывать только после того, как были установлены данные для переменных count  и suffix, а иначе фокус в поле et_count не установится
-            requestFocusToCount.value = true
         }
     }
 

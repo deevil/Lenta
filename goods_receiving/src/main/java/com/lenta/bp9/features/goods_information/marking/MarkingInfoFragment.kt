@@ -32,8 +32,8 @@ class MarkingInfoFragment : CoreFragment<FragmentMarkingInfoBinding, MarkingInfo
     override fun getViewModel(): MarkingInfoViewModel {
         provideViewModel(MarkingInfoViewModel::class.java).let { vm ->
             getAppComponent()?.inject(vm)
-            vm.productInfo.value = this.productInfo
-            vm.productInfo.value?.let {
+            this.productInfo?.let {
+                vm.productInfo.value = it
                 vm.processMarkingProductService.initProduct(it)
             }
             return vm
@@ -64,8 +64,7 @@ class MarkingInfoFragment : CoreFragment<FragmentMarkingInfoBinding, MarkingInfo
                 vm.onClickPositionSpinQuality(position)
             }
 
-            override fun onNothingSelected(adapterView: AdapterView<*>) {
-            }
+            override fun onNothingSelected(adapterView: AdapterView<*>) = Unit
         }
 
         binding?.etCount?.setOnKeyListener(View.OnKeyListener { v, keyCode, event ->
@@ -90,6 +89,11 @@ class MarkingInfoFragment : CoreFragment<FragmentMarkingInfoBinding, MarkingInfo
 
     override fun onScanResult(data: String) {
         vm.onScanResult(data)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        vm.requestFocusToCount.value = true
     }
 
     companion object {

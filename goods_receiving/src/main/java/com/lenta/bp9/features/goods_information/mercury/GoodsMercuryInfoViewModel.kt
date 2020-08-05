@@ -51,7 +51,7 @@ class GoodsMercuryInfoViewModel : CoreViewModel(), OnPositionClickListener {
     lateinit var timeMonitor: ITimeMonitor
 
     val productInfo: MutableLiveData<TaskProductInfo> = MutableLiveData()
-    val requestFocusToCount: MutableLiveData<Boolean> = MutableLiveData()
+    val requestFocusToCount: MutableLiveData<Boolean> = MutableLiveData(false)
     val uom: MutableLiveData<Uom?> by lazy {
         if (taskManager.getReceivingTask()?.taskHeader?.taskType == TaskType.DirectSupplier) {
             MutableLiveData(productInfo.value?.purchaseOrderUnits)
@@ -249,17 +249,11 @@ class GoodsMercuryInfoViewModel : CoreViewModel(), OnPositionClickListener {
             productInfo.value
                     ?.let {
                         if (processMercuryProductService.newProcessMercuryProductService(it) == null) {
-                            with(screenNavigator) {
-                                goBack()
-                                openAlertWrongProductType()
-                            }
+                            screenNavigator.goBackAndShowAlertWrongProductType()
                             return@launchUITryCatch
                         }
                     }.orIfNull {
-                        with(screenNavigator) {
-                            goBack()
-                            openAlertWrongProductType()
-                        }
+                        screenNavigator.goBackAndShowAlertWrongProductType()
                         return@launchUITryCatch
                     }
 
@@ -316,9 +310,6 @@ class GoodsMercuryInfoViewModel : CoreViewModel(), OnPositionClickListener {
                     remainingShelfLife.value = productInfo.value?.mhdrzDays.toString()
                 }
             }
-
-            //эту строку необходимо прописывать только после того, как были установлены данные для переменных count  и suffix, а иначе фокус в поле et_count не установится
-            requestFocusToCount.value = true
 
             spinQuality.value = qualityInfo.value?.map {
                 it.name
