@@ -185,13 +185,38 @@ class OpenTaskManager @Inject constructor(
     override fun isGoodCorrespondToTask(goodInfo: GoodInfoResult): Boolean {
         currentTask.value?.let { task ->
             val isControl = task.control == goodInfo.getControlType()
-            val isType = if (task.goodType.isNotEmpty()) task.goodType == goodInfo.materialInfo?.goodType else true
-            val isSection = if (task.section.isNotEmpty()) task.section == goodInfo.materialInfo?.section else true
-            val isPurchaseGroup = if (task.purchaseGroup.isNotEmpty()) task.purchaseGroup == goodInfo.materialInfo.purchaseGroup else true
-            val isProvider = if (task.provider.code.orEmpty().isNotEmpty()) goodInfo.providers?.find { it.code == task.provider.code } != null else true
+            val isType =
+                    if (task.goodType.isNotEmpty()) task.goodType == goodInfo.materialInfo?.goodType
+                    else true
+            val isSection =
+                    if (task.section.isNotEmpty()) task.section == goodInfo.materialInfo?.section
+                    else true
+            val isPurchaseGroup =
+                    if (task.purchaseGroup.isNotEmpty()) task.purchaseGroup == goodInfo.materialInfo?.purchaseGroup
+                    else true
+            val isProvider =
+                    if (task.provider.code.orEmpty().isNotEmpty()) goodInfo.providers
+                            ?.find { it.code == task.provider.code } != null
+                    else true
 
-            Logg.d { "--> task parameters: ${task.control} / ${task.goodType} / ${task.section} / ${task.purchaseGroup} / ${task.provider.code}" }
-            Logg.d { "--> good parameters: ${goodInfo.getControlType()} / ${goodInfo.materialInfo.goodType} / ${goodInfo.materialInfo.section} / ${goodInfo.materialInfo.purchaseGroup} / ${goodInfo.providers}" }
+            Logg.d {
+                """
+                --> task parameters: ${task.control} /
+                                     ${task.goodType} /
+                                     ${task.section} /
+                                     ${task.purchaseGroup} /
+                                     ${task.provider.code}
+                """.trimIndent()
+            }
+            Logg.d {
+                """
+                --> good parameters: ${goodInfo.getControlType()} /
+                                     ${goodInfo.materialInfo?.goodType} /
+                                     ${goodInfo.materialInfo?.section} /
+                                     ${goodInfo.materialInfo?.purchaseGroup} /
+                                     ${goodInfo.providers}
+                """.trimIndent()
+            }
 
             return isControl && isType && isSection && isPurchaseGroup && isProvider
         }
@@ -221,8 +246,8 @@ class OpenTaskManager @Inject constructor(
                     positions.add(
                             PositionInfo(
                                     material = good.material,
-                                    providerCode = task.provider.code,
-                                    providerName = task.provider.name,
+                                    providerCode = task.provider.code.orEmpty(),
+                                    providerName = task.provider.name.orEmpty(),
                                     factQuantity = "0",
                                     isCounted = good.isCounted.toSapBooleanString(),
                                     isDeleted = good.isDeleted.toSapBooleanString(),
@@ -235,8 +260,8 @@ class OpenTaskManager @Inject constructor(
                         val quantity = if (position.quantity > 0.0) position.quantity else good.getTotalQuantity()
                         PositionInfo(
                                 material = good.material,
-                                providerCode = position.provider.code,
-                                providerName = position.provider.name,
+                                providerCode = position.provider.code.orEmpty(),
+                                providerName = position.provider.name.orEmpty(),
                                 factQuantity = quantity.dropZeros(),
                                 isCounted = good.isCounted.toSapBooleanString(),
                                 isDeleted = good.isDeleted.toSapBooleanString(),

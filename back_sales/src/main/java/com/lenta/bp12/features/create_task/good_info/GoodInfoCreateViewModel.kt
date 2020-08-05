@@ -518,20 +518,23 @@ class GoodInfoCreateViewModel : CoreViewModel() {
         launchUITryCatch {
             with(result) {
                 good.value = GoodCreate(
-                        ean = eanInfo.ean,
-                        eans = database.getEanListByMaterialUnits(materialInfo.material, materialInfo.commonUnitsCode),
-                        material = materialInfo.material,
-                        name = materialInfo.name,
+                        ean = eanInfo?.ean.orEmpty(),
+                        eans = database.getEanListByMaterialUnits(
+                                material = materialInfo?.material.orEmpty(),
+                                unitsCode = materialInfo?.commonUnitsCode.orEmpty()
+                        ),
+                        material = materialInfo?.material.orEmpty(),
+                        name = materialInfo?.name.orEmpty(),
                         kind = getGoodKind(),
-                        type = materialInfo.goodType,
+                        type = materialInfo?.goodType.orEmpty(),
                         control = getControlType(),
-                        section = materialInfo.section,
-                        matrix = getMatrixType(materialInfo.matrix),
-                        commonUnits = database.getUnitsByCode(materialInfo.commonUnitsCode),
-                        innerUnits = database.getUnitsByCode(materialInfo.innerUnitsCode),
-                        innerQuantity = materialInfo.innerQuantity.toDoubleOrNull() ?: 1.0,
-                        providers = providers.toMutableList(),
-                        producers = producers.toMutableList()
+                        section = materialInfo?.section.orEmpty(),
+                        matrix = getMatrixType(materialInfo?.matrix.orEmpty()),
+                        commonUnits = database.getUnitsByCode(materialInfo?.commonUnitsCode.orEmpty()),
+                        innerUnits = database.getUnitsByCode(materialInfo?.innerUnitsCode.orEmpty()),
+                        innerQuantity = materialInfo?.innerQuantity?.toDoubleOrNull() ?: 1.0,
+                        providers = providers.orEmpty().toMutableList(),
+                        producers = producers.orEmpty().toMutableList()
                 )
             }
 
