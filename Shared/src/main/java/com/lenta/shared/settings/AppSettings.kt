@@ -110,7 +110,7 @@ class AppSettings(
     override var lastGroup: String?
         get() = sharedPrefferences.getString("lastGroup$lastLogin",null)
         set(value) {
-            sharedPrefferences.edit().putString("lastGroup$lastLogin",null).commit()
+            sharedPrefferences.edit().putString("lastGroup$lastLogin",value).commit()
         }
 
     override var lastPersonnelNumber: String?
