@@ -42,17 +42,13 @@ class ProcessMarkingProductService
                     blocks.clear()
                     taskManager.getReceivingTask()
                             ?.getProcessedBlocks()
-                            ?.map {
-                                blocks.add(it.copy())
-                            }
+                            ?.mapTo(blocks) { it.copy() }
                     currentBlocksDiscrepancies.clear()
                     taskManager.getReceivingTask()
                             ?.taskRepository
                             ?.getBlocksDiscrepancies()
                             ?.findBlocksDiscrepanciesOfProduct(productInfo)
-                            ?.map {
-                                currentBlocksDiscrepancies.add(it.copy())
-                            }
+                            ?.mapTo(currentBlocksDiscrepancies) { it.copy() }
                 }
     }
 

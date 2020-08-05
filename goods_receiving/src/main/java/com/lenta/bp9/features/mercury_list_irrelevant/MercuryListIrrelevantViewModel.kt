@@ -8,6 +8,7 @@ import com.lenta.bp9.platform.navigation.IScreenNavigator
 import com.lenta.bp9.repos.IRepoInMemoryHolder
 import com.lenta.bp9.requests.network.*
 import com.lenta.shared.account.ISessionInfo
+import com.lenta.shared.platform.constants.Constants.OPERATING_SYSTEM_ANDROID
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.extentions.getDeviceIp
 import com.lenta.shared.utilities.extentions.launchUITryCatch
@@ -85,7 +86,7 @@ class MercuryListIrrelevantViewModel : CoreViewModel() {
                                 dateRecount = task.taskDescription.currentStatusDate,
                                 timeRecount = task.taskDescription.currentStatusTime,
                                 unbindVSD = "X",
-                                operatingSystem = "2"
+                                operatingSystem = OPERATING_SYSTEM_ANDROID
                         )
                         directSupplierStartRecountNetRequest(params).either(::handleFailure, ::handleSuccessRecountStart)
                     }

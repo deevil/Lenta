@@ -108,7 +108,7 @@ class TransportConditionsReviseFragment : CoreFragment<FragmentTransportConditio
                                     }
                                 }
                                 val conditionsToCheckSize = vm.conditionsToCheck.value?.size ?: 0
-                                if (conditionsToCheckSize-1 >= position) {
+                                if (conditionsToCheckSize - 1 >= position) {
                                     binding.cbChecked.visibility =
                                             when (vm.conditionsToCheck.value?.get(position)?.conditionType) {
                                                 ConditionType.Checkbox -> View.VISIBLE

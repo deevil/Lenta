@@ -12,6 +12,7 @@ import com.lenta.bp9.requests.network.DirectSupplierStartRecountRestInfo
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.features.loading.CoreLoadingViewModel
+import com.lenta.shared.platform.constants.Constants.OPERATING_SYSTEM_ANDROID
 import com.lenta.shared.utilities.extentions.getDeviceIp
 import com.lenta.shared.utilities.extentions.launchUITryCatch
 import com.mobrun.plugin.api.HyperHive
@@ -60,7 +61,7 @@ class LoadingRecountStartViewModel : CoreLoadingViewModel() {
                         dateRecount = task.taskDescription.currentStatusDate,
                         timeRecount = task.taskDescription.currentStatusTime,
                         unbindVSD = "",
-                        operatingSystem = "2"
+                        operatingSystem = OPERATING_SYSTEM_ANDROID
                 )
                 directSupplierStartRecountNetRequest(params).either(::handleFailure, ::handleSuccess)
             }

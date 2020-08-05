@@ -11,6 +11,7 @@ import com.lenta.bp9.requests.network.StartRecountPGERestInfo
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.features.loading.CoreLoadingViewModel
+import com.lenta.shared.platform.constants.Constants.OPERATING_SYSTEM_ANDROID
 import com.lenta.shared.utilities.extentions.getDeviceIp
 import com.lenta.shared.utilities.extentions.launchUITryCatch
 import javax.inject.Inject
@@ -57,7 +58,7 @@ class LoadingRecountStartPGEViewModel : CoreLoadingViewModel() {
                                 ?.taskType
                                 ?.taskTypeString
                                 .orEmpty(),
-                        operatingSystem = "2"
+                        operatingSystem = OPERATING_SYSTEM_ANDROID
                 )
                 startRecountPGENetRequest(params).either(::handleFailure, ::handleSuccess)
             }

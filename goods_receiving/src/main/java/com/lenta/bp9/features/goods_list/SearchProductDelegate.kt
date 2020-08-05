@@ -281,13 +281,14 @@ class SearchProductDelegate @Inject constructor(
     }
 
     private fun openExciseAlcoholProductScreen(taskProductInfo: TaskProductInfo) {
+        val loadingMode = repoInMemoryHolder.taskList.value?.taskListLoadingMode
         when {
             taskProductInfo.isSet -> {
                 screenNavigator.openInfoScreen("Ошибка получения данных") //openNotImplementedScreenAlert("Информация о наборе")
                 //screenNavigator.openSetsInfoScreen(taskProductInfo)
             }
             taskProductInfo.isBoxFl -> { //алкоголь, коробочный учет ППП https://trello.com/c/KbBbXj2t; коробочный учет ПГЕ https://trello.com/c/TzUSGIH7
-                when (repoInMemoryHolder.taskList.value?.taskListLoadingMode) {
+                when (loadingMode) {
                     TaskListLoadingMode.Receiving -> screenNavigator.openExciseAlcoBoxAccInfoReceivingScreen(taskProductInfo)
                     TaskListLoadingMode.PGE -> screenNavigator.openExciseAlcoBoxAccInfoPGEScreen(taskProductInfo)
                     TaskListLoadingMode.Shipment -> screenNavigator.openInfoScreen("Ошибка получения данных") //openNotImplementedScreenAlert("Информация о коробочном учете")
@@ -295,7 +296,7 @@ class SearchProductDelegate @Inject constructor(
                 }
             }
             taskProductInfo.isMarkFl -> { //алкоголь, марочный учет ПГЕ https://trello.com/c/Bx03dgxE;
-                when (repoInMemoryHolder.taskList.value?.taskListLoadingMode) {
+                when (loadingMode) {
                     TaskListLoadingMode.Receiving -> screenNavigator.openInfoScreen("Ошибка получения данных") //screenNavigator.openExciseAlcoStampAccInfoScreen(taskProductInfo) это экран для марочного учета ППП
                     TaskListLoadingMode.PGE -> screenNavigator.openExciseAlcoStampAccInfoPGEScreen(taskProductInfo)
                     TaskListLoadingMode.Shipment -> screenNavigator.openInfoScreen("Ошибка получения данных") //openNotImplementedScreenAlert("Информация о марочном учете")

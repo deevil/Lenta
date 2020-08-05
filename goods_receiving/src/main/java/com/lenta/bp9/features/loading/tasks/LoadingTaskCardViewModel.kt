@@ -13,6 +13,7 @@ import com.lenta.bp9.requests.network.*
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.features.loading.CoreLoadingViewModel
+import com.lenta.shared.platform.constants.Constants.OPERATING_SYSTEM_ANDROID
 import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.extentions.getDeviceIp
 import com.lenta.shared.utilities.extentions.launchUITryCatch
@@ -72,7 +73,7 @@ class LoadingTaskCardViewModel : CoreLoadingViewModel() {
                     deviceIP = context.getDeviceIp(),
                     personalNumber = sessionInfo.personnelNumber ?: "",
                     taskNumber = taskNumber,
-                    operatingSystem = "2"
+                    operatingSystem = OPERATING_SYSTEM_ANDROID
             )
             val taskHeader = repoInMemoryHolder.taskList.value
                     ?.tasks
@@ -99,7 +100,7 @@ class LoadingTaskCardViewModel : CoreLoadingViewModel() {
                                         } else {
                                             TaskType.OwnProduction.taskTypeString
                                         },
-                                        operatingSystem = "2"
+                                        operatingSystem = OPERATING_SYSTEM_ANDROID
                                 )
                                 taskContentsReceptionDistrCenterNetRequest(paramsRDS).either(::handleFailure, ::handleSuccessRDS)
                             }
@@ -115,7 +116,7 @@ class LoadingTaskCardViewModel : CoreLoadingViewModel() {
                                     personalNumber = sessionInfo.personnelNumber.orEmpty(),
                                     taskNumber = taskNumber,
                                     taskType = TaskType.RecalculationCargoUnit.taskTypeString,
-                                    operatingSystem = "2"
+                                    operatingSystem = OPERATING_SYSTEM_ANDROID
                             )
                             taskContentsReceptionDistrCenterNetRequest(params).either(::handleFailure, ::handleSuccessRDS)
                         }
