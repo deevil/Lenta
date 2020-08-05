@@ -5,53 +5,56 @@ import com.google.gson.annotations.SerializedName
 data class MaterialInfo(
         /** Sap-код товара */
         @SerializedName("MATERIAL")
-        var material: String,
+        var material: String?,
         /** Наименование */
         @SerializedName("NAME")
-        var name: String,
+        var name: String?,
         /** Вид товара */
         @SerializedName("MATYPE")
-        var goodType: String,
+        var goodType: String?,
         /** Базовая единица измерения */
         @SerializedName("BUOM")
-        var innerUnitsCode: String,
+        var innerUnitsCode: String?,
         /** Тип матрицы SCU */
         @SerializedName("MATR_TYPE")
-        var matrix: String,
+        var matrix: String?,
         /** Номер секции */
         @SerializedName("ABTNR")
-        var section: String,
+        var section: String?,
         /** Акцизный товар */
         @SerializedName("IS_EXC")
-        var isExcise: String,
+        var isExcise: String?,
         /** Алкоголь */
         @SerializedName("IS_ALCO")
-        var isAlcohol: String,
+        var isAlcohol: String?,
         /** Группа товара */
         @SerializedName("MATKL")
-        var goodGroup: String,
+        var goodGroup: String?,
         /** Группа закупки */
         @SerializedName("EKGRP")
-        var purchaseGroup: String,
+        var purchaseGroup: String?,
         /** ЕИ заказа на поставку */
         @SerializedName("BSTME")
-        var commonUnitsCode: String,
+        var commonUnitsCode: String?,
         /** Количество вложенного */
         @SerializedName("QNTINCL")
-        var innerQuantity: String,
+        var innerQuantity: String?,
         /** Общий флаг */
         @SerializedName("IS_RUS")
-        var isRus: String,
+        var isRus: String?,
         /** Общий флаг */
         @SerializedName("IS_VET")
-        var isVet: String,
+        var isVet: String?,
         /** Общий флаг */
         @SerializedName("IS_FOOD") // Для BKS не используется
-        var isFood: String,
+        var isFood: String?,
         /** Обьъем в куб. метрах (точность 6 знаков) */
         @SerializedName("VOLUM") // Для BKS не используется
-        var volume: String,
+        var volume: String?,
         /** Единица объема */
         @SerializedName("VOLEH") // Для BKS не используется
-        var volumeUnit: String
+        var volumeUnit: String?,
+        /** Тип маркировки */
+        @SerializedName("ZMARKTYPE")
+        val markType: String?
 )

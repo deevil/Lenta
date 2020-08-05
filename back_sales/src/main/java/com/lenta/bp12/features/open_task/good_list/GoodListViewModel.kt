@@ -62,7 +62,7 @@ class GoodListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
                                 position = "${filtered.size - index}",
                                 name = good.getNameWithMaterial(),
                                 material = good.material,
-                                providerCode = good.provider.code
+                                providerCode = good.provider.code.orEmpty()
                         )
                     }
                 }
@@ -80,7 +80,7 @@ class GoodListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
                                 name = good.getNameWithMaterial(),
                                 quantity = "${good.getQuantity().dropZeros()} ${good.commonUnits.name}",
                                 material = good.material,
-                                providerCode = good.provider.code
+                                providerCode = good.provider.code.orEmpty()
                         )
                     }
                 }
@@ -183,7 +183,7 @@ class GoodListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
     fun onClickDelete() {
         selectedPage.value?.let { page ->
             when (page) {
-                0 -> {
+                PROCESSED_PAGE -> {
                     val materials = mutableListOf<String>()
                     processingSelectionsHelper.selectedPositions.value?.forEach { position ->
                         processing.value?.get(position)?.let { item ->
@@ -193,7 +193,7 @@ class GoodListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
 
                     manager.markGoodsDeleted(materials)
                 }
-                1 -> {
+                TO_PROCESS_PAGE -> {
                     val materials = mutableListOf<String>()
                     processedSelectionsHelper.selectedPositions.value?.forEach { position ->
                         processed.value?.get(position)?.let { item ->
@@ -225,6 +225,11 @@ class GoodListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
                 navigator.openSaveDataScreen()
             }
         }
+    }
+
+    companion object {
+        private const val PROCESSED_PAGE = 0
+        private const val TO_PROCESS_PAGE = 1
     }
 
 }

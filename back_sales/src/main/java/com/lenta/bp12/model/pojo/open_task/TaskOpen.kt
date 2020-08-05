@@ -31,8 +31,10 @@ data class TaskOpen(
 
     fun getProviderCodeWithName(): String {
         var providerCode = provider.code
-        while (providerCode.startsWith("0")) {
-            providerCode = providerCode.substring(1)
+        providerCode?.let{
+            while (it.startsWith("0")) {
+                providerCode = providerCode?.substring(1)
+            }
         }
 
         return "$providerCode ${provider.name}"

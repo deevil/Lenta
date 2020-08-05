@@ -17,8 +17,8 @@ fun GoodKind.getDescriptionResId(): Int {
 }
 
 fun GoodInfoResult.getGoodKind(): GoodKind {
-    val isAlcohol = this.materialInfo.isAlcohol.isSapTrue()
-    val isExcise = this.materialInfo.isExcise.isSapTrue()
+    val isAlcohol = this.materialInfo?.isAlcohol.isSapTrue()
+    val isExcise = this.materialInfo?.isExcise.isSapTrue()
 
     return when {
         isExcise -> GoodKind.EXCISE
@@ -39,8 +39,8 @@ fun ZfmpUtz48V001.ItemLocal_ET_MATNR_LIST.getGoodKind(): GoodKind {
 }
 
 fun GoodInfoResult.getControlType(): ControlType {
-    val isVet = this.materialInfo.isVet.isSapTrue()
-    val isAlcohol = this.materialInfo.isAlcohol.isSapTrue()
+    val isVet = this.materialInfo?.isVet.isSapTrue()
+    val isAlcohol = this.materialInfo?.isAlcohol.isSapTrue()
 
     return when {
         !isAlcohol && !isVet -> ControlType.COMMON

@@ -430,17 +430,17 @@ class GoodInfoOpenViewModel : CoreViewModel() {
         launchUITryCatch {
             with(result) {
                 good.value = GoodOpen(
-                        ean = eanInfo.ean,
-                        material = materialInfo.material,
-                        name = materialInfo.name,
-                        section = materialInfo.section,
-                        matrix = getMatrixType(materialInfo.matrix),
+                        ean = eanInfo?.ean.orEmpty(),
+                        material = materialInfo?.material.orEmpty(),
+                        name = materialInfo?.name.orEmpty(),
+                        section = materialInfo?.section.orEmpty(),
+                        matrix = getMatrixType(materialInfo?.matrix.orEmpty()),
                         kind = getGoodKind(),
-                        commonUnits = database.getUnitsByCode(materialInfo.commonUnitsCode),
-                        innerUnits = database.getUnitsByCode(materialInfo.innerUnitsCode),
-                        innerQuantity = materialInfo.innerQuantity.toDoubleOrNull() ?: 0.0,
+                        commonUnits = database.getUnitsByCode(materialInfo?.commonUnitsCode.orEmpty()),
+                        innerUnits = database.getUnitsByCode(materialInfo?.innerUnitsCode.orEmpty()),
+                        innerQuantity = materialInfo?.innerQuantity?.toDoubleOrNull() ?: 0.0,
                         provider = task.value?.provider ?: ProviderInfo(),
-                        producers = producers
+                        producers = producers.orEmpty()
                 )
             }
 
@@ -615,6 +615,7 @@ class GoodInfoOpenViewModel : CoreViewModel() {
                 ScreenStatus.MARK_150, ScreenStatus.MARK_68 -> addMark()
                 ScreenStatus.ALCOHOL, ScreenStatus.PART -> addPart()
                 ScreenStatus.BOX -> addBox()
+                else -> Logg.e { "wrong screenStatus" }
             }
         }
     }
@@ -640,7 +641,7 @@ class GoodInfoOpenViewModel : CoreViewModel() {
                     number = lastSuccessSearchNumber.value.orEmpty(),
                     material = changedGood.material,
                     isBadMark = scanInfoResult.value?.status == MarkStatus.BAD.code,
-                    providerCode = changedGood.provider.code
+                    providerCode = changedGood.provider.code.orEmpty()
             )
             Logg.d { "--> add mark = $mark" }
             changedGood.addMark(mark)
@@ -656,7 +657,7 @@ class GoodInfoOpenViewModel : CoreViewModel() {
                     number = lastSuccessSearchNumber.value.orEmpty(),
                     material = changedGood.material,
                     quantity = quantity.value ?: 0.0,
-                    providerCode = changedGood.provider.code,
+                    providerCode = changedGood.provider.code.orEmpty(),
                     producerCode = getProducerCode(),
                     date = getDateFromString(date.value.orEmpty(), Constants.DATE_FORMAT_dd_mm_yyyy)
             )
@@ -677,7 +678,7 @@ class GoodInfoOpenViewModel : CoreViewModel() {
                             material = changedGood.material,
                             boxNumber = lastSuccessSearchNumber.value.orEmpty(),
                             isBadMark = mark.isBadMark.isNotEmpty(),
-                            providerCode = changedGood.provider.code
+                            providerCode = changedGood.provider.code.orEmpty()
                     )
                     Logg.d { "--> add mark from box = $markFromBox" }
                     changedGood.addMark(markFromBox)

@@ -56,7 +56,7 @@ data class TaskCreate(
     fun removeGoodByBasketAndMaterials(basket: Basket, materials: MutableList<String>) {
         materials.forEach { material ->
             goods.find { it.material == material }?.let { good ->
-                good.removeByProvider(basket.provider.code)
+                good.removeByProvider(basket.provider.code.orEmpty())
                 if (good.isEmpty()) {
                     goods.remove(good)
                 }
@@ -70,9 +70,9 @@ data class TaskCreate(
     fun removeBaskets(basketList: MutableList<Basket>) {
         basketList.forEach { basket ->
             getGoodListByBasket(basket).forEach { good ->
-                good.removePositionsByProvider(basket.provider.code)
-                good.removeMarksByProvider(basket.provider.code)
-                good.removePartsByProvider(basket.provider.code)
+                good.removePositionsByProvider(basket.provider.code.orEmpty())
+                good.removeMarksByProvider(basket.provider.code.orEmpty())
+                good.removePartsByProvider(basket.provider.code.orEmpty())
             }
 
             baskets.remove(basket)

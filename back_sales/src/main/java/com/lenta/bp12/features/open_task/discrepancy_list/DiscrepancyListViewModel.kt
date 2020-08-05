@@ -47,7 +47,7 @@ class DiscrepancyListViewModel : CoreViewModel() {
                         position = "${task.goods.size - index}",
                         name = good.name,
                         material = good.material,
-                        providerCode = good.provider.code
+                        providerCode = good.provider.code.orEmpty()
                 )
             }
         }

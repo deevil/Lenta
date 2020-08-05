@@ -135,7 +135,7 @@ class CreateTaskManager @Inject constructor(
                                 basketNumber = basketNumber,
                                 isCommon = basket.control.isCommon().toSapBooleanString(),
                                 isAlcohol = basket.control.isAlcohol().toSapBooleanString(),
-                                providerCode = basket.provider.code,
+                                providerCode = basket.provider.code.orEmpty(),
                                 goodType = basket.goodType,
                                 section = basket.section
                         )
@@ -157,7 +157,7 @@ class CreateTaskManager @Inject constructor(
                     positions.add(
                             PositionInfo(
                                     material = good.material,
-                                    providerCode = position.provider.code,
+                                    providerCode = position.provider.code.orEmpty(),
                                     factQuantity = position.quantity.dropZeros(),
                                     isCounted = true.toSapBooleanString(),
                                     innerQuantity = good.innerQuantity.dropZeros(),
