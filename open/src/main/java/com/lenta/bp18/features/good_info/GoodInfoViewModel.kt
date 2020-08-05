@@ -6,6 +6,7 @@ import com.lenta.bp18.platform.Constants
 import com.lenta.bp18.platform.navigation.IScreenNavigator
 import com.lenta.bp18.repository.IDatabaseRepo
 import com.lenta.bp18.request.network.GoodInfoNetRequest
+import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.models.core.Uom
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.requests.combined.scan_info.pojo.ConditionInfo
@@ -59,7 +60,7 @@ class GoodInfoViewModel : CoreViewModel(), OnPositionClickListener {
         condition?.map { it.name }.orEmpty()
     }
 
-    var currentCondition: String? = ""
+    private var currentCondition: String? = ""
 
     var suffix: String = Uom.KG.name
 
@@ -101,8 +102,10 @@ class GoodInfoViewModel : CoreViewModel(), OnPositionClickListener {
             selectedPosition.value?.let {
                 appSettings.lastGroup?.let { lGroup ->
                     groupList.forEachIndexed() { index, groupInfo ->
-                        if (groupInfo.number == lGroup)
+                        if (groupInfo.number == lGroup) {
                             onClickPosition(index)
+                        }
+
                         return@forEachIndexed
                     }
                 }.orIfNull { onClickPosition(0) }
@@ -115,8 +118,7 @@ class GoodInfoViewModel : CoreViewModel(), OnPositionClickListener {
                         if (conditionInfo.defCondition == DEF_COND_FLAG) {
                             currentCondition = conditionInfo.name
                             onClickCondition(index)
-                        }
-                        else{
+                        } else {
                             onClickCondition(0)
                         }
                     }
@@ -131,11 +133,12 @@ class GoodInfoViewModel : CoreViewModel(), OnPositionClickListener {
         selectedPosition.value = position
     }
 
-    fun onClickCondition(position: Int) {
+    private fun onClickCondition(position: Int) {
         selectedCondition.value = position
     }
 
     fun onClickBack() {
+        saveGroup()
         with(navigator) {
             showConfirmSaveData {
                 openSelectGoodScreen()
@@ -143,7 +146,18 @@ class GoodInfoViewModel : CoreViewModel(), OnPositionClickListener {
         }
     }
 
+    private fun saveGroup() {
+        launchUITryCatch {
+            groups.value
+                    ?.getOrNull(selectedPosition.value ?: -1)?.number
+                    ?.let { group ->
+                        appSettings.lastGroup = group
+                    }
+        }
+    }
+
     fun onClickComplete() {
+        saveGroup()
         with(navigator) {
             showConfirmOpeningPackage {
                 showAlertSuccessfulOpeningPackage(::openSelectGoodScreen)
