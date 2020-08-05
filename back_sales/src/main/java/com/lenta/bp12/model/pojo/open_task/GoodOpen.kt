@@ -14,7 +14,7 @@ import com.lenta.shared.utilities.extentions.sumWith
 
 data class GoodOpen(
         var ean: String,
-        val allGoodEans: List<String> = emptyList(),
+        val eans: List<String> = emptyList(),
         val material: String,
         val name: String,
         val kind: GoodKind,
@@ -30,7 +30,6 @@ data class GoodOpen(
 
         var isCounted: Boolean = false,
         var isDeleted: Boolean = false,
-        var isMissing: Boolean = false,
 
         val provider: ProviderInfo,
         val producers: List<ProducerInfo> = emptyList(),
@@ -52,11 +51,9 @@ data class GoodOpen(
         return if (isDifferentUnits()) " (${commonUnits.name} = ${innerQuantity.dropZeros()} ${innerUnits.name})" else ""
     }
 
-    fun getQuantity(): Double {
-        return factQuantity.takeIf { it > 0.0 } ?: getTotalQuantity()
-    }
-
     fun getTotalQuantity(): Double {
+        // todo Возможно придется вернуть логику использования factQuantity
+        //return factQuantity + getPositionQuantity() + getMarkQuantity() + getPartQuantity()
         return getPositionQuantity() + getMarkQuantity() + getPartQuantity()
     }
 
@@ -70,13 +67,6 @@ data class GoodOpen(
 
     fun getPartQuantity(): Double {
         return parts.map { it.quantity }.sumList()
-    }
-
-    fun getQuantityByProvider(providerCode: String?): Double {
-        val positionQuantity = positions.filter { it.provider.code == providerCode }.map { it.quantity }.sumList()
-        val partQuantity = parts.filter { it.providerCode == providerCode }.map { it.quantity }.sumList()
-
-        return positionQuantity.sumWith(partQuantity)
     }
 
     fun addPosition(position: Position) {
@@ -97,18 +87,16 @@ data class GoodOpen(
         } ?: parts.add(part)
     }
 
-    fun removeMark(number: String) {
-        marks.find { it.number == number }?.let { mark ->
-            marks.remove(mark)
-        }
-    }
-
     fun removeAllMark() {
         marks.clear()
     }
 
     fun removeAllPart() {
         parts.clear()
+    }
+
+    fun isEmpty(): Boolean {
+        return positions.isEmpty() && marks.isEmpty() && parts.isEmpty()
     }
 
 }

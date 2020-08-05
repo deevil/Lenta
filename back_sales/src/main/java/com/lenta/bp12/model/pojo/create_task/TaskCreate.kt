@@ -10,7 +10,7 @@ data class TaskCreate(
         val name: String,
         val storage: String,
         val reason: ReturnReason,
-        val taskType: TaskType,
+        val type: TaskType,
         val control: ControlType = ControlType.UNKNOWN,
         var isProcessed: Boolean = false,
 
@@ -19,7 +19,7 @@ data class TaskCreate(
 ) {
 
     fun getFormattedName(): String {
-        return "${taskType.code} // $name"
+        return "${type.code} // $name"
     }
 
     fun getQuantityByBasket(basket: Basket): Double {
@@ -38,6 +38,13 @@ data class TaskCreate(
                     (good.positions.find { it.provider == basket.provider } != null ||
                             good.marks.find { it.providerCode == basket.provider.code } != null ||
                             good.parts.find { it.providerCode == basket.provider.code } != null)
+        }
+    }
+
+    fun getBasketsByGood(good: GoodCreate): List<Basket> {
+        return baskets.filter { basket ->
+            basket.section == good.section && basket.goodType == good.type && basket.control == good.control &&
+                    good.positions.find { it.provider == basket.provider } != null
         }
     }
 
@@ -81,16 +88,12 @@ data class TaskCreate(
         removeEmptyGoods()
     }
 
-    private fun removeEmptyGoods() {
-        goods.filter { it.getTotalQuantity() == 0.0 }.let { goodsForRemove ->
-            goodsForRemove.forEach { good ->
-                goods.remove(good)
-            }
-        }
+    fun removeEmptyGoods() {
+        goods.removeAll(goods.filter { it.getTotalQuantity() == 0.0 })
     }
 
-    private fun removeEmptyBaskets() {
-        baskets.removeAll(baskets.filter { getQuantityByBasket(it) == 0.0 })
+    fun removeEmptyBaskets() {
+        baskets.removeAll(baskets.filter { getGoodListByBasket(it).isEmpty() })
     }
 
     fun isExistBasket(basket: Basket): Boolean {

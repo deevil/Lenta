@@ -16,7 +16,6 @@ import com.lenta.shared.utilities.extentions.isSapTrue
 import com.mobrun.plugin.api.HyperHive
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import java.util.*
 import javax.inject.Inject
 
 class DatabaseRepository @Inject constructor(
@@ -46,7 +45,7 @@ class DatabaseRepository @Inject constructor(
             products.getProductInfoByMaterial(material)?.let { goodInfo ->
                 GoodInfo(
                         ean = getEanByMaterialUnits(material, goodInfo.buom),
-                        allGoodEans = getEanListByMaterialUnits(material, goodInfo.buom),
+                        eans = getEanListByMaterialUnits(material, goodInfo.buom),
                         material = material,
                         name = goodInfo.name,
                         kind = goodInfo.getGoodKind(),
@@ -63,7 +62,7 @@ class DatabaseRepository @Inject constructor(
         }
     }
 
-    private suspend fun getEanListByMaterialUnits(material: String, unitsCode: String): List<String> {
+    override suspend fun getEanListByMaterialUnits(material: String, unitsCode: String): List<String> {
         return withContext(Dispatchers.IO) {
             eanInfo.getEanListByMaterialUnits(material, unitsCode)
         }
@@ -77,7 +76,7 @@ class DatabaseRepository @Inject constructor(
 
     override suspend fun getUnitsByCode(code: String): Uom {
         return withContext(Dispatchers.IO) {
-            units.getUnitName(code)?.toLowerCase(Locale.getDefault())?.let { name ->
+            units.getUnitName(code)?.let { name ->
                 Uom(code, name)
             } ?: Uom.ST
         }
@@ -178,6 +177,7 @@ class DatabaseRepository @Inject constructor(
 interface IDatabaseRepository {
 
     suspend fun getGoodInfoByMaterial(material: String): GoodInfo?
+    suspend fun getEanListByMaterialUnits(material: String, unitsCode: String): List<String>
     suspend fun getAllowedAppVersion(): String?
     suspend fun getUnitsByCode(code: String): Uom
     suspend fun getTaskTypeList(): List<TaskType>

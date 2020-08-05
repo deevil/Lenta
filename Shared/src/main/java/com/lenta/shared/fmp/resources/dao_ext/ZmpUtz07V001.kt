@@ -1,6 +1,7 @@
 package com.lenta.shared.fmp.resources.dao_ext
 
 import com.lenta.shared.fmp.resources.fast.ZmpUtz07V001
+import java.util.*
 
 fun ZmpUtz07V001.getUomInfo(uom: String?): ZmpUtz07V001.ItemLocal_ET_UOMS? {
     @Suppress("INACCESSIBLE_TYPE")
@@ -8,5 +9,5 @@ fun ZmpUtz07V001.getUomInfo(uom: String?): ZmpUtz07V001.ItemLocal_ET_UOMS? {
 }
 
 fun ZmpUtz07V001.getUnitName(uom: String?): String? {
-    return getUomInfo(uom)?.name?.toLowerCase()
+    return getUomInfo(uom)?.name?.toLowerCase(Locale.getDefault())
 }

@@ -1,7 +1,9 @@
 package com.lenta.bp12.model
 
 import androidx.lifecycle.MutableLiveData
+import com.google.gson.Gson
 import com.lenta.bp12.model.pojo.Block
+import com.lenta.bp12.model.pojo.Position
 import com.lenta.bp12.model.pojo.open_task.GoodOpen
 import com.lenta.bp12.model.pojo.open_task.TaskOpen
 import com.lenta.bp12.platform.extention.getControlType
@@ -21,14 +23,19 @@ import javax.inject.Inject
 
 class OpenTaskManager @Inject constructor(
         private val database: IDatabaseRepository,
-        private val generalTaskManager: IGeneralTaskManager
+        private val generalTaskManager: IGeneralTaskManager,
+        private val gson: Gson
 ) : IOpenTaskManager {
 
     override var searchNumber = ""
 
-    override var searchGoodFromList = false
+    override var isSearchFromList = false
 
-    override val searchParams = MutableLiveData<TaskSearchParams>()
+    override var isNeedLoadTaskListByParams: Boolean = false
+
+    private var startStateCurrentTask: TaskOpen? = null
+
+    override var searchParams: TaskSearchParams? = null
 
     override val tasks = MutableLiveData<List<TaskOpen>>(emptyList())
 
@@ -114,9 +121,11 @@ class OpenTaskManager @Inject constructor(
                 with(positionInfo) {
                     database.getGoodInfoByMaterial(material)?.let { goodInfo ->
                         val commonUnits = database.getUnitsByCode(unitsCode)
+                        val provider = ProviderInfo(providerCode, providerName)
+
                         val good = GoodOpen(
                                 ean = goodInfo.ean,
-                                allGoodEans = goodInfo.allGoodEans,
+                                eans = goodInfo.eans,
                                 material = material,
                                 name = goodInfo.name,
                                 section = goodInfo.section,
@@ -129,7 +138,7 @@ class OpenTaskManager @Inject constructor(
                                 innerQuantity = innerQuantity.toDoubleOrNull() ?: 1.0,
                                 isCounted = isCounted.isSapTrue(),
                                 isDeleted = isDeleted.isSapTrue(),
-                                provider = ProviderInfo(providerCode, providerName),
+                                provider = provider,
                                 producers = taskContentResult.producers.filter { it.material == goodInfo.material }.map {
                                     ProducerInfo(
                                             code = it.code,
@@ -137,6 +146,15 @@ class OpenTaskManager @Inject constructor(
                                     )
                                 }
                         )
+
+                        factQuantity.toDoubleOrNull()?.let { factQuantity ->
+                            if (factQuantity != 0.0) {
+                                good.addPosition(Position(
+                                        quantity = factQuantity,
+                                        provider = provider
+                                ))
+                            }
+                        }
 
                         task.goods.add(good)
 
@@ -152,7 +170,7 @@ class OpenTaskManager @Inject constructor(
     override fun findGoodByEan(ean: String): GoodOpen? {
         return currentTask.value?.let { task ->
             task.goods.find { good ->
-                good.allGoodEans.contains(ean)
+                good.ean == ean || good.eans.contains(ean)
             }?.also { found ->
                 found.ean = ean
                 updateCurrentTask(task)
@@ -161,59 +179,21 @@ class OpenTaskManager @Inject constructor(
     }
 
     override fun findGoodByMaterial(material: String): GoodOpen? {
-        val formattedMaterial = if (material.length == Constants.SAP_6) "000000000000$material" else material
-        return currentTask.value?.goods?.find { it.material == formattedMaterial }
-    }
-
-    override fun isGoodExist(number: String): Boolean {
-        currentTask.value?.let { task ->
-            task.goods.find { good ->
-                good.material.contains(number)
-            }?.also {
-                return true
-            }
-
-            task.goods.find { good ->
-                good.allGoodEans.contains(number)
-            }?.also { found ->
-                found.ean = number
-                updateCurrentTask(task)
-                return true
-            }
-        }
-
-        return false
+        return currentTask.value?.goods?.find { it.material == material }
     }
 
     override fun isGoodCorrespondToTask(goodInfo: GoodInfoResult): Boolean {
         currentTask.value?.let { task ->
             val isControl = task.control == goodInfo.getControlType()
-            val isType = if (task.goodType.isNotEmpty()) task.goodType == goodInfo.materialInfo?.goodType
-            else true
-            val isSection = if (task.section.isNotEmpty()) task.section == goodInfo.materialInfo?.section
-            else true
-            val isPurchaseGroup =
-                    if (task.purchaseGroup.isNotEmpty()) task.purchaseGroup == goodInfo.materialInfo?.purchaseGroup
-                    else true
-            task.provider.code?.let{ providerCode ->
-                val isProvider = if (providerCode.isNotEmpty()) goodInfo.providers?.find {
-                    it.code == task.provider.code
-                } != null
-                else true
+            val isType = if (task.goodType.isNotEmpty()) task.goodType == goodInfo.materialInfo?.goodType else true
+            val isSection = if (task.section.isNotEmpty()) task.section == goodInfo.materialInfo?.section else true
+            val isPurchaseGroup = if (task.purchaseGroup.isNotEmpty()) task.purchaseGroup == goodInfo.materialInfo.purchaseGroup else true
+            val isProvider = if (task.provider.code.orEmpty().isNotEmpty()) goodInfo.providers?.find { it.code == task.provider.code } != null else true
 
-                Logg.d { "--> task parameters: ${task.control} / " +
-                        "${task.goodType} / " +
-                        "${task.section} / " +
-                        "${task.purchaseGroup} / " +
-                        "${task.provider.code}" }
-                Logg.d { "--> good parameters: ${goodInfo.getControlType()} / " +
-                        "${goodInfo.materialInfo?.goodType} / " +
-                        "${goodInfo.materialInfo?.section} / " +
-                        "${goodInfo.materialInfo?.purchaseGroup} / " +
-                        "${goodInfo.providers}" }
+            Logg.d { "--> task parameters: ${task.control} / ${task.goodType} / ${task.section} / ${task.purchaseGroup} / ${task.provider.code}" }
+            Logg.d { "--> good parameters: ${goodInfo.getControlType()} / ${goodInfo.materialInfo.goodType} / ${goodInfo.materialInfo.section} / ${goodInfo.materialInfo.purchaseGroup} / ${goodInfo.providers}" }
 
-                return isControl && isType && isSection && isPurchaseGroup && isProvider
-            }
+            return isControl && isType && isSection && isPurchaseGroup && isProvider
         }
 
         return false
@@ -226,7 +206,6 @@ class OpenTaskManager @Inject constructor(
     override fun finishCurrentTask() {
         currentTask.value?.let { task ->
             task.isFinished = true
-
             updateCurrentTask(task)
         }
     }
@@ -238,45 +217,54 @@ class OpenTaskManager @Inject constructor(
             val parts = mutableListOf<PartInfo>()
 
             task.goods.forEach { good ->
-                val isDeleted = good.isDeleted
-
-                good.positions.forEach { position ->
+                if (good.isEmpty() || good.isDeleted) {
                     positions.add(
                             PositionInfo(
                                     material = good.material,
-                                    providerCode = position.provider.code.orEmpty(),
-                                    factQuantity = if (isDeleted) "0" else position.quantity.dropZeros(),
+                                    providerCode = task.provider.code,
+                                    providerName = task.provider.name,
+                                    factQuantity = "0",
                                     isCounted = good.isCounted.toSapBooleanString(),
-                                    isDeleted = isDeleted.toSapBooleanString(),
+                                    isDeleted = good.isDeleted.toSapBooleanString(),
                                     innerQuantity = good.innerQuantity.dropZeros(),
                                     unitsCode = good.commonUnits.code
                             )
                     )
-                }
+                } else {
+                    good.positions.mapTo(positions) { position ->
+                        val quantity = if (position.quantity > 0.0) position.quantity else good.getTotalQuantity()
+                        PositionInfo(
+                                material = good.material,
+                                providerCode = position.provider.code,
+                                providerName = position.provider.name,
+                                factQuantity = quantity.dropZeros(),
+                                isCounted = good.isCounted.toSapBooleanString(),
+                                isDeleted = good.isDeleted.toSapBooleanString(),
+                                innerQuantity = good.innerQuantity.dropZeros(),
+                                unitsCode = good.commonUnits.code
+                        )
+                    }
 
-                good.marks.map { mark ->
-                    marks.add(
-                            MarkInfo(
-                                    material = good.material,
-                                    number = mark.number,
-                                    boxNumber = mark.boxNumber,
-                                    isBadMark = mark.isBadMark.toSapBooleanString(),
-                                    providerCode = mark.providerCode
-                            )
-                    )
-                }
+                    good.marks.mapTo(marks) { mark ->
+                        MarkInfo(
+                                material = good.material,
+                                number = mark.number,
+                                boxNumber = mark.boxNumber,
+                                isBadMark = mark.isBadMark.toSapBooleanString(),
+                                providerCode = mark.providerCode
+                        )
+                    }
 
-                good.parts.map { part ->
-                    parts.add(
-                            PartInfo(
-                                    material = good.material,
-                                    producerCode = part.producerCode,
-                                    productionDate = getStringFromDate(part.date, Constants.DATE_FORMAT_yyyyMMdd),
-                                    quantity = part.quantity.dropZeros(),
-                                    partNumber = part.number,
-                                    providerCode = part.providerCode
-                            )
-                    )
+                    good.parts.mapTo(parts) { part ->
+                        PartInfo(
+                                material = good.material,
+                                producerCode = part.producerCode,
+                                productionDate = getStringFromDate(part.date, Constants.DATE_FORMAT_yyyyMMdd),
+                                quantity = part.quantity.dropZeros(),
+                                partNumber = part.number,
+                                providerCode = part.providerCode
+                        )
+                    }
                 }
             }
 
@@ -299,7 +287,7 @@ class OpenTaskManager @Inject constructor(
         }
     }
 
-    override fun markGoodsDeleted(materials: List<String>) { 
+    override fun markGoodsDeleted(materials: List<String>) {
         currentTask.value?.let { task ->
             materials.forEach { material ->
                 task.goods.find { it.material == material }?.isDeleted = true
@@ -320,8 +308,38 @@ class OpenTaskManager @Inject constructor(
     }
 
     override fun clearSearchFromListParams() {
-        searchGoodFromList = false
+        isSearchFromList = false
         searchNumber = ""
+    }
+
+    override fun isExistStartTaskInfo(): Boolean {
+        return startStateCurrentTask != null
+    }
+
+    override fun saveStartTaskInfo() {
+        val currentTask = gson.toJson(currentTask.value)
+        startStateCurrentTask = gson.fromJson(currentTask, TaskOpen::class.java)
+    }
+
+    override fun isTaskWasChanged(): Boolean {
+        return if (startStateCurrentTask != null) {
+            currentTask.value != startStateCurrentTask
+        } else false
+    }
+
+    override fun clearStartTaskInfo() {
+        startStateCurrentTask = null
+    }
+
+    override fun clearCurrentTask() {
+        tasks.value?.let { tasks ->
+            currentTask.value?.let { task ->
+                tasks.find { it.number == task.number }?.goods?.clear()
+            }
+
+            updateCurrentTask(null)
+            updateTasks(tasks)
+        }
     }
 
 }
@@ -330,9 +348,10 @@ class OpenTaskManager @Inject constructor(
 interface IOpenTaskManager {
 
     var searchNumber: String
-    var searchGoodFromList: Boolean
+    var isSearchFromList: Boolean
+    var isNeedLoadTaskListByParams: Boolean
+    var searchParams: TaskSearchParams?
 
-    val searchParams: MutableLiveData<TaskSearchParams>
     val tasks: MutableLiveData<List<TaskOpen>>
     val foundTasks: MutableLiveData<List<TaskOpen>>
     val currentTask: MutableLiveData<TaskOpen>
@@ -346,7 +365,6 @@ interface IOpenTaskManager {
     fun saveGoodInTask(good: GoodOpen)
     fun findGoodByEan(ean: String): GoodOpen?
     fun findGoodByMaterial(material: String): GoodOpen?
-    fun isGoodExist(number: String): Boolean
     fun isGoodCorrespondToTask(goodInfo: GoodInfoResult): Boolean
     suspend fun isGoodCanBeAdded(goodInfo: GoodInfoResult): Boolean
     fun finishCurrentTask()
@@ -358,5 +376,10 @@ interface IOpenTaskManager {
     fun markGoodsUncounted(materials: List<String>)
     fun clearSearchFromListParams()
     fun clearCurrentGood()
+    fun isExistStartTaskInfo(): Boolean
+    fun saveStartTaskInfo()
+    fun isTaskWasChanged(): Boolean
+    fun clearStartTaskInfo()
+    fun clearCurrentTask()
 
 }

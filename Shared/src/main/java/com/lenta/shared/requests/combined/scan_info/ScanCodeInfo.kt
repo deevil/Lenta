@@ -22,12 +22,12 @@ class ScanCodeInfo(
         withWeight && prefix == "27"
     }
 
-    val quantity: Double by lazy {
+    val weight: Double by lazy {
         if (withWeight) {
-            originalNumber.takeLast(6).dropLast(1).toDoubleOrNull() ?: 0.0.let { weight ->
+            originalNumber.takeLast(6).dropLast(1).toDoubleOrNull()?.let { weight ->
                 if (withWeightInTens) weight * 10 else weight
-            }
-        } else 1.0
+            } ?: 0.0
+        } else 0.0
     }
 
     val eanWithoutWeight: String by lazy {
