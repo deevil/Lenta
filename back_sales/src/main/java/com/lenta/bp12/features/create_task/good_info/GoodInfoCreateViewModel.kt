@@ -390,7 +390,7 @@ class GoodInfoCreateViewModel : CoreViewModel() {
     private fun checkSearchNumber(number: String) {
         originalSearchNumber = number
 
-        actionByNumberLength(
+        actionByNumber(
                 number = number,
                 funcForEan = ::getGoodByEan,
                 funcForMaterial = ::getGoodByMaterial,
