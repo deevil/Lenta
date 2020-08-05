@@ -111,6 +111,8 @@ class GoodInfoViewModel : CoreViewModel(), OnPositionClickListener {
                 }.orIfNull { onClickPosition(0) }
             }
 
+            val conditionKek = database.getConditionByName(good?.matcode)
+            Logg.d { "$conditionKek" }
             database.getConditionByName(good?.matcode).let { list ->
                 conditions.value = list.map { ConditionInfo(name = it.name) }
                 selectedCondition.value?.let {
