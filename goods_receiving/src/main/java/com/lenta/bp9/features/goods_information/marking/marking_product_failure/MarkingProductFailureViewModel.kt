@@ -43,14 +43,21 @@ class MarkingProductFailureViewModel : CoreViewModel() {
 
     val tvMessage: MutableLiveData<String> by lazy {
 
-        val countProductNotProcessed =
+        val confirmedByScanning =
                 productInfo.value
-                        ?.let {
-                            taskManager.getReceivingTask()
-                                    ?.taskRepository
-                                    ?.getProductsDiscrepancies()
-                                    ?.getCountProductNotProcessedOfProduct(it)
-                                    ?: 0.0
+                        ?.let { product ->
+                            val countProcessedBlocks =
+                                    taskManager
+                                            .getReceivingTask()
+                                            ?.taskRepository
+                                            ?.getBlocksDiscrepancies()
+                                            ?.findBlocksDiscrepanciesOfProduct(product)
+                                            ?.filter { block ->
+                                                block.isScan
+                                            }
+                                            ?.size
+                                            .toString()
+                            processMarkingProductService.getCountAttachmentInBlock(countProcessedBlocks)
                         }
                         ?: 0.0
 
@@ -58,7 +65,9 @@ class MarkingProductFailureViewModel : CoreViewModel() {
                 productInfo.value
                         ?.origQuantity
                         ?.toDouble()
-                        .toStringFormatted()
+                        ?: 0.0
+
+        val notConfirmedByScanning = productOrigQuantity - confirmedByScanning
 
         val unit =
                 productInfo.value
@@ -66,7 +75,7 @@ class MarkingProductFailureViewModel : CoreViewModel() {
                         ?.name
                         ?.toLowerCase(Locale.getDefault())
                         .orEmpty()
-        MutableLiveData(context.getString(R.string.marking_product_rejection_dialogue, countProductNotProcessed.toStringFormatted(), "$productOrigQuantity $unit"))
+        MutableLiveData(context.getString(R.string.marking_product_rejection_dialogue, notConfirmedByScanning.toStringFormatted(), "${productOrigQuantity.toStringFormatted()} $unit"))
     }
 
     val enabledPartialFailureBtn: MutableLiveData<Boolean> by lazy {
@@ -141,20 +150,18 @@ class MarkingProductFailureViewModel : CoreViewModel() {
                     if (processMarkingProductService.newProcessMarkingProductService(productInfo) == null) {
                         screenNavigator.openAlertWrongProductType()
                     } else {
-                        val confirmedByScanning =
-                                processMarkingProductService.getCountAttachmentInBlock(
-                                        taskManager
-                                                .getReceivingTask()
-                                                ?.taskRepository
-                                                ?.getBlocksDiscrepancies()
-                                                ?.findBlocksDiscrepanciesOfProduct(productInfo)
-                                                ?.filter {
-                                                    it.isScan
-                                                }
-                                                ?.size
-                                                .toString()
-                                )
-
+                        val countProcessedBlocks =
+                                taskManager
+                                        .getReceivingTask()
+                                        ?.taskRepository
+                                        ?.getBlocksDiscrepancies()
+                                        ?.findBlocksDiscrepanciesOfProduct(productInfo)
+                                        ?.filter {
+                                            it.isScan
+                                        }
+                                        ?.size
+                                        .toString()
+                        val confirmedByScanning = processMarkingProductService.getCountAttachmentInBlock(countProcessedBlocks)
                         val notConfirmedByScanning = productInfo.origQuantity.toDouble() - confirmedByScanning
                         val unitName = productInfo.purchaseOrderUnits.name.toLowerCase(Locale.getDefault())
                         screenNavigator.openPartialRefusalOnMarkingGoodsDialog(

@@ -342,20 +342,24 @@ class NonExciseAlcoInfoPGEViewModel : CoreViewModel(), OnPositionClickListener {
     }
 
     private fun updateDataSpinBottlingDate(position: Int) {
-        val manufactureCode = manufacturer
-                .value
-                ?.findLast {
-                    it.name == spinManufacturers.value?.get(position)
-                }?.code
+        val manufactureCode =
+                manufacturer.value
+                        ?.findLast {
+                            it.name == spinManufacturers.value?.get(position)
+                        }
+                        ?.code
 
-        val bottlingDates = batchInfo.value?.asSequence()
-                ?.filter { batch ->
-                    batch.egais == manufactureCode
-                }?.groupBy { dateGroups ->
-                    formatterRU.format(formatterEN.parse(dateGroups.bottlingDate))
-                }?.map {
-                    it.key
-                }
+        val bottlingDates =
+                batchInfo.value
+                        ?.filter { batch ->
+                            batch.egais == manufactureCode
+                        }
+                        ?.groupBy { dateGroups ->
+                            formatterRU.format(formatterEN.parse(dateGroups.bottlingDate))
+                        }
+                        ?.map {
+                            it.key
+                        }
         spinBottlingDateSelectedPosition.value = 0
         spinBottlingDate.value = bottlingDates
 
@@ -370,14 +374,18 @@ class NonExciseAlcoInfoPGEViewModel : CoreViewModel(), OnPositionClickListener {
 
         val bottlingDate = formatterEN.format(formatterRU.parse(spinBottlingDate.value?.get(positionSpinBottlingDate)))
 
-        var listProcessingUnitNumber = batchInfo.value?.asSequence()
-                ?.filter { batch ->
-                    batch.egais == manufactureCode && batch.bottlingDate == bottlingDate
-                }?.groupBy { processingUnitNumberGroups ->
-                    processingUnitNumberGroups.processingUnitNumber
-                }?.map {
-                    "${context.getString(R.string.prefix_processing_unit)}${it.key}"
-                }.orEmpty()
+        var listProcessingUnitNumber =
+                batchInfo.value
+                        ?.filter { batch ->
+                            batch.egais == manufactureCode && batch.bottlingDate == bottlingDate
+                        }
+                        ?.groupBy { processingUnitNumberGroups ->
+                            processingUnitNumberGroups.processingUnitNumber
+                        }
+                        ?.map {
+                            "${context.getString(R.string.prefix_processing_unit)}${it.key}"
+                        }
+                        .orEmpty()
 
         if (listProcessingUnitNumber.size > 1) {
             listProcessingUnitNumber = listOf(context.getString(R.string.selected_processing_unit)).plus(listProcessingUnitNumber)
