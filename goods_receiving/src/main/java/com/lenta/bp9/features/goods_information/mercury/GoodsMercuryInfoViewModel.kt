@@ -96,17 +96,25 @@ class GoodsMercuryInfoViewModel : CoreViewModel(), OnPositionClickListener {
         }
     }
     val spinManufacturersSelectedPosition: MutableLiveData<Int> = MutableLiveData(0)
+
     @SuppressLint("SimpleDateFormat")
-    val spinProductionDate = spinManufacturersSelectedPosition.map { position ->
-        taskManager.getReceivingTask()?.taskRepository?.getMercuryDiscrepancies()?.findMercuryInfoOfProduct(productInfo.value!!)?.filter {
-            it.manufacturer == spinManufacturers!![position!!]
-        }?.groupBy {
-            it.productionDate
-        }?.map {
-            //it.key
-            formatterRU.format(formatterEN.parse(it.key))
-        }
-    }
+    val spinProductionDate =
+        spinManufacturersSelectedPosition
+                .map { pos ->
+                    val position = pos ?: 0
+                    productInfo.value
+                            ?.let { product ->
+                                taskManager
+                                        .getReceivingTask()
+                                        ?.taskRepository
+                                        ?.getMercuryDiscrepancies()
+                                        ?.findMercuryDiscrepanciesOfProduct(product)
+                                        ?.filter { it.manufacturer == spinManufacturers?.get(position) }
+                                        ?.groupBy { it.productionDate }
+                                        ?.map { formatterRU.format(formatterEN.parse(it.key)) }
+                            }
+                }
+
     val spinProductionDateSelectedPosition: MutableLiveData<Int> = MutableLiveData(0)
     val spinReasonRejection: MutableLiveData<List<String>> = MutableLiveData()
     val spinReasonRejectionSelectedPosition: MutableLiveData<Int> = MutableLiveData(0)
@@ -117,14 +125,24 @@ class GoodsMercuryInfoViewModel : CoreViewModel(), OnPositionClickListener {
     private val paramGrzRoundLackUnit: MutableLiveData<String> = MutableLiveData()
     private val paramGrzRoundHeapRatio: MutableLiveData<String> = MutableLiveData()
 
-    private val mercuryVolume  = spinManufacturersSelectedPosition.combineLatest(spinProductionDateSelectedPosition).map {
-        val findMercuryInfoOfProduct = taskManager.getReceivingTask()?.taskRepository?.getMercuryDiscrepancies()?.findMercuryInfoOfProduct(productInfo.value!!)?.filter {taskMercuryInfo ->
-            taskMercuryInfo.manufacturer == spinManufacturers!![it!!.first] && taskMercuryInfo.productionDate == formatterEN.format(formatterRU.parse(spinProductionDate.value!![it.second]))
-        }
-        "${findMercuryInfoOfProduct?.sumByDouble {mercuryInfo ->
-            mercuryInfo.volume
-        }.toStringFormatted()} ${findMercuryInfoOfProduct?.last()?.uom?.name}"
-    }
+    private val mercuryVolume  =
+            spinManufacturersSelectedPosition
+                    .combineLatest(spinProductionDateSelectedPosition)
+                    .map {
+                        val findMercuryInfoOfProduct =
+                                taskManager
+                                        .getReceivingTask()
+                                        ?.taskRepository
+                                        ?.getMercuryDiscrepancies()
+                                        ?.findMercuryDiscrepanciesOfProduct(productInfo.value!!)
+                                        ?.filter {taskMercuryInfo ->
+                                            taskMercuryInfo.manufacturer == spinManufacturers!![it!!.first]
+                                                    && taskMercuryInfo.productionDate == formatterEN.format(formatterRU.parse(spinProductionDate.value!![it.second]))
+                                        }
+                        "${findMercuryInfoOfProduct?.sumByDouble {mercuryInfo ->
+                            mercuryInfo.volume
+                        }.toStringFormatted()} ${findMercuryInfoOfProduct?.last()?.uom?.name}"
+                    }
     val tvProductionDate = mercuryVolume.map {
         if (isTaskPGE.value == true && isGoodsAddedAsSurplus.value == true) {
             context.getString(R.string.vet_with_production_date_txt)
@@ -274,10 +292,17 @@ class GoodsMercuryInfoViewModel : CoreViewModel(), OnPositionClickListener {
                     }
                 }
             } else {
-                suffix.value = uom.value?.name
-                if (isDiscrepancy.value!!) {
+                suffix.value = uom.value?.name.orEmpty()
+                if (isDiscrepancy.value == true) {
+                    count.value =
+                            taskManager
+                                    .getReceivingTask()
+                                    ?.taskRepository
+                                    ?.getProductsDiscrepancies()
+                                    ?.getCountProductNotProcessedOfProduct(productInfo.value!!)
+                                    .toStringFormatted()
                     qualityInfo.value = dataBase.getQualityMercuryInfoForDiscrepancy()
-                    spinQualitySelectedPosition.value = qualityInfo.value!!.indexOfLast {it.code == "7"}
+                    spinQualitySelectedPosition.value = qualityInfo.value!!.indexOfLast {it.code == "4"}
                 } else {
                     qualityInfo.value = dataBase.getQualityMercuryInfo()
                 }
@@ -533,9 +558,16 @@ class GoodsMercuryInfoViewModel : CoreViewModel(), OnPositionClickListener {
 
     @SuppressLint("SimpleDateFormat")
     private fun addProductDiscrepanciesPGE() {
-        val mercuryUom = taskManager.getReceivingTask()?.taskRepository?.getMercuryDiscrepancies()?.findMercuryInfoOfProduct(productInfo.value!!)?.last { taskMercuryInfo ->
-            taskMercuryInfo.manufacturer == spinManufacturers!![spinManufacturersSelectedPosition.value!!] && taskMercuryInfo.productionDate == formatterEN.format(formatterRU.parse(spinProductionDate.value!![spinProductionDateSelectedPosition.value!!]))
-        }?.uom
+        val mercuryUom =
+                taskManager
+                        .getReceivingTask()
+                        ?.taskRepository
+                        ?.getMercuryDiscrepancies()
+                        ?.findMercuryDiscrepanciesOfProduct(productInfo.value!!)
+                        ?.last { mercuryDiscrepancies ->
+                            mercuryDiscrepancies.manufacturer == spinManufacturers!![spinManufacturersSelectedPosition.value!!]
+                                    && mercuryDiscrepancies.productionDate == formatterEN.format(formatterRU.parse(spinProductionDate.value!![spinProductionDateSelectedPosition.value!!]))
+                        }?.uom
 
         //https://trello.com/c/yALoQg2b
         val isConvertUnit = uom.value != mercuryUom

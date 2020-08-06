@@ -38,6 +38,25 @@ data class TaskProductDiscrepancies(
                         notEditNumberDiscrepancies = if (restData.isNotEdit.isNotEmpty()) restData.numberDiscrepancies else ""
                 )
             }
+        }
+
+        suspend fun fromMercury(hyperHive: HyperHive, restData: TaskMercuryDiscrepanciesRestData): TaskProductDiscrepancies {
+            return withContext(Dispatchers.IO) {
+                val zmpUtz07V001: ZmpUtz07V001 by lazy {
+                    ZmpUtz07V001(hyperHive)
+                }
+                val uomInfo = zmpUtz07V001.getUomInfo(restData.unit)
+                return@withContext TaskProductDiscrepancies(
+                        materialNumber = restData.materialNumber,
+                        processingUnitNumber = "",
+                        numberDiscrepancies = restData.numberDiscrepancies,
+                        uom = Uom(code = uomInfo?.uom.orEmpty(), name = uomInfo?.name.orEmpty()),
+                        typeDiscrepancies = restData.typeDiscrepancies,
+                        isNotEdit = false,
+                        isNew = false,
+                        notEditNumberDiscrepancies = ""
+                )
+            }
 
         }
     }

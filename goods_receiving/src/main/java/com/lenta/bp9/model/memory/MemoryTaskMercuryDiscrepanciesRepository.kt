@@ -2,43 +2,18 @@ package com.lenta.bp9.model.memory
 
 import com.lenta.bp9.model.repositories.ITaskMercuryDiscrepanciesRepository
 import com.lenta.bp9.model.task.TaskMercuryDiscrepancies
-import com.lenta.bp9.model.task.TaskMercuryInfo
 import com.lenta.bp9.model.task.TaskProductInfo
 
 class MemoryTaskMercuryDiscrepanciesRepository : ITaskMercuryDiscrepanciesRepository {
 
-    private val mercuryInfo: ArrayList<TaskMercuryInfo> = ArrayList()
     private val mercuryDiscrepancies: ArrayList<TaskMercuryDiscrepancies> = ArrayList()
-
-    override fun getMercuryInfo(): List<TaskMercuryInfo> {
-        return mercuryInfo
-    }
 
     override fun getMercuryDiscrepancies(): List<TaskMercuryDiscrepancies> {
         return mercuryDiscrepancies
     }
 
-    override fun findMercuryInfoOfProduct(product: TaskProductInfo): List<TaskMercuryInfo> {
-        return mercuryInfo.filter { it.materialNumber == product.materialNumber}
-    }
-
     override fun findMercuryDiscrepanciesOfProduct(product: TaskProductInfo): List<TaskMercuryDiscrepancies> {
         return mercuryDiscrepancies.filter { it.materialNumber == product.materialNumber}
-    }
-
-    override fun addMercuryInfo(newMercuryInfo: TaskMercuryInfo): Boolean {
-        var index = -1
-        for (i in mercuryInfo.indices) {
-            if (newMercuryInfo.vetDocumentID == mercuryInfo[i].vetDocumentID && newMercuryInfo.typeDiscrepancies == mercuryInfo[i].typeDiscrepancies) {
-                index = i
-            }
-        }
-
-        if (index == -1) {
-            mercuryInfo.add(newMercuryInfo)
-            return true
-        }
-        return false
     }
 
     override fun addMercuryDiscrepancy(discrepancy: TaskMercuryDiscrepancies): Boolean {
@@ -60,11 +35,9 @@ class MemoryTaskMercuryDiscrepanciesRepository : ITaskMercuryDiscrepanciesReposi
         return false
     }
 
-    override fun updateMercuryInfo(newMercuryInfo: List<TaskMercuryInfo>) {
-        mercuryInfo.clear()
-        newMercuryInfo.map {
-            addMercuryInfo(it)
-        }
+    override fun updateMercuryDiscrepancy(newMercuryDiscrepancy: List<TaskMercuryDiscrepancies>) {
+        mercuryDiscrepancies.clear()
+        newMercuryDiscrepancy.map { addMercuryDiscrepancy(it) }
     }
 
     override fun changeMercuryDiscrepancy(discrepancy: TaskMercuryDiscrepancies): Boolean {
@@ -174,15 +147,12 @@ class MemoryTaskMercuryDiscrepanciesRepository : ITaskMercuryDiscrepanciesReposi
     }
 
     override fun getManufacturesOfProduct(product: TaskProductInfo) : List<String> {
-        return findMercuryInfoOfProduct(product).groupBy {
-            it.manufacturer
-        }.map {
-            it.key
-        }
+        return findMercuryDiscrepanciesOfProduct(product)
+                .groupBy { it.manufacturer }
+                .map { it.key }
     }
 
     override fun clear() {
-        mercuryInfo.clear()
         mercuryDiscrepancies.clear()
     }
 }

@@ -80,13 +80,9 @@ class ReceivingTask(val taskHeader: TaskInfo,
             }
         }
 
-        taskContentsInfo
-                .taskMercuryInfo
-                ?.let {
-                    taskRepository
-                            .getMercuryDiscrepancies()
-                            .updateMercuryInfo(it)
-                }
+        taskRepository
+                .getMercuryDiscrepancies()
+                .updateMercuryDiscrepancy(taskContentsInfo.taskMercuryDiscrepancies)
         taskRepository
                 .getExciseStamps()
                 .updateExciseStamps(taskContentsInfo.taskExciseStampInfo)

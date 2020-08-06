@@ -38,7 +38,7 @@ class DataBaseRepo(
 
     override suspend fun getQualityMercuryInfoForDiscrepancy(): List<QualityInfo>? = withContext(Dispatchers.IO) {
         zmpUtz17V001.getAllQuality()?.toQualityInfoList()?.filter {
-            it.id == "005" && !(it.code == "1" || it.code == "4")
+            it.id == "005" && it.code != "1"
         }
     }
 

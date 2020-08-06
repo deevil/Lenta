@@ -1,9 +1,14 @@
 package com.lenta.bp9.model.task
 
 import com.google.gson.annotations.SerializedName
+import com.lenta.shared.fmp.resources.dao_ext.getUomInfo
+import com.lenta.shared.fmp.resources.fast.ZmpUtz07V001
 import com.lenta.shared.models.core.Uom
+import com.mobrun.plugin.api.HyperHive
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
-//IT_VET_DIFF Таблица расхождений по вет.товарам (это информация введенная пользователем по веттоварам и ВСД и отправляемая на сервер для сохранения)
+//ET_VET_DIFF Таблица расхождений по вет.товарам (это информация пришедшая с сервера, и введенная пользователем по веттоварам и ВСД и отправляемая обратно на сервер для сохранения)
 data class TaskMercuryDiscrepancies(
         /**номер продукта (ET_VET_DIFF -> MATNR)*/
         val materialNumber: String,
@@ -26,18 +31,24 @@ data class TaskMercuryDiscrepancies(
 ) {
 
     companion object {
-        fun from(data: TaskMercuryInfo): TaskMercuryDiscrepancies {
-            return TaskMercuryDiscrepancies(
-                    materialNumber = data.materialNumber,
-                    vetDocumentID = data.vetDocumentID,
-                    volume = data.volume,
-                    uom = data.uom,
-                    typeDiscrepancies = data.typeDiscrepancies,
-                    numberDiscrepancies = data.numberDiscrepancies,
-                    productionDate = data.productionDate,
-                    manufacturer = data.manufacturer,
-                    productionDateTo = data.productionDateTo
-            )
+        suspend fun from(hyperHive: HyperHive, restData: TaskMercuryDiscrepanciesRestData): TaskMercuryDiscrepancies {
+            return withContext(Dispatchers.IO) {
+                val zmpUtz07V001: ZmpUtz07V001 by lazy {
+                    ZmpUtz07V001(hyperHive)
+                }
+                val uomInfo = zmpUtz07V001.getUomInfo(restData.unit)
+                return@withContext TaskMercuryDiscrepancies(
+                        materialNumber= restData.materialNumber,
+                        vetDocumentID = restData.vetDocumentID,
+                        volume = restData.volume.toDouble(),
+                        uom = Uom(code = uomInfo?.uom.orEmpty(), name = uomInfo?.name.orEmpty()),
+                        typeDiscrepancies = restData.typeDiscrepancies,
+                        numberDiscrepancies = restData.numberDiscrepancies.toDouble(),
+                        productionDate = restData.productionDate,
+                        manufacturer = restData.manufacturer,
+                        productionDateTo = restData.productionDateTo
+                )
+            }
         }
     }
 }

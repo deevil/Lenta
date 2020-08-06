@@ -44,7 +44,7 @@ data class TaskContentsRequestResult(
         @SerializedName("ET_MARK_BAD") //Таблица плохих марок задания
         val taskExciseStampBad: List<TaskExciseStampBadRestData>,
         @SerializedName("ET_VET_DIFF") //Таблица расхождений по вет.товарам
-        val taskMercuryInfoRestData: List<TaskMercuryInfoRestData>,
+        val taskMercuryDiscrepancies: List<TaskMercuryDiscrepanciesRestData>?,
         @SerializedName("ET_VET_NOT_ACTUAL") //Список не актуальных ВСД
         val taskMercuryNotActualRestData: List<TaskMercuryNotActualRestData>,
         @SerializedName("ET_NOTIFY")

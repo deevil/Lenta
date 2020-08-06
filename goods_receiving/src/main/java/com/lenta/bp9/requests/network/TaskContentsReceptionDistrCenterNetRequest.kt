@@ -56,7 +56,7 @@ data class TaskContentsReceptionDistrCenterResult(
         @SerializedName("ET_MARK_BAD") //Таблица плохих марок задания
         val taskExciseStampBad: List<TaskExciseStampBadRestData>,
         @SerializedName("ET_VET_DIFF") //Таблица расхождений по вет.товарам
-        val taskMercuryInfoRestData: List<TaskMercuryInfoRestData>?,
+        val taskMercuryDiscrepancies: List<TaskMercuryDiscrepanciesRestData>?,
         @SerializedName("ET_NOTIFY")
         val notifications: List<TaskNotificationRestInfo>,
         @SerializedName("ET_DOC_NOTIFY")
