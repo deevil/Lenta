@@ -16,9 +16,7 @@ class MarketOverIPRequest
 
     override suspend fun run(params: MarketInfoParams): Either<Failure, MarketInfoResult> {
         return fmpRequestsHelper.restRequest("ZMP_UTZ_89_V001", params, MarketOverIPStatus::class.java)
-
     }
 }
 
 class MarketOverIPStatus : ObjectRawStatus<MarketInfoResult>()
-

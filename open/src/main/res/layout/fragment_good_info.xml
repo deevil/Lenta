@@ -41,7 +41,7 @@
                     style="@style/LinearCellStyle"
                     android:layout_weight="1">
 
-                    <EditText
+                    <com.lenta.shared.view.EditTextWithSuffix
                         android:id="@+id/et_goods_count"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -49,6 +49,7 @@
                         android:paddingEnd="@dimen/size_10dp"
                         android:textSize="@dimen/text_14sp"
                         android:text="@={vm.quantityField}"
+                        app:suffix="@{vm.suffix}"
                         app:requestFocus="@{vm.requestFocusToQuantityField}"
                         app:cursorToLastPos="@{false}"
                         style="@style/CellEditTextStyle"
