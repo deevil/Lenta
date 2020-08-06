@@ -8,11 +8,11 @@ data class TaskSearchParams(
         var providerCode: String,
         /** SAP-код товара */
         @SerializedName("MATNR")
-        var material: String,
+        var goodNumber: String,
         /** Номер отдела (секция) */
         @SerializedName("ABTNR")
         var section: String,
         /** Код акцизной марки */
         @SerializedName("MARK_NUM")
-        var exciseMark: String
+        var exciseNumber: String
 )

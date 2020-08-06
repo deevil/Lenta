@@ -46,23 +46,6 @@
 
         </androidx.viewpager.widget.ViewPager>
 
-        <!-- Ввод номера товара -->
-        <LinearLayout style="@style/EnterNumberFieldLayout">
-
-            <EditText
-                style="@style/EnterNumberField"
-                android:drawableEnd="@drawable/ic_filter_white_16dp"
-                android:hint="@string/enter_task_or_user_name"
-                android:inputType="textNoSuggestions|textVisiblePassword"
-                android:maxLength="20"
-                android:text="@={vm.numberField}"
-                app:onOkInSoftKeyboard="@{vm}"
-                app:requestFocus="@{vm.requestFocusToNumberField}"
-                app:textAllCaps="@{true}"
-                tools:ignore="Autofill" />
-
-        </LinearLayout>
-
     </LinearLayout>
 
 </layout>
