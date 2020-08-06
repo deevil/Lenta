@@ -41,6 +41,7 @@ class SelectGoodFragment : CoreFragment<FragmentSelectGoodsBinding, SelectGoodVi
         bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.next, enabled = false)
 
             vm.barcodeField.observe(viewLifecycleOwner) {
+                if (vm.barcodeField.value.toString().length == EAN13)
                 bottomToolbarUiModel.uiModelButton5.requestFocus()
             }
 
@@ -59,6 +60,7 @@ class SelectGoodFragment : CoreFragment<FragmentSelectGoodsBinding, SelectGoodVi
 
     companion object {
         const val SCREEN_NUMBER = Constants.SELECT_GOOD_FRAGMENT
+        const val EAN13 = 13
     }
 
 }
