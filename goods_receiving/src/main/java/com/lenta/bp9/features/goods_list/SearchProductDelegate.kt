@@ -269,7 +269,7 @@ class SearchProductDelegate @Inject constructor(
     private fun openGeneralProductScreen(taskProductInfo: TaskProductInfo) {
         if (taskProductInfo.isVet &&
                 //todo это условие прописано временно, т.к. на продакшене для ПГЕ и ПРЦ не реализована таблица ET_VET_DIFF, она приходит пустой  в 28 и 30 рестах, поэтому обрабатываем данные товары не как вет, а как обычные. Не делал условия для типов задания, чтобы если для других типов задания эта таблица будет пустая, то товары обрабатывались как обычные, а не веттовары
-                !taskManager.getReceivingTask()?.taskRepository?.getMercuryDiscrepancies()?.getMercuryInfo().isNullOrEmpty()) {
+                !taskManager.getReceivingTask()?.taskRepository?.getMercuryDiscrepancies()?.getMercuryDiscrepancies().isNullOrEmpty()) {
             screenNavigator.openGoodsMercuryInfoScreen(taskProductInfo, isDiscrepancy)
         } else {
             if (taskManager.getReceivingTask()?.taskHeader?.taskType == TaskType.ShipmentPP) {
