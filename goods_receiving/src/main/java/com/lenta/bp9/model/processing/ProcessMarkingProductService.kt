@@ -439,13 +439,13 @@ class ProcessMarkingProductService
                     it.isNotEmpty()
                 }
                 ?.run {
-                    val stamp = currentScannedTypesStamps.last()
+                    val stamp = this.last()
                     if (stamp == TypeLastStampScanned.BLOCK) {
                         rollbackScannedBlock()
                     } else {
                         rollbackScannedGtin()
                     }
-                    currentScannedTypesStamps.remove(stamp)
+                    this.remove(stamp)
                 }
     }
 
