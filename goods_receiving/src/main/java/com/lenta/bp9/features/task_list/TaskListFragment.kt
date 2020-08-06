@@ -106,41 +106,32 @@ class TaskListFragment : CoreFragment<FragmentTaskListBinding, TaskListViewModel
                 .inflate<LayoutTasksToProcessBinding>(LayoutInflater.from(container.context),
                         R.layout.layout_tasks_to_process,
                         container,
-                        false).let { layoutBinding ->
-
-                    layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
+                        false)
+                .let { layoutBinding ->
+                    layoutBinding.rvConfig = initRecycleAdapterDataBinding(
                             layoutId = R.layout.item_tile_tasks,
                             itemId = BR.item,
-                            realisation = object : DataBindingAdapter<ItemTileTasksBinding> {
-                                override fun onCreate(binding: ItemTileTasksBinding) {
-                                }
-
-                                override fun onBind(binding: ItemTileTasksBinding, position: Int) {
-                                    toProcessRecyclerViewKeyHandler?.let {
-                                        binding.root.isSelected = it.isSelected(position)
-                                    }
+                            onAdapterItemBind = { binding: ItemTileTasksBinding, position: Int ->
+                                toProcessRecyclerViewKeyHandler?.let {
+                                    binding.root.isSelected = it.isSelected(position)
                                 }
                             },
-                            onItemClickListener = AdapterView.OnItemClickListener { _, _, position, _ ->
-                                toProcessRecyclerViewKeyHandler?.let {
-                                    if (it.isSelected(position)) {
-                                        vm.onClickItemPosition(position)
-                                    } else {
-                                        it.selectPosition(position)
-                                    }
-                                }
+                            onAdapterItemClicked = {position ->
+                                toProcessRecyclerViewKeyHandler?.onItemClicked(position)
                             }
+
                     )
 
                     layoutBinding.vm = vm
                     layoutBinding.lifecycleOwner = viewLifecycleOwner
-                    val rvKeyHandler = RecyclerViewKeyHandler(
-                            rv = layoutBinding.rv,
+
+                    toProcessRecyclerViewKeyHandler  = initRecyclerViewKeyHandler(
+                            recyclerView = layoutBinding.rv,
+                            previousPosInfo  = toProcessRecyclerViewKeyHandler?.posInfo?.value,
                             items = vm.getTasksForPage(0),
-                            lifecycleOwner = layoutBinding.lifecycleOwner!!,
-                            initPosInfo = toProcessRecyclerViewKeyHandler?.posInfo?.value
+                            onClickHandler = vm::onClickItemPosition
                     )
-                    toProcessRecyclerViewKeyHandler = rvKeyHandler
+
                     return layoutBinding.root
                 }
     }
@@ -150,41 +141,31 @@ class TaskListFragment : CoreFragment<FragmentTaskListBinding, TaskListViewModel
                 .inflate<LayoutTasksSearchBinding>(LayoutInflater.from(container.context),
                         R.layout.layout_tasks_search,
                         container,
-                        false).let { layoutBinding ->
-
-                    layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
+                        false)
+                .let { layoutBinding ->
+                    layoutBinding.rvConfig = initRecycleAdapterDataBinding(
                             layoutId = R.layout.item_tile_tasks,
                             itemId = BR.item,
-                            realisation = object : DataBindingAdapter<ItemTileTasksBinding> {
-                                override fun onCreate(binding: ItemTileTasksBinding) {
-                                }
-
-                                override fun onBind(binding: ItemTileTasksBinding, position: Int) {
-                                    searchRecyclerViewKeyHandler?.let {
-                                        binding.root.isSelected = it.isSelected(position)
-                                    }
+                            onAdapterItemBind = { binding: ItemTileTasksBinding, position: Int ->
+                                searchRecyclerViewKeyHandler?.let {
+                                    binding.root.isSelected = it.isSelected(position)
                                 }
                             },
-                            onItemClickListener = AdapterView.OnItemClickListener { _, _, position, _ ->
-                                searchRecyclerViewKeyHandler?.let {
-                                    if (it.isSelected(position)) {
-                                        vm.onClickItemPosition(position)
-                                    } else {
-                                        it.selectPosition(position)
-                                    }
-                                }
+                            onAdapterItemClicked = {position ->
+                                searchRecyclerViewKeyHandler?.onItemClicked(position)
                             }
                     )
 
                     layoutBinding.vm = vm
                     layoutBinding.lifecycleOwner = viewLifecycleOwner
-                    val rvKeyHandler = RecyclerViewKeyHandler(
-                            rv = layoutBinding.rv,
+
+                    searchRecyclerViewKeyHandler = initRecyclerViewKeyHandler(
+                            recyclerView = layoutBinding.rv,
+                            previousPosInfo = searchRecyclerViewKeyHandler?.posInfo?.value,
                             items = vm.getTasksForPage(1),
-                            lifecycleOwner = layoutBinding.lifecycleOwner!!,
-                            initPosInfo = searchRecyclerViewKeyHandler?.posInfo?.value
+                            onClickHandler = vm::onClickItemPosition
                     )
-                    searchRecyclerViewKeyHandler = rvKeyHandler
+
                     return layoutBinding.root
                 }
     }
@@ -194,41 +175,31 @@ class TaskListFragment : CoreFragment<FragmentTaskListBinding, TaskListViewModel
                 .inflate<LayoutTasksPostponedBinding>(LayoutInflater.from(container.context),
                         R.layout.layout_tasks_postponed,
                         container,
-                        false).let { layoutBinding ->
-
-                    layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
+                        false)
+                .let { layoutBinding ->
+                    layoutBinding.rvConfig = initRecycleAdapterDataBinding(
                             layoutId = R.layout.item_tile_tasks,
                             itemId = BR.item,
-                            realisation = object : DataBindingAdapter<ItemTileTasksBinding> {
-                                override fun onCreate(binding: ItemTileTasksBinding) {
-                                }
-
-                                override fun onBind(binding: ItemTileTasksBinding, position: Int) {
-                                    postponedRecyclerViewKeyHandler?.let {
-                                        binding.root.isSelected = it.isSelected(position)
-                                    }
+                            onAdapterItemBind = { binding: ItemTileTasksBinding, position: Int ->
+                                postponedRecyclerViewKeyHandler?.let {
+                                    binding.root.isSelected = it.isSelected(position)
                                 }
                             },
-                            onItemClickListener = AdapterView.OnItemClickListener { _, _, position, _ ->
-                                postponedRecyclerViewKeyHandler?.let {
-                                    if (it.isSelected(position)) {
-                                        vm.onClickItemPosition(position)
-                                    } else {
-                                        it.selectPosition(position)
-                                    }
-                                }
+                            onAdapterItemClicked = {position ->
+                                postponedRecyclerViewKeyHandler?.onItemClicked(position)
                             }
                     )
 
                     layoutBinding.vm = vm
                     layoutBinding.lifecycleOwner = viewLifecycleOwner
-                    val rvKeyHandler = RecyclerViewKeyHandler(
-                            rv = layoutBinding.rv,
+
+                    postponedRecyclerViewKeyHandler = initRecyclerViewKeyHandler(
+                            recyclerView = layoutBinding.rv,
+                            previousPosInfo = postponedRecyclerViewKeyHandler?.posInfo?.value,
                             items = vm.getTasksForPage(2),
-                            lifecycleOwner = layoutBinding.lifecycleOwner!!,
-                            initPosInfo = postponedRecyclerViewKeyHandler?.posInfo?.value
+                            onClickHandler = vm::onClickItemPosition
                     )
-                    postponedRecyclerViewKeyHandler = rvKeyHandler
+
                     return layoutBinding.root
                 }
     }

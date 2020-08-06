@@ -15,6 +15,7 @@ import com.lenta.shared.requests.combined.scan_info.ScanInfoResult
 import com.lenta.shared.utilities.extentions.launchUITryCatch
 import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.utilities.extentions.toStringFormatted
+import com.lenta.shared.utilities.orIfNull
 import com.lenta.shared.view.OnPositionClickListener
 import javax.inject.Inject
 
@@ -37,7 +38,7 @@ class GoodsInfoShipmentPPViewModel : CoreViewModel(), OnPositionClickListener {
     val spinQuality: MutableLiveData<List<String>> = MutableLiveData()
     val spinQualitySelectedPosition: MutableLiveData<Int> = MutableLiveData(0)
     val suffix: MutableLiveData<String> = MutableLiveData()
-    val requestFocusToCount: MutableLiveData<Boolean> = MutableLiveData()
+    val requestFocusToCount: MutableLiveData<Boolean> = MutableLiveData(false)
     val isEizUnit: MutableLiveData<Boolean> by lazy {
         MutableLiveData(productInfo.value?.purchaseOrderUnits?.code != productInfo.value?.uom?.code)
     }
@@ -85,6 +86,17 @@ class GoodsInfoShipmentPPViewModel : CoreViewModel(), OnPositionClickListener {
 
     init {
         launchUITryCatch {
+            productInfo.value
+                    ?.let {
+                        if (processGeneralProductService.newProcessGeneralProductService(it) == null) {
+                            screenNavigator.goBackAndShowAlertWrongProductType()
+                            return@launchUITryCatch
+                        }
+                    }.orIfNull {
+                        screenNavigator.goBackAndShowAlertWrongProductType()
+                        return@launchUITryCatch
+                    }
+
             searchProductDelegate.init(viewModelScope = this@GoodsInfoShipmentPPViewModel::viewModelScope,
                     scanResultHandler = this@GoodsInfoShipmentPPViewModel::handleProductSearchResult)
 
@@ -94,15 +106,7 @@ class GoodsInfoShipmentPPViewModel : CoreViewModel(), OnPositionClickListener {
                 count.value = taskManager.getReceivingTask()?.taskRepository?.getProductsDiscrepancies()?.getCountProductNotProcessedOfProduct(productInfo.value!!).toStringFormatted()
             }
 
-            //эту строку необходимо прописывать только после того, как были установлены данные для переменных count  и suffix, а иначе фокус в поле et_count не установится
-            requestFocusToCount.value = true
-
             spinQuality.value = listOf(context.getString(R.string.quantity))
-
-            if (processGeneralProductService.newProcessGeneralProductService(productInfo.value!!) == null) {
-                screenNavigator.goBack()
-                screenNavigator.openAlertWrongProductType()
-            }
         }
     }
 

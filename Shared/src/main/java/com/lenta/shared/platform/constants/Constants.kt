@@ -46,4 +46,9 @@ object Constants {
     const val MARK_134 = 134
     const val MARK_39 = 39
 
+    // ERP Requests
+    const val OPERATING_SYSTEM_WINDOWS = "1"
+    const val OPERATING_SYSTEM_ANDROID = "2"
+    const val REQUEST_DEFAULT_FALSE = "X"
+
 }

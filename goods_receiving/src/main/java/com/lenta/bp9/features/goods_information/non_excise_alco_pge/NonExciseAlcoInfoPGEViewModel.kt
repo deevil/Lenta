@@ -22,6 +22,7 @@ import com.lenta.shared.utilities.extentions.combineLatest
 import com.lenta.shared.utilities.extentions.launchUITryCatch
 import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.utilities.extentions.toStringFormatted
+import com.lenta.shared.utilities.orIfNull
 import com.lenta.shared.view.OnPositionClickListener
 import java.text.SimpleDateFormat
 import javax.inject.Inject
@@ -63,7 +64,7 @@ class NonExciseAlcoInfoPGEViewModel : CoreViewModel(), OnPositionClickListener {
     val spinProcessingUnit: MutableLiveData<List<String>> = MutableLiveData()
     val spinProcessingUnitSelectedPosition: MutableLiveData<Int> = MutableLiveData(0)
     val suffix: MutableLiveData<String> = MutableLiveData()
-    val requestFocusToCount: MutableLiveData<Boolean> = MutableLiveData()
+    val requestFocusToCount: MutableLiveData<Boolean> = MutableLiveData(false)
     val bottlingDate: MutableLiveData<String> = MutableLiveData("")
 
     private val qualityInfo: MutableLiveData<List<QualityInfo>> = MutableLiveData()
@@ -176,6 +177,17 @@ class NonExciseAlcoInfoPGEViewModel : CoreViewModel(), OnPositionClickListener {
 
     init {
         launchUITryCatch {
+            productInfo.value
+                    ?.let {
+                        if (processNonExciseAlcoProductPGEService.newProcessNonExciseAlcoProductPGEService(it) == null) {
+                            screenNavigator.goBackAndShowAlertWrongProductType()
+                            return@launchUITryCatch
+                        }
+                    }.orIfNull {
+                        screenNavigator.goBackAndShowAlertWrongProductType()
+                        return@launchUITryCatch
+                    }
+
             searchProductDelegate.init(viewModelScope = this@NonExciseAlcoInfoPGEViewModel::viewModelScope,
                     scanResultHandler = this@NonExciseAlcoInfoPGEViewModel::handleProductSearchResult)
 
@@ -220,14 +232,6 @@ class NonExciseAlcoInfoPGEViewModel : CoreViewModel(), OnPositionClickListener {
                 it.name
             }?.map {
                 it.key
-            }
-
-            //эту строку необходимо прописывать только после того, как были установлены данные для переменных count  и suffix, а иначе фокус в поле et_count не установится
-            requestFocusToCount.value = true
-
-            if (processNonExciseAlcoProductPGEService.newProcessNonExciseAlcoProductPGEService(productInfo.value!!) == null) {
-                screenNavigator.goBack()
-                screenNavigator.openAlertWrongProductType()
             }
         }
     }

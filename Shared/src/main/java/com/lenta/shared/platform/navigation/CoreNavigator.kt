@@ -485,6 +485,24 @@ class CoreNavigator @Inject constructor(
         }
     }
 
+    override fun openMarkingGoodsInfoScreen() {
+        runOrPostpone {
+            val inputMessage = iconDescriptionHelper.getDescription(IconCode.MARKING_GOODS) ?: context.getString(R.string.marking_goods)
+            getFragmentStack()?.push(AlertFragment.create(
+                    message = inputMessage,
+                    iconRes = R.drawable.ic_marked_white_80dp), CustomAnimation.vertical)
+        }
+    }
+
+    override fun openExceptionsShelfLifeScreen() {
+        runOrPostpone {
+            val inputMessage = iconDescriptionHelper.getDescription(IconCode.EXCEPTIONS_SHELF_LIFE) ?: context.getString(R.string.exceptions_shelf_life)
+            getFragmentStack()?.push(AlertFragment.create(
+                    message = inputMessage,
+                    iconRes = R.drawable.ic_exceptions_shelf_life_48dp), CustomAnimation.vertical)
+        }
+    }
+
 }
 
 fun ICoreNavigator.runOrPostpone(function: () -> Unit) {
@@ -549,6 +567,8 @@ interface ICoreNavigator {
     fun showAlertBlockedTaskByMe(userName: String, yesCallback: () -> Unit)
     fun openGS128InfoScreen()
     fun openUpdateAppScreen()
+    fun openMarkingGoodsInfoScreen()
+    fun openExceptionsShelfLifeScreen()
 }
 
 class FunctionsCollector(private val needCollectLiveData: LiveData<Boolean>) {

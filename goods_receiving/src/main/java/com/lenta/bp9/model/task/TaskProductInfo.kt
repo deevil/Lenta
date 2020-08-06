@@ -1,9 +1,6 @@
 package com.lenta.bp9.model.task
 
-import com.lenta.shared.models.core.MatrixType
-import com.lenta.shared.models.core.ProductInfo
-import com.lenta.shared.models.core.ProductType
-import com.lenta.shared.models.core.Uom
+import com.lenta.shared.models.core.*
 
 //ET_TASK_POS Таблица состава задания ППП (ZSGRZ_TASK_DS_POS_EXCH)
 class TaskProductInfo(materialNumber: String,
@@ -39,7 +36,12 @@ class TaskProductInfo(materialNumber: String,
                       val processingUnit: String,
                       val isGoodsAddedAsSurplus: Boolean, //товар был добавлен в задание ПГЕ как излишек, трелло https://trello.com/c/im9rJqrU
                       val mhdhbDays: Int, //значение из 48 справочника для определения срока годности
-                      val mhdrzDays: Int //значение из 48 справочника для определения срока годности
+                      val mhdrzDays: Int, //значение из 48 справочника для определения срока годности
+                      val markType: MarkType, //для маркированного товара
+                      val isCountingBoxes: Boolean, //маркированный товар, пусто - нет возможности пересчета в коробах
+                      val nestingInOneBlock: String, //маркированный товар, Вложенность в один блок
+                      val isControlGTIN: Boolean, //маркированный товар, Контроль GTIN
+                      val isGrayZone: Boolean //маркированный товар
                         ) : ProductInfo(materialNumber, description, uom, type, isSet, sectionId, matrixType, materialType) {
 
     fun copy(materialNumber: String = this.materialNumber,
@@ -75,7 +77,12 @@ class TaskProductInfo(materialNumber: String,
              processingUnit: String = this.processingUnit,
              isGoodsAddedAsSurplus: Boolean = this.isGoodsAddedAsSurplus,
              mhdhbDays: Int = this.mhdhbDays,
-             mhdrzDays: Int = this.mhdrzDays) : TaskProductInfo {
+             mhdrzDays: Int = this.mhdrzDays,
+             markType: MarkType = this.markType,
+             isCountingBoxes: Boolean = this.isCountingBoxes,
+             nestingInOneBlock: String = this.nestingInOneBlock,
+             isControlGTIN: Boolean = this.isControlGTIN,
+             isGrayZone: Boolean = this.isGrayZone) : TaskProductInfo {
         return TaskProductInfo(
                 materialNumber = materialNumber,
                 description = description,
@@ -110,7 +117,12 @@ class TaskProductInfo(materialNumber: String,
                 processingUnit = processingUnit,
                 isGoodsAddedAsSurplus = isGoodsAddedAsSurplus,
                 mhdhbDays = mhdhbDays,
-                mhdrzDays = mhdrzDays
+                mhdrzDays = mhdrzDays,
+                markType = markType,
+                isCountingBoxes = isCountingBoxes,
+                nestingInOneBlock = nestingInOneBlock,
+                isControlGTIN = isControlGTIN,
+                isGrayZone = isGrayZone
         )
     }
 }

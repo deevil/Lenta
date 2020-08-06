@@ -117,4 +117,9 @@ class NonExciseSetComponentInfoPGEFragment : CoreFragment<FragmentNonExciseSetCo
         vm.onScanResult(data)
     }
 
+    override fun onResume() {
+        super.onResume()
+        vm.requestFocusToCount.value = true
+    }
+
 }

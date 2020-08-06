@@ -31,7 +31,6 @@ class TransportConditionsReviseFragment : CoreFragment<FragmentTransportConditio
         ToolbarButtonsClickListener,
         OnBackPresserListener {
 
-    private var notificationsRecyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
     private var toCheckRecyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
     private var checkedRecyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
 
@@ -83,59 +82,59 @@ class TransportConditionsReviseFragment : CoreFragment<FragmentTransportConditio
                 .inflate<LayoutTransportConditionsUncheckedBinding>(LayoutInflater.from(container.context),
                         R.layout.layout_transport_conditions_unchecked,
                         container,
-                        false).let { layoutBinding ->
-
-                    layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
+                        false)
+                .let { layoutBinding ->
+                    layoutBinding.rvConfig = initRecycleAdapterDataBinding(
                             layoutId = R.layout.item_tile_transport_condition,
                             itemId = BR.item,
-                            realisation = object : DataBindingAdapter<ItemTileTransportConditionBinding> {
-                                override fun onCreate(binding: ItemTileTransportConditionBinding) {
+                            onAdapterItemBind = { binding: ItemTileTransportConditionBinding, position: Int ->
+                                binding.tvItemNumber.tag = position
+                                binding.cbChecked.setOnClickListener { view ->
+                                    val cb = view as? CheckBox
+                                    cb?.let { vm.checkedChanged(position, it.isChecked) }
                                 }
-
-                                override fun onBind(binding: ItemTileTransportConditionBinding, position: Int) {
-                                    binding.tvItemNumber.tag = position
-                                    binding.cbChecked.setOnClickListener { view ->
-                                        val cb = view as? CheckBox
-                                        cb?.let { vm.checkedChanged(position, it.isChecked) }
+                                binding.etEditText.setOnFocusChangeListener { v, hasFocus ->
+                                    if (!hasFocus) {
+                                        vm.finishedInput(position)
                                     }
-                                    binding.etEditText.setOnFocusChangeListener { v, hasFocus ->
-                                        if (!hasFocus) {
+                                }
+                                binding.etEditText.setOnEditorActionListener { v, actionId, event ->
+                                    when(actionId) {
+                                        EditorInfo.IME_ACTION_DONE -> {
                                             vm.finishedInput(position)
+                                            return@setOnEditorActionListener false
                                         }
+                                        else -> return@setOnEditorActionListener false
                                     }
-                                    binding.etEditText.setOnEditorActionListener { v, actionId, event ->
-                                        when(actionId) {
-                                            EditorInfo.IME_ACTION_DONE -> {
-                                                vm.finishedInput(position)
-                                                return@setOnEditorActionListener false
+                                }
+                                val conditionsToCheckSize = vm.conditionsToCheck.value?.size ?: 0
+                                if (conditionsToCheckSize - 1 >= position) {
+                                    binding.cbChecked.visibility =
+                                            when (vm.conditionsToCheck.value?.get(position)?.conditionType) {
+                                                ConditionType.Checkbox -> View.VISIBLE
+                                                else -> View.INVISIBLE
                                             }
-                                            else -> return@setOnEditorActionListener false
-                                        }
-                                    }
-                                    val conditionsToCheckSize = vm.conditionsToCheck.value?.size ?: 0
-                                    if (conditionsToCheckSize-1 >= position) {
-                                        binding.cbChecked.visibility = when (vm.conditionsToCheck.value?.get(position)?.conditionType) {
-                                            ConditionType.Checkbox -> View.VISIBLE
-                                            else -> View.INVISIBLE
-                                        }
-                                        binding.etEditText.visibility = when (vm.conditionsToCheck.value?.get(position)?.conditionType) {
-                                            ConditionType.Input -> View.VISIBLE
-                                            else -> View.INVISIBLE
-                                        }
-                                    }
+                                    binding.etEditText.visibility =
+                                            when (vm.conditionsToCheck.value?.get(position)?.conditionType) {
+                                                ConditionType.Input -> View.VISIBLE
+                                                else -> View.INVISIBLE
+                                            }
+                                }
+                                toCheckRecyclerViewKeyHandler?.let {
+                                    binding.root.isSelected = it.isSelected(position)
                                 }
                             }
                     )
 
                     layoutBinding.vm = vm
                     layoutBinding.lifecycleOwner = viewLifecycleOwner
-                    val rvKeyHandler = RecyclerViewKeyHandler(
-                            rv = layoutBinding.rv,
-                            items = vm.conditionsToCheck,
-                            lifecycleOwner = layoutBinding.lifecycleOwner!!,
-                            initPosInfo = toCheckRecyclerViewKeyHandler?.posInfo?.value
+
+                    toCheckRecyclerViewKeyHandler = initRecyclerViewKeyHandler(
+                            recyclerView = layoutBinding.rv,
+                            previousPosInfo = toCheckRecyclerViewKeyHandler?.posInfo?.value,
+                            items = vm.conditionsToCheck
                     )
-                    toCheckRecyclerViewKeyHandler = rvKeyHandler
+
                     return layoutBinding.root
                 }
     }
@@ -145,60 +144,58 @@ class TransportConditionsReviseFragment : CoreFragment<FragmentTransportConditio
                 .inflate<LayoutTransportConditionsCheckedBinding>(LayoutInflater.from(container.context),
                         R.layout.layout_transport_conditions_checked,
                         container,
-                        false).let { layoutBinding ->
-
-                    layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
+                        false)
+                .let { layoutBinding ->
+                    layoutBinding.rvConfig = initRecycleAdapterDataBinding(
                             layoutId = R.layout.item_tile_transport_condition_checked,
                             itemId = BR.item,
-                            realisation = object : DataBindingAdapter<ItemTileTransportConditionCheckedBinding> {
-                                override fun onCreate(binding: ItemTileTransportConditionCheckedBinding) {
+                            onAdapterItemBind = { binding: ItemTileTransportConditionCheckedBinding, position: Int ->
+                                binding.tvItemNumber.tag = position
+                                binding.cbChecked.setOnClickListener { view ->
+                                    val cb = view as? CheckBox
+                                    cb?.let { vm.checkedChanged(position, it.isChecked) }
                                 }
-
-                                override fun onBind(binding: ItemTileTransportConditionCheckedBinding, position: Int) {
-                                    binding.tvItemNumber.tag = position
-                                    binding.cbChecked.setOnClickListener { view ->
-                                        val cb = view as? CheckBox
-                                        cb?.let { vm.checkedChanged(position, it.isChecked) }
+                                if ((vm.checkedConditions.value?.size ?: 0) - 1 >= position) {
+                                    binding.cbChecked.visibility = when (vm.checkedConditions.value?.get(position)?.conditionType) {
+                                        ConditionType.Checkbox -> View.VISIBLE
+                                        else -> View.INVISIBLE
                                     }
-                                    if ((vm.checkedConditions.value?.size ?: 0) - 1 >= position) {
-                                        binding.cbChecked.visibility = when (vm.checkedConditions.value?.get(position)?.conditionType) {
-                                            ConditionType.Checkbox -> View.VISIBLE
-                                            else -> View.INVISIBLE
-                                        }
+                                }
+                                if ((vm.checkedConditions.value?.size ?: 0) - 1 >= position) {
+                                    binding.etConditionValue.visibility = when (vm.checkedConditions.value?.get(position)?.conditionType) {
+                                        ConditionType.Input -> View.VISIBLE
+                                        else -> View.INVISIBLE
                                     }
-                                    if ((vm.checkedConditions.value?.size ?: 0) - 1 >= position) {
-                                        binding.etConditionValue.visibility = when (vm.checkedConditions.value?.get(position)?.conditionType) {
-                                                ConditionType.Input -> View.VISIBLE
-                                                else -> View.INVISIBLE
-                                        }
+                                }
+                                binding.etConditionValue.setOnFocusChangeListener { v, hasFocus ->
+                                    if (!hasFocus) {
+                                        vm.finishedInput(position)
                                     }
-                                    binding.etConditionValue.setOnFocusChangeListener { v, hasFocus ->
-                                        if (!hasFocus) {
+                                }
+                                binding.etConditionValue.setOnEditorActionListener { v, actionId, event ->
+                                    when(actionId) {
+                                        EditorInfo.IME_ACTION_DONE -> {
                                             vm.finishedInput(position)
+                                            return@setOnEditorActionListener false
                                         }
+                                        else -> return@setOnEditorActionListener false
                                     }
-                                    binding.etConditionValue.setOnEditorActionListener { v, actionId, event ->
-                                        when(actionId) {
-                                            EditorInfo.IME_ACTION_DONE -> {
-                                                vm.finishedInput(position)
-                                                return@setOnEditorActionListener false
-                                            }
-                                            else -> return@setOnEditorActionListener false
-                                        }
-                                    }
+                                }
+                                checkedRecyclerViewKeyHandler?.let {
+                                    binding.root.isSelected = it.isSelected(position)
                                 }
                             }
                     )
 
                     layoutBinding.vm = vm
                     layoutBinding.lifecycleOwner = viewLifecycleOwner
-                    val rvKeyHandler = RecyclerViewKeyHandler(
-                            rv = layoutBinding.rv,
-                            items = vm.checkedConditions,
-                            lifecycleOwner = layoutBinding.lifecycleOwner!!,
-                            initPosInfo = checkedRecyclerViewKeyHandler?.posInfo?.value
+
+                    checkedRecyclerViewKeyHandler = initRecyclerViewKeyHandler(
+                            recyclerView = layoutBinding.rv,
+                            previousPosInfo = checkedRecyclerViewKeyHandler?.posInfo?.value,
+                            items = vm.checkedConditions
                     )
-                    checkedRecyclerViewKeyHandler = rvKeyHandler
+
                     return layoutBinding.root
                 }
     }
@@ -208,29 +205,15 @@ class TransportConditionsReviseFragment : CoreFragment<FragmentTransportConditio
                 .inflate<LayoutTransportConditionsInformationBinding>(LayoutInflater.from(container.context),
                         R.layout.layout_transport_conditions_information,
                         container,
-                        false).let { layoutBinding ->
-
-                    layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
+                        false)
+                .let { layoutBinding ->
+                    layoutBinding.rvConfig = initRecycleAdapterDataBinding<ItemTileNotificationsBinding>(
                             layoutId = R.layout.item_tile_notifications,
-                            itemId = BR.item,
-                            realisation = object : DataBindingAdapter<ItemTileNotificationsBinding> {
-                                override fun onCreate(binding: ItemTileNotificationsBinding) {
-                                }
-
-                                override fun onBind(binding: ItemTileNotificationsBinding, position: Int) {
-                                    binding.tvItemNumber.tag = position
-                                }
-                            }
+                            itemId = BR.item
                     )
 
                     layoutBinding.vm = vm
                     layoutBinding.lifecycleOwner = viewLifecycleOwner
-                    val rvKeyHandler = RecyclerViewKeyHandler(
-                            rv = layoutBinding.rv,
-                            items = vm.notifications,
-                            lifecycleOwner = layoutBinding.lifecycleOwner!!
-                    )
-                    notificationsRecyclerViewKeyHandler = rvKeyHandler
                     return layoutBinding.root
                 }
     }

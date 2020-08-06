@@ -464,7 +464,7 @@ class ExciseAlcoBoxCardPGEViewModel : CoreViewModel(), OnPositionClickListener {
                                             isScan = true
                                     )
                                     //обновляем кол-во отсканированных марок для отображения на экране
-                                    countExciseStampsScanned.value = countExciseStampsScanned.value
+                                    countExciseStampsScanned.value = countExciseStampsScanned.value?.plus(1)
                                 }
                             }
                         }

@@ -83,15 +83,7 @@ class TransportMarriageCargoUnitFragment : CoreFragment<FragmentTransportMarriag
                         binding.tvItemNumber.tag = position
                         binding.tvItemNumber.setOnClickListener(onClickSelectionListener)
                         binding.selectedForDelete = vm.actSelectionsHelper.isSelected(position)
-                        onAdapterBindHandler(binding, position)
                     }
-            )
-
-            recyclerViewKeyHandler = initRecyclerViewKeyHandler(
-                    recyclerView = layoutBinding.rv,
-                    items = vm.listAct,
-                    previousPosInfo = recyclerViewKeyHandler?.posInfo?.value,
-                    onClickHandler = vm::onClickItemPosition
             )
         }
     }

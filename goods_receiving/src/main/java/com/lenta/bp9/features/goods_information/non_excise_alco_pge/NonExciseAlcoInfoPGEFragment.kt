@@ -124,4 +124,9 @@ class NonExciseAlcoInfoPGEFragment : CoreFragment<FragmentNonExciseAlcoInfoPgeBi
         return false
     }
 
+    override fun onResume() {
+        super.onResume()
+        vm.requestFocusToCount.value = true
+    }
+
 }

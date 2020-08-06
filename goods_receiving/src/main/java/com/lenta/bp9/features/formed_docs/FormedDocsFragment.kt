@@ -69,14 +69,7 @@ class FormedDocsFragment : CoreFragment<FragmentFormedDocsBinding, FormedDocsVie
                         binding.tvItemNumber.tag = position
                         binding.tvItemNumber.setOnClickListener(onClickSelectionListener)
                         binding.selectedForDelete = vm.docsSelectionsHelper.isSelected(position)
-                        onAdapterBindHandler(binding, position)
                     }
-            )
-
-            recyclerViewKeyHandler = initRecyclerViewKeyHandler(
-                    recyclerView = layoutBinding.rv,
-                    items = vm.listDocs,
-                    previousPosInfo = recyclerViewKeyHandler?.posInfo?.value
             )
         }
     }

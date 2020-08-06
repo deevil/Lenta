@@ -30,7 +30,9 @@ data class StartRecountPGEParams(
         @SerializedName("IV_TIME_COUNT")
         val timeRecount: String, //Время начала пересчета
         @SerializedName("IV_TASK_TYPE")
-        val taskType: String
+        val taskType: String,
+        @SerializedName("IV_OS")
+        val operatingSystem: String //операционная система, Win - 1, Андроид - 2
 )
 
 class StartRecountPGEStatus : ObjectRawStatus<StartRecountPGERestInfo>()
@@ -60,6 +62,12 @@ data class StartRecountPGERestInfo(
         val taskMercuryInfoRestData: List<TaskMercuryInfoRestData>?,
         @SerializedName("ET_PROD_TEXT")//Таблица ЕГАИС производителей
         val manufacturers: List<Manufacturer>,
+        @SerializedName("ET_TASK_PACK")//Список блоков для маркированного товара
+        val taskBlocks: List<TaskBlockInfoRestData>,
+        @SerializedName("ET_PACK_DIFF")//Список обработанных блоков для маркированного товара
+        val taskBlocksDiscrepancies: List<TaskBlockDiscrepanciesRestData>,
+        @SerializedName("ET_PROPERTIES")//таблица свойств для маркированного товара
+        val markingGoodsProperties: List<TaskMarkingGoodsPropertiesRestData>,
         @SerializedName("EV_RETCODE")
         override val retCode: Int,
         @SerializedName("EV_ERROR_TEXT")

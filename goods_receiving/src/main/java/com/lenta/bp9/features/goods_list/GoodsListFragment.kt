@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.AdapterView
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import com.lenta.bp9.BR
@@ -19,8 +18,6 @@ import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListener
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
 import com.lenta.shared.scan.OnScanResultListener
-import com.lenta.shared.utilities.databinding.DataBindingAdapter
-import com.lenta.shared.utilities.databinding.DataBindingRecyclerViewConfig
 import com.lenta.shared.utilities.databinding.RecyclerViewKeyHandler
 import com.lenta.shared.utilities.databinding.ViewPagerSettings
 import com.lenta.shared.utilities.extentions.connectLiveData
@@ -134,51 +131,40 @@ class GoodsListFragment : CoreFragment<FragmentGoodsListBinding, GoodsListViewMo
                 .inflate<LayoutGoodsListCountedBinding>(LayoutInflater.from(container.context),
                         R.layout.layout_goods_list_counted,
                         container,
-                        false).let { layoutBinding ->
-
+                        false)
+                .let { layoutBinding ->
                     val onClickSelectionListener = View.OnClickListener {
-                        (it!!.tag as Int).let { position ->
-                            vm.countedSelectionsHelper.revert(position = position)
-                            layoutBinding.rv.adapter?.notifyItemChanged(position)
-                        }
+                        (it!!.tag as Int)
+                                .let { position ->
+                                    vm.countedSelectionsHelper.revert(position = position)
+                                    layoutBinding.rv.adapter?.notifyItemChanged(position)
+                                }
                     }
 
-                    layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
+                    layoutBinding.rvConfig = initRecycleAdapterDataBinding(
                             layoutId = R.layout.item_tile_goods_list_counted,
                             itemId = BR.item,
-                            realisation = object : DataBindingAdapter<ItemTileGoodsListCountedBinding> {
-                                override fun onCreate(binding: ItemTileGoodsListCountedBinding) {
-                                }
-
-                                override fun onBind(binding: ItemTileGoodsListCountedBinding, position: Int) {
-                                    binding.tvItemNumber.tag = position
-                                    binding.tvItemNumber.setOnClickListener(onClickSelectionListener)
-                                    binding.selectedForDelete = vm.countedSelectionsHelper.isSelected(position)
-                                    countedRecyclerViewKeyHandler?.let {
-                                        binding.root.isSelected = it.isSelected(position)
-                                    }
-                                }
-
-                            },
-                            onItemClickListener = AdapterView.OnItemClickListener { _, _, position, _ ->
+                            onAdapterItemBind = { binding: ItemTileGoodsListCountedBinding, position: Int ->
+                                binding.tvItemNumber.tag = position
+                                binding.tvItemNumber.setOnClickListener(onClickSelectionListener)
+                                binding.selectedForDelete = vm.countedSelectionsHelper.isSelected(position)
                                 countedRecyclerViewKeyHandler?.let {
-                                    if (it.isSelected(position)) {
-                                        vm.onClickItemPosition(position)
-                                    } else {
-                                        it.selectPosition(position)
-                                    }
+                                    binding.root.isSelected = it.isSelected(position)
                                 }
-
+                            },
+                            onAdapterItemClicked = {position ->
+                                countedRecyclerViewKeyHandler?.onItemClicked(position)
                             }
                     )
 
                     layoutBinding.vm = vm
                     layoutBinding.lifecycleOwner = viewLifecycleOwner
-                    countedRecyclerViewKeyHandler = RecyclerViewKeyHandler(
-                            rv = layoutBinding.rv,
+
+                    countedRecyclerViewKeyHandler = initRecyclerViewKeyHandler(
+                            recyclerView = layoutBinding.rv,
+                            previousPosInfo = countedRecyclerViewKeyHandler?.posInfo?.value,
                             items = vm.listCounted,
-                            lifecycleOwner = layoutBinding.lifecycleOwner!!,
-                            initPosInfo = countedRecyclerViewKeyHandler?.posInfo?.value
+                            onClickHandler = vm::onClickItemPosition
                     )
                     return layoutBinding.root
                 }
@@ -189,41 +175,29 @@ class GoodsListFragment : CoreFragment<FragmentGoodsListBinding, GoodsListViewMo
                 .inflate<LayoutGoodsListWithoutBarcodeBinding>(LayoutInflater.from(container.context),
                         R.layout.layout_goods_list_without_barcode,
                         container,
-                        false).let { layoutBinding ->
-
-                    layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
+                        false)
+                .let { layoutBinding ->
+                    layoutBinding.rvConfig = initRecycleAdapterDataBinding(
                             layoutId = R.layout.item_tile_goods_list_without_barcode,
                             itemId = BR.item,
-                            realisation = object : DataBindingAdapter<ItemTileGoodsListWithoutBarcodeBinding> {
-                                override fun onCreate(binding: ItemTileGoodsListWithoutBarcodeBinding) {
-                                }
-
-                                override fun onBind(binding: ItemTileGoodsListWithoutBarcodeBinding, position: Int) {
-                                    withoutBarcodeRecyclerViewKeyHandler?.let {
-                                        binding.root.isSelected = it.isSelected(position)
-                                    }
-                                }
-
-                            },
-                            onItemClickListener = AdapterView.OnItemClickListener { _, _, position, _ ->
+                            onAdapterItemBind = { binding: ItemTileGoodsListWithoutBarcodeBinding, position: Int ->
                                 withoutBarcodeRecyclerViewKeyHandler?.let {
-                                    if (it.isSelected(position)) {
-                                        vm.onClickItemPosition(position)
-                                    } else {
-                                        it.selectPosition(position)
-                                    }
+                                    binding.root.isSelected = it.isSelected(position)
                                 }
-
+                            },
+                            onAdapterItemClicked = {position ->
+                                withoutBarcodeRecyclerViewKeyHandler?.onItemClicked(position)
                             }
                     )
 
                     layoutBinding.vm = vm
                     layoutBinding.lifecycleOwner = viewLifecycleOwner
-                    withoutBarcodeRecyclerViewKeyHandler = RecyclerViewKeyHandler(
-                            rv = layoutBinding.rv,
+
+                    withoutBarcodeRecyclerViewKeyHandler = initRecyclerViewKeyHandler(
+                            recyclerView = layoutBinding.rv,
+                            previousPosInfo = withoutBarcodeRecyclerViewKeyHandler?.posInfo?.value,
                             items = vm.listWithoutBarcode,
-                            lifecycleOwner = layoutBinding.lifecycleOwner!!,
-                            initPosInfo = withoutBarcodeRecyclerViewKeyHandler?.posInfo?.value
+                            onClickHandler = vm::onClickItemPosition
                     )
                     return layoutBinding.root
                 }
@@ -234,52 +208,42 @@ class GoodsListFragment : CoreFragment<FragmentGoodsListBinding, GoodsListViewMo
                 .inflate<LayoutGoodsListToProcessingBinding>(LayoutInflater.from(container.context),
                         R.layout.layout_goods_list_to_processing,
                         container,
-                        false).let { layoutBinding ->
-
+                        false)
+                .let { layoutBinding ->
                     val onClickSelectionListener = View.OnClickListener {
-                        (it!!.tag as Int).let { position ->
-                            vm.toProcessingSelectionsHelper.revert(position = position)
-                            layoutBinding.rv.adapter?.notifyItemChanged(position)
-                        }
+                        (it!!.tag as Int)
+                                .let { position ->
+                                    vm.toProcessingSelectionsHelper.revert(position = position)
+                                    layoutBinding.rv.adapter?.notifyItemChanged(position)
+                                }
                     }
 
-                    layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
+                    layoutBinding.rvConfig = initRecycleAdapterDataBinding(
                             layoutId = R.layout.item_tile_goods_list_to_processing,
                             itemId = BR.item,
-                            realisation = object : DataBindingAdapter<ItemTileGoodsListToProcessingBinding> {
-                                override fun onCreate(binding: ItemTileGoodsListToProcessingBinding) {
-                                }
-
-                                override fun onBind(binding: ItemTileGoodsListToProcessingBinding, position: Int) {
-                                    binding.tvItemNumber.tag = position
-                                    binding.tvItemNumber.setOnClickListener(onClickSelectionListener)
-                                    binding.selectedForDelete = vm.toProcessingSelectionsHelper.isSelected(position)
-                                    toProcessingRecyclerViewKeyHandler?.let {
-                                        binding.root.isSelected = it.isSelected(position)
-                                    }
-                                }
-
-                            },
-                            onItemClickListener = AdapterView.OnItemClickListener { _, _, position, _ ->
+                            onAdapterItemBind = { binding: ItemTileGoodsListToProcessingBinding, position: Int ->
+                                binding.tvItemNumber.tag = position
+                                binding.tvItemNumber.setOnClickListener(onClickSelectionListener)
+                                binding.selectedForDelete = vm.toProcessingSelectionsHelper.isSelected(position)
                                 toProcessingRecyclerViewKeyHandler?.let {
-                                    if (it.isSelected(position)) {
-                                        vm.onClickItemPosition(position)
-                                    } else {
-                                        it.selectPosition(position)
-                                    }
+                                    binding.root.isSelected = it.isSelected(position)
                                 }
-
+                            },
+                            onAdapterItemClicked = {position ->
+                                toProcessingRecyclerViewKeyHandler?.onItemClicked(position)
                             }
                     )
 
                     layoutBinding.vm = vm
                     layoutBinding.lifecycleOwner = viewLifecycleOwner
-                    toProcessingRecyclerViewKeyHandler = RecyclerViewKeyHandler(
-                            rv = layoutBinding.rv,
+
+                    toProcessingRecyclerViewKeyHandler = initRecyclerViewKeyHandler(
+                            recyclerView = layoutBinding.rv,
+                            previousPosInfo = toProcessingRecyclerViewKeyHandler?.posInfo?.value,
                             items = vm.listToProcessing,
-                            lifecycleOwner = layoutBinding.lifecycleOwner!!,
-                            initPosInfo = toProcessingRecyclerViewKeyHandler?.posInfo?.value
+                            onClickHandler = vm::onClickItemPosition
                     )
+
                     return layoutBinding.root
                 }
     }
@@ -289,52 +253,42 @@ class GoodsListFragment : CoreFragment<FragmentGoodsListBinding, GoodsListViewMo
                 .inflate<LayoutGoodsListProcessedBinding>(LayoutInflater.from(container.context),
                         R.layout.layout_goods_list_processed,
                         container,
-                        false).let { layoutBinding ->
-
+                        false)
+                .let { layoutBinding ->
                     val onClickSelectionListener = View.OnClickListener {
-                        (it!!.tag as Int).let { position ->
-                            vm.processedSelectionsHelper.revert(position = position)
-                            layoutBinding.rv.adapter?.notifyItemChanged(position)
-                        }
+                        (it!!.tag as Int)
+                                .let { position ->
+                                    vm.processedSelectionsHelper.revert(position = position)
+                                    layoutBinding.rv.adapter?.notifyItemChanged(position)
+                                }
                     }
 
-                    layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
+                    layoutBinding.rvConfig = initRecycleAdapterDataBinding(
                             layoutId = R.layout.item_tile_goods_list_processed,
                             itemId = BR.item,
-                            realisation = object : DataBindingAdapter<ItemTileGoodsListProcessedBinding> {
-                                override fun onCreate(binding: ItemTileGoodsListProcessedBinding) {
-                                }
-
-                                override fun onBind(binding: ItemTileGoodsListProcessedBinding, position: Int) {
-                                    binding.tvItemNumber.tag = position
-                                    binding.tvItemNumber.setOnClickListener(onClickSelectionListener)
-                                    binding.selectedForDelete = vm.processedSelectionsHelper.isSelected(position)
-                                    processedRecyclerViewKeyHandler?.let {
-                                        binding.root.isSelected = it.isSelected(position)
-                                    }
-                                }
-
-                            },
-                            onItemClickListener = AdapterView.OnItemClickListener { _, _, position, _ ->
+                            onAdapterItemBind = { binding: ItemTileGoodsListProcessedBinding, position: Int ->
+                                binding.tvItemNumber.tag = position
+                                binding.tvItemNumber.setOnClickListener(onClickSelectionListener)
+                                binding.selectedForDelete = vm.processedSelectionsHelper.isSelected(position)
                                 processedRecyclerViewKeyHandler?.let {
-                                    if (it.isSelected(position)) {
-                                        vm.onClickItemPosition(position)
-                                    } else {
-                                        it.selectPosition(position)
-                                    }
+                                    binding.root.isSelected = it.isSelected(position)
                                 }
-
+                            },
+                            onAdapterItemClicked = {position ->
+                                processedRecyclerViewKeyHandler?.onItemClicked(position)
                             }
                     )
 
                     layoutBinding.vm = vm
                     layoutBinding.lifecycleOwner = viewLifecycleOwner
-                    processedRecyclerViewKeyHandler = RecyclerViewKeyHandler(
-                            rv = layoutBinding.rv,
+
+                    processedRecyclerViewKeyHandler = initRecyclerViewKeyHandler(
+                            recyclerView = layoutBinding.rv,
+                            previousPosInfo = processedRecyclerViewKeyHandler?.posInfo?.value,
                             items = vm.listProcessed,
-                            lifecycleOwner = layoutBinding.lifecycleOwner!!,
-                            initPosInfo = processedRecyclerViewKeyHandler?.posInfo?.value
+                            onClickHandler = vm::onClickItemPosition
                     )
+
                     return layoutBinding.root
                 }
     }

@@ -6,6 +6,7 @@ import com.lenta.bp9.BR
 import com.lenta.bp9.R
 import com.lenta.bp9.databinding.FragmentTransportMarriageGoodsDetailsBinding
 import com.lenta.bp9.databinding.ItemTileGoodsDetailsBinding
+import com.lenta.bp9.databinding.ItemTileNonExciseSetsComponentsBinding
 import com.lenta.bp9.platform.extentions.getAppComponent
 import com.lenta.shared.platform.fragment.CoreFragment
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
@@ -58,17 +59,9 @@ class TransportMarriageGoodsDetailsFragment : CoreFragment<FragmentTransportMarr
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         binding?.let { layoutBinding ->
-            layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
+            layoutBinding.rvConfig = initRecycleAdapterDataBinding<ItemTileGoodsDetailsBinding>(
                     layoutId = R.layout.item_tile_goods_details,
-                    itemId = BR.item,
-                    realisation = object : DataBindingAdapter<ItemTileGoodsDetailsBinding> {
-                        override fun onCreate(binding: ItemTileGoodsDetailsBinding) {
-                        }
-
-                        override fun onBind(binding: ItemTileGoodsDetailsBinding, position: Int) {
-                        }
-
-                    }
+                    itemId = BR.item
             )
 
             layoutBinding.vm = vm

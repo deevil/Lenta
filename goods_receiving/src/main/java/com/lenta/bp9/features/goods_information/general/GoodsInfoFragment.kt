@@ -120,6 +120,11 @@ class GoodsInfoFragment : CoreFragment<FragmentGoodsInfoBinding, GoodsInfoViewMo
         DateInputMask(binding?.etShelfLife!!).listen()
     }
 
+    override fun onResume() {
+        super.onResume()
+        vm.requestFocusToCount.value = true
+    }
+
     override fun onBackPressed(): Boolean {
         vm.onBackPressed()
         return false

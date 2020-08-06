@@ -2,10 +2,7 @@ package com.lenta.bp9.features.loading.tasks
 
 import android.content.Context
 import androidx.lifecycle.MutableLiveData
-import com.lenta.bp9.model.task.IReceivingTaskManager
-import com.lenta.bp9.model.task.TaskContents
-import com.lenta.bp9.model.task.TaskDescription
-import com.lenta.bp9.model.task.TaskType
+import com.lenta.bp9.model.task.*
 import com.lenta.bp9.platform.navigation.IScreenNavigator
 import com.lenta.bp9.repos.IRepoInMemoryHolder
 import com.lenta.bp9.requests.network.StartRecountPGENetRequest
@@ -14,6 +11,7 @@ import com.lenta.bp9.requests.network.StartRecountPGERestInfo
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.features.loading.CoreLoadingViewModel
+import com.lenta.shared.platform.constants.Constants.OPERATING_SYSTEM_ANDROID
 import com.lenta.shared.utilities.extentions.getDeviceIp
 import com.lenta.shared.utilities.extentions.launchUITryCatch
 import javax.inject.Inject
@@ -52,10 +50,15 @@ class LoadingRecountStartPGEViewModel : CoreLoadingViewModel() {
                 val params = StartRecountPGEParams(
                         taskNumber = task.taskHeader.taskNumber,
                         deviceIP = context.getDeviceIp(),
-                        personnelNumber = sessionInfo.personnelNumber ?: "",
+                        personnelNumber = sessionInfo.personnelNumber.orEmpty(),
                         dateRecount = task.taskDescription.currentStatusDate,
                         timeRecount = task.taskDescription.currentStatusTime,
-                        taskType = taskManager.getReceivingTask()?.taskHeader?.taskType?.taskTypeString ?: ""
+                        taskType = taskManager.getReceivingTask()
+                                ?.taskHeader
+                                ?.taskType
+                                ?.taskTypeString
+                                .orEmpty(),
+                        operatingSystem = OPERATING_SYSTEM_ANDROID
                 )
                 startRecountPGENetRequest(params).either(::handleFailure, ::handleSuccess)
             }
@@ -71,6 +74,7 @@ class LoadingRecountStartPGEViewModel : CoreLoadingViewModel() {
     private fun handleSuccess(result: StartRecountPGERestInfo) {
         launchUITryCatch {
             repoInMemoryHolder.manufacturers.value = result.manufacturers
+            repoInMemoryHolder.markingGoodsProperties.value = result.markingGoodsProperties.map { TaskMarkingGoodsProperties.from(it) }
             taskManager.updateTaskDescription(TaskDescription.from(result.taskDescription))
             taskManager.getReceivingTask()?.updateTaskWithContents(taskContents.getTaskContentsPGEInfo(result))
             screenNavigator.openGoodsListScreen(taskType = taskManager.getReceivingTask()?.taskHeader?.taskType ?: TaskType.None)

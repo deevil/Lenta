@@ -26,8 +26,10 @@ import com.lenta.shared.utilities.SelectionItemsHelper
 import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
 import com.lenta.shared.utilities.databinding.PageSelectionListener
 import com.lenta.shared.utilities.extentions.combineLatest
+import com.lenta.shared.utilities.extentions.launchUITryCatch
 import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.utilities.extentions.toStringFormatted
+import com.lenta.shared.utilities.orIfNull
 import com.lenta.shared.view.OnPositionClickListener
 import com.mobrun.plugin.api.HyperHive
 import kotlinx.coroutines.launch
@@ -190,7 +192,19 @@ class NonExciseSetsReceivingViewModel : CoreViewModel(),
     }
 
     init {
-        viewModelScope.launch {
+        launchUITryCatch {
+            productInfo.value
+                    ?.let {
+                        if (processNonExciseSetsReceivingProductService.newProcessNonExciseSetsReceivingProductService(it) == null) {
+                            screenNavigator.goBackAndShowAlertWrongProductType()
+                            return@launchUITryCatch
+                        }
+                    }
+                    .orIfNull {
+                        screenNavigator.goBackAndShowAlertWrongProductType()
+                        return@launchUITryCatch
+                    }
+
             searchProductDelegate.init(viewModelScope = this@NonExciseSetsReceivingViewModel::viewModelScope,
                     scanResultHandler = this@NonExciseSetsReceivingViewModel::handleProductSearchResult)
 
@@ -208,20 +222,6 @@ class NonExciseSetsReceivingViewModel : CoreViewModel(),
             spinQuality.value = qualityInfo.value?.map {
                 it.name
             }
-
-            //эту строку необходимо прописывать только после того, как были установлены данные для переменных count  и suffix, а иначе фокус в поле et_count не установится
-            requestFocusToCount.value = true
-
-            productInfo.value?.let {
-                if (processNonExciseSetsReceivingProductService.newProcessNonExciseSetsReceivingProductService(it) == null) {
-                    screenNavigator.goBack()
-                    screenNavigator.openAlertWrongProductType()
-                }
-                return@launch
-            }
-
-            screenNavigator.goBack()
-
         }
     }
 

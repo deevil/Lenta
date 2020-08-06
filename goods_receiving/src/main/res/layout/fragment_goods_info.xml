@@ -426,7 +426,10 @@
 
             </LinearLayout>
 
-            <View style="@style/BottomIconEmptyPlaceStyle" />
+            <ImageView
+                style="@style/BottomIconStyle"
+                android:onClick="@{(v) -> vm.screenNavigator.openExceptionsShelfLifeScreen()}"
+                android:src="@drawable/ic_exceptions_shelf_life_48dp" />
 
             <View style="@style/BottomIconEmptyPlaceStyle" />
 
