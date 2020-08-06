@@ -5,7 +5,8 @@ import com.lenta.shared.R
 enum class ProductType {
     General,
     NonExciseAlcohol,
-    ExciseAlcohol
+    ExciseAlcohol,
+    Unknown
 }
 
 

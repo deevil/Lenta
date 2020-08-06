@@ -23,6 +23,7 @@ import com.lenta.shared.utilities.extentions.combineLatest
 import com.lenta.shared.utilities.extentions.launchUITryCatch
 import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.utilities.extentions.toStringFormatted
+import com.lenta.shared.utilities.orIfNull
 import com.lenta.shared.view.OnPositionClickListener
 import org.joda.time.DateTime
 import org.joda.time.Days
@@ -50,7 +51,7 @@ class GoodsMercuryInfoViewModel : CoreViewModel(), OnPositionClickListener {
     lateinit var timeMonitor: ITimeMonitor
 
     val productInfo: MutableLiveData<TaskProductInfo> = MutableLiveData()
-    val requestFocusToCount: MutableLiveData<Boolean> = MutableLiveData()
+    val requestFocusToCount: MutableLiveData<Boolean> = MutableLiveData(false)
     val uom: MutableLiveData<Uom?> by lazy {
         if (taskManager.getReceivingTask()?.taskHeader?.taskType == TaskType.DirectSupplier) {
             MutableLiveData(productInfo.value?.purchaseOrderUnits)
@@ -263,8 +264,20 @@ class GoodsMercuryInfoViewModel : CoreViewModel(), OnPositionClickListener {
 
     init {
         launchUITryCatch {
+            productInfo.value
+                    ?.let {
+                        if (processMercuryProductService.newProcessMercuryProductService(it) == null) {
+                            screenNavigator.goBackAndShowAlertWrongProductType()
+                            return@launchUITryCatch
+                        }
+                    }.orIfNull {
+                        screenNavigator.goBackAndShowAlertWrongProductType()
+                        return@launchUITryCatch
+                    }
+
             searchProductDelegate.init(viewModelScope = this@GoodsMercuryInfoViewModel::viewModelScope,
                     scanResultHandler = this@GoodsMercuryInfoViewModel::handleProductSearchResult)
+
             currentDate.value = timeMonitor.getServerDate()
             expirationDate.value = Calendar.getInstance()
             if (taskManager.getReceivingTask()?.taskHeader?.taskType == TaskType.RecalculationCargoUnit) {
@@ -323,9 +336,6 @@ class GoodsMercuryInfoViewModel : CoreViewModel(), OnPositionClickListener {
                 }
             }
 
-            //эту строку необходимо прописывать только после того, как были установлены данные для переменных count  и suffix, а иначе фокус в поле et_count не установится
-            requestFocusToCount.value = true
-
             spinQuality.value = qualityInfo.value?.map {
                 it.name
             }
@@ -333,11 +343,6 @@ class GoodsMercuryInfoViewModel : CoreViewModel(), OnPositionClickListener {
             paramGrzRoundLackRatio.value = dataBase.getParamGrzRoundLackRatio()
             paramGrzRoundLackUnit.value = dataBase.getParamGrzRoundLackUnit()
             paramGrzRoundHeapRatio.value = dataBase.getParamGrzRoundHeapRatio()
-
-            if (processMercuryProductService.newProcessMercuryProductService(productInfo.value!!) == null) {
-                screenNavigator.goBack()
-                screenNavigator.openAlertWrongProductType()
-            }
         }
     }
 

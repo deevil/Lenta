@@ -6,6 +6,7 @@ import com.lenta.bp9.BR
 import com.lenta.bp9.R
 import com.lenta.bp9.databinding.FragmentAlcoholBatchSelectBinding
 import com.lenta.bp9.databinding.ItemTileAlcoholBatchBinding
+import com.lenta.bp9.databinding.ItemTileGoodsListProcessedBinding
 import com.lenta.bp9.model.task.revise.ProductDocumentType
 import com.lenta.bp9.platform.extentions.getAppComponent
 import com.lenta.shared.platform.fragment.CoreFragment
@@ -48,13 +49,20 @@ class AlcoholBatchSelectFragment : CoreFragment<FragmentAlcoholBatchSelectBindin
 
     private fun initRvConfig() {
         binding?.let { layoutBinding ->
-            layoutBinding.rvConfig = initRecycleAdapterDataBinding<ItemTileAlcoholBatchBinding>(
+            layoutBinding.rvConfig = initRecycleAdapterDataBinding(
                     layoutId = R.layout.item_tile_alcohol_batch,
-                    itemId = BR.item
+                    itemId = BR.item,
+                    onAdapterItemBind = { binding: ItemTileAlcoholBatchBinding, position: Int ->
+                        onAdapterBindHandler(binding, position)
+                    },
+                    onAdapterItemClicked = {position ->
+                        recyclerViewKeyHandler?.onItemClicked(position)
+                    }
             )
 
             layoutBinding.vm = vm
             layoutBinding.lifecycleOwner = viewLifecycleOwner
+
             recyclerViewKeyHandler = initRecyclerViewKeyHandler(
                     recyclerView = layoutBinding.rv,
                     items = vm.batches,

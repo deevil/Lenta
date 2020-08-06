@@ -3,6 +3,7 @@ package com.lenta.bp18.features.good_info
 import android.os.Bundle
 import android.view.View
 import androidx.core.os.bundleOf
+import androidx.lifecycle.observe
 import com.lenta.bp18.R
 import com.lenta.bp18.databinding.FragmentGoodInfoBinding
 import com.lenta.bp18.model.pojo.GoodParams
@@ -49,7 +50,9 @@ class GoodInfoFragment : CoreFragment<FragmentGoodInfoBinding, GoodInfoViewModel
 
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
         bottomToolbarUiModel.uiModelButton1.show(ButtonDecorationInfo.back)
-        bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.complete/*, enabled = false*/)
+        bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.complete, enabled = false)
+
+        connectLiveData(vm.completeButtonEnabled,bottomToolbarUiModel.uiModelButton5.enabled)
     }
 
     override fun onToolbarButtonClick(view: View) {

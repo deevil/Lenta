@@ -9,10 +9,7 @@ import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import com.lenta.bp9.BR
 import com.lenta.bp9.R
-import com.lenta.bp9.databinding.FragmentMercuryListBinding
-import com.lenta.bp9.databinding.ItemTileMercuryListBinding
-import com.lenta.bp9.databinding.LayoutMercuryListTiedBinding
-import com.lenta.bp9.databinding.LayoutMercuryListUntiedBinding
+import com.lenta.bp9.databinding.*
 import com.lenta.bp9.model.task.revise.DeliveryProductDocumentRevise
 import com.lenta.bp9.platform.extentions.getAppComponent
 import com.lenta.shared.platform.activity.OnBackPresserListener
@@ -98,8 +95,8 @@ class MercuryListFragment : CoreFragment<FragmentMercuryListBinding, MercuryList
                     .inflate<LayoutMercuryListTiedBinding>(LayoutInflater.from(container.context),
                             R.layout.layout_mercury_list_tied,
                             container,
-                            false).let { layoutBinding ->
-
+                            false)
+                    .let { layoutBinding ->
                         val onClickSelectionListener = View.OnClickListener {
                             (it!!.tag as Int).let { position ->
                                 vm.tiedSelectionsHelper.revert(position = position)
@@ -107,43 +104,33 @@ class MercuryListFragment : CoreFragment<FragmentMercuryListBinding, MercuryList
                             }
                         }
 
-                        layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
+                        layoutBinding.rvConfig = initRecycleAdapterDataBinding(
                                 layoutId = R.layout.item_tile_mercury_list,
                                 itemId = BR.item,
-                                realisation = object : DataBindingAdapter<ItemTileMercuryListBinding> {
-                                    override fun onCreate(binding: ItemTileMercuryListBinding) {
-                                    }
-
-                                    override fun onBind(binding: ItemTileMercuryListBinding, position: Int) {
-                                        binding.tvItemNumber.tag = position
-                                        binding.tvItemNumber.setOnClickListener(onClickSelectionListener)
-                                        binding.selectedForDelete = vm.tiedSelectionsHelper.isSelected(position)
-                                        tiedRecyclerViewKeyHandler?.let {
-                                            binding.root.isSelected = it.isSelected(position)
-                                        }
-                                    }
-
+                                onAdapterItemBind = { binding: ItemTileMercuryListBinding, position: Int ->
+                                    binding.tvItemNumber.tag = position
+                                    binding.tvItemNumber.setOnClickListener(onClickSelectionListener)
+                                    binding.selectedForDelete = vm.tiedSelectionsHelper.isSelected(position)
+                                    tiedRecyclerViewKeyHandler
+                                            ?.let {
+                                                binding.root.isSelected = it.isSelected(position)
+                                            }
                                 },
-                                onItemClickListener = AdapterView.OnItemClickListener { _, _, position, _ ->
-                                    tiedRecyclerViewKeyHandler?.let {
-                                        if (it.isSelected(position)) {
-                                            vm.onClickItemPosition(position)
-                                        } else {
-                                            it.selectPosition(position)
-                                        }
-                                    }
-
+                                onAdapterItemClicked = {position ->
+                                    tiedRecyclerViewKeyHandler?.onItemClicked(position)
                                 }
                         )
 
                         layoutBinding.vm = vm
                         layoutBinding.lifecycleOwner = viewLifecycleOwner
-                        tiedRecyclerViewKeyHandler = RecyclerViewKeyHandler(
-                                rv = layoutBinding.rv,
+
+                        tiedRecyclerViewKeyHandler = initRecyclerViewKeyHandler(
+                                recyclerView = layoutBinding.rv,
+                                previousPosInfo = tiedRecyclerViewKeyHandler?.posInfo?.value,
                                 items = vm.listTied,
-                                lifecycleOwner = layoutBinding.lifecycleOwner!!,
-                                initPosInfo = tiedRecyclerViewKeyHandler?.posInfo?.value
+                                onClickHandler = vm::onClickItemPosition
                         )
+
                         return layoutBinding.root
                     }
         }
@@ -152,8 +139,8 @@ class MercuryListFragment : CoreFragment<FragmentMercuryListBinding, MercuryList
                 .inflate<LayoutMercuryListUntiedBinding>(LayoutInflater.from(container.context),
                         R.layout.layout_mercury_list_untied,
                         container,
-                        false).let { layoutBinding ->
-
+                        false)
+                .let { layoutBinding ->
                     val onClickSelectionListener = View.OnClickListener {
                         (it!!.tag as Int).let { position ->
                             vm.untiedSelectionsHelper.revert(position = position)
@@ -161,43 +148,33 @@ class MercuryListFragment : CoreFragment<FragmentMercuryListBinding, MercuryList
                         }
                     }
 
-                    layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
+                    layoutBinding.rvConfig = initRecycleAdapterDataBinding(
                             layoutId = R.layout.item_tile_mercury_list,
                             itemId = BR.item,
-                            realisation = object : DataBindingAdapter<ItemTileMercuryListBinding> {
-                                override fun onCreate(binding: ItemTileMercuryListBinding) {
-                                }
-
-                                override fun onBind(binding: ItemTileMercuryListBinding, position: Int) {
-                                    binding.tvItemNumber.tag = position
-                                    binding.tvItemNumber.setOnClickListener(onClickSelectionListener)
-                                    binding.selectedForDelete = vm.untiedSelectionsHelper.isSelected(position)
-                                    untiedRecyclerViewKeyHandler?.let {
-                                        binding.root.isSelected = it.isSelected(position)
-                                    }
-                                }
-
+                            onAdapterItemBind = { binding: ItemTileMercuryListBinding, position: Int ->
+                                binding.tvItemNumber.tag = position
+                                binding.tvItemNumber.setOnClickListener(onClickSelectionListener)
+                                binding.selectedForDelete = vm.untiedSelectionsHelper.isSelected(position)
+                                untiedRecyclerViewKeyHandler
+                                        ?.let {
+                                            binding.root.isSelected = it.isSelected(position)
+                                        }
                             },
-                            onItemClickListener = AdapterView.OnItemClickListener { _, _, position, _ ->
-                                untiedRecyclerViewKeyHandler?.let {
-                                    if (it.isSelected(position)) {
-                                        vm.onClickItemPosition(position)
-                                    } else {
-                                        it.selectPosition(position)
-                                    }
-                                }
-
+                            onAdapterItemClicked = {position ->
+                                untiedRecyclerViewKeyHandler?.onItemClicked(position)
                             }
                     )
 
                     layoutBinding.vm = vm
                     layoutBinding.lifecycleOwner = viewLifecycleOwner
-                    untiedRecyclerViewKeyHandler = RecyclerViewKeyHandler(
-                            rv = layoutBinding.rv,
+
+                    untiedRecyclerViewKeyHandler = initRecyclerViewKeyHandler(
+                            recyclerView = layoutBinding.rv,
+                            previousPosInfo = untiedRecyclerViewKeyHandler?.posInfo?.value,
                             items = vm.listUntied,
-                            lifecycleOwner = layoutBinding.lifecycleOwner!!,
-                            initPosInfo = untiedRecyclerViewKeyHandler?.posInfo?.value
+                            onClickHandler = vm::onClickItemPosition
                     )
+
                     return layoutBinding.root
                 }
     }

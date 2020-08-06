@@ -153,7 +153,7 @@ class TaskListFragment : CoreFragment<FragmentTaskListBinding, TaskListViewModel
             layoutBinding.lifecycleOwner = viewLifecycleOwner
             searchRecyclerViewKeyHandler = RecyclerViewKeyHandler(
                     rv = layoutBinding.rv,
-                    items = vm.found,
+                    items = vm.search,
                     lifecycleOwner = layoutBinding.lifecycleOwner!!,
                     initPosInfo = searchRecyclerViewKeyHandler?.posInfo?.value
             )

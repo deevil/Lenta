@@ -22,6 +22,7 @@ import com.lenta.shared.utilities.extentions.combineLatest
 import com.lenta.shared.utilities.extentions.launchUITryCatch
 import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.utilities.extentions.toStringFormatted
+import com.lenta.shared.utilities.orIfNull
 import com.lenta.shared.view.OnPositionClickListener
 import java.text.SimpleDateFormat
 import javax.inject.Inject
@@ -63,7 +64,7 @@ class NonExciseAlcoInfoPGEViewModel : CoreViewModel(), OnPositionClickListener {
     val spinProcessingUnit: MutableLiveData<List<String>> = MutableLiveData()
     val spinProcessingUnitSelectedPosition: MutableLiveData<Int> = MutableLiveData(0)
     val suffix: MutableLiveData<String> = MutableLiveData()
-    val requestFocusToCount: MutableLiveData<Boolean> = MutableLiveData()
+    val requestFocusToCount: MutableLiveData<Boolean> = MutableLiveData(false)
     val bottlingDate: MutableLiveData<String> = MutableLiveData("")
 
     private val qualityInfo: MutableLiveData<List<QualityInfo>> = MutableLiveData()
@@ -176,6 +177,17 @@ class NonExciseAlcoInfoPGEViewModel : CoreViewModel(), OnPositionClickListener {
 
     init {
         launchUITryCatch {
+            productInfo.value
+                    ?.let {
+                        if (processNonExciseAlcoProductPGEService.newProcessNonExciseAlcoProductPGEService(it) == null) {
+                            screenNavigator.goBackAndShowAlertWrongProductType()
+                            return@launchUITryCatch
+                        }
+                    }.orIfNull {
+                        screenNavigator.goBackAndShowAlertWrongProductType()
+                        return@launchUITryCatch
+                    }
+
             searchProductDelegate.init(viewModelScope = this@NonExciseAlcoInfoPGEViewModel::viewModelScope,
                     scanResultHandler = this@NonExciseAlcoInfoPGEViewModel::handleProductSearchResult)
 
@@ -220,14 +232,6 @@ class NonExciseAlcoInfoPGEViewModel : CoreViewModel(), OnPositionClickListener {
                 it.name
             }?.map {
                 it.key
-            }
-
-            //эту строку необходимо прописывать только после того, как были установлены данные для переменных count  и suffix, а иначе фокус в поле et_count не установится
-            requestFocusToCount.value = true
-
-            if (processNonExciseAlcoProductPGEService.newProcessNonExciseAlcoProductPGEService(productInfo.value!!) == null) {
-                screenNavigator.goBack()
-                screenNavigator.openAlertWrongProductType()
             }
         }
     }
@@ -338,20 +342,24 @@ class NonExciseAlcoInfoPGEViewModel : CoreViewModel(), OnPositionClickListener {
     }
 
     private fun updateDataSpinBottlingDate(position: Int) {
-        val manufactureCode = manufacturer
-                .value
-                ?.findLast {
-                    it.name == spinManufacturers.value?.get(position)
-                }?.code
+        val manufactureCode =
+                manufacturer.value
+                        ?.findLast {
+                            it.name == spinManufacturers.value?.get(position)
+                        }
+                        ?.code
 
-        val bottlingDates = batchInfo.value?.asSequence()
-                ?.filter { batch ->
-                    batch.egais == manufactureCode
-                }?.groupBy { dateGroups ->
-                    formatterRU.format(formatterEN.parse(dateGroups.bottlingDate))
-                }?.map {
-                    it.key
-                }
+        val bottlingDates =
+                batchInfo.value
+                        ?.filter { batch ->
+                            batch.egais == manufactureCode
+                        }
+                        ?.groupBy { dateGroups ->
+                            formatterRU.format(formatterEN.parse(dateGroups.bottlingDate))
+                        }
+                        ?.map {
+                            it.key
+                        }
         spinBottlingDateSelectedPosition.value = 0
         spinBottlingDate.value = bottlingDates
 
@@ -366,14 +374,18 @@ class NonExciseAlcoInfoPGEViewModel : CoreViewModel(), OnPositionClickListener {
 
         val bottlingDate = formatterEN.format(formatterRU.parse(spinBottlingDate.value?.get(positionSpinBottlingDate)))
 
-        var listProcessingUnitNumber = batchInfo.value?.asSequence()
-                ?.filter { batch ->
-                    batch.egais == manufactureCode && batch.bottlingDate == bottlingDate
-                }?.groupBy { processingUnitNumberGroups ->
-                    processingUnitNumberGroups.processingUnitNumber
-                }?.map {
-                    "${context.getString(R.string.prefix_processing_unit)}${it.key}"
-                }.orEmpty()
+        var listProcessingUnitNumber =
+                batchInfo.value
+                        ?.filter { batch ->
+                            batch.egais == manufactureCode && batch.bottlingDate == bottlingDate
+                        }
+                        ?.groupBy { processingUnitNumberGroups ->
+                            processingUnitNumberGroups.processingUnitNumber
+                        }
+                        ?.map {
+                            "${context.getString(R.string.prefix_processing_unit)}${it.key}"
+                        }
+                        .orEmpty()
 
         if (listProcessingUnitNumber.size > 1) {
             listProcessingUnitNumber = listOf(context.getString(R.string.selected_processing_unit)).plus(listProcessingUnitNumber)

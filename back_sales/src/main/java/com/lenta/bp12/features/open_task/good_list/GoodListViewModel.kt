@@ -194,18 +194,18 @@ class GoodListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
     fun onClickSave() {
         task.value?.let { task ->
             if (task.isExistUncountedGood()) {
-                navigator.showMakeTaskCountedAndClose {
-                    navigator.openDiscrepancyListScreen()
-                }
+                navigator.openDiscrepancyListScreen()
             } else {
-                manager.finishCurrentTask()
-                manager.prepareSendTaskDataParams(
-                        deviceIp = deviceInfo.getDeviceIp(),
-                        tkNumber = sessionInfo.market.orEmpty(),
-                        userNumber = sessionInfo.personnelNumber.orEmpty()
-                )
+                navigator.showMakeTaskCountedAndClose {
+                    manager.finishCurrentTask()
+                    manager.prepareSendTaskDataParams(
+                            deviceIp = deviceInfo.getDeviceIp(),
+                            tkNumber = sessionInfo.market.orEmpty(),
+                            userNumber = sessionInfo.personnelNumber.orEmpty()
+                    )
 
-                navigator.openSaveDataScreen()
+                    navigator.openSaveDataScreen()
+                }
             }
         }
     }

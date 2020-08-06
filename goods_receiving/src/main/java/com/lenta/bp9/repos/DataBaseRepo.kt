@@ -205,6 +205,34 @@ class DataBaseRepo(
             it.code == code
         }?.name
     }
+
+    override suspend fun getGrzMeinsPack(): String? = withContext(Dispatchers.IO) {
+        zmpUtz14V001.getGrzMeinsPack()
+    }
+
+    override suspend fun getGrzExclGtin(): String? = withContext(Dispatchers.IO) {
+        zmpUtz14V001.getGrzExclGtin()
+    }
+
+    override suspend fun getGrzMarkRef(): String? = withContext(Dispatchers.IO) {
+        zmpUtz14V001.getGrzMarkRef()
+    }
+
+    override suspend fun getQualityErrorUPD(): List<QualityInfo>? = withContext(Dispatchers.IO) {
+        zmpUtz17V001.getAllQuality()?.toQualityInfoList()?.filter {
+            it.id == "015" && it.code == "100"
+        }
+    }
+
+    override suspend fun getGrzGrundMark(): String? = withContext(Dispatchers.IO) {
+        zmpUtz14V001.getGrzGrundMark()
+    }
+
+    override suspend fun getGrzGrundMarkName(code: String): String? = withContext(Dispatchers.IO) {
+        zmpUtz20V001.getAllReasonRejection()?.toReasonRejectionInfoList()?.findLast {
+            it.code == code
+        }?.name
+    }
 }
 
 interface IDataBaseRepo {
@@ -243,4 +271,10 @@ interface IDataBaseRepo {
     suspend fun getQualityInfoTransportMarriage(): List<QualityInfo>?
     suspend fun getQualityBoxesDefectInfo(): List<QualityInfo>?
     suspend fun getGrzCrGrundcatName(code: String): String?
+    suspend fun getGrzMeinsPack(): String?
+    suspend fun getGrzExclGtin(): String?
+    suspend fun getGrzMarkRef(): String?
+    suspend fun getQualityErrorUPD(): List<QualityInfo>?
+    suspend fun getGrzGrundMark(): String?
+    suspend fun getGrzGrundMarkName(code: String): String?
 }

@@ -2,17 +2,18 @@ package com.lenta.bp12.features.open_task.task_search
 
 import androidx.lifecycle.MutableLiveData
 import com.lenta.bp12.model.IOpenTaskManager
+import com.lenta.bp12.model.actionByNumber
 import com.lenta.bp12.platform.navigation.IScreenNavigator
 import com.lenta.bp12.platform.resource.IResourceManager
 import com.lenta.bp12.request.pojo.TaskSearchParams
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.platform.viewmodel.CoreViewModel
+import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
 import com.lenta.shared.utilities.extentions.combineLatest
-import com.lenta.shared.utilities.extentions.launchUITryCatch
 import com.lenta.shared.utilities.extentions.map
 import javax.inject.Inject
 
-class TaskSearchViewModel : CoreViewModel() {
+class TaskSearchViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
 
     @Inject
     lateinit var navigator: IScreenNavigator
@@ -31,52 +32,69 @@ class TaskSearchViewModel : CoreViewModel() {
         resource.tk(sessionInfo.market.orEmpty())
     }
 
+    val requestFocusToProvider by lazy {
+        MutableLiveData(true)
+    }
+
     val provider = MutableLiveData("")
 
-    val material = MutableLiveData("")
+    val goodNumber = MutableLiveData("")
 
-    val mark = MutableLiveData("")
+    val exciseNumber = MutableLiveData("")
 
     val section = MutableLiveData("")
 
-    val searchEnabled = provider.combineLatest(material).combineLatest(mark).combineLatest(section).map {
+    val searchEnabled = provider.combineLatest(goodNumber).combineLatest(exciseNumber).combineLatest(section).map {
         it?.let {
             val provider = it.first.first.first
             val good = it.first.first.second
-            val mark = it.first.second
+            val excise = it.first.second
             val section = it.second
 
-            provider.isNotEmpty() || good.isNotEmpty() || mark.isNotEmpty() || section.isNotEmpty()
+            provider.isNotEmpty() || good.isNotEmpty() || excise.isNotEmpty() || section.isNotEmpty()
         }
     }
 
     // -----------------------------
 
-    init {
-        launchUITryCatch {
-            initSearchFields()
-        }
-    }
-
-    private fun initSearchFields() {
-        manager.searchParams?.let { searchParams ->
-            provider.value = searchParams.providerCode
-            material.value = searchParams.material
-            mark.value = searchParams.exciseMark
-            section.value = searchParams.section
-        }
-    }
-
     fun onClickSearch() {
         manager.searchParams = TaskSearchParams(
                 providerCode = provider.value.orEmpty(),
-                material = material.value.orEmpty(),
-                section = section.value.orEmpty(),
-                exciseMark = mark.value.orEmpty()
+                goodNumber = goodNumber.value.orEmpty(),
+                exciseNumber = exciseNumber.value.orEmpty(),
+                section = section.value.orEmpty()
         )
 
         manager.isNeedLoadTaskListByParams = true
         navigator.goBack()
+    }
+
+    override fun onOkInSoftKeyboard(): Boolean {
+        onClickSearch()
+        return true
+    }
+
+    fun onScanResult(data: String) {
+        checkSearchNumber(data)
+    }
+
+    private fun checkSearchNumber(number: String) {
+        actionByNumber(
+                number = number,
+                funcForEan = ::fillGoodNumberField,
+                funcForMaterial = ::fillGoodNumberField,
+                funcForSapOrBar = navigator::showTwelveCharactersEntered,
+                funcForExcise = ::fillExciseNumberField,
+                funcForNotValidFormat = navigator::showIncorrectEanFormat
+        )
+    }
+
+    private fun fillGoodNumberField(number: String) {
+        goodNumber.value = number
+    }
+
+    private fun fillExciseNumberField(number: String) {
+        exciseNumber.value = number
     }
 
 }

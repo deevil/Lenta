@@ -5,6 +5,7 @@ import android.view.View
 import com.lenta.bp9.BR
 import com.lenta.bp9.R
 import com.lenta.bp9.databinding.FragmentListGoodsTransferBinding
+import com.lenta.bp9.databinding.ItemTileGoodsDetailsBinding
 import com.lenta.bp9.databinding.ItemTileListGoodsTransferBinding
 import com.lenta.bp9.model.task.TaskSectionInfo
 import com.lenta.bp9.platform.extentions.getAppComponent
@@ -67,16 +68,9 @@ class ListGoodsTransferFragment : CoreFragment<FragmentListGoodsTransferBinding,
 
     private fun initRvConfig() {
         binding?.let { layoutBinding ->
-            layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
+            layoutBinding.rvConfig = initRecycleAdapterDataBinding<ItemTileListGoodsTransferBinding>(
                     layoutId = R.layout.item_tile_list_goods_transfer,
-                    itemId = BR.item,
-                    realisation = object : DataBindingAdapter<ItemTileListGoodsTransferBinding> {
-                        override fun onCreate(binding: ItemTileListGoodsTransferBinding) {
-                        }
-
-                        override fun onBind(binding: ItemTileListGoodsTransferBinding, position: Int) {
-                        }
-                    }
+                    itemId = BR.item
             )
 
             layoutBinding.vm = vm
