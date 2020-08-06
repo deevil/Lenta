@@ -2,6 +2,7 @@ package com.lenta.bp12.features.create_task.task_card
 
 import androidx.lifecycle.MutableLiveData
 import com.lenta.bp12.model.ICreateTaskManager
+import com.lenta.bp12.model.TypeCode
 import com.lenta.bp12.model.pojo.ReturnReason
 import com.lenta.bp12.model.pojo.TaskType
 import com.lenta.bp12.model.pojo.create_task.TaskCreate
@@ -12,6 +13,7 @@ import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.platform.constants.Constants
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.databinding.PageSelectionListener
+import com.lenta.shared.utilities.extentions.combineLatest
 import com.lenta.shared.utilities.extentions.launchUITryCatch
 import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.view.OnPositionClickListener
@@ -48,7 +50,18 @@ class TaskCardCreateViewModel : CoreViewModel(), PageSelectionListener {
     val selectedPage = MutableLiveData(0)
 
     val taskName by lazy {
-        MutableLiveData(resource.backSalesFromDate(SimpleDateFormat(Constants.DATE_FORMAT_dd_mm_yyyy_hh_mm, Locale.getDefault()).format(Date())))
+        selectedType.map { type ->
+            if (type?.code != TypeCode.PKO.code) {
+                val date = SimpleDateFormat(Constants.DATE_FORMAT_dd_mm_yyyy_hh_mm, Locale.getDefault()).format(Date())
+                resource.backSalesFromDate(date)
+            } else ""
+        }
+    }
+
+    val providerText by lazy {
+        selectedType.map { type ->
+            if (type?.code != TypeCode.PKO.code) resource.allSuppliers() else resource.wholesaleBuyer()
+        }
     }
 
     /**
@@ -70,6 +83,15 @@ class TaskCardCreateViewModel : CoreViewModel(), PageSelectionListener {
             returnReasonPosition.value = 0
 
             updateLists()
+        }
+    }
+
+    private val selectedType by lazy {
+        types.combineLatest(taskTypePosition).map {
+            it?.let {
+                val (list, position) = it
+                if (list.isNotEmpty()) list[position] else null
+            }
         }
     }
 

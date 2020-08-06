@@ -38,6 +38,13 @@ enum class ControlType(val code: String, val description: String) {
     }
 }
 
+enum class TypeCode(val code: String, val description: String){
+    VBP("ВБП", "Возврат брака прямому поставщику"),
+    PKO("ПКО", "Продажа крупным оптом"),
+    PNO("ПНО", "Обратная продажа Non Food"),
+    SPNO("СПНО", "Обратная продажа Food")
+}
+
 enum class CategoryType(val description: String){
     MARK("Марочно"),
     PART("Партионно")

@@ -13,6 +13,10 @@ class ResourceManager @Inject constructor(
 
     override fun backSalesFromDate(date: String): String = context.getString(R.string.back_sales_from_date, date)
 
+    override fun allSuppliers(): String = context.getString(R.string.all_suppliers)
+
+    override fun wholesaleBuyer(): String = context.getString(R.string.wholesale_buyer)
+
     override fun alcocodeDoesNotApplyToThisGood(): String = context.getString(R.string.alcocode_does_not_apply_to_this_good)
 
     override fun unknownAlcocode(): String = context.getString(R.string.unknown_alcocode)
@@ -38,6 +42,8 @@ interface IResourceManager {
 
     fun tk(number: String): String
     fun backSalesFromDate(date: String): String
+    fun allSuppliers(): String
+    fun wholesaleBuyer(): String
     fun alcocodeDoesNotApplyToThisGood(): String
     fun unknownAlcocode(): String
     fun typeQuantity(): String

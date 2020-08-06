@@ -413,6 +413,14 @@ class ScreenNavigator @Inject constructor(
         }
     }
 
+    override fun showMarkedGoodInfoScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    message = context.getString(R.string.marked_good),
+                    iconRes = com.lenta.shared.R.drawable.ic_marked_white_32dp), CustomAnimation.vertical)
+        }
+    }
+
 }
 
 interface IScreenNavigator : ICoreNavigator {
@@ -463,5 +471,6 @@ interface IScreenNavigator : ICoreNavigator {
     fun showExciseAlcoholGoodInfoScreen()
     fun showAlcoholGoodInfoScreen()
     fun showCommonGoodInfoScreen()
+    fun showMarkedGoodInfoScreen()
 
 }

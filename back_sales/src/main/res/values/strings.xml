@@ -62,6 +62,7 @@
     // Описание иконок
     <string name="alcohol_good">Алкогольный товар</string>
     <string name="common_good">Обычный товар</string>
+    <string name="marked_good">Маркированный товар</string>
 
     // Наименование кнопок
     <string name="create_task">Создать задание</string>
@@ -100,6 +101,7 @@
     <string name="specify_supplier_sap">Укажите SAP-код поставщика</string>
     <string name="supplier_name">Наименование поставщика:</string>
     <string name="all_suppliers">Все поставщики</string>
+    <string name="wholesale_buyer">Оптовый покупатель</string>
     <string name="picking_warehouse">Склад\nкомплектации</string>
 
 </resources>

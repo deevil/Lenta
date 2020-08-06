@@ -66,8 +66,9 @@
 
                 <TextView
                     style="@style/CellTextStyle"
-                    android:text="@string/all_suppliers"
-                    android:textColor="@color/color_text_title_header" />
+                    android:text="@{vm.providerText}"
+                    android:textColor="@color/color_text_title_header"
+                    tools:text="@string/all_suppliers" />
 
             </LinearLayout>
 
