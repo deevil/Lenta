@@ -96,6 +96,7 @@
     <string name="with_bottling_date">с датой розлива</string>
     <string name="common_product">Обычный товар</string>
     <string name="alcohol">Алкоголь</string>
+    <string name="marked_good">Маркированный товар</string>
     <string name="excise_alcohol">Акцизный алкоголь</string>
     <string name="specify_supplier_sap">Укажите SAP-код поставщика</string>
     <string name="supplier_name">Наименование поставщика:</string>

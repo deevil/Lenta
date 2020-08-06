@@ -19,6 +19,7 @@ enum class BlockType {
 enum class GoodKind {
     COMMON,
     ALCOHOL,
+    MARK,
     EXCISE
 }
 
@@ -68,7 +69,17 @@ enum class ScreenStatus(val description: String){
     MARK_150("Марка 150 символов"),
     MARK_68("Марка 68 символов"),
     PART("Партия"),
-    BOX("Коробка")
+    BOX("Коробка"),
+    SHOES("Обувь"),
+    TOBACCO("Сигареты"),
+    TIRES("Шины"),
+    PERFUME("Парфюм"),
+    CLOTHES("Одежда"),
+    PHOTO("Фото"),
+    BEER("Пиво"),
+    MILK("Молоко"),
+    MEDICINE("Медицина"),
+    UNKNOWN("")
 }
 
 enum class ScanInfoMode(val mode: Int){
@@ -80,4 +91,21 @@ enum class ScanInfoMode(val mode: Int){
 enum class TaskSearchMode(val mode: Int){
     COMMON(1),
     WITH_PARAMS(2)
+}
+
+enum class MarkType(val description: String) {
+    TOBACCO("Табак"),
+    SHOES("Обувь"),
+    TIRES("Шины"),
+    PERFUME("Парфюм"),
+    CLOTHES("Одежда"),
+    PHOTO("Фото"),
+    BEER("Пиво"),
+    MILK("Молоко"),
+    MEDICINE("Медицина"),
+    UNKNOWN("")
+}
+
+fun main() {
+    MarkType::class.java.enumConstants
 }

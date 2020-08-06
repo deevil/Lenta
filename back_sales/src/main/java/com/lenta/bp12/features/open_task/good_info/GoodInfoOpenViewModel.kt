@@ -21,10 +21,8 @@ import com.lenta.shared.models.core.getMatrixType
 import com.lenta.shared.platform.constants.Constants
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.requests.combined.scan_info.ScanCodeInfo
-import com.lenta.shared.utilities.Logg
+import com.lenta.shared.utilities.*
 import com.lenta.shared.utilities.extentions.*
-import com.lenta.shared.utilities.getDateFromString
-import com.lenta.shared.utilities.getFormattedDate
 import com.lenta.shared.view.OnPositionClickListener
 import javax.inject.Inject
 
@@ -85,7 +83,7 @@ class GoodInfoOpenViewModel : CoreViewModel() {
     val accountingType by lazy {
         screenStatus.map { status ->
             when (status) {
-                ScreenStatus.MARK_150, ScreenStatus.MARK_68 -> resource.typeMark()
+                ScreenStatus.MARK_150, ScreenStatus.MARK_68, ScreenStatus.TOBACCO, ScreenStatus.SHOES -> resource.typeMark()
                 ScreenStatus.ALCOHOL, ScreenStatus.PART -> resource.typePart()
                 else -> resource.typeQuantity()
             }
@@ -311,12 +309,13 @@ class GoodInfoOpenViewModel : CoreViewModel() {
     private fun checkSearchNumber(number: String) {
         originalSearchNumber = number
 
+
         actionByNumberLength(
                 number = number,
                 funcForEan = ::getGoodByEan,
                 funcForMaterial = ::getGoodByMaterial,
                 funcForSapOrBar = navigator::showTwelveCharactersEntered,
-                funcForExcise = ::loadMarkInfo,
+                funcForExcise = ::loadExciseMarkInfo,
                 funcForBox = ::loadBoxInfo,
                 funcForNotValidFormat = {
                     goBackIfSearchFromList()
@@ -393,6 +392,18 @@ class GoodInfoOpenViewModel : CoreViewModel() {
             GoodKind.COMMON -> ScreenStatus.COMMON
             GoodKind.ALCOHOL -> ScreenStatus.ALCOHOL
             GoodKind.EXCISE -> ScreenStatus.EXCISE
+            GoodKind.MARK -> when (good.markType) {
+                MarkType.SHOES -> ScreenStatus.SHOES
+                MarkType.TOBACCO -> ScreenStatus.TOBACCO
+                MarkType.BEER -> ScreenStatus.BEER
+                MarkType.CLOTHES -> ScreenStatus.CLOTHES
+                MarkType.MEDICINE -> ScreenStatus.MEDICINE
+                MarkType.MILK -> ScreenStatus.MILK
+                MarkType.PERFUME -> ScreenStatus.PERFUME
+                MarkType.PHOTO -> ScreenStatus.PHOTO
+                MarkType.TIRES -> ScreenStatus.TIRES
+                MarkType.UNKNOWN -> ScreenStatus.UNKNOWN
+            }
         }
     }
 
@@ -476,7 +487,8 @@ class GoodInfoOpenViewModel : CoreViewModel() {
                         innerUnits = database.getUnitsByCode(materialInfo?.innerUnitsCode.orEmpty()),
                         innerQuantity = materialInfo?.innerQuantity?.toDoubleOrNull() ?: 0.0,
                         provider = task.value?.provider ?: ProviderInfo(),
-                        producers = producers.orEmpty()
+                        producers = producers.orEmpty(),
+                        markType = enumValueOrNull<MarkType>(materialInfo?.markType.orEmpty()).orIfNull { MarkType.UNKNOWN }
                 )
             }
 
@@ -498,7 +510,7 @@ class GoodInfoOpenViewModel : CoreViewModel() {
         }
     }
 
-    private fun loadMarkInfo(number: String) {
+    private fun loadExciseMarkInfo(number: String) {
         launchUITryCatch {
             navigator.showProgressLoadingData(::handleFailure)
 
@@ -511,18 +523,18 @@ class GoodInfoOpenViewModel : CoreViewModel() {
             )).also {
                 navigator.hideProgress()
             }.either(::handleFailure) { result ->
-                handleLoadMarkInfoResult(result, number)
+                handleLoadExciseMarkInfoResult(result, number)
             }
         }
     }
 
-    private fun handleLoadMarkInfoResult(result: ScanInfoResult, number: String) {
+    private fun handleLoadExciseMarkInfoResult(result: ScanInfoResult, number: String) {
         launchUITryCatch {
             result.status.let { status ->
                 when (status) {
-                    MarkStatus.OK.code -> addMarkInfo(result)
+                    MarkStatus.OK.code -> addExciseMarkInfo(result)
                     MarkStatus.BAD.code -> {
-                        addMarkInfo(result)
+                        addExciseMarkInfo(result)
                         navigator.openAlertScreen(result.statusDescription)
                     }
                     MarkStatus.UNKNOWN.code -> handleUnknownMark(number, result)
@@ -552,7 +564,7 @@ class GoodInfoOpenViewModel : CoreViewModel() {
         }
     }
 
-    private fun addMarkInfo(result: ScanInfoResult) {
+    private fun addExciseMarkInfo(result: ScanInfoResult) {
         manager.clearSearchFromListParams()
         lastSuccessSearchNumber = originalSearchNumber
         isExistUnsavedData = true

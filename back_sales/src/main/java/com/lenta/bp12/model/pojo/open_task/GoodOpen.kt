@@ -1,6 +1,7 @@
 package com.lenta.bp12.model.pojo.open_task
 
 import com.lenta.bp12.model.GoodKind
+import com.lenta.bp12.model.MarkType
 import com.lenta.bp12.model.pojo.Mark
 import com.lenta.bp12.model.pojo.Part
 import com.lenta.bp12.model.pojo.Position
@@ -36,7 +37,8 @@ data class GoodOpen(
 
         val positions: MutableList<Position> = mutableListOf(),
         val marks: MutableList<Mark> = mutableListOf(),
-        val parts: MutableList<Part> = mutableListOf()
+        val parts: MutableList<Part> = mutableListOf(),
+        val markType: MarkType
 ) {
 
     fun getNameWithMaterial(delimiter: String = " "): String {

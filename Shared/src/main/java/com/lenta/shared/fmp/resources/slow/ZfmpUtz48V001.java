@@ -116,6 +116,8 @@ public class ZfmpUtz48V001 {
         @SerializedName("IS_NEW")
         public String isNew;
 
+        @SerializedName("ZMARKTYPE")
+        public String markType;
 
     }
 

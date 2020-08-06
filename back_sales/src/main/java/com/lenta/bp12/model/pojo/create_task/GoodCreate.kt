@@ -2,6 +2,7 @@ package com.lenta.bp12.model.pojo.create_task
 
 import com.lenta.bp12.model.ControlType
 import com.lenta.bp12.model.GoodKind
+import com.lenta.bp12.model.MarkType
 import com.lenta.bp12.model.pojo.Mark
 import com.lenta.bp12.model.pojo.Part
 import com.lenta.bp12.model.pojo.Position
@@ -23,6 +24,7 @@ data class GoodCreate(
         val control: ControlType = ControlType.COMMON,
         val section: String,
         val matrix: MatrixType,
+        val markType: MarkType,
 
         val commonUnits: Uom = Uom.ST,
         val innerUnits: Uom = Uom.ST,

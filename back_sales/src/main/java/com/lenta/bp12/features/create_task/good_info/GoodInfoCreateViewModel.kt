@@ -10,6 +10,7 @@ import com.lenta.bp12.model.pojo.create_task.GoodCreate
 import com.lenta.bp12.platform.extention.extractAlcoCode
 import com.lenta.bp12.platform.extention.getControlType
 import com.lenta.bp12.platform.extention.getGoodKind
+import com.lenta.bp12.platform.extention.getMarkType
 import com.lenta.bp12.platform.navigation.IScreenNavigator
 import com.lenta.bp12.platform.resource.IResourceManager
 import com.lenta.bp12.repository.IDatabaseRepository
@@ -449,6 +450,18 @@ class GoodInfoCreateViewModel : CoreViewModel() {
             GoodKind.COMMON -> ScreenStatus.COMMON
             GoodKind.ALCOHOL -> ScreenStatus.ALCOHOL
             GoodKind.EXCISE -> ScreenStatus.EXCISE
+            GoodKind.MARK -> when (good.markType) {
+                MarkType.SHOES -> ScreenStatus.SHOES
+                MarkType.TOBACCO -> ScreenStatus.TOBACCO
+                MarkType.BEER -> ScreenStatus.BEER
+                MarkType.CLOTHES -> ScreenStatus.CLOTHES
+                MarkType.MEDICINE -> ScreenStatus.MEDICINE
+                MarkType.MILK -> ScreenStatus.MILK
+                MarkType.PERFUME -> ScreenStatus.PERFUME
+                MarkType.PHOTO -> ScreenStatus.PHOTO
+                MarkType.TIRES -> ScreenStatus.TIRES
+                MarkType.UNKNOWN -> ScreenStatus.UNKNOWN
+            }
         }
     }
 
@@ -534,7 +547,8 @@ class GoodInfoCreateViewModel : CoreViewModel() {
                         innerUnits = database.getUnitsByCode(materialInfo?.innerUnitsCode.orEmpty()),
                         innerQuantity = materialInfo?.innerQuantity?.toDoubleOrNull() ?: 1.0,
                         providers = providers.orEmpty().toMutableList(),
-                        producers = producers.orEmpty().toMutableList()
+                        producers = producers.orEmpty().toMutableList(),
+                        markType = getMarkType()
                 )
             }
 

@@ -1,5 +1,6 @@
 package com.lenta.bp12.repository
 
+import com.lenta.bp12.model.MarkType
 import com.lenta.bp12.model.pojo.AlcoCodeInfo
 import com.lenta.bp12.model.pojo.ReturnReason
 import com.lenta.bp12.model.pojo.TaskType
@@ -12,7 +13,9 @@ import com.lenta.shared.fmp.resources.fast.*
 import com.lenta.shared.fmp.resources.slow.*
 import com.lenta.shared.models.core.Uom
 import com.lenta.shared.models.core.getMatrixType
+import com.lenta.shared.utilities.enumValueOrNull
 import com.lenta.shared.utilities.extentions.isSapTrue
+import com.lenta.shared.utilities.orIfNull
 import com.mobrun.plugin.api.HyperHive
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -50,7 +53,8 @@ class DatabaseRepository @Inject constructor(
                         name = goodInfo.name,
                         kind = goodInfo.getGoodKind(),
                         section = goodInfo.abtnr,
-                        matrix = getMatrixType(goodInfo.matrType)
+                        matrix = getMatrixType(goodInfo.matrType),
+                        markType = enumValueOrNull<MarkType>(goodInfo.markType.orEmpty()).orIfNull { MarkType.UNKNOWN }
                 )
             }
         }

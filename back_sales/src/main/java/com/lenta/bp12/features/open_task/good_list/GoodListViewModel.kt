@@ -34,7 +34,7 @@ class GoodListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
 
     val processedSelectionsHelper = SelectionItemsHelper()
 
-    val selectedPage = MutableLiveData(0)
+    val selectedPage = MutableLiveData(PROCESSING_PAGE)
 
     val task by lazy {
         manager.currentTask
@@ -104,7 +104,7 @@ class GoodListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
                     val isSelectedProcessing = it.first.second.isNotEmpty()
                     val isSelectedProcessed = it.second.isNotEmpty()
 
-                    (page == 0 && isSelectedProcessing) || (page == 1 && isSelectedProcessed)
+                    (page == PROCESSING_PAGE && isSelectedProcessing) || (page == PROCESSED_PAGE && isSelectedProcessed)
                 }
             }
 
@@ -125,8 +125,8 @@ class GoodListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
     fun onClickItemPosition(position: Int) {
         selectedPage.value?.let { page ->
             when (page) {
-                0 -> processing.value?.get(position)?.material
-                1 -> processed.value?.get(position)?.material
+                PROCESSING_PAGE -> processing.value?.get(position)?.material
+                PROCESSED_PAGE -> processed.value?.get(position)?.material
                 else -> null
             }?.let { material ->
                 openGoodByMaterial(material)
@@ -145,7 +145,7 @@ class GoodListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
 
     private fun openGoodByMaterial(material: String) {
         task.value?.let { task ->
-            task.goods.find { it.material == material }?.let { good ->
+            task.goods.find { it.material == material }?.let {
                 manager.searchNumber = material
                 manager.isSearchFromList = true
                 navigator.openGoodInfoOpenScreen()
@@ -168,7 +168,7 @@ class GoodListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
     fun onClickDelete() {
         selectedPage.value?.let { page ->
             when (page) {
-                PROCESSED_PAGE -> {
+                PROCESSING_PAGE -> {
                     val materials = mutableListOf<String>()
                     processingSelectionsHelper.selectedPositions.value?.mapNotNullTo(materials) { position ->
                         processing.value?.get(position)?.material
@@ -177,7 +177,7 @@ class GoodListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
                     processingSelectionsHelper.clearPositions()
                     manager.markGoodsDeleted(materials)
                 }
-                TO_PROCESS_PAGE -> {
+                PROCESSED_PAGE -> {
                     val materials = mutableListOf<String>()
                     processedSelectionsHelper.selectedPositions.value?.mapNotNullTo(materials) { position ->
                         processed.value?.get(position)?.material
@@ -211,8 +211,8 @@ class GoodListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
     }
 
     companion object {
-        private const val PROCESSED_PAGE = 0
-        private const val TO_PROCESS_PAGE = 1
+        private const val PROCESSING_PAGE = 0
+        private const val PROCESSED_PAGE = 1
     }
 
 }

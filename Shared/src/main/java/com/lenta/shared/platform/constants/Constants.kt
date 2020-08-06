@@ -43,7 +43,12 @@ object Constants {
     // Mark code length
     const val MARK_150 = 150
     const val MARK_68 = 68
-    const val MARK_134 = 134
+    const val MARK_134 = 134 //Shoes
     const val MARK_39 = 39
+
+    // Regex patterns
+    const val GTIN_REGEX_PATTERN = "(0{6}(?<ean8gs1>\\d{8})|0(?<ean13gs1>\\d{13}))"
+    const val TOBACCO_MARK_REGEX_PATTERN = "^01(0{6}(?<ean8gs1>\\d{8})|0(?<ean13gs1>\\d{13}))21(?<serialBlock>.{7})(8005(?<mrpBlock>\\d{6}))?|^(0{6}(?<ean8Pack>\\d{8})|0(?<ean13Pack>\\d{13}))(?<serialPack>.{7})(?<cryptoPack>.{8})$|(?<ean8>^\\d{8}$)|(?<ean13>^\\d{13}$)"
+    const val SHOES_MARK_REGEX_PATTERN = "^01(?<gtin>\\d{14})21(?<serial>\\S{13})(?:240(?<tradeCode>\\d{4}))?(?:91(?<verificationKey>\\S{4}))?(?:92(?<verificationCode>\\S{88}))?$"
 
 }

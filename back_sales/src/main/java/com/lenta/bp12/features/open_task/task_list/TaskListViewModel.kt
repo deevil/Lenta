@@ -53,7 +53,7 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
     val selectedPage = MutableLiveData(0)
 
     val numberField by lazy {
-        MutableLiveData(sessionInfo.userName)
+        MutableLiveData("")
     }
 
     val requestFocusToNumberField by lazy {

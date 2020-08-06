@@ -144,7 +144,8 @@ class OpenTaskManager @Inject constructor(
                                             code = it.code,
                                             name = it.name
                                     )
-                                }
+                                },
+                                markType = goodInfo.markType
                         )
 
                         factQuantity.toDoubleOrNull()?.let { factQuantity ->
