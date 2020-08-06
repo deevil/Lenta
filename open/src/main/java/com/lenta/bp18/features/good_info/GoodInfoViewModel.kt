@@ -49,15 +49,15 @@ class GoodInfoViewModel : CoreViewModel(), OnPositionClickListener {
 
     private val groups: MutableLiveData<List<GroupInfo>> = MutableLiveData()
     private val conditions: MutableLiveData<List<ConditionInfo>> = MutableLiveData()
-    private val selectedPosition: MutableLiveData<Int> = MutableLiveData()
-    private val selectedCondition: MutableLiveData<Int> = MutableLiveData()
+    val selectedPosition: MutableLiveData<Int> = MutableLiveData(0)
+    val selectedCondition: MutableLiveData<Int> = MutableLiveData(0)
 
-    val groupsNames: MutableLiveData<List<String?>> = groups.map { group ->
-        group?.map { it.name }.orEmpty()
+    val groupsNames: MutableLiveData<List<String?>> = groups.map { groups ->
+        groups?.map { it.name }.orEmpty()
     }
 
-    val conditionNames: MutableLiveData<List<String?>> = conditions.map { condition ->
-        condition?.map { it.name }.orEmpty()
+    val conditionNames: MutableLiveData<List<String?>> = conditions.map { conditions ->
+        conditions?.map { it.name }.orEmpty()
     }
 
     private var currentCondition: String? = ""
@@ -97,7 +97,6 @@ class GoodInfoViewModel : CoreViewModel(), OnPositionClickListener {
             //partNumberField.value = /*значение*/
 
             val groupList = database.getAllGoodGroup()
-            /**Добавить выборку групп*/
             groups.value = groupList
             selectedPosition.value?.let {
                 appSettings.lastGroup?.let { lGroup ->
@@ -111,20 +110,23 @@ class GoodInfoViewModel : CoreViewModel(), OnPositionClickListener {
                 }.orIfNull { onClickPosition(0) }
             }
 
-            database.getConditionByName(good?.getFormattedMatcode()).let { list ->
-                conditions.value = list.map { ConditionInfo(name = it.name) }
-                selectedCondition.value?.let {
-                    list.forEachIndexed { index, conditionInfo ->
-                        if (conditionInfo.defCondition == DEF_COND_FLAG) {
-                            currentCondition = conditionInfo.name
-                            onClickCondition(index)
-                        } else {
-                            onClickCondition(0)
-                        }
+            val conditionsList: MutableList<ConditionInfo> = mutableListOf()
+            /**Для отображения пустого поля, если условие DEFCOND не имеет флага*/
+            conditionsList.add(0,ConditionInfo())
+            conditionsList.addAll(database.getAllCondition())
+            val conditionMatnr = good?.getFormattedMatcode()
+            Logg.d { "$conditionMatnr" }
+            conditions.value = conditionsList
+            Logg.d { "$conditionsList" }
+            selectedCondition.value?.let {
+                conditionsList.forEachIndexed { index, conditionInfo ->
+                    if (conditionInfo.defCondition == "X" && conditionInfo.matnr == "$SAP_ZEROES$conditionMatnr") {
+                        currentCondition = conditionInfo.name
+                        Logg.d { "$currentCondition $index" }
+                        onClickCondition(index)
                     }
                 }
-            }
-
+            }.orIfNull { onClickPosition(0) }
         }
 
     }
@@ -133,7 +135,7 @@ class GoodInfoViewModel : CoreViewModel(), OnPositionClickListener {
         selectedPosition.value = position
     }
 
-    private fun onClickCondition(position: Int) {
+    fun onClickCondition(position: Int) {
         selectedCondition.value = position
     }
 
@@ -167,7 +169,7 @@ class GoodInfoViewModel : CoreViewModel(), OnPositionClickListener {
 
     companion object {
         private const val DEF_WEIGHT = "0"
-        private const val DEF_COND_FLAG = "X"
+        private const val SAP_ZEROES = "000000000000" //12 нулей
     }
 
 }

@@ -80,6 +80,12 @@ class DatabaseRepo(
         }
     }
 
+    override suspend fun getAllCondition(): List<ConditionInfo>{
+        return withContext(Dispatchers.IO){
+            conditionInfo.getAllCondition().toConditionInfoList()
+        }
+    }
+
 }
 
 
@@ -91,4 +97,5 @@ interface IDatabaseRepo {
     suspend fun getAllMarkets(): List<MarketInfo>
     suspend fun getConditionByName(good: String?): List<ConditionInfo>
     suspend fun getAllGoodGroup(): List<GroupInfo>
+    suspend fun getAllCondition(): List<ConditionInfo>
 }
