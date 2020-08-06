@@ -7,7 +7,10 @@ data class Basket(
         val section: String,
         val goodType: String,
         val control: ControlType,
-        val provider: ProviderInfo
+        val provider: ProviderInfo,
+
+        val isPrinted: Boolean = false,
+        val isLocked: Boolean = false
 ) {
 
     fun getDescription(isDivBySection: Boolean): String {

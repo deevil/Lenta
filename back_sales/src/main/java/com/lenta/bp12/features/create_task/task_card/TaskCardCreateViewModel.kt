@@ -6,6 +6,7 @@ import com.lenta.bp12.model.TypeCode
 import com.lenta.bp12.model.pojo.ReturnReason
 import com.lenta.bp12.model.pojo.TaskType
 import com.lenta.bp12.model.pojo.create_task.TaskCreate
+import com.lenta.bp12.platform.extention.isWholesaleType
 import com.lenta.bp12.platform.navigation.IScreenNavigator
 import com.lenta.bp12.platform.resource.IResourceManager
 import com.lenta.bp12.repository.IDatabaseRepository
@@ -51,7 +52,7 @@ class TaskCardCreateViewModel : CoreViewModel(), PageSelectionListener {
 
     val taskName by lazy {
         selectedType.map { type ->
-            if (type?.code != TypeCode.PKO.code) {
+            if (type?.isWholesaleType() == true) {
                 val date = SimpleDateFormat(Constants.DATE_FORMAT_dd_mm_yyyy_hh_mm, Locale.getDefault()).format(Date())
                 resource.backSalesFromDate(date)
             } else ""
@@ -60,7 +61,7 @@ class TaskCardCreateViewModel : CoreViewModel(), PageSelectionListener {
 
     val provider by lazy {
         selectedType.map { type ->
-            if (type?.code != TypeCode.PKO.code) resource.allSuppliers() else resource.wholesaleBuyer()
+            if (type?.isWholesaleType() == true) resource.allSuppliers() else resource.wholesaleBuyer()
         }
     }
 
@@ -185,12 +186,15 @@ class TaskCardCreateViewModel : CoreViewModel(), PageSelectionListener {
      */
 
     fun onClickNext() {
-        manager.updateCurrentTask(TaskCreate(
+        val task = TaskCreate(
                 name = taskName.value.orEmpty(),
                 type = types.value!![taskTypePosition.value!!],
                 storage = storage.value!![storagePosition.value!!],
                 reason = reasons.value!![returnReasonPosition.value!!]
-        ))
+        )
+
+        manager.updateCurrentTask(task)
+        manager.isWholesaleTaskType = task.type.isWholesaleType()
 
         navigator.openTaskCompositionScreen()
     }

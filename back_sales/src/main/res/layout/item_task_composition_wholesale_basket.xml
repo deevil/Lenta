@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        xmlns:tools="http://schemas.android.com/tools">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <data>
 
         <variable
             name="item"
-            type="com.lenta.bp12.features.create_task.task_composition.ItemBasketUi" />
+            type="com.lenta.bp12.features.create_task.task_composition.ItemWholesaleBasketUi" />
 
         <variable
             name="selectedForDelete"
@@ -84,7 +84,7 @@
                     style="@style/CellTextStyle"
                     android:layout_width="wrap_content"
                     android:text="@{item.quantity}"
-                    tools:text="1" />
+                    tools:text="3 шт" />
 
             </LinearLayout>
 
@@ -92,13 +92,20 @@
 
             <LinearLayout
                 style="@style/LinearCellStyle"
-                android:layout_weight="@integer/four_two_4">
+                android:layout_weight="@integer/four_two_4"
+                android:orientation="horizontal">
 
-                <TextView
-                    style="@style/CellTextStyle"
+                <ImageView
                     android:layout_width="wrap_content"
-                    android:text="@{item.quantity}"
-                    tools:text="1" />
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_print_gray_24dp"
+                    android:visibility="@{item.printed}" />
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_lock_status_gray_24dp"
+                    android:visibility="@{item.locked}" />
 
             </LinearLayout>
 

@@ -7,6 +7,7 @@ import com.lenta.bp12.platform.navigation.IScreenNavigator
 import com.lenta.bp12.platform.resource.IResourceManager
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.exception.Failure
+import com.lenta.shared.models.core.Uom
 import com.lenta.shared.platform.device_info.DeviceInfo
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.SelectionItemsHelper
@@ -77,12 +78,12 @@ class TaskCompositionViewModel : CoreViewModel(), PageSelectionListener, OnOkInS
         }
     }
 
-    val baskets by lazy {
+    val commonBaskets by lazy {
         task.map {
             it?.let { task ->
                 task.baskets.reversed().mapIndexed { index, basket ->
                     val position = task.baskets.size - index
-                    ItemBasketUi(
+                    ItemCommonBasketUi(
                             basket = basket,
                             position = "$position",
                             name = resource.basket("$position"),
@@ -94,20 +95,45 @@ class TaskCompositionViewModel : CoreViewModel(), PageSelectionListener, OnOkInS
         }
     }
 
+    val wholesaleBaskets by lazy {
+        task.map {
+            it?.let { task ->
+                task.baskets.reversed().mapIndexed { index, basket ->
+                    val position = task.baskets.size - index
+                    ItemWholesaleBasketUi(
+                            basket = basket,
+                            position = "$position",
+                            name = resource.basket("$position"),
+                            description = basket.getDescription(task.type.isDivBySection),
+                            quantity = "${task.getCountByBasket(basket)} ${Uom.ST.name}",
+                            isPrinted = basket.isPrinted,
+                            isLocked = basket.isLocked
+                    )
+                }
+            }
+        }
+    }
+
     /**
     Кнопки нижнего тулбара
      */
 
-    val deleteEnabled = selectedPage.combineLatest(goodSelectionsHelper.selectedPositions).combineLatest(basketSelectionsHelper.selectedPositions).map {
-        val tab = it!!.first.first
-        val isGoodSelected = it.first.second.isNotEmpty()
-        val isBasketSelected = it.second.isNotEmpty()
+    val deleteEnabled = selectedPage.combineLatest(goodSelectionsHelper.selectedPositions)
+            .combineLatest(basketSelectionsHelper.selectedPositions).map {
+                val tab = it!!.first.first
+                val isGoodSelected = it.first.second.isNotEmpty()
+                val isBasketSelected = it.second.isNotEmpty()
 
-        tab == 0 && isGoodSelected || tab == 1 && isBasketSelected
-    }
+                tab == 0 && isGoodSelected || tab == 1 && isBasketSelected
+            }
 
-    val printVisibility = selectedPage.map { tab ->
-        tab == 1
+    val printVisibility by lazy {
+        selectedPage.combineLatest(wholesaleBaskets).map {
+            it?.let {
+                val (tab, baskets) = it
+                manager.isWholesaleTaskType && tab == 1 && baskets.isNotEmpty()
+            }
+        }
     }
 
     val saveEnabled by lazy {
@@ -154,7 +180,7 @@ class TaskCompositionViewModel : CoreViewModel(), PageSelectionListener, OnOkInS
                     navigator.openGoodInfoCreateScreen()
                 }
                 1 -> {
-                    manager.updateCurrentBasket(baskets.value!![position].basket)
+                    manager.updateCurrentBasket(commonBaskets.value!![position].basket)
                     navigator.openBasketGoodListScreen()
                 }
                 else -> throw IllegalArgumentException("Wrong pager position!")
@@ -177,7 +203,7 @@ class TaskCompositionViewModel : CoreViewModel(), PageSelectionListener, OnOkInS
                 1 -> {
                     val basketList = mutableListOf<Basket>()
                     basketSelectionsHelper.selectedPositions.value?.mapNotNullTo(basketList) { position ->
-                        baskets.value?.get(position)?.basket
+                        commonBaskets.value?.get(position)?.basket
                     }
 
                     basketSelectionsHelper.clearPositions()
@@ -216,19 +242,3 @@ class TaskCompositionViewModel : CoreViewModel(), PageSelectionListener, OnOkInS
     }
 
 }
-
-
-data class ItemGoodUi(
-        val material: String,
-        val position: String,
-        val name: String,
-        val quantity: String
-)
-
-data class ItemBasketUi(
-        val basket: Basket,
-        val position: String,
-        val name: String,
-        val description: String,
-        val quantity: String
-)

@@ -70,7 +70,13 @@ class TaskCompositionFragment : CoreFragment<FragmentTaskCompositionBinding, Tas
     override fun getPagerItemView(container: ViewGroup, position: Int): View {
         return when (position) {
             TAB_GOODS -> initTaskCompositionGoods(container)
-            TAB_BASKETS -> initTaskCompositionBaskets(container)
+            TAB_BASKETS -> {
+                if(vm.manager.isWholesaleTaskType) {
+                    initTaskCompositionWholesaleBaskets(container)
+                } else {
+                    initTaskCompositionCommonBaskets(container)
+                }
+            }
             else -> View(context)
         }
     }
@@ -128,9 +134,9 @@ class TaskCompositionFragment : CoreFragment<FragmentTaskCompositionBinding, Tas
         }
     }
 
-    private fun initTaskCompositionBaskets(container: ViewGroup): View {
-        DataBindingUtil.inflate<LayoutTaskCompositionBasketsBinding>(LayoutInflater.from(container.context),
-                R.layout.layout_task_composition_baskets,
+    private fun initTaskCompositionCommonBaskets(container: ViewGroup): View {
+        DataBindingUtil.inflate<LayoutTaskCompositionCommonBasketsBinding>(LayoutInflater.from(container.context),
+                R.layout.layout_task_composition_common_baskets,
                 container,
                 false).let { layoutBinding ->
 
@@ -142,13 +148,13 @@ class TaskCompositionFragment : CoreFragment<FragmentTaskCompositionBinding, Tas
             }
 
             layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
-                    layoutId = R.layout.item_task_composition_basket,
+                    layoutId = R.layout.item_task_composition_common_basket,
                     itemId = BR.item,
-                    realisation = object : DataBindingAdapter<ItemTaskCompositionBasketBinding> {
-                        override fun onCreate(binding: ItemTaskCompositionBasketBinding) {
+                    realisation = object : DataBindingAdapter<ItemTaskCompositionCommonBasketBinding> {
+                        override fun onCreate(binding: ItemTaskCompositionCommonBasketBinding) {
                         }
 
-                        override fun onBind(binding: ItemTaskCompositionBasketBinding, position: Int) {
+                        override fun onBind(binding: ItemTaskCompositionCommonBasketBinding, position: Int) {
                             binding.tvItemNumber.tag = position
                             binding.tvItemNumber.setOnClickListener(onClickSelectionListener)
                             binding.selectedForDelete = vm.basketSelectionsHelper.isSelected(position)
@@ -172,7 +178,60 @@ class TaskCompositionFragment : CoreFragment<FragmentTaskCompositionBinding, Tas
             layoutBinding.lifecycleOwner = viewLifecycleOwner
             basketRecyclerViewKeyHandler = RecyclerViewKeyHandler(
                     rv = layoutBinding.rv,
-                    items = vm.baskets,
+                    items = vm.commonBaskets,
+                    lifecycleOwner = layoutBinding.lifecycleOwner!!,
+                    initPosInfo = basketRecyclerViewKeyHandler?.posInfo?.value
+            )
+
+            return layoutBinding.root
+        }
+    }
+
+    private fun initTaskCompositionWholesaleBaskets(container: ViewGroup): View {
+        DataBindingUtil.inflate<LayoutTaskCompositionWholesaleBasketsBinding>(LayoutInflater.from(container.context),
+                R.layout.layout_task_composition_wholesale_baskets,
+                container,
+                false).let { layoutBinding ->
+
+            val onClickSelectionListener = View.OnClickListener {
+                (it!!.tag as Int).let { position ->
+                    vm.basketSelectionsHelper.revert(position = position)
+                    layoutBinding.rv.adapter?.notifyItemChanged(position)
+                }
+            }
+
+            layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
+                    layoutId = R.layout.item_task_composition_wholesale_basket,
+                    itemId = BR.item,
+                    realisation = object : DataBindingAdapter<ItemTaskCompositionWholesaleBasketBinding> {
+                        override fun onCreate(binding: ItemTaskCompositionWholesaleBasketBinding) {
+                        }
+
+                        override fun onBind(binding: ItemTaskCompositionWholesaleBasketBinding, position: Int) {
+                            binding.tvItemNumber.tag = position
+                            binding.tvItemNumber.setOnClickListener(onClickSelectionListener)
+                            binding.selectedForDelete = vm.basketSelectionsHelper.isSelected(position)
+                            basketRecyclerViewKeyHandler?.let {
+                                binding.root.isSelected = it.isSelected(position)
+                            }
+                        }
+                    },
+                    onItemClickListener = AdapterView.OnItemClickListener { _, _, position, _ ->
+                        basketRecyclerViewKeyHandler?.let {
+                            if (it.isSelected(position)) {
+                                vm.onClickItemPosition(position)
+                            } else {
+                                it.selectPosition(position)
+                            }
+                        }
+                    }
+            )
+
+            layoutBinding.vm = vm
+            layoutBinding.lifecycleOwner = viewLifecycleOwner
+            basketRecyclerViewKeyHandler = RecyclerViewKeyHandler(
+                    rv = layoutBinding.rv,
+                    items = vm.commonBaskets,
                     lifecycleOwner = layoutBinding.lifecycleOwner!!,
                     initPosInfo = basketRecyclerViewKeyHandler?.posInfo?.value
             )

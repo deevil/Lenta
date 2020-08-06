@@ -83,9 +83,9 @@
             android:layout_height="0dp"
             android:layout_marginBottom="8dp"
             android:layout_weight="1"
-            app:items="@{vm.baskets}"
+            app:items="@{vm.wholesaleBaskets}"
             app:rv_config="@{rvConfig}"
-            tools:listitem="@layout/item_task_composition_basket" />
+            tools:listitem="@layout/item_task_composition_wholesale_basket" />
 
     </LinearLayout>
 

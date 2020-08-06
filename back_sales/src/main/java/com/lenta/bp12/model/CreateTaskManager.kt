@@ -27,6 +27,8 @@ class CreateTaskManager @Inject constructor(
 
     override var isWasAddedProvider = false
 
+    override var isWholesaleTaskType: Boolean = false
+
     override val currentTask = MutableLiveData<TaskCreate>()
 
     override val currentGood = MutableLiveData<GoodCreate>()
@@ -227,6 +229,7 @@ interface ICreateTaskManager {
     var searchNumber: String
     var isSearchFromList: Boolean
     var isWasAddedProvider: Boolean
+    var isWholesaleTaskType: Boolean
 
     val currentTask: MutableLiveData<TaskCreate>
     val currentGood: MutableLiveData<GoodCreate>
