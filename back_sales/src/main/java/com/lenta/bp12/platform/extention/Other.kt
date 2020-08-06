@@ -66,6 +66,10 @@ fun ControlType.isAlcohol(): Boolean {
     return this == ControlType.ALCOHOL
 }
 
+fun ControlType.isMark(): Boolean {
+    return this == ControlType.MARK
+}
+
 fun String.extractAlcoCode(): String {
     return BigInteger(this.substring(7, 19), 36).toString().padStart(19, '0')
 }

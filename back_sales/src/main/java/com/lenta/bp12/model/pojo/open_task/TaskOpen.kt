@@ -30,12 +30,11 @@ data class TaskOpen(
 ) {
 
     fun getProviderCodeWithName(): String {
-        var providerCode = provider.code
-        while (providerCode.startsWith("0")) {
-            providerCode = providerCode.substring(1)
+        with(provider){
+            return if (code.isNotEmpty() || name.isNotEmpty()) {
+                "${code.dropWhile { it == '0' }} $name"
+            } else ""
         }
-
-        return "$providerCode ${provider.name}"
     }
 
     fun isExistProcessedGood(): Boolean {

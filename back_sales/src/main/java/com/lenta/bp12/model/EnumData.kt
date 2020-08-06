@@ -25,13 +25,15 @@ enum class GoodKind {
 enum class ControlType(val code: String, val description: String) {
     UNKNOWN("UNKNOWN", "Неизвестный"),
     COMMON("N", "Обычный"),
-    ALCOHOL("A", "Алкоголь");
+    ALCOHOL("A", "Алкоголь"),
+    MARK("M", "Маркированный");
 
     companion object {
         fun from(code: String): ControlType {
             return when (code) {
                 "N" -> COMMON
                 "A" -> ALCOHOL
+                "M" -> MARK
                 else -> UNKNOWN
             }
         }

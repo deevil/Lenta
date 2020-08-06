@@ -4,6 +4,7 @@ import androidx.lifecycle.MutableLiveData
 import com.lenta.bp12.model.IOpenTaskManager
 import com.lenta.bp12.platform.extention.isAlcohol
 import com.lenta.bp12.platform.extention.isCommon
+import com.lenta.bp12.platform.extention.isMark
 import com.lenta.bp12.platform.navigation.IScreenNavigator
 import com.lenta.bp12.platform.resource.IResourceManager
 import com.lenta.bp12.request.*
@@ -57,16 +58,21 @@ class TaskCardOpenViewModel : CoreViewModel(), PageSelectionListener {
     val ui by lazy {
         task.map {
             it?.let { task ->
+                val provider = task.getProviderCodeWithName().takeIf { codeWithName ->
+                    codeWithName.isNotEmpty()
+                } ?: resource.wholesaleBuyer()
+
                 TaskCardOpenUi(
                         name = task.name,
-                        provider = task.getProviderCodeWithName(),
+                        provider = provider,
                         storage = task.storage,
                         reason = task.reason?.description.orEmpty(),
                         description = task.type?.description.orEmpty(),
                         comment = task.comment,
                         isStrict = task.isStrict,
                         isAlcohol = task.control.isAlcohol(),
-                        isCommon = task.control.isCommon()
+                        isCommon = task.control.isCommon(),
+                        isMark = task.control.isMark()
                 )
             }
         }
@@ -180,5 +186,6 @@ data class TaskCardOpenUi(
         val comment: String,
         val isStrict: Boolean,
         val isAlcohol: Boolean,
-        val isCommon: Boolean
+        val isCommon: Boolean,
+        val isMark: Boolean
 )

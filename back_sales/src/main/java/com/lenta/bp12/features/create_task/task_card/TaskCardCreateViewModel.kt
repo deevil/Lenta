@@ -58,7 +58,7 @@ class TaskCardCreateViewModel : CoreViewModel(), PageSelectionListener {
         }
     }
 
-    val providerText by lazy {
+    val provider by lazy {
         selectedType.map { type ->
             if (type?.code != TypeCode.PKO.code) resource.allSuppliers() else resource.wholesaleBuyer()
         }
