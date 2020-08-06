@@ -31,7 +31,7 @@
 
                 <LinearLayout
                     style="@style/LinearCellStyle"
-                    android:layout_weight="@integer/task_tag_quantity_column_1">
+                    android:layout_weight="@integer/four_one_1">
 
                     <TextView
                         style="@style/FirstRowTextStyle"
@@ -42,7 +42,7 @@
 
                 <LinearLayout
                     style="@style/LinearCellStyle"
-                    android:layout_weight="@integer/task_tag_quantity_column_2">
+                    android:layout_weight="@integer/four_one_2">
 
                     <TextView
                         style="@style/FirstRowTextStyle"
@@ -52,7 +52,7 @@
 
                 <LinearLayout
                     style="@style/LinearCellStyle"
-                    android:layout_weight="@integer/task_tag_quantity_column_3">
+                    android:layout_weight="@integer/four_one_3">
 
                     <TextView
                         style="@style/FirstRowTextStyle"
@@ -62,7 +62,7 @@
 
                 <LinearLayout
                     style="@style/LinearCellStyle"
-                    android:layout_weight="@integer/task_tag_quantity_column_4">
+                    android:layout_weight="@integer/four_one_4">
 
                     <TextView
                         style="@style/FirstRowTextStyle"

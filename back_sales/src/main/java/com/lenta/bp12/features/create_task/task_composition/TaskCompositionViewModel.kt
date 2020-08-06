@@ -36,6 +36,10 @@ class TaskCompositionViewModel : CoreViewModel(), PageSelectionListener, OnOkInS
     lateinit var resource: IResourceManager
 
 
+    /**
+    Переменные
+     */
+
     val goodSelectionsHelper = SelectionItemsHelper()
 
     val basketSelectionsHelper = SelectionItemsHelper()
@@ -90,6 +94,10 @@ class TaskCompositionViewModel : CoreViewModel(), PageSelectionListener, OnOkInS
         }
     }
 
+    /**
+    Кнопки нижнего тулбара
+     */
+
     val deleteEnabled = selectedPage.combineLatest(goodSelectionsHelper.selectedPositions).combineLatest(basketSelectionsHelper.selectedPositions).map {
         val tab = it!!.first.first
         val isGoodSelected = it.first.second.isNotEmpty()
@@ -98,13 +106,19 @@ class TaskCompositionViewModel : CoreViewModel(), PageSelectionListener, OnOkInS
         tab == 0 && isGoodSelected || tab == 1 && isBasketSelected
     }
 
+    val printVisibility = selectedPage.map { tab ->
+        tab == 1
+    }
+
     val saveEnabled by lazy {
         goods.map {
             it?.isNotEmpty()
         }
     }
 
-    // -----------------------------
+    /**
+    Методы
+     */
 
     override fun onPageSelected(position: Int) {
         selectedPage.value = position

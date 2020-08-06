@@ -31,7 +31,7 @@
 
                 <LinearLayout
                     style="@style/LinearCellStyle"
-                    android:layout_weight="@integer/name_quantity_column_1">
+                    android:layout_weight="@integer/four_two_1">
 
                     <TextView
                         style="@style/FirstRowTextStyle"
@@ -42,21 +42,31 @@
 
                 <LinearLayout
                     style="@style/LinearCellStyle"
-                    android:layout_weight="@integer/name_quantity_column_2">
+                    android:layout_weight="@integer/four_two_2">
 
                     <TextView
                         style="@style/FirstRowTextStyle"
-                        android:text="@string/basket" />
+                        android:text="@string/goods" />
 
                 </LinearLayout>
 
                 <LinearLayout
                     style="@style/LinearCellStyle"
-                    android:layout_weight="@integer/name_quantity_column_3">
+                    android:layout_weight="@integer/four_two_3">
 
                     <TextView
                         style="@style/FirstRowTextStyle"
-                        android:text="@string/of_goods" />
+                        android:text="@string/quantity_short" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    style="@style/LinearCellStyle"
+                    android:layout_weight="@integer/four_two_4">
+
+                    <TextView
+                        style="@style/FirstRowTextStyle"
+                        android:text="@string/tag" />
 
                 </LinearLayout>
 

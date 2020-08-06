@@ -51,10 +51,12 @@ class TaskCompositionFragment : CoreFragment<FragmentTaskCompositionBinding, Tas
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
         bottomToolbarUiModel.uiModelButton1.show(ButtonDecorationInfo.back)
         bottomToolbarUiModel.uiModelButton3.show(ButtonDecorationInfo.delete, enabled = false)
+        bottomToolbarUiModel.uiModelButton4.show(ButtonDecorationInfo.print)
         bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.save, enabled = false)
 
         connectLiveData(vm.deleteEnabled, bottomToolbarUiModel.uiModelButton3.enabled)
         connectLiveData(vm.saveEnabled, bottomToolbarUiModel.uiModelButton5.enabled)
+        connectLiveData(vm.printVisibility, bottomToolbarUiModel.uiModelButton4.visibility)
     }
 
     override fun onToolbarButtonClick(view: View) {
