@@ -74,9 +74,9 @@ class DatabaseRepo(
         }
     }
 
-    override suspend fun getAllGoodCondition(): List<ConditionInfo> {
+    override suspend fun getConditionByName(good: String?): List<ConditionInfo> {
         return withContext(Dispatchers.IO) {
-            conditionInfo.getAllConditions().toConditionInfoList()
+            conditionInfo.getConditionByName(good).toConditionInfoList()
         }
     }
 
@@ -89,6 +89,6 @@ interface IDatabaseRepo {
     suspend fun getGoodUnitName(unitCode: String?): String?
     suspend fun getGoodByEan(ean: String): Good?
     suspend fun getAllMarkets(): List<MarketInfo>
-    suspend fun getAllGoodCondition(): List<ConditionInfo>
+    suspend fun getConditionByName(good: String?): List<ConditionInfo>
     suspend fun getAllGoodGroup(): List<GroupInfo>
 }

@@ -1,22 +1,32 @@
 package com.lenta.bp18.features.select_good
 
 import androidx.lifecycle.MutableLiveData
-import com.lenta.bp18.features.other.SendDataViewModel
 import com.lenta.bp18.model.pojo.GoodParams
 import com.lenta.bp18.platform.Constants
+import com.lenta.bp18.platform.navigation.IScreenNavigator
+import com.lenta.bp18.repository.IDatabaseRepo
 import com.lenta.shared.account.ISessionInfo
+import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.settings.IAppSettings
 import com.lenta.shared.utilities.extentions.launchUITryCatch
 import com.lenta.shared.utilities.extentions.map
 import javax.inject.Inject
 
-class SelectGoodViewModel : SendDataViewModel() {
+class SelectGoodViewModel : CoreViewModel() {
 
     @Inject
     lateinit var sessionInfo: ISessionInfo
 
     @Inject
     lateinit var appSettings: IAppSettings
+
+    @Inject
+    lateinit var navigator: IScreenNavigator
+
+    @Inject
+    lateinit var database: IDatabaseRepo
+
+    val ean: MutableLiveData<String> = MutableLiveData()
 
     private val weightValue = listOf(VALUE_23, VALUE_24, VALUE_27, VALUE_28)
 
@@ -53,7 +63,7 @@ class SelectGoodViewModel : SendDataViewModel() {
                         material = good.getFormattedMaterial(),
                         name = good.name,
                         weight = weight)
-                 navigator.openGoodsInfoScreen(goodParams)
+                navigator.openGoodsInfoScreen(goodParams)
             } ?: navigator.showAlertGoodsNotFound()
         }
     }

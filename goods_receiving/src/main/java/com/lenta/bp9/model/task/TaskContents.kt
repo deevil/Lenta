@@ -54,6 +54,12 @@ class TaskContents
                 },
                 startRecountRestInfo.taskBoxesDiscrepancies.map {
                     TaskBoxDiscrepancies.from(it)
+                },
+                startRecountRestInfo.taskBlocks.map {
+                    TaskBlockInfo.from(it)
+                },
+                startRecountRestInfo.taskBlocksDiscrepancies.map {
+                    TaskBlockDiscrepancies.from(it)
                 }
         )
     }
@@ -87,6 +93,12 @@ class TaskContents
                 },
                 startRecountRestInfo.taskBoxesDiscrepancies.map {
                     TaskBoxDiscrepancies.from(it)
+                },
+                startRecountRestInfo.taskBlocks.map {
+                    TaskBlockInfo.from(it)
+                },
+                startRecountRestInfo.taskBlocksDiscrepancies.map {
+                    TaskBlockDiscrepancies.from(it)
                 }
         )
     }
@@ -125,6 +137,12 @@ class TaskContents
                 },
                 startRecountRestInfo.taskBoxesDiscrepancies.map {
                     TaskBoxDiscrepancies.from(it)
+                },
+                startRecountRestInfo.taskBlocks.map {
+                    TaskBlockInfo.from(it)
+                },
+                startRecountRestInfo.taskBlocksDiscrepancies.map {
+                    TaskBlockDiscrepancies.from(it)
                 }
         )
     }
@@ -163,6 +181,12 @@ class TaskContents
                 },
                 startRecountRestInfo.taskBoxesDiscrepancies.map {
                     TaskBoxDiscrepancies.from(it)
+                },
+                startRecountRestInfo.taskBlocks.map {
+                    TaskBlockInfo.from(it)
+                },
+                startRecountRestInfo.taskBlocksDiscrepancies.map {
+                    TaskBlockDiscrepancies.from(it)
                 }
         )
     }
@@ -173,18 +197,18 @@ class TaskContents
             val uomInfo = zmpUtz07V001.getUomInfo(it.uom)
             val purchaseOrderUnitUomInfo = zmpUtz07V001.getUomInfo(it.purchaseOrderUnits)
             TaskProductInfo(
-                    materialNumber = materialInfo?.material ?: "",
-                    description = materialInfo?.name ?: "",
-                    uom = Uom(code = uomInfo?.uom ?: "", name = uomInfo?.name ?: ""),
+                    materialNumber = materialInfo?.material.orEmpty(),
+                    description = materialInfo?.name.orEmpty(),
+                    uom = Uom(code = uomInfo?.uom.orEmpty(), name = uomInfo?.name.orEmpty()),
                     type = getProductType(isAlco = it.isAlco == "X", isExcise = it.isExc == "X"),
                     isSet = it.isSet == "X",
-                    sectionId = materialInfo?.abtnr ?: "",
-                    matrixType = getMatrixType(materialInfo?.matrType ?: ""),
-                    materialType = materialInfo?.matype ?: "",
+                    sectionId = materialInfo?.abtnr.orEmpty(),
+                    matrixType = getMatrixType(materialInfo?.matrType.orEmpty()),
+                    materialType = materialInfo?.matype.orEmpty(),
                     origQuantity = it.origDeliveryQuantity ?: "0.0",
                     orderQuantity = it.menge,
                     quantityCapitalized = it.volumeGoodsReceived ?: "0.0",
-                    purchaseOrderUnits = Uom(code = purchaseOrderUnitUomInfo?.uom ?: "", name = purchaseOrderUnitUomInfo?.name ?: ""),
+                    purchaseOrderUnits = Uom(code = purchaseOrderUnitUomInfo?.uom.orEmpty(), name = purchaseOrderUnitUomInfo?.name.orEmpty()),
                     overdToleranceLimit = it.overDeliveryToleranceLimit ?: "0.0",
                     underdToleranceLimit = it.shortDeliveryToleranceLimit ?: "0.0",
                     upLimitCondAmount = it.upperLimitConditionAmount,
@@ -203,10 +227,15 @@ class TaskContents
                     isVet = it.isVet == "X",
                     numberBoxesControl = it.quantityBoxesControl,
                     numberStampsControl = it.quantityStampsControl,
-                    processingUnit = it.processingUnit ?: "",
+                    processingUnit = it.processingUnit.orEmpty(),
                     isGoodsAddedAsSurplus = false,
                     mhdhbDays = materialInfo?.mhdhbDays ?: 0,
-                    mhdrzDays = materialInfo?.mhdrzDays ?: 0
+                    mhdrzDays = materialInfo?.mhdrzDays ?: 0,
+                    markType = getMarkType(it.markType.orEmpty()),
+                    isCountingBoxes = it.isCountingBoxes == "X",
+                    nestingInOneBlock = it.nestingInOneBlock ?: "0.0",
+                    isControlGTIN = it.isControlGTIN == "X",
+                    isGrayZone = it.isGrayZone == "X"
             )
         }
     }
@@ -222,5 +251,7 @@ data class TaskContentsInfo(
         val taskExciseStampDiscrepancies: List<TaskExciseStampDiscrepancies>,
         val taskExciseStampBad: List<TaskExciseStampBad>,
         val taskBoxes: List<TaskBoxInfo>,
-        val taskBoxesDiscrepancies: List<TaskBoxDiscrepancies>
+        val taskBoxesDiscrepancies: List<TaskBoxDiscrepancies>,
+        val taskBlock: List<TaskBlockInfo>,
+        val taskBlockDiscrepancies: List<TaskBlockDiscrepancies>
 )

@@ -72,42 +72,32 @@ class TransportMarriageFragment : CoreFragment<FragmentTransportMarriageBinding,
                     .inflate<LayoutTransportMarriageCargoUnitsBinding>(LayoutInflater.from(container.context),
                             R.layout.layout_transport_marriage_cargo_units,
                             container,
-                            false).let { layoutBinding ->
-
-                        layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
+                            false)
+                    .let { layoutBinding ->
+                        layoutBinding.rvConfig = initRecycleAdapterDataBinding(
                                 layoutId = R.layout.item_tile_transport_marriage_cargo_units,
                                 itemId = BR.item,
-                                realisation = object : DataBindingAdapter<ItemTileTransportMarriageCargoUnitsBinding> {
-                                    override fun onCreate(binding: ItemTileTransportMarriageCargoUnitsBinding) {
-                                    }
-
-                                    override fun onBind(binding: ItemTileTransportMarriageCargoUnitsBinding, position: Int) {
-                                        cargoUnitsRecyclerViewKeyHandler?.let {
-                                            binding.root.isSelected = it.isSelected(position)
-                                        }
-                                    }
-
+                                onAdapterItemBind = { binding: ItemTileTransportMarriageCargoUnitsBinding, position: Int ->
+                                    cargoUnitsRecyclerViewKeyHandler
+                                            ?.let {
+                                                binding.root.isSelected = it.isSelected(position)
+                                            }
                                 },
-                                onItemClickListener = AdapterView.OnItemClickListener { _, _, position, _ ->
-                                    cargoUnitsRecyclerViewKeyHandler?.let {
-                                        if (it.isSelected(position)) {
-                                            vm.onClickItemPosition(position)
-                                        } else {
-                                            it.selectPosition(position)
-                                        }
-                                    }
-
+                                onAdapterItemClicked = {position ->
+                                    cargoUnitsRecyclerViewKeyHandler?.onItemClicked(position)
                                 }
                         )
 
                         layoutBinding.vm = vm
                         layoutBinding.lifecycleOwner = viewLifecycleOwner
-                        cargoUnitsRecyclerViewKeyHandler = RecyclerViewKeyHandler(
-                                rv = layoutBinding.rv,
+
+                        cargoUnitsRecyclerViewKeyHandler = initRecyclerViewKeyHandler(
+                                recyclerView = layoutBinding.rv,
+                                previousPosInfo = cargoUnitsRecyclerViewKeyHandler?.posInfo?.value,
                                 items = vm.listCargoUnits,
-                                lifecycleOwner = layoutBinding.lifecycleOwner!!,
-                                initPosInfo = cargoUnitsRecyclerViewKeyHandler?.posInfo?.value
+                                onClickHandler = vm::onClickItemPosition
                         )
+
                         return layoutBinding.root
                     }
         }
@@ -116,8 +106,8 @@ class TransportMarriageFragment : CoreFragment<FragmentTransportMarriageBinding,
                 .inflate<LayoutTransportMarriageActBinding>(LayoutInflater.from(container.context),
                         R.layout.layout_transport_marriage_act,
                         container,
-                        false).let { layoutBinding ->
-
+                        false)
+                .let { layoutBinding ->
                     val onClickSelectionListener = View.OnClickListener {
                         (it!!.tag as Int).let { position ->
                             vm.actSelectionsHelper.revert(position = position)
@@ -125,43 +115,33 @@ class TransportMarriageFragment : CoreFragment<FragmentTransportMarriageBinding,
                         }
                     }
 
-                    layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
+                    layoutBinding.rvConfig = initRecycleAdapterDataBinding(
                             layoutId = R.layout.item_tile_transport_marriage_act,
                             itemId = BR.item,
-                            realisation = object : DataBindingAdapter<ItemTileTransportMarriageActBinding> {
-                                override fun onCreate(binding: ItemTileTransportMarriageActBinding) {
-                                }
-
-                                override fun onBind(binding: ItemTileTransportMarriageActBinding, position: Int) {
-                                    binding.tvItemNumber.tag = position
-                                    binding.tvItemNumber.setOnClickListener(onClickSelectionListener)
-                                    binding.selectedForDelete = vm.actSelectionsHelper.isSelected(position)
-                                    actRecyclerViewKeyHandler?.let {
-                                        binding.root.isSelected = it.isSelected(position)
-                                    }
-                                }
-
+                            onAdapterItemBind = { binding: ItemTileTransportMarriageActBinding, position: Int ->
+                                binding.tvItemNumber.tag = position
+                                binding.tvItemNumber.setOnClickListener(onClickSelectionListener)
+                                binding.selectedForDelete = vm.actSelectionsHelper.isSelected(position)
+                                actRecyclerViewKeyHandler
+                                        ?.let {
+                                            binding.root.isSelected = it.isSelected(position)
+                                        }
                             },
-                            onItemClickListener = AdapterView.OnItemClickListener { _, _, position, _ ->
-                                actRecyclerViewKeyHandler?.let {
-                                    if (it.isSelected(position)) {
-                                        vm.onClickItemPosition(position)
-                                    } else {
-                                        it.selectPosition(position)
-                                    }
-                                }
-
+                            onAdapterItemClicked = {position ->
+                                actRecyclerViewKeyHandler?.onItemClicked(position)
                             }
                     )
 
                     layoutBinding.vm = vm
                     layoutBinding.lifecycleOwner = viewLifecycleOwner
-                    actRecyclerViewKeyHandler = RecyclerViewKeyHandler(
-                            rv = layoutBinding.rv,
+
+                    actRecyclerViewKeyHandler = initRecyclerViewKeyHandler(
+                            recyclerView = layoutBinding.rv,
+                            previousPosInfo = actRecyclerViewKeyHandler?.posInfo?.value,
                             items = vm.listAct,
-                            lifecycleOwner = layoutBinding.lifecycleOwner!!,
-                            initPosInfo = actRecyclerViewKeyHandler?.posInfo?.value
+                            onClickHandler = vm::onClickItemPosition
                     )
+
                     return layoutBinding.root
                 }
     }

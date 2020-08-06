@@ -91,7 +91,7 @@ class DiscrepancyListFragment : CoreFragment<FragmentDiscrepancyListBinding, Dis
     }
 
     override fun getPagerItemView(container: ViewGroup, position: Int): View {
-        return if (vm.isAlco.value == true) {
+        return if (vm.isAlco.value == true || vm.isMark.value == true) {
             when(position) {
                 0 -> prepareNotProcessedView(container)
                 1 -> prepareControlView(container)
@@ -112,42 +112,31 @@ class DiscrepancyListFragment : CoreFragment<FragmentDiscrepancyListBinding, Dis
                 .inflate<LayoutDiscrepancyListNotProcessedBinding>(LayoutInflater.from(container.context),
                         R.layout.layout_discrepancy_list_not_processed,
                         container,
-                        false).let { layoutBinding ->
-
-                    layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
+                        false)
+                .let { layoutBinding ->
+                    layoutBinding.rvConfig = initRecycleAdapterDataBinding(
                             layoutId = R.layout.item_tile_discrepancy_list_not_processed,
                             itemId = BR.item,
-                            realisation = object : DataBindingAdapter<ItemTileDiscrepancyListNotProcessedBinding> {
-                                override fun onCreate(binding: ItemTileDiscrepancyListNotProcessedBinding) {
-                                }
-
-                                override fun onBind(binding: ItemTileDiscrepancyListNotProcessedBinding, position: Int) {
-                                    notProcessedRecyclerViewKeyHandler?.let {
-                                        binding.root.isSelected = it.isSelected(position)
-                                    }
-                                }
-
-                            },
-                            onItemClickListener = AdapterView.OnItemClickListener { _, _, position, _ ->
+                            onAdapterItemBind = { binding: ItemTileDiscrepancyListNotProcessedBinding, position: Int ->
                                 notProcessedRecyclerViewKeyHandler?.let {
-                                    if (it.isSelected(position)) {
-                                        vm.onClickItemPosition(position)
-                                    } else {
-                                        it.selectPosition(position)
-                                    }
+                                    binding.root.isSelected = it.isSelected(position)
                                 }
-
+                            },
+                            onAdapterItemClicked = {position ->
+                                notProcessedRecyclerViewKeyHandler?.onItemClicked(position)
                             }
                     )
 
                     layoutBinding.vm = vm
                     layoutBinding.lifecycleOwner = viewLifecycleOwner
-                    notProcessedRecyclerViewKeyHandler = RecyclerViewKeyHandler(
-                            rv = layoutBinding.rv,
+
+                    notProcessedRecyclerViewKeyHandler = initRecyclerViewKeyHandler(
+                            recyclerView = layoutBinding.rv,
+                            previousPosInfo = notProcessedRecyclerViewKeyHandler?.posInfo?.value,
                             items = vm.countNotProcessed,
-                            lifecycleOwner = layoutBinding.lifecycleOwner!!,
-                            initPosInfo = notProcessedRecyclerViewKeyHandler?.posInfo?.value
+                            onClickHandler = vm::onClickItemPosition
                     )
+
                     return layoutBinding.root
                 }
     }
@@ -157,8 +146,8 @@ class DiscrepancyListFragment : CoreFragment<FragmentDiscrepancyListBinding, Dis
                 .inflate<LayoutDiscrepancyListProcessedBinding>(LayoutInflater.from(container.context),
                         R.layout.layout_discrepancy_list_processed,
                         container,
-                        false).let { layoutBinding ->
-
+                        false)
+                .let { layoutBinding ->
                     val onClickSelectionListener = View.OnClickListener {
                         (it!!.tag as Int).let { position ->
                             vm.processedSelectionsHelper.revert(position = position)
@@ -166,19 +155,13 @@ class DiscrepancyListFragment : CoreFragment<FragmentDiscrepancyListBinding, Dis
                         }
                     }
 
-                    layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
+                    layoutBinding.rvConfig = initRecycleAdapterDataBinding(
                             layoutId = R.layout.item_tile_discrepancy_list_processed,
                             itemId = BR.item,
-                            realisation = object : DataBindingAdapter<ItemTileDiscrepancyListProcessedBinding> {
-                                override fun onCreate(binding: ItemTileDiscrepancyListProcessedBinding) {
-                                }
-
-                                override fun onBind(binding: ItemTileDiscrepancyListProcessedBinding, position: Int) {
-                                    binding.tvItemNumber.tag = position
-                                    binding.tvItemNumber.setOnClickListener(onClickSelectionListener)
-                                    binding.selectedForDelete = vm.processedSelectionsHelper.isSelected(position)
-                                }
-
+                            onAdapterItemBind = { binding: ItemTileDiscrepancyListProcessedBinding, position: Int ->
+                                binding.tvItemNumber.tag = position
+                                binding.tvItemNumber.setOnClickListener(onClickSelectionListener)
+                                binding.selectedForDelete = vm.processedSelectionsHelper.isSelected(position)
                             }
                     )
 
@@ -193,57 +176,46 @@ class DiscrepancyListFragment : CoreFragment<FragmentDiscrepancyListBinding, Dis
                 .inflate<LayoutDiscrepancyListControlBinding>(LayoutInflater.from(container.context),
                         R.layout.layout_discrepancy_list_control,
                         container,
-                        false).let { layoutBinding ->
-
-                    layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
+                        false)
+                .let { layoutBinding ->
+                    layoutBinding.rvConfig = initRecycleAdapterDataBinding(
                             layoutId = R.layout.item_tile_discrepancy_list_control,
                             itemId = BR.item,
-                            realisation = object : DataBindingAdapter<ItemTileDiscrepancyListControlBinding> {
-                                override fun onCreate(binding: ItemTileDiscrepancyListControlBinding) {
-                                }
-
-                                override fun onBind(binding: ItemTileDiscrepancyListControlBinding, position: Int) {
-                                    controlRecyclerViewKeyHandler?.let {
-                                        binding.root.isSelected = it.isSelected(position)
-                                    }
-                                }
-
-                            },
-                            onItemClickListener = AdapterView.OnItemClickListener { _, _, position, _ ->
+                            onAdapterItemBind = { binding: ItemTileDiscrepancyListControlBinding, position: Int ->
                                 controlRecyclerViewKeyHandler?.let {
-                                    if (it.isSelected(position)) {
-                                        vm.onClickItemPosition(position)
-                                    } else {
-                                        it.selectPosition(position)
-                                    }
+                                    binding.root.isSelected = it.isSelected(position)
                                 }
-
+                            },
+                            onAdapterItemClicked = {position ->
+                                controlRecyclerViewKeyHandler?.onItemClicked(position)
                             }
                     )
 
                     layoutBinding.vm = vm
                     layoutBinding.lifecycleOwner = viewLifecycleOwner
-                    controlRecyclerViewKeyHandler = RecyclerViewKeyHandler(
-                            rv = layoutBinding.rv,
+
+                    controlRecyclerViewKeyHandler = initRecyclerViewKeyHandler(
+                            recyclerView = layoutBinding.rv,
+                            previousPosInfo = controlRecyclerViewKeyHandler?.posInfo?.value,
                             items = vm.countControl,
-                            lifecycleOwner = layoutBinding.lifecycleOwner!!,
-                            initPosInfo = controlRecyclerViewKeyHandler?.posInfo?.value
+                            onClickHandler = vm::onClickItemPosition
                     )
+
                     return layoutBinding.root
                 }
     }
 
     override fun getTextTitle(position: Int): String {
-        return if (vm.isAlco.value == true) {
+        return if (vm.isAlco.value == true || vm.isMark.value == true) {
             when (position) {
-                0 -> getString(R.string.not_processed)
+                0 -> getString(R.string.to_processing)
                 1 -> getString(R.string.control)
                 2 -> getString(R.string.processed)
                 else -> ""
             }
         } else {
             when (position) {
-                0 -> getString(R.string.not_processed)
+                0 -> getString(R.string.to_processing)
                 1 -> getString(R.string.processed)
                 else -> ""
             }
@@ -251,7 +223,7 @@ class DiscrepancyListFragment : CoreFragment<FragmentDiscrepancyListBinding, Dis
     }
 
     override fun countTab(): Int {
-        return if (vm.isAlco.value == true) 3 else 2
+        return if (vm.isAlco.value == true || vm.isMark.value == true) 3 else 2
     }
 
     override fun onResume() {

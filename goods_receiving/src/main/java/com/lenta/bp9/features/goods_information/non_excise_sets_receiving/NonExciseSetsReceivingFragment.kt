@@ -10,10 +10,7 @@ import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import com.lenta.bp9.BR
 import com.lenta.bp9.R
-import com.lenta.bp9.databinding.FragmentNonExciseSetsReceivingBinding
-import com.lenta.bp9.databinding.ItemTileNonExciseSetsComponentsBinding
-import com.lenta.bp9.databinding.LayoutNonExciseSetsComponentsReceivingBinding
-import com.lenta.bp9.databinding.LayoutNonExciseSetsCountedReceivingBinding
+import com.lenta.bp9.databinding.*
 import com.lenta.bp9.model.task.TaskProductInfo
 import com.lenta.bp9.platform.extentions.getAppComponent
 import com.lenta.shared.platform.activity.OnBackPresserListener
@@ -23,8 +20,6 @@ import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListener
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
 import com.lenta.shared.scan.OnScanResultListener
-import com.lenta.shared.utilities.databinding.DataBindingAdapter
-import com.lenta.shared.utilities.databinding.DataBindingRecyclerViewConfig
 import com.lenta.shared.utilities.databinding.RecyclerViewKeyHandler
 import com.lenta.shared.utilities.databinding.ViewPagerSettings
 import com.lenta.shared.utilities.extentions.connectLiveData
@@ -104,9 +99,8 @@ class NonExciseSetsReceivingFragment : CoreFragment<FragmentNonExciseSetsReceivi
                         .inflate<LayoutNonExciseSetsCountedReceivingBinding>(LayoutInflater.from(container.context),
                                 R.layout.layout_non_excise_sets_counted_receiving,
                                 container,
-                                false).let { layoutBinding ->
-                            layoutBinding.vm = vm
-                            layoutBinding.lifecycleOwner = viewLifecycleOwner
+                                false)
+                        .let { layoutBinding ->
                             layoutBinding.spinnerQuality.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
                                 override fun onItemSelected(adapterView: AdapterView<*>, view: View?, position: Int, l: Long) {
                                     vm.onClickPositionSpinQuality(position)
@@ -115,6 +109,7 @@ class NonExciseSetsReceivingFragment : CoreFragment<FragmentNonExciseSetsReceivi
                                 override fun onNothingSelected(adapterView: AdapterView<*>) {
                                 }
                             }
+
                             layoutBinding.etCount.setOnKeyListener(View.OnKeyListener { v, keyCode, event ->
                                 if (keyCode == KeyEvent.KEYCODE_ENTER && event.action == KeyEvent.ACTION_UP) {
                                     if (vm.enabledApplyButton.value == true) {
@@ -124,6 +119,9 @@ class NonExciseSetsReceivingFragment : CoreFragment<FragmentNonExciseSetsReceivi
                                 }
                                 false
                             })
+
+                            layoutBinding.vm = vm
+                            layoutBinding.lifecycleOwner = viewLifecycleOwner
                             return layoutBinding.root
                         }
             }
@@ -132,8 +130,8 @@ class NonExciseSetsReceivingFragment : CoreFragment<FragmentNonExciseSetsReceivi
                         .inflate<LayoutNonExciseSetsComponentsReceivingBinding>(LayoutInflater.from(container.context),
                                 R.layout.layout_non_excise_sets_components_receiving,
                                 container,
-                                false).let { layoutBinding ->
-
+                                false)
+                        .let { layoutBinding ->
                             val onClickSelectionListener = View.OnClickListener {
                                 (it!!.tag as Int).let { position ->
                                     vm.componentsSelectionsHelper.revert(position = position)
@@ -141,43 +139,32 @@ class NonExciseSetsReceivingFragment : CoreFragment<FragmentNonExciseSetsReceivi
                                 }
                             }
 
-                            layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
+                            layoutBinding.rvConfig = initRecycleAdapterDataBinding(
                                     layoutId = R.layout.item_tile_non_excise_sets_components,
                                     itemId = BR.item,
-                                    realisation = object : DataBindingAdapter<ItemTileNonExciseSetsComponentsBinding> {
-                                        override fun onCreate(binding: ItemTileNonExciseSetsComponentsBinding) {
-                                        }
-
-                                        override fun onBind(binding: ItemTileNonExciseSetsComponentsBinding, position: Int) {
-                                            binding.tvItemNumber.tag = position
-                                            binding.tvItemNumber.setOnClickListener(onClickSelectionListener)
-                                            binding.selectedForDelete = vm.componentsSelectionsHelper.isSelected(position)
-                                            componentsRecyclerViewKeyHandler?.let {
-                                                binding.root.isSelected = it.isSelected(position)
-                                            }
-                                        }
-
-                                    },
-                                    onItemClickListener = AdapterView.OnItemClickListener { _, _, position, _ ->
+                                    onAdapterItemBind = { binding: ItemTileNonExciseSetsComponentsBinding, position: Int ->
+                                        binding.tvItemNumber.tag = position
+                                        binding.tvItemNumber.setOnClickListener(onClickSelectionListener)
+                                        binding.selectedForDelete = vm.componentsSelectionsHelper.isSelected(position)
                                         componentsRecyclerViewKeyHandler?.let {
-                                            if (it.isSelected(position)) {
-                                                vm.onClickItemPosition(position)
-                                            } else {
-                                                it.selectPosition(position)
-                                            }
+                                            binding.root.isSelected = it.isSelected(position)
                                         }
-
+                                    },
+                                    onAdapterItemClicked = {position ->
+                                        componentsRecyclerViewKeyHandler?.onItemClicked(position)
                                     }
                             )
 
                             layoutBinding.vm = vm
                             layoutBinding.lifecycleOwner = viewLifecycleOwner
-                            componentsRecyclerViewKeyHandler = RecyclerViewKeyHandler(
-                                    rv = layoutBinding.rv,
+
+                            componentsRecyclerViewKeyHandler = initRecyclerViewKeyHandler(
+                                    recyclerView = layoutBinding.rv,
+                                    previousPosInfo = componentsRecyclerViewKeyHandler?.posInfo?.value,
                                     items = vm.listComponents,
-                                    lifecycleOwner = layoutBinding.lifecycleOwner!!,
-                                    initPosInfo = componentsRecyclerViewKeyHandler?.posInfo?.value
+                                    onClickHandler = vm::onClickItemPosition
                             )
+
                             return layoutBinding.root
                         }
             }

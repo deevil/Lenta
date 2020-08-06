@@ -7,7 +7,9 @@ import app_update.AppUpdateInstaller
 import com.lenta.bp18.model.pojo.MarketUI
 import com.lenta.bp18.platform.navigation.IScreenNavigator
 import com.lenta.bp18.repository.IDatabaseRepo
+import com.lenta.bp18.request.SlowResourcesMultiRequest
 import com.lenta.bp18.request.model.params.MarketInfoParams
+import com.lenta.bp18.request.model.result.MarketInfoResult
 import com.lenta.bp18.request.network.MarketOverIPRequest
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.exception.Failure
@@ -22,6 +24,7 @@ import com.lenta.shared.requests.network.ServerTimeRequest
 import com.lenta.shared.requests.network.ServerTimeRequestParam
 import com.lenta.shared.settings.IAppSettings
 import com.lenta.shared.utilities.Logg
+import com.lenta.shared.utilities.extentions.getDeviceId
 import com.lenta.shared.utilities.extentions.getDeviceIp
 import com.lenta.shared.utilities.extentions.launchUITryCatch
 import com.lenta.shared.utilities.extentions.map
@@ -69,6 +72,9 @@ class SelectMarketViewModel : CoreViewModel(), OnPositionClickListener {
     @Inject
     lateinit var context: Context
 
+    @Inject
+    lateinit var slowResourcesMultiRequest: SlowResourcesMultiRequest
+
     private val markets: MutableLiveData<List<MarketUI>> = MutableLiveData()
     val marketsNames: MutableLiveData<List<String>> = markets.map { markets ->
         markets?.map { it.number }
@@ -82,26 +88,41 @@ class SelectMarketViewModel : CoreViewModel(), OnPositionClickListener {
         }
     }
 
-    val currentMarket = MutableLiveData("")
+    var currentMarket: String? = ""
+
+
 
     init {
         launchUITryCatch {
-            currentMarket.value = MarketInfoParams(context.getDeviceIp(), "1", "").toString()
-            Logg.d { "Current market:${currentMarket.value}" }
+
+            /**Загрузка медленных справочников*/
+            slowResourcesMultiRequest(null).either(::handleFailure, ::handleSuccess)
+
+            /**Выполнение запроса получения номера ТК*/
+            marketOverIPRequest(MarketInfoParams(
+                    ipAdress = context.getDeviceIp(),
+                    mode = MODE_1
+            ))
+
             database.getAllMarkets().let { list ->
 
                 markets.value = list.map { MarketUI(number = it.number, address = it.address) }
 
                 if (selectedPosition.value == null) {
+
                     if (appSettings.lastTK != null) {
                         list.forEachIndexed { index, market ->
                             if (market.number == appSettings.lastTK) {
+                                currentMarket = market.number
                                 onClickPosition(index)
                             }
                         }
                     } else {
-
-                        onClickPosition(0)
+                        list.forEachIndexed { index, market ->
+                            if (market.number == currentMarket)
+                                currentMarket = market.number
+                                onClickPosition(index)
+                        }
                     }
                 }
 
@@ -115,6 +136,11 @@ class SelectMarketViewModel : CoreViewModel(), OnPositionClickListener {
     fun onClickNext() {
         launchUITryCatch {
             navigator.showProgressLoadingData()
+            marketOverIPRequest(MarketInfoParams(
+                    ipAdress = context.getDeviceIp(),
+                    mode = MODE_2,
+                    werks = currentMarket
+            ))
             markets.value
                     ?.getOrNull(selectedPosition.value ?: -1)?.number
                     ?.let { tkNumber ->
@@ -169,6 +195,10 @@ class SelectMarketViewModel : CoreViewModel(), OnPositionClickListener {
         navigator.hideProgress()
     }
 
+    private fun handleSuccess(b: Boolean){
+        //
+    }
+
     private fun installUpdate(updateFileName: String) {
         viewModelScope.launch {
             navigator.showProgress(resourceManager.loadingNewAppVersion())
@@ -189,5 +219,12 @@ class SelectMarketViewModel : CoreViewModel(), OnPositionClickListener {
     private fun clearPrinters() {
         appSettings.printer = null
         sessionInfo.printer = null
+    }
+
+    companion object{
+        /**Получить данные*/
+        const val MODE_1 = "1"
+        /**Отправить данные*/
+        const val MODE_2 = "2"
     }
 }

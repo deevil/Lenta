@@ -23,6 +23,8 @@ enum class IconCode(val code: String) {
     RETURN_POSSIBLE("08"),
     USUALY_PRODUCT("09"),
     TASK_WITH_ALCO("10"),
-    QR_CODE("11")
+    QR_CODE("11"),
+    MARKING_GOODS("14"),
+    EXCEPTIONS_SHELF_LIFE("16")
 }
 

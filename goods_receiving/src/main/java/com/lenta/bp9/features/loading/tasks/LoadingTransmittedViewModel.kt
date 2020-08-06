@@ -56,7 +56,7 @@ class LoadingTransmittedViewModel : CoreLoadingViewModel() {
     }
 
     private fun handleSuccess(result: TransmittedRestInfo) {
-        viewModelScope.launch {
+        launchUITryCatch {
             val mercuryNotActual = result.taskMercuryNotActualRestData.map { TaskMercuryNotActual.from(hyperHive,it)}
             val sectionInfo = result.sectionsInfo.map { TaskSectionInfo.from(it) }
             val sectionProducts = result.sectionProducts.map { TaskSectionProducts.from(hyperHive, it) }
@@ -77,7 +77,7 @@ class LoadingTransmittedViewModel : CoreLoadingViewModel() {
                         countVad = mercuryNotActual.size.toString(),
                         countGoods = taskManager.getReceivingTask()?.taskDescription?.quantityPositions.toString()
                 )
-                return@launch
+                return@launchUITryCatch
             }
 
             when (taskManager.getReceivingTask()?.taskHeader?.taskType) {

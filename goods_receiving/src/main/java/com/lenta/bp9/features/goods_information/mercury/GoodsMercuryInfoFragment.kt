@@ -125,4 +125,9 @@ class GoodsMercuryInfoFragment : CoreFragment<FragmentGoodsMercuryInfoBinding, G
         return false
     }
 
+    override fun onResume() {
+        super.onResume()
+        vm.requestFocusToCount.value = true
+    }
+
 }
