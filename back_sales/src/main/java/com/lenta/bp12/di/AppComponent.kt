@@ -3,8 +3,8 @@ package com.lenta.bp12.di
 import com.lenta.bp12.ExceptionHandler
 import com.lenta.bp12.features.auth.AuthViewModel
 import com.lenta.bp12.features.create_task.add_provider.AddProviderViewModel
-import com.lenta.bp12.features.create_task.basket_good_list.BasketGoodListViewModel
-import com.lenta.bp12.features.create_task.basket_properties.BasketPropertiesViewModel
+import com.lenta.bp12.features.basket.basket_good_list.BasketGoodListViewModel
+import com.lenta.bp12.features.basket.basket_properties.BasketPropertiesViewModel
 import com.lenta.bp12.features.create_task.good_details.GoodDetailsCreateViewModel
 import com.lenta.bp12.features.create_task.good_info.GoodInfoCreateViewModel
 import com.lenta.bp12.features.create_task.task_card.TaskCardCreateViewModel

@@ -2,13 +2,13 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context=".features.basket.basket_good_list.BasketGoodListFragment">
+    tools:context=".features.create_task.task_content.TaskContentFragment">
 
     <data>
 
         <variable
             name="vm"
-            type="com.lenta.bp12.features.basket.basket_good_list.BasketGoodListViewModel" />
+            type="com.lenta.bp12.features.open_task.good_list.GoodListViewModel" />
 
         <variable
             name="rvConfig"
@@ -31,7 +31,7 @@
 
                 <LinearLayout
                     style="@style/LinearCellStyle"
-                    android:layout_weight="@integer/three_one_1">
+                    android:layout_weight="@integer/four_two_1">
 
                     <TextView
                         style="@style/FirstRowTextStyle"
@@ -42,21 +42,31 @@
 
                 <LinearLayout
                     style="@style/LinearCellStyle"
-                    android:layout_weight="@integer/three_one_2">
+                    android:layout_weight="@integer/four_two_2">
 
                     <TextView
                         style="@style/FirstRowTextStyle"
-                        android:text="@string/good" />
+                        android:text="@string/goods" />
 
                 </LinearLayout>
 
                 <LinearLayout
                     style="@style/LinearCellStyle"
-                    android:layout_weight="@integer/three_one_3">
+                    android:layout_weight="@integer/four_two_3">
 
                     <TextView
                         style="@style/FirstRowTextStyle"
-                        android:text="@string/quantity" />
+                        android:text="@string/quantity_short" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    style="@style/LinearCellStyle"
+                    android:layout_weight="@integer/four_two_4">
+
+                    <TextView
+                        style="@style/FirstRowTextStyle"
+                        android:text="@string/tag" />
 
                 </LinearLayout>
 
@@ -66,41 +76,16 @@
 
         </LinearLayout>
 
-        <!-- Список товаров -->
+        <!-- Список корзин -->
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rv"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_marginBottom="8dp"
             android:layout_weight="1"
-            app:items="@{vm.goods}"
+            app:items="@{vm.wholesaleBaskets}"
             app:rv_config="@{rvConfig}"
-            tools:listitem="@layout/item_task_content_good" />
-
-        <!-- Ввод номера товара -->
-        <LinearLayout style="@style/EnterNumberFieldLayout">
-
-            <EditText
-                style="@style/EnterNumberField"
-                android:digits="0123456789"
-                android:drawableEnd="@drawable/ic_loupe_white_16dp"
-                android:hint="@string/enter_sap_or_barcode"
-                android:inputType="number"
-                android:maxLength="20"
-                android:text="@={vm.numberField}"
-                app:onOkInSoftKeyboard="@{vm}"
-                app:requestFocus="@{vm.requestFocusToNumberField}"
-                tools:ignore="Autofill" />
-
-            <ImageButton
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="8dp"
-                android:background="?selectableItemBackground"
-                android:onClick="@{(v) -> vm.navigator.openEanInfoScreen()}"
-                android:src="@drawable/ic_scan_barcode_white_32dp" />
-
-        </LinearLayout>
+            tools:listitem="@layout/item_task_content_wholesale_basket" />
 
     </LinearLayout>
 

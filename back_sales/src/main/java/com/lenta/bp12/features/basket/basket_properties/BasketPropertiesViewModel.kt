@@ -1,4 +1,4 @@
-package com.lenta.bp12.features.create_task.basket_properties
+package com.lenta.bp12.features.basket.basket_properties
 
 import com.lenta.bp12.model.ICreateTaskManager
 import com.lenta.bp12.platform.navigation.IScreenNavigator

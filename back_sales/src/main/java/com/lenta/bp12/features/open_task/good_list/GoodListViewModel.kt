@@ -1,9 +1,11 @@
 package com.lenta.bp12.features.open_task.good_list
 
 import androidx.lifecycle.MutableLiveData
+import com.lenta.bp12.features.basket.ItemWholesaleBasketUi
 import com.lenta.bp12.model.IOpenTaskManager
 import com.lenta.bp12.platform.navigation.IScreenNavigator
 import com.lenta.shared.account.ISessionInfo
+import com.lenta.shared.models.core.Uom
 import com.lenta.shared.platform.device_info.DeviceInfo
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.SelectionItemsHelper
@@ -83,6 +85,27 @@ class GoodListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
                         )
                     }
                 }
+            }
+        }
+    }
+
+    val wholesaleBaskets by lazy {
+        task.map {
+            it?.let { task ->
+                emptyList<ItemWholesaleBasketUi>()
+
+                /*task.baskets.reversed().mapIndexed { index, basket ->
+                    val position = task.baskets.size - index
+                    ItemWholesaleBasketUi(
+                            basket = basket,
+                            position = "$position",
+                            name = resource.basket("$position"),
+                            description = basket.getDescription(task.type.isDivBySection),
+                            quantity = "${task.getCountByBasket(basket)} ${Uom.ST.name}",
+                            isPrinted = basket.isPrinted,
+                            isLocked = basket.isLocked
+                    )
+                }*/
             }
         }
     }

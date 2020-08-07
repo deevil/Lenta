@@ -7,7 +7,7 @@
 
         <variable
             name="item"
-            type="com.lenta.bp12.features.create_task.basket_good_list.ItemGoodUi" />
+            type="com.lenta.bp12.features.basket.basket_good_list.ItemGoodUi" />
 
         <variable
             name="selectedForDelete"

@@ -4,8 +4,8 @@ import android.content.Context
 import com.lenta.bp12.R
 import com.lenta.bp12.features.auth.AuthFragment
 import com.lenta.bp12.features.create_task.add_provider.AddProviderFragment
-import com.lenta.bp12.features.create_task.basket_good_list.BasketGoodListFragment
-import com.lenta.bp12.features.create_task.basket_properties.BasketPropertiesFragment
+import com.lenta.bp12.features.basket.basket_good_list.BasketGoodListFragment
+import com.lenta.bp12.features.basket.basket_properties.BasketPropertiesFragment
 import com.lenta.bp12.features.create_task.good_details.GoodDetailsCreateFragment
 import com.lenta.bp12.features.create_task.good_info.GoodInfoCreateFragment
 import com.lenta.bp12.features.create_task.task_card.TaskCardCreateFragment

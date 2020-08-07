@@ -1,4 +1,4 @@
-package com.lenta.bp12.features.create_task.basket_good_list
+package com.lenta.bp12.features.basket.basket_good_list
 
 import androidx.lifecycle.MutableLiveData
 import com.lenta.bp12.model.ICreateTaskManager
