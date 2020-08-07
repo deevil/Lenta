@@ -151,6 +151,16 @@ class TaskCardCreateViewModel : CoreViewModel(), PageSelectionListener {
     }
 
     /**
+    Кнопки нижнего тулбара
+     */
+
+    val nextEnabled by lazy {
+        taskName.map {
+            it?.isNotEmpty()
+        }
+    }
+
+    /**
     Блок инициализации
      */
 

@@ -10,6 +10,7 @@ import com.lenta.bp12.model.pojo.create_task.GoodCreate
 import com.lenta.bp12.platform.extention.extractAlcoCode
 import com.lenta.bp12.platform.extention.getControlType
 import com.lenta.bp12.platform.extention.getGoodKind
+import com.lenta.bp12.platform.extention.isWholesaleType
 import com.lenta.bp12.platform.navigation.IScreenNavigator
 import com.lenta.bp12.platform.resource.IResourceManager
 import com.lenta.bp12.repository.IDatabaseRepository
@@ -76,7 +77,13 @@ class GoodInfoCreateViewModel : CoreViewModel() {
 
     private var lastSuccessSearchNumber = ""
 
-    val isCompactMode by lazy {
+    val isWholesaleTaskType by lazy {
+        task.map {
+            it?.type?.isWholesaleType()
+        }
+    }
+
+    val isCommonGood by lazy {
         good.map { good ->
             good?.kind == GoodKind.COMMON
         }
@@ -348,6 +355,16 @@ class GoodInfoCreateViewModel : CoreViewModel() {
 
     val rollbackEnabled = scanInfoResult.map { info ->
         info != null
+    }
+
+    val closeVisibility by lazy {
+        task.map { task ->
+            task?.type?.isWholesaleType()
+        }
+    }
+
+    val closeEnabled by lazy {
+        applyEnabled.map { it }
     }
 
     /**
@@ -928,6 +945,13 @@ class GoodInfoCreateViewModel : CoreViewModel() {
         saveChanges()
         navigator.goBack()
         navigator.openBasketGoodListScreen()
+    }
+
+    fun onClickClose() {
+        // Сохранить все изменения
+        // Закрыть корзину
+        // Выйти на экран товаров корзины
+
     }
 
 }

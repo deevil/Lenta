@@ -70,6 +70,10 @@ class GoodInfoOpenViewModel : CoreViewModel() {
         }
     }
 
+    val isWholesaleTaskType by lazy {
+        manager.isWholesaleTaskType
+    }
+
     private var originalSearchNumber = ""
 
     private var lastSuccessSearchNumber = ""
@@ -269,6 +273,10 @@ class GoodInfoOpenViewModel : CoreViewModel() {
         quantity.map {
             it ?: 0.0 == 0.0
         }
+    }
+
+    val closeEnabled by lazy {
+        applyEnabled.map { it }
     }
 
     /**
@@ -814,6 +822,13 @@ class GoodInfoOpenViewModel : CoreViewModel() {
     private fun saveChangesAndExit() {
         saveChanges()
         navigator.goBack()
+    }
+
+    fun onClickClose() {
+        // Сохранить все изменения
+        // Закрыть корзину
+        // Выйти на экран товаров корзины
+
     }
 
 }

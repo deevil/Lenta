@@ -412,6 +412,10 @@ data class ButtonDecorationInfo(
         val partialFailureMarking: ButtonDecorationInfo by lazy {
             ButtonDecorationInfo(R.drawable.ic_partial_failure_marking, R.string.partial_failure)
         }
+
+        val close: ButtonDecorationInfo by lazy {
+            ButtonDecorationInfo(R.drawable.ic_lock_white_24dp, R.string.to_close)
+        }
     }
 
 }

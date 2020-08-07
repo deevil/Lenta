@@ -193,6 +193,7 @@
     <string name="enter_printer_address">Введите IP-адрес принтера для печати с этого терминала</string>
     <string name="inStock">В наличии</string>
     <string name="proceed">Продолжить</string>
+    <string name="to_close">Закрыть</string>
     <string name="properties">Свойства</string>
     <string name="boxes">Короба</string>
     <string name="handle_goods">Обработать</string>
