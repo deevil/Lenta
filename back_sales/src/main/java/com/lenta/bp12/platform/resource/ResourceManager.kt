@@ -36,6 +36,11 @@ class ResourceManager @Inject constructor(
     override fun byBasket(): String = context.getString(R.string.by_basket)
 
     override fun basket(description: String): String = context.getString(R.string.basket_title, description)
+
+    override fun goodList(): String = context.getString(R.string.good_list)
+
+    override fun taskContent(): String = context.getString(R.string.task_content)
+
 }
 
 interface IResourceManager {
@@ -54,5 +59,7 @@ interface IResourceManager {
     fun totalWithConvertingInfo(info: String): String
     fun byBasket(): String
     fun basket(description: String): String
+    fun goodList(): String
+    fun taskContent(): String
 
 }

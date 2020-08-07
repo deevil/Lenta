@@ -43,7 +43,7 @@ class TaskContentFragment : CoreFragment<FragmentTaskContentBinding, TaskContent
     }
 
     override fun setupTopToolBar(topToolbarUiModel: TopToolbarUiModel) {
-        topToolbarUiModel.description.value = getString(R.string.task_composition)
+        topToolbarUiModel.description.value = getString(R.string.task_content)
 
         connectLiveData(vm.title, topToolbarUiModel.title)
     }
@@ -51,13 +51,13 @@ class TaskContentFragment : CoreFragment<FragmentTaskContentBinding, TaskContent
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
         bottomToolbarUiModel.uiModelButton1.show(ButtonDecorationInfo.back)
         bottomToolbarUiModel.uiModelButton3.show(ButtonDecorationInfo.delete, enabled = false)
-        bottomToolbarUiModel.uiModelButton4.show(ButtonDecorationInfo.print)
+        bottomToolbarUiModel.uiModelButton4.show(ButtonDecorationInfo.print, enabled = false)
         bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.save, enabled = false)
 
         connectLiveData(vm.deleteEnabled, bottomToolbarUiModel.uiModelButton3.enabled)
-        connectLiveData(vm.saveEnabled, bottomToolbarUiModel.uiModelButton5.enabled)
         connectLiveData(vm.printEnabled, bottomToolbarUiModel.uiModelButton4.enabled)
         connectLiveData(vm.printVisibility, bottomToolbarUiModel.uiModelButton4.visibility)
+        connectLiveData(vm.saveEnabled, bottomToolbarUiModel.uiModelButton5.enabled)
     }
 
     override fun onToolbarButtonClick(view: View) {
@@ -203,13 +203,13 @@ class TaskContentFragment : CoreFragment<FragmentTaskContentBinding, TaskContent
             }
 
             layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
-                    layoutId = R.layout.item_task_content_wholesale_basket,
+                    layoutId = R.layout.item_wholesale_basket,
                     itemId = BR.item,
-                    realisation = object : DataBindingAdapter<ItemTaskContentWholesaleBasketBinding> {
-                        override fun onCreate(binding: ItemTaskContentWholesaleBasketBinding) {
+                    realisation = object : DataBindingAdapter<ItemWholesaleBasketBinding> {
+                        override fun onCreate(binding: ItemWholesaleBasketBinding) {
                         }
 
-                        override fun onBind(binding: ItemTaskContentWholesaleBasketBinding, position: Int) {
+                        override fun onBind(binding: ItemWholesaleBasketBinding, position: Int) {
                             binding.tvItemNumber.tag = position
                             binding.tvItemNumber.setOnClickListener(onClickSelectionListener)
                             binding.selectedForDelete = vm.basketSelectionsHelper.isSelected(position)

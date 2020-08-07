@@ -2,7 +2,7 @@
     <string name="app_name">Возвраты</string>
 
     // Заголовки экранов
-    <string name="task_composition">Состав задания</string>
+    <string name="task_content">Состав задания</string>
     <string name="basket_good_list">Список товаров корзины</string>
     <string name="good_details">Детали по товару</string>
     <string name="task_list">Список заданий</string>

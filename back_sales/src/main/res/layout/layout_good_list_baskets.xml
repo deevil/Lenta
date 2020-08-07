@@ -85,7 +85,7 @@
             android:layout_weight="1"
             app:items="@{vm.wholesaleBaskets}"
             app:rv_config="@{rvConfig}"
-            tools:listitem="@layout/item_task_content_wholesale_basket" />
+            tools:listitem="@layout/item_wholesale_basket" />
 
     </LinearLayout>
 

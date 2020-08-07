@@ -5,6 +5,7 @@ import com.lenta.bp12.model.IOpenTaskManager
 import com.lenta.bp12.platform.extention.isAlcohol
 import com.lenta.bp12.platform.extention.isCommon
 import com.lenta.bp12.platform.extention.isMark
+import com.lenta.bp12.platform.extention.isWholesaleType
 import com.lenta.bp12.platform.navigation.IScreenNavigator
 import com.lenta.bp12.platform.resource.IResourceManager
 import com.lenta.bp12.request.*
@@ -81,6 +82,16 @@ class TaskCardOpenViewModel : CoreViewModel(), PageSelectionListener {
     val isExistComment by lazy {
         task.map {
             it?.comment?.isNotEmpty() ?: false
+        }
+    }
+
+    /**
+    Блок инициализации
+     */
+
+    init {
+        launchUITryCatch {
+            manager.isWholesaleTaskType = task.value?.type?.isWholesaleType() == true
         }
     }
 
@@ -176,16 +187,3 @@ class TaskCardOpenViewModel : CoreViewModel(), PageSelectionListener {
     }
 
 }
-
-data class TaskCardOpenUi(
-        val name: String,
-        val provider: String,
-        val storage: String,
-        val reason: String,
-        val description: String,
-        val comment: String,
-        val isStrict: Boolean,
-        val isAlcohol: Boolean,
-        val isCommon: Boolean,
-        val isMark: Boolean
-)

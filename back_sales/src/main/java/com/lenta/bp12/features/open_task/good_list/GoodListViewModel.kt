@@ -4,8 +4,8 @@ import androidx.lifecycle.MutableLiveData
 import com.lenta.bp12.features.basket.ItemWholesaleBasketUi
 import com.lenta.bp12.model.IOpenTaskManager
 import com.lenta.bp12.platform.navigation.IScreenNavigator
+import com.lenta.bp12.platform.resource.IResourceManager
 import com.lenta.shared.account.ISessionInfo
-import com.lenta.shared.models.core.Uom
 import com.lenta.shared.platform.device_info.DeviceInfo
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.SelectionItemsHelper
@@ -31,10 +31,15 @@ class GoodListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
     @Inject
     lateinit var manager: IOpenTaskManager
 
+    @Inject
+    lateinit var resource: IResourceManager
+
 
     val processingSelectionsHelper = SelectionItemsHelper()
 
     val processedSelectionsHelper = SelectionItemsHelper()
+
+    val basketSelectionsHelper = SelectionItemsHelper()
 
     val selectedPage = MutableLiveData(0)
 
@@ -46,6 +51,10 @@ class GoodListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
         task.map { task ->
             "${task?.type?.code}-${task?.number} // ${task?.name}"
         }
+    }
+
+    val description by lazy {
+        if (manager.isWholesaleTaskType) resource.taskContent() else resource.goodList()
     }
 
     val numberField: MutableLiveData<String> = MutableLiveData("")
@@ -130,6 +139,18 @@ class GoodListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
                     (page == 0 && isSelectedProcessing) || (page == 1 && isSelectedProcessed)
                 }
             }
+
+    val printVisibility by lazy {
+        selectedPage.map { tab ->
+            manager.isWholesaleTaskType && tab == 2
+        }
+    }
+
+    val printEnabled by lazy {
+        wholesaleBaskets.map {
+            it?.isNotEmpty()
+        }
+    }
 
     val saveEnabled by lazy {
         task.map {
@@ -231,6 +252,14 @@ class GoodListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
                 }
             }
         }
+    }
+
+    fun getCountTab(): Int {
+        return if (manager.isWholesaleTaskType) 3 else 2
+    }
+
+    fun onPrint() {
+
     }
 
 }

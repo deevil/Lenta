@@ -27,8 +27,9 @@ import com.lenta.shared.utilities.extentions.provideViewModel
 class GoodListFragment : CoreFragment<FragmentGoodListBinding, GoodListViewModel>(),
         ToolbarButtonsClickListener, ViewPagerSettings, OnScanResultListener {
 
-    private var notProcessedRecyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
+    private var processingRecyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
     private var processedRecyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
+    private var basketRecyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
 
     override fun getLayoutId(): Int = R.layout.fragment_good_list
 
@@ -42,7 +43,7 @@ class GoodListFragment : CoreFragment<FragmentGoodListBinding, GoodListViewModel
     }
 
     override fun setupTopToolBar(topToolbarUiModel: TopToolbarUiModel) {
-        topToolbarUiModel.description.value = getString(R.string.good_list)
+        topToolbarUiModel.description.value = vm.description
 
         connectLiveData(vm.title, topToolbarUiModel.title)
     }
@@ -50,16 +51,20 @@ class GoodListFragment : CoreFragment<FragmentGoodListBinding, GoodListViewModel
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
         bottomToolbarUiModel.uiModelButton1.show(ButtonDecorationInfo.back)
         bottomToolbarUiModel.uiModelButton3.show(ButtonDecorationInfo.delete, enabled = false)
+        bottomToolbarUiModel.uiModelButton4.show(ButtonDecorationInfo.print, enabled = false)
         bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.save, enabled = false)
 
         connectLiveData(vm.deleteEnabled, bottomToolbarUiModel.uiModelButton3.enabled)
         connectLiveData(vm.deleteVisible, bottomToolbarUiModel.uiModelButton3.visibility)
+        connectLiveData(vm.printEnabled, bottomToolbarUiModel.uiModelButton4.enabled)
+        connectLiveData(vm.printVisibility, bottomToolbarUiModel.uiModelButton4.visibility)
         connectLiveData(vm.saveEnabled, bottomToolbarUiModel.uiModelButton5.enabled)
     }
 
     override fun onToolbarButtonClick(view: View) {
         when (view.id) {
             R.id.b_3 -> vm.onClickDelete()
+            R.id.b_4 -> vm.onPrint()
             R.id.b_5 -> vm.onClickSave()
         }
     }
@@ -68,6 +73,7 @@ class GoodListFragment : CoreFragment<FragmentGoodListBinding, GoodListViewModel
         return when (position) {
             TAB_PROCESSING -> initGoodListNotProcessed(container)
             TAB_PROCESSED -> initGoodListProcessed(container)
+            TAB_BASKET -> initGoodListBasket(container)
             else -> View(context)
         }
     }
@@ -96,13 +102,13 @@ class GoodListFragment : CoreFragment<FragmentGoodListBinding, GoodListViewModel
                             binding.tvItemNumber.tag = position
                             binding.tvItemNumber.setOnClickListener(onClickSelectionListener)
                             binding.selectedForDelete = vm.processingSelectionsHelper.isSelected(position)
-                            notProcessedRecyclerViewKeyHandler?.let {
+                            processingRecyclerViewKeyHandler?.let {
                                 binding.root.isSelected = it.isSelected(position)
                             }
                         }
                     },
                     onItemClickListener = AdapterView.OnItemClickListener { _, _, position, _ ->
-                        notProcessedRecyclerViewKeyHandler?.let {
+                        processingRecyclerViewKeyHandler?.let {
                             if (it.isSelected(position)) {
                                 vm.onClickItemPosition(position)
                             } else {
@@ -115,11 +121,11 @@ class GoodListFragment : CoreFragment<FragmentGoodListBinding, GoodListViewModel
 
             layoutBinding.vm = vm
             layoutBinding.lifecycleOwner = viewLifecycleOwner
-            notProcessedRecyclerViewKeyHandler = RecyclerViewKeyHandler(
+            processingRecyclerViewKeyHandler = RecyclerViewKeyHandler(
                     rv = layoutBinding.rv,
                     items = vm.processing,
                     lifecycleOwner = layoutBinding.lifecycleOwner!!,
-                    initPosInfo = notProcessedRecyclerViewKeyHandler?.posInfo?.value
+                    initPosInfo = processingRecyclerViewKeyHandler?.posInfo?.value
             )
 
             return layoutBinding.root
@@ -180,16 +186,71 @@ class GoodListFragment : CoreFragment<FragmentGoodListBinding, GoodListViewModel
         }
     }
 
+    private fun initGoodListBasket(container: ViewGroup): View {
+        DataBindingUtil.inflate<LayoutGoodListBasketsBinding>(LayoutInflater.from(container.context),
+                R.layout.layout_good_list_baskets,
+                container,
+                false).let { layoutBinding ->
+
+            val onClickSelectionListener = View.OnClickListener {
+                (it!!.tag as Int).let { position ->
+                    vm.basketSelectionsHelper.revert(position = position)
+                    layoutBinding.rv.adapter?.notifyItemChanged(position)
+                }
+            }
+
+            layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
+                    layoutId = R.layout.item_wholesale_basket,
+                    itemId = BR.item,
+                    realisation = object : DataBindingAdapter<ItemWholesaleBasketBinding> {
+                        override fun onCreate(binding: ItemWholesaleBasketBinding) {
+                        }
+
+                        override fun onBind(binding: ItemWholesaleBasketBinding, position: Int) {
+                            binding.tvItemNumber.tag = position
+                            binding.tvItemNumber.setOnClickListener(onClickSelectionListener)
+                            binding.selectedForDelete = vm.basketSelectionsHelper.isSelected(position)
+                            basketRecyclerViewKeyHandler?.let {
+                                binding.root.isSelected = it.isSelected(position)
+                            }
+                        }
+                    },
+                    onItemClickListener = AdapterView.OnItemClickListener { _, _, position, _ ->
+                        basketRecyclerViewKeyHandler?.let {
+                            if (it.isSelected(position)) {
+                                vm.onClickItemPosition(position)
+                            } else {
+                                it.selectPosition(position)
+                            }
+                        }
+
+                    }
+            )
+
+            layoutBinding.vm = vm
+            layoutBinding.lifecycleOwner = viewLifecycleOwner
+            basketRecyclerViewKeyHandler = RecyclerViewKeyHandler(
+                    rv = layoutBinding.rv,
+                    items = vm.wholesaleBaskets,
+                    lifecycleOwner = layoutBinding.lifecycleOwner!!,
+                    initPosInfo = basketRecyclerViewKeyHandler?.posInfo?.value
+            )
+
+            return layoutBinding.root
+        }
+    }
+
     override fun getTextTitle(position: Int): String {
         return when (position) {
             TAB_PROCESSING -> getString(R.string.to_processing)
             TAB_PROCESSED -> getString(R.string.processed)
+            TAB_BASKET -> getString(R.string.baskets)
             else -> throw IllegalArgumentException("Wrong pager position!")
         }
     }
 
     override fun countTab(): Int {
-        return TABS
+        return vm.getCountTab()
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -204,9 +265,9 @@ class GoodListFragment : CoreFragment<FragmentGoodListBinding, GoodListViewModel
     companion object {
         const val SCREEN_NUMBER = "32"
 
-        private const val TABS = 2
         private const val TAB_PROCESSING = 0
         private const val TAB_PROCESSED = 1
+        private const val TAB_BASKET = 2
     }
 
 }
