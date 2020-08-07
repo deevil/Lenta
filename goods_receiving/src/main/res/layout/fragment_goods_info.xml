@@ -428,6 +428,7 @@
 
             <ImageView
                 style="@style/BottomIconStyle"
+                app:visibleOrGone="@{vm.isPerishable &amp;&amp; !vm.isGoodsAddedAsSurplus}"
                 android:onClick="@{(v) -> vm.screenNavigator.openExceptionsShelfLifeScreen()}"
                 android:src="@drawable/ic_exceptions_shelf_life_48dp" />
 

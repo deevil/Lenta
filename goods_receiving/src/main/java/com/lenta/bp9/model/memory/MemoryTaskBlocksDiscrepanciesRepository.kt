@@ -104,7 +104,7 @@ class MemoryTaskBlocksDiscrepanciesRepository : ITaskBlocksDiscrepanciesReposito
     override fun processedNumberOfStampsByProduct(product: TaskProductInfo): Int {
         return findBlocksDiscrepanciesOfProduct(product)
                 .filter {
-                    it.isScan
+                    it.isScan && it.typeDiscrepancies == TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_NORM
                 }.size
     }
 

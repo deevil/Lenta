@@ -130,7 +130,7 @@ class RejectViewModel : CoreViewModel(), OnPositionClickListener {
                     val isMarkProduct = taskDescription?.isMark ?: false
 
                     if (isMarkProduct && paramGrzMarkRef.isNotEmpty()) {
-                        screenNavigator.openAlertRequestCompleteRejectionMarkingGoods()
+                        screenNavigator.openAlertRequestCompleteRejectionMarkingGoods { goToTaskList()}
                         return@launchUITryCatch
                     }
 

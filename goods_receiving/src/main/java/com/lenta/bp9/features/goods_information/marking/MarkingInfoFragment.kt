@@ -8,6 +8,7 @@ import com.lenta.bp9.R
 import com.lenta.bp9.databinding.FragmentMarkingInfoBinding
 import com.lenta.bp9.model.task.TaskProductInfo
 import com.lenta.bp9.platform.extentions.getAppComponent
+import com.lenta.shared.platform.activity.OnBackPresserListener
 import com.lenta.shared.platform.fragment.CoreFragment
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
@@ -21,7 +22,8 @@ import com.lenta.shared.utilities.state.state
 //https://trello.com/c/NGsFfWgB
 class MarkingInfoFragment : CoreFragment<FragmentMarkingInfoBinding, MarkingInfoViewModel>(),
         ToolbarButtonsClickListener,
-        OnScanResultListener {
+        OnScanResultListener,
+        OnBackPresserListener {
 
     private var productInfo by state<TaskProductInfo?>(null)
 
@@ -94,6 +96,11 @@ class MarkingInfoFragment : CoreFragment<FragmentMarkingInfoBinding, MarkingInfo
     override fun onResume() {
         super.onResume()
         vm.requestFocusToCount.value = true
+    }
+
+    override fun onBackPressed(): Boolean {
+        vm.onBackPressed()
+        return false
     }
 
     companion object {
