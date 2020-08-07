@@ -122,7 +122,6 @@ class OpenTaskManager @Inject constructor(
                     database.getGoodInfoByMaterial(material)?.let { goodInfo ->
                         val commonUnits = database.getUnitsByCode(unitsCode)
                         val provider = ProviderInfo(providerCode, providerName)
-
                         val good = GoodOpen(
                                 ean = goodInfo.ean,
                                 eans = goodInfo.eans,
@@ -145,7 +144,8 @@ class OpenTaskManager @Inject constructor(
                                             name = it.name
                                     )
                                 },
-                                markType = goodInfo.markType
+                                markType = goodInfo.markType,
+                                maxRetailPrice = positionInfo.maxRetailPrice
                         )
 
                         factQuantity.toDoubleOrNull()?.let { factQuantity ->
@@ -239,7 +239,7 @@ class OpenTaskManager @Inject constructor(
     override fun prepareSendTaskDataParams(deviceIp: String, tkNumber: String, userNumber: String) {
         currentTask.value?.let { task ->
             val positions = mutableListOf<PositionInfo>()
-            val marks = mutableListOf<MarkInfo>()
+            val marks = mutableListOf<ExciseMarkInfo>()
             val parts = mutableListOf<PartInfo>()
 
             task.goods.forEach { good ->
@@ -272,7 +272,7 @@ class OpenTaskManager @Inject constructor(
                     }
 
                     good.marks.mapTo(marks) { mark ->
-                        MarkInfo(
+                        ExciseMarkInfo(
                                 material = good.material,
                                 number = mark.number,
                                 boxNumber = mark.boxNumber,
@@ -306,7 +306,7 @@ class OpenTaskManager @Inject constructor(
                             reasonCode = task.reason?.code.orEmpty(),
                             isNotFinish = (!task.isFinished).toSapBooleanString(),
                             positions = positions,
-                            marks = marks,
+                            exciseMarks = marks,
                             parts = parts
                     )
             )

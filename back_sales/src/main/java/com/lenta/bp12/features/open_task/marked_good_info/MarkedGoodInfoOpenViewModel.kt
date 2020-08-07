@@ -1,4 +1,4 @@
-package com.lenta.bp12.features.open_task.good_info
+package com.lenta.bp12.features.open_task.marked_good_info
 
 import androidx.lifecycle.MutableLiveData
 import com.lenta.bp12.model.*
@@ -6,7 +6,6 @@ import com.lenta.bp12.model.pojo.Mark
 import com.lenta.bp12.model.pojo.Part
 import com.lenta.bp12.model.pojo.Position
 import com.lenta.bp12.model.pojo.open_task.GoodOpen
-import com.lenta.bp12.platform.extention.extractAlcoCode
 import com.lenta.bp12.platform.extention.getGoodKind
 import com.lenta.bp12.platform.navigation.IScreenNavigator
 import com.lenta.bp12.platform.resource.IResourceManager
@@ -26,7 +25,7 @@ import com.lenta.shared.utilities.extentions.*
 import com.lenta.shared.view.OnPositionClickListener
 import javax.inject.Inject
 
-class GoodInfoOpenViewModel : CoreViewModel() {
+class MarkedGoodInfoOpenViewModel : CoreViewModel() {
 
     @Inject
     lateinit var navigator: IScreenNavigator
@@ -78,21 +77,15 @@ class GoodInfoOpenViewModel : CoreViewModel() {
         }
     }
 
-    private val screenStatus = MutableLiveData(ScreenStatus.DEFAULT)
+    private val screenStatus = MutableLiveData(MarkedScreenStatus.UNKNOWN)
 
     val accountingType by lazy {
-        screenStatus.map { status ->
-            when (status) {
-                ScreenStatus.MARK_150, ScreenStatus.MARK_68 -> resource.typeMark()
-                ScreenStatus.ALCOHOL, ScreenStatus.PART -> resource.typePart()
-                else -> resource.typeQuantity()
-            }
-        }
+        resource.typeMark()
     }
 
     val markScanEnabled by lazy {
         good.map { good ->
-            good?.kind == GoodKind.EXCISE
+            good?.kind == GoodKind.EXCISE || good?.kind == GoodKind.MARK
         }
     }
 
@@ -116,10 +109,7 @@ class GoodInfoOpenViewModel : CoreViewModel() {
 
     val quantityFieldEnabled by lazy {
         screenStatus.map { status ->
-            when (status) {
-                ScreenStatus.COMMON, ScreenStatus.ALCOHOL, ScreenStatus.PART -> true
-                else -> false
-            }
+            false
         }
     }
 
@@ -206,6 +196,22 @@ class GoodInfoOpenViewModel : CoreViewModel() {
         when (status) {
             ScreenStatus.ALCOHOL, ScreenStatus.PART -> true
             else -> false
+        }
+    }
+
+    /**
+    МРЦ
+     */
+
+    val mrc by unsafeLazy {
+        good.map {
+            it?.maxRetailPrice
+        }
+    }
+
+    val isMrcVisible by unsafeLazy {
+        screenStatus.map {
+            it == MarkedScreenStatus.TOBACCO
         }
     }
 
@@ -317,7 +323,6 @@ class GoodInfoOpenViewModel : CoreViewModel() {
                 funcForEan = ::getGoodByEan,
                 funcForMaterial = ::getGoodByMaterial,
                 funcForSapOrBar = navigator::showTwelveCharactersEntered,
-                funcForExcise = ::loadExciseMarkInfo,
                 funcForBox = ::loadBoxInfo,
                 funcForNotValidFormat = {
                     goBackIfSearchFromList()
@@ -390,11 +395,17 @@ class GoodInfoOpenViewModel : CoreViewModel() {
     }
 
     private fun setScreenStatus(good: GoodOpen) {
-        screenStatus.value = when (good.kind) {
-            GoodKind.COMMON -> ScreenStatus.COMMON
-            GoodKind.ALCOHOL -> ScreenStatus.ALCOHOL
-            GoodKind.EXCISE -> ScreenStatus.EXCISE
-            GoodKind.MARK -> ScreenStatus.MARK
+        screenStatus.value = when (good.markType) {
+            MarkType.SHOES -> MarkedScreenStatus.SHOES
+            MarkType.TOBACCO -> MarkedScreenStatus.TOBACCO
+            MarkType.BEER -> MarkedScreenStatus.BEER
+            MarkType.CLOTHES -> MarkedScreenStatus.CLOTHES
+            MarkType.MEDICINE -> MarkedScreenStatus.MEDICINE
+            MarkType.MILK -> MarkedScreenStatus.MILK
+            MarkType.PERFUME -> MarkedScreenStatus.PERFUME
+            MarkType.PHOTO -> MarkedScreenStatus.PHOTO
+            MarkType.TIRES -> MarkedScreenStatus.TIRES
+            MarkType.UNKNOWN -> MarkedScreenStatus.UNKNOWN
         }
     }
 
@@ -502,91 +513,6 @@ class GoodInfoOpenViewModel : CoreViewModel() {
         }
     }
 
-    private fun loadExciseMarkInfo(number: String) {
-        launchUITryCatch {
-            navigator.showProgressLoadingData(::handleFailure)
-
-            scanInfoNetRequest(ScanInfoParams(
-                    tkNumber = sessionInfo.market.orEmpty(),
-                    material = good.value?.material.orEmpty(),
-                    markNumber = number,
-                    mode = ScanInfoMode.MARK.mode,
-                    quantity = 0.0
-            )).also {
-                navigator.hideProgress()
-            }.either(::handleFailure) { result ->
-                handleLoadExciseMarkInfoResult(result, number)
-            }
-        }
-    }
-
-    private fun handleLoadExciseMarkInfoResult(result: ScanInfoResult, number: String) {
-        launchUITryCatch {
-            result.status.let { status ->
-                when (status) {
-                    ExciseMarkStatus.OK.code -> addExciseMarkInfo(result)
-                    ExciseMarkStatus.BAD.code -> {
-                        addExciseMarkInfo(result)
-                        navigator.openAlertScreen(result.statusDescription)
-                    }
-                    ExciseMarkStatus.UNKNOWN.code -> handleUnknownMark(number, result)
-                    else -> navigator.openAlertScreen(result.statusDescription)
-                }
-            }
-        }
-    }
-
-    private suspend fun handleUnknownMark(number: String, result: ScanInfoResult) {
-        when (number.length) {
-            Constants.MARK_150 -> navigator.openAlertScreen(result.statusDescription)
-            Constants.MARK_68 -> {
-                val alcoCodeInfoList = database.getAlcoCodeInfoList(number.extractAlcoCode())
-
-                if (alcoCodeInfoList.isEmpty()) {
-                    navigator.openAlertScreen(resource.unknownAlcocode())
-                    return
-                }
-
-                if (alcoCodeInfoList.find { it.material == good.value?.material } != null) {
-                    addPartInfo(result)
-                } else {
-                    navigator.openAlertScreen(resource.alcocodeDoesNotApplyToThisGood())
-                }
-            }
-        }
-    }
-
-    private fun addExciseMarkInfo(result: ScanInfoResult) {
-        manager.clearSearchFromListParams()
-        lastSuccessSearchNumber = originalSearchNumber
-        isExistUnsavedData = true
-        scanInfoResult.value = result
-        quantityField.value = "1"
-
-        when (originalSearchNumber.length) {
-            Constants.MARK_150 -> {
-                screenStatus.value = ScreenStatus.MARK_150
-                updateProducers(result.producers.toMutableList())
-                date.value = result.producedDate
-            }
-            Constants.MARK_68 -> {
-                screenStatus.value = ScreenStatus.MARK_68
-            }
-        }
-    }
-
-    private fun addPartInfo(result: ScanInfoResult) {
-        screenStatus.value = ScreenStatus.PART
-        lastSuccessSearchNumber = originalSearchNumber
-        isExistUnsavedData = true
-        scanInfoResult.value = result
-        quantityField.value = "1"
-
-        // todo Возможно ошибка в логике
-        // потому что тогда непонятно зачем приходит новый список при запросе по марке
-        //updateProducers(result.producers.toMutableList())
-    }
-
     private fun loadBoxInfo(number: String) {
         launchUITryCatch {
             navigator.showProgressLoadingData(::handleFailure)
@@ -613,7 +539,7 @@ class GoodInfoOpenViewModel : CoreViewModel() {
     }
 
     private fun addBoxInfo(result: ScanInfoResult) {
-        screenStatus.value = ScreenStatus.BOX
+        screenStatus.value = MarkedScreenStatus.BOX
         lastSuccessSearchNumber = originalSearchNumber
         isExistUnsavedData = true
         scanInfoResult.value = result

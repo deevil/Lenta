@@ -183,9 +183,9 @@
 
                 <View style="@style/HorizontalDivider" />
 
-            </LinearLayout>
+                </LinearLayout>
 
-        </LinearLayout>
+            </LinearLayout>
 
         <!-- Блок с иконками -->
         <LinearLayout

@@ -35,7 +35,8 @@ data class GoodCreate(
 
         var positions: MutableList<Position> = mutableListOf(),
         val marks: MutableList<Mark> = mutableListOf(),
-        val parts: MutableList<Part> = mutableListOf()
+        val parts: MutableList<Part> = mutableListOf(),
+        val maxRetailPrice: String
 ) {
 
     fun getNameWithMaterial(delimiter: String = " "): String {

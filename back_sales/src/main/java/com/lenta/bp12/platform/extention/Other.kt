@@ -41,7 +41,7 @@ fun GoodInfoResult.getMarkType(): MarkType {
 fun ZfmpUtz48V001.ItemLocal_ET_MATNR_LIST.getGoodKind(): GoodKind {
     val isAlcohol = this.isAlco.isSapTrue()
     val isExcise = this.isExc.isSapTrue()
-    val isMark = this.isMark.isSapTrue()
+    val isMark = this.markType.orEmpty().isNotEmpty()
 
     return when {
         isExcise -> GoodKind.EXCISE

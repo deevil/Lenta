@@ -7,6 +7,7 @@ import com.lenta.bp12.features.create_task.basket_good_list.BasketGoodListViewMo
 import com.lenta.bp12.features.create_task.basket_properties.BasketPropertiesViewModel
 import com.lenta.bp12.features.create_task.good_details.GoodDetailsCreateViewModel
 import com.lenta.bp12.features.create_task.good_info.GoodInfoCreateViewModel
+import com.lenta.bp12.features.create_task.marked_good_info.MarkedGoodInfoCreateViewModel
 import com.lenta.bp12.features.create_task.task_card.TaskCardCreateViewModel
 import com.lenta.bp12.features.create_task.task_composition.TaskCompositionViewModel
 import com.lenta.bp12.features.enter_employee_number.EnterEmployeeNumberViewModel
@@ -16,6 +17,7 @@ import com.lenta.bp12.features.open_task.discrepancy_list.DiscrepancyListViewMod
 import com.lenta.bp12.features.open_task.good_details.GoodDetailsOpenViewModel
 import com.lenta.bp12.features.open_task.good_info.GoodInfoOpenViewModel
 import com.lenta.bp12.features.open_task.good_list.GoodListViewModel
+import com.lenta.bp12.features.open_task.marked_good_info.MarkedGoodInfoOpenViewModel
 import com.lenta.bp12.features.open_task.task_card.TaskCardOpenViewModel
 import com.lenta.bp12.features.open_task.task_list.TaskListViewModel
 import com.lenta.bp12.features.open_task.task_search.TaskSearchViewModel
@@ -67,5 +69,7 @@ interface AppComponent : CoreComponent {
     fun inject(it: GoodInfoCreateViewModel)
     fun inject(it: AddProviderViewModel)
     fun inject(it: GoodInfoOpenViewModel)
+    fun inject(it: MarkedGoodInfoOpenViewModel)
+    fun inject(it: MarkedGoodInfoCreateViewModel)
 
 }

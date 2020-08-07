@@ -15,9 +15,9 @@ fun actionByNumberLength(
         funcForMark: ((markNumber: String) -> Unit)? = null,
         funcForNotValidFormat: () -> Unit
 ) {
+    val numberLength = number.length
 
     val numberInfo = ScanCodeInfo(number)
-    val numberLength = number.length
 
     Logg.d { "--> checked number = $numberLength / $number" }
 

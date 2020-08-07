@@ -6,7 +6,8 @@ import android.widget.TextView
 import com.google.android.material.tabs.TabLayout
 import com.lenta.shared.R
 import com.lenta.shared.platform.constants.Constants.SHOES_MARK_REGEX_PATTERN
-import com.lenta.shared.platform.constants.Constants.TOBACCO_MARK_REGEX_PATTERN
+import com.lenta.shared.platform.constants.Constants.TOBACCO_MARK_CARTON_REGEX_PATTERN
+import com.lenta.shared.platform.constants.Constants.TOBACCO_MARK_PACK_REGEX_PATTERN
 import com.lenta.shared.requests.combined.scan_info.ScanCodeInfo
 import java.text.SimpleDateFormat
 import java.util.*
@@ -49,8 +50,13 @@ fun isCommonFormatNumber(number: String): Boolean {
     return ScanCodeInfo(number).isEnterCodeValid
 }
 
-fun isTobaccoMark(number: String) : Boolean {
-    val tobaccoMarkRegex = Regex(TOBACCO_MARK_REGEX_PATTERN)
+fun isTobaccoPackMark(number: String) : Boolean {
+    val tobaccoMarkRegex = Regex(TOBACCO_MARK_PACK_REGEX_PATTERN)
+    return number.matches(tobaccoMarkRegex)
+}
+
+fun isTobaccoCartonMark(number: String) : Boolean {
+    val tobaccoMarkRegex = Regex(TOBACCO_MARK_CARTON_REGEX_PATTERN)
     return number.matches(tobaccoMarkRegex)
 }
 

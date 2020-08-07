@@ -119,6 +119,9 @@ public class ZfmpUtz48V001 {
         @SerializedName("ZMARKTYPE")
         public String markType;
 
+        @SerializedName("IS_MRK_MIX")
+        public String isMarkedGood;
+
     }
 
 

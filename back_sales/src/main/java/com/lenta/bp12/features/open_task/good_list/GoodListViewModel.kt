@@ -159,6 +159,7 @@ class GoodListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
         if (isCommonFormatNumber(number)) {
             manager.searchNumber = number
             manager.isSearchFromList = true
+
             navigator.openGoodInfoOpenScreen()
         } else {
             navigator.showIncorrectEanFormat()

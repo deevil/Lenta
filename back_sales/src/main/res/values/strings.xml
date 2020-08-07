@@ -102,5 +102,9 @@
     <string name="supplier_name">Наименование поставщика:</string>
     <string name="all_suppliers">Все поставщики</string>
     <string name="picking_warehouse">Склад\nкомплектации</string>
+    <string name="mrc">МРЦ</string>
+    <string name="gtin">GTIN</string>
+    <string name="property">Свойство</string>
+    <string name="value">Значение</string>
 
 </resources>

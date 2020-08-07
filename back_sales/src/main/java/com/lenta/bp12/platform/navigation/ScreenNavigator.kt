@@ -8,6 +8,7 @@ import com.lenta.bp12.features.create_task.basket_good_list.BasketGoodListFragme
 import com.lenta.bp12.features.create_task.basket_properties.BasketPropertiesFragment
 import com.lenta.bp12.features.create_task.good_details.GoodDetailsCreateFragment
 import com.lenta.bp12.features.create_task.good_info.GoodInfoCreateFragment
+import com.lenta.bp12.features.create_task.marked_good_info.MarkedGoodInfoCreateFragment
 import com.lenta.bp12.features.create_task.task_card.TaskCardCreateFragment
 import com.lenta.bp12.features.create_task.task_composition.TaskCompositionFragment
 import com.lenta.bp12.features.enter_employee_number.EnterEmployeeNumberFragment
@@ -17,6 +18,7 @@ import com.lenta.bp12.features.open_task.discrepancy_list.DiscrepancyListFragmen
 import com.lenta.bp12.features.open_task.good_details.GoodDetailsOpenFragment
 import com.lenta.bp12.features.open_task.good_info.GoodInfoOpenFragment
 import com.lenta.bp12.features.open_task.good_list.GoodListFragment
+import com.lenta.bp12.features.open_task.marked_good_info.MarkedGoodInfoOpenFragment
 import com.lenta.bp12.features.open_task.task_card.TaskCardOpenFragment
 import com.lenta.bp12.features.open_task.task_list.TaskListFragment
 import com.lenta.bp12.features.open_task.task_search.TaskSearchFragment
@@ -171,6 +173,20 @@ class ScreenNavigator @Inject constructor(
     override fun openAddProviderScreen() {
         runOrPostpone {
             getFragmentStack()?.push(AddProviderFragment())
+        }
+    }
+
+    override fun openMarkedGoodInfoCreateScreen() {
+        runOrPostpone {
+            goBack()
+            getFragmentStack()?.push(MarkedGoodInfoCreateFragment())
+        }
+    }
+
+    override fun openMarkedGoodInfoOpenScreen() {
+        runOrPostpone {
+            goBack()
+            getFragmentStack()?.push(MarkedGoodInfoOpenFragment())
         }
     }
 
@@ -439,6 +455,8 @@ interface IScreenNavigator : ICoreNavigator {
     fun openTaskCardOpenScreen()
     fun openTaskSearchScreen()
     fun openAddProviderScreen()
+    fun openMarkedGoodInfoCreateScreen()
+    fun openMarkedGoodInfoOpenScreen()
 
     fun showUnsentDataFoundOnDevice(deleteCallback: () -> Unit, goOverCallback: () -> Unit)
     fun showTwelveCharactersEntered(sapCallback: () -> Unit, barCallback: () -> Unit)

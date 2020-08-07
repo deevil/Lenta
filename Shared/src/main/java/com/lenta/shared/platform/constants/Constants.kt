@@ -43,12 +43,19 @@ object Constants {
     // Mark code length
     const val MARK_150 = 150
     const val MARK_68 = 68
-    const val MARK_134 = 134 //Shoes
+    const val MARK_134 = 134
     const val MARK_39 = 39
+    val SHOES_MARK_RANGE_18_20 = IntRange(18, 20)
+    val TOBACCO_MARK_RANGE_0_21 = IntRange(0, 21)
+    val TOBACCO_MARK_RANGE_21_28 = IntRange(21, 28)
+    val TOBACCO_MARK_RANGE_30_44 = IntRange(30, 44)
+    const val MARK_28 = 28
+    const val MARK_29 = 29
 
     // Regex patterns
     const val GTIN_REGEX_PATTERN = "(0{6}(?<ean8gs1>\\d{8})|0(?<ean13gs1>\\d{13}))"
-    const val TOBACCO_MARK_REGEX_PATTERN = "^01(0{6}(?<ean8gs1>\\d{8})|0(?<ean13gs1>\\d{13}))21(?<serialBlock>.{7})(8005(?<mrpBlock>\\d{6}))?|^(0{6}(?<ean8Pack>\\d{8})|0(?<ean13Pack>\\d{13}))(?<serialPack>.{7})(?<cryptoPack>.{8})$|(?<ean8>^\\d{8}$)|(?<ean13>^\\d{13}$)"
+    const val TOBACCO_MARK_PACK_REGEX_PATTERN = "^(?<packBarcode>(?<gtin>\\d{14})(?<serial>\\S{7}))(?<MRC>\\S{4})(?:\\S{4})\$"
+    const val TOBACCO_MARK_CARTON_REGEX_PATTERN = "^.?(?<blockBarcode>01(?<gtin2>\\d{14})21(?<serial>\\S{7})).?8005(?<MRC>\\d{6}).?93(?<verificationKey>\\S{4}).?(?<other>\\S{1,})?\$"
     const val SHOES_MARK_REGEX_PATTERN = "^01(?<gtin>\\d{14})21(?<serial>\\S{13})(?:240(?<tradeCode>\\d{4}))?(?:91(?<verificationKey>\\S{4}))?(?:92(?<verificationCode>\\S{88}))?$"
 
 }

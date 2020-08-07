@@ -19,8 +19,8 @@ enum class BlockType {
 enum class GoodKind {
     COMMON,
     ALCOHOL,
-    MARK,
-    EXCISE
+    EXCISE,
+    MARK
 }
 
 enum class ControlType(val code: String, val description: String) {
@@ -44,7 +44,7 @@ enum class CategoryType(val description: String){
     PART("Партионно")
 }
 
-enum class MarkStatus(val code: String){
+enum class ExciseMarkStatus(val code: String){
     OK("01"),
     BAD("02"),
     OTHER("03"),
@@ -70,8 +70,13 @@ enum class ScreenStatus(val description: String){
     MARK_68("Марка 68 символов"),
     PART("Партия"),
     BOX("Коробка"),
+    MARK("Марка")
+}
+
+enum class MarkedScreenStatus(val description: String){
+    BOX("Коробка"),
+    TOBACCO("Табак"),
     SHOES("Обувь"),
-    TOBACCO("Сигареты"),
     TIRES("Шины"),
     PERFUME("Парфюм"),
     CLOTHES("Одежда"),

@@ -1,7 +1,7 @@
 package com.lenta.bp12.request
 
 import com.google.gson.annotations.SerializedName
-import com.lenta.bp12.request.pojo.MarkInfo
+import com.lenta.bp12.request.pojo.ExciseMarkInfo
 import com.lenta.bp12.request.pojo.ProducerInfo
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.fmp.ObjectRawStatus
@@ -68,7 +68,7 @@ data class ScanInfoResult(
         val statusDescription: String,
         /** Таблица марок в коробке */
         @SerializedName("ET_MARKS")
-        val marks: List<MarkInfo>,
+        val exciseMarks: List<ExciseMarkInfo>,
         /** Номер товара? */
         @SerializedName("EV_MATNR_COMP")
         val materialComp: String,

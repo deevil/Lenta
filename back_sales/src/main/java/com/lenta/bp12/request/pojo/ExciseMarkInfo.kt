@@ -2,7 +2,7 @@ package com.lenta.bp12.request.pojo
 
 import com.google.gson.annotations.SerializedName
 
-data class MarkInfo(
+data class ExciseMarkInfo(
         /** SAP-код родителя */
         @SerializedName("MATNR_OSN")
         var materialOsn: String = "",
@@ -15,6 +15,9 @@ data class MarkInfo(
         /** Номер коробки */
         @SerializedName("BOX_NUM")
         var boxNumber: String = "",
+        /** Номер блока */
+        @SerializedName("PACK_NUM")
+        var cartonNumber: String = "",
         /** Проблемная марка */
         @SerializedName("IS_MARK_BAD")
         var isBadMark: String,

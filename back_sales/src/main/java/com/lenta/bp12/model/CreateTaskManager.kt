@@ -128,7 +128,7 @@ class CreateTaskManager @Inject constructor(
     override fun prepareSendTaskDataParams(deviceIp: String, tkNumber: String, userNumber: String) {
         currentTask.value?.let { task ->
             val positions = mutableListOf<PositionInfo>()
-            val marks = mutableListOf<MarkInfo>()
+            val marks = mutableListOf<ExciseMarkInfo>()
             val parts = mutableListOf<PartInfo>()
             val baskets = mutableListOf<BasketInfo>()
             val basketPositions = mutableListOf<BasketPositionInfo>()
@@ -171,7 +171,7 @@ class CreateTaskManager @Inject constructor(
                 }
 
                 good.marks.mapTo(marks) { mark ->
-                    MarkInfo(
+                    ExciseMarkInfo(
                             material = good.material,
                             number = mark.number,
                             boxNumber = mark.boxNumber,
@@ -205,7 +205,7 @@ class CreateTaskManager @Inject constructor(
                             reasonCode = task.reason.code,
                             isNotFinish = false.toSapBooleanString(),
                             positions = positions,
-                            marks = marks,
+                            exciseMarks = marks,
                             parts = parts,
                             baskets = baskets,
                             basketPositions = basketPositions
