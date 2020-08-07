@@ -47,7 +47,7 @@ class GoodInfoOpenFragment : CoreFragment<FragmentGoodInfoOpenBinding, GoodInfoO
         connectLiveData(vm.rollbackEnabled, bottomToolbarUiModel.uiModelButton2.enabled)
         connectLiveData(vm.applyEnabled, bottomToolbarUiModel.uiModelButton5.enabled)
 
-        if (vm.isWholesaleTaskType) {
+        if (vm.isWholesale) {
             bottomToolbarUiModel.uiModelButton4.show(ButtonDecorationInfo.close)
             connectLiveData(vm.closeEnabled, bottomToolbarUiModel.uiModelButton4.enabled)
         } else {
@@ -61,7 +61,7 @@ class GoodInfoOpenFragment : CoreFragment<FragmentGoodInfoOpenBinding, GoodInfoO
         when (view.id) {
             R.id.b_2 -> vm.onClickRollback()
             R.id.b_3 -> vm.onClickDetails()
-            R.id.b_4 -> if (vm.isWholesaleTaskType) vm.onClickClose() else vm.onClickMissing()
+            R.id.b_4 -> if (vm.isWholesale) vm.onClickClose() else vm.onClickMissing()
             //R.id.b_4 -> vm.onScanResult("147300249826851018001FZSIZAB5I6KZKWEQKPKZJHW6MYKVGAETXLPV7M5AIF7OXTQFIM347EWQGXAK65QGJFKTR7EQDHJQTJFSW5DNWTBU3BRLKVM7D6YZMYRBV6IOQY5ZXLPKLBHUZPBTRFTLQ")
             //R.id.b_4 -> vm.onScanResult("22N00001CRDKFRWFBZ90123456789012345678901234567890123456789000000001") // Марка 156641
             //R.id.b_4 -> vm.onScanResult("4607149780488") // ШК

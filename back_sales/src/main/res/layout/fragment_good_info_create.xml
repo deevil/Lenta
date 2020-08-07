@@ -71,13 +71,13 @@
                         style="@style/CellTextStyle"
                         android:text="@{vm.totalTitle}"
                         android:textColor="@color/color_text_title_header"
-                        tools:text="Итого*" />
+                        tools:text="Итого" />
 
                     <TextView
                         style="@style/CellTextStyle"
                         android:text="@{vm.basketTitle}"
                         android:textColor="@color/color_text_title_header"
-                        tools:text="*По корзине" />
+                        tools:text="По корзине" />
 
                 </LinearLayout>
 

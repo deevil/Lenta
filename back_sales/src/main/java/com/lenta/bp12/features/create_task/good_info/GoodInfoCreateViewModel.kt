@@ -185,7 +185,7 @@ class GoodInfoCreateViewModel : CoreViewModel() {
         }
     }
 
-    val basketQuantity by lazy {
+    private val basketQuantity by lazy {
         good.combineLatest(quantity).combineLatest(isProviderSelected).map {
             it?.let {
                 val good = it.first.first

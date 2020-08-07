@@ -8,6 +8,7 @@ import com.lenta.bp12.model.pojo.Position
 import com.lenta.bp12.model.pojo.open_task.GoodOpen
 import com.lenta.bp12.platform.extention.extractAlcoCode
 import com.lenta.bp12.platform.extention.getGoodKind
+import com.lenta.bp12.platform.extention.isWholesaleType
 import com.lenta.bp12.platform.navigation.IScreenNavigator
 import com.lenta.bp12.platform.resource.IResourceManager
 import com.lenta.bp12.repository.IDatabaseRepository
@@ -70,7 +71,7 @@ class GoodInfoOpenViewModel : CoreViewModel() {
         }
     }
 
-    val isWholesaleTaskType by lazy {
+    val isWholesale by lazy {
         manager.isWholesaleTaskType
     }
 
@@ -78,7 +79,13 @@ class GoodInfoOpenViewModel : CoreViewModel() {
 
     private var lastSuccessSearchNumber = ""
 
-    val isCompactMode by lazy {
+    val isWholesaleTaskType by lazy {
+        task.map {
+            it?.type?.isWholesaleType()
+        }
+    }
+
+    val isCommonGood by lazy {
         good.map { good ->
             good?.kind == GoodKind.COMMON
         }
@@ -151,6 +158,27 @@ class GoodInfoOpenViewModel : CoreViewModel() {
     val totalWithUnits by lazy {
         totalQuantity.map { quantity ->
             "${quantity.dropZeros()} ${good.value?.commonUnits?.name}"
+        }
+    }
+
+    /**
+    Количество товара по корзинам
+     */
+
+    val basketTitle by lazy {
+        MutableLiveData(resource.byBasket())
+    }
+
+    private val basketQuantity by lazy {
+        MutableLiveData(0.0)
+    }
+
+    val basketQuantityWithUnits by lazy {
+        good.combineLatest(basketQuantity).map {
+            it?.let {
+                val (good, quantity) = it
+                "${quantity.dropZeros()} ${good.commonUnits.name}"
+            }
         }
     }
 

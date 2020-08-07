@@ -73,6 +73,13 @@
                         android:textColor="@color/color_text_title_header"
                         tools:text="Итого" />
 
+                    <TextView
+                        style="@style/CellTextStyle"
+                        android:text="@{vm.basketTitle}"
+                        android:textColor="@color/color_text_title_header"
+                        android:visibility="@{vm.isWholesaleTaskType}"
+                        tools:text="По корзине" />
+
                 </LinearLayout>
 
                 <View style="@style/VerticalDivider" />
@@ -86,6 +93,12 @@
                         android:text="@{vm.totalWithUnits}"
                         tools:text="1 шт" />
 
+                    <TextView
+                        style="@style/CellTextStyle"
+                        android:text="@{vm.basketQuantityWithUnits}"
+                        android:visibility="@{vm.isWholesaleTaskType}"
+                        tools:text="1 шт" />
+
                 </LinearLayout>
 
             </LinearLayout>
@@ -93,7 +106,9 @@
             <View style="@style/HorizontalDivider" />
 
             <!-- Производитель -->
-            <LinearLayout style="@style/LinearRowStyle">
+            <LinearLayout
+                style="@style/LinearRowStyle"
+                android:visibility="@{!vm.isWholesaleTaskType}">
 
                 <LinearLayout
                     style="@style/LinearCellStyle"
@@ -111,14 +126,16 @@
 
             </LinearLayout>
 
-            <View style="@style/HorizontalDivider" />
+            <View
+                style="@style/HorizontalDivider"
+                android:visibility="@{!vm.isWholesaleTaskType}" />
 
             <!-- Алкогольная часть -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:visibility="@{!vm.isCompactMode}">
+                android:visibility="@{!vm.isCommonGood}">
 
                 <!-- Импортер -->
                 <LinearLayout style="@style/LinearRowStyle">
