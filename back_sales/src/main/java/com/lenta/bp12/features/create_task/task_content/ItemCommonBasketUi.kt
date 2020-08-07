@@ -1,4 +1,4 @@
-package com.lenta.bp12.features.create_task.task_composition
+package com.lenta.bp12.features.create_task.task_content
 
 import com.lenta.bp12.model.pojo.create_task.Basket
 

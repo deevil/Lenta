@@ -1,4 +1,4 @@
-package com.lenta.bp12.features.create_task.task_composition
+package com.lenta.bp12.features.create_task.task_content
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -25,18 +25,18 @@ import com.lenta.shared.utilities.extentions.connectLiveData
 import com.lenta.shared.utilities.extentions.generateScreenNumberFromPostfix
 import com.lenta.shared.utilities.extentions.provideViewModel
 
-class TaskCompositionFragment : CoreFragment<FragmentTaskCompositionBinding, TaskCompositionViewModel>(),
+class TaskContentFragment : CoreFragment<FragmentTaskContentBinding, TaskContentViewModel>(),
         ToolbarButtonsClickListener, ViewPagerSettings, OnBackPresserListener, OnScanResultListener {
 
     private var goodRecyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
     private var basketRecyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
 
-    override fun getLayoutId(): Int = R.layout.fragment_task_composition
+    override fun getLayoutId(): Int = R.layout.fragment_task_content
 
     override fun getPageNumber(): String? = generateScreenNumberFromPostfix(SCREEN_NUMBER)
 
-    override fun getViewModel(): TaskCompositionViewModel {
-        provideViewModel(TaskCompositionViewModel::class.java).let {
+    override fun getViewModel(): TaskContentViewModel {
+        provideViewModel(TaskContentViewModel::class.java).let {
             getAppComponent()?.inject(it)
             return it
         }
@@ -56,12 +56,14 @@ class TaskCompositionFragment : CoreFragment<FragmentTaskCompositionBinding, Tas
 
         connectLiveData(vm.deleteEnabled, bottomToolbarUiModel.uiModelButton3.enabled)
         connectLiveData(vm.saveEnabled, bottomToolbarUiModel.uiModelButton5.enabled)
+        connectLiveData(vm.printEnabled, bottomToolbarUiModel.uiModelButton4.enabled)
         connectLiveData(vm.printVisibility, bottomToolbarUiModel.uiModelButton4.visibility)
     }
 
     override fun onToolbarButtonClick(view: View) {
         when (view.id) {
             R.id.b_3 -> vm.onClickDelete()
+            R.id.b_4 -> vm.onPrint()
             R.id.b_5 -> vm.onClickSave()
             //R.id.b_5 -> vm.onScanResult("03000042907513119000404111") // Коробка 082682
         }
@@ -69,21 +71,21 @@ class TaskCompositionFragment : CoreFragment<FragmentTaskCompositionBinding, Tas
 
     override fun getPagerItemView(container: ViewGroup, position: Int): View {
         return when (position) {
-            TAB_GOODS -> initTaskCompositionGoods(container)
+            TAB_GOODS -> initTaskContentGoods(container)
             TAB_BASKETS -> {
                 if(vm.manager.isWholesaleTaskType) {
-                    initTaskCompositionWholesaleBaskets(container)
+                    initTaskContentWholesaleBaskets(container)
                 } else {
-                    initTaskCompositionCommonBaskets(container)
+                    initTaskContentCommonBaskets(container)
                 }
             }
             else -> View(context)
         }
     }
 
-    private fun initTaskCompositionGoods(container: ViewGroup): View {
-        DataBindingUtil.inflate<LayoutTaskCompositionGoodsBinding>(LayoutInflater.from(container.context),
-                R.layout.layout_task_composition_goods,
+    private fun initTaskContentGoods(container: ViewGroup): View {
+        DataBindingUtil.inflate<LayoutTaskContentGoodsBinding>(LayoutInflater.from(container.context),
+                R.layout.layout_task_content_goods,
                 container,
                 false).let { layoutBinding ->
 
@@ -95,13 +97,13 @@ class TaskCompositionFragment : CoreFragment<FragmentTaskCompositionBinding, Tas
             }
 
             layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
-                    layoutId = R.layout.item_task_composition_good,
+                    layoutId = R.layout.item_task_content_good,
                     itemId = BR.item,
-                    realisation = object : DataBindingAdapter<ItemTaskCompositionGoodBinding> {
-                        override fun onCreate(binding: ItemTaskCompositionGoodBinding) {
+                    realisation = object : DataBindingAdapter<ItemTaskContentGoodBinding> {
+                        override fun onCreate(binding: ItemTaskContentGoodBinding) {
                         }
 
-                        override fun onBind(binding: ItemTaskCompositionGoodBinding, position: Int) {
+                        override fun onBind(binding: ItemTaskContentGoodBinding, position: Int) {
                             binding.tvItemNumber.tag = position
                             binding.tvItemNumber.setOnClickListener(onClickSelectionListener)
                             binding.selectedForDelete = vm.goodSelectionsHelper.isSelected(position)
@@ -134,9 +136,9 @@ class TaskCompositionFragment : CoreFragment<FragmentTaskCompositionBinding, Tas
         }
     }
 
-    private fun initTaskCompositionCommonBaskets(container: ViewGroup): View {
-        DataBindingUtil.inflate<LayoutTaskCompositionCommonBasketsBinding>(LayoutInflater.from(container.context),
-                R.layout.layout_task_composition_common_baskets,
+    private fun initTaskContentCommonBaskets(container: ViewGroup): View {
+        DataBindingUtil.inflate<LayoutTaskContentCommonBasketsBinding>(LayoutInflater.from(container.context),
+                R.layout.layout_task_content_common_baskets,
                 container,
                 false).let { layoutBinding ->
 
@@ -148,13 +150,13 @@ class TaskCompositionFragment : CoreFragment<FragmentTaskCompositionBinding, Tas
             }
 
             layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
-                    layoutId = R.layout.item_task_composition_common_basket,
+                    layoutId = R.layout.item_task_content_common_basket,
                     itemId = BR.item,
-                    realisation = object : DataBindingAdapter<ItemTaskCompositionCommonBasketBinding> {
-                        override fun onCreate(binding: ItemTaskCompositionCommonBasketBinding) {
+                    realisation = object : DataBindingAdapter<ItemTaskContentCommonBasketBinding> {
+                        override fun onCreate(binding: ItemTaskContentCommonBasketBinding) {
                         }
 
-                        override fun onBind(binding: ItemTaskCompositionCommonBasketBinding, position: Int) {
+                        override fun onBind(binding: ItemTaskContentCommonBasketBinding, position: Int) {
                             binding.tvItemNumber.tag = position
                             binding.tvItemNumber.setOnClickListener(onClickSelectionListener)
                             binding.selectedForDelete = vm.basketSelectionsHelper.isSelected(position)
@@ -187,9 +189,9 @@ class TaskCompositionFragment : CoreFragment<FragmentTaskCompositionBinding, Tas
         }
     }
 
-    private fun initTaskCompositionWholesaleBaskets(container: ViewGroup): View {
-        DataBindingUtil.inflate<LayoutTaskCompositionWholesaleBasketsBinding>(LayoutInflater.from(container.context),
-                R.layout.layout_task_composition_wholesale_baskets,
+    private fun initTaskContentWholesaleBaskets(container: ViewGroup): View {
+        DataBindingUtil.inflate<LayoutTaskContentWholesaleBasketsBinding>(LayoutInflater.from(container.context),
+                R.layout.layout_task_content_wholesale_baskets,
                 container,
                 false).let { layoutBinding ->
 
@@ -201,13 +203,13 @@ class TaskCompositionFragment : CoreFragment<FragmentTaskCompositionBinding, Tas
             }
 
             layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
-                    layoutId = R.layout.item_task_composition_wholesale_basket,
+                    layoutId = R.layout.item_task_content_wholesale_basket,
                     itemId = BR.item,
-                    realisation = object : DataBindingAdapter<ItemTaskCompositionWholesaleBasketBinding> {
-                        override fun onCreate(binding: ItemTaskCompositionWholesaleBasketBinding) {
+                    realisation = object : DataBindingAdapter<ItemTaskContentWholesaleBasketBinding> {
+                        override fun onCreate(binding: ItemTaskContentWholesaleBasketBinding) {
                         }
 
-                        override fun onBind(binding: ItemTaskCompositionWholesaleBasketBinding, position: Int) {
+                        override fun onBind(binding: ItemTaskContentWholesaleBasketBinding, position: Int) {
                             binding.tvItemNumber.tag = position
                             binding.tvItemNumber.setOnClickListener(onClickSelectionListener)
                             binding.selectedForDelete = vm.basketSelectionsHelper.isSelected(position)

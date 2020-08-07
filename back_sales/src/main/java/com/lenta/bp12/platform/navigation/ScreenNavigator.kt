@@ -9,7 +9,7 @@ import com.lenta.bp12.features.create_task.basket_properties.BasketPropertiesFra
 import com.lenta.bp12.features.create_task.good_details.GoodDetailsCreateFragment
 import com.lenta.bp12.features.create_task.good_info.GoodInfoCreateFragment
 import com.lenta.bp12.features.create_task.task_card.TaskCardCreateFragment
-import com.lenta.bp12.features.create_task.task_composition.TaskCompositionFragment
+import com.lenta.bp12.features.create_task.task_content.TaskContentFragment
 import com.lenta.bp12.features.enter_employee_number.EnterEmployeeNumberFragment
 import com.lenta.bp12.features.loading.fast.FastDataLoadingFragment
 import com.lenta.bp12.features.main_menu.MainMenuFragment
@@ -86,7 +86,7 @@ class ScreenNavigator @Inject constructor(
     // Основные экраны
     override fun openTaskCompositionScreen() {
         runOrPostpone {
-            getFragmentStack()?.push(TaskCompositionFragment())
+            getFragmentStack()?.push(TaskContentFragment())
         }
     }
 

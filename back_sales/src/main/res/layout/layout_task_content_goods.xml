@@ -2,13 +2,13 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context=".features.create_task.task_composition.TaskCompositionFragment">
+    tools:context=".features.create_task.task_content.TaskContentFragment">
 
     <data>
 
         <variable
             name="vm"
-            type="com.lenta.bp12.features.create_task.task_composition.TaskCompositionViewModel" />
+            type="com.lenta.bp12.features.create_task.task_content.TaskContentViewModel" />
 
         <variable
             name="rvConfig"
@@ -31,7 +31,7 @@
 
                 <LinearLayout
                     style="@style/LinearCellStyle"
-                    android:layout_weight="@integer/four_two_1">
+                    android:layout_weight="@integer/three_one_1">
 
                     <TextView
                         style="@style/FirstRowTextStyle"
@@ -42,31 +42,21 @@
 
                 <LinearLayout
                     style="@style/LinearCellStyle"
-                    android:layout_weight="@integer/four_two_2">
+                    android:layout_weight="@integer/three_one_2">
 
                     <TextView
                         style="@style/FirstRowTextStyle"
-                        android:text="@string/goods" />
+                        android:text="@string/good" />
 
                 </LinearLayout>
 
                 <LinearLayout
                     style="@style/LinearCellStyle"
-                    android:layout_weight="@integer/four_two_3">
+                    android:layout_weight="@integer/three_one_3">
 
                     <TextView
                         style="@style/FirstRowTextStyle"
-                        android:text="@string/quantity_short" />
-
-                </LinearLayout>
-
-                <LinearLayout
-                    style="@style/LinearCellStyle"
-                    android:layout_weight="@integer/four_two_4">
-
-                    <TextView
-                        style="@style/FirstRowTextStyle"
-                        android:text="@string/tag" />
+                        android:text="@string/quantity" />
 
                 </LinearLayout>
 
@@ -76,16 +66,16 @@
 
         </LinearLayout>
 
-        <!-- Список корзин -->
+        <!-- Список товаров -->
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rv"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_marginBottom="8dp"
             android:layout_weight="1"
-            app:items="@{vm.wholesaleBaskets}"
+            app:items="@{vm.goods}"
             app:rv_config="@{rvConfig}"
-            tools:listitem="@layout/item_task_composition_wholesale_basket" />
+            tools:listitem="@layout/item_task_content_good" />
 
     </LinearLayout>
 

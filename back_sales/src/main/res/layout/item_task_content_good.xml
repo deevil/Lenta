@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools">
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools">
 
     <data>
 
         <variable
             name="item"
-            type="com.lenta.bp12.features.create_task.task_composition.ItemCommonBasketUi" />
+            type="com.lenta.bp12.features.create_task.task_content.ItemGoodUi" />
 
         <variable
             name="selectedForDelete"
@@ -47,23 +47,12 @@
                 android:layout_weight="@integer/three_one_2"
                 android:orientation="horizontal">
 
-                <LinearLayout
+                <TextView
+                    style="@style/CellTextStyle"
                     android:layout_width="0dp"
-                    android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:orientation="vertical">
-
-                    <TextView
-                        style="@style/CellTextStyle"
-                        android:text="@{item.name}"
-                        tools:text="Корзина 01" />
-
-                    <TextView
-                        style="@style/CellTextStyle"
-                        android:text="@{item.description}"
-                        tools:text="С-02/1HAW/O/ПП-104653" />
-
-                </LinearLayout>
+                    android:text="@{item.name}"
+                    tools:text="000021 Масло" />
 
                 <ImageView
                     android:layout_width="wrap_content"
@@ -84,7 +73,7 @@
                     style="@style/CellTextStyle"
                     android:layout_width="wrap_content"
                     android:text="@{item.quantity}"
-                    tools:text="1" />
+                    tools:text="5 шт" />
 
             </LinearLayout>
 

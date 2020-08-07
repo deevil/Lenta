@@ -75,7 +75,7 @@
             android:layout_weight="1"
             app:items="@{vm.goods}"
             app:rv_config="@{rvConfig}"
-            tools:listitem="@layout/item_task_composition_good" />
+            tools:listitem="@layout/item_task_content_good" />
 
         <!-- Ввод номера товара -->
         <LinearLayout style="@style/EnterNumberFieldLayout">

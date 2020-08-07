@@ -7,7 +7,7 @@
 
         <variable
             name="item"
-            type="com.lenta.bp12.features.create_task.task_composition.ItemWholesaleBasketUi" />
+            type="com.lenta.bp12.features.create_task.task_content.ItemWholesaleBasketUi" />
 
         <variable
             name="selectedForDelete"

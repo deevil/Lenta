@@ -1,4 +1,4 @@
-package com.lenta.bp12.features.create_task.task_composition
+package com.lenta.bp12.features.create_task.task_content
 
 import androidx.lifecycle.MutableLiveData
 import com.lenta.bp12.model.ICreateTaskManager
@@ -19,7 +19,7 @@ import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.utilities.isCommonFormatNumber
 import javax.inject.Inject
 
-class TaskCompositionViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyboardListener {
+class TaskContentViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyboardListener {
 
     @Inject
     lateinit var navigator: IScreenNavigator
@@ -128,11 +128,14 @@ class TaskCompositionViewModel : CoreViewModel(), PageSelectionListener, OnOkInS
             }
 
     val printVisibility by lazy {
-        selectedPage.combineLatest(wholesaleBaskets).map {
-            it?.let {
-                val (tab, baskets) = it
-                manager.isWholesaleTaskType && tab == 1 && baskets.isNotEmpty()
-            }
+        selectedPage.map { tab ->
+            manager.isWholesaleTaskType && tab == 1
+        }
+    }
+
+    val printEnabled by lazy {
+        wholesaleBaskets.map {
+            it?.isNotEmpty()
         }
     }
 
@@ -210,6 +213,18 @@ class TaskCompositionViewModel : CoreViewModel(), PageSelectionListener, OnOkInS
                     manager.removeBaskets(basketList)
                 }
                 else -> throw IllegalArgumentException("Wrong pager position!")
+            }
+        }
+    }
+
+    fun onPrint() {
+        goodSelectionsHelper.selectedPositions.value?.let { positions ->
+            if (positions.isNotEmpty()) {
+                // Печатаем выбранные позиции
+
+            } else {
+                // Печатаем весь список корзин
+
             }
         }
     }

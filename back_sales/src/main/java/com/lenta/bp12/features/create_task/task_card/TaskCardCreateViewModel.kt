@@ -52,7 +52,7 @@ class TaskCardCreateViewModel : CoreViewModel(), PageSelectionListener {
 
     val taskName by lazy {
         selectedType.map { type ->
-            if (type?.isWholesaleType() == true) {
+            if (type?.isWholesaleType() == false) {
                 val date = SimpleDateFormat(Constants.DATE_FORMAT_dd_mm_yyyy_hh_mm, Locale.getDefault()).format(Date())
                 resource.backSalesFromDate(date)
             } else ""
@@ -61,7 +61,7 @@ class TaskCardCreateViewModel : CoreViewModel(), PageSelectionListener {
 
     val provider by lazy {
         selectedType.map { type ->
-            if (type?.isWholesaleType() == true) resource.allSuppliers() else resource.wholesaleBuyer()
+            if (type?.isWholesaleType() == false) resource.allSuppliers() else resource.wholesaleBuyer()
         }
     }
 

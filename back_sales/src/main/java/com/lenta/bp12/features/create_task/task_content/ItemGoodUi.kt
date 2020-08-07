@@ -1,4 +1,4 @@
-package com.lenta.bp12.features.create_task.task_composition
+package com.lenta.bp12.features.create_task.task_content
 
 data class ItemGoodUi(
         val material: String,
