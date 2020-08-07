@@ -157,12 +157,10 @@ class TaskContents
                 startRecountRestInfo.taskBatchesDiscrepancies.map {
                     TaskBatchesDiscrepancies.from(hyperHive, it)
                 },
-
                 startRecountRestInfo
                         .taskMercuryDiscrepancies
                         ?.map { TaskMercuryDiscrepancies.from(hyperHive, it) }
                         .orEmpty(),
-
                 startRecountRestInfo.taskExciseStamps.map {
                     TaskExciseStampInfo.from(it)
                 },

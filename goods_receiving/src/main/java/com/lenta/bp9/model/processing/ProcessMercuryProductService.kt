@@ -6,6 +6,8 @@ import com.lenta.bp9.model.task.TaskProductDiscrepancies
 import com.lenta.bp9.model.task.TaskProductInfo
 import com.lenta.bp9.repos.IRepoInMemoryHolder
 import com.lenta.shared.di.AppScope
+import com.lenta.shared.models.core.Uom
+import com.lenta.shared.utilities.extentions.toStringFormatted
 import javax.inject.Inject
 
 const val PROCESSING_MERCURY_UNKNOWN = 0
@@ -662,6 +664,36 @@ class ProcessMercuryProductService
     fun getRoundingQuantityPPP (count: String, reasonRejectionCode: String) : Double {
         val residue = productInfo.origQuantity.toDouble() - getQuantityAllCategoryExceptNonOrderOfProduct(if (reasonRejectionCode != "41") count.toDouble() else 0.0)
         return count.toDouble() + residue
+    }
+
+    fun getVolumeAllMercury(manufacturer: String, productionDate: String) : Double {
+        return currentMercuryDiscrepancies
+                .filter {
+                    it.manufacturer == manufacturer
+                            && it.productionDate == productionDate
+                }
+                .groupBy {
+                    it.vetDocumentID
+                }
+                .map { groupByMercuryDiscrepancies ->
+                    groupByMercuryDiscrepancies
+                            .value
+                            .first()
+                            .volume
+                }.sumByDouble {
+                    it
+                }
+    }
+
+    fun getUomNameOfMercury(manufacturer: String, productionDate: String) : String {
+        return currentMercuryDiscrepancies
+                .findLast {
+                    it.manufacturer == manufacturer
+                            && it.productionDate == productionDate
+                }
+                ?.uom
+                ?.name
+                .orEmpty()
     }
 
 }

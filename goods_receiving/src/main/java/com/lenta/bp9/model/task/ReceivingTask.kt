@@ -119,6 +119,14 @@ class ReceivingTask(val taskHeader: TaskInfo,
         taskRepository
                 .getMercuryDiscrepancies()
                 .updateMercuryDiscrepancy(taskContentsInfo.taskMercuryDiscrepancies)
+        /**для веттоваров таблица ET_TASK_DIFF приходит пустой, потому данные необходимо брать из таблицы ET_VET_DIFF,
+         * чтобы на экранах Список товаров, Обнаружены расхождения и Информация о веттоваре, Детали по товару, были данные и их не переписывать под таблицу ET_VET_DIFF,
+         * конвертируем и переносим данные из ET_VET_DIFF в ET_TASK_DIFF
+         * */
+        taskRepository
+                .getProductsDiscrepancies()
+                .addProductDiscrepancyOfMercuryDiscrepancy(taskContentsInfo.taskMercuryDiscrepancies)
+
         taskRepository
                 .getExciseStamps()
                 .updateExciseStamps(taskContentsInfo.taskExciseStampInfo)

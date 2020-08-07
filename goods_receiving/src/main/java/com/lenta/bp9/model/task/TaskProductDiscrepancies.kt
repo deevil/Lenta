@@ -4,6 +4,7 @@ import com.google.gson.annotations.SerializedName
 import com.lenta.shared.fmp.resources.dao_ext.getUomInfo
 import com.lenta.shared.fmp.resources.fast.ZmpUtz07V001
 import com.lenta.shared.models.core.Uom
+import com.lenta.shared.utilities.extentions.toStringFormatted
 import com.mobrun.plugin.api.HyperHive
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -40,24 +41,17 @@ data class TaskProductDiscrepancies(
             }
         }
 
-        suspend fun fromMercury(hyperHive: HyperHive, restData: TaskMercuryDiscrepanciesRestData): TaskProductDiscrepancies {
-            return withContext(Dispatchers.IO) {
-                val zmpUtz07V001: ZmpUtz07V001 by lazy {
-                    ZmpUtz07V001(hyperHive)
-                }
-                val uomInfo = zmpUtz07V001.getUomInfo(restData.unit)
-                return@withContext TaskProductDiscrepancies(
-                        materialNumber = restData.materialNumber,
-                        processingUnitNumber = "",
-                        numberDiscrepancies = restData.numberDiscrepancies,
-                        uom = Uom(code = uomInfo?.uom.orEmpty(), name = uomInfo?.name.orEmpty()),
-                        typeDiscrepancies = restData.typeDiscrepancies,
-                        isNotEdit = false,
-                        isNew = false,
-                        notEditNumberDiscrepancies = ""
-                )
-            }
-
+        fun fromMercury(data: TaskMercuryDiscrepancies): TaskProductDiscrepancies {
+            return TaskProductDiscrepancies(
+                    materialNumber = data.materialNumber,
+                    processingUnitNumber = "",
+                    numberDiscrepancies = data.numberDiscrepancies.toStringFormatted(),
+                    uom = data.uom,
+                    typeDiscrepancies = data.typeDiscrepancies,
+                    isNotEdit = false,
+                    isNew = false,
+                    notEditNumberDiscrepancies = ""
+            )
         }
     }
 }

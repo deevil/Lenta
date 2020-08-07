@@ -10,6 +10,7 @@ import com.lenta.bp9.model.processing.*
 import com.lenta.bp9.model.task.IReceivingTaskManager
 import com.lenta.bp9.model.task.TaskProductInfo
 import com.lenta.bp9.model.task.TaskType
+import com.lenta.bp9.platform.TypeDiscrepanciesConstants
 import com.lenta.bp9.platform.navigation.IScreenNavigator
 import com.lenta.bp9.repos.IDataBaseRepo
 import com.lenta.bp9.repos.IRepoInMemoryHolder
@@ -87,21 +88,13 @@ class GoodsMercuryInfoViewModel : CoreViewModel(), OnPositionClickListener {
 
     val spinQuality: MutableLiveData<List<String>> = MutableLiveData()
     val spinQualitySelectedPosition: MutableLiveData<Int> = MutableLiveData(0)
-    val spinManufacturers by lazy {
-        if (isTaskPGE.value == true && isGoodsAddedAsSurplus.value == true) {
-            repoInMemoryHolder.manufacturers.value?.map {
-                it.name
-            }
-        } else {
-            taskManager.getReceivingTask()?.taskRepository?.getMercuryDiscrepancies()?.getManufacturesOfProduct(productInfo.value!!)
-        }
-    }
+    val spinManufacturers: MutableLiveData<List<String>> = MutableLiveData()
     val spinManufacturersSelectedPosition: MutableLiveData<Int> = MutableLiveData(0)
 
     @SuppressLint("SimpleDateFormat")
-    val spinProductionDate =
-        spinManufacturersSelectedPosition
-                .map { pos ->
+    val spinProductionDate: MutableLiveData<List<String>> =
+            spinManufacturersSelectedPosition
+                    .map { pos ->
                     val position = pos ?: 0
                     productInfo.value
                             ?.let { product ->
@@ -110,11 +103,12 @@ class GoodsMercuryInfoViewModel : CoreViewModel(), OnPositionClickListener {
                                         ?.taskRepository
                                         ?.getMercuryDiscrepancies()
                                         ?.findMercuryDiscrepanciesOfProduct(product)
-                                        ?.filter { it.manufacturer == spinManufacturers?.get(position) }
+                                        ?.filter { it.manufacturer == spinManufacturers.value?.get(position) }
                                         ?.groupBy { it.productionDate }
                                         ?.map { formatterRU.format(formatterEN.parse(it.key)) }
                             }
-                }
+                            .orEmpty()
+                    }
 
     val spinProductionDateSelectedPosition: MutableLiveData<Int> = MutableLiveData(0)
     val spinReasonRejection: MutableLiveData<List<String>> = MutableLiveData()
@@ -125,45 +119,62 @@ class GoodsMercuryInfoViewModel : CoreViewModel(), OnPositionClickListener {
     private val paramGrzRoundLackRatio: MutableLiveData<String> = MutableLiveData()
     private val paramGrzRoundLackUnit: MutableLiveData<String> = MutableLiveData()
     private val paramGrzRoundHeapRatio: MutableLiveData<String> = MutableLiveData()
+    private val isClickApply: MutableLiveData<Boolean> = MutableLiveData(false)
 
     private val mercuryVolume  =
             spinManufacturersSelectedPosition
                     .combineLatest(spinProductionDateSelectedPosition)
                     .map {
-                        val findMercuryInfoOfProduct =
-                                taskManager
-                                        .getReceivingTask()
-                                        ?.taskRepository
-                                        ?.getMercuryDiscrepancies()
-                                        ?.findMercuryDiscrepanciesOfProduct(productInfo.value!!)
-                                        ?.filter {taskMercuryInfo ->
-                                            taskMercuryInfo.manufacturer == spinManufacturers!![it!!.first]
-                                                    && taskMercuryInfo.productionDate == formatterEN.format(formatterRU.parse(spinProductionDate.value!![it.second]))
-                                        }
-                        "${findMercuryInfoOfProduct?.sumByDouble {mercuryInfo ->
-                            mercuryInfo.volume
-                        }.toStringFormatted()} ${findMercuryInfoOfProduct?.last()?.uom?.name}"
+                        val manufacturer = spinManufacturers.value?.get(spinManufacturersSelectedPosition.value ?: 0).orEmpty()
+                        val spinProductionDate = spinProductionDate.value?.get(spinProductionDateSelectedPosition.value ?: 0).orEmpty()
+                        val productionDate = if (spinProductionDate.isNotEmpty()) formatterEN.format(formatterRU.parse(spinProductionDate)) else ""
+                        val countMercuryVolume = processMercuryProductService.getVolumeAllMercury(manufacturer, productionDate)
+                        val mercuryUomName = processMercuryProductService.getUomNameOfMercury(manufacturer, productionDate)
+                        buildString {
+                            append(countMercuryVolume.toStringFormatted())
+                            append(" ")
+                            append(mercuryUomName)
+                        }
                     }
+
     val tvProductionDate = mercuryVolume.map {
         if (isTaskPGE.value == true && isGoodsAddedAsSurplus.value == true) {
             context.getString(R.string.vet_with_production_date_txt)
         } else {
-            context.getString(R.string.vet_with_production_date, it)
+            context.getString(R.string.vet_with_production_date, it.orEmpty())
         }
     }
-    private val isClickApply: MutableLiveData<Boolean> = MutableLiveData(false)
+
     val isDiscrepancy: MutableLiveData<Boolean> = MutableLiveData(false)
-    val isDefect: MutableLiveData<Boolean> = spinQualitySelectedPosition.combineLatest(isDiscrepancy).map {
-        if (taskManager.getReceivingTask()!!.taskHeader.taskType != TaskType.RecalculationCargoUnit) {
-            if (!it!!.second) {
-                qualityInfo.value?.get(it.first)?.code != "1"
-            } else true
-        } else {
-            if (!it!!.second) {
-                qualityInfo.value?.get(it.first)?.code != "1" && qualityInfo.value?.get(it.first)?.code != "2"
-            } else true
-        }
-    }
+    val isDefect: MutableLiveData<Boolean> =
+            spinQualitySelectedPosition
+                    .combineLatest(isDiscrepancy)
+                    .map {
+                        val taskType =
+                                taskManager
+                                        .getReceivingTask()
+                                        ?.taskHeader
+                                        ?.taskType
+                        val spinQualitySelectedPositionVal = spinQualitySelectedPosition.value ?: 0
+                        val qualityInfoCode =
+                                qualityInfo.value
+                                        ?.get(spinQualitySelectedPositionVal)
+                                        ?.code
+                                        .orEmpty()
+
+                        isDiscrepancy.value
+                                ?.takeIf { !it }
+                                ?.run {
+                                    if (taskType != TaskType.RecalculationCargoUnit) {
+                                        qualityInfoCode != TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_NORM
+                                    } else {
+                                        qualityInfoCode != TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_NORM
+                                                && qualityInfoCode != TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_SURPLUS
+                                    }
+                                }
+                                ?: true
+                                .orIfNull { false }
+                    }
     val isEizUnit: MutableLiveData<Boolean> by lazy {
         MutableLiveData(isDiscrepancy.value == false && isGoodsAddedAsSurplus.value == false)
     }
@@ -256,9 +267,9 @@ class GoodsMercuryInfoViewModel : CoreViewModel(), OnPositionClickListener {
 
     val enabledApplyButton: MutableLiveData<Boolean> = countValue.map {
         if (isGoodsAddedAsSurplus.value == true) { //карточка трелло https://trello.com/c/eo1nRdKC) (ТП (меркурий по ПГЕ) -> 3.2.2.16 Обработка расхождений при пересчете ГЕ (Меркурий) -> 2.1.Излишек по товару
-            (it ?: 0.0) > 0.0 && !spinManufacturers.isNullOrEmpty()
+            (it ?: 0.0) > 0.0 && !spinManufacturers.value.isNullOrEmpty()
         } else {
-            (it ?: 0.0) > 0.0 && !spinManufacturers.isNullOrEmpty() && !spinProductionDate.value.isNullOrEmpty()
+            (it ?: 0.0) > 0.0 && !spinManufacturers.value.isNullOrEmpty() && !spinProductionDate.value.isNullOrEmpty()
         }
     }
 
@@ -336,9 +347,16 @@ class GoodsMercuryInfoViewModel : CoreViewModel(), OnPositionClickListener {
                 }
             }
 
-            spinQuality.value = qualityInfo.value?.map {
-                it.name
-            }
+            spinQuality.value = qualityInfo.value?.map { it.name }
+
+            spinManufacturers.value =
+                if (isTaskPGE.value == true && isGoodsAddedAsSurplus.value == true) {
+                    repoInMemoryHolder.manufacturers.value?.map {
+                        it.name
+                    }
+                } else {
+                    taskManager.getReceivingTask()?.taskRepository?.getMercuryDiscrepancies()?.getManufacturesOfProduct(productInfo.value!!)
+                }
 
             paramGrzRoundLackRatio.value = dataBase.getParamGrzRoundLackRatio()
             paramGrzRoundLackUnit.value = dataBase.getParamGrzRoundLackUnit()
@@ -479,7 +497,7 @@ class GoodsMercuryInfoViewModel : CoreViewModel(), OnPositionClickListener {
                 processing = processMercuryProductService.checkConditionsOfPreservationOfProduct(
                                 count = count.value ?: "0",
                                 typeDiscrepancies = reasonRejectionCode,
-                                manufacturer = spinManufacturers!![spinManufacturersSelectedPosition.value!!],
+                                manufacturer = spinManufacturers.value!![spinManufacturersSelectedPosition.value!!],
                                 productionDate = formatterEN.format(formatterRU.parse(spinProductionDate.value!![spinProductionDateSelectedPosition.value!!])),
                                 paramGrzRoundLackRatio = paramGrzRoundLackRatio.value?.replace(",", ".")?.toDouble() ?: 0.0,
                                 paramGrzRoundLackUnit = paramGrzRoundLackUnit.value?.replace(",", ".")?.toDouble() ?: 0.0,
@@ -494,9 +512,9 @@ class GoodsMercuryInfoViewModel : CoreViewModel(), OnPositionClickListener {
         when (processing) {
             PROCESSING_MERCURY_SAVED -> {
                 if (qualityInfo.value?.get(spinQualitySelectedPosition.value ?: 0)?.code == "1") {
-                    processMercuryProductService.add(addCount, false,"1", spinManufacturers!![spinManufacturersSelectedPosition.value!!], formatterEN.format(formatterRU.parse(spinProductionDate.value!![spinProductionDateSelectedPosition.value!!])))
+                    processMercuryProductService.add(addCount, false,"1", spinManufacturers.value!![spinManufacturersSelectedPosition.value!!], formatterEN.format(formatterRU.parse(spinProductionDate.value!![spinProductionDateSelectedPosition.value!!])))
                 } else {
-                    processMercuryProductService.add(addCount, false, reasonRejectionInfo.value!![spinReasonRejectionSelectedPosition.value!!].code, spinManufacturers!![spinManufacturersSelectedPosition.value!!], formatterEN.format(formatterRU.parse(spinProductionDate.value!![spinProductionDateSelectedPosition.value!!])))
+                    processMercuryProductService.add(addCount, false, reasonRejectionInfo.value!![spinReasonRejectionSelectedPosition.value!!].code, spinManufacturers.value!![spinManufacturersSelectedPosition.value!!], formatterEN.format(formatterRU.parse(spinProductionDate.value!![spinProductionDateSelectedPosition.value!!])))
                 }
                 count.value = "0"
                 addGoods.value = true
@@ -521,7 +539,7 @@ class GoodsMercuryInfoViewModel : CoreViewModel(), OnPositionClickListener {
                                     processing = processMercuryProductService.checkConditionsOfPreservationOfVSD(
                                                     count = addCount,
                                                     typeDiscrepancies = reasonRejectionCode,
-                                                    manufacturer = spinManufacturers!![spinManufacturersSelectedPosition.value!!],
+                                                    manufacturer = spinManufacturers.value!![spinManufacturersSelectedPosition.value!!],
                                                     productionDate = formatterEN.format(formatterRU.parse(spinProductionDate.value!![spinProductionDateSelectedPosition.value!!]))),
                                     addCount = addCount,
                                     reasonRejectionCode = reasonRejectionCode
@@ -536,7 +554,7 @@ class GoodsMercuryInfoViewModel : CoreViewModel(), OnPositionClickListener {
                                     processing = processMercuryProductService.checkConditionsOfPreservationOfVSD(
                                                         count = enteredCount.toString(),
                                                         typeDiscrepancies = reasonRejectionCode,
-                                                        manufacturer = spinManufacturers!![spinManufacturersSelectedPosition.value!!],
+                                                        manufacturer = spinManufacturers.value!![spinManufacturersSelectedPosition.value!!],
                                                         productionDate = formatterEN.format(formatterRU.parse(spinProductionDate.value!![spinProductionDateSelectedPosition.value!!]))),
                                     addCount = enteredCount.toString(),
                                     reasonRejectionCode = reasonRejectionCode)
@@ -549,10 +567,10 @@ class GoodsMercuryInfoViewModel : CoreViewModel(), OnPositionClickListener {
                 screenNavigator.openAlertUnableSaveNegativeQuantity()
             }
             PROCESSING_MERCURY_OVERDELIVERY_MORE_EQUAL_NOT_ORDER -> {
-                processMercuryProductService.overDeliveryMoreEqualNotOrder(addCount, false, reasonRejectionInfo.value!![spinReasonRejectionSelectedPosition.value!!].code, spinManufacturers!![spinManufacturersSelectedPosition.value!!], formatterEN.format(formatterRU.parse(spinProductionDate.value!![spinProductionDateSelectedPosition.value!!])))
+                processMercuryProductService.overDeliveryMoreEqualNotOrder(addCount, false, reasonRejectionInfo.value!![spinReasonRejectionSelectedPosition.value!!].code, spinManufacturers.value!![spinManufacturersSelectedPosition.value!!], formatterEN.format(formatterRU.parse(spinProductionDate.value!![spinProductionDateSelectedPosition.value!!])))
             }
             PROCESSING_MERCURY_OVERDELIVERY_LESS_NOT_ORDER -> {
-                processMercuryProductService.overDeliveryLessNotOrder(addCount, false, reasonRejectionInfo.value!![spinReasonRejectionSelectedPosition.value!!].code, spinManufacturers!![spinManufacturersSelectedPosition.value!!], formatterEN.format(formatterRU.parse(spinProductionDate.value!![spinProductionDateSelectedPosition.value!!])))
+                processMercuryProductService.overDeliveryLessNotOrder(addCount, false, reasonRejectionInfo.value!![spinReasonRejectionSelectedPosition.value!!].code, spinManufacturers.value!![spinManufacturersSelectedPosition.value!!], formatterEN.format(formatterRU.parse(spinProductionDate.value!![spinProductionDateSelectedPosition.value!!])))
             }
             PROCESSING_MERCURY_UNKNOWN -> {
                 //на Windows Mobile нет действия
@@ -570,7 +588,7 @@ class GoodsMercuryInfoViewModel : CoreViewModel(), OnPositionClickListener {
                         ?.getMercuryDiscrepancies()
                         ?.findMercuryDiscrepanciesOfProduct(productInfo.value!!)
                         ?.last { mercuryDiscrepancies ->
-                            mercuryDiscrepancies.manufacturer == spinManufacturers!![spinManufacturersSelectedPosition.value!!]
+                            mercuryDiscrepancies.manufacturer == spinManufacturers.value!![spinManufacturersSelectedPosition.value!!]
                                     && mercuryDiscrepancies.productionDate == formatterEN.format(formatterRU.parse(spinProductionDate.value!![spinProductionDateSelectedPosition.value!!]))
                         }?.uom
 
@@ -585,7 +603,7 @@ class GoodsMercuryInfoViewModel : CoreViewModel(), OnPositionClickListener {
                 return
             } else {
                 val productionDateSave = SimpleDateFormat("yyyy-MM-dd").format(formatterRU.parse(productionDate.value))
-                processMercuryProductService.add(convertEizToBei().toString(), isConvertUnit, qualityInfo.value!![spinQualitySelectedPosition.value!!].code, spinManufacturers!![spinManufacturersSelectedPosition.value!!], productionDateSave)
+                processMercuryProductService.add(convertEizToBei().toString(), isConvertUnit, qualityInfo.value!![spinQualitySelectedPosition.value!!].code, spinManufacturers.value!![spinManufacturersSelectedPosition.value!!], productionDateSave)
                 count.value = "0"
                 addGoods.value = true
                 if (isClickApply.value!!) {
@@ -597,9 +615,9 @@ class GoodsMercuryInfoViewModel : CoreViewModel(), OnPositionClickListener {
         }
 
         //обработка ПГЕ Меркурия для товаров, которые есть в поставке (карточка трелло https://trello.com/c/eo1nRdKC) (ТП (меркурий по ПГЕ) -> 3.2.2.16 Обработка расхождений при пересчете ГЕ (Меркурий) )
-        when (processMercuryProductService.checkConditionsOfPreservationPGE(convertEizToBei(), isConvertUnit, qualityInfo.value!![spinQualitySelectedPosition.value!!].code, spinManufacturers!![spinManufacturersSelectedPosition.value!!], formatterEN.format(formatterRU.parse(spinProductionDate.value!![spinProductionDateSelectedPosition.value!!])))) {
+        when (processMercuryProductService.checkConditionsOfPreservationPGE(convertEizToBei(), isConvertUnit, qualityInfo.value!![spinQualitySelectedPosition.value!!].code, spinManufacturers.value!![spinManufacturersSelectedPosition.value!!], formatterEN.format(formatterRU.parse(spinProductionDate.value!![spinProductionDateSelectedPosition.value!!])))) {
             PROCESSING_MERCURY_SAVED -> {
-                processMercuryProductService.add(convertEizToBei().toString(), isConvertUnit, qualityInfo.value!![spinQualitySelectedPosition.value!!].code, spinManufacturers!![spinManufacturersSelectedPosition.value!!], formatterEN.format(formatterRU.parse(spinProductionDate.value!![spinProductionDateSelectedPosition.value!!])))
+                processMercuryProductService.add(convertEizToBei().toString(), isConvertUnit, qualityInfo.value!![spinQualitySelectedPosition.value!!].code, spinManufacturers.value!![spinManufacturersSelectedPosition.value!!], formatterEN.format(formatterRU.parse(spinProductionDate.value!![spinProductionDateSelectedPosition.value!!])))
                 count.value = "0"
                 addGoods.value = true
                 if (isClickApply.value!!) {
@@ -619,7 +637,7 @@ class GoodsMercuryInfoViewModel : CoreViewModel(), OnPositionClickListener {
             PROCESSING_MERCURY_SURPLUS_IN_QUANTITY -> { //2.2.	Излишек по количеству
                 screenNavigator.openExceededPlannedQuantityBatchInProcessingUnitDialog(
                         nextCallbackFunc = {
-                            processMercuryProductService.addSurplusInQuantityPGE(convertEizToBei(), isConvertUnit, spinManufacturers!![spinManufacturersSelectedPosition.value!!], formatterEN.format(formatterRU.parse(spinProductionDate.value!![spinProductionDateSelectedPosition.value!!])))
+                            processMercuryProductService.addSurplusInQuantityPGE(convertEizToBei(), isConvertUnit, spinManufacturers.value!![spinManufacturersSelectedPosition.value!!], formatterEN.format(formatterRU.parse(spinProductionDate.value!![spinProductionDateSelectedPosition.value!!])))
                             count.value = "0"
                             addGoods.value = true
                             if (isClickApply.value!!) {
@@ -630,7 +648,7 @@ class GoodsMercuryInfoViewModel : CoreViewModel(), OnPositionClickListener {
                 )
             }
             PROCESSING_MERCURY_NORM_AND_UNDERLOAD_EXCEEDED_INVOICE -> {//4.Особые случаи, 4.2.1.1 кол-во по поставке превышено
-                processMercuryProductService.addNormAndUnderloadExceededInvoicePGE(convertEizToBei(), isConvertUnit, spinManufacturers!![spinManufacturersSelectedPosition.value!!], formatterEN.format(formatterRU.parse(spinProductionDate.value!![spinProductionDateSelectedPosition.value!!])))
+                processMercuryProductService.addNormAndUnderloadExceededInvoicePGE(convertEizToBei(), isConvertUnit, spinManufacturers.value!![spinManufacturersSelectedPosition.value!!], formatterEN.format(formatterRU.parse(spinProductionDate.value!![spinProductionDateSelectedPosition.value!!])))
                 count.value = "0"
                 addGoods.value = true
                 if (isClickApply.value!!) {
@@ -639,7 +657,7 @@ class GoodsMercuryInfoViewModel : CoreViewModel(), OnPositionClickListener {
                 }
             }
             PROCESSING_MERCURY_NORM_AND_UNDERLOAD_EXCEEDED_VET_DOC -> { //4.Особые случаи, 4.2.1.2 кол-во превышает кол-во по ВСД
-                processMercuryProductService.addNormAndUnderloadExceededVetDocPGE(convertEizToBei(), isConvertUnit, spinManufacturers!![spinManufacturersSelectedPosition.value!!], formatterEN.format(formatterRU.parse(spinProductionDate.value!![spinProductionDateSelectedPosition.value!!])))
+                processMercuryProductService.addNormAndUnderloadExceededVetDocPGE(convertEizToBei(), isConvertUnit, spinManufacturers.value!![spinManufacturersSelectedPosition.value!!], formatterEN.format(formatterRU.parse(spinProductionDate.value!![spinProductionDateSelectedPosition.value!!])))
                 count.value = "0"
                 addGoods.value = true
                 if (isClickApply.value!!) {
