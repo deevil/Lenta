@@ -6,7 +6,6 @@ import com.lenta.bp18.platform.Constants
 import com.lenta.bp18.platform.navigation.IScreenNavigator
 import com.lenta.bp18.repository.IDatabaseRepo
 import com.lenta.bp18.request.network.GoodInfoNetRequest
-import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.models.core.Uom
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.requests.combined.scan_info.pojo.ConditionInfo
@@ -110,25 +109,23 @@ class GoodInfoViewModel : CoreViewModel(), OnPositionClickListener {
                 }.orIfNull { onClickPosition(0) }
             }
 
-            val conditionsList: MutableList<ConditionInfo> = mutableListOf()
-            /**Для отображения пустого поля, если условие DEFCOND не имеет флага*/
-            conditionsList.add(0,ConditionInfo())
-            conditionsList.addAll(database.getAllCondition())
-            val conditionMatnr = good?.getFormattedMatcode()
-            Logg.d { "$conditionMatnr" }
-            conditions.value = conditionsList
-            Logg.d { "$conditionsList" }
-            selectedCondition.value?.let {
-                conditionsList.forEachIndexed { index, conditionInfo ->
-                    if (conditionInfo.defCondition == "X" && conditionInfo.matnr == "$SAP_ZEROES$conditionMatnr") {
-                        currentCondition = conditionInfo.name
-                        Logg.d { "$currentCondition $index" }
-                        onClickCondition(index)
-                    }
+            val conditionList = database.getConditionByName(good?.getFormattedMatcode())
+            if (conditionList.isEmpty()) {
+                with(navigator) {
+                    showAlertConditionNotFound(::openSelectGoodScreen)
                 }
-            }.orIfNull { onClickPosition(0) }
+            }
+            conditions.value = conditionList.map { ConditionInfo(name = it.name) }
+            selectedCondition.value?.let {
+                conditionList.forEachIndexed { index, conditionInfo ->
+                    if (conditionInfo.defCondition == DEF_COND_FLAG) {
+                        currentCondition = conditionInfo.name
+                        onClickCondition(index)
+                    } else
+                        onClickCondition(0)
+                }
+            }
         }
-
     }
 
     override fun onClickPosition(position: Int) {
@@ -169,7 +166,6 @@ class GoodInfoViewModel : CoreViewModel(), OnPositionClickListener {
 
     companion object {
         private const val DEF_WEIGHT = "0"
-        private const val SAP_ZEROES = "000000000000" //12 нулей
+        private const val DEF_COND_FLAG = "X"
     }
-
 }
