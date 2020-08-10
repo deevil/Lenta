@@ -28,7 +28,7 @@ object EAN128Parser {
     }
 
     @Throws(InvalidObjectException::class)
-    fun Parse(data: String, throwException: Boolean): Map<AII, String> {
+    fun parse(data: String, throwException: Boolean): Map<AII, String> {
         var data = data
         // cut off the EAN128 start code
         if (data.startsWith(eAN128StartCode)) {
@@ -43,7 +43,7 @@ object EAN128Parser {
         // walkk through the EAN128 code
         while (index < data.length) {
             // try to get the AI at the current position
-            val ai = GetAI(data, index, false)
+            val ai = getAI(data, index, false)
             if (ai == null) {
                 if (throwException) {
                     throw InvalidObjectException("AI not found")
@@ -51,13 +51,13 @@ object EAN128Parser {
                 return result
             }
             // get the data to the current AI
-            val code = GetCode(data, ai, index)
+            val code = getCode(data, ai, index)
             result[ai] = code
         }
         return result
     }
 
-    private fun GetCode(data: String, ai: AII, index: Int): String {
+    private fun getCode(data: String, ai: AII, index: Int): String {
         // get the max lenght to read.
         var localIndex = index
         var lenghtToRead = min(ai.LengthOfData, data.length - localIndex)
@@ -86,7 +86,7 @@ object EAN128Parser {
         return result
     }
 
-    private fun GetAI(data: String, index: Int, usePlaceHolder: Boolean): AII? {
+    private fun getAI(data: String, index: Int, usePlaceHolder: Boolean): AII? {
         var result: AII? = null
         var localIndex = index
         // Step through the different lenghts of the AIs
@@ -111,7 +111,7 @@ object EAN128Parser {
         }
         // if no AI found here, than try it with placeholders. Assumed that is the first sep where usePlaceHolder is false
         if (!usePlaceHolder) {
-            result = GetAI(data, index, true)
+            result = getAI(data, index, true)
         }
         return result
     }
