@@ -1,7 +1,6 @@
 package com.lenta.bp16.platform.navigation
 
 import android.content.Context
-import android.os.Bundle
 import com.lenta.bp16.R
 import com.lenta.bp16.features.auth.AuthFragment
 import com.lenta.bp16.features.defect_info.DefectInfoFragment
@@ -11,7 +10,6 @@ import com.lenta.bp16.features.external_supply_task_list.ExternalSupplyTaskListF
 import com.lenta.bp16.features.good_info.GoodInfoFragment
 import com.lenta.bp16.features.good_packaging.GoodPackagingFragment
 import com.lenta.bp16.features.good_weighing.GoodWeighingFragment
-import com.lenta.bp16.features.good_without_manufacturer.GoodWithoutManufacturerFragment
 import com.lenta.bp16.features.ingredient_details.IngredientDetailsFragment
 import com.lenta.bp16.features.ingredients_list.IngredientsListFragment
 import com.lenta.bp16.features.loading.fast.FastDataLoadingFragment
@@ -337,14 +335,14 @@ class ScreenNavigator @Inject constructor(
         }
     }
 
-    override fun showAlertPartNotFound(backCallback: () -> Unit) {
+    override fun showAlertPartNotFound(backCallback: (() -> Unit)?) {
         runOrPostpone {
             getFragmentStack()?.push(AlertFragment.create(
                     pageNumber = Constants.ALERT_FRAGMENT,
                     message = context.getString(R.string.tw_alert_part_not_found),
                     iconRes = R.drawable.ic_warning_red_80dp,
                     leftButtonDecorationInfo = ButtonDecorationInfo.back,
-                    codeConfirmForLeft = backFragmentResultHelper.setFuncForResult(backCallback)
+                    codeConfirmForLeft = backCallback?.let { backFragmentResultHelper.setFuncForResult(it) }
             ))
         }
     }
@@ -382,8 +380,6 @@ class ScreenNavigator @Inject constructor(
                     leftButtonDecorationInfo = ButtonDecorationInfo.back,
                     codeConfirmForLeft = backFragmentResultHelper.setFuncForResult(backCallback)
             ))
-                    pageNumber = Constants.ALERT_FRAGMENT)
-            )
         }
     }
 
@@ -439,10 +435,9 @@ interface IScreenNavigator : ICoreNavigator {
     fun showNotSavedDataWillBeLost(yesCallback: () -> Unit)
     fun showAlertNoIpPrinter()
     fun showLabelSentToPrint(nextCallback: () -> Unit)
-    fun showAlertPartNotFound()
     fun showAlertWeightNotSet()
-    fun showAlertPartNotFound(backCallback: () -> Unit)
-    fun showAlertGoodNotFound(backCallback: () -> Unit)
-    fun showMovingSuccessful(nextCallback: () -> Unit)
     fun showAlertExceededLimit(backCallback: () -> Unit)
+    fun showMovingSuccessful(nextCallback: () -> Unit)
+    fun showAlertGoodNotFound(backCallback: () -> Unit)
+    fun showAlertPartNotFound(backCallback: (() -> Unit)? = null)
 }

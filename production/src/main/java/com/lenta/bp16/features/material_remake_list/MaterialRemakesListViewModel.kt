@@ -108,6 +108,8 @@ class MaterialRemakesListViewModel : CoreViewModel() {
             val code = ingredient.value?.getFormattedCode().orEmpty()
             val name = ingredient.value?.nameMatnrOsn.orEmpty()
             navigator.openMaterialRemakeDetailsScreen(selectedMaterial, code, name)
-        } ?: navigator.showAlertPartNotFound()
+        } ?: navigator.showAlertPartNotFound {
+
+        }
     }
 }
