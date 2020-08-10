@@ -4,7 +4,7 @@ import android.content.Context
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.*
+import androidx.lifecycle.switchMap
 import com.lenta.movement.R
 import com.lenta.movement.exception.EmptyTaskFailure
 import com.lenta.movement.exception.PersonnelNumberFailure
@@ -35,9 +35,6 @@ import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.databinding.PageSelectionListener
 import com.lenta.shared.utilities.date_time.DateTimeUtil
 import com.lenta.shared.utilities.extentions.*
-import com.lenta.shared.utilities.extentions.getDeviceIp
-import com.lenta.shared.utilities.extentions.launchUITryCatch
-import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.utilities.orIfNull
 import com.lenta.shared.view.OnPositionClickListener
 import kotlinx.coroutines.Dispatchers
@@ -242,7 +239,7 @@ class TaskViewModel : CoreViewModel(), PageSelectionListener {
     }
 
     val isStrictList by unsafeLazy {
-        currentStatus != Task.Status.Created(CREATED) || currentStatus != Task.Status.Published(PUBLISHED)
+        !(currentStatus == Task.Status.Created(CREATED) || currentStatus == Task.Status.Published(PUBLISHED))
     }
 
     fun onResume() = task.value?.let(taskManager::setTask).orIfNull{ selectedPagePosition.value = 1 }

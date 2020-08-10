@@ -12,6 +12,8 @@ import com.mobrun.plugin.models.StatusSelectTable;
 
 /**
  * Настройки типов заданий
+ * На основании типа перемещения и типа задания получить Настройки.
+ * По наличию определенного типа настроек делить корзину
  */
 public class ZmpUtz47V001 {
 
@@ -59,32 +61,35 @@ public class ZmpUtz47V001 {
         @SerializedName("LGORT_TGT")
         public String lgortTarget;
 
+        @SerializedName("DIV_ABTNR")
+        public String divAbtnr; //Делить по секции
+
         @SerializedName("DIV_MARK_PARTS")
-        public String divMarkParts;
+        public String divMarkParts; //Делить по партионным и марочным остаткам
 
         @SerializedName("DIV_ALCO")
-        public String divAlco;
+        public String divAlco; //Делить по признаку Алкоголь
 
         @SerializedName("DIV_USUAL")
-        public String divUsual;
+        public String divUsual; //Делить по признаку Обычный товар
 
         @SerializedName("DIV_VET")
-        public String divVet;
+        public String divVet; //Делить по признаку Меркурианский товар
 
         @SerializedName("DIV_PARTS")
-        public String divParts;
+        public String divParts; //Делить по партии
 
         @SerializedName("DIV_MTART")
-        public String divMtart;
+        public String divMtart; //Делить по признаку Вид товара
 
         @SerializedName("DIV_FOOD")
-        public String divFood;
+        public String divFood; //Делить по признаку Еда\Не еда
 
         @SerializedName("DIV_LIFNR")
-        public String divLifnr;
+        public String divLifnr; //Делить по признаку Поставщик
 
         @SerializedName("DIV_MATNR")
-        public String divMatnr;
+        public String divMatnr; //Делить по признаку SAPкод товара (только один вид кода в корзине)
 
     }
 

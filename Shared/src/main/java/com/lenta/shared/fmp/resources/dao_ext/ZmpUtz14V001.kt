@@ -136,6 +136,22 @@ fun ZmpUtz14V001.getGrzCrGrundcat(): String? {
     return getParams("GRZ_CR_GRUNDCAT").firstOrNull()
 }
 
+fun ZmpUtz14V001.getGrzMeinsPack(): String? {
+    return getParams("GRZ_MEINS_PACK").firstOrNull()
+}
+
+fun ZmpUtz14V001.getGrzExclGtin(): String? {
+    return getParams("GRZ_EXCL_GTIN").firstOrNull()
+}
+
+fun ZmpUtz14V001.getGrzMarkRef(): String? {
+    return getParams("GRZ_MARK_REF").firstOrNull()
+}
+
+fun ZmpUtz14V001.getGrzGrundMark(): String? {
+    return getParams("GRZ_GRUND_MARK").firstOrNull()
+}
+
 private fun ZmpUtz14V001.getParams(paramName: String): List<String> {
     @Suppress("INACCESSIBLE_TYPE")
     return localHelper_ET_PARAMS.getWhere("PARAMNAME = \"$paramName\"").map { it.paramvalue }

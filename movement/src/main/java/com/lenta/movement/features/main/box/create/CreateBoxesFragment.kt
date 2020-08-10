@@ -35,7 +35,7 @@ class CreateBoxesFragment : CoreFragment<FragmentCreateBoxesBinding, CreateBoxes
         ViewPagerSettings,
         OnScanResultListener,
         OnBackPresserListener,
-        OnKeyDownListener {
+        OnKeyDownListener{
 
     private var productInfo: ProductInfo? by state(null)
 
@@ -206,17 +206,6 @@ class CreateBoxesFragment : CoreFragment<FragmentCreateBoxesBinding, CreateBoxes
         return false
     }
 
-    companion object {
-        private const val PAGE_NUMBER = "13/18"
-
-        fun newInstance(productInfo: ProductInfo): CreateBoxesFragment {
-            return CreateBoxesFragment().apply {
-                this.productInfo = productInfo
-            }
-        }
-    }
-
-    //Для тестов
     override fun onKeyDown(keyCode: KeyCode): Boolean {
         when (keyCode) {
             KeyCode.KEYCODE_0 -> {
@@ -227,7 +216,21 @@ class CreateBoxesFragment : CoreFragment<FragmentCreateBoxesBinding, CreateBoxes
                 vm.onScanResult("01000000014011219000536300")
                 return true
             }
+            KeyCode.KEYCODE_2 -> {
+                vm.onAddClick()
+                return true
+            }
             else -> return false
+        }
+    }
+
+    companion object {
+        private const val PAGE_NUMBER = "13/18"
+
+        fun newInstance(productInfo: ProductInfo): CreateBoxesFragment {
+            return CreateBoxesFragment().apply {
+                this.productInfo = productInfo
+            }
         }
     }
 }

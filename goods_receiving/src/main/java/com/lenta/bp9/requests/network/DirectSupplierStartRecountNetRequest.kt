@@ -30,7 +30,9 @@ data class DirectSupplierStartRecountParams(
         @SerializedName("IV_TIME_COUNT")
         val timeRecount: String, //Время начала пересчета
         @SerializedName("IV_UNBIND_VSD")
-        val unbindVSD: String //общий флаг
+        val unbindVSD: String, //общий флаг
+        @SerializedName("IV_OS")
+        val operatingSystem: String //операционная система, Win - 1, Андроид - 2
 )
 
 class DirectSupplierStartRecountStatus : ObjectRawStatus<DirectSupplierStartRecountRestInfo>()
@@ -66,6 +68,12 @@ data class DirectSupplierStartRecountRestInfo(
         val processOrderData: List<TaskProcessOrderDataRestData>,
         @SerializedName("ET_TASK_SETS")//Список наборов
         val setsInfo: List<TaskSetsRestData>,
+        @SerializedName("ET_TASK_PACK")//Список блоков для маркированного товара
+        val taskBlocks: List<TaskBlockInfoRestData>,
+        @SerializedName("ET_PACK_DIFF")//Список обработанных блоков для маркированного товара
+        val taskBlocksDiscrepancies: List<TaskBlockDiscrepanciesRestData>,
+        @SerializedName("ET_PROPERTIES")//таблица свойств для маркированного товара
+        val markingGoodsProperties: List<TaskMarkingGoodsPropertiesRestData>,
         @SerializedName("EV_RETCODE")
         override val retCode: Int,
         @SerializedName("EV_ERROR_TEXT")
@@ -130,7 +138,15 @@ data class TaskComposition(
         @SerializedName("ABTNR")
         val departmentNumber: String, //номер отдела (abtnr)
         @SerializedName("ZMARKTYPE")
-        val markType: String,
+        val markType: String?,
         @SerializedName("EXIDV")
-        val processingUnit: String? //Номер ЕО (Единица обработки) (для 28 реста, в 11 и 15 рестах данного поля нет)
+        val processingUnit: String?, //Номер ЕО (Единица обработки) (для 28 реста, в 11 и 15 рестах данного поля нет)
+        @SerializedName("IS_USE_ALTERN_MEINS")
+        val isCountingBoxes: String, //маркированный товар, пусто - нет возможности пересчета в коробах
+        @SerializedName("QNTINCL_PACK")
+        val nestingInOneBlock: String?, //маркированный товар, Вложенность в один блок
+        @SerializedName("IS_CHECK_GTIN")
+        val isControlGTIN: String, //маркированный товар, Контроль GTIN
+        @SerializedName("IS_GRAYZONE")
+        val isGrayZone: String //маркированный товар
 )

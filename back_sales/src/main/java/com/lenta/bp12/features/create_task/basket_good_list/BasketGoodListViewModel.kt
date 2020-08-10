@@ -37,7 +37,7 @@ class BasketGoodListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
     val title by lazy {
         basket.map { basket ->
             val position = manager.getBasketPosition(basket)
-            val description = basket?.getDescription(task.value?.taskType?.isDivBySection ?: false)
+            val description = basket?.getDescription(task.value?.type?.isDivBySection ?: false)
             resource.basket("$position: $description")
         }
     }
@@ -87,7 +87,7 @@ class BasketGoodListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
         number.length.let { length ->
             if (length >= Constants.SAP_6) {
                 manager.searchNumber = number
-                manager.searchGoodFromList = true
+                manager.isSearchFromList = true
                 navigator.goBack()
                 navigator.openGoodInfoCreateScreen()
             }
@@ -97,7 +97,7 @@ class BasketGoodListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
     fun onClickItemPosition(position: Int) {
         goods.value?.get(position)?.material?.let { material ->
             manager.searchNumber = material
-            manager.searchGoodFromList = true
+            manager.isSearchFromList = true
             navigator.goBack()
             navigator.openGoodInfoCreateScreen()
         }
@@ -112,17 +112,15 @@ class BasketGoodListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
     }
 
     fun onClickDelete() {
-        val materialList = mutableListOf<String>()
-        selectionsHelper.selectedPositions.value?.map { position ->
-            goods.value?.get(position)?.material?.let {
-                materialList.add(it)
-            }
+        val materials = mutableListOf<String>()
+        selectionsHelper.selectedPositions.value?.mapNotNullTo(materials) { position ->
+            goods.value?.get(position)?.material
         }
 
         selectionsHelper.clearPositions()
 
         basket.value?.let { basket ->
-            manager.removeGoodByBasketAndMaterials(basket, materialList)
+            manager.removeGoodByBasketAndMaterials(basket, materials)
             manager.updateCurrentBasket(manager.currentBasket.value)
 
             task.value?.let { task ->

@@ -67,7 +67,7 @@ class NonExciseSetComponentInfoPGEViewModel : CoreViewModel(),
     val spinProcessingUnit: MutableLiveData<List<String>> = MutableLiveData()
     val spinProcessingUnitSelectedPosition: MutableLiveData<Int> = MutableLiveData(0)
     val suffix: MutableLiveData<String> = MutableLiveData()
-    val requestFocusToCount: MutableLiveData<Boolean> = MutableLiveData()
+    val requestFocusToCount: MutableLiveData<Boolean> = MutableLiveData(false)
     val typeDiscrepancies: MutableLiveData<String> = MutableLiveData()
 
     private val qualityInfo: MutableLiveData<List<QualityInfo>> = MutableLiveData()
@@ -130,9 +130,6 @@ class NonExciseSetComponentInfoPGEViewModel : CoreViewModel(),
             }?.map {
                 it.key
             }
-
-            //эту строку необходимо прописывать только после того, как были установлены данные для переменных count  и suffix, а иначе фокус в поле et_count не установится
-            requestFocusToCount.value = true
         }
     }
 

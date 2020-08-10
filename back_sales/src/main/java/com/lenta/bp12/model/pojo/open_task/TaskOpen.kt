@@ -39,7 +39,7 @@ data class TaskOpen(
     }
 
     fun isExistProcessedGood(): Boolean {
-        return goods.any { it.isCounted || it.isDeleted  }
+        return goods.any { it.isCounted || it.isDeleted }
     }
 
     fun isExistUncountedGood(): Boolean {
@@ -47,8 +47,14 @@ data class TaskOpen(
     }
 
     fun getFormattedName(withFullName: Boolean = false): String {
-        val name = if (withFullName) name else name.split(" ")[2]
-        return "${type?.code}-$number // $name"
+        var formattedName = name
+        if (!withFullName) {
+            runCatching {
+                formattedName = name.split(" ")[2]
+            }
+        }
+
+        return "${type?.code}-$number // $formattedName"
     }
 
 }

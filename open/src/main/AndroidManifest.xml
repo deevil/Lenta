@@ -5,6 +5,7 @@
     <uses-permission android:name="android.permission.INTERNET" />
 
     <application
+        android:name=".AndroidApplication"
         android:allowBackup="false"
         android:icon="@mipmap/ic_launcher"
         android:appComponentFactory="whateverString"
@@ -16,6 +17,15 @@
         tools:ignore="GoogleAppIndexingWarning"
         tools:replace="android:appComponentFactory, android:allowBackup, android:supportsRtl"
         tools:targetApi="p">
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.provider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/provider_paths" />
+        </provider>
 
         <activity
             android:name=".main.MainActivity"
@@ -29,6 +39,8 @@
             </intent-filter>
 
         </activity>
+
+        <service android:name="com.lenta.shared.platform.high_priority.MainService" />
 
         <meta-data
             android:name="io.fabric.ApiKey"

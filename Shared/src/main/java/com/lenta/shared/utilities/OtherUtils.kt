@@ -46,3 +46,7 @@ fun getFormattedDate(date: String, sourcePattern: String, targetPattern: String)
 fun isCommonFormatNumber(number: String): Boolean {
     return ScanCodeInfo(number).isEnterCodeValid
 }
+
+fun getMaterialInCommonFormat(number: String): String {
+    return "000000000000${number.takeLast(6)}"
+}

@@ -2,10 +2,11 @@ package com.lenta.movement.features.task.basket
 
 import android.os.Bundle
 import android.view.View
+import com.lenta.movement.BR
 import com.lenta.movement.R
 import com.lenta.movement.databinding.FragmentTaskBasketBinding
+import com.lenta.movement.databinding.LayoutItemSimpleBinding
 import com.lenta.movement.platform.extensions.getAppComponent
-import com.lenta.movement.view.simpleListRecyclerViewConfig
 import com.lenta.shared.keys.KeyCode
 import com.lenta.shared.keys.OnKeyDownListener
 import com.lenta.shared.platform.fragment.CoreFragment
@@ -32,7 +33,7 @@ class TaskBasketFragment: CoreFragment<FragmentTaskBasketBinding, TaskBasketView
     override fun getViewModel(): TaskBasketViewModel {
         return provideViewModel(TaskBasketViewModel::class.java).also {
             getAppComponent()?.inject(it)
-            it.basketIndex = basketIndex
+            it.basketIndex.value = basketIndex
         }
     }
 
@@ -42,31 +43,40 @@ class TaskBasketFragment: CoreFragment<FragmentTaskBasketBinding, TaskBasketView
         binding?.apply {
             val vm = this@TaskBasketFragment.vm
 
-            rvConfig = simpleListRecyclerViewConfig(
-                    recyclerView = binding?.recyclerView,
-                    selectionItemsHelper = vm.selectionsHelper,
-                    recyclerViewKeyHandler = recyclerViewKeyHandler
+            val onClickSelectionListener = View.OnClickListener { clickListener ->
+                val itemPosition = clickListener.tag as Int
+                vm.selectionsHelper.revert(position = itemPosition)
+                this.recyclerView.adapter?.notifyItemChanged(itemPosition)
+            }
+
+            rvConfig = initRecycleAdapterDataBinding(
+                    layoutId = R.layout.layout_item_simple,
+                    itemId = BR.item,
+                    onAdapterItemBind = { binding: LayoutItemSimpleBinding, position ->
+                        binding.tvCounter.tag = position
+                        binding.tvCounter.setOnClickListener(onClickSelectionListener)
+                        binding.selectedForDelete = vm.selectionsHelper.isSelected(position)
+                        super.onAdapterBindHandler(binding, position)
+                    }
             )
 
             recyclerViewKeyHandler = initRecyclerViewKeyHandler(
                     recyclerView = recyclerView,
                     items = vm.goodsItemList,
-                    previousPosInfo = recyclerViewKeyHandler?.posInfo?.value
+                    previousPosInfo = recyclerViewKeyHandler?.posInfo?.value,
+                    onClickHandler = vm::onItemClick
             )
         }
     }
 
     override fun setupTopToolBar(topToolbarUiModel: TopToolbarUiModel) {
-        topToolbarUiModel.title.value = vm.title.value
+        connectLiveData(vm.title, topToolbarUiModel.title)
         topToolbarUiModel.description.value = getString(R.string.task_basket_title)
     }
 
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
         bottomToolbarUiModel.uiModelButton3.show(ButtonDecorationInfo.delete)
-        bottomToolbarUiModel.uiModelButton4.show(ButtonDecorationInfo(
-            iconRes = R.drawable.ic_basket_24dp,
-            titleRes = R.string.task_basket_characteristics_title
-        ))
+        bottomToolbarUiModel.uiModelButton4.show(ButtonDecorationInfo.properties)
         bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.next)
 
         connectLiveData(vm.deleteEnabled, bottomToolbarUiModel.uiModelButton3.enabled)

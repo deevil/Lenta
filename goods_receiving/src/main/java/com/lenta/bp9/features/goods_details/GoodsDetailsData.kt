@@ -18,3 +18,14 @@ data class GoodsDetailsCategoriesItem(
     override fun isEven() = even
 
 }
+
+data class GoodsDetailsPropertiesItem(
+        val number: Int,
+        val ean: String,
+        val properties: String,
+        val value: String,
+        val even: Boolean
+) : Evenable {
+    override fun isEven() = even
+
+}

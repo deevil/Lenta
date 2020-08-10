@@ -17,6 +17,7 @@ data class GoodsDiscrepancyItem(
         val productInfo: TaskProductInfo?,
         val productDiscrepancies: TaskProductDiscrepancies?,
         val batchInfo: TaskBatchInfo?,
+        val visibilityCheckBoxControl: Boolean,
         val checkBoxControl: Boolean,
         val checkStampControl: Boolean,
         val even: Boolean

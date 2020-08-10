@@ -27,10 +27,10 @@ data class TaskListParams(
         val tkNumber: String,
         /** Адресат */
         @SerializedName("IV_EXEC_USER")
-        val value: String,
+        val value: String = "",
         /** Табельный номер */
         @SerializedName("IV_PERNR")
-        val userNumber: String,
+        val userNumber: String = "",
         /** Режим работы: 1 - обновление списка заданий, 2 - расширенный поиск заданий */
         @SerializedName("IV_MODE")
         val mode: Int,

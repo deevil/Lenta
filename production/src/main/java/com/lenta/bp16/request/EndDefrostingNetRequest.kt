@@ -42,8 +42,8 @@ data class EndDefrostingParams(
 class EndDefrostingStatus : ObjectRawStatus<EndDefrostingResult>()
 
 data class EndDefrostingResult(
-        /** ??? */
-        @SerializedName("IS_AUTOFIX")
+        /** Этап зафиксирован */
+        @SerializedName("EV_AUTOFIX")
         val isAutofix: String,
         /** Таблица возврата */
         @SerializedName("ET_RETCODE")

@@ -122,4 +122,9 @@ class NonExciseAlcoInfoFragment : CoreFragment<FragmentNonExciseAlcoInfoBinding,
         return false
     }
 
+    override fun onResume() {
+        super.onResume()
+        vm.requestFocusToCount.value = true
+    }
+
 }

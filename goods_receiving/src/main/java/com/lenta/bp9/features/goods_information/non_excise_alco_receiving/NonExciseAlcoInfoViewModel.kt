@@ -22,6 +22,7 @@ import com.lenta.shared.utilities.extentions.combineLatest
 import com.lenta.shared.utilities.extentions.launchUITryCatch
 import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.utilities.extentions.toStringFormatted
+import com.lenta.shared.utilities.orIfNull
 import com.lenta.shared.view.OnPositionClickListener
 import java.text.SimpleDateFormat
 import javax.inject.Inject
@@ -58,7 +59,7 @@ class NonExciseAlcoInfoViewModel : CoreViewModel(), OnPositionClickListener {
     val spinReasonRejection: MutableLiveData<List<String>> = MutableLiveData()
     val spinReasonRejectionSelectedPosition: MutableLiveData<Int> = MutableLiveData(0)
     val suffix: MutableLiveData<String> = MutableLiveData()
-    val requestFocusToCount: MutableLiveData<Boolean> = MutableLiveData()
+    val requestFocusToCount: MutableLiveData<Boolean> = MutableLiveData(false)
 
     val isDefect: MutableLiveData<Boolean> = spinQualitySelectedPosition.combineLatest(isDiscrepancy).map {
         if (!it!!.second) {
@@ -152,6 +153,17 @@ class NonExciseAlcoInfoViewModel : CoreViewModel(), OnPositionClickListener {
 
     init {
         launchUITryCatch {
+            productInfo.value
+                    ?.let {
+                        if (processNonExciseAlcoProductService.newProcessNonExciseAlcoProductService(it) == null) {
+                            screenNavigator.goBackAndShowAlertWrongProductType()
+                            return@launchUITryCatch
+                        }
+                    }.orIfNull {
+                        screenNavigator.goBackAndShowAlertWrongProductType()
+                        return@launchUITryCatch
+                    }
+
             searchProductDelegate.init(viewModelScope = this@NonExciseAlcoInfoViewModel::viewModelScope,
                     scanResultHandler = this@NonExciseAlcoInfoViewModel::handleProductSearchResult)
 
@@ -184,14 +196,6 @@ class NonExciseAlcoInfoViewModel : CoreViewModel(), OnPositionClickListener {
                 it.name
             }?.map {
                 it.key
-            }
-
-            //эту строку необходимо прописывать только после того, как были установлены данные для переменных count  и suffix, а иначе фокус в поле et_count не установится
-            requestFocusToCount.value = true
-
-            if (processNonExciseAlcoProductService.newProcessNonExciseAlcoProductService(productInfo.value!!) == null) {
-                screenNavigator.goBack()
-                screenNavigator.openAlertWrongProductType()
             }
         }
     }

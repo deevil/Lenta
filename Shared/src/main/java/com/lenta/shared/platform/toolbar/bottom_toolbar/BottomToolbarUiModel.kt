@@ -5,6 +5,7 @@ import androidx.annotation.StringRes
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.lenta.shared.R
+import com.lenta.shared.utilities.extentions.unsafeLazy
 
 class BottomToolbarUiModel {
     private val _visibility: MutableLiveData<Boolean> = MutableLiveData()
@@ -142,6 +143,10 @@ data class ButtonDecorationInfo(
 
         val orders: ButtonDecorationInfo by lazy {
             ButtonDecorationInfo(R.drawable.ic_details_white_24dp, R.string.orders)
+        }
+
+        val detail: ButtonDecorationInfo by unsafeLazy {
+            ButtonDecorationInfo(R.drawable.ic_detail_white_32dp, R.string.details)
         }
 
         val goOver: ButtonDecorationInfo by lazy {
@@ -406,6 +411,14 @@ data class ButtonDecorationInfo(
 
         val stickers: ButtonDecorationInfo by lazy {
             ButtonDecorationInfo(R.drawable.ic_print_white_24dp, R.string.stickers)
+        }
+
+        val completeRejectionMarking: ButtonDecorationInfo by lazy {
+            ButtonDecorationInfo(R.drawable.ic_complete_rejection_marking, R.string.complete_rejection)
+        }
+
+        val partialFailureMarking: ButtonDecorationInfo by lazy {
+            ButtonDecorationInfo(R.drawable.ic_partial_failure_marking, R.string.partial_failure)
         }
     }
 

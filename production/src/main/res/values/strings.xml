@@ -11,7 +11,7 @@
     <string name="good_list">Список товаров</string>
     <string name="pu_number">ЕО %1$s</string>
     <string name="good_card">Карточка товара</string>
-    <string name="good_search">Поиск товара</string>
+    <string name="good_select">Выбор товара</string>
     <string name="defect_detail">Детализация брака</string>
     <string name="pack_list">Список тар</string>
 
@@ -69,6 +69,11 @@
     <string name="tw_search_info">Отсканируйте штрахкод или введите товар вручную</string>
     <string name="preparation_ingredients">Подготовка ингредиентов</string>
     <string name="tw_alert_part_not_found">Отсканированная партия не найдена в системе. Отложите товар и проведите инвентаризацию.</string>
+    <string name="tw_alert_good_not_found">Данный товар не найден</string>
+    <string name="tw_moving_successful">Перемещение товара выполнено</string>
+    <string name="tw_exceeded_limit">Превышено количество по партии</string>
+    <string name="title_good_sap_name">%1$s %2$s</string>
+
 
     <!-- Типы складов -->
     <string name="warehouse_select">Выберите склад:</string>

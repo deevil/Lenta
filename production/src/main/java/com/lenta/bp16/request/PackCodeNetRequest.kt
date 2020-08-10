@@ -72,8 +72,8 @@ data class PackCodeResult(
         /** Код тары */
         @SerializedName("EV_CODE_CONT")
         val packCode: String,
-        /** ??? */
-        @SerializedName("IS_AUTOFIX")
+        /** Этап зафиксирован */
+        @SerializedName("EV_AUTOFIX")
         val isAutofix: String,
         /** Таблица возврата */
         @SerializedName("ET_RETCODE")

@@ -5,7 +5,9 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.switchMap
 import com.lenta.movement.R
 import com.lenta.movement.features.main.box.ScanInfoHelper
-import com.lenta.movement.models.*
+import com.lenta.movement.models.ITaskManager
+import com.lenta.movement.models.Task
+import com.lenta.movement.models.TaskListItem
 import com.lenta.movement.platform.IFormatter
 import com.lenta.movement.platform.navigation.IScreenNavigator
 import com.lenta.movement.requests.network.ObtainingTaskListNetRequest
@@ -56,8 +58,6 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
 
     val searchFilter: MutableLiveData<String> = MutableLiveData()
     val requestFocusToEan: MutableLiveData<Boolean> = MutableLiveData()
-
-    val taskItemList2 = MutableLiveData<List<TaskListItem>>()
 
     val taskItemList by unsafeLazy {
         taskList.switchMap { taskList ->
@@ -189,7 +189,7 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
             Task.ALIEN_BLOCK_TYPE -> R.drawable.ic_lock_white_24dp
             else -> {
                 Logg.e {
-                    "wrong or empty task blocktype"
+                    "wrong or empty task blocktype: $blockType"
                 }
                 EMPTY_IMAGE_VIEW_RES_ID
             }
