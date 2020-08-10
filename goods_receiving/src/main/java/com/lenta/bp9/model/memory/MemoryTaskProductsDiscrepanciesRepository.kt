@@ -4,6 +4,7 @@ import com.lenta.bp9.model.repositories.ITaskProductsDiscrepanciesRepository
 import com.lenta.bp9.model.task.TaskMercuryDiscrepancies
 import com.lenta.bp9.model.task.TaskProductDiscrepancies
 import com.lenta.bp9.model.task.TaskProductInfo
+import com.lenta.shared.models.core.Uom
 import com.mobrun.plugin.api.HyperHive
 
 class MemoryTaskProductsDiscrepanciesRepository : ITaskProductsDiscrepanciesRepository {
@@ -43,23 +44,27 @@ class MemoryTaskProductsDiscrepanciesRepository : ITaskProductsDiscrepanciesRepo
         return false
     }
 
-    override fun addProductDiscrepancyOfMercuryDiscrepancy(mercuryDiscrepancy: List<TaskMercuryDiscrepancies>) {
-        mercuryDiscrepancy
-                .groupBy {
-                    it.typeDiscrepancies
-                }
-                .map { groupByMercuryDiscrepancies ->
-                    val countDiscrepancies =
-                            groupByMercuryDiscrepancies.value
-                            .map { it.numberDiscrepancies }
-                            .sumByDouble { it }
+    override fun addProductDiscrepancyOfMercuryDiscrepancy(mercuryDiscrepancies: List<TaskMercuryDiscrepancies>) {
+        mercuryDiscrepancies
+                .asSequence()
+                .groupBy { it.materialNumber }
+                .map { groupByMaterialNumberMercuryDiscrepancies ->
+                    groupByMaterialNumberMercuryDiscrepancies.value
+                            .groupBy { it.typeDiscrepancies }
+                            .map { groupByMercuryDiscrepancies ->
+                                val countDiscrepancies =
+                                        groupByMercuryDiscrepancies.value
+                                                .map { it.numberDiscrepancies }
+                                                .sumByDouble { it }
 
-                    groupByMercuryDiscrepancies.value
-                            .first {
-                                val productDiscrepancies = TaskProductDiscrepancies.fromMercury(it.copy(numberDiscrepancies = countDiscrepancies))
-                                addProductDiscrepancy(productDiscrepancies)
+                                groupByMercuryDiscrepancies.value
+                                        .first {
+                                            val productDiscrepancies = TaskProductDiscrepancies.fromMercury(it.copy(numberDiscrepancies = countDiscrepancies))
+                                            addProductDiscrepancy(productDiscrepancies)
+                                        }
                             }
                 }
+                .toList()
     }
 
     override fun updateProductsDiscrepancy(newProductsDiscrepancies: List<TaskProductDiscrepancies>) {

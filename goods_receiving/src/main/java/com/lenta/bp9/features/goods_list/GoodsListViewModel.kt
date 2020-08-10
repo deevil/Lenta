@@ -531,12 +531,14 @@ class GoodsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKey
                 screenNavigator.openDiscrepancyListScreen()
             } else {
                 screenNavigator.showProgressLoadingData(::handleFailure)
-                //очищаем таблицу ET_TASK_DIFF от не акцизного (партионного) алкоголя, т.к. для этих товаров необходимо передавать только данные из таблицы ET_PARTS_DIFF
+                /**
+                 * очищаем таблицу ET_TASK_DIFF от не акцизного (партионного) алкоголя и веттоваров,
+                 * т.к. для партионного товара необходимо передавать только данные из таблицы ET_PARTS_DIFF, а для веттоваров - ET_VET_DIFF
+                 */
                 val receivingTask = taskManager.getReceivingTask()
                 val taskRepository = taskManager.getReceivingTask()?.taskRepository
                 receivingTask
                         ?.getProcessedProductsDiscrepancies()
-                        ?.asSequence()
                         ?.map { productDiscr ->
                             taskRepository
                                     ?.getProducts()
@@ -544,9 +546,10 @@ class GoodsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKey
                         }
                         ?.filter { filterProduct ->
                             //партионный - это помеченный IS_ALCO и не помеченный IS_BOX_FL, IS_MARK_FL (Артем)
-                            filterProduct?.type == ProductType.NonExciseAlcohol
+                            (filterProduct?.type == ProductType.NonExciseAlcohol
                                     && !filterProduct.isBoxFl
-                                    && !filterProduct.isMarkFl
+                                    && !filterProduct.isMarkFl)
+                                    || filterProduct?.isVet == true //или веттовары
                         }
                         ?.map { mapProduct ->
                             mapProduct?.let { productForDel ->
@@ -555,7 +558,6 @@ class GoodsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKey
                                         ?.deleteProductsDiscrepanciesForProduct(productForDel.materialNumber)
                             }
                         }
-                        ?.toList()
 
                 endRecountDirectDeliveries(EndRecountDDParameters(
                         taskNumber = receivingTask

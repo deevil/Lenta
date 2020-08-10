@@ -616,7 +616,7 @@ class DiscrepancyListViewModel : CoreViewModel(), PageSelectionListener {
         }
 
         searchProductDelegate.searchCode(
-                code = selectedMaterialNumber.orEmpty(),
+                code = selectedMaterialNumber,
                 fromScan = false,
                 isDiscrepancy = true
         )
@@ -627,8 +627,7 @@ class DiscrepancyListViewModel : CoreViewModel(), PageSelectionListener {
                 .selectedPositions
                 .value
                 ?.map { position ->
-                    countProcessed
-                            .value
+                    countProcessed.value
                             ?.get(position)
                             ?.productInfo
                             ?.let { selectedProduct ->
@@ -727,6 +726,7 @@ class DiscrepancyListViewModel : CoreViewModel(), PageSelectionListener {
                     taskRepository
                             .getExciseStampsBad()
                             .deleteExciseStampBadForProductAndDiscrepancies(materialNumber, typeDiscrepancies)
+
                     taskRepository
                             .getBlocksDiscrepancies()
                             .deleteBlocksDiscrepanciesForProductAndDiscrepancies(materialNumber, typeDiscrepancies)
@@ -776,7 +776,10 @@ class DiscrepancyListViewModel : CoreViewModel(), PageSelectionListener {
     fun onClickSave() {
         launchUITryCatch {
             screenNavigator.showProgressLoadingData(::handleFailure)
-            //очищаем таблицу ET_TASK_DIFF от не акцизного (партионного) алкоголя, т.к. для этих товаров необходимо передавать только данные из таблицы ET_PARTS_DIFF
+            /**
+             * очищаем таблицу ET_TASK_DIFF от не акцизного (партионного) алкоголя и веттоваров,
+             * т.к. для партионного товара необходимо передавать только данные из таблицы ET_PARTS_DIFF, а для веттоваров - ET_VET_DIFF
+            */
             taskManager
                     .getReceivingTask()
                     ?.getProcessedProductsDiscrepancies()
@@ -789,9 +792,10 @@ class DiscrepancyListViewModel : CoreViewModel(), PageSelectionListener {
                     }
                     ?.filter { filterProduct ->
                         //партионный - это помеченный IS_ALCO и не помеченный IS_BOX_FL, IS_MARK_FL (Артем)
-                        filterProduct?.type == ProductType.NonExciseAlcohol
+                        (filterProduct?.type == ProductType.NonExciseAlcohol
                                 && !filterProduct.isBoxFl
-                                && !filterProduct.isMarkFl
+                                && !filterProduct.isMarkFl)
+                                || filterProduct?.isVet == true //или веттовары
                     }
                     ?.map { mapProduct ->
                         mapProduct?.let { productForDel ->

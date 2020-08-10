@@ -91,7 +91,6 @@ class GoodsMercuryInfoViewModel : CoreViewModel(), OnPositionClickListener {
     val spinManufacturers: MutableLiveData<List<String>> = MutableLiveData()
     val spinManufacturersSelectedPosition: MutableLiveData<Int> = MutableLiveData(0)
 
-    @SuppressLint("SimpleDateFormat")
     val spinProductionDate: MutableLiveData<List<String>> =
             spinManufacturersSelectedPosition
                     .map { pos ->
@@ -121,13 +120,27 @@ class GoodsMercuryInfoViewModel : CoreViewModel(), OnPositionClickListener {
     private val paramGrzRoundHeapRatio: MutableLiveData<String> = MutableLiveData()
     private val isClickApply: MutableLiveData<Boolean> = MutableLiveData(false)
 
-    private val mercuryVolume  =
+    private val mercuryVolume: MutableLiveData<String> =
             spinManufacturersSelectedPosition
                     .combineLatest(spinProductionDateSelectedPosition)
                     .map {
-                        val manufacturer = spinManufacturers.value?.get(spinManufacturersSelectedPosition.value ?: 0).orEmpty()
-                        val spinProductionDate = spinProductionDate.value?.get(spinProductionDateSelectedPosition.value ?: 0).orEmpty()
-                        val productionDate = if (spinProductionDate.isNotEmpty()) formatterEN.format(formatterRU.parse(spinProductionDate)) else ""
+                        val spinManufacturersPosition = spinManufacturersSelectedPosition.value ?: 0
+                        val manufacturer =
+                                spinManufacturers.value
+                                        ?.takeIf { !it.isNullOrEmpty() }
+                                        ?.run { this[spinManufacturersPosition] }
+                                        .orEmpty()
+                        val spinProductionDatePosition = spinProductionDateSelectedPosition.value ?: 0
+                        val spinProductionDate =
+                                spinProductionDate.value
+                                        ?.takeIf { !it.isNullOrEmpty() }
+                                        ?.run { this[spinProductionDatePosition] }
+                                        .orEmpty()
+                        val productionDate =
+                                spinProductionDate
+                                        .takeIf { it.isNotEmpty() }
+                                        ?.run { formatterEN.format(formatterRU.parse(spinProductionDate)) }
+                                        .orEmpty()
                         val countMercuryVolume = processMercuryProductService.getVolumeAllMercury(manufacturer, productionDate)
                         val mercuryUomName = processMercuryProductService.getUomNameOfMercury(manufacturer, productionDate)
                         buildString {
@@ -190,9 +203,9 @@ class GoodsMercuryInfoViewModel : CoreViewModel(), OnPositionClickListener {
     val acceptTotalCount: MutableLiveData<Double> by lazy {
         countValue.combineLatest(spinQualitySelectedPosition).map {
             val countAccept = if (isTaskPGE.value!!) {
-                processMercuryProductService.getNewCountAcceptPGE()
+                processMercuryProductService.getCountAcceptPGE()
             } else {
-                processMercuryProductService.getNewCountAccept()
+                processMercuryProductService.getCountAccept()
             }
 
             if (isTaskPGE.value!!) {
@@ -213,9 +226,9 @@ class GoodsMercuryInfoViewModel : CoreViewModel(), OnPositionClickListener {
 
     val acceptTotalCountWithUom: MutableLiveData<String> = acceptTotalCount.map {
         val countAccept = if (isTaskPGE.value!!) {
-            processMercuryProductService.getNewCountAcceptPGE()
+            processMercuryProductService.getCountAcceptPGE()
         } else {
-            processMercuryProductService.getNewCountAccept()
+            processMercuryProductService.getCountAccept()
         }
         if ((it ?: 0.0) > 0.0) {
             "+ ${it.toStringFormatted()} ${uom.value?.name}"
@@ -227,9 +240,9 @@ class GoodsMercuryInfoViewModel : CoreViewModel(), OnPositionClickListener {
     val refusalTotalCount: MutableLiveData<Double> by lazy {
         countValue.combineLatest(spinQualitySelectedPosition).map {
             val countRefusal = if (isTaskPGE.value!!) {
-                processMercuryProductService.getNewCountRefusalPGE()
+                processMercuryProductService.getCountRefusalPGE()
             } else {
-                processMercuryProductService.getNewCountRefusal()
+                processMercuryProductService.getCountRefusal()
             }
 
             if (isTaskPGE.value!!) {
@@ -250,9 +263,9 @@ class GoodsMercuryInfoViewModel : CoreViewModel(), OnPositionClickListener {
 
     val refusalTotalCountWithUom: MutableLiveData<String> = refusalTotalCount.map {
         val countRefusal = if (isTaskPGE.value!!) {
-            processMercuryProductService.getNewCountRefusalPGE()
+            processMercuryProductService.getCountRefusalPGE()
         } else {
-            processMercuryProductService.getNewCountRefusal()
+            processMercuryProductService.getCountRefusal()
         }
         if ((it ?: 0.0) > 0.0) {
             "- ${it.toStringFormatted()} ${uom.value?.name}"
@@ -297,21 +310,28 @@ class GoodsMercuryInfoViewModel : CoreViewModel(), OnPositionClickListener {
                         suffix.value = uom.value?.name
                         qualityInfo.value = dataBase.getSurplusInfoForPGE()
                     }
-                    isDiscrepancy.value!! -> {
+                    isDiscrepancy.value == true -> {
                         suffix.value = uom.value?.name
-                        count.value = taskManager.getReceivingTask()?.taskRepository?.getProductsDiscrepancies()?.getCountProductNotProcessedOfProductPGE(productInfo.value!!).toStringFormatted()
+                        count.value =
+                                taskManager
+                                        .getReceivingTask()
+                                        ?.taskRepository
+                                        ?.getProductsDiscrepancies()
+                                        ?.getCountProductNotProcessedOfProductPGE(productInfo.value!!)
+                                        .toStringFormatted()
+
                         if (isNotRecountCargoUnit.value == true) {
-                            qualityInfo.value = dataBase.getQualityInfoPGENotRecountBreaking()
+                            qualityInfo.value = dataBase.getQualityInfoPGENotRecountBreaking().orEmpty()
                         } else {
-                            qualityInfo.value = dataBase.getQualityInfoPGEForDiscrepancy()
+                            qualityInfo.value = dataBase.getQualityInfoPGEForDiscrepancy().orEmpty()
                         }
                     }
                     else -> {
-                        suffix.value = productInfo.value?.purchaseOrderUnits?.name
+                        suffix.value = productInfo.value?.purchaseOrderUnits?.name.orEmpty()
                         if (isNotRecountCargoUnit.value == true) {
-                            qualityInfo.value = dataBase.getQualityInfoPGENotRecountBreaking()
+                            qualityInfo.value = dataBase.getQualityInfoPGENotRecountBreaking().orEmpty()
                         } else {
-                            qualityInfo.value = dataBase.getQualityInfoPGE()
+                            qualityInfo.value = dataBase.getQualityInfoPGE().orEmpty()
                         }
                     }
                 }
@@ -325,27 +345,35 @@ class GoodsMercuryInfoViewModel : CoreViewModel(), OnPositionClickListener {
                                     ?.getProductsDiscrepancies()
                                     ?.getCountProductNotProcessedOfProduct(productInfo.value!!)
                                     .toStringFormatted()
-                    qualityInfo.value = dataBase.getQualityMercuryInfoForDiscrepancy()
-                    spinQualitySelectedPosition.value = qualityInfo.value!!.indexOfLast {it.code == "4"}
+                    qualityInfo.value = dataBase.getQualityMercuryInfoForDiscrepancy().orEmpty()
+                    spinQualitySelectedPosition.value = qualityInfo.value?.indexOfLast {it.code == "4"} ?: 0
                 } else {
-                    qualityInfo.value = dataBase.getQualityMercuryInfo()
+                    qualityInfo.value = dataBase.getQualityMercuryInfo().orEmpty()
                 }
             }
 
             /** определяем, что товар скоропорт, это общий для всех алгоритм https://trello.com/c/8sOTWtB7 */
             val paramGrzUffMhdhb = dataBase.getParamGrzUffMhdhb()?.toInt() ?: 60
-            isPerishable.value = (productInfo.value?.generalShelfLife?.toInt() ?: 0) > 0 ||
-                    (productInfo.value?.remainingShelfLife?.toInt() ?: 0) > 0 ||
-                    ((productInfo.value?.mhdhbDays ?: 0) > 0 && (productInfo.value?.mhdhbDays ?: 0) < paramGrzUffMhdhb )
-            if (isPerishable.value == true) {
-                if ( (productInfo.value?.generalShelfLife?.toInt() ?: 0) > 0 || (productInfo.value?.remainingShelfLife?.toInt() ?: 0) > 0 ) { //https://trello.com/c/XSAxdgjt
-                    generalShelfLife.value = productInfo.value?.generalShelfLife
-                    remainingShelfLife.value = productInfo.value?.remainingShelfLife
-                } else {
-                    generalShelfLife.value = productInfo.value?.mhdhbDays.toString()
-                    remainingShelfLife.value = productInfo.value?.mhdrzDays.toString()
-                }
-            }
+            val productGeneralShelfLife = productInfo.value?.generalShelfLife?.toInt() ?: 0
+            val productRemainingShelfLife = productInfo.value?.remainingShelfLife?.toInt() ?: 0
+            val productMhdhbDays = productInfo.value?.mhdhbDays ?: 0
+            val productMhdrzDays = productInfo.value?.mhdrzDays ?: 0
+
+            isPerishable.value = productGeneralShelfLife > 0
+                    || productRemainingShelfLife > 0
+                    || (productMhdhbDays in 1 until paramGrzUffMhdhb)
+
+            isPerishable.value
+                    ?.takeIf { it }
+                    ?.run {
+                        if ( productGeneralShelfLife > 0 || productRemainingShelfLife > 0 ) { //https://trello.com/c/XSAxdgjt
+                            generalShelfLife.value = productGeneralShelfLife.toString()
+                            remainingShelfLife.value = productRemainingShelfLife.toString()
+                        } else {
+                            generalShelfLife.value = productMhdhbDays.toString()
+                            remainingShelfLife.value = productMhdrzDays.toString()
+                        }
+                    }
 
             spinQuality.value = qualityInfo.value?.map { it.name }
 
@@ -355,7 +383,11 @@ class GoodsMercuryInfoViewModel : CoreViewModel(), OnPositionClickListener {
                         it.name
                     }
                 } else {
-                    taskManager.getReceivingTask()?.taskRepository?.getMercuryDiscrepancies()?.getManufacturesOfProduct(productInfo.value!!)
+                    taskManager
+                            .getReceivingTask()
+                            ?.taskRepository
+                            ?.getMercuryDiscrepancies()
+                            ?.getManufacturesOfProduct(productInfo.value!!)
                 }
 
             paramGrzRoundLackRatio.value = dataBase.getParamGrzRoundLackRatio()
