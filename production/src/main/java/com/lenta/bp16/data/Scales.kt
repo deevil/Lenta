@@ -8,6 +8,7 @@ import com.lenta.shared.settings.IAppSettings
 import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.extentions.dropZeros
 import okhttp3.HttpUrl
+import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import javax.inject.Inject
@@ -29,7 +30,7 @@ class Scales @Inject constructor(
             return Either.Left(Failure.WeighingError)
         }
 
-        val urlOne = HttpUrl.parse("http://$serverAddress/ConnectService/pox/Send")!!.newBuilder()
+        val urlOne = "http://$serverAddress/ConnectService/pox/Send".toHttpUrlOrNull()!!.newBuilder()
                 .addQueryParameter("connectName", deviceName)
                 .addQueryParameter("header", "I?LV01|RX01|LX02")
                 .addQueryParameter("data", "")
@@ -42,7 +43,7 @@ class Scales @Inject constructor(
 
         try {
             client.newCall(Request.Builder().url(urlOne).build()).execute().apply {
-                responseOneBody = this.body()?.string().orEmpty()
+                responseOneBody = this.body?.string().orEmpty()
                 Logg.d { "Response one body: $responseOneBody" }
             }
         } catch (e: Exception) {
@@ -58,7 +59,7 @@ class Scales @Inject constructor(
             return Either.Left(Failure.NetworkConnection)
         }
 
-        val urlTwo = HttpUrl.parse("http://$serverAddress/ConnectService/pox/ReceiveMessage")!!.newBuilder()
+        val urlTwo = "http://$serverAddress/ConnectService/pox/ReceiveMessage".toHttpUrlOrNull()!!.newBuilder()
                 .addQueryParameter("connectName", deviceName)
                 .addQueryParameter("handle", handle)
                 .addQueryParameter("timeout", "5000")
@@ -70,7 +71,7 @@ class Scales @Inject constructor(
 
         try {
             client.newCall(Request.Builder().url(urlTwo).build()).execute().apply {
-                responseTwoBody = this.body()?.string().orEmpty()
+                responseTwoBody = this.body?.string().orEmpty()
                 Logg.d { "Response two body: $responseTwoBody" }
             }
         } catch (e: Exception) {
