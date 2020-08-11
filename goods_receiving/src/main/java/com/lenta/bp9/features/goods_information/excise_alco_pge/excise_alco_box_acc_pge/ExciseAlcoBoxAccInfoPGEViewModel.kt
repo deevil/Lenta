@@ -24,6 +24,7 @@ import com.lenta.shared.utilities.extentions.combineLatest
 import com.lenta.shared.utilities.extentions.launchUITryCatch
 import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.utilities.extentions.toStringFormatted
+import com.lenta.shared.utilities.orIfNull
 import com.lenta.shared.view.OnPositionClickListener
 import com.mobrun.plugin.api.HyperHive
 import kotlinx.coroutines.launch
@@ -69,7 +70,7 @@ class ExciseAlcoBoxAccInfoPGEViewModel : CoreViewModel(), OnPositionClickListene
     val spinQuality: MutableLiveData<List<String>> = MutableLiveData()
     val spinQualitySelectedPosition: MutableLiveData<Int> = MutableLiveData(0)
     val suffix: MutableLiveData<String> = MutableLiveData()
-    val requestFocusToCount: MutableLiveData<Boolean> = MutableLiveData()
+    val requestFocusToCount: MutableLiveData<Boolean> = MutableLiveData(false)
     val isDefect: MutableLiveData<Boolean> = spinQualitySelectedPosition.map {
         !(qualityInfo.value?.get(it!!)?.code == TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_NORM
                 || qualityInfo.value?.get(it!!)?.code == TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_SURPLUS)
@@ -184,7 +185,19 @@ class ExciseAlcoBoxAccInfoPGEViewModel : CoreViewModel(), OnPositionClickListene
     private val scannedBoxNumber: MutableLiveData<String> = MutableLiveData("")
 
     init {
-        viewModelScope.launch {
+        launchUITryCatch {
+            productInfo.value
+                    ?.let {
+                        if (processExciseAlcoBoxAccPGEService.newProcessExciseAlcoBoxPGEService(it) == null) {
+                            screenNavigator.goBackAndShowAlertWrongProductType()
+                            return@launchUITryCatch
+                        }
+                    }
+                    .orIfNull {screenNavigator.goBack()
+                        screenNavigator.goBackAndShowAlertWrongProductType()
+                        return@launchUITryCatch
+                    }
+
             searchProductDelegate.init(viewModelScope = this@ExciseAlcoBoxAccInfoPGEViewModel::viewModelScope,
                     scanResultHandler = this@ExciseAlcoBoxAccInfoPGEViewModel::handleProductSearchResult)
 
@@ -194,22 +207,13 @@ class ExciseAlcoBoxAccInfoPGEViewModel : CoreViewModel(), OnPositionClickListene
                 it.name
             }
 
-            if (processExciseAlcoBoxAccPGEService.newProcessExciseAlcoBoxPGEService(productInfo.value!!) == null) {
-                screenNavigator.goBack()
-                screenNavigator.openAlertWrongProductType()
-                return@launch
-            }
-
             count.value = processExciseAlcoBoxAccPGEService.getInitialCount().toStringFormatted()
-
-            //эту строку необходимо прописывать только после того, как были установлены данные для переменных count  и suffix, а иначе фокус в поле et_count не установится
-            requestFocusToCount.value = true
-
         }
     }
 
     fun onResume() {
         count.value = processExciseAlcoBoxAccPGEService.getInitialCount().toStringFormatted()
+        requestFocusToCount.value = true
     }
 
     private fun handleProductSearchResult(@Suppress("UNUSED_PARAMETER") scanInfoResult: ScanInfoResult?): Boolean {

@@ -6,6 +6,7 @@ import com.lenta.bp9.BR
 import com.lenta.bp9.R
 import com.lenta.bp9.databinding.FragmentMercuryListIrrelevantBinding
 import com.lenta.bp9.databinding.ItemTileMercuryListIrrelevantBinding
+import com.lenta.bp9.databinding.ItemTileNonExciseSetsComponentsBinding
 import com.lenta.bp9.platform.extentions.getAppComponent
 import com.lenta.shared.platform.fragment.CoreFragment
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
@@ -64,17 +65,9 @@ class MercuryListIrrelevantFragment : CoreFragment<FragmentMercuryListIrrelevant
 
     private fun initRvConfig() {
         binding?.let { layoutBinding ->
-            layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
+            layoutBinding.rvConfig = initRecycleAdapterDataBinding<ItemTileMercuryListIrrelevantBinding>(
                     layoutId = R.layout.item_tile_mercury_list_irrelevant,
-                    itemId = BR.item,
-                    realisation = object : DataBindingAdapter<ItemTileMercuryListIrrelevantBinding> {
-                        override fun onCreate(binding: ItemTileMercuryListIrrelevantBinding) {
-                        }
-
-                        override fun onBind(binding: ItemTileMercuryListIrrelevantBinding, position: Int) {
-                        }
-
-                    }
+                    itemId = BR.item
             )
 
             layoutBinding.vm = vm

@@ -58,13 +58,13 @@
             android:maxLines="1"
             android:paddingTop="@dimen/size_8dp"
             android:paddingBottom="@dimen/size_8dp"
-            android:text="@={vm.eanCode}"
-            app:cursorToLastPos="@{true}"
             app:layout_constraintBottom_toBottomOf="@+id/b_scan"
             app:layout_constraintEnd_toStartOf="@+id/b_scan"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="@+id/b_scan"
             app:onOkInSoftKeyboard="@{vm}"
+            android:text="@={vm.eanCode}"
+            app:cursorToLastPos="@{true}"
             app:requestFocus="@{vm.requestFocusToEan}"
             tools:ignore="Autofill" />
 

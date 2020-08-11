@@ -10,6 +10,7 @@
     <string name="back">Назад</string>
     <string name="revert">Откатить</string>
     <string name="details">Детали</string>
+    <string name="orders">Заказы</string>
     <string name="add">Добавить</string>
     <string name="create">Создать</string>
     <string name="apply">Применить</string>
@@ -20,7 +21,7 @@
     <string name="enter">Войти</string>
     <string name="go_over">Перейти</string>
     <string name="error_server">Ошибка сервера</string>
-    <string name="time_out_error">Превышено время ожидания ответа</string>
+    <string name="time_out_error">Превышено время ожидания ответа сервера</string>
     <string name="error_network">Ошибка подключения</string>
     <string name="error_auth">Неправильно введен пользователь или пароль SAP</string>
     <string name="error_connect_weight_equipment">Не найдено наименование или IP-адрес весового оборудования</string>
@@ -204,4 +205,7 @@
     <string name="check_app_updates">Проверка обновлений приложения</string>
     <string name="app_update">Обновление версии</string>
     <string name="reset">Сбросить</string>
+    <string name="stickers">Этикетки</string>
+    <string name="marking_goods">Маркированный товар</string>
+    <string name="exceptions_shelf_life">Исключение по СГ</string>
 </resources>

@@ -35,7 +35,9 @@ data class EndRecountDDParameters(
         @SerializedName("IT_MARK_BAD")
         val exciseStampBad: List<TaskExciseStampBadRestData>,
         @SerializedName("IT_VET_DIFF")
-        val discrepanciesMercury: List<TaskMercuryDiscrepanciesRestData?>
+        val discrepanciesMercury: List<TaskMercuryDiscrepanciesRestData?>,
+        @SerializedName("IT_PACK_DIFF")
+        val discrepanciesBlocks: List<TaskBlockDiscrepanciesRestData>
 )
 
 class EndRecountDDStatus : ObjectRawStatus<EndRecountDDResult>()

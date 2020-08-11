@@ -150,9 +150,7 @@ class CreateBoxesViewModel : CoreViewModel(),
                 .forEach { doRemovePosition ->
                     productInfo.value?.let { productInfoValue ->
                         val boxes = boxesRepository.getBoxesByProduct(productInfoValue)
-                        boxes.getOrNull(doRemovePosition)?.let {
-                            boxesRepository::removeBox
-                        }
+                        boxes.getOrNull(doRemovePosition)?.let (boxesRepository::removeBox)
                     }
                 }
         updateBoxes()
@@ -167,15 +165,15 @@ class CreateBoxesViewModel : CoreViewModel(),
         }
     }
 
-    private fun isStampInAnotherBox(stampCode: String): Boolean {
+    private fun findBoxByStampCode(stampCode: String): ExciseBox? {
         val productInfoValue = productInfo.value
         return productInfoValue?.let {
-            boxesRepository.getBoxesByProduct(it).any { box ->
+             boxesRepository.getBoxesByProduct(it).find { box ->
                 box.stamps.any { stamp ->
                     stamp.code == stampCode
                 }
             }
-        }.orIfNull { false }
+        }
     }
 
 
@@ -191,8 +189,8 @@ class CreateBoxesViewModel : CoreViewModel(),
                     return
                 }
 
-                if (isStampInAnotherBox(stampCode)) {
-                    screenNavigator.openStampWasAddedDialogInAnotherBox()
+                findBoxByStampCode(stampCode)?.let {
+                    screenNavigator.openStampWasAddedDialogInAnotherBox(it)
                     return
                 }
 

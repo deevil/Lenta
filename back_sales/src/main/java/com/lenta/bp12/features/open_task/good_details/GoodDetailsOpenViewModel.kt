@@ -83,7 +83,7 @@ class GoodDetailsOpenViewModel : CoreViewModel(), PageSelectionListener {
 
     fun onClickDelete() {
         good.value?.let { changedGood ->
-            selectionsHelper.selectedPositions.value?.map { position ->
+            selectionsHelper.selectedPositions.value?.forEach { position ->
                 categories.value?.get(position)?.type?.let { category ->
                     when (category) {
                         CategoryType.MARK.description -> changedGood.removeAllMark()
@@ -92,6 +92,7 @@ class GoodDetailsOpenViewModel : CoreViewModel(), PageSelectionListener {
                 }
             }
 
+            selectionsHelper.clearPositions()
             manager.updateCurrentGood(changedGood)
         }
     }

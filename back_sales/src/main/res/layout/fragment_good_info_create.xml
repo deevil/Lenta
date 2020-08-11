@@ -32,6 +32,7 @@
                         style="@style/CellEditTextStyle"
                         android:drawableEnd="@drawable/spinner_arrow_down_disabled"
                         android:enabled="false"
+                        android:focusable="false"
                         android:text="@{vm.accountingType}"
                         tools:text="Количество" />
 
@@ -93,7 +94,7 @@
 
                     <TextView
                         style="@style/CellTextStyle"
-                        android:text="@{vm.basketQuantity}"
+                        android:text="@{vm.basketQuantityWithUnits}"
                         tools:text="1 шт" />
 
                 </LinearLayout>

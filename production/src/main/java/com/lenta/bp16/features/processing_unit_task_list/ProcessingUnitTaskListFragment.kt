@@ -88,7 +88,7 @@ class ProcessingUnitTaskListFragment : KeyDownCoreFragment<FragmentProcessingUni
             layoutBinding.vm = vm
             layoutBinding.lifecycleOwner = viewLifecycleOwner
 
-            initRecyclerViewKeyHandler(
+            recyclerViewKeyHandler = initRecyclerViewKeyHandler(
                     recyclerView = layoutBinding.rv,
                     items = vm.processing,
                     onClickHandler = vm::onClickItemPosition
@@ -112,7 +112,9 @@ class ProcessingUnitTaskListFragment : KeyDownCoreFragment<FragmentProcessingUni
                             bindItem.root.isSelected = it.isSelected(position)
                         }
                     },
-                    onAdapterItemClicked = processedRecyclerViewKeyHandler?.run { ::onItemClicked }
+                    onAdapterItemClicked = { position ->
+                        processedRecyclerViewKeyHandler?.onItemClicked(position)
+                    }
             )
 
             layoutBinding.vm = vm

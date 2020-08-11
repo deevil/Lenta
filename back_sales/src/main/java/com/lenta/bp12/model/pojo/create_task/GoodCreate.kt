@@ -14,7 +14,8 @@ import com.lenta.shared.utilities.extentions.sumList
 import com.lenta.shared.utilities.extentions.sumWith
 
 data class GoodCreate(
-        val ean: String,
+        var ean: String,
+        val eans: List<String>,
         val material: String,
         val name: String,
         val kind: GoodKind,

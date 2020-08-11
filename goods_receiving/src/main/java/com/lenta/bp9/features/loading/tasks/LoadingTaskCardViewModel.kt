@@ -3,14 +3,17 @@ package com.lenta.bp9.features.loading.tasks
 import android.content.Context
 import androidx.lifecycle.MutableLiveData
 import com.lenta.bp9.R
+import com.lenta.bp9.features.reject.RejectType
 import com.lenta.bp9.model.task.*
 import com.lenta.bp9.model.task.revise.*
 import com.lenta.bp9.platform.navigation.IScreenNavigator
+import com.lenta.bp9.repos.IDataBaseRepo
 import com.lenta.bp9.repos.IRepoInMemoryHolder
 import com.lenta.bp9.requests.network.*
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.features.loading.CoreLoadingViewModel
+import com.lenta.shared.platform.constants.Constants.OPERATING_SYSTEM_ANDROID
 import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.extentions.getDeviceIp
 import com.lenta.shared.utilities.extentions.launchUITryCatch
@@ -49,6 +52,9 @@ class LoadingTaskCardViewModel : CoreLoadingViewModel() {
     lateinit var taskContents: TaskContents
 
     @Inject
+    lateinit var dataBase: IDataBaseRepo
+
+    @Inject
     lateinit var hyperHive: HyperHive
 
     override val title: MutableLiveData<String> = MutableLiveData()
@@ -66,7 +72,8 @@ class LoadingTaskCardViewModel : CoreLoadingViewModel() {
             val params = TaskContentRequestParameters(mode = mode.TaskCardModeString,
                     deviceIP = context.getDeviceIp(),
                     personalNumber = sessionInfo.personnelNumber ?: "",
-                    taskNumber = taskNumber
+                    taskNumber = taskNumber,
+                    operatingSystem = OPERATING_SYSTEM_ANDROID
             )
             val taskHeader = repoInMemoryHolder.taskList.value
                     ?.tasks
@@ -88,7 +95,12 @@ class LoadingTaskCardViewModel : CoreLoadingViewModel() {
                                         deviceIP = context.getDeviceIp(),
                                         personalNumber = sessionInfo.personnelNumber ?: "",
                                         taskNumber = taskNumber,
-                                        taskType = if (taskHeader.taskType == TaskType.ReceptionDistributionCenter) TaskType.ReceptionDistributionCenter.taskTypeString else TaskType.OwnProduction.taskTypeString
+                                        taskType = if (taskHeader.taskType == TaskType.ReceptionDistributionCenter) {
+                                            TaskType.ReceptionDistributionCenter.taskTypeString
+                                        } else {
+                                            TaskType.OwnProduction.taskTypeString
+                                        },
+                                        operatingSystem = OPERATING_SYSTEM_ANDROID
                                 )
                                 taskContentsReceptionDistrCenterNetRequest(paramsRDS).either(::handleFailure, ::handleSuccessRDS)
                             }
@@ -101,9 +113,10 @@ class LoadingTaskCardViewModel : CoreLoadingViewModel() {
                             val params = TaskContentsReceptionDistrCenterParameters(
                                     mode = mode.TaskCardModeString,
                                     deviceIP = context.getDeviceIp(),
-                                    personalNumber = sessionInfo.personnelNumber ?: "",
+                                    personalNumber = sessionInfo.personnelNumber.orEmpty(),
                                     taskNumber = taskNumber,
-                                    taskType = TaskType.RecalculationCargoUnit.taskTypeString
+                                    taskType = TaskType.RecalculationCargoUnit.taskTypeString,
+                                    operatingSystem = OPERATING_SYSTEM_ANDROID
                             )
                             taskContentsReceptionDistrCenterNetRequest(params).either(::handleFailure, ::handleSuccessRDS)
                         }
@@ -157,6 +170,7 @@ class LoadingTaskCardViewModel : CoreLoadingViewModel() {
         //screenNavigator.goBack()
         launchUITryCatch {
             repoInMemoryHolder.manufacturers.value = result.manufacturers
+            repoInMemoryHolder.markingGoodsProperties.value = result.markingGoodsProperties.map { TaskMarkingGoodsProperties.from(it) }
             //todo закомичено, т.к. на проде этот фунционал пока не реализован repoInMemoryHolder.processOrderData.value = result.processOrderData.map { TaskProcessOrderDataInfo.from(it) }
             repoInMemoryHolder.sets.value = result.setsInfo.map { TaskSetsInfo.from(hyperHive, it) }
             val taskHeader = repoInMemoryHolder.taskList.value
@@ -216,6 +230,7 @@ class LoadingTaskCardViewModel : CoreLoadingViewModel() {
         //screenNavigator.goBack()
         launchUITryCatch {
             repoInMemoryHolder.manufacturers.value = result.manufacturers
+            repoInMemoryHolder.markingGoodsProperties.value = result.markingGoodsProperties.map { TaskMarkingGoodsProperties.from(it) }
             repoInMemoryHolder.sets.value = result.setsInfo.map { TaskSetsInfo.from(hyperHive, it) }
             val taskHeader = repoInMemoryHolder.taskList.value
                     ?.tasks

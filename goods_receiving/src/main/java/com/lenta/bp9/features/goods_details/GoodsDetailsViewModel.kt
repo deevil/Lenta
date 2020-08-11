@@ -69,7 +69,11 @@ class GoodsDetailsViewModel : CoreViewModel() {
                     it.convertToReasonRejectionInfo()
                 }.orEmpty()
                 val allReasonRejectionInfo = dataBase.getAllReasonRejectionInfo().orEmpty()
-                qualityInfoForDiscrepancy + allReasonRejectionInfo
+                val discrepancyErrorUPD = dataBase.getQualityErrorUPD()
+                        ?.map {
+                            it.convertToReasonRejectionInfo()
+                        }.orEmpty()
+                qualityInfoForDiscrepancy + allReasonRejectionInfo + discrepancyErrorUPD
             }
 
             updateProduct()

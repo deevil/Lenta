@@ -12,6 +12,8 @@ import com.lenta.movement.requests.network.SaveTaskNetRequest
 import com.lenta.movement.requests.network.models.saveTask.SaveTaskParams
 import com.lenta.movement.requests.network.models.saveTask.SaveTaskParamsTaskBasket
 import com.lenta.movement.requests.network.models.saveTask.SaveTaskParamsTaskMaterial
+import com.lenta.movement.requests.network.models.saveTask.SaveTaskResultTask
+import com.lenta.movement.requests.network.models.toTask
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.models.core.Uom
 import com.lenta.shared.platform.constants.Constants
@@ -72,9 +74,9 @@ class TaskGoodsViewModel : CoreViewModel(),
     val basketItemList by unsafeLazy {
         baskets.switchMap { list ->
             asyncLiveData<List<SimpleListItem>> {
-                val mappedList = list.map { basket ->
+                val mappedList = list.mapIndexed { index, basket ->
                     SimpleListItem(
-                            number = basket.number,
+                            number = index + 1,
                             title = formatter.getBasketName(basket),
                             subtitle = formatter.getBasketDescription(
                                     basket,
@@ -254,18 +256,24 @@ class TaskGoodsViewModel : CoreViewModel(),
                     fnL = { failure ->
                         screenNavigator.openAlertScreen(failure)
                     },
-                    fnR = { savedTask ->
-                        taskBasketsRepository.clear()
-                        screenNavigator.goBack()
-                        screenNavigator.goBack()
-                        taskManager.setTask(savedTask)
-                        screenNavigator.openTaskScreen(savedTask)
-                    }
+                    fnR = ::onSaveTaskSuccess
             )
-
             screenNavigator.hideProgress()
         }
     }
+
+    private fun onSaveTaskSuccess(inputTask: SaveTaskResultTask) {
+        val savedTask = inputTask.toTask()
+        taskBasketsRepository.clear()
+        screenNavigator.goBack()
+        screenNavigator.goBack()
+        taskManager.setTask(savedTask)
+        screenNavigator.openTaskScreen(savedTask)
+        if (inputTask.currentStatusCode == Task.Status.COUNTED_CODE) {
+            screenNavigator.openNotEnoughGoodsInTKAlertScreen(inputTask.errorText.orEmpty())
+        }
+    }
+
 
     fun onScanResult(data: String) {
         searchCode(code = data, fromScan = true, isBarCode = true)

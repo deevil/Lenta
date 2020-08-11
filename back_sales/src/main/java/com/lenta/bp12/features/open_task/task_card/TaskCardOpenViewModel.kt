@@ -74,7 +74,7 @@ class TaskCardOpenViewModel : CoreViewModel(), PageSelectionListener {
 
     val isExistComment by lazy {
         task.map {
-            it?.comment?.isNotEmpty()
+            it?.comment?.isNotEmpty() ?: false
         }
     }
 
@@ -92,7 +92,7 @@ class TaskCardOpenViewModel : CoreViewModel(), PageSelectionListener {
 
             taskContentNetRequest(TaskContentParams(
                     deviceIp = deviceInfo.getDeviceIp(),
-                    taskNumber = task.value!!.number,
+                    taskNumber = task.value?.number.orEmpty(),
                     mode = 1,
                     userNumber = appSettings.lastPersonnelNumber.orEmpty()
             )).also {
@@ -103,14 +103,25 @@ class TaskCardOpenViewModel : CoreViewModel(), PageSelectionListener {
 
     private fun handleTaskContentResult(result: TaskContentResult) {
         launchUITryCatch {
+            navigator.showProgressLoadingData()
             manager.addGoodsInCurrentTask(result)
-            navigator.openGoodListScreen()
+            navigator.hideProgress()
+
+            openGoodListScreen()
         }
     }
 
     override fun handleFailure(failure: Failure) {
         super.handleFailure(failure)
         navigator.openAlertScreen(failure)
+    }
+
+    private fun openGoodListScreen() {
+        if (!manager.isExistStartTaskInfo()) {
+            manager.saveStartTaskInfo()
+        }
+
+        navigator.openGoodListScreen()
     }
 
     /**
@@ -122,17 +133,30 @@ class TaskCardOpenViewModel : CoreViewModel(), PageSelectionListener {
         if (goodList.isEmpty()) {
             loadGoodList()
         } else {
-            navigator.openGoodListScreen()
+            openGoodListScreen()
         }
     }
 
     fun onBackPressed() {
+        task.value?.let { task ->
+            if (manager.isTaskWasChanged()) {
+                navigator.showTaskUnsentDataWillBeDeleted(task.name) {
+                    manager.clearCurrentTask()
+                    unblockTaskAndExit(task.number)
+                }
+            } else {
+                unblockTaskAndExit(task.number)
+            }
+        }
+    }
+
+    private fun unblockTaskAndExit(taskNumber: String) {
         launchUITryCatch {
             navigator.showProgressLoadingData(::handleFailure)
 
             unblockTaskNetRequest(
                     UnblockTaskParams(
-                            taskNumber = task.value!!.number,
+                            taskNumber = taskNumber,
                             userNumber = sessionInfo.personnelNumber.orEmpty(),
                             deviceIp = deviceInfo.getDeviceIp()
                     )
@@ -140,6 +164,7 @@ class TaskCardOpenViewModel : CoreViewModel(), PageSelectionListener {
                 navigator.hideProgress()
             }
 
+            manager.clearStartTaskInfo()
             navigator.goBack()
         }
     }

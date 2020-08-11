@@ -10,6 +10,16 @@
     <integer name="three_two_2">60</integer>
     <integer name="three_two_3">30</integer>
 
+    <!-- Три колонки / Тип 3 -->
+    <integer name="three_three_1">10</integer>
+    <integer name="three_three_2">75</integer>
+    <integer name="three_three_3">15</integer>
+
+    <!-- Три колонки / Тип 4 -->
+    <integer name="three_four_1">10</integer>
+    <integer name="three_four_2">70</integer>
+    <integer name="three_four_3">20</integer>
+
     <!-- Четыре колонки / Тип 1 -->
     <integer name="four_one_1">12</integer>
     <integer name="four_one_2">50</integer>
@@ -21,6 +31,12 @@
     <integer name="four_two_2">38</integer>
     <integer name="four_two_3">25</integer>
     <integer name="four_two_4">22</integer>
+
+    <!-- Четыре колонки / Тип 3 -->
+    <integer name="four_three_1">10</integer>
+    <integer name="four_three_2">52</integer>
+    <integer name="four_three_3">19</integer>
+    <integer name="four_three_4">19</integer>
 
     <dimen name="size_8dp">8dp</dimen>
     <dimen name="size_10dp">10dp</dimen>
