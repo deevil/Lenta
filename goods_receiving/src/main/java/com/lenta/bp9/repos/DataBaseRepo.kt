@@ -233,6 +233,12 @@ class DataBaseRepo(
             it.code == code
         }?.name
     }
+
+    override suspend fun getReasonRejectionMercuryInfoOfQuality(quality: String): List<ReasonRejectionInfo>? = withContext(Dispatchers.IO) {
+        zmpUtz20V001.getAllReasonRejection()?.toReasonRejectionInfoList()?.filter {
+            it.id == "005" && it.qualityCode == quality && it.code != "41"
+        }
+    }
 }
 
 interface IDataBaseRepo {
@@ -277,4 +283,5 @@ interface IDataBaseRepo {
     suspend fun getQualityErrorUPD(): List<QualityInfo>?
     suspend fun getGrzGrundMark(): String?
     suspend fun getGrzGrundMarkName(code: String): String?
+    suspend fun getReasonRejectionMercuryInfoOfQuality(quality: String): List<ReasonRejectionInfo>?
 }

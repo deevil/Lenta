@@ -95,7 +95,7 @@ class MemoryTaskMercuryDiscrepanciesRepository : ITaskMercuryDiscrepanciesReposi
         findMercuryDiscrepanciesOfProduct(product.materialNumber)
                 .asSequence()
                 .filter { it.typeDiscrepancies != TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_NORM }
-                .groupBy { it.vetDocumentID == it.vetDocumentID }
+                .groupBy { it.vetDocumentID }
                 .map { groupByMercuryDiscrepancies ->
                     groupByMercuryDiscrepancies.value.map { changeGroupByMercuryDiscrepancies(it)}
                 }

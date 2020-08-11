@@ -58,7 +58,8 @@ class MemoryTaskProductsDiscrepanciesRepository : ITaskProductsDiscrepanciesRepo
                                                 .sumByDouble { it }
 
                                 groupByMercuryDiscrepancies.value
-                                        .first {
+                                        .first()
+                                        .let {
                                             val productDiscrepancies = TaskProductDiscrepancies.fromMercury(it.copy(numberDiscrepancies = countDiscrepancies))
                                             addProductDiscrepancy(productDiscrepancies)
                                         }
