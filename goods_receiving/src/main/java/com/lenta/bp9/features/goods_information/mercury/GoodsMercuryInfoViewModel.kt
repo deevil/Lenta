@@ -186,7 +186,6 @@ class GoodsMercuryInfoViewModel : CoreViewModel(), OnPositionClickListener {
                                     }
                                 }
                                 ?: true
-                                .orIfNull { false }
                     }
     val isEizUnit: MutableLiveData<Boolean> by lazy {
         MutableLiveData(isDiscrepancy.value == false && isGoodsAddedAsSurplus.value == false)
@@ -454,13 +453,19 @@ class GoodsMercuryInfoViewModel : CoreViewModel(), OnPositionClickListener {
 
     @SuppressLint("SimpleDateFormat")
     fun onClickAdd() {
+        val currentTypeDiscrepancies =
+                qualityInfo.value
+                        ?.get(spinQualitySelectedPosition.value ?: 0)
+                        ?.code
+                        .orEmpty()
         if (isTaskPGE.value == true) {
             //меркурий для ПГЕ
             if (isPerishable.value == true) { //https://trello.com/c/fqOMeUob
                 expirationDate.value!!.time = formatterRU.parse(spinProductionDate.value!![spinProductionDateSelectedPosition.value!!])
                 expirationDate.value!!.add(Calendar.DATE, generalShelfLife.value?.toInt() ?: 0)
 
-                if (expirationDate.value!!.time <= currentDate.value) {
+                if (expirationDate.value!!.time <= currentDate.value
+                        && currentTypeDiscrepancies == TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_NORM) {
                     screenNavigator.openShelfLifeExpiredDialog(
                             yesCallbackFunc = {
                                 spinQualitySelectedPosition.value = qualityInfo.value!!.indexOfLast {it.code == "5"}//устанавливаем брак складской (как и в обычном товаре, Маша Стоян)
@@ -490,7 +495,8 @@ class GoodsMercuryInfoViewModel : CoreViewModel(), OnPositionClickListener {
                 expirationDate.value!!.time = formatterRU.parse(spinProductionDate.value!![spinProductionDateSelectedPosition.value!!])
                 expirationDate.value!!.add(Calendar.DATE, generalShelfLife.value?.toInt() ?: 0)
 
-                if (expirationDate.value!!.time <= currentDate.value) {
+                if (expirationDate.value!!.time <= currentDate.value
+                        && currentTypeDiscrepancies == TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_NORM) {
                     screenNavigator.openShelfLifeExpiredDialog(
                             yesCallbackFunc = {
                                 spinQualitySelectedPosition.value = qualityInfo.value!!.indexOfLast {it.code == "7"}
