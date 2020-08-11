@@ -49,7 +49,7 @@ class InvoiceReviseFragment : CoreFragment<FragmentInvoiceReviseBinding, Invoice
         viewLifecycleOwner.apply {
             vm.selectedPage.observe(this, Observer {
                 if (it == 2) {
-                    if (vm.isEInvoice) {
+                    if (vm.editingAvailable.value == false) { //https://trello.com/c/YGRYIO7e и алкоголь и е-инвойс
                         bottomToolbarUiModel.uiModelButton3.show(ButtonDecorationInfo.browsing)
                     } else {
                         bottomToolbarUiModel.uiModelButton3.show(ButtonDecorationInfo.fix)
