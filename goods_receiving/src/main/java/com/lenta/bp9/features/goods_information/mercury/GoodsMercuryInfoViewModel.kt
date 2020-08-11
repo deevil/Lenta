@@ -619,6 +619,7 @@ class GoodsMercuryInfoViewModel : CoreViewModel(), OnPositionClickListener {
 
     @SuppressLint("SimpleDateFormat")
     private fun addProductDiscrepanciesPGE() {
+        val manufacturer = spinManufacturers.value?.get(spinManufacturersSelectedPosition.value ?: 0).orEmpty()
         val mercuryUom =
                 taskManager
                         .getReceivingTask()
@@ -626,7 +627,7 @@ class GoodsMercuryInfoViewModel : CoreViewModel(), OnPositionClickListener {
                         ?.getMercuryDiscrepancies()
                         ?.findMercuryDiscrepanciesOfProduct(productInfo.value!!)
                         ?.last { mercuryDiscrepancies ->
-                            mercuryDiscrepancies.manufacturer == spinManufacturers.value!![spinManufacturersSelectedPosition.value!!]
+                            mercuryDiscrepancies.manufacturer == manufacturer
                                     && mercuryDiscrepancies.productionDate == formatterEN.format(formatterRU.parse(spinProductionDate.value!![spinProductionDateSelectedPosition.value!!]))
                         }?.uom
 

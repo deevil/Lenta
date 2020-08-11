@@ -95,7 +95,7 @@ class ProcessMercuryProductService
                             filterMercury.manufacturer == manufacturer
                                     && filterMercury.productionDate == productionDate
                         }
-                        .map { mapMercury ->
+                        .mapNotNull { mapMercury ->
                             val remainderOfVsdAndDiscrepancy = getRemainderOfVsdAndDiscrepancies(mapMercury.vetDocumentID, typeDiscrepancies, mapMercury.volume)
                             val addCount: Double
                             countAllAddVetDoc
@@ -126,9 +126,7 @@ class ProcessMercuryProductService
                         }
 
         foundVetDiscrepancy.map { mercury ->
-            mercury?.let {
-                changeVetProductDiscrepancy(it)
-            }
+            changeVetProductDiscrepancy(mercury)
         }
     }
 
@@ -160,19 +158,19 @@ class ProcessMercuryProductService
 
         //удаляем превышающее количество из недогруза в текущей ВСД
         var delCount: Double = if (isConvertUnit) convertUnitForPGEVsd(countExceeded) else countExceeded
-        currentMercuryDiscrepancies.filter {newVet ->
+        currentMercuryDiscrepancies.filter { newVet ->
             newVet.typeDiscrepancies == "3" && newVet.manufacturer == manufacturer && newVet.productionDate == productionDate
         }.map {
-            if ((it.numberDiscrepancies - delCount) < 0.0) {
+            delCount -= if ((it.numberDiscrepancies - delCount) < 0.0) {
                 currentMercuryDiscrepancies.remove(it)
-                delCount -= it.numberDiscrepancies
+                it.numberDiscrepancies
             } else {
                 if ((it.numberDiscrepancies - delCount) > 0.0 ) {
                     changeVetProductDiscrepancy(it.copy(numberDiscrepancies = it.numberDiscrepancies - delCount))
                 } else {
                     currentMercuryDiscrepancies.remove(it)
                 }
-                delCount -= it.numberDiscrepancies
+                it.numberDiscrepancies
             }
         }
 

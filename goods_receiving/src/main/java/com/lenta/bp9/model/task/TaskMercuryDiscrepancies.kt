@@ -33,10 +33,7 @@ data class TaskMercuryDiscrepancies(
     companion object {
         suspend fun from(hyperHive: HyperHive, restData: TaskMercuryDiscrepanciesRestData): TaskMercuryDiscrepancies {
             return withContext(Dispatchers.IO) {
-                val zmpUtz07V001: ZmpUtz07V001 by lazy {
-                    ZmpUtz07V001(hyperHive)
-                }
-                val uomInfo = zmpUtz07V001.getUomInfo(restData.unit)
+                val uomInfo = ZmpUtz07V001(hyperHive).getUomInfo(restData.unit) //zmpUtz07V001.getUomInfo(restData.unit)
                 return@withContext TaskMercuryDiscrepancies(
                         materialNumber= restData.materialNumber,
                         vetDocumentID = restData.vetDocumentID,
