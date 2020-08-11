@@ -85,7 +85,6 @@ class DatabaseRepo(
             conditionInfo.getAllCondition().toConditionInfoList()
         }
     }
-
 }
 
 

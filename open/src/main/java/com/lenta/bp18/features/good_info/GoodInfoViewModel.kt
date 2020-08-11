@@ -72,7 +72,7 @@ class GoodInfoViewModel : CoreViewModel() {
     }
     val selectedGroup = MutableLiveData(0)
 
-    val selectedGroupClickListener = object : OnPositionClickListener{
+    val selectedGroupClickListener = object : OnPositionClickListener {
         override fun onClickPosition(position: Int) {
             selectedGroup.value = position
         }
@@ -85,7 +85,7 @@ class GoodInfoViewModel : CoreViewModel() {
         conditions?.map { it.name }.orEmpty()
     }
     val selectedCondition = MutableLiveData(0)
-    val selectedConditionClickListener = object : OnPositionClickListener{
+    val selectedConditionClickListener = object : OnPositionClickListener {
         override fun onClickPosition(position: Int) {
             selectedCondition.value = position
         }
@@ -134,19 +134,8 @@ class GoodInfoViewModel : CoreViewModel() {
             //partNumberField.value = /*значение*/
 
             val groupList = database.getAllGoodGroup()
-            groups.value = groupList
-            selectedGroup.value?.let {
-                appSettings.lastGroup?.let { lGroup ->
-                    groupList.forEachIndexed() { index, groupInfo ->
-                        if (groupInfo.number == lGroup) {
-                            currentGroup = groupInfo.number
-                            selectedGroup.value = index
-                        }
 
-                        return@forEachIndexed
-                    }
-                }.orIfNull { selectedGroup.value = 0 }
-            }
+            selectedGroup.value = findSelectedIndexForGroup(groupList)
 
             val conditionList = database.getConditionByName(good?.getFormattedMatcode())
             if (conditionList.isEmpty()) {
@@ -154,17 +143,37 @@ class GoodInfoViewModel : CoreViewModel() {
                     showAlertConditionNotFound(::openSelectGoodScreen)
                 }
             }
-            conditions.value = conditionList.map { ConditionInfo(name = it.name) }
-            selectedCondition.value?.let {
-                conditionList.forEachIndexed { index, conditionInfo ->
-                    if (conditionInfo.defCondition == DEF_COND_FLAG) {
-                        currentCondition = conditionInfo.name
-                        selectedCondition.value = index
-                    } else
-                        selectedCondition.value = 0
+
+            selectedCondition.value = findSelectedIndexForCondition(conditionList)
+        }
+    }
+
+    private fun findSelectedIndexForGroup(groupList: List<GroupInfo>): Int {
+        var selectedIndex = 0
+        groups.value = groupList
+        appSettings.lastGroup?.let { lGroup ->
+            groupList.forEachIndexed { index, groupInfo ->
+                if (groupInfo.number == lGroup) {
+                    currentGroup = groupInfo.number
+                    selectedIndex = index
+                    return@forEachIndexed
                 }
             }
         }
+        return selectedIndex
+    }
+
+    private fun findSelectedIndexForCondition(conditionList: List<ConditionInfo>): Int {
+        var selectedIndex = 0
+        conditions.value = conditionList
+        conditionList.forEachIndexed { index, conditionInfo ->
+            if (conditionInfo.defCondition == DEF_COND_FLAG) {
+                currentCondition = conditionInfo.name
+                selectedIndex = index
+                return@forEachIndexed
+            }
+        }
+        return selectedIndex
     }
 
     fun onClickBack() {
@@ -179,7 +188,8 @@ class GoodInfoViewModel : CoreViewModel() {
     private fun saveGroup() {
         launchUITryCatch {
             groups.value
-                    ?.getOrNull(selectedGroup.value ?: -1)?.number
+                    ?.getOrNull(selectedGroup.value ?: -1)
+                    ?.number
                     ?.let { group ->
                         appSettings.lastGroup = group
                     }
