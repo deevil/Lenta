@@ -2,20 +2,29 @@ package com.lenta.bp18.features.good_info
 
 import android.content.Context
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.viewModelScope
+import com.lenta.bp18.model.pojo.Good
 import com.lenta.bp18.platform.Constants
 import com.lenta.bp18.platform.navigation.IScreenNavigator
 import com.lenta.bp18.repository.IDatabaseRepo
+import com.lenta.bp18.request.model.params.GoodInfoParams
 import com.lenta.bp18.request.network.GoodInfoNetRequest
+import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.models.core.Uom
+import com.lenta.shared.platform.time.ITimeMonitor
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.requests.combined.scan_info.pojo.ConditionInfo
 import com.lenta.shared.requests.combined.scan_info.pojo.GroupInfo
+import com.lenta.shared.requests.network.ServerTime
+import com.lenta.shared.requests.network.ServerTimeRequest
+import com.lenta.shared.requests.network.ServerTimeRequestParam
 import com.lenta.shared.settings.IAppSettings
 import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.extentions.launchUITryCatch
 import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.utilities.orIfNull
 import com.lenta.shared.view.OnPositionClickListener
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class GoodInfoViewModel : CoreViewModel(), OnPositionClickListener {
@@ -31,6 +40,15 @@ class GoodInfoViewModel : CoreViewModel(), OnPositionClickListener {
 
     @Inject
     lateinit var database: IDatabaseRepo
+
+    @Inject
+    lateinit var sessionInfo: ISessionInfo
+
+    @Inject
+    lateinit var timeMonitor: ITimeMonitor
+
+    @Inject
+    lateinit var serverTimeRequest: ServerTimeRequest
 
     @Inject
     lateinit var goodInfoNetRequest: GoodInfoNetRequest
@@ -59,6 +77,9 @@ class GoodInfoViewModel : CoreViewModel(), OnPositionClickListener {
         conditions?.map { it.name }.orEmpty()
     }
 
+    val selectedGood = MutableLiveData<Good>()
+
+    private var currentGroup: String? = ""
     private var currentCondition: String? = ""
 
     var suffix: String = Uom.KG.name
@@ -67,11 +88,13 @@ class GoodInfoViewModel : CoreViewModel(), OnPositionClickListener {
 
     init {
         setGoodInfo()
+        getServerTime()
     }
 
     private fun setGoodInfo() {
         launchUITryCatch {
             val good = database.getGoodByEan(selectedEan.value.toString())
+            selectedGood.value = good
             Logg.d { "$good" }
             val (quantity: Int?, uom: String?) = if (weight.value != 0) {
                 weight.value?.div(Constants.CONVERT_TO_KG) to Uom.KG.name
@@ -101,6 +124,7 @@ class GoodInfoViewModel : CoreViewModel(), OnPositionClickListener {
                 appSettings.lastGroup?.let { lGroup ->
                     groupList.forEachIndexed() { index, groupInfo ->
                         if (groupInfo.number == lGroup) {
+                            currentGroup = groupInfo.number
                             onClickPosition(index)
                         }
 
@@ -155,14 +179,44 @@ class GoodInfoViewModel : CoreViewModel(), OnPositionClickListener {
         }
     }
 
-    fun onClickComplete() {
-        saveGroup()
-        with(navigator) {
-            showConfirmOpeningPackage {
-                showAlertSuccessfulOpeningPackage(::openSelectGoodScreen)
-            }
+    private fun getServerTime() {
+        viewModelScope.launch {
+            serverTimeRequest(ServerTimeRequestParam(sessionInfo.market
+                    .orEmpty())).either(::handleFailure, ::handleSuccessServerTime)
         }
     }
+
+    private fun handleSuccessServerTime(serverTime: ServerTime) {
+        timeMonitor.setServerTime(time = serverTime.time, date = serverTime.date)
+    }
+
+    fun onClickComplete() =
+            navigator.showConfirmOpeningPackage {
+                launchUITryCatch {
+                    navigator.showProgressLoadingData()
+                    val result = goodInfoNetRequest(
+                            params = GoodInfoParams(
+                                    marketNumber = sessionInfo.market.orEmpty(),
+                                    sapCode = selectedGood.value?.getFormattedMatcode(),
+                                    grNum = currentGroup,
+                                    stdCond = currentCondition,
+                                    quantity = quantityField.value,
+                                    buom = suffix,
+                                    partNumber = partNumberField.value,
+                                    /**Уникальный идентификатор*/
+                                    guid = "1",
+                                    dateOpen = timeMonitor.getServerDate().toString(),
+                                    timeOpen = timeMonitor.getUnixTime().toString(),
+                                    ean = selectedEan.value
+                            )
+                    )
+                    result.also {
+                        navigator.hideProgress()
+                    }.either(::handleFailure) {
+                        navigator.openSelectGoodScreen()
+                    }
+                }
+            }
 
     companion object {
         private const val DEF_WEIGHT = "0"
