@@ -1,5 +1,13 @@
 package com.lenta.bp16.model
 
+enum class IngredientStatus {
+    IS_PLAY,
+    IS_DONE,
+    COMMON,
+    SELF_LOCK,
+    LOCK
+}
+
 enum class TaskStatus {
     COMMON,
     STARTED,
@@ -8,6 +16,7 @@ enum class TaskStatus {
 }
 
 enum class TaskType(val abbreviation: String, val numberLength: Int) {
+    WAREHOUSE_INGREDIENTS("ИН", 30),
     PROCESSING_UNIT("ЕО", 20),
     EXTERNAL_SUPPLY("ВП", 10)
 }

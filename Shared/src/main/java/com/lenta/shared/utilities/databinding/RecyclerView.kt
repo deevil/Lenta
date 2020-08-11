@@ -12,10 +12,7 @@ import androidx.annotation.NonNull
 import androidx.databinding.BindingAdapter
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
-import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.Observer
+import androidx.lifecycle.*
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.lenta.shared.keys.KeyCode
@@ -182,7 +179,7 @@ class RecyclerViewKeyHandler<T>(private val rv: RecyclerView,
     val posInfo = MutableLiveData(initPosInfo?.copy(isManualClick = false) ?: PosInfo(0, -1))
 
     init {
-        posInfo.observe(lifecycleOwner, Observer { info ->
+        posInfo.observe(lifecycleOwner) { info ->
             Logg.d { "new pos: $info" }
             //rv.adapter?.notifyItemChanged(info.lastPos)
             //rv.adapter?.notifyItemChanged(info.currentPos)
@@ -191,10 +188,10 @@ class RecyclerViewKeyHandler<T>(private val rv: RecyclerView,
                 rv.post { rv.scrollToPosition(info.currentPos) }
             }
 
-        })
-        items.observe(lifecycleOwner, Observer {
+        }
+        items.observe(lifecycleOwner) {
             resendPositions()
-        })
+        }
     }
 
     fun onKeyDown(keyCode: KeyCode): Boolean {
@@ -230,6 +227,7 @@ class RecyclerViewKeyHandler<T>(private val rv: RecyclerView,
                     }
                 }
             }
+            else -> return false
         }
 
         return false

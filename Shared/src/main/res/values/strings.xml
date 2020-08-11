@@ -10,6 +10,7 @@
     <string name="back">Назад</string>
     <string name="revert">Откатить</string>
     <string name="details">Детали</string>
+    <string name="orders">Заказы</string>
     <string name="add">Добавить</string>
     <string name="create">Создать</string>
     <string name="apply">Применить</string>
@@ -204,6 +205,7 @@
     <string name="check_app_updates">Проверка обновлений приложения</string>
     <string name="app_update">Обновление версии</string>
     <string name="reset">Сбросить</string>
+    <string name="stickers">Этикетки</string>
     <string name="marking_goods">Маркированный товар</string>
     <string name="exceptions_shelf_life">Исключение по СГ</string>
 </resources>
