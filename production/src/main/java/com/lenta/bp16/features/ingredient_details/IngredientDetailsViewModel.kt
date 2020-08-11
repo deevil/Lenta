@@ -60,7 +60,7 @@ class IngredientDetailsViewModel : CoreViewModel() {
     }
 
     val totalWithUnits = total.map {
-        "${it.dropZeros()} ${orderIngredient.value?.buom.orEmpty()}"
+        "${it.dropZeros()} ${resourceManager.kgSuffix()}"
     }
 
     fun onCompleteClicked() = launchUITryCatch {
