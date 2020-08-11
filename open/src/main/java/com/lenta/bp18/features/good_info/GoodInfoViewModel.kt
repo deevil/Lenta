@@ -221,8 +221,8 @@ class GoodInfoViewModel : CoreViewModel() {
                                     quantity = quantityField.value,
                                     buom = suffix,
                                     partNumber = partNumberField.value,
-                                    /**Уникальный идентификатор*/
-                                    guid = "1",
+                                    /**Уникальный идентификатор, потом заменить на генерацию GUID*/
+                                    guid = DEF_GUID,
                                     dateOpen = timeMonitor.getServerDate().toString(),
                                     timeOpen = timeMonitor.getUnixTime().toString(),
                                     ean = selectedEan.value
@@ -239,5 +239,7 @@ class GoodInfoViewModel : CoreViewModel() {
     companion object {
         private const val DEF_WEIGHT = "0"
         private const val DEF_COND_FLAG = "X"
+        /**It's a temporary solution*/
+        private const val DEF_GUID = "1"
     }
 }
