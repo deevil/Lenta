@@ -27,7 +27,7 @@ import com.lenta.shared.view.OnPositionClickListener
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-class GoodInfoViewModel : CoreViewModel(), OnPositionClickListener {
+class GoodInfoViewModel : CoreViewModel() {
 
     @Inject
     lateinit var appSettings: IAppSettings
@@ -64,20 +64,35 @@ class GoodInfoViewModel : CoreViewModel(), OnPositionClickListener {
 
     val partNumberFieldEnabled: MutableLiveData<Boolean> = MutableLiveData(true)
 
-    private val groups: MutableLiveData<List<GroupInfo>> = MutableLiveData()
-    private val conditions: MutableLiveData<List<ConditionInfo>> = MutableLiveData()
-    val selectedPosition: MutableLiveData<Int> = MutableLiveData(0)
-    val selectedCondition: MutableLiveData<Int> = MutableLiveData(0)
 
+    /**Выбор группы весового оборудования*/
+    private val groups: MutableLiveData<List<GroupInfo>> = MutableLiveData()
     val groupsNames: MutableLiveData<List<String?>> = groups.map { groups ->
         groups?.map { it.name }.orEmpty()
     }
+    val selectedGroup = MutableLiveData(0)
 
+    val selectedGroupClickListener = object : OnPositionClickListener{
+        override fun onClickPosition(position: Int) {
+            selectedGroup.value = position
+        }
+
+    }
+
+    /**Выбор условий хранения*/
+    private val conditions: MutableLiveData<List<ConditionInfo>> = MutableLiveData()
     val conditionNames: MutableLiveData<List<String?>> = conditions.map { conditions ->
         conditions?.map { it.name }.orEmpty()
     }
+    val selectedCondition = MutableLiveData(0)
+    val selectedConditionClickListener = object : OnPositionClickListener{
+        override fun onClickPosition(position: Int) {
+            selectedCondition.value = position
+        }
 
-    val selectedGood = MutableLiveData<Good>()
+    }
+
+    private val selectedGood = MutableLiveData<Good>()
 
     private var currentGroup: String? = ""
     private var currentCondition: String? = ""
@@ -120,17 +135,17 @@ class GoodInfoViewModel : CoreViewModel(), OnPositionClickListener {
 
             val groupList = database.getAllGoodGroup()
             groups.value = groupList
-            selectedPosition.value?.let {
+            selectedGroup.value?.let {
                 appSettings.lastGroup?.let { lGroup ->
                     groupList.forEachIndexed() { index, groupInfo ->
                         if (groupInfo.number == lGroup) {
                             currentGroup = groupInfo.number
-                            onClickPosition(index)
+                            selectedGroup.value = index
                         }
 
                         return@forEachIndexed
                     }
-                }.orIfNull { onClickPosition(0) }
+                }.orIfNull { selectedGroup.value = 0 }
             }
 
             val conditionList = database.getConditionByName(good?.getFormattedMatcode())
@@ -144,20 +159,12 @@ class GoodInfoViewModel : CoreViewModel(), OnPositionClickListener {
                 conditionList.forEachIndexed { index, conditionInfo ->
                     if (conditionInfo.defCondition == DEF_COND_FLAG) {
                         currentCondition = conditionInfo.name
-                        onClickCondition(index)
+                        selectedCondition.value = index
                     } else
-                        onClickCondition(0)
+                        selectedCondition.value = 0
                 }
             }
         }
-    }
-
-    override fun onClickPosition(position: Int) {
-        selectedPosition.value = position
-    }
-
-    fun onClickCondition(position: Int) {
-        selectedCondition.value = position
     }
 
     fun onClickBack() {
@@ -172,7 +179,7 @@ class GoodInfoViewModel : CoreViewModel(), OnPositionClickListener {
     private fun saveGroup() {
         launchUITryCatch {
             groups.value
-                    ?.getOrNull(selectedPosition.value ?: -1)?.number
+                    ?.getOrNull(selectedGroup.value ?: -1)?.number
                     ?.let { group ->
                         appSettings.lastGroup = group
                     }
@@ -192,6 +199,7 @@ class GoodInfoViewModel : CoreViewModel(), OnPositionClickListener {
 
     fun onClickComplete() =
             navigator.showConfirmOpeningPackage {
+                saveGroup()
                 launchUITryCatch {
                     navigator.showProgressLoadingData()
                     val result = goodInfoNetRequest(

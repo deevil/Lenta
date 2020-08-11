@@ -117,7 +117,8 @@
                         android:id="@+id/spin_group"
                         style="@style/CellSpinnerStyle"
                         app:items="@{vm.groupsNames}"
-                        app:position="@{vm.selectedPosition}"
+                        app:position="@{vm.selectedGroup}"
+                        app:onPositionClickListener="@{vm.selectedGroupClickListener}"
                         android:layout_height="match_parent"
                         tools:entries="@array/group_list" />
 
@@ -141,6 +142,7 @@
                         style="@style/CellSpinnerStyle"
                         app:items="@{vm.conditionNames}"
                         app:position="@{vm.selectedCondition}"
+                        app:onPositionClickListener="@{vm.selectedConditionClickListener}"
                         android:layout_height="match_parent"
                         tools:entries="@array/condition_list" />
 
