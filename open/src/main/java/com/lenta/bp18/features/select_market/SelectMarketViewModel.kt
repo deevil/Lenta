@@ -90,13 +90,8 @@ class SelectMarketViewModel : CoreViewModel(), OnPositionClickListener {
 
     var currentMarket: String? = ""
 
-
-
     init {
         launchUITryCatch {
-
-            /**Загрузка медленных справочников*/
-            slowResourcesMultiRequest(null).either(::handleFailure, ::handleSuccess)
 
             /**Выполнение запроса получения номера ТК*/
             marketOverIPRequest(MarketInfoParams(
@@ -136,11 +131,17 @@ class SelectMarketViewModel : CoreViewModel(), OnPositionClickListener {
     fun onClickNext() {
         launchUITryCatch {
             navigator.showProgressLoadingData()
+
+            /**Загрузка медленных справочников*/
+            slowResourcesMultiRequest(null).either(::handleFailure, ::handleSuccess)
+
+            /**Выполнение запроса сохранения номера ТК*/
             marketOverIPRequest(MarketInfoParams(
                     ipAdress = context.getDeviceIp(),
                     mode = MODE_2,
                     werks = currentMarket
             ))
+
             markets.value
                     ?.getOrNull(selectedPosition.value ?: -1)?.number
                     ?.let { tkNumber ->
