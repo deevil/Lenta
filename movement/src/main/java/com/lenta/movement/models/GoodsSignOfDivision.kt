@@ -1,5 +1,8 @@
 package com.lenta.movement.models
 
+/** Вид по которому делятся корзины в задании. Находится в настройках задания
+ * @see TaskManager.getTaskSettings
+ * @see TaskSettings */
 enum class GoodsSignOfDivision {
     // Марочные и Партионные остатки
     MARK_PARTS,
@@ -18,5 +21,7 @@ enum class GoodsSignOfDivision {
     // Поставщик
     LIF_NUMBER,
     // SAP-код товара
-    MATERIAL_NUMBER
+    MATERIAL_NUMBER,
+    // Секция
+    SECTION
 }

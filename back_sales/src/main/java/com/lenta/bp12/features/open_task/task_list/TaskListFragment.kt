@@ -153,7 +153,7 @@ class TaskListFragment : CoreFragment<FragmentTaskListBinding, TaskListViewModel
             layoutBinding.lifecycleOwner = viewLifecycleOwner
             searchRecyclerViewKeyHandler = RecyclerViewKeyHandler(
                     rv = layoutBinding.rv,
-                    items = vm.found,
+                    items = vm.search,
                     lifecycleOwner = layoutBinding.lifecycleOwner!!,
                     initPosInfo = searchRecyclerViewKeyHandler?.posInfo?.value
             )
@@ -177,6 +177,11 @@ class TaskListFragment : CoreFragment<FragmentTaskListBinding, TaskListViewModel
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding?.viewPagerSettings = this
+    }
+
+    override fun onResume() {
+        super.onResume()
+        vm.updateTaskList()
     }
 
     companion object {

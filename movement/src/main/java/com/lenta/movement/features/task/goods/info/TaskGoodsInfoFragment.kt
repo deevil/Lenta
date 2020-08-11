@@ -10,12 +10,13 @@ import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListener
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
+import com.lenta.shared.scan.OnScanResultListener
 import com.lenta.shared.utilities.extentions.connectLiveData
 import com.lenta.shared.utilities.extentions.provideViewModel
 import com.lenta.shared.utilities.state.state
 
 class TaskGoodsInfoFragment : CoreFragment<FragmentTaskGoodsInfoBinding, TaskGoodsInfoViewModel>(),
-    ToolbarButtonsClickListener {
+    ToolbarButtonsClickListener, OnScanResultListener {
 
     private var productInfo: ProductInfo? by state(null)
 
@@ -26,7 +27,7 @@ class TaskGoodsInfoFragment : CoreFragment<FragmentTaskGoodsInfoBinding, TaskGoo
     override fun getViewModel(): TaskGoodsInfoViewModel {
         return provideViewModel(TaskGoodsInfoViewModel::class.java).also { vm ->
             productInfo?.let {
-                vm.productInfo = it
+                vm.productInfo.value = it
             }
             getAppComponent()?.inject(vm)
 
@@ -43,7 +44,7 @@ class TaskGoodsInfoFragment : CoreFragment<FragmentTaskGoodsInfoBinding, TaskGoo
         bottomToolbarUiModel.cleanAll()
 
         bottomToolbarUiModel.uiModelButton1.show(ButtonDecorationInfo.back)
-        bottomToolbarUiModel.uiModelButton3.show(ButtonDecorationInfo.details)
+        bottomToolbarUiModel.uiModelButton3.show(ButtonDecorationInfo.detail)
         bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.apply)
 
         connectLiveData(vm.applyEnabled, bottomToolbarUiModel.uiModelButton5.enabled)
@@ -64,5 +65,9 @@ class TaskGoodsInfoFragment : CoreFragment<FragmentTaskGoodsInfoBinding, TaskGoo
                 this.productInfo = productInfo
             }
         }
+    }
+
+    override fun onScanResult(data: String) {
+        vm.onScanResult(data)
     }
 }

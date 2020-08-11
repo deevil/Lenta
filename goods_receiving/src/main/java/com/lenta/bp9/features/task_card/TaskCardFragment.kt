@@ -41,8 +41,6 @@ class TaskCardFragment : CoreFragment<FragmentTaskCardBinding, TaskCardViewModel
         }
     }
 
-    private var notificationsRecyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
-
     private var mode: TaskCardMode = TaskCardMode.None
     private var taskType: TaskType = TaskType.None
 
@@ -179,7 +177,8 @@ class TaskCardFragment : CoreFragment<FragmentTaskCardBinding, TaskCardViewModel
                 .inflate<LayoutTaskCardStatusBinding>(LayoutInflater.from(container.context),
                         R.layout.layout_task_card_status,
                         container,
-                        false).let { layoutBinding ->
+                        false)
+                .let { layoutBinding ->
                     layoutBinding.vm = vm
                     layoutBinding.lifecycleOwner = viewLifecycleOwner
                     return layoutBinding.root
@@ -191,7 +190,8 @@ class TaskCardFragment : CoreFragment<FragmentTaskCardBinding, TaskCardViewModel
                 .inflate<LayoutTaskCardDeliveryBinding>(LayoutInflater.from(container.context),
                         R.layout.layout_task_card_delivery,
                         container,
-                        false).let { layoutBinding ->
+                        false)
+                .let { layoutBinding ->
                     layoutBinding.vm = vm
                     layoutBinding.lifecycleOwner = viewLifecycleOwner
                     return layoutBinding.root
@@ -203,7 +203,8 @@ class TaskCardFragment : CoreFragment<FragmentTaskCardBinding, TaskCardViewModel
                 .inflate<LayoutTaskCardShipmentBinding>(LayoutInflater.from(container.context),
                         R.layout.layout_task_card_shipment,
                         container,
-                        false).let { layoutBinding ->
+                        false)
+                .let { layoutBinding ->
                     layoutBinding.vm = vm
                     layoutBinding.lifecycleOwner = viewLifecycleOwner
                     return layoutBinding.root
@@ -215,7 +216,8 @@ class TaskCardFragment : CoreFragment<FragmentTaskCardBinding, TaskCardViewModel
                 .inflate<LayoutTaskCardDetailsBinding>(LayoutInflater.from(container.context),
                         R.layout.layout_task_card_details,
                         container,
-                        false).let { layoutBinding ->
+                        false)
+                .let { layoutBinding ->
                     layoutBinding.vm = vm
                     layoutBinding.lifecycleOwner = viewLifecycleOwner
                     return layoutBinding.root
@@ -227,29 +229,17 @@ class TaskCardFragment : CoreFragment<FragmentTaskCardBinding, TaskCardViewModel
                 .inflate<LayoutTaskCardNotificationsBinding>(LayoutInflater.from(container.context),
                         R.layout.layout_task_card_notifications,
                         container,
-                        false).let { layoutBinding ->
+                        false)
+                .let { layoutBinding ->
 
-                    layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
+                    layoutBinding.rvConfig = initRecycleAdapterDataBinding(
                             layoutId = R.layout.item_tile_notifications,
                             itemId = BR.item,
-                            realisation = object : DataBindingAdapter<ItemTileNotificationsBinding> {
-                                override fun onCreate(binding: ItemTileNotificationsBinding) {
-                                }
-
-                                override fun onBind(binding: ItemTileNotificationsBinding, position: Int) {
-                                    binding.tvItemNumber.tag = position
-                                }
-                            }
+                            onAdapterItemBind = { binding: ItemTileNotificationsBinding, position: Int -> }
                     )
 
                     layoutBinding.vm = vm
                     layoutBinding.lifecycleOwner = viewLifecycleOwner
-                    val rvKeyHandler = RecyclerViewKeyHandler(
-                            rv = layoutBinding.rv,
-                            items = vm.notifications,
-                            lifecycleOwner = layoutBinding.lifecycleOwner!!
-                    )
-                    notificationsRecyclerViewKeyHandler = rvKeyHandler
                     return layoutBinding.root
                 }
     }

@@ -69,7 +69,7 @@
 
     // Подсказки
     <string name="enter_sap_or_barcode">Введите SAP-код или штрихкод</string>
-    <string name="enter_task_or_user_name">Введите номер задания или имя пользователя</string>
+    <string name="enter_task_number_or_login">Введите номер задания или логин</string>
 
     // Строки в коде
     <string name="tk_number">ТК - %1$s</string>

@@ -3,7 +3,6 @@ package com.lenta.movement.features.task.goods
 import android.content.Context
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.switchMap
-import androidx.lifecycle.viewModelScope
 import com.lenta.movement.features.main.box.ScanInfoHelper
 import com.lenta.movement.models.*
 import com.lenta.movement.models.repositories.ITaskBasketsRepository
@@ -13,6 +12,8 @@ import com.lenta.movement.requests.network.SaveTaskNetRequest
 import com.lenta.movement.requests.network.models.saveTask.SaveTaskParams
 import com.lenta.movement.requests.network.models.saveTask.SaveTaskParamsTaskBasket
 import com.lenta.movement.requests.network.models.saveTask.SaveTaskParamsTaskMaterial
+import com.lenta.movement.requests.network.models.saveTask.SaveTaskResultTask
+import com.lenta.movement.requests.network.models.toTask
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.models.core.Uom
 import com.lenta.shared.platform.constants.Constants
@@ -73,9 +74,9 @@ class TaskGoodsViewModel : CoreViewModel(),
     val basketItemList by unsafeLazy {
         baskets.switchMap { list ->
             asyncLiveData<List<SimpleListItem>> {
-                val mappedList = list.map { basket ->
+                val mappedList = list.mapIndexed { index, basket ->
                     SimpleListItem(
-                            number = basket.number,
+                            number = index + 1,
                             title = formatter.getBasketName(basket),
                             subtitle = formatter.getBasketDescription(
                                     basket,
@@ -112,6 +113,7 @@ class TaskGoodsViewModel : CoreViewModel(),
     }
 
     fun onResume() {
+        eanCode.value = ""
         processed.postValue(getProcessed())
         baskets.postValue(getBaskets())
     }
@@ -129,13 +131,12 @@ class TaskGoodsViewModel : CoreViewModel(),
     }
 
     override fun onOkInSoftKeyboard(): Boolean {
-        searchCode(eanCode.value.orEmpty(), fromScan = false)
-
-        return true
-    }
-
-    fun onScanResult(data: String) {
-        searchCode(code = data, fromScan = true, isBarCode = true)
+        val eanCodeValue = eanCode.value
+        return if (eanCodeValue != null && eanCodeValue.isNotEmpty()) {
+            searchCode(eanCodeValue, fromScan = false)
+            true
+        }
+        else false
     }
 
     fun onDigitPressed(digit: Int) {
@@ -155,13 +156,13 @@ class TaskGoodsViewModel : CoreViewModel(),
     }
 
     fun onClickProcessedItem(position: Int) {
-        processed.value.orEmpty().getOrNull(position)?.also { (product, _) ->
+        processed.value.orEmpty().getOrNull(position)?.let { (product, _) ->
             screenNavigator.openTaskGoodsInfoScreen(product)
         }
     }
 
     fun onClickBasketItem(position: Int) {
-        baskets.value.orEmpty().getOrNull(position)?.also { basket ->
+        baskets.value.orEmpty().getOrNull(position)?.let { basket ->
             screenNavigator.openTaskBasketScreen(basket.index)
         }
     }
@@ -237,7 +238,7 @@ class TaskGoodsViewModel : CoreViewModel(),
                                     basketNumber = basket.number.toString(),
                                     materialNumber = product.materialNumber,
                                     quantity = count.toString(),
-                                    uom = Uom.ST.code,  // TODO Базисная единица измерения
+                                    uom = product.uom.code,
                                     materialType = "",
                                     lifNr = basket.supplier?.code.orEmpty(),
                                     zcharg = "", // TODO Номер партии
@@ -255,24 +256,40 @@ class TaskGoodsViewModel : CoreViewModel(),
                     fnL = { failure ->
                         screenNavigator.openAlertScreen(failure)
                     },
-                    fnR = { savedTask ->
-                        taskBasketsRepository.clear()
-                        screenNavigator.goBack()
-                        screenNavigator.goBack()
-                        taskManager.setTask(savedTask)
-                        screenNavigator.openTaskScreen(savedTask)
-                    }
+                    fnR = ::onSaveTaskSuccess
             )
-
             screenNavigator.hideProgress()
         }
+    }
+
+    private fun onSaveTaskSuccess(inputTask: SaveTaskResultTask) {
+        val savedTask = inputTask.toTask()
+        taskBasketsRepository.clear()
+        screenNavigator.goBack()
+        screenNavigator.goBack()
+        taskManager.setTask(savedTask)
+        screenNavigator.openTaskScreen(savedTask)
+        if (inputTask.currentStatusCode == Task.Status.COUNTED_CODE) {
+            screenNavigator.openNotEnoughGoodsInTKAlertScreen(inputTask.errorText.orEmpty())
+        }
+    }
+
+
+    fun onScanResult(data: String) {
+        searchCode(code = data, fromScan = true, isBarCode = true)
     }
 
     private fun searchCode(code: String, fromScan: Boolean, isBarCode: Boolean? = null) {
         launchUITryCatch {
             scanInfoHelper.searchCode(code, fromScan, isBarCode) { productInfo ->
-                screenNavigator.openTaskGoodsInfoScreen(productInfo)
+                onSearchResult(productInfo)
             }
+        }
+    }
+
+    private fun onSearchResult(productInfo: ProductInfo) {
+        launchUITryCatch {
+            screenNavigator.openTaskGoodsInfoScreen(productInfo)
         }
     }
 

@@ -1,7 +1,6 @@
 package com.lenta.movement.platform.navigation
 
 import android.content.Context
-import android.os.Handler
 import androidx.core.content.ContextCompat
 import com.lenta.movement.R
 import com.lenta.movement.exception.InfoFailure
@@ -138,10 +137,16 @@ class ScreenNavigator(
     }
 
     override fun openProductIncorrectForCreateBox(productInfo: ProductInfo) {
+        val productNumber = when(productInfo.materialNumber.length) {
+            in 0..6 -> productInfo.materialNumber
+            else -> productInfo.getMaterialLastSix()
+        }
+        val productName = productInfo.description
+        val productTitle = "$productNumber $productName"
         openAlertScreen(
                 message = context.getString(
                         R.string.alert_product_incorrect_for_create_box,
-                        productInfo.materialNumber
+                        productTitle
                 ),
                 iconRes = com.lenta.shared.R.drawable.ic_warning_red_80dp
         )
@@ -202,11 +207,11 @@ class ScreenNavigator(
                 )
             }
     }
-    override fun openStampWasAddedDialogInAnotherBox() {
+    override fun openStampWasAddedDialogInAnotherBox(box: ExciseBox) {
             runOrPostpone {
                 getFragmentStack()?.push(
                         fragment = AlertFragment.create(
-                                message = context.getString(R.string.stamp_was_added_to_box_msg),
+                                message = context.getString(R.string.stamp_was_added_to_box_msg, box.code),
                                 iconRes = R.drawable.ic_warning_red_80dp,
                                 pageNumber = OPEN_BOX_REWRITE_DIALOG_PAGE_NUMBER,
                                 leftButtonDecorationInfo = ButtonDecorationInfo.back
@@ -214,8 +219,6 @@ class ScreenNavigator(
                 )
             }
     }
-
-
 
     override fun openBoxNumberWasUsedDialog() {
         openInfoScreen(context.getString(R.string.box_number_was_used_msg))
@@ -413,6 +416,19 @@ class ScreenNavigator(
         }
     }
 
+    override fun openNotEnoughGoodsInTKAlertScreen(message: String) {
+        runOrPostpone {
+            getFragmentStack()?.push(
+                    fragment = AlertFragment.create(
+                            message = message,
+                            iconRes = R.drawable.ic_warning_red_80dp,
+                            pageNumber = SAVE_TASK_CONFIRM_DIALOG_PAGE_NUMBER,
+                            leftButtonDecorationInfo = ButtonDecorationInfo.back
+                    )
+            )
+        }
+    }
+
 
     companion object {
         private const val TWO_SECONDS_IN_MILLI = 2000
@@ -445,7 +461,7 @@ interface IScreenNavigator : ICoreNavigator {
 
     fun openStampMaxCountDialog()
     fun openStampWasAddedDialog(yesCallbackFunc: () -> Unit)
-    fun openStampWasAddedDialogInAnotherBox()
+    fun openStampWasAddedDialogInAnotherBox(box: ExciseBox)
 
     fun openEanInvalidDialog()
 
@@ -468,4 +484,6 @@ interface IScreenNavigator : ICoreNavigator {
 
     fun openGeneralGoodIconScreen()
     fun openAlcoGoodIconScreen()
+
+    fun openNotEnoughGoodsInTKAlertScreen(message: String)
 }

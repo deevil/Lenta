@@ -12,6 +12,7 @@ import com.lenta.bp9.requests.network.DirectSupplierStartRecountRestInfo
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.features.loading.CoreLoadingViewModel
+import com.lenta.shared.platform.constants.Constants.OPERATING_SYSTEM_ANDROID
 import com.lenta.shared.utilities.extentions.getDeviceIp
 import com.lenta.shared.utilities.extentions.launchUITryCatch
 import com.mobrun.plugin.api.HyperHive
@@ -59,7 +60,8 @@ class LoadingRecountStartViewModel : CoreLoadingViewModel() {
                         personnelNumber = sessionInfo.personnelNumber ?: "",
                         dateRecount = task.taskDescription.currentStatusDate,
                         timeRecount = task.taskDescription.currentStatusTime,
-                        unbindVSD = ""
+                        unbindVSD = "",
+                        operatingSystem = OPERATING_SYSTEM_ANDROID
                 )
                 directSupplierStartRecountNetRequest(params).either(::handleFailure, ::handleSuccess)
             }
@@ -75,6 +77,7 @@ class LoadingRecountStartViewModel : CoreLoadingViewModel() {
     private fun handleSuccess(result: DirectSupplierStartRecountRestInfo) {
         launchUITryCatch {
             repoInMemoryHolder.manufacturers.value = result.manufacturers
+            repoInMemoryHolder.markingGoodsProperties.value = result.markingGoodsProperties.map { TaskMarkingGoodsProperties.from(it) }
             //todo закомичено, т.к. на проде этот фунционал пока не реализован repoInMemoryHolder.processOrderData.value = result.processOrderData.map { TaskProcessOrderDataInfo.from( it) }
             repoInMemoryHolder.sets.value = result.setsInfo.map { TaskSetsInfo.from(hyperHive, it) }
             val mercuryNotActual = result.taskMercuryNotActualRestData.map {TaskMercuryNotActual.from(hyperHive,it)}

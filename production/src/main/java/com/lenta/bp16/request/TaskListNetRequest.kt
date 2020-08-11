@@ -27,7 +27,6 @@ class TaskListNetRequest @Inject constructor(
                         }
                 )
     }
-
 }
 
 data class TaskListParams(

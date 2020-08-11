@@ -51,7 +51,7 @@ class BasketGoodListFragment : CoreFragment<FragmentBasketGoodListBinding, Baske
         bottomToolbarUiModel.uiModelButton4.show(ButtonDecorationInfo.properties)
         bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.next)
 
-        connectLiveData(vm.deleteEnabled, getBottomToolBarUIModel()!!.uiModelButton3.enabled)
+        connectLiveData(vm.deleteEnabled, bottomToolbarUiModel.uiModelButton3.enabled)
     }
 
     override fun onToolbarButtonClick(view: View) {

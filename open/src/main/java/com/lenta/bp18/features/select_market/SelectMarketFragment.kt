@@ -1,6 +1,7 @@
 package com.lenta.bp18.features.select_market
 
 import android.view.View
+import androidx.lifecycle.Observer
 import com.lenta.bp18.R
 import com.lenta.bp18.databinding.FragmentSelectMarketBinding
 import com.lenta.bp18.platform.Constants
@@ -12,6 +13,7 @@ import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListe
 import com.lenta.shared.platform.toolbar.top_toolbar.ImageButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
 import com.lenta.shared.utilities.extentions.generateScreenNumberFromPostfix
+import com.lenta.shared.utilities.extentions.getDeviceIp
 import com.lenta.shared.utilities.extentions.provideViewModel
 
 class SelectMarketFragment : CoreFragment<FragmentSelectMarketBinding, SelectMarketViewModel>(), ToolbarButtonsClickListener {
@@ -34,14 +36,14 @@ class SelectMarketFragment : CoreFragment<FragmentSelectMarketBinding, SelectMar
 
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
         bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.next)
-/*        vm.selectedPosition.observe(viewLifecycleOwner, Observer{
+        vm.selectedPosition.observe(viewLifecycleOwner, Observer{
             bottomToolbarUiModel.uiModelButton5.requestFocus()
-        })*/
+        })
     }
 
     override fun onToolbarButtonClick(view: View) {
-        if(view.id == R.id.b_5){
-            vm.onClickNext()
+        when(view.id){
+            R.id.b_5 -> vm.onClickNext()
         }
     }
 

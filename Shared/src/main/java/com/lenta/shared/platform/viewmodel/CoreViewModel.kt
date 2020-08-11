@@ -1,14 +1,14 @@
 package com.lenta.shared.platform.viewmodel
 
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.lenta.shared.exception.Failure
+import com.lenta.shared.platform.livedata.SingleLiveEvent
 import com.lenta.shared.platform.navigation.BackFragmentResultHelper
 import com.lenta.shared.utilities.Logg
 import javax.inject.Inject
 
 abstract class CoreViewModel : ViewModel() {
-    var failure: MutableLiveData<Failure> = MutableLiveData()
+    val failure: SingleLiveEvent<Failure> = SingleLiveEvent()
 
     @Inject
     lateinit var backFragmentResultHelper: BackFragmentResultHelper

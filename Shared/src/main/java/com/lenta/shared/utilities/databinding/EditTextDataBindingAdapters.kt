@@ -54,6 +54,7 @@ fun setDigitsForUom(editText: EditText, uom: Uom?) {
 fun requestFocus(editText: EditText, @Suppress("UNUSED_PARAMETER") requestFocus: Boolean?, cursorToLastPos: Boolean?) {
     requestFocus?.let {
         if (it) {
+            editText.isFocusableInTouchMode = true
             editText.requestFocus()
             if (cursorToLastPos == true) {
                 editText.setSelection(editText.text.length)

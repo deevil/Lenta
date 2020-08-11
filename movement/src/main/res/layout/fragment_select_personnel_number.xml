@@ -46,8 +46,8 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:onOkInSoftKeyboard="@{vm}"
+            app:cursorToLastPos="@{true}"
             app:requestFocus="@{vm.editTextFocus}"
-            tools:targetApi="o"
             tools:ignore="LabelFor" />
 
         <TextView

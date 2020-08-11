@@ -42,13 +42,15 @@ class DiscrepancyListViewModel : CoreViewModel() {
 
     val goods by lazy {
         task.map { task ->
-            task?.goods?.filter { !it.isDeleted && !it.isCounted && !it.isMissing }?.mapIndexed { index, good ->
-                ItemGoodUi(
-                        position = "${task.goods.size - index}",
-                        name = good.name,
-                        material = good.material,
-                        providerCode = good.provider.code
-                )
+            task?.goods?.filter { !it.isCounted }?.let { list ->
+                list.mapIndexed { index, good ->
+                    ItemGoodUi(
+                            position = "${list.size - index}",
+                            name = good.name,
+                            material = good.material,
+                            providerCode = good.provider.code
+                    )
+                }
             }
         }
     }
@@ -73,7 +75,8 @@ class DiscrepancyListViewModel : CoreViewModel() {
         task.value?.let { task ->
             goods.value?.get(position)?.material?.let { material ->
                 task.goods.find { it.material == material }?.let { good ->
-                    manager.updateCurrentGood(good)
+                    manager.searchNumber = material
+                    manager.isSearchFromList = true
                     navigator.openGoodInfoOpenScreen()
                 }
             }
@@ -103,6 +106,7 @@ class DiscrepancyListViewModel : CoreViewModel() {
                 }
             }
 
+            selectionsHelper.clearPositions()
             manager.updateCurrentTask(task)
         }
     }
@@ -112,23 +116,26 @@ class DiscrepancyListViewModel : CoreViewModel() {
             selectionsHelper.selectedPositions.value?.forEach { position ->
                 goods.value?.get(position)?.material?.let { material ->
                     task.goods.find { it.material == material }?.let { good ->
-                        good.isMissing = true
+                        good.isCounted = true
                     }
                 }
             }
 
+            selectionsHelper.clearPositions()
             manager.updateCurrentTask(task)
         }
     }
 
     fun onClickSkip() {
-        if (goods.value?.isNotEmpty() == true) {
-            navigator.showRawGoodsRemainedInTask {
+        goods.value?.let { goods ->
+            if (goods.isNotEmpty()) {
+                navigator.showRawGoodsRemainedInTask {
+                    prepareToSaveAndOpenNextScreen()
+                }
+            } else {
+                manager.finishCurrentTask()
                 prepareToSaveAndOpenNextScreen()
             }
-        } else {
-            manager.finishCurrentTask()
-            prepareToSaveAndOpenNextScreen()
         }
     }
 

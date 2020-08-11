@@ -1,14 +1,19 @@
 <resources>
     <string name="app_name">Вскрытие упаковки</string>
 
+    <string name="title_good_sap_name">%1$s %2$s</string>
+
     <string name="tw_search_info">Отсканируйте штрихкод или введите штрихкод вручную</string>
     <string name="tw_unpucking">Подтвердите вскрытие упаковки</string>
     <string name="tw_unpucking_process">Выполняется вскрытие упаковки</string>
     <string name="tw_unpucking_success">Вскрытие упаковки прошло успешно. Напечатайте дату и время вскрытия с помощью стикера-пистолета</string>
     <string name="tw_part_number_not_found">Введенный номер партии не найден</string>
+    <string name="tw_good_not_found">Данный товар не найден в справочнике</string>
+    <string name="tw_server_no_available">Нет доступа к серверу</string>
     <string name="tw_quantity_goods">Количество</string>
     <string name="tw_part_number">Номер партии</string>
     <string name="tw_sync_contacts">Синхронизация справочников</string>
+    <string name="tw_save_data">Несохраненные данные будут утеряны. Вы точно хотите выйти?</string>
 
     <string name="select_goods">Выбор товара</string>
     <string name="good_card">Карточка товара</string>

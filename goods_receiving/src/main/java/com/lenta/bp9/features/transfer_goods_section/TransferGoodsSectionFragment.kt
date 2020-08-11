@@ -8,6 +8,7 @@ import androidx.databinding.DataBindingUtil
 import com.lenta.bp9.BR
 import com.lenta.bp9.R
 import com.lenta.bp9.databinding.FragmentTransferGoodsSectionBinding
+import com.lenta.bp9.databinding.ItemTileGoodsDetailsBinding
 import com.lenta.bp9.databinding.ItemTileTransferGoodsSectionBinding
 import com.lenta.bp9.databinding.LayoutTransferGoodsSectionBinding
 import com.lenta.bp9.platform.extentions.getAppComponent
@@ -76,18 +77,13 @@ class TransferGoodsSectionFragment : CoreFragment<FragmentTransferGoodsSectionBi
                         }
                     }
 
-                    layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
+                    layoutBinding.rvConfig = initRecycleAdapterDataBinding(
                             layoutId = R.layout.item_tile_transfer_goods_section,
                             itemId = BR.item,
-                            realisation = object : DataBindingAdapter<ItemTileTransferGoodsSectionBinding> {
-                                override fun onCreate(binding: ItemTileTransferGoodsSectionBinding) {
-                                }
-
-                                override fun onBind(binding: ItemTileTransferGoodsSectionBinding, position: Int) {
-                                    binding.tvCondition.tag = position
-                                    binding.tvCondition.setOnClickListener(onClickConditionTitle)
-                                }
-
+                            onAdapterItemBind = { binding: ItemTileTransferGoodsSectionBinding, position: Int ->
+                                binding.tvCondition.tag = position
+                                binding.tvCondition.setOnClickListener(onClickConditionTitle)
+                                onAdapterBindHandler(binding, position)
                             }
                     )
 
