@@ -40,13 +40,14 @@
                     style="@style/LinearCellStyle"
                     android:layout_weight="1">
 
-                    <EditText
+                    <com.lenta.shared.view.EditTextWithSuffix
                         android:id="@+id/et_goods_count"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:paddingStart="@dimen/size_10dp"
                         android:paddingEnd="@dimen/size_10dp"
                         android:textSize="@dimen/text_14sp"
+                        suffix="@{vm.suffix}"
                         android:text="@={vm.quantityField}"
                         app:requestFocus="@{vm.requestFocusQuantityField}"
                         style="@style/CellEditTextStyle"

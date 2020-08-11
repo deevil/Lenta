@@ -65,6 +65,8 @@ class GoodInfoViewModel : CoreViewModel() {
 
     val enabledCompleteButton = quantityField.map { !it.isNullOrBlank() }
 
+    var suffix: String = Uom.KG.name
+
     init {
         setGoodInfo()
         setProdInfo()
@@ -72,12 +74,14 @@ class GoodInfoViewModel : CoreViewModel() {
 
     private fun setGoodInfo() {
         launchUITryCatch {
-            val goodInfo = database.getGoodByEan(selectedEan.value.toString())
+            val ean = selectedEan.value.toString()
+            val goodInfo = database.getGoodByEan(ean)
             var weight: Int? = 0
-            if (weightBarcode.contains(selectedEan.value.toString().substring(0 until 2))) {
-                weight = selectedEan.value?.takeLast(6)?.take(5)?.toInt()
+            /**Проверка на весовой ШК*/
+            if (weightBarcode.contains(ean.substring(0 until 2))) {
+                weight = ean.takeLast(6).take(5).toInt()
             }
-
+            /**Расчет количества и единиц измерения*/
             val (quantity: Int?, uom: String) =
                     if (weight != 0) {
                         weight?.div(Constants.CONVERT_TO_KG) to Uom.KG.name
@@ -87,26 +91,23 @@ class GoodInfoViewModel : CoreViewModel() {
                                 Constants.QUANTITY_DEFAULT_VALUE_1 to Uom.ST.name
                             }
                             Uom.KAR -> {
-                                val uomInfo = database.getEanInfoByEan(selectedEan.value.toString())
+                                val uomInfo = database.getEanInfoByEan(goodInfo.ean)
                                 uomInfo?.umrez?.div(uomInfo.umren) to Uom.KAR.name
-                            }
-                            Uom.G -> {
-                                Constants.QUANTITY_DEFAULT_VALUE_0 to Uom.G.name
                             }
                             else -> {
                                 Constants.QUANTITY_DEFAULT_VALUE_0 to Uom.DEFAULT.name
                             }
                         }
                     }
-
-            quantityField.value = "$quantity $uom"
+            quantityField.value = "$quantity"
+            suffix = uom
         }
     }
 
     private fun setProdInfo() {
         launchUITryCatch {
             val ean = Ean(
-                    ean = "2425352000000"
+                    ean = selectedEan.value
             )
             val matnr = Product(
                     matnr = "2425352000000"
