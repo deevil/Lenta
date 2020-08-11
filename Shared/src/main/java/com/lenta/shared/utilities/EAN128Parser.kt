@@ -12,7 +12,7 @@ object EAN128Parser {
     class AII(var AI: String, var Description: String, var LengthOfAI: Int, var DataDescription: DataType, var LengthOfData: Int,
               var FNC1: Boolean) {
         override fun toString(): String {
-            return String.format("{0} [{1}]", AI, Description)
+            return String.format("%s [%s]", AI, Description)
         }
     }
 
@@ -29,29 +29,32 @@ object EAN128Parser {
 
     @Throws(InvalidObjectException::class)
     fun parse(data: String, throwException: Boolean): Map<AII, String> {
-        var data = data
+        var localData = data
         // cut off the EAN128 start code
-        if (data.startsWith(eAN128StartCode)) {
-            data = data.substring(eAN128StartCode.length)
+        if (localData.startsWith(eAN128StartCode)) {
+            localData = localData.substring(eAN128StartCode.length)
         }
         // cut off the check sum
         if (HasCheckSum) {
-            data = data.substring(0, data.length - 2)
+            localData = localData.substring(0, localData.length - 2)
         }
         val result: MutableMap<AII, String> = HashMap()
-        val index = 0
-        // walkk through the EAN128 code
-        while (index < data.length) {
+        var index = 0
+        // walk through the EAN128 code
+        while (index < localData.length) {
             // try to get the AI at the current position
-            val ai = getAI(data, index, false)
+            val (ai: AII?, count: Int) = getAI(localData, index, false)
             if (ai == null) {
                 if (throwException) {
                     throw InvalidObjectException("AI not found")
                 }
                 return result
+            } else {
+                // Shift the index to the next
+                index += count
             }
             // get the data to the current AI
-            val code = getCode(data, ai, index)
+            val code = getCode(localData, ai, index)
             result[ai] = code
         }
         return result
@@ -62,17 +65,17 @@ object EAN128Parser {
         var localIndex = index
         var lenghtToRead = min(ai.LengthOfData, data.length - localIndex)
         // get the data of the current AI
-        var result = data.substring(localIndex, lenghtToRead)
+        var result = data.substring(localIndex, lenghtToRead + localIndex)
         // check if the AI support a group seperator
         if (ai.FNC1) {
             // try to find the index of the group seperator
             val indexOfGroupTermination = result.indexOf(groutSeperator)
             if (indexOfGroupTermination >= 0) {
-                result = data.substring(localIndex, indexOfGroupTermination)
+                result = data.substring(localIndex, indexOfGroupTermination + localIndex)
                 lenghtToRead = indexOfGroupTermination + 1
             } else {
                 // get the data of the current AI till the group seperator with out it
-                result = data.substring(localIndex, lenghtToRead)
+                result = data.substring(localIndex, lenghtToRead + localIndex)
             }
         }
 
@@ -86,34 +89,32 @@ object EAN128Parser {
         return result
     }
 
-    private fun getAI(data: String, index: Int, usePlaceHolder: Boolean): AII? {
+    private fun getAI(data: String, index: Int, usePlaceHolder: Boolean): Pair<AII?, Int> {
         var result: AII? = null
-        var localIndex = index
         // Step through the different lenghts of the AIs
         for (i in minLengthOfAI..maxLengthOfAI) {
-            if (localIndex + i > data.length) {
-                return null
+            val addedIndex = index + i
+            if (addedIndex > data.length) {
+                return null to i
             }
             // get the AI sub string
-            var ai = data.substring(localIndex, i)
-            if (usePlaceHolder) {
-                ai = ai.removeRange(ai.length - 1, 1) + "d";
+            var ai = data.substring(index, addedIndex)
+            if (usePlaceHolder && ai.isNotEmpty()) {
+                ai = ai.removeRange(ai.length - 1, ai.length) + "d"
             }
 
             // try to get the ai from the dictionary
             result = aiiDict[ai]
             result?.let {
-                // Shift the index to the next
-                localIndex += i
-                return result
+                return result to i
             }
             // if no AI found, try it with the next lenght
         }
         // if no AI found here, than try it with placeholders. Assumed that is the first sep where usePlaceHolder is false
         if (!usePlaceHolder) {
-            result = getAI(data, index, true)
+            return getAI(data, index, true)
         }
-        return result
+        return result to 0
     }
 
     init {
