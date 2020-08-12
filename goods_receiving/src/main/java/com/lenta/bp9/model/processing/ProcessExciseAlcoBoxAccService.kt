@@ -376,13 +376,19 @@ class ProcessExciseAlcoBoxAccService
     // https://trello.com/c/Hve509E5 контроль короба
     fun boxControl(box: TaskBoxInfo): Boolean {
         val countProcessedBox = currentBoxDiscrepancies.filter {
-            it.boxNumber == box.boxNumber
+            it.isScan
+                    && it.boxNumber == box.boxNumber
         }.size
         val countScannedExciseStampOfBox = currentExciseStampsDiscrepancies.filter {
-            it.boxNumber == box.boxNumber && it.isScan && it.typeDiscrepancies == "1"
+            it.boxNumber == box.boxNumber
+                    && it.isScan
+                    && it.typeDiscrepancies == TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_NORM
         }.size
 
-        return (countProcessedBox >= 1 && countScannedExciseStampOfBox >= 1) || (countScannedExciseStampOfBox >= 2) || (countScannedExciseStampOfBox >= productInfo.numberStampsControl.toInt())
+        return (countProcessedBox >= 1
+                && countScannedExciseStampOfBox >= 1)
+                || (countScannedExciseStampOfBox >= 2)
+                || (countScannedExciseStampOfBox >= productInfo.numberStampsControl.toInt())
     }
 
     fun rollbackScannedExciseStamp() {

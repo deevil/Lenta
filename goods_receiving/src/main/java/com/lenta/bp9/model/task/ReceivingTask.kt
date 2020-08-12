@@ -156,7 +156,8 @@ class ReceivingTask(val taskHeader: TaskInfo,
                             .getBoxesDiscrepancies()
                             .findBoxesDiscrepanciesOfProduct(productInfo)
                             .filter {
-                                it.boxNumber == taskBoxInfo.boxNumber
+                                it.isScan
+                                        && it.boxNumber == taskBoxInfo.boxNumber
                             }.size
                     val countScannedExciseStamps = taskRepository
                             .getExciseStampsDiscrepancies()

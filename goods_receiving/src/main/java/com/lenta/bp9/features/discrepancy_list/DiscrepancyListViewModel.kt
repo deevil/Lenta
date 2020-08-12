@@ -28,7 +28,6 @@ import com.lenta.shared.utilities.extentions.getDeviceIp
 import com.lenta.shared.utilities.extentions.launchUITryCatch
 import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.utilities.extentions.toStringFormatted
-import com.lenta.shared.utilities.orIfNull
 import javax.inject.Inject
 
 private const val SELECTED_PAGE_NOT_PROCESSED = 0
@@ -480,7 +479,7 @@ class DiscrepancyListViewModel : CoreViewModel(), PageSelectionListener {
 
         return GoodsDiscrepancyItem(
                 number = index,
-                name = "${product?.getMaterialLastSix()} ${product?.description}",
+                name = "${product.getMaterialLastSix()} ${product.description}",
                 nameMaxLines = 2,
                 nameBatch = "",
                 visibilityNameBatch = false,
@@ -512,9 +511,7 @@ class DiscrepancyListViewModel : CoreViewModel(), PageSelectionListener {
                                 normEnteredButControlNotPassed(goodsInfo)
                             }
                         }
-                        ?.sortedByDescending {
-                            it.materialNumber
-                        }
+                        ?.sortedByDescending { it.materialNumber }
                         ?.mapIndexed { index, productInfo ->
                             getItemControlProduct(productInfo, index)
                         }
@@ -873,42 +870,24 @@ class DiscrepancyListViewModel : CoreViewModel(), PageSelectionListener {
     }
 
     private fun normEnteredButControlNotPassed(productInfo: TaskProductInfo): Boolean {
-        /** Артем:
-        товар на вкладке Контроль появляется если по товару была введеная норма, но не был пройден контроль
-        Причем если по товару
-        10 шт
-        контроль 2 шт,
-        а по факту мы ввели 1 норму (и подтвердили сканированием) и 9 брака то контроль считается пройден*/
         val countAcceptOfProduct =
                 taskManager.getReceivingTask()
                         ?.taskRepository
                         ?.getProductsDiscrepancies()
                         ?.getCountAcceptOfProduct(productInfo)
                         ?: 0.0
-        val countRefusalOfProduct =
-                taskManager.getReceivingTask()
-                        ?.taskRepository
-                        ?.getProductsDiscrepancies()
-                        ?.getCountRefusalOfProduct(productInfo)
-                        ?: 0.0
+
         val isControlBoxesOfProduct =
                 taskManager.getReceivingTask()
                         ?.controlBoxesOfProduct(productInfo)
                         ?: false
+
         val isControlExciseStampsOfProduct =
                 taskManager.getReceivingTask()
                         ?.controlExciseStampsOfProduct(productInfo)
                         ?: false
-        val countBoxesPassedControlOfProduct =
-                taskManager.getReceivingTask()
-                        ?.countBoxesPassedControlOfProduct(productInfo)
-                        ?: 0
 
-        return if (countAcceptOfProduct <= 0 || (isControlExciseStampsOfProduct && isControlBoxesOfProduct)) {
-            false
-        } else {
-            (countBoxesPassedControlOfProduct + countRefusalOfProduct) < productInfo.origQuantity.toDouble()
-        }
+        return !(countAcceptOfProduct <= 0 || (isControlExciseStampsOfProduct && isControlBoxesOfProduct))
     }
 
     private fun markingProductControlNotPassed(productInfo: TaskProductInfo): Boolean {
