@@ -44,7 +44,7 @@ class SelectPersonnelNumberFragment : CoreFragment<FragmentSelectPersonnelNumber
         })
 
         connectLiveData(vm.enabledBackButton, bottomToolbarUiModel.uiModelButton1.enabled)
-        //connectLiveData(vm.enabledNextButton, bottomToolbarUiModel.uiModelButton5.enabled)
+        connectLiveData(vm.enabledNextButton, bottomToolbarUiModel.uiModelButton5.enabled)
     }
 
     override fun onToolbarButtonClick(view: View) {
