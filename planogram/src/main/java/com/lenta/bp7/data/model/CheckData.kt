@@ -226,14 +226,13 @@ class CheckData @Inject constructor(
     fun prepareXmlCheckResult(marketIp: String): String {
         // XML со списком неотправленных сегментов
         /**Генерация gid*/
-        if(gid == ""){
+        if(gid.isEmpty()){
             gid = UUID.randomUUID().toString()
         }
-        val sendGid = gid
         val displayOfGoods = DisplayOfGoods(
                 sendDateTime = SimpleDateFormat(CHECK_DATA_TIME_FORMAT, Locale.getDefault()).format(timeMonitor.getServerDate()),
                 marketIp = marketIp,
-                gid = sendGid
+                gid = gid
         )
 
         for (segment in segments) {
