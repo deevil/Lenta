@@ -146,7 +146,7 @@ class ProcessMercuryProductService
             add(
                     count = countSurplusAdd.toString(),
                     isConvertUnit = isConvertUnit,
-                    typeDiscrepancies = TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_SURPLUS,
+                    typeDiscrepancies = TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_PGE_SURPLUS,
                     manufacturer = manufacturer,
                     productionDate = productionDate
             )
