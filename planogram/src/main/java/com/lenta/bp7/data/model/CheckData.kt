@@ -27,6 +27,7 @@ class CheckData @Inject constructor(
     var currentSegmentIndex = 0
     var currentShelfIndex = 0
     var currentGoodIndex = 0
+    var gid = ""
 
     init {
         val savedResult = persistCheckResult.getSavedCheckResult()
@@ -224,9 +225,15 @@ class CheckData @Inject constructor(
 
     fun prepareXmlCheckResult(marketIp: String): String {
         // XML со списком неотправленных сегментов
+        /**Генерация gid*/
+        if(gid == ""){
+            gid = UUID.randomUUID().toString()
+        }
+        val sendGid = gid
         val displayOfGoods = DisplayOfGoods(
                 sendDateTime = SimpleDateFormat(CHECK_DATA_TIME_FORMAT, Locale.getDefault()).format(timeMonitor.getServerDate()),
-                marketIp = marketIp
+                marketIp = marketIp,
+                gid = sendGid
         )
 
         for (segment in segments) {
