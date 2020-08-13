@@ -40,10 +40,10 @@ class SelectGoodFragment : CoreFragment<FragmentSelectGoodsBinding, SelectGoodVi
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
         bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.next, enabled = false)
 
-            vm.barcodeField.observe(viewLifecycleOwner) {
-                if (vm.barcodeField.value.toString().length == EAN13)
+        vm.barcodeField.observe(viewLifecycleOwner) {
+            if (vm.barcodeField.value.toString().length == EAN13)
                 bottomToolbarUiModel.uiModelButton5.requestFocus()
-            }
+        }
 
         connectLiveData(vm.nextButtonEnabled, bottomToolbarUiModel.uiModelButton5.enabled)
     }
@@ -54,7 +54,7 @@ class SelectGoodFragment : CoreFragment<FragmentSelectGoodsBinding, SelectGoodVi
         }
     }
 
-    override fun onScanResult(data: String){
+    override fun onScanResult(data: String) {
         vm.onScanResult(data)
     }
 

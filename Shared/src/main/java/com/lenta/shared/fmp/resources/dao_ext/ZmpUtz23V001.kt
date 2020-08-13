@@ -15,13 +15,19 @@ fun ZmpUtz23V001.getAllMarkets(): List<ZmpUtz23V001.ItemLocal_ET_WERKS_ADR> {
     return localHelper_ET_WERKS_ADR.all
 }
 
+fun ZmpUtz23V001.getMarketByNumber(tkNumber: String): ZmpUtz23V001.ItemLocal_ET_WERKS_ADR? {
+    return localHelper_ET_WERKS_ADR.getWhere("WERKS = \"$tkNumber\"").firstOrNull()
+}
+
 fun List<ZmpUtz23V001.ItemLocal_ET_WERKS_ADR>.toMarketInfoList(): List<MarketInfo> {
-    return this.map {
-        MarketInfo(
-                number = it.werks,
-                address = it.addres,
-                retailType = it.retailType,
-                version = it.version
-        )
-    }
+    return this.map { it.toMarketInfo() }
+}
+
+fun ZmpUtz23V001.ItemLocal_ET_WERKS_ADR.toMarketInfo(): MarketInfo {
+    return MarketInfo(
+            number = this.werks,
+            address = this.addres,
+            retailType = this.retailType,
+            version = this.version
+    )
 }

@@ -48,19 +48,19 @@ class SelectGoodViewModel : CoreViewModel() {
 
     private fun preparationEanForSearch() {
         val barcode = ean.value.toString()
-        var weight = "0"
+        var weight = DEFAULT_WEIGHT
         if (weightValue.contains(barcode.substring(0 until 2))) {
-            ean.value = barcode.replace(barcode.takeLast(6), "000000")
+            ean.value = barcode.replace(barcode.takeLast(6), TAKEN_ZEROS)
             weight = barcode.takeLast(6).take(5)
         } else {
-            if (barcode.length >= 16) {
+            if (barcode.length >= MINIMUM_GS1_CODE_LENGTH) {
                 val ean128Barcode = EAN128Parser.parse(barcode, false).entries.find { pair ->
                     pair.key.AI == EAN_01 || pair.key.AI == EAN_02
                 }?.value
 
                 if (ean128Barcode != null) {
                     ean.value = ean128Barcode
-                } else if (barcode.length != 16) {
+                } else if (barcode.length != MINIMUM_GS1_CODE_LENGTH) {
                     println("----->  barcode EAN 128 less than 16 chars")
                 }
             }
@@ -87,6 +87,9 @@ class SelectGoodViewModel : CoreViewModel() {
         const val VALUE_27 = "27"
         const val VALUE_28 = "28"
 
+        private const val MINIMUM_GS1_CODE_LENGTH = 16
+        private const val TAKEN_ZEROS = "000000"
+        private const val DEFAULT_WEIGHT = "0"
         private const val EAN_01 = "01"
         private const val EAN_02 = "02"
     }
