@@ -24,21 +24,22 @@ data class TaskCreate(
 
     fun getQuantityByBasket(basket: Basket): Double {
         return getGoodListByBasket(basket).map { good ->
-            val positionQuantity = good.positions.filter { it.provider.code == basket.provider.code }.map { it.quantity }.sumList()
-            val markQuantity = good.marks.filter { it.providerCode == basket.provider.code }.size.toDouble()
-            val partQuantity = good.parts.filter { it.providerCode == basket.provider.code }.map { it.quantity }.sumList()
+            val positionQuantity = good.positions.filter { it.provider.code == basket.provider?.code }.map { it.quantity }.sumList()
+            val markQuantity = good.marks.filter { it.providerCode == basket.provider?.code }.size.toDouble()
+            val partQuantity = good.parts.filter { it.providerCode == basket.provider?.code }.map { it.quantity }.sumList()
 
             positionQuantity.sumWith(markQuantity).sumWith(partQuantity)
         }.sumList()
     }
 
     fun getGoodListByBasket(basket: Basket): List<GoodCreate> {
-        return goods.filter { good ->
+        val list = goods.filter { good ->
             good.section == basket.section && good.type == basket.goodType && good.control == basket.control &&
                     (good.positions.find { it.provider == basket.provider } != null ||
-                            good.marks.find { it.providerCode == basket.provider.code } != null ||
-                            good.parts.find { it.providerCode == basket.provider.code } != null)
+                            good.marks.find { it.providerCode == basket.provider?.code } != null ||
+                            good.parts.find { it.providerCode == basket.provider?.code } != null)
         }
+        return list
     }
 
     fun getBasketsByGood(good: GoodCreate): List<Basket> {
@@ -63,9 +64,11 @@ data class TaskCreate(
     fun removeGoodByBasketAndMaterials(basket: Basket, materials: MutableList<String>) {
         materials.forEach { material ->
             goods.find { it.material == material }?.let { good ->
-                good.removeByProvider(basket.provider.code)
-                if (good.isEmpty()) {
-                    goods.remove(good)
+                basket.provider?.let { provider ->
+                    good.removeByProvider(provider.code)
+                    if (good.isEmpty()) {
+                        goods.remove(good)
+                    }
                 }
             }
         }
@@ -77,9 +80,11 @@ data class TaskCreate(
     fun removeBaskets(basketList: MutableList<Basket>) {
         basketList.forEach { basket ->
             getGoodListByBasket(basket).forEach { good ->
-                good.removePositionsByProvider(basket.provider.code)
-                good.removeMarksByProvider(basket.provider.code)
-                good.removePartsByProvider(basket.provider.code)
+                basket.provider?.let{ provider ->
+                    good.removePositionsByProvider(provider.code)
+                    good.removeMarksByProvider(provider.code)
+                    good.removePartsByProvider(provider.code)
+                }
             }
 
             baskets.remove(basket)
@@ -103,7 +108,7 @@ data class TaskCreate(
     fun getBasketNumber(good: GoodCreate, providerCode: String): String {
         val basket = baskets.find {
             it.section == good.section && it.goodType == good.type &&
-                    it.control == good.control && it.provider.code == providerCode
+                    it.control == good.control && it.provider?.code == providerCode
         }
 
         return "${baskets.indexOf(basket) + 1}"

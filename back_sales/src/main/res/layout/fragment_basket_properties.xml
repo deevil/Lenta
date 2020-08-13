@@ -17,7 +17,8 @@
         android:orientation="vertical">
 
         <!-- Секция -->
-        <LinearLayout style="@style/LinearRowStyle">
+        <LinearLayout style="@style/LinearRowStyle"
+            android:visibility="@{vm.isSectionVisible}">
 
             <LinearLayout
                 style="@style/LinearCellStyle"
@@ -49,7 +50,8 @@
         <View style="@style/HorizontalDivider" />
 
         <!-- Вид товара -->
-        <LinearLayout style="@style/LinearRowStyle">
+        <LinearLayout style="@style/LinearRowStyle"
+            android:visibility="@{vm.isGoodTypeVisible}">
 
             <LinearLayout
                 style="@style/LinearCellStyle"
@@ -112,7 +114,8 @@
         <View style="@style/HorizontalDivider" />
 
         <!-- Поставщик -->
-        <LinearLayout style="@style/LinearRowStyle">
+        <LinearLayout style="@style/LinearRowStyle"
+            android:visibility="@{vm.isProviderVisible}">
 
             <LinearLayout
                 style="@style/LinearCellStyle"

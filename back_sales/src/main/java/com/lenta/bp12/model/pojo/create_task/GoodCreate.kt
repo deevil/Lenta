@@ -23,6 +23,7 @@ data class GoodCreate(
         val control: ControlType = ControlType.COMMON,
         val section: String,
         val matrix: MatrixType,
+        val volume: Double,
 
         val commonUnits: Uom = Uom.ST,
         val innerUnits: Uom = Uom.ST,
@@ -143,5 +144,18 @@ data class GoodCreate(
     fun isEmpty(): Boolean {
         return positions.isEmpty() && marks.isEmpty() && parts.isEmpty()
     }
+
+
+    val isAlco: Boolean
+        get() = kind != GoodKind.COMMON
+
+    val isExcise: Boolean
+        get() = kind == GoodKind.EXCISE
+
+    val isNotExcise: Boolean
+        get() = kind == GoodKind.ALCOHOL
+
+    val isUsual: Boolean
+        get() = kind == GoodKind.COMMON
 
 }

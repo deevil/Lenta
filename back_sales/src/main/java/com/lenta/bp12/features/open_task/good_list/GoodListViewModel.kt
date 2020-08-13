@@ -103,18 +103,18 @@ class GoodListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
             it?.let { task ->
                 emptyList<ItemWholesaleBasketUi>()
 
-                /*task.baskets.reversed().mapIndexed { index, basket ->
+                task.baskets.reversed().mapIndexed { index, basket ->
                     val position = task.baskets.size - index
                     ItemWholesaleBasketUi(
                             basket = basket,
                             position = "$position",
                             name = resource.basket("$position"),
-                            description = basket.getDescription(task.type.isDivBySection),
-                            quantity = "${task.getCountByBasket(basket)} ${Uom.ST.name}",
+                            description = basket.getDescription(task.type?.isDivBySection ?: false),
+                            quantity = basket.quantity.orEmpty(),
                             isPrinted = basket.isPrinted,
                             isLocked = basket.isLocked
                     )
-                }*/
+                }
             }
         }
     }

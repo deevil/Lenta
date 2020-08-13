@@ -3,9 +3,9 @@ package com.lenta.bp12.platform.navigation
 import android.content.Context
 import com.lenta.bp12.R
 import com.lenta.bp12.features.auth.AuthFragment
-import com.lenta.bp12.features.create_task.add_provider.AddProviderFragment
 import com.lenta.bp12.features.basket.basket_good_list.BasketGoodListFragment
 import com.lenta.bp12.features.basket.basket_properties.BasketPropertiesFragment
+import com.lenta.bp12.features.create_task.add_provider.AddProviderFragment
 import com.lenta.bp12.features.create_task.good_details.GoodDetailsCreateFragment
 import com.lenta.bp12.features.create_task.good_info.GoodInfoCreateFragment
 import com.lenta.bp12.features.create_task.task_card.TaskCardCreateFragment
@@ -421,6 +421,18 @@ class ScreenNavigator @Inject constructor(
         }
     }
 
+    override fun showCloseBasketDialog(yesCallback: () -> Unit) {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    pageNumber = "65",
+                    message = context.getString(R.string.close_basket),
+                    iconRes = R.drawable.ic_question_yellow_80dp,
+                    codeConfirmForRight = backFragmentResultHelper.setFuncForResult(yesCallback),
+                    rightButtonDecorationInfo = ButtonDecorationInfo.yes
+            ))
+        }
+    }
+
 }
 
 interface IScreenNavigator : ICoreNavigator {
@@ -472,5 +484,7 @@ interface IScreenNavigator : ICoreNavigator {
     fun showAlcoholGoodInfoScreen()
     fun showCommonGoodInfoScreen()
     fun showMarkedGoodInfoScreen()
+
+    fun showCloseBasketDialog(yesCallback: () -> Unit)
 
 }

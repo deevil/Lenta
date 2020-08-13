@@ -49,9 +49,9 @@ data class MaterialInfo(
         @SerializedName("IS_FOOD") // Для BKS не используется
         var isFood: String,
         /** Обьъем в куб. метрах (точность 6 знаков) */
-        @SerializedName("VOLUM") // Для BKS не используется
+        @SerializedName("VOLUM")
         var volume: String,
         /** Единица объема */
-        @SerializedName("VOLEH") // Для BKS не используется
+        @SerializedName("VOLEH")
         var volumeUnit: String
 )

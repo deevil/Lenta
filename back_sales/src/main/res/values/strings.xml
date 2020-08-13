@@ -58,6 +58,7 @@
     <string name="unknown_alcocode">Неизвестный алкокод</string>
     <string name="good_is_missing_in_task">Товар отсутствует в задании</string>
     <string name="incorrect_ean_format">Неверный формат штрихкода</string>
+    <string name="close_basket">Закрыть текущую корзину для редактирования? В случае согласия система запретит добавление товаров в текущую корзину.</string>
 
     // Описание иконок
     <string name="alcohol_good">Алкогольный товар</string>

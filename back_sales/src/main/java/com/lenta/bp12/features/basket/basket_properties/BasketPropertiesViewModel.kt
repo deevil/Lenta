@@ -5,6 +5,7 @@ import com.lenta.bp12.platform.navigation.IScreenNavigator
 import com.lenta.bp12.platform.resource.IResourceManager
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.extentions.map
+import com.lenta.shared.utilities.extentions.unsafeLazy
 import javax.inject.Inject
 
 class BasketPropertiesViewModel : CoreViewModel() {
@@ -43,6 +44,24 @@ class BasketPropertiesViewModel : CoreViewModel() {
                     gisControl = basket?.control?.description.orEmpty(),
                     provider = "${basket?.provider?.code} ${basket?.provider?.name}"
             )
+        }
+    }
+
+    val isSectionVisible by unsafeLazy {
+        basket.map {
+            it?.section.isNullOrEmpty().not()
+        }
+    }
+
+    val isGoodTypeVisible by unsafeLazy {
+        basket.map {
+            it?.goodType.isNullOrEmpty().not()
+        }
+    }
+
+    val isProviderVisible by unsafeLazy {
+        basket.map {
+            it?.provider?.code.isNullOrEmpty().not()
         }
     }
 

@@ -172,6 +172,12 @@ class DatabaseRepository @Inject constructor(
         }
     }
 
+    override suspend fun getBasketVolume(): Double? {
+        return withContext(Dispatchers.IO){
+            settings.getBKSBasketVolume()
+        }
+    }
+
 }
 
 interface IDatabaseRepository {
@@ -189,5 +195,6 @@ interface IDatabaseRepository {
     suspend fun isGoodCanBeAdded(goodInfo: GoodInfoResult, taskType: String): Boolean
     suspend fun getProviderInfo(code: String): ProviderInfo?
     suspend fun getAlcoCodeInfoList(alcoCode: String): List<AlcoCodeInfo>
+    suspend fun getBasketVolume() : Double?
 
 }

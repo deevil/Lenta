@@ -4,6 +4,7 @@ import androidx.lifecycle.MutableLiveData
 import com.google.gson.Gson
 import com.lenta.bp12.model.pojo.Block
 import com.lenta.bp12.model.pojo.Position
+import com.lenta.bp12.model.pojo.create_task.Basket
 import com.lenta.bp12.model.pojo.open_task.GoodOpen
 import com.lenta.bp12.model.pojo.open_task.TaskOpen
 import com.lenta.bp12.platform.extention.getControlType
@@ -119,11 +120,29 @@ class OpenTaskManager @Inject constructor(
 
     override suspend fun addGoodsInCurrentTask(taskContentResult: TaskContentResult) {
         currentTask.value?.let { task ->
-            taskContentResult.positions.map { positionInfo ->
+            taskContentResult.positions?.map { positionInfo ->
                 with(positionInfo) {
                     database.getGoodInfoByMaterial(material)?.let { goodInfo ->
                         val commonUnits = database.getUnitsByCode(unitsCode)
                         val provider = ProviderInfo(providerCode, providerName)
+                        val restBaskets = taskContentResult.basketInfo
+                        val restBasketsProducts = taskContentResult.basketProducts
+                        val baskets = restBaskets?.map { restBasket ->
+                            val quantity = restBasketsProducts?.find {
+                                it.basketNumber == restBasket.basketNumber
+                            }?.quantity
+
+                            Basket(
+                                    index = task.baskets.size,
+                                    section = restBasket.section.orEmpty(),
+                                    goodType = restBasket.goodType.orEmpty(),
+                                    control = task.control,
+                                    provider = provider,
+                                    isLocked = restBasket.isClose.isSapTrue(),
+                                    isPrinted = restBasket.isPrint.isSapTrue(),
+                                    quantity = quantity.orEmpty()
+                            )
+                        }
 
                         val good = GoodOpen(
                                 ean = goodInfo.ean,
@@ -141,12 +160,12 @@ class OpenTaskManager @Inject constructor(
                                 isCounted = isCounted.isSapTrue(),
                                 isDeleted = isDeleted.isSapTrue(),
                                 provider = provider,
-                                producers = taskContentResult.producers.filter { it.material == goodInfo.material }.map {
+                                producers = taskContentResult.producers?.filter { it.material == goodInfo.material }?.map {
                                     ProducerInfo(
                                             code = it.code,
                                             name = it.name
                                     )
-                                }
+                                } ?: listOf()
                         )
 
                         factQuantity.toDoubleOrNull()?.let { factQuantity ->
@@ -159,6 +178,7 @@ class OpenTaskManager @Inject constructor(
                         }
 
                         task.goods.add(good)
+                        task.baskets.addAll(baskets.orEmpty())
 
                         Logg.d { "--> added good = $good" }
                     }

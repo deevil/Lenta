@@ -8,7 +8,6 @@ import com.lenta.shared.platform.constants.Constants
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.SelectionItemsHelper
 import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
-import com.lenta.shared.utilities.extentions.dropZeros
 import com.lenta.shared.utilities.extentions.map
 import javax.inject.Inject
 
@@ -49,8 +48,8 @@ class BasketGoodListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
             it?.let { basket ->
                 task.value?.let { task ->
                     task.getGoodListByBasket(basket).mapIndexed { index, good ->
-                        val quantity = good.getQuantityByProvider(basket.provider.code).dropZeros()
                         val units = good.commonUnits.name
+                        val quantity = basket.goods.size
 
                         ItemGoodUi(
                                 position = "${index + 1}",

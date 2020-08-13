@@ -59,7 +59,7 @@ data class SendTaskDataParams(
         val parts: List<PartInfo>,
         /** Таблица корзин */
         @SerializedName("IT_TASK_BASKET")
-        val baskets: List<BasketInfo> = emptyList(),
+        val baskets: List<CreateTaskBasketInfo> = emptyList(),
         /**  Таблица товаров разбитых по корзинам */
         @SerializedName("IT_TASK_BASKET_POS")
         val basketPositions: List<BasketPositionInfo> = emptyList()

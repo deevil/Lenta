@@ -31,7 +31,12 @@ fun ZmpUtz39V001.getTaskTypeList(): List<TaskType> {
                 code = it.taskType,
                 description = it.annotation,
                 isDivBySection = it.divAbtnr.isSapTrue(),
-                isDivByPurchaseGroup = it.divEkgrp.isSapTrue()
+                isDivByPurchaseGroup = it.divEkgrp.isSapTrue(),
+                isDivByMark = it.isDivByMarkType.isSapTrue(),
+                isDivByGis = it.isDivByGis.isSapTrue(),
+                isDivByMinimalPrice = it.isDivByMinimalPrice.isSapTrue(),
+                isDivByProvider = it.isDivByProvider.isSapTrue(),
+                isDivByGoodType = it.isDivByMaterialType.isSapTrue()
         )
     }
 }
@@ -43,7 +48,12 @@ fun ZmpUtz39V001.getTaskType(code: String): TaskType? {
                 code = it.taskType,
                 description = it.annotation,
                 isDivBySection = it.divAbtnr.isSapTrue(),
-                isDivByPurchaseGroup = it.divEkgrp.isSapTrue()
+                isDivByPurchaseGroup = it.divEkgrp.isSapTrue(),
+                isDivByMark = it.isDivByMarkType.isSapTrue(),
+                isDivByGis = it.isDivByGis.isSapTrue(),
+                isDivByMinimalPrice = it.isDivByMinimalPrice.isSapTrue(),
+                isDivByProvider = it.isDivByProvider.isSapTrue(),
+                isDivByGoodType = it.isDivByMaterialType.isSapTrue()
         )
     }
 }

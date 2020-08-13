@@ -57,10 +57,10 @@ data class TaskInfo(
         /** Вид товара */
         @SerializedName("MTART")
         var goodType: String,
-        /** ??? */
+        /** Код клиента */
         @SerializedName("KUNNR")
         var kunnr: String,
-        /** ??? */
+        /** УТЗ ТСД, Наименование клиента */
         @SerializedName("KUNNR_NAME")
         var kunnrName: String
 )

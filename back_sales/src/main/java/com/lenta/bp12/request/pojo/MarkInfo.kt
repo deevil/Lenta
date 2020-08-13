@@ -15,6 +15,9 @@ data class MarkInfo(
         /** Номер коробки */
         @SerializedName("BOX_NUM")
         var boxNumber: String = "",
+        /** Номер блока */
+        @SerializedName("PACK_NUM")
+        var packNumber: String? = "",
         /** Проблемная марка */
         @SerializedName("IS_MARK_BAD")
         var isBadMark: String,

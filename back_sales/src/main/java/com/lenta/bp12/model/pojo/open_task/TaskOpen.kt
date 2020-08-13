@@ -4,6 +4,7 @@ import com.lenta.bp12.model.ControlType
 import com.lenta.bp12.model.pojo.Block
 import com.lenta.bp12.model.pojo.ReturnReason
 import com.lenta.bp12.model.pojo.TaskType
+import com.lenta.bp12.model.pojo.create_task.Basket
 import com.lenta.bp12.request.pojo.ProviderInfo
 
 data class TaskOpen(
@@ -24,6 +25,7 @@ data class TaskOpen(
 
         val numberOfGoods: Int,
         val goods: MutableList<GoodOpen> = mutableListOf(),
+        val baskets: MutableList<Basket> = mutableListOf(),
 
         val isStrict: Boolean,
         var isFinished: Boolean
