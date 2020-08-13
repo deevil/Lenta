@@ -28,7 +28,6 @@ import com.lenta.shared.utilities.extentions.getDeviceIp
 import com.lenta.shared.utilities.extentions.launchUITryCatch
 import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.utilities.extentions.toStringFormatted
-import com.lenta.shared.utilities.orIfNull
 import javax.inject.Inject
 
 private const val SELECTED_PAGE_NOT_PROCESSED = 0
@@ -480,11 +479,11 @@ class DiscrepancyListViewModel : CoreViewModel(), PageSelectionListener {
 
         return GoodsDiscrepancyItem(
                 number = index,
-                name = "${product?.getMaterialLastSix()} ${product?.description}",
+                name = "${product.getMaterialLastSix()} ${product.description}",
                 nameMaxLines = 2,
                 nameBatch = "",
                 visibilityNameBatch = false,
-                countRefusalWithUom = "- ${productDiscrepancies.numberDiscrepancies.toDouble().toStringFormatted()} ${uom?.name.orEmpty()}",
+                countRefusalWithUom = "- ${productDiscrepancies.numberDiscrepancies.toDouble().toStringFormatted()} ${uom.name}",
                 quantityNotProcessedWithUom = "",
                 discrepanciesName = discrepanciesName,
                 productInfo = product,
@@ -512,9 +511,7 @@ class DiscrepancyListViewModel : CoreViewModel(), PageSelectionListener {
                                 normEnteredButControlNotPassed(goodsInfo)
                             }
                         }
-                        ?.sortedByDescending {
-                            it.materialNumber
-                        }
+                        ?.sortedByDescending { it.materialNumber }
                         ?.mapIndexed { index, productInfo ->
                             getItemControlProduct(productInfo, index)
                         }
@@ -773,41 +770,45 @@ class DiscrepancyListViewModel : CoreViewModel(), PageSelectionListener {
         updateData()
     }
 
+    private fun filterClearTabTaskDiff(productInfo: TaskProductInfo) : Boolean {
+        //партионный - это помеченный IS_ALCO и не помеченный IS_BOX_FL, IS_MARK_FL (Артем)
+        val isBatchNonExciseAlcoholProduct =
+                productInfo.type == ProductType.NonExciseAlcohol
+                        && !productInfo.isBoxFl
+                        && !productInfo.isMarkFl
+        val isVetProduct = productInfo.isVet
+        //коробочный или марочный алкоголь
+        val isExciseAlcoholProduct =
+                productInfo.type == ProductType.ExciseAlcohol
+                        && (productInfo.isBoxFl || productInfo.isMarkFl)
+        return isBatchNonExciseAlcoholProduct
+                || isVetProduct
+                || isExciseAlcoholProduct
+    }
+
     fun onClickSave() {
         launchUITryCatch {
             screenNavigator.showProgressLoadingData(::handleFailure)
             /**
              * очищаем таблицу ET_TASK_DIFF от не акцизного (партионного) алкоголя и веттоваров,
              * т.к. для партионного товара необходимо передавать только данные из таблицы ET_PARTS_DIFF, а для веттоваров - ET_VET_DIFF
-            */
-            taskManager
-                    .getReceivingTask()
+             */
+            val receivingTask = taskManager.getReceivingTask()
+            val taskRepository = taskManager.getReceivingTask()?.taskRepository
+            receivingTask
                     ?.getProcessedProductsDiscrepancies()
-                    ?.map { productDiscr ->
-                        taskManager
-                                .getReceivingTask()
-                                ?.taskRepository
+                    ?.mapNotNull { productDiscr ->
+                        taskRepository
                                 ?.getProducts()
                                 ?.findProduct(productDiscr.materialNumber)
                     }
-                    ?.filter { filterProduct ->
-                        //партионный - это помеченный IS_ALCO и не помеченный IS_BOX_FL, IS_MARK_FL (Артем)
-                        (filterProduct?.type == ProductType.NonExciseAlcohol
-                                && !filterProduct.isBoxFl
-                                && !filterProduct.isMarkFl)
-                                || filterProduct?.isVet == true //или веттовары
-                    }
-                    ?.map { mapProduct ->
-                        mapProduct?.let { productForDel ->
-                            taskManager
-                                    .getReceivingTask()
-                                    ?.taskRepository
-                                    ?.getProductsDiscrepancies()
-                                    ?.deleteProductsDiscrepanciesForProduct(productForDel.materialNumber)
-                        }
+                    ?.filter { filterClearTabTaskDiff(it) }
+                    ?.forEach { productForDel ->
+                        taskRepository
+                                ?.getProductsDiscrepancies()
+                                ?.deleteProductsDiscrepanciesForProduct(productForDel.materialNumber)
                     }
 
-            val receivingTask = taskManager.getReceivingTask()
             endRecountDirectDeliveries(EndRecountDDParameters(
                     taskNumber = receivingTask
                             ?.taskHeader
@@ -868,42 +869,24 @@ class DiscrepancyListViewModel : CoreViewModel(), PageSelectionListener {
     }
 
     private fun normEnteredButControlNotPassed(productInfo: TaskProductInfo): Boolean {
-        /** Артем:
-        товар на вкладке Контроль появляется если по товару была введеная норма, но не был пройден контроль
-        Причем если по товару
-        10 шт
-        контроль 2 шт,
-        а по факту мы ввели 1 норму (и подтвердили сканированием) и 9 брака то контроль считается пройден*/
         val countAcceptOfProduct =
                 taskManager.getReceivingTask()
                         ?.taskRepository
                         ?.getProductsDiscrepancies()
                         ?.getCountAcceptOfProduct(productInfo)
                         ?: 0.0
-        val countRefusalOfProduct =
-                taskManager.getReceivingTask()
-                        ?.taskRepository
-                        ?.getProductsDiscrepancies()
-                        ?.getCountRefusalOfProduct(productInfo)
-                        ?: 0.0
+
         val isControlBoxesOfProduct =
                 taskManager.getReceivingTask()
                         ?.controlBoxesOfProduct(productInfo)
                         ?: false
+
         val isControlExciseStampsOfProduct =
                 taskManager.getReceivingTask()
                         ?.controlExciseStampsOfProduct(productInfo)
                         ?: false
-        val countBoxesPassedControlOfProduct =
-                taskManager.getReceivingTask()
-                        ?.countBoxesPassedControlOfProduct(productInfo)
-                        ?: 0
 
-        return if (countAcceptOfProduct <= 0 || (isControlExciseStampsOfProduct && isControlBoxesOfProduct)) {
-            false
-        } else {
-            (countBoxesPassedControlOfProduct + countRefusalOfProduct) < productInfo.origQuantity.toDouble()
-        }
+        return !(countAcceptOfProduct <= 0 || (isControlExciseStampsOfProduct && isControlBoxesOfProduct))
     }
 
     private fun markingProductControlNotPassed(productInfo: TaskProductInfo): Boolean {
