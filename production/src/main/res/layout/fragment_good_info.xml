@@ -70,8 +70,9 @@
                         android:orientation="horizontal">
 
                         <com.lenta.shared.view.ClickableSpinner
-                            android:id="@+id/spin_manufacturer"
-                            app:items="@{vm.manufactureName}"
+                            android:id="@+id/spin_producer"
+                            app:items="@{vm.producerName}"
+                            app:onPositionClickListener="@{vm.producerClicked}"
                             style="@style/CellSpinnerStyle"
                             android:layout_height="match_parent"
                             tools:entries="@array/manufacturer_list" />
@@ -93,6 +94,7 @@
                     <com.lenta.shared.view.ClickableSpinner
                         android:id="@+id/spin_production_date"
                         app:items="@{vm.dateInfo}"
+                        app:onPositionClickListener="@{vm.dateClicked}"
                         style="@style/CellSpinnerStyle"
                         android:layout_height="match_parent"
                         tools:entries="@array/date_list" />
@@ -145,9 +147,10 @@
                     android:layout_weight="1">
 
                     <com.lenta.shared.view.ClickableSpinner
-                        android:id="@+id/spin_storage_sender"
+                        android:id="@+id/spin_warehouse_sender"
                         style="@style/CellSpinnerStyle"
                         app:items="@{vm.warehouseSender}"
+                        app:onPositionClickListener="@{vm.warehouseSenderClicked}"
                         android:layout_height="match_parent"
                         tools:entries="@array/storage_list" />
 
@@ -182,6 +185,7 @@
                         android:id="@+id/spin_storage_receiver"
                         style="@style/CellSpinnerStyle"
                         app:items="@{vm.warehouseReceiver}"
+                        app:onPositionClickListener="@{vm.warehouseReceiverClicked}"
                         android:layout_height="match_parent"
                         tools:entries="@array/storage_list" />
 

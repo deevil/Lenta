@@ -6,6 +6,8 @@ import com.lenta.bp16.platform.navigation.IScreenNavigator
 import com.lenta.bp16.repository.IDatabaseRepository
 import com.lenta.bp16.repository.IRepoInMemoryHolder
 import com.lenta.bp16.request.FastResourcesMultiRequest
+import com.lenta.bp16.request.StockLockRequestResult
+import com.lenta.bp16.request.StockNetRequest
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.exception.IFailureInterpreter
@@ -34,6 +36,8 @@ class FastLoadingViewModel : CoreLoadingViewModel() {
     lateinit var database: IDatabaseRepository
     @Inject
     lateinit var auth: Auth
+    @Inject
+    lateinit var stockNetRequest: StockNetRequest
     @Inject
     lateinit var appUpdateInstaller: AppUpdateInstaller
     @Inject
@@ -91,7 +95,13 @@ class FastLoadingViewModel : CoreLoadingViewModel() {
 
     private fun getFastResources() {
         launchUITryCatch {
-            fastResourcesNetRequest(null).either(::handleFailure, ::handleSuccess)
+            fastResourcesNetRequest(null).either(::handleFailure, ::loadStocks)
+        }
+    }
+
+    private fun loadStocks(@Suppress("UNUSED_PARAMETER") b: Boolean) {
+        launchUITryCatch {
+            stockNetRequest(null).either(::handleFailure, ::handleSuccess)
         }
     }
 
@@ -101,7 +111,9 @@ class FastLoadingViewModel : CoreLoadingViewModel() {
         progress.postValue(false)
     }
 
-    private fun handleSuccess(notUsed: Boolean) {
+    private fun handleSuccess(stockLockRequestResult: StockLockRequestResult) {
+        repoInMemoryHolder.stockLockRequestResult = stockLockRequestResult
+        Logg.d { "stockLockRequestResult:${repoInMemoryHolder.stockLockRequestResult}" }
         progress.value = false
         navigator.closeAllScreen()
         navigator.openSelectPersonnelNumberScreen()

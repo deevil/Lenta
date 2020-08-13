@@ -10,7 +10,7 @@ import com.lenta.shared.interactor.UseCase
 import com.lenta.shared.requests.FmpRequestsHelper
 import javax.inject.Inject
 
-class MovementNewRequest @Inject constructor(
+class MovementNetRequest @Inject constructor(
         private val fmpRequestsHelper: FmpRequestsHelper
 ) : UseCase<MovementResult, MovementParams> {
 

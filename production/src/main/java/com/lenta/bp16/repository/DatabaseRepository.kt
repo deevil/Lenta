@@ -24,7 +24,7 @@ class DatabaseRepository @Inject constructor(
 
     private val units: ZmpUtz07V001 by lazy { ZmpUtz07V001(hyperHive) } // Единицы измерения
     private val settings: ZmpUtz14V001 by lazy { ZmpUtz14V001(hyperHive) } // Настройки
-    private val dictonary: ZmpUtz17V001 by lazy { ZmpUtz17V001(hyperHive) } // Справочник с наборами данных
+    private val dictionary: ZmpUtz17V001 by lazy { ZmpUtz17V001(hyperHive) } // Справочник с наборами данных
     private val warehouses: ZmpUtz106V001 by lazy { ZmpUtz106V001(hyperHive) } // Справочник складов
     private val barcodeInfo: ZmpUtz25V001 by lazy { ZmpUtz25V001(hyperHive) } // Информация о  штрихкоде
     private val productInfo: ZfmpUtz48V001 by lazy { ZfmpUtz48V001(hyperHive) } // Информация о товаре
@@ -69,7 +69,7 @@ class DatabaseRepository @Inject constructor(
 
     override suspend fun getCategoryList(): List<DictElement> {
         return withContext(Dispatchers.IO) {
-            val list = dictonary.getItemsByTidSorted("025")?.toElementList()?.toMutableList()
+            val list = dictionary.getItemsByTidSorted("025")?.toElementList()?.toMutableList()
                     ?: mutableListOf()
             if (list.size > 1) {
                 list.add(0, DictElement(
@@ -85,7 +85,7 @@ class DatabaseRepository @Inject constructor(
 
     override suspend fun getDefectList(): List<DictElement> {
         return withContext(Dispatchers.IO) {
-            val list = dictonary.getItemsByTidSorted("024")?.toElementList()?.toMutableList()
+            val list = dictionary.getItemsByTidSorted("024")?.toElementList()?.toMutableList()
                     ?: mutableListOf()
             if (list.size > 1) {
                 list.add(0, DictElement(
