@@ -80,7 +80,7 @@ class MaterialRemakesListViewModel : CoreViewModel() {
                 emit(it.mapIndexed { index, materialIngredientDataInfo ->
                     ItemMaterialIngredientUi(
                             lgort = materialIngredientDataInfo.lgort.orEmpty(),
-                            desc = materialIngredientDataInfo.name.orEmpty(),
+                            desc = materialIngredientDataInfo.ltxa1.orEmpty(),
                             position = (index + 1).toString(),
                             plan = getFieldWithSuffix(materialIngredientDataInfo.plan_qnt, suffix),
                             fact = getFieldWithSuffix(materialIngredientDataInfo.done_qnt, suffix)

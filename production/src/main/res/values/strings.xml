@@ -50,6 +50,7 @@
     <string name="processing_es">Обработка ВП</string>
     <string name="enter_number_es">Введите номер ВП</string>
     <string name="enter_number_pu">Введите номер ЕО</string>
+    <string name="scan_barcode">Отсканируйте штрихкод</string>
     <string name="fact">Факт</string>
     <string name="total">Итого</string>
     <string name="planed_quantity">План на передел</string>

@@ -64,7 +64,7 @@ class MaterialRemakeDetailsFragment : CoreFragment<FragmentMaterialRemakeDetails
             append(" ")
             append(materialIngredientDataInfo.name)
         }
-        topToolbarUiModel.description.value = parentName
+        topToolbarUiModel.description.value = materialIngredientDataInfo.ltxa1
     }
 
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
