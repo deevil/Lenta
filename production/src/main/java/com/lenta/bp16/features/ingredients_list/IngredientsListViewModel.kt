@@ -44,6 +44,7 @@ class IngredientsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInS
     val numberField by unsafeLazy { MutableLiveData<String>("") }
     val requestFocusToNumberField by unsafeLazy { MutableLiveData(true) }
     val marketNumber by unsafeLazy { sessionInfo.market }
+    val selectedEan = MutableLiveData<String>()
 
     private val allIngredients: MutableLiveData<List<IngredientInfo>> by unsafeLazy {
         MutableLiveData<List<IngredientInfo>>()
@@ -131,4 +132,9 @@ class IngredientsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInS
     fun onRefreshClicked() {
         loadIngredients()
     }
+
+    fun onScanResult(data: String){
+     selectedEan.value = data
+    }
+
 }
