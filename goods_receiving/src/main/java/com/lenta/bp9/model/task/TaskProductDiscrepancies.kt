@@ -4,6 +4,7 @@ import com.google.gson.annotations.SerializedName
 import com.lenta.shared.fmp.resources.dao_ext.getUomInfo
 import com.lenta.shared.fmp.resources.fast.ZmpUtz07V001
 import com.lenta.shared.models.core.Uom
+import com.lenta.shared.utilities.extentions.toStringFormatted
 import com.mobrun.plugin.api.HyperHive
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -38,7 +39,19 @@ data class TaskProductDiscrepancies(
                         notEditNumberDiscrepancies = if (restData.isNotEdit.isNotEmpty()) restData.numberDiscrepancies else ""
                 )
             }
+        }
 
+        fun fromMercury(data: TaskMercuryDiscrepancies): TaskProductDiscrepancies {
+            return TaskProductDiscrepancies(
+                    materialNumber = data.materialNumber,
+                    processingUnitNumber = "",
+                    numberDiscrepancies = data.numberDiscrepancies.toStringFormatted(),
+                    uom = data.uom,
+                    typeDiscrepancies = data.typeDiscrepancies,
+                    isNotEdit = false,
+                    isNew = false,
+                    notEditNumberDiscrepancies = ""
+            )
         }
     }
 }

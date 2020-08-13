@@ -239,22 +239,13 @@ class MarkingInfoViewModel : CoreViewModel(),
                         context.getString(R.string.not_required)
                     } else {
                         checkStampControlVisibility.value = true
-                        if (acceptTotalCountBlock < numberStampsControl) {
-                            buildString {
-                                append(countBlockScanned.toStringFormatted())
-                                append(" ")
-                                append(context.getString(R.string.of))
-                                append(" ")
-                                append(acceptTotalCountBlock.toStringFormatted())
-                            }
-                        } else {
-                            buildString {
-                                append(countBlockScanned.toStringFormatted())
-                                append(" ")
-                                append(context.getString(R.string.of))
-                                append(" ")
-                                append(numberStampsControl.toStringFormatted())
-                            }
+                        val countStampsControl = if (acceptTotalCountBlock < numberStampsControl) acceptTotalCountBlock else numberStampsControl
+                        buildString {
+                            append(countBlockScanned.toStringFormatted())
+                            append(" ")
+                            append(context.getString(R.string.of))
+                            append(" ")
+                            append(countStampsControl.toStringFormatted())
                         }
                     }
                 } else {

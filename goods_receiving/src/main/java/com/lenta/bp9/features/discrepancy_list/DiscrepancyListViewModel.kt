@@ -324,7 +324,7 @@ class DiscrepancyListViewModel : CoreViewModel(), PageSelectionListener {
         }
         return if (repoInMemoryHolder.taskList.value?.taskListLoadingMode == TaskListLoadingMode.PGE) {
             !(productDiscrepancies.typeDiscrepancies == TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_NORM
-                    || productDiscrepancies.typeDiscrepancies == TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_SURPLUS)
+                    || productDiscrepancies.typeDiscrepancies == TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_PGE_SURPLUS)
                     && isComponent == false
         } else {
             productDiscrepancies.typeDiscrepancies != TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_NORM && isComponent == false
@@ -349,7 +349,7 @@ class DiscrepancyListViewModel : CoreViewModel(), PageSelectionListener {
             batchDiscrepanciesOfBatch
                     ?.filter { findBatchDiscrPGE ->
                         !(findBatchDiscrPGE.typeDiscrepancies == TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_NORM
-                                || findBatchDiscrPGE.typeDiscrepancies == TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_SURPLUS)
+                                || findBatchDiscrPGE.typeDiscrepancies == TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_PGE_SURPLUS)
                     }
                     ?.any()
                     ?: false
@@ -613,7 +613,7 @@ class DiscrepancyListViewModel : CoreViewModel(), PageSelectionListener {
         }
 
         searchProductDelegate.searchCode(
-                code = selectedMaterialNumber.orEmpty(),
+                code = selectedMaterialNumber,
                 fromScan = false,
                 isDiscrepancy = true
         )
@@ -624,8 +624,7 @@ class DiscrepancyListViewModel : CoreViewModel(), PageSelectionListener {
                 .selectedPositions
                 .value
                 ?.map { position ->
-                    countProcessed
-                            .value
+                    countProcessed.value
                             ?.get(position)
                             ?.productInfo
                             ?.let { selectedProduct ->
@@ -724,6 +723,7 @@ class DiscrepancyListViewModel : CoreViewModel(), PageSelectionListener {
                     taskRepository
                             .getExciseStampsBad()
                             .deleteExciseStampBadForProductAndDiscrepancies(materialNumber, typeDiscrepancies)
+
                     taskRepository
                             .getBlocksDiscrepancies()
                             .deleteBlocksDiscrepanciesForProductAndDiscrepancies(materialNumber, typeDiscrepancies)

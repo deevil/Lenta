@@ -59,7 +59,7 @@ data class StartRecountPGERestInfo(
         @SerializedName("ET_MARK_BAD") //Таблица плохих марок задания
         val taskExciseStampBad: List<TaskExciseStampBadRestData>,
         @SerializedName("ET_VET_DIFF") //Таблица расхождений по вет.товарам
-        val taskMercuryInfoRestData: List<TaskMercuryInfoRestData>?,
+        val taskMercuryDiscrepancies: List<TaskMercuryDiscrepanciesRestData>?,
         @SerializedName("ET_PROD_TEXT")//Таблица ЕГАИС производителей
         val manufacturers: List<Manufacturer>,
         @SerializedName("ET_TASK_PACK")//Список блоков для маркированного товара

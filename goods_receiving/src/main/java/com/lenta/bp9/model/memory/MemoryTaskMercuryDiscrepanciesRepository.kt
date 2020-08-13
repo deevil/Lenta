@@ -2,51 +2,29 @@ package com.lenta.bp9.model.memory
 
 import com.lenta.bp9.model.repositories.ITaskMercuryDiscrepanciesRepository
 import com.lenta.bp9.model.task.TaskMercuryDiscrepancies
-import com.lenta.bp9.model.task.TaskMercuryInfo
 import com.lenta.bp9.model.task.TaskProductInfo
+import com.lenta.bp9.platform.TypeDiscrepanciesConstants
 
 class MemoryTaskMercuryDiscrepanciesRepository : ITaskMercuryDiscrepanciesRepository {
 
-    private val mercuryInfo: ArrayList<TaskMercuryInfo> = ArrayList()
     private val mercuryDiscrepancies: ArrayList<TaskMercuryDiscrepancies> = ArrayList()
-
-    override fun getMercuryInfo(): List<TaskMercuryInfo> {
-        return mercuryInfo
-    }
 
     override fun getMercuryDiscrepancies(): List<TaskMercuryDiscrepancies> {
         return mercuryDiscrepancies
     }
 
-    override fun findMercuryInfoOfProduct(product: TaskProductInfo): List<TaskMercuryInfo> {
-        return mercuryInfo.filter { it.materialNumber == product.materialNumber}
-    }
-
     override fun findMercuryDiscrepanciesOfProduct(product: TaskProductInfo): List<TaskMercuryDiscrepancies> {
-        return mercuryDiscrepancies.filter { it.materialNumber == product.materialNumber}
+        return findMercuryDiscrepanciesOfProduct(product.materialNumber)
     }
 
-    override fun addMercuryInfo(newMercuryInfo: TaskMercuryInfo): Boolean {
-        var index = -1
-        for (i in mercuryInfo.indices) {
-            if (newMercuryInfo.vetDocumentID == mercuryInfo[i].vetDocumentID && newMercuryInfo.typeDiscrepancies == mercuryInfo[i].typeDiscrepancies) {
-                index = i
-            }
-        }
-
-        if (index == -1) {
-            mercuryInfo.add(newMercuryInfo)
-            return true
-        }
-        return false
+    override fun findMercuryDiscrepanciesOfProduct(materialNumber: String): List<TaskMercuryDiscrepancies> {
+        return mercuryDiscrepancies.filter { it.materialNumber == materialNumber}
     }
 
     override fun addMercuryDiscrepancy(discrepancy: TaskMercuryDiscrepancies): Boolean {
         var index = -1
         for (i in mercuryDiscrepancies.indices) {
             if (discrepancy.materialNumber == mercuryDiscrepancies[i].materialNumber &&
-                    discrepancy.manufacturer == mercuryDiscrepancies[i].manufacturer &&
-                    discrepancy.productionDate == mercuryDiscrepancies[i].productionDate &&
                     discrepancy.vetDocumentID == mercuryDiscrepancies[i].vetDocumentID &&
                     discrepancy.typeDiscrepancies == mercuryDiscrepancies[i].typeDiscrepancies) {
                 index = i
@@ -60,11 +38,9 @@ class MemoryTaskMercuryDiscrepanciesRepository : ITaskMercuryDiscrepanciesReposi
         return false
     }
 
-    override fun updateMercuryInfo(newMercuryInfo: List<TaskMercuryInfo>) {
-        mercuryInfo.clear()
-        newMercuryInfo.map {
-            addMercuryInfo(it)
-        }
+    override fun updateMercuryDiscrepancy(newMercuryDiscrepancy: List<TaskMercuryDiscrepancies>) {
+        mercuryDiscrepancies.clear()
+        newMercuryDiscrepancy.map { addMercuryDiscrepancy(it) }
     }
 
     override fun changeMercuryDiscrepancy(discrepancy: TaskMercuryDiscrepancies): Boolean {
@@ -75,10 +51,9 @@ class MemoryTaskMercuryDiscrepanciesRepository : ITaskMercuryDiscrepanciesReposi
     override fun deleteMercuryDiscrepancy(delDiscrepancy: TaskMercuryDiscrepancies): Boolean {
         mercuryDiscrepancies.map { it }.filter {discrepancy ->
             if (delDiscrepancy.materialNumber == discrepancy.materialNumber &&
-                    delDiscrepancy.manufacturer == discrepancy.manufacturer &&
-                    delDiscrepancy.productionDate == discrepancy.productionDate &&
                     delDiscrepancy.vetDocumentID == discrepancy.vetDocumentID &&
-                    delDiscrepancy.typeDiscrepancies == discrepancy.typeDiscrepancies) {
+                    (delDiscrepancy.typeDiscrepancies == discrepancy.typeDiscrepancies
+                            || discrepancy.typeDiscrepancies.isEmpty())) {
                 mercuryDiscrepancies.remove(discrepancy)
                 return@filter true
             }
@@ -89,56 +64,42 @@ class MemoryTaskMercuryDiscrepanciesRepository : ITaskMercuryDiscrepanciesReposi
         }
     }
 
-    override fun deleteMercuryDiscrepancyOfProduct(materialNumber: String, typeDiscrepancies: String): Boolean {
-        val delDiscrepancies = ArrayList<TaskMercuryDiscrepancies>()
-        for (i in mercuryDiscrepancies.indices) {
-            if (materialNumber == mercuryDiscrepancies[i].materialNumber && typeDiscrepancies == mercuryDiscrepancies[i].typeDiscrepancies) {
-                delDiscrepancies.add(mercuryDiscrepancies[i])
-            }
-        }
-
-        if (delDiscrepancies.isEmpty()) {
-            return false
-        }
-
-        mercuryDiscrepancies.removeAll(delDiscrepancies)
-        return true
+    private fun changeGroupByMercuryDiscrepancies(delDiscrepancy: TaskMercuryDiscrepancies) {
+        deleteMercuryDiscrepancy(delDiscrepancy)
+        addMercuryDiscrepancy(delDiscrepancy.copy(typeDiscrepancies = "", numberDiscrepancies = 0.0))
     }
 
-    override fun deleteMercuryDiscrepanciesForProduct(product: TaskProductInfo): Boolean {
-        val delDiscrepancies = ArrayList<TaskMercuryDiscrepancies>()
-        for (i in mercuryDiscrepancies.indices) {
-            if (product.materialNumber == mercuryDiscrepancies[i].materialNumber) {
-                delDiscrepancies.add(mercuryDiscrepancies[i])
-            }
-        }
-
-        if (delDiscrepancies.isEmpty()) {
-            return false
-        }
-
-        delDiscrepancies.map {
-            deleteMercuryDiscrepancy(it)
-        }
-        return true
+    override fun deleteMercuryDiscrepancyOfProduct(materialNumber: String, typeDiscrepancies: String) {
+        findMercuryDiscrepanciesOfProduct(materialNumber)
+                .asSequence()
+                .groupBy {
+                    it.typeDiscrepancies == typeDiscrepancies
+                }
+                .map { groupByMercuryDiscrepancies ->
+                    groupByMercuryDiscrepancies.value.map { changeGroupByMercuryDiscrepancies(it)}
+                }
+                .toList()
     }
 
-    override fun deleteMercuryDiscrepanciesNotNormForProduct(product: TaskProductInfo): Boolean {
-        val delDiscrepancies = ArrayList<TaskMercuryDiscrepancies>()
-        for (i in mercuryDiscrepancies.indices) {
-            if (product.materialNumber == mercuryDiscrepancies[i].materialNumber && mercuryDiscrepancies[i].typeDiscrepancies != "1") {
-                delDiscrepancies.add(mercuryDiscrepancies[i])
-            }
-        }
+    override fun deleteMercuryDiscrepanciesForProduct(product: TaskProductInfo) {
+        findMercuryDiscrepanciesOfProduct(product.materialNumber)
+                .asSequence()
+                .groupBy { it.vetDocumentID }
+                .map { groupByMercuryDiscrepancies ->
+                    groupByMercuryDiscrepancies.value.map { changeGroupByMercuryDiscrepancies(it)}
+                }
+                .toList()
+    }
 
-        if (delDiscrepancies.isEmpty()) {
-            return false
-        }
-
-        delDiscrepancies.map {
-            deleteMercuryDiscrepancy(it)
-        }
-        return true
+    override fun deleteMercuryDiscrepanciesNotNormForProduct(product: TaskProductInfo) {
+        findMercuryDiscrepanciesOfProduct(product.materialNumber)
+                .asSequence()
+                .filter { it.typeDiscrepancies != TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_NORM }
+                .groupBy { it.vetDocumentID }
+                .map { groupByMercuryDiscrepancies ->
+                    groupByMercuryDiscrepancies.value.map { changeGroupByMercuryDiscrepancies(it)}
+                }
+                .toList()
     }
 
     override fun getMercuryCountAcceptOfProduct(product: TaskProductInfo): Double {
@@ -174,15 +135,12 @@ class MemoryTaskMercuryDiscrepanciesRepository : ITaskMercuryDiscrepanciesReposi
     }
 
     override fun getManufacturesOfProduct(product: TaskProductInfo) : List<String> {
-        return findMercuryInfoOfProduct(product).groupBy {
-            it.manufacturer
-        }.map {
-            it.key
-        }
+        return findMercuryDiscrepanciesOfProduct(product)
+                .groupBy { it.manufacturer }
+                .map { it.key }
     }
 
     override fun clear() {
-        mercuryInfo.clear()
         mercuryDiscrepancies.clear()
     }
 }
