@@ -37,9 +37,10 @@ class TaskContents
                 startRecountRestInfo.taskBatchesDiscrepancies.map {
                     TaskBatchesDiscrepancies.from(hyperHive, it)
                 },
-                startRecountRestInfo.taskMercuryInfoRestData.map {
-                    TaskMercuryInfo.from(hyperHive, it)
-                },
+                startRecountRestInfo
+                        .taskMercuryDiscrepancies
+                        ?.map { TaskMercuryDiscrepancies.from(hyperHive, it) }
+                        .orEmpty(),
                 startRecountRestInfo.taskExciseStamps.map {
                     TaskExciseStampInfo.from(it)
                 },
@@ -76,9 +77,10 @@ class TaskContents
                 startRecountRestInfo.taskBatchesDiscrepancies.map {
                     TaskBatchesDiscrepancies.from(hyperHive, it)
                 },
-                startRecountRestInfo.taskMercuryInfoRestData.map {
-                    TaskMercuryInfo.from(hyperHive, it)
-                },
+                startRecountRestInfo
+                        .taskMercuryDiscrepancies
+                        ?.map { TaskMercuryDiscrepancies.from(hyperHive, it) }
+                        .orEmpty(),
                 startRecountRestInfo.taskExciseStamps.map {
                     TaskExciseStampInfo.from(it)
                 },
@@ -115,14 +117,10 @@ class TaskContents
                 startRecountRestInfo.taskBatchesDiscrepancies.map {
                     TaskBatchesDiscrepancies.from(hyperHive, it)
                 },
-
-                //todo это условие прописано временно, т.к. на продакшене для ПГЕ и ПРЦ не реализована таблица ET_VET_DIFF, она приходит пустой в 28 и 30 рестах, поэтому обрабатываем данные товары не как вет, а как обычные
-                if (startRecountRestInfo.taskMercuryInfoRestData != null) {
-                    startRecountRestInfo.taskMercuryInfoRestData.map {
-                        TaskMercuryInfo.from(hyperHive, it)
-                    }
-                } else null,
-
+                startRecountRestInfo
+                        .taskMercuryDiscrepancies
+                        ?.map { TaskMercuryDiscrepancies.from(hyperHive, it) }
+                        .orEmpty(),
                 startRecountRestInfo.taskExciseStamps.map {
                     TaskExciseStampInfo.from(it)
                 },
@@ -159,14 +157,10 @@ class TaskContents
                 startRecountRestInfo.taskBatchesDiscrepancies.map {
                     TaskBatchesDiscrepancies.from(hyperHive, it)
                 },
-
-                //todo это условие прописано временно, т.к. на продакшене для ПГЕ и ПРЦ не реализована таблица ET_VET_DIFF, она приходит пустой в 28 и 30 рестах, поэтому обрабатываем данные товары не как вет, а как обычные
-                if (startRecountRestInfo.taskMercuryInfoRestData != null) {
-                    startRecountRestInfo.taskMercuryInfoRestData.map {
-                        TaskMercuryInfo.from(hyperHive, it)
-                    }
-                } else null,
-
+                startRecountRestInfo
+                        .taskMercuryDiscrepancies
+                        ?.map { TaskMercuryDiscrepancies.from(hyperHive, it) }
+                        .orEmpty(),
                 startRecountRestInfo.taskExciseStamps.map {
                     TaskExciseStampInfo.from(it)
                 },
@@ -246,7 +240,7 @@ data class TaskContentsInfo(
         val productsDiscrepancies: List<TaskProductDiscrepancies>,
         val taskBatches: List<TaskBatchInfo>,
         val taskBatchesDiscrepancies: List<TaskBatchesDiscrepancies>,
-        val taskMercuryInfo: List<TaskMercuryInfo>?,
+        val taskMercuryDiscrepancies: List<TaskMercuryDiscrepancies>,
         val taskExciseStampInfo: List<TaskExciseStampInfo>,
         val taskExciseStampDiscrepancies: List<TaskExciseStampDiscrepancies>,
         val taskExciseStampBad: List<TaskExciseStampBad>,
