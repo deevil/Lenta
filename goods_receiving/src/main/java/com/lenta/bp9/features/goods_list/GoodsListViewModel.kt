@@ -516,8 +516,7 @@ class GoodsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKey
         //коробочный или марочный алкоголь
         val isExciseAlcoholProduct =
                 productInfo.type == ProductType.ExciseAlcohol
-                        && (productInfo.isBoxFl
-                        || productInfo.isMarkFl)
+                        && (productInfo.isBoxFl || productInfo.isMarkFl)
         return isBatchNonExciseAlcoholProduct
                 || isVetProduct
                 || isExciseAlcoholProduct
@@ -530,21 +529,18 @@ class GoodsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKey
                     val taskType =task.taskHeader.taskType
                     val productsDiscrepancies = task.taskRepository.getProductsDiscrepancies()
                     task.getProcessedProducts()
-                            .filter { productInfo ->
+                            .mapNotNull { productInfo ->
                                 if (taskType == TaskType.RecalculationCargoUnit) {
-                                    productsDiscrepancies.getCountProductNotProcessedOfProductPGE(productInfo) > 0.0
+                                    productsDiscrepancies
+                                            .getCountProductNotProcessedOfProductPGE(productInfo)
+                                            .takeIf { it > 0.0 }
                                 } else {
-                                    productsDiscrepancies.getCountProductNotProcessedOfProduct(productInfo) > 0.0
+                                    productsDiscrepancies
+                                            .getCountProductNotProcessedOfProduct(productInfo)
+                                            .takeIf { it > 0.0 }
                                 }
-                            }.map {
-                                if (taskType == TaskType.RecalculationCargoUnit) {
-                                    productsDiscrepancies.getCountProductNotProcessedOfProductPGE(it)
-                                } else {
-                                    productsDiscrepancies.getCountProductNotProcessedOfProduct(it)
-                                }
-                            }.sumByDouble {
-                                it
                             }
+                            .sumByDouble { it }
                 } ?: 0.0
     }
 

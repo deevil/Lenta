@@ -461,11 +461,12 @@ class ExciseAlcoBoxCardViewModel : CoreViewModel(), OnPositionClickListener {
     }
 
     private fun getManufacturerName() : String {
+        val batchNumber = exciseStampInfo.value?.batchNumber
         val manufacturerCode =
                 taskManager
                         .getReceivingTask()
                         ?.getProcessedBatches()
-                        ?.findLast { it.batchNumber == exciseStampInfo.value?.batchNumber }
+                        ?.findLast { it.batchNumber == batchNumber }
                         ?.egais
                         .orEmpty()
         return repoInMemoryHolder
@@ -476,11 +477,12 @@ class ExciseAlcoBoxCardViewModel : CoreViewModel(), OnPositionClickListener {
     }
 
     private fun getBottlingDate() : String {
+        val batchNumber = exciseStampInfo.value?.batchNumber
         val dateOfPour =
                 taskManager
                         .getReceivingTask()
                         ?.getProcessedBatches()
-                        ?.findLast { it.batchNumber == exciseStampInfo.value?.batchNumber }
+                        ?.findLast { it.batchNumber == batchNumber }
                         ?.bottlingDate
                         .orEmpty()
         return dateOfPour

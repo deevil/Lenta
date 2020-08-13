@@ -483,7 +483,7 @@ class DiscrepancyListViewModel : CoreViewModel(), PageSelectionListener {
                 nameMaxLines = 2,
                 nameBatch = "",
                 visibilityNameBatch = false,
-                countRefusalWithUom = "- ${productDiscrepancies.numberDiscrepancies.toDouble().toStringFormatted()} ${uom?.name.orEmpty()}",
+                countRefusalWithUom = "- ${productDiscrepancies.numberDiscrepancies.toDouble().toStringFormatted()} ${uom.name}",
                 quantityNotProcessedWithUom = "",
                 discrepanciesName = discrepanciesName,
                 productInfo = product,
@@ -780,8 +780,7 @@ class DiscrepancyListViewModel : CoreViewModel(), PageSelectionListener {
         //коробочный или марочный алкоголь
         val isExciseAlcoholProduct =
                 productInfo.type == ProductType.ExciseAlcohol
-                        && (productInfo.isBoxFl
-                        || productInfo.isMarkFl)
+                        && (productInfo.isBoxFl || productInfo.isMarkFl)
         return isBatchNonExciseAlcoholProduct
                 || isVetProduct
                 || isExciseAlcoholProduct
