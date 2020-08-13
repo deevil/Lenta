@@ -72,6 +72,7 @@
                         <com.lenta.shared.view.ClickableSpinner
                             android:id="@+id/spin_producer"
                             app:items="@{vm.producerName}"
+                            app:position="@{vm.selectedProducer}"
                             app:onPositionClickListener="@{vm.producerClicked}"
                             style="@style/CellSpinnerStyle"
                             android:layout_height="match_parent"
@@ -150,6 +151,7 @@
                         android:id="@+id/spin_warehouse_sender"
                         style="@style/CellSpinnerStyle"
                         app:items="@{vm.warehouseSender}"
+                        app:position="@{vm.selectedWarehouseSender}"
                         app:onPositionClickListener="@{vm.warehouseSenderClicked}"
                         android:layout_height="match_parent"
                         tools:entries="@array/storage_list" />
@@ -185,6 +187,7 @@
                         android:id="@+id/spin_storage_receiver"
                         style="@style/CellSpinnerStyle"
                         app:items="@{vm.warehouseReceiver}"
+                        app:position="@{vm.selectedWarehouseReceiver}"
                         app:onPositionClickListener="@{vm.warehouseReceiverClicked}"
                         android:layout_height="match_parent"
                         tools:entries="@array/storage_list" />

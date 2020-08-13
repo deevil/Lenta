@@ -39,9 +39,9 @@ class GoodSelectFragment : CoreFragment<FragmentGoodSelectBinding, GoodSelectVie
         bottomToolbarUiModel.uiModelButton1.show(ButtonDecorationInfo.menu)
         bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.next, enabled = false)
 
-            vm.enteredEanField.observe(viewLifecycleOwner) {
+            /*vm.enteredEanField.observe(viewLifecycleOwner) {
                 bottomToolbarUiModel.uiModelButton5.requestFocus()
-            }
+            }*/
 
         connectLiveData(vm.enabledNextButton, bottomToolbarUiModel.uiModelButton5.enabled)
     }

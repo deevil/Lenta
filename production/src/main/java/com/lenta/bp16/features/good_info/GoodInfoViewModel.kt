@@ -153,12 +153,12 @@ class GoodInfoViewModel : CoreViewModel() {
 
         launchUITryCatch {
             val goodInfo = database.getGoodByEan(selectedEan.value.toString())
-            val sapCode = goodInfo?.material
+            val sapCode = goodInfo?.matcode?.takeLast(6)
             val ean = Ean(
                     ean = selectedEan.value
             )
             val matnr = Product(
-                    matnr = "000000341209"
+                    matnr = sapCode
             )
             productInfoNetRequest(ProductInfoParams(
                     ean = listOf(ean),
@@ -173,8 +173,7 @@ class GoodInfoViewModel : CoreViewModel() {
         launchUITryCatch {
             with(result) {
                 ProductInfoResult(producers = producerList, product = productList, set = setList)
-                Logg.d { "ProducerList:$producerList" }
-                Logg.d { "ProductList:$productList" }
+
             }
         }
     }
