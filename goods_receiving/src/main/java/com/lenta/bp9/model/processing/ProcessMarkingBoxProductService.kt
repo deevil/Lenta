@@ -11,7 +11,7 @@ import com.lenta.shared.utilities.extentions.removeItemFromListWithPredicate
 import javax.inject.Inject
 
 @AppScope
-class ProcessMarkingProductService
+class ProcessMarkingBoxProductService
 @Inject constructor() {
 
     @Inject
@@ -31,7 +31,7 @@ class ProcessMarkingProductService
         this.productInfo = inputProductInfo.copy()
     }
 
-    fun newProcessMarkingProductService(inputProductInfo: TaskProductInfo): ProcessMarkingProductService? {
+    fun newProcessMarkingBoxProductService(inputProductInfo: TaskProductInfo): ProcessMarkingBoxProductService? {
         return this
                 .takeIf { inputProductInfo.type == ProductType.General }
                 ?.apply {

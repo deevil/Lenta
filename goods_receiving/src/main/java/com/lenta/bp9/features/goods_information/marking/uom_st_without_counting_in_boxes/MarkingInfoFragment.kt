@@ -1,4 +1,4 @@
-package com.lenta.bp9.features.goods_information.marking
+package com.lenta.bp9.features.goods_information.marking.uom_st_without_counting_in_boxes
 
 import android.os.Bundle
 import android.view.KeyEvent

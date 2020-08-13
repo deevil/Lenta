@@ -1,4 +1,4 @@
-package com.lenta.bp9.features.goods_information.marking
+package com.lenta.bp9.features.goods_information.marking.uom_st_without_counting_in_boxes
 
 import android.content.Context
 import androidx.lifecycle.MutableLiveData
@@ -23,7 +23,6 @@ import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.requests.combined.scan_info.ScanInfoResult
 import com.lenta.shared.requests.combined.scan_info.pojo.QualityInfo
 import com.lenta.shared.requests.combined.scan_info.pojo.ReasonRejectionInfo
-import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.extentions.combineLatest
 import com.lenta.shared.utilities.extentions.launchUITryCatch
 import com.lenta.shared.utilities.extentions.map

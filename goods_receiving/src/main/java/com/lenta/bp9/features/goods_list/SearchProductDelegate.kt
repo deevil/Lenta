@@ -1,6 +1,7 @@
 package com.lenta.bp9.features.goods_list
 
 import android.content.Context
+import com.lenta.bp9.R
 import com.lenta.bp9.features.loading.tasks.TaskListLoadingMode
 import com.lenta.bp9.model.task.IReceivingTaskManager
 import com.lenta.bp9.model.task.MarkType
@@ -236,25 +237,7 @@ class SearchProductDelegate @Inject constructor(
 
         //https://trello.com/c/NGsFfWgB маркированный товар
         if (taskProductInfo.markType != MarkType.None) {
-            val isExciseStampsNotEmpty =
-                    taskManager.getReceivingTask()
-                            ?.taskRepository
-                            ?.getExciseStamps()
-                            ?.getExciseStamps()
-                            ?.size
-                            ?: 0 > 0
-
-            //условие для: MARK.ППП. Табак. Карточка товара. Марочный учет. ЕИЗ=ШТ. Признак IS_USE_ALTERN_MEINS не установлен. Таблица task_mark не пустая. https://trello.com/c/NGsFfWgB
-            if (isExciseStampsNotEmpty
-                    && taskProductInfo.markType == MarkType.Tobacco
-                    && taskProductInfo.isMarkFl
-                    && !taskProductInfo.isCountingBoxes
-                    && taskProductInfo.purchaseOrderUnits.name == "ШТ") {
-                screenNavigator.openMarkingInfoScreen(productInfo = taskProductInfo)
-                return
-            }
-
-            screenNavigator.openInfoScreen("Ошибка получения данных")
+            openMarkingProductScreen(taskProductInfo)
             return
         }
 
@@ -264,6 +247,37 @@ class SearchProductDelegate @Inject constructor(
             ProductType.NonExciseAlcohol -> openNonExciseAlcoholProductScreen(taskProductInfo)
             else -> screenNavigator.openAlertUnknownGoodsTypeScreen() //сообщение о неизвестном типе товара
         }
+    }
+
+    private fun openMarkingProductScreen(taskProductInfo: TaskProductInfo) {
+        val isExciseStampsNotEmpty =
+                taskManager
+                        .getReceivingTask()
+                        ?.getProcessedExciseStamps()
+                        ?.size
+                        ?: 0 > 0
+
+        //условие для: MARK.ППП. Табак. Карточка товара. Марочный учет. ЕИЗ=ШТ. Признак IS_USE_ALTERN_MEINS не установлен. Таблица task_mark не пустая. https://trello.com/c/NGsFfWgB
+        if (isExciseStampsNotEmpty
+                && taskProductInfo.markType == MarkType.Tobacco
+                && taskProductInfo.isMarkFl
+                && !taskProductInfo.isCountingBoxes
+                && taskProductInfo.purchaseOrderUnits.code == UNIT_CODE_ST) {
+            screenNavigator.openMarkingInfoScreen(productInfo = taskProductInfo)
+            return
+        }
+
+        //условие для: MARK.ППП. Табак. Карточка товара. Марочный учет. ЕИЗ=ШТ. Признак IS_USE_ALTERN_MEINS установлен. Таблица task_mark не пустая. https://trello.com/c/vl9wQg0Y
+        if (isExciseStampsNotEmpty
+                && taskProductInfo.markType == MarkType.Tobacco
+                && taskProductInfo.isMarkFl
+                && taskProductInfo.isCountingBoxes
+                && taskProductInfo.purchaseOrderUnits.code == UNIT_CODE_ST) {
+            screenNavigator.openMarkingBoxInfoScreen(productInfo = taskProductInfo)
+            return
+        }
+
+        screenNavigator.openInfoScreen(context.getString(R.string.data_retrieval_error)) //Ошибка получения данных
     }
 
     private fun openGeneralProductScreen(taskProductInfo: TaskProductInfo) {
@@ -284,22 +298,22 @@ class SearchProductDelegate @Inject constructor(
         val loadingMode = repoInMemoryHolder.taskList.value?.taskListLoadingMode
         when {
             taskProductInfo.isSet -> {
-                screenNavigator.openInfoScreen("Ошибка получения данных") //openNotImplementedScreenAlert("Информация о наборе")
+                screenNavigator.openInfoScreen(context.getString(R.string.data_retrieval_error)) //openNotImplementedScreenAlert("Информация о наборе")
                 //screenNavigator.openSetsInfoScreen(taskProductInfo)
             }
             taskProductInfo.isBoxFl -> { //алкоголь, коробочный учет ППП https://trello.com/c/KbBbXj2t; коробочный учет ПГЕ https://trello.com/c/TzUSGIH7
                 when (loadingMode) {
                     TaskListLoadingMode.Receiving -> screenNavigator.openExciseAlcoBoxAccInfoReceivingScreen(taskProductInfo)
                     TaskListLoadingMode.PGE -> screenNavigator.openExciseAlcoBoxAccInfoPGEScreen(taskProductInfo)
-                    TaskListLoadingMode.Shipment -> screenNavigator.openInfoScreen("Ошибка получения данных") //openNotImplementedScreenAlert("Информация о коробочном учете")
+                    TaskListLoadingMode.Shipment -> screenNavigator.openInfoScreen(context.getString(R.string.data_retrieval_error)) //openNotImplementedScreenAlert("Информация о коробочном учете")
                     else -> screenNavigator.openAlertUnknownTaskTypeScreen() //сообщение о неизвестном типе задания
                 }
             }
             taskProductInfo.isMarkFl -> { //алкоголь, марочный учет ПГЕ https://trello.com/c/Bx03dgxE;
                 when (loadingMode) {
-                    TaskListLoadingMode.Receiving -> screenNavigator.openInfoScreen("Ошибка получения данных") //screenNavigator.openExciseAlcoStampAccInfoScreen(taskProductInfo) это экран для марочного учета ППП
+                    TaskListLoadingMode.Receiving -> screenNavigator.openInfoScreen(context.getString(R.string.data_retrieval_error)) //screenNavigator.openExciseAlcoStampAccInfoScreen(taskProductInfo) это экран для марочного учета ППП
                     TaskListLoadingMode.PGE -> screenNavigator.openExciseAlcoStampAccInfoPGEScreen(taskProductInfo)
-                    TaskListLoadingMode.Shipment -> screenNavigator.openInfoScreen("Ошибка получения данных") //openNotImplementedScreenAlert("Информация о марочном учете")
+                    TaskListLoadingMode.Shipment -> screenNavigator.openInfoScreen(context.getString(R.string.data_retrieval_error)) //openNotImplementedScreenAlert("Информация о марочном учете")
                     else -> screenNavigator.openAlertUnknownTaskTypeScreen() //сообщение о неизвестном типе задания
                 }
 
@@ -315,7 +329,7 @@ class SearchProductDelegate @Inject constructor(
                 when (repoInMemoryHolder.taskList.value?.taskListLoadingMode) {
                     TaskListLoadingMode.Receiving -> screenNavigator.openNonExciseSetsInfoReceivingScreen(productInfo = taskProductInfo, isDiscrepancy = isDiscrepancy)
                     TaskListLoadingMode.PGE -> screenNavigator.openNonExciseSetsInfoPGEScreen(productInfo = taskProductInfo, isDiscrepancy = isDiscrepancy)
-                    TaskListLoadingMode.Shipment -> screenNavigator.openInfoScreen("Ошибка получения данных") //openNotImplementedScreenAlert("Информация о не акцизном наборе")
+                    TaskListLoadingMode.Shipment -> screenNavigator.openInfoScreen(context.getString(R.string.data_retrieval_error)) //openNotImplementedScreenAlert("Информация о не акцизном наборе")
                     else -> screenNavigator.openAlertUnknownTaskTypeScreen() //сообщение о неизвестном типе задания
                 }
             }
@@ -323,11 +337,15 @@ class SearchProductDelegate @Inject constructor(
                 when (repoInMemoryHolder.taskList.value?.taskListLoadingMode) {
                     TaskListLoadingMode.Receiving -> screenNavigator.openNonExciseAlcoInfoReceivingScreen(productInfo = taskProductInfo, isDiscrepancy = isDiscrepancy)
                     TaskListLoadingMode.PGE -> screenNavigator.openNonExciseAlcoInfoPGEScreen(productInfo = taskProductInfo, isDiscrepancy = isDiscrepancy)
-                    TaskListLoadingMode.Shipment -> screenNavigator.openInfoScreen("Ошибка получения данных") //openNotImplementedScreenAlert("Информация о не акцизном алкоголе")
+                    TaskListLoadingMode.Shipment -> screenNavigator.openInfoScreen(context.getString(R.string.data_retrieval_error)) //openNotImplementedScreenAlert("Информация о не акцизном алкоголе")
                     else -> screenNavigator.openAlertUnknownTaskTypeScreen() //сообщение о неизвестном типе задания
                 }
             }
         }
+    }
+
+    companion object {
+        const val UNIT_CODE_ST = "ST"
     }
 
 }
