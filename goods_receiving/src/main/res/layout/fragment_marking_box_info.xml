@@ -79,31 +79,19 @@
             app:suffix="@{vm.suffix}"
             app:cursorToLastPos="@{false}"
             app:requestFocus="@{vm.requestFocusToCount}"
-            tools:text="1 бл" />
+            tools:text="1 КОР" />
 
         <ImageView
             android:id="@+id/imgUnit"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="@dimen/size_8dp"
-            android:visibility="@{!vm.visibilityImgUnit}"
-            android:src="@{@drawable/ic_block_24dp}"
+            android:onClick="@{(v) -> vm.onClickUnitChange()}"
+            android:src="@{vm.isUnitBox ? @drawable/ic_eiz_white_24dp : @drawable/ic_block_24dp}"
             app:layout_constraintBottom_toBottomOf="@+id/et_count"
             app:layout_constraintEnd_toEndOf="@+id/et_count"
             app:layout_constraintTop_toTopOf="@+id/et_count"
             tools:src="@drawable/ic_block_24dp"/>
-
-        <ImageView
-            android:id="@+id/imgUnitDisabled"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="@dimen/size_8dp"
-            android:visibility="@{vm.visibilityImgUnit}"
-            android:src="@{@drawable/ic_block_disabled_24dp}"
-            app:layout_constraintBottom_toBottomOf="@+id/et_count"
-            app:layout_constraintEnd_toEndOf="@+id/et_count"
-            app:layout_constraintTop_toTopOf="@+id/et_count"
-            tools:src="@drawable/ic_block_disabled_24dp"/>
 
         <View
             android:id="@+id/div_hor2"

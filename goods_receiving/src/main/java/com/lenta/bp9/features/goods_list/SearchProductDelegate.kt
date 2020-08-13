@@ -194,7 +194,8 @@ class SearchProductDelegate @Inject constructor(
                 isCountingBoxes = false,
                 nestingInOneBlock = "0.0",
                 isControlGTIN = false,
-                isGrayZone = false
+                isGrayZone = false,
+                countPiecesBox = "0"
         )
         taskManager
                 .getReceivingTask()
