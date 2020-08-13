@@ -8,6 +8,7 @@ import com.lenta.bp18.repository.IDatabaseRepo
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.settings.IAppSettings
+import com.lenta.shared.utilities.EAN128Parser
 import com.lenta.shared.utilities.extentions.launchUITryCatch
 import com.lenta.shared.utilities.extentions.map
 import javax.inject.Inject
@@ -51,6 +52,18 @@ class SelectGoodViewModel : CoreViewModel() {
         if (weightValue.contains(barcode.substring(0 until 2))) {
             ean.value = barcode.replace(barcode.takeLast(6), "000000")
             weight = barcode.takeLast(6).take(5)
+        } else {
+            if (barcode.length >= 16) {
+                val ean128Barcode = EAN128Parser.parse(barcode, false).entries.find { pair ->
+                    pair.key.AI == EAN_01 || pair.key.AI == EAN_02
+                }?.value
+
+                if (ean128Barcode != null) {
+                    ean.value = ean128Barcode
+                } else if (barcode.length != 16) {
+                    println("----->  barcode EAN 128 less than 16 chars")
+                }
+            }
         }
         searchEan(ean.value.toString(), weight)
     }
@@ -73,5 +86,8 @@ class SelectGoodViewModel : CoreViewModel() {
         const val VALUE_24 = "24"
         const val VALUE_27 = "27"
         const val VALUE_28 = "28"
+
+        private const val EAN_01 = "01"
+        private const val EAN_02 = "02"
     }
 }

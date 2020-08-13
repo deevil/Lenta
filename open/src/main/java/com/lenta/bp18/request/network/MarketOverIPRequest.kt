@@ -9,8 +9,7 @@ import com.lenta.shared.interactor.UseCase
 import com.lenta.shared.requests.FmpRequestsHelper
 import javax.inject.Inject
 
-class MarketOverIPRequest
-@Inject constructor(
+class MarketOverIPRequest @Inject constructor(
         private val fmpRequestsHelper: FmpRequestsHelper
 ) : UseCase<MarketInfoResult, MarketInfoParams> {
 
