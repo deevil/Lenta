@@ -417,10 +417,10 @@ class MarkingInfoViewModel : CoreViewModel(),
         }
 
         processMarkingProductService.rollbackTypeLastStampScanned()
-        //уменьшаем кол-во отсканированных марок (блок/gtin) на единицу в текущей сессии
-        countScannedStamps.value = countScannedStamps.value?.minus(1)
         //уменьшаем кол-во отсканированных блоков на единицу в текущей сессии
-        countScannedBlocks.value = countScannedBlocks.value?.minus(1)
+        minusScannedBlocks()
+        //уменьшаем кол-во отсканированных марок (блок/gtin) на единицу в текущей сессии
+        minusScannedStamps(1)
     }
 
     private fun rollbackControlGtin() {
@@ -469,22 +469,14 @@ class MarkingInfoViewModel : CoreViewModel(),
 
     private fun minusScannedStamps(count: Int) {
         countScannedStamps.value
-                ?.takeIf {
-                    it > 0
-                }
-                ?.run {
-                    countScannedStamps.value = countScannedStamps.value?.minus(count)
-                }
+                ?.takeIf { it >= count }
+                ?.run { countScannedStamps.value = countScannedStamps.value?.minus(count) }
     }
 
     private fun minusScannedBlocks() {
         countScannedBlocks.value
-                ?.takeIf {
-                    it > 0
-                }
-                ?.run {
-                    countScannedBlocks.value = countScannedBlocks.value?.minus(1)
-                }
+                ?.takeIf { it > 0 }
+                ?.run { countScannedBlocks.value = countScannedBlocks.value?.minus(1) }
     }
 
     fun onClickDetails() {

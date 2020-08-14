@@ -1113,7 +1113,7 @@ class ScreenNavigator(
             val materialNumberLastSix = if (materialNumber.length > 6) materialNumber.substring(materialNumber.length - 6) else materialNumber
             getFragmentStack()?.push(AlertFragment.create(
                     message = context.getString(R.string.scanned_box_belongs_to_another_product, materialNumberLastSix, materialName),
-                    iconRes = R.drawable.ic_info_pink_80dp,
+                    iconRes = R.drawable.ic_warning_red_80dp,
                     textColor = ContextCompat.getColor(context, R.color.color_text_dialogWarning),
                     pageNumber = "97")
             )
@@ -1684,6 +1684,39 @@ class ScreenNavigator(
         }
     }
 
+    override fun openMarkingBoxNotIncludedDeliveryScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    message = context.getString(R.string.marking_box_not_included_delivery),
+                    iconRes = R.drawable.ic_warning_red_80dp,
+                    textColor = ContextCompat.getColor(context, R.color.color_text_dialogWarning),
+                    pageNumber = PAGE_NUMBER_97)
+            )
+        }
+    }
+
+    override fun openMarkingPerformRateControlScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    message = context.getString(R.string.marking_perform_rate_control),
+                    iconRes = R.drawable.ic_warning_red_80dp,
+                    textColor = ContextCompat.getColor(context, R.color.color_text_dialogWarning),
+                    pageNumber = PAGE_NUMBER_97)
+            )
+        }
+    }
+
+    override fun openMarkingBlockDeclaredDifferentCategoryScreen(typeDiscrepanciesName: String) {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    message = context.getString(R.string.marking_block_declared_different_category, typeDiscrepanciesName),
+                    iconRes = R.drawable.ic_warning_red_80dp,
+                    textColor = ContextCompat.getColor(context, R.color.color_text_dialogWarning),
+                    pageNumber = PAGE_NUMBER_97)
+            )
+        }
+    }
+
     private fun getFragmentStack() = foregroundActivityProvider.getActivity()?.fragmentStack
 }
 
@@ -1874,4 +1907,7 @@ interface IScreenNavigator : ICoreNavigator {
     fun openAlertScanProductGtinScreen()
     fun goBackAndShowAlertWrongProductType()
     fun openMarkingBoxInfoScreen(productInfo: TaskProductInfo)
+    fun openMarkingBoxNotIncludedDeliveryScreen()
+    fun openMarkingPerformRateControlScreen()
+    fun openMarkingBlockDeclaredDifferentCategoryScreen(typeDiscrepanciesName: String)
 }

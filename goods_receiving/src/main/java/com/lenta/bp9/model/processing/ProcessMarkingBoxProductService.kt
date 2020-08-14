@@ -4,7 +4,6 @@ import com.lenta.bp9.features.goods_information.marking.MarkingBlocksDiscrepanci
 import com.lenta.bp9.features.goods_information.marking.TypeLastStampScanned
 import com.lenta.bp9.model.repositories.ITaskRepository
 import com.lenta.bp9.model.task.*
-import com.lenta.bp9.platform.TypeDiscrepanciesConstants
 import com.lenta.bp9.platform.TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_NORM
 import com.lenta.bp9.repos.IDataBaseRepo
 import com.lenta.shared.di.AppScope
@@ -23,6 +22,8 @@ class ProcessMarkingBoxProductService
     lateinit var dataBase: IDataBaseRepo
 
     private lateinit var productInfo: TaskProductInfo
+    private val boxes: ArrayList<TaskBoxInfo> = ArrayList()
+    private val currentBoxDiscrepancies: ArrayList<TaskBoxDiscrepancies> = ArrayList()
     private val blocks: ArrayList<TaskBlockInfo> = ArrayList()
     private val currentBlocksDiscrepancies: ArrayList<MarkingBlocksDiscrepanciesInfo> = ArrayList()
     private val currentGtin: ArrayList<String> = ArrayList()
@@ -43,10 +44,27 @@ class ProcessMarkingBoxProductService
                     taskRepository = receivingTask?.taskRepository
                     currentGtin.clear()
                     currentScannedTypesStamps.clear()
+
+                    boxes.clear()
+                    taskRepository
+                            ?.getBoxes()
+                            ?.findBoxesOfProduct(productInfo)
+                            ?.mapTo(boxes) { it.copy() }
+
+                    currentBoxDiscrepancies.clear()
+                    taskRepository
+                            ?.run {
+                                getBoxesDiscrepancies()
+                                        .findBoxesDiscrepanciesOfProduct(productInfo)
+                                        .mapTo(currentBoxDiscrepancies) { it.copy() }
+                            }
+
                     blocks.clear()
-                    receivingTask
-                            ?.getProcessedBlocks()
+                    taskRepository
+                            ?.getBlocks()
+                            ?.findBlocksOfProduct(productInfo)
                             ?.mapTo(blocks) { it.copy() }
+
                     currentBlocksDiscrepancies.clear()
                     taskRepository
                             ?.run {
@@ -56,7 +74,6 @@ class ProcessMarkingBoxProductService
                                             MarkingBlocksDiscrepanciesInfo(it.copy(), true)
                                         }
                             }
-
                 }
     }
 
@@ -64,20 +81,28 @@ class ProcessMarkingBoxProductService
         currentBlocksDiscrepancies
                 .takeIf { it.isNotEmpty() }
                 ?.run {
-                    this.asSequence()
-                            .filter { blockDiscrepanciesInfo -> blockDiscrepanciesInfo.isGtinControlPassed }
-                            .map { block ->
+                    this.filter { blockDiscrepanciesInfo -> blockDiscrepanciesInfo.isGtinControlPassed }
+                            .forEach { block ->
                                 taskRepository
                                         ?.getBlocksDiscrepancies()
                                         ?.changeBlockDiscrepancy(block.blockDiscrepancies)
                             }
-                            .toList()
+                }
+
+        currentBoxDiscrepancies
+                .takeIf { it.isNotEmpty() }
+                ?.run {
+                    this.forEach { box ->
+                        taskRepository
+                                ?.getBoxesDiscrepancies()
+                                ?.changeBoxDiscrepancy(box)
+                    }
                 }
     }
 
     fun addProduct(count: String, typeDiscrepancies: String) {
         val countAdd =
-                if (typeDiscrepancies == TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_NORM) {
+                if (typeDiscrepancies == TYPE_DISCREPANCIES_QUALITY_NORM) {
                     getCountAcceptOfProduct() + count.toDouble()
                 } else {
                     getCountOfDiscrepanciesOfProduct(typeDiscrepancies) + count.toDouble()
@@ -112,9 +137,7 @@ class ProcessMarkingBoxProductService
     fun addBlockDiscrepancies(blockInfo: TaskBlockInfo, typeDiscrepancies: String, isScan: Boolean, isGtinControlPassed: Boolean) {
         var foundBlockDiscrepancy =
                 currentBlocksDiscrepancies
-                        .findLast {
-                            it.blockDiscrepancies.blockNumber == blockInfo.blockNumber
-                        }
+                        .findLast { it.blockDiscrepancies.blockNumber == blockInfo.blockNumber }
 
         foundBlockDiscrepancy =
                 foundBlockDiscrepancy
@@ -154,6 +177,54 @@ class ProcessMarkingBoxProductService
         addTypeLastStampScanned(TypeLastStampScanned.BLOCK)
     }
 
+    fun addBoxDiscrepancy(boxNumber: String, typeDiscrepancies: String) : Int {
+        val box = boxes.findLast { it.boxNumber == boxNumber }
+        var foundBoxDiscrepancy = currentBoxDiscrepancies.findLast { it.boxNumber == boxNumber }
+
+        foundBoxDiscrepancy = foundBoxDiscrepancy?.copy(typeDiscrepancies = typeDiscrepancies)
+                ?: TaskBoxDiscrepancies(
+                        processingUnitNumber = box?.processingUnitNumber.orEmpty(),
+                        materialNumber = box?.materialNumber.orEmpty(),
+                        boxNumber = boxNumber,
+                        typeDiscrepancies = typeDiscrepancies,
+                        isScan = true
+                )
+
+        currentBoxDiscrepancies
+                .map { it }
+                .filter { unitInfo ->
+                    if (unitInfo.boxNumber == boxNumber) {
+                        currentBoxDiscrepancies.remove(unitInfo)
+                        return@filter true
+                    }
+                    return@filter false
+                }
+
+        currentBoxDiscrepancies.add(foundBoxDiscrepancy)
+
+        //сохраняем все необработанные блоки для коробки без isScan, но с isGtinControlPassed
+        var countAddBlocks = 0
+        val blocksFromBox = blocks.filter { it.boxNumber == boxNumber }
+        blocksFromBox
+                .filter { block ->
+                    val lastBlock = currentBlocksDiscrepancies.findLast { it.blockDiscrepancies.blockNumber == block.blockNumber }
+                    lastBlock == null
+                }
+                .forEach { blockInfo ->
+                    addBlockDiscrepancies(
+                            blockInfo = blockInfo,
+                            typeDiscrepancies = typeDiscrepancies,
+                            isScan = false,
+                            isGtinControlPassed = true
+                    )
+                    countAddBlocks += 1
+                }
+
+        addTypeLastStampScanned(TypeLastStampScanned.BOX)
+
+        return countAddBlocks
+    }
+
     fun markPassageControlBlock(blockNumber: String) {
         val blockDiscrepancies =
                 currentBlocksDiscrepancies
@@ -172,18 +243,16 @@ class ProcessMarkingBoxProductService
 
     fun addAllUntreatedBlocksAsDefect(typeDiscrepancies: String) {
         //отмечаем все не обработанные блоки/марки для продукта категорией выбранной категорией для брака
-        blocks
-                .filter { block ->
-                    block.materialNumber == productInfo.materialNumber
-                            && currentBlocksDiscrepancies.findLast { it.blockDiscrepancies.blockNumber == block.blockNumber } == null
-                }.map { blockInfo ->
-                    addBlockDiscrepancies(
-                            blockInfo = blockInfo,
-                            typeDiscrepancies = typeDiscrepancies,
-                            isScan = false, //передаем false, т.к. эта ф-ция вызывается при сохранении всех необработанных блоков в брак без сканирования
-                            isGtinControlPassed = true
-                    )
-                }
+        blocks.filter { block ->
+            currentBlocksDiscrepancies.findLast { it.blockDiscrepancies.blockNumber == block.blockNumber } == null
+        }.forEach { blockInfo ->
+            addBlockDiscrepancies(
+                    blockInfo = blockInfo,
+                    typeDiscrepancies = typeDiscrepancies,
+                    isScan = false, //передаем false, т.к. эта ф-ция вызывается при сохранении всех необработанных блоков в брак без сканирования
+                    isGtinControlPassed = true
+            )
+        }
     }
 
     fun getTotalScannedBlocks(): Int {
@@ -214,12 +283,8 @@ class ProcessMarkingBoxProductService
 
     fun getLastScannedGtin(): String? {
         return currentGtin
-                .takeIf {
-                    !it.isNullOrEmpty()
-                }
-                ?.run {
-                    currentGtin.last()
-                }
+                .takeIf { !it.isNullOrEmpty() }
+                ?.run { currentGtin.last() }
     }
 
     fun replaceLastGtin(gtinCode: String) {
@@ -240,21 +305,57 @@ class ProcessMarkingBoxProductService
                 .filter {
                     it.blockDiscrepancies.typeDiscrepancies == typeDiscrepancies
                             && it.isGtinControlPassed
-                }.size
+                }
+                .size
+    }
+
+    fun checkBlocksCategoriesDifferentCurrent(boxNumber: String, typeDiscrepancies: String): Boolean {
+        return currentBlocksDiscrepancies.any {
+            it.blockDiscrepancies.typeDiscrepancies != typeDiscrepancies
+                    && it.blockDiscrepancies.boxNumber == boxNumber
+        }
     }
 
     private fun rollbackScannedBlock() {
-        if (currentBlocksDiscrepancies.isNotEmpty()) {
-            val block = currentBlocksDiscrepancies.last()
-            currentBlocksDiscrepancies.remove(block)
-        }
+        currentBlocksDiscrepancies
+                .takeIf { it.isNotEmpty() }
+                ?.run {
+                    val block = this.last()
+                    this.remove(block)
+                }
     }
 
     private fun rollbackScannedGtin() {
-        if (currentGtin.isNotEmpty()) {
-            val gtin = currentGtin.last()
-            currentGtin.remove(gtin)
-        }
+        currentGtin
+                .takeIf { it.isNotEmpty() }
+                ?.run {
+                    val gtin = this.last()
+                    this.remove(gtin)
+                }
+    }
+
+    private fun rollbackScannedBox() : Int {
+        var boxNumber = ""
+        currentBoxDiscrepancies
+                .takeIf { it.isNotEmpty() }
+                ?.run {
+                    val box = this.last()
+                    boxNumber = box.boxNumber
+                    this.remove(box)
+                }
+
+        val countDelBlocksForBox =
+                currentBlocksDiscrepancies
+                        .filter { it.blockDiscrepancies.boxNumber == boxNumber && !it.blockDiscrepancies.isScan }
+                        .size
+
+        //удаляем блоки, которые были добавлены при скане коробки, т.е. без признака isScan
+        currentBlocksDiscrepancies
+                .removeItemFromListWithPredicate {
+                    it.blockDiscrepancies.boxNumber == boxNumber && !it.blockDiscrepancies.isScan
+                }
+
+        return countDelBlocksForBox
     }
 
     fun overLimit(count: Double): Boolean {
@@ -314,16 +415,16 @@ class ProcessMarkingBoxProductService
                 ?.deleteBlocksDiscrepanciesForProduct(productInfo)
 
         //отмечаем все блоки/марки для продукта категорией для брака из параметра GRZ_GRUND_MARK
-        blocks.filter { block -> block.materialNumber == productInfo.materialNumber }
-                .map { blockInfo ->
-                    addBlockDiscrepancies(
-                            blockInfo = blockInfo,
-                            typeDiscrepancies = typeDiscrepancies,
-                            isScan = false, //передаем false, т.к. эта ф-ция (denialOfFullProductAcceptance) вызывается с экрана Обнаружены расхождения по клику на блок на вкладке Не обработаны
-                            isGtinControlPassed = true
-                    )
-                    apply()
-                }
+        blocks.forEach { blockInfo ->
+            addBlockDiscrepancies(
+                    blockInfo = blockInfo,
+                    typeDiscrepancies = typeDiscrepancies,
+                    isScan = false, //передаем false, т.к. эта ф-ция (denialOfFullProductAcceptance) вызывается с экрана Обнаружены расхождения по клику на блок на вкладке Не обработаны
+                    isGtinControlPassed = true
+            )
+        }
+
+        apply()
 
         //удаляем всю информацию по продукту
         taskRepository
@@ -350,19 +451,18 @@ class ProcessMarkingBoxProductService
         val notConfirmedByScanning = productInfo.origQuantity.toDouble() - countProcessedBlocks
 
         //отмечаем все не обработанные блоки/марки для продукта категорией для брака из параметра GRZ_GRUND_MARK
-        blocks
-                .filter { block ->
-                    block.materialNumber == productInfo.materialNumber
-                            && currentBlocksDiscrepancies.findLast { it.blockDiscrepancies.blockNumber == block.blockNumber } == null
-                }.map { blockInfo ->
-                    addBlockDiscrepancies(
-                            blockInfo = blockInfo,
-                            typeDiscrepancies = typeDiscrepancies,
-                            isScan = false, //передаем false, т.к. эта ф-ция (refusalToAcceptPartlyByProduct) вызывается с экрана Обнаружены расхождения по клику на блок на вкладке Не обработаны
-                            isGtinControlPassed = true
-                    )
-                    apply()
-                }
+        blocks.filter { block ->
+            currentBlocksDiscrepancies.findLast { it.blockDiscrepancies.blockNumber == block.blockNumber } == null
+        }.forEach { blockInfo ->
+            addBlockDiscrepancies(
+                    blockInfo = blockInfo,
+                    typeDiscrepancies = typeDiscrepancies,
+                    isScan = false, //передаем false, т.к. эта ф-ция (refusalToAcceptPartlyByProduct) вызывается с экрана Обнаружены расхождения по клику на блок на вкладке Не обработаны
+                    isGtinControlPassed = true
+            )
+        }
+
+        apply()
 
         //отмечаем продукт (https://trello.com/c/r4kofgtQ в комментарии смотреть логику)
         taskRepository
@@ -383,27 +483,35 @@ class ProcessMarkingBoxProductService
         currentScannedTypesStamps.add(typeLastStampScanned)
     }
 
-    fun rollbackTypeLastStampScanned() {
+    fun rollbackTypeLastStampScanned() : Int {
+        var countDelBlocksForBox = 0
         currentScannedTypesStamps
-                .takeIf {
-                    it.isNotEmpty()
-                }
+                .takeIf { it.isNotEmpty() }
                 ?.run {
                     val stamp = this.last()
-                    if (stamp == TypeLastStampScanned.BLOCK) {
-                        rollbackScannedBlock()
-                    } else {
-                        rollbackScannedGtin()
+                    when (stamp) {
+                        TypeLastStampScanned.BLOCK -> rollbackScannedBlock()
+                        TypeLastStampScanned.GTIN -> rollbackScannedGtin()
+                        TypeLastStampScanned.BOX -> countDelBlocksForBox = rollbackScannedBox()
+                        else -> return@run
                     }
                     this.remove(stamp)
                 }
+
+        return countDelBlocksForBox
+    }
+
+    fun getLastScannedTypesStamps() : TypeLastStampScanned {
+        return currentScannedTypesStamps.last()
     }
 
     fun modifications(): Boolean {
-        return currentBlocksDiscrepancies !=
+        val blocksDiscrepanciesOfProduct =
                 taskRepository
                         ?.getBlocksDiscrepancies()
                         ?.findBlocksDiscrepanciesOfProduct(productInfo)
+
+        return currentBlocksDiscrepancies != blocksDiscrepanciesOfProduct
     }
 
     fun clearModifications() {

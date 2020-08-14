@@ -83,7 +83,7 @@ class MarkingGoodsDetailsViewModel : CoreViewModel(), PageSelectionListener {
     fun onClickDelete() {
         if (productInfo.value != null && productInfo.value?.isNotEdit == false) {
             categoriesSelectionsHelper.selectedPositions.value
-                    ?.map { position ->
+                    ?.forEach { position ->
                         val isDiscrepanciesErrorUPD =
                                 (goodsDetails.value
                                         ?.get(position)

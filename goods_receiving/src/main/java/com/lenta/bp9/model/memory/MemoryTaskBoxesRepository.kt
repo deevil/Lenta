@@ -13,7 +13,11 @@ class MemoryTaskBoxesRepository : ITaskBoxesRepository {
     }
 
     override fun findBox(box: TaskBoxInfo): TaskBoxInfo? {
-        return boxes.firstOrNull { it.boxNumber == box.boxNumber}
+        return findBox(box.boxNumber)
+    }
+
+    override fun findBox(boxNumber: String): TaskBoxInfo? {
+        return boxes.firstOrNull { it.boxNumber == boxNumber}
     }
 
     override fun findBoxesOfProduct(productInfo: TaskProductInfo): List<TaskBoxInfo>? {
