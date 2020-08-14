@@ -2,7 +2,7 @@ package com.lenta.bp18.platform
 
 object Constants {
 
-    const val GOOD_BARCODE = "000000"
+    const val GOOD_BARCODE = "(01)00242526702505(10)500001150580(8008)202008101515"
     const val GOOD_MATERIAL = "000000000000000000"
     const val GOOD_MATCODE = "000000000000"
 

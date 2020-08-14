@@ -29,7 +29,7 @@ object EAN128Parser {
 
     @Throws(InvalidObjectException::class)
     fun parse(data: String, throwException: Boolean): Map<AII, String> {
-        var localData = data
+        var localData = data.replace("(", "").replace(")", "")
         // cut off the EAN128 start code
         if (localData.startsWith(eAN128StartCode)) {
             localData = localData.substring(eAN128StartCode.length)
