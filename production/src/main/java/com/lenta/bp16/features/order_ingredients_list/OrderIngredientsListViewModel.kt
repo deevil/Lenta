@@ -7,11 +7,13 @@ import com.lenta.bp16.model.ingredients.OrderIngredientDataInfo
 import com.lenta.bp16.model.ingredients.params.GetIngredientDataParams
 import com.lenta.bp16.model.ingredients.params.UnblockIngredientsParams
 import com.lenta.bp16.model.ingredients.ui.ItemOrderIngredientUi
+import com.lenta.bp16.model.ingredients.ui.OrderByBarcode
 import com.lenta.bp16.platform.extention.getFieldWithSuffix
 import com.lenta.bp16.platform.extention.getItemName
 import com.lenta.bp16.platform.extention.getModeType
 import com.lenta.bp16.platform.navigation.IScreenNavigator
 import com.lenta.bp16.platform.resource.IResourceManager
+import com.lenta.bp16.request.GetEanIngredientsNetRequest
 import com.lenta.bp16.request.GetOrderIngredientsDataNetRequest
 import com.lenta.bp16.request.UnblockIngredientNetRequest
 import com.lenta.shared.account.ISessionInfo
@@ -45,8 +47,15 @@ class OrderIngredientsListViewModel : CoreViewModel() {
     @Inject
     lateinit var getIngredientData: GetOrderIngredientsDataNetRequest
 
+    @Inject
+    lateinit var getEanIngredientData: GetEanIngredientsNetRequest
+
     private val allOrderIngredients: MutableLiveData<List<OrderIngredientDataInfo>> by unsafeLazy {
         MutableLiveData<List<OrderIngredientDataInfo>>()
+    }
+
+    private val allEanIngredients: MutableLiveData<List<OrderByBarcode>> by unsafeLazy {
+        MutableLiveData<List<OrderByBarcode>>()
     }
 
     fun loadOrderIngredientsList() = launchUITryCatch {
@@ -63,11 +72,24 @@ class OrderIngredientsListViewModel : CoreViewModel() {
                         mode = mode,
                         weight = weight
                 )
-        ).also {
+        )
+        val eanResult = getEanIngredientData(
+                params =  GetIngredientDataParams(
+                        tkMarket = sessionInfo.market.orEmpty(),
+                        deviceIP = resourceManager.deviceIp,
+                        code = code,
+                        mode = mode,
+                        weight = weight
+                )
+        ).also{
             navigator.hideProgress()
         }
         result.either(::handleFailure, fnR = {
             allOrderIngredients.value = it
+            Unit
+        })
+        eanResult.either(::handleFailure, fnR = {
+            allEanIngredients.value = it
             Unit
         })
     }
@@ -102,8 +124,10 @@ class OrderIngredientsListViewModel : CoreViewModel() {
 
     fun onClickItemPosition(position: Int) {
         ingredient.value?.let { selectedIngredient ->
-            allOrderIngredients.value?.getOrNull(position)?.let {
-                navigator.openIngredientDetailsScreen(it, selectedIngredient.text3.orEmpty())
+            allOrderIngredients.value?.getOrNull(position)?.let {orderDataInfo ->
+                allEanIngredients.value?.getOrNull(position)?.let { barcode ->
+                    navigator.openIngredientDetailsScreen(orderDataInfo, selectedIngredient.text3.orEmpty(), barcode)
+                }
             }
         }
     }

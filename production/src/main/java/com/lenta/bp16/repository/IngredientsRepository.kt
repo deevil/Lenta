@@ -117,14 +117,14 @@ interface IIngredientsRepository {
     suspend fun getAllIngredients(params: GetIngredientsParams): Either<Failure, List<IngredientInfo>>
 
     /**
-     * Получение игредиентов из заказа
+     * Получение ингредиентов из заказа
      *
      * @param params - [GetIngredientDataParams]
      */
     suspend fun getIngredientListData(params: GetIngredientDataParams): Either<Failure, IngredientsDataListResult>
 
     /**
-     * Разбокировка иноредиента после комплектации
+     * Разбокировка ингредиента после комплектации
      *
      * @param params - [UnblockIngredientsParams]
      */
