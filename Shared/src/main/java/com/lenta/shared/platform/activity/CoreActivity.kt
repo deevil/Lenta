@@ -24,12 +24,13 @@ abstract class CoreActivity<T : ViewDataBinding> : AppCompatActivity() {
         binding = DataBindingUtil.setContentView(this, getLayoutId())
         binding?.lifecycleOwner = this
         coreComponent.inject(dataBindingHelpHolder)
+    }
 
-        window.decorView.apply {
-            // Hide both the navigation bar
-            // Set the content to appear under the system bars so that the
-            // content doesn't resize when the system bars hide and show.
-            systemUiVisibility = View.SYSTEM_UI_FLAG_HIDE_NAVIGATION or View.SYSTEM_UI_FLAG_FULLSCREEN
+    override fun onWindowFocusChanged(hasFocus: Boolean) {
+        super.onWindowFocusChanged(hasFocus)
+
+        if (hasFocus) {
+            hideSystemUI()
         }
     }
 
@@ -45,4 +46,17 @@ abstract class CoreActivity<T : ViewDataBinding> : AppCompatActivity() {
         requestWindowFeature(Window.FEATURE_NO_TITLE)
         window.setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN)
     }
+
+    private fun hideSystemUI() {
+        val decorView: View = window.decorView
+        val uiOptions = decorView.systemUiVisibility
+        var newUiOptions = uiOptions
+        newUiOptions = newUiOptions or View.SYSTEM_UI_FLAG_LOW_PROFILE
+        newUiOptions = newUiOptions or View.SYSTEM_UI_FLAG_FULLSCREEN
+        newUiOptions = newUiOptions or View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+        newUiOptions = newUiOptions or View.SYSTEM_UI_FLAG_IMMERSIVE
+        newUiOptions = newUiOptions or View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+        decorView.systemUiVisibility = newUiOptions
+    }
+
 }
