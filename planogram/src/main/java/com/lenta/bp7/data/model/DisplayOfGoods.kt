@@ -11,7 +11,7 @@ data class DisplayOfGoods @JvmOverloads constructor(
         @field:Attribute(name = "id")
         var marketIp: String,
         @field:Attribute(name = "gid")
-        var gid: String = UUID.randomUUID().toString(),
+        var gid: String,
         @Path("equipment") @field:ElementList(name = "equipment", inline = true)
         var segments: MutableList<SegmentSend> = mutableListOf()
 ) {
