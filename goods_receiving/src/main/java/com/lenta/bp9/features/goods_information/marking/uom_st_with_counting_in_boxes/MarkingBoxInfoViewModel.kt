@@ -543,9 +543,9 @@ class MarkingBoxInfoViewModel : CoreViewModel(),
             in 0..7, in 9..11, in 15..20 -> {
                 screenNavigator.openAlertInvalidBarcodeFormatScannedScreen()
             }
-            in 30..40, 42, 43 -> {
+            /**in 30..40, 42, 43 -> {
                 screenNavigator.openAlertInvalidCodeScannedForCurrentModeScreen()
-            }
+            }*/
             8, in 12..14 -> {//GTIN https://trello.com/c/y2ECoCw4
                 if (currentTypeDiscrepanciesCode == TYPE_DISCREPANCIES_QUALITY_NORM) {
                     gtinScannedCheck(data.padStart(14, '0'))
