@@ -15,6 +15,7 @@ import com.lenta.bp9.repos.IDataBaseRepo
 import com.lenta.bp9.repos.IRepoInMemoryHolder
 import com.lenta.shared.fmp.resources.dao_ext.getProductInfoByMaterial
 import com.lenta.shared.fmp.resources.slow.ZfmpUtz48V001
+import com.lenta.shared.platform.constants.Constants
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.requests.combined.scan_info.pojo.QualityInfo
 import com.lenta.shared.requests.combined.scan_info.pojo.ReasonRejectionInfo
@@ -124,10 +125,10 @@ class ExciseAlcoBoxCardViewModel : CoreViewModel(), OnPositionClickListener {
     }
 
     @SuppressLint("SimpleDateFormat")
-    private val formatterRU = SimpleDateFormat("dd.MM.yyyy")
+    private val formatterRU = SimpleDateFormat(Constants.DATE_FORMAT_dd_mm_yyyy)
 
     @SuppressLint("SimpleDateFormat")
-    private val formatterEN = SimpleDateFormat("yyyy-MM-dd")
+    private val formatterERP = SimpleDateFormat(Constants.DATE_FORMAT_yyyyMMdd)
 
     private val paramGrzCrGrundcatCode: MutableLiveData<String> = MutableLiveData("")
     private val paramGrzCrGrundcatName: MutableLiveData<String> = MutableLiveData("")
@@ -461,14 +462,7 @@ class ExciseAlcoBoxCardViewModel : CoreViewModel(), OnPositionClickListener {
     }
 
     private fun getManufacturerName() : String {
-        val batchNumber = exciseStampInfo.value?.batchNumber
-        val manufacturerCode =
-                taskManager
-                        .getReceivingTask()
-                        ?.getProcessedBatches()
-                        ?.findLast { it.batchNumber == batchNumber }
-                        ?.egais
-                        .orEmpty()
+        val manufacturerCode = exciseStampInfo.value?.organizationCodeEGAIS
         return repoInMemoryHolder
                 .manufacturers.value
                 ?.findLast { it.code == manufacturerCode }
@@ -477,17 +471,10 @@ class ExciseAlcoBoxCardViewModel : CoreViewModel(), OnPositionClickListener {
     }
 
     private fun getBottlingDate() : String {
-        val batchNumber = exciseStampInfo.value?.batchNumber
-        val dateOfPour =
-                taskManager
-                        .getReceivingTask()
-                        ?.getProcessedBatches()
-                        ?.findLast { it.batchNumber == batchNumber }
-                        ?.bottlingDate
-                        .orEmpty()
+        val dateOfPour = exciseStampInfo.value?.bottlingDate.orEmpty()
         return dateOfPour
                 .takeIf { it.isNotEmpty() }
-                ?.run { formatterRU.format(formatterEN.parse(dateOfPour)) }
+                ?.run { formatterRU.format(formatterERP.parse(dateOfPour)) }
                 .orEmpty()
     }
 

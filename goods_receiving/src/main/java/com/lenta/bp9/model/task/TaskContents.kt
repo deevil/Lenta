@@ -13,8 +13,13 @@ import com.lenta.shared.fmp.resources.slow.ZfmpUtz48V001
 import com.lenta.shared.models.core.Uom
 import com.lenta.shared.models.core.getMatrixType
 import com.lenta.shared.models.core.getProductType
+import com.lenta.shared.platform.constants.Constants
 import com.lenta.shared.platform.constants.Constants.DATE_FORMAT_dd_mm_yyyy
+import com.lenta.shared.platform.constants.Constants.DATE_FORMAT_yyyyMMdd
 import com.lenta.shared.platform.constants.Constants.DATE_FORMAT_yyyy_mm_dd
+import com.lenta.shared.utilities.Logg
+import com.lenta.shared.utilities.extentions.getFormattedDate
+import com.lenta.shared.utilities.getStringFromDate
 import com.mobrun.plugin.api.HyperHive
 import java.text.SimpleDateFormat
 import javax.inject.Inject
@@ -40,10 +45,10 @@ class TaskContents
     }
 
     @SuppressLint("SimpleDateFormat")
-    private val formatterRU = SimpleDateFormat(DATE_FORMAT_dd_mm_yyyy)
+    private val formatterEN = SimpleDateFormat(DATE_FORMAT_yyyy_mm_dd)
 
     @SuppressLint("SimpleDateFormat")
-    private val formatterEN = SimpleDateFormat(DATE_FORMAT_yyyy_mm_dd)
+    private val formatterERP = SimpleDateFormat(DATE_FORMAT_yyyyMMdd)
 
     suspend fun getTaskContentsInfo(startRecountRestInfo: DirectSupplierStartRecountRestInfo) : TaskContentsInfo {
         return TaskContentsInfo(
@@ -289,7 +294,7 @@ class TaskContents
         return batch
                 ?.bottlingDate
                 ?.takeIf { it.isNotEmpty() }
-                ?.run { formatterRU.format(formatterEN.parse(this)) }
+                ?.run { formatterERP.format(formatterEN.parse(this)) }
                 .orEmpty()
     }
 }
