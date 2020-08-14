@@ -33,12 +33,16 @@ sealed class Failure {
     data class SapError(val message: String, val retCode: Int? = null) : Failure()
     data class DbError(val message: String) : Failure()
     object NotValidQrCode : Failure()
-    object FileReadingError: Failure()
-    object PrintTemplateError: Failure()
+    object FileReadingError : Failure()
+    object PrintTemplateError : Failure()
 
-    data class ThrowableFailure(val e : Throwable) : Failure()
+    data class ThrowableFailure(val e: Throwable) : Failure()
+
     /** * Extend this class for feature specific failures.*/
     abstract class FeatureFailure : Failure()
+
+    /** Internal app Message failure **/
+    data class MessageFailure(val message: String? = null, val messageResId: Int? = null) : Failure()
 }
 
 data class NotFoundAppUpdateFileError(
