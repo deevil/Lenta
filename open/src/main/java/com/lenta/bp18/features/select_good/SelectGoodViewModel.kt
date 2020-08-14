@@ -1,6 +1,8 @@
 package com.lenta.bp18.features.select_good
 
+import android.content.Context
 import androidx.lifecycle.MutableLiveData
+import com.lenta.bp18.R
 import com.lenta.bp18.model.pojo.GoodParams
 import com.lenta.bp18.platform.Constants
 import com.lenta.bp18.platform.navigation.IScreenNavigator
@@ -11,6 +13,9 @@ import com.lenta.shared.settings.IAppSettings
 import com.lenta.shared.utilities.EAN128Parser
 import com.lenta.shared.utilities.extentions.launchUITryCatch
 import com.lenta.shared.utilities.extentions.map
+import com.lenta.shared.utilities.extentions.unsafeLazy
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 class SelectGoodViewModel : CoreViewModel() {
@@ -27,12 +32,14 @@ class SelectGoodViewModel : CoreViewModel() {
     @Inject
     lateinit var database: IDatabaseRepo
 
-    val ean: MutableLiveData<String> = MutableLiveData()
+    @Inject
+    lateinit var context: Context
 
-    private val weightValue = listOf(VALUE_23, VALUE_24, VALUE_27, VALUE_28)
+    private val ean: MutableLiveData<String> = MutableLiveData()
+
+    private val weightValue by unsafeLazy { listOf(VALUE_23, VALUE_24, VALUE_27, VALUE_28) }
 
     val barcodeField: MutableLiveData<String> = MutableLiveData()
-
     val nextButtonEnabled = barcodeField.map { !it.isNullOrBlank() }
     val requestFocusToBarcode = MutableLiveData<Boolean>(true)
 
@@ -46,38 +53,54 @@ class SelectGoodViewModel : CoreViewModel() {
         preparationEanForSearch()
     }
 
-    private fun preparationEanForSearch() {
+    private fun preparationEanForSearch() = launchUITryCatch {
+        navigator.showProgress(context.getString(R.string.load_barcode_data))
+        //00030000020005
         val barcode = ean.value.toString()
         var weight = DEFAULT_WEIGHT
-        if (weightValue.contains(barcode.substring(0 until 2))) {
-            ean.value = barcode.replace(barcode.takeLast(6), TAKEN_ZEROS)
-            weight = barcode.takeLast(6).take(5)
-        } else {
-            if (barcode.length >= MINIMUM_GS1_CODE_LENGTH) {
-                val ean128Barcode = EAN128Parser.parse(barcode, false).entries.find { pair ->
-                    pair.key.AI == EAN_01 || pair.key.AI == EAN_02
-                }?.value
 
-                if (ean128Barcode != null) {
-                    ean.value = ean128Barcode
+        withContext(Dispatchers.IO) {
+            if (weightValue.contains(barcode.substring(0 until 2))) {
+                ean.postValue(barcode.replace(barcode.takeLast(6), TAKEN_ZEROS))
+                weight = barcode.takeLast(6).take(5)
+            } else {
+                if (barcode.length >= MINIMUM_GS1_CODE_LENGTH) {
+                    val ean128Barcode = EAN128Parser.parse(barcode, false).entries.find { pair ->
+                        pair.key.AI == EAN_01 || pair.key.AI == EAN_02
+                    }?.value
+
+                    ean.postValue(ean128Barcode.orEmpty())
                 } else if (barcode.length != MINIMUM_GS1_CODE_LENGTH) {
+                    ean.postValue("")
                     println("----->  barcode EAN 128 less than 16 chars")
                 }
             }
         }
+
         searchEan(ean.value.toString(), weight)
     }
 
-    private fun searchEan(ean: String, weight: String) {
-        launchUITryCatch {
-            val good = database.getGoodByEan(ean)
-            good?.let {
-                val goodParams = GoodParams(ean = good.ean,
-                        material = good.getFormattedMaterial(),
-                        name = good.name,
-                        weight = weight)
-                navigator.openGoodsInfoScreen(goodParams)
-            } ?: navigator.showAlertGoodsNotFound()
+    private suspend fun searchEan(ean: String, weight: String) {
+        database.getGoodByEan(ean)?.let { good ->
+            val goodMaterial = good.getFormattedMaterial()
+            val goodParams = GoodParams(
+                    ean = good.ean,
+                    material = goodMaterial,
+                    name = good.name,
+                    weight = weight
+            )
+
+            with(navigator) {
+                hideProgress()
+                openGoodsInfoScreen(goodParams)
+            }
+        } ?: showAlertForNotFoundedGood()
+    }
+
+    private fun showAlertForNotFoundedGood() {
+        with(navigator) {
+            hideProgress()
+            showAlertGoodsNotFound()
         }
     }
 

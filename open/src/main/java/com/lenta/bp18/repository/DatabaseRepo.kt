@@ -11,6 +11,7 @@ import com.lenta.shared.fmp.resources.slow.ZfmpUtz48V001
 import com.lenta.shared.fmp.resources.slow.ZmpUtz25V001
 import com.lenta.shared.models.core.Uom
 import com.lenta.shared.requests.combined.scan_info.pojo.*
+import com.lenta.shared.utilities.Logg
 import com.mobrun.plugin.api.HyperHive
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -39,15 +40,21 @@ class DatabaseRepo(
                         name = productInfo?.name.orEmpty(),
                         uom = Uom(
                                 code = productInfo?.buom.orEmpty(),
-                                name = unitName.orEmpty()))
+                                name = unitName.orEmpty())
+                )
             }
         }
     }
 
     override suspend fun getEanInfoByEan(ean: String?): EanInfo? {
         return withContext(Dispatchers.IO) {
-            //val allData = barCodeInfo.localHelper_ET_EANS.all.takeLast(100)
             barCodeInfo.getEanInfo(ean)?.toEanInfo()
+        }
+    }
+
+    override suspend fun getEanInfoByMaterial(material: String?): EanInfo? {
+        return withContext(Dispatchers.IO) {
+            barCodeInfo.getEanInfoFromMaterial(material)?.toEanInfo()
         }
     }
 
@@ -97,6 +104,7 @@ class DatabaseRepo(
 
 interface IDatabaseRepo {
     suspend fun getEanInfoByEan(ean: String?): EanInfo?
+    suspend fun getEanInfoByMaterial(material: String?): EanInfo?
     suspend fun getProductInfoByMaterial(material: String?): ProductInfo?
     suspend fun getGoodUnitName(unitCode: String?): String?
     suspend fun getGoodByEan(ean: String): Good?
