@@ -37,7 +37,7 @@ class SelectGoodViewModel : CoreViewModel() {
     val requestFocusToBarcode = MutableLiveData<Boolean>(true)
 
     fun onClickNext() {
-        ean.value = Constants.GOOD_BARCODE// barcodeField.value ?: Constants.GOOD_BARCODE
+        ean.value = barcodeField.value ?: Constants.GOOD_BARCODE
         preparationEanForSearch()
     }
 
