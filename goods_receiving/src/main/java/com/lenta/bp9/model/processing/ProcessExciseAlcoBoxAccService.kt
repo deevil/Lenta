@@ -213,7 +213,7 @@ class ProcessExciseAlcoBoxAccService
     }
 
     fun denialOfFullProductAcceptance(typeDiscrepancies: String) {
-        //https://trello.com/c/WeGFSdAW
+        //https://trello.com/c/WeGFSdAW https://trello.com/c/Vb4JOS5f
         //отмечаем все короба для продукта категорией для брака из параметра GRZ_CR_GRUNDCAT
         boxes.filter { box ->
             box.materialNumber == productInfo.materialNumber
@@ -226,14 +226,14 @@ class ProcessExciseAlcoBoxAccService
         }
 
         //отмечаем все марки для продукта категорией для брака из параметра GRZ_CR_GRUNDCAT
-        exciseStamps
+       /** exciseStamps закомичено согласно этой карточке https://trello.com/c/Vb4JOS5f
                 .filter { foundStamp ->
                     foundStamp.materialNumber == productInfo.materialNumber
                 }
                 .forEach { stamp ->
                     //передаем false, т.к. эта ф-ция (denialOfFullProductAcceptance) вызывается с экрана Обнаружены расхождения по клику на короб на вкладке Не обработаны
                     addExciseStampDiscrepancy(stamp, typeDiscrepancies, false)
-                }
+                }*/
 
         //отмечаем продукт
         addProduct(productInfo.origQuantity, typeDiscrepancies)
@@ -258,7 +258,7 @@ class ProcessExciseAlcoBoxAccService
         }
 
         //отмечаем все не обработанные марки для продукта категорией для брака из параметра GRZ_CR_GRUNDCAT
-        exciseStamps
+        /**exciseStamps закомичено согласно этой карточке https://trello.com/c/Vb4JOS5f
                 .filter { foundStamp ->
                     val currentExciseStampsCode = currentExciseStampsDiscrepancies.findLast { it.code == foundStamp.code }?.code.orEmpty()
                     foundStamp.materialNumber == productInfo.materialNumber
@@ -266,7 +266,7 @@ class ProcessExciseAlcoBoxAccService
                 }
                 .forEach { stamp ->
                     addExciseStampDiscrepancy(stamp, typeDiscrepancies, false)//передаем false, т.к. эта ф-ция (refusalToAcceptPartlyByProduct) вызывается с экрана Оюнаружены расхождения по клику на короб на вкладке Не обработаны
-                }
+                }*/
 
         //отмечаем продукт
         val countAddProduct = (productInfo.origQuantity.toDouble() - getCountAcceptOfProduct() - getCountRefusalOfProduct()).toString()
