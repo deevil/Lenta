@@ -185,9 +185,7 @@ class MarkingBoxInfoViewModel : CoreViewModel(),
         get() {
             return productInfo.value
                     ?.let { product ->
-                        taskManager
-                                .getReceivingTask()
-                                ?.taskRepository
+                        taskRepository
                                 ?.getProductsDiscrepancies()
                                 ?.getCountRefusalOfProduct(product)
                     }
@@ -291,13 +289,10 @@ class MarkingBoxInfoViewModel : CoreViewModel(),
             .combineLatest(spinReasonRejectionSelectedPosition)
             .combineLatest(countScannedBlocks)
             .map {
-                //проверяем productInfo т.к. он используется в processMarkingProductService.getCountProcessedBlockForDiscrepancies() и если он null, тогда он неинициализирован в processMarkingProductService, и получим lateinit property productInfo has not been initialized
                 productInfo.value
                         ?.let { product ->
-                            //val enteredCount = count.value?.toDoubleOrNull() ?: 0.0
                             val countBlockScannedValue = countScannedBlocks.value ?: 0
-                            //val productOrigQuantity = product.origQuantity
-                            val totalBlocksProduct = product.origQuantity.toDouble() //processMarkingBoxProductService.getCountBoxesByAttachments(productOrigQuantity)
+                            val totalBlocksProduct = product.origQuantity.toDouble()
                             val countProcessedBlocksCurrentDiscrepancies = processMarkingBoxProductService.getTotalScannedBlocks()
                             if (countBlockScannedValue <= 0) { //фиксируем необработанное количество после первого сканирования марок, чтобы не учитывать их в текущей сессии, иначе это кол-во будет уменьшаться и появиться текст Не требуется
                                 unprocessedQuantityOfBlocks.value = totalBlocksProduct - countProcessedBlocksCurrentDiscrepancies
@@ -326,10 +321,9 @@ class MarkingBoxInfoViewModel : CoreViewModel(),
             }
 
     val checkBoxStampList: MutableLiveData<Boolean> = checkBoxStampListVisibility.map {
-        val enteredCount = count.value?.toDoubleOrNull() ?: 0.0
         val countBlockScanned = countScannedBlocks.value ?: 0
         (currentTypeDiscrepanciesCode != TYPE_DISCREPANCIES_QUALITY_NORM && it == false)
-                || (countBlockScanned >= enteredCount && enteredCount > 0.0)
+                || (countBlockScanned >= enteredCountInBlockUnits && enteredCountInBlockUnits > 0.0)
     }
 
     val enabledApplyButton: MutableLiveData<Boolean> =
@@ -338,12 +332,11 @@ class MarkingBoxInfoViewModel : CoreViewModel(),
                     .combineLatest(checkBoxStampList)
                     .combineLatest(acceptTotalCount)
                     .map {
-                        val enteredCount = count.value?.toDoubleOrNull() ?: 0.0
                         val checkStampControlValue = checkStampControl.value ?: false
                         val checkBoxStampListValue = checkBoxStampList.value ?: false
                         val acceptTotalCountValue = acceptTotalCount.value ?: 0.0
 
-                        (enteredCount > 0.0 || (acceptTotalCountValue > 0.0 && currentTypeDiscrepanciesCode == TYPE_DISCREPANCIES_QUALITY_NORM))
+                        (enteredCountInBlockUnits > 0.0 || (acceptTotalCountValue > 0.0 && currentTypeDiscrepanciesCode == TYPE_DISCREPANCIES_QUALITY_NORM))
                                 && (currentTypeDiscrepanciesCode == TYPE_DISCREPANCIES_QUALITY_NORM
                                 ||checkStampControlValue
                                 || checkBoxStampListValue)
@@ -538,9 +531,8 @@ class MarkingBoxInfoViewModel : CoreViewModel(),
 
     //https://trello.com/c/vl9wQg0Y https://trello.com/c/N6t51jru
     fun onScanResult(data: String) {
-        val enteredCount = count.value?.toDoubleOrNull() ?: 0.0
         val acceptTotalCountValue = acceptTotalCount.value ?: 0.0
-        if (enteredCount <= 0.0) {
+        if (enteredCountInBlockUnits <= 0.0) {
             if (!(currentTypeDiscrepanciesCode == TYPE_DISCREPANCIES_QUALITY_NORM && acceptTotalCountValue > 0.0)) {
                 screenNavigator.openAlertMustEnterQuantityInfoGreenScreen()
                 return
@@ -551,13 +543,22 @@ class MarkingBoxInfoViewModel : CoreViewModel(),
             in 0..7, in 9..11, in 15..20 -> {
                 screenNavigator.openAlertInvalidBarcodeFormatScannedScreen()
             }
-            in 21..40, 42, 43 -> {
+            in 30..40, 42, 43 -> {
                 screenNavigator.openAlertInvalidCodeScannedForCurrentModeScreen()
             }
             8, in 12..14 -> {//GTIN https://trello.com/c/y2ECoCw4
                 if (currentTypeDiscrepanciesCode == TYPE_DISCREPANCIES_QUALITY_NORM) {
                     gtinScannedCheck(data.padStart(14, '0'))
                 }
+            }
+            in 21..28 -> {
+                //коробка
+            }
+            29 -> {
+                //пачка
+            }
+            in 30..44 -> {
+                //Блок и больше 44
             }
             else -> { //марка/блок. отсканировано 41, 44 или более 44 символов https://trello.com/c/N6t51jru
                 if (barcodeCheck(data)) {
