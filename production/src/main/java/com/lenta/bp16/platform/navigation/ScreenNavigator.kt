@@ -206,8 +206,8 @@ class ScreenNavigator @Inject constructor(
         getFragmentStack()?.push(MaterialRemakesListFragment.newInstance(selectedIngredient))
     }
 
-    override fun openMaterialRemakeDetailsScreen(selectedMaterial: MaterialIngredientDataInfo, parentCode: String, parentName: String) {
-        getFragmentStack()?.push(MaterialRemakeDetailsFragment.newInstance(selectedMaterial, parentCode, parentName))
+    override fun openMaterialRemakeDetailsScreen(selectedMaterial: MaterialIngredientDataInfo, parentCode: String, parentName: String, barcode: OrderByBarcode) {
+        getFragmentStack()?.push(MaterialRemakeDetailsFragment.newInstance(selectedMaterial, parentCode, parentName, barcode))
     }
 
     override fun openTechOrdersScreen(selectedMaterial: MaterialIngredientDataInfo, parentCode: String) {
@@ -423,7 +423,7 @@ interface IScreenNavigator : ICoreNavigator {
     fun openIngredientDetailsScreen(selectedIngredient: OrderIngredientDataInfo, parentCode: String, eanList: OrderByBarcode)
     fun openOrderIngredientsListScreen(weight: String, selectedIngredient: IngredientInfo)
     fun openMaterialRemakesScreen(selectedIngredient: IngredientInfo)
-    fun openMaterialRemakeDetailsScreen(selectedMaterial: MaterialIngredientDataInfo, parentCode: String, parentName: String)
+    fun openMaterialRemakeDetailsScreen(selectedMaterial: MaterialIngredientDataInfo, parentCode: String, parentName: String, barcode: OrderByBarcode)
     fun openTechOrdersScreen(selectedMaterial: MaterialIngredientDataInfo, parentCode: String)
 
     fun showDefrostingPhaseIsCompleted(nextCallback: () -> Unit)

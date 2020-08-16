@@ -7,10 +7,12 @@ import com.lenta.bp16.model.ingredients.MaterialIngredientDataInfo
 import com.lenta.bp16.model.ingredients.params.GetIngredientDataParams
 import com.lenta.bp16.model.ingredients.params.UnblockIngredientsParams
 import com.lenta.bp16.model.ingredients.ui.ItemMaterialIngredientUi
+import com.lenta.bp16.model.ingredients.ui.OrderByBarcode
 import com.lenta.bp16.platform.extention.getFieldWithSuffix
 import com.lenta.bp16.platform.extention.getModeType
 import com.lenta.bp16.platform.navigation.IScreenNavigator
 import com.lenta.bp16.platform.resource.IResourceManager
+import com.lenta.bp16.request.GetEanIngredientsNetRequest
 import com.lenta.bp16.request.GetMaterialIngredientsDataNetRequest
 import com.lenta.bp16.request.UnblockIngredientNetRequest
 import com.lenta.shared.account.ISessionInfo
@@ -19,6 +21,7 @@ import com.lenta.shared.utilities.extentions.asyncLiveData
 import com.lenta.shared.utilities.extentions.launchUITryCatch
 import com.lenta.shared.utilities.extentions.unsafeLazy
 import javax.inject.Inject
+import kotlin.properties.Delegates
 
 class MaterialRemakesListViewModel : CoreViewModel() {
 
@@ -37,9 +40,16 @@ class MaterialRemakesListViewModel : CoreViewModel() {
     @Inject
     lateinit var unblockIngredientNetRequest: UnblockIngredientNetRequest
 
+    @Inject
+    lateinit var getEanIngredientData: GetEanIngredientsNetRequest
+
     // выбранный ингредиент
     val ingredient by unsafeLazy {
         MutableLiveData<IngredientInfo>()
+    }
+
+    private val allEanMaterialIngredients: MutableLiveData<List<OrderByBarcode>> by unsafeLazy {
+        MutableLiveData<List<OrderByBarcode>>()
     }
 
     private val allMaterialIngredients: MutableLiveData<List<MaterialIngredientDataInfo>> by unsafeLazy {
@@ -57,6 +67,16 @@ class MaterialRemakesListViewModel : CoreViewModel() {
         val code = ingredient.value?.code.orEmpty()
         val mode = ingredient.value?.getModeType().orEmpty()
 
+        val eanResult = getEanIngredientData(
+                params = GetIngredientDataParams(
+                        tkMarket = sessionInfo.market.orEmpty(),
+                        deviceIP = resourceManager.deviceIp,
+                        code = code,
+                        mode = mode,
+                        weight = ""
+                )
+        )
+
         val result = getIngredientData(
                 params = GetIngredientDataParams(
                         tkMarket = sessionInfo.market.orEmpty(),
@@ -71,6 +91,10 @@ class MaterialRemakesListViewModel : CoreViewModel() {
         result.either(::handleFailure, fnR = {
             allMaterialIngredients.value = it
             it
+        })
+        eanResult.either(::handleFailure, fnR = {
+            allEanMaterialIngredients.value = it
+            Unit
         })
     }
 
@@ -103,11 +127,15 @@ class MaterialRemakesListViewModel : CoreViewModel() {
         }.either(fnL = ::handleFailure)
     }
 
+    /*allEanMaterialIngredients*/
+
     fun onClickItemPosition(position: Int) {
         allMaterialIngredients.value?.getOrNull(position)?.let { selectedMaterial ->
             val code = ingredient.value?.getFormattedCode().orEmpty()
             val name = ingredient.value?.nameMatnrOsn.orEmpty()
-            navigator.openMaterialRemakeDetailsScreen(selectedMaterial, code, name)
+            allEanMaterialIngredients.value?.getOrNull(position)?.let { barcode ->
+                navigator.openMaterialRemakeDetailsScreen(selectedMaterial, code, name, barcode)
+            }
         } ?: navigator.showAlertPartNotFound {
 
         }

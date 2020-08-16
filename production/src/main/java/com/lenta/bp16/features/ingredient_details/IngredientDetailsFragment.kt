@@ -84,6 +84,10 @@ class IngredientDetailsFragment : CoreFragment<FragmentIngredientDetailsBinding,
         return false
     }
 
+    override fun onScanResult(data: String) {
+        vm.onScanResult(data)
+    }
+
     companion object {
         private const val SCREEN_NUMBER = "16/83"
         private const val KEY_INGREDIENT = "KEY_INGREDIENT"
@@ -95,9 +99,5 @@ class IngredientDetailsFragment : CoreFragment<FragmentIngredientDetailsBinding,
                 arguments = bundleOf(KEY_INGREDIENT to selectedIngredient, KEY_PARENT_CODE to parentCode, KEY_EAN_INFO to eanInfo)
             }
         }
-    }
-
-    override fun onScanResult(data: String) {
-        vm.onScanResult(data)
     }
 }
