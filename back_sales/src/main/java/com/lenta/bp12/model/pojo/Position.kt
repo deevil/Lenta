@@ -7,4 +7,5 @@ data class Position(
         var provider: ProviderInfo
 ) {
     var basketNumber: Int = 0
+    var materialNumber: String = ""
 }

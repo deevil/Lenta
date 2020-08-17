@@ -193,7 +193,7 @@ class CreateTaskManager @Inject constructor(
     override fun getBasket(providerCode: String): Basket? {
         return currentTask.value?.let { task ->
             currentGood.value?.let { good ->
-                task.baskets.findLast { basket ->
+                task.baskets.lastOrNull { basket ->
                     isLastBasketMatches(basket, good, providerCode)
                 }
             }
@@ -278,13 +278,6 @@ class CreateTaskManager @Inject constructor(
     override fun removeGoodByMaterials(materialList: List<String>) {
         currentTask.value?.let { task ->
             task.removeGoodByMaterials(materialList)
-            updateCurrentTask(task)
-        }
-    }
-
-    override fun removeGoodByBasketAndMaterials(basket: Basket, materials: MutableList<String>) {
-        currentTask.value?.let { task ->
-            task.removeGoodByBasketAndMaterials(basket, materials)
             updateCurrentTask(task)
         }
     }
@@ -434,7 +427,6 @@ interface ICreateTaskManager {
     fun addBasket(basket: Basket)
     fun getBasketPosition(basket: Basket?): Int
     fun removeGoodByMaterials(materialList: List<String>)
-    fun removeGoodByBasketAndMaterials(basket: Basket, materials: MutableList<String>)
     fun removeBaskets(basketList: MutableList<Basket>)
     fun addProviderInCurrentGood(providerInfo: ProviderInfo)
     fun prepareSendTaskDataParams(deviceIp: String, tkNumber: String, userNumber: String)

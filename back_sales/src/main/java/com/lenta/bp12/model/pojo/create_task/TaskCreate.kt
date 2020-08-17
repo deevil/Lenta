@@ -38,45 +38,42 @@ data class TaskCreate(
     fun removeGoodByMaterials(materials: List<String>) {
         materials.forEach { material ->
             goods.remove(goods.find { it.material == material })
-        }
 
-        removeEmptyBaskets()
-    }
-
-    fun removeGoodByBasketAndMaterials(basket: Basket, materials: MutableList<String>) {
-        materials.forEach { material ->
-            goods.find { it.material == material }?.let { good ->
-                basket.provider?.let { provider ->
-                    good.removeByProvider(provider.code)
-                    if (good.isEmpty()) {
-                        goods.remove(good)
-                    }
-                }
+            baskets.forEach { basket ->
+                basket.goods.keys.removeAll { it.material == material }
             }
         }
 
-        removeEmptyGoods()
         removeEmptyBaskets()
     }
 
-    fun updateBasket(basket: Basket){
+    fun updateBasket(basket: Basket) {
         val oldBasketIndex = baskets.indexOfFirst { it.index == basket.index }
         baskets[oldBasketIndex] = basket
     }
 
+    //TODO NEEDS REFACTOR TOO MANY CYCLES BAD CODE
     fun removeBaskets(basketList: MutableList<Basket>) {
         basketList.forEach { basket ->
-            getGoodListByBasket(basket).forEach { good ->
-                basket.provider?.let{ provider ->
-                    good.removePositionsByProvider(provider.code)
-                    good.removeMarksByProvider(provider.code)
-                    good.removePartsByProvider(provider.code)
+            goods.forEach { good ->
+                val basketIndex = basket.index
+                good.marks.removeAll { it.basketNumber == basketIndex }
+                good.parts.removeAll { it.basketNumber == basketIndex }
+                val basketGoodList = basket.goods.keys.toList()
+                basketGoodList.forEach { goodFromBasket ->
+                    val positionThatFits = good.positions.firstOrNull { it.quantity > 0 && goodFromBasket.material == it.materialNumber }
+                    val quantity = positionThatFits?.quantity?:0.0
+                    val quantityToMinus = basket.goods[goodFromBasket]?:0.0
+                    val newQuantity = quantity.minus(quantityToMinus)
+                    positionThatFits?.let {
+                        it.quantity = newQuantity
+                        val index = good.positions.indexOf(it)
+                        good.positions.set(index, it)
+                    }
                 }
             }
-
             baskets.remove(basket)
         }
-
         removeEmptyGoods()
     }
 

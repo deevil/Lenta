@@ -791,6 +791,7 @@ class GoodInfoCreateViewModel : CoreViewModel() {
                     quantity = quantityValue,
                     provider = getProvider()
             )
+            position.materialNumber = changedGood.material
             changedGood.addPosition(position)
             manager.addGoodToBasket(changedGood, getProvider(), quantityValue)
             manager.updateCurrentGood(changedGood)
