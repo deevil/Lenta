@@ -336,14 +336,14 @@ class ScreenNavigator @Inject constructor(
         }
     }
 
-    override fun showAlertPartNotFound(backCallback: (() -> Unit)?) {
+    override fun showAlertPartNotFound(backCallback: () -> Unit) {
         runOrPostpone {
             getFragmentStack()?.push(AlertFragment.create(
                     pageNumber = Constants.ALERT_FRAGMENT,
                     message = context.getString(R.string.tw_alert_part_not_found),
                     iconRes = R.drawable.ic_warning_red_80dp,
                     leftButtonDecorationInfo = ButtonDecorationInfo.back,
-                    codeConfirmForLeft = backCallback?.let { backFragmentResultHelper.setFuncForResult(it) }
+                    codeConfirmForLeft = backFragmentResultHelper.setFuncForResult(backCallback)
             ))
         }
     }
@@ -353,6 +353,30 @@ class ScreenNavigator @Inject constructor(
             getFragmentStack()?.push(AlertFragment.create(
                     pageNumber = Constants.ALERT_FRAGMENT,
                     message = context.getString(R.string.tw_alert_good_not_found),
+                    iconRes = R.drawable.ic_warning_red_80dp,
+                    leftButtonDecorationInfo = ButtonDecorationInfo.back,
+                    codeConfirmForLeft = backFragmentResultHelper.setFuncForResult(backCallback)
+            ))
+        }
+    }
+
+    override fun showAlertDualism(backCallback: () -> Unit) {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    pageNumber = Constants.ALERT_FRAGMENT,
+                    message = context.getString(R.string.tw_alert_dualism),
+                    iconRes = R.drawable.ic_warning_red_80dp,
+                    leftButtonDecorationInfo = ButtonDecorationInfo.back,
+                    codeConfirmForLeft = backFragmentResultHelper.setFuncForResult(backCallback)
+            ))
+        }
+    }
+
+    override fun showAlertGoodNotFoundInCurrentShift(backCallback: () -> Unit) {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    pageNumber = Constants.ALERT_FRAGMENT,
+                    message = context.getString(R.string.tw_alert_good_not_found_in_current_shift),
                     iconRes = R.drawable.ic_warning_red_80dp,
                     leftButtonDecorationInfo = ButtonDecorationInfo.back,
                     codeConfirmForLeft = backFragmentResultHelper.setFuncForResult(backCallback)
@@ -440,5 +464,7 @@ interface IScreenNavigator : ICoreNavigator {
     fun showAlertExceededLimit(backCallback: () -> Unit)
     fun showMovingSuccessful(nextCallback: () -> Unit)
     fun showAlertGoodNotFound(backCallback: () -> Unit)
-    fun showAlertPartNotFound(backCallback: (() -> Unit)? = null)
+    fun showAlertPartNotFound(backCallback: () -> Unit)
+    fun showAlertDualism(backCallback: () -> Unit)
+    fun showAlertGoodNotFoundInCurrentShift(backCallback: () -> Unit)
 }

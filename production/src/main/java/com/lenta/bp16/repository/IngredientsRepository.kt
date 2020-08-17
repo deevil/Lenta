@@ -1,5 +1,6 @@
 package com.lenta.bp16.repository
 
+import com.lenta.bp16.model.ingredients.GoodByOrder
 import com.lenta.bp16.model.ingredients.IngredientInfo
 import com.lenta.bp16.model.ingredients.TechOrderDataInfo
 import com.lenta.bp16.model.ingredients.params.GetIngredientDataParams
@@ -10,6 +11,7 @@ import com.lenta.bp16.model.ingredients.results.IngredientDataCompleteResult
 import com.lenta.bp16.model.ingredients.results.IngredientsDataListResult
 import com.lenta.bp16.model.ingredients.results.IngredientsListResult
 import com.lenta.bp16.model.ingredients.results.UnblockOrderIngredientsResult
+import com.lenta.bp16.model.ingredients.ui.OrderByBarcode
 import com.lenta.bp16.platform.extention.getResult
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.fmp.ObjectRawStatus
@@ -23,6 +25,8 @@ class IngredientsRepository @Inject constructor(
 ) : IIngredientsRepository {
 
     private val allIngredients: MutableList<IngredientInfo> = mutableListOf()
+    private val goodsByOrder: MutableList<GoodByOrder> = mutableListOf()
+    private val ingredientsEanInfo: MutableList<OrderByBarcode> = mutableListOf()
     private val ordersByRemake: MutableList<TechOrderDataInfo> = mutableListOf()
 
     override suspend fun getAllIngredients(params: GetIngredientsParams): Either<Failure, List<IngredientInfo>> {
@@ -33,6 +37,28 @@ class IngredientsRepository @Inject constructor(
             allIngredients.clear()
             allIngredients.addAll(it.ingredientsList.orEmpty())
             Either.Right(allIngredients)
+        }
+    }
+
+    override suspend fun getIngredientEanInfo(params: GetIngredientsParams): Either<Failure, List<OrderByBarcode>>{
+        val result = fmpRequestsHelper.restRequest(FMP_ORDERS_RESOURCE_NAME,params, IngredientsListStatus::class.java)
+                .getResult()
+
+        return result.flatMap{
+            ingredientsEanInfo.clear()
+            ingredientsEanInfo.addAll(it.goodsEanList.orEmpty())
+            Either.Right(ingredientsEanInfo)
+        }
+    }
+
+    override suspend fun getGoodsByOrder(params: GetIngredientsParams): Either<Failure, List<GoodByOrder>>{
+        val result = fmpRequestsHelper.restRequest(FMP_ORDERS_RESOURCE_NAME,params, IngredientsListStatus::class.java)
+                .getResult()
+
+        return result.flatMap{
+            goodsByOrder.clear()
+            goodsByOrder.addAll(it.goodsListByOrder.orEmpty())
+            Either.Right(goodsByOrder)
         }
     }
 
@@ -115,6 +141,21 @@ interface IIngredientsRepository {
      * @param params - [GetIngredientsParams]
      */
     suspend fun getAllIngredients(params: GetIngredientsParams): Either<Failure, List<IngredientInfo>>
+
+    /**
+     * Получение данных о товаре по ШК
+     *
+     * @param params - [GetIngredientsParams]
+     * */
+    suspend fun getIngredientEanInfo(params: GetIngredientsParams): Either<Failure, List<OrderByBarcode>>
+
+    /**
+     * Получение списка заказов с товарами
+     *
+     * @param params - [GetIngredientsParams]
+     * */
+
+    suspend fun getGoodsByOrder(params: GetIngredientsParams): Either<Failure, List<GoodByOrder>>
 
     /**
      * Получение ингредиентов из заказа
