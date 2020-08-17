@@ -145,6 +145,21 @@ data class GoodCreate(
         return positions.isEmpty() && marks.isEmpty() && parts.isEmpty()
     }
 
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as GoodCreate
+
+        if (material != other.material) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        return material.hashCode()
+    }
+
 
     val isAlco: Boolean
         get() = kind != GoodKind.COMMON
@@ -157,5 +172,6 @@ data class GoodCreate(
 
     val isUsual: Boolean
         get() = kind == GoodKind.COMMON
+
 
 }

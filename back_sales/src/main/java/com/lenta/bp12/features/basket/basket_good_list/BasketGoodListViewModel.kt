@@ -1,14 +1,21 @@
 package com.lenta.bp12.features.basket.basket_good_list
 
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.liveData
+import androidx.lifecycle.switchMap
 import com.lenta.bp12.model.ICreateTaskManager
+import com.lenta.bp12.model.pojo.create_task.Basket
 import com.lenta.bp12.platform.navigation.IScreenNavigator
 import com.lenta.bp12.platform.resource.IResourceManager
 import com.lenta.shared.platform.constants.Constants
 import com.lenta.shared.platform.viewmodel.CoreViewModel
+import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.SelectionItemsHelper
 import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
+import com.lenta.shared.utilities.extentions.dropZeros
 import com.lenta.shared.utilities.extentions.map
+import com.lenta.shared.utilities.extentions.unsafeLazy
 import javax.inject.Inject
 
 class BasketGoodListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
@@ -29,7 +36,7 @@ class BasketGoodListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
         manager.currentTask
     }
 
-    val basket by lazy {
+    val basket: LiveData<Basket> by lazy { //вернуть lazy
         manager.currentBasket
     }
 
@@ -41,25 +48,33 @@ class BasketGoodListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
         }
     }
 
+    private val isWholesaleBasket by unsafeLazy {
+        manager.isWholesaleTaskType
+    }
+
     val numberField: MutableLiveData<String> = MutableLiveData("")
 
     val goods by lazy {
         basket.map {
             it?.let { basket ->
                 task.value?.let { task ->
-                    task.getGoodListByBasket(basket).mapIndexed { index, good ->
+
+                    val list = basket.goods.keys.toList()
+                    list.mapIndexed { index, good ->
                         val units = good.commonUnits.name
-                        val quantity = basket.goods.size
+                        val quantity = basket.goods[good]
+
+                        Logg.e { "freeVolume: ${basket.freeVolume}, isPrinted: ${basket.isPrinted}, isLocked: ${basket.isLocked} ${basket.goods}" }
 
                         ItemGoodUi(
                                 position = "${index + 1}",
                                 name = good.getNameWithMaterial(),
-                                quantity = "$quantity $units",
+                                quantity = "${quantity.dropZeros()} $units",
                                 material = good.material
                         )
                     }
                 }
-            }
+            }.orEmpty()
         }
     }
 
@@ -69,6 +84,32 @@ class BasketGoodListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
 
     val deleteEnabled = selectionsHelper.selectedPositions.map {
         it?.isNotEmpty() ?: false
+    }
+
+    val isCloseBtnEnabled by unsafeLazy {
+        basket.switchMap {
+            liveData {
+                val isCloseBtnEnabled = it.isLocked.not()
+                emit(isCloseBtnEnabled)
+            }
+        }
+    }
+
+    val isOpenBtnEnabled by unsafeLazy {
+        basket.switchMap {
+            liveData {
+                val isCloseBtnEnabled = it.isLocked
+                emit(isCloseBtnEnabled)
+            }
+        }
+    }
+
+    val isCloseBtnVisible by unsafeLazy {
+        MutableLiveData(isWholesaleBasket)
+    }
+
+    val isOpenBtnVisible by unsafeLazy {
+        MutableLiveData(isWholesaleBasket)
     }
 
     // -----------------------------
@@ -113,23 +154,69 @@ class BasketGoodListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
     fun onClickDelete() {
         val materials = mutableListOf<String>()
         selectionsHelper.selectedPositions.value?.mapNotNullTo(materials) { position ->
-            goods.value?.get(position)?.material
+            goods.value?.getOrNull(position)?.material
         }
 
         selectionsHelper.clearPositions()
 
-        basket.value?.let { basket ->
-            manager.removeGoodByBasketAndMaterials(basket, materials)
-            manager.updateCurrentBasket(manager.currentBasket.value)
+        task.value?.let { task ->
+            basket.value?.let { basket ->
+                materials.forEach { goodMaterial ->
+                    val goodToDeleteFromBasket = basket.goods.keys.firstOrNull { it.material == goodMaterial }
+                    goodToDeleteFromBasket?.let {
+                        val volumeToReturnToBasket = basket.goods[it]?.times(it.volume)
+                        if (volumeToReturnToBasket != null) {
+                            basket.freeVolume += volumeToReturnToBasket
+                        }
+                        basket.goods.remove(it)
+                    }
 
-            task.value?.let { task ->
-                if (task.isExistBasket(basket)) {
-                    manager.updateCurrentBasket(basket)
-                } else {
+                    task.goods.filter { it.material == goodMaterial }.forEach { good ->
+                        val basketIndex = basket.index
+                        good.marks.removeAll { it.basketNumber == basketIndex }
+                        good.parts.removeAll { it.basketNumber == basketIndex }
+                        good.positions.removeAll { it.basketNumber == basketIndex }
+                    }
+                }
+                if (basket.goods.isEmpty()) {
+                    task.removeEmptyBaskets()
                     navigator.goBack()
                 }
+                task.removeEmptyGoods()
+                manager.updateCurrentBasket(basket)
+                manager.updateCurrentTask(task)
             }
         }
+
+    }
+
+    fun onClickClose() {
+        navigator.showCloseBasketDialog(yesCallback = {
+            task.value?.let { task ->
+                basket.value?.let { basket ->
+                    basket.isLocked = true
+                    task.updateBasket(basket)
+                    manager.updateCurrentBasket(basket)
+                    manager.updateCurrentTask(task)
+                }
+
+            }
+            navigator.goBack()
+        })
+    }
+
+    fun onClickOpen() {
+        navigator.showOpenBasketDialog(yesCallback = {
+            task.value?.let { task ->
+                basket.value?.let { basket ->
+                    basket.isLocked = false
+                    task.updateBasket(basket)
+                    manager.updateCurrentBasket(basket)
+                    manager.updateCurrentTask(task)
+                }
+            }
+            navigator.goBack()
+        })
     }
 
 }

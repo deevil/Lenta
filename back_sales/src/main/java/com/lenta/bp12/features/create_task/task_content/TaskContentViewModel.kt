@@ -6,6 +6,10 @@ import com.lenta.bp12.model.ICreateTaskManager
 import com.lenta.bp12.model.pojo.create_task.Basket
 import com.lenta.bp12.platform.navigation.IScreenNavigator
 import com.lenta.bp12.platform.resource.IResourceManager
+import com.lenta.bp12.request.PrintPalletListNetRequest
+import com.lenta.bp12.request.pojo.print_pallet_list.PrintPalletListBasket
+import com.lenta.bp12.request.pojo.print_pallet_list.PrintPalletListGood
+import com.lenta.bp12.request.pojo.print_pallet_list.PrintPalletListParams
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.models.core.Uom
@@ -16,8 +20,11 @@ import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
 import com.lenta.shared.utilities.databinding.PageSelectionListener
 import com.lenta.shared.utilities.extentions.combineLatest
 import com.lenta.shared.utilities.extentions.dropZeros
+import com.lenta.shared.utilities.extentions.launchAsyncTryCatch
 import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.utilities.isCommonFormatNumber
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 class TaskContentViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyboardListener {
@@ -37,6 +44,8 @@ class TaskContentViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
     @Inject
     lateinit var resource: IResourceManager
 
+    @Inject
+    lateinit var printPalletListNetRequest: PrintPalletListNetRequest
 
     /**
     Переменные
@@ -184,7 +193,16 @@ class TaskContentViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
                     navigator.openGoodInfoCreateScreen()
                 }
                 1 -> {
-                    manager.updateCurrentBasket(commonBaskets.value!![position].basket)
+                    val basket = if (manager.isWholesaleTaskType) {
+                        wholesaleBaskets.value?.let { wholesaleBasketsValue ->
+                            wholesaleBasketsValue.getOrNull(position)?.basket
+                        }
+                    } else {
+                        commonBaskets.value?.let { commonBasketsValue ->
+                            commonBasketsValue.getOrNull(position)?.basket
+                        }
+                    }
+                    manager.updateCurrentBasket(basket)
                     navigator.openBasketGoodListScreen()
                 }
                 else -> throw IllegalArgumentException("Wrong pager position!")
@@ -219,18 +237,96 @@ class TaskContentViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
     }
 
     fun onPrint() {
-        goodSelectionsHelper.selectedPositions.value?.let { positions ->
-            if (positions.isNotEmpty()) {
-                // Печатаем выбранные позиции
+        task.value?.let { taskValue ->
+            goodSelectionsHelper.selectedPositions.value?.let { positions ->
+                var baskets = taskValue.baskets
+                //Если корзины выделены то берем их
+                if (positions.isNotEmpty()) {
+                    baskets = positions.mapNotNull {
+                        baskets.getOrNull(it)
+                    }.toMutableList()
+                }
+                //Если какие-то корзины не закрыты
+                if (baskets.any { it.isLocked.not() }) {
+                    // Вывести экран сообщения «Некоторые выбранные корзины не закрыты. Закройте корзины и повторите печать», с кнопкой «Назад»
+                    navigator.showSomeOfChosenBasketsNotClosedScreen()
+                } else {
+                    //Если какие-то корзины напечатаны
+                    if (baskets.any { it.isPrinted }) {
+                        // «По некоторым выделенным корзинам уже производилась печать. Продолжить?», с кнопками «Да», «Назад» (макеты, экран №81)
+                        navigator.showSomeBasketsAlreadyPrinted(
+                                yesCallback = { printPalletList(baskets) }
+                        )
+                    } else {
+                        printPalletList(baskets)
+                    }
+                }
+            }
+        }
+    }
 
-            } else {
-                // Печатаем весь список корзин
+    // TODO Функция не проверена (13.08.2020 САП еще не создан)
+    private fun printPalletList(baskets: List<Basket>) {
+        launchAsyncTryCatch {
+            // собираем в один список все товары
+            navigator.showProgressLoadingData()
+            val goodListRest = baskets.flatMap { basket ->
+                val distinctGoods = basket.goods.keys
+                distinctGoods.map { good ->
+                    val quantity = basket.goods[good]
+                    PrintPalletListGood(
+                            materialNumber = good.material,
+                            basketNumber = basket.index.toString(),
+                            quantity = quantity.toString(),
+                            uom = good.commonUnits.code
+                    )
+                }
+            }
 
+            val basketListRest = baskets.map {
+                val description = it.getDescription(task.value?.type?.isDivBySection ?: false)
+                PrintPalletListBasket(
+                        number = it.index.toString(),
+                        description = description,
+                        section = it.section.orEmpty()
+                )
+            }
+
+            withContext(Dispatchers.Main) {
+                printPalletListNetRequest(
+                        PrintPalletListParams(
+                                userNumber = sessionInfo.personnelNumber.orEmpty(),
+                                deviceIp = resource.deviceIp(),
+                                baskets = basketListRest,
+                                goods = goodListRest
+                        )
+                ).either(
+                        fnL = ::handleFailure,
+                        fnR = {
+                            handlePrintSuccess(baskets)
+                        }
+                )
             }
         }
     }
 
     fun onClickSave() {
+        task.value?.let { task ->
+            if (manager.isWholesaleTaskType) {
+                // Есть незакрытые корзины - отобразить экран сообщения «Некоторые корзины не закрыты.
+                // Сохранение заданий невозможно», с кнопкой «Назад». См. «MRK_BKS_Макет экранов МП (Крупный ОПТ) 1.1 APP» экран №84
+                if (task.baskets.any { it.isLocked.not() }) {
+                    navigator.showSomeBasketsNotClosedCantSaveScreen()
+                } else {
+                    showMakeTaskCountedAndCLose()
+                }
+            } else {
+                showMakeTaskCountedAndCLose()
+            }
+        }
+    }
+
+    private fun showMakeTaskCountedAndCLose() {
         navigator.showMakeTaskCountedAndClose {
             manager.prepareSendTaskDataParams(
                     deviceIp = deviceInfo.getDeviceIp(),
@@ -244,17 +340,36 @@ class TaskContentViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
 
     override fun handleFailure(failure: Failure) {
         super.handleFailure(failure)
+        navigator.hideProgress()
         navigator.openAlertScreen(failure)
     }
 
+    private fun handlePrintSuccess(baskets: List<Basket>) {
+
+        baskets.forEach {
+            it.isPrinted = true
+        }
+        navigator.hideProgress()
+        //отображать сообщение «Паллетный лист был успешно распечатан», с кнопкой «Далее»
+        navigator.showPalletListPrintedScreen(
+                nextCallback = {
+                    navigator.goBack()
+                }
+        )
+
+    }
+
     fun onBackPressed() {
-        if (task.value!!.goods.isNotEmpty()) {
-            navigator.showUnsavedDataWillBeLost {
+        task.value?.let { taskValue ->
+            if (taskValue.goods.isNotEmpty()) {
+                navigator.showUnsavedDataWillBeLost {
+                    navigator.goBack()
+                }
+            } else {
                 navigator.goBack()
             }
-        } else {
-            navigator.goBack()
         }
+
     }
 
 }

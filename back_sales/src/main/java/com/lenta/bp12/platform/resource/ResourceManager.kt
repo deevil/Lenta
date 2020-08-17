@@ -2,6 +2,7 @@ package com.lenta.bp12.platform.resource
 
 import android.content.Context
 import com.lenta.bp12.R
+import com.lenta.shared.utilities.extentions.getDeviceIp
 
 import javax.inject.Inject
 
@@ -40,6 +41,7 @@ class ResourceManager @Inject constructor(
     override fun goodList(): String = context.getString(R.string.good_list)
 
     override fun taskContent(): String = context.getString(R.string.task_content)
+    override fun deviceIp(): String = context.getDeviceIp()
 
 }
 
@@ -61,5 +63,6 @@ interface IResourceManager {
     fun basket(description: String): String
     fun goodList(): String
     fun taskContent(): String
+    fun deviceIp(): String
 
 }

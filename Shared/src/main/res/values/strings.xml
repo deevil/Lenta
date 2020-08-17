@@ -207,4 +207,5 @@
     <string name="reset">Сбросить</string>
     <string name="marking_goods">Маркированный товар</string>
     <string name="exceptions_shelf_life">Исключение по СГ</string>
+    <string name="open">Открыть</string>
 </resources>

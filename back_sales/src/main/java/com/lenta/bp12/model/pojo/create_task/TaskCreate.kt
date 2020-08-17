@@ -3,8 +3,6 @@ package com.lenta.bp12.model.pojo.create_task
 import com.lenta.bp12.model.ControlType
 import com.lenta.bp12.model.pojo.ReturnReason
 import com.lenta.bp12.model.pojo.TaskType
-import com.lenta.shared.utilities.extentions.sumList
-import com.lenta.shared.utilities.extentions.sumWith
 
 data class TaskCreate(
         val name: String,
@@ -22,24 +20,8 @@ data class TaskCreate(
         return "${type.code} // $name"
     }
 
-    fun getQuantityByBasket(basket: Basket): Double {
-        return getGoodListByBasket(basket).map { good ->
-            val positionQuantity = good.positions.filter { it.provider.code == basket.provider?.code }.map { it.quantity }.sumList()
-            val markQuantity = good.marks.filter { it.providerCode == basket.provider?.code }.size.toDouble()
-            val partQuantity = good.parts.filter { it.providerCode == basket.provider?.code }.map { it.quantity }.sumList()
-
-            positionQuantity.sumWith(markQuantity).sumWith(partQuantity)
-        }.sumList()
-    }
-
     fun getGoodListByBasket(basket: Basket): List<GoodCreate> {
-        val list = goods.filter { good ->
-            good.section == basket.section && good.type == basket.goodType && good.control == basket.control &&
-                    (good.positions.find { it.provider == basket.provider } != null ||
-                            good.marks.find { it.providerCode == basket.provider?.code } != null ||
-                            good.parts.find { it.providerCode == basket.provider?.code } != null)
-        }
-        return list
+        return basket.goods.keys.toList()
     }
 
     fun getBasketsByGood(good: GoodCreate): List<Basket> {
@@ -75,6 +57,11 @@ data class TaskCreate(
 
         removeEmptyGoods()
         removeEmptyBaskets()
+    }
+
+    fun updateBasket(basket: Basket){
+        val oldBasketIndex = baskets.indexOfFirst { it.index == basket.index }
+        baskets[oldBasketIndex] = basket
     }
 
     fun removeBaskets(basketList: MutableList<Basket>) {

@@ -107,5 +107,11 @@ dependencies {
 
     // Firebase
     implementation 'com.google.firebase:firebase-analytics:17.4.3'
+    implementation "androidx.core:core-ktx:+"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 
+}
+repositories {
+    maven { url 'https://dl.bintray.com/kotlin/kotlin-eap' }
+    mavenCentral()
 }

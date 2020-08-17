@@ -138,10 +138,11 @@ class OpenTaskManager @Inject constructor(
                                     goodType = restBasket.goodType.orEmpty(),
                                     control = task.control,
                                     provider = provider,
-                                    isLocked = restBasket.isClose.isSapTrue(),
-                                    isPrinted = restBasket.isPrint.isSapTrue(),
                                     quantity = quantity.orEmpty()
-                            )
+                            ).also {
+                                it.isLocked = restBasket.isClose.isSapTrue()
+                                it.isPrinted = restBasket.isPrint.isSapTrue()
+                            }
                         }
 
                         val good = GoodOpen(

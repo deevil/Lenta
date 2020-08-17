@@ -47,15 +47,23 @@ class BasketGoodListFragment : CoreFragment<FragmentBasketGoodListBinding, Baske
     }
 
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
+        bottomToolbarUiModel.uiModelButton1.show(ButtonDecorationInfo.close)
+        bottomToolbarUiModel.uiModelButton2.show(ButtonDecorationInfo.open)
         bottomToolbarUiModel.uiModelButton3.show(ButtonDecorationInfo.delete, enabled = false)
         bottomToolbarUiModel.uiModelButton4.show(ButtonDecorationInfo.properties)
         bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.next)
 
         connectLiveData(vm.deleteEnabled, bottomToolbarUiModel.uiModelButton3.enabled)
+        connectLiveData(vm.isCloseBtnVisible, bottomToolbarUiModel.uiModelButton1.visibility)
+        connectLiveData(vm.isCloseBtnEnabled, bottomToolbarUiModel.uiModelButton1.enabled)
+        connectLiveData(vm.isOpenBtnVisible, bottomToolbarUiModel.uiModelButton2.visibility)
+        connectLiveData(vm.isOpenBtnEnabled, bottomToolbarUiModel.uiModelButton2.enabled)
     }
 
     override fun onToolbarButtonClick(view: View) {
         when (view.id) {
+            R.id.b_1 -> vm.onClickClose()
+            R.id.b_2 -> vm.onClickOpen()
             R.id.b_3 -> vm.onClickDelete()
             R.id.b_4 -> vm.onClickProperties()
             R.id.b_5 -> vm.onClickNext()

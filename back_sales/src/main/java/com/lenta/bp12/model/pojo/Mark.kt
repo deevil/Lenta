@@ -5,4 +5,6 @@ data class Mark(
         var boxNumber: String = "",
         var isBadMark: Boolean = false,
         var providerCode: String
-)
+) {
+    var basketNumber = 0
+}

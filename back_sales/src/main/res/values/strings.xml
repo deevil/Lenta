@@ -104,5 +104,10 @@
     <string name="all_suppliers">Все поставщики</string>
     <string name="wholesale_buyer">Оптовый покупатель</string>
     <string name="picking_warehouse">Склад\nкомплектации</string>
+    <string name="some_of_chosen_baskets_not_closed">Некоторые выбранные корзины не закрыты. Закройте корзины и повторите печать</string>
+    <string name="some_baskets_not_closed_cant_save">Некоторые корзины не закрыты. Сохранение заданий невозможно</string>
+    <string name="some_baskets_already_printed">По некоторым выделенным корзинам уже производилась печать. Продолжить?</string>
+    <string name="pallet_list_printed">Паллетный лист был успешно распечатан.</string>
+    <string name="open_basket">Открыть текущую корзину для редактирования? В случае согласия система разрешит добавление товаров в текущую корщину.</string>
 
 </resources>

@@ -68,6 +68,12 @@ android {
         pickFirst 'META-INF/atomicfu.kotlin_module'
         pickFirst 'META-INF/kotlinx-coroutines-io.kotlin_module'
     }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    kotlinOptions { jvmTarget = "1.8" }
 
 }
 
@@ -99,4 +105,10 @@ dependencies {
     // Mockito
     testImplementation "com.nhaarman.mockitokotlin2:mockito-kotlin:2.1.0"
     testImplementation "io.mockk:mockk:1.9.3"
+    implementation "androidx.core:core-ktx:+"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+}
+repositories {
+    maven { url 'https://dl.bintray.com/kotlin/kotlin-eap' }
+    mavenCentral()
 }

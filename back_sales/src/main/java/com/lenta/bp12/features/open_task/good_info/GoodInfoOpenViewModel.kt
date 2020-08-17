@@ -743,11 +743,11 @@ class GoodInfoOpenViewModel : CoreViewModel() {
             val part = Part(
                     number = lastSuccessSearchNumber,
                     material = changedGood.material,
-                    quantity = quantity.value ?: 0.0,
                     providerCode = changedGood.provider.code,
                     producerCode = getProducerCode(),
                     date = getDateFromString(date.value.orEmpty(), Constants.DATE_FORMAT_dd_mm_yyyy)
             )
+            part.quantity = quantity.value ?: 0.0
             Logg.d { "--> add part = $part" }
             changedGood.addPart(part)
 

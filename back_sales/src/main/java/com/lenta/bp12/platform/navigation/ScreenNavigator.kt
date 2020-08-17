@@ -424,11 +424,68 @@ class ScreenNavigator @Inject constructor(
     override fun showCloseBasketDialog(yesCallback: () -> Unit) {
         runOrPostpone {
             getFragmentStack()?.push(AlertFragment.create(
-                    pageNumber = "65",
+                    pageNumber = "71",
                     message = context.getString(R.string.close_basket),
                     iconRes = R.drawable.ic_question_yellow_80dp,
                     codeConfirmForRight = backFragmentResultHelper.setFuncForResult(yesCallback),
                     rightButtonDecorationInfo = ButtonDecorationInfo.yes
+            ))
+        }
+    }
+
+    override fun showOpenBasketDialog(yesCallback: () -> Unit) {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    pageNumber = "71",
+                    message = context.getString(R.string.open_basket),
+                    iconRes = R.drawable.ic_question_yellow_80dp,
+                    codeConfirmForRight = backFragmentResultHelper.setFuncForResult(yesCallback),
+                    rightButtonDecorationInfo = ButtonDecorationInfo.yes
+            ))
+        }
+    }
+
+    override fun showSomeOfChosenBasketsNotClosedScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    pageNumber = "79",
+                    message = context.getString(R.string.some_of_chosen_baskets_not_closed),
+                    iconRes = R.drawable.ic_warning_red_80dp
+            ))
+        }
+    }
+
+    override fun showSomeBasketsNotClosedCantSaveScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    pageNumber = "84",
+                    message = context.getString(R.string.some_baskets_not_closed_cant_save),
+                    iconRes = R.drawable.ic_warning_red_80dp
+            ))
+        }
+    }
+
+    override fun showSomeBasketsAlreadyPrinted(yesCallback: () -> Unit) {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    pageNumber = "81",
+                    message = context.getString(R.string.some_baskets_already_printed),
+                    iconRes = R.drawable.ic_question_yellow_80dp,
+                    codeConfirmForRight = backFragmentResultHelper.setFuncForResult(yesCallback),
+                    rightButtonDecorationInfo = ButtonDecorationInfo.yes
+            ))
+        }
+    }
+
+    override fun showPalletListPrintedScreen(nextCallback: () -> Unit) {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    pageNumber = "81",
+                    message = context.getString(R.string.pallet_list_printed),
+                    iconRes = R.drawable.ic_done_green_80dp,
+                    codeConfirmForRight = backFragmentResultHelper.setFuncForResult(nextCallback),
+                    rightButtonDecorationInfo = ButtonDecorationInfo.next,
+                    leftButtonDecorationInfo = ButtonDecorationInfo.empty
             ))
         }
     }
@@ -486,5 +543,10 @@ interface IScreenNavigator : ICoreNavigator {
     fun showMarkedGoodInfoScreen()
 
     fun showCloseBasketDialog(yesCallback: () -> Unit)
+    fun showOpenBasketDialog(yesCallback: () -> Unit)
 
+    fun showSomeOfChosenBasketsNotClosedScreen()
+    fun showSomeBasketsNotClosedCantSaveScreen()
+    fun showSomeBasketsAlreadyPrinted(yesCallback: () -> Unit)
+    fun showPalletListPrintedScreen(nextCallback: () -> Unit)
 }

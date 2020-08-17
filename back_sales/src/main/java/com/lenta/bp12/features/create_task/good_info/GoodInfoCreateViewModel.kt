@@ -541,11 +541,7 @@ class GoodInfoCreateViewModel : CoreViewModel() {
             with(result) {
                 task.value?.let { task ->
                     val taskType = task.type
-                    Logg.e {
-                        """
-                            $taskType
-                        """.trimIndent()
-                    }
+                    Logg.e { "$taskType" }
                     good.value = GoodCreate(
                             ean = eanInfo.ean,
                             eans = database.getEanListByMaterialUnits(materialInfo.material, materialInfo.commonUnitsCode),
@@ -783,6 +779,7 @@ class GoodInfoCreateViewModel : CoreViewModel() {
                 ScreenStatus.MARK_150, ScreenStatus.MARK_68 -> addMark()
                 ScreenStatus.ALCOHOL, ScreenStatus.PART -> addPart()
                 ScreenStatus.BOX -> addBox()
+                else -> Unit
             }
         }
     }
@@ -794,9 +791,8 @@ class GoodInfoCreateViewModel : CoreViewModel() {
                     quantity = quantityValue,
                     provider = getProvider()
             )
-            Logg.d { "--> add position = $position" }
             changedGood.addPosition(position)
-            manager.addGoodToBasket(changedGood, getProvider(), quantityValue.toInt())
+            manager.addGoodToBasket(changedGood, getProvider(), quantityValue)
             manager.updateCurrentGood(changedGood)
         }
     }
@@ -804,16 +800,12 @@ class GoodInfoCreateViewModel : CoreViewModel() {
     private suspend fun addMark() {
         good.value?.let { changedGood ->
             addEmptyPosition(changedGood)
-
             val mark = Mark(
                     number = lastSuccessSearchNumber,
                     isBadMark = scanInfoResult.value?.status == MarkStatus.BAD.code,
                     providerCode = getProviderCode()
             )
-            Logg.d { "--> add mark = $mark" }
-            changedGood.addMark(mark)
-            manager.addGoodToBasket(changedGood, getProvider(), 1)
-            manager.updateCurrentGood(changedGood)
+            manager.addGoodToBasketWithMark(changedGood, mark, getProvider())
         }
     }
 
@@ -824,16 +816,15 @@ class GoodInfoCreateViewModel : CoreViewModel() {
             val part = Part(
                     number = lastSuccessSearchNumber,
                     material = changedGood.material,
-                    quantity = quantityValue,
                     providerCode = getProviderCode(),
                     producerCode = getProducerCode(),
                     date = getDateFromString(date.value.orEmpty(), Constants.DATE_FORMAT_dd_mm_yyyy)
             )
-            Logg.d { "--> add part = $part" }
-            changedGood.addPart(part)
-
-            manager.addGoodToBasket(changedGood, getProvider(), quantityValue.toInt())
-            manager.updateCurrentGood(changedGood)
+            manager.addGoodToBasketWithPart(
+                    good = changedGood,
+                    part = part,
+                    provider = getProvider(),
+                    count = quantityValue)
         }
     }
 
@@ -851,8 +842,8 @@ class GoodInfoCreateViewModel : CoreViewModel() {
                     )
                     Logg.d { "--> add mark from box = $markFromBox" }
                     changedGood.addMark(markFromBox)
+                    manager.addGoodToBasketWithMark(changedGood, markFromBox, getProvider())
                 }
-                manager.addGoodToBasket(changedGood, getProvider(), quantity)
             }
 
             manager.updateCurrentGood(changedGood)
@@ -867,23 +858,6 @@ class GoodInfoCreateViewModel : CoreViewModel() {
         Logg.d { "--> add position = $position" }
         changedGood.addPosition(position)
     }
-
-//    private fun createBasket(changedGood: GoodCreate) {
-//        var basket = manager.getBasket(getProviderCode())
-//        if (basket == null) {
-//            basket = Basket(
-//                    index = task.value?.baskets?.size ?: 0,
-//                    section = changedGood.section,
-//                    goodType = changedGood.type,
-//                    control = changedGood.control,
-//                    provider = getProvider()
-//            )
-//            Logg.d { "--> add basket = $basket" }
-//            manager.addBasket(basket)
-//        } else {
-//            manager.updateCurrentBasket(basket)
-//        }
-//    }
 
     private fun getBasket(): Basket? {
         return manager.getBasket(getProviderCode())
@@ -967,10 +941,4 @@ class GoodInfoCreateViewModel : CoreViewModel() {
             saveChangesAndExit()
         })
     }
-
-    companion object {
-        private const val SAVE_MODE_CLOSE = 0
-        private const val SAVE_MODE_APPLY = 1
-    }
-
 }
