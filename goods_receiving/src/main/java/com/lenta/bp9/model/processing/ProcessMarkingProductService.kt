@@ -2,8 +2,9 @@ package com.lenta.bp9.model.processing
 
 import com.lenta.bp9.features.goods_information.marking.MarkingBlocksDiscrepanciesInfo
 import com.lenta.bp9.features.goods_information.marking.TypeLastStampScanned
+import com.lenta.bp9.model.repositories.ITaskRepository
 import com.lenta.bp9.model.task.*
-import com.lenta.bp9.platform.TypeDiscrepanciesConstants
+import com.lenta.bp9.platform.TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_NORM
 import com.lenta.bp9.repos.IDataBaseRepo
 import com.lenta.shared.di.AppScope
 import com.lenta.shared.models.core.ProductType
@@ -12,7 +13,7 @@ import javax.inject.Inject
 
 @AppScope
 class ProcessMarkingProductService
-@Inject constructor() {
+@Inject constructor() : IProcessMarkingProductService {
 
     @Inject
     lateinit var taskManager: IReceivingTaskManager
@@ -26,62 +27,153 @@ class ProcessMarkingProductService
     private val currentBlocksDiscrepancies: ArrayList<MarkingBlocksDiscrepanciesInfo> = ArrayList()
     private val currentGtin: ArrayList<String> = ArrayList()
     private val currentScannedTypesStamps: ArrayList<TypeLastStampScanned> = ArrayList()
+    private var taskRepository: ITaskRepository? = null
+    private var receivingTask: ReceivingTask? = null
 
     fun initProduct(inputProductInfo: TaskProductInfo) {
         this.productInfo = inputProductInfo.copy()
     }
 
-    fun newProcessMarkingProductService(inputProductInfo: TaskProductInfo): ProcessMarkingProductService? {
+    override fun newProcessMarkingProductService(inputProductInfo: TaskProductInfo): IProcessMarkingProductService? {
         return this
-                .takeIf { inputProductInfo.type == ProductType.General }
+                .takeIf {
+                    inputProductInfo.type == ProductType.General
+                            && getMarkingGoodsRegime(taskManager,inputProductInfo) == MarkingGoodsRegime.UomStWithoutBoxes
+                }
                 ?.apply {
                     this.productInfo = inputProductInfo.copy()
+                    receivingTask = taskManager.getReceivingTask()
+                    taskRepository = receivingTask?.taskRepository
                     isBlockMode =
-                            (this.productInfo.purchaseOrderUnits.code == UNIT_ST
-                                    || this.productInfo.purchaseOrderUnits.code == UNIT_P09)
+                            (this.productInfo.purchaseOrderUnits.code == UNIT_ST || this.productInfo.purchaseOrderUnits.code == UNIT_P09)
                                     && this.productInfo.isCountingBoxes == false
                     currentGtin.clear()
                     currentScannedTypesStamps.clear()
                     blocks.clear()
-                    taskManager.getReceivingTask()
+                    receivingTask
                             ?.getProcessedBlocks()
-                            ?.mapTo(blocks) {
-                                it.copy()
-                            }
+                            ?.mapTo(blocks) { it.copy() }
                     currentBlocksDiscrepancies.clear()
-                    taskManager.getReceivingTask()
-                            ?.taskRepository
-                            ?.getBlocksDiscrepancies()
-                            ?.findBlocksDiscrepanciesOfProduct(productInfo)
-                            ?.mapTo(currentBlocksDiscrepancies) {
-                                MarkingBlocksDiscrepanciesInfo(it.copy(), true)
+                    taskRepository
+                            ?.run {
+                                getBlocksDiscrepancies()
+                                        .findBlocksDiscrepanciesOfProduct(productInfo)
+                                        .mapTo(currentBlocksDiscrepancies) {
+                                            MarkingBlocksDiscrepanciesInfo(blockDiscrepancies = it.copy(), isGtinControlPassed = true)
+                                        }
                             }
                 }
     }
 
+    override fun getConfirmedByScanning(): Double {
+        val countProcessedBlocks =
+                taskRepository
+                        ?.run {
+                            getBlocksDiscrepancies()
+                                    .findBlocksDiscrepanciesOfProduct(productInfo)
+                                    .filter { block -> block.isScan }
+                                    .size
+                                    .toString()
+                        }
+        return getCountAttachmentInBlock(countProcessedBlocks)
+    }
+
+    override fun getCountBlocksUnderload(paramGrzGrundMarkCode: String) : Double {
+        val countUnderload =
+                taskRepository
+                        ?.run {
+                            getProductsDiscrepancies()
+                                    .findProductDiscrepanciesOfProduct(productInfo)
+                                    .findLast { it.typeDiscrepancies == paramGrzGrundMarkCode }
+                                    ?.numberDiscrepancies
+                        }
+                        .orEmpty()
+
+        return  getCountBlocksByAttachments(countUnderload)
+    }
+
+    override fun denialOfFullProductAcceptance(typeDiscrepancies: String) {
+        //https://trello.com/c/vcymT9Kp
+        //удаляем всю информацию по блокам
+        taskRepository
+                ?.getBlocksDiscrepancies()
+                ?.deleteBlocksDiscrepanciesForProduct(productInfo)
+        //отмечаем все блоки/марки для продукта категорией для брака из параметра GRZ_GRUND_MARK
+        blocks.filter { block -> block.materialNumber == productInfo.materialNumber }
+                .forEach { blockInfo ->
+                    addBlockDiscrepancies(
+                            blockInfo = blockInfo,
+                            typeDiscrepancies = typeDiscrepancies,
+                            isScan = false, //передаем false, т.к. эта ф-ция (denialOfFullProductAcceptance) вызывается с экрана Обнаружены расхождения по клику на блок на вкладке Не обработаны
+                            isGtinControlPassed = true
+                    )
+                }
+
+        apply()
+
+        //удаляем всю информацию по продукту
+        taskRepository
+                ?.getProductsDiscrepancies()
+                ?.deleteProductsDiscrepanciesForProduct(productInfo)
+        //отмечаем по продукту все кол-во с категорией из параметра GRZ_GRUND_MARK
+        addProduct(productInfo.origQuantity, typeDiscrepancies)
+    }
+
+    override fun refusalToAcceptPartlyByProduct(typeDiscrepancies: String) {
+        //https://trello.com/c/vcymT9Kp
+        val countProcessedBlocks =
+                taskRepository
+                        ?.run {
+                            getBlocksDiscrepancies()
+                                    .findBlocksDiscrepanciesOfProduct(productInfo)
+                                    .filter { it.isScan }
+                                    .size
+                                    .toString()
+                        }
+                        .orEmpty()
+
+        val confirmedByScanning = getCountAttachmentInBlock(countProcessedBlocks)
+        val notConfirmedByScanning = productInfo.origQuantity.toDouble() - confirmedByScanning
+
+        //отмечаем все не обработанные блоки/марки для продукта категорией для брака из параметра GRZ_GRUND_MARK
+        blocks
+                .filter { block ->
+                    block.materialNumber == productInfo.materialNumber
+                            && currentBlocksDiscrepancies.findLast { it.blockDiscrepancies.blockNumber == block.blockNumber } == null
+                }.map { blockInfo ->
+                    addBlockDiscrepancies(
+                            blockInfo = blockInfo,
+                            typeDiscrepancies = typeDiscrepancies,
+                            isScan = false, //передаем false, т.к. эта ф-ция (refusalToAcceptPartlyByProduct) вызывается с экрана Обнаружены расхождения по клику на блок на вкладке Не обработаны
+                            isGtinControlPassed = true
+                    )
+                    apply()
+                }
+
+        //отмечаем продукт (https://trello.com/c/r4kofgtQ в комментарии смотреть логику)
+        taskRepository
+                ?.getProductsDiscrepancies()
+                ?.deleteProductDiscrepancy(productInfo.materialNumber, TYPE_DISCREPANCIES_QUALITY_NORM)
+        addProduct(confirmedByScanning.toString(), TYPE_DISCREPANCIES_QUALITY_NORM)
+        addProduct(notConfirmedByScanning.toString(), typeDiscrepancies)
+    }
+
     fun apply() {
         currentBlocksDiscrepancies
-                .takeIf {
-                    it.isNotEmpty()
-                }
+                .takeIf { it.isNotEmpty() }
                 ?.run {
-                    this.asSequence()
-                            .filter { blockDiscrepanciesInfo ->
-                                blockDiscrepanciesInfo.isGtinControlPassed
-                            }.map { block ->
-                                taskManager
-                                        .getReceivingTask()
-                                        ?.taskRepository
+                    this.filter { blockDiscrepanciesInfo -> blockDiscrepanciesInfo.isGtinControlPassed }
+                            .forEach { block ->
+                                taskRepository
                                         ?.getBlocksDiscrepancies()
                                         ?.changeBlockDiscrepancy(block.blockDiscrepancies)
                             }
-                            .toList()
                 }
     }
 
     fun addProduct(count: String, typeDiscrepancies: String) {
         val countAdd =
-                if (typeDiscrepancies == TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_NORM) {
+                if (typeDiscrepancies == TYPE_DISCREPANCIES_QUALITY_NORM) {
                     getCountAcceptOfProduct() + count.toDouble()
                 } else {
                     getCountOfDiscrepanciesOfProduct(typeDiscrepancies) + count.toDouble()
@@ -89,12 +181,11 @@ class ProcessMarkingProductService
 
         //добавляем кол-во по расхождению для продукта
         var foundDiscrepancy =
-                taskManager.getReceivingTask()
-                        ?.taskRepository
-                        ?.getProductsDiscrepancies()
-                        ?.findProductDiscrepanciesOfProduct(productInfo)
-                        ?.findLast {
-                            it.typeDiscrepancies == typeDiscrepancies
+                taskRepository
+                        ?.run {
+                            getProductsDiscrepancies()
+                                    .findProductDiscrepanciesOfProduct(productInfo)
+                                    .findLast { it.typeDiscrepancies == typeDiscrepancies }
                         }
 
         foundDiscrepancy = foundDiscrepancy?.copy(numberDiscrepancies = countAdd.toString())
@@ -109,9 +200,7 @@ class ProcessMarkingProductService
                         notEditNumberDiscrepancies = ""
                 )
 
-        taskManager
-                .getReceivingTask()
-                ?.taskRepository
+        taskRepository
                 ?.getProductsDiscrepancies()
                 ?.changeProductDiscrepancy(foundDiscrepancy)
     }
@@ -119,9 +208,7 @@ class ProcessMarkingProductService
     fun addBlockDiscrepancies(blockInfo: TaskBlockInfo, typeDiscrepancies: String, isScan: Boolean, isGtinControlPassed: Boolean) {
         var foundBlockDiscrepancy =
                 currentBlocksDiscrepancies
-                        .findLast {
-                            it.blockDiscrepancies.blockNumber == blockInfo.blockNumber
-                        }
+                        .findLast { it.blockDiscrepancies.blockNumber == blockInfo.blockNumber }
 
         foundBlockDiscrepancy =
                 foundBlockDiscrepancy
@@ -286,120 +373,36 @@ class ProcessMarkingProductService
     }
 
     private fun getCountOfDiscrepanciesOfProduct(typeDiscrepancies: String): Double {
-        return taskManager
-                .getReceivingTask()
-                ?.taskRepository
-                ?.getProductsDiscrepancies()
-                ?.findProductDiscrepanciesOfProduct(productInfo)
-                ?.filter { productDiscrepancies ->
-                    productDiscrepancies.typeDiscrepancies == typeDiscrepancies
-                }?.sumByDouble {
-                    it.numberDiscrepancies.toDouble()
+        return taskRepository
+                ?.run {
+                    getProductsDiscrepancies()
+                            .findProductDiscrepanciesOfProduct(productInfo)
+                            .filter { productDiscrepancies -> productDiscrepancies.typeDiscrepancies == typeDiscrepancies }
+                            .sumByDouble { it.numberDiscrepancies.toDouble() }
                 }
                 ?: 0.0
     }
 
     fun getCountAcceptOfProduct(): Double {
-        return taskManager
-                .getReceivingTask()
-                ?.taskRepository
-                ?.getProductsDiscrepancies()
-                ?.findProductDiscrepanciesOfProduct(productInfo)
-                ?.filter { productDiscrepancies ->
-                    productDiscrepancies.typeDiscrepancies == TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_NORM
-                }?.sumByDouble {
-                    it.numberDiscrepancies.toDouble()
+        return taskRepository
+                ?.run {
+                    getProductsDiscrepancies()
+                            .findProductDiscrepanciesOfProduct(productInfo)
+                            .filter { productDiscrepancies -> productDiscrepancies.typeDiscrepancies == TYPE_DISCREPANCIES_QUALITY_NORM }
+                            .sumByDouble { it.numberDiscrepancies.toDouble()}
                 }
                 ?: 0.0
     }
 
     fun getCountRefusalOfProduct(): Double {
-        return taskManager
-                .getReceivingTask()
-                ?.taskRepository
-                ?.getProductsDiscrepancies()
-                ?.findProductDiscrepanciesOfProduct(productInfo)
-                ?.filter { productDiscrepancies ->
-                    productDiscrepancies.typeDiscrepancies != TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_NORM
-                }
-                ?.sumByDouble {
-                    it.numberDiscrepancies.toDouble()
+        return taskRepository
+                ?.run {
+                    getProductsDiscrepancies()
+                            .findProductDiscrepanciesOfProduct(productInfo)
+                            .filter { productDiscrepancies -> productDiscrepancies.typeDiscrepancies != TYPE_DISCREPANCIES_QUALITY_NORM }
+                            .sumByDouble { it.numberDiscrepancies.toDouble() }
                 }
                 ?: 0.0
-    }
-
-    fun denialOfFullProductAcceptance(typeDiscrepancies: String) {
-        //https://trello.com/c/vcymT9Kp
-        //удаляем всю информацию по блокам
-        taskManager
-                .getReceivingTask()
-                ?.taskRepository
-                ?.getBlocksDiscrepancies()
-                ?.deleteBlocksDiscrepanciesForProduct(productInfo)
-        //отмечаем все блоки/марки для продукта категорией для брака из параметра GRZ_GRUND_MARK
-        blocks
-                .filter { block ->
-                    block.materialNumber == productInfo.materialNumber
-                }
-                .map { blockInfo ->
-                    addBlockDiscrepancies(
-                            blockInfo = blockInfo,
-                            typeDiscrepancies = typeDiscrepancies,
-                            isScan = false, //передаем false, т.к. эта ф-ция (denialOfFullProductAcceptance) вызывается с экрана Обнаружены расхождения по клику на блок на вкладке Не обработаны
-                            isGtinControlPassed = true
-                    )
-                    apply()
-                }
-
-        //удаляем всю информацию по продукту
-        taskManager
-                .getReceivingTask()
-                ?.taskRepository
-                ?.getProductsDiscrepancies()
-                ?.deleteProductsDiscrepanciesForProduct(productInfo)
-        //отмечаем по продукту все кол-во с категорией из параметра GRZ_GRUND_MARK
-        addProduct(productInfo.origQuantity, typeDiscrepancies)
-    }
-
-    fun refusalToAcceptPartlyByProduct(typeDiscrepancies: String) {
-        //https://trello.com/c/vcymT9Kp
-        val countProcessedBlocks =
-                taskManager
-                        .getReceivingTask()
-                        ?.taskRepository
-                        ?.getBlocksDiscrepancies()
-                        ?.findBlocksDiscrepanciesOfProduct(productInfo)
-                        ?.filter {
-                            it.isScan
-                        }
-                        ?.size
-                        .toString()
-        val confirmedByScanning = getCountAttachmentInBlock(countProcessedBlocks)
-        val notConfirmedByScanning = productInfo.origQuantity.toDouble() - confirmedByScanning
-
-        //отмечаем все не обработанные блоки/марки для продукта категорией для брака из параметра GRZ_GRUND_MARK
-        blocks
-                .filter { block ->
-                    block.materialNumber == productInfo.materialNumber
-                            && currentBlocksDiscrepancies.findLast { it.blockDiscrepancies.blockNumber == block.blockNumber } == null
-                }.map { blockInfo ->
-                    addBlockDiscrepancies(
-                            blockInfo = blockInfo,
-                            typeDiscrepancies = typeDiscrepancies,
-                            isScan = false, //передаем false, т.к. эта ф-ция (refusalToAcceptPartlyByProduct) вызывается с экрана Обнаружены расхождения по клику на блок на вкладке Не обработаны
-                            isGtinControlPassed = true
-                    )
-                    apply()
-                }
-
-        //отмечаем продукт (https://trello.com/c/r4kofgtQ в комментарии смотреть логику)
-        taskManager
-                .getReceivingTask()
-                ?.taskRepository
-                ?.getProductsDiscrepancies()
-                ?.deleteProductDiscrepancy(productInfo.materialNumber, TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_NORM)
-        addProduct(confirmedByScanning.toString(), TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_NORM)
-        addProduct(notConfirmedByScanning.toString(), typeDiscrepancies)
     }
 
     fun delBlockDiscrepancy(typeDiscrepancies: String) {
@@ -452,9 +455,7 @@ class ProcessMarkingProductService
 
     fun modifications(): Boolean {
         return currentBlocksDiscrepancies !=
-                taskManager
-                        .getReceivingTask()
-                        ?.taskRepository
+                taskRepository
                         ?.getBlocksDiscrepancies()
                         ?.findBlocksDiscrepanciesOfProduct(productInfo)
     }
@@ -466,17 +467,15 @@ class ProcessMarkingProductService
         taskManager
                 .getReceivingTask()
                 ?.getProcessedBlocks()
-                ?.mapTo(blocks) {
-                    it.copy()
-                }
+                ?.mapTo(blocks) { it.copy() }
         currentBlocksDiscrepancies.clear()
-        taskManager
-                .getReceivingTask()
-                ?.taskRepository
-                ?.getBlocksDiscrepancies()
-                ?.findBlocksDiscrepanciesOfProduct(productInfo)
-                ?.mapTo(currentBlocksDiscrepancies) {
-                    MarkingBlocksDiscrepanciesInfo(blockDiscrepancies = it.copy(), isGtinControlPassed = true)
+        taskRepository
+                ?.run {
+                    getBlocksDiscrepancies()
+                            .findBlocksDiscrepanciesOfProduct(productInfo)
+                            .mapTo(currentBlocksDiscrepancies) {
+                                MarkingBlocksDiscrepanciesInfo(blockDiscrepancies = it.copy(), isGtinControlPassed = true)
+                            }
                 }
     }
 

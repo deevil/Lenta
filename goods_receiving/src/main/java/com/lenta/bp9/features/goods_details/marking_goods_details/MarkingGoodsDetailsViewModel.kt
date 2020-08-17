@@ -1,15 +1,14 @@
 package com.lenta.bp9.features.goods_details.marking_goods_details
 
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
+import com.lenta.bp9.R
 import com.lenta.bp9.features.goods_details.GoodsDetailsCategoriesItem
 import com.lenta.bp9.features.goods_details.GoodsDetailsPropertiesItem
+import com.lenta.bp9.model.processing.ProcessMarkingBoxProductService
 import com.lenta.bp9.model.processing.ProcessMarkingProductService
-import com.lenta.bp9.model.processing.ProcessMercuryProductService
-import com.lenta.bp9.model.task.IReceivingTaskManager
-import com.lenta.bp9.model.task.TaskMarkingGoodsProperties
-import com.lenta.bp9.model.task.TaskProductInfo
-import com.lenta.bp9.platform.TypeDiscrepanciesConstants
+import com.lenta.bp9.model.task.*
+import com.lenta.bp9.platform.TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_NORM
+import com.lenta.bp9.platform.TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_REASON_REJECTION_ERROR_UPD
 import com.lenta.bp9.repos.IDataBaseRepo
 import com.lenta.bp9.repos.IRepoInMemoryHolder
 import com.lenta.shared.platform.viewmodel.CoreViewModel
@@ -19,7 +18,6 @@ import com.lenta.shared.utilities.databinding.PageSelectionListener
 import com.lenta.shared.utilities.extentions.launchUITryCatch
 import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.utilities.extentions.toStringFormatted
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class MarkingGoodsDetailsViewModel : CoreViewModel(), PageSelectionListener {
@@ -34,8 +32,12 @@ class MarkingGoodsDetailsViewModel : CoreViewModel(), PageSelectionListener {
     lateinit var processMarkingProductService: ProcessMarkingProductService
 
     @Inject
+    lateinit var processMarkingBoxProductService: ProcessMarkingBoxProductService
+
+    @Inject
     lateinit var repoInMemoryHolder: IRepoInMemoryHolder
 
+    private val taskRepository by lazy { taskManager.getReceivingTask()?.taskRepository }
     val productInfo: MutableLiveData<TaskProductInfo> = MutableLiveData()
     val selectedPage = MutableLiveData(0)
     val goodsDetails: MutableLiveData<List<GoodsDetailsCategoriesItem>> = MutableLiveData()
@@ -81,49 +83,39 @@ class MarkingGoodsDetailsViewModel : CoreViewModel(), PageSelectionListener {
     }
 
     fun onClickDelete() {
-        if (productInfo.value != null && productInfo.value?.isNotEdit == false) {
+        val product = productInfo.value
+        if (product != null && !product.isNotEdit) {
             categoriesSelectionsHelper.selectedPositions.value
                     ?.forEach { position ->
                         val isDiscrepanciesErrorUPD =
-                                (goodsDetails.value
+                                goodsDetails.value
                                         ?.get(position)
-                                        ?.typeDiscrepancies == TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_REASON_REJECTION_ERROR_UPD)
+                                        ?.typeDiscrepancies == TYPE_DISCREPANCIES_REASON_REJECTION_ERROR_UPD
+
+                        val materialNumber =
+                                goodsDetails.value
+                                        ?.get(position)
+                                        ?.materialNumber
+                                        .orEmpty()
+
+                        val typeDiscrepancies =
+                                goodsDetails.value
+                                        ?.get(position)
+                                        ?.typeDiscrepancies
+                                        .orEmpty()
 
                         if (!isDiscrepanciesErrorUPD) {
-                            taskManager.getReceivingTask()
-                                    ?.taskRepository
-                                    ?.getProductsDiscrepancies()
-                                    ?.deleteProductDiscrepancy(
-                                            materialNumber = goodsDetails.value
-                                                    ?.get(position)
-                                                    ?.materialNumber
-                                                    .orEmpty(),
-                                            typeDiscrepancies = goodsDetails.value
-                                                    ?.get(position)
-                                                    ?.typeDiscrepancies
-                                                    .orEmpty()
-                                    )
+                            taskRepository
+                                    ?.run {
+                                        getProductsDiscrepancies().deleteProductDiscrepancy(materialNumber,typeDiscrepancies)
+                                        getBoxesDiscrepancies().deleteBoxesDiscrepanciesForProductAndDiscrepancies(materialNumber, typeDiscrepancies)
+                                        getBlocksDiscrepancies().deleteBlocksDiscrepanciesForProductAndDiscrepancies(materialNumber,typeDiscrepancies)
+                                    }
 
-                            taskManager.getReceivingTask()
-                                    ?.taskRepository
-                                    ?.getBlocksDiscrepancies()
-                                    ?.deleteBlocksDiscrepanciesForProductAndDiscrepancies(
-                                            materialNumber = goodsDetails.value
-                                                    ?.get(position)
-                                                    ?.materialNumber
-                                                    .orEmpty(),
-                                            typeDiscrepancies = goodsDetails.value
-                                                    ?.get(position)
-                                                    ?.typeDiscrepancies
-                                                    .orEmpty()
-                                    )
-
-                            processMarkingProductService.delBlockDiscrepancy(
-                                    typeDiscrepancies = goodsDetails.value
-                                            ?.get(position)
-                                            ?.typeDiscrepancies
-                                            .orEmpty()
-                            )
+                            when(getMarkingGoodsRegime(taskManager, product)) {
+                                MarkingGoodsRegime.UomStWithoutBoxes -> processMarkingProductService.delBlockDiscrepancy(typeDiscrepancies)
+                                MarkingGoodsRegime.UomStWithBoxes -> processMarkingBoxProductService.delBoxAndBlockDiscrepancy(typeDiscrepancies)
+                            }
                         }
                     }
         }
@@ -139,12 +131,11 @@ class MarkingGoodsDetailsViewModel : CoreViewModel(), PageSelectionListener {
         goodsDetails.postValue(
                 productInfo.value
                         ?.let { product ->
-                            taskManager.getReceivingTask()
-                                    ?.taskRepository
+                            taskRepository
                                     ?.getProductsDiscrepancies()
                                     ?.findProductDiscrepanciesOfProduct(product)
                         }?.mapIndexed { index, discrepancy ->
-                            val isNormDiscrepancies = discrepancy.typeDiscrepancies == TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_NORM
+                            val isNormDiscrepancies = discrepancy.typeDiscrepancies == TYPE_DISCREPANCIES_QUALITY_NORM
                             GoodsDetailsCategoriesItem(
                                     number = index + 1,
                                     name = reasonRejectionInfo.value?.firstOrNull { it.code == discrepancy.typeDiscrepancies }?.name.orEmpty(),

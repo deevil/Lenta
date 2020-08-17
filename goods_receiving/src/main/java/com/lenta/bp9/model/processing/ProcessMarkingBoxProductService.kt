@@ -13,7 +13,7 @@ import javax.inject.Inject
 
 @AppScope
 class ProcessMarkingBoxProductService
-@Inject constructor() {
+@Inject constructor() : IProcessMarkingProductService {
 
     @Inject
     lateinit var taskManager: IReceivingTaskManager
@@ -35,9 +35,12 @@ class ProcessMarkingBoxProductService
         this.productInfo = inputProductInfo.copy()
     }
 
-    fun newProcessMarkingBoxProductService(inputProductInfo: TaskProductInfo): ProcessMarkingBoxProductService? {
+    override fun newProcessMarkingProductService(inputProductInfo: TaskProductInfo): IProcessMarkingProductService? {
         return this
-                .takeIf { inputProductInfo.type == ProductType.General }
+                .takeIf {
+                    inputProductInfo.type == ProductType.General
+                            && getMarkingGoodsRegime(taskManager,inputProductInfo) == MarkingGoodsRegime.UomStWithBoxes
+                }
                 ?.apply {
                     this.productInfo = inputProductInfo.copy()
                     receivingTask = taskManager.getReceivingTask()
@@ -75,6 +78,124 @@ class ProcessMarkingBoxProductService
                                         }
                             }
                 }
+    }
+
+    override fun getConfirmedByScanning(): Double {
+        val processedBox =
+                taskRepository
+                        ?.run {
+                            getBoxesDiscrepancies()
+                                    .findBoxesDiscrepanciesOfProduct(productInfo)
+                                    .filter { box -> box.isScan }
+                        }
+
+        var countNotScannedBlocks = 0.0
+        processedBox
+                ?.forEach { boxScanned ->
+                    countNotScannedBlocks +=
+                            taskRepository
+                            ?.run {
+                                getBlocksDiscrepancies()
+                                        .findBlocksDiscrepanciesOfProduct(productInfo)
+                                        .filter { blocksDiscrepancies ->
+                                            !blocksDiscrepancies.isScan
+                                                    && blocksDiscrepancies.boxNumber == boxScanned.boxNumber
+                                        }
+                                        .size
+                                        .toDouble()
+                            }
+                            ?: 0.0
+                }
+
+        val countScannedBlocks =
+                taskRepository
+                        ?.run {
+                            getBlocksDiscrepancies()
+                                    .findBlocksDiscrepanciesOfProduct(productInfo)
+                                    .filter { it.isScan }
+                                    .size
+                                    .toDouble()
+                        }
+                        ?: 0.0
+
+        val totalCountProcessedBlocks = countNotScannedBlocks + countScannedBlocks
+
+        val nestingInOneBlock = productInfo.nestingInOneBlock.toDouble()
+
+        return totalCountProcessedBlocks * nestingInOneBlock
+    }
+
+    override fun getCountBlocksUnderload(paramGrzGrundMarkCode: String): Double {
+        val countUnderload =
+                taskManager
+                        .getReceivingTask()
+                        ?.run {
+                            taskRepository
+                                    .getProductsDiscrepancies()
+                                    .findProductDiscrepanciesOfProduct(productInfo)
+                                    .findLast { it.typeDiscrepancies == paramGrzGrundMarkCode }
+                                    ?.numberDiscrepancies
+                                    ?.toDouble()
+                        }
+                        ?: 0.0
+
+        val nestingInOneBlock = productInfo.nestingInOneBlock.toDouble()
+
+        return countUnderload / nestingInOneBlock
+    }
+
+    override fun denialOfFullProductAcceptance(typeDiscrepancies: String) {
+        //https://trello.com/c/vcymT9Kp
+        //удаляем всю информацию по коробкам
+        taskRepository
+                ?.getBoxesDiscrepancies()
+                ?.deleteBoxesDiscrepanciesForProduct(productInfo)
+
+        //удаляем всю информацию по блокам
+        taskRepository
+                ?.getBlocksDiscrepancies()
+                ?.deleteBlocksDiscrepanciesForProduct(productInfo)
+
+        //отмечаем все коробки и блоки для продукта категорией для брака из параметра GRZ_GRUND_MARK
+        boxes.forEach {
+            addBoxDiscrepancy(
+                    boxNumber = it.boxNumber,
+                    typeDiscrepancies = typeDiscrepancies,
+                    isScan = false,
+                    isDenialOfFullProductAcceptance = true
+            )
+        }
+
+        apply()
+
+        //удаляем всю информацию по продукту
+        taskRepository
+                ?.getProductsDiscrepancies()
+                ?.deleteProductsDiscrepanciesForProduct(productInfo)
+
+        //отмечаем по продукту все кол-во с категорией из параметра GRZ_GRUND_MARK
+        addProduct(productInfo.origQuantity, typeDiscrepancies)
+    }
+
+    override fun refusalToAcceptPartlyByProduct(typeDiscrepancies: String) {
+        //https://trello.com/c/vcymT9Kp
+        //отмечаем все необработанные коробки и блоки для продукта категорией для брака из параметра GRZ_GRUND_MARK
+        boxes.filter { boxInfo ->
+            val lastBox = currentBoxDiscrepancies.findLast { it.boxNumber == boxInfo.boxNumber }
+            lastBox == null
+        }.forEach {
+            addBoxDiscrepancy(
+                    boxNumber = it.boxNumber,
+                    typeDiscrepancies = typeDiscrepancies,
+                    isScan = false,
+                    isDenialOfFullProductAcceptance = false
+            )
+        }
+
+        apply()
+
+        val notConfirmedByScanning = productInfo.origQuantity.toDouble() - getCountAcceptOfProduct() - getCountRefusalOfProduct()
+        addProduct(notConfirmedByScanning.toString(), typeDiscrepancies)
     }
 
     fun apply() {
@@ -135,6 +256,11 @@ class ProcessMarkingBoxProductService
     }
 
     fun addBlockDiscrepancies(blockInfo: TaskBlockInfo, typeDiscrepancies: String, isScan: Boolean, isGtinControlPassed: Boolean) {
+        val boxNumber = blocks
+                .findLast { it.blockNumber == blockInfo.blockNumber }
+                ?.boxNumber
+                .orEmpty()
+
         var foundBlockDiscrepancy =
                 currentBlocksDiscrepancies
                         .findLast { it.blockDiscrepancies.blockNumber == blockInfo.blockNumber }
@@ -152,7 +278,7 @@ class ProcessMarkingBoxProductService
                                         processingUnitNumber = blockInfo.processingUnitNumber,
                                         materialNumber = blockInfo.materialNumber,
                                         blockNumber = blockInfo.blockNumber,
-                                        boxNumber = "",
+                                        boxNumber = boxNumber,
                                         typeDiscrepancies = typeDiscrepancies,
                                         isScan = isScan,
                                         isMsc = false,
@@ -177,9 +303,11 @@ class ProcessMarkingBoxProductService
         addTypeLastStampScanned(TypeLastStampScanned.BLOCK)
     }
 
-    fun addBoxDiscrepancy(boxNumber: String, typeDiscrepancies: String) : Int {
+    fun addBoxDiscrepancy(boxNumber: String, typeDiscrepancies: String, isScan: Boolean, isDenialOfFullProductAcceptance: Boolean) : Int {
         val box = boxes.findLast { it.boxNumber == boxNumber }
-        var foundBoxDiscrepancy = currentBoxDiscrepancies.findLast { it.boxNumber == boxNumber }
+        var foundBoxDiscrepancy =
+                currentBoxDiscrepancies
+                        .findLast { it.boxNumber == boxNumber }
 
         foundBoxDiscrepancy = foundBoxDiscrepancy?.copy(typeDiscrepancies = typeDiscrepancies)
                 ?: TaskBoxDiscrepancies(
@@ -187,7 +315,7 @@ class ProcessMarkingBoxProductService
                         materialNumber = box?.materialNumber.orEmpty(),
                         boxNumber = boxNumber,
                         typeDiscrepancies = typeDiscrepancies,
-                        isScan = true
+                        isScan = isScan
                 )
 
         currentBoxDiscrepancies
@@ -208,7 +336,7 @@ class ProcessMarkingBoxProductService
         blocksFromBox
                 .filter { block ->
                     val lastBlock = currentBlocksDiscrepancies.findLast { it.blockDiscrepancies.blockNumber == block.blockNumber }
-                    lastBlock == null
+                    lastBlock == null || isDenialOfFullProductAcceptance
                 }
                 .forEach { blockInfo ->
                     addBlockDiscrepancies(
@@ -407,73 +535,11 @@ class ProcessMarkingBoxProductService
                 ?: 0.0
     }
 
-    fun denialOfFullProductAcceptance(typeDiscrepancies: String) {
-        //https://trello.com/c/vcymT9Kp
-        //удаляем всю информацию по блокам
-        taskRepository
-                ?.getBlocksDiscrepancies()
-                ?.deleteBlocksDiscrepanciesForProduct(productInfo)
-
-        //отмечаем все блоки/марки для продукта категорией для брака из параметра GRZ_GRUND_MARK
-        blocks.forEach { blockInfo ->
-            addBlockDiscrepancies(
-                    blockInfo = blockInfo,
-                    typeDiscrepancies = typeDiscrepancies,
-                    isScan = false, //передаем false, т.к. эта ф-ция (denialOfFullProductAcceptance) вызывается с экрана Обнаружены расхождения по клику на блок на вкладке Не обработаны
-                    isGtinControlPassed = true
-            )
+    fun delBoxAndBlockDiscrepancy(typeDiscrepancies: String) {
+        currentBoxDiscrepancies.removeItemFromListWithPredicate {
+            it.typeDiscrepancies == typeDiscrepancies
         }
 
-        apply()
-
-        //удаляем всю информацию по продукту
-        taskRepository
-                ?.getProductsDiscrepancies()
-                ?.deleteProductsDiscrepanciesForProduct(productInfo)
-
-        //отмечаем по продукту все кол-во с категорией из параметра GRZ_GRUND_MARK
-        addProduct(productInfo.origQuantity, typeDiscrepancies)
-    }
-
-    fun refusalToAcceptPartlyByProduct(typeDiscrepancies: String) {
-        //https://trello.com/c/vcymT9Kp
-        val countProcessedBlocks =
-                taskRepository
-                        ?.run {
-                            getBlocksDiscrepancies()
-                                    .findBlocksDiscrepanciesOfProduct(productInfo)
-                                    .filter { it.isScan }
-                                    .size
-                                    .toDouble()
-                        }
-                        ?: 0.0
-
-        val notConfirmedByScanning = productInfo.origQuantity.toDouble() - countProcessedBlocks
-
-        //отмечаем все не обработанные блоки/марки для продукта категорией для брака из параметра GRZ_GRUND_MARK
-        blocks.filter { block ->
-            currentBlocksDiscrepancies.findLast { it.blockDiscrepancies.blockNumber == block.blockNumber } == null
-        }.forEach { blockInfo ->
-            addBlockDiscrepancies(
-                    blockInfo = blockInfo,
-                    typeDiscrepancies = typeDiscrepancies,
-                    isScan = false, //передаем false, т.к. эта ф-ция (refusalToAcceptPartlyByProduct) вызывается с экрана Обнаружены расхождения по клику на блок на вкладке Не обработаны
-                    isGtinControlPassed = true
-            )
-        }
-
-        apply()
-
-        //отмечаем продукт (https://trello.com/c/r4kofgtQ в комментарии смотреть логику)
-        taskRepository
-                ?.getProductsDiscrepancies()
-                ?.deleteProductDiscrepancy(productInfo.materialNumber, TYPE_DISCREPANCIES_QUALITY_NORM)
-
-        addProduct(countProcessedBlocks.toString(), TYPE_DISCREPANCIES_QUALITY_NORM)
-        addProduct(notConfirmedByScanning.toString(), typeDiscrepancies)
-    }
-
-    fun delBlockDiscrepancy(typeDiscrepancies: String) {
         currentBlocksDiscrepancies.removeItemFromListWithPredicate {
             it.blockDiscrepancies.typeDiscrepancies == typeDiscrepancies
         }
@@ -517,6 +583,19 @@ class ProcessMarkingBoxProductService
     fun clearModifications() {
         currentGtin.clear()
         currentScannedTypesStamps.clear()
+        boxes.clear()
+        taskRepository
+                ?.getBoxes()
+                ?.findBoxesOfProduct(productInfo)
+                ?.mapTo(boxes) { it.copy() }
+
+        currentBoxDiscrepancies.clear()
+        taskRepository
+                ?.run {
+                    getBoxesDiscrepancies()
+                            .findBoxesDiscrepanciesOfProduct(productInfo)
+                            .mapTo(currentBoxDiscrepancies) { it.copy() }
+                }
         blocks.clear()
         receivingTask
                 ?.getProcessedBlocks()

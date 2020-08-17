@@ -64,7 +64,7 @@ class MarkingBoxInfoViewModel : CoreViewModel(),
     val tvAccept: MutableLiveData<String> by lazy {
         paramGrzAlternMeins.map {
             val uomName = paramGrzAlternMeins.value?.name.orEmpty()
-            val nestingInOneBlock = productInfo.value?.nestingInOneBlock?.toDouble().toStringFormatted()
+            val nestingInOneBlock = productInfo.value?.countPiecesBox?.toDouble().toStringFormatted()
             val productUomName = productInfo.value?.uom?.name.orEmpty()
             context.getString(R.string.accept, "$uomName=$nestingInOneBlock $productUomName")
         }
@@ -168,8 +168,8 @@ class MarkingBoxInfoViewModel : CoreViewModel(),
                                 ?: countAcceptOfProduct
                     }
 
-    val acceptTotalCountWithUom: MutableLiveData<String> = acceptTotalCount.map { acceptTotalCountValue ->
-        val currentAcceptTotalCount = acceptTotalCountValue ?: 0.0
+    val acceptTotalCountWithUom: MutableLiveData<String> = acceptTotalCount.map {
+        val acceptTotalCount = it ?: 0.0
         val purchaseOrderUnits = productInfo.value?.purchaseOrderUnits?.name.orEmpty()
         val totalCountAcceptOfProduct =
                 countAcceptOfProduct
@@ -177,7 +177,7 @@ class MarkingBoxInfoViewModel : CoreViewModel(),
                         ?.run { "+ ${this.toStringFormatted()}" }
                         ?: countAcceptOfProduct.toStringFormatted()
 
-        currentAcceptTotalCount
+        acceptTotalCount
                 .takeIf { count -> count > 0.0 }
                 ?.run { "+ ${this.toStringFormatted()} $purchaseOrderUnits" }
                 ?: "$totalCountAcceptOfProduct $purchaseOrderUnits"
@@ -206,8 +206,8 @@ class MarkingBoxInfoViewModel : CoreViewModel(),
                                 ?: countRefusalOfProduct
                     }
 
-    val refusalTotalCountWithUom: MutableLiveData<String> = refusalTotalCount.map { refusalTotalCountValue ->
-        val currentRefusalTotalCount = refusalTotalCountValue ?: 0.0
+    val refusalTotalCountWithUom: MutableLiveData<String> = refusalTotalCount.map {
+        val refusalTotalCount = it ?: 0.0
         val purchaseOrderUnits = productInfo.value?.purchaseOrderUnits?.name.orEmpty()
         val totalCountRefusalOfProduct =
                 countRefusalOfProduct
@@ -215,7 +215,7 @@ class MarkingBoxInfoViewModel : CoreViewModel(),
                         ?.run { "- ${this.toStringFormatted()}" }
                         ?: countRefusalOfProduct.toStringFormatted()
 
-        currentRefusalTotalCount
+        refusalTotalCount
                 .takeIf { count -> count > 0.0 }
                 ?.run { "- ${this.toStringFormatted()} $purchaseOrderUnits" }
                 ?: "$totalCountRefusalOfProduct $purchaseOrderUnits"
@@ -350,7 +350,7 @@ class MarkingBoxInfoViewModel : CoreViewModel(),
         launchUITryCatch {
             productInfo.value
                     ?.let {
-                        if (processMarkingBoxProductService.newProcessMarkingBoxProductService(it) == null) {
+                        if (processMarkingBoxProductService.newProcessMarkingProductService(it) == null) {
                             screenNavigator.goBackAndShowAlertWrongProductType()
                             return@launchUITryCatch
                         }
@@ -890,7 +890,12 @@ class MarkingBoxInfoViewModel : CoreViewModel(),
         }
 
         //сохраняем короб и все оставшиеся неотсканированными блоки без is_scan
-        val countAddBlocksForBox = processMarkingBoxProductService.addBoxDiscrepancy(boxNumber, currentTypeDiscrepanciesCode)
+        val countAddBlocksForBox = processMarkingBoxProductService.addBoxDiscrepancy(
+                boxNumber = boxNumber,
+                typeDiscrepancies = currentTypeDiscrepanciesCode,
+                isScan = true,
+                isDenialOfFullProductAcceptance = false
+        )
         //обновляем кол-во отсканированных блоков/марок для отображения на экране в поле «Контроль марок»
         countScannedBlocks.value = countScannedBlocks.value?.plus(countAddBlocksForBox)
         countScannedStamps.value = countScannedStamps.value?.plus(1)

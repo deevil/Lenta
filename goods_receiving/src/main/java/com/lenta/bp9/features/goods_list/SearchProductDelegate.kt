@@ -3,6 +3,8 @@ package com.lenta.bp9.features.goods_list
 import android.content.Context
 import com.lenta.bp9.R
 import com.lenta.bp9.features.loading.tasks.TaskListLoadingMode
+import com.lenta.bp9.model.task.MarkingGoodsRegime
+import com.lenta.bp9.model.task.getMarkingGoodsRegime
 import com.lenta.bp9.model.task.IReceivingTaskManager
 import com.lenta.bp9.model.task.MarkType
 import com.lenta.bp9.model.task.TaskProductInfo
@@ -251,34 +253,11 @@ class SearchProductDelegate @Inject constructor(
     }
 
     private fun openMarkingProductScreen(taskProductInfo: TaskProductInfo) {
-        val isExciseStampsNotEmpty =
-                taskManager
-                        .getReceivingTask()
-                        ?.getProcessedExciseStamps()
-                        ?.size
-                        ?: 0 > 0
-
-        //условие для: MARK.ППП. Табак. Карточка товара. Марочный учет. ЕИЗ=ШТ. Признак IS_USE_ALTERN_MEINS не установлен. Таблица task_mark не пустая. https://trello.com/c/NGsFfWgB
-        if (isExciseStampsNotEmpty
-                && taskProductInfo.markType == MarkType.Tobacco
-                && taskProductInfo.isMarkFl
-                && !taskProductInfo.isCountingBoxes
-                && taskProductInfo.purchaseOrderUnits.code == UNIT_CODE_ST) {
-            screenNavigator.openMarkingInfoScreen(productInfo = taskProductInfo)
-            return
+        when(getMarkingGoodsRegime(taskManager, taskProductInfo)) {
+            MarkingGoodsRegime.UomStWithoutBoxes -> screenNavigator.openMarkingInfoScreen(taskProductInfo)
+            MarkingGoodsRegime.UomStWithBoxes -> screenNavigator.openMarkingBoxInfoScreen(taskProductInfo)
+            else -> screenNavigator.openInfoScreen(context.getString(R.string.data_retrieval_error)) //Ошибка получения данных
         }
-
-        //условие для: MARK.ППП. Табак. Карточка товара. Марочный учет. ЕИЗ=ШТ. Признак IS_USE_ALTERN_MEINS установлен. Таблица task_mark не пустая. https://trello.com/c/vl9wQg0Y
-        if (isExciseStampsNotEmpty
-                && taskProductInfo.markType == MarkType.Tobacco
-                && taskProductInfo.isMarkFl
-                && taskProductInfo.isCountingBoxes
-                && taskProductInfo.purchaseOrderUnits.code == UNIT_CODE_ST) {
-            screenNavigator.openMarkingBoxInfoScreen(productInfo = taskProductInfo)
-            return
-        }
-
-        screenNavigator.openInfoScreen(context.getString(R.string.data_retrieval_error)) //Ошибка получения данных
     }
 
     private fun openGeneralProductScreen(taskProductInfo: TaskProductInfo) {
