@@ -5,8 +5,8 @@ import com.lenta.bp16.model.ingredients.MaterialIngredientDataInfo
 import com.lenta.bp16.model.ingredients.TechOrderDataInfo
 import com.lenta.bp16.model.ingredients.OrderIngredientDataInfo
 import com.lenta.bp16.model.ingredients.ui.OrderByBarcode
-import com.lenta.bp16.platform.extention.IResultWithRetCodes
 import com.lenta.bp16.request.pojo.RetCode
+import com.lenta.shared.utilities.extentions.IResultWithRetCodes
 
 data class IngredientsDataListResult(
         /** Данные по заказу */
