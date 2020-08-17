@@ -59,13 +59,13 @@ class SelectGoodViewModel : CoreViewModel() {
         var barcode = ean.value.toString()
         var weight = DEFAULT_WEIGHT
 
-        withContext(Dispatchers.IO) {
+        withContext(Dispatchers.Default) {
             if (barcode.length >= MINIMUM_GS1_CODE_LENGTH) {
                 val ean128Barcode = EAN128Parser.parse(barcode, false).entries.find { pair ->
                     pair.key.AI == EAN_01
                 }?.value
                 if (ean128Barcode != null) {
-                    barcode = ean128Barcode.substring(1, ean128Barcode.length)
+                    barcode = ean128Barcode
                     ean.postValue(barcode)
                 }
             } else {

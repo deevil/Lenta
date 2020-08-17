@@ -26,6 +26,7 @@ import com.lenta.shared.view.OnPositionClickListener
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.util.*
 import javax.inject.Inject
 
 class GoodInfoViewModel : CoreViewModel() {
@@ -101,7 +102,6 @@ class GoodInfoViewModel : CoreViewModel() {
 
     init {
         setGoodInfo()
-        getServerTime()
     }
 
     private fun setGoodInfo() = launchUITryCatch {
@@ -115,6 +115,7 @@ class GoodInfoViewModel : CoreViewModel() {
                 }
             } else {
                 applyGoodForGroupAndCondition(good, conditionList)
+                getServerTime()
             }
 
         } ?: navigator.showAlertGoodsNotFound()
@@ -205,7 +206,7 @@ class GoodInfoViewModel : CoreViewModel() {
     }
 
     private fun getServerTime() {
-        viewModelScope.launch {
+        launchUITryCatch {
             serverTimeRequest(ServerTimeRequestParam(sessionInfo.market
                     .orEmpty())).either(::handleFailure, ::handleSuccessServerTime)
         }
@@ -218,37 +219,37 @@ class GoodInfoViewModel : CoreViewModel() {
     fun onClickComplete() =
             navigator.showConfirmOpeningPackage {
                 saveGroup()
-                launchUITryCatch {
-                    navigator.showProgressLoadingData()
-                    val result = goodInfoNetRequest(
-                            params = GoodInfoParams(
-                                    marketNumber = sessionInfo.market.orEmpty(),
-                                    sapCode = selectedGood.value?.getFormattedMatcode(),
-                                    grNum = currentGroup,
-                                    stdCond = currentCondition,
-                                    quantity = quantityField.value,
-                                    buom = suffix.value.orEmpty(),
-                                    partNumber = partNumberField.value,
-                                    /**Уникальный идентификатор, потом заменить на генерацию GUID*/
-                                    guid = DEF_GUID,
-                                    dateOpen = timeMonitor.getServerDate().toString(),
-                                    timeOpen = timeMonitor.getUnixTime().toString(),
-                                    ean = selectedEan.value
-                            )
-                    )
-                    result.also {
-                        navigator.hideProgress()
-                    }.either(::handleFailure) {
-                        navigator.openSelectGoodScreen()
-                    }
-                }
+                onConfirmationYesHandler()
             }
+
+    private fun onConfirmationYesHandler() = launchUITryCatch {
+        navigator.showProgressLoadingData()
+        val guid = UUID.randomUUID().toString()
+        val result = goodInfoNetRequest(
+                params = GoodInfoParams(
+                        marketNumber = sessionInfo.market.orEmpty(),
+                        sapCode = selectedGood.value?.getFormattedMatcode(),
+                        grNum = currentGroup,
+                        stdCond = currentCondition,
+                        quantity = quantityField.value,
+                        buom = suffix.value.orEmpty(),
+                        partNumber = partNumberField.value,
+                        /**Уникальный идентификатор, потом заменить на генерацию GUID*/
+                        guid = guid,
+                        dateOpen = timeMonitor.getServerDate().toString(),
+                        timeOpen = timeMonitor.getUnixTime().toString(),
+                        ean = selectedEan.value
+                )
+        )
+        result.also {
+            navigator.hideProgress()
+        }.either(::handleFailure) {
+            navigator.openSelectGoodScreen()
+        }
+    }
 
     companion object {
         private const val DEF_WEIGHT = "0"
         private const val DEF_COND_FLAG = "X"
-
-        /**It's a temporary solution*/
-        private const val DEF_GUID = "1"
     }
 }
