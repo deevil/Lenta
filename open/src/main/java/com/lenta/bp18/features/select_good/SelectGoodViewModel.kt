@@ -49,32 +49,37 @@ class SelectGoodViewModel : CoreViewModel() {
     }
 
     fun onScanResult(data: String) {
+        barcodeField.value = data
         ean.value = data
         preparationEanForSearch()
     }
 
     private fun preparationEanForSearch() = launchUITryCatch {
         navigator.showProgress(context.getString(R.string.load_barcode_data))
-        //00030000020005
-        val barcode = ean.value.toString()
+        var barcode = ean.value.toString()
         var weight = DEFAULT_WEIGHT
 
         withContext(Dispatchers.IO) {
-            if (weightValue.contains(barcode.substring(0 until 2))) {
-                ean.postValue(barcode.replace(barcode.takeLast(6), TAKEN_ZEROS))
-                weight = barcode.takeLast(6).take(5)
-            } else {
-                if (barcode.length >= MINIMUM_GS1_CODE_LENGTH) {
-                    val ean128Barcode = EAN128Parser.parse(barcode, false).entries.find { pair ->
-                        pair.key.AI == EAN_01 || pair.key.AI == EAN_02
-                    }?.value
-
-                    ean.postValue(ean128Barcode.orEmpty())
-                } else if (barcode.length != MINIMUM_GS1_CODE_LENGTH) {
-                    ean.postValue("")
-                    println("----->  barcode EAN 128 less than 16 chars")
+            if (barcode.length >= MINIMUM_GS1_CODE_LENGTH) {
+                val ean128Barcode = EAN128Parser.parse(barcode, false).entries.find { pair ->
+                    pair.key.AI == EAN_01
+                }?.value
+                if (ean128Barcode != null) {
+                    barcode = ean128Barcode.substring(1, ean128Barcode.length)
+                    ean.postValue(barcode)
                 }
+            } else {
+                ean.postValue(barcode)
+                println("----->  barcode EAN 128 less than 16 chars")
             }
+        }
+
+        if (weightValue.contains(barcode.substring(0 until 2))) {
+            val changedBarcode = barcode.replace(barcode.takeLast(6), TAKEN_ZEROS)
+            ean.postValue(changedBarcode)
+            weight = barcode.takeLast(6).take(5)
+        } else {
+            ean.postValue(barcode)
         }
 
         searchEan(ean.value.toString(), weight)
