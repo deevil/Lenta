@@ -35,16 +35,13 @@ class MarkingBoxInfoFragment : CoreFragment<FragmentMarkingBoxInfoBinding, Marki
     override fun getViewModel(): MarkingBoxInfoViewModel {
         provideViewModel(MarkingBoxInfoViewModel::class.java).let { vm ->
             getAppComponent()?.inject(vm)
-            this.productInfo?.let {
-                vm.productInfo.value = it
-                vm.processMarkingBoxProductService.initProduct(it)
-            }
+            this.productInfo?.let { vm.initProduct(it) } //https://bitbucket.org/eigenmethodlentatempteam/lenta-pdct-android/pull-requests/534/grz_features_6037/diff
             return vm
         }
     }
 
     override fun setupTopToolBar(topToolbarUiModel: TopToolbarUiModel) {
-        topToolbarUiModel.title.value = "${vm.productInfo.value?.getMaterialLastSix()} ${vm.productInfo.value?.description}"
+        topToolbarUiModel.title.value = vm.getTitle() //https://bitbucket.org/eigenmethodlentatempteam/lenta-pdct-android/pull-requests/534/grz_features_6037/diff
         topToolbarUiModel.description.value = getString(R.string.goods_info)
     }
 
@@ -79,6 +76,12 @@ class MarkingBoxInfoFragment : CoreFragment<FragmentMarkingBoxInfoBinding, Marki
             }
             false
         })
+    }
+
+    //https://bitbucket.org/eigenmethodlentatempteam/lenta-pdct-android/pull-requests/534/grz_features_6037/diff
+    override fun onDestroyView() {
+        super.onDestroyView()
+        binding?.etCount?.setOnKeyListener(null)
     }
 
     override fun onToolbarButtonClick(view: View) {

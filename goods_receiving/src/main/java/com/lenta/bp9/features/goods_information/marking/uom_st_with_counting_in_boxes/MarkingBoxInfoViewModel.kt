@@ -72,6 +72,7 @@ class MarkingBoxInfoViewModel : CoreViewModel(),
 
     private val countScannedBlocks: MutableLiveData<Int> = MutableLiveData(0) //только блоки, переменная используется для отображения счетчика в поле Контроль марок
     private val countScannedStamps: MutableLiveData<Int> = MutableLiveData(0) //блоки и GTINы, переменная используется для кнопки Откатить
+
     val spinQualityEnabled: MutableLiveData<Boolean> = countScannedStamps.map { it == 0 }
     val spinReasonRejectionEnabled: MutableLiveData<Boolean> = countScannedStamps.map { it == 0 }
     val spinQuality: MutableLiveData<List<String>> = MutableLiveData()
@@ -81,12 +82,14 @@ class MarkingBoxInfoViewModel : CoreViewModel(),
     val suffix: MutableLiveData<String> = MutableLiveData()
     val requestFocusToCount: MutableLiveData<Boolean> = MutableLiveData(false)
     val isDefect: MutableLiveData<Boolean> = spinQualitySelectedPosition.map { it != 0 }
+
     private val qualityInfo: MutableLiveData<List<QualityInfo>> = MutableLiveData()
     private val reasonRejectionInfo: MutableLiveData<List<ReasonRejectionInfo>> = MutableLiveData()
     private val allTypeDiscrepancies: MutableLiveData<List<QualityInfo>> = MutableLiveData()
     private val paramGrzExclGtin: MutableLiveData<String> = MutableLiveData("")
     private val paramGrzAlternMeins: MutableLiveData<Uom> = MutableLiveData()
     private val unprocessedQuantityOfBlocks: MutableLiveData<Double> = MutableLiveData(0.0)
+
     val isVisibilityControlGTIN: MutableLiveData<Boolean> by lazy {
         MutableLiveData(productInfo.value?.isControlGTIN == true)
     }
@@ -106,7 +109,7 @@ class MarkingBoxInfoViewModel : CoreViewModel(),
 
             isUnitBox.value
                     ?.takeIf { it }
-                    ?.run { addNewCount *= countPiecesBox }
+                    ?.let { addNewCount *= countPiecesBox }
 
             return addNewCount
         }
@@ -171,14 +174,15 @@ class MarkingBoxInfoViewModel : CoreViewModel(),
     val acceptTotalCountWithUom: MutableLiveData<String> = acceptTotalCount.map {
         val acceptTotalCount = it ?: 0.0
         val purchaseOrderUnits = productInfo.value?.purchaseOrderUnits?.name.orEmpty()
+        val countAcceptOfProductValue = countAcceptOfProduct
         val totalCountAcceptOfProduct =
-                countAcceptOfProduct
+                countAcceptOfProductValue
                         .takeIf { count -> count > 0.0 }
                         ?.run { "+ ${this.toStringFormatted()}" }
-                        ?: countAcceptOfProduct.toStringFormatted()
+                        ?: countAcceptOfProductValue.toStringFormatted()
 
         acceptTotalCount
-                .takeIf { count -> count > 0.0 }
+                .takeIf { count1 -> count1 > 0.0 }
                 ?.run { "+ ${this.toStringFormatted()} $purchaseOrderUnits" }
                 ?: "$totalCountAcceptOfProduct $purchaseOrderUnits"
     }
@@ -227,38 +231,42 @@ class MarkingBoxInfoViewModel : CoreViewModel(),
             .combineLatest(spinQualitySelectedPosition)
             .combineLatest(countScannedBlocks)
             .map {
-                val acceptTotalCountVal = acceptTotalCount.value ?: 0.0
-                val countBlockScanned =
-                        productInfo.value
-                                ?.let { processMarkingBoxProductService.getCountProcessedBlockForDiscrepancies(TYPE_DISCREPANCIES_QUALITY_NORM).toDouble() }
-                                ?: 0.0
+                getTvStampControlVal()
+            }
 
-                val numberStampsControl =
-                        productInfo.value
-                                ?.numberStampsControl
-                                ?.toDouble()
-                                ?: 0.0
+    private fun getTvStampControlVal() : String {
+        val acceptTotalCountVal = acceptTotalCount.value ?: 0.0
+        val countBlockScanned =
+                productInfo.value
+                        ?.let { processMarkingBoxProductService.getCountProcessedBlockForDiscrepancies(TYPE_DISCREPANCIES_QUALITY_NORM).toDouble() }
+                        ?: 0.0
 
-                if (currentQualityInfoCode == TYPE_DISCREPANCIES_QUALITY_NORM) {
-                    if (numberStampsControl == 0.0 || acceptTotalCountVal <= 0.0) {
-                        checkStampControlVisibility.value = false
-                        context.getString(R.string.not_required)
-                    } else {
-                        checkStampControlVisibility.value = true
-                        val countStampsControl = if (acceptTotalCountVal < numberStampsControl) acceptTotalCountVal else numberStampsControl
-                        buildString {
-                            append(countBlockScanned.toStringFormatted())
-                            append(" ")
-                            append(context.getString(R.string.of))
-                            append(" ")
-                            append(countStampsControl.toStringFormatted())
-                        }
-                    }
-                } else {
-                    checkStampControlVisibility.value = false
-                    "" //это поле отображается только при выбранной категории "Норма"
+        val numberStampsControl =
+                productInfo.value
+                        ?.numberStampsControl
+                        ?.toDouble()
+                        ?: 0.0
+
+        return if (currentQualityInfoCode == TYPE_DISCREPANCIES_QUALITY_NORM) {
+            if (numberStampsControl == 0.0 || acceptTotalCountVal <= 0.0) {
+                checkStampControlVisibility.value = false
+                context.getString(R.string.not_required)
+            } else {
+                checkStampControlVisibility.value = true
+                val countStampsControl = if (acceptTotalCountVal < numberStampsControl) acceptTotalCountVal else numberStampsControl
+                buildString {
+                    append(countBlockScanned.toStringFormatted())
+                    append(" ")
+                    append(context.getString(R.string.of))
+                    append(" ")
+                    append(countStampsControl.toStringFormatted())
                 }
             }
+        } else {
+            checkStampControlVisibility.value = false
+            "" //это поле отображается только при выбранной категории "Норма"
+        }
+    }
 
     val checkStampControl: MutableLiveData<Boolean> = checkStampControlVisibility.map {
         val countBlockScanned = processMarkingBoxProductService.getCountProcessedBlockForDiscrepancies(TYPE_DISCREPANCIES_QUALITY_NORM).toDouble()
@@ -290,37 +298,41 @@ class MarkingBoxInfoViewModel : CoreViewModel(),
             .combineLatest(spinReasonRejectionSelectedPosition)
             .combineLatest(countScannedBlocks)
             .map {
-                productInfo.value
-                        ?.let { product ->
-                            val countBlockScannedValue = countScannedBlocks.value ?: 0
-                            val totalBlocksProduct = product.origQuantity.toDouble()
-                            val countProcessedBlocksCurrentDiscrepancies = processMarkingBoxProductService.getTotalScannedBlocks()
-                            if (countBlockScannedValue <= 0) { //фиксируем необработанное количество после первого сканирования марок, чтобы не учитывать их в текущей сессии, иначе это кол-во будет уменьшаться и появиться текст Не требуется
-                                unprocessedQuantityOfBlocks.value = totalBlocksProduct - countProcessedBlocksCurrentDiscrepancies
-                            }
-                            val unprocessedQuantityOfBlocksVal = unprocessedQuantityOfBlocks.value
-                                    ?: 0.0
-                            if (currentTypeDiscrepanciesCode != TYPE_DISCREPANCIES_QUALITY_NORM) {
-                                if (unprocessedQuantityOfBlocksVal == enteredCountInBlockUnits) {
-                                    checkBoxStampListVisibility.value = false
-                                    context.getString(R.string.not_required)
-                                } else {
-                                    checkBoxStampListVisibility.value = true
-                                    buildString {
-                                        append(countBlockScannedValue.toDouble().toStringFormatted())
-                                        append(" ")
-                                        append(context.getString(R.string.of))
-                                        append(" ")
-                                        append(enteredCountInBlockUnits.toStringFormatted())
-                                    }
-                                }
-                            } else {
-                                checkBoxStampListVisibility.value = false
-                                "" //это поле отображается только при выбранной категории брака
-                            }
-                        }.orEmpty()
+                getTvStampListVal()
 
             }
+
+    private fun getTvStampListVal() : String {
+        return productInfo.value
+                ?.let { product ->
+                    val countBlockScannedValue = countScannedBlocks.value ?: 0
+                    val totalBlocksProduct = product.origQuantity.toDouble()
+                    val countProcessedBlocksCurrentDiscrepancies = processMarkingBoxProductService.getTotalScannedBlocks()
+                    if (countBlockScannedValue <= 0) { //фиксируем необработанное количество после первого сканирования марок, чтобы не учитывать их в текущей сессии, иначе это кол-во будет уменьшаться и появиться текст Не требуется
+                        unprocessedQuantityOfBlocks.value = totalBlocksProduct - countProcessedBlocksCurrentDiscrepancies
+                    }
+                    val unprocessedQuantityOfBlocksVal = unprocessedQuantityOfBlocks.value
+                            ?: 0.0
+                    if (currentTypeDiscrepanciesCode != TYPE_DISCREPANCIES_QUALITY_NORM) {
+                        if (unprocessedQuantityOfBlocksVal == enteredCountInBlockUnits) {
+                            checkBoxStampListVisibility.value = false
+                            context.getString(R.string.not_required)
+                        } else {
+                            checkBoxStampListVisibility.value = true
+                            buildString {
+                                append(countBlockScannedValue.toDouble().toStringFormatted())
+                                append(" ")
+                                append(context.getString(R.string.of))
+                                append(" ")
+                                append(enteredCountInBlockUnits.toStringFormatted())
+                            }
+                        }
+                    } else {
+                        checkBoxStampListVisibility.value = false
+                        "" //это поле отображается только при выбранной категории брака
+                    }
+                }.orEmpty()
+    }
 
     val checkBoxStampList: MutableLiveData<Boolean> = checkBoxStampListVisibility.map {
         val countBlockScanned = countScannedBlocks.value ?: 0
@@ -334,15 +346,19 @@ class MarkingBoxInfoViewModel : CoreViewModel(),
                     .combineLatest(checkBoxStampList)
                     .combineLatest(acceptTotalCount)
                     .map {
-                        val checkStampControlValue = checkStampControl.value ?: false
-                        val checkBoxStampListValue = checkBoxStampList.value ?: false
-                        val acceptTotalCountValue = acceptTotalCount.value ?: 0.0
-
-                        (enteredCountInBlockUnits > 0.0 || (acceptTotalCountValue > 0.0 && currentTypeDiscrepanciesCode == TYPE_DISCREPANCIES_QUALITY_NORM))
-                                && (currentTypeDiscrepanciesCode == TYPE_DISCREPANCIES_QUALITY_NORM
-                                || checkStampControlValue
-                                || checkBoxStampListValue)
+                        getEnabledApplyButton()
                     }
+
+    private fun getEnabledApplyButton() : Boolean {
+        val checkStampControlValue = checkStampControl.value ?: false
+        val checkBoxStampListValue = checkBoxStampList.value ?: false
+        val acceptTotalCountValue = acceptTotalCount.value ?: 0.0
+
+        return (enteredCountInBlockUnits > 0.0 || (acceptTotalCountValue > 0.0 && currentTypeDiscrepanciesCode == TYPE_DISCREPANCIES_QUALITY_NORM))
+                && (currentTypeDiscrepanciesCode == TYPE_DISCREPANCIES_QUALITY_NORM
+                || checkStampControlValue
+                || checkBoxStampListValue)
+    }
 
     val enabledRollbackBtn: MutableLiveData<Boolean> = countScannedStamps.map { (it ?: 0) > 0 }
 
@@ -386,12 +402,23 @@ class MarkingBoxInfoViewModel : CoreViewModel(),
         return false
     }
 
+    //https://bitbucket.org/eigenmethodlentatempteam/lenta-pdct-android/pull-requests/534/grz_features_6037/diff
+    fun getTitle() : String {
+        return "${productInfo.value?.getMaterialLastSix().orEmpty()} ${productInfo.value?.description.orEmpty()}"
+    }
+
+    //https://bitbucket.org/eigenmethodlentatempteam/lenta-pdct-android/pull-requests/534/grz_features_6037/diff
+    fun initProduct(initProduct: TaskProductInfo)  {
+        productInfo.value = initProduct
+        processMarkingBoxProductService.initProduct(initProduct)
+    }
+
     fun onClickRollback() {
         //сначала проверяем, неотсканирован ли последним блок
         val lastScannedTypesStamps = processMarkingBoxProductService.getLastScannedTypesStamps()
         lastScannedTypesStamps
                 .takeIf { it == TypeLastStampScanned.BOX }
-                ?.run {
+                ?.let {
                     val countDelBlocksForBox = processMarkingBoxProductService.rollbackTypeLastStampScanned()
                     //уменьшаем кол-во отсканированных блоков на кол-во удаленных в текущей сессии
                     minusScannedBlocks(countDelBlocksForBox)
@@ -413,7 +440,10 @@ class MarkingBoxInfoViewModel : CoreViewModel(),
     }
 
     private fun rollbackControlGtin() {
-        if (checkBoxGtinControl.value == false && checkBoxGtinStampControl.value == false) {
+        val checkBoxGtinControlValue = checkBoxGtinControl.value
+        val checkBoxGtinStampControlValue = checkBoxGtinStampControl.value
+
+        if (checkBoxGtinControlValue == false && checkBoxGtinStampControlValue == false) {
             /**Чек-боксы не установлены -
              * По кнопке удалять последний отсканированный блок.
              * Уменьшать количество в поле "Список марок",
@@ -433,7 +463,7 @@ class MarkingBoxInfoViewModel : CoreViewModel(),
         }
 
         processMarkingBoxProductService.rollbackTypeLastStampScanned()
-        if (checkBoxGtinControl.value == true) {
+        if (checkBoxGtinControlValue == true) {
             /**Установлен чек-бокс GTIN (первый чек-бокс) -
              * удалять отсканированный GTIN из локальной стуктуры,
              * очищать активный чек-бокс для GTIN
@@ -443,7 +473,7 @@ class MarkingBoxInfoViewModel : CoreViewModel(),
             minusScannedStamps(1)
         }
 
-        if (checkBoxGtinStampControl.value == true) {
+        if (checkBoxGtinStampControlValue == true) {
             /**Установлен чек-бокс марки (второй чек-бокс) -
              * удалять отсканированный блок из локальной структуры,
              * очищать активный чек-бокс для марки
@@ -459,19 +489,17 @@ class MarkingBoxInfoViewModel : CoreViewModel(),
     private fun minusScannedStamps(count: Int) {
         countScannedStamps.value
                 ?.takeIf { it >= count }
-                ?.run { countScannedStamps.value = countScannedStamps.value?.minus(count) }
+                ?.let { countScannedStamps.value = countScannedStamps.value?.minus(count) }
     }
 
     private fun minusScannedBlocks(count: Int = 1) {
         countScannedBlocks.value
                 ?.takeIf { it >= count }
-                ?.run { countScannedBlocks.value = countScannedBlocks.value?.minus(1) }
+                ?.let { countScannedBlocks.value = countScannedBlocks.value?.minus(1) }
     }
 
     fun onClickDetails() {
-        productInfo.value?.let {
-            screenNavigator.openMarkingGoodsDetailsScreen(it)
-        }
+        productInfo.value?.let { screenNavigator.openMarkingGoodsDetailsScreen(it) }
     }
 
     private fun clearControl(checkBoxGtinControlValue: Boolean, checkBoxGtinStampControl: Boolean) {
@@ -556,6 +584,10 @@ class MarkingBoxInfoViewModel : CoreViewModel(),
             }
         }
 
+        checkScanResult(data)
+    }
+
+    private fun checkScanResult(data: String) {
         when (data.length) {
             //Отсканирован неверный формат ШК
             in 0..7, in 9..11, in 15..20 -> screenNavigator.openAlertInvalidBarcodeFormatScannedScreen()
@@ -599,12 +631,12 @@ class MarkingBoxInfoViewModel : CoreViewModel(),
     }
 
     private fun barcodePackCheck(data: String): Boolean {
-        val regex = Regex("""^(?<packBarcode>(?<gtin>\d{14})(?<serial>\S{7}))(?<MRC>\S{4})(?:\S{4})${'$'}""")
+        val regex = REGEX_BARCODE_PACK.toRegex()
         return regex.find(data) != null
     }
 
     private fun barcodeBlockCheck(data: String): Boolean {
-        val regex = Regex("""^.?(?<blockBarcode>01(?<gtin2>\d{14})21(?<serial>\S{7})).?8005(?<MRC>\d{6}).?93(?<verificationKey>\S{4}).?(?<other>\S{1,})?${'$'}""")
+        val regex = REGEX_BARCODE_BLOCK.toRegex()
         return regex.find(data) != null
     }
 
@@ -961,6 +993,22 @@ class MarkingBoxInfoViewModel : CoreViewModel(),
         }
 
         screenNavigator.goBack()
+    }
+
+    companion object {
+        const val REGEX_BARCODE_PACK = """^(?<packBarcode>(?<gtin>\d{14})(?<serial>\S{7}))(?<MRC>\S{4})(?:\S{4})${'$'}"""
+        const val REGEX_BARCODE_BLOCK = """^.?(?<blockBarcode>01(?<gtin2>\d{14})21(?<serial>\S{7})).?8005(?<MRC>\d{6}).?93(?<verificationKey>\S{4}).?(?<other>\S{1,})?${'$'}"""
+    }
+
+    //todo
+    fun scanGtin() {
+        onScanResult("04600266012142")
+    }
+    fun scanMark1() {
+        onScanResult("01046002660121422100000E(.8005012345.938000.92NGkg+wRXz36kBFjpfwOub5DBIIpD2iS/DMYpZuuDLU0Y3pZt1z20/1ksr4004wfhDhRxu4dgUV4QN96Qtdih9g==")
+    }
+    fun scanMark2() {
+        onScanResult("112952490961357003142970979778")
     }
 
 }

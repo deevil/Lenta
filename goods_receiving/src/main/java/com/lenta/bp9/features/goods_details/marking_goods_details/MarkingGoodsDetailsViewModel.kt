@@ -87,39 +87,44 @@ class MarkingGoodsDetailsViewModel : CoreViewModel(), PageSelectionListener {
         if (product != null && !product.isNotEdit) {
             categoriesSelectionsHelper.selectedPositions.value
                     ?.forEach { position ->
-                        val isDiscrepanciesErrorUPD =
-                                goodsDetails.value
-                                        ?.get(position)
-                                        ?.typeDiscrepancies == TYPE_DISCREPANCIES_REASON_REJECTION_ERROR_UPD
-
-                        val materialNumber =
-                                goodsDetails.value
-                                        ?.get(position)
-                                        ?.materialNumber
-                                        .orEmpty()
-
-                        val typeDiscrepancies =
-                                goodsDetails.value
-                                        ?.get(position)
-                                        ?.typeDiscrepancies
-                                        .orEmpty()
-
-                        if (!isDiscrepanciesErrorUPD) {
-                            taskRepository
-                                    ?.run {
-                                        getProductsDiscrepancies().deleteProductDiscrepancy(materialNumber,typeDiscrepancies)
-                                        getBoxesDiscrepancies().deleteBoxesDiscrepanciesForProductAndDiscrepancies(materialNumber, typeDiscrepancies)
-                                        getBlocksDiscrepancies().deleteBlocksDiscrepanciesForProductAndDiscrepancies(materialNumber,typeDiscrepancies)
-                                    }
-
-                            when(getMarkingGoodsRegime(taskManager, product)) {
-                                MarkingGoodsRegime.UomStWithoutBoxes -> processMarkingProductService.delBlockDiscrepancy(typeDiscrepancies)
-                                MarkingGoodsRegime.UomStWithBoxes -> processMarkingBoxProductService.delBoxAndBlockDiscrepancy(typeDiscrepancies)
-                            }
-                        }
+                        processSelectedPosition(position, product)
                     }
         }
         updateData()
+    }
+
+    //https://bitbucket.org/eigenmethodlentatempteam/lenta-pdct-android/pull-requests/534/grz_features_6037/diff
+    private fun processSelectedPosition(position: Int, product: TaskProductInfo) {
+        val isDiscrepanciesErrorUPD =
+                goodsDetails.value
+                        ?.get(position)
+                        ?.typeDiscrepancies == TYPE_DISCREPANCIES_REASON_REJECTION_ERROR_UPD
+
+        val materialNumber =
+                goodsDetails.value
+                        ?.get(position)
+                        ?.materialNumber
+                        .orEmpty()
+
+        val typeDiscrepancies =
+                goodsDetails.value
+                        ?.get(position)
+                        ?.typeDiscrepancies
+                        .orEmpty()
+
+        if (!isDiscrepanciesErrorUPD) {
+            taskRepository
+                    ?.let {
+                        it.getProductsDiscrepancies().deleteProductDiscrepancy(materialNumber,typeDiscrepancies)
+                        it.getBoxesDiscrepancies().deleteBoxesDiscrepanciesForProductAndDiscrepancies(materialNumber, typeDiscrepancies)
+                        it.getBlocksDiscrepancies().deleteBlocksDiscrepanciesForProductAndDiscrepancies(materialNumber,typeDiscrepancies)
+                    }
+
+            when(getMarkingGoodsRegime(taskManager, product)) {
+                MarkingGoodsRegime.UomStWithoutBoxes -> processMarkingProductService.delBlockDiscrepancy(typeDiscrepancies)
+                MarkingGoodsRegime.UomStWithBoxes -> processMarkingBoxProductService.delBoxAndBlockDiscrepancy(typeDiscrepancies)
+            }
+        }
     }
 
     private fun updateData() {
