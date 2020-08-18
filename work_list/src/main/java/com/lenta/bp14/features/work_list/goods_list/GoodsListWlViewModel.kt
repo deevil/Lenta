@@ -1,11 +1,11 @@
 package com.lenta.bp14.features.work_list.goods_list
 
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
 import com.lenta.bp14.models.IGeneralTaskManager
 import com.lenta.bp14.models.check_price.IPriceInfoParser
 import com.lenta.bp14.models.data.GoodsListTab
 import com.lenta.bp14.models.getTaskName
+import com.lenta.bp14.models.ui.ItemWorkListUi
 import com.lenta.bp14.models.work_list.Good
 import com.lenta.bp14.models.work_list.IWorkListTask
 import com.lenta.bp14.platform.navigation.IScreenNavigator
@@ -21,7 +21,6 @@ import com.lenta.shared.utilities.extentions.combineLatest
 import com.lenta.shared.utilities.extentions.dropZeros
 import com.lenta.shared.utilities.extentions.launchUITryCatch
 import com.lenta.shared.utilities.extentions.map
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class GoodsListWlViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyboardListener {
@@ -174,7 +173,7 @@ class GoodsListWlViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
     }
 
     private fun searchCode(ean: String? = null, material: String? = null) {
-        viewModelScope.launch {
+        launchUITryCatch {
             require((ean != null) xor (material != null)) {
                 "Only one param allowed - ean: $ean, material: $material"
             }
@@ -194,7 +193,7 @@ class GoodsListWlViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
                     task.addGoodToList(good)
                     navigator.openGoodInfoWlScreen()
                 }
-                return@launch
+                return@launchUITryCatch
             }
 
             navigator.showGoodNotFound()
@@ -238,10 +237,3 @@ class GoodsListWlViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
     }
 
 }
-
-data class ItemWorkListUi(
-        val position: String,
-        val material: String,
-        val name: String,
-        val quantity: String = ""
-)
