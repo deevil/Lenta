@@ -34,7 +34,7 @@ class GoodInfoFragment : CoreFragment<FragmentGoodInfoBinding, GoodInfoViewModel
         provideViewModel(GoodInfoViewModel::class.java).let {
             getAppComponent()?.inject(it)
             it.selectedEan.value = goodParams.ean
-            it.weight.value = goodParams.weight.toInt()
+            it.weight.value = goodParams.weight.toDouble()
             return it
         }
     }

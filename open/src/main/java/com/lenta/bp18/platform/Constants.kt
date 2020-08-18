@@ -12,10 +12,10 @@ object Constants {
 
     const val TIME_OUT_IN_SEC = 60
     const val TIME_OUT = 2000
-    const val QUANTITY_DEFAULT_VALUE_1 = 1
-    const val QUANTITY_DEFAULT_VALUE_0 = 0
+    const val QUANTITY_DEFAULT_VALUE_1 = 1.0
+    const val QUANTITY_DEFAULT_VALUE_0 = 0.0
 
-    const val CONVERT_TO_KG = 1000
+    const val CONVERT_TO_KG = 1000.0
 
     //Номера экранов
     const val AUTH_FRAGMENT = "01"
