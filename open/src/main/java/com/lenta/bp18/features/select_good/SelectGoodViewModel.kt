@@ -11,6 +11,7 @@ import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.settings.IAppSettings
 import com.lenta.shared.utilities.EAN128Parser
+import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.extentions.launchUITryCatch
 import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.utilities.extentions.unsafeLazy
@@ -41,7 +42,7 @@ class SelectGoodViewModel : CoreViewModel() {
 
     val barcodeField: MutableLiveData<String> = MutableLiveData()
     val nextButtonEnabled = barcodeField.map { !it.isNullOrBlank() }
-    val requestFocusToBarcode = MutableLiveData<Boolean>(true)
+    val requestFocusToBarcode = MutableLiveData<Boolean>(false)
 
     fun onClickNext() {
         ean.value = barcodeField.value ?: Constants.GOOD_BARCODE
@@ -59,30 +60,27 @@ class SelectGoodViewModel : CoreViewModel() {
         var barcode = ean.value.toString()
         var weight = DEFAULT_WEIGHT
 
-        withContext(Dispatchers.Default) {
-            if (barcode.length >= MINIMUM_GS1_CODE_LENGTH) {
-                val ean128Barcode = EAN128Parser.parse(barcode, false).entries.find { pair ->
+        if (barcode.length >= MINIMUM_GS1_CODE_LENGTH) {
+            val ean128Barcode = withContext(Dispatchers.Default) {
+                EAN128Parser.parse(barcode, false).entries.find { pair ->
                     pair.key.AI == EAN_01
                 }?.value
-                if (ean128Barcode != null) {
-                    barcode = ean128Barcode
-                    ean.postValue(barcode)
-                }
-            } else {
-                ean.postValue(barcode)
-                println("----->  barcode EAN 128 less than 16 chars")
             }
+            if (ean128Barcode != null) {
+                barcode = ean128Barcode
+            }
+        } else {
+            Logg.d { "----->  barcode EAN 128 less than 16 chars" }
         }
 
         if (weightValue.contains(barcode.substring(0 until 2))) {
             val changedBarcode = barcode.replace(barcode.takeLast(6), TAKEN_ZEROS)
-            ean.postValue(changedBarcode)
             weight = barcode.takeLast(6).take(5)
-        } else {
-            ean.postValue(barcode)
+            barcode = changedBarcode
         }
 
-        searchEan(ean.value.toString(), weight)
+        ean.value = barcode
+        searchEan(barcode, weight)
     }
 
     private suspend fun searchEan(ean: String, weight: String) {

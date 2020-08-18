@@ -160,7 +160,7 @@ class GoodInfoViewModel : CoreViewModel() {
 
     private suspend fun findSelectedIndexForGroup(groupList: List<GroupInfo>): Int = withContext(Dispatchers.IO) {
         var selectedIndex = 0
-        groups.value = groupList
+        groups.postValue(groupList)
         appSettings.lastGroup?.let { lGroup ->
             groupList.forEachIndexed { index, groupInfo ->
                 if (groupInfo.number == lGroup) {
