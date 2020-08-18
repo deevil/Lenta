@@ -1,11 +1,16 @@
 package com.lenta.bp16.features.good_info
 
 import androidx.lifecycle.MutableLiveData
+import com.lenta.bp16.model.movement.params.ProductInfoParams
+import com.lenta.bp16.model.movement.result.ProductInfoResult
 import com.lenta.bp16.platform.Constants
 import com.lenta.bp16.platform.navigation.IScreenNavigator
 import com.lenta.bp16.repository.DatabaseRepository
 import com.lenta.bp16.repository.IRepoInMemoryHolder
-import com.lenta.bp16.request.*
+import com.lenta.bp16.request.MovementNetRequest
+import com.lenta.bp16.request.MovementParams
+import com.lenta.bp16.request.ProductInfoNetRequest
+import com.lenta.bp16.request.StockLockRequestResult
 import com.lenta.bp16.request.pojo.*
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.models.core.Uom
@@ -151,7 +156,7 @@ class GoodInfoViewModel : CoreViewModel() {
 
     private fun setProdInfo() {
 
-        launchUITryCatch {
+        /*launchUITryCatch {
             val goodInfo = database.getGoodByEan(selectedEan.value.toString())
             val sapCode = goodInfo?.matcode?.takeLast(6)
             val ean = Ean(
@@ -166,7 +171,7 @@ class GoodInfoViewModel : CoreViewModel() {
             )).either(::handleFailure) { productInfoResult ->
                 handleLoadProductInfoResult(productInfoResult)
             }
-        }
+        }*/
     }
 
     private fun handleLoadProductInfoResult(result: ProductInfoResult) {

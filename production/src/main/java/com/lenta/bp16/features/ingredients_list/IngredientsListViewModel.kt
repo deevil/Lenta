@@ -45,6 +45,8 @@ class IngredientsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInS
     val requestFocusToNumberField by unsafeLazy { MutableLiveData(true) }
     val marketNumber by unsafeLazy { sessionInfo.market }
 
+    /**Три списка, которые по хорошему должны получаться по одному запросу*/
+
     private val allIngredients: MutableLiveData<List<IngredientInfo>> by unsafeLazy {
         MutableLiveData<List<IngredientInfo>>()
     }
