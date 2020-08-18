@@ -62,9 +62,7 @@ class SelectGoodViewModel : CoreViewModel() {
 
         if (barcode.length >= MINIMUM_GS1_CODE_LENGTH) {
             val ean128Barcode = withContext(Dispatchers.Default) {
-                EAN128Parser.parse(barcode, false).entries.find { pair ->
-                    pair.key.AI == EAN_01
-                }?.value
+                EAN128Parser.parseWith(barcode, EAN128Parser.EAN_01)
             }
             if (ean128Barcode != null) {
                 barcode = ean128Barcode
@@ -116,7 +114,5 @@ class SelectGoodViewModel : CoreViewModel() {
         private const val MINIMUM_GS1_CODE_LENGTH = 16
         private const val TAKEN_ZEROS = "000000"
         private const val DEFAULT_WEIGHT = "0"
-        private const val EAN_01 = "01"
-        private const val EAN_02 = "02"
     }
 }
