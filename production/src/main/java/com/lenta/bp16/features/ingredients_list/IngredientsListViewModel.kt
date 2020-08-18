@@ -54,7 +54,7 @@ class IngredientsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInS
     val numberField by unsafeLazy { MutableLiveData<String>("") }
     val requestFocusToNumberField by unsafeLazy { MutableLiveData(true) }
     val marketNumber by unsafeLazy { sessionInfo.market }
-    private val selectedMatrn by unsafeLazy { MutableLiveData<String>("") }
+    private val selectedMatnr by unsafeLazy { MutableLiveData<String>("") }
 
     private val allIngredients: MutableLiveData<List<IngredientInfo>> by unsafeLazy {
         MutableLiveData<List<IngredientInfo>>()
@@ -178,15 +178,15 @@ class IngredientsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInS
 
             /**Поиск отсканированного ШК в данных интерфейса ZMP_UTZ_PRO_10_V001*/
             allIngredientsEanInfo.value?.find { numberField.value == it.ean }?.let {
-                selectedMatrn.value = it.matnr
+                selectedMatnr.value = it.matnr
             }
             var searchStatus = SearchStatus.NOT_FOUND
             /**Поиск вхождения в список материалов*/
-            allIngredients.value?.find { it.code == selectedMatrn.value }?.let {
+            allIngredients.value?.find { it.code == selectedMatnr.value }?.let {
                 searchStatus = SearchStatus.FOUND_INGREDIENT
             }
             /**Поиск вхождения в список заказов*/
-            goodsByOrderList.value?.find { it.matnr == selectedMatrn.value }?.let {
+            goodsByOrderList.value?.find { it.matnr == selectedMatnr.value }?.let {
                 if (searchStatus == SearchStatus.FOUND_ORDER)
                     searchStatus = SearchStatus.DUALISM
                 searchStatus = SearchStatus.FOUND_INGREDIENT
@@ -196,10 +196,10 @@ class IngredientsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInS
                 SearchStatus.DUALISM -> navigator.showAlertDualism {
                     navigator.openIngredientsListScreen()
                 }
-                SearchStatus.FOUND_INGREDIENT -> allIngredients.value?.find { it.code == selectedMatrn.value }?.let { selectedIngredient ->
+                SearchStatus.FOUND_INGREDIENT -> allIngredients.value?.find { it.code == selectedMatnr.value }?.let { selectedIngredient ->
                     navigator.openOrderDetailsScreen(selectedIngredient)
                 }
-                SearchStatus.FOUND_ORDER -> allIngredients.value?.find { it.code == selectedMatrn.value }?.let { selectedIngredient ->
+                SearchStatus.FOUND_ORDER -> allIngredients.value?.find { it.code == selectedMatnr.value }?.let { selectedIngredient ->
                     navigator.openMaterialRemakesScreen(selectedIngredient)
                 }
                 SearchStatus.NOT_FOUND -> navigator.showAlertGoodNotFoundInCurrentShift { navigator.openIngredientsListScreen() }
@@ -236,6 +236,7 @@ class IngredientsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInS
 
     fun onScanResult(data: String) {
         numberField.value = data
+        searchByBarcode()
     }
 
 }
