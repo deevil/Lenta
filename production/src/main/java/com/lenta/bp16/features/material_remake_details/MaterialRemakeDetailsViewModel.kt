@@ -79,13 +79,13 @@ class MaterialRemakeDetailsViewModel : CoreViewModel() {
 
     val planQntWithSuffix by unsafeLazy {
         materialIngredient.combineLatest(eanInfo).map {
-            /**Пока хз что там нужно будет, передам суффикс*/
-            /*val uom: String? =
+            val uom: String? =
                     when (eanInfo.value?.ean_nom.orEmpty()) {
+                        "KAR" -> Uom.KAR.name
                         "ST" -> Uom.ST.name
                         else -> Uom.KG.name
-                    }*/
-            MutableLiveData("${materialIngredient.value?.plan_qnt} ${resourceManager.kgSuffix()}")
+                    }
+            MutableLiveData("${materialIngredient.value?.plan_qnt} $uom")
         }
     }
 
