@@ -71,7 +71,8 @@ class SelectGoodViewModel : CoreViewModel() {
             Logg.d { "----->  barcode EAN 128 less than 16 chars" }
         }
 
-        if (weightValue.contains(barcode.substring(0 until 2))) {
+        val weightCollider = barcode.substring(0 until 3)
+        if (weightValue.any { weightCollider.contains(it) }) {
             val changedBarcode = barcode.replace(barcode.takeLast(6), TAKEN_ZEROS)
             weight = barcode.takeLast(6).take(5)
             barcode = changedBarcode
@@ -82,7 +83,8 @@ class SelectGoodViewModel : CoreViewModel() {
     }
 
     private suspend fun searchEan(ean: String, weight: String) {
-        database.getGoodByEan(ean)?.let { good ->
+        val goodWithEan = database.getGoodByEan(ean)
+        goodWithEan?.let { good ->
             val goodMaterial = good.getFormattedMaterial()
             val goodParams = GoodParams(
                     ean = good.ean,

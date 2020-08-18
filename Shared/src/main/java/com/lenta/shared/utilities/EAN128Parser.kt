@@ -51,7 +51,7 @@ object EAN128Parser {
         }?.value
         if (ean128Barcode != null) {
             parsedBarcode = if (ean128Barcode.first().toString() == EAN_WEIGHT_PREFIX) {
-                ean128Barcode.substring(1..barcode.length)
+                ean128Barcode.substring(1 until ean128Barcode.length)
             } else {
                 ean128Barcode
             }
