@@ -6,11 +6,6 @@ object Constants {
     const val GOOD_MATERIAL = "000000000000000000"
     const val GOOD_MATCODE = "000000000000"
 
-    /**GoodInfoBundle*/
-    const val GOOD_INFO_EAN = "EAN"
-    const val GOOD_INFO_MATERIAL = "MATERIAL"
-    const val GOOD_INFO_NAME = "NAME"
-
     const val APP_FOLDER_NAME = "bp18"
 
     const val KEY_FOR_SAVE = "OPEN_CHECK_RESULT"

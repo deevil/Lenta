@@ -128,14 +128,14 @@ class ProcessExciseAlcoBoxAccPGEService
         }
 
         foundExciseStampDiscrepancy = foundExciseStampDiscrepancy?.copy(
-                typeDiscrepancies = TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_SURPLUS,
+                typeDiscrepancies = TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_PGE_SURPLUS,
                 isScan = isScan
         )
                 ?: TaskExciseStampDiscrepancies(
                         materialNumber = productInfo.materialNumber,
                         code = exciseStampCode,
                         processingUnitNumber = productInfo.processingUnit,
-                        typeDiscrepancies = TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_SURPLUS,
+                        typeDiscrepancies = TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_PGE_SURPLUS,
                         isScan = isScan,
                         boxNumber = boxNumber,
                         packNumber = "",
@@ -255,7 +255,7 @@ class ProcessExciseAlcoBoxAccPGEService
                 ?.findProductDiscrepanciesOfProduct(productInfo)
                 ?.filter { productDiscrepancies ->
                     productDiscrepancies.typeDiscrepancies == TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_NORM
-                            || productDiscrepancies.typeDiscrepancies == TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_SURPLUS
+                            || productDiscrepancies.typeDiscrepancies == TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_PGE_SURPLUS
                 }?.sumByDouble {
                     it.numberDiscrepancies.toDouble()
                 }
@@ -350,7 +350,7 @@ class ProcessExciseAlcoBoxAccPGEService
     fun defectiveBox(boxNumber: String): Boolean {
         return currentBoxDiscrepancies.none {
             it.boxNumber == boxNumber
-                    && (it.typeDiscrepancies == TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_NORM || it.typeDiscrepancies == TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_SURPLUS)
+                    && (it.typeDiscrepancies == TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_NORM || it.typeDiscrepancies == TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_PGE_SURPLUS)
         }
     }
 

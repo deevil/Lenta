@@ -12,6 +12,7 @@ import com.lenta.bp7.requests.network.SaveSelfControlDataNetRequest
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.extentions.launchUITryCatch
+import java.util.*
 import javax.inject.Inject
 
 abstract class SendDataViewModel : CoreViewModel() {
@@ -63,6 +64,8 @@ abstract class SendDataViewModel : CoreViewModel() {
         // Сообщение - Успешно сохранено в LUA
         navigator.showSuccessfullySavedToLua {
             checkData.removeAllFinishedSegments()
+            /**Если данные успешно сохранились, то сбрасываем gid*/
+            checkData.gid = ""
             navigator.openSegmentListScreen()
         }
     }

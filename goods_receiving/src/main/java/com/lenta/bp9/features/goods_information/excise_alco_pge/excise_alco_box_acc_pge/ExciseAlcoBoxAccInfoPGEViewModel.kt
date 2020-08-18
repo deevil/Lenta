@@ -73,7 +73,7 @@ class ExciseAlcoBoxAccInfoPGEViewModel : CoreViewModel(), OnPositionClickListene
     val requestFocusToCount: MutableLiveData<Boolean> = MutableLiveData(false)
     val isDefect: MutableLiveData<Boolean> = spinQualitySelectedPosition.map {
         !(qualityInfo.value?.get(it!!)?.code == TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_NORM
-                || qualityInfo.value?.get(it!!)?.code == TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_SURPLUS)
+                || qualityInfo.value?.get(it!!)?.code == TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_PGE_SURPLUS)
     }
 
     private val qualityInfo: MutableLiveData<List<QualityInfo>> = MutableLiveData()

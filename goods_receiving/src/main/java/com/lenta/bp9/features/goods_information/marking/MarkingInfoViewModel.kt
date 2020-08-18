@@ -239,22 +239,13 @@ class MarkingInfoViewModel : CoreViewModel(),
                         context.getString(R.string.not_required)
                     } else {
                         checkStampControlVisibility.value = true
-                        if (acceptTotalCountBlock < numberStampsControl) {
-                            buildString {
-                                append(countBlockScanned.toStringFormatted())
-                                append(" ")
-                                append(context.getString(R.string.of))
-                                append(" ")
-                                append(acceptTotalCountBlock.toStringFormatted())
-                            }
-                        } else {
-                            buildString {
-                                append(countBlockScanned.toStringFormatted())
-                                append(" ")
-                                append(context.getString(R.string.of))
-                                append(" ")
-                                append(numberStampsControl.toStringFormatted())
-                            }
+                        val countStampsControl = if (acceptTotalCountBlock < numberStampsControl) acceptTotalCountBlock else numberStampsControl
+                        buildString {
+                            append(countBlockScanned.toStringFormatted())
+                            append(" ")
+                            append(context.getString(R.string.of))
+                            append(" ")
+                            append(countStampsControl.toStringFormatted())
                         }
                     }
                 } else {
@@ -625,45 +616,8 @@ class MarkingInfoViewModel : CoreViewModel(),
     }
 
     private fun barcodeCheck(data: String): Boolean {
-        val regex = """\w+""".toRegex()
-        val barcode = when (data.length) {
-            41 -> data
-            44 -> data.removeRange(43, 44).removeRange(36, 37).removeRange(25, 26)
-            else -> {
-                if (data.substring(0, 41).matches(regex)) {
-                    data.substring(0, 41)
-                } else {
-                    data.substring(0, 44)
-                            .removeRange(43, 44)
-                            .removeRange(36, 37)
-                            .removeRange(25, 26)
-                }
-            }
-        }
-
-        return if (barcode.isNotEmpty()) {
-            val isBlockBarcode = barcode.substring(0, 2) == "01"
-            val gtinCode = barcode.substring(2, 16)
-            val isGtin = gtinCode.toLongOrNull() != null && gtinCode.length == 14
-            val isSerialStartCode = barcode.substring(16, 18) == "21"
-            val isSerial = barcode.substring(18, 25).length == 7
-            val isMrcStartCode = barcode.substring(25, 29) == "8005"
-            val mrcCode = barcode.substring(29, 35)
-            val isMrc = mrcCode.toIntOrNull() != null && mrcCode.length == 6
-            val isVerificationKeyStartCode = barcode.substring(35, 37) == "93"
-            val isVerificationKey = barcode.substring(37, 41).length == 4
-
-            isBlockBarcode
-                    && isGtin
-                    && isSerialStartCode
-                    && isSerial
-                    && isMrcStartCode
-                    && isMrc
-                    && isVerificationKeyStartCode
-                    && isVerificationKey
-        } else {
-            false
-        }
+        val regex = Regex("""^.?(?<blockBarcode>01(?<gtin2>\d{14})21(?<serial>\S{7})).?8005(?<MRC>\d{6}).?93(?<verificationKey>\S{4}).?(?<other>\S{1,})?${'$'}""")
+        return regex.find(data) != null
     }
 
     private fun blockCheck(stampCode: String) {

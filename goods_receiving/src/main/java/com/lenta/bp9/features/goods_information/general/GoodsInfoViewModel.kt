@@ -10,6 +10,7 @@ import com.lenta.bp9.model.processing.ProcessGeneralProductService
 import com.lenta.bp9.model.task.IReceivingTaskManager
 import com.lenta.bp9.model.task.TaskProductInfo
 import com.lenta.bp9.model.task.TaskType
+import com.lenta.bp9.platform.TypeDiscrepanciesConstants
 import com.lenta.bp9.platform.navigation.IScreenNavigator
 import com.lenta.bp9.repos.IDataBaseRepo
 import com.lenta.bp9.repos.IRepoInMemoryHolder
@@ -555,7 +556,13 @@ class GoodsInfoViewModel : CoreViewModel(), OnPositionClickListener {
         }
 
         //блок 6.152
-        if (expirationDate.value!!.time <= currentDate.value) {
+        val currentTypeDiscrepancies =
+                qualityInfo.value
+                        ?.get(spinQualitySelectedPosition.value ?: 0)
+                        ?.code
+                        .orEmpty()
+        if (expirationDate.value!!.time <= currentDate.value
+                && currentTypeDiscrepancies == TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_NORM) {
             //блок 6.158
             screenNavigator.openShelfLifeExpiredDialog(
                     //блок 6.170
@@ -777,7 +784,13 @@ class GoodsInfoViewModel : CoreViewModel(), OnPositionClickListener {
         }
 
         //блок 7.160
-        if (expirationDate.value!!.time <= currentDate.value) {
+        val currentTypeDiscrepancies =
+                qualityInfo.value
+                        ?.get(spinQualitySelectedPosition.value ?: 0)
+                        ?.code
+                        .orEmpty()
+        if (expirationDate.value!!.time <= currentDate.value
+                && currentTypeDiscrepancies == TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_NORM) {
             //блок 7.168
             screenNavigator.openShelfLifeExpiredDialog(
                     //блок 7.180

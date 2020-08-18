@@ -1,5 +1,10 @@
 package com.lenta.bp9.model.task
 
+import android.annotation.SuppressLint
+import android.content.Context
+import com.lenta.bp9.model.processing.ProcessExciseAlcoBoxAccService
+import com.lenta.bp9.repos.IDataBaseRepo
+import com.lenta.bp9.repos.IRepoInMemoryHolder
 import com.lenta.bp9.requests.network.*
 import com.lenta.shared.fmp.resources.dao_ext.getProductInfoByMaterial
 import com.lenta.shared.fmp.resources.dao_ext.getUomInfo
@@ -8,7 +13,15 @@ import com.lenta.shared.fmp.resources.slow.ZfmpUtz48V001
 import com.lenta.shared.models.core.Uom
 import com.lenta.shared.models.core.getMatrixType
 import com.lenta.shared.models.core.getProductType
+import com.lenta.shared.platform.constants.Constants
+import com.lenta.shared.platform.constants.Constants.DATE_FORMAT_dd_mm_yyyy
+import com.lenta.shared.platform.constants.Constants.DATE_FORMAT_yyyyMMdd
+import com.lenta.shared.platform.constants.Constants.DATE_FORMAT_yyyy_mm_dd
+import com.lenta.shared.utilities.Logg
+import com.lenta.shared.utilities.extentions.getFormattedDate
+import com.lenta.shared.utilities.getStringFromDate
 import com.mobrun.plugin.api.HyperHive
+import java.text.SimpleDateFormat
 import javax.inject.Inject
 
 class TaskContents
@@ -17,6 +30,12 @@ class TaskContents
     @Inject
     lateinit var hyperHive: HyperHive
 
+    @Inject
+    lateinit var taskManager: IReceivingTaskManager
+
+    @Inject
+    lateinit var repoInMemoryHolder: IRepoInMemoryHolder
+
     private val zmpUtz07V001: ZmpUtz07V001 by lazy {
         ZmpUtz07V001(hyperHive)
     }
@@ -24,6 +43,12 @@ class TaskContents
     private val zfmpUtz48V001: ZfmpUtz48V001 by lazy {
         ZfmpUtz48V001(hyperHive)
     }
+
+    @SuppressLint("SimpleDateFormat")
+    private val formatterEN = SimpleDateFormat(DATE_FORMAT_yyyy_mm_dd)
+
+    @SuppressLint("SimpleDateFormat")
+    private val formatterERP = SimpleDateFormat(DATE_FORMAT_yyyyMMdd)
 
     suspend fun getTaskContentsInfo(startRecountRestInfo: DirectSupplierStartRecountRestInfo) : TaskContentsInfo {
         return TaskContentsInfo(
@@ -37,11 +62,18 @@ class TaskContents
                 startRecountRestInfo.taskBatchesDiscrepancies.map {
                     TaskBatchesDiscrepancies.from(hyperHive, it)
                 },
-                startRecountRestInfo.taskMercuryInfoRestData.map {
-                    TaskMercuryInfo.from(hyperHive, it)
-                },
+                startRecountRestInfo
+                        .taskMercuryDiscrepancies
+                        ?.map { TaskMercuryDiscrepancies.from(hyperHive, it) }
+                        .orEmpty(),
                 startRecountRestInfo.taskExciseStamps.map {
-                    TaskExciseStampInfo.from(it)
+                    val batch = getBatchInfo(it.batchNumber, startRecountRestInfo.taskBatches)
+                    TaskExciseStampInfo.from(
+                            it.copy(
+                                    organizationCodeEGAIS = batch?.egais.orEmpty(),
+                                    bottlingDate = getBottlingDate(batch)
+                            )
+                    )
                 },
                 startRecountRestInfo.taskExciseStampsDiscrepancies.map {
                     TaskExciseStampDiscrepancies.from(it)
@@ -76,11 +108,18 @@ class TaskContents
                 startRecountRestInfo.taskBatchesDiscrepancies.map {
                     TaskBatchesDiscrepancies.from(hyperHive, it)
                 },
-                startRecountRestInfo.taskMercuryInfoRestData.map {
-                    TaskMercuryInfo.from(hyperHive, it)
-                },
+                startRecountRestInfo
+                        .taskMercuryDiscrepancies
+                        ?.map { TaskMercuryDiscrepancies.from(hyperHive, it) }
+                        .orEmpty(),
                 startRecountRestInfo.taskExciseStamps.map {
-                    TaskExciseStampInfo.from(it)
+                    val batch = getBatchInfo(it.batchNumber, startRecountRestInfo.taskBatches)
+                    TaskExciseStampInfo.from(
+                            it.copy(
+                                    organizationCodeEGAIS = batch?.egais.orEmpty(),
+                                    bottlingDate = getBottlingDate(batch)
+                            )
+                    )
                 },
                 startRecountRestInfo.taskExciseStampsDiscrepancies.map {
                     TaskExciseStampDiscrepancies.from(it)
@@ -115,16 +154,18 @@ class TaskContents
                 startRecountRestInfo.taskBatchesDiscrepancies.map {
                     TaskBatchesDiscrepancies.from(hyperHive, it)
                 },
-
-                //todo это условие прописано временно, т.к. на продакшене для ПГЕ и ПРЦ не реализована таблица ET_VET_DIFF, она приходит пустой в 28 и 30 рестах, поэтому обрабатываем данные товары не как вет, а как обычные
-                if (startRecountRestInfo.taskMercuryInfoRestData != null) {
-                    startRecountRestInfo.taskMercuryInfoRestData.map {
-                        TaskMercuryInfo.from(hyperHive, it)
-                    }
-                } else null,
-
+                startRecountRestInfo
+                        .taskMercuryDiscrepancies
+                        ?.map { TaskMercuryDiscrepancies.from(hyperHive, it) }
+                        .orEmpty(),
                 startRecountRestInfo.taskExciseStamps.map {
-                    TaskExciseStampInfo.from(it)
+                    val batch = getBatchInfo(it.batchNumber, startRecountRestInfo.taskBatches)
+                    TaskExciseStampInfo.from(
+                            it.copy(
+                                    organizationCodeEGAIS = batch?.egais.orEmpty(),
+                                    bottlingDate = getBottlingDate(batch)
+                            )
+                    )
                 },
                 startRecountRestInfo.taskExciseStampsDiscrepancies.map {
                     TaskExciseStampDiscrepancies.from(it)
@@ -159,16 +200,18 @@ class TaskContents
                 startRecountRestInfo.taskBatchesDiscrepancies.map {
                     TaskBatchesDiscrepancies.from(hyperHive, it)
                 },
-
-                //todo это условие прописано временно, т.к. на продакшене для ПГЕ и ПРЦ не реализована таблица ET_VET_DIFF, она приходит пустой в 28 и 30 рестах, поэтому обрабатываем данные товары не как вет, а как обычные
-                if (startRecountRestInfo.taskMercuryInfoRestData != null) {
-                    startRecountRestInfo.taskMercuryInfoRestData.map {
-                        TaskMercuryInfo.from(hyperHive, it)
-                    }
-                } else null,
-
+                startRecountRestInfo
+                        .taskMercuryDiscrepancies
+                        ?.map { TaskMercuryDiscrepancies.from(hyperHive, it) }
+                        .orEmpty(),
                 startRecountRestInfo.taskExciseStamps.map {
-                    TaskExciseStampInfo.from(it)
+                    val batch = getBatchInfo(it.batchNumber, startRecountRestInfo.taskBatches)
+                    TaskExciseStampInfo.from(
+                            it.copy(
+                                    organizationCodeEGAIS = batch?.egais.orEmpty(),
+                                    bottlingDate = getBottlingDate(batch)
+                            )
+                    )
                 },
                 startRecountRestInfo.taskExciseStampsDiscrepancies.map {
                     TaskExciseStampDiscrepancies.from(it)
@@ -239,6 +282,21 @@ class TaskContents
             )
         }
     }
+
+    private fun getBatchInfo(batchNumber: String, batches: List<TaskBatchInfoRestData>) : TaskBatchInfoRestData? {
+        return batches
+                .findLast { batchInfo ->
+                    batchInfo.batchNumber == batchNumber
+                }
+    }
+
+    private fun getBottlingDate(batch: TaskBatchInfoRestData?) : String {
+        return batch
+                ?.bottlingDate
+                ?.takeIf { it.isNotEmpty() }
+                ?.run { formatterERP.format(formatterEN.parse(this)) }
+                .orEmpty()
+    }
 }
 
 data class TaskContentsInfo(
@@ -246,7 +304,7 @@ data class TaskContentsInfo(
         val productsDiscrepancies: List<TaskProductDiscrepancies>,
         val taskBatches: List<TaskBatchInfo>,
         val taskBatchesDiscrepancies: List<TaskBatchesDiscrepancies>,
-        val taskMercuryInfo: List<TaskMercuryInfo>?,
+        val taskMercuryDiscrepancies: List<TaskMercuryDiscrepancies>,
         val taskExciseStampInfo: List<TaskExciseStampInfo>,
         val taskExciseStampDiscrepancies: List<TaskExciseStampDiscrepancies>,
         val taskExciseStampBad: List<TaskExciseStampBad>,
