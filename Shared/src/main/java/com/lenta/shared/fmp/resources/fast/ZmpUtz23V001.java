@@ -53,8 +53,6 @@ public class ZmpUtz23V001 {
         //  type: TEXT, source: {'name': 'SAP', 'type': 'C'}
         @SerializedName("VERSION")
         public String version;
-
-
     }
 
 

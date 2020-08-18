@@ -506,56 +506,69 @@ class GoodsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKey
         updateData()
     }
 
+    private fun filterClearTabTaskDiff(productInfo: TaskProductInfo) : Boolean {
+        //партионный - это помеченный IS_ALCO и не помеченный IS_BOX_FL, IS_MARK_FL (Артем)
+        val isBatchNonExciseAlcoholProduct =
+                productInfo.type == ProductType.NonExciseAlcohol
+                        && !productInfo.isBoxFl
+                        && !productInfo.isMarkFl
+        val isVetProduct = productInfo.isVet
+        //коробочный или марочный алкоголь
+        val isExciseAlcoholProduct =
+                productInfo.type == ProductType.ExciseAlcohol
+                        && (productInfo.isBoxFl || productInfo.isMarkFl)
+        return isBatchNonExciseAlcoholProduct
+                || isVetProduct
+                || isExciseAlcoholProduct
+    }
+
+    private fun getCountProductNotProcessed() : Double {
+        return taskManager
+                .getReceivingTask()
+                ?.let { task ->
+                    val taskType =task.taskHeader.taskType
+                    val productsDiscrepancies = task.taskRepository.getProductsDiscrepancies()
+                    task.getProcessedProducts()
+                            .mapNotNull { productInfo ->
+                                if (taskType == TaskType.RecalculationCargoUnit) {
+                                    productsDiscrepancies
+                                            .getCountProductNotProcessedOfProductPGE(productInfo)
+                                            .takeIf { it > 0.0 }
+                                } else {
+                                    productsDiscrepancies
+                                            .getCountProductNotProcessedOfProduct(productInfo)
+                                            .takeIf { it > 0.0 }
+                                }
+                            }
+                            .sumByDouble { it }
+                } ?: 0.0
+    }
+
     fun onClickSave() {
         launchUITryCatch {
-            val countProductNotProcessed = taskManager.getReceivingTask()?.let { task ->
-                task.getProcessedProducts()
-                        .filter { productInfo ->
-                            if (task.taskHeader.taskType == TaskType.RecalculationCargoUnit) {
-                                task.taskRepository.getProductsDiscrepancies().getCountProductNotProcessedOfProductPGE(productInfo) > 0.0
-                            } else {
-                                task.taskRepository.getProductsDiscrepancies().getCountProductNotProcessedOfProduct(productInfo) > 0.0
-                            }
-                        }.map {
-                            if (task.taskHeader.taskType == TaskType.RecalculationCargoUnit) {
-                                task.taskRepository.getProductsDiscrepancies().getCountProductNotProcessedOfProductPGE(it)
-                            } else {
-                                task.taskRepository.getProductsDiscrepancies().getCountProductNotProcessedOfProduct(it)
-                            }
-                        }.sumByDouble {
-                            it
-                        }
-            } ?: 0.0
-
-            if (countProductNotProcessed > 0.0) {
+            if (getCountProductNotProcessed() > 0.0) {
                 screenNavigator.openDiscrepancyListScreen()
             } else {
                 screenNavigator.showProgressLoadingData(::handleFailure)
-                //очищаем таблицу ET_TASK_DIFF от не акцизного (партионного) алкоголя, т.к. для этих товаров необходимо передавать только данные из таблицы ET_PARTS_DIFF
+                /**
+                 * очищаем таблицу ET_TASK_DIFF от не акцизного (партионного) алкоголя и веттоваров,
+                 * т.к. для партионного товара необходимо передавать только данные из таблицы ET_PARTS_DIFF, а для веттоваров - ET_VET_DIFF
+                 */
                 val receivingTask = taskManager.getReceivingTask()
                 val taskRepository = taskManager.getReceivingTask()?.taskRepository
                 receivingTask
                         ?.getProcessedProductsDiscrepancies()
-                        ?.asSequence()
-                        ?.map { productDiscr ->
+                        ?.mapNotNull { productDiscr ->
                             taskRepository
                                     ?.getProducts()
                                     ?.findProduct(productDiscr.materialNumber)
                         }
-                        ?.filter { filterProduct ->
-                            //партионный - это помеченный IS_ALCO и не помеченный IS_BOX_FL, IS_MARK_FL (Артем)
-                            filterProduct?.type == ProductType.NonExciseAlcohol
-                                    && !filterProduct.isBoxFl
-                                    && !filterProduct.isMarkFl
+                        ?.filter { filterClearTabTaskDiff(it) }
+                        ?.forEach { productForDel ->
+                            taskRepository
+                                    ?.getProductsDiscrepancies()
+                                    ?.deleteProductsDiscrepanciesForProduct(productForDel.materialNumber)
                         }
-                        ?.map { mapProduct ->
-                            mapProduct?.let { productForDel ->
-                                taskRepository
-                                        ?.getProductsDiscrepancies()
-                                        ?.deleteProductsDiscrepanciesForProduct(productForDel.materialNumber)
-                            }
-                        }
-                        ?.toList()
 
                 endRecountDirectDeliveries(EndRecountDDParameters(
                         taskNumber = receivingTask

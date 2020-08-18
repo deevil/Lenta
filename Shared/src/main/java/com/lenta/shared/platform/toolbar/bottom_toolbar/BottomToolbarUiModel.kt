@@ -141,6 +141,10 @@ data class ButtonDecorationInfo(
             ButtonDecorationInfo(R.drawable.ic_details_white_24dp, R.string.details)
         }
 
+        val orders: ButtonDecorationInfo by lazy {
+            ButtonDecorationInfo(R.drawable.ic_details_white_24dp, R.string.orders)
+        }
+
         val detail: ButtonDecorationInfo by unsafeLazy {
             ButtonDecorationInfo(R.drawable.ic_detail_white_32dp, R.string.details)
         }
@@ -403,6 +407,10 @@ data class ButtonDecorationInfo(
 
         val reset: ButtonDecorationInfo by lazy {
             ButtonDecorationInfo(R.drawable.ic_rollback_white_24dp, R.string.reset)
+        }
+
+        val stickers: ButtonDecorationInfo by lazy {
+            ButtonDecorationInfo(R.drawable.ic_print_white_24dp, R.string.stickers)
         }
 
         val completeRejectionMarking: ButtonDecorationInfo by lazy {

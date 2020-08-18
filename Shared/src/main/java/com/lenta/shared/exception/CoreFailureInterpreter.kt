@@ -55,6 +55,11 @@ class CoreFailureInterpreter
             )
 
             is Failure.DbError -> FailureDescription(message = context.getString(R.string.db_error))
+            is Failure.MessageFailure -> {
+                val message = failure.messageResId?.let(context::getString) ?: failure.message
+                ?: context.getString(R.string.error_unknown)
+                FailureDescription(message = message, iconRes = R.drawable.ic_warning_yellow_80dp)
+            }
 
             else -> FailureDescription(message = context.getString(R.string.error_unknown))
         }

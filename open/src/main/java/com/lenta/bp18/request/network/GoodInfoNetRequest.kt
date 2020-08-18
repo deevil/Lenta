@@ -8,6 +8,7 @@ import com.lenta.shared.functional.Either
 import com.lenta.shared.functional.rightToLeft
 import com.lenta.shared.interactor.UseCase
 import com.lenta.shared.requests.FmpRequestsHelper
+import com.lenta.shared.utilities.extentions.getResult
 import javax.inject.Inject
 
 class GoodInfoNetRequest @Inject constructor(
@@ -16,15 +17,7 @@ class GoodInfoNetRequest @Inject constructor(
 
     override suspend fun run(params: GoodInfoParams): Either<Failure, GoodInfoResult> {
         return fmpRequestsHelper.restRequest("ZMP_UTZ_OPP_01_V001", params, GoodInfoStatus::class.java)
-                .rightToLeft(
-                        fnRtoL = { result ->
-                            result.retCode.firstOrNull { retCode ->
-                                retCode.retCode == 1
-                            }?.let { retCode ->
-                                return@rightToLeft Failure.SapError(retCode.errorText)
-                            }
-                        }
-                )
+                .getResult()
     }
 }
 

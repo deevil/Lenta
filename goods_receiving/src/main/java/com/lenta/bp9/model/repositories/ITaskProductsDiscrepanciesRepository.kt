@@ -1,13 +1,16 @@
 package com.lenta.bp9.model.repositories
 
+import com.lenta.bp9.model.task.TaskMercuryDiscrepancies
 import com.lenta.bp9.model.task.TaskProductDiscrepancies
 import com.lenta.bp9.model.task.TaskProductInfo
+import com.mobrun.plugin.api.HyperHive
 
 interface ITaskProductsDiscrepanciesRepository {
     fun getProductsDiscrepancies(): List<TaskProductDiscrepancies>
     fun findProductDiscrepanciesOfProduct(product: TaskProductInfo): List<TaskProductDiscrepancies>
     fun findProductDiscrepanciesOfProduct(materialNumber: String): List<TaskProductDiscrepancies>
     fun addProductDiscrepancy(discrepancy: TaskProductDiscrepancies): Boolean
+    fun addProductDiscrepancyOfMercuryDiscrepancy(mercuryDiscrepancies: List<TaskMercuryDiscrepancies>)
     fun updateProductsDiscrepancy(newProductsDiscrepancies: List<TaskProductDiscrepancies>)
     fun changeProductDiscrepancy(discrepancy: TaskProductDiscrepancies): Boolean
     fun deleteProductDiscrepancy(discrepancy: TaskProductDiscrepancies): Boolean

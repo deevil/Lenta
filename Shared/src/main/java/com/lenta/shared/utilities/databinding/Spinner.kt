@@ -12,7 +12,7 @@ import com.lenta.shared.view.OnPositionClickListener
 fun setupSpinner(spinner: Spinner, items: List<String>?, position: Int?, onPositionClickListener: OnPositionClickListener?, enabled: Boolean?) {
     var adapter: ArrayAdapter<String>
     if (spinner.adapter == null) {
-        val mutableList: MutableList<String> = (items ?: listOf()).toMutableList()
+        val mutableList: MutableList<String> = items.orEmpty().toMutableList()
         spinner.tag = mutableList
         adapter = ArrayAdapter(spinner.context, android.R.layout.simple_spinner_item, mutableList)
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
@@ -26,8 +26,7 @@ fun setupSpinner(spinner: Spinner, items: List<String>?, position: Int?, onPosit
                     onPositionClickListener.onClickPosition(position)
                 }
 
-                override fun onNothingSelected(adapterView: AdapterView<*>) {
-                }
+                override fun onNothingSelected(adapterView: AdapterView<*>) = Unit
             }
         }, 500)
     }

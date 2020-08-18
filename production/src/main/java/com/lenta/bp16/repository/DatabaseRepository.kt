@@ -1,9 +1,11 @@
 package com.lenta.bp16.repository
 
+import com.lenta.bp16.request.pojo.WarehouseInfo
 import com.lenta.bp16.model.pojo.Good
 import com.lenta.bp16.model.pojo.GoodInfo
 import com.lenta.shared.fmp.resources.dao_ext.*
 import com.lenta.shared.fmp.resources.fast.ZmpUtz07V001
+import com.lenta.shared.fmp.resources.fast.ZmpUtz106V001
 import com.lenta.shared.fmp.resources.fast.ZmpUtz14V001
 import com.lenta.shared.fmp.resources.fast.ZmpUtz17V001
 import com.lenta.shared.fmp.resources.slow.ZfmpUtz48V001
@@ -23,6 +25,7 @@ class DatabaseRepository @Inject constructor(
     private val units: ZmpUtz07V001 by lazy { ZmpUtz07V001(hyperHive) } // Единицы измерения
     private val settings: ZmpUtz14V001 by lazy { ZmpUtz14V001(hyperHive) } // Настройки
     private val dictonary: ZmpUtz17V001 by lazy { ZmpUtz17V001(hyperHive) } // Справочник с наборами данных
+    private val warehouses: ZmpUtz106V001 by lazy { ZmpUtz106V001(hyperHive) } // Справочник складов
     private val barcodeInfo: ZmpUtz25V001 by lazy { ZmpUtz25V001(hyperHive) } // Информация о  штрихкоде
     private val productInfo: ZfmpUtz48V001 by lazy { ZfmpUtz48V001(hyperHive) } // Информация о товаре
 
@@ -137,6 +140,20 @@ class DatabaseRepository @Inject constructor(
     }
 
 
+    override suspend fun getWarehouses(tkNumber: String): List<WarehouseInfo> {
+        return withContext(Dispatchers.IO) {
+            val warehousesList = warehouses.getWarehouseNumbers(tkNumber)
+            warehousesList.mapNotNull { warehouseModel ->
+                warehouseModel.name?.run {
+                    WarehouseInfo(
+                            name = warehouseModel.name.orEmpty(),
+                            werks = tkNumber,
+                            lgort = warehouseModel.lgort.orEmpty()
+                    )
+                }
+            }
+        }
+    }
 }
 
 interface IDatabaseRepository {
@@ -155,4 +172,5 @@ interface IDatabaseRepository {
     suspend fun getGoodByEan(ean: String): GoodInfo?
     suspend fun getEanInfoByEan(ean: String): EanInfo?
 
+    suspend fun getWarehouses(tkNumber: String): List<WarehouseInfo>
 }

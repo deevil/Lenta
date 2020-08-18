@@ -196,8 +196,17 @@ class GoodsDetailsViewModel : CoreViewModel() {
                             ?.getProductsDiscrepancies()
                             ?.deleteProductDiscrepancy(goodsDetails.value?.get(position)!!.materialNumber, goodsDetails.value?.get(position)!!.typeDiscrepancies)
 
-                    if (isVetProduct.value!!) {
-                        processMercuryProductService.delDiscrepancy(goodsDetails.value?.get(position)!!.typeDiscrepancies)
+                    if (isVetProduct.value == true) {
+                        val materialNumber = goodsDetails.value?.get(position)?.materialNumber.orEmpty()
+                        val typeDiscrepancies = goodsDetails.value?.get(position)?.typeDiscrepancies.orEmpty()
+
+                        taskManager
+                                .getReceivingTask()
+                                ?.taskRepository
+                                ?.getMercuryDiscrepancies()
+                                ?.deleteMercuryDiscrepancyOfProduct(materialNumber, typeDiscrepancies)
+
+                        processMercuryProductService.updateDiscrepancy()
                     }
 
                     if (isNonExciseAlcoProduct.value!!) {
