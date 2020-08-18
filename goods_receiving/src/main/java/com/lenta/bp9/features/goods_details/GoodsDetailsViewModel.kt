@@ -190,23 +190,18 @@ class GoodsDetailsViewModel : CoreViewModel() {
         } else {
             if (productInfo.value != null && !productInfo.value!!.isNotEdit) {
                 categoriesSelectionsHelper.selectedPositions.value?.map { position ->
+                    val goodsDetailsItem = goodsDetails.value?.get(position)
+                    val materialNumber = goodsDetailsItem?.materialNumber.orEmpty()
+                    val typeDiscrepancies = goodsDetailsItem?.typeDiscrepancies.orEmpty()
+
                     taskManager
                             .getReceivingTask()
                             ?.taskRepository
                             ?.getProductsDiscrepancies()
-                            ?.deleteProductDiscrepancy(goodsDetails.value?.get(position)!!.materialNumber, goodsDetails.value?.get(position)!!.typeDiscrepancies)
+                            ?.deleteProductDiscrepancy(materialNumber, typeDiscrepancies)
 
                     if (isVetProduct.value == true) {
-                        val materialNumber = goodsDetails.value?.get(position)?.materialNumber.orEmpty()
-                        val typeDiscrepancies = goodsDetails.value?.get(position)?.typeDiscrepancies.orEmpty()
-
-                        taskManager
-                                .getReceivingTask()
-                                ?.taskRepository
-                                ?.getMercuryDiscrepancies()
-                                ?.deleteMercuryDiscrepancyOfProduct(materialNumber, typeDiscrepancies)
-
-                        processMercuryProductService.updateDiscrepancy()
+                        processMercuryProductService.deleteDetails(typeDiscrepancies)
                     }
 
                     if (isNonExciseAlcoProduct.value!!) {

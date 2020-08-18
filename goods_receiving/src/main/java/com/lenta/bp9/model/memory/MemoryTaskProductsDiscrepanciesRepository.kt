@@ -46,12 +46,12 @@ class MemoryTaskProductsDiscrepanciesRepository : ITaskProductsDiscrepanciesRepo
 
     override fun addProductDiscrepancyOfMercuryDiscrepancy(mercuryDiscrepancies: List<TaskMercuryDiscrepancies>) {
         mercuryDiscrepancies
-                .asSequence()
+                .filter { it.typeDiscrepancies.isNotEmpty() }
                 .groupBy { it.materialNumber }
-                .map { groupByMaterialNumberMercuryDiscrepancies ->
+                .forEach { groupByMaterialNumberMercuryDiscrepancies ->
                     groupByMaterialNumberMercuryDiscrepancies.value
                             .groupBy { it.typeDiscrepancies }
-                            .map { groupByMercuryDiscrepancies ->
+                            .forEach { groupByMercuryDiscrepancies ->
                                 val countDiscrepancies =
                                         groupByMercuryDiscrepancies.value
                                                 .map { it.numberDiscrepancies }
@@ -65,7 +65,6 @@ class MemoryTaskProductsDiscrepanciesRepository : ITaskProductsDiscrepanciesRepo
                                         }
                             }
                 }
-                .toList()
     }
 
     override fun updateProductsDiscrepancy(newProductsDiscrepancies: List<TaskProductDiscrepancies>) {
