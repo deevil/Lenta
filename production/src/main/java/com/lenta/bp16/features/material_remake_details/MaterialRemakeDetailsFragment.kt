@@ -34,12 +34,6 @@ class MaterialRemakeDetailsFragment : CoreFragment<FragmentMaterialRemakeDetails
                 ?: throw IllegalArgumentException("There is no argument value with key $KEY_INGREDIENT")
     }
 
-    // name of parent component
-    private val parentName: String by unsafeLazy {
-        arguments?.getString(KEY_PARENT_NAME)
-                ?: throw IllegalArgumentException("There is no argument value with key $KEY_PARENT_NAME")
-    }
-
     private val parentCode: String by unsafeLazy {
         arguments?.getString(KEY_PARENT_CODE)
                 ?: throw IllegalArgumentException("There is no argument value with key $KEY_PARENT_CODE")
@@ -47,7 +41,7 @@ class MaterialRemakeDetailsFragment : CoreFragment<FragmentMaterialRemakeDetails
 
     private val eanInfo: OrderByBarcode by unsafeLazy {
         arguments?.getParcelable<OrderByBarcode>(KEY_EAN_INFO)
-                ?: throw IllegalArgumentException("There is no argument value with key ${KEY_EAN_INFO}")
+                ?: throw IllegalArgumentException("There is no argument value with key $KEY_EAN_INFO")
     }
 
     init {

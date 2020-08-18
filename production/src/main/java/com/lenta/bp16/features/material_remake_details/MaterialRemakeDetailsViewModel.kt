@@ -10,7 +10,9 @@ import com.lenta.bp16.platform.navigation.IScreenNavigator
 import com.lenta.bp16.platform.resource.IResourceManager
 import com.lenta.bp16.request.CompleteIngredientByMaterialNetRequest
 import com.lenta.shared.account.ISessionInfo
+import com.lenta.shared.models.core.Uom
 import com.lenta.shared.platform.viewmodel.CoreViewModel
+import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.extentions.*
 import javax.inject.Inject
 import kotlin.properties.Delegates
@@ -75,6 +77,18 @@ class MaterialRemakeDetailsViewModel : CoreViewModel() {
         "${it.dropZeros()} ${resourceManager.kgSuffix()}"
     }
 
+    val planQntWithSuffix by unsafeLazy {
+        materialIngredient.combineLatest(eanInfo).map {
+            /**Пока хз что там нужно будет, передам суффикс*/
+            /*val uom: String? =
+                    when (eanInfo.value?.ean_nom.orEmpty()) {
+                        "ST" -> Uom.ST.name
+                        else -> Uom.KG.name
+                    }*/
+            MutableLiveData("${materialIngredient.value?.plan_qnt} ${resourceManager.kgSuffix()}")
+        }
+    }
+
     fun onCompleteClicked() = launchUITryCatch {
         val weight = total.value ?: 0.0
         if (weight == 0.0) {
@@ -99,28 +113,28 @@ class MaterialRemakeDetailsViewModel : CoreViewModel() {
         }
     }
 
-    fun onScanResult(data: String){
+    fun onScanResult(data: String) {
         ean.value = data
         preparationEanForSearch()
     }
 
-    private fun preparationEanForSearch(){
+    private fun preparationEanForSearch() {
         var barcode = ean.value.orEmpty()
-        if(weightValue.contains(barcode.substring(0 until 2))){
-            barcode = barcode.replace(barcode.takeLast(6),"000000")
+        if (weightValue.contains(barcode.substring(0 until 2))) {
+            barcode = barcode.replace(barcode.takeLast(6), "000000")
         }
         setWeight(barcode)
     }
 
-    private fun setWeight(barcode: String){
+    private fun setWeight(barcode: String) {
         val ean = eanInfo.value?.ean
-        if(ean == barcode){
+        if (ean == barcode) {
             val umrez = eanInfo.value?.ean_umrez?.toDouble() //Числитель
             val umren = eanInfo.value?.ean_umren?.toDouble() //Знаменатель
             val result = umrez?.div(umren ?: 0.0)
             weighted.value = result
-        }else{
-            weighted.value = barcode.takeLast(6).take(5).toDouble().div(IngredientDetailsViewModel.DIV_TO_KG)
+        } else {
+            weighted.value = barcode.takeLast(6).take(5).toDouble().div(DIV_TO_KG)
         }
     }
 
@@ -153,6 +167,7 @@ class MaterialRemakeDetailsViewModel : CoreViewModel() {
 
     companion object {
         private const val DEFAULT_WEIGHT = "0"
+
         /**Показатели весового штрихкода*/
         const val VALUE_23 = "23"
         const val VALUE_24 = "24"

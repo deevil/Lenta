@@ -21,7 +21,6 @@ import com.lenta.shared.utilities.extentions.asyncLiveData
 import com.lenta.shared.utilities.extentions.launchUITryCatch
 import com.lenta.shared.utilities.extentions.unsafeLazy
 import javax.inject.Inject
-import kotlin.properties.Delegates
 
 class MaterialRemakesListViewModel : CoreViewModel() {
 
@@ -127,8 +126,6 @@ class MaterialRemakesListViewModel : CoreViewModel() {
         }.either(fnL = ::handleFailure)
     }
 
-    /*allEanMaterialIngredients*/
-
     fun onClickItemPosition(position: Int) {
         allMaterialIngredients.value?.getOrNull(position)?.let { selectedMaterial ->
             val code = ingredient.value?.getFormattedCode().orEmpty()
@@ -137,7 +134,6 @@ class MaterialRemakesListViewModel : CoreViewModel() {
                 navigator.openMaterialRemakeDetailsScreen(selectedMaterial, code, name, barcode)
             }
         } ?: navigator.showAlertPartNotFound {
-
         }
     }
 }

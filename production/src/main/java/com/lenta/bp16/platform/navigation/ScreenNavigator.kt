@@ -444,7 +444,7 @@ interface IScreenNavigator : ICoreNavigator {
     fun openSelectGoodScreen()
     fun openIngredientsListScreen()
     fun openOrderDetailsScreen(selectedIngredient: IngredientInfo)
-    fun openIngredientDetailsScreen(selectedIngredient: OrderIngredientDataInfo, parentCode: String, eanList: OrderByBarcode)
+    fun openIngredientDetailsScreen(selectedIngredient: OrderIngredientDataInfo, parentCode: String, eanInfo: OrderByBarcode)
     fun openOrderIngredientsListScreen(weight: String, selectedIngredient: IngredientInfo)
     fun openMaterialRemakesScreen(selectedIngredient: IngredientInfo)
     fun openMaterialRemakeDetailsScreen(selectedMaterial: MaterialIngredientDataInfo, parentCode: String, parentName: String, barcode: OrderByBarcode)
