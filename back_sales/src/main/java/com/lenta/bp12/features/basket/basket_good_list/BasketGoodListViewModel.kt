@@ -161,23 +161,39 @@ class BasketGoodListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
 
         task.value?.let { task ->
             basket.value?.let { basket ->
+                val basketIndex = basket.index
+                // Пройдемся по всем номерам товара которые нужно удалить
                 materials.forEach { goodMaterial ->
+                    // Найдем товары в корзине которые нужно удалить
                     val goodToDeleteFromBasket = basket.goods.keys.firstOrNull { it.material == goodMaterial }
-                    goodToDeleteFromBasket?.let {
-                        val volumeToReturnToBasket = basket.goods[it]?.times(it.volume)
-                        if (volumeToReturnToBasket != null) {
-                            basket.freeVolume += volumeToReturnToBasket
-                        }
-                        basket.goods.remove(it)
-                    }
+                    goodToDeleteFromBasket?.let { good ->
+                        //Найдем этот товар в общем списке задания
+                        task.goods.firstOrNull { it.material == goodMaterial }?.let { goodFromTask ->
+                            //Удалим у этого товара марки и партии с номером корзины
+                            goodFromTask.removeMarksByBasketIndex(basketIndex)
+                            goodFromTask.removePartsByBasketNumber(basketIndex)
+                            //Найдем у этого товара позиции с подходящим количеством
+                            val positionThatFits = goodFromTask.positions.firstOrNull { positionFromTask ->
+                                good.positions.any { it.quantity >= positionFromTask.quantity }
+                            }
 
-                    task.goods.filter { it.material == goodMaterial }.forEach { good ->
-                        val basketIndex = basket.index
-                        good.marks.removeAll { it.basketNumber == basketIndex }
-                        good.parts.removeAll { it.basketNumber == basketIndex }
-                        good.positions.removeAll { it.basketNumber == basketIndex }
+                            positionThatFits?.let {
+                                //Получим количество позиций этого товара
+                                val quantityOfPositionFromTask = it.quantity
+                                //Получим количество удаляемого товара из корзины
+                                val quantityToMinus = basket.goods[good] ?: 0.0
+                                //Отнимем первое от второго и вернем в товар
+                                val newQuantity = quantityOfPositionFromTask.minus(quantityToMinus)
+                                it.quantity = newQuantity
+                                val index = goodFromTask.positions.indexOf(it)
+                                goodFromTask.positions.set(index, it)
+                            }
+                        }
+                        //Удалим товар из корзины
+                        basket.deleteGood(good)
                     }
                 }
+                //Если корзина пуста удалим ее из задания и вернемся назад
                 if (basket.goods.isEmpty()) {
                     task.removeEmptyBaskets()
                     navigator.goBack()

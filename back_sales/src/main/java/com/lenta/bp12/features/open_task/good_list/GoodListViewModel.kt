@@ -72,7 +72,8 @@ class GoodListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
                                 position = "${filtered.size - index}",
                                 name = good.getNameWithMaterial(),
                                 material = good.material,
-                                providerCode = good.provider.code
+                                providerCode = good.provider.code,
+                                quantity = "${good.planQuantity.dropZeros()} ${good.commonUnits.name}"
                         )
                     }
                 }
@@ -268,7 +269,8 @@ data class ItemGoodProcessingUi(
         val position: String,
         val name: String,
         val material: String,
-        val providerCode: String
+        val providerCode: String,
+        val quantity: String
 )
 
 data class ItemGoodProcessedUi(

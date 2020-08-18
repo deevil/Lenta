@@ -103,16 +103,12 @@ data class GoodCreate(
         }
     }
 
-    fun removeParts(partList: List<Part>) {
-        partList.forEach { part ->
-            parts.remove(part)
-        }
+    fun removePartsByBasketNumber(basketIndex: Int) {
+        parts.removeAll { it.basketNumber == basketIndex }
     }
 
-    fun removeMark(number: String) {
-        marks.find { it.number == number }?.let { mark ->
-            marks.remove(mark)
-        }
+    fun removeMarksByBasketIndex(basketIndex: Int) {
+        marks.removeAll { it.basketNumber == basketIndex }
     }
 
     fun removeAllMark() {
@@ -123,23 +119,6 @@ data class GoodCreate(
         parts.clear()
     }
 
-    fun removePositionsByProvider(providerCode: String) {
-        removePositions(positions.filter { it.provider.code == providerCode })
-    }
-
-    fun removeMarksByProvider(providerCode: String) {
-        removeMarks(marks.filter { it.providerCode == providerCode })
-    }
-
-    fun removePartsByProvider(providerCode: String) {
-        removeParts(parts.filter { it.providerCode == providerCode })
-    }
-
-    fun removeByProvider(providerCode: String) {
-        removePositionsByProvider(providerCode)
-        removeMarksByProvider(providerCode)
-        removePartsByProvider(providerCode)
-    }
 
     fun isEmpty(): Boolean {
         return positions.isEmpty() && marks.isEmpty() && parts.isEmpty()

@@ -20,19 +20,14 @@ data class TaskCreate(
         return "${type.code} // $name"
     }
 
-    fun getGoodListByBasket(basket: Basket): List<GoodCreate> {
-        return basket.goods.keys.toList()
-    }
-
     fun getBasketsByGood(good: GoodCreate): List<Basket> {
         return baskets.filter { basket ->
-            basket.section == good.section && basket.goodType == good.type && basket.control == good.control &&
-                    good.positions.find { it.provider == basket.provider } != null
+            basket.getGoodList().any { it.material == good.material }
         }
     }
 
     fun getCountByBasket(basket: Basket): Int {
-        return getGoodListByBasket(basket).size
+        return basket.getGoodList().size
     }
 
     fun removeGoodByMaterials(materials: List<String>) {
@@ -40,10 +35,12 @@ data class TaskCreate(
             goods.remove(goods.find { it.material == material })
 
             baskets.forEach { basket ->
-                basket.goods.keys.removeAll { it.material == material }
+                val goodList = basket.getGoodList().filter { it.material == material }
+                goodList.forEach { good ->
+                    basket.deleteGood(good)
+                }
             }
         }
-
         removeEmptyBaskets()
     }
 
@@ -52,29 +49,43 @@ data class TaskCreate(
         baskets[oldBasketIndex] = basket
     }
 
-    //TODO NEEDS REFACTOR TOO MANY CYCLES BAD CODE
+
     fun removeBaskets(basketList: MutableList<Basket>) {
+        //Пройдемся по всем корзинам что нужно удалить
         basketList.forEach { basket ->
-            goods.forEach { good ->
-                val basketIndex = basket.index
-                good.marks.removeAll { it.basketNumber == basketIndex }
-                good.parts.removeAll { it.basketNumber == basketIndex }
-                val basketGoodList = basket.goods.keys.toList()
-                basketGoodList.forEach { goodFromBasket ->
-                    val positionThatFits = good.positions.firstOrNull { it.quantity > 0 && goodFromBasket.material == it.materialNumber }
-                    val quantity = positionThatFits?.quantity?:0.0
-                    val quantityToMinus = basket.goods[goodFromBasket]?:0.0
-                    val newQuantity = quantity.minus(quantityToMinus)
+            val basketIndex = basket.index
+            //Получим список товаров корзины
+            val goodsToDeleteFromBasket = basket.getGoodList()
+            //Найдем их в общем списке
+            goodsToDeleteFromBasket.forEach { goodToDeleteFromBasket ->
+                val goodToDeleteFromTask = goods.firstOrNull { goodFromTask ->
+                    goodToDeleteFromBasket == goodFromTask
+                }
+                goodToDeleteFromTask?.let { good ->
+                    //Удалим у этого товара марки и партии с номером корзины
+                    good.removeMarksByBasketIndex(basketIndex)
+                    good.removePartsByBasketNumber(basketIndex)
+                    //Найдем у этого товара позиции с подходящим количеством
+                    val positionThatFits = good.positions.firstOrNull { positionFromTask ->
+                        goodToDeleteFromBasket.positions.any { it.quantity >= positionFromTask.quantity}
+                    }
+
                     positionThatFits?.let {
+                        //Получим количество позиций этого товара
+                        val quantityOfPositionFromTask = it.quantity
+                        //Получим количество удаляемого товара из корзины
+                        val quantityToMinus = basket.goods[goodToDeleteFromBasket] ?: 0.0
+                        //Отнимем первое от второго и вернем в товар
+                        val newQuantity = quantityOfPositionFromTask.minus(quantityToMinus)
                         it.quantity = newQuantity
                         val index = good.positions.indexOf(it)
                         good.positions.set(index, it)
                     }
                 }
+                baskets.remove(basket)
             }
-            baskets.remove(basket)
+            removeEmptyGoods()
         }
-        removeEmptyGoods()
     }
 
     fun removeEmptyGoods() {
@@ -82,20 +93,6 @@ data class TaskCreate(
     }
 
     fun removeEmptyBaskets() {
-        baskets.removeAll(baskets.filter { getGoodListByBasket(it).isEmpty() })
+        baskets.removeAll(baskets.filter { it.getGoodList().isEmpty() })
     }
-
-    fun isExistBasket(basket: Basket): Boolean {
-        return baskets.contains(basket)
-    }
-
-    fun getBasketNumber(good: GoodCreate, providerCode: String): String {
-        val basket = baskets.find {
-            it.section == good.section && it.goodType == good.type &&
-                    it.control == good.control && it.provider?.code == providerCode
-        }
-
-        return "${baskets.indexOf(basket) + 1}"
-    }
-
 }

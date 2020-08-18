@@ -35,15 +35,19 @@ data class Basket(
     var freeVolume: Double = volume
 
     fun addGood(good: GoodCreate, quantity: Double) {
-        freeVolume -= (good.volume * quantity)
-        val oldQuantity = goods[good].orIfNull { 0.0 }
-        val newQuantity = quantity + oldQuantity
-        goods[good] = newQuantity
+        if (freeVolume >= good.volume * quantity) {
+            freeVolume -= (good.volume * quantity)
+            val oldQuantity = goods[good].orIfNull { 0.0 }
+            val newQuantity = quantity + oldQuantity
+            goods[good] = newQuantity
+        }
     }
-    //TODO
+
     fun deleteGood(good: GoodCreate) {
-        if ((freeVolume + good.volume) <= volume) {
-            freeVolume += good.volume
+        if (freeVolume + good.volume <= volume) {
+            val oldQuantity = goods[good].orIfNull { 0.0 }
+            val volumeToReturnToBasket = oldQuantity * good.volume
+            freeVolume += volumeToReturnToBasket
             goods.remove(good)
         }
     }
@@ -63,6 +67,14 @@ data class Basket(
 
             append(providerBlock)
         }
+    }
+
+    fun getGoodList() : List<GoodCreate> {
+        return goods.keys.toList()
+    }
+
+    fun getSize() : Int {
+        return getGoodList().size
     }
 
 }

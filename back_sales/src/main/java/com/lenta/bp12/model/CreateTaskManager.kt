@@ -321,7 +321,7 @@ class CreateTaskManager @Inject constructor(
                         )
                 )
 
-                task.getGoodListByBasket(basket).mapTo(basketPositions) { good ->
+                basket.getGoodList().mapTo(basketPositions) { good ->
                     BasketPositionInfo( //IT_TASK_BASKET_POS
                             material = good.material,
                             basketNumber = basketNumber,
