@@ -2,7 +2,12 @@ package com.lenta.shared.models.core
 
 import java.util.*
 
-class Batch(val batchNumber: String, val manufacturer: Manufacturer, val bottlingDate: Date, val count: Int) {
+data class Batch(
+        val batchNumber: String,
+        val manufacturer: Manufacturer? = null,
+        val bottlingDate: Date? = null,
+        val count: Int? = null
+) {
 
     companion object {
         fun setBottlingDate(batch: Batch, bottlingDate: Date): Batch {

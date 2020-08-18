@@ -71,8 +71,8 @@ class SelectGoodViewModel : CoreViewModel() {
             Logg.d { "----->  barcode EAN 128 less than 16 chars" }
         }
 
-        val weightCollider = barcode.substring(0 until 3)
-        if (weightValue.any { weightCollider.contains(it) }) {
+        val weightCollider = barcode.substring(0 until 2)
+        if (weightValue.any { weightCollider == it }) {
             val changedBarcode = barcode.replace(barcode.takeLast(6), TAKEN_ZEROS)
             weight = barcode.takeLast(6).take(5)
             barcode = changedBarcode
