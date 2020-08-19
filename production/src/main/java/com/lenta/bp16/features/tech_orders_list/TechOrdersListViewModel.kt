@@ -35,7 +35,7 @@ class TechOrdersListViewModel : CoreViewModel() {
                     val position = (index + 1).toString()
                     ItemTechOrderUi(
                             position = position,
-                            text1 = techOrderDataInfo.text1.orEmpty(),
+                            text1 = techOrderDataInfo.text1.orEmpty().takeLast(valueNumber),
                             text2 = techOrderDataInfo.text2.orEmpty(),
                             plan = getFieldWithSuffix(techOrderDataInfo.plan_qnt, suffix)
                     )
@@ -44,4 +44,10 @@ class TechOrdersListViewModel : CoreViewModel() {
             }
         }
     }
+
+    companion object{
+        /**Значимые цифры заказа*/
+        const val valueNumber = 12
+    }
+
 }

@@ -113,7 +113,7 @@
 
                 <TextView
                     style="@style/CellTextStyle"
-                    android:text="@{vm.materialIngredient.plan_qnt}"
+                    android:text="@{vm.planQntWithSuffix}"
                     tools:text="70 кг" />
 
             </LinearLayout>

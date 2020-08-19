@@ -45,9 +45,9 @@ class TechOrdersListFragment : CoreFragment<FragmentTechOrdersListBinding, TechO
 
     override fun setupTopToolBar(topToolbarUiModel: TopToolbarUiModel) {
         topToolbarUiModel.title.value = buildString {
-            append(materialIngredientDataInfo.name)
+            append(materialIngredientDataInfo.ltxa1)
             append(" / ")
-            append(parentCode)
+            append(materialIngredientDataInfo.lgort)
         }
         topToolbarUiModel.description.value = getString(R.string.desc_tech_order_list_by)
     }
