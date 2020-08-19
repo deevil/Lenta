@@ -193,10 +193,9 @@ class GoodsDetailsViewModel : CoreViewModel() {
                     val goodsDetailsItem = goodsDetails.value?.get(position)
                     val materialNumber = goodsDetailsItem?.materialNumber.orEmpty()
                     val typeDiscrepancies = goodsDetailsItem?.typeDiscrepancies.orEmpty()
+                    val taskRepository = taskManager.getReceivingTask()?.taskRepository
 
-                    taskManager
-                            .getReceivingTask()
-                            ?.taskRepository
+                    taskRepository
                             ?.getProductsDiscrepancies()
                             ?.deleteProductDiscrepancy(materialNumber, typeDiscrepancies)
 
@@ -206,9 +205,7 @@ class GoodsDetailsViewModel : CoreViewModel() {
 
                     if (isNonExciseAlcoProduct.value!!) {
                         goodsDetails.value?.get(position)!!.batchDiscrepancies?.let {
-                            taskManager
-                                    .getReceivingTask()
-                                    ?.taskRepository
+                            taskRepository
                                     ?.getBatchesDiscrepancies()
                                     ?.deleteBatchDiscrepancies(it)
                         }
