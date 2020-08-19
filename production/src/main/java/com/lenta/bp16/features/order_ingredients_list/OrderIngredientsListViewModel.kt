@@ -74,14 +74,14 @@ class OrderIngredientsListViewModel : CoreViewModel() {
                 )
         )
         val eanResult = getEanIngredientData(
-                params =  GetIngredientDataParams(
+                params = GetIngredientDataParams(
                         tkMarket = sessionInfo.market.orEmpty(),
                         deviceIP = resourceManager.deviceIp,
                         code = code,
                         mode = mode,
                         weight = weight
                 )
-        ).also{
+        ).also {
             navigator.hideProgress()
         }
         result.either(::handleFailure, allOrderIngredients::setValue)
@@ -118,10 +118,10 @@ class OrderIngredientsListViewModel : CoreViewModel() {
 
     fun onClickItemPosition(position: Int) {
         ingredient.value?.let { selectedIngredient ->
-            allOrderIngredients.value?.getOrNull(position)?.let {orderDataInfo ->
+            allOrderIngredients.value?.getOrNull(position)?.let { orderDataInfo ->
                 allEanIngredients.value?.getOrNull(position)?.let { barcode ->
                     navigator.openIngredientDetailsScreen(orderDataInfo, selectedIngredient.text3.orEmpty(), barcode)
-                }
+                } ?: navigator.showNotFoundedBarcodeForPosition()
             } ?: navigator.showAlertIngredientNotFound()
         }
     }

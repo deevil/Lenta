@@ -72,6 +72,7 @@
     <string name="tw_alert_part_not_found">Отсканированная партия не найдена в системе. Отложите товар и проведите инвентаризацию.</string>
     <string name="tw_alert_good_not_found">Данный товар не найден</string>
     <string name="tw_alert_ingredient_not_found">Ингредиент не найден</string>
+    <string name="tw_alert_ingredient_not_found_in_position">Ингредиент не найден в данной позиции</string>
     <string name="tw_alert_dualism">Отсканированный товар может быть обработан как в рамках заказа, так и в рамках передела. Выберите режим обработки вручную</string>
     <string name="tw_alert_good_not_found_in_current_shift">Отсканированный товар не найден в ингредиентах на текущую смену</string>
     <string name="tw_moving_successful">Перемещение товара выполнено</string>

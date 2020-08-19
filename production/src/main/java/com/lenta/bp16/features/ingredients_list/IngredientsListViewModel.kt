@@ -117,6 +117,7 @@ class IngredientsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInS
             ).either(::handleFailure, allIngredients::setValue)
         }
     }
+
     /**Another one*/
 
     fun loadEanInfoIngredients() {
@@ -130,6 +131,7 @@ class IngredientsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInS
             ).either(::handleFailure, allIngredientsEanInfo::setValue)
         }
     }
+
     /**And Another one*/
 
     fun loadGoodsByOrder() {
@@ -180,7 +182,7 @@ class IngredientsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInS
              * */
             navigator.showProgressLoadingData()
             /**Поиск отсканированного ШК в данных интерфейса ZMP_UTZ_PRO_10_V001*/
-            val searchStatus = withContext(Dispatchers.IO){
+            val searchStatus = withContext(Dispatchers.IO) {
                 var status = SearchStatus.NOT_FOUND
                 allIngredientsEanInfo.value?.find { numberField.value == it.ean }?.let { ean ->
                     selectedMatnr.value = ean.matnr

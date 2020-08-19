@@ -365,6 +365,16 @@ class ScreenNavigator @Inject constructor(
         }
     }
 
+    override fun showNotFoundedBarcodeForPosition() {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    pageNumber = Constants.ALERT_FRAGMENT,
+                    message = context.getString(R.string.tw_alert_ingredient_not_found_in_position),
+                    iconRes = R.drawable.ic_warning_red_80dp
+            ))
+        }
+    }
+
     override fun showAlertDualism() {
         runOrPostpone {
             getFragmentStack()?.push(AlertFragment.create(
@@ -469,4 +479,5 @@ interface IScreenNavigator : ICoreNavigator {
     fun showAlertDualism()
     fun showAlertGoodNotFoundInCurrentShift()
     fun showAlertIngredientNotFound()
+    fun showNotFoundedBarcodeForPosition()
 }
