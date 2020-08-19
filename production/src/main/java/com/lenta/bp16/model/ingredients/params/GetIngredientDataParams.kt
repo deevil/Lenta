@@ -22,7 +22,7 @@ data class GetIngredientDataParams(
         @SerializedName("IV_OBJ_CODE ")
         val code: String,
 
-        @SerializedName("IT_LGORTS")
+        @SerializedName("IT_LGORT_LIST")
         val warehouse: List<WarehouseParam>,
 
         /**
