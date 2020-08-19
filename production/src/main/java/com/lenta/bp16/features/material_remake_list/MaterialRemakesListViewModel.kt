@@ -132,7 +132,7 @@ class MaterialRemakesListViewModel : CoreViewModel() {
         unblockIngredientNetRequest(
                 params = UnblockIngredientsParams(
                         code = ingredient.value?.code.orEmpty(),
-                        mode = UnblockIngredientsParams.MODE_UNBLOCK_VP
+                        mode = UnblockIngredientsParams.MODE_UNBLOCK_MATERIAL
                 )
         ).also {
             navigator.hideProgress()
