@@ -6,8 +6,10 @@ import com.lenta.bp16.model.ingredients.IngredientInfo
 import com.lenta.bp16.model.ingredients.OrderIngredientDataInfo
 import com.lenta.bp16.model.ingredients.params.GetIngredientDataParams
 import com.lenta.bp16.model.ingredients.params.UnblockIngredientsParams
+import com.lenta.bp16.model.ingredients.params.WarehouseParam
 import com.lenta.bp16.model.ingredients.ui.ItemOrderIngredientUi
 import com.lenta.bp16.model.ingredients.ui.OrderByBarcode
+import com.lenta.bp16.model.warehouse.IWarehousePersistStorage
 import com.lenta.bp16.platform.extention.getFieldWithSuffix
 import com.lenta.bp16.platform.extention.getItemName
 import com.lenta.bp16.platform.extention.getModeType
@@ -18,6 +20,7 @@ import com.lenta.bp16.request.GetOrderIngredientsDataNetRequest
 import com.lenta.bp16.request.UnblockIngredientNetRequest
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.platform.viewmodel.CoreViewModel
+import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.extentions.*
 import javax.inject.Inject
 import kotlin.properties.Delegates
@@ -35,6 +38,9 @@ class OrderIngredientsListViewModel : CoreViewModel() {
 
     @Inject
     lateinit var unblockIngredientNetRequest: UnblockIngredientNetRequest
+
+    @Inject
+    lateinit var warehouseStorage: IWarehousePersistStorage
 
     // выбранное количество
     var weight: String by Delegates.notNull()
@@ -63,6 +69,16 @@ class OrderIngredientsListViewModel : CoreViewModel() {
 
         val code = ingredient.value?.code.orEmpty()
         val mode = ingredient.value?.getModeType().orEmpty()
+        val warehouseList = warehouseStorage.getSelectedWarehouses().toList()
+        val selectedWarehouseList = mutableListOf<WarehouseParam>()
+        for (i in 0..warehouseList.size){
+            selectedWarehouseList.add(WarehouseParam(warehouseList[i]))
+        }
+        val lgort = when(mode){
+            MODE_5 -> mutableListOf(WarehouseParam(ingredient.value?.lgort.orEmpty()))
+            MODE_6 -> mutableListOf(WarehouseParam(ingredient.value?.lgort.orEmpty()))
+            else -> selectedWarehouseList
+        }
 
         val result = getIngredientData(
                 params = GetIngredientDataParams(
@@ -70,7 +86,8 @@ class OrderIngredientsListViewModel : CoreViewModel() {
                         deviceIP = resourceManager.deviceIp,
                         code = code,
                         mode = mode,
-                        weight = weight
+                        weight = weight,
+                        warehouse = lgort
                 )
         )
         val eanResult = getEanIngredientData(
@@ -79,7 +96,8 @@ class OrderIngredientsListViewModel : CoreViewModel() {
                         deviceIP = resourceManager.deviceIp,
                         code = code,
                         mode = mode,
-                        weight = weight
+                        weight = weight,
+                        warehouse = lgort
                 )
         ).also {
             navigator.hideProgress()
@@ -125,4 +143,10 @@ class OrderIngredientsListViewModel : CoreViewModel() {
             } ?: navigator.showAlertIngredientNotFound()
         }
     }
+
+    companion object{
+        const val MODE_5 = "5"
+        const val MODE_6 = "6"
+    }
+
 }

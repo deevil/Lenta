@@ -2,12 +2,15 @@ package com.lenta.bp16.features.material_remake_list
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.switchMap
+import com.lenta.bp16.features.order_ingredients_list.OrderIngredientsListViewModel
 import com.lenta.bp16.model.ingredients.IngredientInfo
 import com.lenta.bp16.model.ingredients.MaterialIngredientDataInfo
 import com.lenta.bp16.model.ingredients.params.GetIngredientDataParams
 import com.lenta.bp16.model.ingredients.params.UnblockIngredientsParams
+import com.lenta.bp16.model.ingredients.params.WarehouseParam
 import com.lenta.bp16.model.ingredients.ui.ItemMaterialIngredientUi
 import com.lenta.bp16.model.ingredients.ui.OrderByBarcode
+import com.lenta.bp16.model.warehouse.IWarehousePersistStorage
 import com.lenta.bp16.platform.extention.getFieldWithSuffix
 import com.lenta.bp16.platform.extention.getModeType
 import com.lenta.bp16.platform.navigation.IScreenNavigator
@@ -42,6 +45,9 @@ class MaterialRemakesListViewModel : CoreViewModel() {
     @Inject
     lateinit var getEanIngredientData: GetEanIngredientsNetRequest
 
+    @Inject
+    lateinit var warehouseStorage: IWarehousePersistStorage
+
     // выбранный ингредиент
     val ingredient by unsafeLazy {
         MutableLiveData<IngredientInfo>()
@@ -65,6 +71,18 @@ class MaterialRemakesListViewModel : CoreViewModel() {
 
         val code = ingredient.value?.code.orEmpty()
         val mode = ingredient.value?.getModeType().orEmpty()
+        val warehouseList = warehouseStorage.getSelectedWarehouses().toList()
+
+        val lgort = when(mode){
+            OrderIngredientsListViewModel.MODE_5 -> mutableListOf(WarehouseParam(ingredient.value?.lgort.orEmpty()))
+            OrderIngredientsListViewModel.MODE_6 -> mutableListOf(WarehouseParam(ingredient.value?.lgort.orEmpty()))
+            else -> {val selectedWarehouseList = mutableListOf<WarehouseParam>()
+                for (element in warehouseList){
+                    selectedWarehouseList.add(WarehouseParam(element))
+                }
+                selectedWarehouseList
+            }
+        }
 
         val eanResult = getEanIngredientData(
                 params = GetIngredientDataParams(
@@ -72,7 +90,8 @@ class MaterialRemakesListViewModel : CoreViewModel() {
                         deviceIP = resourceManager.deviceIp,
                         code = code,
                         mode = mode,
-                        weight = ""
+                        weight = "",
+                        warehouse = lgort
                 )
         )
 
@@ -82,19 +101,14 @@ class MaterialRemakesListViewModel : CoreViewModel() {
                         deviceIP = resourceManager.deviceIp,
                         code = code,
                         mode = mode,
-                        weight = ""
+                        weight = "",
+                        warehouse = lgort
                 )
         ).also {
             navigator.hideProgress()
         }
-        result.either(::handleFailure, fnR = {
-            allMaterialIngredients.value = it
-            it
-        })
-        eanResult.either(::handleFailure, fnR = {
-            allEanMaterialIngredients.value = it
-            Unit
-        })
+        result.either(::handleFailure, allMaterialIngredients::setValue)
+        eanResult.either(::handleFailure, allEanMaterialIngredients::setValue)
     }
 
     val materialIngredients by unsafeLazy {

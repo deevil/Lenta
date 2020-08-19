@@ -22,6 +22,9 @@ data class GetIngredientDataParams(
         @SerializedName("IV_OBJ_CODE ")
         val code: String,
 
+        @SerializedName("IT_LGORTS")
+        val warehouse: List<WarehouseParam>,
+
         /**
         Режим обработки:
         5 – Получение данных с блокировкой заказа
