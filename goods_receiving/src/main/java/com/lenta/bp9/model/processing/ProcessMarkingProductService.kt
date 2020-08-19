@@ -470,7 +470,7 @@ class ProcessMarkingProductService
                 ?.mapTo(blocks) { it.copy() }
         currentBlocksDiscrepancies.clear()
         taskRepository
-                ?.run {
+                ?.apply {
                     getBlocksDiscrepancies()
                             .findBlocksDiscrepanciesOfProduct(productInfo)
                             .mapTo(currentBlocksDiscrepancies) {
