@@ -1,14 +1,12 @@
 package com.lenta.bp16.model.ingredients.results
 
-import android.os.Parcelable
 import com.google.gson.annotations.SerializedName
 import com.lenta.bp16.model.ingredients.MaterialIngredientDataInfo
-import com.lenta.bp16.model.ingredients.TechOrderDataInfo
 import com.lenta.bp16.model.ingredients.OrderIngredientDataInfo
+import com.lenta.bp16.model.ingredients.TechOrderDataInfo
 import com.lenta.bp16.model.ingredients.ui.OrderByBarcode
-import com.lenta.bp16.platform.extention.IResultWithRetCodes
 import com.lenta.bp16.request.pojo.RetCode
-import kotlinx.android.parcel.Parcelize
+import com.lenta.bp16.platform.extention.IResultWithRetCodes
 
 data class IngredientsDataListResult(
         /** Данные по заказу */

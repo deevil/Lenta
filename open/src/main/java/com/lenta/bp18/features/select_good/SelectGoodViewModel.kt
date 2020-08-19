@@ -1,6 +1,8 @@
 package com.lenta.bp18.features.select_good
 
+import android.content.Context
 import androidx.lifecycle.MutableLiveData
+import com.lenta.bp18.R
 import com.lenta.bp18.model.pojo.GoodParams
 import com.lenta.bp18.platform.Constants
 import com.lenta.bp18.platform.navigation.IScreenNavigator
@@ -8,8 +10,13 @@ import com.lenta.bp18.repository.IDatabaseRepo
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.settings.IAppSettings
+import com.lenta.shared.utilities.EAN128Parser
+import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.extentions.launchUITryCatch
 import com.lenta.shared.utilities.extentions.map
+import com.lenta.shared.utilities.extentions.unsafeLazy
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 class SelectGoodViewModel : CoreViewModel() {
@@ -26,14 +33,16 @@ class SelectGoodViewModel : CoreViewModel() {
     @Inject
     lateinit var database: IDatabaseRepo
 
-    val ean: MutableLiveData<String> = MutableLiveData()
+    @Inject
+    lateinit var context: Context
 
-    private val weightValue = listOf(VALUE_23, VALUE_24, VALUE_27, VALUE_28)
+    private val ean: MutableLiveData<String> = MutableLiveData()
+
+    private val weightValue by unsafeLazy { listOf(VALUE_23, VALUE_24, VALUE_27, VALUE_28) }
 
     val barcodeField: MutableLiveData<String> = MutableLiveData()
-
     val nextButtonEnabled = barcodeField.map { !it.isNullOrBlank() }
-    val requestFocusToBarcode = MutableLiveData<Boolean>(true)
+    val requestFocusToBarcode = MutableLiveData<Boolean>(false)
 
     fun onClickNext() {
         ean.value = barcodeField.value ?: Constants.GOOD_BARCODE
@@ -41,30 +50,58 @@ class SelectGoodViewModel : CoreViewModel() {
     }
 
     fun onScanResult(data: String) {
+        barcodeField.value = data
         ean.value = data
         preparationEanForSearch()
     }
 
-    private fun preparationEanForSearch() {
-        val barcode = ean.value.toString()
-        var weight = "0"
-        if (weightValue.contains(barcode.substring(0 until 2))) {
-            ean.value = barcode.replace(barcode.takeLast(6), "000000")
-            weight = barcode.takeLast(6).take(5)
+    private fun preparationEanForSearch() = launchUITryCatch {
+        navigator.showProgress(context.getString(R.string.load_barcode_data))
+        var barcode = ean.value.toString()
+        var weight = DEFAULT_WEIGHT
+
+        if (barcode.length >= MINIMUM_GS1_CODE_LENGTH) {
+            val ean128Barcode = withContext(Dispatchers.Default) {
+                EAN128Parser.parseWith(barcode, EAN128Parser.EAN_01)
+            }
+            if (ean128Barcode != null) {
+                barcode = ean128Barcode
+            }
+        } else {
+            Logg.d { "----->  barcode EAN 128 less than 16 chars" }
         }
-        searchEan(ean.value.toString(), weight)
+
+        if (weightValue.contains(barcode.substring(0 until 2))) {
+            val changedBarcode = barcode.replace(barcode.takeLast(6), TAKEN_ZEROS)
+            weight = barcode.takeLast(6).take(5)
+            barcode = changedBarcode
+        }
+
+        ean.value = barcode
+        searchEan(barcode, weight)
     }
 
-    private fun searchEan(ean: String, weight: String) {
-        launchUITryCatch {
-            val good = database.getGoodByEan(ean)
-            good?.let {
-                val goodParams = GoodParams(ean = good.ean,
-                        material = good.getFormattedMaterial(),
-                        name = good.name,
-                        weight = weight)
-                navigator.openGoodsInfoScreen(goodParams)
-            } ?: navigator.showAlertGoodsNotFound()
+    private suspend fun searchEan(ean: String, weight: String) {
+        database.getGoodByEan(ean)?.let { good ->
+            val goodMaterial = good.getFormattedMaterial()
+            val goodParams = GoodParams(
+                    ean = good.ean,
+                    material = goodMaterial,
+                    name = good.name,
+                    weight = weight
+            )
+
+            with(navigator) {
+                hideProgress()
+                openGoodsInfoScreen(goodParams)
+            }
+        } ?: showAlertForNotFoundedGood()
+    }
+
+    private fun showAlertForNotFoundedGood() {
+        with(navigator) {
+            hideProgress()
+            showAlertGoodsNotFound()
         }
     }
 
@@ -73,5 +110,9 @@ class SelectGoodViewModel : CoreViewModel() {
         const val VALUE_24 = "24"
         const val VALUE_27 = "27"
         const val VALUE_28 = "28"
+
+        private const val MINIMUM_GS1_CODE_LENGTH = 16
+        private const val TAKEN_ZEROS = "000000"
+        private const val DEFAULT_WEIGHT = "0"
     }
 }

@@ -31,6 +31,11 @@ class SelectGoodFragment : CoreFragment<FragmentSelectGoodsBinding, SelectGoodVi
         }
     }
 
+    override fun onResume() {
+        super.onResume()
+        vm.requestFocusToBarcode.value = true
+    }
+
     override fun setupTopToolBar(topToolbarUiModel: TopToolbarUiModel) {
         topToolbarUiModel.title.value = requireContext().getAppInfo()
         topToolbarUiModel.description.value = getString(R.string.select_goods)
@@ -40,10 +45,10 @@ class SelectGoodFragment : CoreFragment<FragmentSelectGoodsBinding, SelectGoodVi
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
         bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.next, enabled = false)
 
-            vm.barcodeField.observe(viewLifecycleOwner) {
-                if (vm.barcodeField.value.toString().length == EAN13)
+        vm.barcodeField.observe(viewLifecycleOwner) {
+            if (vm.barcodeField.value.toString().length == EAN13)
                 bottomToolbarUiModel.uiModelButton5.requestFocus()
-            }
+        }
 
         connectLiveData(vm.nextButtonEnabled, bottomToolbarUiModel.uiModelButton5.enabled)
     }
@@ -54,7 +59,7 @@ class SelectGoodFragment : CoreFragment<FragmentSelectGoodsBinding, SelectGoodVi
         }
     }
 
-    override fun onScanResult(data: String){
+    override fun onScanResult(data: String) {
         vm.onScanResult(data)
     }
 

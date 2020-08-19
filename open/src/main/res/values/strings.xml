@@ -19,5 +19,9 @@
     <string name="select_goods">Выбор товара</string>
     <string name="good_card">Карточка товара</string>
     <string name="load_data">Загрузка данных</string>
+    <string name="load_barcode_data">Обработка данных</string>
+
+    <string name="error_market_info_not_found">Информация по маркету не найдена</string>
+    <string name="error_market_selected_position">Вы не выбрали маркет из списка</string>
 
 </resources>
