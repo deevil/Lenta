@@ -336,50 +336,51 @@ class ScreenNavigator @Inject constructor(
         }
     }
 
-    override fun showAlertPartNotFound(backCallback: () -> Unit) {
+    override fun showAlertPartNotFound() {
         runOrPostpone {
             getFragmentStack()?.push(AlertFragment.create(
                     pageNumber = Constants.ALERT_FRAGMENT,
                     message = context.getString(R.string.tw_alert_part_not_found),
-                    iconRes = R.drawable.ic_warning_red_80dp,
-                    leftButtonDecorationInfo = ButtonDecorationInfo.back,
-                    codeConfirmForLeft = backFragmentResultHelper.setFuncForResult(backCallback)
+                    iconRes = R.drawable.ic_warning_red_80dp
             ))
         }
     }
 
-    override fun showAlertGoodNotFound(backCallback: () -> Unit) {
+    override fun showAlertGoodNotFound() {
         runOrPostpone {
             getFragmentStack()?.push(AlertFragment.create(
                     pageNumber = Constants.ALERT_FRAGMENT,
                     message = context.getString(R.string.tw_alert_good_not_found),
-                    iconRes = R.drawable.ic_warning_red_80dp,
-                    leftButtonDecorationInfo = ButtonDecorationInfo.back,
-                    codeConfirmForLeft = backFragmentResultHelper.setFuncForResult(backCallback)
+                    iconRes = R.drawable.ic_warning_red_80dp
             ))
         }
     }
 
-    override fun showAlertDualism(backCallback: () -> Unit) {
+    override fun showAlertIngredientNotFound() {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    pageNumber = Constants.ALERT_FRAGMENT,
+                    message = context.getString(R.string.tw_alert_ingredient_not_found)
+            ))
+        }
+    }
+
+    override fun showAlertDualism() {
         runOrPostpone {
             getFragmentStack()?.push(AlertFragment.create(
                     pageNumber = Constants.ALERT_FRAGMENT,
                     message = context.getString(R.string.tw_alert_dualism),
-                    iconRes = R.drawable.ic_warning_red_80dp,
-                    leftButtonDecorationInfo = ButtonDecorationInfo.back,
-                    codeConfirmForLeft = backFragmentResultHelper.setFuncForResult(backCallback)
+                    iconRes = R.drawable.ic_warning_red_80dp
             ))
         }
     }
 
-    override fun showAlertGoodNotFoundInCurrentShift(backCallback: () -> Unit) {
+    override fun showAlertGoodNotFoundInCurrentShift() {
         runOrPostpone {
             getFragmentStack()?.push(AlertFragment.create(
                     pageNumber = Constants.ALERT_FRAGMENT,
                     message = context.getString(R.string.tw_alert_good_not_found_in_current_shift),
-                    iconRes = R.drawable.ic_warning_red_80dp,
-                    leftButtonDecorationInfo = ButtonDecorationInfo.back,
-                    codeConfirmForLeft = backFragmentResultHelper.setFuncForResult(backCallback)
+                    iconRes = R.drawable.ic_warning_red_80dp
             ))
         }
     }
@@ -463,8 +464,9 @@ interface IScreenNavigator : ICoreNavigator {
     fun showAlertWeightNotSet()
     fun showAlertExceededLimit(backCallback: () -> Unit)
     fun showMovingSuccessful(nextCallback: () -> Unit)
-    fun showAlertGoodNotFound(backCallback: () -> Unit)
-    fun showAlertPartNotFound(backCallback: () -> Unit)
-    fun showAlertDualism(backCallback: () -> Unit)
-    fun showAlertGoodNotFoundInCurrentShift(backCallback: () -> Unit)
+    fun showAlertGoodNotFound()
+    fun showAlertPartNotFound()
+    fun showAlertDualism()
+    fun showAlertGoodNotFoundInCurrentShift()
+    fun showAlertIngredientNotFound()
 }

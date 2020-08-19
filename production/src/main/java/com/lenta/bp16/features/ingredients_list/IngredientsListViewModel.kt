@@ -25,6 +25,9 @@ import com.lenta.shared.utilities.databinding.PageSelectionListener
 import com.lenta.shared.utilities.extentions.asyncLiveData
 import com.lenta.shared.utilities.extentions.launchUITryCatch
 import com.lenta.shared.utilities.extentions.unsafeLazy
+import com.lenta.shared.utilities.orIfNull
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 class IngredientsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyboardListener {
@@ -175,34 +178,38 @@ class IngredientsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInS
              * Главное записать чем я руководствовался в этот момент.
              *
              * */
-
+            navigator.showProgressLoadingData()
             /**Поиск отсканированного ШК в данных интерфейса ZMP_UTZ_PRO_10_V001*/
-            allIngredientsEanInfo.value?.find { numberField.value == it.ean }?.let {
-                selectedMatnr.value = it.matnr
+            val searchStatus = withContext(Dispatchers.IO){
+                var status = SearchStatus.NOT_FOUND
+                allIngredientsEanInfo.value?.find { numberField.value == it.ean }?.let { ean ->
+                    selectedMatnr.value = ean.matnr
+
+                    /**Поиск вхождения в список материалов*/
+                    allIngredients.value?.find { it.code == selectedMatnr.value }?.let {
+                        status = SearchStatus.FOUND_INGREDIENT
+                    }
+                    /**Поиск вхождения в список заказов*/
+                    goodsByOrderList.value?.find { it.matnr == selectedMatnr.value }?.let {
+                        if (status == SearchStatus.FOUND_INGREDIENT)
+                            status = SearchStatus.DUALISM
+                        status = SearchStatus.FOUND_ORDER
+                    }
+                }
+                return@withContext status
             }
-            var searchStatus = SearchStatus.NOT_FOUND
-            /**Поиск вхождения в список материалов*/
-            allIngredients.value?.find { it.code == selectedMatnr.value }?.let {
-                searchStatus = SearchStatus.FOUND_INGREDIENT
-            }
-            /**Поиск вхождения в список заказов*/
-            goodsByOrderList.value?.find { it.matnr == selectedMatnr.value }?.let {
-                if (searchStatus == SearchStatus.FOUND_ORDER)
-                    searchStatus = SearchStatus.DUALISM
-                searchStatus = SearchStatus.FOUND_INGREDIENT
-            }
+
+            navigator.hideProgress()
 
             when (searchStatus) {
-                SearchStatus.DUALISM -> navigator.showAlertDualism {
-                    navigator.openIngredientsListScreen()
-                }
+                SearchStatus.DUALISM -> navigator.showAlertDualism()
                 SearchStatus.FOUND_INGREDIENT -> allIngredients.value?.find { it.code == selectedMatnr.value }?.let { selectedIngredient ->
                     navigator.openOrderDetailsScreen(selectedIngredient)
                 }
                 SearchStatus.FOUND_ORDER -> allIngredients.value?.find { it.code == selectedMatnr.value }?.let { selectedIngredient ->
                     navigator.openMaterialRemakesScreen(selectedIngredient)
                 }
-                SearchStatus.NOT_FOUND -> navigator.showAlertGoodNotFoundInCurrentShift { navigator.openIngredientsListScreen() }
+                SearchStatus.NOT_FOUND -> navigator.showAlertGoodNotFoundInCurrentShift()
             }
 
         }

@@ -84,14 +84,8 @@ class OrderIngredientsListViewModel : CoreViewModel() {
         ).also{
             navigator.hideProgress()
         }
-        result.either(::handleFailure, fnR = {
-            allOrderIngredients.value = it
-            Unit
-        })
-        eanResult.either(::handleFailure, fnR = {
-            allEanIngredients.value = it
-            Unit
-        })
+        result.either(::handleFailure, allOrderIngredients::setValue)
+        eanResult.either(::handleFailure, allEanIngredients::setValue)
     }
 
     val orderIngredientsList by unsafeLazy {
@@ -128,7 +122,7 @@ class OrderIngredientsListViewModel : CoreViewModel() {
                 allEanIngredients.value?.getOrNull(position)?.let { barcode ->
                     navigator.openIngredientDetailsScreen(orderDataInfo, selectedIngredient.text3.orEmpty(), barcode)
                 }
-            }
+            } ?: navigator.showAlertIngredientNotFound()
         }
     }
 }

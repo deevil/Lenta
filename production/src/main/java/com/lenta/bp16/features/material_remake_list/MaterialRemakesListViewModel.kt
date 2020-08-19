@@ -133,7 +133,6 @@ class MaterialRemakesListViewModel : CoreViewModel() {
             allEanMaterialIngredients.value?.getOrNull(position)?.let { barcode ->
                 navigator.openMaterialRemakeDetailsScreen(selectedMaterial, code, name, barcode)
             }
-        } ?: navigator.showAlertPartNotFound {
-        }
+        } ?: navigator.showAlertPartNotFound()
     }
 }

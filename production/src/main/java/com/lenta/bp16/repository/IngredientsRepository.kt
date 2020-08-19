@@ -12,12 +12,12 @@ import com.lenta.bp16.model.ingredients.results.IngredientsDataListResult
 import com.lenta.bp16.model.ingredients.results.IngredientsListResult
 import com.lenta.bp16.model.ingredients.results.UnblockOrderIngredientsResult
 import com.lenta.bp16.model.ingredients.ui.OrderByBarcode
-import com.lenta.bp16.platform.extention.getResult
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.fmp.ObjectRawStatus
 import com.lenta.shared.functional.Either
 import com.lenta.shared.functional.flatMap
 import com.lenta.shared.requests.FmpRequestsHelper
+import com.lenta.shared.utilities.extentions.getResult
 import javax.inject.Inject
 
 class IngredientsRepository @Inject constructor(
