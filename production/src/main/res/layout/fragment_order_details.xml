@@ -75,6 +75,7 @@
                     style="@style/CellTextStyle"
                     android:singleLine="false"
                     android:maxLines="2"
+                    app:zoom="@{true}"
                     android:text="@{vm.ingredient.nameMatnrOsn}"
                     tools:text="Шашлык" />
 
