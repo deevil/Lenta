@@ -118,7 +118,6 @@ class IngredientDetailsViewModel : CoreViewModel() {
                                 deviceIP = resourceManager.deviceIp,
                                 mode = IngredientDataCompleteParams.MODE_INGREDIENT,
                                 parent = parentCode,
-                                aufnr = parentCode,
                                 matnr = ingredient.matnr.orEmpty(),
                                 fact = weight,
                                 personnelNumber = sessionInfo.personnelNumber.orEmpty()

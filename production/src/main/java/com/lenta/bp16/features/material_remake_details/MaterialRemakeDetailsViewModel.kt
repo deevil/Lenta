@@ -102,6 +102,7 @@ class MaterialRemakeDetailsViewModel : CoreViewModel() {
                             parent = parentCode,
                             matnr = parentCode,
                             fact = weight,
+                            mode = DEF_VALUE_FOR_MATERIAL,
                             personnelNumber = sessionInfo.personnelNumber.orEmpty()
                     )
             )
@@ -167,6 +168,7 @@ class MaterialRemakeDetailsViewModel : CoreViewModel() {
 
     companion object {
         private const val DEFAULT_WEIGHT = "0"
+        private const val DEF_VALUE_FOR_MATERIAL = "5"
 
         /**Показатели весового штрихкода*/
         const val VALUE_23 = "23"

@@ -24,10 +24,6 @@ data class IngredientDataCompleteParams(
         @SerializedName("IV_PARENT")
         val parent: String,
 
-        /** Номер технологического заказа  */
-        @SerializedName("IV_AUFNR")
-        val aufnr: String = "",
-
         /** SAP – код товара  */
         @SerializedName("IV_MATNR")
         val matnr: String,
