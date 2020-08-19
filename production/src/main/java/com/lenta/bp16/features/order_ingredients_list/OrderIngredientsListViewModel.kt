@@ -70,14 +70,16 @@ class OrderIngredientsListViewModel : CoreViewModel() {
         val code = ingredient.value?.code.orEmpty()
         val mode = ingredient.value?.getModeType().orEmpty()
         val warehouseList = warehouseStorage.getSelectedWarehouses().toList()
-        val selectedWarehouseList = mutableListOf<WarehouseParam>()
-        for (i in 0..warehouseList.size){
-            selectedWarehouseList.add(WarehouseParam(warehouseList[i]))
-        }
+
         val lgort = when(mode){
             MODE_5 -> mutableListOf(WarehouseParam(ingredient.value?.lgort.orEmpty()))
             MODE_6 -> mutableListOf(WarehouseParam(ingredient.value?.lgort.orEmpty()))
-            else -> selectedWarehouseList
+            else -> {val selectedWarehouseList = mutableListOf<WarehouseParam>()
+                for (element in warehouseList){
+                    selectedWarehouseList.add(WarehouseParam(element))
+                }
+                selectedWarehouseList
+            }
         }
 
         val result = getIngredientData(
