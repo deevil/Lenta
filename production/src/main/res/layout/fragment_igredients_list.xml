@@ -55,7 +55,7 @@
                 android:drawableEnd="@drawable/ic_filter_white_16dp"
                 android:hint="@string/scan_barcode"
                 android:inputType="number"
-                android:maxLength="13"
+                android:maxLength="14"
                 android:text="@={vm.numberField}"
                 app:onOkInSoftKeyboard="@{vm}"
                 app:requestFocus="@{vm.requestFocusToNumberField}"
