@@ -107,7 +107,7 @@
 
                 <TextView
                     style="@style/CellTextStyle"
-                    android:text="@{vm.ingredient.planQntStr}"
+                    android:text="@{vm.planQntWithSuffix}"
                     tools:text="70 кг" />
 
             </LinearLayout>
@@ -138,7 +138,7 @@
 
                 <TextView
                     style="@style/CellTextStyle"
-                    android:text="@{vm.ingredient.doneQnt}"
+                    android:text="@{vm.doneQntWithSuffix}"
                     tools:text="25 кг" />
 
             </LinearLayout>

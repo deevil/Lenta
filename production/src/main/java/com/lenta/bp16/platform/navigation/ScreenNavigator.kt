@@ -190,8 +190,8 @@ class ScreenNavigator @Inject constructor(
         }
     }
 
-    override fun openOrderDetailsScreen(selectedIngredient: IngredientInfo) {
-        getFragmentStack()?.push(OrderDetailsFragment.newInstance(selectedIngredient))
+    override fun openOrderDetailsScreen(selectedIngredient: IngredientInfo, barcode: OrderByBarcode) {
+        getFragmentStack()?.push(OrderDetailsFragment.newInstance(selectedIngredient, barcode))
     }
 
     override fun openOrderIngredientsListScreen(weight: String, selectedIngredient: IngredientInfo) {
@@ -454,7 +454,7 @@ interface IScreenNavigator : ICoreNavigator {
     fun openGoodInfoScreen(goodParams: GoodParams)
     fun openSelectGoodScreen()
     fun openIngredientsListScreen()
-    fun openOrderDetailsScreen(selectedIngredient: IngredientInfo)
+    fun openOrderDetailsScreen(selectedIngredient: IngredientInfo, barcode: OrderByBarcode)
     fun openIngredientDetailsScreen(selectedIngredient: OrderIngredientDataInfo, parentCode: String, eanInfo: OrderByBarcode)
     fun openOrderIngredientsListScreen(weight: String, selectedIngredient: IngredientInfo)
     fun openMaterialRemakesScreen(selectedIngredient: IngredientInfo)

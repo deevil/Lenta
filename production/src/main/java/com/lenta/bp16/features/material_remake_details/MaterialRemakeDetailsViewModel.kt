@@ -81,8 +81,8 @@ class MaterialRemakeDetailsViewModel : CoreViewModel() {
         materialIngredient.combineLatest(eanInfo).map {
             val uom: String? =
                     when (eanInfo.value?.ean_nom.orEmpty()) {
-                        "KAR" -> Uom.KAR.name
-                        "ST" -> Uom.ST.name
+                        OrderByBarcode.KAR -> Uom.KAR.name
+                        OrderByBarcode.ST -> Uom.ST.name
                         else -> Uom.KG.name
                     }
             MutableLiveData("${materialIngredient.value?.plan_qnt} $uom")

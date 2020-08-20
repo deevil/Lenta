@@ -25,7 +25,6 @@ import com.lenta.shared.utilities.databinding.PageSelectionListener
 import com.lenta.shared.utilities.extentions.asyncLiveData
 import com.lenta.shared.utilities.extentions.launchUITryCatch
 import com.lenta.shared.utilities.extentions.unsafeLazy
-import com.lenta.shared.utilities.orIfNull
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -203,16 +202,16 @@ class IngredientsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInS
 
             navigator.hideProgress()
 
-            when (searchStatus) {
+            /*when (searchStatus) {
                 SearchStatus.DUALISM -> navigator.showAlertDualism()
                 SearchStatus.FOUND_INGREDIENT -> allIngredients.value?.find { it.code == selectedMatnr.value }?.let { selectedIngredient ->
-                    navigator.openOrderDetailsScreen(selectedIngredient)
+                    navigator.openOrderDetailsScreen(selectedIngredient, barcode)
                 }
                 SearchStatus.FOUND_ORDER -> allIngredients.value?.find { it.code == selectedMatnr.value }?.let { selectedIngredient ->
                     navigator.openMaterialRemakesScreen(selectedIngredient)
                 }
                 SearchStatus.NOT_FOUND -> navigator.showAlertGoodNotFoundInCurrentShift()
-            }
+            }*/
 
         }
     }
@@ -229,8 +228,13 @@ class IngredientsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInS
                 else -> null
             }?.let { ingredientUI ->
                 allIngredients.value?.find { it.code == ingredientUI.code }?.let { selectedIngredient ->
+                    val positionInList = ingredientUI.position.toInt()
                     if (selectedIngredient.isByOrder) {
-                        navigator.openOrderDetailsScreen(selectedIngredient)
+                        allIngredientsEanInfo.value?.getOrNull(positionInList).let { barcode ->
+                            if (barcode != null) {
+                                navigator.openOrderDetailsScreen(selectedIngredient, barcode)
+                            }
+                        }
                     } else {
                         navigator.openMaterialRemakesScreen(selectedIngredient)
                     }

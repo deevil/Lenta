@@ -29,3 +29,10 @@ data class OrderByBarcode(
         @SerializedName("EAN_UMREN")
         val ean_umren: String?
 ) : Parcelable
+{
+        companion object{
+                const val KAR = "KAR"
+                const val ST = "ST"
+                const val KG = "KG"
+        }
+}

@@ -4,10 +4,14 @@ import android.content.Context
 import androidx.lifecycle.MutableLiveData
 import com.lenta.bp16.R
 import com.lenta.bp16.model.ingredients.IngredientInfo
+import com.lenta.bp16.model.ingredients.ui.OrderByBarcode
 import com.lenta.bp16.platform.navigation.IScreenNavigator
 import com.lenta.shared.account.ISessionInfo
+import com.lenta.shared.models.core.Uom
 import com.lenta.shared.platform.viewmodel.CoreViewModel
+import com.lenta.shared.utilities.extentions.combineLatest
 import com.lenta.shared.utilities.extentions.launchUITryCatch
+import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.utilities.extentions.unsafeLazy
 import javax.inject.Inject
 
@@ -30,9 +34,40 @@ class OrderDetailsViewModel : CoreViewModel() {
         MutableLiveData<IngredientInfo>()
     }
 
+    //Список параметров EAN для ингредиента
+    val eanInfo by unsafeLazy {
+        MutableLiveData<OrderByBarcode>()
+    }
+
     // суффикс
     val suffix: String by unsafeLazy {
         context.getString(R.string.text_weight_hint)
+    }
+
+    //ingredient.planQntStr
+
+    val planQntWithSuffix by unsafeLazy {
+        ingredient.combineLatest(eanInfo).map {
+            val uom: String? =
+                    when(eanInfo.value?.ean_nom.orEmpty()){
+                        OrderByBarcode.KAR -> Uom.KAR.name
+                        OrderByBarcode.ST -> Uom.KAR.name
+                        else -> Uom.KG.name
+                    }
+            MutableLiveData("${ingredient.value?.planQnt} $uom")
+        }
+    }
+
+    val doneQntWithSuffix by unsafeLazy {
+        ingredient.combineLatest(eanInfo).map {
+            val uom: String =
+                    when(eanInfo.value?.ean_nom.orEmpty()){
+                        OrderByBarcode.KAR -> Uom.KAR.name
+                        OrderByBarcode.ST -> Uom.KAR.name
+                        else -> Uom.KG.name
+                    }
+            MutableLiveData("${ingredient.value?.doneQnt} $uom")
+        }
     }
 
     // Focus by request
