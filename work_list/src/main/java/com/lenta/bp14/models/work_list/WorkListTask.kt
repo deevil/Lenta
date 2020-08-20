@@ -22,6 +22,11 @@ import com.lenta.shared.models.core.Uom
 import com.lenta.shared.platform.constants.Constants
 import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.extentions.*
+import com.lenta.shared.utilities.orIfNull
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.util.*
 import javax.inject.Inject
 
@@ -116,26 +121,26 @@ class WorkListTask @Inject constructor(
     }
 
     override fun addScanResult(scanResult: ScanResult) {
-        /**Ищем совпадение по списку*/
-        if(currentGood.value?.scanResults?.contains(scanResult) == true){
-            /**Получение элемента с идентичными полями*/
-            val mutableScanResult = currentGood.value?.scanResults?.find { searchScanResult ->
+        GlobalScope.launch(Dispatchers.IO) {
+            /**Ищем совпадение по списку*/
+            currentGood.value?.scanResults?.find { searchScanResult ->
                 searchScanResult == scanResult
-            }
-            /**Получение идекса дублирующегося элемента*/
-            val index = currentGood.value?.scanResults?.indexOf(scanResult) ?: 0
-            /**Создание нового элемента, который заменит дублирующиеся, с увеличением количества*/
-            val replaceScanResult = ScanResult(
-                    quantity = mutableScanResult?.quantity?.plus(scanResult.quantity) ?: 0.0,
-                    commentCode = scanResult.commentCode,
-                    comment = scanResult.comment,
-                    expirationDate = scanResult.expirationDate,
-                    productionDate = scanResult.productionDate
-            )
-            /**Замена элемента*/
-            currentGood.value?.scanResults?.set(index,replaceScanResult)
-        }else
-        currentGood.value?.scanResults?.add(scanResult)
+            }?.let {
+                /**Получение идекса дублирующегося элемента*/
+                val index = currentGood.value?.scanResults?.indexOf(scanResult) ?: 0
+
+                /**Создание нового элемента, который заменит дублирующиеся, с увеличением количества*/
+                val replaceScanResult = ScanResult(
+                        quantity = it.quantity.plus(scanResult.quantity),
+                        commentCode = scanResult.commentCode,
+                        comment = scanResult.comment,
+                        expirationDate = scanResult.expirationDate,
+                        productionDate = scanResult.productionDate
+                )
+                /**Замена элемента*/
+                currentGood.value?.scanResults?.set(index, replaceScanResult)
+            }.orIfNull { currentGood.value?.scanResults?.add(scanResult) }
+        }
     }
 
     override fun getTaskType(): ITaskTypeInfo {
@@ -212,7 +217,7 @@ class WorkListTask @Inject constructor(
 
     override fun setMissing(matNrList: List<String>) {
         val goodsList = goods.value
-        matNrList.forEach {material ->
+        matNrList.forEach { material ->
             goodsList?.find { it.material == material }?.let { good ->
                 good.isProcessed = true
             }
