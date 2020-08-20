@@ -210,8 +210,8 @@ class ScreenNavigator @Inject constructor(
         getFragmentStack()?.push(MaterialRemakeDetailsFragment.newInstance(selectedMaterial, parentCode, parentName, barcode))
     }
 
-    override fun openTechOrdersScreen(selectedMaterial: MaterialIngredientDataInfo, parentCode: String) {
-        getFragmentStack()?.push(TechOrdersListFragment.newInstance(selectedMaterial, parentCode))
+    override fun openTechOrdersScreen(selectedMaterial: MaterialIngredientDataInfo, parentCode: String, materialIngredientKtsch: String) {
+        getFragmentStack()?.push(TechOrdersListFragment.newInstance(selectedMaterial, parentCode, materialIngredientKtsch))
     }
 
     // Информационные экраны
@@ -459,7 +459,7 @@ interface IScreenNavigator : ICoreNavigator {
     fun openOrderIngredientsListScreen(weight: String, selectedIngredient: IngredientInfo)
     fun openMaterialRemakesScreen(selectedIngredient: IngredientInfo)
     fun openMaterialRemakeDetailsScreen(selectedMaterial: MaterialIngredientDataInfo, parentCode: String, parentName: String, barcode: OrderByBarcode)
-    fun openTechOrdersScreen(selectedMaterial: MaterialIngredientDataInfo, parentCode: String)
+    fun openTechOrdersScreen(selectedMaterial: MaterialIngredientDataInfo, parentCode: String, materialIngredientKtsch: String)
 
     fun showDefrostingPhaseIsCompleted(nextCallback: () -> Unit)
     fun showFixStartNextStageSuccessful(nextCallback: () -> Unit)
