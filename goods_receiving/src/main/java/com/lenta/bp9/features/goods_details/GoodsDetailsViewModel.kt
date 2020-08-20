@@ -2,10 +2,12 @@ package com.lenta.bp9.features.goods_details
 
 import androidx.lifecycle.MutableLiveData
 import com.lenta.bp9.features.loading.tasks.TaskListLoadingMode
+import com.lenta.bp9.model.processing.ProcessExciseAlcoBoxAccPGEService
 import com.lenta.bp9.model.processing.ProcessMercuryProductService
-import com.lenta.bp9.model.task.IReceivingTaskManager
-import com.lenta.bp9.model.task.TaskProductInfo
-import com.lenta.bp9.model.task.TaskType
+import com.lenta.bp9.model.task.*
+import com.lenta.bp9.platform.TypeDiscrepanciesConstants
+import com.lenta.bp9.platform.TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_NORM
+import com.lenta.bp9.platform.TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_PGE_SURPLUS
 import com.lenta.bp9.repos.IDataBaseRepo
 import com.lenta.bp9.repos.IRepoInMemoryHolder
 import com.lenta.shared.models.core.ProductType
@@ -30,7 +32,14 @@ class GoodsDetailsViewModel : CoreViewModel() {
     lateinit var processMercuryProductService: ProcessMercuryProductService
 
     @Inject
+    lateinit var processExciseAlcoBoxAccPGEService: ProcessExciseAlcoBoxAccPGEService
+
+    @Inject
     lateinit var repoInMemoryHolder: IRepoInMemoryHolder
+
+    private val taskRepository by lazy { taskManager.getReceivingTask()?.taskRepository }
+    private val boxNumberForTaskPGEBoxAlco: MutableLiveData<String> = MutableLiveData("")
+    private val isScreenPGEBoxAlcoInfo: MutableLiveData<Boolean> = MutableLiveData(false)
 
     val productInfo: MutableLiveData<TaskProductInfo> = MutableLiveData()
     val uom: MutableLiveData<Uom?> by lazy {
@@ -40,17 +49,22 @@ class GoodsDetailsViewModel : CoreViewModel() {
             MutableLiveData(productInfo.value?.uom)
         }
     }
+
     val goodsDetails: MutableLiveData<List<GoodsDetailsCategoriesItem>> = MutableLiveData()
+
     private val reasonRejectionInfo: MutableLiveData<List<ReasonRejectionInfo>> = MutableLiveData()
     private val isVetProduct: MutableLiveData<Boolean> by lazy {
         MutableLiveData(productInfo.value?.isVet ?: false)
     }
+
     private val isNonExciseAlcoProduct: MutableLiveData<Boolean> by lazy {
         MutableLiveData(productInfo.value?.type == ProductType.NonExciseAlcohol)
     }
+
     private val isBatchProduct: MutableLiveData<Boolean> by lazy {
         MutableLiveData(productInfo.value!!.type == ProductType.NonExciseAlcohol && !productInfo.value!!.isBoxFl && !productInfo.value!!.isMarkFl)
     }
+
     val categoriesSelectionsHelper = SelectionItemsHelper()
     val enabledDelBtn: MutableLiveData<Boolean> = categoriesSelectionsHelper.selectedPositions.map {
         !categoriesSelectionsHelper.selectedPositions.value.isNullOrEmpty()
@@ -89,21 +103,36 @@ class GoodsDetailsViewModel : CoreViewModel() {
         }
     }
 
+    fun initProduct(initProductInfo: TaskProductInfo) {
+        productInfo.value = initProductInfo
+    }
+
+    fun initBoxNumber(_initBoxNumber: String) {
+        boxNumberForTaskPGEBoxAlco.value = _initBoxNumber
+    }
+
+    fun initScreenPGEBoxAlcoInfo(_initScreenPGEBoxAlcoInfo: Boolean) {
+        isScreenPGEBoxAlcoInfo.value = _initScreenPGEBoxAlcoInfo
+    }
+
+    private fun isNormDiscrepancies(typeDiscrepancies: String) : Boolean {
+        return when (repoInMemoryHolder.taskList.value?.taskListLoadingMode) {
+            TaskListLoadingMode.PGE -> typeDiscrepancies == TYPE_DISCREPANCIES_QUALITY_NORM || typeDiscrepancies == TYPE_DISCREPANCIES_QUALITY_PGE_SURPLUS
+            else -> typeDiscrepancies == TYPE_DISCREPANCIES_QUALITY_NORM
+        }
+    }
+
     private fun updateProduct() {
         if (isVetProduct.value == true && productInfo.value?.isNotEdit == false) {
             goodsDetails.postValue(
                     processMercuryProductService.getGoodsDetails()?.mapIndexed { index, discrepancy ->
-                        val isNormDiscrepancies = when (repoInMemoryHolder.taskList.value?.taskListLoadingMode) {
-                            TaskListLoadingMode.PGE -> discrepancy.typeDiscrepancies == "1" || discrepancy.typeDiscrepancies == "2"
-                            else -> discrepancy.typeDiscrepancies == "1"
-                        }
                         GoodsDetailsCategoriesItem(
                                 number = index + 1,
                                 name = "${reasonRejectionInfo.value?.firstOrNull { it.code == discrepancy.typeDiscrepancies }?.name}",
                                 nameBatch = "",
                                 visibilityNameBatch = false,
                                 quantityWithUom = "${discrepancy.numberDiscrepancies.toDouble().toStringFormatted()} ${uom.value?.name}",
-                                isNormDiscrepancies = isNormDiscrepancies,
+                                isNormDiscrepancies = isNormDiscrepancies(discrepancy.typeDiscrepancies),
                                 typeDiscrepancies = discrepancy.typeDiscrepancies,
                                 materialNumber = productInfo.value?.materialNumber ?: "",
                                 batchDiscrepancies = null,
@@ -111,6 +140,16 @@ class GoodsDetailsViewModel : CoreViewModel() {
                         )
                     }?.reversed()
             )
+        } else if (productInfo.value?.type == ProductType.ExciseAlcohol
+                && productInfo.value?.isBoxFl == true
+                && !boxNumberForTaskPGEBoxAlco.value.isNullOrEmpty()) { //ПГЕ алкоголь, коробочный учет https://trello.com/c/TzUSGIH7
+            goodsDetails.value =
+                    processExciseAlcoBoxAccPGEService
+                            .getGoodsDetails(boxNumberForTaskPGEBoxAlco.value.orEmpty())
+                            ?.mapIndexed { index, discrepancy ->
+                                getItemAlcoBoxPGE(discrepancy, index)
+                            }
+                            ?.reversed()
         } else {
             goodsDetails.postValue(
                     if (isBatchProduct.value == true || productInfo.value?.isSet == true) {
@@ -129,10 +168,6 @@ class GoodsDetailsViewModel : CoreViewModel() {
                                 ?.getBatchesDiscrepancies()
                                 ?.findBatchDiscrepanciesOfProducts(productNumbers)
                                 ?.mapIndexed { index, discrepancy ->
-                                    val isNormDiscrepancies = when (repoInMemoryHolder.taskList.value?.taskListLoadingMode) {
-                                        TaskListLoadingMode.PGE -> discrepancy.typeDiscrepancies == "1" || discrepancy.typeDiscrepancies == "2"
-                                        else -> discrepancy.typeDiscrepancies == "1"
-                                    }
                                     val nameItem = if (productInfo.value?.isSet == true) {
                                         "${discrepancy.getMaterialLastSix()} ${reasonRejectionInfo.value?.firstOrNull { it.code == discrepancy.typeDiscrepancies }?.name}"
                                     } else {
@@ -144,7 +179,7 @@ class GoodsDetailsViewModel : CoreViewModel() {
                                             nameBatch = "ДР-${discrepancy.bottlingDate} // ${getManufacturerName(discrepancy.egais)}",
                                             visibilityNameBatch = true,
                                             quantityWithUom = "${discrepancy.numberDiscrepancies.toDouble().toStringFormatted()} ${uom.value?.name}",
-                                            isNormDiscrepancies = isNormDiscrepancies,
+                                            isNormDiscrepancies = isNormDiscrepancies(discrepancy.typeDiscrepancies),
                                             typeDiscrepancies = discrepancy.typeDiscrepancies,
                                             materialNumber = discrepancy.materialNumber,
                                             batchDiscrepancies = discrepancy,
@@ -158,17 +193,13 @@ class GoodsDetailsViewModel : CoreViewModel() {
                                 ?.getProductsDiscrepancies()
                                 ?.findProductDiscrepanciesOfProduct(productInfo.value!!)
                                 ?.mapIndexed { index, discrepancy ->
-                                    val isNormDiscrepancies = when (repoInMemoryHolder.taskList.value?.taskListLoadingMode) {
-                                        TaskListLoadingMode.PGE -> discrepancy.typeDiscrepancies == "1" || discrepancy.typeDiscrepancies == "2"
-                                        else -> discrepancy.typeDiscrepancies == "1"
-                                    }
                                     GoodsDetailsCategoriesItem(
                                             number = index + 1,
                                             name = "${reasonRejectionInfo.value?.firstOrNull { it.code == discrepancy.typeDiscrepancies }?.name}",
                                             nameBatch = "",
                                             visibilityNameBatch = false,
                                             quantityWithUom = "${discrepancy.numberDiscrepancies.toDouble().toStringFormatted()} ${uom.value?.name}",
-                                            isNormDiscrepancies = isNormDiscrepancies,
+                                            isNormDiscrepancies = isNormDiscrepancies(discrepancy.typeDiscrepancies),
                                             typeDiscrepancies = discrepancy.typeDiscrepancies,
                                             materialNumber = productInfo.value?.materialNumber
                                                     ?: "",
@@ -182,6 +213,25 @@ class GoodsDetailsViewModel : CoreViewModel() {
         categoriesSelectionsHelper.clearPositions()
     }
 
+    private fun getItemAlcoBoxPGE(discrepancy: TaskProductDiscrepancies, index: Int) : GoodsDetailsCategoriesItem {
+        val itemName = reasonRejectionInfo.value?.firstOrNull { it.code == discrepancy.typeDiscrepancies }?.name.orEmpty()
+        val quantityWithUom = "${discrepancy.numberDiscrepancies.toDouble().toStringFormatted()} ${uom.value?.name.orEmpty()}"
+        val materialNumber = productInfo.value?.materialNumber.orEmpty()
+
+        return GoodsDetailsCategoriesItem(
+                number = index + 1,
+                name = itemName,
+                nameBatch = "",
+                visibilityNameBatch = false,
+                quantityWithUom = quantityWithUom,
+                isNormDiscrepancies = isNormDiscrepancies(discrepancy.typeDiscrepancies),
+                typeDiscrepancies = discrepancy.typeDiscrepancies,
+                materialNumber = materialNumber,
+                batchDiscrepancies = null,
+                even = index % 2 == 0
+        )
+    }
+
     fun onClickDelete() {
         if (taskManager.getReceivingTask()?.taskHeader?.taskType == TaskType.RecalculationCargoUnit && productInfo.value!!.isWithoutRecount) { //если это не пересчетная ГЕ //https://trello.com/c/PRTAVnUP только без признака ВЗЛОМ (обсудили с Колей 17.06.2020)
             categoriesSelectionsHelper.selectedPositions.value?.map { position ->
@@ -190,16 +240,30 @@ class GoodsDetailsViewModel : CoreViewModel() {
         } else {
             if (productInfo.value != null && !productInfo.value!!.isNotEdit) {
                 categoriesSelectionsHelper.selectedPositions.value?.map { position ->
-                    taskManager
-                            .getReceivingTask()
-                            ?.taskRepository
-                            ?.getProductsDiscrepancies()
-                            ?.deleteProductDiscrepancy(goodsDetails.value?.get(position)!!.materialNumber, goodsDetails.value?.get(position)!!.typeDiscrepancies)
+                    val materialNumber = goodsDetails.value?.get(position)?.materialNumber.orEmpty()
+                    val typeDiscrepancies = goodsDetails.value?.get(position)?.typeDiscrepancies.orEmpty()
+
+                    if (isScreenPGEBoxAlcoInfo.value == true) {
+                        processExciseAlcoBoxAccPGEService.delBoxesStampsDiscrepancies(typeDiscrepancies)
+                    }
+
+                    if (boxNumberForTaskPGEBoxAlco.value.isNullOrEmpty()) {
+                        taskRepository
+                                ?.getProductsDiscrepancies()
+                                ?.deleteProductDiscrepancy(materialNumber, typeDiscrepancies)
+                    } else {
+                        processExciseAlcoBoxAccPGEService.delBoxStampsDiscrepancies(boxNumberForTaskPGEBoxAlco.value.orEmpty(), typeDiscrepancies)
+                    }
+
+                    taskRepository
+                            ?.getBoxesDiscrepancies()
+                            ?.deleteBoxesDiscrepanciesForProductAndDiscrepancies(materialNumber, typeDiscrepancies)
+
+                    taskRepository
+                            ?.getExciseStampsDiscrepancies()
+                            ?.deleteExciseStampsDiscrepanciesForProductAndDiscrepancies(materialNumber, typeDiscrepancies)
 
                     if (isVetProduct.value == true) {
-                        val materialNumber = goodsDetails.value?.get(position)?.materialNumber.orEmpty()
-                        val typeDiscrepancies = goodsDetails.value?.get(position)?.typeDiscrepancies.orEmpty()
-
                         taskManager
                                 .getReceivingTask()
                                 ?.taskRepository
