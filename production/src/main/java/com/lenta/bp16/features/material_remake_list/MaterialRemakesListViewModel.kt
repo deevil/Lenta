@@ -73,11 +73,12 @@ class MaterialRemakesListViewModel : CoreViewModel() {
         val mode = ingredient.value?.getModeType().orEmpty()
         val warehouseList = warehouseStorage.getSelectedWarehouses().toList()
 
-        val lgort = when(mode){
+        val lgort = when (mode) {
             MODE_5 -> mutableListOf(WarehouseParam(ingredient.value?.lgort.orEmpty()))
             MODE_6 -> mutableListOf(WarehouseParam(ingredient.value?.lgort.orEmpty()))
-            else -> {val selectedWarehouseList = mutableListOf<WarehouseParam>()
-                for (element in warehouseList){
+            else -> {
+                val selectedWarehouseList = mutableListOf<WarehouseParam>()
+                for (element in warehouseList) {
                     selectedWarehouseList.add(WarehouseParam(element))
                 }
                 selectedWarehouseList
@@ -150,7 +151,7 @@ class MaterialRemakesListViewModel : CoreViewModel() {
         } ?: navigator.showAlertPartNotFound()
     }
 
-    companion object{
+    companion object {
         const val MODE_5 = "5"
         const val MODE_6 = "6"
     }
