@@ -55,7 +55,7 @@ class TaskCardViewModel : CoreViewModel(), PageSelectionListener {
     val tvDeliveryCaption: String by lazy {
         when (taskManager.getReceivingTask()?.taskHeader?.taskType) {
             TaskType.DirectSupplier, TaskType.OwnProduction -> context.getString(R.string.incoming_delivery)
-            TaskType.ReceptionDistributionCenter, TaskType.RecalculationCargoUnit -> context.getString(R.string.transportation)
+            TaskType.ReceptionDistributionCenter, TaskType.RecalculationCargoUnit, TaskType.ShoppingMall -> context.getString(R.string.transportation)
             else -> context.getString(R.string.incoming_delivery)
         }
     }
@@ -63,7 +63,7 @@ class TaskCardViewModel : CoreViewModel(), PageSelectionListener {
     val tvCountCaption: String by lazy {
         when (taskManager.getReceivingTask()?.taskHeader?.taskType) {
             TaskType.DirectSupplier, TaskType.RecalculationCargoUnit -> context.getString(R.string.count_SKU)
-            TaskType.ReceptionDistributionCenter -> context.getString(R.string.count_GE)
+            TaskType.ReceptionDistributionCenter, TaskType.ShoppingMall -> context.getString(R.string.count_GE)
             TaskType.OwnProduction -> context.getString(R.string.count_EO)
             else -> context.getString(R.string.count_SKU)
         }
@@ -109,10 +109,10 @@ class TaskCardViewModel : CoreViewModel(), PageSelectionListener {
 
     val visibilitySecondBtn by lazy {
         MutableLiveData(taskManager.getReceivingTask()?.taskDescription?.currentStatus.let {
-            it == TaskStatus.Recounted ||
-                    (it == TaskStatus.Checked && taskType != TaskType.ShipmentPP) ||
-                    (it == TaskStatus.Unloaded && (taskType == TaskType.RecalculationCargoUnit || taskType == TaskType.ReceptionDistributionCenter)) ||
-                    (it == TaskStatus.ReadyToShipment && taskType == TaskType.ShipmentRC)
+            it == TaskStatus.Recounted
+                    || (it == TaskStatus.Checked && taskType != TaskType.ShipmentPP)
+                    || (it == TaskStatus.Unloaded && (taskType == TaskType.RecalculationCargoUnit || taskType == TaskType.ReceptionDistributionCenter || taskType == TaskType.ShoppingMall))
+                    || (it == TaskStatus.ReadyToShipment && taskType == TaskType.ShipmentRC)
         })
     }
 
@@ -222,8 +222,9 @@ class TaskCardViewModel : CoreViewModel(), PageSelectionListener {
 
     val changeCurrentDateTimePossible by lazy {
         val status = taskManager.getReceivingTask()?.taskDescription?.currentStatus
-        if ((taskManager.getReceivingTask()?.taskHeader?.taskType == TaskType.ReceptionDistributionCenter || taskManager.getReceivingTask()?.taskHeader?.taskType == TaskType.OwnProduction) &&
-                status == TaskStatus.Arrived) {
+        val taskType = taskManager.getReceivingTask()?.taskHeader?.taskType ?: TaskType.None
+        if ((taskType == TaskType.ReceptionDistributionCenter || taskType == TaskType.OwnProduction || taskType == TaskType.ShoppingMall)
+                && status == TaskStatus.Arrived) {
             false
         } else {
             status == TaskStatus.Arrived
@@ -344,7 +345,7 @@ class TaskCardViewModel : CoreViewModel(), PageSelectionListener {
             TaskStatus.Unloaded -> {
                 when (taskType) {
                     TaskType.RecalculationCargoUnit -> screenNavigator.openSkipRecountScreen()
-                    TaskType.ReceptionDistributionCenter -> screenNavigator.openTransportMarriageScreen()
+                    TaskType.ReceptionDistributionCenter, TaskType.ShoppingMall -> screenNavigator.openTransportMarriageScreen()
                 }
             }
             TaskStatus.Checked -> {
@@ -368,7 +369,8 @@ class TaskCardViewModel : CoreViewModel(), PageSelectionListener {
     }
 
     fun onClickNext() {
-        if (taskManager.getReceivingTask()?.taskHeader?.taskType == TaskType.RecalculationCargoUnit) { //карточка trello https://trello.com/c/BShSWFgU
+        val taskType = taskManager.getReceivingTask()?.taskHeader?.taskType ?: TaskType.None
+        if (taskType == TaskType.RecalculationCargoUnit) { //карточка trello https://trello.com/c/BShSWFgU
             if (taskManager.getReceivingTask()?.taskHeader?.isCracked == false &&  taskManager.getReceivingTask()?.taskDescription?.isRecount == false) {
                 //todo аналитик должен дописать алгоритм, карточка 2680
                 return
@@ -388,7 +390,7 @@ class TaskCardViewModel : CoreViewModel(), PageSelectionListener {
             return
         }
 
-        if (taskManager.getReceivingTask()?.taskHeader?.taskType == TaskType.ShipmentRC) {
+        if (taskType == TaskType.ShipmentRC) {
             when (currentStatus.value) {
                 TaskStatus.ReadyToShipment -> screenNavigator.openTransportationNumberScreen()
                 TaskStatus.Traveling -> {
@@ -461,13 +463,13 @@ class TaskCardViewModel : CoreViewModel(), PageSelectionListener {
                 }
             }
             TaskStatus.Arrived -> {
-                if (isEdo && taskManager.getReceivingTask()?.taskHeader?.taskType == TaskType.DirectSupplier && incomingDelivery.isEmpty()) {
+                if (isEdo && taskType == TaskType.DirectSupplier && incomingDelivery.isEmpty()) {
                     screenNavigator.openCreateInboundDeliveryDialog(
                             yesCallbackFunc = {
                                 screenNavigator.openStartReviseLoadingScreen()
                             }
                     )
-                } else if (taskManager.getReceivingTask()?.taskHeader?.taskType == TaskType.ReceptionDistributionCenter || taskManager.getReceivingTask()?.taskHeader?.taskType == TaskType.OwnProduction) {
+                } else if (taskType == TaskType.ReceptionDistributionCenter || taskType == TaskType.OwnProduction || taskType == TaskType.ShoppingMall) {
                     screenNavigator.openUnloadingStartRDSLoadingScreen()
                 } else {
                     screenNavigator.openStartReviseLoadingScreen()
@@ -476,7 +478,7 @@ class TaskCardViewModel : CoreViewModel(), PageSelectionListener {
             TaskStatus.Checked -> screenNavigator.openStartConditionsReviseLoadingScreen()
             TaskStatus.Unloaded -> {
                 when (taskManager.getReceivingTask()?.taskHeader?.taskType) {
-                    TaskType.ReceptionDistributionCenter -> {
+                    TaskType.ReceptionDistributionCenter, TaskType.ShoppingMall -> {
                         screenNavigator.openNoTransportDefectDeclaredDialog(
                                 nextCallbackFunc = {
                                     if (taskManager.getReceivingTask()?.taskDescription?.quantityOutgoingFillings == 0) {

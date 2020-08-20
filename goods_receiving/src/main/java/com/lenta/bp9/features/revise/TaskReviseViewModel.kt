@@ -43,7 +43,11 @@ class TaskReviseViewModel : CoreViewModel(), PageSelectionListener {
     val checkedDocs: MutableLiveData<List<DeliveryDocumentVM>> = MutableLiveData()
 
     private val isTaskPRCorPSP by lazy {
-        MutableLiveData(taskManager.getReceivingTask()!!.taskHeader.taskType == TaskType.ReceptionDistributionCenter || taskManager.getReceivingTask()!!.taskHeader.taskType == TaskType.OwnProduction)
+        val taskType = taskManager.getReceivingTask()?.taskHeader?.taskType ?: TaskType.None
+        MutableLiveData(taskType == TaskType.ReceptionDistributionCenter
+                || taskType == TaskType.OwnProduction
+                || taskType == TaskType.ShoppingMall
+        )
     }
 
     val nextEnabled = docsToCheck.map { document ->

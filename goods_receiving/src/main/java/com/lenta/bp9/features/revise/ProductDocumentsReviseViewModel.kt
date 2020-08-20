@@ -61,7 +61,11 @@ class ProductDocumentsReviseViewModel : CoreViewModel(), PageSelectionListener {
     var currentSortMode: SortMode = SortMode.ProductNumber
 
     private val isTaskPRCorPSP by lazy {
-        MutableLiveData(taskManager.getReceivingTask()!!.taskHeader.taskType == TaskType.ReceptionDistributionCenter || taskManager.getReceivingTask()!!.taskHeader.taskType == TaskType.OwnProduction)
+        val taskType = taskManager.getReceivingTask()?.taskHeader?.taskType ?: TaskType.None
+        MutableLiveData(taskType == TaskType.ReceptionDistributionCenter
+                || taskType == TaskType.OwnProduction
+                || taskType == TaskType.ShoppingMall
+        )
     }
 
     override fun onPageSelected(position: Int) {

@@ -35,7 +35,12 @@ class CargoUnitCardViewModel : CoreViewModel(), OnPositionClickListener {
     private val statusInfo: MutableLiveData<List<QualityInfo>> = MutableLiveData()
     private val typePalletInfo: MutableLiveData<List<QualityInfo>> = MutableLiveData()
     val deleteVisibility by lazy {
-        MutableLiveData(cargoUnitInfo.value?.cargoUnitStatus == "3" || taskManager.getReceivingTask()?.taskHeader?.taskType == TaskType.ReceptionDistributionCenter || taskManager.getReceivingTask()?.taskHeader?.taskType == TaskType.OwnProduction)
+        val taskType = taskManager.getReceivingTask()?.taskHeader?.taskType ?: TaskType.None
+        MutableLiveData(cargoUnitInfo.value?.cargoUnitStatus == "3"
+                || taskType == TaskType.ReceptionDistributionCenter
+                || taskType == TaskType.OwnProduction
+                || taskType == TaskType.ShoppingMall
+        )
     }
     val recountValue by lazy {
         if (cargoUnitInfo.value?.isCount == true) {

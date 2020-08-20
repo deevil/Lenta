@@ -69,7 +69,7 @@ class TaskCardFragment : CoreFragment<FragmentTaskCardBinding, TaskCardViewModel
                 TaskStatus.Unloaded -> {
                     when (vm.taskType) {
                         TaskType.RecalculationCargoUnit -> bottomToolbarUiModel.uiModelButton2.show(ButtonDecorationInfo.skipAlternate)
-                        TaskType.ReceptionDistributionCenter -> bottomToolbarUiModel.uiModelButton2.show(ButtonDecorationInfo.transportMarriage)
+                        TaskType.ReceptionDistributionCenter, TaskType.ShoppingMall -> bottomToolbarUiModel.uiModelButton2.show(ButtonDecorationInfo.transportMarriage)
                     }
                 }
                 TaskStatus.Checked -> {
@@ -101,7 +101,7 @@ class TaskCardFragment : CoreFragment<FragmentTaskCardBinding, TaskCardViewModel
                 TaskStatus.Unloaded -> {
                     when (vm.taskType) {
                         TaskType.RecalculationCargoUnit -> bottomToolbarUiModel.uiModelButton2.show(ButtonDecorationInfo.skipAlternate, enabled = false)
-                        TaskType.ReceptionDistributionCenter -> bottomToolbarUiModel.uiModelButton2.show(ButtonDecorationInfo.transportMarriage, enabled = false)
+                        TaskType.ReceptionDistributionCenter, TaskType.ShoppingMall -> bottomToolbarUiModel.uiModelButton2.show(ButtonDecorationInfo.transportMarriage, enabled = false)
                     }
                 }
                 TaskStatus.Checked -> {
