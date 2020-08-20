@@ -5,6 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import com.lenta.bp16.R
 import com.lenta.bp16.model.ingredients.IngredientInfo
 import com.lenta.bp16.model.ingredients.OrderByBarcode
+import com.lenta.bp16.model.ingredients.ui.OrderByBarcodeUI
 import com.lenta.bp16.platform.navigation.IScreenNavigator
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.models.core.Uom
@@ -36,15 +37,13 @@ class OrderDetailsViewModel : CoreViewModel() {
 
     //Список параметров EAN для ингредиента
     val eanInfo by unsafeLazy {
-        MutableLiveData<OrderByBarcode>()
+        MutableLiveData<OrderByBarcodeUI>()
     }
 
     // суффикс
     val suffix: String by unsafeLazy {
         context.getString(R.string.text_weight_hint)
     }
-
-    //ingredient.planQntStr
 
     val planQntWithSuffix by unsafeLazy {
         ingredient.combineLatest(eanInfo).map {

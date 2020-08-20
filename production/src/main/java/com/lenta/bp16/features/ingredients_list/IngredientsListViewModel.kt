@@ -12,6 +12,11 @@ import com.lenta.bp16.model.ingredients.params.WarehouseParam
 import com.lenta.bp16.model.ingredients.ui.ItemIngredientUi
 import com.lenta.bp16.model.ingredients.OrderByBarcode
 import com.lenta.bp16.model.ingredients.ui.OrderByBarcodeUI
+import com.lenta.bp16.model.ingredients.ui.OrderByBarcodeUI.Companion.EAN_NOM
+import com.lenta.bp16.model.ingredients.ui.OrderByBarcodeUI.Companion.EAN_UMREN
+import com.lenta.bp16.model.ingredients.ui.OrderByBarcodeUI.Companion.EAN_UMREZ
+import com.lenta.bp16.model.ingredients.ui.OrderByBarcodeUI.Companion.FAKE_EAN
+import com.lenta.bp16.model.ingredients.ui.OrderByBarcodeUI.Companion.FAKE_MATNR
 import com.lenta.bp16.model.warehouse.IWarehousePersistStorage
 import com.lenta.bp16.platform.extention.getIngredientStatus
 import com.lenta.bp16.platform.navigation.IScreenNavigator
@@ -26,6 +31,7 @@ import com.lenta.shared.utilities.databinding.PageSelectionListener
 import com.lenta.shared.utilities.extentions.asyncLiveData
 import com.lenta.shared.utilities.extentions.launchUITryCatch
 import com.lenta.shared.utilities.extentions.unsafeLazy
+import com.lenta.shared.utilities.orIfNull
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -63,8 +69,8 @@ class IngredientsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInS
         MutableLiveData<List<IngredientInfo>>()
     }
 
-    private val allIngredientsEanInfo: MutableLiveData<List<OrderByBarcode>> by unsafeLazy {
-        MutableLiveData<List<OrderByBarcode>>()
+    private val allIngredientsEanInfo: MutableLiveData<List<OrderByBarcodeUI>> by unsafeLazy {
+        MutableLiveData<List<OrderByBarcodeUI>>()
     }
 
     private val goodsByOrderList: MutableLiveData<List<GoodByOrder>> by unsafeLazy {
@@ -231,7 +237,16 @@ class IngredientsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInS
                 allIngredients.value?.find { it.code == ingredientUI.code }?.let { selectedIngredient ->
                     val positionInList = ingredientUI.position.toInt()
                     if (selectedIngredient.isByOrder) {
-                        val barcode = allIngredientsEanInfo.value?.getOrElse(positionInList) { OrderByBarcode() }
+                        val barcode = allIngredientsEanInfo.value?.getOrNull(positionInList)
+                                .orIfNull {
+                                    OrderByBarcodeUI(
+                                            matnr = FAKE_MATNR,
+                                            ean = FAKE_EAN,
+                                            ean_nom = EAN_NOM,
+                                            ean_umrez = EAN_UMREZ,
+                                            ean_umren = EAN_UMREN
+                                    )
+                                }
                         navigator.openOrderDetailsScreen(selectedIngredient, barcode)
                     } else {
                         navigator.openMaterialRemakesScreen(selectedIngredient)

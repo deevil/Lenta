@@ -33,6 +33,7 @@ import com.lenta.bp16.model.ingredients.IngredientInfo
 import com.lenta.bp16.model.ingredients.MaterialIngredientDataInfo
 import com.lenta.bp16.model.ingredients.OrderIngredientDataInfo
 import com.lenta.bp16.model.ingredients.OrderByBarcode
+import com.lenta.bp16.model.ingredients.ui.OrderByBarcodeUI
 import com.lenta.bp16.model.pojo.GoodParams
 import com.lenta.bp16.platform.Constants
 import com.lenta.shared.account.IAuthenticator
@@ -190,7 +191,7 @@ class ScreenNavigator @Inject constructor(
         }
     }
 
-    override fun openOrderDetailsScreen(selectedIngredient: IngredientInfo, barcode: OrderByBarcode) {
+    override fun openOrderDetailsScreen(selectedIngredient: IngredientInfo, barcode: OrderByBarcodeUI) {
         getFragmentStack()?.push(OrderDetailsFragment.newInstance(selectedIngredient, barcode))
     }
 
@@ -454,7 +455,7 @@ interface IScreenNavigator : ICoreNavigator {
     fun openGoodInfoScreen(goodParams: GoodParams)
     fun openSelectGoodScreen()
     fun openIngredientsListScreen()
-    fun openOrderDetailsScreen(selectedIngredient: IngredientInfo, barcode: OrderByBarcode)
+    fun openOrderDetailsScreen(selectedIngredient: IngredientInfo, barcode: OrderByBarcodeUI)
     fun openIngredientDetailsScreen(selectedIngredient: OrderIngredientDataInfo, parentCode: String, eanInfo: OrderByBarcode)
     fun openOrderIngredientsListScreen(weight: String, selectedIngredient: IngredientInfo)
     fun openMaterialRemakesScreen(selectedIngredient: IngredientInfo)

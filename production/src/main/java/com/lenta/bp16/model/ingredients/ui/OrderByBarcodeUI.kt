@@ -24,3 +24,12 @@ data class OrderByBarcodeUI(
         /** Знаменатель при пересчете в базисные единицы измерения */
         val ean_umren: String
 ) : Parcelable
+{
+        companion object{
+                const val FAKE_MATNR = ""
+                const val FAKE_EAN = "0000000000000"
+                const val EAN_NOM = ""
+                const val EAN_UMREZ = ""
+                const val EAN_UMREN = ""
+        }
+}

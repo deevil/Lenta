@@ -13,7 +13,7 @@ import javax.inject.Inject
 
 class GetIngredientsEanInfoNetRequest @Inject constructor(
         private val ingredientsRepository: IIngredientsRepository
-) : UseCase<List<OrderByBarcode>, GetIngredientsParams> {
+) : UseCase<List<OrderByBarcodeUI>, GetIngredientsParams> {
     override suspend fun run(params: GetIngredientsParams): Either<Failure, List<OrderByBarcodeUI>> {
         return ingredientsRepository.getIngredientEanInfo(params).flatMap {
             Either.Right(it.mapNotNull { it.convert() })
