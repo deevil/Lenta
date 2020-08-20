@@ -127,6 +127,7 @@ class WorkListTask @Inject constructor(
             /**Создание нового элемента, который заменит дублирующиеся, с увеличением количества*/
             val replaceScanResult = ScanResult(
                     quantity = mutableScanResult?.quantity?.plus(scanResult.quantity) ?: 0.0,
+                    commentCode = scanResult.commentCode,
                     comment = scanResult.comment,
                     expirationDate = scanResult.expirationDate,
                     productionDate = scanResult.productionDate
