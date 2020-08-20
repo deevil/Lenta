@@ -8,7 +8,7 @@ import com.lenta.bp16.model.ingredients.params.GetIngredientDataParams
 import com.lenta.bp16.model.ingredients.params.UnblockIngredientsParams
 import com.lenta.bp16.model.ingredients.params.WarehouseParam
 import com.lenta.bp16.model.ingredients.ui.ItemOrderIngredientUi
-import com.lenta.bp16.model.ingredients.ui.OrderByBarcode
+import com.lenta.bp16.model.ingredients.OrderByBarcode
 import com.lenta.bp16.model.warehouse.IWarehousePersistStorage
 import com.lenta.bp16.platform.extention.getFieldWithSuffix
 import com.lenta.bp16.platform.extention.getItemName
@@ -20,7 +20,6 @@ import com.lenta.bp16.request.GetOrderIngredientsDataNetRequest
 import com.lenta.bp16.request.UnblockIngredientNetRequest
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.platform.viewmodel.CoreViewModel
-import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.extentions.*
 import javax.inject.Inject
 import kotlin.properties.Delegates

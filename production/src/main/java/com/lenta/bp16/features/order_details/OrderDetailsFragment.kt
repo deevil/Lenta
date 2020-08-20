@@ -5,10 +5,9 @@ import androidx.core.os.bundleOf
 import androidx.lifecycle.lifecycleScope
 import com.lenta.bp16.R
 import com.lenta.bp16.databinding.FragmentOrderDetailsBinding
-import com.lenta.bp16.features.material_remake_details.MaterialRemakeDetailsFragment
 import com.lenta.bp16.platform.extention.getAppComponent
 import com.lenta.bp16.model.ingredients.IngredientInfo
-import com.lenta.bp16.model.ingredients.ui.OrderByBarcode
+import com.lenta.bp16.model.ingredients.OrderByBarcode
 import com.lenta.shared.platform.fragment.CoreFragment
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo

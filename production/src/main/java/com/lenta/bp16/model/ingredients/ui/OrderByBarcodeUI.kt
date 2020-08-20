@@ -8,31 +8,19 @@ import kotlinx.android.parcel.Parcelize
  * Данные ШК по товарам
  */
 @Parcelize
-data class OrderByBarcode(
+data class OrderByBarcodeUI(
         /** SAP-код товара */
-        @SerializedName("MATNR")
-        val matnr: String?,
+        val matnr: String,
 
         /** Глобальный номер товара (GTIN) */
-        @SerializedName("EAN")
-        val ean: String?,
+        val ean: String,
 
         /** Единица измерения */
-        @SerializedName("EAN_UOM")
-        val ean_nom: String?,
+        val ean_nom: String,
 
         /** Числитель для пересчета в базисные единицы измерения */
-        @SerializedName("EAN_UMREZ")
-        val ean_umrez: String?,
+        val ean_umrez: String,
 
         /** Знаменатель при пересчете в базисные единицы измерения */
-        @SerializedName("EAN_UMREN")
-        val ean_umren: String?
+        val ean_umren: String
 ) : Parcelable
-{
-        companion object{
-                const val KAR = "KAR"
-                const val ST = "ST"
-                const val KG = "KG"
-        }
-}

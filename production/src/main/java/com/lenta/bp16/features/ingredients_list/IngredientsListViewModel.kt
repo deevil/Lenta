@@ -10,7 +10,8 @@ import com.lenta.bp16.model.ingredients.IngredientInfo
 import com.lenta.bp16.model.ingredients.params.GetIngredientsParams
 import com.lenta.bp16.model.ingredients.params.WarehouseParam
 import com.lenta.bp16.model.ingredients.ui.ItemIngredientUi
-import com.lenta.bp16.model.ingredients.ui.OrderByBarcode
+import com.lenta.bp16.model.ingredients.OrderByBarcode
+import com.lenta.bp16.model.ingredients.ui.OrderByBarcodeUI
 import com.lenta.bp16.model.warehouse.IWarehousePersistStorage
 import com.lenta.bp16.platform.extention.getIngredientStatus
 import com.lenta.bp16.platform.navigation.IScreenNavigator
@@ -230,11 +231,8 @@ class IngredientsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInS
                 allIngredients.value?.find { it.code == ingredientUI.code }?.let { selectedIngredient ->
                     val positionInList = ingredientUI.position.toInt()
                     if (selectedIngredient.isByOrder) {
-                        allIngredientsEanInfo.value?.getOrNull(positionInList).let { barcode ->
-                            if (barcode != null) {
-                                navigator.openOrderDetailsScreen(selectedIngredient, barcode)
-                            }
-                        }
+                        val barcode = allIngredientsEanInfo.value?.getOrElse(positionInList) { OrderByBarcode() }
+                        navigator.openOrderDetailsScreen(selectedIngredient, barcode)
                     } else {
                         navigator.openMaterialRemakesScreen(selectedIngredient)
                     }

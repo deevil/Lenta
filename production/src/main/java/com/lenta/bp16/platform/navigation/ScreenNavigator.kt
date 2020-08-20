@@ -32,7 +32,7 @@ import com.lenta.bp16.features.warehouse_selection.WarehouseSelectionFragment
 import com.lenta.bp16.model.ingredients.IngredientInfo
 import com.lenta.bp16.model.ingredients.MaterialIngredientDataInfo
 import com.lenta.bp16.model.ingredients.OrderIngredientDataInfo
-import com.lenta.bp16.model.ingredients.ui.OrderByBarcode
+import com.lenta.bp16.model.ingredients.OrderByBarcode
 import com.lenta.bp16.model.pojo.GoodParams
 import com.lenta.bp16.platform.Constants
 import com.lenta.shared.account.IAuthenticator

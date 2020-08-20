@@ -2,14 +2,13 @@ package com.lenta.bp16.features.material_remake_list
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.switchMap
-import com.lenta.bp16.features.order_ingredients_list.OrderIngredientsListViewModel
 import com.lenta.bp16.model.ingredients.IngredientInfo
 import com.lenta.bp16.model.ingredients.MaterialIngredientDataInfo
 import com.lenta.bp16.model.ingredients.params.GetIngredientDataParams
 import com.lenta.bp16.model.ingredients.params.UnblockIngredientsParams
 import com.lenta.bp16.model.ingredients.params.WarehouseParam
 import com.lenta.bp16.model.ingredients.ui.ItemMaterialIngredientUi
-import com.lenta.bp16.model.ingredients.ui.OrderByBarcode
+import com.lenta.bp16.model.ingredients.OrderByBarcode
 import com.lenta.bp16.model.warehouse.IWarehousePersistStorage
 import com.lenta.bp16.platform.extention.getFieldWithSuffix
 import com.lenta.bp16.platform.extention.getModeType

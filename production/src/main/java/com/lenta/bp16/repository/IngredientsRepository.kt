@@ -11,7 +11,7 @@ import com.lenta.bp16.model.ingredients.results.IngredientDataCompleteResult
 import com.lenta.bp16.model.ingredients.results.IngredientsDataListResult
 import com.lenta.bp16.model.ingredients.results.IngredientsListResult
 import com.lenta.bp16.model.ingredients.results.UnblockOrderIngredientsResult
-import com.lenta.bp16.model.ingredients.ui.OrderByBarcode
+import com.lenta.bp16.model.ingredients.OrderByBarcode
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.fmp.ObjectRawStatus
 import com.lenta.shared.functional.Either
