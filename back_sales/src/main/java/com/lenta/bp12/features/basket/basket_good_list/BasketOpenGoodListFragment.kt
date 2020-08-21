@@ -5,7 +5,7 @@ import android.view.View
 import androidx.viewbinding.ViewBinding
 import com.lenta.bp12.BR
 import com.lenta.bp12.R
-import com.lenta.bp12.databinding.FragmentBasketGoodListBinding
+import com.lenta.bp12.databinding.FragmentBasketOpenGoodListBinding
 import com.lenta.bp12.databinding.ItemBasketGoodListGoodBinding
 import com.lenta.bp12.platform.extention.getAppComponent
 import com.lenta.shared.platform.fragment.CoreFragment
@@ -18,10 +18,11 @@ import com.lenta.shared.utilities.extentions.connectLiveData
 import com.lenta.shared.utilities.extentions.generateScreenNumberFromPostfix
 import com.lenta.shared.utilities.extentions.provideViewModel
 
-class BasketGoodListFragment : CoreFragment<FragmentBasketGoodListBinding, BasketGoodListViewModel>(),
+class BasketOpenGoodListFragment : CoreFragment<FragmentBasketOpenGoodListBinding, BasketOpenGoodListViewModel>(),
         ToolbarButtonsClickListener, OnScanResultListener {
 
-    override fun getLayoutId(): Int = R.layout.fragment_basket_good_list
+
+    override fun getLayoutId(): Int = R.layout.fragment_basket_open_good_list
 
     override fun getPageNumber(): String? = generateScreenNumberFromPostfix(SCREEN_NUMBER)
 
@@ -33,8 +34,8 @@ class BasketGoodListFragment : CoreFragment<FragmentBasketGoodListBinding, Baske
             }
         }
 
-    override fun getViewModel(): BasketGoodListViewModel {
-        provideViewModel(BasketGoodListViewModel::class.java).let {
+    override fun getViewModel(): BasketOpenGoodListViewModel {
+        provideViewModel(BasketOpenGoodListViewModel::class.java).let {
             getAppComponent()?.inject(it)
             return it
         }
@@ -105,7 +106,7 @@ class BasketGoodListFragment : CoreFragment<FragmentBasketGoodListBinding, Baske
     }
 
     companion object {
-        const val SCREEN_NUMBER = "13"
+        private const val SCREEN_NUMBER = "13"
     }
 
 }

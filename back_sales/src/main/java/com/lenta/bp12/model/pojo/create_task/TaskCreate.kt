@@ -59,12 +59,13 @@ data class TaskCreate(
             //Найдем их в общем списке
             goodsToDeleteFromBasket.forEach { goodToDeleteFromBasket ->
                 val goodToDeleteFromTask = goods.firstOrNull { goodFromTask ->
-                    goodToDeleteFromBasket == goodFromTask
+                    goodToDeleteFromBasket.material == goodFromTask.material
                 }
                 goodToDeleteFromTask?.let { good ->
                     //Удалим у этого товара марки и партии с номером корзины
                     good.removeMarksByBasketIndex(basketIndex)
                     good.removePartsByBasketNumber(basketIndex)
+                    good.removePositionsByBasketIndex(basketIndex)
                     //Найдем у этого товара позиции с подходящим количеством
                     val positionThatFits = good.positions.firstOrNull { positionFromTask ->
                         goodToDeleteFromBasket.positions.any { it.quantity >= positionFromTask.quantity}

@@ -96,7 +96,7 @@ class TaskContentViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
                     ItemCommonBasketUi(
                             basket = basket,
                             position = "$position",
-                            name = resource.basket("$position"),
+                            name = resource.basket("${basket.index}"),
                             description = basket.getDescription(task.type.isDivBySection),
                             quantity = "${task.getCountByBasket(basket)}"
                     )
@@ -113,7 +113,7 @@ class TaskContentViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
                     ItemWholesaleBasketUi(
                             basket = basket,
                             position = "$position",
-                            name = resource.basket("$position"),
+                            name = resource.basket("${basket.index}"),
                             description = basket.getDescription(task.type.isDivBySection),
                             quantity = "${task.getCountByBasket(basket)} ${Uom.ST.name}",
                             isPrinted = basket.isPrinted,
@@ -203,7 +203,7 @@ class TaskContentViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
                         }
                     }
                     manager.updateCurrentBasket(basket)
-                    navigator.openBasketGoodListScreen()
+                    navigator.openBasketCreateGoodListScreen()
                 }
                 else -> throw IllegalArgumentException("Wrong pager position!")
             }
@@ -238,7 +238,7 @@ class TaskContentViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
 
     fun onPrint() {
         task.value?.let { taskValue ->
-            goodSelectionsHelper.selectedPositions.value?.let { positions ->
+            basketSelectionsHelper.selectedPositions.value?.let { positions ->
                 var baskets = taskValue.baskets
                 //Если корзины выделены то берем их
                 if (positions.isNotEmpty()) {

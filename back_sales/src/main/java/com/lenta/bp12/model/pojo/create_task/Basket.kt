@@ -1,6 +1,7 @@
 package com.lenta.bp12.model.pojo.create_task
 
 import com.lenta.bp12.model.ControlType
+import com.lenta.bp12.model.pojo.Good
 import com.lenta.bp12.request.pojo.ProviderInfo
 import com.lenta.shared.utilities.orIfNull
 
@@ -10,9 +11,8 @@ data class Basket(
         val goodType: String?,
         val control: ControlType?,
         val provider: ProviderInfo?,
-        var quantity: String? = "",
         val volume: Double = 0.0,
-        val goods: MutableMap<GoodCreate, Double> = mutableMapOf()
+        val goods: MutableMap<Good, Double> = mutableMapOf()
 ) {
     /**
      * Распечатана ли
@@ -34,7 +34,7 @@ data class Basket(
      */
     var freeVolume: Double = volume
 
-    fun addGood(good: GoodCreate, quantity: Double) {
+    fun addGood(good: Good, quantity: Double) {
         if (freeVolume >= good.volume * quantity) {
             freeVolume -= (good.volume * quantity)
             val oldQuantity = goods[good].orIfNull { 0.0 }
@@ -43,7 +43,7 @@ data class Basket(
         }
     }
 
-    fun deleteGood(good: GoodCreate) {
+    fun deleteGood(good: Good) {
         if (freeVolume + good.volume <= volume) {
             val oldQuantity = goods[good].orIfNull { 0.0 }
             val volumeToReturnToBasket = oldQuantity * good.volume
@@ -69,12 +69,15 @@ data class Basket(
         }
     }
 
-    fun getGoodList() : List<GoodCreate> {
+    fun getGoodList() : List<Good> {
         return goods.keys.toList()
     }
 
-    fun getSize() : Int {
-        return getGoodList().size
+    fun getQuantityOfGood(good: Good): Double {
+        return goods[good] ?: 0.0
     }
 
+    fun getQuantityFromGoodList() : Int {
+        return getGoodList().size
+    }
 }

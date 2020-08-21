@@ -69,7 +69,7 @@ class CreateTaskManager @Inject constructor(
                 //Обновим товар в задании
                 updateCurrentGood(good)
 
-                // Если нажата кнопка закрыть коризину то пометим все корзины для закрытия
+                // Если нажата кнопка закрыть корзину то пометим все корзины для закрытия
                 if (isBasketsNeedsToBeClosed) {
                     it.markedForLock = true
                 }
@@ -84,6 +84,7 @@ class CreateTaskManager @Inject constructor(
             }
         }
     }
+
     /** Добавляет товар в корзину один раз без цикла, и при этом добавляет в товар марку */
     override suspend fun addGoodToBasketWithMark(good: GoodCreate, mark: Mark, provider: ProviderInfo) {
         val suitableBasket = getOrCreateSuitableBasket(good, provider)
@@ -172,7 +173,7 @@ class CreateTaskManager @Inject constructor(
                 getBasket(provider.code) //Функция возвращает либо корзину с подходящими параметрами и достаточным объемом или возвращает null
                         .orIfNull {
                             //Если корзина не найдена - создадим ее
-                            val index = basketList.lastOrNull()?.index?.plus(1) ?: 0
+                            val index = basketList.lastOrNull()?.index?.plus(1) ?: 1
                             Basket(
                                     index = index,
                                     section = good.section,
@@ -270,9 +271,7 @@ class CreateTaskManager @Inject constructor(
     }
 
     override fun getBasketPosition(basket: Basket?): Int {
-        val position = currentTask.value?.baskets?.indexOf(basket)
-
-        return if (position != null) position + 1 else 0
+        return basket?.index ?: 0
     }
 
     override fun removeGoodByMaterials(materialList: List<String>) {
@@ -308,7 +307,7 @@ class CreateTaskManager @Inject constructor(
             val basketPositions = mutableListOf<BasketPositionInfo>()
 
             task.baskets.forEach { basket ->
-                val basketNumber = "${task.baskets.indexOf(basket) + 1}"
+                val basketNumber = "${basket.index}"
 
                 baskets.add(
                         CreateTaskBasketInfo( //IT_TASK_BASKET
@@ -325,7 +324,7 @@ class CreateTaskManager @Inject constructor(
                     BasketPositionInfo( //IT_TASK_BASKET_POS
                             material = good.material,
                             basketNumber = basketNumber,
-                            quantity = good.getQuantityByProvider(basket.provider?.code).dropZeros()
+                            quantity = basket.getQuantityOfGood(good).dropZeros()
                     )
                 }
             }
@@ -417,6 +416,8 @@ interface ICreateTaskManager {
     suspend fun addGoodToBasketWithPart(good: GoodCreate, part: Part, provider: ProviderInfo, count: Double)
     suspend fun getOrCreateSuitableBasket(good: GoodCreate, provider: ProviderInfo): Basket?
 
+    fun getBasket(providerCode: String): Basket?
+
     fun updateCurrentTask(task: TaskCreate?)
     fun updateCurrentGood(good: GoodCreate?)
     fun updateCurrentBasket(basket: Basket?)
@@ -433,6 +434,5 @@ interface ICreateTaskManager {
     fun saveGoodInTask(good: GoodCreate)
     fun clearSearchFromListParams()
     fun clearCurrentGood()
-    fun getBasket(providerCode: String): Basket?
 
 }

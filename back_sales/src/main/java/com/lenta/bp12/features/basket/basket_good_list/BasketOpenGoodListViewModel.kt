@@ -4,7 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.liveData
 import androidx.lifecycle.switchMap
-import com.lenta.bp12.model.ICreateTaskManager
+import com.lenta.bp12.model.IOpenTaskManager
 import com.lenta.bp12.model.pojo.create_task.Basket
 import com.lenta.bp12.platform.navigation.IScreenNavigator
 import com.lenta.bp12.platform.resource.IResourceManager
@@ -18,13 +18,13 @@ import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.utilities.extentions.unsafeLazy
 import javax.inject.Inject
 
-class BasketGoodListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
+class BasketOpenGoodListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
 
     @Inject
     lateinit var navigator: IScreenNavigator
 
     @Inject
-    lateinit var manager: ICreateTaskManager
+    lateinit var openTaskManager: IOpenTaskManager
 
     @Inject
     lateinit var resource: IResourceManager
@@ -33,47 +33,49 @@ class BasketGoodListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
     val selectionsHelper = SelectionItemsHelper()
 
     private val task by lazy {
-        manager.currentTask
+        openTaskManager.currentTask
     }
 
-    val basket: LiveData<Basket> by lazy { //вернуть lazy
-        manager.currentBasket
+    val basket: LiveData<Basket> by lazy {
+        openTaskManager.currentBasket
     }
 
     val title by lazy {
         basket.map { basket ->
-            val position = manager.getBasketPosition(basket)
+            val position = basket?.index ?: 1
+
             val description = basket?.getDescription(task.value?.type?.isDivBySection ?: false)
             resource.basket("$position: $description")
         }
     }
 
+
     private val isWholesaleBasket by unsafeLazy {
-        manager.isWholesaleTaskType
+        openTaskManager.isWholesaleTaskType
     }
 
     val numberField: MutableLiveData<String> = MutableLiveData("")
 
     val goods by lazy {
+        Logg.e { basket.value.toString() }
         basket.map {
             it?.let { basket ->
-                task.value?.let { task ->
+                val list = basket.getGoodList()
 
-                    val list = basket.goods.keys.toList()
-                    list.mapIndexed { index, good ->
-                        val units = good.commonUnits.name
-                        val quantity = basket.goods[good]
+                list.mapIndexed { index, good ->
+                    val units = good.commonUnits.name
+                    val quantity = basket.goods[good]
 
-                        Logg.e { "freeVolume: ${basket.freeVolume}, isPrinted: ${basket.isPrinted}, isLocked: ${basket.isLocked} ${basket.goods}" }
+                    Logg.e { "freeVolume: ${basket.freeVolume}, isPrinted: ${basket.isPrinted}, isLocked: ${basket.isLocked} ${basket.goods}" }
 
-                        ItemGoodUi(
-                                position = "${index + 1}",
-                                name = good.getNameWithMaterial(),
-                                quantity = "${quantity.dropZeros()} $units",
-                                material = good.material
-                        )
-                    }
+                    ItemGoodUi(
+                            position = "${index + 1}",
+                            name = good.getNameWithMaterial(),
+                            quantity = "${quantity.dropZeros()} $units",
+                            material = good.material
+                    )
                 }
+
             }.orEmpty()
         }
     }
@@ -112,7 +114,7 @@ class BasketGoodListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
         MutableLiveData(isWholesaleBasket)
     }
 
-    // -----------------------------
+// -----------------------------
 
     fun onScanResult(data: String) {
         checkEnteredNumber(data)
@@ -126,8 +128,8 @@ class BasketGoodListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
     private fun checkEnteredNumber(number: String) {
         number.length.let { length ->
             if (length >= Constants.SAP_6) {
-                manager.searchNumber = number
-                manager.isSearchFromList = true
+                openTaskManager.searchNumber = number
+                openTaskManager.isSearchFromList = true
                 navigator.goBack()
                 navigator.openGoodInfoCreateScreen()
             }
@@ -136,10 +138,10 @@ class BasketGoodListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
 
     fun onClickItemPosition(position: Int) {
         goods.value?.get(position)?.material?.let { material ->
-            manager.searchNumber = material
-            manager.isSearchFromList = true
+            openTaskManager.searchNumber = material
+            openTaskManager.isSearchFromList = true
             navigator.goBack()
-            navigator.openGoodInfoCreateScreen()
+            navigator.openGoodInfoOpenScreen()
         }
     }
 
@@ -172,6 +174,7 @@ class BasketGoodListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
                             //Удалим у этого товара марки и партии с номером корзины
                             goodFromTask.removeMarksByBasketIndex(basketIndex)
                             goodFromTask.removePartsByBasketNumber(basketIndex)
+                            goodFromTask.removePositionsByBasketIndex(basketIndex)
                             //Найдем у этого товара позиции с подходящим количеством
                             val positionThatFits = goodFromTask.positions.firstOrNull { positionFromTask ->
                                 good.positions.any { it.quantity >= positionFromTask.quantity }
@@ -199,8 +202,8 @@ class BasketGoodListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
                     navigator.goBack()
                 }
                 task.removeEmptyGoods()
-                manager.updateCurrentBasket(basket)
-                manager.updateCurrentTask(task)
+                openTaskManager.updateCurrentBasket(basket)
+                openTaskManager.updateCurrentTask(task)
             }
         }
 
@@ -212,8 +215,8 @@ class BasketGoodListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
                 basket.value?.let { basket ->
                     basket.isLocked = true
                     task.updateBasket(basket)
-                    manager.updateCurrentBasket(basket)
-                    manager.updateCurrentTask(task)
+                    openTaskManager.updateCurrentBasket(basket)
+                    openTaskManager.updateCurrentTask(task)
                 }
 
             }
@@ -227,19 +230,11 @@ class BasketGoodListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
                 basket.value?.let { basket ->
                     basket.isLocked = false
                     task.updateBasket(basket)
-                    manager.updateCurrentBasket(basket)
-                    manager.updateCurrentTask(task)
+                    openTaskManager.updateCurrentBasket(basket)
+                    openTaskManager.updateCurrentTask(task)
                 }
             }
             navigator.goBack()
         })
     }
-
 }
-
-data class ItemGoodUi(
-        val position: String,
-        val name: String,
-        val quantity: String,
-        val material: String
-)

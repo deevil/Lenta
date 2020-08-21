@@ -111,5 +111,6 @@
     <string name="all_suppliers">Все поставщики</string>
     <string name="wholesale_buyer">Оптовый покупатель</string>
     <string name="picking_warehouse">Склад\nкомплектации</string>
+    <string name="quantity_more_than_planned">Превышено плановое количество. Добавление невозможно.</string>
 
 </resources>

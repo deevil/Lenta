@@ -73,7 +73,10 @@ class GoodListFragment : CoreFragment<FragmentGoodListBinding, GoodListViewModel
         return when (position) {
             TAB_PROCESSING -> initGoodListNotProcessed(container)
             TAB_PROCESSED -> initGoodListProcessed(container)
-            TAB_BASKET -> initGoodListBasket(container)
+            TAB_BASKET -> {
+                if (vm.manager.isWholesaleTaskType) initGoodListWholesaleBasket(container)
+                else initGoodListCommonBasket(container)
+            }
             else -> View(context)
         }
     }
@@ -186,9 +189,9 @@ class GoodListFragment : CoreFragment<FragmentGoodListBinding, GoodListViewModel
         }
     }
 
-    private fun initGoodListBasket(container: ViewGroup): View {
-        DataBindingUtil.inflate<LayoutGoodListBasketsBinding>(LayoutInflater.from(container.context),
-                R.layout.layout_good_list_baskets,
+    private fun initGoodListWholesaleBasket(container: ViewGroup): View {
+        DataBindingUtil.inflate<LayoutGoodListWholesaleBasketsBinding>(LayoutInflater.from(container.context),
+                R.layout.layout_good_list_wholesale_baskets,
                 container,
                 false).let { layoutBinding ->
 
@@ -232,6 +235,60 @@ class GoodListFragment : CoreFragment<FragmentGoodListBinding, GoodListViewModel
             basketRecyclerViewKeyHandler = RecyclerViewKeyHandler(
                     rv = layoutBinding.rv,
                     items = vm.wholesaleBaskets,
+                    lifecycleOwner = layoutBinding.lifecycleOwner!!,
+                    initPosInfo = basketRecyclerViewKeyHandler?.posInfo?.value
+            )
+
+            return layoutBinding.root
+        }
+    }
+
+
+    private fun initGoodListCommonBasket(container: ViewGroup): View {
+        DataBindingUtil.inflate<LayoutGoodListCommonBasketsBinding>(LayoutInflater.from(container.context),
+                R.layout.layout_good_list_common_baskets,
+                container,
+                false).let { layoutBinding ->
+
+            val onClickSelectionListener = View.OnClickListener {
+                (it!!.tag as Int).let { position ->
+                    vm.basketSelectionsHelper.revert(position = position)
+                    layoutBinding.rv.adapter?.notifyItemChanged(position)
+                }
+            }
+
+            layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
+                    layoutId = R.layout.item_task_content_common_basket,
+                    itemId = BR.item,
+                    realisation = object : DataBindingAdapter<ItemTaskContentCommonBasketBinding> {
+                        override fun onCreate(binding: ItemTaskContentCommonBasketBinding) {
+                        }
+
+                        override fun onBind(binding: ItemTaskContentCommonBasketBinding, position: Int) {
+                            binding.tvItemNumber.tag = position
+                            binding.tvItemNumber.setOnClickListener(onClickSelectionListener)
+                            binding.selectedForDelete = vm.basketSelectionsHelper.isSelected(position)
+                            basketRecyclerViewKeyHandler?.let {
+                                binding.root.isSelected = it.isSelected(position)
+                            }
+                        }
+                    },
+                    onItemClickListener = AdapterView.OnItemClickListener { _, _, position, _ ->
+                        basketRecyclerViewKeyHandler?.let {
+                            if (it.isSelected(position)) {
+                                vm.onClickItemPosition(position)
+                            } else {
+                                it.selectPosition(position)
+                            }
+                        }
+                    }
+            )
+
+            layoutBinding.vm = vm
+            layoutBinding.lifecycleOwner = viewLifecycleOwner
+            basketRecyclerViewKeyHandler = RecyclerViewKeyHandler(
+                    rv = layoutBinding.rv,
+                    items = vm.commonBaskets,
                     lifecycleOwner = layoutBinding.lifecycleOwner!!,
                     initPosInfo = basketRecyclerViewKeyHandler?.posInfo?.value
             )

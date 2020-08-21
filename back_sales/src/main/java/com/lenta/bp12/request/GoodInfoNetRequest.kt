@@ -36,7 +36,7 @@ data class GoodInfoParams(
         @SerializedName("IV_TYPE_TASK")
         val taskType: String,
         /** Индикатор из одной позиции */
-        @SerializedName("IV_MODE") // Для BKS не используется
+        @SerializedName("IV_MODE")
         val mode: String = ""
 )
 

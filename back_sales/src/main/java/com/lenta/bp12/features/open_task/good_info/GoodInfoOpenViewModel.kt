@@ -7,6 +7,7 @@ import com.lenta.bp12.model.pojo.Part
 import com.lenta.bp12.model.pojo.Position
 import com.lenta.bp12.model.pojo.open_task.GoodOpen
 import com.lenta.bp12.platform.extention.extractAlcoCode
+import com.lenta.bp12.platform.extention.getControlType
 import com.lenta.bp12.platform.extention.getGoodKind
 import com.lenta.bp12.platform.extention.isWholesaleType
 import com.lenta.bp12.platform.navigation.IScreenNavigator
@@ -127,7 +128,7 @@ class GoodInfoOpenViewModel : CoreViewModel() {
         it?.toDoubleOrNull() ?: 0.0
     }
 
-    val quantityFieldEnabled by lazy {
+    val quantityFieldEnabled by unsafeLazy {
         screenStatus.map { status ->
             when (status) {
                 ScreenStatus.COMMON, ScreenStatus.ALCOHOL, ScreenStatus.PART -> true
@@ -140,13 +141,13 @@ class GoodInfoOpenViewModel : CoreViewModel() {
     Количество товара итого
      */
 
-    val totalTitle by lazy {
+    val totalTitle by unsafeLazy {
         good.map { good ->
             resource.totalWithConvertingInfo(good?.getConvertingInfo().orEmpty())
         }
     }
 
-    private val totalQuantity by lazy {
+    private val totalQuantity by unsafeLazy {
         good.combineLatest(quantity).map {
             it?.let {
                 val (good, entered) = it
@@ -155,9 +156,18 @@ class GoodInfoOpenViewModel : CoreViewModel() {
         }
     }
 
-    val totalWithUnits by lazy {
+    val totalWithUnits by unsafeLazy {
         totalQuantity.map { quantity ->
-            "${quantity.dropZeros()} ${good.value?.commonUnits?.name}"
+            good.value?.let {
+                buildString {
+                    append(quantity.dropZeros())
+                    if (isPlannedQuantityMoreThanZero) {
+                        append(" $FROM_STRING ${it.planQuantity.dropZeros()}")
+                    }
+                    append(" ")
+                    append(it.commonUnits.name)
+                }
+            }
         }
     }
 
@@ -165,15 +175,37 @@ class GoodInfoOpenViewModel : CoreViewModel() {
     Количество товара по корзинам
      */
 
-    val basketTitle by lazy {
+    val basketTitle by unsafeLazy {
         MutableLiveData(resource.byBasket())
     }
 
     private val basketQuantity by lazy {
-        MutableLiveData(0.0)
+        good.combineLatest(quantity).map {
+            it?.let {
+                val good = it.first
+                val enteredQuantity = it.second
+
+                manager.getBasket(good.provider.code)?.getQuantityOfGood(good)?.sumWith(enteredQuantity)
+                        ?: enteredQuantity
+            }
+        }
     }
 
-    val basketQuantityWithUnits by lazy {
+    val basketNumber by unsafeLazy {
+        task.map {
+            it?.let { task ->
+                good.map {
+                    it?.let { good ->
+                        manager.getBasket(good.provider.code)?.let { basket ->
+                            "${basket.index + 1}"
+                        } ?: "${task.baskets.size + 1}"
+                    }
+                }
+            }
+        }
+    }
+
+    val basketQuantityWithUnits by unsafeLazy {
         good.combineLatest(basketQuantity).map {
             it?.let {
                 val (good, quantity) = it
@@ -241,6 +273,20 @@ class GoodInfoOpenViewModel : CoreViewModel() {
             ScreenStatus.ALCOHOL, ScreenStatus.PART -> true
             else -> false
         }
+    }
+
+    /**
+     * Плановое количество
+     * */
+
+    private val plannedQuantity by unsafeLazy {
+        good.value?.planQuantity ?: 0.0
+    }
+
+    private val isPlannedQuantityMoreThanZero by unsafeLazy {
+        good.value?.planQuantity?.let {
+            it > 0
+        } ?: false
     }
 
     /**
@@ -324,15 +370,17 @@ class GoodInfoOpenViewModel : CoreViewModel() {
 
     fun onScanResult(number: String) {
         good.value?.let { good ->
-            if (applyEnabled.value == true || (good.kind == GoodKind.EXCISE && isExciseNumber(number))) {
-                if (!thereWasRollback) {
-                    saveChanges()
-                } else {
-                    thereWasRollback = false
-                }
+            launchUITryCatch {
+                if (applyEnabled.value == true || (good.kind == GoodKind.EXCISE && isExciseNumber(number))) {
+                    if (!thereWasRollback) {
+                        saveChanges()
+                    } else {
+                        thereWasRollback = false
+                    }
 
-                manager.clearSearchFromListParams()
-                checkSearchNumber(number)
+                    manager.clearSearchFromListParams()
+                    checkSearchNumber(number)
+                }
             }
         }
     }
@@ -458,7 +506,8 @@ class GoodInfoOpenViewModel : CoreViewModel() {
             goodInfoNetRequest(GoodInfoParams(
                     tkNumber = sessionInfo.market.orEmpty(),
                     material = material,
-                    taskType = task.value?.type?.code.orEmpty()
+                    taskType = task.value?.type?.code.orEmpty(),
+                    mode = ScanInfoMode.MARK.mode.toString()
             )).also {
                 navigator.hideProgress()
             }.either(::handleFailure) { result ->
@@ -508,11 +557,13 @@ class GoodInfoOpenViewModel : CoreViewModel() {
                         section = materialInfo.section,
                         matrix = getMatrixType(materialInfo.matrix),
                         kind = getGoodKind(),
+                        control = getControlType(),
                         commonUnits = database.getUnitsByCode(materialInfo.commonUnitsCode),
                         innerUnits = database.getUnitsByCode(materialInfo.innerUnitsCode),
                         innerQuantity = materialInfo.innerQuantity.toDoubleOrNull() ?: 0.0,
                         provider = task.value?.provider ?: ProviderInfo(),
-                        producers = producers
+                        producers = producers.toMutableList(),
+                        volume = materialInfo.volume.toDoubleOrNull() ?: 0.0
                 )
             }
 
@@ -690,56 +741,62 @@ class GoodInfoOpenViewModel : CoreViewModel() {
         sourceProducers.value = producers
     }
 
-    private fun saveChanges() {
-        screenStatus.value?.let { type ->
-            when (type) {
-                ScreenStatus.COMMON -> addPosition()
-                ScreenStatus.MARK_150, ScreenStatus.MARK_68 -> addMark()
-                ScreenStatus.ALCOHOL, ScreenStatus.PART -> addPart()
-                ScreenStatus.BOX -> addBox()
-            }
-
+    private suspend fun saveChanges() {
+        screenStatus.value?.let { status ->
             good.value?.let { good ->
                 manager.saveGoodInTask(good)
                 isExistUnsavedData = false
             }
+
+            Logg.e { status.description }
+
+            when (status) {
+                ScreenStatus.COMMON -> addPosition()
+                ScreenStatus.MARK_150, ScreenStatus.MARK_68 -> addMark()
+                ScreenStatus.ALCOHOL, ScreenStatus.PART -> addPart()
+                ScreenStatus.BOX -> addBox()
+                else -> Unit
+            }
         }
     }
 
-    private fun addPosition() {
+    private suspend fun addPosition() {
         good.value?.let { changedGood ->
             changedGood.isCounted = true
+            val quantityValue = quantity.value ?: 0.0
             val position = Position(
-                    quantity = quantity.value ?: 0.0,
+                    quantity = quantityValue,
                     provider = changedGood.provider
             )
-            Logg.d { "--> add position = $position" }
+            position.materialNumber = changedGood.material
             changedGood.addPosition(position)
-
+            manager.addGoodToBasket(
+                    good = changedGood,
+                    provider = changedGood.provider,
+                    count = quantityValue,
+                    part = null)
             manager.updateCurrentGood(changedGood)
         }
     }
 
-    private fun addMark() {
+    private suspend fun addMark() {
         good.value?.let { changedGood ->
-            addEmptyPosition(changedGood)
-
             val mark = Mark(
                     number = lastSuccessSearchNumber,
                     isBadMark = scanInfoResult.value?.status == MarkStatus.BAD.code,
                     providerCode = changedGood.provider.code
             )
-            Logg.d { "--> add mark = $mark" }
-            changedGood.addMark(mark)
-
+            manager.addGoodToBasketWithMark(
+                    good = changedGood,
+                    mark = mark,
+                    provider = changedGood.provider)
             manager.updateCurrentGood(changedGood)
         }
     }
 
-    private fun addPart() {
+    private suspend fun addPart() {
         good.value?.let { changedGood ->
-            addEmptyPosition(changedGood)
-
+            val quantityValue = quantity.value ?: 0.0
             val part = Part(
                     number = lastSuccessSearchNumber,
                     material = changedGood.material,
@@ -747,17 +804,16 @@ class GoodInfoOpenViewModel : CoreViewModel() {
                     producerCode = getProducerCode(),
                     date = getDateFromString(date.value.orEmpty(), Constants.DATE_FORMAT_dd_mm_yyyy)
             )
-            part.quantity = quantity.value ?: 0.0
-            Logg.d { "--> add part = $part" }
-            changedGood.addPart(part)
-
-            manager.updateCurrentGood(changedGood)
+            manager.addGoodToBasket(
+                    good = changedGood,
+                    part = part,
+                    provider = changedGood.provider,
+                    count = quantityValue)
         }
     }
 
-    private fun addBox() {
+    private suspend fun addBox() {
         good.value?.let { changedGood ->
-            addEmptyPosition(changedGood)
 
             scanInfoResult.value?.marks?.let { marks ->
                 marks.forEach { mark ->
@@ -767,22 +823,12 @@ class GoodInfoOpenViewModel : CoreViewModel() {
                             providerCode = changedGood.provider.code
                     )
                     Logg.d { "--> add mark from box = $markFromBox" }
-                    changedGood.addMark(markFromBox)
+                    manager.addGoodToBasketWithMark(changedGood, markFromBox, changedGood.provider)
                 }
             }
 
             manager.updateCurrentGood(changedGood)
         }
-    }
-
-    private fun addEmptyPosition(changedGood: GoodOpen) {
-        changedGood.isCounted = true
-        val position = Position(
-                quantity = 0.0,
-                provider = changedGood.provider
-        )
-        Logg.d { "--> add position = $position" }
-        changedGood.addPosition(position)
     }
 
     /**
@@ -829,6 +875,15 @@ class GoodInfoOpenViewModel : CoreViewModel() {
     }
 
     fun onClickApply() {
+        if (isPlannedQuantityMoreThanZero) {
+                quantity.value?.let{ quantityValue ->
+                    if (quantityValue > plannedQuantity) {
+                        navigator.showQuantityMoreThenPlannedScreen()
+                        return
+                    }
+                }
+        }
+
         when (screenStatus.value) {
             ScreenStatus.ALCOHOL, ScreenStatus.PART -> {
                 launchUITryCatch {
@@ -848,15 +903,29 @@ class GoodInfoOpenViewModel : CoreViewModel() {
     }
 
     private fun saveChangesAndExit() {
-        saveChanges()
-        navigator.goBack()
+        launchUITryCatch {
+            navigator.showProgressLoadingData()
+            saveChanges()
+            navigator.hideProgress()
+            navigator.goBack()
+            navigator.openBasketOpenGoodListScreen()
+            manager.isBasketsNeedsToBeClosed = false
+        }
     }
 
     fun onClickClose() {
+        navigator.showCloseBasketDialog(
+                yesCallback = {
+                    manager.isBasketsNeedsToBeClosed = true
+                    saveChangesAndExit()
+                })
         // Сохранить все изменения
         // Закрыть корзину
         // Выйти на экран товаров корзины
+    }
 
+    companion object {
+        private const val FROM_STRING = "из"
     }
 
 }

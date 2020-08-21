@@ -58,4 +58,56 @@ data class TaskOpen(
         return "${type?.code}-$number // $formattedName"
     }
 
+    fun removeEmptyGoods() {
+        goods.removeAll(goods.filter { it.getTotalQuantity() == 0.0 })
+    }
+
+    fun removeEmptyBaskets() {
+        baskets.removeAll(baskets.filter { it.getGoodList().isEmpty() })
+    }
+
+    fun updateBasket(basket: Basket) {
+        val oldBasketIndex = baskets.indexOfFirst { it.index == basket.index }
+        baskets[oldBasketIndex] = basket
+    }
+
+    fun removeBaskets(basketList: MutableList<Basket>) {
+        //Пройдемся по всем корзинам что нужно удалить
+        basketList.forEach { basket ->
+            val basketIndex = basket.index
+            //Получим список товаров корзины
+            val goodsToDeleteFromBasket = basket.getGoodList()
+            //Найдем их в общем списке
+            goodsToDeleteFromBasket.forEach { goodToDeleteFromBasket ->
+                val goodToDeleteFromTask = goods.firstOrNull { goodFromTask ->
+                    goodToDeleteFromBasket.material == goodFromTask.material
+                }
+                goodToDeleteFromTask?.let { good ->
+                    //Удалим у этого товара марки и партии с номером корзины
+                    good.removeMarksByBasketIndex(basketIndex)
+                    good.removePartsByBasketNumber(basketIndex)
+                    good.removePositionsByBasketIndex(basketIndex)
+                    //Найдем у этого товара позиции с подходящим количеством
+                    val positionThatFits = good.positions.firstOrNull { positionFromTask ->
+                        goodToDeleteFromBasket.positions.any { it.quantity >= positionFromTask.quantity}
+                    }
+
+                    positionThatFits?.let {
+                        //Получим количество позиций этого товара
+                        val quantityOfPositionFromTask = it.quantity
+                        //Получим количество удаляемого товара из корзины
+                        val quantityToMinus = basket.goods[goodToDeleteFromBasket] ?: 0.0
+                        //Отнимем первое от второго и вернем в товар
+                        val newQuantity = quantityOfPositionFromTask.minus(quantityToMinus)
+                        it.quantity = newQuantity
+                        val index = good.positions.indexOf(it)
+                        good.positions.set(index, it)
+                    }
+                }
+                baskets.remove(basket)
+            }
+            removeEmptyGoods()
+        }
+    }
+
 }

@@ -23,7 +23,7 @@ enum class GoodKind {
 }
 
 enum class ControlType(val code: String, val description: String) {
-    UNKNOWN("UNKNOWN", "Неизвестный"),
+    UNKNOWN("", "Неизвестный"),
     COMMON("N", "Обычный"),
     ALCOHOL("A", "Алкоголь"),
     MARK("M", "Маркированный");

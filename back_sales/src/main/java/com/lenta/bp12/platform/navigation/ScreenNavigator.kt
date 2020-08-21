@@ -3,7 +3,8 @@ package com.lenta.bp12.platform.navigation
 import android.content.Context
 import com.lenta.bp12.R
 import com.lenta.bp12.features.auth.AuthFragment
-import com.lenta.bp12.features.basket.basket_good_list.BasketGoodListFragment
+import com.lenta.bp12.features.basket.basket_good_list.BasketCreateGoodListFragment
+import com.lenta.bp12.features.basket.basket_good_list.BasketOpenGoodListFragment
 import com.lenta.bp12.features.basket.basket_properties.BasketPropertiesFragment
 import com.lenta.bp12.features.create_task.add_provider.AddProviderFragment
 import com.lenta.bp12.features.create_task.good_details.GoodDetailsCreateFragment
@@ -90,9 +91,15 @@ class ScreenNavigator @Inject constructor(
         }
     }
 
-    override fun openBasketGoodListScreen() {
+    override fun openBasketCreateGoodListScreen() {
         runOrPostpone {
-            getFragmentStack()?.push(BasketGoodListFragment())
+            getFragmentStack()?.push(BasketCreateGoodListFragment())
+        }
+    }
+
+    override fun openBasketOpenGoodListScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(BasketOpenGoodListFragment())
         }
     }
 
@@ -490,6 +497,16 @@ class ScreenNavigator @Inject constructor(
         }
     }
 
+    override fun showQuantityMoreThenPlannedScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    pageNumber = "87",
+                    message = context.getString(R.string.quantity_more_than_planned),
+                    iconRes = R.drawable.ic_warning_red_80dp
+            ))
+        }
+    }
+
 }
 
 interface IScreenNavigator : ICoreNavigator {
@@ -502,7 +519,8 @@ interface IScreenNavigator : ICoreNavigator {
     fun openMainMenuScreen()
 
     fun openTaskCompositionScreen()
-    fun openBasketGoodListScreen()
+    fun openBasketCreateGoodListScreen()
+    fun openBasketOpenGoodListScreen()
     fun openGoodDetailsCreateScreen()
     fun openGoodDetailsOpenScreen()
     fun openSaveDataScreen()
@@ -549,4 +567,5 @@ interface IScreenNavigator : ICoreNavigator {
     fun showSomeBasketsNotClosedCantSaveScreen()
     fun showSomeBasketsAlreadyPrinted(yesCallback: () -> Unit)
     fun showPalletListPrintedScreen(nextCallback: () -> Unit)
+    fun showQuantityMoreThenPlannedScreen()
 }

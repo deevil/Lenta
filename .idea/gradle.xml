@@ -14,8 +14,6 @@
             <option value="$PROJECT_DIR$/Shared" />
             <option value="$PROJECT_DIR$/back_sales" />
             <option value="$PROJECT_DIR$/hhive" />
-            <option value="$PROJECT_DIR$/movement" />
-            <option value="$PROJECT_DIR$/planogram" />
           </set>
         </option>
         <option name="resolveModulePerSourceSet" value="false" />

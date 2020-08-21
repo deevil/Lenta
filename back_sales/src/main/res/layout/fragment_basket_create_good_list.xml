@@ -2,13 +2,13 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context=".features.basket.basket_good_list.BasketGoodListFragment">
+    tools:context=".features.basket.basket_good_list.BasketCreateGoodListFragment">
 
     <data>
 
         <variable
             name="vm"
-            type="com.lenta.bp12.features.basket.basket_good_list.BasketGoodListViewModel" />
+            type="com.lenta.bp12.features.basket.basket_good_list.BasketCreateGoodListViewModel" />
 
         <variable
             name="rvConfig"

@@ -194,9 +194,7 @@ class GoodInfoCreateViewModel : CoreViewModel() {
                 val isProviderSelected = it.second
 
                 if (isProviderSelected) {
-                    getBasket()?.let { basket ->
-                        good.getQuantityByProvider(basket.provider?.code).sumWith(enteredQuantity)
-                    } ?: enteredQuantity
+                    getBasket()?.getQuantityOfGood(good)?.sumWith(enteredQuantity) ?: enteredQuantity
                 } else 0.0
             }
         }
@@ -800,7 +798,6 @@ class GoodInfoCreateViewModel : CoreViewModel() {
 
     private suspend fun addMark() {
         good.value?.let { changedGood ->
-            addEmptyPosition(changedGood)
             val mark = Mark(
                     number = lastSuccessSearchNumber,
                     isBadMark = scanInfoResult.value?.status == MarkStatus.BAD.code,
@@ -812,7 +809,6 @@ class GoodInfoCreateViewModel : CoreViewModel() {
 
     private suspend fun addPart() {
         good.value?.let { changedGood ->
-            addEmptyPosition(changedGood)
             val quantityValue = quantity.value ?: 0.0
             val part = Part(
                     number = lastSuccessSearchNumber,
@@ -831,10 +827,8 @@ class GoodInfoCreateViewModel : CoreViewModel() {
 
     private suspend fun addBox() {
         good.value?.let { changedGood ->
-            addEmptyPosition(changedGood)
 
             scanInfoResult.value?.marks?.let { marks ->
-                val quantity = marks.size
                 marks.forEach { mark ->
                     val markFromBox = Mark(
                             number = mark.number,
@@ -842,7 +836,6 @@ class GoodInfoCreateViewModel : CoreViewModel() {
                             providerCode = getProviderCode()
                     )
                     Logg.d { "--> add mark from box = $markFromBox" }
-                    changedGood.addMark(markFromBox)
                     manager.addGoodToBasketWithMark(changedGood, markFromBox, getProvider())
                 }
             }
@@ -851,14 +844,6 @@ class GoodInfoCreateViewModel : CoreViewModel() {
         }
     }
 
-    private fun addEmptyPosition(changedGood: GoodCreate) {
-        val position = Position(
-                quantity = 0.0,
-                provider = getProvider()
-        )
-        Logg.d { "--> add position = $position" }
-        changedGood.addPosition(position)
-    }
 
     private fun getBasket(): Basket? {
         return manager.getBasket(getProviderCode())
@@ -931,15 +916,16 @@ class GoodInfoCreateViewModel : CoreViewModel() {
             saveChanges()
             navigator.hideProgress()
             navigator.goBack()
-            navigator.openBasketGoodListScreen()
+            navigator.openBasketCreateGoodListScreen()
             manager.isBasketsNeedsToBeClosed = false
         }
     }
 
     fun onClickClose() {
-        navigator.showCloseBasketDialog(yesCallback = {
-            manager.isBasketsNeedsToBeClosed = true
-            saveChangesAndExit()
-        })
+        navigator.showCloseBasketDialog(
+                yesCallback = {
+                    manager.isBasketsNeedsToBeClosed = true
+                    saveChangesAndExit()
+                })
     }
 }
