@@ -25,3 +25,10 @@ enum class Tabs(val page: Int) {
     PROCESSING(0),
     PROCESSED(1)
 }
+
+enum class SearchStatus {
+    DUALISM,
+    FOUND_INGREDIENT,
+    FOUND_ORDER,
+    NOT_FOUND
+}

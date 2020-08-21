@@ -7,7 +7,7 @@
 
         <variable
             name="provider"
-            type="com.lenta.bp14.features.work_list.good_info.ItemProviderUi" />
+            type="com.lenta.bp14.models.ui.ItemProviderUi" />
 
     </data>
 

@@ -209,5 +209,6 @@
     <string name="stickers">Этикетки</string>
     <string name="marking_goods">Маркированный товар</string>
     <string name="exceptions_shelf_life">Исключение по СГ</string>
+    <string name="data_retrieval_error">Ошибка получения данных</string>
     <string name="open">Открыть</string>
 </resources>

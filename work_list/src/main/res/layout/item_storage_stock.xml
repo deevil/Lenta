@@ -6,7 +6,7 @@
 
         <variable
             name="stock"
-            type="com.lenta.bp14.features.work_list.good_info.ItemStockUi" />
+            type="com.lenta.bp14.models.ui.ItemStockUi" />
 
     </data>
 

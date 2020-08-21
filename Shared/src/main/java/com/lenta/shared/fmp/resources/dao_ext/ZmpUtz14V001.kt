@@ -152,6 +152,10 @@ fun ZmpUtz14V001.getGrzGrundMark(): String? {
     return getParams("GRZ_GRUND_MARK").firstOrNull()
 }
 
+fun ZmpUtz14V001.getGrzAlternMeins(): String? {
+    return getParams("GRZ_ALTERN_MEINS").firstOrNull()
+}
+
 fun ZmpUtz14V001.getBKSBasketVolume(): Double? {
     return getParams("BKS_PALLET_VOL_KUBM").firstOrNull()?.toDoubleOrNull()
 }

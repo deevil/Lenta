@@ -4,9 +4,11 @@ import android.content.Context
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.lenta.bp9.R
-import com.lenta.bp9.model.processing.ProcessMarkingProductService
+import com.lenta.bp9.model.processing.*
 import com.lenta.bp9.model.task.IReceivingTaskManager
+import com.lenta.bp9.model.task.MarkingGoodsRegime
 import com.lenta.bp9.model.task.TaskProductInfo
+import com.lenta.bp9.model.task.getMarkingGoodsRegime
 import com.lenta.bp9.platform.navigation.IScreenNavigator
 import com.lenta.bp9.repos.IDataBaseRepo
 import com.lenta.bp9.requests.network.RejectNetRequest
@@ -34,31 +36,32 @@ class MarkingProductFailureViewModel : CoreViewModel() {
     lateinit var processMarkingProductService: ProcessMarkingProductService
 
     @Inject
+    lateinit var processMarkingBoxProductService: ProcessMarkingBoxProductService
+
+    @Inject
     lateinit var dataBase: IDataBaseRepo
 
     @Inject
     lateinit var context: Context
 
+    private val taskRepository by lazy { taskManager.getReceivingTask()?.taskRepository }
     val productInfo: MutableLiveData<TaskProductInfo> = MutableLiveData()
 
-    val tvMessage: MutableLiveData<String> by lazy {
+    private val processMarkingProduct by lazy {
+        productInfo.value
+                ?.let {
+                    when(getMarkingGoodsRegime(taskManager, it)) {
+                        MarkingGoodsRegime.UomStWithoutBoxes -> processMarkingProductService.newProcessMarkingProductService(it)
+                        MarkingGoodsRegime.UomStWithBoxes -> processMarkingBoxProductService.newProcessMarkingProductService(it)
+                        else -> null
+                    }
+                }
+    }
 
+    val tvMessage: MutableLiveData<String> by lazy {
         val confirmedByScanning =
                 productInfo.value
-                        ?.let { product ->
-                            val countProcessedBlocks =
-                                    taskManager
-                                            .getReceivingTask()
-                                            ?.taskRepository
-                                            ?.getBlocksDiscrepancies()
-                                            ?.findBlocksDiscrepanciesOfProduct(product)
-                                            ?.filter { block ->
-                                                block.isScan
-                                            }
-                                            ?.size
-                                            .toString()
-                            processMarkingProductService.getCountAttachmentInBlock(countProcessedBlocks)
-                        }
+                        ?.let { processMarkingProduct?.getConfirmedByScanning() }
                         ?: 0.0
 
         val productOrigQuantity =
@@ -85,20 +88,16 @@ class MarkingProductFailureViewModel : CoreViewModel() {
         MutableLiveData(
                 productInfo.value
                         ?.let {
-                            (taskManager
-                                    .getReceivingTask()
-                                    ?.taskRepository
-                                    ?.getBlocksDiscrepancies()
-                                    ?.findBlocksDiscrepanciesOfProduct(it)
-                                    ?.filter { blockDiscrepancies ->
-                                        blockDiscrepancies.isScan
-                                    }?.size
+                            (taskRepository
+                                    ?.run {
+                                        getBlocksDiscrepancies()
+                                                .findBlocksDiscrepanciesOfProduct(it)
+                                                .count { blockDiscrepancies -> blockDiscrepancies.isScan }
+                                    }
                                     ?: 0
                                     ) > 0
                         }
-                        .orIfNull {
-                            false
-                        }
+                        .orIfNull { false }
         )
     }
 
@@ -109,7 +108,7 @@ class MarkingProductFailureViewModel : CoreViewModel() {
         launchUITryCatch {
             productInfo.value
                     ?.let {
-                        if (processMarkingProductService.newProcessMarkingProductService(it) == null) {
+                        if (processMarkingProduct == null) {
                             screenNavigator.goBackAndShowAlertWrongProductType()
                             return@launchUITryCatch
                         }
@@ -126,7 +125,7 @@ class MarkingProductFailureViewModel : CoreViewModel() {
     fun onClickCompleteRejection() {
         productInfo.value
                 ?.let { productInfo ->
-                    if (processMarkingProductService.newProcessMarkingProductService(productInfo) == null) {
+                    if (processMarkingProduct?.newProcessMarkingProductService(productInfo) == null) {
                         screenNavigator.openAlertWrongProductType()
                     } else {
                         val productOrigQuantity = productInfo.origQuantity.toDouble().toStringFormatted()
@@ -134,7 +133,7 @@ class MarkingProductFailureViewModel : CoreViewModel() {
                         screenNavigator.openCompleteRejectionOfMarkingGoodsDialog(
                                 nextCallbackFunc = {
                                     screenNavigator.goBack()
-                                    processMarkingProductService.denialOfFullProductAcceptance(paramGrzGrundMarkCode.value.orEmpty())
+                                    processMarkingProduct?.denialOfFullProductAcceptance(paramGrzGrundMarkCode.value.orEmpty())
                                 },
                                 title = "${productInfo.getMaterialLastSix()} ${productInfo.description}",
                                 productOrigQuantity = "$productOrigQuantity $unitName",
@@ -147,27 +146,16 @@ class MarkingProductFailureViewModel : CoreViewModel() {
     fun onClickPartialFailure() {
         productInfo.value
                 ?.let { productInfo ->
-                    if (processMarkingProductService.newProcessMarkingProductService(productInfo) == null) {
+                    if (processMarkingProduct?.newProcessMarkingProductService(productInfo) == null) {
                         screenNavigator.openAlertWrongProductType()
                     } else {
-                        val countProcessedBlocks =
-                                taskManager
-                                        .getReceivingTask()
-                                        ?.taskRepository
-                                        ?.getBlocksDiscrepancies()
-                                        ?.findBlocksDiscrepanciesOfProduct(productInfo)
-                                        ?.filter {
-                                            it.isScan
-                                        }
-                                        ?.size
-                                        .toString()
-                        val confirmedByScanning = processMarkingProductService.getCountAttachmentInBlock(countProcessedBlocks)
+                        val confirmedByScanning = processMarkingProduct?.getConfirmedByScanning() ?: 0.0
                         val notConfirmedByScanning = productInfo.origQuantity.toDouble() - confirmedByScanning
                         val unitName = productInfo.purchaseOrderUnits.name.toLowerCase(Locale.getDefault())
                         screenNavigator.openPartialRefusalOnMarkingGoodsDialog(
                                 nextCallbackFunc = {
                                     screenNavigator.goBack()
-                                    processMarkingProductService.refusalToAcceptPartlyByProduct(paramGrzGrundMarkCode.value.orEmpty())
+                                    processMarkingProduct?.refusalToAcceptPartlyByProduct(paramGrzGrundMarkCode.value.orEmpty())
                                 },
                                 title = "${productInfo.getMaterialLastSix()} ${productInfo.description}",
                                 confirmedByScanning = "${confirmedByScanning.toStringFormatted()} $unitName",
