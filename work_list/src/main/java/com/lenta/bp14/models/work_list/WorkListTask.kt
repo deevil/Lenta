@@ -23,12 +23,10 @@ import com.lenta.shared.platform.constants.Constants
 import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.extentions.*
 import com.lenta.shared.utilities.orIfNull
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.*
 import java.util.*
 import javax.inject.Inject
+import kotlin.coroutines.CoroutineContext
 
 @WorkListScope
 class WorkListTask @Inject constructor(
@@ -37,7 +35,7 @@ class WorkListTask @Inject constructor(
         private val taskDescription: WorkListTaskDescription,
         private val filterableDelegate: IFilterable,
         private val gson: Gson
-) : IWorkListTask, StateFromToString, IFilterable by filterableDelegate {
+) : IWorkListTask, StateFromToString, CoroutineScope, IFilterable by filterableDelegate {
 
     private val checkResults by lazy {
         taskDescription.taskInfoResult?.checkResults?.toList() ?: emptyList()
@@ -46,6 +44,9 @@ class WorkListTask @Inject constructor(
     private val marks by lazy {
         taskDescription.taskInfoResult?.marks?.toList() ?: emptyList()
     }
+
+    private val job = SupervisorJob()
+    override val coroutineContext: CoroutineContext = Dispatchers.IO + job
 
     override var isLoadedTaskList = false
 
@@ -121,25 +122,27 @@ class WorkListTask @Inject constructor(
     }
 
     override fun addScanResult(scanResult: ScanResult) {
-        GlobalScope.launch(Dispatchers.IO) {
-            /**Ищем совпадение по списку*/
-            currentGood.value?.scanResults?.find { searchScanResult ->
-                searchScanResult == scanResult
-            }?.let {
-                /**Получение идекса дублирующегося элемента*/
-                val index = currentGood.value?.scanResults?.indexOf(scanResult) ?: 0
+        launch {
+            currentGood.value?.scanResults?.let { scanResultList ->
+                /**Ищем совпадение по списку*/
+                scanResultList.find { searchScanResult ->
+                    searchScanResult.findScanResultBy(scanResult)
+                }?.let {
+                    /**Получение идекса дублирующегося элемента*/
+                    val index = scanResultList.indexOf(scanResult)
 
-                /**Создание нового элемента, который заменит дублирующиеся, с увеличением количества*/
-                val replaceScanResult = ScanResult(
-                        quantity = it.quantity.plus(scanResult.quantity),
-                        commentCode = scanResult.commentCode,
-                        comment = scanResult.comment,
-                        expirationDate = scanResult.expirationDate,
-                        productionDate = scanResult.productionDate
-                )
-                /**Замена элемента*/
-                currentGood.value?.scanResults?.set(index, replaceScanResult)
-            }.orIfNull { currentGood.value?.scanResults?.add(scanResult) }
+                    /**Создание нового элемента, который заменит дублирующиеся, с увеличением количества*/
+                    val replaceScanResult = ScanResult(
+                            quantity = it.quantity.plus(scanResult.quantity),
+                            commentCode = scanResult.commentCode,
+                            comment = scanResult.comment,
+                            expirationDate = scanResult.expirationDate,
+                            productionDate = scanResult.productionDate
+                    )
+                    /**Замена элемента*/
+                    scanResultList.set(index, replaceScanResult)
+                }.orIfNull { scanResultList.add(scanResult) }
+            }
         }
     }
 
@@ -150,6 +153,7 @@ class WorkListTask @Inject constructor(
     override fun getDescription(): ITaskDescription {
         return taskDescription
     }
+
 
     fun deleteScanResultsByComments(comments: List<String>) {
         val good = currentGood.value!!
@@ -222,7 +226,6 @@ class WorkListTask @Inject constructor(
                 good.isProcessed = true
             }
         }
-
         goods.value = goodsList
     }
 
@@ -246,7 +249,6 @@ class WorkListTask @Inject constructor(
                 }
             }
         }
-
         goods.value = goodsList
     }
 
@@ -266,6 +268,14 @@ class WorkListTask @Inject constructor(
                 emptyList()
             }
         }
+    }
+
+    private fun ScanResult.findScanResultBy(scanResult: ScanResult): Boolean {
+        return this.markNumber == scanResult.markNumber &&
+                this.productionDate == scanResult.productionDate &&
+                this.expirationDate == scanResult.expirationDate &&
+                this.commentCode == scanResult.commentCode &&
+                this.comment == scanResult.comment
     }
 
     private fun filter(good: Good): Boolean {
