@@ -120,15 +120,15 @@ class DatabaseRepository @Inject constructor(
 
     override suspend fun isGoodCanBeAdded(goodInfo: GoodInfoResult, taskType: String): Boolean {
         return withContext(Dispatchers.IO) {
-            if (goodInfo.materialInfo.isVet.isSapTrue()) {
+            if (goodInfo.materialInfo?.isVet.isSapTrue()) {
                 return@withContext false
             }
 
             // Параметры товара
             val controlType = goodInfo.getControlType().code
-            val goodType = goodInfo.materialInfo.goodType
-            val goodGroup = goodInfo.materialInfo.goodGroup
-            val purchaseGroup = goodInfo.materialInfo.purchaseGroup
+            val goodType = goodInfo.materialInfo?.goodType
+            val goodGroup = goodInfo.materialInfo?.goodGroup
+            val purchaseGroup = goodInfo.materialInfo?.purchaseGroup
 
             // Таблицы с параметрами
             val allowedParams = allowed.getAllParams(taskType)
@@ -138,8 +138,8 @@ class DatabaseRepository @Inject constructor(
             val allowedList = allowedParams
                     .filter { it.controlType == controlType }
                     .filter { it.goodType == goodType }
-                    .filter { it.goodGroup == if (goodGroup.isNotEmpty()) goodGroup else it.goodGroup }
-                    .filter { it.purchaseGroup == if (purchaseGroup.isNotEmpty()) purchaseGroup else it.purchaseGroup }
+                    .filter { it.goodGroup == if (goodGroup.orEmpty().isNotEmpty()) goodGroup else it.goodGroup }
+                    .filter { it.purchaseGroup == if (purchaseGroup.orEmpty().isNotEmpty()) purchaseGroup else it.purchaseGroup }
 
             if (allowedList.isNotEmpty()) {
                 return@withContext true
@@ -149,8 +149,8 @@ class DatabaseRepository @Inject constructor(
             val forbiddenList = forbiddenParams
                     .filter { it.controlType == controlType }
                     .filter { it.goodType == goodType }
-                    .filter { it.goodGroup == if (goodGroup.isNotEmpty()) goodGroup else it.goodGroup }
-                    .filter { it.purchaseGroup == if (purchaseGroup.isNotEmpty()) purchaseGroup else it.purchaseGroup }
+                    .filter { it.goodGroup == if (goodGroup.orEmpty().isNotEmpty()) goodGroup else it.goodGroup }
+                    .filter { it.purchaseGroup == if (purchaseGroup.orEmpty().isNotEmpty()) purchaseGroup else it.purchaseGroup }
 
             if (forbiddenList.isNotEmpty()) {
                 return@withContext false

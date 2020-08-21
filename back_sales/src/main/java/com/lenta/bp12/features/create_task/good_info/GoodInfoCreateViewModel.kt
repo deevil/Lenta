@@ -13,6 +13,8 @@ import com.lenta.bp12.platform.extention.getGoodKind
 import com.lenta.bp12.platform.extention.isWholesaleType
 import com.lenta.bp12.platform.navigation.IScreenNavigator
 import com.lenta.bp12.platform.resource.IResourceManager
+import com.lenta.bp12.platform.utils.GOOD_NOT_FOUND_ERROR_MSG
+import com.lenta.bp12.platform.utils.TASK_NOT_FOUND_ERROR_MSG
 import com.lenta.bp12.repository.IDatabaseRepository
 import com.lenta.bp12.request.*
 import com.lenta.bp12.request.pojo.ProducerInfo
@@ -388,7 +390,7 @@ class GoodInfoCreateViewModel : CoreViewModel() {
     fun onScanResult(number: String) {
         good.value?.let { good ->
             launchUITryCatch {
-                if (applyEnabled.value == true || (good.kind == GoodKind.EXCISE && isExciseNumber(number))) {
+                if (isApplyEnabledOrIsGoodExcise(good, number)) {
                     if (!thereWasRollback) {
                         saveChanges()
                     } else {
@@ -401,6 +403,12 @@ class GoodInfoCreateViewModel : CoreViewModel() {
             }
         }
     }
+    private fun isApplyEnabledOrIsGoodExcise(good: GoodCreate, number: String) =
+            isApplyEnabled() or isGoodExcise(good, number)
+
+    private fun isApplyEnabled() = applyEnabled.value == true
+    private fun isGoodExcise(good: GoodCreate, number: String) =
+            good.kind == GoodKind.EXCISE && isExciseNumber(number)
 
     private fun isExciseNumber(number: String): Boolean {
         return when (number.length) {
@@ -543,22 +551,25 @@ class GoodInfoCreateViewModel : CoreViewModel() {
                     val taskType = task.type
                     Logg.e { "$taskType" }
                     good.value = GoodCreate(
-                            ean = eanInfo.ean,
-                            eans = database.getEanListByMaterialUnits(materialInfo.material, materialInfo.commonUnitsCode),
-                            material = materialInfo.material,
-                            name = materialInfo.name,
+                            ean = eanInfo?.ean.orEmpty(),
+                            eans = database.getEanListByMaterialUnits(materialInfo?.material.orEmpty(), materialInfo?.commonUnitsCode.orEmpty()),
+                            material = materialInfo?.material.orEmpty(),
+                            name = materialInfo?.name.orEmpty(),
                             kind = getGoodKind(),
-                            type = materialInfo.goodType.takeIf { taskType.isDivByGoodType }.orEmpty(),
+                            type = materialInfo?.goodType.takeIf { taskType.isDivByGoodType }.orEmpty(),
                             control = getControlType(),
-                            section = materialInfo.section.takeIf { taskType.isDivBySection }.orEmpty(),
-                            matrix = getMatrixType(materialInfo.matrix),
-                            commonUnits = database.getUnitsByCode(materialInfo.commonUnitsCode),
-                            innerUnits = database.getUnitsByCode(materialInfo.innerUnitsCode),
-                            innerQuantity = materialInfo.innerQuantity.toDoubleOrNull() ?: 1.0,
-                            providers = providers.toMutableList().takeIf { taskType.isDivByProvider }.orEmpty().toMutableList(),
-                            producers = producers.toMutableList(),
-                            volume = materialInfo.volume.toDoubleOrNull() ?: 0.0
+                            section = materialInfo?.section.takeIf { taskType.isDivBySection }.orEmpty(),
+                            matrix = getMatrixType(materialInfo?.matrix.orEmpty()),
+                            commonUnits = database.getUnitsByCode(materialInfo?.commonUnitsCode.orEmpty()),
+                            innerUnits = database.getUnitsByCode(materialInfo?.innerUnitsCode.orEmpty()),
+                            innerQuantity = materialInfo?.innerQuantity?.toDoubleOrNull() ?: 1.0,
+                            providers = providers?.toMutableList().takeIf { taskType.isDivByProvider }.orEmpty().toMutableList(),
+                            producers = producers?.toMutableList().orEmpty().toMutableList(),
+                            volume = materialInfo?.volume?.toDoubleOrNull() ?: 0.0
                     )
+                }.orIfNull {
+                    Logg.e { "task null" }
+                    navigator.showInternalError(TASK_NOT_FOUND_ERROR_MSG)
                 }
             }
 
@@ -575,6 +586,9 @@ class GoodInfoCreateViewModel : CoreViewModel() {
                 }
 
                 Logg.d { "--> added good: $good" }
+            }.orIfNull {
+                Logg.e { "good null" }
+                navigator.showInternalError(GOOD_NOT_FOUND_ERROR_MSG)
             }
 
             manager.clearSearchFromListParams()
@@ -738,7 +752,7 @@ class GoodInfoCreateViewModel : CoreViewModel() {
         if (isProducerSelected.value == true) {
             producers.value?.let { producers ->
                 producerPosition.value?.let { position ->
-                    producerCode = producers[position].code
+                    producerCode = producers.getOrNull(position)?.code.orEmpty()
                 }
             }
         }
@@ -751,7 +765,7 @@ class GoodInfoCreateViewModel : CoreViewModel() {
         if (isProviderSelected.value == true) {
             providers.value?.let { providers ->
                 providerPosition.value?.let { position ->
-                    provider = providers.getOrNull(position).orIfNull { ProviderInfo() }
+                    provider = providers.getOrNull(position).orIfNull { ProviderInfo.getEmptyProvider() }
                 }
             }
         }
@@ -772,6 +786,9 @@ class GoodInfoCreateViewModel : CoreViewModel() {
             good.value?.let { good ->
                 manager.saveGoodInTask(good)
                 isExistUnsavedData = false
+            }.orIfNull {
+                Logg.e { "good null" }
+                navigator.showInternalError(GOOD_NOT_FOUND_ERROR_MSG)
             }
 
             when (status) {
@@ -793,8 +810,14 @@ class GoodInfoCreateViewModel : CoreViewModel() {
             )
             position.materialNumber = changedGood.material
             changedGood.addPosition(position)
-            manager.addGoodToBasket(changedGood, getProvider(), quantityValue)
+            manager.addGoodToBasket(
+                    good = changedGood,
+                    provider = getProvider(),
+                    count = quantityValue)
             manager.updateCurrentGood(changedGood)
+        }.orIfNull {
+            Logg.e { "good null" }
+            navigator.showInternalError(GOOD_NOT_FOUND_ERROR_MSG)
         }
     }
 
@@ -807,6 +830,9 @@ class GoodInfoCreateViewModel : CoreViewModel() {
                     providerCode = getProviderCode()
             )
             manager.addGoodToBasketWithMark(changedGood, mark, getProvider())
+        }.orIfNull {
+            Logg.e { "good null" }
+            navigator.showInternalError(GOOD_NOT_FOUND_ERROR_MSG)
         }
     }
 
@@ -821,11 +847,14 @@ class GoodInfoCreateViewModel : CoreViewModel() {
                     producerCode = getProducerCode(),
                     date = getDateFromString(date.value.orEmpty(), Constants.DATE_FORMAT_dd_mm_yyyy)
             )
-            manager.addGoodToBasketWithPart(
+            manager.addGoodToBasket(
                     good = changedGood,
                     part = part,
                     provider = getProvider(),
                     count = quantityValue)
+        }.orIfNull {
+            Logg.e { "good null" }
+            navigator.showInternalError(GOOD_NOT_FOUND_ERROR_MSG)
         }
     }
 
@@ -834,7 +863,6 @@ class GoodInfoCreateViewModel : CoreViewModel() {
             addEmptyPosition(changedGood)
 
             scanInfoResult.value?.marks?.let { marks ->
-                val quantity = marks.size
                 marks.forEach { mark ->
                     val markFromBox = Mark(
                             number = mark.number,
@@ -848,6 +876,9 @@ class GoodInfoCreateViewModel : CoreViewModel() {
             }
 
             manager.updateCurrentGood(changedGood)
+        }.orIfNull {
+            Logg.e { "good null" }
+            navigator.showInternalError(GOOD_NOT_FOUND_ERROR_MSG)
         }
     }
 

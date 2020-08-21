@@ -3,6 +3,8 @@ package com.lenta.bp12.model.pojo.create_task
 import com.lenta.bp12.model.ControlType
 import com.lenta.bp12.model.pojo.ReturnReason
 import com.lenta.bp12.model.pojo.TaskType
+import com.lenta.bp12.platform.extention.deleteGood
+import com.lenta.bp12.platform.extention.getGoodList
 
 data class TaskCreate(
         val name: String,

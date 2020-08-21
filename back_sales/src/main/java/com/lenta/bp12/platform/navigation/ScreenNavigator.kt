@@ -23,6 +23,7 @@ import com.lenta.bp12.features.open_task.task_search.TaskSearchFragment
 import com.lenta.bp12.features.save_data.SaveDataFragment
 import com.lenta.bp12.features.select_market.SelectMarketFragment
 import com.lenta.shared.account.IAuthenticator
+import com.lenta.shared.exception.Failure
 import com.lenta.shared.features.alert.AlertFragment
 import com.lenta.shared.platform.activity.ForegroundActivityProvider
 import com.lenta.shared.platform.navigation.CustomAnimation
@@ -490,6 +491,10 @@ class ScreenNavigator @Inject constructor(
         }
     }
 
+    override fun showInternalError(cause: String) {
+        openAlertScreen(Failure.MessageFailure("Внутренняя ошибка программы: $cause", R.drawable.ic_warning_red_80dp))
+    }
+
 }
 
 interface IScreenNavigator : ICoreNavigator {
@@ -549,4 +554,6 @@ interface IScreenNavigator : ICoreNavigator {
     fun showSomeBasketsNotClosedCantSaveScreen()
     fun showSomeBasketsAlreadyPrinted(yesCallback: () -> Unit)
     fun showPalletListPrintedScreen(nextCallback: () -> Unit)
+
+    fun showInternalError(cause: String)
 }

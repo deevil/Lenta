@@ -2,14 +2,14 @@ package com.lenta.bp12.request.pojo.print_pallet_list
 
 import com.google.gson.annotations.SerializedName
 
-data class PrintPalletListBasket(
+data class PrintPalletListParamsBasket(
         /** Номер корзины */
         @SerializedName("BASKET_NUM")
-        var number: String,
+        val number: String?,
         /** Наименование */
         @SerializedName("BASKET_NAME")
-        var description: String,
+        val description: String?,
         /** Номер секции */
         @SerializedName("ABTNR")
-        var section: String
+        val section: String?
 )

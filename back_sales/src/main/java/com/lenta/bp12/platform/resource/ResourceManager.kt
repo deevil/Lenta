@@ -10,6 +10,8 @@ class ResourceManager @Inject constructor(
         val context: Context
 ) : IResourceManager {
 
+    override val deviceIp: String by lazy { context.getDeviceIp() }
+
     override fun tk(number: String): String = context.getString(R.string.tk_number, number)
 
     override fun backSalesFromDate(date: String): String = context.getString(R.string.back_sales_from_date, date)
@@ -41,11 +43,13 @@ class ResourceManager @Inject constructor(
     override fun goodList(): String = context.getString(R.string.good_list)
 
     override fun taskContent(): String = context.getString(R.string.task_content)
-    override fun deviceIp(): String = context.getDeviceIp()
+
 
 }
 
 interface IResourceManager {
+
+    val deviceIp: String
 
     fun tk(number: String): String
     fun backSalesFromDate(date: String): String
@@ -63,6 +67,5 @@ interface IResourceManager {
     fun basket(description: String): String
     fun goodList(): String
     fun taskContent(): String
-    fun deviceIp(): String
 
 }

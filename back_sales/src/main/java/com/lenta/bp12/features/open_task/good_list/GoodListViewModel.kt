@@ -3,6 +3,7 @@ package com.lenta.bp12.features.open_task.good_list
 import androidx.lifecycle.MutableLiveData
 import com.lenta.bp12.features.basket.ItemWholesaleBasketUi
 import com.lenta.bp12.model.IOpenTaskManager
+import com.lenta.bp12.platform.extention.getDescription
 import com.lenta.bp12.platform.navigation.IScreenNavigator
 import com.lenta.bp12.platform.resource.IResourceManager
 import com.lenta.shared.account.ISessionInfo
@@ -72,7 +73,7 @@ class GoodListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
                                 position = "${filtered.size - index}",
                                 name = good.getNameWithMaterial(),
                                 material = good.material,
-                                providerCode = good.provider.code,
+                                providerCode = good.provider.code.orEmpty(),
                                 quantity = "${good.planQuantity.dropZeros()} ${good.commonUnits.name}"
                         )
                     }
@@ -91,7 +92,7 @@ class GoodListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
                                 name = good.getNameWithMaterial(),
                                 quantity = "${good.getTotalQuantity().dropZeros()} ${good.commonUnits.name}",
                                 material = good.material,
-                                providerCode = good.provider.code
+                                providerCode = good.provider.code.orEmpty()
                         )
                     }
                 }
@@ -190,7 +191,7 @@ class GoodListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
 
     private fun openGoodByMaterial(material: String) {
         task.value?.let { task ->
-            task.goods.find { it.material == material }?.let { good ->
+            task.goods.find { it.material == material }?.let {
                 manager.searchNumber = material
                 manager.isSearchFromList = true
                 navigator.openGoodInfoOpenScreen()

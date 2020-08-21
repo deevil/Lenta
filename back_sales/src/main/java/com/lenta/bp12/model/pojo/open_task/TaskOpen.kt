@@ -33,8 +33,8 @@ data class TaskOpen(
 
     fun getProviderCodeWithName(): String {
         with(provider){
-            return if (code.isNotEmpty() || name.isNotEmpty()) {
-                "${code.dropWhile { it == '0' }} $name"
+            return if (code.orEmpty().isNotEmpty() || name.orEmpty().isNotEmpty()) {
+                "${code.orEmpty().dropWhile { it == '0' }} $name"
             } else ""
         }
     }

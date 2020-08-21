@@ -5,14 +5,14 @@ import com.google.gson.annotations.SerializedName
 data class SetInfo(
         /** Номер товара? */
         @SerializedName("MATNR_OSN")
-        var ean: String,
+        val ean: String?,
         /** Sap-код товара */
         @SerializedName("MATNR")
-        var material: String,
+        val material: String?,
         /** Количество вложенного */
         @SerializedName("MENGE")
-        var innerQuantity: String,
+        val innerQuantity: String?,
         /** Базовая единица измерения */
         @SerializedName("MEINS")
-        var unitCode: String
+        val unitCode: String?
 )
