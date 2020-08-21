@@ -6,7 +6,7 @@
 
         <variable
             name="good"
-            type="com.lenta.bp14.features.work_list.goods_list.ItemWorkListUi" />
+            type="com.lenta.bp14.models.ui.ItemWorkListUi" />
 
     </data>
 

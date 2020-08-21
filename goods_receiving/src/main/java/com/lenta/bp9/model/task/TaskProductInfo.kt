@@ -41,7 +41,8 @@ class TaskProductInfo(materialNumber: String,
                       val isCountingBoxes: Boolean, //маркированный товар, пусто - нет возможности пересчета в коробах
                       val nestingInOneBlock: String, //маркированный товар, Вложенность в один блок
                       val isControlGTIN: Boolean, //маркированный товар, Контроль GTIN
-                      val isGrayZone: Boolean //маркированный товар
+                      val isGrayZone: Boolean, //маркированный товар
+                      val countPiecesBox: String //маркированный товар, сколько пачек (штук) в одной коробке
                         ) : ProductInfo(materialNumber, description, uom, type, isSet, sectionId, matrixType, materialType) {
 
     fun copy(materialNumber: String = this.materialNumber,
@@ -82,7 +83,8 @@ class TaskProductInfo(materialNumber: String,
              isCountingBoxes: Boolean = this.isCountingBoxes,
              nestingInOneBlock: String = this.nestingInOneBlock,
              isControlGTIN: Boolean = this.isControlGTIN,
-             isGrayZone: Boolean = this.isGrayZone) : TaskProductInfo {
+             isGrayZone: Boolean = this.isGrayZone,
+             countPiecesBox: String= this.countPiecesBox) : TaskProductInfo {
         return TaskProductInfo(
                 materialNumber = materialNumber,
                 description = description,
@@ -122,7 +124,8 @@ class TaskProductInfo(materialNumber: String,
                 isCountingBoxes = isCountingBoxes,
                 nestingInOneBlock = nestingInOneBlock,
                 isControlGTIN = isControlGTIN,
-                isGrayZone = isGrayZone
+                isGrayZone = isGrayZone,
+                countPiecesBox = countPiecesBox
         )
     }
 }

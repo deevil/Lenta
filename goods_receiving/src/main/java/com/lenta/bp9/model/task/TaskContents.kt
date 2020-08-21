@@ -278,7 +278,8 @@ class TaskContents
                     isCountingBoxes = it.isCountingBoxes == "X",
                     nestingInOneBlock = it.nestingInOneBlock ?: "0.0",
                     isControlGTIN = it.isControlGTIN == "X",
-                    isGrayZone = it.isGrayZone == "X"
+                    isGrayZone = it.isGrayZone == "X",
+                    countPiecesBox = it.countPiecesBox
             )
         }
     }
