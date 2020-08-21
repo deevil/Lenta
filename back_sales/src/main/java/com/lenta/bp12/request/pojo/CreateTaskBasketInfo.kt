@@ -17,7 +17,7 @@ data class CreateTaskBasketInfo(
         val isMark: String? = "",
         /** Меркурианский товар */
         @SerializedName("IS_VET")
-        val isVet: String = "",
+        val isVet: String? = "",
         /** Код поставщика */
         @SerializedName("LIFNR")
         val providerCode: String?,

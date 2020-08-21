@@ -17,10 +17,7 @@ import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.SelectionItemsHelper
 import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
 import com.lenta.shared.utilities.databinding.PageSelectionListener
-import com.lenta.shared.utilities.extentions.combineLatest
-import com.lenta.shared.utilities.extentions.dropZeros
-import com.lenta.shared.utilities.extentions.launchAsyncTryCatch
-import com.lenta.shared.utilities.extentions.map
+import com.lenta.shared.utilities.extentions.*
 import com.lenta.shared.utilities.isCommonFormatNumber
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -56,6 +53,10 @@ class GoodListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
 
     val task by lazy {
         manager.currentTask
+    }
+
+    val isTaskStrict by unsafeLazy {
+        task.value?.isStrict ?: false
     }
 
     val title by lazy {
@@ -285,6 +286,7 @@ class GoodListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
 
                     processedSelectionsHelper.clearPositions()
                     manager.markGoodsUncounted(materials)
+                    manager.deleteGoodsFromBaskets(materials)
                 }
                 2 -> {
                     val basketList = mutableListOf<Basket>()

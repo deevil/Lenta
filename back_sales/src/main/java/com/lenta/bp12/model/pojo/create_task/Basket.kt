@@ -34,6 +34,8 @@ data class Basket(
      */
     var freeVolume: Double = volume
 
+    /**
+     * */
     fun addGood(good: Good, quantity: Double) {
         if (freeVolume >= good.volume * quantity) {
             freeVolume -= (good.volume * quantity)

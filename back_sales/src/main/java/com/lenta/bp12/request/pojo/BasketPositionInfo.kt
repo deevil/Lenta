@@ -5,14 +5,14 @@ import com.google.gson.annotations.SerializedName
 data class BasketPositionInfo(
         /** SAP-код товара */
         @SerializedName("MATNR")
-        val material: String,
+        val material: String?,
         /** Номер корзины */
         @SerializedName("BASKET_NUM")
-        val basketNumber: String,
+        val basketNumber: String?,
         /** Количество товаров в корзине */
         @SerializedName("FACT_QNT")
-        val quantity: String,
+        val quantity: String?,
         /** Максимальная розничная цена */
         @SerializedName("MPR")
-        val maxRetailPrice: String = ""
+        val maxRetailPrice: String? = ""
 )

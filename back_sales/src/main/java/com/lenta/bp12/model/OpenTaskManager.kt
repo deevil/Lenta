@@ -53,7 +53,7 @@ class OpenTaskManager @Inject constructor(
 
     override val currentBasket = MutableLiveData<Basket>()
 
-    var startStateHashOfCurrentTask = -1
+    private var startStateHashOfCurrentTask = -1
 
     /** Метод добавляет обычные в товары в корзину */
     override suspend fun addGoodToBasket(good: GoodOpen, provider: ProviderInfo, count: Double, part: Part?) {
@@ -131,6 +131,9 @@ class OpenTaskManager @Inject constructor(
         }
     }
 
+    /**
+     * Метод добавляет пустую позицию, используется при добавлении марки или партии
+     */
     private fun addEmptyPosition(good: GoodOpen, provider: ProviderInfo, basket: Basket) {
         good.isCounted = true
         val position = Position(
@@ -239,27 +242,27 @@ class OpenTaskManager @Inject constructor(
     private suspend fun getTaskListFromInfo(tasksInfo: List<TaskInfo>): List<TaskOpen> {
         return tasksInfo.map { taskInfo ->
             TaskOpen(
-                    number = taskInfo.number,
-                    name = taskInfo.name,
-                    type = database.getTaskType(taskInfo.typeCode),
+                    number = taskInfo.number.orEmpty(),
+                    name = taskInfo.name.orEmpty(),
+                    type = database.getTaskType(taskInfo.typeCode.orEmpty()),
                     block = Block(
-                            type = BlockType.from(taskInfo.blockType),
-                            user = taskInfo.blockUser,
-                            ip = taskInfo.blockIp
+                            type = BlockType.from(taskInfo.blockType.orEmpty()),
+                            user = taskInfo.blockUser.orEmpty(),
+                            ip = taskInfo.blockIp.orEmpty()
                     ),
-                    storage = taskInfo.storage,
-                    control = ControlType.from(taskInfo.control),
+                    storage = taskInfo.storage.orEmpty(),
+                    control = ControlType.from(taskInfo.control.orEmpty()),
                     provider = ProviderInfo(
-                            code = taskInfo.providerCode,
-                            name = taskInfo.providerName
+                            code = taskInfo.providerCode.orEmpty(),
+                            name = taskInfo.providerName.orEmpty()
                     ),
-                    reason = database.getReturnReason(taskInfo.typeCode, taskInfo.reasonCode),
-                    comment = taskInfo.comment,
-                    section = taskInfo.section,
-                    goodType = taskInfo.goodType,
-                    purchaseGroup = taskInfo.purchaseGroup,
-                    goodGroup = taskInfo.goodType,
-                    numberOfGoods = taskInfo.quantity.toIntOrNull() ?: 0,
+                    reason = database.getReturnReason(taskInfo.typeCode.orEmpty(), taskInfo.reasonCode.orEmpty()),
+                    comment = taskInfo.comment.orEmpty(),
+                    section = taskInfo.section.orEmpty(),
+                    goodType = taskInfo.goodType.orEmpty(),
+                    purchaseGroup = taskInfo.purchaseGroup.orEmpty(),
+                    goodGroup = taskInfo.goodType.orEmpty(),
+                    numberOfGoods = taskInfo.quantity?.toIntOrNull() ?: 0,
                     isStrict = taskInfo.isStrict.isSapTrue(),
                     isFinished = !taskInfo.isNotFinish.isSapTrue()
             )
@@ -283,25 +286,25 @@ class OpenTaskManager @Inject constructor(
     private suspend fun TaskOpen.addGoodsToTask(taskContentResult: TaskContentResult) {
         taskContentResult.positions?.map { positionInfo ->
             with(positionInfo) {
-                database.getGoodInfoByMaterial(material)?.let { goodInfo ->
-                    val commonUnits = database.getUnitsByCode(unitsCode)
-                    val provider = ProviderInfo(providerCode, providerName)
+                database.getGoodInfoByMaterial(material.orEmpty())?.let { goodInfo ->
+                    val commonUnits = database.getUnitsByCode(unitsCode.orEmpty())
+                    val provider = ProviderInfo(providerCode.orEmpty(), providerName.orEmpty())
 
                     val good = GoodOpen(
                             ean = goodInfo.ean,
                             eans = goodInfo.eans,
-                            material = material,
+                            material = material.orEmpty(),
                             name = goodInfo.name,
                             section = goodInfo.section.takeIf {
                                 type?.isDivBySection ?: false
                             }.orEmpty(),
                             matrix = goodInfo.matrix,
                             kind = goodInfo.kind,
-                            planQuantity = planQuantity.toDoubleOrNull() ?: 0.0,
-                            factQuantity = factQuantity.toDoubleOrNull() ?: 0.0,
+                            planQuantity = planQuantity?.toDoubleOrNull() ?: 0.0,
+                            factQuantity = factQuantity?.toDoubleOrNull() ?: 0.0,
                             commonUnits = commonUnits,
                             innerUnits = getInnerUnits(commonUnits),
-                            innerQuantity = innerQuantity.toDoubleOrNull() ?: 1.0,
+                            innerQuantity = innerQuantity?.toDoubleOrNull() ?: 1.0,
                             isCounted = isCounted.isSapTrue(),
                             isDeleted = isDeleted.isSapTrue(),
                             provider = provider,
@@ -311,10 +314,10 @@ class OpenTaskManager @Inject constructor(
                                         name = it.name
                                 )
                             }?.toMutableList() ?: mutableListOf(),
-                            volume = positionInfo.volume.toDoubleOrNull() ?: 0.0
+                            volume = positionInfo.volume?.toDoubleOrNull() ?: 0.0
                     )
 
-                    factQuantity.toDoubleOrNull()?.let { factQuantity ->
+                    factQuantity?.toDoubleOrNull()?.let { factQuantity ->
                         if (factQuantity != 0.0) {
                             good.addPosition(Position(
                                     quantity = factQuantity,
@@ -338,7 +341,7 @@ class OpenTaskManager @Inject constructor(
         // Таблица соотношения товаров и корзин, приходит так: [BasketPositionInfo{ХЛЕБ, КОРЗИНА 1, 32ШТ}, BasketPositionInfo{ХЛЕБ, КОРЗИНА 2, 15ШТ}]
         val restBasketsProducts = taskContentResult.basketProducts
         // Выше мы создали мапу - [ХЛЕБ - [BasketPositionInfo{ХЛЕБ, КОРЗИНА 1, 32ШТ}, BasketPositionInfo{ХЛЕБ, КОРЗИНА 2, 15ШТ}]].
-        val mapOfGoodsByMaterial = restBasketsProducts?.groupBy { it.material }.orEmpty()
+        val mapOfGoodsByMaterial = restBasketsProducts?.groupBy { it.material.orEmpty() }.orEmpty()
 
         val mappedBaskets = restBaskets?.map { restBasket ->
             Basket(
@@ -348,7 +351,7 @@ class OpenTaskManager @Inject constructor(
                     goodType = restBasket.goodType.orEmpty(),
                     control = control,
                     provider = taskGoods.firstOrNull()?.provider,
-                    volume = basketVolume ?: 0.0
+                    volume = basketVolume
             ).apply {
                 isLocked = restBasket.isClose.isSapTrue()
                 isPrinted = restBasket.isPrint.isSapTrue()
@@ -424,6 +427,21 @@ class OpenTaskManager @Inject constructor(
     override fun removeBaskets(basketList: MutableList<Basket>) {
         currentTask.value?.let { task ->
             task.removeBaskets(basketList)
+            updateCurrentTask(task)
+        }
+    }
+
+    override fun deleteGoodsFromBaskets(materials: List<String>) {
+        currentTask.value?.let { task ->
+            materials.forEach { goodNumberToDelete ->
+                task.baskets.forEach { basket ->
+                    val goodToDelete = basket.getGoodList().firstOrNull { it.material == goodNumberToDelete }
+                    goodToDelete?.let {
+                        basket.goods.remove(it)
+                    }
+                }
+            }
+            task.removeEmptyBaskets()
             updateCurrentTask(task)
         }
     }
@@ -627,6 +645,7 @@ interface IOpenTaskManager {
     fun addBasket(basket: Basket)
     fun getBasket(providerCode: String): Basket?
     fun removeBaskets(basketList: MutableList<Basket>)
+    fun deleteGoodsFromBaskets(materials: List<String>)
 
     fun updateTasks(taskList: List<TaskOpen>?)
     fun updateFoundTasks(taskList: List<TaskOpen>?)

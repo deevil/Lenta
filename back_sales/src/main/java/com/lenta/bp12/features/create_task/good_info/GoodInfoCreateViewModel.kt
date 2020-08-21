@@ -831,7 +831,7 @@ class GoodInfoCreateViewModel : CoreViewModel() {
             scanInfoResult.value?.marks?.let { marks ->
                 marks.forEach { mark ->
                     val markFromBox = Mark(
-                            number = mark.number,
+                            number = mark.number.orEmpty(),
                             boxNumber = lastSuccessSearchNumber,
                             providerCode = getProviderCode()
                     )

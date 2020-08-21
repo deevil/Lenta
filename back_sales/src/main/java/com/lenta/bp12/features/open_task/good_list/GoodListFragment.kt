@@ -94,6 +94,7 @@ class GoodListFragment : CoreFragment<FragmentGoodListBinding, GoodListViewModel
                 }
             }
 
+
             layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
                     layoutId = R.layout.item_good_list_processing,
                     itemId = BR.item,
@@ -103,7 +104,9 @@ class GoodListFragment : CoreFragment<FragmentGoodListBinding, GoodListViewModel
 
                         override fun onBind(binding: ItemGoodListProcessingBinding, position: Int) {
                             binding.tvItemNumber.tag = position
-                            binding.tvItemNumber.setOnClickListener(onClickSelectionListener)
+                            if (!vm.isTaskStrict) {
+                                binding.tvItemNumber.setOnClickListener(onClickSelectionListener)
+                            }
                             binding.selectedForDelete = vm.processingSelectionsHelper.isSelected(position)
                             processingRecyclerViewKeyHandler?.let {
                                 binding.root.isSelected = it.isSelected(position)
