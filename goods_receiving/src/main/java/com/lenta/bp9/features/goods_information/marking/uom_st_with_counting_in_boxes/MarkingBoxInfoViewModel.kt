@@ -821,19 +821,21 @@ class MarkingBoxInfoViewModel : CoreViewModel(),
         val lastScannedBlockInfo = processMarkingBoxProductService.getLastScannedBlock()
         val lastScannedGtin = lastScannedBlockInfo?.blockNumber?.substring(2, 16).orEmpty()
         if (gtinCode == lastScannedGtin) {
-            lastScannedBlockInfo?.let { blockInfo ->
-                checkBoxGtinControl.value = true //аналитики сказали сначала поставить чекбокс, а потом снять чисто для показа пользователю на мгновение
-                //код по сохранению блока для передачи в erp, т.к. он считается обработанным
-                processMarkingBoxProductService.markPassageControlBlock(blockInfo.blockNumber)
-                addGtin(gtinCode)
-                checkBoxGtinControl.value = false //аналитики сказали сначала поставить чекбокс, а потом снять чисто для показа пользователю на мгновение
-                checkBoxGtinStampControl.value = false //аналитики сказали сначала поставить чекбокс, а потом снять чисто для показа пользователю на мгновение
-                //обновляем кол-во отсканированных марок/блоков для отображения на экране в поле «Контроль марок»
-                countScannedBlocks.value = countScannedBlocks.value?.plus(1)
-            }
+            lastScannedBlockInfo?.let { blockInfo -> processGtinBy(gtinCode, blockInfo) }
         } else {
             screenNavigator.openAlertDisparityGTINScreen()
         }
+    }
+
+    private fun processGtinBy(gtinCode: String, blockInfo: TaskBlockInfo) {
+        checkBoxGtinControl.value = true //аналитики сказали сначала поставить чекбокс, а потом снять чисто для показа пользователю на мгновение
+        //код по сохранению блока для передачи в erp, т.к. он считается обработанным
+        processMarkingBoxProductService.markPassageControlBlock(blockInfo.blockNumber)
+        addGtin(gtinCode)
+        checkBoxGtinControl.value = false //аналитики сказали сначала поставить чекбокс, а потом снять чисто для показа пользователю на мгновение
+        checkBoxGtinStampControl.value = false //аналитики сказали сначала поставить чекбокс, а потом снять чисто для показа пользователю на мгновение
+        //обновляем кол-во отсканированных марок/блоков для отображения на экране в поле «Контроль марок»
+        countScannedBlocks.value = countScannedBlocks.value?.plus(1)
     }
 
     //https://trello.com/c/y2ECoCw4
