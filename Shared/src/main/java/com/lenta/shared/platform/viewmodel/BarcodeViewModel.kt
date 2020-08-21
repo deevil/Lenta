@@ -15,7 +15,7 @@ abstract class BarcodeViewModel : CoreViewModel() {
     protected open val weightZeroValue by unsafeLazy { listOf(VALUE_023, VALUE_024, VALUE_027, VALUE_028) }
 
     protected open suspend fun processBarcode(data: String) {
-        var barcode = data
+        var barcode = "(01)02877311000054(10)500001150580(8008)202008101515"
         val barcodeLenght = barcode.length
         var isWeight = false
         var weight = DEFAULT_ZERO_VALUE
@@ -32,10 +32,12 @@ abstract class BarcodeViewModel : CoreViewModel() {
             }
             barcodeLenght >= MINIMUM_GS1_CODE_LENGTH -> {
                 val parsedEntities = EAN128Parser.parse(barcode, false)
+                Logg.d { "parsedEntities = ${parsedEntities.size}" }
+
             }
         }
 
-        if (barcode.length >= MINIMUM_GS1_CODE_LENGTH) {
+        /*if (barcode.length >= MINIMUM_GS1_CODE_LENGTH) {
 
             val ean128Barcode = withContext(Dispatchers.Default) {
                 EAN128Parser.parseWith(barcode, EAN128Parser.EAN_01)
@@ -45,7 +47,7 @@ abstract class BarcodeViewModel : CoreViewModel() {
             }
         } else {
             Logg.d { "----->  barcode EAN 128 less than 16 chars" }
-        }
+        }*/
 
         if (isWeight) {
             val changedBarcode = barcode.replace(barcode.takeLast(6), TAKEN_ZEROS)

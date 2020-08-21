@@ -8,6 +8,7 @@ import com.lenta.bp18.platform.Constants
 import com.lenta.bp18.platform.navigation.IScreenNavigator
 import com.lenta.bp18.repository.IDatabaseRepo
 import com.lenta.shared.account.ISessionInfo
+import com.lenta.shared.platform.viewmodel.BarcodeViewModel
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.settings.IAppSettings
 import com.lenta.shared.utilities.EAN128Parser
@@ -19,7 +20,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
-class SelectGoodViewModel : CoreViewModel() {
+class SelectGoodViewModel : BarcodeViewModel() {
 
     @Inject
     lateinit var sessionInfo: ISessionInfo
@@ -38,21 +39,21 @@ class SelectGoodViewModel : CoreViewModel() {
 
     private val ean: MutableLiveData<String> = MutableLiveData()
 
-    private val weightValue by unsafeLazy { listOf(VALUE_23, VALUE_24, VALUE_27, VALUE_28) }
+    //private val weightValue by unsafeLazy { listOf(VALUE_23, VALUE_24, VALUE_27, VALUE_28) }
 
     val barcodeField: MutableLiveData<String> = MutableLiveData()
     val nextButtonEnabled = barcodeField.map { !it.isNullOrBlank() }
     val requestFocusToBarcode = MutableLiveData<Boolean>(false)
 
-    fun onClickNext() {
+    fun onClickNext() = launchUITryCatch {
         ean.value = barcodeField.value ?: Constants.GOOD_BARCODE
-        preparationEanForSearch()
+        processBarcode(ean.value.orEmpty())
     }
 
-    fun onScanResult(data: String) {
+    fun onScanResult(data: String) = launchUITryCatch {
         barcodeField.value = data
         ean.value = data
-        preparationEanForSearch()
+        processBarcode(data)
     }
 
     private fun preparationEanForSearch() = launchUITryCatch {

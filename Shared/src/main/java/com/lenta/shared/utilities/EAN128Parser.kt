@@ -89,11 +89,13 @@ object EAN128Parser {
                 return result
             } else {
                 // Shift the index to the next
-                index += count
+                //index += ai.LengthOfData + count
             }
             // get the data to the current AI
-            val code = getCode(localData, ai, index)
+            val code = getCode(localData, ai, count)
             result[ai] = code
+            // Shift the index to the next
+            index += code.length + count
         }
         return result
     }
@@ -144,7 +146,7 @@ object EAN128Parser {
             // try to get the ai from the dictionary
             result = aiiDict[ai]
             result?.let {
-                return result to i
+                return result to addedIndex
             }
             // if no AI found, try it with the next lenght
         }
@@ -269,7 +271,7 @@ object EAN128Parser {
         //Add("97", "Company specific", 2, DataType.Alphanumeric, 30, true);
         //Add("98", "Company specific", 2, DataType.Alphanumeric, 30, true);
         //Add("99", "Company specific", 2, DataType.Alphanumeric, 30, true);
-        minLengthOfAI = aiiDict.values.indexOf(aiiDict.values.minBy { it.LengthOfAI })
-        maxLengthOfAI = aiiDict.values.indexOf(aiiDict.values.maxBy { it.LengthOfAI })
+        minLengthOfAI = aiiDict.values.minBy { it.LengthOfAI }?.LengthOfAI ?: 0
+        maxLengthOfAI = aiiDict.values.maxBy { it.LengthOfAI }?.LengthOfAI ?: 2
     }
 }
