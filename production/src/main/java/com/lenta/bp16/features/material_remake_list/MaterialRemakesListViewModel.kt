@@ -8,14 +8,15 @@ import com.lenta.bp16.model.ingredients.params.GetIngredientDataParams
 import com.lenta.bp16.model.ingredients.params.UnblockIngredientsParams
 import com.lenta.bp16.model.ingredients.params.WarehouseParam
 import com.lenta.bp16.model.ingredients.ui.ItemMaterialIngredientUi
-import com.lenta.bp16.model.ingredients.OrderByBarcode
+import com.lenta.bp16.model.ingredients.results.IngredientsDataListResult
+import com.lenta.bp16.model.ingredients.ui.OrderByBarcodeUI
 import com.lenta.bp16.model.warehouse.IWarehousePersistStorage
 import com.lenta.bp16.platform.extention.getFieldWithSuffix
 import com.lenta.bp16.platform.extention.getModeType
 import com.lenta.bp16.platform.navigation.IScreenNavigator
 import com.lenta.bp16.platform.resource.IResourceManager
 import com.lenta.bp16.request.GetEanIngredientsNetRequest
-import com.lenta.bp16.request.GetMaterialIngredientsDataNetRequest
+import com.lenta.bp16.request.GetIngredientsDataListNetRequest
 import com.lenta.bp16.request.UnblockIngredientNetRequest
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.platform.viewmodel.CoreViewModel
@@ -36,7 +37,7 @@ class MaterialRemakesListViewModel : CoreViewModel() {
     lateinit var resourceManager: IResourceManager
 
     @Inject
-    lateinit var getIngredientData: GetMaterialIngredientsDataNetRequest
+    lateinit var getIngredientDataList: GetIngredientsDataListNetRequest
 
     @Inject
     lateinit var unblockIngredientNetRequest: UnblockIngredientNetRequest
@@ -52,8 +53,12 @@ class MaterialRemakesListViewModel : CoreViewModel() {
         MutableLiveData<IngredientInfo>()
     }
 
-    private val allEanMaterialIngredients: MutableLiveData<List<OrderByBarcode>> by unsafeLazy {
-        MutableLiveData<List<OrderByBarcode>>()
+    private val ingredientsDataListResult: MutableLiveData<IngredientsDataListResult> by unsafeLazy {
+        MutableLiveData<IngredientsDataListResult>()
+    }
+
+    private val allEanMaterialIngredients: MutableLiveData<List<OrderByBarcodeUI>> by unsafeLazy {
+        MutableLiveData<List<OrderByBarcodeUI>>()
     }
 
     private val allMaterialIngredients: MutableLiveData<List<MaterialIngredientDataInfo>> by unsafeLazy {
@@ -84,18 +89,7 @@ class MaterialRemakesListViewModel : CoreViewModel() {
             }
         }
 
-        val eanResult = getEanIngredientData(
-                params = GetIngredientDataParams(
-                        tkMarket = sessionInfo.market.orEmpty(),
-                        deviceIP = resourceManager.deviceIp,
-                        code = code,
-                        mode = mode,
-                        weight = "",
-                        warehouse = lgort
-                )
-        )
-
-        val result = getIngredientData(
+        val result = getIngredientDataList(
                 params = GetIngredientDataParams(
                         tkMarket = sessionInfo.market.orEmpty(),
                         deviceIP = resourceManager.deviceIp,
@@ -107,8 +101,11 @@ class MaterialRemakesListViewModel : CoreViewModel() {
         ).also {
             navigator.hideProgress()
         }
-        result.either(::handleFailure, allMaterialIngredients::setValue)
-        eanResult.either(::handleFailure, allEanMaterialIngredients::setValue)
+        result.either(::handleFailure, ingredientsDataListResult::setValue)
+        ingredientsDataListResult.value?.let { ingredientsDataListResult ->
+            allMaterialIngredients.value = ingredientsDataListResult.materialsIngredientsDataInfoList
+            allEanMaterialIngredients.value = ingredientsDataListResult.orderByBarcode?.mapNotNull { it.convert() }
+        }
     }
 
     val materialIngredients by unsafeLazy {
@@ -137,7 +134,7 @@ class MaterialRemakesListViewModel : CoreViewModel() {
         ).also {
             navigator.hideProgress()
             navigator.goBack()
-        }.either(fnL = ::handleFailure)
+        }.either(::handleFailure)
     }
 
     fun onClickItemPosition(position: Int) {
@@ -154,5 +151,4 @@ class MaterialRemakesListViewModel : CoreViewModel() {
         const val MODE_5 = "5"
         const val MODE_6 = "6"
     }
-
 }

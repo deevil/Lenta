@@ -5,6 +5,7 @@ import com.lenta.bp16.data.IScales
 import com.lenta.bp16.model.ingredients.MaterialIngredientDataInfo
 import com.lenta.bp16.model.ingredients.params.IngredientDataCompleteParams
 import com.lenta.bp16.model.ingredients.OrderByBarcode
+import com.lenta.bp16.model.ingredients.ui.OrderByBarcodeUI
 import com.lenta.bp16.platform.navigation.IScreenNavigator
 import com.lenta.bp16.platform.resource.IResourceManager
 import com.lenta.bp16.request.CompleteIngredientByMaterialNetRequest
@@ -42,7 +43,7 @@ class MaterialRemakeDetailsViewModel : CoreViewModel() {
 
     //Список параметров EAN для ингредиента
     val eanInfo by unsafeLazy {
-        MutableLiveData<OrderByBarcode>()
+        MutableLiveData<OrderByBarcodeUI>()
     }
 
     // Комплектация
