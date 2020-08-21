@@ -11,6 +11,9 @@ class ResourceManager @Inject constructor(
 ) : IResourceManager {
 
     override val deviceIp: String by lazy { context.getDeviceIp() }
+    override val goodNotFoundErrorMsg: String by lazy { context.getString(R.string.good_not_found_error_msg) }
+    override val basketNotFoundErrorMsg: String by lazy { context.getString(R.string.basket_not_found_error_msg) }
+    override val taskNotFoundErrorMsg: String by lazy { context.getString(R.string.task_not_found_error_msg) }
 
     override fun tk(number: String): String = context.getString(R.string.tk_number, number)
 
@@ -50,6 +53,9 @@ class ResourceManager @Inject constructor(
 interface IResourceManager {
 
     val deviceIp: String
+    val goodNotFoundErrorMsg: String
+    val basketNotFoundErrorMsg: String
+    val taskNotFoundErrorMsg: String
 
     fun tk(number: String): String
     fun backSalesFromDate(date: String): String

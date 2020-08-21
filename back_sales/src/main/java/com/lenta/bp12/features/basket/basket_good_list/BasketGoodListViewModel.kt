@@ -11,8 +11,6 @@ import com.lenta.bp12.platform.extention.deleteGood
 import com.lenta.bp12.platform.extention.getDescription
 import com.lenta.bp12.platform.navigation.IScreenNavigator
 import com.lenta.bp12.platform.resource.IResourceManager
-import com.lenta.bp12.platform.utils.BASKET_NOT_FOUND_ERROR_MSG
-import com.lenta.bp12.platform.utils.TASK_NOT_FOUND_ERROR_MSG
 import com.lenta.shared.platform.constants.Constants
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.Logg
@@ -194,11 +192,11 @@ class BasketGoodListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
                 manager.updateCurrentTask(task)
             }.orIfNull {
                 Logg.e { " basket null " }
-                navigator.showInternalError(BASKET_NOT_FOUND_ERROR_MSG)
+                navigator.showInternalError(resource.basketNotFoundErrorMsg)
             }
         }.orIfNull {
             Logg.e { " task null " }
-            navigator.showInternalError(TASK_NOT_FOUND_ERROR_MSG)
+            navigator.showInternalError(resource.taskNotFoundErrorMsg)
         }
     }
 
@@ -233,11 +231,11 @@ class BasketGoodListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
                 manager.updateCurrentTask(task)
             }.orIfNull {
                 Logg.e { " basket null " }
-                navigator.showInternalError(BASKET_NOT_FOUND_ERROR_MSG)
+                navigator.showInternalError(resource.basketNotFoundErrorMsg)
             }
         }.orIfNull {
             Logg.e { " task null " }
-            navigator.showInternalError(TASK_NOT_FOUND_ERROR_MSG)
+            navigator.showInternalError(resource.taskNotFoundErrorMsg)
         }
         navigator.goBack()
     }
