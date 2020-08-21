@@ -5,10 +5,9 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.liveData
 import androidx.lifecycle.switchMap
 import com.lenta.bp12.model.ICreateTaskManager
+import com.lenta.bp12.model.pojo.Good
 import com.lenta.bp12.model.pojo.create_task.Basket
 import com.lenta.bp12.model.pojo.create_task.GoodCreate
-import com.lenta.bp12.platform.extention.deleteGood
-import com.lenta.bp12.platform.extention.getDescription
 import com.lenta.bp12.platform.navigation.IScreenNavigator
 import com.lenta.bp12.platform.resource.IResourceManager
 import com.lenta.bp12.platform.utils.BASKET_NOT_FOUND_ERROR_MSG
@@ -205,7 +204,7 @@ class BasketCreateGoodListViewModel : CoreViewModel(), OnOkInSoftKeyboardListene
         }
     }
 
-    private fun GoodCreate.deletePositionsFromTask(goodFromBasket: GoodCreate, basketToGetQuantity: Basket) {
+    private fun GoodCreate.deletePositionsFromTask(goodFromBasket: Good, basketToGetQuantity: Basket) {
         val positionThatFits = positions.firstOrNull { positionFromTask ->
             goodFromBasket.positions.any { it.quantity >= positionFromTask.quantity }
         }

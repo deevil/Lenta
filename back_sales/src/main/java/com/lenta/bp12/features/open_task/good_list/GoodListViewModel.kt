@@ -4,14 +4,13 @@ import androidx.lifecycle.MutableLiveData
 import com.lenta.bp12.features.basket.ItemWholesaleBasketUi
 import com.lenta.bp12.features.create_task.task_content.ItemCommonBasketUi
 import com.lenta.bp12.model.IOpenTaskManager
-import com.lenta.bp12.platform.extention.getDescription
 import com.lenta.bp12.model.pojo.create_task.Basket
 import com.lenta.bp12.platform.navigation.IScreenNavigator
 import com.lenta.bp12.platform.resource.IResourceManager
 import com.lenta.bp12.request.PrintPalletListNetRequest
-import com.lenta.bp12.request.pojo.print_pallet_list.PrintPalletListBasket
-import com.lenta.bp12.request.pojo.print_pallet_list.PrintPalletListGood
 import com.lenta.bp12.request.pojo.print_pallet_list.PrintPalletListParams
+import com.lenta.bp12.request.pojo.print_pallet_list.PrintPalletListParamsBasket
+import com.lenta.bp12.request.pojo.print_pallet_list.PrintPalletListParamsGood
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.platform.device_info.DeviceInfo
 import com.lenta.shared.platform.viewmodel.CoreViewModel
@@ -364,7 +363,7 @@ class GoodListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
                 val distinctGoods = basket.getGoodList()
                 distinctGoods.map { good ->
                     val quantity = basket.goods[good]
-                    PrintPalletListGood(
+                    PrintPalletListParamsGood(
                             materialNumber = good.material,
                             basketNumber = basket.index.toString(),
                             quantity = quantity.toString(),
@@ -375,7 +374,7 @@ class GoodListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
 
             val basketListRest = baskets.map {
                 val description = it.getDescription(task.value?.type?.isDivBySection ?: false)
-                PrintPalletListBasket(
+                PrintPalletListParamsBasket(
                         number = it.index.toString(),
                         description = description,
                         section = it.section.orEmpty()
@@ -386,7 +385,7 @@ class GoodListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
                 val request = printPalletListNetRequest(
                         PrintPalletListParams(
                                 userNumber = sessionInfo.personnelNumber.orEmpty(),
-                                deviceIp = resource.deviceIp(),
+                                deviceIp = resource.deviceIp,
                                 baskets = basketListRest,
                                 goods = goodListRest
                         )
