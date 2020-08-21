@@ -20,6 +20,11 @@
     <integer name="three_four_2">70</integer>
     <integer name="three_four_3">20</integer>
 
+    <!-- Три колонки / Тип 5 -->
+    <integer name="three_five_1">10</integer>
+    <integer name="three_five_2">65</integer>
+    <integer name="three_five_3">25</integer>
+
     <!-- Четыре колонки / Тип 1 -->
     <integer name="four_one_1">12</integer>
     <integer name="four_one_2">50</integer>

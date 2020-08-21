@@ -21,6 +21,10 @@
     <dimen name="size_36dp">36dp</dimen>
     <dimen name="size_98dp">98dp</dimen>
 
+    //Step to auto text size
+    <dimen name="text_2sp">2sp</dimen>
+
+    <dimen name="text_10sp">10sp</dimen>
     <dimen name="text_12sp">12sp</dimen>
     <dimen name="text_14sp">14sp</dimen>
     <dimen name="text_16sp">16sp</dimen>

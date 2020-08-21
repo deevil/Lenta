@@ -1,8 +1,7 @@
 package com.lenta.bp16.request
 
-import com.lenta.bp16.model.ingredients.OrderIngredientDataInfo
 import com.lenta.bp16.model.ingredients.params.GetIngredientDataParams
-import com.lenta.bp16.model.ingredients.ui.OrderByBarcode
+import com.lenta.bp16.model.ingredients.OrderByBarcode
 import com.lenta.bp16.repository.IngredientsRepository
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.functional.Either
