@@ -37,9 +37,7 @@ class GoodSelectViewModel : CoreViewModel() {
                 val name = it.name
                 val goodParams = GoodParams(ean = ean, material = material, name = name)
                 navigator.openGoodInfoScreen(goodParams)
-            } ?: navigator.showAlertGoodNotFound {
-                navigator.openSelectGoodScreen()
-            }
+            } ?: navigator.showAlertGoodNotFound()
         }
     }
 

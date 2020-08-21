@@ -2,8 +2,8 @@ package com.lenta.bp16.model.ingredients.results
 
 import com.google.gson.annotations.SerializedName
 import com.lenta.bp16.model.ingredients.MaterialIngredientDataInfo
-import com.lenta.bp16.model.ingredients.TechOrderDataInfo
 import com.lenta.bp16.model.ingredients.OrderIngredientDataInfo
+import com.lenta.bp16.model.ingredients.TechOrderDataInfo
 import com.lenta.bp16.model.ingredients.ui.OrderByBarcode
 import com.lenta.bp16.request.pojo.RetCode
 import com.lenta.shared.utilities.extentions.IResultWithRetCodes
@@ -21,6 +21,7 @@ data class IngredientsDataListResult(
         @SerializedName("ET_AUFNR_LIST")
         val techOrdersDataInfoList: List<TechOrderDataInfo>?,
 
+        /**Данные ШК по товарам*/
         @SerializedName("ET_EAN")
         val orderByBarcode: List<OrderByBarcode>?,
 

@@ -32,6 +32,7 @@ import com.lenta.bp16.features.warehouse_selection.WarehouseSelectionFragment
 import com.lenta.bp16.model.ingredients.IngredientInfo
 import com.lenta.bp16.model.ingredients.MaterialIngredientDataInfo
 import com.lenta.bp16.model.ingredients.OrderIngredientDataInfo
+import com.lenta.bp16.model.ingredients.ui.OrderByBarcode
 import com.lenta.bp16.model.pojo.GoodParams
 import com.lenta.bp16.platform.Constants
 import com.lenta.shared.account.IAuthenticator
@@ -197,16 +198,16 @@ class ScreenNavigator @Inject constructor(
         getFragmentStack()?.push(OrderIngredientsListFragment.newInstance(weight, selectedIngredient))
     }
 
-    override fun openIngredientDetailsScreen(selectedIngredient: OrderIngredientDataInfo, parentCode: String) {
-        getFragmentStack()?.push(IngredientDetailsFragment.newInstance(selectedIngredient, parentCode))
+    override fun openIngredientDetailsScreen(selectedIngredient: OrderIngredientDataInfo, parentCode: String, eanInfo: OrderByBarcode) {
+        getFragmentStack()?.push(IngredientDetailsFragment.newInstance(selectedIngredient, parentCode,eanInfo))
     }
 
     override fun openMaterialRemakesScreen(selectedIngredient: IngredientInfo) {
         getFragmentStack()?.push(MaterialRemakesListFragment.newInstance(selectedIngredient))
     }
 
-    override fun openMaterialRemakeDetailsScreen(selectedMaterial: MaterialIngredientDataInfo, parentCode: String, parentName: String) {
-        getFragmentStack()?.push(MaterialRemakeDetailsFragment.newInstance(selectedMaterial, parentCode, parentName))
+    override fun openMaterialRemakeDetailsScreen(selectedMaterial: MaterialIngredientDataInfo, parentCode: String, parentName: String, barcode: OrderByBarcode) {
+        getFragmentStack()?.push(MaterialRemakeDetailsFragment.newInstance(selectedMaterial, parentCode, parentName, barcode))
     }
 
     override fun openTechOrdersScreen(selectedMaterial: MaterialIngredientDataInfo, parentCode: String) {
@@ -335,26 +336,61 @@ class ScreenNavigator @Inject constructor(
         }
     }
 
-    override fun showAlertPartNotFound(backCallback: (() -> Unit)?) {
+    override fun showAlertPartNotFound() {
         runOrPostpone {
             getFragmentStack()?.push(AlertFragment.create(
                     pageNumber = Constants.ALERT_FRAGMENT,
                     message = context.getString(R.string.tw_alert_part_not_found),
-                    iconRes = R.drawable.ic_warning_red_80dp,
-                    leftButtonDecorationInfo = ButtonDecorationInfo.back,
-                    codeConfirmForLeft = backCallback?.let { backFragmentResultHelper.setFuncForResult(it) }
+                    iconRes = R.drawable.ic_warning_red_80dp
             ))
         }
     }
 
-    override fun showAlertGoodNotFound(backCallback: () -> Unit) {
+    override fun showAlertGoodNotFound() {
         runOrPostpone {
             getFragmentStack()?.push(AlertFragment.create(
                     pageNumber = Constants.ALERT_FRAGMENT,
                     message = context.getString(R.string.tw_alert_good_not_found),
-                    iconRes = R.drawable.ic_warning_red_80dp,
-                    leftButtonDecorationInfo = ButtonDecorationInfo.back,
-                    codeConfirmForLeft = backFragmentResultHelper.setFuncForResult(backCallback)
+                    iconRes = R.drawable.ic_warning_red_80dp
+            ))
+        }
+    }
+
+    override fun showAlertIngredientNotFound() {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    pageNumber = Constants.ALERT_FRAGMENT,
+                    message = context.getString(R.string.tw_alert_ingredient_not_found)
+            ))
+        }
+    }
+
+    override fun showNotFoundedBarcodeForPosition() {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    pageNumber = Constants.ALERT_FRAGMENT,
+                    message = context.getString(R.string.tw_alert_ingredient_not_found_in_position),
+                    iconRes = R.drawable.ic_warning_red_80dp
+            ))
+        }
+    }
+
+    override fun showAlertDualism() {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    pageNumber = Constants.ALERT_FRAGMENT,
+                    message = context.getString(R.string.tw_alert_dualism),
+                    iconRes = R.drawable.ic_warning_red_80dp
+            ))
+        }
+    }
+
+    override fun showAlertGoodNotFoundInCurrentShift() {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    pageNumber = Constants.ALERT_FRAGMENT,
+                    message = context.getString(R.string.tw_alert_good_not_found_in_current_shift),
+                    iconRes = R.drawable.ic_warning_red_80dp
             ))
         }
     }
@@ -419,10 +455,10 @@ interface IScreenNavigator : ICoreNavigator {
     fun openSelectGoodScreen()
     fun openIngredientsListScreen()
     fun openOrderDetailsScreen(selectedIngredient: IngredientInfo)
-    fun openIngredientDetailsScreen(selectedIngredient: OrderIngredientDataInfo, parentCode: String)
+    fun openIngredientDetailsScreen(selectedIngredient: OrderIngredientDataInfo, parentCode: String, eanInfo: OrderByBarcode)
     fun openOrderIngredientsListScreen(weight: String, selectedIngredient: IngredientInfo)
     fun openMaterialRemakesScreen(selectedIngredient: IngredientInfo)
-    fun openMaterialRemakeDetailsScreen(selectedMaterial: MaterialIngredientDataInfo, parentCode: String, parentName: String)
+    fun openMaterialRemakeDetailsScreen(selectedMaterial: MaterialIngredientDataInfo, parentCode: String, parentName: String, barcode: OrderByBarcode)
     fun openTechOrdersScreen(selectedMaterial: MaterialIngredientDataInfo, parentCode: String)
 
     fun showDefrostingPhaseIsCompleted(nextCallback: () -> Unit)
@@ -438,6 +474,10 @@ interface IScreenNavigator : ICoreNavigator {
     fun showAlertWeightNotSet()
     fun showAlertExceededLimit(backCallback: () -> Unit)
     fun showMovingSuccessful(nextCallback: () -> Unit)
-    fun showAlertGoodNotFound(backCallback: () -> Unit)
-    fun showAlertPartNotFound(backCallback: (() -> Unit)? = null)
+    fun showAlertGoodNotFound()
+    fun showAlertPartNotFound()
+    fun showAlertDualism()
+    fun showAlertGoodNotFoundInCurrentShift()
+    fun showAlertIngredientNotFound()
+    fun showNotFoundedBarcodeForPosition()
 }
