@@ -7,7 +7,6 @@ import com.lenta.bp12.model.pojo.create_task.Basket
 import com.lenta.bp12.platform.extention.getDescription
 import com.lenta.bp12.platform.navigation.IScreenNavigator
 import com.lenta.bp12.platform.resource.IResourceManager
-import com.lenta.bp12.platform.utils.TASK_NOT_FOUND_ERROR_MSG
 import com.lenta.bp12.request.PrintPalletListNetRequest
 import com.lenta.bp12.request.pojo.print_pallet_list.PrintPalletListParams
 import com.lenta.bp12.request.pojo.print_pallet_list.PrintPalletListParamsBasket
@@ -323,7 +322,7 @@ class TaskContentViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
             }
         }.orIfNull {
             Logg.e { "task null" }
-            navigator.showInternalError(TASK_NOT_FOUND_ERROR_MSG)
+            navigator.showInternalError(resource.taskNotFoundErrorMsg)
         }
     }
 

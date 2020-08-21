@@ -13,8 +13,6 @@ import com.lenta.bp12.platform.extention.getGoodKind
 import com.lenta.bp12.platform.extention.isWholesaleType
 import com.lenta.bp12.platform.navigation.IScreenNavigator
 import com.lenta.bp12.platform.resource.IResourceManager
-import com.lenta.bp12.platform.utils.GOOD_NOT_FOUND_ERROR_MSG
-import com.lenta.bp12.platform.utils.TASK_NOT_FOUND_ERROR_MSG
 import com.lenta.bp12.repository.IDatabaseRepository
 import com.lenta.bp12.request.*
 import com.lenta.bp12.request.pojo.ProducerInfo
@@ -567,7 +565,7 @@ class GoodInfoCreateViewModel : CoreViewModel() {
                     )
                 }.orIfNull {
                     Logg.e { "task null" }
-                    navigator.showInternalError(TASK_NOT_FOUND_ERROR_MSG)
+                    navigator.showInternalError(resource.taskNotFoundErrorMsg)
                 }
             }
 
@@ -586,7 +584,7 @@ class GoodInfoCreateViewModel : CoreViewModel() {
                 Logg.d { "--> added good: $good" }
             }.orIfNull {
                 Logg.e { "good null" }
-                navigator.showInternalError(GOOD_NOT_FOUND_ERROR_MSG)
+                navigator.showInternalError(resource.goodNotFoundErrorMsg)
             }
 
             manager.clearSearchFromListParams()
@@ -786,7 +784,7 @@ class GoodInfoCreateViewModel : CoreViewModel() {
                 isExistUnsavedData = false
             }.orIfNull {
                 Logg.e { "good null" }
-                navigator.showInternalError(GOOD_NOT_FOUND_ERROR_MSG)
+                navigator.showInternalError(resource.goodNotFoundErrorMsg)
             }
 
             when (status) {
@@ -815,7 +813,7 @@ class GoodInfoCreateViewModel : CoreViewModel() {
             manager.updateCurrentGood(changedGood)
         }.orIfNull {
             Logg.e { "good null" }
-            navigator.showInternalError(GOOD_NOT_FOUND_ERROR_MSG)
+            navigator.showInternalError(resource.goodNotFoundErrorMsg)
         }
     }
 
@@ -829,7 +827,7 @@ class GoodInfoCreateViewModel : CoreViewModel() {
             manager.addGoodToBasketWithMark(changedGood, mark, getProvider())
         }.orIfNull {
             Logg.e { "good null" }
-            navigator.showInternalError(GOOD_NOT_FOUND_ERROR_MSG)
+            navigator.showInternalError(resource.goodNotFoundErrorMsg)
         }
     }
 
@@ -850,7 +848,7 @@ class GoodInfoCreateViewModel : CoreViewModel() {
                     count = quantityValue)
         }.orIfNull {
             Logg.e { "good null" }
-            navigator.showInternalError(GOOD_NOT_FOUND_ERROR_MSG)
+            navigator.showInternalError(resource.goodNotFoundErrorMsg)
         }
     }
 
@@ -872,7 +870,7 @@ class GoodInfoCreateViewModel : CoreViewModel() {
             manager.updateCurrentGood(changedGood)
         }.orIfNull {
             Logg.e { "good null" }
-            navigator.showInternalError(GOOD_NOT_FOUND_ERROR_MSG)
+            navigator.showInternalError(resource.goodNotFoundErrorMsg)
         }
     }
 
