@@ -249,7 +249,6 @@ class TaskCardViewModel : CoreViewModel(), PageSelectionListener {
     }
 
     private fun getIsTaskTypeForStatusArrived(): Boolean {
-        val curStat = taskManager.getReceivingTask()?.taskDescription?.currentStatus
         return taskType == TaskType.ReceptionDistributionCenter || taskType == TaskType.OwnProduction || taskType == TaskType.ShoppingMall
     }
 
@@ -478,7 +477,7 @@ class TaskCardViewModel : CoreViewModel(), PageSelectionListener {
             TaskStatus.Checked -> screenNavigator.openRecountStartLoadingScreen()
             TaskStatus.Recounted -> {
                 if (isBksDiff) {
-                    screenNavigator.openShipmentConfirmDiscrepanciesDialog { screenNavigator.openTransmittedLoadingScreen() }
+                    screenNavigator.openShipmentConfirmDiscrepanciesDialog (screenNavigator::openTransmittedLoadingScreen)
                 } else {
                     screenNavigator.openTransmittedLoadingScreen()
                 }
