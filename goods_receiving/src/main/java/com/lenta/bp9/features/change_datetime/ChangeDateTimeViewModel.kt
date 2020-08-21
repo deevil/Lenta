@@ -53,7 +53,7 @@ class ChangeDateTimeViewModel : CoreViewModel() {
 
     val dateCaption: String by lazy {
         val currentStatus = taskManager.getReceivingTask()?.taskDescription?.currentStatus
-        val taskType = taskManager.getReceivingTask()?.taskHeader?.taskType
+        val taskType = taskManager.getTaskType()
         if (currentStatus == TaskStatus.Checked)
             context.getString(R.string.unloading_date)
         else if (currentStatus == TaskStatus.Arrived && mode.value == ChangeDateTimeMode.NextStatus && taskType != TaskType.ShipmentRC)
@@ -66,7 +66,7 @@ class ChangeDateTimeViewModel : CoreViewModel() {
 
     val timeCaption: String by lazy {
         val currentStatus = taskManager.getReceivingTask()?.taskDescription?.currentStatus
-        val taskType = taskManager.getReceivingTask()?.taskHeader?.taskType
+        val taskType = taskManager.getTaskType()
         if (currentStatus == TaskStatus.Checked)
             context.getString(R.string.unloading_time)
         else if (currentStatus == TaskStatus.Arrived && mode.value == ChangeDateTimeMode.NextStatus && taskType != TaskType.ShipmentRC)
@@ -125,7 +125,7 @@ class ChangeDateTimeViewModel : CoreViewModel() {
     @SuppressLint("SimpleDateFormat")
     private fun isCorrectDateTime(checkDateTime: String?): Boolean {
         return try {
-            val taskType = taskManager.getReceivingTask()?.taskHeader?.taskType ?: TaskType.None
+            val taskType = taskManager.getTaskType()
             val selectedDateTime = SimpleDateFormat("dd.MM.yy HH:mm:ss").parse(checkDateTime)
             if (mode.value == ChangeDateTimeMode.NextStatus) {
                 val minNextStatusDate = Calendar.getInstance()

@@ -49,11 +49,11 @@ class TaskCardViewModel : CoreViewModel(), PageSelectionListener {
     var mode: TaskCardMode = TaskCardMode.None
 
     val taskType: TaskType by lazy {
-        taskManager.getReceivingTask()?.taskHeader?.taskType ?: TaskType.None
+        taskManager.getTaskType()
     }
 
     val tvDeliveryCaption: String by lazy {
-        when (taskManager.getReceivingTask()?.taskHeader?.taskType) {
+        when (taskType) {
             TaskType.DirectSupplier, TaskType.OwnProduction -> context.getString(R.string.incoming_delivery)
             TaskType.ReceptionDistributionCenter, TaskType.RecalculationCargoUnit, TaskType.ShoppingMall -> context.getString(R.string.transportation)
             else -> context.getString(R.string.incoming_delivery)
@@ -61,7 +61,7 @@ class TaskCardViewModel : CoreViewModel(), PageSelectionListener {
     }
 
     val tvCountCaption: String by lazy {
-        when (taskManager.getReceivingTask()?.taskHeader?.taskType) {
+        when (taskType) {
             TaskType.DirectSupplier, TaskType.RecalculationCargoUnit -> context.getString(R.string.count_SKU)
             TaskType.ReceptionDistributionCenter, TaskType.ShoppingMall -> context.getString(R.string.count_GE)
             TaskType.OwnProduction -> context.getString(R.string.count_EO)
@@ -108,13 +108,22 @@ class TaskCardViewModel : CoreViewModel(), PageSelectionListener {
     }
 
     val isSecondBtnVisible by lazy {
-        MutableLiveData(taskManager.getReceivingTask()?.taskDescription?.currentStatus.let {
-            it == TaskStatus.Recounted
-                    || (it == TaskStatus.Checked && taskType != TaskType.ShipmentPP)
-                    || (it == TaskStatus.Unloaded && (taskType == TaskType.RecalculationCargoUnit || taskType == TaskType.ReceptionDistributionCenter || taskType == TaskType.ShoppingMall))
-                    || (it == TaskStatus.ReadyToShipment && taskType == TaskType.ShipmentRC)
-        })
+        MutableLiveData(getIsCurrentStatusAvailable())
     }
+
+    ///---BEGIN THIS IS FOR SECOND BUTTON ---///
+    private fun getIsCurrentStatusAvailable(): Boolean {
+        val curStat = taskManager.getReceivingTask()?.taskDescription?.currentStatus
+        return curStat == TaskStatus.Recounted
+                || (curStat == TaskStatus.Checked && taskType != TaskType.ShipmentPP)
+                || (curStat == TaskStatus.Unloaded && isTaskTypeForUnloaded())
+                || (curStat == TaskStatus.ReadyToShipment && taskType == TaskType.ShipmentRC)
+    }
+
+    private fun isTaskTypeForUnloaded(): Boolean {
+        return (taskType == TaskType.RecalculationCargoUnit || taskType == TaskType.ReceptionDistributionCenter || taskType == TaskType.ShoppingMall)
+    }
+   ////---END THIS IS FOR SECOND BUTTON ---/////
 
     val visibilityBtnFourth by lazy {
         MutableLiveData(isShipmentPPSkipRecount)
@@ -222,18 +231,21 @@ class TaskCardViewModel : CoreViewModel(), PageSelectionListener {
 
     val changeCurrentDateTimePossible by lazy {
         val status = taskManager.getReceivingTask()?.taskDescription?.currentStatus
-        val taskType = taskManager.getReceivingTask()?.taskHeader?.taskType ?: TaskType.None
-        if ((taskType == TaskType.ReceptionDistributionCenter || taskType == TaskType.OwnProduction || taskType == TaskType.ShoppingMall)
-                && status == TaskStatus.Arrived) {
+        if (getIsTaskTypeForStatusArrived() && status == TaskStatus.Arrived) {
             false
         } else {
             status == TaskStatus.Arrived
         }
     }
 
+    private fun getIsTaskTypeForStatusArrived(): Boolean {
+        val curStat = taskManager.getReceivingTask()?.taskDescription?.currentStatus
+        return taskType == TaskType.ReceptionDistributionCenter || taskType == TaskType.OwnProduction || taskType == TaskType.ShoppingMall
+    }
+
     val changeNextDateTimePossible by lazy {
         val status = taskManager.getReceivingTask()?.taskDescription?.currentStatus
-        if (taskManager.getReceivingTask()?.taskHeader?.taskType == TaskType.ShipmentRC) {
+        if (taskType == TaskType.ShipmentRC) {
             status == TaskStatus.Traveling || status == TaskStatus.Arrived
         } else {
             status == TaskStatus.Ordered || status == TaskStatus.Traveling || status == TaskStatus.Arrived || status == TaskStatus.Checked
@@ -244,44 +256,42 @@ class TaskCardViewModel : CoreViewModel(), PageSelectionListener {
     val nextStatusDateTime: MutableLiveData<String> = MutableLiveData("")
 
     val shipmentNumberTN by lazy {
-        taskManager.getReceivingTask()?.taskDescription?.tnNumber ?: ""
+        taskManager.getReceivingTask()?.taskDescription?.tnNumber.orEmpty()
     }
     val shipmentNumberTTN by lazy {
-        taskManager.getReceivingTask()?.taskDescription?.ttnNumber ?: ""
+        taskManager.getReceivingTask()?.taskDescription?.ttnNumber.orEmpty()
     }
     val shipmentPlanDate by lazy {
-        taskManager.getReceivingTask()?.taskDescription?.plannedDeliveryDate ?: ""
+        taskManager.getReceivingTask()?.taskDescription?.plannedDeliveryDate.orEmpty()
     }
     val shipmentFactDate by lazy {
-        taskManager.getReceivingTask()?.taskDescription?.actualArrivalDate ?: ""
+        taskManager.getReceivingTask()?.taskDescription?.actualArrivalDate.orEmpty()
     }
     val shipmentOrder by lazy {
         if (taskType == TaskType.ShipmentRC) {
-            taskManager.getReceivingTask()?.taskDescription?.shipmentOrder ?: ""
+            taskManager.getReceivingTask()?.taskDescription?.shipmentOrder.orEmpty()
         } else {
-            taskManager.getReceivingTask()?.taskDescription?.orderNumber ?: ""
+            taskManager.getReceivingTask()?.taskDescription?.orderNumber.orEmpty()
         }
 
     }
     val shipmentDelivery by lazy {
         if (taskType == TaskType.ShipmentRC) {
-            taskManager.getReceivingTask()?.taskDescription?.shipmentDelivery ?: ""
+            taskManager.getReceivingTask()?.taskDescription?.shipmentDelivery.orEmpty()
         } else {
-            taskManager.getReceivingTask()?.taskDescription?.deliveryNumber ?: ""
+            taskManager.getReceivingTask()?.taskDescription?.deliveryNumber.orEmpty()
         }
 
     }
 
-    val isTaskTypeShipmentRC by lazy {
-        taskManager.getReceivingTask()?.taskHeader?.taskType == TaskType.ShipmentRC
-    }
+    val isTaskTypeShipmentRC by lazy { taskType == TaskType.ShipmentRC }
 
     val shipmentDeliveryOTM by lazy {
-        taskManager.getReceivingTask()?.taskDescription?.deliveryNumberOTM ?: ""
+        taskManager.getReceivingTask()?.taskDescription?.deliveryNumberOTM.orEmpty()
     }
 
     val shipmentTransportation by lazy {
-        taskManager.getReceivingTask()?.taskDescription?.transportationNumber ?: ""
+        taskManager.getReceivingTask()?.taskDescription?.transportationNumber.orEmpty()
     }
 
 
@@ -440,7 +450,7 @@ class TaskCardViewModel : CoreViewModel(), PageSelectionListener {
     private fun clickNextByTaskShipmentRCByStatusRecounted() {
         if (taskManager.getReceivingTask()?.taskDescription?.submergedGE?.isNotEmpty() == true) {
             screenNavigator.openShipmentAdjustmentConfirmationDialog(
-                    submergedGE = taskManager.getReceivingTask()?.taskDescription?.submergedGE ?: "",
+                    submergedGE = taskManager.getReceivingTask()?.taskDescription?.submergedGE.orEmpty(),
                     nextCallbackFunc = {
                         screenNavigator.openShipmentPostingLoadingScreen()
                     }
@@ -541,11 +551,11 @@ class TaskCardViewModel : CoreViewModel(), PageSelectionListener {
         launchUITryCatch {
             screenNavigator.showProgressLoadingData(::handleFailure)
             val params = ZmpUtzGrz39V001Params(
-                    taskNumber = taskManager.getReceivingTask()?.taskHeader?.taskNumber ?: "",
+                    taskNumber = taskManager.getReceivingTask()?.taskHeader?.taskNumber.orEmpty(),
                     deviceIP = context.getDeviceIp(),
-                    personalNumber = sessionInfo.personnelNumber ?: "",
-                    recountStartDate = taskManager.getReceivingTask()?.taskDescription?.nextStatusDate ?: "",
-                    recountStartTime = taskManager.getReceivingTask()?.taskDescription?.nextStatusTime ?: ""
+                    personalNumber = sessionInfo.personnelNumber.orEmpty(),
+                    recountStartDate = taskManager.getReceivingTask()?.taskDescription?.nextStatusDate.orEmpty(),
+                    recountStartTime = taskManager.getReceivingTask()?.taskDescription?.nextStatusTime.orEmpty()
             )
             zmpUtzGrz39V001NetRequest(params).either(::handleFailure, ::handleSuccessShipmentStartRecount)
             screenNavigator.hideProgress()
@@ -563,9 +573,9 @@ class TaskCardViewModel : CoreViewModel(), PageSelectionListener {
         launchUITryCatch {
             screenNavigator.showProgressLoadingData(::handleFailure)
             val params = FixationDepartureReceptionDistrCenterParameters(
-                    taskNumber = taskManager.getReceivingTask()?.taskHeader?.taskNumber ?: "",
+                    taskNumber = taskManager.getReceivingTask()?.taskHeader?.taskNumber.orEmpty(),
                     deviceIP = context.getDeviceIp(),
-                    personalNumber = sessionInfo.personnelNumber ?: "",
+                    personalNumber = sessionInfo.personnelNumber.orEmpty(),
                     fillings = emptyList()
             )
             fixationDepartureReceptionDistrCenterNetRequest(params).either(::handleFailure, ::handleSuccessFixationDeparture)
@@ -579,16 +589,16 @@ class TaskCardViewModel : CoreViewModel(), PageSelectionListener {
 
         taskManager.updateTaskDescription(TaskDescription.from(result.taskDescription))
 
-        screenNavigator.openTaskCardScreen(TaskCardMode.Full, taskManager.getReceivingTask()?.taskHeader?.taskType ?: TaskType.None)
+        screenNavigator.openTaskCardScreen(TaskCardMode.Full, taskManager.getTaskType())
     }
 
     private fun shipmentSkipRecount() {
         launchUITryCatch {
             screenNavigator.showProgress(context.getString(R.string.skipping_recount))
             val params = SkipRecountParameters(
-                    taskNumber = taskManager.getReceivingTask()?.taskHeader?.taskNumber ?: "",
+                    taskNumber = taskManager.getReceivingTask()?.taskHeader?.taskNumber.orEmpty(),
                     deviceIP = context.getDeviceIp(),
-                    personalNumber = sessionInfo.personnelNumber ?: "",
+                    personalNumber = sessionInfo.personnelNumber.orEmpty(),
                     comment = ""
             )
             skipRecountNetRequest(params).either(::handleFailure, ::handleSuccessSkipRecount)
@@ -604,7 +614,7 @@ class TaskCardViewModel : CoreViewModel(), PageSelectionListener {
             taskManager.updateTaskDescription(TaskDescription.from(result.taskDescription))
             taskManager.getReceivingTask()?.taskRepository?.getNotifications()?.updateWithNotifications(notifications, null, null, null)
             taskManager.getReceivingTask()?.taskRepository?.getSections()?.updateSections(sectionInfo, sectionProducts)
-            screenNavigator.openTaskCardScreen(TaskCardMode.Full, taskManager.getReceivingTask()?.taskHeader?.taskType ?: TaskType.None)
+            screenNavigator.openTaskCardScreen(TaskCardMode.Full, taskManager.getTaskType())
         }
     }
 
@@ -613,8 +623,8 @@ class TaskCardViewModel : CoreViewModel(), PageSelectionListener {
             screenNavigator.showProgressLoadingData(::handleFailure)
             val params = ZmpUtzGrz41V001Params(
                     deviceIP = context.getDeviceIp(),
-                    taskNumber = taskManager.getReceivingTask()?.taskHeader?.taskNumber ?: "",
-                    personalNumber = sessionInfo.personnelNumber ?: ""
+                    taskNumber = taskManager.getReceivingTask()?.taskHeader?.taskNumber.orEmpty(),
+                    personalNumber = sessionInfo.personnelNumber.orEmpty()
             )
             zmpUtzGrz41V001NetRequest(params).either(::handleFailure, ::handleSuccessShipmentAllowedByGis)
             screenNavigator.hideProgress()
@@ -629,7 +639,7 @@ class TaskCardViewModel : CoreViewModel(), PageSelectionListener {
 
         screenNavigator.openShipmentPostingSuccessfulDialog(
                 nextCallbackFunc = {
-                    screenNavigator.openTaskCardScreen(TaskCardMode.Full, taskManager.getReceivingTask()?.taskHeader?.taskType ?: TaskType.None)
+                    screenNavigator.openTaskCardScreen(TaskCardMode.Full, taskManager.getTaskType())
                 }
         )
     }

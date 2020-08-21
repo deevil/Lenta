@@ -28,7 +28,7 @@ class TaskReviseViewModel : CoreViewModel(), PageSelectionListener {
     val selectedPage = MutableLiveData(0)
 
     val taskCaption: String by lazy {
-        taskManager.getReceivingTask()?.taskHeader?.caption ?: ""
+        taskManager.getReceivingTask()?.taskHeader?.caption.orEmpty()
     }
 
     val notifications by lazy {

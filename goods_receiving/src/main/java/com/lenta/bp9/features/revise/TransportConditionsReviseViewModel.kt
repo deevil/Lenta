@@ -33,11 +33,11 @@ class TransportConditionsReviseViewModel : CoreViewModel(), PageSelectionListene
 
 
     val taskCaption: String by lazy {
-        taskManager.getReceivingTask()?.taskHeader?.caption ?: ""
+        taskManager.getReceivingTask()?.taskHeader?.caption.orEmpty()
     }
 
     val typeTask: TaskType by lazy {
-        taskManager.getReceivingTask()?.taskHeader?.taskType ?: TaskType.None
+        taskManager.getTaskType()
     }
 
     val notifications by lazy {

@@ -100,7 +100,7 @@ class LoadingTaskCardViewModel : CoreLoadingViewModel() {
                                 val paramsRDS = TaskContentsReceptionDistrCenterParameters(
                                         mode = mode.TaskCardModeString,
                                         deviceIP = context.getDeviceIp(),
-                                        personalNumber = sessionInfo.personnelNumber ?: "",
+                                        personalNumber = sessionInfo.personnelNumber.orEmpty(),
                                         taskNumber = taskNumber,
                                         taskType = taskTypeString,
                                         operatingSystem = OPERATING_SYSTEM_ANDROID
@@ -128,7 +128,7 @@ class LoadingTaskCardViewModel : CoreLoadingViewModel() {
                         val params = ZmpUtzGrz43V001Params(
                                 mode = mode.TaskCardModeString,
                                 deviceIP = context.getDeviceIp(),
-                                personalNumber = sessionInfo.personnelNumber ?: "",
+                                personalNumber = sessionInfo.personnelNumber.orEmpty(),
                                 taskNumber = taskNumber
                         )
                         zmpUtzGrz43V001NetRequest(params).either(::handleFailure, ::handleSuccessShipmentRC)
@@ -163,7 +163,7 @@ class LoadingTaskCardViewModel : CoreLoadingViewModel() {
             val newTask = taskManager.newReceivingTask(taskHeader, TaskDescription.from(result.taskDescription))
             newTask?.taskRepository?.getNotifications()?.updateWithNotifications(notifications, null, null, null)
             taskManager.setTask(newTask)
-            screenNavigator.openTaskCardScreen(mode, taskManager.getReceivingTask()?.taskHeader?.taskType
+            screenNavigator.openTaskCardScreen(mode, taskManager.getTaskType()
                     ?: TaskType.None)
         }
     }
@@ -318,7 +318,7 @@ class LoadingTaskCardViewModel : CoreLoadingViewModel() {
                             screenNavigator.openControlDeliveryCargoUnitsScreen() //экран Контроль погрузки ГЕ
                         }
                         else -> {
-                            screenNavigator.openTaskCardScreen(TaskCardMode.Full, taskManager.getReceivingTask()?.taskHeader?.taskType
+                            screenNavigator.openTaskCardScreen(TaskCardMode.Full, taskManager.getTaskType()
                                     ?: TaskType.None)
                         }
                     }
@@ -365,8 +365,7 @@ class LoadingTaskCardViewModel : CoreLoadingViewModel() {
                     screenNavigator.openTransferGoodsSectionScreen()
                 }
                 else -> {
-                    screenNavigator.openTaskCardScreen(TaskCardMode.Full, taskManager.getReceivingTask()?.taskHeader?.taskType
-                            ?: TaskType.None)
+                    screenNavigator.openTaskCardScreen(TaskCardMode.Full, taskManager.getTaskType())
                 }
             }
         }
