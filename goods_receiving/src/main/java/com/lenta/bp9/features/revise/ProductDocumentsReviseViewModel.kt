@@ -61,7 +61,7 @@ class ProductDocumentsReviseViewModel : CoreViewModel(), PageSelectionListener {
     var currentSortMode: SortMode = SortMode.ProductNumber
 
     private val isTaskPRCorPSP by lazy {
-        val taskType = taskManager.getReceivingTask()?.taskHeader?.taskType ?: TaskType.None
+        val taskType = taskManager.getTaskType()
         MutableLiveData(taskType == TaskType.ReceptionDistributionCenter
                 || taskType == TaskType.OwnProduction
                 || taskType == TaskType.ShoppingMall

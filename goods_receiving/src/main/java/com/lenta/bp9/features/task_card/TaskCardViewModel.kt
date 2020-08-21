@@ -107,7 +107,7 @@ class TaskCardViewModel : CoreViewModel(), PageSelectionListener {
                 taskManager.getReceivingTask()?.taskDescription?.isSkipCountMan == true
     }
 
-    val visibilitySecondBtn by lazy {
+    val isSecondBtnVisible by lazy {
         MutableLiveData(taskManager.getReceivingTask()?.taskDescription?.currentStatus.let {
             it == TaskStatus.Recounted
                     || (it == TaskStatus.Checked && taskType != TaskType.ShipmentPP)
@@ -369,138 +369,167 @@ class TaskCardViewModel : CoreViewModel(), PageSelectionListener {
     }
 
     fun onClickNext() {
-        val taskType = taskManager.getReceivingTask()?.taskHeader?.taskType ?: TaskType.None
-        if (taskType == TaskType.RecalculationCargoUnit) { //карточка trello https://trello.com/c/BShSWFgU
-            if (taskManager.getReceivingTask()?.taskHeader?.isCracked == false &&  taskManager.getReceivingTask()?.taskDescription?.isRecount == false) {
-                //todo аналитик должен дописать алгоритм, карточка 2680
-                return
-            }
+        when (taskManager.getTaskType()) {
+            TaskType.RecalculationCargoUnit -> clickNextByTaskRecalculationCargoUnit()
+            TaskType.ShipmentRC -> clickNextByTaskShipmentRC()
+            TaskType.ShipmentPP -> clickNextByTaskShipmentPP()
+            else -> clickNextByCurrentStatus()
+        }
+    }
 
-            if (taskManager.getReceivingTask()?.taskHeader?.isCracked == true &&  taskManager.getReceivingTask()?.taskDescription?.isRecount == false) {
-                //todo Не пересчётная ГЕ с признаком "взлом", узнать у аналитика как сменить статус на "Взлом", карточка 2680
-                return
-            }
+    private fun clickNextByTaskRecalculationCargoUnit() {
+        //карточка trello https://trello.com/c/BShSWFgU
+        val isCracked =
+                taskManager
+                        .getReceivingTask()
+                        ?.taskHeader
+                        ?.isCracked
 
-            if ( (taskManager.getReceivingTask()?.taskHeader?.isCracked == true &&  taskManager.getReceivingTask()?.taskDescription?.isRecount == true) ||
-                    (taskManager.getReceivingTask()?.taskHeader?.isCracked == false &&  taskManager.getReceivingTask()?.taskDescription?.isRecount == true) ) {
-                screenNavigator.openRecountStartPGELoadingScreen()
-                return
-            }
+        val isRecount =
+                taskManager
+                        .getReceivingTask()
+                        ?.taskDescription
+                        ?.isRecount
 
+        if (isCracked == false && isRecount == false) {
+            //todo аналитик должен дописать алгоритм, карточка 2680
             return
         }
 
-        if (taskType == TaskType.ShipmentRC) {
-            when (currentStatus.value) {
-                TaskStatus.ReadyToShipment -> screenNavigator.openTransportationNumberScreen()
-                TaskStatus.Traveling -> {
-                    if (taskManager.getReceivingTask()?.taskDescription?.isAlco == true) {
-                        screenNavigator.openDriverDataScreen()
-                    } else {
-                        screenNavigator.openShipmentArrivalLockLoadingScreen(
-                                TaskDriverDataInfo(
-                                        initials = "",
-                                        passportData = "",
-                                        carMake = "",
-                                        carNumber = "",
-                                        additionalCarNumber = "",
-                                        transportCompanyCode = ""
-                                )
-                        )
-                    }
-                }
-                TaskStatus.Arrived -> screenNavigator.openShipmentStartLoadingScreen(taskNumber = taskManager.getReceivingTask()?.taskHeader?.taskNumber ?: "")
-                TaskStatus.ConditionsTested -> shipmentStartRecount()
-                TaskStatus.Recounted -> {
-                    if (taskManager.getReceivingTask()?.taskDescription?.submergedGE?.isNotEmpty() == true) {
-                        screenNavigator.openShipmentAdjustmentConfirmationDialog(
-                                submergedGE = taskManager.getReceivingTask()?.taskDescription?.submergedGE ?: "",
-                                nextCallbackFunc = {
-                                    screenNavigator.openShipmentPostingLoadingScreen()
-                                }
-                        )
-                    } else {
+        if (isCracked == true && isRecount == false) {
+            //todo Не пересчётная ГЕ с признаком "взлом", узнать у аналитика как сменить статус на "Взлом", карточка 2680
+            return
+        }
+
+        if ( (isCracked == true && isRecount == true)
+                || (isCracked == false &&  isRecount == true) ) {
+            screenNavigator.openRecountStartPGELoadingScreen()
+        }
+    }
+
+    private fun clickNextByTaskShipmentRC() {
+        when (currentStatus.value) {
+            TaskStatus.ReadyToShipment -> screenNavigator.openTransportationNumberScreen()
+            TaskStatus.Traveling -> clickNextByTaskShipmentRCByStatusTraveling()
+            TaskStatus.Arrived -> screenNavigator.openShipmentStartLoadingScreen(taskNumber = taskManager.getReceivingTask()?.taskHeader?.taskNumber.orEmpty())
+            TaskStatus.ConditionsTested -> shipmentStartRecount()
+            TaskStatus.Recounted -> clickNextByTaskShipmentRCByStatusRecounted()
+            TaskStatus.ShipmentAllowedByGis -> shipmentAllowedByGis() // https://trello.com/c/FnABffRE
+            TaskStatus.Loaded -> screenNavigator.openInputOutgoingFillingsScreen()
+        }
+    }
+
+    private fun clickNextByTaskShipmentRCByStatusTraveling() {
+        val isAlco = taskManager.getReceivingTask()?.taskDescription?.isAlco
+        if (isAlco == true) {
+            screenNavigator.openDriverDataScreen()
+        } else {
+            screenNavigator.openShipmentArrivalLockLoadingScreen(
+                    TaskDriverDataInfo(
+                            initials = "",
+                            passportData = "",
+                            carMake = "",
+                            carNumber = "",
+                            additionalCarNumber = "",
+                            transportCompanyCode = ""
+                    )
+            )
+        }
+    }
+
+    private fun clickNextByTaskShipmentRCByStatusRecounted() {
+        if (taskManager.getReceivingTask()?.taskDescription?.submergedGE?.isNotEmpty() == true) {
+            screenNavigator.openShipmentAdjustmentConfirmationDialog(
+                    submergedGE = taskManager.getReceivingTask()?.taskDescription?.submergedGE ?: "",
+                    nextCallbackFunc = {
                         screenNavigator.openShipmentPostingLoadingScreen()
                     }
-                }
-                TaskStatus.ShipmentAllowedByGis -> shipmentAllowedByGis() // https://trello.com/c/FnABffRE
-                TaskStatus.Loaded -> screenNavigator.openInputOutgoingFillingsScreen()
-            }
-            return
+            )
+        } else {
+            screenNavigator.openShipmentPostingLoadingScreen()
         }
+    }
 
+    private fun clickNextByTaskShipmentPP() {
         //ТП для ОПП. 5.5.3	Разработка карточки задания на отгрузку в МП GRZ
-        if (taskManager.getReceivingTask()?.taskHeader?.taskType == TaskType.ShipmentPP) {
-            when (currentStatus.value) {
-                TaskStatus.ReadyToShipment -> screenNavigator.openStartReviseLoadingScreen()
-                TaskStatus.Checked -> screenNavigator.openRecountStartLoadingScreen()
-                TaskStatus.Recounted -> {
-                    if (isBksDiff) {
-                        screenNavigator.openShipmentConfirmDiscrepanciesDialog(
-                                nextCallbackFunc = {
-                                    screenNavigator.openTransmittedLoadingScreen()
-                                }
-                        )
-                    } else {
-                        screenNavigator.openTransmittedLoadingScreen()
-                    }
+        when (currentStatus.value) {
+            TaskStatus.ReadyToShipment -> screenNavigator.openStartReviseLoadingScreen()
+            TaskStatus.Checked -> screenNavigator.openRecountStartLoadingScreen()
+            TaskStatus.Recounted -> {
+                if (isBksDiff) {
+                    screenNavigator.openShipmentConfirmDiscrepanciesDialog { screenNavigator.openTransmittedLoadingScreen() }
+                } else {
+                    screenNavigator.openTransmittedLoadingScreen()
                 }
             }
-            return
         }
+    }
 
+    private fun clickNextByCurrentStatus() {
         when (taskManager.getReceivingTask()?.taskDescription?.currentStatus) {
-            TaskStatus.Ordered, TaskStatus.Traveling, TaskStatus.TemporaryRejected -> {
-                if (isEdo &&
-                        taskManager.getReceivingTask()?.taskHeader?.taskType == TaskType.DirectSupplier &&
-                        (taskManager.getReceivingTask()?.taskDescription?.currentStatus == TaskStatus.Ordered || taskManager.getReceivingTask()?.taskDescription?.currentStatus == TaskStatus.TemporaryRejected) ) { //trello https://trello.com/c/XKpOCvZo
-                    screenNavigator.openEdoDialog(
-                            missing = {screenNavigator.openRegisterArrivalLoadingScreen(isInStockPaperTTN = false, isEdo = true, status = taskManager.getReceivingTask()?.taskDescription?.currentStatus ?: TaskStatus.Other)},
-                            inStock = {screenNavigator.openRegisterArrivalLoadingScreen(isInStockPaperTTN = true, isEdo = true, status = taskManager.getReceivingTask()?.taskDescription?.currentStatus ?: TaskStatus.Other)}
-                    )
-                } else {
-                    screenNavigator.openRegisterArrivalLoadingScreen()
-                }
-            }
-            TaskStatus.Arrived -> {
-                if (isEdo && taskType == TaskType.DirectSupplier && incomingDelivery.isEmpty()) {
-                    screenNavigator.openCreateInboundDeliveryDialog(
-                            yesCallbackFunc = {
-                                screenNavigator.openStartReviseLoadingScreen()
-                            }
-                    )
-                } else if (taskType == TaskType.ReceptionDistributionCenter || taskType == TaskType.OwnProduction || taskType == TaskType.ShoppingMall) {
-                    screenNavigator.openUnloadingStartRDSLoadingScreen()
-                } else {
-                    screenNavigator.openStartReviseLoadingScreen()
-                }
-            }
+            TaskStatus.Ordered, TaskStatus.Traveling, TaskStatus.TemporaryRejected -> clickNextByStatusOrderedTravelingTemporaryRejected()
+            TaskStatus.Arrived -> clickNextByStatusArrived()
             TaskStatus.Checked -> screenNavigator.openStartConditionsReviseLoadingScreen()
-            TaskStatus.Unloaded -> {
-                when (taskManager.getReceivingTask()?.taskHeader?.taskType) {
-                    TaskType.ReceptionDistributionCenter, TaskType.ShoppingMall -> {
-                        screenNavigator.openNoTransportDefectDeclaredDialog(
-                                nextCallbackFunc = {
-                                    if (taskManager.getReceivingTask()?.taskDescription?.quantityOutgoingFillings == 0) {
-                                        fixationDeparture()
-                                    } else {
-                                        screenNavigator.openInputOutgoingFillingsScreen()
-                                    }
-                                }
-                        )
-                    }
-                    TaskType.OwnProduction -> {
-                        fixationDeparture()
-                    }
-                    else -> {
-                        screenNavigator.openRecountStartLoadingScreen()
-                    }
-                }
-            }
+            TaskStatus.Unloaded -> clickNextByStatusUnloaded()
             TaskStatus.Recounted -> screenNavigator.openTransmittedLoadingScreen()
             TaskStatus.Departure -> screenNavigator.openStartReviseLoadingScreen()
             TaskStatus.Booked -> screenNavigator.openTransferGoodsSectionScreen()
             TaskStatus.Completed -> screenNavigator.openFormedDocsScreen()
+        }
+    }
+
+    private fun clickNextByStatusOrderedTravelingTemporaryRejected() {
+        val taskType = taskManager.getTaskType()
+        val currentStatus = taskManager.getReceivingTask()?.taskDescription?.currentStatus ?: TaskStatus.Other
+        if (isEdo
+                && taskType == TaskType.DirectSupplier
+                && (currentStatus == TaskStatus.Ordered || currentStatus == TaskStatus.TemporaryRejected) ) { //trello https://trello.com/c/XKpOCvZo
+            screenNavigator.openEdoDialog(
+                    missing = {screenNavigator.openRegisterArrivalLoadingScreen(
+                            isInStockPaperTTN = false,
+                            isEdo = true,
+                            status = currentStatus
+                    )},
+                    inStock = {screenNavigator.openRegisterArrivalLoadingScreen(
+                            isInStockPaperTTN = true,
+                            isEdo = true,
+                            status = currentStatus
+                    )}
+            )
+        } else {
+            screenNavigator.openRegisterArrivalLoadingScreen()
+        }
+    }
+
+    private fun clickNextByStatusArrived() {
+        if (isEdo
+                && taskType == TaskType.DirectSupplier
+                && incomingDelivery.isEmpty()) {
+            screenNavigator.openCreateInboundDeliveryDialog{ screenNavigator.openStartReviseLoadingScreen() }
+        } else if (taskType == TaskType.ReceptionDistributionCenter
+                || taskType == TaskType.OwnProduction
+                || taskType == TaskType.ShoppingMall) {
+            screenNavigator.openUnloadingStartRDSLoadingScreen()
+        } else {
+            screenNavigator.openStartReviseLoadingScreen()
+        }
+    }
+
+    private fun clickNextByStatusUnloaded() {
+        when (taskManager.getTaskType()) {
+            TaskType.ReceptionDistributionCenter, TaskType.ShoppingMall -> {
+                screenNavigator.openNoTransportDefectDeclaredDialog{ nextCallbackFuncOpenNoTransportDefectDeclaredDialog() }
+            }
+            TaskType.OwnProduction -> fixationDeparture()
+            else -> screenNavigator.openRecountStartLoadingScreen()
+        }
+    }
+
+    private fun nextCallbackFuncOpenNoTransportDefectDeclaredDialog() {
+        if (taskManager.getReceivingTask()?.taskDescription?.quantityOutgoingFillings == 0) {
+            fixationDeparture()
+        } else {
+            screenNavigator.openInputOutgoingFillingsScreen()
         }
     }
 

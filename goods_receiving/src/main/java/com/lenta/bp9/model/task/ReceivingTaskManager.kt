@@ -31,4 +31,8 @@ class ReceivingTaskManager : IReceivingTaskManager {
     override fun setTask(receivingTask: ReceivingTask?) {
         currentReceivingTask = receivingTask
     }
+
+    override fun getTaskType(): TaskType {
+        return currentReceivingTask?.taskHeader?.taskType ?: TaskType.None
+    }
 }
