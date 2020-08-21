@@ -90,6 +90,10 @@
 
                 <TextView
                     style="@style/CellTextStyle"
+                    app:autoSizeTextType = "uniform"
+                    app:autoSizeMaxTextSize="@dimen/text_14sp"
+                    app:autoSizeMinTextSize="@dimen/text_10sp"
+                    app:autoSizeStepGranularity="@dimen/text_2sp"
                     android:text="@{item.plan}"
                     tools:text="105.105 кг" />
 
@@ -104,6 +108,10 @@
 
                 <TextView
                     style="@style/CellTextStyle"
+                    app:autoSizeTextType = "uniform"
+                    app:autoSizeMaxTextSize="@dimen/text_14sp"
+                    app:autoSizeMinTextSize="@dimen/text_10sp"
+                    app:autoSizeStepGranularity="@dimen/text_2sp"
                     android:text="@{item.fact}"
                     tools:text="105.105 кг" />
 
