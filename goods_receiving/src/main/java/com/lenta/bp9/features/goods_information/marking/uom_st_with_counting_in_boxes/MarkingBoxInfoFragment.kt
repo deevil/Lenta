@@ -80,8 +80,9 @@ class MarkingBoxInfoFragment : CoreFragment<FragmentMarkingBoxInfoBinding, Marki
 
     //https://bitbucket.org/eigenmethodlentatempteam/lenta-pdct-android/pull-requests/534/grz_features_6037/diff
     override fun onDestroyView() {
-        super.onDestroyView()
         binding?.etCount?.setOnKeyListener(null)
+        binding?.spinnerQuality?.onItemSelectedListener = null
+        super.onDestroyView()
     }
 
     override fun onToolbarButtonClick(view: View) {

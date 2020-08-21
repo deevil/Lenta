@@ -92,8 +92,7 @@ class MarkingProductFailureViewModel : CoreViewModel() {
                                     ?.run {
                                         getBlocksDiscrepancies()
                                                 .findBlocksDiscrepanciesOfProduct(it)
-                                                .filter { blockDiscrepancies -> blockDiscrepancies.isScan }
-                                                .size
+                                                .count { blockDiscrepancies -> blockDiscrepancies.isScan }
                                     }
                                     ?: 0
                                     ) > 0

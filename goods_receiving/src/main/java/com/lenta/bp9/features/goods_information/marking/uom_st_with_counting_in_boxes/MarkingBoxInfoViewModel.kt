@@ -416,19 +416,12 @@ class MarkingBoxInfoViewModel : CoreViewModel(),
     fun onClickRollback() {
         //сначала проверяем, неотсканирован ли последним блок
         val lastScannedTypesStamps = processMarkingBoxProductService.getLastScannedTypesStamps()
-        lastScannedTypesStamps
-                .takeIf { it == TypeLastStampScanned.BOX }
-                ?.let {
-                    val countDelBlocksForBox = processMarkingBoxProductService.rollbackTypeLastStampScanned()
-                    //уменьшаем кол-во отсканированных блоков на кол-во удаленных в текущей сессии
-                    minusScannedBlocks(countDelBlocksForBox)
-                    //уменьшаем кол-во отсканированных марок (блок/gtin) на единицу в текущей сессии
-                    minusScannedStamps(1)
-                    return
-                }
-
-        if (productInfo.value?.isControlGTIN == true) {
-            rollbackControlGtin()
+        if(lastScannedTypesStamps == TypeLastStampScanned.BOX) {
+            val countDelBlocksForBox = processMarkingBoxProductService.rollbackTypeLastStampScanned()
+            //уменьшаем кол-во отсканированных блоков на кол-во удаленных в текущей сессии
+            minusScannedBlocks(countDelBlocksForBox)
+            //уменьшаем кол-во отсканированных марок (блок/gtin) на единицу в текущей сессии
+            minusScannedStamps(1)
             return
         }
 
@@ -514,9 +507,7 @@ class MarkingBoxInfoViewModel : CoreViewModel(),
             }
             //обнуляем кол-во отсканированных блоков
             countScannedBlocks.value = 0
-        }
-
-        if (checkBoxGtinStampControl) {
+        } else if (checkBoxGtinStampControl) {
             addBlock(
                     blockInfo = lastScannedBlock,
                     typeDiscrepancies = TYPE_DISCREPANCIES_QUALITY_NORM,
@@ -525,6 +516,7 @@ class MarkingBoxInfoViewModel : CoreViewModel(),
             //оставляем кол-во отсканированных блоков равное 1
             countScannedBlocks.value = 1
         }
+
         //оставляем кол-во отсканированных марок (блок/gtin) равное 1
         countScannedStamps.value = 1
     }
@@ -745,17 +737,7 @@ class MarkingBoxInfoViewModel : CoreViewModel(),
         }
 
         if (checkBoxGtinControl.value == false) {
-            if (stampCode.substring(0, 2) == "0${paramGrzExclGtin.value}") {
-                addBoxGtinControl(stampCode, blockInfo, typeDiscrepancies)
-            } else {
-                checkBoxGtinStampControl.value = true
-                //этот блок считается НЕ обработанным, помечаем его как не прошедшего контроль GTIN, и на экране в поле «Контроль марок» кол-во не обновляем, т.е. countScannedBlocks не увеличиваем на единицу
-                addBlock(
-                        blockInfo = blockInfo,
-                        typeDiscrepancies = typeDiscrepancies,
-                        isGtinControlPassed = false
-                )
-            }
+            notCheckBoxGtinControl(stampCode, blockInfo, typeDiscrepancies)
             return
         }
 
@@ -764,6 +746,22 @@ class MarkingBoxInfoViewModel : CoreViewModel(),
             typeDiscrepancies?.let { currentTypeDiscrepancies ->
                 gtinControlCheck(currentBlock, currentTypeDiscrepancies)
             }
+        }
+    }
+
+    private fun notCheckBoxGtinControl(stampCode: String, blockInfo: TaskBlockInfo?, typeDiscrepancies: String?) {
+        val blockBarcode = stampCode.substring(0, 2)
+        val paramGrzExclGtinValue = "0${paramGrzExclGtin.value}"
+        if (blockBarcode == paramGrzExclGtinValue) {
+            addBoxGtinControl(stampCode, blockInfo, typeDiscrepancies)
+        } else {
+            checkBoxGtinStampControl.value = true
+            //этот блок считается НЕ обработанным, помечаем его как не прошедшего контроль GTIN, и на экране в поле «Контроль марок» кол-во не обновляем, т.е. countScannedBlocks не увеличиваем на единицу
+            addBlock(
+                    blockInfo = blockInfo,
+                    typeDiscrepancies = typeDiscrepancies,
+                    isGtinControlPassed = false
+            )
         }
     }
 
