@@ -1,13 +1,14 @@
 package com.lenta.bp12.model
 
 import androidx.lifecycle.MutableLiveData
-import com.lenta.bp12.model.pojo.*
+import com.lenta.bp12.model.pojo.Block
+import com.lenta.bp12.model.pojo.Mark
+import com.lenta.bp12.model.pojo.Part
+import com.lenta.bp12.model.pojo.Position
 import com.lenta.bp12.model.pojo.create_task.Basket
 import com.lenta.bp12.model.pojo.open_task.GoodOpen
 import com.lenta.bp12.model.pojo.open_task.TaskOpen
-import com.lenta.bp12.platform.extention.getControlType
-import com.lenta.bp12.platform.extention.isAlcohol
-import com.lenta.bp12.platform.extention.isCommon
+import com.lenta.bp12.platform.extention.*
 import com.lenta.bp12.repository.IDatabaseRepository
 import com.lenta.bp12.request.GoodInfoResult
 import com.lenta.bp12.request.SendTaskDataParams
@@ -57,21 +58,23 @@ class OpenTaskManager @Inject constructor(
 
     /** Метод добавляет обычные в товары в корзину */
     override suspend fun addGoodToBasket(good: GoodOpen, provider: ProviderInfo, count: Double, part: Part?) {
-        // Переменная которая служит счётчиком - сколько товаров надо добавить
-        var leftToAdd = count
-        // Пока все товары не добавлены крутимся в цикле
-        while (leftToAdd > 0) {
-            // Найдем корзину в которой достаточно места для нового товара, или создадим ее
-            val suitableBasket = getOrCreateSuitableBasket(good, provider)
-            suitableBasket?.let { basket ->
+        currentTask.value?.let { taskValue ->
+            // Переменная которая служит счётчиком - сколько товаров надо добавить
+            var leftToAdd = count
+            // Пока все товары не добавлены крутимся в цикле
+            while (leftToAdd > 0) {
+                // Найдем корзину в которой достаточно места для нового товара, или создадим ее
+                val suitableBasket = getOrCreateSuitableBasket(taskValue, good, provider)
+
                 //Максимальное количество этого товара, которе может влезть в эту корзину, учитывая оставшийся объем в ней
-                val maxQuantity = floor(basket.freeVolume.div(good.volume))
+                val maxQuantity = floor(suitableBasket.freeVolume.div(good.volume))
                 //Если макс количество больше чем нужно добавить
                 val quantity = if (maxQuantity >= leftToAdd) {
                     leftToAdd // то добавляем все что осталось добавить
                 } else {
                     maxQuantity // или только то количество что влезет
                 }
+
                 if (part != null) {
                     // Скопируем партию потому что сверху приходит одна, для каждой корзины будет своя партия
                     val newPart = part.copy()
@@ -81,11 +84,11 @@ class OpenTaskManager @Inject constructor(
                     // Добавим партию в товар
                     good.addPart(newPart)
                     // Добавим пустую позицию товара (просто надо)
-                    addEmptyPosition(good, provider, basket)
+                    addEmptyPosition(good, provider, suitableBasket)
                     // Добавим товар в корзину
                 }
                 // Добавим товар в корзину
-                basket.addGood(good, quantity)
+                suitableBasket.addGood(good, quantity)
                 // Уменьшим количество товара которое осталось добавить
                 leftToAdd -= quantity
 
@@ -94,7 +97,7 @@ class OpenTaskManager @Inject constructor(
 
                 // Если нажата кнопка закрыть корзину то пометим все корзины для закрытия
                 if (isBasketsNeedsToBeClosed) {
-                    basket.markedForLock = true
+                    suitableBasket.markedForLock = true
                 }
             }
         }
@@ -110,24 +113,24 @@ class OpenTaskManager @Inject constructor(
 
     /** Добавляет товар в корзину один раз без цикла, и при этом добавляет в товар марку */
     override suspend fun addGoodToBasketWithMark(good: GoodOpen, mark: Mark, provider: ProviderInfo) {
-        val suitableBasket = getOrCreateSuitableBasket(good, provider)
-
-        suitableBasket?.let { basket ->
+        currentTask.value?.let { taskValue ->
+            val suitableBasket = getOrCreateSuitableBasket(taskValue, good, provider)
             // Добавим марке номер корзины
             mark.basketNumber = suitableBasket.index
             // Положим в товар
             good.addMark(mark)
             // Продублируем марку в позиции (просто надо)
-            addEmptyPosition(good, provider, basket)
+            addEmptyPosition(good, provider, suitableBasket)
             // Добавим товар в корзину
-            basket.addGood(good, 1.0)
+            suitableBasket.addGood(good, 1.0)
             // Добавим товар в задание
             saveGoodInTask(good)
             // Обновим товар в менеджере
             updateCurrentGood(good)
 
-            basket.isLocked = true
-
+            if (isBasketsNeedsToBeClosed) {
+                suitableBasket.isLocked = true
+            }
         }
     }
 
@@ -146,30 +149,28 @@ class OpenTaskManager @Inject constructor(
     }
 
     /** Метод ищет корзины или создает их в зависимости от того что вернет getBasket() */
-    override suspend fun getOrCreateSuitableBasket(good: Good, provider: ProviderInfo): Basket? {
+    override suspend fun getOrCreateSuitableBasket(task: TaskOpen, good: GoodOpen, provider: ProviderInfo): Basket {
         return withContext(Dispatchers.IO) {
             val basketVolume = database.getBasketVolume()
                     ?: error(NULL_BASKET_VOLUME)
-            currentTask.value?.let { task ->
-                val basketList = task.baskets
+            val basketList = task.baskets
 
-                //Найдем корзину в списке корзин задания
-                getBasket(provider.code) //Функция возвращает либо корзину с подходящими параметрами и достаточным объемом или возвращает null
-                        .orIfNull {
-                            //Если корзина не найдена - создадим ее
-                            val index = basketList.lastOrNull()?.index?.plus(1) ?: 1
-                            Basket(
-                                    index = index,
-                                    section = good.section,
-                                    volume = basketVolume,
-                                    provider = provider,
-                                    control = good.control,
-                                    goodType = ""
-                            ).also {
-                                addBasket(it)
-                            }
+            //Найдем корзину в списке корзин задания
+            getBasket(provider.code.orEmpty()) //Функция возвращает либо корзину с подходящими параметрами и достаточным объемом или возвращает null
+                    .orIfNull {
+                        //Если корзина не найдена - создадим ее
+                        val index = basketList.lastOrNull()?.index?.plus(1) ?: INDEX_OF_FIRST_BASKET
+                        Basket(
+                                index = index,
+                                section = good.section,
+                                volume = basketVolume,
+                                provider = provider,
+                                control = good.control,
+                                goodType = task.goodType
+                        ).also {
+                            addBasket(it)
                         }
-            }
+                    }
         }
     }
 
@@ -187,6 +188,7 @@ class OpenTaskManager @Inject constructor(
 
     private fun isLastBasketMatches(basket: Basket, good: GoodOpen, providerCode: String): Boolean {
         return basket.section == good.section &&
+                basket.control == good.control &&
                 basket.provider?.code == providerCode &&
                 !basket.isLocked &&
                 isBasketHasEnoughVolume(basket, good)
@@ -618,6 +620,7 @@ class OpenTaskManager @Inject constructor(
 
     companion object {
         private const val NULL_BASKET_VOLUME = "Объем корзины отсутствует"
+        private const val INDEX_OF_FIRST_BASKET = 1
     }
 
 }
@@ -640,7 +643,7 @@ interface IOpenTaskManager {
 
     suspend fun addGoodToBasket(good: GoodOpen, provider: ProviderInfo, count: Double, part: Part?)
     suspend fun addGoodToBasketWithMark(good: GoodOpen, mark: Mark, provider: ProviderInfo)
-    suspend fun getOrCreateSuitableBasket(good: Good, provider: ProviderInfo): Basket?
+    suspend fun getOrCreateSuitableBasket(task: TaskOpen, good: GoodOpen, provider: ProviderInfo): Basket?
 
     fun addBasket(basket: Basket)
     fun getBasket(providerCode: String): Basket?

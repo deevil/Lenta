@@ -1,10 +1,10 @@
 package com.lenta.bp12.platform.extention
 
+import com.lenta.bp12.model.pojo.Good
 import com.lenta.bp12.model.pojo.create_task.Basket
-import com.lenta.bp12.model.pojo.create_task.GoodCreate
 import com.lenta.shared.utilities.orIfNull
 
-fun Basket.addGood(good: GoodCreate, quantity: Double) {
+fun Basket.addGood(good: Good, quantity: Double) {
     if (freeVolume >= good.volume * quantity) {
         freeVolume -= (good.volume * quantity)
         val oldQuantity = goods[good].orIfNull { 0.0 }
@@ -13,7 +13,7 @@ fun Basket.addGood(good: GoodCreate, quantity: Double) {
     }
 }
 
-fun Basket.deleteGood(good: GoodCreate) {
+fun Basket.deleteGood(good: Good) {
     if (freeVolume + good.volume <= volume) {
         val oldQuantity = goods[good].orIfNull { 0.0 }
         val volumeToReturnToBasket = oldQuantity * good.volume
@@ -39,10 +39,18 @@ fun Basket.getDescription(isDivBySection: Boolean): String {
     }
 }
 
-fun Basket.getGoodList() : List<GoodCreate> {
+fun Basket.getGoodList() : List<Good> {
     return goods.keys.toList()
 }
 
 fun Basket.getSize() : Int {
     return getGoodList().size
+}
+
+fun Basket.getQuantityFromGoodList() : Int {
+    return getGoodList().size
+}
+
+fun Basket.getQuantityOfGood(good: Good): Double {
+    return goods[good] ?: 0.0
 }

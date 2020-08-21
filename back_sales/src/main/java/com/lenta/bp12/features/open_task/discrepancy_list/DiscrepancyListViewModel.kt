@@ -2,11 +2,14 @@ package com.lenta.bp12.features.open_task.discrepancy_list
 
 import com.lenta.bp12.model.IOpenTaskManager
 import com.lenta.bp12.platform.navigation.IScreenNavigator
+import com.lenta.bp12.platform.resource.IResourceManager
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.platform.device_info.DeviceInfo
 import com.lenta.shared.platform.viewmodel.CoreViewModel
+import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.SelectionItemsHelper
 import com.lenta.shared.utilities.extentions.map
+import com.lenta.shared.utilities.orIfNull
 import javax.inject.Inject
 
 class DiscrepancyListViewModel : CoreViewModel() {
@@ -22,6 +25,9 @@ class DiscrepancyListViewModel : CoreViewModel() {
 
     @Inject
     lateinit var deviceInfo: DeviceInfo
+
+    @Inject
+    lateinit var resource: IResourceManager
 
 
     /**
@@ -80,6 +86,9 @@ class DiscrepancyListViewModel : CoreViewModel() {
                     navigator.openGoodInfoOpenScreen()
                 }
             }
+        }.orIfNull {
+            Logg.e { "task null" }
+            navigator.showInternalError(resource.taskNotFoundErrorMsg)
         }
     }
 
@@ -108,6 +117,9 @@ class DiscrepancyListViewModel : CoreViewModel() {
 
             selectionsHelper.clearPositions()
             manager.updateCurrentTask(task)
+        }.orIfNull {
+            Logg.e { "task null" }
+            navigator.showInternalError(resource.taskNotFoundErrorMsg)
         }
     }
 
@@ -123,6 +135,9 @@ class DiscrepancyListViewModel : CoreViewModel() {
 
             selectionsHelper.clearPositions()
             manager.updateCurrentTask(task)
+        }.orIfNull {
+            Logg.e { "task null" }
+            navigator.showInternalError(resource.taskNotFoundErrorMsg)
         }
     }
 
@@ -136,6 +151,9 @@ class DiscrepancyListViewModel : CoreViewModel() {
                 manager.finishCurrentTask()
                 prepareToSaveAndOpenNextScreen()
             }
+        }.orIfNull {
+            Logg.e { "good null" }
+            navigator.showInternalError(resource.goodNotFoundErrorMsg)
         }
     }
 

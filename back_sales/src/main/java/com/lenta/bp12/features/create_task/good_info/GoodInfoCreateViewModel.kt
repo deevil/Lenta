@@ -7,10 +7,7 @@ import com.lenta.bp12.model.pojo.Part
 import com.lenta.bp12.model.pojo.Position
 import com.lenta.bp12.model.pojo.create_task.Basket
 import com.lenta.bp12.model.pojo.create_task.GoodCreate
-import com.lenta.bp12.platform.extention.extractAlcoCode
-import com.lenta.bp12.platform.extention.getControlType
-import com.lenta.bp12.platform.extention.getGoodKind
-import com.lenta.bp12.platform.extention.isWholesaleType
+import com.lenta.bp12.platform.extention.*
 import com.lenta.bp12.platform.navigation.IScreenNavigator
 import com.lenta.bp12.platform.resource.IResourceManager
 import com.lenta.bp12.repository.IDatabaseRepository
@@ -952,10 +949,11 @@ class GoodInfoCreateViewModel : CoreViewModel() {
     }
 
     fun onClickClose() {
-        navigator.showCloseBasketDialog(
-                yesCallback = {
-                    manager.isBasketsNeedsToBeClosed = true
-                    saveChangesAndExit()
-                })
+        navigator.showCloseBasketDialog(::handleYesOnClickCloseCallback)
+    }
+
+    private fun handleYesOnClickCloseCallback() {
+        manager.isBasketsNeedsToBeClosed = true
+        saveChangesAndExit()
     }
 }

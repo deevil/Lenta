@@ -7,10 +7,7 @@ import com.lenta.bp12.model.pojo.Position
 import com.lenta.bp12.model.pojo.create_task.Basket
 import com.lenta.bp12.model.pojo.create_task.GoodCreate
 import com.lenta.bp12.model.pojo.create_task.TaskCreate
-import com.lenta.bp12.platform.extention.addGood
-import com.lenta.bp12.platform.extention.getGoodList
-import com.lenta.bp12.platform.extention.isAlcohol
-import com.lenta.bp12.platform.extention.isCommon
+import com.lenta.bp12.platform.extention.*
 import com.lenta.bp12.repository.IDatabaseRepository
 import com.lenta.bp12.request.GoodInfoResult
 import com.lenta.bp12.request.SendTaskDataParams
@@ -64,8 +61,6 @@ class CreateTaskManager @Inject constructor(
                 } else {
                     maxQuantity // или только то количество что влезет
                 }
-
-                if (quantity == 0.0) break
 
                 //Если передаем партию, то
                 if (part != null) {
@@ -124,7 +119,6 @@ class CreateTaskManager @Inject constructor(
             if (isBasketsNeedsToBeClosed) {
                 suitableBasket.isLocked = true
             }
-
         }
     }
 
@@ -148,7 +142,7 @@ class CreateTaskManager @Inject constructor(
             getBasket(provider.code.orEmpty()) //Функция возвращает либо корзину с подходящими параметрами и достаточным объемом или возвращает null
                     .orIfNull {
                         //Если корзина не найдена - создадим ее
-                        val index = basketList.lastOrNull()?.index?.plus(1) ?: 0
+                        val index = basketList.lastOrNull()?.index?.plus(1) ?: INDEX_OF_FIRST_BASKET
                         Basket(
                                 index = index,
                                 section = good.section,
@@ -159,7 +153,6 @@ class CreateTaskManager @Inject constructor(
                         ).also {
                             addBasket(it)
                         }
-
                     }
         }
     }
@@ -369,6 +362,7 @@ class CreateTaskManager @Inject constructor(
 
     companion object {
         private const val NULL_BASKET_VOLUME = "Объем корзины отсутствует"
+        private const val INDEX_OF_FIRST_BASKET = 1
     }
 
 }

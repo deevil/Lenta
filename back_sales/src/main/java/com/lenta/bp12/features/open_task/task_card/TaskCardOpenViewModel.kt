@@ -14,9 +14,11 @@ import com.lenta.shared.exception.Failure
 import com.lenta.shared.platform.device_info.DeviceInfo
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.settings.IAppSettings
+import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.databinding.PageSelectionListener
 import com.lenta.shared.utilities.extentions.launchUITryCatch
 import com.lenta.shared.utilities.extentions.map
+import com.lenta.shared.utilities.orIfNull
 import javax.inject.Inject
 
 class TaskCardOpenViewModel : CoreViewModel(), PageSelectionListener {
@@ -164,6 +166,9 @@ class TaskCardOpenViewModel : CoreViewModel(), PageSelectionListener {
             } else {
                 unblockTaskAndExit(task.number)
             }
+        }.orIfNull {
+            Logg.e { "task null" }
+            navigator.showInternalError(resource.taskNotFoundErrorMsg)
         }
     }
 

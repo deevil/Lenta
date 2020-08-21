@@ -6,10 +6,7 @@ import com.lenta.bp12.model.pojo.Mark
 import com.lenta.bp12.model.pojo.Part
 import com.lenta.bp12.model.pojo.Position
 import com.lenta.bp12.model.pojo.open_task.GoodOpen
-import com.lenta.bp12.platform.extention.extractAlcoCode
-import com.lenta.bp12.platform.extention.getControlType
-import com.lenta.bp12.platform.extention.getGoodKind
-import com.lenta.bp12.platform.extention.isWholesaleType
+import com.lenta.bp12.platform.extention.*
 import com.lenta.bp12.platform.navigation.IScreenNavigator
 import com.lenta.bp12.platform.resource.IResourceManager
 import com.lenta.bp12.repository.IDatabaseRepository
@@ -27,6 +24,7 @@ import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.extentions.*
 import com.lenta.shared.utilities.getDateFromString
 import com.lenta.shared.utilities.getFormattedDate
+import com.lenta.shared.utilities.orIfNull
 import com.lenta.shared.view.OnPositionClickListener
 import javax.inject.Inject
 
@@ -185,7 +183,7 @@ class GoodInfoOpenViewModel : CoreViewModel() {
                 val good = it.first
                 val enteredQuantity = it.second
 
-                manager.getBasket(good.provider.code)?.getQuantityOfGood(good)?.sumWith(enteredQuantity)
+                manager.getBasket(good.provider.code.orEmpty())?.getQuantityOfGood(good)?.sumWith(enteredQuantity)
                         ?: enteredQuantity
             }
         }
@@ -196,7 +194,7 @@ class GoodInfoOpenViewModel : CoreViewModel() {
             it?.let { task ->
                 good.map {
                     it?.let { good ->
-                        manager.getBasket(good.provider.code)?.let { basket ->
+                        manager.getBasket(good.provider.code.orEmpty())?.let { basket ->
                             "${basket.index + 1}"
                         } ?: "${task.baskets.size + 1}"
                     }
@@ -382,6 +380,9 @@ class GoodInfoOpenViewModel : CoreViewModel() {
                     checkSearchNumber(number)
                 }
             }
+        }.orIfNull {
+            Logg.e { "good null" }
+            navigator.showInternalError(resource.goodNotFoundErrorMsg)
         }
     }
 
@@ -563,7 +564,7 @@ class GoodInfoOpenViewModel : CoreViewModel() {
                         innerQuantity = materialInfo?.innerQuantity?.toDoubleOrNull() ?: 0.0,
                         provider = task.value?.provider ?: ProviderInfo(),
                         producers = producers.orEmpty().toMutableList(),
-                        volume = materialInfo.volume.toDoubleOrNull() ?: 0.0
+                        volume = materialInfo?.volume?.toDoubleOrNull() ?: 0.0
                 )
             }
 
@@ -579,6 +580,9 @@ class GoodInfoOpenViewModel : CoreViewModel() {
                 }
 
                 Logg.d { "--> added good: $good" }
+            }.orIfNull {
+                Logg.e { "good null" }
+                navigator.showInternalError(resource.goodNotFoundErrorMsg)
             }
 
             manager.clearSearchFromListParams()
@@ -664,10 +668,6 @@ class GoodInfoOpenViewModel : CoreViewModel() {
         isExistUnsavedData = true
         scanInfoResult.value = result
         quantityField.value = "1"
-
-        // todo Возможно ошибка в логике
-        // потому что тогда непонятно зачем приходит новый список при запросе по марке
-        //updateProducers(result.producers.toMutableList())
     }
 
     private fun loadBoxInfo(number: String) {
@@ -761,6 +761,9 @@ class GoodInfoOpenViewModel : CoreViewModel() {
             good.value?.let { good ->
                 manager.saveGoodInTask(good)
                 isExistUnsavedData = false
+            }.orIfNull {
+                Logg.e { "good null" }
+                navigator.showInternalError(resource.goodNotFoundErrorMsg)
             }
         }
     }
@@ -781,6 +784,9 @@ class GoodInfoOpenViewModel : CoreViewModel() {
                     count = quantityValue,
                     part = null)
             manager.updateCurrentGood(changedGood)
+        }.orIfNull {
+            Logg.e { "good null" }
+            navigator.showInternalError(resource.goodNotFoundErrorMsg)
         }
     }
 
@@ -796,6 +802,9 @@ class GoodInfoOpenViewModel : CoreViewModel() {
                     mark = mark,
                     provider = changedGood.provider)
             manager.updateCurrentGood(changedGood)
+        }.orIfNull {
+            Logg.e { "good null" }
+            navigator.showInternalError(resource.goodNotFoundErrorMsg)
         }
     }
 
@@ -814,6 +823,9 @@ class GoodInfoOpenViewModel : CoreViewModel() {
                     part = part,
                     provider = changedGood.provider,
                     count = quantityValue)
+        }.orIfNull {
+            Logg.e { "good null" }
+            navigator.showInternalError(resource.goodNotFoundErrorMsg)
         }
     }
 
@@ -833,6 +845,9 @@ class GoodInfoOpenViewModel : CoreViewModel() {
             }
 
             manager.updateCurrentGood(changedGood)
+        }.orIfNull {
+            Logg.e { "good null" }
+            navigator.showInternalError(resource.goodNotFoundErrorMsg)
         }
     }
 
@@ -859,6 +874,9 @@ class GoodInfoOpenViewModel : CoreViewModel() {
             scanInfoResult.value = null
             quantityField.value = "0"
             date.value = ""
+        }.orIfNull {
+            Logg.e { "good null" }
+            navigator.showInternalError(resource.goodNotFoundErrorMsg)
         }
     }
 
@@ -866,6 +884,9 @@ class GoodInfoOpenViewModel : CoreViewModel() {
         good.value?.let {
             manager.updateCurrentGood(it)
             navigator.openGoodDetailsOpenScreen()
+        }.orIfNull {
+            Logg.e { "good null" }
+            navigator.showInternalError(resource.goodNotFoundErrorMsg)
         }
     }
 
@@ -874,6 +895,9 @@ class GoodInfoOpenViewModel : CoreViewModel() {
             changedGood.isCounted = true
             manager.updateCurrentGood(changedGood)
             manager.updateCurrentTask(task.value)
+        }.orIfNull {
+            Logg.e { "good null" }
+            navigator.showInternalError(resource.goodNotFoundErrorMsg)
         }
 
         navigator.goBack()
@@ -918,15 +942,14 @@ class GoodInfoOpenViewModel : CoreViewModel() {
         }
     }
 
+
     fun onClickClose() {
-        navigator.showCloseBasketDialog(
-                yesCallback = {
-                    manager.isBasketsNeedsToBeClosed = true
-                    saveChangesAndExit()
-                })
-        // Сохранить все изменения
-        // Закрыть корзину
-        // Выйти на экран товаров корзины
+        navigator.showCloseBasketDialog(::handleYesOnClickCloseCallback)
+    }
+
+    private fun handleYesOnClickCloseCallback() {
+        manager.isBasketsNeedsToBeClosed = true
+        saveChangesAndExit()
     }
 
     companion object {

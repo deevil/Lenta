@@ -5,6 +5,9 @@ import com.lenta.bp12.features.basket.ItemWholesaleBasketUi
 import com.lenta.bp12.features.create_task.task_content.ItemCommonBasketUi
 import com.lenta.bp12.model.IOpenTaskManager
 import com.lenta.bp12.model.pojo.create_task.Basket
+import com.lenta.bp12.platform.extention.getDescription
+import com.lenta.bp12.platform.extention.getGoodList
+import com.lenta.bp12.platform.extention.getQuantityFromGoodList
 import com.lenta.bp12.platform.navigation.IScreenNavigator
 import com.lenta.bp12.platform.resource.IResourceManager
 import com.lenta.bp12.request.PrintPalletListNetRequest
@@ -14,13 +17,13 @@ import com.lenta.bp12.request.pojo.print_pallet_list.PrintPalletListParamsGood
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.platform.device_info.DeviceInfo
 import com.lenta.shared.platform.viewmodel.CoreViewModel
+import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.SelectionItemsHelper
 import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
 import com.lenta.shared.utilities.databinding.PageSelectionListener
 import com.lenta.shared.utilities.extentions.*
 import com.lenta.shared.utilities.isCommonFormatNumber
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
+import com.lenta.shared.utilities.orIfNull
 import javax.inject.Inject
 
 class GoodListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyboardListener {
@@ -251,6 +254,9 @@ class GoodListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
                 manager.isSearchFromList = true
                 navigator.openGoodInfoOpenScreen()
             }
+        }.orIfNull {
+            Logg.e { "task null" }
+            navigator.showInternalError(resource.taskNotFoundErrorMsg)
         }
     }
 
@@ -318,6 +324,9 @@ class GoodListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
                     navigator.openSaveDataScreen()
                 }
             }
+        }.orIfNull {
+            Logg.e { "task null" }
+            navigator.showInternalError(resource.taskNotFoundErrorMsg)
         }
     }
 
@@ -351,12 +360,15 @@ class GoodListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
                     }
                 }
             }
+        }.orIfNull {
+            Logg.e { "task null" }
+            navigator.showInternalError(resource.taskNotFoundErrorMsg)
         }
     }
 
     // TODO Функция не проверена (13.08.2020 САП еще не создан)
     private fun printPalletList(baskets: List<Basket>) {
-        launchAsyncTryCatch {
+        launchUITryCatch {
             // собираем в один список все товары
             navigator.showProgressLoadingData()
             val goodListRest = baskets.flatMap { basket ->
@@ -381,23 +393,22 @@ class GoodListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
                 )
             }
 
-            withContext(Dispatchers.Main) {
-                val request = printPalletListNetRequest(
-                        PrintPalletListParams(
-                                userNumber = sessionInfo.personnelNumber.orEmpty(),
-                                deviceIp = resource.deviceIp,
-                                baskets = basketListRest,
-                                goods = goodListRest
-                        )
-                )
-                navigator.hideProgress()
-                request.either(
-                        fnL = ::handleFailure,
-                        fnR = {
-                            handlePrintSuccess(baskets)
-                        }
-                )
-            }
+            val request = printPalletListNetRequest(
+                    PrintPalletListParams(
+                            userNumber = sessionInfo.personnelNumber.orEmpty(),
+                            deviceIp = resource.deviceIp,
+                            baskets = basketListRest,
+                            goods = goodListRest
+                    )
+            )
+            navigator.hideProgress()
+            request.either(
+                    fnL = ::handleFailure,
+                    fnR = {
+                        handlePrintSuccess(baskets)
+                    }
+            )
+
         }
     }
 
@@ -419,19 +430,3 @@ class GoodListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
     }
 
 }
-
-data class ItemGoodProcessingUi(
-        val position: String,
-        val name: String,
-        val material: String,
-        val providerCode: String,
-        val quantity: String
-)
-
-data class ItemGoodProcessedUi(
-        val position: String,
-        val name: String,
-        val quantity: String,
-        val material: String,
-        val providerCode: String
-)
