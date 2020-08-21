@@ -1,6 +1,7 @@
 package com.lenta.bp12.features.basket.basket_properties
 
 import com.lenta.bp12.model.ICreateTaskManager
+import com.lenta.bp12.platform.extention.getDescription
 import com.lenta.bp12.platform.navigation.IScreenNavigator
 import com.lenta.bp12.platform.resource.IResourceManager
 import com.lenta.shared.platform.viewmodel.CoreViewModel

@@ -45,23 +45,23 @@ class GoodInfoStatus : ObjectRawStatus<GoodInfoResult>()
 data class GoodInfoResult(
         /** Справочник ШК */
         @SerializedName("ES_EAN")
-        val eanInfo: EanInfo,
+        val eanInfo: EanInfo?,
         /** Справочник товаров */
         @SerializedName("ES_MATERIAL")
-        val materialInfo: MaterialInfo,
+        val materialInfo: MaterialInfo?,
         /** Таблица наборов */
         @SerializedName("ET_SET")
-        val sets: List<SetInfo>, // Для BKS не используется
+        val sets: List<SetInfo>?, // Для BKS не используется
         /** Таблица поставщиков */
         @SerializedName("ET_LIFNR")
-        val providers: List<ProviderInfo>,
+        val providers: List<ProviderInfo>?,
         /** Таблица производителей */
         @SerializedName("ET_PROD")
-        val producers: List<ProducerInfo>,
+        val producers: List<ProducerInfo>?,
         /** Код возврата */
         @SerializedName("EV_RETCODE")
-        override val retCode: Int,
+        override val retCode: Int?,
         /** Текст ошибки */
         @SerializedName("EV_ERROR_TEXT")
-        override val errorText: String
+        override val errorText: String?
 ) : SapResponse

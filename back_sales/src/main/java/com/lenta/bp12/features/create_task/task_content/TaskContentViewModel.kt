@@ -4,27 +4,29 @@ import androidx.lifecycle.MutableLiveData
 import com.lenta.bp12.features.basket.ItemWholesaleBasketUi
 import com.lenta.bp12.model.ICreateTaskManager
 import com.lenta.bp12.model.pojo.create_task.Basket
+import com.lenta.bp12.platform.extention.getDescription
 import com.lenta.bp12.platform.navigation.IScreenNavigator
 import com.lenta.bp12.platform.resource.IResourceManager
+import com.lenta.bp12.platform.utils.TASK_NOT_FOUND_ERROR_MSG
 import com.lenta.bp12.request.PrintPalletListNetRequest
-import com.lenta.bp12.request.pojo.print_pallet_list.PrintPalletListBasket
-import com.lenta.bp12.request.pojo.print_pallet_list.PrintPalletListGood
 import com.lenta.bp12.request.pojo.print_pallet_list.PrintPalletListParams
+import com.lenta.bp12.request.pojo.print_pallet_list.PrintPalletListParamsBasket
+import com.lenta.bp12.request.pojo.print_pallet_list.PrintPalletListParamsGood
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.models.core.Uom
 import com.lenta.shared.platform.device_info.DeviceInfo
 import com.lenta.shared.platform.viewmodel.CoreViewModel
+import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.SelectionItemsHelper
 import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
 import com.lenta.shared.utilities.databinding.PageSelectionListener
 import com.lenta.shared.utilities.extentions.combineLatest
 import com.lenta.shared.utilities.extentions.dropZeros
-import com.lenta.shared.utilities.extentions.launchAsyncTryCatch
+import com.lenta.shared.utilities.extentions.launchUITryCatch
 import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.utilities.isCommonFormatNumber
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
+import com.lenta.shared.utilities.orIfNull
 import javax.inject.Inject
 
 class TaskContentViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyboardListener {
@@ -194,13 +196,10 @@ class TaskContentViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
                 }
                 1 -> {
                     val basket = if (manager.isWholesaleTaskType) {
-                        wholesaleBaskets.value?.let { wholesaleBasketsValue ->
-                            wholesaleBasketsValue.getOrNull(position)?.basket
-                        }
+                        wholesaleBaskets.value?.getOrNull(position)?.basket
                     } else {
-                        commonBaskets.value?.let { commonBasketsValue ->
-                            commonBasketsValue.getOrNull(position)?.basket
-                        }
+                        commonBaskets.value?.getOrNull(position)?.basket
+
                     }
                     manager.updateCurrentBasket(basket)
                     navigator.openBasketCreateGoodListScreen()
@@ -238,14 +237,14 @@ class TaskContentViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
 
     fun onPrint() {
         task.value?.let { taskValue ->
-            basketSelectionsHelper.selectedPositions.value?.let { positions ->
-                var baskets = taskValue.baskets
-                //Если корзины выделены то берем их
-                if (positions.isNotEmpty()) {
-                    baskets = positions.mapNotNull {
-                        baskets.getOrNull(it)
-                    }.toMutableList()
-                }
+            goodSelectionsHelper.selectedPositions.value?.let { positions ->
+
+                val taskValueBaskets = taskValue.baskets
+                val baskets = positions.takeIf { it.isNotEmpty() }
+                        ?.mapNotNullTo(mutableListOf()) {
+                            taskValueBaskets.getOrNull(it)
+                        }.orIfNull { taskValueBaskets }
+
                 //Если какие-то корзины не закрыты
                 if (baskets.any { it.isLocked.not() }) {
                     // Вывести экран сообщения «Некоторые выбранные корзины не закрыты. Закройте корзины и повторите печать», с кнопкой «Назад»
@@ -267,14 +266,14 @@ class TaskContentViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
 
     // TODO Функция не проверена (13.08.2020 САП еще не создан)
     private fun printPalletList(baskets: List<Basket>) {
-        launchAsyncTryCatch {
-            // собираем в один список все товары
+        launchUITryCatch {
             navigator.showProgressLoadingData()
+            // собираем в один список все товары
             val goodListRest = baskets.flatMap { basket ->
                 val distinctGoods = basket.goods.keys
                 distinctGoods.map { good ->
                     val quantity = basket.goods[good]
-                    PrintPalletListGood(
+                    PrintPalletListParamsGood(
                             materialNumber = good.material,
                             basketNumber = basket.index.toString(),
                             quantity = quantity.toString(),
@@ -285,28 +284,27 @@ class TaskContentViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
 
             val basketListRest = baskets.map {
                 val description = it.getDescription(task.value?.type?.isDivBySection ?: false)
-                PrintPalletListBasket(
+                PrintPalletListParamsBasket(
                         number = it.index.toString(),
                         description = description,
                         section = it.section.orEmpty()
                 )
             }
 
-            withContext(Dispatchers.Main) {
-                printPalletListNetRequest(
-                        PrintPalletListParams(
-                                userNumber = sessionInfo.personnelNumber.orEmpty(),
-                                deviceIp = resource.deviceIp(),
-                                baskets = basketListRest,
-                                goods = goodListRest
-                        )
-                ).either(
-                        fnL = ::handleFailure,
-                        fnR = {
-                            handlePrintSuccess(baskets)
-                        }
-                )
-            }
+            printPalletListNetRequest(
+                    PrintPalletListParams(
+                            userNumber = sessionInfo.personnelNumber.orEmpty(),
+                            deviceIp = resource.deviceIp,
+                            baskets = basketListRest,
+                            goods = goodListRest
+                    )
+            ).either(
+                    fnL = ::handleFailure,
+                    fnR = {
+                        handlePrintSuccess(baskets)
+                    }
+            )
+
         }
     }
 
@@ -318,15 +316,18 @@ class TaskContentViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
                 if (task.baskets.any { it.isLocked.not() }) {
                     navigator.showSomeBasketsNotClosedCantSaveScreen()
                 } else {
-                    showMakeTaskCountedAndCLose()
+                    showMakeTaskCountedAndClose()
                 }
             } else {
-                showMakeTaskCountedAndCLose()
+                showMakeTaskCountedAndClose()
             }
+        }.orIfNull {
+            Logg.e { "task null" }
+            navigator.showInternalError(TASK_NOT_FOUND_ERROR_MSG)
         }
     }
 
-    private fun showMakeTaskCountedAndCLose() {
+    private fun showMakeTaskCountedAndClose() {
         navigator.showMakeTaskCountedAndClose {
             manager.prepareSendTaskDataParams(
                     deviceIp = deviceInfo.getDeviceIp(),

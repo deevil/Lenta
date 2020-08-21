@@ -238,7 +238,7 @@
                     android:layout_height="30dp"
                     android:background="@drawable/bg_white_circle"
                     android:gravity="center"
-                    android:textSize="12sp"
+                    android:textSize="@dimen/text_12sp"
                     app:section="@{vm.good.section}"
                     android:visibility="@{!vm.good.section.isEmpty()}"
                     tools:text="02" />

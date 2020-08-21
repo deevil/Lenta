@@ -195,7 +195,7 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
 
     private fun handleTaskListResultWithParams(result: TaskListResult) {
         launchUITryCatch {
-            result.tasks?.let { manager.addFoundTasks(it) }
+            manager.addFoundTasks(result.tasks.orEmpty())
         }
     }
 

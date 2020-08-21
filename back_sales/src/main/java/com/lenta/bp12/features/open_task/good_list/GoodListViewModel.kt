@@ -4,6 +4,7 @@ import androidx.lifecycle.MutableLiveData
 import com.lenta.bp12.features.basket.ItemWholesaleBasketUi
 import com.lenta.bp12.features.create_task.task_content.ItemCommonBasketUi
 import com.lenta.bp12.model.IOpenTaskManager
+import com.lenta.bp12.platform.extention.getDescription
 import com.lenta.bp12.model.pojo.create_task.Basket
 import com.lenta.bp12.platform.navigation.IScreenNavigator
 import com.lenta.bp12.platform.resource.IResourceManager
@@ -84,7 +85,7 @@ class GoodListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
                                 position = "${filtered.size - index}",
                                 name = good.getNameWithMaterial(),
                                 material = good.material,
-                                providerCode = good.provider.code,
+                                providerCode = good.provider.code.orEmpty(),
                                 quantity = "${good.planQuantity.dropZeros()} ${good.commonUnits.name}"
                         )
                     }
@@ -103,7 +104,7 @@ class GoodListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
                                 name = good.getNameWithMaterial(),
                                 quantity = "${good.getTotalQuantity().dropZeros()} ${good.commonUnits.name}",
                                 material = good.material,
-                                providerCode = good.provider.code
+                                providerCode = good.provider.code.orEmpty()
                         )
                     }
                 }
@@ -246,7 +247,7 @@ class GoodListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
 
     private fun openGoodByMaterial(material: String) {
         task.value?.let { task ->
-            task.goods.find { it.material == material }?.let { good ->
+            task.goods.find { it.material == material }?.let {
                 manager.searchNumber = material
                 manager.isSearchFromList = true
                 navigator.openGoodInfoOpenScreen()

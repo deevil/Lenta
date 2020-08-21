@@ -2,17 +2,17 @@ package com.lenta.bp12.request.pojo.print_pallet_list
 
 import com.google.gson.annotations.SerializedName
 
-data class PrintPalletListGood(
+data class PrintPalletListParamsGood(
         /** SAP-код товара */
         @SerializedName("MATNR")
-        var materialNumber: String,
+        val materialNumber: String,
         /** Номер корзины */
         @SerializedName("BASKET_NUM")
-        var basketNumber: String,
+        val basketNumber: String,
         /** Посчитанное количество */
         @SerializedName("FACT_QNT")
-        var quantity: String,
+        val quantity: String,
         /** Базисная единица измерения */
         @SerializedName("MEINS")
-        var uom: String
+        val uom: String
 )

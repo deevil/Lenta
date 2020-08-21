@@ -48,7 +48,7 @@ class DiscrepancyListViewModel : CoreViewModel() {
                             position = "${list.size - index}",
                             name = good.name,
                             material = good.material,
-                            providerCode = good.provider.code
+                            providerCode = good.provider.code.orEmpty()
                     )
                 }
             }
@@ -74,7 +74,7 @@ class DiscrepancyListViewModel : CoreViewModel() {
     fun onClickItemPosition(position: Int) {
         task.value?.let { task ->
             goods.value?.get(position)?.material?.let { material ->
-                task.goods.find { it.material == material }?.let { good ->
+                task.goods.find { it.material == material }?.let {
                     manager.searchNumber = material
                     manager.isSearchFromList = true
                     navigator.openGoodInfoOpenScreen()

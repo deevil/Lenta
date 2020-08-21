@@ -13,11 +13,11 @@ data class PrintPalletListParams(
          * Заполнять в случае получения параметра, при получения списка заданий
          * при создании задания не заполнять */
         @SerializedName("KUNNR")
-        var debitor: String = "",
+        val debitor: String = "",
         /** Таблица корзин задания */
         @SerializedName("IT_BASKET_INFO")
-        var baskets: List<PrintPalletListBasket>,
+        val baskets: List<PrintPalletListParamsBasket>,
         /** Номер секции */
         @SerializedName("IT_MTNR_LIST")
-        var goods: List<PrintPalletListGood>
+        val goods: List<PrintPalletListParamsGood>
 )
