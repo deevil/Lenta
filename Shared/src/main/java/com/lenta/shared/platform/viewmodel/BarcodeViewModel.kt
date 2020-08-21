@@ -31,8 +31,8 @@ abstract class BarcodeViewModel : CoreViewModel() {
                 isWeight = getIsWeightFromCode(barcode)
             }
             barcodeLenght >= MINIMUM_GS1_CODE_LENGTH -> {
-                val parsedEntities = EAN128Parser.parse(barcode, false)
-                Logg.d { "parsedEntities = ${parsedEntities.size}" }
+                val parsedEntities = EAN128Parser.parseBy(barcode)
+                Logg.d { "parsedEntities = ${parsedEntities}" }
 
             }
         }
