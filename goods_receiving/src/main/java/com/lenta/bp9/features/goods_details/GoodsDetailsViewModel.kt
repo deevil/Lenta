@@ -203,12 +203,15 @@ class GoodsDetailsViewModel : CoreViewModel() {
                         processMercuryProductService.deleteDetails(typeDiscrepancies)
                     }
 
-                    if (isNonExciseAlcoProduct.value!!) {
-                        goodsDetails.value?.get(position)!!.batchDiscrepancies?.let {
-                            taskRepository
-                                    ?.getBatchesDiscrepancies()
-                                    ?.deleteBatchDiscrepancies(it)
-                        }
+                    if (isNonExciseAlcoProduct.value == true) {
+                        goodsDetails.value
+                                ?.getOrNull(position)
+                                ?.batchDiscrepancies
+                                ?.let {
+                                    taskRepository
+                                            ?.getBatchesDiscrepancies()
+                                            ?.deleteBatchDiscrepancies(it)
+                                }
                     }
                 }
             }
