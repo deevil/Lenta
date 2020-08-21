@@ -1,10 +1,13 @@
 package com.lenta.bp16.model.ingredients.ui
 
+import android.os.Parcelable
 import com.google.gson.annotations.SerializedName
+import kotlinx.android.parcel.Parcelize
 
 /**
  * Данные ШК по товарам
  */
+@Parcelize
 data class OrderByBarcode(
         /** SAP-код товара */
         @SerializedName("MATNR")
@@ -25,4 +28,4 @@ data class OrderByBarcode(
         /** Знаменатель при пересчете в базисные единицы измерения */
         @SerializedName("EAN_UMREN")
         val ean_umren: String?
-)
+) : Parcelable

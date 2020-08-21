@@ -10,6 +10,8 @@
     <dimen name="tv_product_section_id_30dp">30dp</dimen>
     <dimen name="spinner_quality_height">32dp</dimen>
     <dimen name="text_size_12sp">12sp</dimen>
+    <!-- https://bitbucket.org/eigenmethodlentatempteam/lenta-pdct-android/pull-requests/534/grz_features_6037/diff Саша М.  -->
+    <dimen name="div_hor4_marginTop">12dp</dimen>
 
     <!-- Две колонки / Тип 1  -->
     <integer name="two_one_1">15</integer>

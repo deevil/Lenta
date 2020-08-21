@@ -6,6 +6,7 @@ import com.lenta.bp9.model.task.TaskProductInfo
 interface ITaskBoxesRepository {
     fun getBoxes(): List<TaskBoxInfo>
     fun findBox(box: TaskBoxInfo): TaskBoxInfo?
+    fun findBox(boxNumber: String): TaskBoxInfo?
     fun findBoxesOfProduct(productInfo: TaskProductInfo): List<TaskBoxInfo>?
     fun addBox(box: TaskBoxInfo): Boolean
     fun updateBoxes(newBoxes: List<TaskBoxInfo>)

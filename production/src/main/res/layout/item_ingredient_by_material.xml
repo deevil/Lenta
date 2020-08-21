@@ -25,7 +25,7 @@
 
             <LinearLayout
                 style="@style/LinearCellStyle"
-                android:layout_weight="@integer/three_three_1">
+                android:layout_weight="@integer/three_four_1">
 
                 <TextView
                     android:id="@+id/tv_item_number"
@@ -40,7 +40,7 @@
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 style="@style/LinearCellStyle"
-                android:layout_weight="@integer/three_three_2"
+                android:layout_weight="@integer/three_four_2"
                 android:orientation="horizontal">
 
                 <ImageView
@@ -72,7 +72,7 @@
 
             <LinearLayout
                 style="@style/LinearCellStyle"
-                android:layout_weight="@integer/three_three_3"
+                android:layout_weight="@integer/three_four_3"
                 android:orientation="horizontal">
 
                 <ImageView
