@@ -94,9 +94,9 @@ class BasketOpenGoodListFragment : CoreFragment<FragmentBasketOpenGoodListBindin
 
     override fun onAdapterBindHandler(bindItem: ViewBinding, position: Int) {
         (bindItem as ItemBasketGoodListGoodBinding).apply {
-            bindItem.tvItemNumber.tag = position
-            bindItem.tvItemNumber.setOnClickListener(onClickSelectionListener)
-            bindItem.selectedForDelete = vm.selectionsHelper.isSelected(position)
+            tvItemNumber.tag = position
+            tvItemNumber.setOnClickListener(onClickSelectionListener)
+            selectedForDelete = vm.selectionsHelper.isSelected(position)
             super.onAdapterBindHandler(bindItem, position)
         }
     }

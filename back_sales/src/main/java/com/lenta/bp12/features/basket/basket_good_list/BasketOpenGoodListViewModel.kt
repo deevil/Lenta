@@ -62,14 +62,13 @@ class BasketOpenGoodListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener 
     val goods by lazy {
         Logg.e { basket.value.toString() }
         basket.map {
-            it?.let { basket ->
-                val list = basket.getGoodList()
-
+            it?.let { activeBasket ->
+                val list = activeBasket.getGoodList()
                 list.mapIndexed { index, good ->
                     val units = good.commonUnits.name
-                    val quantity = basket.goods[good]
+                    val quantity = activeBasket.goods[good]
 
-                    Logg.e { "freeVolume: ${basket.freeVolume}, isPrinted: ${basket.isPrinted}, isLocked: ${basket.isLocked} ${basket.goods}" }
+                    Logg.d { "-> freeVolume: ${activeBasket.freeVolume}, isPrinted: ${activeBasket.isPrinted}, isLocked: ${activeBasket.isLocked} ${activeBasket.goods}" }
 
                     ItemGoodUi(
                             position = "${index + 1}",
@@ -129,22 +128,27 @@ class BasketOpenGoodListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener 
     }
 
     private fun checkEnteredNumber(number: String) {
-        number.length.let { length ->
-            if (length >= Constants.SAP_6) {
-                openTaskManager.searchNumber = number
-                openTaskManager.isSearchFromList = true
-                navigator.goBack()
-                navigator.openGoodInfoCreateScreen()
-            }
+        val length = number.length
+        if (length >= Constants.SAP_6) {
+            openTaskManager.searchNumber = number
+            openTaskManager.isSearchFromList = true
+            navigator.goBack()
+            navigator.openGoodInfoCreateScreen()
         }
+
     }
 
     fun onClickItemPosition(position: Int) {
         goods.value?.get(position)?.material?.let { material ->
-            openTaskManager.searchNumber = material
-            openTaskManager.isSearchFromList = true
-            navigator.goBack()
-            navigator.openGoodInfoOpenScreen()
+            openTaskManager.apply {
+                searchNumber = material
+                isSearchFromList = true
+            }
+
+            with(navigator) {
+                goBack()
+                openGoodInfoOpenScreen()
+            }
         }
     }
 
