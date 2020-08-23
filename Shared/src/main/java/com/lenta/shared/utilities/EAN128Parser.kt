@@ -36,7 +36,7 @@ object EAN128Parser {
 
     fun parseBy(barcode: String): MutableMap<AII, String> {
         val result: MutableMap<AII, String> = HashMap()
-        val splitted = barcode.split("[(.*?)]".toRegex())
+        val splitted = barcode.split("[/((?!^)\\{.*?\\})/]".toRegex())
         val splittedSize = splitted.size
         splitted.forEachIndexed { index, code ->
             val ai: AII? = aiiDict[code]
