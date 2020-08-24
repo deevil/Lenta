@@ -517,6 +517,17 @@ data class ScanResult(
         val markNumber: String? = null
 ) {
 
+    override fun equals(other: Any?): Boolean {
+        if (other == null || other !is ScanResult) return false
+        return other.markNumber == markNumber &&
+                other.productionDate == productionDate &&
+                other.expirationDate == expirationDate &&
+                other.commentCode == commentCode &&
+                other.comment == comment
+    }
+
+    override fun hashCode() = Objects.hash(markNumber, commentCode, comment, productionDate, expirationDate)
+
     fun getFormattedProductionDate(): String {
         return if (productionDate != null) "ДП ${productionDate.getFormattedDate()}" else ""
     }
