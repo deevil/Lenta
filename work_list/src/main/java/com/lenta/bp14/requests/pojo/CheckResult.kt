@@ -17,5 +17,8 @@ data class CheckResult(
         val producedDate: String,
         /** Срок годности */
         @SerializedName("SHELF_LIFE")
-        val shelfLife: String
+        val shelfLife: String,
+        /**EAN код товара*/
+        @SerializedName("EAN")
+        val ean: String
 )
