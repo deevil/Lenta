@@ -1,6 +1,6 @@
 package com.lenta.bp12.features.basket
 
-import com.lenta.bp12.model.pojo.create_task.Basket
+import com.lenta.bp12.model.pojo.Basket
 
 data class ItemWholesaleBasketUi(
         val basket: Basket,

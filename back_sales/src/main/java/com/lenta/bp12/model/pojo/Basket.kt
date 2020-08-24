@@ -1,7 +1,6 @@
-package com.lenta.bp12.model.pojo.create_task
+package com.lenta.bp12.model.pojo
 
 import com.lenta.bp12.model.ControlType
-import com.lenta.bp12.model.pojo.Good
 import com.lenta.bp12.request.pojo.ProviderInfo
 
 data class Basket(

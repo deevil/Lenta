@@ -1,11 +1,11 @@
 package com.lenta.bp12.model.pojo.open_task
 
 import com.lenta.bp12.model.ControlType
+import com.lenta.bp12.model.pojo.Basket
 import com.lenta.bp12.model.pojo.Block
 import com.lenta.bp12.model.pojo.ReturnReason
 import com.lenta.bp12.model.pojo.TaskType
-import com.lenta.bp12.model.pojo.create_task.Basket
-import com.lenta.bp12.platform.extention.getGoodList
+import com.lenta.bp12.model.pojo.extentions.getGoodList
 import com.lenta.bp12.request.pojo.ProviderInfo
 
 data class TaskOpen(
