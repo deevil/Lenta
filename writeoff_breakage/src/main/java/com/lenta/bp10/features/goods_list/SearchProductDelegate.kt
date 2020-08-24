@@ -35,7 +35,6 @@ class SearchProductDelegate @Inject constructor(
         private var permissionToWriteoffNetRequest: PermissionToWriteoffNetRequest
 ) {
 
-
     private val zmpUtz29V001: ZmpUtz29V001Rfc by lazy {
         ZmpUtz29V001Rfc(hyperHive)
     }
@@ -61,7 +60,9 @@ class SearchProductDelegate @Inject constructor(
                 sessionInfo,
                 permissionToWriteoffNetRequest
         )
+
         searchProductDelegate.init(viewModelScope, scanResultHandler, checksEnabled, limitsChecker)
+
         return searchProductDelegate
     }
 
@@ -74,8 +75,9 @@ class SearchProductDelegate @Inject constructor(
     }
 
     fun searchCode(code: String, fromScan: Boolean, isBarCode: Boolean? = null) {
-
         Logg.d { "hashCode: ${hashCode()}" }
+
+        checksEnabled = true
 
         if (checksEnabled && isBarCode == null && code.length == 12) {
             codeWith12Digits = code
@@ -92,10 +94,9 @@ class SearchProductDelegate @Inject constructor(
                             fromScan = fromScan,
                             isBarCode = isBarCode
                     )
-            )
-                    .either(::handleFailure, ::handleSearchSuccess)
-            screenNavigator.hideProgress()
+            ).either(::handleFailure, ::handleSearchSuccess)
 
+            screenNavigator.hideProgress()
         }
     }
 
@@ -121,31 +122,27 @@ class SearchProductDelegate @Inject constructor(
             }
             else -> false
         }
-
     }
 
-
     private fun checkPermissions() {
-
         if (checksEnabled && zmpUtz29V001.isChkOwnpr(processServiceManager.getWriteOffTask()?.taskDescription!!.taskType.code)) {
-
             screenNavigator.showProgress(permissionToWriteoffNetRequest)
 
             viewModelScope().launch {
                 permissionToWriteoffNetRequest(
                         PermissionToWriteoffPrams(
                                 matnr = scanInfoResult!!.productInfo.materialNumber,
-                                werks = sessionInfo.market!!))
-                        .either(::handleFailure, ::handlePermissionsSuccess)
+                                werks = sessionInfo.market!!)
+                ).either(::handleFailure, ::handlePermissionsSuccess)
             }
 
+            checksEnabled = false
             screenNavigator.hideProgress()
 
             return
         }
 
         handleSearchResultOrOpenProductScreen()
-
     }
 
     private fun handleSearchResultOrOpenProductScreen() {
@@ -155,13 +152,14 @@ class SearchProductDelegate @Inject constructor(
                     return
                 }
             }
+
             with(infoResult) {
-                openProductScreen(productInfo,
-                        if (productInfo.type == ProductType.ExciseAlcohol && !productInfo.isSet) 0.0 else quantity)
+                openProductScreen(
+                        productInfo = productInfo,
+                        quantity = if (productInfo.type == ProductType.ExciseAlcohol && !productInfo.isSet) 0.0 else quantity
+                )
             }
-
         }
-
     }
 
     private fun handleFailure(failure: Failure) {
@@ -181,7 +179,6 @@ class SearchProductDelegate @Inject constructor(
     }
 
     private fun searchProduct() {
-
         if (!checksEnabled) {
             handleSearchResultOrOpenProductScreen()
             return
@@ -229,9 +226,7 @@ class SearchProductDelegate @Inject constructor(
         }
 
         checkPermissions()
-
     }
-
 
     fun openProductScreen(productInfo: ProductInfo, quantity: Double) {
         when (productInfo.type) {
@@ -248,6 +243,5 @@ class SearchProductDelegate @Inject constructor(
 
         limitsChecker?.check()
     }
-
 
 }
