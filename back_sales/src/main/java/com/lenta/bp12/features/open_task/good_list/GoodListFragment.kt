@@ -88,10 +88,10 @@ class GoodListFragment : CoreFragment<FragmentGoodListBinding, GoodListViewModel
                 false).let { layoutBinding ->
 
             val onClickSelectionListener = View.OnClickListener {
-                (it!!.tag as Int).let { position ->
-                    vm.processingSelectionsHelper.revert(position = position)
-                    layoutBinding.rv.adapter?.notifyItemChanged(position)
-                }
+                val position = (it?.tag as Int)
+                vm.processingSelectionsHelper.revert(position = position)
+                layoutBinding.rv.adapter?.notifyItemChanged(position)
+
             }
 
 
@@ -145,10 +145,10 @@ class GoodListFragment : CoreFragment<FragmentGoodListBinding, GoodListViewModel
                 false).let { layoutBinding ->
 
             val onClickSelectionListener = View.OnClickListener {
-                (it!!.tag as Int).let { position ->
-                    vm.processedSelectionsHelper.revert(position = position)
-                    layoutBinding.rv.adapter?.notifyItemChanged(position)
-                }
+                val position = (it?.tag as Int)
+                vm.processedSelectionsHelper.revert(position = position)
+                layoutBinding.rv.adapter?.notifyItemChanged(position)
+
             }
 
             layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
@@ -199,10 +199,10 @@ class GoodListFragment : CoreFragment<FragmentGoodListBinding, GoodListViewModel
                 false).let { layoutBinding ->
 
             val onClickSelectionListener = View.OnClickListener {
-                (it!!.tag as Int).let { position ->
-                    vm.basketSelectionsHelper.revert(position = position)
-                    layoutBinding.rv.adapter?.notifyItemChanged(position)
-                }
+                val position = (it?.tag as Int)
+                vm.basketSelectionsHelper.revert(position = position)
+                layoutBinding.rv.adapter?.notifyItemChanged(position)
+
             }
 
             layoutBinding.rvConfig = DataBindingRecyclerViewConfig(

@@ -61,7 +61,7 @@ android {
 
         if (variant.buildType.name == "debug") {
             variant.outputs.all {
-                def name = outputFileName.replace("app-", "LentaProduction-")
+                def name = outputFileName.replace("app-", "LentaBackSales-debug")
                 outputFileName = name.replace(".apk", "-${variant.versionName}-${variant.versionCode}.apk")
             }
         }

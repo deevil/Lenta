@@ -207,17 +207,13 @@ class GoodListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
                 0 -> {
                     processing.value?.let { processingListValue ->
                         val material = processingListValue.getOrNull(position)?.material
-                        material?.let {
-                            openGoodByMaterial(it)
-                        }
+                        material?.let(::openGoodByMaterial) ?: navigator.showGoodIsMissingInTask()
                     }
                 }
                 1 -> {
                     processed.value?.let { processedListValue ->
                         val material = processedListValue.getOrNull(position)?.material
-                        material?.let {
-                            openGoodByMaterial(it)
-                        }
+                        material?.let(::openGoodByMaterial) ?: navigator.showGoodIsMissingInTask()
                     }
                 }
                 2 -> {
