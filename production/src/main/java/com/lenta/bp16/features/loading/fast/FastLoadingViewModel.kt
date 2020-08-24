@@ -6,8 +6,6 @@ import com.lenta.bp16.platform.navigation.IScreenNavigator
 import com.lenta.bp16.repository.IDatabaseRepository
 import com.lenta.bp16.repository.IRepoInMemoryHolder
 import com.lenta.bp16.request.FastResourcesMultiRequest
-import com.lenta.bp16.request.StockLockRequestResult
-import com.lenta.bp16.request.StockNetRequest
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.exception.IFailureInterpreter
@@ -26,24 +24,31 @@ class FastLoadingViewModel : CoreLoadingViewModel() {
 
     @Inject
     lateinit var navigator: IScreenNavigator
+
     @Inject
     lateinit var failureInterpreter: IFailureInterpreter
+
     @Inject
     lateinit var fastResourcesNetRequest: FastResourcesMultiRequest
+
     @Inject
     lateinit var appUpdateChecker: AppUpdateChecker
+
     @Inject
     lateinit var database: IDatabaseRepository
+
     @Inject
     lateinit var auth: Auth
-    @Inject
-    lateinit var stockNetRequest: StockNetRequest
+
     @Inject
     lateinit var appUpdateInstaller: AppUpdateInstaller
+
     @Inject
     lateinit var resourceManager: ISharedStringResourceManager
+
     @Inject
     lateinit var repoInMemoryHolder: IRepoInMemoryHolder
+
     @Inject
     lateinit var sessionInfo: ISessionInfo
 
@@ -95,13 +100,7 @@ class FastLoadingViewModel : CoreLoadingViewModel() {
 
     private fun getFastResources() {
         launchUITryCatch {
-            fastResourcesNetRequest(null).either(::handleFailure, ::loadStocks)
-        }
-    }
-
-    private fun loadStocks(@Suppress("UNUSED_PARAMETER") b: Boolean) {
-        launchUITryCatch {
-            stockNetRequest(null).either(::handleFailure, ::handleSuccess)
+            fastResourcesNetRequest(null).either(::handleFailure, ::handleSuccess)
         }
     }
 
@@ -111,9 +110,7 @@ class FastLoadingViewModel : CoreLoadingViewModel() {
         progress.postValue(false)
     }
 
-    private fun handleSuccess(stockLockRequestResult: StockLockRequestResult) {
-        repoInMemoryHolder.stockLockRequestResult = stockLockRequestResult
-        Logg.d { "stockLockRequestResult:${repoInMemoryHolder.stockLockRequestResult}" }
+    private fun handleSuccess(b: Boolean) {
         progress.value = false
         navigator.closeAllScreen()
         navigator.openSelectPersonnelNumberScreen()

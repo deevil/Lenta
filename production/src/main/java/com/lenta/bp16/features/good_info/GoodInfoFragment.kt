@@ -35,6 +35,7 @@ class GoodInfoFragment : CoreFragment<FragmentGoodInfoBinding, GoodInfoViewModel
         provideViewModel(GoodInfoViewModel::class.java).let {
             getAppComponent()?.inject(it)
             it.deviceIp.value = deviceIp
+            it.goodParams.value = goodParams
             it.selectedEan.value = selectedEan
             return it
         }
@@ -72,5 +73,4 @@ class GoodInfoFragment : CoreFragment<FragmentGoodInfoBinding, GoodInfoViewModel
             arguments = bundleOf(KEY_GOOD_PARAMS to goodParams)
         }
     }
-
 }

@@ -71,7 +71,7 @@
 
                         <com.lenta.shared.view.ClickableSpinner
                             android:id="@+id/spin_producer"
-                            app:items="@{vm.producerName}"
+                            app:items="@{vm.producerNameField}"
                             app:position="@{vm.selectedProducer}"
                             app:onPositionClickListener="@{vm.producerClicked}"
                             style="@style/CellSpinnerStyle"
@@ -117,6 +117,7 @@
                         android:textSize="@dimen/text_14sp"
                         android:text="@={vm.dateInfoField}"
                         app:requestFocus="@{vm.requestFocusDateInfoField}"
+                        app:maskPattern='@{"[00]{.}[00]{.}[0000]"}'
                         style="@style/CellEditTextStyle"
                         tools:text="21.06.2020"/>
 

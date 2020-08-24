@@ -1,8 +1,10 @@
 package com.lenta.bp16.features.good_info
 
 import androidx.lifecycle.MutableLiveData
-import com.lenta.bp16.model.movement.params.ProductInfoParams
-import com.lenta.bp16.model.movement.result.ProductInfoResult
+import com.lenta.bp16.model.movement.result.WarehouseResult
+import com.lenta.bp16.model.movement.ui.ProducerUI
+import com.lenta.bp16.model.movement.ui.Warehouse
+import com.lenta.bp16.model.pojo.GoodParams
 import com.lenta.bp16.platform.Constants
 import com.lenta.bp16.platform.navigation.IScreenNavigator
 import com.lenta.bp16.repository.DatabaseRepository
@@ -10,17 +12,19 @@ import com.lenta.bp16.repository.IRepoInMemoryHolder
 import com.lenta.bp16.request.MovementNetRequest
 import com.lenta.bp16.request.MovementParams
 import com.lenta.bp16.request.ProductInfoNetRequest
-import com.lenta.bp16.request.StockLockRequestResult
-import com.lenta.bp16.request.pojo.*
+import com.lenta.bp16.request.WarehouseNetRequest
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.models.core.Uom
+import com.lenta.shared.models.core.toUom
 import com.lenta.shared.platform.time.ITimeMonitor
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.requests.network.ServerTimeRequest
-import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.extentions.launchUITryCatch
 import com.lenta.shared.utilities.extentions.map
+import com.lenta.shared.utilities.extentions.unsafeLazy
 import com.lenta.shared.view.OnPositionClickListener
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 class GoodInfoViewModel : CoreViewModel() {
@@ -49,62 +53,67 @@ class GoodInfoViewModel : CoreViewModel() {
     @Inject
     lateinit var database: DatabaseRepository
 
+    @Inject
+    lateinit var warehouseRequest: WarehouseNetRequest
 
+    val deviceIp = MutableLiveData<String>()
 
-    val deviceIp = MutableLiveData("")
+    val goodParams = MutableLiveData<GoodParams>()
 
     val weightBarcode = listOf(CONST_VALUE_23, CONST_VALUE_24, CONST_VALUE_27, CONST_VALUE_28)
 
-    val selectedEan = MutableLiveData("")
+    val selectedEan = MutableLiveData<String>()
 
     /**Количество*/
     val quantityField = MutableLiveData("")
     val requestFocusQuantityField = MutableLiveData(true)
 
-    val producerList: MutableList<ProducerInfo> = mutableListOf()
-    val productList: MutableList<ProductInfo> = mutableListOf()
-    val setList: MutableList<SetInfo> = mutableListOf()
+    val warehouseResult: MutableLiveData<WarehouseResult> by unsafeLazy {
+        MutableLiveData<WarehouseResult>()
+    }
+
+    val dateInfoSpinner = mutableListOf(PROD_DATE, SELF_LIFE)
 
     /**Производитель*/
-    var producerName: MutableLiveData<List<String>> = MutableLiveData()
+    private val producerList: MutableLiveData<ProducerUI> = MutableLiveData()
+    val producerNameField: MutableLiveData<List<String>> = MutableLiveData()
     val selectedProducer = MutableLiveData(0);
-    val producerClicked = object : OnPositionClickListener{
+    val producerClicked = object : OnPositionClickListener {
         override fun onClickPosition(position: Int) {
             selectedProducer.value = position
         }
-
     }
 
     /**Дата производства и срок годности*/
     val dateInfoField = MutableLiveData("")
-    val dateInfo: MutableLiveData<List<String>> = MutableLiveData()
+    private var producerDate: String = ""
+    private var selfLifeDate: String = ""
+    val dateInfo: MutableLiveData<List<String>> = MutableLiveData(dateInfoSpinner)
     val selectedDate = MutableLiveData(0)
-    val dateClicked = object : OnPositionClickListener{
+    val dateClicked = object : OnPositionClickListener {
         override fun onClickPosition(position: Int) {
             selectedDate.value = position
         }
-
     }
+
     val requestFocusDateInfoField = MutableLiveData(true)
 
     /**Склад отправитель*/
     val warehouseSender: MutableLiveData<List<String>> = MutableLiveData()
     val selectedWarehouseSender = MutableLiveData(0)
-    val warehouseSenderClicked = object : OnPositionClickListener{
+    val warehouseSenderClicked = object : OnPositionClickListener {
         override fun onClickPosition(position: Int) {
             selectedWarehouseSender.value = position
         }
-
     }
 
     /**Склад получатель*/
     val warehouseReceiver: MutableLiveData<List<String>> = MutableLiveData()
     val selectedWarehouseReceiver = MutableLiveData(0)
-    val warehouseReceiverClicked = object : OnPositionClickListener{
+    val warehouseReceiverClicked = object : OnPositionClickListener {
         override fun onClickPosition(position: Int) {
             selectedWarehouseReceiver.value = position
         }
-
     }
 
     /**Тара*/
@@ -112,12 +121,12 @@ class GoodInfoViewModel : CoreViewModel() {
 
     val enabledCompleteButton = quantityField.map { !it.isNullOrBlank() }
 
-    var suffix: String = Uom.KG.name
+    var suffix: MutableLiveData<String> = MutableLiveData(Uom.KG.name)
 
     init {
-        setGoodInfo()
-        setProdInfo()
+        setProducerInfo()
         setStockInfo()
+        setGoodInfo()
         setDateInfo()
         setContainerInfo()
     }
@@ -125,7 +134,6 @@ class GoodInfoViewModel : CoreViewModel() {
     private fun setGoodInfo() {
         launchUITryCatch {
             val ean = selectedEan.value.toString()
-            val goodInfo = database.getGoodByEan(ean)
             var weight: Int? = 0
             /**Проверка на весовой ШК*/
             if (weightBarcode.contains(ean.substring(0 until 2))) {
@@ -136,13 +144,13 @@ class GoodInfoViewModel : CoreViewModel() {
                     if (weight != 0) {
                         weight?.div(Constants.CONVERT_TO_KG) to Uom.KG.name
                     } else {
-                        when (goodInfo?.uom) {
+                        when (goodParams.value?.uom?.toUom()) {
                             Uom.ST -> {
                                 Constants.QUANTITY_DEFAULT_VALUE_1 to Uom.ST.name
                             }
                             Uom.KAR -> {
-                                val uomInfo = database.getEanInfoByEan(goodInfo.ean)
-                                uomInfo?.umrez?.div(uomInfo.umren) to Uom.KAR.name
+                                val uomInfo = goodParams.value
+                                uomInfo?.umrez?.toInt()?.div(uomInfo.umren.toInt()) to Uom.KAR.name
                             }
                             else -> {
                                 Constants.QUANTITY_DEFAULT_VALUE_0 to Uom.DEFAULT.name
@@ -150,53 +158,31 @@ class GoodInfoViewModel : CoreViewModel() {
                         }
                     }
             quantityField.value = quantity.toString()
-            suffix = uom
+            suffix.value = uom
         }
-    }
-
-    private fun setProdInfo() {
-
-        /*launchUITryCatch {
-            val goodInfo = database.getGoodByEan(selectedEan.value.toString())
-            val sapCode = goodInfo?.matcode?.takeLast(6)
-            val ean = Ean(
-                    ean = selectedEan.value
-            )
-            val matnr = Product(
-                    matnr = sapCode
-            )
-            productInfoNetRequest(ProductInfoParams(
-                    ean = listOf(ean),
-                    matnr = listOf(matnr)
-            )).either(::handleFailure) { productInfoResult ->
-                handleLoadProductInfoResult(productInfoResult)
-            }
-        }*/
-    }
-
-    private fun handleLoadProductInfoResult(result: ProductInfoResult) {
-        launchUITryCatch {
-            with(result) {
-               // ProductInfoResult(producers = producerList, product = productList, set = setList)
-
-            }
-        }
-    }
-
-    private fun handleSuccess(stockLockRequestResult: StockLockRequestResult) {
-        val stockLockRequestResult = stockLockRequestResult
-        Logg.d { "stockLockRequestResult:$stockLockRequestResult" }
     }
 
     private fun setDateInfo() {
         launchUITryCatch {
-
+            if (selectedDate.value == 0) producerDate = dateInfoField.value.orEmpty() else selfLifeDate = dateInfoField.value.orEmpty()
         }
+    }
+
+    private fun setProducerInfo() {
+        producerList.value = goodParams.value?.producers
+        producerNameField.value = goodParams.value?.producers?.producerName
+
     }
 
     private fun setStockInfo() {
         launchUITryCatch {
-
+            warehouseRequest(
+                    params = null
+            ).either(::handleFailure, warehouseResult::setValue)
+            warehouseResult.value?.let { warehouseResult ->
+                warehouseSender.value = warehouseResult.warehouseList?.map { it.warehouseName }
+                warehouseReceiver.value = warehouseResult.warehouseList?.map { it.warehouseName }
+            }
         }
     }
 
@@ -209,20 +195,23 @@ class GoodInfoViewModel : CoreViewModel() {
     fun onClickComplete() {
         launchUITryCatch {
             navigator.showProgressLoadingData()
+            val prodCodeSelectedProducer = goodParams.value?.producers?.producerCode?.getOrNull(selectedProducer.value ?: 0).orEmpty()
+            val warehouseSenderSelected = warehouseSender.value?.getOrNull(selectedWarehouseSender.value ?: 0).orEmpty()
+            val warehouseReceiverSelected =  warehouseReceiver.value?.getOrNull(selectedWarehouseReceiver.value ?: 0).orEmpty()
             val result = movementNewRequest(
                     params = MovementParams(
                             tkNumber = sessionInfo.market.orEmpty(),
-                            matnr = "good.matnr",
-                            prodCode = "prod.prodCode",
-                            dateProd = "dateProd",
-                            expirDate = "expirDate",
-                            lgortExport = "lgortExport",
-                            lgortImport = "lgortImport",
+                            matnr = goodParams.value?.material.orEmpty(),
+                            prodCode = prodCodeSelectedProducer,
+                            dateProd = producerDate,
+                            expirDate = selfLifeDate,
+                            lgortExport = warehouseSenderSelected,
+                            lgortImport = warehouseReceiverSelected,
                             codeCont = "codeCont",
                             factQnt = quantityField.value.toString(),
-                            buom = suffix,
+                            buom = suffix.value.orEmpty(),
                             deviceIP = deviceIp.toString(),
-                            personnelNumber = "personnelNumber"
+                            personnelNumber = sessionInfo.personnelNumber.orEmpty()
                     )
             )
             result.also {
@@ -238,5 +227,8 @@ class GoodInfoViewModel : CoreViewModel() {
         const val CONST_VALUE_24 = "24"
         const val CONST_VALUE_27 = "27"
         const val CONST_VALUE_28 = "28"
+
+        const val PROD_DATE = "Дата производства"
+        const val SELF_LIFE = "Срок годности"
     }
 }
