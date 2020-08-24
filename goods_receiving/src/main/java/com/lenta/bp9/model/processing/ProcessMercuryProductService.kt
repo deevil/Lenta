@@ -8,6 +8,7 @@ import com.lenta.bp9.platform.TypeDiscrepanciesConstants
 import com.lenta.bp9.repos.IRepoInMemoryHolder
 import com.lenta.shared.di.AppScope
 import com.lenta.shared.models.core.Uom
+import com.lenta.shared.utilities.extentions.removeItemFromListWithPredicate
 import com.lenta.shared.utilities.extentions.toStringFormatted
 import javax.inject.Inject
 
@@ -228,18 +229,24 @@ class ProcessMercuryProductService
         add(if (isConvertUnit) convertUnitForPGEProduct(countExceeded).toString() else countExceeded.toString(), isConvertUnit, "2", manufacturer, productionDate)
     }
 
-    fun updateDiscrepancy() {
-        val taskRepository = taskManager.getReceivingTask()?.taskRepository
-        currentProductDiscrepancies.clear()
-        taskRepository
-                ?.getProductsDiscrepancies()
-                ?.findProductDiscrepanciesOfProduct(productInfo)
-                ?.mapTo(currentProductDiscrepancies) { it.copy() }
-        currentMercuryDiscrepancies.clear()
-        taskRepository
-                ?.getMercuryDiscrepancies()
-                ?.findMercuryDiscrepanciesOfProduct(productInfo)
-                ?.mapTo(currentMercuryDiscrepancies) { it.copy() }
+    fun deleteDetails(typeDiscrepancies: String) {
+        currentProductDiscrepancies.removeItemFromListWithPredicate {
+            it.typeDiscrepancies == typeDiscrepancies
+                    && !it.isNotEdit
+        }
+
+        currentMercuryDiscrepancies.removeItemFromListWithPredicate {
+            it.typeDiscrepancies == typeDiscrepancies
+        }
+
+        taskManager
+                .getReceivingTask()
+                ?.let { task ->
+                    task.taskRepository
+                            .getMercuryDiscrepancies()
+                            .findMercuryDiscrepanciesOfProduct(productInfo)
+                            .mapTo(currentMercuryDiscrepancies) { it.copy() }
+                }
     }
 
     fun save(){
