@@ -39,7 +39,7 @@ class GoodSelectViewModel : CoreViewModel() {
         MutableLiveData<ProductInfoResult>()
     }
 
-    private val productInfo : MutableLiveData<ProductInfo> by unsafeLazy {
+    private val productInfo: MutableLiveData<ProductInfo> by unsafeLazy {
         MutableLiveData<ProductInfo>()
     }
 
@@ -61,23 +61,22 @@ class GoodSelectViewModel : CoreViewModel() {
                     )
             ).either(::handleFailure, productInfoResult::setValue)
             productInfoResult.value?.let { productInfoResult ->
-                productInfo.value = productInfoResult.product?.getOrNull(0)
+                productInfo.value = productInfoResult.product?.get(0)
                 producerInfo.value = productInfoResult.producers?.getOrNull(0)
+            }
+            productInfo.value?.let { goodInfo ->
+                val good = GoodParams(
+                        ean = goodInfo.ean.orEmpty(),
+                        material = goodInfo.getFormattedMaterial().orEmpty(),
+                        name = goodInfo.productName.orEmpty()
+                )
+                navigator.openGoodInfoScreen(good)
             }
         }
     }
 
-
     fun onClickNext() {
         searchGood()
-        val goodInfo = productInfo.value?.let {goodInfo ->
-            val good = GoodParams(
-                    ean = goodInfo.ean,
-                    material = goodInfo.productMatcode,
-                    name = goodInfo.productName
-            )
-        }
-
     }
 
     fun onScanResult(data: String) {

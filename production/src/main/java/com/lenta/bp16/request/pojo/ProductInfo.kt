@@ -5,7 +5,7 @@ import com.google.gson.annotations.SerializedName
 data class ProductInfo(
         /**Номер товара*/
         @SerializedName("MATNR")
-        val productNumber: String?,
+        val matnr: String?,
         /**Длинное наименование*/
         @SerializedName("NAME")
         val productName: String?,
@@ -84,5 +84,8 @@ data class ProductInfo(
         /**Общий флаг*/
         @SerializedName("IS_ZPART")
         val isPart: String?
-
-)
+) {
+    fun getFormattedMaterial(): String? {
+        return matnr?.takeLast(6)
+    }
+}
