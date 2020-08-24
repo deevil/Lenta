@@ -512,7 +512,7 @@ class GoodsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKey
                 productInfo.type == ProductType.NonExciseAlcohol
                         && !productInfo.isBoxFl
                         && !productInfo.isMarkFl
-        val isVetProduct = productInfo.isVet
+        val isVetProduct = productInfo.isVet && !productInfo.isNotEdit
         //коробочный или марочный алкоголь
         val isExciseAlcoholProduct =
                 productInfo.type == ProductType.ExciseAlcohol
