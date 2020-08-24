@@ -5,7 +5,7 @@ import kotlinx.android.parcel.Parcelize
 
 @Parcelize
 data class GoodParams (
-        val ean: String,
-        val material: String,
-        val name: String
+        val ean: String?,
+        val material: String?,
+        val name: String?
 ): Parcelable

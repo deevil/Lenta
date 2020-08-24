@@ -177,7 +177,7 @@ class GoodInfoViewModel : CoreViewModel() {
     private fun handleLoadProductInfoResult(result: ProductInfoResult) {
         launchUITryCatch {
             with(result) {
-                ProductInfoResult(producers = producerList, product = productList, set = setList)
+               // ProductInfoResult(producers = producerList, product = productList, set = setList)
 
             }
         }

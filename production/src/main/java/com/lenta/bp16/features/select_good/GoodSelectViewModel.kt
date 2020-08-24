@@ -11,7 +11,10 @@ import com.lenta.bp16.platform.navigation.IScreenNavigator
 import com.lenta.bp16.repository.DatabaseRepository
 import com.lenta.bp16.request.ProductInfoNetRequest
 import com.lenta.bp16.request.pojo.Ean
+import com.lenta.bp16.request.pojo.ProducerInfo
 import com.lenta.bp16.request.pojo.Product
+import com.lenta.bp16.request.pojo.ProductInfo
+import com.lenta.shared.exception.Failure
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.extentions.launchUITryCatch
@@ -32,15 +35,19 @@ class GoodSelectViewModel : CoreViewModel() {
     val enteredEanField = MutableLiveData("")
     val requestFocusEnteredEanField = MutableLiveData(true)
 
-    private val productInfoList: MutableLiveData<List<ProductInfoResult>> by unsafeLazy {
-        MutableLiveData<List<ProductInfoResult>>()
+    private val productInfoResult: MutableLiveData<ProductInfoResult> by unsafeLazy {
+        MutableLiveData<ProductInfoResult>()
+    }
+
+    private val productInfo : MutableLiveData<ProductInfo> by unsafeLazy {
+        MutableLiveData<ProductInfo>()
+    }
+
+    private val producerInfo: MutableLiveData<ProducerInfo> by unsafeLazy {
+        MutableLiveData<ProducerInfo>()
     }
 
     val enabledNextButton = enteredEanField.map { !it.isNullOrBlank() }
-
-    /**
-     * Остановился тут, потому что пока не приходят данные
-     * */
 
     private fun searchGood() {
         val ean: MutableList<String> = mutableListOf()
@@ -52,27 +59,25 @@ class GoodSelectViewModel : CoreViewModel() {
                             ean = ean.map { Ean(it) },
                             matnr = matnr.map { Product(it) }
                     )
-            ).either(::handleFailure, productInfoList::setValue)
+            ).either(::handleFailure, productInfoResult::setValue)
+            productInfoResult.value?.let { productInfoResult ->
+                productInfo.value = productInfoResult.product?.getOrNull(0)
+                producerInfo.value = productInfoResult.producers?.getOrNull(0)
+            }
         }
     }
 
-/*    private fun searchGood() {
-        launchUITryCatch {
-            val goodEan = database.getGoodByEan(enteredEanField.value.toString())
-            goodEan?.let {
-                val ean = it.ean
-                val material = it.getFormattedMaterial()
-                val name = it.name
-                val goodParams = GoodParams(ean = ean, material = material, name = name)
-                navigator.openGoodInfoScreen(goodParams)
-            } ?: navigator.showAlertGoodNotFound {
-                navigator.openSelectGoodScreen()
-            }
-        }
-    }*/
 
     fun onClickNext() {
         searchGood()
+        val goodInfo = productInfo.value?.let {goodInfo ->
+            val good = GoodParams(
+                    ean = goodInfo.ean,
+                    material = goodInfo.productMatcode,
+                    name = goodInfo.productName
+            )
+        }
+
     }
 
     fun onScanResult(data: String) {

@@ -12,7 +12,7 @@ class MovementRepository @Inject constructor(
         private val fmpRequestsHelper: FmpRequestsHelper
 ) : IMovementRepository {
 
-    override suspend fun getProductInfoList(params: ProductInfoParams): Either<Failure, List<ProductInfoResult>> {
+    override suspend fun getProductInfoList(params: ProductInfoParams): Either<Failure, ProductInfoResult> {
         return fmpRequestsHelper.restRequest(FMP_GOODS_INFO, params, ProductInfoStatus::class.java)
     }
 
@@ -20,7 +20,7 @@ class MovementRepository @Inject constructor(
         private const val FMP_GOODS_INFO = "ZMP_UTZ_45_V001"
     }
 
-    internal class ProductInfoStatus : ObjectRawStatus<List<ProductInfoResult>>()
+    internal class ProductInfoStatus : ObjectRawStatus<ProductInfoResult>()
 
 }
 
@@ -30,5 +30,5 @@ interface IMovementRepository {
      *
      * @param params - [ProductInfoParams]
      * */
-    suspend fun getProductInfoList(params: ProductInfoParams): Either<Failure, List<ProductInfoResult>>
+    suspend fun getProductInfoList(params: ProductInfoParams): Either<Failure, ProductInfoResult>
 }

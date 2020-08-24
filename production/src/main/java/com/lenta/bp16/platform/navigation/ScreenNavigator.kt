@@ -347,14 +347,12 @@ class ScreenNavigator @Inject constructor(
         }
     }
 
-    override fun showAlertGoodNotFound(backCallback: () -> Unit) {
+    override fun showAlertGoodNotFound() {
         runOrPostpone {
             getFragmentStack()?.push(AlertFragment.create(
                     pageNumber = Constants.ALERT_FRAGMENT,
                     message = context.getString(R.string.tw_alert_good_not_found),
-                    iconRes = R.drawable.ic_warning_red_80dp,
-                    leftButtonDecorationInfo = ButtonDecorationInfo.back,
-                    codeConfirmForLeft = backFragmentResultHelper.setFuncForResult(backCallback)
+                    iconRes = R.drawable.ic_warning_red_80dp
             ))
         }
     }
@@ -438,6 +436,6 @@ interface IScreenNavigator : ICoreNavigator {
     fun showAlertWeightNotSet()
     fun showAlertExceededLimit(backCallback: () -> Unit)
     fun showMovingSuccessful(nextCallback: () -> Unit)
-    fun showAlertGoodNotFound(backCallback: () -> Unit)
+    fun showAlertGoodNotFound()
     fun showAlertPartNotFound(backCallback: (() -> Unit)? = null)
 }

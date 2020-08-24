@@ -10,8 +10,8 @@ import javax.inject.Inject
 
 class ProductInfoNetRequest @Inject constructor(
         private val movementRepository: IMovementRepository
-) : UseCase<List<ProductInfoResult>, ProductInfoParams> {
-    override suspend fun run(params: ProductInfoParams): Either<Failure, List<ProductInfoResult>> {
+) : UseCase<ProductInfoResult, ProductInfoParams> {
+    override suspend fun run(params: ProductInfoParams): Either<Failure, ProductInfoResult> {
         return movementRepository.getProductInfoList(params)
     }
 }
