@@ -524,7 +524,6 @@ data class ScanResult(
                 other.expirationDate == expirationDate &&
                 other.commentCode == commentCode &&
                 other.comment == comment
-
     }
 
     override fun hashCode() = Objects.hash(markNumber, commentCode, comment, productionDate, expirationDate)
