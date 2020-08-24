@@ -10,19 +10,20 @@ import com.lenta.bp9.model.processing.ProcessGeneralProductService
 import com.lenta.bp9.model.task.IReceivingTaskManager
 import com.lenta.bp9.model.task.TaskProductInfo
 import com.lenta.bp9.model.task.TaskType
+import com.lenta.bp9.platform.TypeDiscrepanciesConstants
 import com.lenta.bp9.platform.navigation.IScreenNavigator
 import com.lenta.bp9.repos.IDataBaseRepo
 import com.lenta.bp9.repos.IRepoInMemoryHolder
 import com.lenta.shared.models.core.Uom
+import com.lenta.shared.platform.constants.Constants
 import com.lenta.shared.platform.time.ITimeMonitor
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.requests.combined.scan_info.ScanInfoResult
 import com.lenta.shared.requests.combined.scan_info.pojo.QualityInfo
 import com.lenta.shared.requests.combined.scan_info.pojo.ReasonRejectionInfo
-import com.lenta.shared.utilities.extentions.combineLatest
-import com.lenta.shared.utilities.extentions.launchUITryCatch
-import com.lenta.shared.utilities.extentions.map
-import com.lenta.shared.utilities.extentions.toStringFormatted
+import com.lenta.shared.utilities.date_time.DateTimeUtil
+import com.lenta.shared.utilities.extentions.*
+import com.lenta.shared.utilities.orIfNull
 import com.lenta.shared.view.OnPositionClickListener
 import org.joda.time.DateTime
 import org.joda.time.Days
@@ -68,7 +69,7 @@ class GoodsInfoViewModel : CoreViewModel(), OnPositionClickListener {
     val spinShelfLife: MutableLiveData<List<String>> = MutableLiveData()
     val spinShelfLifeSelectedPosition: MutableLiveData<Int> = MutableLiveData(0)
     val suffix: MutableLiveData<String> = MutableLiveData()
-    val requestFocusToCount: MutableLiveData<Boolean> = MutableLiveData()
+    val requestFocusToCount: MutableLiveData<Boolean> = MutableLiveData(false)
     private val countOverdelivery: MutableLiveData<Double> = MutableLiveData()
     private val isClickApply: MutableLiveData<Boolean> = MutableLiveData(false)
     val isDiscrepancy: MutableLiveData<Boolean> = MutableLiveData(false)
@@ -242,8 +243,20 @@ class GoodsInfoViewModel : CoreViewModel(), OnPositionClickListener {
 
     init {
         launchUITryCatch {
+            productInfo.value
+                    ?.let {
+                        if (processGeneralProductService.newProcessGeneralProductService(it) == null) {
+                            screenNavigator.goBackAndShowAlertWrongProductType()
+                            return@launchUITryCatch
+                        }
+                    }.orIfNull {
+                        screenNavigator.goBackAndShowAlertWrongProductType()
+                        return@launchUITryCatch
+                    }
+
             searchProductDelegate.init(viewModelScope = this@GoodsInfoViewModel::viewModelScope,
                     scanResultHandler = this@GoodsInfoViewModel::handleProductSearchResult)
+
             if (taskManager.getReceivingTask()?.taskHeader?.taskType == TaskType.RecalculationCargoUnit) {
                 paramGrwOlGrundcat.value = dataBase.getParamGrwOlGrundcat() ?: ""
                 paramGrwUlGrundcat.value = dataBase.getParamGrwUlGrundcat() ?: ""
@@ -292,38 +305,41 @@ class GoodsInfoViewModel : CoreViewModel(), OnPositionClickListener {
                 }
             }
 
-            //эту строку необходимо прописывать только после того, как были установлены данные для переменных count  и suffix, а иначе фокус в поле et_count не установится
-            requestFocusToCount.value = true
-
-            spinQuality.value = qualityInfo.value?.map {
-                it.name
-            }
-            paramGrsGrundNeg.value = dataBase.getParamGrsGrundNeg() ?: ""
+            spinQuality.value =
+                    qualityInfo.value
+                            ?.map {
+                                it.name
+                            }
+                            ?: emptyList()
+            paramGrsGrundNeg.value = dataBase.getParamGrsGrundNeg().orEmpty()
 
             /** определяем, что товар скоропорт https://trello.com/c/8sOTWtB7 */
             val paramGrzUffMhdhb = dataBase.getParamGrzUffMhdhb()?.toInt() ?: 60
-            isPerishable.value = (productInfo.value?.generalShelfLife?.toInt() ?: 0) > 0 ||
-                    (productInfo.value?.remainingShelfLife?.toInt() ?: 0) > 0 ||
-                    ((productInfo.value?.mhdhbDays ?: 0) > 0 && (productInfo.value?.mhdhbDays ?: 0) < paramGrzUffMhdhb )
+            val productGeneralShelfLifeInt = productInfo.value?.generalShelfLife?.toInt() ?: 0
+            val productRemainingShelfLifeInt = productInfo.value?.remainingShelfLife?.toInt() ?: 0
+            val productMhdhbDays = productInfo.value?.mhdhbDays ?: 0
+            isPerishable.value =
+                    productGeneralShelfLifeInt > 0
+                            || productRemainingShelfLifeInt > 0
+                            || (productMhdhbDays in 1 until paramGrzUffMhdhb)
             if (isPerishable.value == true) {
                 shelfLifeInfo.value = dataBase.getTermControlInfo()
-                spinShelfLife.value = shelfLifeInfo.value?.map {
-                    it.name
-                }
+                spinShelfLife.value = shelfLifeInfo.value?.map {it.name}.orEmpty()
                 currentDate.value = timeMonitor.getServerDate()
                 expirationDate.value = Calendar.getInstance()
-                if ( (productInfo.value?.generalShelfLife?.toInt() ?: 0) > 0 || (productInfo.value?.remainingShelfLife?.toInt() ?: 0) > 0 ) { //https://trello.com/c/XSAxdgjt
-                    generalShelfLife.value = productInfo.value?.generalShelfLife
-                    remainingShelfLife.value = productInfo.value?.remainingShelfLife
+                shelfLifeDate.value =
+                        currentDate.value
+                                ?.let {
+                                    DateTimeUtil.formatDate(it, Constants.DATE_FORMAT_dd_mm_yyyy)
+                                }
+                                .orEmpty()
+                if ( productGeneralShelfLifeInt > 0 || productRemainingShelfLifeInt > 0 ) { //https://trello.com/c/XSAxdgjt
+                    generalShelfLife.value = productInfo.value?.generalShelfLife.orEmpty()
+                    remainingShelfLife.value = productInfo.value?.remainingShelfLife.orEmpty()
                 } else {
                     generalShelfLife.value = productInfo.value?.mhdhbDays.toString()
                     remainingShelfLife.value = productInfo.value?.mhdrzDays.toString()
                 }
-            }
-
-            if (processGeneralProductService.newProcessGeneralProductService(productInfo.value!!) == null) {
-                screenNavigator.goBack()
-                screenNavigator.openAlertWrongProductType()
             }
         }
     }
@@ -351,10 +367,15 @@ class GoodsInfoViewModel : CoreViewModel(), OnPositionClickListener {
             productInfo.value = processingUnitsOfProduct.value?.get(position)
             tvAccept.value = context.getString(R.string.accept, "${productInfo.value?.purchaseOrderUnits?.name}=${productInfo.value?.quantityInvest?.toDouble().toStringFormatted()} ${productInfo.value?.uom?.name}")
 
-            if (processGeneralProductService.newProcessGeneralProductService(productInfo.value!!) == null) {
-                screenNavigator.goBack()
-                screenNavigator.openAlertWrongProductType()
-            }
+            productInfo.value
+                    ?.let {
+                        if (processGeneralProductService.newProcessGeneralProductService(it) == null) {
+                            screenNavigator.goBackAndShowAlertWrongProductType()
+                        }
+                    }
+                    ?.orIfNull {
+                        screenNavigator.goBackAndShowAlertWrongProductType()
+                    }
         }
     }
 
@@ -535,7 +556,13 @@ class GoodsInfoViewModel : CoreViewModel(), OnPositionClickListener {
         }
 
         //блок 6.152
-        if (expirationDate.value!!.time <= currentDate.value) {
+        val currentTypeDiscrepancies =
+                qualityInfo.value
+                        ?.get(spinQualitySelectedPosition.value ?: 0)
+                        ?.code
+                        .orEmpty()
+        if (expirationDate.value!!.time <= currentDate.value
+                && currentTypeDiscrepancies == TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_NORM) {
             //блок 6.158
             screenNavigator.openShelfLifeExpiredDialog(
                     //блок 6.170
@@ -757,7 +784,13 @@ class GoodsInfoViewModel : CoreViewModel(), OnPositionClickListener {
         }
 
         //блок 7.160
-        if (expirationDate.value!!.time <= currentDate.value) {
+        val currentTypeDiscrepancies =
+                qualityInfo.value
+                        ?.get(spinQualitySelectedPosition.value ?: 0)
+                        ?.code
+                        .orEmpty()
+        if (expirationDate.value!!.time <= currentDate.value
+                && currentTypeDiscrepancies == TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_NORM) {
             //блок 7.168
             screenNavigator.openShelfLifeExpiredDialog(
                     //блок 7.180

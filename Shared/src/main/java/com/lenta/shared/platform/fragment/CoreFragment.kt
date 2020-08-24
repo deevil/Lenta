@@ -10,11 +10,16 @@ import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.observe
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewbinding.ViewBinding
 import com.lenta.shared.BR
+import com.lenta.shared.R
 import com.lenta.shared.di.CoreComponent
 import com.lenta.shared.di.FromParentToCoreProvider
+import com.lenta.shared.exception.CoreFailureInterpreter
+import com.lenta.shared.exception.Failure
+import com.lenta.shared.features.alert.AlertFragment
 import com.lenta.shared.platform.activity.CoreActivity
 import com.lenta.shared.platform.activity.main_activity.CoreMainActivity
 import com.lenta.shared.platform.navigation.FragmentStack
@@ -39,6 +44,7 @@ abstract class CoreFragment<T : ViewDataBinding, S : CoreViewModel> : Fragment()
     }
 
     private var timeForAllowHandleEnter = Long.MAX_VALUE
+    private var mCount = 0
 
     protected open var recyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
 
@@ -51,9 +57,28 @@ abstract class CoreFragment<T : ViewDataBinding, S : CoreViewModel> : Fragment()
         restoreInstanceStateGsonBundle(savedInstanceState)
     }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        vm.failure.observe(viewLifecycleOwner, ::showFailureHandler)
+    }
+
+    private fun showFailureHandler(failure: Failure) {
+        val failureDescription = CoreFailureInterpreter(requireContext()).getFailureDescription(failure)
+        (activity as? CoreMainActivity)?.fragmentStack?.push(
+                AlertFragment.create(
+                        message = failureDescription.message,
+                        iconRes = failureDescription.iconRes,
+                        pageNumber = "97",
+                        textColor = failureDescription.textColor,
+                        title = context?.getString(R.string.error)
+                )
+        )
+    }
+
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         saveInstanceStateGsonBundle(outState)
+        bundle.putInt("mCount", mCount)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -119,7 +144,7 @@ abstract class CoreFragment<T : ViewDataBinding, S : CoreViewModel> : Fragment()
         return System.currentTimeMillis() > timeForAllowHandleEnter
     }
 
-    protected open fun<T : ViewDataBinding> initRecycleAdapterDataBinding(
+    protected open fun <T : ViewDataBinding> initRecycleAdapterDataBinding(
             @LayoutRes layoutId: Int,
             itemId: Int,
             onAdapterItemCreate: ((T) -> Unit)? = null,
@@ -133,6 +158,7 @@ abstract class CoreFragment<T : ViewDataBinding, S : CoreViewModel> : Fragment()
                     override fun onCreate(binding: T) {
                         onAdapterItemCreate?.invoke(binding)
                     }
+
                     override fun onBind(binding: T, position: Int) {
                         onAdapterItemBind?.invoke(binding, position)
                     }
@@ -143,7 +169,7 @@ abstract class CoreFragment<T : ViewDataBinding, S : CoreViewModel> : Fragment()
         )
     }
 
-    protected open fun<Item : Any> initRecyclerViewKeyHandler(
+    protected open fun <Item : Any> initRecyclerViewKeyHandler(
             recyclerView: RecyclerView,
             items: LiveData<List<Item>>,
             previousPosInfo: PosInfo? = null,

@@ -1,9 +1,9 @@
 package com.lenta.bp18.request.model.result
 
-import com.lenta.bp18.request.pojo.GoodInfo
 import com.lenta.bp18.request.pojo.RetCode
+import com.lenta.shared.utilities.extentions.IResultWithRetCodes
 
-data class GoodInfoResult (
+data class GoodInfoResult(
         /**Таблица возврата*/
-        val retCode: List<RetCode>
-)
+        override val retCodes: List<RetCode>?
+) : IResultWithRetCodes

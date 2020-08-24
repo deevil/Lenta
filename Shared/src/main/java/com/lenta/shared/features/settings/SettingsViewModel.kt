@@ -39,6 +39,10 @@ class SettingsViewModel : CoreViewModel(){
                 PackageName.PRO.path -> {
                     changeWeightEquipmentButtonVisibility.value = true
                 }
+                PackageName.OPP.path -> {
+                    selectPrinterButtonVisibility.value = false
+                    updateAppButtonVisibility.value = false
+                }
             }
         }
     }

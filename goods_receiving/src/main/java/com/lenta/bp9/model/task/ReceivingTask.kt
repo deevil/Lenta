@@ -30,8 +30,48 @@ class ReceivingTask(val taskHeader: TaskInfo,
         return taskRepository.getProducts().getProducts()
     }
 
+    fun getProcessedProductsDiscrepancies(): List<TaskProductDiscrepancies> {
+        return taskRepository.getProductsDiscrepancies().getProductsDiscrepancies()
+    }
+
     fun getProcessedBatches(): List<TaskBatchInfo> {
         return taskRepository.getBatches().getBatches()
+    }
+
+    fun getProcessedBatchesDiscrepancies(): List<TaskBatchesDiscrepancies> {
+        return taskRepository.getBatchesDiscrepancies().getBatchesDiscrepancies()
+    }
+
+    fun getProcessedBoxes(): List<TaskBoxInfo> {
+        return taskRepository.getBoxes().getBoxes()
+    }
+
+    fun getProcessedBoxesDiscrepancies(): List<TaskBoxDiscrepancies> {
+        return taskRepository.getBoxesDiscrepancies().getBoxesDiscrepancies()
+    }
+
+    fun getProcessedExciseStampsBad(): List<TaskExciseStampBad> {
+        return taskRepository.getExciseStampsBad().getExciseStampsBad()
+    }
+
+    fun getProcessedMercuryDiscrepancies(): List<TaskMercuryDiscrepancies> {
+        return taskRepository.getMercuryDiscrepancies().getMercuryDiscrepancies()
+    }
+
+    fun getProcessedBlocksDiscrepancies(): List<TaskBlockDiscrepancies> {
+        return taskRepository.getBlocksDiscrepancies().getBlocksDiscrepancies()
+    }
+
+    fun getProcessedExciseStamps(): List<TaskExciseStampInfo> {
+        return taskRepository.getExciseStamps().getExciseStamps()
+    }
+
+    fun getProcessedExciseStampsDiscrepancies(): List<TaskExciseStampDiscrepancies> {
+        return taskRepository.getExciseStampsDiscrepancies().getExciseStampDiscrepancies()
+    }
+
+    fun getProcessedBlocks(): List<TaskBlockInfo> {
+        return taskRepository.getBlocks().getBlocks()
     }
 
     fun getProcessedSections(): List<TaskSectionInfo> {
@@ -80,13 +120,17 @@ class ReceivingTask(val taskHeader: TaskInfo,
             }
         }
 
-        taskContentsInfo
-                .taskMercuryInfo
-                ?.let {
-                    taskRepository
-                            .getMercuryDiscrepancies()
-                            .updateMercuryInfo(it)
-                }
+        taskRepository
+                .getMercuryDiscrepancies()
+                .updateMercuryDiscrepancy(taskContentsInfo.taskMercuryDiscrepancies)
+        /**для веттоваров таблица ET_TASK_DIFF приходит пустой, потому данные необходимо брать из таблицы ET_VET_DIFF,
+         * чтобы на экранах Список товаров, Обнаружены расхождения и Информация о веттоваре, Детали по товару, были данные и их не переписывать под таблицу ET_VET_DIFF,
+         * конвертируем и переносим данные из ET_VET_DIFF в ET_TASK_DIFF
+         * */
+        taskRepository
+                .getProductsDiscrepancies()
+                .addProductDiscrepancyOfMercuryDiscrepancy(taskContentsInfo.taskMercuryDiscrepancies)
+
         taskRepository
                 .getExciseStamps()
                 .updateExciseStamps(taskContentsInfo.taskExciseStampInfo)
@@ -102,6 +146,12 @@ class ReceivingTask(val taskHeader: TaskInfo,
         taskRepository
                 .getBoxesDiscrepancies()
                 .updateBoxesDiscrepancies(taskContentsInfo.taskBoxesDiscrepancies)
+        taskRepository
+                .getBlocks()
+                .updateBlocks(taskContentsInfo.taskBlock)
+        taskRepository
+                .getBlocksDiscrepancies()
+                .updateBlocksDiscrepancies(taskContentsInfo.taskBlockDiscrepancies)
     }
 
     //количество коробов для товара прошедших контроль
@@ -114,7 +164,8 @@ class ReceivingTask(val taskHeader: TaskInfo,
                             .getBoxesDiscrepancies()
                             .findBoxesDiscrepanciesOfProduct(productInfo)
                             .filter {
-                                it.boxNumber == taskBoxInfo.boxNumber
+                                it.isScan
+                                        && it.boxNumber == taskBoxInfo.boxNumber
                             }.size
                     val countScannedExciseStamps = taskRepository
                             .getExciseStampsDiscrepancies()

@@ -8,6 +8,7 @@ import com.lenta.bp9.platform.navigation.IScreenNavigator
 import com.lenta.bp9.repos.IRepoInMemoryHolder
 import com.lenta.bp9.requests.network.*
 import com.lenta.shared.account.ISessionInfo
+import com.lenta.shared.platform.constants.Constants.OPERATING_SYSTEM_ANDROID
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.extentions.getDeviceIp
 import com.lenta.shared.utilities.extentions.launchUITryCatch
@@ -84,7 +85,8 @@ class MercuryListIrrelevantViewModel : CoreViewModel() {
                                 personnelNumber = sessionInfo.personnelNumber ?: "",
                                 dateRecount = task.taskDescription.currentStatusDate,
                                 timeRecount = task.taskDescription.currentStatusTime,
-                                unbindVSD = "X"
+                                unbindVSD = "X",
+                                operatingSystem = OPERATING_SYSTEM_ANDROID
                         )
                         directSupplierStartRecountNetRequest(params).either(::handleFailure, ::handleSuccessRecountStart)
                     }
@@ -113,6 +115,7 @@ class MercuryListIrrelevantViewModel : CoreViewModel() {
     private fun handleSuccessRecountStart(result: DirectSupplierStartRecountRestInfo) {
         launchUITryCatch {
             repoInMemoryHolder.manufacturers.value = result.manufacturers
+            repoInMemoryHolder.markingGoodsProperties.value = result.markingGoodsProperties.map { TaskMarkingGoodsProperties.from(it) }
             //todo закомичено, т.к. на проде этот фунционал пока не реализован repoInMemoryHolder.processOrderData.value = result.processOrderData.map { TaskProcessOrderDataInfo.from( it) }
             repoInMemoryHolder.sets.value = result.setsInfo.map { TaskSetsInfo.from(hyperHive, it) }
             taskManager.updateTaskDescription(TaskDescription.from(result.taskDescription))

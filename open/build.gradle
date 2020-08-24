@@ -72,17 +72,19 @@ android {
         all*.exclude group: 'com.google.guava', module: 'listenablefuture'
     }
 
-    packagingOptions {
-        pickFirst 'META-INF/kotlinx-io.kotlin_module'
-        pickFirst 'META-INF/atomicfu.kotlin_module'
-        pickFirst 'META-INF/kotlinx-coroutines-io.kotlin_module'
-    }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
+    // For Kotlin projects
     kotlinOptions {
-        jvmTarget = '1.8'
+        jvmTarget = "1.8"
+    }
+
+    packagingOptions {
+        pickFirst 'META-INF/kotlinx-io.kotlin_module'
+        pickFirst 'META-INF/atomicfu.kotlin_module'
+        pickFirst 'META-INF/kotlinx-coroutines-io.kotlin_module'
     }
 
 }

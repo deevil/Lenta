@@ -1,6 +1,5 @@
 package com.lenta.bp18.features.good_info
 
-import android.os.Bundle
 import android.view.View
 import androidx.core.os.bundleOf
 import com.lenta.bp18.R
@@ -14,7 +13,10 @@ import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListener
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
-import com.lenta.shared.utilities.extentions.*
+import com.lenta.shared.utilities.extentions.connectLiveData
+import com.lenta.shared.utilities.extentions.generateScreenNumberFromPostfix
+import com.lenta.shared.utilities.extentions.provideViewModel
+import com.lenta.shared.utilities.extentions.unsafeLazy
 
 class GoodInfoFragment : CoreFragment<FragmentGoodInfoBinding, GoodInfoViewModel>(), ToolbarButtonsClickListener, OnBackPresserListener {
 
@@ -49,7 +51,9 @@ class GoodInfoFragment : CoreFragment<FragmentGoodInfoBinding, GoodInfoViewModel
 
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
         bottomToolbarUiModel.uiModelButton1.show(ButtonDecorationInfo.back)
-        bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.complete/*, enabled = false*/)
+        bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.complete, enabled = false)
+
+        connectLiveData(vm.completeButtonEnabled,bottomToolbarUiModel.uiModelButton5.enabled)
     }
 
     override fun onToolbarButtonClick(view: View) {

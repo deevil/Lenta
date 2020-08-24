@@ -24,19 +24,28 @@ enum class GoodKind {
 }
 
 enum class ControlType(val code: String, val description: String) {
-    UNKNOWN("UNKNOWN", "Неизвестный"),
+    UNKNOWN("", "Неизвестный"),
     COMMON("N", "Обычный"),
-    ALCOHOL("A", "Алкоголь");
+    ALCOHOL("A", "Алкоголь"),
+    MARK("M", "Маркированный");
 
     companion object {
         fun from(code: String): ControlType {
             return when (code) {
                 "N" -> COMMON
                 "A" -> ALCOHOL
+                "M" -> MARK
                 else -> UNKNOWN
             }
         }
     }
+}
+
+enum class TypeCode(val code: String, val description: String){
+    COMMON("ВБП", "Возврат брака прямому поставщику"),
+    WHOLESALE("ПКО", "Продажа крупным оптом"),
+    NOT_FOOD("ПНО", "Обратная продажа Non Food"),
+    FOOD("СПНО", "Обратная продажа Food")
 }
 
 enum class CategoryType(val description: String){

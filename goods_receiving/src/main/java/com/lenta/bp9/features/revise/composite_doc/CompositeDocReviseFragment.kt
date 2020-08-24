@@ -6,6 +6,7 @@ import android.widget.CheckBox
 import com.lenta.bp9.BR
 import com.lenta.bp9.R
 import com.lenta.bp9.databinding.FragmentCompositeDocReviseBinding
+import com.lenta.bp9.databinding.ItemTileGoodsDetailsBinding
 import com.lenta.bp9.databinding.ItemTileListCompositeDocReviseBinding
 import com.lenta.bp9.model.task.revise.DeliveryDocumentRevise
 import com.lenta.bp9.platform.extentions.getAppComponent
@@ -64,18 +65,13 @@ class CompositeDocReviseFragment : CoreFragment<FragmentCompositeDocReviseBindin
 
     private fun initRvConfig() {
         binding?.let { layoutBinding ->
-            layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
+            layoutBinding.rvConfig = initRecycleAdapterDataBinding(
                     layoutId = R.layout.item_tile_list_composite_doc_revise,
                     itemId = BR.item,
-                    realisation = object : DataBindingAdapter<ItemTileListCompositeDocReviseBinding> {
-                        override fun onCreate(binding: ItemTileListCompositeDocReviseBinding) {
-                        }
-
-                        override fun onBind(binding: ItemTileListCompositeDocReviseBinding, position: Int) {
-                            binding.cbChecked.setOnClickListener { view ->
-                                val cb = view as? CheckBox
-                                cb?.let { vm.checkedChanged(position, it.isChecked) }
-                            }
+                    onAdapterItemBind = { binding: ItemTileListCompositeDocReviseBinding, position: Int ->
+                        binding.cbChecked.setOnClickListener { view ->
+                            val cb = view as? CheckBox
+                            cb?.let { vm.checkedChanged(position, it.isChecked) }
                         }
                     }
             )

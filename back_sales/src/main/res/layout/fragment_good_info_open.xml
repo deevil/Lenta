@@ -73,6 +73,13 @@
                         android:textColor="@color/color_text_title_header"
                         tools:text="Итого" />
 
+                    <TextView
+                        style="@style/CellTextStyle"
+                        android:text="@{vm.basketTitle}"
+                        android:textColor="@color/color_text_title_header"
+                        android:visibility="@{vm.isWholesaleTaskType}"
+                        tools:text="По корзине" />
+
                 </LinearLayout>
 
                 <View style="@style/VerticalDivider" />
@@ -86,6 +93,12 @@
                         android:text="@{vm.totalWithUnits}"
                         tools:text="1 шт" />
 
+                    <TextView
+                        style="@style/CellTextStyle"
+                        android:text="@{vm.basketQuantityWithUnits}"
+                        android:visibility="@{vm.isWholesaleTaskType}"
+                        tools:text="1 шт" />
+
                 </LinearLayout>
 
             </LinearLayout>
@@ -93,7 +106,9 @@
             <View style="@style/HorizontalDivider" />
 
             <!-- Производитель -->
-            <LinearLayout style="@style/LinearRowStyle">
+            <LinearLayout
+                style="@style/LinearRowStyle"
+                android:visibility="@{!vm.isWholesaleTaskType}">
 
                 <LinearLayout
                     style="@style/LinearCellStyle"
@@ -111,14 +126,16 @@
 
             </LinearLayout>
 
-            <View style="@style/HorizontalDivider" />
+            <View
+                style="@style/HorizontalDivider"
+                android:visibility="@{!vm.isWholesaleTaskType}" />
 
             <!-- Алкогольная часть -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:visibility="@{!vm.isCompactMode}">
+                android:visibility="@{!vm.isCommonGood}">
 
                 <!-- Импортер -->
                 <LinearLayout style="@style/LinearRowStyle">
@@ -183,9 +200,9 @@
 
                 <View style="@style/HorizontalDivider" />
 
-                </LinearLayout>
-
             </LinearLayout>
+
+        </LinearLayout>
 
         <!-- Блок с иконками -->
         <LinearLayout
@@ -224,6 +241,7 @@
                     android:gravity="center"
                     android:textSize="12sp"
                     app:section="@{vm.good.section}"
+                    android:visibility="@{!vm.good.section.isEmpty()}"
                     tools:text="02" />
 
             </LinearLayout>
@@ -233,11 +251,25 @@
                 app:goodKindIcon="@{vm.good.kind}"
                 tools:src="@drawable/ic_excise_alcohol_white_32dp" />
 
+            <FrameLayout style="@style/BottomIconStyle">
 
-            <ImageView
-                style="@style/BottomIconStyle"
-                android:src="@drawable/ic_clear_basket_32dp"
-                android:visibility="invisible" />
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:src="@drawable/ic_clear_basket_32dp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="1dp"
+                    android:text="@{vm.basketNumber}"
+                    android:textColor="@color/button_bg_color"
+                    android:textSize="12sp"
+                    tools:text="5" />
+
+            </FrameLayout>
 
             <ImageView
                 style="@style/BottomIconStyle"

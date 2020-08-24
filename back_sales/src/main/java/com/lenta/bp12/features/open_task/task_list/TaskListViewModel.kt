@@ -52,11 +52,17 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
 
     val selectedPage = MutableLiveData(0)
 
-    val numberField by lazy {
-        MutableLiveData("")
+    val processingNumberField by lazy {
+        MutableLiveData(sessionInfo.userName)
     }
 
-    val requestFocusToNumberField by lazy {
+    val searchNumberField = MutableLiveData("")
+
+    val requestFocusToProcessingNumberField by lazy {
+        MutableLiveData(true)
+    }
+
+    val requestFocusToSearchNumberField by lazy {
         MutableLiveData(true)
     }
 
@@ -69,11 +75,11 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
     }
 
     val processing by lazy {
-        tasks.combineLatest(numberField).map {
+        tasks.combineLatest(processingNumberField).map {
             it?.let {
                 val (tasks, number) = it
 
-                if (isEnteredLogin()) {
+                if (isEnteredLogin(number.orEmpty())) {
                     tasks
                 } else {
                     tasks?.filter { task -> task.number.contains(number.orEmpty()) }
@@ -95,12 +101,12 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
         }
     }
 
-    val found by lazy {
-        foundTasks.combineLatest(numberField).map {
+    val search by lazy {
+        foundTasks.combineLatest(searchNumberField).map {
             it?.let {
                 val (tasks, number) = it
 
-                if (isEnteredLogin()) {
+                if (isEnteredLogin(number)) {
                     tasks
                 } else {
                     tasks?.filter { task -> task.number.contains(number.orEmpty()) }
@@ -128,7 +134,7 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
 
     init {
         launchUITryCatch {
-            onClickUpdate()
+            updateProcessingTaskList()
         }
     }
 
@@ -138,9 +144,14 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
 
     override fun onPageSelected(position: Int) {
         selectedPage.value = position
+
+        when (position) {
+            0 -> requestFocusToProcessingNumberField.value = true
+            1 -> requestFocusToSearchNumberField.value = true
+        }
     }
 
-    private fun loadTaskList(value: String, userNumber: String = "") {
+    private fun loadProcessingTaskList(value: String, userNumber: String = "") {
         launchUITryCatch {
             navigator.showProgressLoadingData(::handleFailure)
 
@@ -159,11 +170,11 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
 
     private fun handleTaskListResult(result: TaskListResult) {
         launchUITryCatch {
-            manager.addTasks(result.tasks)
+            result.tasks?.let { manager.addTasks(it) }
         }
     }
 
-    private fun loadTaskListWithParams() {
+    private fun loadSearchTaskList(value: String = "") {
         manager.searchParams?.let { params ->
             launchUITryCatch {
                 navigator.showProgressLoadingData(::handleFailure)
@@ -171,6 +182,7 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
                 taskListNetRequest(
                         TaskListParams(
                                 tkNumber = sessionInfo.market.orEmpty(),
+                                value = value,
                                 mode = TaskSearchMode.WITH_PARAMS.mode,
                                 taskSearchParams = params
                         )
@@ -183,7 +195,7 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
 
     private fun handleTaskListResultWithParams(result: TaskListResult) {
         launchUITryCatch {
-            manager.addFoundTasks(result.tasks)
+            manager.addFoundTasks(result.tasks.orEmpty())
         }
     }
 
@@ -204,7 +216,7 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
                 }
                 1 -> {
                     tasks.value?.let { tasks ->
-                        tasks.find { it.number == found.value!![position].number }?.let { task ->
+                        tasks.find { it.number == search.value!![position].number }?.let { task ->
                             prepareToOpenTask(task)
                         }
                     }
@@ -230,25 +242,57 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
     }
 
     override fun onOkInSoftKeyboard(): Boolean {
-        onClickUpdate()
+        selectedPage.value?.let { page ->
+            when (page) {
+                0 -> updateProcessingTaskList()
+                1 -> updateSearchTaskList()
+                else -> throw IllegalArgumentException("Wrong pager position!")
+            }
+        }
+
         return true
     }
 
-    private fun isEnteredLogin(): Boolean {
-        val entered = numberField.value.orEmpty()
-        return entered.isNotEmpty() && !entered.all { it.isDigit() }
+    private fun isEnteredLogin(number: String): Boolean {
+        return number.isNotEmpty() && !number.all { it.isDigit() }
     }
 
-    private fun isEnteredUnknownTaskNumber(): Boolean {
-        val entered = numberField.value.orEmpty()
-        val list = processing.value ?: emptyList()
-        return entered.isNotEmpty() && entered.all { it.isDigit() } && list.isEmpty()
+    private fun isEnteredUnknownTaskNumber(entered: String): Boolean {
+        val currentList = when (selectedPage.value) {
+            0 -> processing.value
+            1 -> search.value
+            else -> throw IllegalArgumentException("Wrong pager position!")
+        }
+
+        return entered.isNotEmpty() && entered.all { it.isDigit() } && currentList.isNullOrEmpty()
     }
 
     fun updateTaskList() {
         if (manager.isNeedLoadTaskListByParams) {
             manager.isNeedLoadTaskListByParams = false
-            loadTaskListWithParams()
+            loadSearchTaskList()
+        }
+    }
+
+    private fun updateProcessingTaskList() {
+        val entered = processingNumberField.value.orEmpty()
+        if (isEnteredLogin(entered) || isEnteredUnknownTaskNumber(entered)) {
+            loadProcessingTaskList(entered)
+        } else {
+            val currentUser = sessionInfo.userName.orEmpty()
+            val userNumber = sessionInfo.personnelNumber.orEmpty()
+
+            loadProcessingTaskList(currentUser, userNumber)
+            processingNumberField.value = currentUser
+        }
+    }
+
+    private fun updateSearchTaskList() {
+        val entered = searchNumberField.value.orEmpty()
+        if (isEnteredLogin(entered) || isEnteredUnknownTaskNumber(entered)) {
+            loadSearchTaskList(entered)
+        } else {
+            loadSearchTaskList()
         }
     }
 
@@ -261,19 +305,7 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
     }
 
     fun onClickUpdate() {
-        val entered = numberField.value.orEmpty()
-
-        if (isEnteredLogin() || isEnteredUnknownTaskNumber()) {
-            loadTaskList(entered)
-        } else {
-            if (entered.isEmpty()) {
-                val currentUser = sessionInfo.userName.orEmpty()
-                val userNumber = sessionInfo.personnelNumber.orEmpty()
-
-                loadTaskList(currentUser, userNumber)
-                numberField.value = currentUser
-            }
-        }
+        updateProcessingTaskList()
     }
 
     fun onClickFilter() {

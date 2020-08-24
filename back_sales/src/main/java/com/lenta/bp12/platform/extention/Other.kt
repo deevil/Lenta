@@ -3,6 +3,8 @@ package com.lenta.bp12.platform.extention
 import com.lenta.bp12.R
 import com.lenta.bp12.model.ControlType
 import com.lenta.bp12.model.GoodKind
+import com.lenta.bp12.model.TypeCode
+import com.lenta.bp12.model.pojo.TaskType
 import com.lenta.bp12.model.MarkType
 import com.lenta.bp12.request.GoodInfoResult
 import com.lenta.shared.fmp.resources.slow.ZfmpUtz48V001
@@ -79,6 +81,14 @@ fun ControlType.isAlcohol(): Boolean {
     return this == ControlType.ALCOHOL
 }
 
+fun ControlType.isMark(): Boolean {
+    return this == ControlType.MARK
+}
+
 fun String.extractAlcoCode(): String {
     return BigInteger(this.substring(7, 19), 36).toString().padStart(19, '0')
+}
+
+fun TaskType.isWholesaleType(): Boolean {
+    return this.code == TypeCode.WHOLESALE.code
 }

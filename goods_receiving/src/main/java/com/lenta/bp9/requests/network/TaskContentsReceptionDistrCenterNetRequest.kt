@@ -29,7 +29,9 @@ data class TaskContentsReceptionDistrCenterParameters(
         @SerializedName("IV_TASK_NUM")
         val taskNumber: String,
         @SerializedName("IV_TASK_TYPE")
-        val taskType: String
+        val taskType: String,
+        @SerializedName("IV_OS")
+        val operatingSystem: String //операционная система, Win - 1, Андроид - 2
 )
 
 class TaskContentsReceptionDistrCenterStatus : ObjectRawStatus<TaskContentsReceptionDistrCenterResult>()
@@ -56,7 +58,7 @@ data class TaskContentsReceptionDistrCenterResult(
         @SerializedName("ET_MARK_BAD") //Таблица плохих марок задания
         val taskExciseStampBad: List<TaskExciseStampBadRestData>,
         @SerializedName("ET_VET_DIFF") //Таблица расхождений по вет.товарам
-        val taskMercuryInfoRestData: List<TaskMercuryInfoRestData>?,
+        val taskMercuryDiscrepancies: List<TaskMercuryDiscrepanciesRestData>?,
         @SerializedName("ET_NOTIFY")
         val notifications: List<TaskNotificationRestInfo>,
         @SerializedName("ET_DOC_NOTIFY")
@@ -93,6 +95,12 @@ data class TaskContentsReceptionDistrCenterResult(
         val manufacturers: List<Manufacturer>,
         @SerializedName("ET_TASK_SETS")//Список наборов
         val setsInfo: List<TaskSetsRestData>,
+        @SerializedName("ET_TASK_PACK")//Список блоков для маркированного товара
+        val taskBlocks: List<TaskBlockInfoRestData>,
+        @SerializedName("ET_PACK_DIFF")//Список обработанных блоков для маркированного товара
+        val taskBlocksDiscrepancies: List<TaskBlockDiscrepanciesRestData>,
+        @SerializedName("ET_PROPERTIES")//таблица свойств для маркированного товара
+        val markingGoodsProperties: List<TaskMarkingGoodsPropertiesRestData>,
         @SerializedName("EV_RETCODE")
         override val retCode: Int,
         @SerializedName("EV_ERROR_TEXT")

@@ -42,7 +42,7 @@ class NumberScreenGenerator @Inject constructor() : INumberScreenGenerator {
     }
 
     companion object {
-        const val prefix = "16"
+        const val prefix = "12"
     }
 
 }

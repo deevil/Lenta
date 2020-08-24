@@ -39,10 +39,13 @@ class GoodInfoCreateFragment : CoreFragment<FragmentGoodInfoCreateBinding, GoodI
         bottomToolbarUiModel.uiModelButton1.show(ButtonDecorationInfo.back)
         bottomToolbarUiModel.uiModelButton2.show(ButtonDecorationInfo.rollback)
         bottomToolbarUiModel.uiModelButton3.show(ButtonDecorationInfo.details)
+        bottomToolbarUiModel.uiModelButton4.show(ButtonDecorationInfo.close)
         bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.apply, enabled = false)
 
         connectLiveData(vm.rollbackVisibility, bottomToolbarUiModel.uiModelButton2.visibility)
         connectLiveData(vm.rollbackEnabled, bottomToolbarUiModel.uiModelButton2.enabled)
+        connectLiveData(vm.closeEnabled, bottomToolbarUiModel.uiModelButton4.enabled)
+        connectLiveData(vm.closeVisibility, bottomToolbarUiModel.uiModelButton4.visibility)
         connectLiveData(vm.applyEnabled, bottomToolbarUiModel.uiModelButton5.enabled)
     }
 
@@ -50,6 +53,7 @@ class GoodInfoCreateFragment : CoreFragment<FragmentGoodInfoCreateBinding, GoodI
         when (view.id) {
             R.id.b_2 -> vm.onClickRollback()
             R.id.b_3 -> vm.onClickDetails()
+            R.id.b_4 -> vm.onClickClose()
             //R.id.b_3 -> vm.onScanResult("147300249826851018001FZSIZAB5I6KZKWEQKPKZJHW6MYKVGAETXLPV7M5AIF7OXTQFIM347EWQGXAK65QGJFKTR7EQDHJQTJFSW5DNWTBU3BRLKVM7D6YZMYRBV6IOQY5ZXLPKLBHUZPBTRFTLQ") // Марка
             //R.id.b_3 -> vm.onScanResult("1734001784926710180016BZ3532QMZKOBPRTXTL7BZMZ3YNNMK53PXMB3ZU66TJ3SNVFR7YTCYVLOPKUNBQIG5XXLKNYYWMWGGUXJLVHB2NLSMF6ACBJDB73IUKGGSAEOWKBY7TW7FZ5BLIT3YT2Y") // SAP-код: 270202156641
             //R.id.b_3 -> vm.onScanResult("236200647504871018001FCCBM6EJ4RTKG5J6SZPIOVDIA4G3QGAZLK3HVONWWBVHXJYO3HOAX633MX756X27L27QPWSTGUNJM5IZL2X67XID6FSVVZAFI5OXWE5XJNHQMELI76JC45KQN2GH5VD7Y") // SAP-код: 444877

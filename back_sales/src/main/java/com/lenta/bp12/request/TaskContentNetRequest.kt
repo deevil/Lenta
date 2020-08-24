@@ -44,23 +44,29 @@ class TaskContentStatus : ObjectRawStatus<TaskContentResult>()
 data class TaskContentResult(
         /** Таблица состава задания */
         @SerializedName("ET_TASK_POS")
-        val positions: List<PositionInfo>,
+        val positions: List<PositionInfo>?,
+        /** Данные состава корзин задания */
+        @SerializedName("ET_TASK_BASKET_POS")
+        val basketProducts: List<BasketPositionInfo>?,
+        /** Данные корзин задания для обмена с МП */
+        @SerializedName("ET_TASK_BASKET")
+        val basketInfo: List<CreateTaskBasketInfo>?,
         /** Таблица марок задания */
         @SerializedName("ET_TASK_MARK")
-        val exciseMarks: List<ExciseMarkInfo>,
+        val exciseMarks: List<ExciseMarkInfo>?,
         /** Таблица партий */
         @SerializedName("ET_TASK_PARTS")
-        val parts: List<PartInfo>,
+        val parts: List<PartInfo>?,
         /** Справочные данные товара */
         @SerializedName("ET_MATERIALS")
-        val additionalInfo: List<AdditionalInfo>,
+        val additionalInfo: List<AdditionalInfo>?,
         /** Таблица производителей */
         @SerializedName("ET_PROD")
-        val producers: List<TaskProducerInfo>,
+        val producers: List<TaskProducerInfo>?,
         /** Код возврата */
         @SerializedName("EV_RETCODE")
-        override val retCode: Int,
+        override val retCode: Int?,
         /** Текст ошибки */
         @SerializedName("EV_ERROR_TEXT")
-        override val errorText: String
+        override val errorText: String?
 ) : SapResponse

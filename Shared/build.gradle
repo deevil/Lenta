@@ -22,6 +22,15 @@ android {
         }
     }
 
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+    // For Kotlin projects
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
+
     buildFeatures{
         dataBinding = true
     }
@@ -33,6 +42,13 @@ android {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    kotlinOptions { jvmTarget = "1.8" }
 
 }
 
@@ -59,6 +75,7 @@ dependencies {
 
     // Architecture components
     api deps.lifecycle.runtime
+    api deps.lifecycle.runtime_ktx
     api deps.lifecycle.extensions
 
     api deps.constraint_layout
@@ -84,5 +101,11 @@ dependencies {
 
     // Style attribute for recycler view
     implementation 'androidx.recyclerview:recyclerview:1.2.0-alpha04'
+    implementation "androidx.core:core-ktx:+"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 
+}
+repositories {
+    maven { url 'https://dl.bintray.com/kotlin/kotlin-eap' }
+    mavenCentral()
 }

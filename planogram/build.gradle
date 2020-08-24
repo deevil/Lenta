@@ -50,6 +50,15 @@ android {
 
     }
 
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+    // For Kotlin projects
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
+
     applicationVariants.all { variant ->
         if (variant.buildType.name == "release") {
             variant.outputs.all {
@@ -107,5 +116,11 @@ dependencies {
 
     // Firebase
     implementation 'com.google.firebase:firebase-analytics:17.4.3'
+    implementation "androidx.core:core-ktx:+"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 
+}
+repositories {
+    maven { url 'https://dl.bintray.com/kotlin/kotlin-eap' }
+    mavenCentral()
 }

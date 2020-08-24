@@ -31,7 +31,7 @@
 
                 <LinearLayout
                     style="@style/LinearCellStyle"
-                    android:layout_weight="@integer/task_tag_quantity_column_1">
+                    android:layout_weight="@integer/four_one_1">
 
                     <TextView
                         style="@style/FirstRowTextStyle"
@@ -42,7 +42,7 @@
 
                 <LinearLayout
                     style="@style/LinearCellStyle"
-                    android:layout_weight="@integer/task_tag_quantity_column_2">
+                    android:layout_weight="@integer/four_one_2">
 
                     <TextView
                         style="@style/FirstRowTextStyle"
@@ -52,7 +52,7 @@
 
                 <LinearLayout
                     style="@style/LinearCellStyle"
-                    android:layout_weight="@integer/task_tag_quantity_column_3">
+                    android:layout_weight="@integer/four_one_3">
 
                     <TextView
                         style="@style/FirstRowTextStyle"
@@ -62,7 +62,7 @@
 
                 <LinearLayout
                     style="@style/LinearCellStyle"
-                    android:layout_weight="@integer/task_tag_quantity_column_4">
+                    android:layout_weight="@integer/four_one_4">
 
                     <TextView
                         style="@style/FirstRowTextStyle"
@@ -86,6 +86,23 @@
             app:items="@{vm.processing}"
             app:rv_config="@{rvConfig}"
             tools:listitem="@layout/item_task_list_task" />
+
+        <!-- Ввод номера -->
+        <LinearLayout style="@style/EnterNumberFieldLayout">
+
+            <EditText
+                style="@style/EnterNumberField"
+                android:drawableEnd="@drawable/ic_filter_white_16dp"
+                android:hint="@string/enter_task_number_or_login"
+                android:inputType="textNoSuggestions|textVisiblePassword"
+                android:maxLength="20"
+                android:text="@={vm.processingNumberField}"
+                app:onOkInSoftKeyboard="@{vm}"
+                app:requestFocus="@{vm.requestFocusToProcessingNumberField}"
+                app:textAllCaps="@{true}"
+                tools:ignore="Autofill" />
+
+        </LinearLayout>
 
     </LinearLayout>
 

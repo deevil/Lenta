@@ -6,7 +6,8 @@ enum class PackageName(val path: String) {
     WOB("com.lenta.bp10"),
     PRO("com.lenta.bp16"),
     INV("com.lenta.inventory"),
-    SHA("com.lenta.shared")
+    SHA("com.lenta.shared"),
+    OPP("com.lenta.bp18")
 }
 
 enum class TabIndicatorColor {

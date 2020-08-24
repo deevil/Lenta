@@ -5,17 +5,17 @@ import com.google.gson.annotations.SerializedName
 data class ConditionInfo(
         /**Код предприятия*/
         @SerializedName("WERKS")
-        val werks: String,
+        val werks: String? = "",
         /**Товар*/
         @SerializedName("MATNR")
-        val matnr: String,
+        val matnr: String? = "",
         /**Код условия хранения*/
         @SerializedName("STCOND")
-        val number: String,
+        val number: String? = "",
         /**Наименование условия хранения*/
         @SerializedName("STCONDNAM")
-        val name: String,
+        val name: String? = "",
         /**Условия хранения по умолчанию*/
         @SerializedName("DEFCOND")
-        val defCondition: String
+        val defCondition: String? = ""
 )

@@ -44,7 +44,7 @@ data class TaskContentsRequestResult(
         @SerializedName("ET_MARK_BAD") //Таблица плохих марок задания
         val taskExciseStampBad: List<TaskExciseStampBadRestData>,
         @SerializedName("ET_VET_DIFF") //Таблица расхождений по вет.товарам
-        val taskMercuryInfoRestData: List<TaskMercuryInfoRestData>,
+        val taskMercuryDiscrepancies: List<TaskMercuryDiscrepanciesRestData>?,
         @SerializedName("ET_VET_NOT_ACTUAL") //Список не актуальных ВСД
         val taskMercuryNotActualRestData: List<TaskMercuryNotActualRestData>,
         @SerializedName("ET_NOTIFY")
@@ -87,6 +87,12 @@ data class TaskContentsRequestResult(
         val processOrderData: List<TaskProcessOrderDataRestData>,
         @SerializedName("ET_TASK_SETS")//Список наборов
         val setsInfo: List<TaskSetsRestData>,
+        @SerializedName("ET_TASK_PACK")//Список блоков для маркированного товара
+        val taskBlocks: List<TaskBlockInfoRestData>,
+        @SerializedName("ET_PACK_DIFF")//Список обработанных блоков для маркированного товара
+        val taskBlocksDiscrepancies: List<TaskBlockDiscrepanciesRestData>,
+        @SerializedName("ET_PROPERTIES")//таблица свойств для маркированного товара
+        val markingGoodsProperties: List<TaskMarkingGoodsPropertiesRestData>,
         @SerializedName("EV_RETCODE")
         override val retCode: Int,
         @SerializedName("EV_ERROR_TEXT")
@@ -101,5 +107,7 @@ data class TaskContentRequestParameters(
         @SerializedName("IV_PERNR")
         val personalNumber: String,
         @SerializedName("IV_TASK_NUM")
-        val taskNumber: String
+        val taskNumber: String,
+        @SerializedName("IV_OS")
+        val operatingSystem: String //операционная система, Win - 1, Андроид - 2
 )

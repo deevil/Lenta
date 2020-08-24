@@ -133,6 +133,18 @@ class ScreenNavigator @Inject constructor(
         }
     }
 
+    override fun showAlertConditionNotFound(goBackCallback: () -> Unit) {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    message = context.getString(R.string.tw_condition_not_found),
+                    iconRes = R.drawable.ic_warning_red_80dp,
+                    pageNumber = Constants.ALERT_SCREEN_NUMBER,
+                    codeConfirmForLeft = backFragmentResultHelper.setFuncForResult(goBackCallback),
+                    leftButtonDecorationInfo = ButtonDecorationInfo.back
+            ))
+        }
+    }
+
 }
 
 interface IScreenNavigator : ICoreNavigator {
@@ -149,4 +161,5 @@ interface IScreenNavigator : ICoreNavigator {
     fun showAlertPartCodeNotFound()
     fun showAlertGoodsNotFound()
     fun showAlertServerNotAvailable(goOverCallback: () -> Unit)
+    fun showAlertConditionNotFound(goBackCallback: () -> Unit)
 }

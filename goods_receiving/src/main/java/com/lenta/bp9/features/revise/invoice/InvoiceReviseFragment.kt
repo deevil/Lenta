@@ -25,8 +25,6 @@ import com.lenta.shared.utilities.extentions.provideViewModel
 
 class InvoiceReviseFragment : CoreFragment<FragmentInvoiceReviseBinding, InvoiceReviseViewModel>(), ViewPagerSettings, ToolbarButtonsClickListener, OnBackPresserListener {
 
-    private var notesRecyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
-
     override fun getLayoutId(): Int = R.layout.fragment_invoice_revise
 
     override fun getPageNumber() = "09/08"
@@ -51,7 +49,7 @@ class InvoiceReviseFragment : CoreFragment<FragmentInvoiceReviseBinding, Invoice
         viewLifecycleOwner.apply {
             vm.selectedPage.observe(this, Observer {
                 if (it == 2) {
-                    if (vm.isEInvoice) {
+                    if (vm.editingAvailable.value == false) { //https://trello.com/c/YGRYIO7e и алкоголь и е-инвойс
                         bottomToolbarUiModel.uiModelButton3.show(ButtonDecorationInfo.browsing)
                     } else {
                         bottomToolbarUiModel.uiModelButton3.show(ButtonDecorationInfo.fix)
@@ -116,27 +114,13 @@ class InvoiceReviseFragment : CoreFragment<FragmentInvoiceReviseBinding, Invoice
                         container,
                         false).let { layoutBinding ->
 
-                    layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
+                    layoutBinding.rvConfig = initRecycleAdapterDataBinding<ItemTileNotesBinding>(
                             layoutId = R.layout.item_tile_notes,
-                            itemId = BR.item,
-                            realisation = object : DataBindingAdapter<ItemTileNotesBinding> {
-                                override fun onCreate(binding: ItemTileNotesBinding) {
-                                }
-
-                                override fun onBind(binding: ItemTileNotesBinding, position: Int) {
-                                    binding.tvItemNumber.tag = position
-                                }
-                            }
+                            itemId = BR.item
                     )
 
                     layoutBinding.vm = vm
                     layoutBinding.lifecycleOwner = viewLifecycleOwner
-                    val rvKeyHandler = RecyclerViewKeyHandler(
-                            rv = layoutBinding.rv,
-                            items = vm.notes,
-                            lifecycleOwner = layoutBinding.lifecycleOwner!!
-                    )
-                    notesRecyclerViewKeyHandler = rvKeyHandler
                     return layoutBinding.root
                 }
     }

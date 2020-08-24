@@ -8,5 +8,5 @@ data class MarketInfoParams(
         @SerializedName("IV_MODE")
         val mode: String,
         @SerializedName("IV_WERKS")
-        val werks: String
+        val werks: String? = ""
 )

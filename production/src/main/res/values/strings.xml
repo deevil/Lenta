@@ -6,6 +6,7 @@
     <string name="processed">Обработанные</string>
 
     // Подзаголовки экранов
+    <string name="market_number">ТК-%1$s</string>
     <string name="work_with_pu_es_quantity">Работа с %1$s (%2$d)</string>
     <string name="good_list">Список товаров</string>
     <string name="pu_number">ЕО %1$s</string>
@@ -49,6 +50,7 @@
     <string name="processing_es">Обработка ВП</string>
     <string name="enter_number_es">Введите номер ВП</string>
     <string name="enter_number_pu">Введите номер ЕО</string>
+    <string name="scan_barcode">Отсканируйте штрихкод</string>
     <string name="fact">Факт</string>
     <string name="total">Итого</string>
     <string name="planed_quantity">План на передел</string>
@@ -69,9 +71,43 @@
     <string name="preparation_ingredients">Подготовка ингредиентов</string>
     <string name="tw_alert_part_not_found">Отсканированная партия не найдена в системе. Отложите товар и проведите инвентаризацию.</string>
     <string name="tw_alert_good_not_found">Данный товар не найден</string>
+    <string name="tw_alert_ingredient_not_found">Ингредиент не найден</string>
+    <string name="tw_alert_ingredient_not_found_in_position">Ингредиент не найден в данной позиции</string>
+    <string name="tw_alert_dualism">Отсканированный товар может быть обработан как в рамках заказа, так и в рамках передела. Выберите режим обработки вручную</string>
+    <string name="tw_alert_good_not_found_in_current_shift">Отсканированный товар не найден в ингредиентах на текущую смену</string>
     <string name="tw_moving_successful">Перемещение товара выполнено</string>
     <string name="tw_exceeded_limit">Превышено количество по партии</string>
     <string name="title_good_sap_name">%1$s %2$s</string>
 
+
+    <!-- Типы складов -->
+    <string name="warehouse_select">Выберите склад:</string>
+    <string name="warehouse_1">0111</string>
+    <string name="warehouse_2">0121</string>
+    <string name="warehouse_3">0131</string>
+    <string name="warehouse_4">0141</string>
+    <string name="warehouse_all">Выбрать все</string>
+    <string name="desc_ingredients_list">Список объектов</string>
+    <string name="desc_order_ingredients_list_by">Список ингредиентов на %s кг</string>
+    <string name="desc_tech_order_list_by">Список технологических заказов</string>
+    <string name="desc_ingredient_detail">Детализация заказа</string>
+    <string name="desc_remakes_list">Список переделов</string>
+    <string name="column_name_two">Заказ/Склад/ПФ</string>
+    <string name="column_name_good">Товар</string>
+    <string name="column_name_order_tech">Заказ/ПФ</string>
+    <string name="column_name_remake">Склад/Передел</string>
+    <string name="column_name_plan">План</string>
+    <string name="column_name_plan_value">План сырья</string>
+    <string name="column_name_fact">Факт</string>
+    <string name="column_name_amount">Итого</string>
+    <string name="tab_name_by_order">По Заказу</string>
+    <string name="tab_name_by_material">По Материалу</string>
+    <string name="text_complect">Комплектация</string>
+    <string name="text_weight_hint">кг</string>
+    <string name="text_pf">ПФ</string>
+    <string name="text_pf_plan">ПФ План (кг)</string>
+    <string name="text_already">Скомплектовано (кг)</string>
+    <string name="text_warehouse">Склад</string>
+    <string name="error_weight_not_set">Вы не указали значение: количество</string>
 
 </resources>

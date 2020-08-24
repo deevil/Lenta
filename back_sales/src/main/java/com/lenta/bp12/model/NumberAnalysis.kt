@@ -5,7 +5,7 @@ import com.lenta.shared.requests.combined.scan_info.ScanCodeInfo
 import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.getMaterialInCommonFormat
 
-fun actionByNumberLength(
+fun actionByNumber(
         number: String,
         funcForEan: (ean: String) -> Unit,
         funcForMaterial: (material: String) -> Unit,

@@ -9,12 +9,13 @@ import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListener
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
+import com.lenta.shared.scan.OnScanResultListener
 import com.lenta.shared.utilities.extentions.connectLiveData
 import com.lenta.shared.utilities.extentions.generateScreenNumberFromPostfix
 import com.lenta.shared.utilities.extentions.provideViewModel
 
 class TaskSearchFragment : CoreFragment<FragmentTaskSearchBinding, TaskSearchViewModel>(),
-        ToolbarButtonsClickListener {
+        ToolbarButtonsClickListener, OnScanResultListener {
 
     override fun getLayoutId(): Int = R.layout.fragment_task_search
 
@@ -45,8 +46,13 @@ class TaskSearchFragment : CoreFragment<FragmentTaskSearchBinding, TaskSearchVie
         }
     }
 
+    override fun onScanResult(data: String) {
+        vm.onScanResult(data)
+    }
+
     companion object {
         const val SCREEN_NUMBER = "70"
+
     }
 
 }

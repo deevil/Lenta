@@ -9,4 +9,8 @@ data class ProviderInfo(
         /** Наименование поставщика */
         @SerializedName("LIFNR_NAME")
         val name: String? = ""
-)
+) {
+        companion object {
+                fun getEmptyProvider() = ProviderInfo()
+        }
+}

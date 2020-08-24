@@ -17,3 +17,13 @@ fun TaskInfo.getTaskStatus(): TaskStatus {
         }
     }
 }
+
+fun getFieldWithSuffix(field: String?, suffix: String): String {
+    return field?.takeIf { it.isNotEmpty() }?.run {
+        buildString {
+            append(field)
+            append(" ")
+            append(suffix)
+        }
+    }.orEmpty()
+}

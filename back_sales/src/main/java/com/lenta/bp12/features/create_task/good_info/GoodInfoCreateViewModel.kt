@@ -7,10 +7,7 @@ import com.lenta.bp12.model.pojo.Part
 import com.lenta.bp12.model.pojo.Position
 import com.lenta.bp12.model.pojo.create_task.Basket
 import com.lenta.bp12.model.pojo.create_task.GoodCreate
-import com.lenta.bp12.platform.extention.extractAlcoCode
-import com.lenta.bp12.platform.extention.getControlType
-import com.lenta.bp12.platform.extention.getGoodKind
-import com.lenta.bp12.platform.extention.getMarkType
+import com.lenta.bp12.platform.extention.*
 import com.lenta.bp12.platform.navigation.IScreenNavigator
 import com.lenta.bp12.platform.resource.IResourceManager
 import com.lenta.bp12.repository.IDatabaseRepository
@@ -28,6 +25,7 @@ import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.extentions.*
 import com.lenta.shared.utilities.getDateFromString
 import com.lenta.shared.utilities.getFormattedDate
+import com.lenta.shared.utilities.orIfNull
 import com.lenta.shared.view.OnPositionClickListener
 import javax.inject.Inject
 
@@ -77,7 +75,13 @@ class GoodInfoCreateViewModel : CoreViewModel() {
 
     private var lastSuccessSearchNumber = ""
 
-    val isImporterAndBottlingDateVisible by unsafeLazy {
+    val isWholesaleTaskType by lazy {
+        task.map {
+            it?.type?.isWholesaleType()
+        }
+    }
+
+    val isCommonGood by lazy {
         good.map { good ->
             good?.kind == GoodKind.COMMON
         }
@@ -187,9 +191,7 @@ class GoodInfoCreateViewModel : CoreViewModel() {
                 val isProviderSelected = it.second
 
                 if (isProviderSelected) {
-                    getBasket()?.let { basket ->
-                        good.getQuantityByProvider(basket.provider.code).sumWith(enteredQuantity)
-                    } ?: enteredQuantity
+                    getBasket()?.getQuantityOfGood(good)?.sumWith(enteredQuantity) ?: enteredQuantity
                 } else 0.0
             }
         }
@@ -356,6 +358,18 @@ class GoodInfoCreateViewModel : CoreViewModel() {
         info != null
     }
 
+    val closeVisibility by lazy {
+        task.map { task ->
+            task?.type?.isWholesaleType()
+        }
+    }
+
+    val closeEnabled by lazy {
+        basketQuantity.map { baksetQuantityValue ->
+            baksetQuantityValue?.let { it > 0 }
+        }
+    }
+
     /**
     Блок инициализации
      */
@@ -373,18 +387,26 @@ class GoodInfoCreateViewModel : CoreViewModel() {
 
     fun onScanResult(number: String) {
         good.value?.let { good ->
-            if (applyEnabled.value == true || (good.kind == GoodKind.EXCISE && isExciseNumber(number))) {
-                if (!thereWasRollback) {
-                    saveChanges()
-                } else {
-                    thereWasRollback = false
-                }
+            launchUITryCatch {
+                if (isApplyEnabledOrIsGoodExcise(good, number)) {
+                    if (!thereWasRollback) {
+                        saveChanges()
+                    } else {
+                        thereWasRollback = false
+                    }
 
-                manager.clearSearchFromListParams()
-                checkSearchNumber(number)
+                    manager.clearSearchFromListParams()
+                    checkSearchNumber(number)
+                }
             }
         }
     }
+    private fun isApplyEnabledOrIsGoodExcise(good: GoodCreate, number: String) =
+            isApplyEnabled() or isGoodExcise(good, number)
+
+    private fun isApplyEnabled() = applyEnabled.value == true
+    private fun isGoodExcise(good: GoodCreate, number: String) =
+            good.kind == GoodKind.EXCISE && isExciseNumber(number)
 
     private fun isExciseNumber(number: String): Boolean {
         return when (number.length) {
@@ -395,7 +417,8 @@ class GoodInfoCreateViewModel : CoreViewModel() {
 
     private fun checkSearchNumber(number: String) {
         originalSearchNumber = number
-        actionByNumberLength(
+
+        actionByNumber(
                 number = number,
                 funcForEan = ::getGoodByEan,
                 funcForMaterial = ::getGoodByMaterial,
@@ -426,7 +449,6 @@ class GoodInfoCreateViewModel : CoreViewModel() {
     }
 
     private fun setFoundGood(foundGood: GoodCreate) {
-        Logg.d { "--> found good: $foundGood" }
         manager.updateCurrentGood(foundGood)
         if (foundGood.markType != MarkType.UNKNOWN) {
             navigator.openMarkedGoodInfoCreateScreen()
@@ -438,6 +460,7 @@ class GoodInfoCreateViewModel : CoreViewModel() {
             setDefaultQuantity(foundGood)
         }
 
+        Logg.d { "--> found good: $foundGood" }
     }
 
     private fun setDefaultQuantity(good: GoodCreate) {
@@ -531,27 +554,34 @@ class GoodInfoCreateViewModel : CoreViewModel() {
         }
         launchUITryCatch {
             with(result) {
-                good.value = GoodCreate(
-                        ean = eanInfo?.ean.orEmpty(),
-                        eans = database.getEanListByMaterialUnits(
-                                material = materialInfo?.material.orEmpty(),
-                                unitsCode = materialInfo?.commonUnitsCode.orEmpty()
-                        ),
-                        material = materialInfo?.material.orEmpty(),
-                        name = materialInfo?.name.orEmpty(),
-                        kind = getGoodKind(),
-                        type = materialInfo?.goodType.orEmpty(),
-                        control = getControlType(),
-                        section = materialInfo?.section.orEmpty(),
-                        matrix = getMatrixType(materialInfo?.matrix.orEmpty()),
-                        commonUnits = database.getUnitsByCode(materialInfo?.commonUnitsCode.orEmpty()),
-                        innerUnits = database.getUnitsByCode(materialInfo?.innerUnitsCode.orEmpty()),
-                        innerQuantity = materialInfo?.innerQuantity?.toDoubleOrNull() ?: 1.0,
-                        providers = providers.orEmpty().toMutableList(),
-                        producers = producers.orEmpty().toMutableList(),
-                        markType = getMarkType(),
-                        maxRetailPrice = ""
-                )
+                task.value?.let { task ->
+                    val taskType = task.type
+                    Logg.e { "$taskType" }
+                    good.value = GoodCreate(
+                            ean = eanInfo?.ean.orEmpty(),
+                            eans = database.getEanListByMaterialUnits(
+                                    material = materialInfo?.material.orEmpty(),
+                                    unitsCode = materialInfo?.commonUnitsCode.orEmpty()
+                            ),
+                            material = materialInfo?.material.orEmpty(),
+                            name = materialInfo?.name.orEmpty(),
+                            kind = getGoodKind(),
+                            type = materialInfo?.goodType.takeIf { taskType.isDivByGoodType }.orEmpty(),
+                            control = getControlType(),
+                            section = materialInfo?.section.takeIf { taskType.isDivBySection }.orEmpty(),
+                            matrix = getMatrixType(materialInfo?.matrix.orEmpty()),
+                            commonUnits = database.getUnitsByCode(materialInfo?.commonUnitsCode.orEmpty()),
+                            innerUnits = database.getUnitsByCode(materialInfo?.innerUnitsCode.orEmpty()),
+                            innerQuantity = materialInfo?.innerQuantity?.toDoubleOrNull() ?: 1.0,
+                            providers = providers?.toMutableList().takeIf { taskType.isDivByProvider }.orEmpty().toMutableList(),
+                            producers = producers?.toMutableList().orEmpty().toMutableList(),
+                            volume = materialInfo?.volume?.toDoubleOrNull() ?: 0.0,
+                            markType = getMarkType(),
+                            maxRetailPrice = ""
+                }.orIfNull {
+                    Logg.e { "task null" }
+                    navigator.showInternalError(resource.taskNotFoundErrorMsg)
+                }
             }
 
             good.value?.let { good ->
@@ -567,6 +597,9 @@ class GoodInfoCreateViewModel : CoreViewModel() {
                 }
 
                 Logg.d { "--> added good: $good" }
+            }.orIfNull {
+                Logg.e { "good null" }
+                navigator.showInternalError(resource.goodNotFoundErrorMsg)
             }
 
             manager.clearSearchFromListParams()
@@ -730,7 +763,7 @@ class GoodInfoCreateViewModel : CoreViewModel() {
         if (isProducerSelected.value == true) {
             producers.value?.let { producers ->
                 producerPosition.value?.let { position ->
-                    producerCode = producers[position].code
+                    producerCode = producers.getOrNull(position)?.code.orEmpty()
                 }
             }
         }
@@ -743,25 +776,12 @@ class GoodInfoCreateViewModel : CoreViewModel() {
         if (isProviderSelected.value == true) {
             providers.value?.let { providers ->
                 providerPosition.value?.let { position ->
-                    provider = providers[position]
+                    provider = providers.getOrNull(position).orIfNull { ProviderInfo.getEmptyProvider() }
                 }
             }
         }
 
         return provider
-    }
-
-    private fun getBasket(): Basket? {
-        return task.value?.let { task ->
-            good.value?.let { good ->
-                task.baskets.find { basket ->
-                    basket.section == good.section &&
-                            basket.goodType == good.type &&
-                            basket.control == good.control &&
-                            basket.provider.code == getProviderCode()
-                }
-            }
-        }
     }
 
     private fun updateProviders(providers: MutableList<ProviderInfo>) {
@@ -772,119 +792,106 @@ class GoodInfoCreateViewModel : CoreViewModel() {
         sourceProducers.value = producers
     }
 
-    private fun saveChanges() {
+    private suspend fun saveChanges() {
         screenStatus.value?.let { status ->
+            good.value?.let { good ->
+                manager.saveGoodInTask(good)
+                isExistUnsavedData = false
+            }.orIfNull {
+                Logg.e { "good null" }
+                navigator.showInternalError(resource.goodNotFoundErrorMsg)
+            }
+
             when (status) {
                 ScreenStatus.COMMON -> addPosition()
                 ScreenStatus.MARK_150, ScreenStatus.MARK_68 -> addMark()
                 ScreenStatus.ALCOHOL, ScreenStatus.PART -> addPart()
                 ScreenStatus.BOX -> addBox()
-                else -> Logg.e { "wrong screenStatus" }
-
-            }
-
-            good.value?.let { good ->
-                manager.saveGoodInTask(good)
-                isExistUnsavedData = false
+                else -> Unit
             }
         }
     }
 
-    private fun addPosition() {
+    private suspend fun addPosition() {
         good.value?.let { changedGood ->
+            val quantityValue = quantity.value ?: 0.0
             val position = Position(
-                    quantity = quantity.value ?: 0.0,
+                    quantity = quantityValue,
                     provider = getProvider()
             )
-            Logg.d { "--> add position = $position" }
+            position.materialNumber = changedGood.material
             changedGood.addPosition(position)
-
-            createBasket(changedGood)
+            manager.addGoodToBasket(
+                    good = changedGood,
+                    provider = getProvider(),
+                    count = quantityValue)
             manager.updateCurrentGood(changedGood)
+        }.orIfNull {
+            Logg.e { "good null" }
+            navigator.showInternalError(resource.goodNotFoundErrorMsg)
         }
     }
 
-    private fun addMark() {
+    private suspend fun addMark() {
         good.value?.let { changedGood ->
-            addEmptyPosition(changedGood)
-
             val mark = Mark(
                     number = lastSuccessSearchNumber,
                     isBadMark = scanInfoResult.value?.status == ExciseMarkStatus.BAD.code,
                     providerCode = getProviderCode()
             )
-            Logg.d { "--> add mark = $mark" }
-            changedGood.addMark(mark)
-
-            createBasket(changedGood)
-            manager.updateCurrentGood(changedGood)
+            manager.addGoodToBasketWithMark(changedGood, mark, getProvider())
+        }.orIfNull {
+            Logg.e { "good null" }
+            navigator.showInternalError(resource.goodNotFoundErrorMsg)
         }
     }
 
-    private fun addPart() {
+    private suspend fun addPart() {
         good.value?.let { changedGood ->
-            addEmptyPosition(changedGood)
-
+            val quantityValue = quantity.value ?: 0.0
             val part = Part(
                     number = lastSuccessSearchNumber,
                     material = changedGood.material,
-                    quantity = quantity.value ?: 0.0,
                     providerCode = getProviderCode(),
                     producerCode = getProducerCode(),
                     date = getDateFromString(date.value.orEmpty(), Constants.DATE_FORMAT_dd_mm_yyyy)
             )
-            Logg.d { "--> add part = $part" }
-            changedGood.addPart(part)
-
-            createBasket(changedGood)
-            manager.updateCurrentGood(changedGood)
+            manager.addGoodToBasket(
+                    good = changedGood,
+                    part = part,
+                    provider = getProvider(),
+                    count = quantityValue)
+        }.orIfNull {
+            Logg.e { "good null" }
+            navigator.showInternalError(resource.goodNotFoundErrorMsg)
         }
     }
 
-    private fun addBox() {
+    private suspend fun addBox() {
         good.value?.let { changedGood ->
-            addEmptyPosition(changedGood)
 
             scanInfoResult.value?.exciseMarks?.let { marks ->
                 marks.forEach { mark ->
                     val markFromBox = Mark(
-                            number = mark.number,
+                            number = mark.number.orEmpty(),
                             boxNumber = lastSuccessSearchNumber,
                             providerCode = getProviderCode()
                     )
                     Logg.d { "--> add mark from box = $markFromBox" }
-                    changedGood.addMark(markFromBox)
+                    manager.addGoodToBasketWithMark(changedGood, markFromBox, getProvider())
                 }
             }
 
-            createBasket(changedGood)
             manager.updateCurrentGood(changedGood)
+        }.orIfNull {
+            Logg.e { "good null" }
+            navigator.showInternalError(resource.goodNotFoundErrorMsg)
         }
     }
 
-    private fun addEmptyPosition(changedGood: GoodCreate) {
-        val position = Position(
-                quantity = 0.0,
-                provider = getProvider()
-        )
-        Logg.d { "--> add position = $position" }
-        changedGood.addPosition(position)
-    }
 
-    private fun createBasket(changedGood: GoodCreate) {
-        var basket = getBasket()
-        if (basket == null) {
-            basket = Basket(
-                    section = changedGood.section,
-                    goodType = changedGood.type,
-                    control = changedGood.control,
-                    provider = getProvider()
-            )
-            Logg.d { "--> add basket = $basket" }
-            manager.addBasket(basket)
-        } else {
-            manager.updateCurrentBasket(basket)
-        }
+    private fun getBasket(): Basket? {
+        return manager.getBasket(getProviderCode())
     }
 
     fun updateData() {
@@ -949,9 +956,22 @@ class GoodInfoCreateViewModel : CoreViewModel() {
     }
 
     private fun saveChangesAndExit() {
-        saveChanges()
-        navigator.goBack()
-        navigator.openBasketGoodListScreen()
+        launchUITryCatch {
+            navigator.showProgressLoadingData()
+            saveChanges()
+            navigator.hideProgress()
+            navigator.goBack()
+            navigator.openBasketCreateGoodListScreen()
+            manager.isBasketsNeedsToBeClosed = false
+        }
     }
 
+    fun onClickClose() {
+        navigator.showCloseBasketDialog(::handleYesOnClickCloseCallback)
+    }
+
+    private fun handleYesOnClickCloseCallback() {
+        manager.isBasketsNeedsToBeClosed = true
+        saveChangesAndExit()
+    }
 }

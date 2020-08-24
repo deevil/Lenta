@@ -85,8 +85,8 @@ class ExciseAlcoBoxListPGEFragment : CoreFragment<FragmentExciseAlcoBoxListPgeBi
                     .inflate<LayoutExciseAlcoBoxListNotProcessedPgeBinding>(LayoutInflater.from(container.context),
                             R.layout.layout_excise_alco_box_list_not_processed_pge,
                             container,
-                            false).let { layoutBinding ->
-
+                            false)
+                    .let { layoutBinding ->
                         val onClickSelectionListener = View.OnClickListener {
                             (it!!.tag as Int).let { position ->
                                 vm.notProcessedSelectionsHelper.revert(position = position)
@@ -94,43 +94,33 @@ class ExciseAlcoBoxListPGEFragment : CoreFragment<FragmentExciseAlcoBoxListPgeBi
                             }
                         }
 
-                        layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
+                        layoutBinding.rvConfig = initRecycleAdapterDataBinding(
                                 layoutId = R.layout.item_tile_excis_alco_box_list_not_processed,
                                 itemId = BR.item,
-                                realisation = object : DataBindingAdapter<ItemTileExcisAlcoBoxListNotProcessedBinding> {
-                                    override fun onCreate(binding: ItemTileExcisAlcoBoxListNotProcessedBinding) {
-                                    }
-
-                                    override fun onBind(binding: ItemTileExcisAlcoBoxListNotProcessedBinding, position: Int) {
-                                        binding.tvItemNumber.tag = position
-                                        binding.tvItemNumber.setOnClickListener(onClickSelectionListener)
-                                        binding.selectedItem = if (vm.isSelectAll.value == true) true else vm.notProcessedSelectionsHelper.isSelected(position)
-                                        notProcessedRecyclerViewKeyHandler?.let {
-                                            binding.root.isSelected = it.isSelected(position)
-                                        }
-                                    }
-
+                                onAdapterItemBind = { binding: ItemTileExcisAlcoBoxListNotProcessedBinding, position: Int ->
+                                    binding.tvItemNumber.tag = position
+                                    binding.tvItemNumber.setOnClickListener(onClickSelectionListener)
+                                    binding.selectedItem = if (vm.isSelectAll.value == true) true else vm.notProcessedSelectionsHelper.isSelected(position)
+                                    notProcessedRecyclerViewKeyHandler
+                                            ?.let {
+                                                binding.root.isSelected = it.isSelected(position)
+                                            }
                                 },
-                                onItemClickListener = AdapterView.OnItemClickListener { _, _, position, _ ->
-                                    notProcessedRecyclerViewKeyHandler?.let {
-                                        if (it.isSelected(position)) {
-                                            vm.onClickItemPosition(position)
-                                        } else {
-                                            it.selectPosition(position)
-                                        }
-                                    }
-
+                                onAdapterItemClicked = {position ->
+                                    notProcessedRecyclerViewKeyHandler?.onItemClicked(position)
                                 }
                         )
 
                         layoutBinding.vm = vm
                         layoutBinding.lifecycleOwner = viewLifecycleOwner
-                        notProcessedRecyclerViewKeyHandler = RecyclerViewKeyHandler(
-                                rv = layoutBinding.rv,
+
+                        notProcessedRecyclerViewKeyHandler = initRecyclerViewKeyHandler(
+                                recyclerView = layoutBinding.rv,
+                                previousPosInfo = notProcessedRecyclerViewKeyHandler?.posInfo?.value,
                                 items = vm.countNotProcessed,
-                                lifecycleOwner = layoutBinding.lifecycleOwner!!,
-                                initPosInfo = notProcessedRecyclerViewKeyHandler?.posInfo?.value
+                                onClickHandler = vm::onClickItemPosition
                         )
+
                         return layoutBinding.root
                     }
         }
@@ -139,8 +129,8 @@ class ExciseAlcoBoxListPGEFragment : CoreFragment<FragmentExciseAlcoBoxListPgeBi
                 .inflate<LayoutExciseAlcoBoxListProcessedPgeBinding>(LayoutInflater.from(container.context),
                         R.layout.layout_excise_alco_box_list_processed_pge,
                         container,
-                        false).let { layoutBinding ->
-
+                        false)
+                .let { layoutBinding ->
                     val onClickSelectionListener = View.OnClickListener {
                         (it!!.tag as Int).let { position ->
                             vm.processedSelectionsHelper.revert(position = position)
@@ -148,42 +138,33 @@ class ExciseAlcoBoxListPGEFragment : CoreFragment<FragmentExciseAlcoBoxListPgeBi
                         }
                     }
 
-                    layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
+                    layoutBinding.rvConfig = initRecycleAdapterDataBinding(
                             layoutId = R.layout.item_tile_excise_alco_box_list_processed,
                             itemId = BR.item,
-                            realisation = object : DataBindingAdapter<ItemTileExciseAlcoBoxListProcessedBinding> {
-                                override fun onCreate(binding: ItemTileExciseAlcoBoxListProcessedBinding) {
-                                }
-
-                                override fun onBind(binding: ItemTileExciseAlcoBoxListProcessedBinding, position: Int) {
-                                    binding.tvItemNumber.tag = position
-                                    binding.tvItemNumber.setOnClickListener(onClickSelectionListener)
-                                    binding.selectedForDelete = vm.processedSelectionsHelper.isSelected(position)
-                                    processedRecyclerViewKeyHandler?.let {
-                                        binding.root.isSelected = it.isSelected(position)
-                                    }
-                                }
-
+                            onAdapterItemBind = { binding: ItemTileExciseAlcoBoxListProcessedBinding, position: Int ->
+                                binding.tvItemNumber.tag = position
+                                binding.tvItemNumber.setOnClickListener(onClickSelectionListener)
+                                binding.selectedForDelete = vm.processedSelectionsHelper.isSelected(position)
+                                processedRecyclerViewKeyHandler
+                                        ?.let {
+                                            binding.root.isSelected = it.isSelected(position)
+                                        }
                             },
-                            onItemClickListener = AdapterView.OnItemClickListener { _, _, position, _ ->
-                                processedRecyclerViewKeyHandler?.let {
-                                    if (it.isSelected(position)) {
-                                        vm.onClickItemPosition(position)
-                                    } else {
-                                        it.selectPosition(position)
-                                    }
-                                }
+                            onAdapterItemClicked = {position ->
+                                processedRecyclerViewKeyHandler?.onItemClicked(position)
                             }
                     )
 
                     layoutBinding.vm = vm
                     layoutBinding.lifecycleOwner = viewLifecycleOwner
-                    processedRecyclerViewKeyHandler = RecyclerViewKeyHandler(
-                            rv = layoutBinding.rv,
+
+                    processedRecyclerViewKeyHandler = initRecyclerViewKeyHandler(
+                            recyclerView = layoutBinding.rv,
+                            previousPosInfo = processedRecyclerViewKeyHandler?.posInfo?.value,
                             items = vm.countNotProcessed,
-                            lifecycleOwner = layoutBinding.lifecycleOwner!!,
-                            initPosInfo = processedRecyclerViewKeyHandler?.posInfo?.value
+                            onClickHandler = vm::onClickItemPosition
                     )
+
                     return layoutBinding.root
                 }
     }

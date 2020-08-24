@@ -14,6 +14,9 @@
         <item name="spinnerStyle">@style/spinner_style</item>
         <item name="android:spinnerItemStyle">@style/SpinnerItemStyle</item>
         <item name="android:progressBarStyle">@style/ProgressBar</item>
+        <item name="android:windowFullscreen">true</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowActionBar">false</item>
         <item name="android:fontFamily" tools:targetApi="jelly_bean">@font/tahoma</item>
         <item name="checkboxStyle">@style/LentaCheckbox</item>
         <item name="recyclerViewStyle">@style/recycler_view_style</item>

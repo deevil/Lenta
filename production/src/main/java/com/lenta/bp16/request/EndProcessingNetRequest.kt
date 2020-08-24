@@ -26,7 +26,6 @@ class EndProcessingNetRequest @Inject constructor(
                         }
                 )
     }
-
 }
 
 data class EndProcessingParams(

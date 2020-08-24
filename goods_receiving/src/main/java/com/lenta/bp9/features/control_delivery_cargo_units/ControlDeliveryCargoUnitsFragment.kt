@@ -83,42 +83,31 @@ class ControlDeliveryCargoUnitsFragment : CoreFragment<FragmentControlDeliveryCa
                     .inflate<LayoutControlDeliveryCuBinding>(LayoutInflater.from(container.context),
                             R.layout.layout_control_delivery_cu,
                             container,
-                            false).let { layoutBinding ->
-
-                        layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
+                            false)
+                    .let { layoutBinding ->
+                        layoutBinding.rvConfig = initRecycleAdapterDataBinding(
                                 layoutId = R.layout.item_tile_control_delivery_cu,
                                 itemId = BR.item,
-                                realisation = object : DataBindingAdapter<ItemTileControlDeliveryCuBinding> {
-                                    override fun onCreate(binding: ItemTileControlDeliveryCuBinding) {
-                                    }
-
-                                    override fun onBind(binding: ItemTileControlDeliveryCuBinding, position: Int) {
-                                        notProcessedRecyclerViewKeyHandler?.let {
-                                            binding.root.isSelected = it.isSelected(position)
-                                        }
-                                    }
-
-                                },
-                                onItemClickListener = AdapterView.OnItemClickListener { _, _, position, _ ->
+                                onAdapterItemBind = { binding: ItemTileControlDeliveryCuBinding, position: Int ->
                                     notProcessedRecyclerViewKeyHandler?.let {
-                                        if (it.isSelected(position)) {
-                                            vm.onClickItemPosition(position)
-                                        } else {
-                                            it.selectPosition(position)
-                                        }
+                                        binding.root.isSelected = it.isSelected(position)
                                     }
-
+                                },
+                                onAdapterItemClicked = {position ->
+                                    notProcessedRecyclerViewKeyHandler?.onItemClicked(position)
                                 }
                         )
 
                         layoutBinding.vm = vm
                         layoutBinding.lifecycleOwner = viewLifecycleOwner
-                        notProcessedRecyclerViewKeyHandler = RecyclerViewKeyHandler(
-                                rv = layoutBinding.rv,
+
+                        notProcessedRecyclerViewKeyHandler = initRecyclerViewKeyHandler(
+                                recyclerView = layoutBinding.rv,
+                                previousPosInfo = notProcessedRecyclerViewKeyHandler?.posInfo?.value,
                                 items = vm.listNotProcessed,
-                                lifecycleOwner = layoutBinding.lifecycleOwner!!,
-                                initPosInfo = notProcessedRecyclerViewKeyHandler?.posInfo?.value
+                                onClickHandler = vm::onClickItemPosition
                         )
+
                         return layoutBinding.root
                     }
         }
@@ -127,42 +116,31 @@ class ControlDeliveryCargoUnitsFragment : CoreFragment<FragmentControlDeliveryCa
                 .inflate<LayoutControlDeliveryCuBinding>(LayoutInflater.from(container.context),
                         R.layout.layout_control_delivery_cu,
                         container,
-                        false).let { layoutBinding ->
-
-                    layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
+                        false)
+                .let { layoutBinding ->
+                    layoutBinding.rvConfig = initRecycleAdapterDataBinding(
                             layoutId = R.layout.item_tile_control_delivery_cu,
                             itemId = BR.item,
-                            realisation = object : DataBindingAdapter<ItemTileControlDeliveryCuBinding> {
-                                override fun onCreate(binding: ItemTileControlDeliveryCuBinding) {
-                                }
-
-                                override fun onBind(binding: ItemTileControlDeliveryCuBinding, position: Int) {
-                                    processedRecyclerViewKeyHandler?.let {
-                                        binding.root.isSelected = it.isSelected(position)
-                                    }
-                                }
-
-                            },
-                            onItemClickListener = AdapterView.OnItemClickListener { _, _, position, _ ->
+                            onAdapterItemBind = { binding: ItemTileControlDeliveryCuBinding, position: Int ->
                                 processedRecyclerViewKeyHandler?.let {
-                                    if (it.isSelected(position)) {
-                                        vm.onClickItemPosition(position)
-                                    } else {
-                                        it.selectPosition(position)
-                                    }
+                                    binding.root.isSelected = it.isSelected(position)
                                 }
-
+                            },
+                            onAdapterItemClicked = {position ->
+                                processedRecyclerViewKeyHandler?.onItemClicked(position)
                             }
                     )
 
                     layoutBinding.vm = vm
                     layoutBinding.lifecycleOwner = viewLifecycleOwner
-                    processedRecyclerViewKeyHandler = RecyclerViewKeyHandler(
-                            rv = layoutBinding.rv,
+
+                    processedRecyclerViewKeyHandler = initRecyclerViewKeyHandler(
+                            recyclerView = layoutBinding.rv,
+                            previousPosInfo = processedRecyclerViewKeyHandler?.posInfo?.value,
                             items = vm.listProcessed,
-                            lifecycleOwner = layoutBinding.lifecycleOwner!!,
-                            initPosInfo = processedRecyclerViewKeyHandler?.posInfo?.value
+                            onClickHandler = vm::onClickItemPosition
                     )
+
                     return layoutBinding.root
                 }
     }
@@ -173,42 +151,31 @@ class ControlDeliveryCargoUnitsFragment : CoreFragment<FragmentControlDeliveryCa
                     .inflate<LayoutControlDeliveryEoBinding>(LayoutInflater.from(container.context),
                             R.layout.layout_control_delivery_eo,
                             container,
-                            false).let { layoutBinding ->
-
-                        layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
+                            false)
+                    .let { layoutBinding ->
+                        layoutBinding.rvConfig = initRecycleAdapterDataBinding(
                                 layoutId = R.layout.item_tile_control_delivery_cu,
                                 itemId = BR.item,
-                                realisation = object : DataBindingAdapter<ItemTileControlDeliveryCuBinding> {
-                                    override fun onCreate(binding: ItemTileControlDeliveryCuBinding) {
-                                    }
-
-                                    override fun onBind(binding: ItemTileControlDeliveryCuBinding, position: Int) {
-                                        notProcessedRecyclerViewKeyHandler?.let {
-                                            binding.root.isSelected = it.isSelected(position)
-                                        }
-                                    }
-
-                                },
-                                onItemClickListener = AdapterView.OnItemClickListener { _, _, position, _ ->
+                                onAdapterItemBind = { binding: ItemTileControlDeliveryCuBinding, position: Int ->
                                     notProcessedRecyclerViewKeyHandler?.let {
-                                        if (it.isSelected(position)) {
-                                            vm.onClickItemPosition(position)
-                                        } else {
-                                            it.selectPosition(position)
-                                        }
+                                        binding.root.isSelected = it.isSelected(position)
                                     }
-
+                                },
+                                onAdapterItemClicked = {position ->
+                                    notProcessedRecyclerViewKeyHandler?.onItemClicked(position)
                                 }
                         )
 
                         layoutBinding.vm = vm
                         layoutBinding.lifecycleOwner = viewLifecycleOwner
-                        notProcessedRecyclerViewKeyHandler = RecyclerViewKeyHandler(
-                                rv = layoutBinding.rv,
+
+                        notProcessedRecyclerViewKeyHandler = initRecyclerViewKeyHandler(
+                                recyclerView = layoutBinding.rv,
+                                previousPosInfo = notProcessedRecyclerViewKeyHandler?.posInfo?.value,
                                 items = vm.listNotProcessed,
-                                lifecycleOwner = layoutBinding.lifecycleOwner!!,
-                                initPosInfo = notProcessedRecyclerViewKeyHandler?.posInfo?.value
+                                onClickHandler = vm::onClickItemPosition
                         )
+
                         return layoutBinding.root
                     }
         }
@@ -217,42 +184,31 @@ class ControlDeliveryCargoUnitsFragment : CoreFragment<FragmentControlDeliveryCa
                 .inflate<LayoutControlDeliveryEoBinding>(LayoutInflater.from(container.context),
                         R.layout.layout_control_delivery_eo,
                         container,
-                        false).let { layoutBinding ->
-
-                    layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
+                        false)
+                .let { layoutBinding ->
+                    layoutBinding.rvConfig = initRecycleAdapterDataBinding(
                             layoutId = R.layout.item_tile_control_delivery_cu,
                             itemId = BR.item,
-                            realisation = object : DataBindingAdapter<ItemTileControlDeliveryCuBinding> {
-                                override fun onCreate(binding: ItemTileControlDeliveryCuBinding) {
-                                }
-
-                                override fun onBind(binding: ItemTileControlDeliveryCuBinding, position: Int) {
-                                    processedRecyclerViewKeyHandler?.let {
-                                        binding.root.isSelected = it.isSelected(position)
-                                    }
-                                }
-
-                            },
-                            onItemClickListener = AdapterView.OnItemClickListener { _, _, position, _ ->
+                            onAdapterItemBind = { binding: ItemTileControlDeliveryCuBinding, position: Int ->
                                 processedRecyclerViewKeyHandler?.let {
-                                    if (it.isSelected(position)) {
-                                        vm.onClickItemPosition(position)
-                                    } else {
-                                        it.selectPosition(position)
-                                    }
+                                    binding.root.isSelected = it.isSelected(position)
                                 }
-
+                            },
+                            onAdapterItemClicked = {position ->
+                                processedRecyclerViewKeyHandler?.onItemClicked(position)
                             }
                     )
 
                     layoutBinding.vm = vm
                     layoutBinding.lifecycleOwner = viewLifecycleOwner
-                    processedRecyclerViewKeyHandler = RecyclerViewKeyHandler(
-                            rv = layoutBinding.rv,
+
+                    processedRecyclerViewKeyHandler = initRecyclerViewKeyHandler(
+                            recyclerView = layoutBinding.rv,
+                            previousPosInfo = processedRecyclerViewKeyHandler?.posInfo?.value,
                             items = vm.listProcessed,
-                            lifecycleOwner = layoutBinding.lifecycleOwner!!,
-                            initPosInfo = processedRecyclerViewKeyHandler?.posInfo?.value
+                            onClickHandler = vm::onClickItemPosition
                     )
+
                     return layoutBinding.root
                 }
     }
@@ -263,52 +219,42 @@ class ControlDeliveryCargoUnitsFragment : CoreFragment<FragmentControlDeliveryCa
                     .inflate<LayoutControlDeliveryShipmentCuBinding>(LayoutInflater.from(container.context),
                             R.layout.layout_control_delivery_shipment_cu,
                             container,
-                            false).let { layoutBinding ->
-
+                            false)
+                    .let { layoutBinding ->
                         val onClickSelectionListener = View.OnClickListener {
-                            (it!!.tag as Int).let { position ->
-                                vm.notProcessedSelectionsHelper.revert(position = position)
-                                layoutBinding.rv.adapter?.notifyItemChanged(position)
-                            }
+                            (it!!.tag as Int)
+                                    .let { position ->
+                                        vm.notProcessedSelectionsHelper.revert(position = position)
+                                        layoutBinding.rv.adapter?.notifyItemChanged(position)
+                                    }
                         }
 
-                        layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
+                        layoutBinding.rvConfig = initRecycleAdapterDataBinding(
                                 layoutId = R.layout.item_tile_control_delivery_shipment_cu,
                                 itemId = BR.item,
-                                realisation = object : DataBindingAdapter<ItemTileControlDeliveryShipmentCuBinding> {
-                                    override fun onCreate(binding: ItemTileControlDeliveryShipmentCuBinding) {
-                                    }
-
-                                    override fun onBind(binding: ItemTileControlDeliveryShipmentCuBinding, position: Int) {
-                                        binding.tvItemNumber.tag = position
-                                        binding.tvItemNumber.setOnClickListener(onClickSelectionListener)
-                                        binding.selectedForDelete = vm.notProcessedSelectionsHelper.isSelected(position)
-                                        notProcessedRecyclerViewKeyHandler?.let {
-                                            binding.root.isSelected = it.isSelected(position)
-                                        }
-                                    }
-
-                                },
-                                onItemClickListener = AdapterView.OnItemClickListener { _, _, position, _ ->
+                                onAdapterItemBind = { binding: ItemTileControlDeliveryShipmentCuBinding, position: Int ->
+                                    binding.tvItemNumber.tag = position
+                                    binding.tvItemNumber.setOnClickListener(onClickSelectionListener)
+                                    binding.selectedForDelete = vm.notProcessedSelectionsHelper.isSelected(position)
                                     notProcessedRecyclerViewKeyHandler?.let {
-                                        if (it.isSelected(position)) {
-                                            vm.onClickItemPosition(position)
-                                        } else {
-                                            it.selectPosition(position)
-                                        }
+                                        binding.root.isSelected = it.isSelected(position)
                                     }
-
+                                },
+                                onAdapterItemClicked = {position ->
+                                    notProcessedRecyclerViewKeyHandler?.onItemClicked(position)
                                 }
                         )
 
                         layoutBinding.vm = vm
                         layoutBinding.lifecycleOwner = viewLifecycleOwner
-                        notProcessedRecyclerViewKeyHandler = RecyclerViewKeyHandler(
-                                rv = layoutBinding.rv,
+
+                        notProcessedRecyclerViewKeyHandler = initRecyclerViewKeyHandler(
+                                recyclerView = layoutBinding.rv,
+                                previousPosInfo = notProcessedRecyclerViewKeyHandler?.posInfo?.value,
                                 items = vm.listNotProcessed,
-                                lifecycleOwner = layoutBinding.lifecycleOwner!!,
-                                initPosInfo = notProcessedRecyclerViewKeyHandler?.posInfo?.value
+                                onClickHandler = vm::onClickItemPosition
                         )
+
                         return layoutBinding.root
                     }
         }
@@ -317,42 +263,31 @@ class ControlDeliveryCargoUnitsFragment : CoreFragment<FragmentControlDeliveryCa
                 .inflate<LayoutControlDeliveryCuBinding>(LayoutInflater.from(container.context),
                         R.layout.layout_control_delivery_cu,
                         container,
-                        false).let { layoutBinding ->
-
-                    layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
+                        false)
+                .let { layoutBinding ->
+                    layoutBinding.rvConfig = initRecycleAdapterDataBinding(
                             layoutId = R.layout.item_tile_control_delivery_cu,
                             itemId = BR.item,
-                            realisation = object : DataBindingAdapter<ItemTileControlDeliveryCuBinding> {
-                                override fun onCreate(binding: ItemTileControlDeliveryCuBinding) {
-                                }
-
-                                override fun onBind(binding: ItemTileControlDeliveryCuBinding, position: Int) {
-                                    processedRecyclerViewKeyHandler?.let {
-                                        binding.root.isSelected = it.isSelected(position)
-                                    }
-                                }
-
-                            },
-                            onItemClickListener = AdapterView.OnItemClickListener { _, _, position, _ ->
+                            onAdapterItemBind = { binding: ItemTileControlDeliveryCuBinding, position: Int ->
                                 processedRecyclerViewKeyHandler?.let {
-                                    if (it.isSelected(position)) {
-                                        vm.onClickItemPosition(position)
-                                    } else {
-                                        it.selectPosition(position)
-                                    }
+                                    binding.root.isSelected = it.isSelected(position)
                                 }
-
+                            },
+                            onAdapterItemClicked = {position ->
+                                processedRecyclerViewKeyHandler?.onItemClicked(position)
                             }
                     )
 
                     layoutBinding.vm = vm
                     layoutBinding.lifecycleOwner = viewLifecycleOwner
-                    processedRecyclerViewKeyHandler = RecyclerViewKeyHandler(
-                            rv = layoutBinding.rv,
+
+                    processedRecyclerViewKeyHandler = initRecyclerViewKeyHandler(
+                            recyclerView = layoutBinding.rv,
+                            previousPosInfo = processedRecyclerViewKeyHandler?.posInfo?.value,
                             items = vm.listProcessed,
-                            lifecycleOwner = layoutBinding.lifecycleOwner!!,
-                            initPosInfo = processedRecyclerViewKeyHandler?.posInfo?.value
+                            onClickHandler = vm::onClickItemPosition
                     )
+
                     return layoutBinding.root
                 }
     }

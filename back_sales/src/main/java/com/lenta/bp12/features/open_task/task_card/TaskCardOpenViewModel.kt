@@ -4,6 +4,8 @@ import androidx.lifecycle.MutableLiveData
 import com.lenta.bp12.model.IOpenTaskManager
 import com.lenta.bp12.platform.extention.isAlcohol
 import com.lenta.bp12.platform.extention.isCommon
+import com.lenta.bp12.platform.extention.isMark
+import com.lenta.bp12.platform.extention.isWholesaleType
 import com.lenta.bp12.platform.navigation.IScreenNavigator
 import com.lenta.bp12.platform.resource.IResourceManager
 import com.lenta.bp12.request.*
@@ -12,9 +14,11 @@ import com.lenta.shared.exception.Failure
 import com.lenta.shared.platform.device_info.DeviceInfo
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.settings.IAppSettings
+import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.databinding.PageSelectionListener
 import com.lenta.shared.utilities.extentions.launchUITryCatch
 import com.lenta.shared.utilities.extentions.map
+import com.lenta.shared.utilities.orIfNull
 import javax.inject.Inject
 
 class TaskCardOpenViewModel : CoreViewModel(), PageSelectionListener {
@@ -57,16 +61,21 @@ class TaskCardOpenViewModel : CoreViewModel(), PageSelectionListener {
     val ui by lazy {
         task.map {
             it?.let { task ->
+                val provider = task.getProviderCodeWithName().takeIf { codeWithName ->
+                    codeWithName.isNotEmpty()
+                } ?: resource.wholesaleBuyer()
+
                 TaskCardOpenUi(
                         name = task.name,
-                        provider = task.getProviderCodeWithName(),
+                        provider = provider,
                         storage = task.storage,
                         reason = task.reason?.description.orEmpty(),
                         description = task.type?.description.orEmpty(),
                         comment = task.comment,
                         isStrict = task.isStrict,
                         isAlcohol = task.control.isAlcohol(),
-                        isCommon = task.control.isCommon()
+                        isCommon = task.control.isCommon(),
+                        isMark = task.control.isMark()
                 )
             }
         }
@@ -75,6 +84,16 @@ class TaskCardOpenViewModel : CoreViewModel(), PageSelectionListener {
     val isExistComment by lazy {
         task.map {
             it?.comment?.isNotEmpty() ?: false
+        }
+    }
+
+    /**
+    Блок инициализации
+     */
+
+    init {
+        launchUITryCatch {
+            manager.isWholesaleTaskType = task.value?.type?.isWholesaleType() == true
         }
     }
 
@@ -147,6 +166,9 @@ class TaskCardOpenViewModel : CoreViewModel(), PageSelectionListener {
             } else {
                 unblockTaskAndExit(task.number)
             }
+        }.orIfNull {
+            Logg.e { "task null" }
+            navigator.showInternalError(resource.taskNotFoundErrorMsg)
         }
     }
 
@@ -170,15 +192,3 @@ class TaskCardOpenViewModel : CoreViewModel(), PageSelectionListener {
     }
 
 }
-
-data class TaskCardOpenUi(
-        val name: String,
-        val provider: String,
-        val storage: String,
-        val reason: String,
-        val description: String,
-        val comment: String,
-        val isStrict: Boolean,
-        val isAlcohol: Boolean,
-        val isCommon: Boolean
-)

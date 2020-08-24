@@ -449,6 +449,10 @@ class GoodsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKey
                     taskRepository
                             .getExciseStampsBad()
                             .deleteExciseStampBadForProduct(product.materialNumber)
+
+                    taskRepository
+                            .getBlocksDiscrepancies()
+                            .deleteBlocksDiscrepanciesForProduct(product)
                 }
     }
 
@@ -502,53 +506,105 @@ class GoodsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKey
         updateData()
     }
 
+    private fun filterClearTabTaskDiff(productInfo: TaskProductInfo) : Boolean {
+        //партионный - это помеченный IS_ALCO и не помеченный IS_BOX_FL, IS_MARK_FL (Артем)
+        val isBatchNonExciseAlcoholProduct =
+                productInfo.type == ProductType.NonExciseAlcohol
+                        && !productInfo.isBoxFl
+                        && !productInfo.isMarkFl
+        val isVetProduct = productInfo.isVet
+        //коробочный или марочный алкоголь
+        val isExciseAlcoholProduct =
+                productInfo.type == ProductType.ExciseAlcohol
+                        && (productInfo.isBoxFl || productInfo.isMarkFl)
+        return isBatchNonExciseAlcoholProduct
+                || isVetProduct
+                || isExciseAlcoholProduct
+    }
+
+    private fun getCountProductNotProcessed() : Double {
+        return taskManager
+                .getReceivingTask()
+                ?.let { task ->
+                    val taskType =task.taskHeader.taskType
+                    val productsDiscrepancies = task.taskRepository.getProductsDiscrepancies()
+                    task.getProcessedProducts()
+                            .mapNotNull { productInfo ->
+                                if (taskType == TaskType.RecalculationCargoUnit) {
+                                    productsDiscrepancies
+                                            .getCountProductNotProcessedOfProductPGE(productInfo)
+                                            .takeIf { it > 0.0 }
+                                } else {
+                                    productsDiscrepancies
+                                            .getCountProductNotProcessedOfProduct(productInfo)
+                                            .takeIf { it > 0.0 }
+                                }
+                            }
+                            .sumByDouble { it }
+                } ?: 0.0
+    }
+
     fun onClickSave() {
         launchUITryCatch {
-            val countProductNotProcessed = taskManager.getReceivingTask()?.let { task ->
-                task.getProcessedProducts()
-                        .filter { productInfo ->
-                            if (task.taskHeader.taskType == TaskType.RecalculationCargoUnit) {
-                                task.taskRepository.getProductsDiscrepancies().getCountProductNotProcessedOfProductPGE(productInfo) > 0.0
-                            } else {
-                                task.taskRepository.getProductsDiscrepancies().getCountProductNotProcessedOfProduct(productInfo) > 0.0
-                            }
-                        }.map {
-                            if (task.taskHeader.taskType == TaskType.RecalculationCargoUnit) {
-                                task.taskRepository.getProductsDiscrepancies().getCountProductNotProcessedOfProductPGE(it)
-                            } else {
-                                task.taskRepository.getProductsDiscrepancies().getCountProductNotProcessedOfProduct(it)
-                            }
-                        }.sumByDouble {
-                            it
-                        }
-            } ?: 0.0
-
-            if (countProductNotProcessed > 0.0) {
+            if (getCountProductNotProcessed() > 0.0) {
                 screenNavigator.openDiscrepancyListScreen()
             } else {
                 screenNavigator.showProgressLoadingData(::handleFailure)
-                //очищаем таблицу ET_TASK_DIFF от не акцизного (партионного) алкоголя, т.к. для этих товаров необходимо передавать только данные из таблицы ET_PARTS_DIFF
-                taskManager.getReceivingTask()!!.taskRepository.getProductsDiscrepancies().getProductsDiscrepancies().map { productDiscr ->
-                    taskManager.getReceivingTask()!!.taskRepository.getProducts().findProduct(productDiscr.materialNumber)
-                }.filter { filterProduct ->
-                    //партионный - это помеченный IS_ALCO и не помеченный IS_BOX_FL, IS_MARK_FL (Артем)
-                    filterProduct?.type == ProductType.NonExciseAlcohol && !filterProduct.isBoxFl && !filterProduct.isMarkFl
-                }.map { mapProduct ->
-                    mapProduct?.let { productForDel ->
-                        taskManager.getReceivingTask()!!.taskRepository.getProductsDiscrepancies().deleteProductsDiscrepanciesForProduct(productForDel.materialNumber)
-                    }
-                }
+                /**
+                 * очищаем таблицу ET_TASK_DIFF от не акцизного (партионного) алкоголя и веттоваров,
+                 * т.к. для партионного товара необходимо передавать только данные из таблицы ET_PARTS_DIFF, а для веттоваров - ET_VET_DIFF
+                 */
+                val receivingTask = taskManager.getReceivingTask()
+                val taskRepository = taskManager.getReceivingTask()?.taskRepository
+                receivingTask
+                        ?.getProcessedProductsDiscrepancies()
+                        ?.mapNotNull { productDiscr ->
+                            taskRepository
+                                    ?.getProducts()
+                                    ?.findProduct(productDiscr.materialNumber)
+                        }
+                        ?.filter { filterClearTabTaskDiff(it) }
+                        ?.forEach { productForDel ->
+                            taskRepository
+                                    ?.getProductsDiscrepancies()
+                                    ?.deleteProductsDiscrepanciesForProduct(productForDel.materialNumber)
+                        }
 
                 endRecountDirectDeliveries(EndRecountDDParameters(
-                        taskNumber = taskManager.getReceivingTask()!!.taskHeader.taskNumber,
+                        taskNumber = receivingTask
+                                ?.taskHeader
+                                ?.taskNumber
+                                .orEmpty(),
                         deviceIP = context.getDeviceIp(),
-                        personalNumber = sessionInfo.personnelNumber ?: "",
-                        discrepanciesProduct = taskManager.getReceivingTask()!!.taskRepository.getProductsDiscrepancies().getProductsDiscrepancies().map { TaskProductDiscrepanciesRestData.from(it) },
-                        discrepanciesBatches = taskManager.getReceivingTask()!!.taskRepository.getBatchesDiscrepancies().getBatchesDiscrepancies().map { TaskBatchesDiscrepanciesRestData.from(it) },
-                        discrepanciesBoxes = taskManager.getReceivingTask()!!.taskRepository.getBoxesDiscrepancies().getBoxesDiscrepancies().map { TaskBoxDiscrepanciesRestData.from(it) },
-                        discrepanciesExciseStamp = taskManager.getReceivingTask()!!.taskRepository.getExciseStampsDiscrepancies().getExciseStampDiscrepancies().map { TaskExciseStampDiscrepanciesRestData.from(it) },
-                        exciseStampBad = taskManager.getReceivingTask()!!.taskRepository.getExciseStampsBad().getExciseStampsBad().map { TaskExciseStampBadRestData.from(it) },
-                        discrepanciesMercury = taskManager.getReceivingTask()!!.taskRepository.getMercuryDiscrepancies().getMercuryDiscrepancies().map { TaskMercuryDiscrepanciesRestData.from(it) }
+                        personalNumber = sessionInfo.personnelNumber.orEmpty(),
+                        discrepanciesProduct = receivingTask
+                                ?.getProcessedProductsDiscrepancies()
+                                ?.map { TaskProductDiscrepanciesRestData.from(it) }
+                                .orEmpty(),
+                        discrepanciesBatches = receivingTask
+                                ?.getProcessedBatchesDiscrepancies()
+                                ?.map { TaskBatchesDiscrepanciesRestData.from(it) }
+                                .orEmpty(),
+                        discrepanciesBoxes = receivingTask
+                                ?.getProcessedBoxesDiscrepancies()
+                                ?.map { TaskBoxDiscrepanciesRestData.from(it) }
+                                .orEmpty(),
+                        discrepanciesExciseStamp = receivingTask
+                                ?.getProcessedExciseStampsDiscrepancies()
+                                ?.map { TaskExciseStampDiscrepanciesRestData.from(it) }
+                                .orEmpty(),
+                        exciseStampBad = receivingTask
+                                ?.getProcessedExciseStampsBad()
+                                ?.map { TaskExciseStampBadRestData.from(it) }
+                                .orEmpty(),
+                        discrepanciesMercury = receivingTask
+                                ?.getProcessedMercuryDiscrepancies()
+                                ?.map { TaskMercuryDiscrepanciesRestData.from(it) }
+                                .orEmpty(),
+                        discrepanciesBlocks = receivingTask
+                                ?.getProcessedBlocksDiscrepancies()
+                                ?.map { TaskBlockDiscrepanciesRestData.from(it) }
+                                .orEmpty()
                 )).either(::handleFailure, ::handleSuccess)
                 screenNavigator.hideProgress()
             }

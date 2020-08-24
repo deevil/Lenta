@@ -58,4 +58,9 @@ object Constants {
     const val TOBACCO_MARK_CARTON_REGEX_PATTERN = "^.?(?<blockBarcode>01(?<gtin2>\\d{14})21(?<serial>\\S{7})).?8005(?<MRC>\\d{6}).?93(?<verificationKey>\\S{4}).?(?<other>\\S{1,})?\$"
     const val SHOES_MARK_REGEX_PATTERN = "^01(?<gtin>\\d{14})21(?<serial>\\S{13})(?:240(?<tradeCode>\\d{4}))?(?:91(?<verificationKey>\\S{4}))?(?:92(?<verificationCode>\\S{88}))?$"
 
+    // ERP Requests
+    const val OPERATING_SYSTEM_WINDOWS = "1"
+    const val OPERATING_SYSTEM_ANDROID = "2"
+    const val REQUEST_DEFAULT_FALSE = "X"
+
 }

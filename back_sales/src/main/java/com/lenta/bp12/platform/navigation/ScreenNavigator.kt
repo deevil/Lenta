@@ -3,14 +3,15 @@ package com.lenta.bp12.platform.navigation
 import android.content.Context
 import com.lenta.bp12.R
 import com.lenta.bp12.features.auth.AuthFragment
+import com.lenta.bp12.features.basket.basket_good_list.BasketCreateGoodListFragment
+import com.lenta.bp12.features.basket.basket_good_list.BasketOpenGoodListFragment
+import com.lenta.bp12.features.basket.basket_properties.BasketPropertiesFragment
 import com.lenta.bp12.features.create_task.add_provider.AddProviderFragment
-import com.lenta.bp12.features.create_task.basket_good_list.BasketGoodListFragment
-import com.lenta.bp12.features.create_task.basket_properties.BasketPropertiesFragment
 import com.lenta.bp12.features.create_task.good_details.GoodDetailsCreateFragment
 import com.lenta.bp12.features.create_task.good_info.GoodInfoCreateFragment
 import com.lenta.bp12.features.create_task.marked_good_info.MarkedGoodInfoCreateFragment
 import com.lenta.bp12.features.create_task.task_card.TaskCardCreateFragment
-import com.lenta.bp12.features.create_task.task_composition.TaskCompositionFragment
+import com.lenta.bp12.features.create_task.task_content.TaskContentFragment
 import com.lenta.bp12.features.enter_employee_number.EnterEmployeeNumberFragment
 import com.lenta.bp12.features.loading.fast.FastDataLoadingFragment
 import com.lenta.bp12.features.main_menu.MainMenuFragment
@@ -25,6 +26,7 @@ import com.lenta.bp12.features.open_task.task_search.TaskSearchFragment
 import com.lenta.bp12.features.save_data.SaveDataFragment
 import com.lenta.bp12.features.select_market.SelectMarketFragment
 import com.lenta.shared.account.IAuthenticator
+import com.lenta.shared.exception.Failure
 import com.lenta.shared.features.alert.AlertFragment
 import com.lenta.shared.platform.activity.ForegroundActivityProvider
 import com.lenta.shared.platform.navigation.CustomAnimation
@@ -88,13 +90,19 @@ class ScreenNavigator @Inject constructor(
     // Основные экраны
     override fun openTaskCompositionScreen() {
         runOrPostpone {
-            getFragmentStack()?.push(TaskCompositionFragment())
+            getFragmentStack()?.push(TaskContentFragment())
         }
     }
 
-    override fun openBasketGoodListScreen() {
+    override fun openBasketCreateGoodListScreen() {
         runOrPostpone {
-            getFragmentStack()?.push(BasketGoodListFragment())
+            getFragmentStack()?.push(BasketCreateGoodListFragment())
+        }
+    }
+
+    override fun openBasketOpenGoodListScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(BasketOpenGoodListFragment())
         }
     }
 
@@ -429,6 +437,97 @@ class ScreenNavigator @Inject constructor(
         }
     }
 
+    override fun showMarkedGoodInfoScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    message = context.getString(R.string.marked_good),
+                    iconRes = com.lenta.shared.R.drawable.ic_marked_white_32dp), CustomAnimation.vertical)
+        }
+    }
+
+    override fun showCloseBasketDialog(yesCallback: () -> Unit) {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    pageNumber = "71",
+                    message = context.getString(R.string.close_basket),
+                    iconRes = R.drawable.ic_question_yellow_80dp,
+                    codeConfirmForRight = backFragmentResultHelper.setFuncForResult(yesCallback),
+                    rightButtonDecorationInfo = ButtonDecorationInfo.yes
+            ))
+        }
+    }
+
+    override fun showOpenBasketDialog(yesCallback: () -> Unit) {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    pageNumber = "71",
+                    message = context.getString(R.string.open_basket),
+                    iconRes = R.drawable.ic_question_yellow_80dp,
+                    codeConfirmForRight = backFragmentResultHelper.setFuncForResult(yesCallback),
+                    rightButtonDecorationInfo = ButtonDecorationInfo.yes
+            ))
+        }
+    }
+
+    override fun showSomeOfChosenBasketsNotClosedScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    pageNumber = "79",
+                    message = context.getString(R.string.some_of_chosen_baskets_not_closed),
+                    iconRes = R.drawable.ic_warning_red_80dp
+            ))
+        }
+    }
+
+    override fun showSomeBasketsNotClosedCantSaveScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    pageNumber = "84",
+                    message = context.getString(R.string.some_baskets_not_closed_cant_save),
+                    iconRes = R.drawable.ic_warning_red_80dp
+            ))
+        }
+    }
+
+    override fun showSomeBasketsAlreadyPrinted(yesCallback: () -> Unit) {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    pageNumber = "81",
+                    message = context.getString(R.string.some_baskets_already_printed),
+                    iconRes = R.drawable.ic_question_yellow_80dp,
+                    codeConfirmForRight = backFragmentResultHelper.setFuncForResult(yesCallback),
+                    rightButtonDecorationInfo = ButtonDecorationInfo.yes
+            ))
+        }
+    }
+
+    override fun showPalletListPrintedScreen(nextCallback: () -> Unit) {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    pageNumber = "81",
+                    message = context.getString(R.string.pallet_list_printed),
+                    iconRes = R.drawable.ic_done_green_80dp,
+                    codeConfirmForRight = backFragmentResultHelper.setFuncForResult(nextCallback),
+                    rightButtonDecorationInfo = ButtonDecorationInfo.next,
+                    leftButtonDecorationInfo = ButtonDecorationInfo.empty
+            ))
+        }
+    }
+
+    override fun showQuantityMoreThenPlannedScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    pageNumber = "87",
+                    message = context.getString(R.string.quantity_more_than_planned),
+                    iconRes = R.drawable.ic_warning_red_80dp
+            ))
+        }
+    }
+
+    override fun showInternalError(cause: String) {
+        openAlertScreen(Failure.MessageFailure("Внутренняя ошибка программы: $cause", R.drawable.ic_warning_red_80dp))
+    }
+
 }
 
 interface IScreenNavigator : ICoreNavigator {
@@ -441,7 +540,8 @@ interface IScreenNavigator : ICoreNavigator {
     fun openMainMenuScreen()
 
     fun openTaskCompositionScreen()
-    fun openBasketGoodListScreen()
+    fun openBasketCreateGoodListScreen()
+    fun openBasketOpenGoodListScreen()
     fun openGoodDetailsCreateScreen()
     fun openGoodDetailsOpenScreen()
     fun openSaveDataScreen()
@@ -481,5 +581,16 @@ interface IScreenNavigator : ICoreNavigator {
     fun showExciseAlcoholGoodInfoScreen()
     fun showAlcoholGoodInfoScreen()
     fun showCommonGoodInfoScreen()
+    fun showMarkedGoodInfoScreen()
 
+    fun showCloseBasketDialog(yesCallback: () -> Unit)
+    fun showOpenBasketDialog(yesCallback: () -> Unit)
+
+    fun showSomeOfChosenBasketsNotClosedScreen()
+    fun showSomeBasketsNotClosedCantSaveScreen()
+    fun showSomeBasketsAlreadyPrinted(yesCallback: () -> Unit)
+    fun showPalletListPrintedScreen(nextCallback: () -> Unit)
+
+    fun showInternalError(cause: String)
+    fun showQuantityMoreThenPlannedScreen()
 }

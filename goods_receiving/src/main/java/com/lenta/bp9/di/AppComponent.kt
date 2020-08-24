@@ -10,6 +10,7 @@ import com.lenta.bp9.features.driver_data.DriverDataViewModel
 import com.lenta.bp9.features.editing_invoice.EditingInvoiceViewModel
 import com.lenta.bp9.features.formed_docs.FormedDocsViewModel
 import com.lenta.bp9.features.goods_details.GoodsDetailsViewModel
+import com.lenta.bp9.features.goods_details.marking_goods_details.MarkingGoodsDetailsViewModel
 import com.lenta.bp9.features.goods_information.excise_alco_pge.excise_alco_box_acc_pge.ExciseAlcoBoxAccInfoPGEViewModel
 import com.lenta.bp9.features.goods_information.excise_alco_pge.excise_alco_box_acc_pge.excise_alco_box_card.ExciseAlcoBoxCardPGEViewModel
 import com.lenta.bp9.features.goods_information.excise_alco_pge.excise_alco_box_acc_pge.excise_alco_box_list.ExciseAlcoBoxListPGEViewModel
@@ -22,6 +23,9 @@ import com.lenta.bp9.features.goods_information.excise_alco_receiving.excise_alc
 import com.lenta.bp9.features.goods_information.excise_alco_receiving.excise_alco_stamp_acc.ExciseAlcoStampAccInfoViewModel
 import com.lenta.bp9.features.goods_information.general.GoodsInfoViewModel
 import com.lenta.bp9.features.goods_information.general_opp.GoodsInfoShipmentPPViewModel
+import com.lenta.bp9.features.goods_information.marking.uom_st_without_counting_in_boxes.MarkingInfoViewModel
+import com.lenta.bp9.features.goods_information.marking.marking_product_failure.MarkingProductFailureViewModel
+import com.lenta.bp9.features.goods_information.marking.uom_st_with_counting_in_boxes.MarkingBoxInfoViewModel
 import com.lenta.bp9.features.goods_information.mercury.GoodsMercuryInfoViewModel
 import com.lenta.bp9.features.goods_information.non_excise_alco_pge.NonExciseAlcoInfoPGEViewModel
 import com.lenta.bp9.features.goods_information.non_excise_alco_receiving.NonExciseAlcoInfoViewModel
@@ -150,4 +154,8 @@ interface AppComponent : FromParentToCoreProvider {
     fun inject(it: NonExciseSetsReceivingViewModel)
     fun inject(it: NonExciseSetComponentInfoPGEViewModel)
     fun inject(it: NonExciseSetComponentInfoReceivingViewModel)
+    fun inject(it: MarkingInfoViewModel)
+    fun inject(it: MarkingGoodsDetailsViewModel)
+    fun inject(it: MarkingProductFailureViewModel)
+    fun inject(it: MarkingBoxInfoViewModel)
 }

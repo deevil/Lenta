@@ -102,16 +102,19 @@ class TaskManager @Inject constructor(
     override suspend fun addTaskInfoToCurrentTask(taskInfoResult: TaskInfoResult) {
         currentTask.value?.let { task ->
             task.goods = taskInfoResult.goods.map { goodInfo ->
-                val rawList = taskInfoResult.raws.filter { it.material == goodInfo.material }.map { rawInfo ->
-                    Raw(
-                            material = rawInfo.material,
-                            materialOsn = rawInfo.materialOsn,
-                            order = rawInfo.orderNumber,
-                            name = rawInfo.name,
-                            planned = rawInfo.planned,
-                            isWasDef = rawInfo.isWasDef.isSapTrue()
-                    )
-                }
+                val rawList = taskInfoResult.raws
+                        .asSequence()
+                        .filter { it.material == goodInfo.material }
+                        .map { rawInfo ->
+                            Raw(
+                                    material = rawInfo.material,
+                                    materialOsn = rawInfo.materialOsn,
+                                    order = rawInfo.orderNumber,
+                                    name = rawInfo.name,
+                                    planned = rawInfo.planned,
+                                    isWasDef = rawInfo.isWasDef.isSapTrue()
+                            )
+                        }
 
                 val packList = taskInfoResult.packs.filter { packInfo ->
                     rawList.any { it.order == packInfo.order } || packInfo.materialDef == goodInfo.material
@@ -168,6 +171,7 @@ class TaskManager @Inject constructor(
         return when (taskType) {
             TaskType.PROCESSING_UNIT -> 1
             TaskType.EXTERNAL_SUPPLY -> 2
+            else -> 0
         }
     }
 
@@ -175,6 +179,7 @@ class TaskManager @Inject constructor(
         return when (taskType) {
             TaskType.PROCESSING_UNIT -> 1
             TaskType.EXTERNAL_SUPPLY -> 3
+            else -> 0
         }
     }
 
