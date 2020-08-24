@@ -137,7 +137,8 @@ class WorkListTask @Inject constructor(
                             commentCode = scanResult.commentCode,
                             comment = scanResult.comment,
                             expirationDate = scanResult.expirationDate,
-                            productionDate = scanResult.productionDate
+                            productionDate = scanResult.productionDate,
+                            ean = scanResult.ean
                     )
                     /**Замена элемента*/
                     scanResultList.set(index, replaceScanResult)
@@ -275,7 +276,8 @@ class WorkListTask @Inject constructor(
                 this.productionDate == scanResult.productionDate &&
                 this.expirationDate == scanResult.expirationDate &&
                 this.commentCode == scanResult.commentCode &&
-                this.comment == scanResult.comment
+                this.comment == scanResult.comment &&
+                this.ean == scanResult.ean
     }
 
     private fun filter(good: Good): Boolean {
@@ -514,7 +516,8 @@ data class ScanResult(
         val comment: String,
         val productionDate: Date?,
         val expirationDate: Date?,
-        val markNumber: String? = null
+        val markNumber: String? = null,
+        val ean: String? = null
 ) {
 
     override fun equals(other: Any?): Boolean {
@@ -523,10 +526,11 @@ data class ScanResult(
                 other.productionDate == productionDate &&
                 other.expirationDate == expirationDate &&
                 other.commentCode == commentCode &&
-                other.comment == comment
+                other.comment == comment &&
+                other.ean == ean
     }
 
-    override fun hashCode() = Objects.hash(markNumber, commentCode, comment, productionDate, expirationDate)
+    override fun hashCode() = Objects.hash(markNumber, commentCode, comment, productionDate, expirationDate, ean)
 
     fun getFormattedProductionDate(): String {
         return if (productionDate != null) "ДП ${productionDate.getFormattedDate()}" else ""
