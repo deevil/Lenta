@@ -3,8 +3,8 @@ package com.lenta.bp12.features.create_task.task_content
 import androidx.lifecycle.MutableLiveData
 import com.lenta.bp12.features.basket.ItemWholesaleBasketUi
 import com.lenta.bp12.model.ICreateTaskManager
-import com.lenta.bp12.model.pojo.create_task.Basket
-import com.lenta.bp12.platform.extention.getDescription
+import com.lenta.bp12.model.pojo.Basket
+import com.lenta.bp12.model.pojo.extentions.getDescription
 import com.lenta.bp12.platform.navigation.IScreenNavigator
 import com.lenta.bp12.platform.resource.IResourceManager
 import com.lenta.bp12.request.PrintPalletListNetRequest

@@ -1,7 +1,6 @@
 package com.lenta.bp12.model.pojo
 
 import androidx.lifecycle.MutableLiveData
-import com.lenta.bp12.model.pojo.create_task.Basket
 import com.lenta.bp12.model.pojo.create_task.GoodCreate
 import com.lenta.bp12.model.pojo.create_task.TaskCreate
 

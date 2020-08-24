@@ -2,12 +2,17 @@ package com.lenta.bp12.features.create_task.good_info
 
 import androidx.lifecycle.MutableLiveData
 import com.lenta.bp12.model.*
+import com.lenta.bp12.model.pojo.Basket
 import com.lenta.bp12.model.pojo.Mark
 import com.lenta.bp12.model.pojo.Part
 import com.lenta.bp12.model.pojo.Position
-import com.lenta.bp12.model.pojo.create_task.Basket
 import com.lenta.bp12.model.pojo.create_task.GoodCreate
-import com.lenta.bp12.platform.extention.*
+import com.lenta.bp12.model.pojo.extentions.addPosition
+import com.lenta.bp12.model.pojo.extentions.getQuantityOfGood
+import com.lenta.bp12.platform.extention.extractAlcoCode
+import com.lenta.bp12.platform.extention.getControlType
+import com.lenta.bp12.platform.extention.getGoodKind
+import com.lenta.bp12.platform.extention.isWholesaleType
 import com.lenta.bp12.platform.navigation.IScreenNavigator
 import com.lenta.bp12.platform.resource.IResourceManager
 import com.lenta.bp12.repository.IDatabaseRepository

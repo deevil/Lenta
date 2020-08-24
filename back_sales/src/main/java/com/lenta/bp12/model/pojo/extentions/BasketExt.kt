@@ -1,7 +1,7 @@
-package com.lenta.bp12.platform.extention
+package com.lenta.bp12.model.pojo.extentions
 
+import com.lenta.bp12.model.pojo.Basket
 import com.lenta.bp12.model.pojo.Good
-import com.lenta.bp12.model.pojo.create_task.Basket
 import com.lenta.shared.utilities.orIfNull
 
 fun Basket.addGood(good: Good, quantity: Double) {

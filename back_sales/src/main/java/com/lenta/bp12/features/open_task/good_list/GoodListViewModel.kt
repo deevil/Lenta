@@ -4,10 +4,10 @@ import androidx.lifecycle.MutableLiveData
 import com.lenta.bp12.features.basket.ItemWholesaleBasketUi
 import com.lenta.bp12.features.create_task.task_content.ItemCommonBasketUi
 import com.lenta.bp12.model.IOpenTaskManager
-import com.lenta.bp12.model.pojo.create_task.Basket
-import com.lenta.bp12.platform.extention.getDescription
-import com.lenta.bp12.platform.extention.getGoodList
-import com.lenta.bp12.platform.extention.getQuantityFromGoodList
+import com.lenta.bp12.model.pojo.Basket
+import com.lenta.bp12.model.pojo.extentions.getDescription
+import com.lenta.bp12.model.pojo.extentions.getGoodList
+import com.lenta.bp12.model.pojo.extentions.getQuantityFromGoodList
 import com.lenta.bp12.platform.navigation.IScreenNavigator
 import com.lenta.bp12.platform.resource.IResourceManager
 import com.lenta.bp12.request.PrintPalletListNetRequest
@@ -51,16 +51,16 @@ class GoodListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
     val processedSelectionsHelper = SelectionItemsHelper()
 
     val selectedPage = MutableLiveData(PROCESSING_PAGE)
+
     val basketSelectionsHelper = SelectionItemsHelper()
 
-    val selectedPage = MutableLiveData(0)
 
     val task by lazy {
         manager.currentTask
     }
 
     val isTaskStrict by unsafeLazy {
-        task.value?.isStrict ?: false
+        task.value?.isStrict == true
     }
 
     val title by lazy {
@@ -118,8 +118,6 @@ class GoodListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
     val commonBaskets by lazy {
         task.map {
             it?.let { task ->
-                emptyList<ItemWholesaleBasketUi>()
-
                 task.baskets.reversed().mapIndexed { index, basket ->
                     val position = task.baskets.size - index
                     ItemCommonBasketUi(
@@ -137,8 +135,6 @@ class GoodListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
     val wholesaleBaskets by lazy {
         task.map {
             it?.let { task ->
-                emptyList<ItemWholesaleBasketUi>()
-
                 task.baskets.reversed().mapIndexed { index, basket ->
                     val position = task.baskets.size - index
                     ItemWholesaleBasketUi(
@@ -172,7 +168,7 @@ class GoodListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
                     val isSelectedProcessing = it.first.second.isNotEmpty()
                     val isSelectedProcessed = it.second.isNotEmpty()
 
-                    (page == PROCESSING_PAGE && isSelectedProcessing) || (page == PROCESSED_PAGE && isSelectedProcessed)
+                    (page == PROCESSED_PAGE_INDEX && isSelectedProcessing) || (page == PROCESSED_PAGE_INDEX && isSelectedProcessed)
                 }
             }
 
@@ -205,19 +201,19 @@ class GoodListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
     fun onClickItemPosition(position: Int) {
         selectedPage.value?.let { page ->
             when (page) {
-                0 -> {
+                PROCESSING_PAGE_INDEX -> {
                     processing.value?.let { processingListValue ->
                         val material = processingListValue.getOrNull(position)?.material
                         material?.let(::openGoodByMaterial) ?: navigator.showGoodIsMissingInTask()
                     }
                 }
-                1 -> {
+                PROCESSED_PAGE_INDEX -> {
                     processed.value?.let { processedListValue ->
                         val material = processedListValue.getOrNull(position)?.material
                         material?.let(::openGoodByMaterial) ?: navigator.showGoodIsMissingInTask()
                     }
                 }
-                2 -> {
+                BASKETS_PAGE_INDEX -> {
                     val basket = if (manager.isWholesaleTaskType) {
                         wholesaleBaskets.value?.let { wholesaleBasketsValue ->
                             wholesaleBasketsValue.getOrNull(position)?.basket
@@ -227,8 +223,13 @@ class GoodListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
                             commonBasketsValue.getOrNull(position)?.basket
                         }
                     }
-                    manager.updateCurrentBasket(basket)
-                    navigator.openBasketOpenGoodListScreen()
+                    basket?.let {
+                        manager.updateCurrentBasket(it)
+                        navigator.openBasketOpenGoodListScreen()
+                    }.orIfNull {
+                        Logg.e { "basket null" }
+                        navigator.showInternalError(resource.basketNotFoundErrorMsg)
+                    }
                 }
                 else -> throw IllegalArgumentException("Wrong pager position!")
             }
@@ -272,7 +273,7 @@ class GoodListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
     fun onClickDelete() {
         selectedPage.value?.let { page ->
             when (page) {
-                PROCESSING_PAGE -> {
+                PROCESSING_PAGE_INDEX -> {
                     val materials = mutableListOf<String>()
                     processingSelectionsHelper.selectedPositions.value?.mapNotNullTo(materials) { position ->
                         processing.value?.get(position)?.material
@@ -281,7 +282,7 @@ class GoodListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
                     processingSelectionsHelper.clearPositions()
                     manager.markGoodsDeleted(materials)
                 }
-                PROCESSED_PAGE -> {
+                PROCESSED_PAGE_INDEX -> {
                     val materials = mutableListOf<String>()
                     processedSelectionsHelper.selectedPositions.value?.mapNotNullTo(materials) { position ->
                         processed.value?.get(position)?.material
@@ -291,7 +292,7 @@ class GoodListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
                     manager.markGoodsUncounted(materials)
                     manager.deleteGoodsFromBaskets(materials)
                 }
-                2 -> {
+                BASKETS_PAGE_INDEX -> {
                     val basketList = mutableListOf<Basket>()
                     basketSelectionsHelper.selectedPositions.value?.mapNotNullTo(basketList) { position ->
                         commonBaskets.value?.get(position)?.basket
@@ -334,13 +335,13 @@ class GoodListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
     fun onPrint() {
         task.value?.let { taskValue ->
             basketSelectionsHelper.selectedPositions.value?.let { positions ->
-                var baskets = taskValue.baskets
-                //Если корзины выделены то берем их
-                if (positions.isNotEmpty()) {
-                    baskets = positions.mapNotNull {
-                        baskets.getOrNull(it)
-                    }.toMutableList()
-                }
+
+                val taskValueBaskets = taskValue.baskets
+                val baskets = positions.takeIf { it.isNotEmpty() }
+                        ?.mapNotNullTo(mutableListOf()) {
+                            taskValueBaskets.getOrNull(it)
+                        } ?: taskValueBaskets
+
                 //Если какие-то корзины не закрыты
                 if (baskets.any { it.isLocked.not() }) {
                     // Вывести экран сообщения «Некоторые выбранные корзины не закрыты. Закройте корзины и повторите печать», с кнопкой «Назад»
@@ -381,7 +382,6 @@ class GoodListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
                 }
             }
 
-
             val basketListRest = baskets.map {
                 val description = it.getDescription(task.value?.type?.isDivBySection ?: false)
                 PrintPalletListParamsBasket(
@@ -416,17 +416,14 @@ class GoodListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
             it.isPrinted = true
         }
         //отображать сообщение «Паллетный лист был успешно распечатан», с кнопкой «Далее»
-        navigator.showPalletListPrintedScreen(
-                nextCallback = {
-                    navigator.goBack()
-                }
-        )
+        navigator.showPalletListPrintedScreen(nextCallback = navigator::goBack)
     }
 
     companion object {
         private const val COUNT_TAB = 3
-        private const val PROCESSING_PAGE = 0
-        private const val PROCESSED_PAGE = 1
+        private const val PROCESSING_PAGE_INDEX = 0
+        private const val PROCESSED_PAGE_INDEX = 1
+        private const val BASKETS_PAGE_INDEX = 2
     }
 
 }

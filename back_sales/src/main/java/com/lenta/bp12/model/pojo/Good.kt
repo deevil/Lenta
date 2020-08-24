@@ -7,9 +7,13 @@ import com.lenta.shared.models.core.MatrixType
 import com.lenta.shared.models.core.Uom
 import com.lenta.shared.utilities.extentions.dropZeros
 import com.lenta.shared.utilities.extentions.sumList
-import com.lenta.shared.utilities.extentions.sumWith
 
-open class Good(
+/**
+ * Родительский класс для всех товаров, Basket хранит именно его
+ * Методы для взаимодействия со списками:
+ * @see com.lenta.bp12.model.pojo.extentions.GoodExt
+ * */
+abstract class Good(
         var ean: String,
         val eans: List<String> = emptyList(),
         val material: String,
@@ -56,50 +60,6 @@ open class Good(
     fun getPartQuantity(): Double {
         return parts.map { it.quantity }.sumList()
     }
-
-    fun addPosition(position: Position) {
-        positions.find { it.provider.code == position.provider.code }?.let { found ->
-            found.quantity = found.quantity.sumWith(position.quantity)
-        } ?: positions.add(position)
-    }
-
-    fun addMark(mark: Mark) {
-        if (marks.find { it.number == mark.number } == null) {
-            marks.add(mark)
-        }
-    }
-
-    fun addPart(part: Part) {
-        parts.find {
-            it.providerCode == part.providerCode &&
-                    it.producerCode == part.producerCode &&
-                    it.date == part.date
-        }?.let { found ->
-            found.quantity = found.quantity.sumWith(part.quantity)
-        } ?: parts.add(part)
-    }
-
-
-    fun removePartsByBasketNumber(basketIndex: Int) {
-        parts.removeAll { it.basketNumber == basketIndex }
-    }
-
-    fun removeMarksByBasketIndex(basketIndex: Int) {
-        marks.removeAll { it.basketNumber == basketIndex }
-    }
-
-    fun removePositionsByBasketIndex(basketIndex: Int) {
-        positions.removeAll { it.basketNumber == basketIndex }
-    }
-
-    fun removeAllMark() {
-        marks.clear()
-    }
-
-    fun removeAllPart() {
-        parts.clear()
-    }
-
 
     fun isEmpty(): Boolean {
         return positions.isEmpty() && marks.isEmpty() && parts.isEmpty()

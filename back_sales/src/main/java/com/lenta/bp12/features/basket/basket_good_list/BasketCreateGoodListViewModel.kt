@@ -5,12 +5,9 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.liveData
 import androidx.lifecycle.switchMap
 import com.lenta.bp12.model.ICreateTaskManager
-import com.lenta.bp12.model.pojo.Good
-import com.lenta.bp12.model.pojo.create_task.Basket
-import com.lenta.bp12.model.pojo.create_task.GoodCreate
-import com.lenta.bp12.platform.extention.deleteGood
-import com.lenta.bp12.platform.extention.getDescription
-import com.lenta.bp12.platform.extention.getGoodList
+import com.lenta.bp12.model.pojo.Basket
+import com.lenta.bp12.model.pojo.create_task.TaskCreate
+import com.lenta.bp12.model.pojo.extentions.*
 import com.lenta.bp12.platform.navigation.IScreenNavigator
 import com.lenta.bp12.platform.resource.IResourceManager
 import com.lenta.shared.platform.constants.Constants
@@ -21,7 +18,6 @@ import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
 import com.lenta.shared.utilities.extentions.dropZeros
 import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.utilities.extentions.unsafeLazy
-import com.lenta.shared.utilities.orIfNull
 import javax.inject.Inject
 
 class BasketCreateGoodListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
@@ -34,8 +30,6 @@ class BasketCreateGoodListViewModel : CoreViewModel(), OnOkInSoftKeyboardListene
 
     @Inject
     lateinit var resource: IResourceManager
-
-    var isOpenGood = false
 
     val selectionsHelper = SelectionItemsHelper()
 
@@ -157,13 +151,20 @@ class BasketCreateGoodListViewModel : CoreViewModel(), OnOkInSoftKeyboardListene
     }
 
     fun onClickDelete() {
+        val materials = getSelectedGoodsNumbers()
+        deleteGoodsFromBasketAndTask(materials)
+    }
+
+    private fun getSelectedGoodsNumbers(): List<String> {
         val materials = mutableListOf<String>()
         selectionsHelper.selectedPositions.value?.mapNotNullTo(materials) { position ->
             goods.value?.getOrNull(position)?.material
         }
-
         selectionsHelper.clearPositions()
+        return materials
+    }
 
+    private fun deleteGoodsFromBasketAndTask(materials: List<String>) {
         task.value?.let { task ->
             basket.value?.let { basket ->
                 val basketIndex = basket.index
@@ -187,77 +188,49 @@ class BasketCreateGoodListViewModel : CoreViewModel(), OnOkInSoftKeyboardListene
                         basket.deleteGood(goodFromBasket)
                     }
                 }
-                //Если корзина пуста удалим ее из задания и вернемся назад
-                if (basket.goods.isEmpty()) {
-                    task.removeEmptyBaskets()
-                    navigator.goBack()
-                }
-                task.removeEmptyGoods()
+                removeEmptyBasketsAndGoods(task, basket)
+
                 createTaskManager.updateCurrentBasket(basket)
                 createTaskManager.updateCurrentTask(task)
-            }.orIfNull {
-                Logg.e { " basket null " }
-                navigator.showInternalError(resource.basketNotFoundErrorMsg)
             }
-        }.orIfNull {
-            Logg.e { " task null " }
-            navigator.showInternalError(resource.taskNotFoundErrorMsg)
         }
     }
 
-    private fun GoodCreate.deletePositionsFromTask(goodFromBasket: Good, basketToGetQuantity: Basket) {
-        val positionThatFits = positions.firstOrNull { positionFromTask ->
-            goodFromBasket.positions.any { it.quantity >= positionFromTask.quantity }
-        }
-
-        positionThatFits?.let {
-            //Получим количество позиций этого товара
-            val quantityOfPositionFromTask = it.quantity
-            //Получим количество удаляемого товара из корзины
-            val quantityToMinus = basketToGetQuantity.goods[goodFromBasket] ?: 0.0
-            //Отнимем первое от второго и вернем в товар
-            val newQuantity = quantityOfPositionFromTask.minus(quantityToMinus)
-            it.quantity = newQuantity
-            val index = positions.indexOf(it)
-            positions.set(index, it)
+    private fun removeEmptyBasketsAndGoods(task: TaskCreate, basket: Basket) {
+        task.removeEmptyGoods()
+        //Если корзина пуста удалим ее из задания и вернемся назад
+        if (basket.goods.isEmpty()) {
+            task.removeEmptyBaskets()
+            navigator.goBack()
         }
     }
 
     fun onClickClose() {
-        navigator.showCloseBasketDialog(::handleYesToCloseBasketCallback)
-    }
-
-    private fun handleYesToCloseBasketCallback() {
-        task.value?.let { task ->
-            basket.value?.let { basket ->
-                basket.isLocked = true
-                task.updateBasket(basket)
-                createTaskManager.updateCurrentBasket(basket)
-                createTaskManager.updateCurrentTask(task)
-            }.orIfNull {
-                Logg.e { " basket null " }
-                navigator.showInternalError(resource.basketNotFoundErrorMsg)
-            }
-        }.orIfNull {
-            Logg.e { " task null " }
-            navigator.showInternalError(resource.taskNotFoundErrorMsg)
-        }
-        navigator.goBack()
+        navigator.showCloseBasketDialog(
+                yesCallback = {
+                    lockAndUpdateBasketAndTask(isNeedLock = true)
+                })
     }
 
     fun onClickOpen() {
-        navigator.showOpenBasketDialog(::handleYesToOpenBasketCallback)
+        navigator.showOpenBasketDialog(
+                yesCallback = {
+                    lockAndUpdateBasketAndTask(isNeedLock = false)
+                })
     }
 
-    private fun handleYesToOpenBasketCallback() {
-        task.value?.let { task ->
-            basket.value?.let { basket ->
-                basket.isLocked = false
-                task.updateBasket(basket)
-                createTaskManager.updateCurrentBasket(basket)
-                createTaskManager.updateCurrentTask(task)
+    private fun lockAndUpdateBasketAndTask(isNeedLock: Boolean) {
+        val taskValue = task.value
+        val basketValue = basket.value
+        if (taskValue == null && basketValue != null) {
+            basketValue.isLocked = isNeedLock
+            taskValue?.updateBasket(basketValue)
+            with(createTaskManager) {
+                updateCurrentBasket(basketValue)
+                updateCurrentTask(taskValue)
             }
+            navigator.goBack()
         }
-        navigator.goBack()
+
     }
 }

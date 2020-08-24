@@ -5,8 +5,13 @@ import com.lenta.bp12.model.*
 import com.lenta.bp12.model.pojo.Mark
 import com.lenta.bp12.model.pojo.Part
 import com.lenta.bp12.model.pojo.Position
+import com.lenta.bp12.model.pojo.extentions.addPosition
+import com.lenta.bp12.model.pojo.extentions.getQuantityOfGood
 import com.lenta.bp12.model.pojo.open_task.GoodOpen
-import com.lenta.bp12.platform.extention.*
+import com.lenta.bp12.platform.extention.extractAlcoCode
+import com.lenta.bp12.platform.extention.getControlType
+import com.lenta.bp12.platform.extention.getGoodKind
+import com.lenta.bp12.platform.extention.isWholesaleType
 import com.lenta.bp12.platform.navigation.IScreenNavigator
 import com.lenta.bp12.platform.resource.IResourceManager
 import com.lenta.bp12.repository.IDatabaseRepository
@@ -372,7 +377,7 @@ class GoodInfoOpenViewModel : CoreViewModel() {
     fun onScanResult(number: String) {
         good.value?.let { good ->
             launchUITryCatch {
-                if (applyEnabled.value == true || (good.kind == GoodKind.EXCISE && isExciseNumber(number))) {
+                if (isApplyEnabledOrIsGoodExcise(good, number)) {
                     if (!thereWasRollback) {
                         saveChanges()
                     } else {
@@ -388,6 +393,13 @@ class GoodInfoOpenViewModel : CoreViewModel() {
             navigator.showInternalError(resource.goodNotFoundErrorMsg)
         }
     }
+
+    private fun isApplyEnabledOrIsGoodExcise(good: GoodOpen, number: String) =
+            isApplyEnabled() or isGoodExcise(good, number)
+
+    private fun isApplyEnabled() = applyEnabled.value == true
+    private fun isGoodExcise(good: GoodOpen, number: String) =
+            good.kind == GoodKind.EXCISE && isExciseNumber(number)
 
     private fun isExciseNumber(number: String): Boolean {
         return when (number.length) {
