@@ -25,22 +25,31 @@ class TaskCardViewModel : CoreViewModel(), PageSelectionListener {
 
     @Inject
     lateinit var screenNavigator: IScreenNavigator
+
     @Inject
     lateinit var sessionInfo: ISessionInfo
+
     @Inject
     lateinit var context: Context
+
     @Inject
     lateinit var taskManager: IReceivingTaskManager
+
     @Inject
     lateinit var timeMonitor: ITimeMonitor
+
     @Inject
     lateinit var zmpUtzGrz39V001NetRequest: ZmpUtzGrz39V001NetRequest
+
     @Inject
     lateinit var fixationDepartureReceptionDistrCenterNetRequest: FixationDepartureReceptionDistrCenterNetRequest
+
     @Inject
     lateinit var skipRecountNetRequest: SkipRecountNetRequest
+
     @Inject
     lateinit var zmpUtzGrz41V001NetRequest: ZmpUtzGrz41V001NetRequest
+
     @Inject
     lateinit var hyperHive: HyperHive
 
@@ -49,21 +58,21 @@ class TaskCardViewModel : CoreViewModel(), PageSelectionListener {
     var mode: TaskCardMode = TaskCardMode.None
 
     val taskType: TaskType by lazy {
-        taskManager.getReceivingTask()?.taskHeader?.taskType ?: TaskType.None
+        taskManager.getTaskType()
     }
 
     val tvDeliveryCaption: String by lazy {
-        when (taskManager.getReceivingTask()?.taskHeader?.taskType) {
+        when (taskType) {
             TaskType.DirectSupplier, TaskType.OwnProduction -> context.getString(R.string.incoming_delivery)
-            TaskType.ReceptionDistributionCenter, TaskType.RecalculationCargoUnit -> context.getString(R.string.transportation)
+            TaskType.ReceptionDistributionCenter, TaskType.RecalculationCargoUnit, TaskType.ShoppingMall -> context.getString(R.string.transportation)
             else -> context.getString(R.string.incoming_delivery)
         }
     }
 
     val tvCountCaption: String by lazy {
-        when (taskManager.getReceivingTask()?.taskHeader?.taskType) {
+        when (taskType) {
             TaskType.DirectSupplier, TaskType.RecalculationCargoUnit -> context.getString(R.string.count_SKU)
-            TaskType.ReceptionDistributionCenter -> context.getString(R.string.count_GE)
+            TaskType.ReceptionDistributionCenter, TaskType.ShoppingMall -> context.getString(R.string.count_GE)
             TaskType.OwnProduction -> context.getString(R.string.count_EO)
             else -> context.getString(R.string.count_SKU)
         }
@@ -74,7 +83,8 @@ class TaskCardViewModel : CoreViewModel(), PageSelectionListener {
     }
 
     val notifications by lazy {
-        MutableLiveData((taskManager.getReceivingTask()?.taskRepository?.getNotifications()?.getGeneralNotifications() ?: emptyList()).mapIndexed { index, notification ->
+        MutableLiveData((taskManager.getReceivingTask()?.taskRepository?.getNotifications()?.getGeneralNotifications()
+                ?: emptyList()).mapIndexed { index, notification ->
             NotificationVM(number = (index + 1).toString(),
                     text = notification.text,
                     indicator = notification.indicator)
@@ -82,7 +92,7 @@ class TaskCardViewModel : CoreViewModel(), PageSelectionListener {
     }
 
     val enabledBtn by lazy {
-        MutableLiveData(if ( (taskType == TaskType.ShipmentRC && taskManager.getReceivingTask()?.taskDescription?.currentStatus == TaskStatus.Ordered) || (taskManager.getReceivingTask()?.taskDescription?.currentStatus == TaskStatus.SentToGIS)) {
+        MutableLiveData(if ((taskType == TaskType.ShipmentRC && taskManager.getReceivingTask()?.taskDescription?.currentStatus == TaskStatus.Ordered) || (taskManager.getReceivingTask()?.taskDescription?.currentStatus == TaskStatus.SentToGIS)) {
             false
         } else {
             notifications.value?.findLast {
@@ -93,7 +103,7 @@ class TaskCardViewModel : CoreViewModel(), PageSelectionListener {
 
     val bookmarkIndicator by lazy {
         val redIndicatorAttend = notifications.value?.findLast { it.indicator == NotificationIndicatorType.Red } != null
-        val yellowIndicatorAttend= notifications.value?.findLast { it.indicator == NotificationIndicatorType.Yellow } != null
+        val yellowIndicatorAttend = notifications.value?.findLast { it.indicator == NotificationIndicatorType.Yellow } != null
         when {
             redIndicatorAttend -> NotificationIndicatorType.Red
             yellowIndicatorAttend -> NotificationIndicatorType.Yellow
@@ -107,14 +117,23 @@ class TaskCardViewModel : CoreViewModel(), PageSelectionListener {
                 taskManager.getReceivingTask()?.taskDescription?.isSkipCountMan == true
     }
 
-    val visibilitySecondBtn by lazy {
-        MutableLiveData(taskManager.getReceivingTask()?.taskDescription?.currentStatus.let {
-            it == TaskStatus.Recounted ||
-                    (it == TaskStatus.Checked && taskType != TaskType.ShipmentPP) ||
-                    (it == TaskStatus.Unloaded && (taskType == TaskType.RecalculationCargoUnit || taskType == TaskType.ReceptionDistributionCenter)) ||
-                    (it == TaskStatus.ReadyToShipment && taskType == TaskType.ShipmentRC)
-        })
+    val isSecondBtnVisible by lazy {
+        MutableLiveData(getIsCurrentStatusAvailable())
     }
+
+    ///---BEGIN THIS IS FOR SECOND BUTTON ---///
+    private fun getIsCurrentStatusAvailable(): Boolean {
+        val curStat = taskManager.getReceivingTask()?.taskDescription?.currentStatus
+        return curStat == TaskStatus.Recounted
+                || (curStat == TaskStatus.Checked && taskType != TaskType.ShipmentPP)
+                || (curStat == TaskStatus.Unloaded && isTaskTypeForUnloaded())
+                || (curStat == TaskStatus.ReadyToShipment && taskType == TaskType.ShipmentRC)
+    }
+
+    private fun isTaskTypeForUnloaded(): Boolean {
+        return (taskType == TaskType.RecalculationCargoUnit || taskType == TaskType.ReceptionDistributionCenter || taskType == TaskType.ShoppingMall)
+    }
+    ////---END THIS IS FOR SECOND BUTTON ---/////
 
     val visibilityBtnFourth by lazy {
         MutableLiveData(isShipmentPPSkipRecount)
@@ -222,17 +241,20 @@ class TaskCardViewModel : CoreViewModel(), PageSelectionListener {
 
     val changeCurrentDateTimePossible by lazy {
         val status = taskManager.getReceivingTask()?.taskDescription?.currentStatus
-        if ((taskManager.getReceivingTask()?.taskHeader?.taskType == TaskType.ReceptionDistributionCenter || taskManager.getReceivingTask()?.taskHeader?.taskType == TaskType.OwnProduction) &&
-                status == TaskStatus.Arrived) {
+        if (getIsTaskTypeForStatusArrived() && status == TaskStatus.Arrived) {
             false
         } else {
             status == TaskStatus.Arrived
         }
     }
 
+    private fun getIsTaskTypeForStatusArrived(): Boolean {
+        return taskType == TaskType.ReceptionDistributionCenter || taskType == TaskType.OwnProduction || taskType == TaskType.ShoppingMall
+    }
+
     val changeNextDateTimePossible by lazy {
         val status = taskManager.getReceivingTask()?.taskDescription?.currentStatus
-        if (taskManager.getReceivingTask()?.taskHeader?.taskType == TaskType.ShipmentRC) {
+        if (taskType == TaskType.ShipmentRC) {
             status == TaskStatus.Traveling || status == TaskStatus.Arrived
         } else {
             status == TaskStatus.Ordered || status == TaskStatus.Traveling || status == TaskStatus.Arrived || status == TaskStatus.Checked
@@ -243,44 +265,42 @@ class TaskCardViewModel : CoreViewModel(), PageSelectionListener {
     val nextStatusDateTime: MutableLiveData<String> = MutableLiveData("")
 
     val shipmentNumberTN by lazy {
-        taskManager.getReceivingTask()?.taskDescription?.tnNumber ?: ""
+        taskManager.getReceivingTask()?.taskDescription?.tnNumber.orEmpty()
     }
     val shipmentNumberTTN by lazy {
-        taskManager.getReceivingTask()?.taskDescription?.ttnNumber ?: ""
+        taskManager.getReceivingTask()?.taskDescription?.ttnNumber.orEmpty()
     }
     val shipmentPlanDate by lazy {
-        taskManager.getReceivingTask()?.taskDescription?.plannedDeliveryDate ?: ""
+        taskManager.getReceivingTask()?.taskDescription?.plannedDeliveryDate.orEmpty()
     }
     val shipmentFactDate by lazy {
-        taskManager.getReceivingTask()?.taskDescription?.actualArrivalDate ?: ""
+        taskManager.getReceivingTask()?.taskDescription?.actualArrivalDate.orEmpty()
     }
     val shipmentOrder by lazy {
         if (taskType == TaskType.ShipmentRC) {
-            taskManager.getReceivingTask()?.taskDescription?.shipmentOrder ?: ""
+            taskManager.getReceivingTask()?.taskDescription?.shipmentOrder.orEmpty()
         } else {
-            taskManager.getReceivingTask()?.taskDescription?.orderNumber ?: ""
+            taskManager.getReceivingTask()?.taskDescription?.orderNumber.orEmpty()
         }
 
     }
     val shipmentDelivery by lazy {
         if (taskType == TaskType.ShipmentRC) {
-            taskManager.getReceivingTask()?.taskDescription?.shipmentDelivery ?: ""
+            taskManager.getReceivingTask()?.taskDescription?.shipmentDelivery.orEmpty()
         } else {
-            taskManager.getReceivingTask()?.taskDescription?.deliveryNumber ?: ""
+            taskManager.getReceivingTask()?.taskDescription?.deliveryNumber.orEmpty()
         }
 
     }
 
-    val isTaskTypeShipmentRC by lazy {
-        taskManager.getReceivingTask()?.taskHeader?.taskType == TaskType.ShipmentRC
-    }
+    val isTaskTypeShipmentRC by lazy { taskType == TaskType.ShipmentRC }
 
     val shipmentDeliveryOTM by lazy {
-        taskManager.getReceivingTask()?.taskDescription?.deliveryNumberOTM ?: ""
+        taskManager.getReceivingTask()?.taskDescription?.deliveryNumberOTM.orEmpty()
     }
 
     val shipmentTransportation by lazy {
-        taskManager.getReceivingTask()?.taskDescription?.transportationNumber ?: ""
+        taskManager.getReceivingTask()?.taskDescription?.transportationNumber.orEmpty()
     }
 
 
@@ -312,7 +332,7 @@ class TaskCardViewModel : CoreViewModel(), PageSelectionListener {
     fun onResume() {
         launchUITryCatch {
             updateDateTimes()
-         }
+        }
     }
 
     private fun updateDateTimes() {
@@ -344,7 +364,7 @@ class TaskCardViewModel : CoreViewModel(), PageSelectionListener {
             TaskStatus.Unloaded -> {
                 when (taskType) {
                     TaskType.RecalculationCargoUnit -> screenNavigator.openSkipRecountScreen()
-                    TaskType.ReceptionDistributionCenter -> screenNavigator.openTransportMarriageScreen()
+                    TaskType.ReceptionDistributionCenter, TaskType.ShoppingMall -> screenNavigator.openTransportMarriageScreen()
                 }
             }
             TaskStatus.Checked -> {
@@ -353,7 +373,8 @@ class TaskCardViewModel : CoreViewModel(), PageSelectionListener {
             TaskStatus.Recounted -> screenNavigator.openRecountStartLoadingScreen()
             TaskStatus.ReadyToShipment -> {
                 if (taskType == TaskType.ShipmentRC) {
-                    screenNavigator.openShipmentPurposeTransportLoadingScreen("2", taskManager.getReceivingTask()?.taskDescription?.transportationNumber ?: "")
+                    screenNavigator.openShipmentPurposeTransportLoadingScreen("2", taskManager.getReceivingTask()?.taskDescription?.transportationNumber
+                            ?: "")
                 }
             }
         }
@@ -368,137 +389,172 @@ class TaskCardViewModel : CoreViewModel(), PageSelectionListener {
     }
 
     fun onClickNext() {
-        if (taskManager.getReceivingTask()?.taskHeader?.taskType == TaskType.RecalculationCargoUnit) { //карточка trello https://trello.com/c/BShSWFgU
-            if (taskManager.getReceivingTask()?.taskHeader?.isCracked == false &&  taskManager.getReceivingTask()?.taskDescription?.isRecount == false) {
-                //todo аналитик должен дописать алгоритм, карточка 2680
-                return
-            }
+        when (taskManager.getTaskType()) {
+            TaskType.RecalculationCargoUnit -> clickNextByTaskRecalculationCargoUnit()
+            TaskType.ShipmentRC -> clickNextByTaskShipmentRC()
+            TaskType.ShipmentPP -> clickNextByTaskShipmentPP()
+            else -> clickNextByCurrentStatus()
+        }
+    }
 
-            if (taskManager.getReceivingTask()?.taskHeader?.isCracked == true &&  taskManager.getReceivingTask()?.taskDescription?.isRecount == false) {
-                //todo Не пересчётная ГЕ с признаком "взлом", узнать у аналитика как сменить статус на "Взлом", карточка 2680
-                return
-            }
+    private fun clickNextByTaskRecalculationCargoUnit() {
+        //карточка trello https://trello.com/c/BShSWFgU
+        val isCracked =
+                taskManager
+                        .getReceivingTask()
+                        ?.taskHeader
+                        ?.isCracked
 
-            if ( (taskManager.getReceivingTask()?.taskHeader?.isCracked == true &&  taskManager.getReceivingTask()?.taskDescription?.isRecount == true) ||
-                    (taskManager.getReceivingTask()?.taskHeader?.isCracked == false &&  taskManager.getReceivingTask()?.taskDescription?.isRecount == true) ) {
-                screenNavigator.openRecountStartPGELoadingScreen()
-                return
-            }
+        val isRecount =
+                taskManager
+                        .getReceivingTask()
+                        ?.taskDescription
+                        ?.isRecount
 
+        if (isCracked == false && isRecount == false) {
+            //todo аналитик должен дописать алгоритм, карточка 2680
             return
         }
 
-        if (taskManager.getReceivingTask()?.taskHeader?.taskType == TaskType.ShipmentRC) {
-            when (currentStatus.value) {
-                TaskStatus.ReadyToShipment -> screenNavigator.openTransportationNumberScreen()
-                TaskStatus.Traveling -> {
-                    if (taskManager.getReceivingTask()?.taskDescription?.isAlco == true) {
-                        screenNavigator.openDriverDataScreen()
-                    } else {
-                        screenNavigator.openShipmentArrivalLockLoadingScreen(
-                                TaskDriverDataInfo(
-                                        initials = "",
-                                        passportData = "",
-                                        carMake = "",
-                                        carNumber = "",
-                                        additionalCarNumber = "",
-                                        transportCompanyCode = ""
-                                )
-                        )
-                    }
-                }
-                TaskStatus.Arrived -> screenNavigator.openShipmentStartLoadingScreen(taskNumber = taskManager.getReceivingTask()?.taskHeader?.taskNumber ?: "")
-                TaskStatus.ConditionsTested -> shipmentStartRecount()
-                TaskStatus.Recounted -> {
-                    if (taskManager.getReceivingTask()?.taskDescription?.submergedGE?.isNotEmpty() == true) {
-                        screenNavigator.openShipmentAdjustmentConfirmationDialog(
-                                submergedGE = taskManager.getReceivingTask()?.taskDescription?.submergedGE ?: "",
-                                nextCallbackFunc = {
-                                    screenNavigator.openShipmentPostingLoadingScreen()
-                                }
-                        )
-                    } else {
+        if (isCracked == true && isRecount == false) {
+            //todo Не пересчётная ГЕ с признаком "взлом", узнать у аналитика как сменить статус на "Взлом", карточка 2680
+            return
+        }
+
+        if ((isCracked == true && isRecount == true)
+                || (isCracked == false && isRecount == true)) {
+            screenNavigator.openRecountStartPGELoadingScreen()
+        }
+    }
+
+    private fun clickNextByTaskShipmentRC() {
+        when (currentStatus.value) {
+            TaskStatus.ReadyToShipment -> screenNavigator.openTransportationNumberScreen()
+            TaskStatus.Traveling -> clickNextByTaskShipmentRCByStatusTraveling()
+            TaskStatus.Arrived -> screenNavigator.openShipmentStartLoadingScreen(taskNumber = taskManager.getReceivingTask()?.taskHeader?.taskNumber.orEmpty())
+            TaskStatus.ConditionsTested -> shipmentStartRecount()
+            TaskStatus.Recounted -> clickNextByTaskShipmentRCByStatusRecounted()
+            TaskStatus.ShipmentAllowedByGis -> shipmentAllowedByGis() // https://trello.com/c/FnABffRE
+            TaskStatus.Loaded -> screenNavigator.openInputOutgoingFillingsScreen()
+        }
+    }
+
+    private fun clickNextByTaskShipmentRCByStatusTraveling() {
+        val isAlco = taskManager.getReceivingTask()?.taskDescription?.isAlco
+        if (isAlco == true) {
+            screenNavigator.openDriverDataScreen()
+        } else {
+            screenNavigator.openShipmentArrivalLockLoadingScreen(
+                    TaskDriverDataInfo(
+                            initials = "",
+                            passportData = "",
+                            carMake = "",
+                            carNumber = "",
+                            additionalCarNumber = "",
+                            transportCompanyCode = ""
+                    )
+            )
+        }
+    }
+
+    private fun clickNextByTaskShipmentRCByStatusRecounted() {
+        if (taskManager.getReceivingTask()?.taskDescription?.submergedGE?.isNotEmpty() == true) {
+            screenNavigator.openShipmentAdjustmentConfirmationDialog(
+                    submergedGE = taskManager.getReceivingTask()?.taskDescription?.submergedGE.orEmpty(),
+                    nextCallbackFunc = {
                         screenNavigator.openShipmentPostingLoadingScreen()
                     }
-                }
-                TaskStatus.ShipmentAllowedByGis -> shipmentAllowedByGis() // https://trello.com/c/FnABffRE
-                TaskStatus.Loaded -> screenNavigator.openInputOutgoingFillingsScreen()
-            }
-            return
+            )
+        } else {
+            screenNavigator.openShipmentPostingLoadingScreen()
         }
+    }
 
+    private fun clickNextByTaskShipmentPP() {
         //ТП для ОПП. 5.5.3	Разработка карточки задания на отгрузку в МП GRZ
-        if (taskManager.getReceivingTask()?.taskHeader?.taskType == TaskType.ShipmentPP) {
-            when (currentStatus.value) {
-                TaskStatus.ReadyToShipment -> screenNavigator.openStartReviseLoadingScreen()
-                TaskStatus.Checked -> screenNavigator.openRecountStartLoadingScreen()
-                TaskStatus.Recounted -> {
-                    if (isBksDiff) {
-                        screenNavigator.openShipmentConfirmDiscrepanciesDialog(
-                                nextCallbackFunc = {
-                                    screenNavigator.openTransmittedLoadingScreen()
-                                }
-                        )
-                    } else {
-                        screenNavigator.openTransmittedLoadingScreen()
-                    }
+        when (currentStatus.value) {
+            TaskStatus.ReadyToShipment -> screenNavigator.openStartReviseLoadingScreen()
+            TaskStatus.Checked -> screenNavigator.openRecountStartLoadingScreen()
+            TaskStatus.Recounted -> {
+                if (isBksDiff) {
+                    screenNavigator.openShipmentConfirmDiscrepanciesDialog (screenNavigator::openTransmittedLoadingScreen)
+                } else {
+                    screenNavigator.openTransmittedLoadingScreen()
                 }
             }
-            return
         }
+    }
 
+    private fun clickNextByCurrentStatus() {
         when (taskManager.getReceivingTask()?.taskDescription?.currentStatus) {
-            TaskStatus.Ordered, TaskStatus.Traveling, TaskStatus.TemporaryRejected -> {
-                if (isEdo &&
-                        taskManager.getReceivingTask()?.taskHeader?.taskType == TaskType.DirectSupplier &&
-                        (taskManager.getReceivingTask()?.taskDescription?.currentStatus == TaskStatus.Ordered || taskManager.getReceivingTask()?.taskDescription?.currentStatus == TaskStatus.TemporaryRejected) ) { //trello https://trello.com/c/XKpOCvZo
-                    screenNavigator.openEdoDialog(
-                            missing = {screenNavigator.openRegisterArrivalLoadingScreen(isInStockPaperTTN = false, isEdo = true, status = taskManager.getReceivingTask()?.taskDescription?.currentStatus ?: TaskStatus.Other)},
-                            inStock = {screenNavigator.openRegisterArrivalLoadingScreen(isInStockPaperTTN = true, isEdo = true, status = taskManager.getReceivingTask()?.taskDescription?.currentStatus ?: TaskStatus.Other)}
-                    )
-                } else {
-                    screenNavigator.openRegisterArrivalLoadingScreen()
-                }
-            }
-            TaskStatus.Arrived -> {
-                if (isEdo && taskManager.getReceivingTask()?.taskHeader?.taskType == TaskType.DirectSupplier && incomingDelivery.isEmpty()) {
-                    screenNavigator.openCreateInboundDeliveryDialog(
-                            yesCallbackFunc = {
-                                screenNavigator.openStartReviseLoadingScreen()
-                            }
-                    )
-                } else if (taskManager.getReceivingTask()?.taskHeader?.taskType == TaskType.ReceptionDistributionCenter || taskManager.getReceivingTask()?.taskHeader?.taskType == TaskType.OwnProduction) {
-                    screenNavigator.openUnloadingStartRDSLoadingScreen()
-                } else {
-                    screenNavigator.openStartReviseLoadingScreen()
-                }
-            }
+            TaskStatus.Ordered, TaskStatus.Traveling, TaskStatus.TemporaryRejected -> clickNextByStatusOrderedTravelingTemporaryRejected()
+            TaskStatus.Arrived -> clickNextByStatusArrived()
             TaskStatus.Checked -> screenNavigator.openStartConditionsReviseLoadingScreen()
-            TaskStatus.Unloaded -> {
-                when (taskManager.getReceivingTask()?.taskHeader?.taskType) {
-                    TaskType.ReceptionDistributionCenter -> {
-                        screenNavigator.openNoTransportDefectDeclaredDialog(
-                                nextCallbackFunc = {
-                                    if (taskManager.getReceivingTask()?.taskDescription?.quantityOutgoingFillings == 0) {
-                                        fixationDeparture()
-                                    } else {
-                                        screenNavigator.openInputOutgoingFillingsScreen()
-                                    }
-                                }
-                        )
-                    }
-                    TaskType.OwnProduction -> {
-                        fixationDeparture()
-                    }
-                    else -> {
-                        screenNavigator.openRecountStartLoadingScreen()
-                    }
-                }
-            }
+            TaskStatus.Unloaded -> clickNextByStatusUnloaded()
             TaskStatus.Recounted -> screenNavigator.openTransmittedLoadingScreen()
             TaskStatus.Departure -> screenNavigator.openStartReviseLoadingScreen()
             TaskStatus.Booked -> screenNavigator.openTransferGoodsSectionScreen()
             TaskStatus.Completed -> screenNavigator.openFormedDocsScreen()
+        }
+    }
+
+    private fun clickNextByStatusOrderedTravelingTemporaryRejected() {
+        val taskType = taskManager.getTaskType()
+        val currentStatus = taskManager.getReceivingTask()?.taskDescription?.currentStatus
+                ?: TaskStatus.Other
+        if (isEdo
+                && taskType == TaskType.DirectSupplier
+                && (currentStatus == TaskStatus.Ordered || currentStatus == TaskStatus.TemporaryRejected)) { //trello https://trello.com/c/XKpOCvZo
+            screenNavigator.openEdoDialog(
+                    missing = {
+                        screenNavigator.openRegisterArrivalLoadingScreen(
+                                isInStockPaperTTN = false,
+                                isEdo = true,
+                                status = currentStatus
+                        )
+                    },
+                    inStock = {
+                        screenNavigator.openRegisterArrivalLoadingScreen(
+                                isInStockPaperTTN = true,
+                                isEdo = true,
+                                status = currentStatus
+                        )
+                    }
+            )
+        } else {
+            screenNavigator.openRegisterArrivalLoadingScreen()
+        }
+    }
+
+    private fun clickNextByStatusArrived() {
+        if (isEdo
+                && taskType == TaskType.DirectSupplier
+                && incomingDelivery.isEmpty()) {
+            screenNavigator.openCreateInboundDeliveryDialog { screenNavigator.openStartReviseLoadingScreen() }
+        } else if (taskType == TaskType.ReceptionDistributionCenter
+                || taskType == TaskType.OwnProduction
+                || taskType == TaskType.ShoppingMall) {
+            screenNavigator.openUnloadingStartRDSLoadingScreen()
+        } else {
+            screenNavigator.openStartReviseLoadingScreen()
+        }
+    }
+
+    private fun clickNextByStatusUnloaded() {
+        when (taskManager.getTaskType()) {
+            TaskType.ReceptionDistributionCenter, TaskType.ShoppingMall -> {
+                screenNavigator.openNoTransportDefectDeclaredDialog { nextCallbackFuncOpenNoTransportDefectDeclaredDialog() }
+            }
+            TaskType.OwnProduction -> fixationDeparture()
+            else -> screenNavigator.openRecountStartLoadingScreen()
+        }
+    }
+
+    private fun nextCallbackFuncOpenNoTransportDefectDeclaredDialog() {
+        if (taskManager.getReceivingTask()?.taskDescription?.quantityOutgoingFillings == 0) {
+            fixationDeparture()
+        } else {
+            screenNavigator.openInputOutgoingFillingsScreen()
         }
     }
 
@@ -510,11 +566,11 @@ class TaskCardViewModel : CoreViewModel(), PageSelectionListener {
         launchUITryCatch {
             screenNavigator.showProgressLoadingData(::handleFailure)
             val params = ZmpUtzGrz39V001Params(
-                    taskNumber = taskManager.getReceivingTask()?.taskHeader?.taskNumber ?: "",
+                    taskNumber = taskManager.getReceivingTask()?.taskHeader?.taskNumber.orEmpty(),
                     deviceIP = context.getDeviceIp(),
-                    personalNumber = sessionInfo.personnelNumber ?: "",
-                    recountStartDate = taskManager.getReceivingTask()?.taskDescription?.nextStatusDate ?: "",
-                    recountStartTime = taskManager.getReceivingTask()?.taskDescription?.nextStatusTime ?: ""
+                    personalNumber = sessionInfo.personnelNumber.orEmpty(),
+                    recountStartDate = taskManager.getReceivingTask()?.taskDescription?.nextStatusDate.orEmpty(),
+                    recountStartTime = taskManager.getReceivingTask()?.taskDescription?.nextStatusTime.orEmpty()
             )
             zmpUtzGrz39V001NetRequest(params).either(::handleFailure, ::handleSuccessShipmentStartRecount)
             screenNavigator.hideProgress()
@@ -532,9 +588,9 @@ class TaskCardViewModel : CoreViewModel(), PageSelectionListener {
         launchUITryCatch {
             screenNavigator.showProgressLoadingData(::handleFailure)
             val params = FixationDepartureReceptionDistrCenterParameters(
-                    taskNumber = taskManager.getReceivingTask()?.taskHeader?.taskNumber ?: "",
+                    taskNumber = taskManager.getReceivingTask()?.taskHeader?.taskNumber.orEmpty(),
                     deviceIP = context.getDeviceIp(),
-                    personalNumber = sessionInfo.personnelNumber ?: "",
+                    personalNumber = sessionInfo.personnelNumber.orEmpty(),
                     fillings = emptyList()
             )
             fixationDepartureReceptionDistrCenterNetRequest(params).either(::handleFailure, ::handleSuccessFixationDeparture)
@@ -548,16 +604,16 @@ class TaskCardViewModel : CoreViewModel(), PageSelectionListener {
 
         taskManager.updateTaskDescription(TaskDescription.from(result.taskDescription))
 
-        screenNavigator.openTaskCardScreen(TaskCardMode.Full, taskManager.getReceivingTask()?.taskHeader?.taskType ?: TaskType.None)
+        screenNavigator.openTaskCardScreen(TaskCardMode.Full, taskManager.getTaskType())
     }
 
     private fun shipmentSkipRecount() {
         launchUITryCatch {
             screenNavigator.showProgress(context.getString(R.string.skipping_recount))
             val params = SkipRecountParameters(
-                    taskNumber = taskManager.getReceivingTask()?.taskHeader?.taskNumber ?: "",
+                    taskNumber = taskManager.getReceivingTask()?.taskHeader?.taskNumber.orEmpty(),
                     deviceIP = context.getDeviceIp(),
-                    personalNumber = sessionInfo.personnelNumber ?: "",
+                    personalNumber = sessionInfo.personnelNumber.orEmpty(),
                     comment = ""
             )
             skipRecountNetRequest(params).either(::handleFailure, ::handleSuccessSkipRecount)
@@ -573,7 +629,7 @@ class TaskCardViewModel : CoreViewModel(), PageSelectionListener {
             taskManager.updateTaskDescription(TaskDescription.from(result.taskDescription))
             taskManager.getReceivingTask()?.taskRepository?.getNotifications()?.updateWithNotifications(notifications, null, null, null)
             taskManager.getReceivingTask()?.taskRepository?.getSections()?.updateSections(sectionInfo, sectionProducts)
-            screenNavigator.openTaskCardScreen(TaskCardMode.Full, taskManager.getReceivingTask()?.taskHeader?.taskType ?: TaskType.None)
+            screenNavigator.openTaskCardScreen(TaskCardMode.Full, taskManager.getTaskType())
         }
     }
 
@@ -582,8 +638,8 @@ class TaskCardViewModel : CoreViewModel(), PageSelectionListener {
             screenNavigator.showProgressLoadingData(::handleFailure)
             val params = ZmpUtzGrz41V001Params(
                     deviceIP = context.getDeviceIp(),
-                    taskNumber = taskManager.getReceivingTask()?.taskHeader?.taskNumber ?: "",
-                    personalNumber = sessionInfo.personnelNumber ?: ""
+                    taskNumber = taskManager.getReceivingTask()?.taskHeader?.taskNumber.orEmpty(),
+                    personalNumber = sessionInfo.personnelNumber.orEmpty()
             )
             zmpUtzGrz41V001NetRequest(params).either(::handleFailure, ::handleSuccessShipmentAllowedByGis)
             screenNavigator.hideProgress()
@@ -598,7 +654,7 @@ class TaskCardViewModel : CoreViewModel(), PageSelectionListener {
 
         screenNavigator.openShipmentPostingSuccessfulDialog(
                 nextCallbackFunc = {
-                    screenNavigator.openTaskCardScreen(TaskCardMode.Full, taskManager.getReceivingTask()?.taskHeader?.taskType ?: TaskType.None)
+                    screenNavigator.openTaskCardScreen(TaskCardMode.Full, taskManager.getTaskType())
                 }
         )
     }
