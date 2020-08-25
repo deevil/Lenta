@@ -235,8 +235,7 @@ class SearchProductDelegate @Inject constructor(
                 if (productInfo.isSet) {
                     screenNavigator.openSetsInfoScreen(productInfo, quantity)
                     return
-                } else
-                    screenNavigator.openExciseAlcoScreen(productInfo)
+                } else screenNavigator.openExciseAlcoScreen(productInfo)
             }
             else -> screenNavigator.openGoodInfoScreen(productInfo, quantity)
         }

@@ -50,14 +50,19 @@ fun setDigitsForUom(editText: EditText, uom: Uom?) {
     }
 }
 
-@BindingAdapter("requestFocus", "cursorToLastPos")
-fun requestFocus(editText: EditText, @Suppress("UNUSED_PARAMETER") requestFocus: Boolean?, cursorToLastPos: Boolean?) {
+@BindingAdapter("requestFocus", "cursorToLastPos", "selectAfterFocus")
+fun requestFocus(editText: EditText, @Suppress("UNUSED_PARAMETER") requestFocus: Boolean?, cursorToLastPos: Boolean?, selectAfterFocus: Boolean?) {
     requestFocus?.let {
         if (it) {
             editText.isFocusableInTouchMode = true
             editText.requestFocus()
+
             if (cursorToLastPos == true) {
                 editText.setSelection(editText.text.length)
+            }
+
+            if (selectAfterFocus == true) {
+                editText.setSelection(0, editText.text.length)
             }
         }
     }
