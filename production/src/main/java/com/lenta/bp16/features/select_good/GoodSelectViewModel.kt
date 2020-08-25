@@ -33,6 +33,8 @@ class GoodSelectViewModel : CoreViewModel() {
 
     val marketNumber by unsafeLazy { sessionInfo.market }
 
+    val weightValueList = listOf(VALUE_23, VALUE_24, VALUE_27, VALUE_28)
+
     val enteredEanField = MutableLiveData("")
     val requestFocusEnteredEanField = MutableLiveData(true)
 
@@ -52,7 +54,14 @@ class GoodSelectViewModel : CoreViewModel() {
 
     private fun searchGood() {
         val ean: MutableList<String> = mutableListOf()
-        ean.add(enteredEanField.value.orEmpty())
+        var weight = DEF_WEIGHT
+        var barcode = enteredEanField.value.orEmpty()
+        if(weightValueList.contains(barcode.substring(0 until 2))){
+            weight = barcode.takeLast(6).take(5).toDouble()
+            val changedBarcode = barcode.replace(barcode.takeLast(6), TAKEN_ZEROS)
+            barcode = changedBarcode
+        }
+        ean.add(barcode)
         val matnr: List<String> = mutableListOf()
         launchUITryCatch {
             productInfoNetRequest(
@@ -70,6 +79,7 @@ class GoodSelectViewModel : CoreViewModel() {
                         ean = goodInfo.ean.orEmpty(),
                         material = goodInfo.getFormattedMaterial().orEmpty(),
                         name = goodInfo.productName.orEmpty(),
+                        weight = weight,
                         zPart = goodInfo.isPart.orEmpty().isNotEmpty(),
                         uom = goodInfo.uom.orEmpty(),
                         umrez = goodInfo.umrez.orEmpty(),
@@ -95,6 +105,16 @@ class GoodSelectViewModel : CoreViewModel() {
 
     fun onClickMenu() {
         navigator.openMainMenuScreen()
+    }
+
+    companion object{
+        const val VALUE_23 = "23"
+        const val VALUE_24 = "24"
+        const val VALUE_27 = "27"
+        const val VALUE_28 = "28"
+
+        private const val DEF_WEIGHT = 0.0
+        private const val TAKEN_ZEROS = "000000"
     }
 
 }

@@ -8,6 +8,7 @@ import kotlinx.android.parcel.Parcelize
 data class GoodParams(
         val ean: String,
         val material: String,
+        val weight: Double,
         val name: String,
         val zPart: Boolean,
         val uom: String,

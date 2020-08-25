@@ -31,22 +31,10 @@ import javax.inject.Inject
 class GoodInfoViewModel : CoreViewModel() {
 
     @Inject
-    lateinit var productInfoNetRequest: ProductInfoNetRequest
-
-    @Inject
     lateinit var movementNetRequest: MovementNetRequest
 
     @Inject
     lateinit var sessionInfo: ISessionInfo
-
-    @Inject
-    lateinit var timeMonitor: ITimeMonitor
-
-    @Inject
-    lateinit var repoInMemoryHolder: IRepoInMemoryHolder
-
-    @Inject
-    lateinit var serverTimeRequest: ServerTimeRequest
 
     @Inject
     lateinit var navigator: IScreenNavigator
@@ -61,7 +49,9 @@ class GoodInfoViewModel : CoreViewModel() {
 
     val goodParams = MutableLiveData<GoodParams>()
 
-    val weightBarcode = listOf(CONST_VALUE_23, CONST_VALUE_24, CONST_VALUE_27, CONST_VALUE_28)
+    val weight: MutableLiveData<Double> by unsafeLazy {
+        MutableLiveData<Double>()
+    }
 
     val selectedEan = MutableLiveData<String>()
 
@@ -134,16 +124,11 @@ class GoodInfoViewModel : CoreViewModel() {
 
     private fun setGoodInfo() {
         launchUITryCatch {
-            val ean = selectedEan.value.toString()
-            var weight: Int? = 0
-            /**Проверка на весовой ШК*/
-            if (weightBarcode.contains(ean.substring(0 until 2))) {
-                weight = ean.takeLast(6).take(5).toInt()
-            }
+            weight.value = goodParams.value?.weight
             /**Расчет количества и единиц измерения*/
-            val (quantity: Int?, uom: String) =
-                    if (weight != 0) {
-                        weight?.div(Constants.CONVERT_TO_KG) to Uom.KG.name
+            val (quantity: Double?, uom: String) =
+                    if (weight.value != 0.0) {
+                        weight.value?.div(Constants.CONVERT_TO_KG) to Uom.KG.name
                     } else {
                         when (goodParams.value?.uom?.toUom()) {
                             Uom.ST -> {
@@ -151,7 +136,7 @@ class GoodInfoViewModel : CoreViewModel() {
                             }
                             Uom.KAR -> {
                                 val uomInfo = goodParams.value
-                                uomInfo?.umrez?.toInt()?.div(uomInfo.umren.toInt()) to Uom.KAR.name
+                                uomInfo?.umrez?.toInt()?.div(uomInfo.umren.toDouble()) to Uom.KAR.name
                             }
                             else -> {
                                 Constants.QUANTITY_DEFAULT_VALUE_0 to Uom.DEFAULT.name
