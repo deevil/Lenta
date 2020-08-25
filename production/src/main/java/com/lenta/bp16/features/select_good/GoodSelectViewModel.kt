@@ -11,6 +11,7 @@ import com.lenta.bp16.request.pojo.Ean
 import com.lenta.bp16.request.pojo.ProducerInfo
 import com.lenta.bp16.request.pojo.Product
 import com.lenta.bp16.request.pojo.ProductInfo
+import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.extentions.launchUITryCatch
 import com.lenta.shared.utilities.extentions.map
@@ -25,7 +26,12 @@ class GoodSelectViewModel : CoreViewModel() {
     @Inject
     lateinit var productInfoNetRequest: ProductInfoNetRequest
 
+    @Inject
+    lateinit var sessionInfo: ISessionInfo
+
     val deviceIp = MutableLiveData("")
+
+    val marketNumber by unsafeLazy { sessionInfo.market }
 
     val enteredEanField = MutableLiveData("")
     val requestFocusEnteredEanField = MutableLiveData(true)

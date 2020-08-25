@@ -6,6 +6,7 @@ import com.lenta.bp16.R
 import com.lenta.bp16.databinding.FragmentGoodSelectBinding
 import com.lenta.bp16.platform.Constants
 import com.lenta.bp16.platform.extention.getAppComponent
+import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.platform.fragment.CoreFragment
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
@@ -31,8 +32,9 @@ class GoodSelectFragment : CoreFragment<FragmentGoodSelectBinding, GoodSelectVie
     }
 
     override fun setupTopToolBar(topToolbarUiModel: TopToolbarUiModel) {
+        val marketNumber = vm.marketNumber
+        topToolbarUiModel.title.value = getString(R.string.market_number, marketNumber)
         topToolbarUiModel.description.value = getString(R.string.good_select)
-        topToolbarUiModel.title.value = context?.getAppInfo()
     }
 
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
