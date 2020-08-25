@@ -1,4 +1,4 @@
-package com.lenta.bp9.features.goods_information.marking
+package com.lenta.bp9.features.goods_information.marking.uom_st_without_counting_in_boxes
 
 import android.content.Context
 import androidx.lifecycle.MutableLiveData
@@ -23,7 +23,6 @@ import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.requests.combined.scan_info.ScanInfoResult
 import com.lenta.shared.requests.combined.scan_info.pojo.QualityInfo
 import com.lenta.shared.requests.combined.scan_info.pojo.ReasonRejectionInfo
-import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.extentions.combineLatest
 import com.lenta.shared.utilities.extentions.launchUITryCatch
 import com.lenta.shared.utilities.extentions.map
@@ -418,10 +417,10 @@ class MarkingInfoViewModel : CoreViewModel(),
         }
 
         processMarkingProductService.rollbackTypeLastStampScanned()
-        //уменьшаем кол-во отсканированных марок (блок/gtin) на единицу в текущей сессии
-        countScannedStamps.value = countScannedStamps.value?.minus(1)
         //уменьшаем кол-во отсканированных блоков на единицу в текущей сессии
-        countScannedBlocks.value = countScannedBlocks.value?.minus(1)
+        minusScannedBlocks()
+        //уменьшаем кол-во отсканированных марок (блок/gtin) на единицу в текущей сессии
+        minusScannedStamps(1)
     }
 
     private fun rollbackControlGtin() {
@@ -470,22 +469,14 @@ class MarkingInfoViewModel : CoreViewModel(),
 
     private fun minusScannedStamps(count: Int) {
         countScannedStamps.value
-                ?.takeIf {
-                    it > 0
-                }
-                ?.run {
-                    countScannedStamps.value = countScannedStamps.value?.minus(count)
-                }
+                ?.takeIf { it >= count }
+                ?.run { countScannedStamps.value = countScannedStamps.value?.minus(count) }
     }
 
     private fun minusScannedBlocks() {
         countScannedBlocks.value
-                ?.takeIf {
-                    it > 0
-                }
-                ?.run {
-                    countScannedBlocks.value = countScannedBlocks.value?.minus(1)
-                }
+                ?.takeIf { it > 0 }
+                ?.run { countScannedBlocks.value = countScannedBlocks.value?.minus(1) }
     }
 
     fun onClickDetails() {

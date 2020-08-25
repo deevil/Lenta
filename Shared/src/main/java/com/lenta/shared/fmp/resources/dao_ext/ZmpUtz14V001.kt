@@ -152,6 +152,10 @@ fun ZmpUtz14V001.getGrzGrundMark(): String? {
     return getParams("GRZ_GRUND_MARK").firstOrNull()
 }
 
+fun ZmpUtz14V001.getGrzAlternMeins(): String? {
+    return getParams("GRZ_ALTERN_MEINS").firstOrNull()
+}
+
 private fun ZmpUtz14V001.getParams(paramName: String): List<String> {
     @Suppress("INACCESSIBLE_TYPE")
     return localHelper_ET_PARAMS.getWhere("PARAMNAME = \"$paramName\"").map { it.paramvalue }

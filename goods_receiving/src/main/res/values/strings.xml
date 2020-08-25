@@ -342,5 +342,8 @@
     <string name="dialogue_partial_refusal_on_marking_goods">Подтверждено сканированием %1$s. Для неподтвержденного количества в %2$s. будет сформирован частичный акт о разногласии с причиной \"%3$s\"</string>
     <string name="scanned_stamp_is_already_processed_alternative">Марка уже обработана</string>
     <string name="scan_product_gtin">Отсканируйте GTIN товара</string>
+    <string name="marking_box_not_included_delivery">Отсканированная коробка не числится в поставке. Отсканируйте все марки из этого короба</string>
+    <string name="marking_perform_rate_control">Сначала произведите контроль нормы путем сканирования МАРОК, а затем добавляйте марки сканированием коробок.</string>
+    <string name="marking_block_declared_different_category">Марки данной коробки были заявлены в другую категорию, для добавления оставшихся марок в категорию \"%1$s\" необходимо отсканировать каждую оставшуюся марку.</string>
 
 </resources>

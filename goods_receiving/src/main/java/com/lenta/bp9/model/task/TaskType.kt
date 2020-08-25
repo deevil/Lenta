@@ -6,6 +6,8 @@ enum class TaskType(val taskTypeString: String) {
     DirectSupplier("ППП"),
     /** ПРЦ*/
     ReceptionDistributionCenter("ПРЦ"),
+    /** ПТК*/
+    ShoppingMall("ПТК"),
     /** ПСП*/
     OwnProduction("ПСП"),
     /** ПГЕ*/
@@ -20,6 +22,7 @@ enum class TaskType(val taskTypeString: String) {
             return when(taskTypeString) {
                 "ППП" -> DirectSupplier
                 "ПРЦ" -> ReceptionDistributionCenter
+                "ПТК" -> ShoppingMall
                 "ПСП" -> OwnProduction
                 "ПГЕ" -> RecalculationCargoUnit
                 "ОПП" -> ShipmentPP

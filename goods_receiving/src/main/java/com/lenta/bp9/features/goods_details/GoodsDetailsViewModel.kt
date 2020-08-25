@@ -240,8 +240,9 @@ class GoodsDetailsViewModel : CoreViewModel() {
         } else {
             if (productInfo.value != null && !productInfo.value!!.isNotEdit) {
                 categoriesSelectionsHelper.selectedPositions.value?.map { position ->
-                    val materialNumber = goodsDetails.value?.get(position)?.materialNumber.orEmpty()
-                    val typeDiscrepancies = goodsDetails.value?.get(position)?.typeDiscrepancies.orEmpty()
+                    val goodsDetailsItem = goodsDetails.value?.get(position)
+                    val materialNumber = goodsDetailsItem?.materialNumber.orEmpty()
+                    val typeDiscrepancies = goodsDetailsItem?.typeDiscrepancies.orEmpty()
 
                     if (isScreenPGEBoxAlcoInfo.value == true) {
                         processExciseAlcoBoxAccPGEService.delBoxesStampsDiscrepancies(typeDiscrepancies)
@@ -263,24 +264,19 @@ class GoodsDetailsViewModel : CoreViewModel() {
                             ?.getExciseStampsDiscrepancies()
                             ?.deleteExciseStampsDiscrepanciesForProductAndDiscrepancies(materialNumber, typeDiscrepancies)
 
-                    if (isVetProduct.value == true) {
-                        taskManager
-                                .getReceivingTask()
-                                ?.taskRepository
-                                ?.getMercuryDiscrepancies()
-                                ?.deleteMercuryDiscrepancyOfProduct(materialNumber, typeDiscrepancies)
 
-                        processMercuryProductService.updateDiscrepancy()
+                    if (isVetProduct.value == true) {
+                            processMercuryProductService.deleteDetails(typeDiscrepancies)
                     }
 
-                    if (isNonExciseAlcoProduct.value!!) {
-                        goodsDetails.value?.get(position)!!.batchDiscrepancies?.let {
-                            taskManager
-                                    .getReceivingTask()
-                                    ?.taskRepository
-                                    ?.getBatchesDiscrepancies()
-                                    ?.deleteBatchDiscrepancies(it)
-                        }
+                    if (isNonExciseAlcoProduct.value == true) {
+                        goodsDetailsItem
+                                ?.batchDiscrepancies
+                                ?.let {
+                                    taskRepository
+                                            ?.getBatchesDiscrepancies()
+                                            ?.deleteBatchDiscrepancies(it)
+                                }
                     }
                 }
             }
