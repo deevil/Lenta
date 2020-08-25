@@ -331,7 +331,7 @@
 
             <ImageView
                 style="@style/BottomIconStyle"
-                android:onClick="@{(v) -> vm.scanMark()}"
+                android:onClick="@{(v) -> vm.screenNavigator.openBoxInfoScreen()}"
                 android:src="@drawable/ic_scan_box_white_32dp" />
 
             <ImageView

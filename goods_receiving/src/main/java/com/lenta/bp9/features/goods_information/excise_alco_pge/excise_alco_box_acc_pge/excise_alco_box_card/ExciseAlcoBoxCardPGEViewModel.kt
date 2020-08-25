@@ -762,11 +762,4 @@ class ExciseAlcoBoxCardPGEViewModel : CoreViewModel(), OnPositionClickListener {
         private const val COUNT_BOXES_ZERO = "0"
     }
 
-    //todo
-    fun scanMark1() {
-        onScanResult("1034003226498310180012WRWPNZJVYW6SO42VEZGTCTV6QYMPHAJ53AQ5Z45G25NEM2IV5S7IQITICX3QLAZ7CFWMZJOUAXLSELNFR53ZMCPM64PVXN5HBII7LMJI53ZAYTOPZPBT3OFMYNJNYQ3A")
-    }
-    fun scanMark2() {
-        onScanResult("01000000031513219100803195")
-    }
 }
