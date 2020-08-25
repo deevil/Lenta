@@ -37,7 +37,7 @@ data class IngredientsDataListResult(
                 ordersIngredientsDataInfoList = ordersIngredientsDataInfoList.orEmpty(),
                 materialsIngredientsDataInfoList = materialsIngredientsDataInfoList.orEmpty(),
                 techOrdersDataInfoList = techOrdersDataInfoList.orEmpty(),
-                orderByBarcode = orderByBarcode.orEmpty(),
+                orderByBarcode = orderByBarcode.orEmpty().mapNotNull { it.convert() },
                 retCodes = retCodes.orEmpty()
         )
     }

@@ -45,19 +45,12 @@ class OrderIngredientsListViewModel : CoreViewModel() {
     @Inject
     lateinit var getIngredientData: GetIngredientsDataListNetRequest
 
-    @Inject
-    lateinit var getEanIngredientData: GetEanIngredientsNetRequest
-
     // выбранное количество
     var weight: String by Delegates.notNull()
 
     // выбранный ингредиент
     val ingredient by unsafeLazy {
         MutableLiveData<IngredientInfo>()
-    }
-
-    private val ingredientsDataListResult: MutableLiveData<IngredientsDataListResult> by unsafeLazy {
-        MutableLiveData<IngredientsDataListResult>()
     }
 
     private val allOrderIngredients: MutableLiveData<List<OrderIngredientDataInfo>> by unsafeLazy {
@@ -100,10 +93,10 @@ class OrderIngredientsListViewModel : CoreViewModel() {
         ).also {
             navigator.hideProgress()
         }
-        result.either(::handleFailure, ingredientsDataListResult::setValue)
-        ingredientsDataListResult.value?.let { ingredientsDataListResult ->
-            allEanIngredients.value = ingredientsDataListResult.orderByBarcode?.mapNotNull { it.convert() }
+        result.either(::handleFailure) { ingredientsDataListResult ->
+            allEanIngredients.value = ingredientsDataListResult.orderByBarcode
             allOrderIngredients.value = ingredientsDataListResult.ordersIngredientsDataInfoList
+            Unit
         }
     }
 

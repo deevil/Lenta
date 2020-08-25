@@ -8,7 +8,7 @@ import com.lenta.bp16.model.ingredients.TechOrderDataInfo
 import com.lenta.bp16.request.pojo.RetCode
 import com.lenta.shared.utilities.extentions.IResultWithRetCodes
 
-data class IngredientsDataListResultUI (
+data class IngredientsDataListResultUI(
         /** Данные по заказу */
         val ordersIngredientsDataInfoList: List<OrderIngredientDataInfo>?,
 
@@ -19,8 +19,8 @@ data class IngredientsDataListResultUI (
         val techOrdersDataInfoList: List<TechOrderDataInfo>?,
 
         /**Данные ШК по товарам*/
-        val orderByBarcode: List<OrderByBarcode>?,
+        val orderByBarcode: List<OrderByBarcodeUI>?,
 
         /** Таблица возврата */
         override val retCodes: List<RetCode>?
-): IResultWithRetCodes
+) : IResultWithRetCodes

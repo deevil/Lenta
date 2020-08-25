@@ -10,6 +10,7 @@ import com.lenta.bp16.model.ingredients.IngredientInfo
 import com.lenta.bp16.model.ingredients.params.GetIngredientsParams
 import com.lenta.bp16.model.ingredients.params.WarehouseParam
 import com.lenta.bp16.model.ingredients.results.IngredientsListResult
+import com.lenta.bp16.model.ingredients.ui.IngredientsListResultUI
 import com.lenta.bp16.model.ingredients.ui.ItemIngredientUi
 import com.lenta.bp16.model.ingredients.ui.OrderByBarcodeUI
 import com.lenta.bp16.model.ingredients.ui.OrderByBarcodeUI.Companion.EAN_NOM
@@ -57,10 +58,6 @@ class IngredientsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInS
     val marketNumber by unsafeLazy { sessionInfo.market }
     private val selectedMatnr by unsafeLazy { MutableLiveData<String>("") }
 
-    private val allIngredients: MutableLiveData<IngredientsListResult> by unsafeLazy {
-        MutableLiveData<IngredientsListResult>()
-    }
-
     private val allIngredientsInfo: MutableLiveData<List<IngredientInfo>> by unsafeLazy {
         MutableLiveData<List<IngredientInfo>>()
     }
@@ -98,11 +95,11 @@ class IngredientsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInS
                             deviceIP = resourceManager.deviceIp,
                             workhousesList = warehouseStorage.getSelectedWarehouses().map { WarehouseParam(it) }
                     )
-            ).either(::handleFailure, allIngredients::setValue)
-            allIngredients.value?.let { ingredientListResult ->
+            ).either(::handleFailure) { ingredientListResult ->
                 allIngredientsInfo.value = ingredientListResult.ingredientsList
-                allIngredientsEanInfo.value = ingredientListResult.goodsEanList?.mapNotNull { it.convert() }
+                allIngredientsEanInfo.value = ingredientListResult.goodsEanList
                 goodsByOrderList.value = ingredientListResult.goodsListByOrder
+                Unit
             }
             navigator.hideProgress()
         }

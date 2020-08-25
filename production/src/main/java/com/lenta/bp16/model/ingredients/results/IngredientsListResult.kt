@@ -29,7 +29,7 @@ data class IngredientsListResult(
         return IngredientsListResultUI(
                 ingredientsList = ingredientsList.orEmpty(),
                 goodsListByOrder = goodsListByOrder.orEmpty(),
-                goodsEanList = goodsEanList.orEmpty(),
+                goodsEanList = goodsEanList.orEmpty().mapNotNull { it.convert() },
                 retCodes = retCodes.orEmpty()
         )
     }

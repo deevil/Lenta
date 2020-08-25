@@ -4,6 +4,7 @@ import com.lenta.bp16.model.ingredients.MaterialIngredientDataInfo
 import com.lenta.bp16.model.ingredients.OrderIngredientDataInfo
 import com.lenta.bp16.model.ingredients.params.GetIngredientDataParams
 import com.lenta.bp16.model.ingredients.results.IngredientsDataListResult
+import com.lenta.bp16.model.ingredients.ui.IngredientsDataListResultUI
 import com.lenta.bp16.repository.IIngredientsRepository
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.functional.Either
@@ -13,8 +14,8 @@ import javax.inject.Inject
 
 class GetIngredientsDataListNetRequest @Inject constructor(
         private val ingredientsRepository: IIngredientsRepository
-) : UseCase<IngredientsDataListResult, GetIngredientDataParams> {
-    override suspend fun run(params: GetIngredientDataParams): Either<Failure, IngredientsDataListResult> {
+) : UseCase<IngredientsDataListResultUI, GetIngredientDataParams> {
+    override suspend fun run(params: GetIngredientDataParams): Either<Failure, IngredientsDataListResultUI> {
         return ingredientsRepository.getIngredientListData(params)
     }
 }

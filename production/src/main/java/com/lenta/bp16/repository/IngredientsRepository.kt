@@ -9,6 +9,8 @@ import com.lenta.bp16.model.ingredients.results.IngredientDataCompleteResult
 import com.lenta.bp16.model.ingredients.results.IngredientsDataListResult
 import com.lenta.bp16.model.ingredients.results.IngredientsListResult
 import com.lenta.bp16.model.ingredients.results.UnblockOrderIngredientsResult
+import com.lenta.bp16.model.ingredients.ui.IngredientsDataListResultUI
+import com.lenta.bp16.model.ingredients.ui.IngredientsListResultUI
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.fmp.ObjectRawStatus
 import com.lenta.shared.functional.Either
@@ -23,13 +25,13 @@ class IngredientsRepository @Inject constructor(
 
     private val ordersByRemake: MutableList<TechOrderDataInfo> = mutableListOf()
 
-    override suspend fun getAllIngredients(params: GetIngredientsParams): Either<Failure, IngredientsListResult> {
+    override suspend fun getAllIngredients(params: GetIngredientsParams): Either<Failure, IngredientsListResultUI> {
 
         return fmpRequestsHelper.restRequest(FMP_ORDERS_RESOURCE_NAME, params, IngredientsListStatus::class.java)
                 .getResult()
     }
 
-    override suspend fun getIngredientListData(params: GetIngredientDataParams): Either<Failure, IngredientsDataListResult> {
+    override suspend fun getIngredientListData(params: GetIngredientDataParams): Either<Failure, IngredientsDataListResultUI> {
         return fmpRequestsHelper.restRequest(FMP_ORDERS_DATA_RESOURCE_NAME, params, IngredientsDataListStatus::class.java)
                 .getResult()
     }
@@ -82,8 +84,8 @@ class IngredientsRepository @Inject constructor(
         private const val FMP_MATERIAL_COMPLETE = "ZMP_UTZ_PRO_12_V001"
     }
 
-    internal class IngredientsListStatus : ObjectRawStatus<IngredientsListResult>()
-    internal class IngredientsDataListStatus : ObjectRawStatus<IngredientsDataListResult>()
+    internal class IngredientsListStatus : ObjectRawStatus<IngredientsListResultUI>()
+    internal class IngredientsDataListStatus : ObjectRawStatus<IngredientsDataListResultUI>()
     internal class UnlockOrderIngredientsDataStatus : ObjectRawStatus<UnblockOrderIngredientsResult>()
     internal class IngredientDataCompleteStatus : ObjectRawStatus<IngredientDataCompleteResult>()
 }
@@ -94,14 +96,14 @@ interface IIngredientsRepository {
      *
      * @param params - [GetIngredientsParams]
      */
-    suspend fun getAllIngredients(params: GetIngredientsParams): Either<Failure, IngredientsListResult>
+    suspend fun getAllIngredients(params: GetIngredientsParams): Either<Failure, IngredientsListResultUI>
 
     /**
      * Получение ингредиентов из заказа
      *
      * @param params - [GetIngredientDataParams]
      */
-    suspend fun getIngredientListData(params: GetIngredientDataParams): Either<Failure, IngredientsDataListResult>
+    suspend fun getIngredientListData(params: GetIngredientDataParams): Either<Failure, IngredientsDataListResultUI>
 
     /**
      * Разбокировка ингредиента после комплектации

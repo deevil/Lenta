@@ -43,18 +43,11 @@ class MaterialRemakesListViewModel : CoreViewModel() {
     lateinit var unblockIngredientNetRequest: UnblockIngredientNetRequest
 
     @Inject
-    lateinit var getEanIngredientData: GetEanIngredientsNetRequest
-
-    @Inject
     lateinit var warehouseStorage: IWarehousePersistStorage
 
     // выбранный ингредиент
     val ingredient by unsafeLazy {
         MutableLiveData<IngredientInfo>()
-    }
-
-    private val ingredientsDataListResult: MutableLiveData<IngredientsDataListResult> by unsafeLazy {
-        MutableLiveData<IngredientsDataListResult>()
     }
 
     private val allEanMaterialIngredients: MutableLiveData<List<OrderByBarcodeUI>> by unsafeLazy {
@@ -95,10 +88,10 @@ class MaterialRemakesListViewModel : CoreViewModel() {
         ).also {
             navigator.hideProgress()
         }
-        result.either(::handleFailure, ingredientsDataListResult::setValue)
-        ingredientsDataListResult.value?.let { ingredientsDataListResult ->
+        result.either(::handleFailure) { ingredientsDataListResult ->
             allMaterialIngredients.value = ingredientsDataListResult.materialsIngredientsDataInfoList
-            allEanMaterialIngredients.value = ingredientsDataListResult.orderByBarcode?.mapNotNull { it.convert() }
+            allEanMaterialIngredients.value = ingredientsDataListResult.orderByBarcode
+            Unit
         }
     }
 
