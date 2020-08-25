@@ -4,28 +4,22 @@ import androidx.lifecycle.MutableLiveData
 import com.lenta.bp16.model.movement.params.WarehouseParams
 import com.lenta.bp16.model.movement.result.WarehouseResult
 import com.lenta.bp16.model.movement.ui.ProducerUI
-import com.lenta.bp16.model.movement.ui.Warehouse
 import com.lenta.bp16.model.pojo.GoodParams
 import com.lenta.bp16.platform.Constants
 import com.lenta.bp16.platform.navigation.IScreenNavigator
 import com.lenta.bp16.repository.DatabaseRepository
-import com.lenta.bp16.repository.IRepoInMemoryHolder
 import com.lenta.bp16.request.MovementNetRequest
 import com.lenta.bp16.request.MovementParams
-import com.lenta.bp16.request.ProductInfoNetRequest
 import com.lenta.bp16.request.WarehouseNetRequest
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.models.core.Uom
 import com.lenta.shared.models.core.toUom
-import com.lenta.shared.platform.time.ITimeMonitor
 import com.lenta.shared.platform.viewmodel.CoreViewModel
-import com.lenta.shared.requests.network.ServerTimeRequest
+import com.lenta.shared.utilities.extentions.combineLatest
 import com.lenta.shared.utilities.extentions.launchUITryCatch
 import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.utilities.extentions.unsafeLazy
 import com.lenta.shared.view.OnPositionClickListener
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 class GoodInfoViewModel : CoreViewModel() {
@@ -55,15 +49,18 @@ class GoodInfoViewModel : CoreViewModel() {
 
     val selectedEan = MutableLiveData<String>()
 
+    private val proFillCond = MutableLiveData<String>()
+    val zPartFlag = MutableLiveData<Boolean>()
+
     /**Количество*/
     val quantityField = MutableLiveData("")
     val requestFocusQuantityField = MutableLiveData(true)
 
-    val warehouseResult: MutableLiveData<WarehouseResult> by unsafeLazy {
+    private val warehouseResult: MutableLiveData<WarehouseResult> by unsafeLazy {
         MutableLiveData<WarehouseResult>()
     }
 
-    val dateInfoSpinner = mutableListOf(PROD_DATE, SELF_LIFE)
+    private val dateInfoSpinner = mutableListOf(PROD_DATE, SELF_LIFE)
 
     /**Производитель*/
     private val producerList: MutableLiveData<ProducerUI> = MutableLiveData()
@@ -110,15 +107,29 @@ class GoodInfoViewModel : CoreViewModel() {
     /**Тара*/
     val containerField = MutableLiveData("")
 
-    val enabledCompleteButton = quantityField.map { !it.isNullOrBlank() }
+    val enabledCompleteButton: MutableLiveData<Boolean> = quantityField
+            .combineLatest(warehouseSender)
+            .combineLatest(warehouseReceiver)
+            .combineLatest(containerField)
+            .map {
+                val fillQuantity = it?.first?.first?.first
+                val fillWarehouseSender = it?.first?.first?.second
+                val fillWarehouseReceiver = it?.first?.second
+                val fillContainerField = it?.second
+                if (!proFillCond.value.isNullOrBlank())
+                    !(fillQuantity.isNullOrBlank() || fillWarehouseReceiver.isNullOrEmpty() || fillWarehouseSender.isNullOrEmpty() || fillContainerField.isNullOrEmpty())
+                else
+                    !(fillQuantity.isNullOrBlank() || fillWarehouseReceiver.isNullOrEmpty() || fillWarehouseSender.isNullOrEmpty())
+
+            }
 
     var suffix: MutableLiveData<String> = MutableLiveData(Uom.KG.name)
 
     init {
-        setProducerInfo()
-        setStockInfo()
         setGoodInfo()
         setDateInfo()
+        setProducerInfo()
+        setStockInfo()
         setContainerInfo()
     }
 
@@ -145,6 +156,7 @@ class GoodInfoViewModel : CoreViewModel() {
                     }
             quantityField.value = quantity.toString()
             suffix.value = uom
+            zPartFlag.value = goodParams.value?.zPart
         }
     }
 
@@ -157,7 +169,6 @@ class GoodInfoViewModel : CoreViewModel() {
     private fun setProducerInfo() {
         producerList.value = goodParams.value?.producers
         producerNameField.value = goodParams.value?.producers?.producerName
-
     }
 
     private fun setStockInfo() {
@@ -176,7 +187,7 @@ class GoodInfoViewModel : CoreViewModel() {
 
     private fun setContainerInfo() {
         launchUITryCatch {
-
+            proFillCond.value = database.getProFillCondition()
         }
     }
 
@@ -214,11 +225,6 @@ class GoodInfoViewModel : CoreViewModel() {
     }
 
     companion object {
-        const val CONST_VALUE_23 = "23"
-        const val CONST_VALUE_24 = "24"
-        const val CONST_VALUE_27 = "27"
-        const val CONST_VALUE_28 = "28"
-
         const val PROD_DATE = "Дата производства"
         const val SELF_LIFE = "Срок годности"
     }
