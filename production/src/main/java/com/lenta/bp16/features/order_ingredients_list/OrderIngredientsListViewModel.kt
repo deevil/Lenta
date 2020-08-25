@@ -8,7 +8,6 @@ import com.lenta.bp16.model.ingredients.params.GetIngredientDataParams
 import com.lenta.bp16.model.ingredients.params.UnblockIngredientsParams
 import com.lenta.bp16.model.ingredients.params.WarehouseParam
 import com.lenta.bp16.model.ingredients.ui.ItemOrderIngredientUi
-import com.lenta.bp16.model.ingredients.results.IngredientsDataListResult
 import com.lenta.bp16.model.ingredients.ui.OrderByBarcodeUI
 import com.lenta.bp16.model.warehouse.IWarehousePersistStorage
 import com.lenta.bp16.platform.extention.getFieldWithSuffix
@@ -16,12 +15,14 @@ import com.lenta.bp16.platform.extention.getItemName
 import com.lenta.bp16.platform.extention.getModeType
 import com.lenta.bp16.platform.navigation.IScreenNavigator
 import com.lenta.bp16.platform.resource.IResourceManager
-import com.lenta.bp16.request.GetEanIngredientsNetRequest
 import com.lenta.bp16.request.GetIngredientsDataListNetRequest
 import com.lenta.bp16.request.UnblockIngredientNetRequest
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.platform.viewmodel.CoreViewModel
-import com.lenta.shared.utilities.extentions.*
+import com.lenta.shared.utilities.extentions.asyncLiveData
+import com.lenta.shared.utilities.extentions.dropZeros
+import com.lenta.shared.utilities.extentions.launchUITryCatch
+import com.lenta.shared.utilities.extentions.unsafeLazy
 import javax.inject.Inject
 import kotlin.properties.Delegates
 
@@ -45,19 +46,12 @@ class OrderIngredientsListViewModel : CoreViewModel() {
     @Inject
     lateinit var getIngredientData: GetIngredientsDataListNetRequest
 
-    @Inject
-    lateinit var getEanIngredientData: GetEanIngredientsNetRequest
-
     // выбранное количество
     var weight: String by Delegates.notNull()
 
     // выбранный ингредиент
     val ingredient by unsafeLazy {
         MutableLiveData<IngredientInfo>()
-    }
-
-    private val ingredientsDataListResult: MutableLiveData<IngredientsDataListResult> by unsafeLazy {
-        MutableLiveData<IngredientsDataListResult>()
     }
 
     private val allOrderIngredients: MutableLiveData<List<OrderIngredientDataInfo>> by unsafeLazy {
@@ -75,16 +69,9 @@ class OrderIngredientsListViewModel : CoreViewModel() {
         val mode = ingredient.value?.getModeType().orEmpty()
         val warehouseList = warehouseStorage.getSelectedWarehouses().toList()
 
-        val lgort = when (mode) {
-            MODE_5 -> mutableListOf(WarehouseParam(ingredient.value?.lgort.orEmpty()))
-            MODE_6 -> mutableListOf(WarehouseParam(ingredient.value?.lgort.orEmpty()))
-            else -> {
-                val selectedWarehouseList = mutableListOf<WarehouseParam>()
-                for (element in warehouseList) {
-                    selectedWarehouseList.add(WarehouseParam(element))
-                }
-                selectedWarehouseList
-            }
+        val selectedWarehouseList = when (mode) {
+            MODE_5, MODE_6 -> mutableListOf(WarehouseParam(ingredient.value?.lgort.orEmpty()))
+            else -> warehouseList.mapTo(mutableListOf()) { WarehouseParam(it) }
         }
 
         val result = getIngredientData(
@@ -94,16 +81,16 @@ class OrderIngredientsListViewModel : CoreViewModel() {
                         code = code,
                         mode = mode,
                         weight = weight,
-                        warehouse = lgort
+                        warehouse = selectedWarehouseList
                 )
 
         ).also {
             navigator.hideProgress()
         }
-        result.either(::handleFailure, ingredientsDataListResult::setValue)
-        ingredientsDataListResult.value?.let { ingredientsDataListResult ->
-            allEanIngredients.value = ingredientsDataListResult.orderByBarcode?.mapNotNull { it.convert() }
+        result.either(::handleFailure) { ingredientsDataListResult ->
+            allEanIngredients.value = ingredientsDataListResult.orderByBarcode
             allOrderIngredients.value = ingredientsDataListResult.ordersIngredientsDataInfoList
+            Unit
         }
     }
 
@@ -149,5 +136,4 @@ class OrderIngredientsListViewModel : CoreViewModel() {
         const val MODE_5 = "5"
         const val MODE_6 = "6"
     }
-
 }

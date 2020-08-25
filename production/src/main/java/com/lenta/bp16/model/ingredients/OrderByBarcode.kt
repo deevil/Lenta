@@ -30,23 +30,23 @@ data class OrderByBarcode(
         /** Знаменатель при пересчете в базисные единицы измерения */
         @SerializedName("EAN_UMREN")
         val ean_umren: String?
-) : Parcelable, IConvertable<OrderByBarcodeUI?>
-{
-        companion object{
-                const val KAR = "KAR"
-                const val ST = "ST"
-                const val KG = "KG"
-        }
+) : Parcelable, IConvertable<OrderByBarcodeUI?> {
 
-        override fun convert(): OrderByBarcodeUI? {
-                return matnr?.run {
-                        OrderByBarcodeUI(
-                                matnr = matnr,
-                                ean = ean.orEmpty(),
-                                ean_nom = ean_nom.orEmpty(),
-                                ean_umren = ean_umren.orEmpty(),
-                                ean_umrez = ean_umrez.orEmpty()
-                        )
-                }
+    override fun convert(): OrderByBarcodeUI? {
+        return matnr?.run {
+            OrderByBarcodeUI(
+                    matnr = matnr,
+                    ean = ean.orEmpty(),
+                    ean_nom = ean_nom.orEmpty(),
+                    ean_umren = ean_umren.orEmpty(),
+                    ean_umrez = ean_umrez.orEmpty()
+            )
         }
+    }
+
+    companion object {
+        const val KAR = "KAR"
+        const val ST = "ST"
+        const val KG = "KG"
+    }
 }

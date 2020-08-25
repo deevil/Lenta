@@ -11,4 +11,6 @@ interface IReceivingTaskManager {
     fun clearTask()
 
     fun setTask(receivingTask: ReceivingTask?)
+
+    fun getTaskType() : TaskType
 }
