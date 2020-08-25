@@ -50,6 +50,7 @@
     <string name="processing_es">Обработка ВП</string>
     <string name="enter_number_es">Введите номер ВП</string>
     <string name="enter_number_pu">Введите номер ЕО</string>
+    <string name="scan_barcode">Отсканируйте штрихкод</string>
     <string name="fact">Факт</string>
     <string name="total">Итого</string>
     <string name="planed_quantity">План на передел</string>
@@ -70,6 +71,10 @@
     <string name="preparation_ingredients">Подготовка ингредиентов</string>
     <string name="tw_alert_part_not_found">Отсканированная партия не найдена в системе. Отложите товар и проведите инвентаризацию.</string>
     <string name="tw_alert_good_not_found">Данный товар не найден</string>
+    <string name="tw_alert_ingredient_not_found">Ингредиент не найден</string>
+    <string name="tw_alert_ingredient_not_found_in_position">Ингредиент не найден в данной позиции</string>
+    <string name="tw_alert_dualism">Отсканированный товар может быть обработан как в рамках заказа, так и в рамках передела. Выберите режим обработки вручную</string>
+    <string name="tw_alert_good_not_found_in_current_shift">Отсканированный товар не найден в ингредиентах на текущую смену</string>
     <string name="tw_moving_successful">Перемещение товара выполнено</string>
     <string name="tw_exceeded_limit">Превышено количество по партии</string>
     <string name="title_good_sap_name">%1$s %2$s</string>
@@ -100,8 +105,8 @@
     <string name="text_complect">Комплектация</string>
     <string name="text_weight_hint">кг</string>
     <string name="text_pf">ПФ</string>
-    <string name="text_pf_plan">ПФ План (кг)</string>
-    <string name="text_already">Скомплектовано (кг)</string>
+    <string name="text_pf_plan">ПФ План</string>
+    <string name="text_already">Скомплектовано</string>
     <string name="text_warehouse">Склад</string>
     <string name="error_weight_not_set">Вы не указали значение: количество</string>
 

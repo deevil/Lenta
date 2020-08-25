@@ -6,12 +6,15 @@ import com.lenta.bp16.model.ingredients.IngredientInfo
 import com.lenta.bp16.model.ingredients.MaterialIngredientDataInfo
 import com.lenta.bp16.model.ingredients.params.GetIngredientDataParams
 import com.lenta.bp16.model.ingredients.params.UnblockIngredientsParams
+import com.lenta.bp16.model.ingredients.params.WarehouseParam
 import com.lenta.bp16.model.ingredients.ui.ItemMaterialIngredientUi
+import com.lenta.bp16.model.ingredients.ui.OrderByBarcodeUI
+import com.lenta.bp16.model.warehouse.IWarehousePersistStorage
 import com.lenta.bp16.platform.extention.getFieldWithSuffix
 import com.lenta.bp16.platform.extention.getModeType
 import com.lenta.bp16.platform.navigation.IScreenNavigator
 import com.lenta.bp16.platform.resource.IResourceManager
-import com.lenta.bp16.request.GetMaterialIngredientsDataNetRequest
+import com.lenta.bp16.request.GetIngredientsDataListNetRequest
 import com.lenta.bp16.request.UnblockIngredientNetRequest
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.platform.viewmodel.CoreViewModel
@@ -32,14 +35,21 @@ class MaterialRemakesListViewModel : CoreViewModel() {
     lateinit var resourceManager: IResourceManager
 
     @Inject
-    lateinit var getIngredientData: GetMaterialIngredientsDataNetRequest
+    lateinit var getIngredientDataList: GetIngredientsDataListNetRequest
 
     @Inject
     lateinit var unblockIngredientNetRequest: UnblockIngredientNetRequest
 
+    @Inject
+    lateinit var warehouseStorage: IWarehousePersistStorage
+
     // выбранный ингредиент
     val ingredient by unsafeLazy {
         MutableLiveData<IngredientInfo>()
+    }
+
+    private val allEanMaterialIngredients: MutableLiveData<List<OrderByBarcodeUI>> by unsafeLazy {
+        MutableLiveData<List<OrderByBarcodeUI>>()
     }
 
     private val allMaterialIngredients: MutableLiveData<List<MaterialIngredientDataInfo>> by unsafeLazy {
@@ -56,22 +66,30 @@ class MaterialRemakesListViewModel : CoreViewModel() {
 
         val code = ingredient.value?.code.orEmpty()
         val mode = ingredient.value?.getModeType().orEmpty()
+        val warehouseList = warehouseStorage.getSelectedWarehouses().toList()
 
-        val result = getIngredientData(
+        val selectedWarehouseList = when (mode) {
+            MODE_5, MODE_6 -> mutableListOf(WarehouseParam(ingredient.value?.lgort.orEmpty()))
+            else -> warehouseList.mapTo(mutableListOf()) { WarehouseParam(it) }
+        }
+
+        val result = getIngredientDataList(
                 params = GetIngredientDataParams(
                         tkMarket = sessionInfo.market.orEmpty(),
                         deviceIP = resourceManager.deviceIp,
                         code = code,
                         mode = mode,
-                        weight = ""
+                        weight = "",
+                        warehouse = selectedWarehouseList
                 )
         ).also {
             navigator.hideProgress()
         }
-        result.either(::handleFailure, fnR = {
-            allMaterialIngredients.value = it
-            it
-        })
+        result.either(::handleFailure) { ingredientsDataListResult ->
+            allMaterialIngredients.value = ingredientsDataListResult.materialsIngredientsDataInfoList
+            allEanMaterialIngredients.value = ingredientsDataListResult.orderByBarcode
+            Unit
+        }
     }
 
     val materialIngredients by unsafeLazy {
@@ -80,7 +98,7 @@ class MaterialRemakesListViewModel : CoreViewModel() {
                 emit(it.mapIndexed { index, materialIngredientDataInfo ->
                     ItemMaterialIngredientUi(
                             lgort = materialIngredientDataInfo.lgort.orEmpty(),
-                            desc = materialIngredientDataInfo.name.orEmpty(),
+                            desc = materialIngredientDataInfo.ltxa1.orEmpty(),
                             position = (index + 1).toString(),
                             plan = getFieldWithSuffix(materialIngredientDataInfo.plan_qnt, suffix),
                             fact = getFieldWithSuffix(materialIngredientDataInfo.done_qnt, suffix)
@@ -95,21 +113,26 @@ class MaterialRemakesListViewModel : CoreViewModel() {
         unblockIngredientNetRequest(
                 params = UnblockIngredientsParams(
                         code = ingredient.value?.code.orEmpty(),
-                        mode = UnblockIngredientsParams.MODE_UNBLOCK_VP
+                        mode = UnblockIngredientsParams.MODE_UNBLOCK_MATERIAL
                 )
         ).also {
             navigator.hideProgress()
             navigator.goBack()
-        }.either(fnL = ::handleFailure)
+        }.either(::handleFailure)
     }
 
     fun onClickItemPosition(position: Int) {
         allMaterialIngredients.value?.getOrNull(position)?.let { selectedMaterial ->
             val code = ingredient.value?.getFormattedCode().orEmpty()
             val name = ingredient.value?.nameMatnrOsn.orEmpty()
-            navigator.openMaterialRemakeDetailsScreen(selectedMaterial, code, name)
-        } ?: navigator.showAlertPartNotFound {
+            allEanMaterialIngredients.value?.getOrNull(position)?.let { barcode ->
+                navigator.openMaterialRemakeDetailsScreen(selectedMaterial, code, name, barcode)
+            }
+        } ?: navigator.showAlertPartNotFound()
+    }
 
-        }
+    companion object {
+        const val MODE_5 = "5"
+        const val MODE_6 = "6"
     }
 }

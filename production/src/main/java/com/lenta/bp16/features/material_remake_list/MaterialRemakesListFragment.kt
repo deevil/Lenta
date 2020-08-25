@@ -43,14 +43,15 @@ class MaterialRemakesListFragment : CoreFragment<FragmentRemakesByMaterialBindin
         }
     }
 
-    init {
-        lifecycleScope.launchWhenResumed {
-            vm.loadMaterialIngredients()
-        }
+    override fun onResume() {
+        super.onResume()
+        vm.loadMaterialIngredients()
     }
 
     override fun setupTopToolBar(topToolbarUiModel: TopToolbarUiModel) {
-        topToolbarUiModel.title.value = "${ingredientInfo.getFormattedCode().orEmpty()} ${ingredientInfo.nameMatnrOsn}"
+        val material = ingredientInfo.getFormattedCode()
+        val productName = ingredientInfo.text1?.substring(6)?.trim()
+        topToolbarUiModel.title.value = "$material $productName"
         topToolbarUiModel.description.value = getString(R.string.desc_remakes_list)
     }
 

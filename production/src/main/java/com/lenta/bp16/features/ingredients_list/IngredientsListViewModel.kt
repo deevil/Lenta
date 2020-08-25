@@ -4,10 +4,20 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.switchMap
 import com.lenta.bp16.features.ingredients_list.IngredientsListFragment.Companion.TAB_BY_MATERIALS
 import com.lenta.bp16.features.ingredients_list.IngredientsListFragment.Companion.TAB_BY_ORDER
+import com.lenta.bp16.model.SearchStatus
+import com.lenta.bp16.model.ingredients.GoodByOrder
 import com.lenta.bp16.model.ingredients.IngredientInfo
 import com.lenta.bp16.model.ingredients.params.GetIngredientsParams
 import com.lenta.bp16.model.ingredients.params.WarehouseParam
+import com.lenta.bp16.model.ingredients.results.IngredientsListResult
+import com.lenta.bp16.model.ingredients.ui.IngredientsListResultUI
 import com.lenta.bp16.model.ingredients.ui.ItemIngredientUi
+import com.lenta.bp16.model.ingredients.ui.OrderByBarcodeUI
+import com.lenta.bp16.model.ingredients.ui.OrderByBarcodeUI.Companion.EAN_NOM
+import com.lenta.bp16.model.ingredients.ui.OrderByBarcodeUI.Companion.EAN_UMREN
+import com.lenta.bp16.model.ingredients.ui.OrderByBarcodeUI.Companion.EAN_UMREZ
+import com.lenta.bp16.model.ingredients.ui.OrderByBarcodeUI.Companion.FAKE_EAN
+import com.lenta.bp16.model.ingredients.ui.OrderByBarcodeUI.Companion.FAKE_MATNR
 import com.lenta.bp16.model.warehouse.IWarehousePersistStorage
 import com.lenta.bp16.platform.extention.getIngredientStatus
 import com.lenta.bp16.platform.navigation.IScreenNavigator
@@ -15,12 +25,14 @@ import com.lenta.bp16.platform.resource.IResourceManager
 import com.lenta.bp16.request.GetIngredientsNetRequest
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.platform.viewmodel.CoreViewModel
-import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
 import com.lenta.shared.utilities.databinding.PageSelectionListener
 import com.lenta.shared.utilities.extentions.asyncLiveData
 import com.lenta.shared.utilities.extentions.launchUITryCatch
 import com.lenta.shared.utilities.extentions.unsafeLazy
+import com.lenta.shared.utilities.orIfNull
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 class IngredientsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyboardListener {
@@ -44,15 +56,22 @@ class IngredientsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInS
     val numberField by unsafeLazy { MutableLiveData<String>("") }
     val requestFocusToNumberField by unsafeLazy { MutableLiveData(true) }
     val marketNumber by unsafeLazy { sessionInfo.market }
+    private val selectedMatnr by unsafeLazy { MutableLiveData<String>("") }
 
-    /**Три списка, которые по хорошему должны получаться по одному запросу*/
-
-    private val allIngredients: MutableLiveData<List<IngredientInfo>> by unsafeLazy {
+    private val allIngredientsInfo: MutableLiveData<List<IngredientInfo>> by unsafeLazy {
         MutableLiveData<List<IngredientInfo>>()
     }
 
+    private val allIngredientsEanInfo: MutableLiveData<List<OrderByBarcodeUI>> by unsafeLazy {
+        MutableLiveData<List<OrderByBarcodeUI>>()
+    }
+
+    private val goodsByOrderList: MutableLiveData<List<GoodByOrder>> by unsafeLazy {
+        MutableLiveData<List<GoodByOrder>>()
+    }
+
     val ingredientsByOrder by unsafeLazy {
-        allIngredients.switchMap {
+        allIngredientsInfo.switchMap {
             asyncLiveData<List<ItemIngredientUi>> {
                 emit(filterIngredientsBy(it, IngredientInfo.TYPE_ORDER))
             }
@@ -60,7 +79,7 @@ class IngredientsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInS
     }
 
     val ingredientsByMaterial by unsafeLazy {
-        allIngredients.switchMap {
+        allIngredientsInfo.switchMap {
             asyncLiveData<List<ItemIngredientUi>> {
                 emit(filterIngredientsBy(it, IngredientInfo.TYPE_MATERIAL))
             }
@@ -68,17 +87,21 @@ class IngredientsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInS
     }
 
     fun loadIngredients() {
+        navigator.showProgressLoadingData()
         launchUITryCatch {
-            navigator.showProgressLoadingData()
             getIngredientsRequest(
                     GetIngredientsParams(
                             tkMarket = sessionInfo.market.orEmpty(),
                             deviceIP = resourceManager.deviceIp,
                             workhousesList = warehouseStorage.getSelectedWarehouses().map { WarehouseParam(it) }
                     )
-            ).also {
-                navigator.hideProgress()
-            }.either(::handleFailure, allIngredients::setValue)
+            ).either(::handleFailure) { ingredientListResult ->
+                allIngredientsInfo.value = ingredientListResult.ingredientsList
+                allIngredientsEanInfo.value = ingredientListResult.goodsEanList
+                goodsByOrderList.value = ingredientListResult.goodsListByOrder
+                Unit
+            }
+            navigator.hideProgress()
         }
     }
 
@@ -104,8 +127,47 @@ class IngredientsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInS
     }
 
     override fun onOkInSoftKeyboard(): Boolean {
-
+        searchByBarcode()
         return true
+    }
+
+    fun searchByBarcode() {
+        launchUITryCatch {
+            navigator.showProgressLoadingData()
+            /**Поиск отсканированного ШК в данных интерфейса ZMP_UTZ_PRO_10_V001*/
+            val searchStatus = withContext(Dispatchers.IO) {
+                var status = SearchStatus.NOT_FOUND
+                allIngredientsEanInfo.value?.find { numberField.value == it.ean }?.let { ean ->
+                    selectedMatnr.value = ean.matnr
+
+                    /**Поиск вхождения в список материалов*/
+                    allIngredientsInfo.value?.find { it.code == selectedMatnr.value }?.let {
+                        status = SearchStatus.FOUND_INGREDIENT
+                    }
+                    /**Поиск вхождения в список заказов*/
+                    goodsByOrderList.value?.find { it.matnr == selectedMatnr.value }?.let {
+                        if (status == SearchStatus.FOUND_INGREDIENT)
+                            status = SearchStatus.DUALISM
+                        status = SearchStatus.FOUND_ORDER
+                    }
+                }
+                return@withContext status
+            }
+
+            navigator.hideProgress()
+
+            /*when (searchStatus) {
+                SearchStatus.DUALISM -> navigator.showAlertDualism()
+                SearchStatus.FOUND_INGREDIENT -> allIngredients.value?.find { it.code == selectedMatnr.value }?.let { selectedIngredient ->
+                    navigator.openOrderDetailsScreen(selectedIngredient, barcode)
+                }
+                SearchStatus.FOUND_ORDER -> allIngredients.value?.find { it.code == selectedMatnr.value }?.let { selectedIngredient ->
+                    navigator.openMaterialRemakesScreen(selectedIngredient)
+                }
+                SearchStatus.NOT_FOUND -> navigator.showAlertGoodNotFoundInCurrentShift()
+            }*/
+
+        }
     }
 
     fun onClickMenu() {
@@ -119,9 +181,20 @@ class IngredientsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInS
                 TAB_BY_MATERIALS -> ingredientsByMaterial.value?.get(position)
                 else -> null
             }?.let { ingredientUI ->
-                allIngredients.value?.find { it.code == ingredientUI.code }?.let { selectedIngredient ->
+                allIngredientsInfo.value?.find { it.code == ingredientUI.code }?.let { selectedIngredient ->
+                    val positionInList = ingredientUI.position.toInt()
                     if (selectedIngredient.isByOrder) {
-                        navigator.openOrderDetailsScreen(selectedIngredient)
+                        val barcode = allIngredientsEanInfo.value?.getOrNull(positionInList)
+                                .orIfNull {
+                                    OrderByBarcodeUI(
+                                            matnr = FAKE_MATNR,
+                                            ean = FAKE_EAN,
+                                            ean_nom = EAN_NOM,
+                                            ean_umrez = EAN_UMREZ,
+                                            ean_umren = EAN_UMREN
+                                    )
+                                }
+                        navigator.openOrderDetailsScreen(selectedIngredient, barcode)
                     } else {
                         navigator.openMaterialRemakesScreen(selectedIngredient)
                     }
@@ -132,5 +205,10 @@ class IngredientsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInS
 
     fun onRefreshClicked() {
         loadIngredients()
+    }
+
+    fun onScanResult(data: String) {
+        numberField.value = data
+        searchByBarcode()
     }
 }

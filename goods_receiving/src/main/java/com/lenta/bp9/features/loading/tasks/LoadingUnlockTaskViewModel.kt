@@ -37,8 +37,8 @@ class LoadingUnlockTaskViewModel : CoreLoadingViewModel() {
             progress.value = true
             val params = UnlockTaskRequestParameters(
                     deviceIP = context.getDeviceIp(),
-                    personalNumber = sessionInfo.personnelNumber ?: "",
-                    taskNumber = taskManager.getReceivingTask()?.taskHeader?.taskNumber ?: ""
+                    personalNumber = sessionInfo.personnelNumber.orEmpty(),
+                    taskNumber = taskManager.getReceivingTask()?.taskHeader?.taskNumber.orEmpty()
             )
             unlockTaskRequest(params).either(::handleFailure, ::handleSuccess)
             progress.value = false
@@ -51,8 +51,8 @@ class LoadingUnlockTaskViewModel : CoreLoadingViewModel() {
     }
 
     private fun handleSuccess(result: UnlockTaskRequestResult) {
-        when (taskManager.getReceivingTask()?.taskHeader?.taskType) {
-            TaskType.DirectSupplier, TaskType.ReceptionDistributionCenter, TaskType.OwnProduction -> screenNavigator.openTaskListLoadingScreen(TaskListLoadingMode.Receiving) // ППП\ПРЦ\ПСП
+        when (taskManager.getTaskType()) {
+            TaskType.DirectSupplier, TaskType.ReceptionDistributionCenter, TaskType.OwnProduction, TaskType.ShoppingMall -> screenNavigator.openTaskListLoadingScreen(TaskListLoadingMode.Receiving) // ППП\ПРЦ\ПСП\ПТК
             TaskType.RecalculationCargoUnit -> screenNavigator.openTaskListLoadingScreen(TaskListLoadingMode.PGE) //ПГЕ
             TaskType.ShipmentPP, TaskType.ShipmentRC -> screenNavigator.openTaskListLoadingScreen(TaskListLoadingMode.Shipment) //Отгрузка ПП или Отгрузка РЦ
             else -> screenNavigator.openTaskListLoadingScreen(TaskListLoadingMode.None)

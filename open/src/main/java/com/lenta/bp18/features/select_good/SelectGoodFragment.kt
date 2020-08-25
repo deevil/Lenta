@@ -31,6 +31,11 @@ class SelectGoodFragment : CoreFragment<FragmentSelectGoodsBinding, SelectGoodVi
         }
     }
 
+    override fun onResume() {
+        super.onResume()
+        vm.requestFocusToBarcode.value = true
+    }
+
     override fun setupTopToolBar(topToolbarUiModel: TopToolbarUiModel) {
         topToolbarUiModel.title.value = requireContext().getAppInfo()
         topToolbarUiModel.description.value = getString(R.string.select_goods)

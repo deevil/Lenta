@@ -6,6 +6,8 @@ import androidx.lifecycle.lifecycleScope
 import com.lenta.bp16.R
 import com.lenta.bp16.databinding.FragmentIngredientDetailsBinding
 import com.lenta.bp16.model.ingredients.OrderIngredientDataInfo
+import com.lenta.bp16.model.ingredients.OrderByBarcode
+import com.lenta.bp16.model.ingredients.ui.OrderByBarcodeUI
 import com.lenta.bp16.platform.extention.getAppComponent
 import com.lenta.shared.platform.activity.OnBackPresserListener
 import com.lenta.shared.platform.fragment.CoreFragment
@@ -13,11 +15,12 @@ import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListener
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
+import com.lenta.shared.scan.OnScanResultListener
 import com.lenta.shared.utilities.extentions.provideViewModel
 import com.lenta.shared.utilities.extentions.unsafeLazy
 
 class IngredientDetailsFragment : CoreFragment<FragmentIngredientDetailsBinding, IngredientDetailsViewModel>(),
-        ToolbarButtonsClickListener, OnBackPresserListener {
+        ToolbarButtonsClickListener, OnBackPresserListener, OnScanResultListener {
 
     override fun getLayoutId(): Int {
         return R.layout.fragment_ingredient_details
@@ -32,10 +35,16 @@ class IngredientDetailsFragment : CoreFragment<FragmentIngredientDetailsBinding,
                 ?: throw IllegalArgumentException("There is no argument value with key $KEY_INGREDIENT")
     }
 
+    private val eanInfo: OrderByBarcodeUI by unsafeLazy {
+        arguments?.getParcelable<OrderByBarcodeUI>(KEY_EAN_INFO)
+                ?: throw IllegalArgumentException("There is no argument value with key $KEY_EAN_INFO")
+    }
+
     override fun getViewModel(): IngredientDetailsViewModel {
         provideViewModel(IngredientDetailsViewModel::class.java).let {
             getAppComponent()?.inject(it)
             it.orderIngredient.value = orderIngredientDataInfo
+            it.eanInfo.value = eanInfo
             it.parentCode = arguments?.getString(KEY_PARENT_CODE, "").orEmpty()
             return it
         }
@@ -76,14 +85,19 @@ class IngredientDetailsFragment : CoreFragment<FragmentIngredientDetailsBinding,
         return false
     }
 
+    override fun onScanResult(data: String) {
+        vm.onScanResult(data)
+    }
+
     companion object {
         private const val SCREEN_NUMBER = "16/83"
         private const val KEY_INGREDIENT = "KEY_INGREDIENT"
         private const val KEY_PARENT_CODE = "KEY_PARENT_CODE"
+        private const val KEY_EAN_INFO = "KEY_EAN_INFO"
 
-        fun newInstance(selectedIngredient: OrderIngredientDataInfo, parentCode: String): IngredientDetailsFragment {
+        fun newInstance(selectedIngredient: OrderIngredientDataInfo, parentCode: String, eanInfo: OrderByBarcodeUI): IngredientDetailsFragment {
             return IngredientDetailsFragment().apply {
-                arguments = bundleOf(KEY_INGREDIENT to selectedIngredient, KEY_PARENT_CODE to parentCode)
+                arguments = bundleOf(KEY_INGREDIENT to selectedIngredient, KEY_PARENT_CODE to parentCode, KEY_EAN_INFO to eanInfo)
             }
         }
     }

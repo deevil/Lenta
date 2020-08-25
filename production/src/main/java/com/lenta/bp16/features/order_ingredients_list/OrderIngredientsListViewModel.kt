@@ -6,17 +6,23 @@ import com.lenta.bp16.model.ingredients.IngredientInfo
 import com.lenta.bp16.model.ingredients.OrderIngredientDataInfo
 import com.lenta.bp16.model.ingredients.params.GetIngredientDataParams
 import com.lenta.bp16.model.ingredients.params.UnblockIngredientsParams
+import com.lenta.bp16.model.ingredients.params.WarehouseParam
 import com.lenta.bp16.model.ingredients.ui.ItemOrderIngredientUi
+import com.lenta.bp16.model.ingredients.ui.OrderByBarcodeUI
+import com.lenta.bp16.model.warehouse.IWarehousePersistStorage
 import com.lenta.bp16.platform.extention.getFieldWithSuffix
 import com.lenta.bp16.platform.extention.getItemName
 import com.lenta.bp16.platform.extention.getModeType
 import com.lenta.bp16.platform.navigation.IScreenNavigator
 import com.lenta.bp16.platform.resource.IResourceManager
-import com.lenta.bp16.request.GetOrderIngredientsDataNetRequest
+import com.lenta.bp16.request.GetIngredientsDataListNetRequest
 import com.lenta.bp16.request.UnblockIngredientNetRequest
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.platform.viewmodel.CoreViewModel
-import com.lenta.shared.utilities.extentions.*
+import com.lenta.shared.utilities.extentions.asyncLiveData
+import com.lenta.shared.utilities.extentions.dropZeros
+import com.lenta.shared.utilities.extentions.launchUITryCatch
+import com.lenta.shared.utilities.extentions.unsafeLazy
 import javax.inject.Inject
 import kotlin.properties.Delegates
 
@@ -34,6 +40,12 @@ class OrderIngredientsListViewModel : CoreViewModel() {
     @Inject
     lateinit var unblockIngredientNetRequest: UnblockIngredientNetRequest
 
+    @Inject
+    lateinit var warehouseStorage: IWarehousePersistStorage
+
+    @Inject
+    lateinit var getIngredientData: GetIngredientsDataListNetRequest
+
     // выбранное количество
     var weight: String by Delegates.notNull()
 
@@ -42,11 +54,12 @@ class OrderIngredientsListViewModel : CoreViewModel() {
         MutableLiveData<IngredientInfo>()
     }
 
-    @Inject
-    lateinit var getIngredientData: GetOrderIngredientsDataNetRequest
-
     private val allOrderIngredients: MutableLiveData<List<OrderIngredientDataInfo>> by unsafeLazy {
         MutableLiveData<List<OrderIngredientDataInfo>>()
+    }
+
+    private val allEanIngredients: MutableLiveData<List<OrderByBarcodeUI>> by unsafeLazy {
+        MutableLiveData<List<OrderByBarcodeUI>>()
     }
 
     fun loadOrderIngredientsList() = launchUITryCatch {
@@ -54,6 +67,12 @@ class OrderIngredientsListViewModel : CoreViewModel() {
 
         val code = ingredient.value?.code.orEmpty()
         val mode = ingredient.value?.getModeType().orEmpty()
+        val warehouseList = warehouseStorage.getSelectedWarehouses().toList()
+
+        val selectedWarehouseList = when (mode) {
+            MODE_5, MODE_6 -> mutableListOf(WarehouseParam(ingredient.value?.lgort.orEmpty()))
+            else -> warehouseList.mapTo(mutableListOf()) { WarehouseParam(it) }
+        }
 
         val result = getIngredientData(
                 params = GetIngredientDataParams(
@@ -61,15 +80,18 @@ class OrderIngredientsListViewModel : CoreViewModel() {
                         deviceIP = resourceManager.deviceIp,
                         code = code,
                         mode = mode,
-                        weight = weight
+                        weight = weight,
+                        warehouse = selectedWarehouseList
                 )
+
         ).also {
             navigator.hideProgress()
         }
-        result.either(::handleFailure, fnR = {
-            allOrderIngredients.value = it
+        result.either(::handleFailure) { ingredientsDataListResult ->
+            allEanIngredients.value = ingredientsDataListResult.orderByBarcode
+            allOrderIngredients.value = ingredientsDataListResult.ordersIngredientsDataInfoList
             Unit
-        })
+        }
     }
 
     val orderIngredientsList by unsafeLazy {
@@ -92,7 +114,7 @@ class OrderIngredientsListViewModel : CoreViewModel() {
         unblockIngredientNetRequest(
                 params = UnblockIngredientsParams(
                         code = ingredient.value?.code.orEmpty(),
-                        mode = UnblockIngredientsParams.MODE_UNBLOCK_VP
+                        mode = UnblockIngredientsParams.MODE_UNBLOCK_ORDER
                 )
         ).also {
             navigator.hideProgress()
@@ -102,9 +124,16 @@ class OrderIngredientsListViewModel : CoreViewModel() {
 
     fun onClickItemPosition(position: Int) {
         ingredient.value?.let { selectedIngredient ->
-            allOrderIngredients.value?.getOrNull(position)?.let {
-                navigator.openIngredientDetailsScreen(it, selectedIngredient.text3.orEmpty())
-            }
+            allOrderIngredients.value?.getOrNull(position)?.let { orderDataInfo ->
+                allEanIngredients.value?.getOrNull(position)?.let { barcode ->
+                    navigator.openIngredientDetailsScreen(orderDataInfo, selectedIngredient.text3.orEmpty(), barcode)
+                } ?: navigator.showNotFoundedBarcodeForPosition()
+            } ?: navigator.showAlertIngredientNotFound()
         }
+    }
+
+    companion object {
+        const val MODE_5 = "5"
+        const val MODE_6 = "6"
     }
 }

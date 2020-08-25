@@ -5,6 +5,13 @@ import java.util.*
 import kotlin.math.min
 
 object EAN128Parser {
+
+    private const val FORMAT_AI = "%s [%s]"
+    private const val EAN_WEIGHT_PREFIX = "0"
+
+    const val EAN_01 = "01"
+    const val EAN_02 = "02"
+
     enum class DataType {
         Numeric, Alphanumeric
     }
@@ -12,7 +19,7 @@ object EAN128Parser {
     class AII(var AI: String, var Description: String, var LengthOfAI: Int, var DataDescription: DataType, var LengthOfData: Int,
               var FNC1: Boolean) {
         override fun toString(): String {
-            return String.format("%s [%s]", AI, Description)
+            return String.format(FORMAT_AI, AI, Description)
         }
     }
 
@@ -27,9 +34,40 @@ object EAN128Parser {
         aiiDict[ai] = AII(ai, description, lengthOfAI, dataDescription, lengthOfData, fnc1)
     }
 
+    /**
+     * Main Parsing barcode function
+     *
+     * @param barcode [String] - scanned barcode
+     * @param ai [String] - constant for GS1 identificator can be 01, 02
+     * @param throwException [Boolean] - need to throw exception if code doesn't find
+     *
+     * @return [String] - optional value of finded code
+     */
     @Throws(InvalidObjectException::class)
-    fun parse(data: String, throwException: Boolean): Map<AII, String> {
-        var localData = data.replace("(", "").replace(")", "")
+    fun parseWith(barcode: String, ai: String = EAN_01, throwException: Boolean = false): String? {
+        var parsedBarcode: String? = null
+        val ean128Barcode = parse(barcode, throwException).entries.find { pair ->
+            pair.key.AI == ai
+        }?.value
+        if (ean128Barcode != null) {
+            parsedBarcode = if (ean128Barcode.first().toString() == EAN_WEIGHT_PREFIX) {
+                ean128Barcode.substring(1..barcode.length)
+            } else {
+                ean128Barcode
+            }
+        }
+        return parsedBarcode
+    }
+
+    /**
+     * Parsing function to get all entities for barcode
+     * @param barcode [String] - scanned barcode
+     *
+     * @return [HashMap] - hash map with AII and codes
+     */
+    @Throws(InvalidObjectException::class)
+    fun parse(barcode: String, throwException: Boolean): Map<AII, String> {
+        var localData = barcode.replace("(", "").replace(")", "")
         // cut off the EAN128 start code
         if (localData.startsWith(eAN128StartCode)) {
             localData = localData.substring(eAN128StartCode.length)

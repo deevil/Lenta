@@ -32,6 +32,8 @@ import com.lenta.bp16.features.warehouse_selection.WarehouseSelectionFragment
 import com.lenta.bp16.model.ingredients.IngredientInfo
 import com.lenta.bp16.model.ingredients.MaterialIngredientDataInfo
 import com.lenta.bp16.model.ingredients.OrderIngredientDataInfo
+import com.lenta.bp16.model.ingredients.OrderByBarcode
+import com.lenta.bp16.model.ingredients.ui.OrderByBarcodeUI
 import com.lenta.bp16.model.pojo.GoodParams
 import com.lenta.bp16.platform.Constants
 import com.lenta.shared.account.IAuthenticator
@@ -189,28 +191,28 @@ class ScreenNavigator @Inject constructor(
         }
     }
 
-    override fun openOrderDetailsScreen(selectedIngredient: IngredientInfo) {
-        getFragmentStack()?.push(OrderDetailsFragment.newInstance(selectedIngredient))
+    override fun openOrderDetailsScreen(selectedIngredient: IngredientInfo, barcode: OrderByBarcodeUI) {
+        getFragmentStack()?.push(OrderDetailsFragment.newInstance(selectedIngredient, barcode))
     }
 
     override fun openOrderIngredientsListScreen(weight: String, selectedIngredient: IngredientInfo) {
         getFragmentStack()?.push(OrderIngredientsListFragment.newInstance(weight, selectedIngredient))
     }
 
-    override fun openIngredientDetailsScreen(selectedIngredient: OrderIngredientDataInfo, parentCode: String) {
-        getFragmentStack()?.push(IngredientDetailsFragment.newInstance(selectedIngredient, parentCode))
+    override fun openIngredientDetailsScreen(selectedIngredient: OrderIngredientDataInfo, parentCode: String, eanInfo: OrderByBarcodeUI) {
+        getFragmentStack()?.push(IngredientDetailsFragment.newInstance(selectedIngredient, parentCode,eanInfo))
     }
 
     override fun openMaterialRemakesScreen(selectedIngredient: IngredientInfo) {
         getFragmentStack()?.push(MaterialRemakesListFragment.newInstance(selectedIngredient))
     }
 
-    override fun openMaterialRemakeDetailsScreen(selectedMaterial: MaterialIngredientDataInfo, parentCode: String, parentName: String) {
-        getFragmentStack()?.push(MaterialRemakeDetailsFragment.newInstance(selectedMaterial, parentCode, parentName))
+    override fun openMaterialRemakeDetailsScreen(selectedMaterial: MaterialIngredientDataInfo, parentCode: String, parentName: String, barcode: OrderByBarcodeUI) {
+        getFragmentStack()?.push(MaterialRemakeDetailsFragment.newInstance(selectedMaterial, parentCode, parentName, barcode))
     }
 
-    override fun openTechOrdersScreen(selectedMaterial: MaterialIngredientDataInfo, parentCode: String) {
-        getFragmentStack()?.push(TechOrdersListFragment.newInstance(selectedMaterial, parentCode))
+    override fun openTechOrdersScreen(selectedMaterial: MaterialIngredientDataInfo, parentCode: String, materialIngredientKtsch: String) {
+        getFragmentStack()?.push(TechOrdersListFragment.newInstance(selectedMaterial, parentCode, materialIngredientKtsch))
     }
 
     // Информационные экраны
@@ -335,14 +337,12 @@ class ScreenNavigator @Inject constructor(
         }
     }
 
-    override fun showAlertPartNotFound(backCallback: (() -> Unit)?) {
+    override fun showAlertPartNotFound() {
         runOrPostpone {
             getFragmentStack()?.push(AlertFragment.create(
                     pageNumber = Constants.ALERT_FRAGMENT,
                     message = context.getString(R.string.tw_alert_part_not_found),
-                    iconRes = R.drawable.ic_warning_red_80dp,
-                    leftButtonDecorationInfo = ButtonDecorationInfo.back,
-                    codeConfirmForLeft = backCallback?.let { backFragmentResultHelper.setFuncForResult(it) }
+                    iconRes = R.drawable.ic_warning_red_80dp
             ))
         }
     }
@@ -352,6 +352,45 @@ class ScreenNavigator @Inject constructor(
             getFragmentStack()?.push(AlertFragment.create(
                     pageNumber = Constants.ALERT_FRAGMENT,
                     message = context.getString(R.string.tw_alert_good_not_found),
+                    iconRes = R.drawable.ic_warning_red_80dp
+            ))
+        }
+    }
+
+    override fun showAlertIngredientNotFound() {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    pageNumber = Constants.ALERT_FRAGMENT,
+                    message = context.getString(R.string.tw_alert_ingredient_not_found)
+            ))
+        }
+    }
+
+    override fun showNotFoundedBarcodeForPosition() {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    pageNumber = Constants.ALERT_FRAGMENT,
+                    message = context.getString(R.string.tw_alert_ingredient_not_found_in_position),
+                    iconRes = R.drawable.ic_warning_red_80dp
+            ))
+        }
+    }
+
+    override fun showAlertDualism() {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    pageNumber = Constants.ALERT_FRAGMENT,
+                    message = context.getString(R.string.tw_alert_dualism),
+                    iconRes = R.drawable.ic_warning_red_80dp
+            ))
+        }
+    }
+
+    override fun showAlertGoodNotFoundInCurrentShift() {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    pageNumber = Constants.ALERT_FRAGMENT,
+                    message = context.getString(R.string.tw_alert_good_not_found_in_current_shift),
                     iconRes = R.drawable.ic_warning_red_80dp
             ))
         }
@@ -416,12 +455,12 @@ interface IScreenNavigator : ICoreNavigator {
     fun openGoodInfoScreen(goodParams: GoodParams)
     fun openSelectGoodScreen()
     fun openIngredientsListScreen()
-    fun openOrderDetailsScreen(selectedIngredient: IngredientInfo)
-    fun openIngredientDetailsScreen(selectedIngredient: OrderIngredientDataInfo, parentCode: String)
+    fun openOrderDetailsScreen(selectedIngredient: IngredientInfo, barcode: OrderByBarcodeUI)
+    fun openIngredientDetailsScreen(selectedIngredient: OrderIngredientDataInfo, parentCode: String, eanInfo: OrderByBarcodeUI)
     fun openOrderIngredientsListScreen(weight: String, selectedIngredient: IngredientInfo)
     fun openMaterialRemakesScreen(selectedIngredient: IngredientInfo)
-    fun openMaterialRemakeDetailsScreen(selectedMaterial: MaterialIngredientDataInfo, parentCode: String, parentName: String)
-    fun openTechOrdersScreen(selectedMaterial: MaterialIngredientDataInfo, parentCode: String)
+    fun openMaterialRemakeDetailsScreen(selectedMaterial: MaterialIngredientDataInfo, parentCode: String, parentName: String, barcode: OrderByBarcodeUI)
+    fun openTechOrdersScreen(selectedMaterial: MaterialIngredientDataInfo, parentCode: String, materialIngredientKtsch: String)
 
     fun showDefrostingPhaseIsCompleted(nextCallback: () -> Unit)
     fun showFixStartNextStageSuccessful(nextCallback: () -> Unit)
@@ -437,5 +476,9 @@ interface IScreenNavigator : ICoreNavigator {
     fun showAlertExceededLimit(backCallback: () -> Unit)
     fun showMovingSuccessful(nextCallback: () -> Unit)
     fun showAlertGoodNotFound()
-    fun showAlertPartNotFound(backCallback: (() -> Unit)? = null)
+    fun showAlertPartNotFound()
+    fun showAlertDualism()
+    fun showAlertGoodNotFoundInCurrentShift()
+    fun showAlertIngredientNotFound()
+    fun showNotFoundedBarcodeForPosition()
 }

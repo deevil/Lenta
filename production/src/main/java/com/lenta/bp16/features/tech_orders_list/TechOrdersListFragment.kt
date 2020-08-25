@@ -28,6 +28,11 @@ class TechOrdersListFragment : CoreFragment<FragmentTechOrdersListBinding, TechO
                 ?: throw IllegalArgumentException("There is no argument value with key $KEY_PARENT_CODE")
     }
 
+    private val materialIngredientKtsch: String by unsafeLazy {
+        arguments?.getString(KEY_INGREDIENT_KTSCH)
+                ?: throw IllegalArgumentException("There is no argument value with key $KEY_INGREDIENT_KTSCH")
+    }
+
     override fun getLayoutId(): Int {
         return R.layout.fragment_tech_orders_list
     }
@@ -39,15 +44,16 @@ class TechOrdersListFragment : CoreFragment<FragmentTechOrdersListBinding, TechO
     override fun getViewModel(): TechOrdersListViewModel {
         provideViewModel(TechOrdersListViewModel::class.java).let {
             getAppComponent()?.inject(it)
+            it.materialIngredientKtsch.value = materialIngredientKtsch
             return it
         }
     }
 
     override fun setupTopToolBar(topToolbarUiModel: TopToolbarUiModel) {
         topToolbarUiModel.title.value = buildString {
-            append(materialIngredientDataInfo.name)
+            append(materialIngredientDataInfo.ltxa1)
             append(" / ")
-            append(parentCode)
+            append(materialIngredientDataInfo.lgort)
         }
         topToolbarUiModel.description.value = getString(R.string.desc_tech_order_list_by)
     }
@@ -80,12 +86,14 @@ class TechOrdersListFragment : CoreFragment<FragmentTechOrdersListBinding, TechO
         private const val SCREEN_NUMBER = "16/93"
         private const val KEY_INGREDIENT = "KEY_INGREDIENT"
         private const val KEY_PARENT_CODE = "KEY_PARENT_CODE"
+        private const val KEY_INGREDIENT_KTSCH = "KEY_INGREDIENT_KTSCH"
 
-        fun newInstance(selectedIngredient: MaterialIngredientDataInfo, parentCode: String) =
+        fun newInstance(selectedIngredient: MaterialIngredientDataInfo, parentCode: String, materialIngredientKtsch: String) =
                 TechOrdersListFragment().apply {
                     arguments = bundleOf(
                             KEY_INGREDIENT to selectedIngredient,
-                            KEY_PARENT_CODE to parentCode
+                            KEY_PARENT_CODE to parentCode,
+                            KEY_INGREDIENT_KTSCH to materialIngredientKtsch
                     )
                 }
     }

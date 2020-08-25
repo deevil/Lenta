@@ -35,7 +35,12 @@ class CargoUnitCardViewModel : CoreViewModel(), OnPositionClickListener {
     private val statusInfo: MutableLiveData<List<QualityInfo>> = MutableLiveData()
     private val typePalletInfo: MutableLiveData<List<QualityInfo>> = MutableLiveData()
     val deleteVisibility by lazy {
-        MutableLiveData(cargoUnitInfo.value?.cargoUnitStatus == "3" || taskManager.getReceivingTask()?.taskHeader?.taskType == TaskType.ReceptionDistributionCenter || taskManager.getReceivingTask()?.taskHeader?.taskType == TaskType.OwnProduction)
+        val taskType = taskManager.getTaskType()
+        MutableLiveData(cargoUnitInfo.value?.cargoUnitStatus == "3"
+                || taskType == TaskType.ReceptionDistributionCenter
+                || taskType == TaskType.OwnProduction
+                || taskType == TaskType.ShoppingMall
+        )
     }
     val recountValue by lazy {
         if (cargoUnitInfo.value?.isCount == true) {
@@ -50,11 +55,11 @@ class CargoUnitCardViewModel : CoreViewModel(), OnPositionClickListener {
     }
 
     val isTaskPSP by lazy {
-        taskManager.getReceivingTask()?.taskHeader?.taskType == TaskType.OwnProduction
+        taskManager.getTaskType() == TaskType.OwnProduction
     }
 
     val isTaskShipmentRC by lazy {
-        taskManager.getReceivingTask()?.taskHeader?.taskType == TaskType.ShipmentRC
+        taskManager.getTaskType() == TaskType.ShipmentRC
     }
 
     val enabledApplyBtn: MutableLiveData<Boolean> = spinStatusSelectedPosition.combineLatest(spinTypePalletSelectedPosition).map {
@@ -90,7 +95,7 @@ class CargoUnitCardViewModel : CoreViewModel(), OnPositionClickListener {
     }
 
     val isGoodsForPackaging by lazy {
-        taskManager.getReceivingTask()?.taskHeader?.taskType == TaskType.OwnProduction && cargoUnitInfo.value?.isPack == true
+        taskManager.getTaskType() == TaskType.OwnProduction && cargoUnitInfo.value?.isPack == true
     }
 
     fun getTitle(): String {

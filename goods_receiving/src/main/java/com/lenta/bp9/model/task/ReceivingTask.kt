@@ -62,6 +62,10 @@ class ReceivingTask(val taskHeader: TaskInfo,
         return taskRepository.getBlocksDiscrepancies().getBlocksDiscrepancies()
     }
 
+    fun getProcessedExciseStamps(): List<TaskExciseStampInfo> {
+        return taskRepository.getExciseStamps().getExciseStamps()
+    }
+
     fun getProcessedExciseStampsDiscrepancies(): List<TaskExciseStampDiscrepancies> {
         return taskRepository.getExciseStampsDiscrepancies().getExciseStampDiscrepancies()
     }

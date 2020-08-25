@@ -6,9 +6,11 @@ import androidx.lifecycle.viewModelScope
 import com.lenta.bp9.features.goods_list.SearchProductDelegate
 import com.lenta.bp9.features.loading.tasks.TaskCardMode
 import com.lenta.bp9.features.loading.tasks.TaskListLoadingMode
+import com.lenta.bp9.model.processing.ProcessMarkingBoxProductService
 import com.lenta.bp9.model.processing.ProcessMarkingProductService
 import com.lenta.bp9.model.task.*
-import com.lenta.bp9.platform.TypeDiscrepanciesConstants
+import com.lenta.bp9.platform.TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_NORM
+import com.lenta.bp9.platform.TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_PGE_SURPLUS
 import com.lenta.bp9.platform.navigation.IScreenNavigator
 import com.lenta.bp9.repos.IDataBaseRepo
 import com.lenta.bp9.repos.IRepoInMemoryHolder
@@ -44,6 +46,9 @@ class DiscrepancyListViewModel : CoreViewModel(), PageSelectionListener {
 
     @Inject
     lateinit var processMarkingProductService: ProcessMarkingProductService
+
+    @Inject
+    lateinit var processMarkingBoxProductService: ProcessMarkingBoxProductService
 
     @Inject
     lateinit var endRecountDirectDeliveries: EndRecountDirectDeliveriesNetRequest
@@ -323,11 +328,11 @@ class DiscrepancyListViewModel : CoreViewModel(), PageSelectionListener {
             set.componentNumber == productDiscrepancies.materialNumber
         }
         return if (repoInMemoryHolder.taskList.value?.taskListLoadingMode == TaskListLoadingMode.PGE) {
-            !(productDiscrepancies.typeDiscrepancies == TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_NORM
-                    || productDiscrepancies.typeDiscrepancies == TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_PGE_SURPLUS)
+            !(productDiscrepancies.typeDiscrepancies == TYPE_DISCREPANCIES_QUALITY_NORM
+                    || productDiscrepancies.typeDiscrepancies == TYPE_DISCREPANCIES_QUALITY_PGE_SURPLUS)
                     && isComponent == false
         } else {
-            productDiscrepancies.typeDiscrepancies != TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_NORM && isComponent == false
+            productDiscrepancies.typeDiscrepancies != TYPE_DISCREPANCIES_QUALITY_NORM && isComponent == false
         }
     }
 
@@ -348,15 +353,15 @@ class DiscrepancyListViewModel : CoreViewModel(), PageSelectionListener {
         return if (loadingMode == TaskListLoadingMode.PGE) {
             batchDiscrepanciesOfBatch
                     ?.filter { findBatchDiscrPGE ->
-                        !(findBatchDiscrPGE.typeDiscrepancies == TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_NORM
-                                || findBatchDiscrPGE.typeDiscrepancies == TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_PGE_SURPLUS)
+                        !(findBatchDiscrPGE.typeDiscrepancies == TYPE_DISCREPANCIES_QUALITY_NORM
+                                || findBatchDiscrPGE.typeDiscrepancies == TYPE_DISCREPANCIES_QUALITY_PGE_SURPLUS)
                     }
                     ?.any()
                     ?: false
         } else {
             batchDiscrepanciesOfBatch
                     ?.filter { findBatchDiscr ->
-                        findBatchDiscr.typeDiscrepancies != TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_NORM
+                        findBatchDiscr.typeDiscrepancies != TYPE_DISCREPANCIES_QUALITY_NORM
                     }
                     ?.any()
                     ?: false
@@ -371,12 +376,8 @@ class DiscrepancyListViewModel : CoreViewModel(), PageSelectionListener {
                 .getReceivingTask()
                 ?.let { task ->
                     task.getProcessedProductsDiscrepancies()
-                            .filter {
-                                filterCountProcessedProduct(it)
-                            }
-                            .sortedByDescending {
-                                it.materialNumber
-                            }
+                            .filter { filterCountProcessedProduct(it) }
+                            .sortedByDescending { it.materialNumber }
                             .map { productDiscrepancies ->
                                 val productInfo = getProductInfoForProcessedProduct(task, productDiscrepancies.materialNumber)
                                 if (isBatches.value == true
@@ -471,9 +472,7 @@ class DiscrepancyListViewModel : CoreViewModel(), PageSelectionListener {
         val uom = getUomForTaskType(product)
         val discrepanciesName =
                 qualityInfo.value
-                        ?.findLast {
-                            it.code == productDiscrepancies.typeDiscrepancies
-                        }
+                        ?.findLast { it.code == productDiscrepancies.typeDiscrepancies }
                         ?.name
                         .orEmpty()
 
@@ -776,7 +775,7 @@ class DiscrepancyListViewModel : CoreViewModel(), PageSelectionListener {
                 productInfo.type == ProductType.NonExciseAlcohol
                         && !productInfo.isBoxFl
                         && !productInfo.isMarkFl
-        val isVetProduct = productInfo.isVet
+        val isVetProduct = productInfo.isVet && !productInfo.isNotEdit
         //коробочный или марочный алкоголь
         val isExciseAlcoholProduct =
                 productInfo.type == ProductType.ExciseAlcohol
@@ -890,39 +889,36 @@ class DiscrepancyListViewModel : CoreViewModel(), PageSelectionListener {
     }
 
     private fun markingProductControlNotPassed(productInfo: TaskProductInfo): Boolean {
-        return processMarkingProductService
-                .newProcessMarkingProductService(productInfo)
+        val processMarkingProduct =
+                when(getMarkingGoodsRegime(taskManager, productInfo)) {
+                    MarkingGoodsRegime.UomStWithoutBoxes -> processMarkingProductService.newProcessMarkingProductService(productInfo)
+                    MarkingGoodsRegime.UomStWithBoxes -> processMarkingBoxProductService.newProcessMarkingProductService(productInfo)
+                    else -> null
+                }
+
+        return processMarkingProduct
                 ?.let { processMarking ->
                     val isProcessedProduct =
                             taskManager
                                     .getReceivingTask()
-                                    ?.taskRepository
-                                    ?.getProductsDiscrepancies()
-                                    ?.findProductDiscrepanciesOfProduct(productInfo)
-                                    ?.any {
-                                        it.typeDiscrepancies == TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_NORM
+                                    ?.run {
+                                        taskRepository
+                                                .getProductsDiscrepancies()
+                                                .findProductDiscrepanciesOfProduct(productInfo)
+                                                .any { it.typeDiscrepancies == TYPE_DISCREPANCIES_QUALITY_NORM }
                                     }
                                     ?: false
                     val countStampsScanned =
                             taskManager
                                     .getReceivingTask()
-                                    ?.taskRepository
-                                    ?.getBlocksDiscrepancies()
-                                    ?.processedNumberOfStampsByProduct(productInfo)
-                                    ?.toDouble()
-                                    ?: 0.0
-                    val countUnderload =
-                            taskManager
-                                    .getReceivingTask()
-                                    ?.taskRepository
-                                    ?.getProductsDiscrepancies()
-                                    ?.findProductDiscrepanciesOfProduct(productInfo)
-                                    ?.findLast {
-                                        it.typeDiscrepancies == paramGrzGrundMarkCode.value
+                                    ?.run {
+                                        taskRepository
+                                                .getBlocksDiscrepancies()
+                                                .processedNumberOfStampsByProduct(productInfo)
+                                                .toDouble()
                                     }
-                                    ?.numberDiscrepancies?.toDouble()
                                     ?: 0.0
-                    val countBlocksUnderload = processMarking.getCountBlocksByAttachments(countUnderload.toString())
+                    val countBlocksUnderload = processMarking.getCountBlocksUnderload(paramGrzGrundMarkCode.value.orEmpty())
                     val numberStampsControl =  productInfo.numberStampsControl.toDouble() - countBlocksUnderload
                     isProcessedProduct && countStampsScanned < numberStampsControl
                 }

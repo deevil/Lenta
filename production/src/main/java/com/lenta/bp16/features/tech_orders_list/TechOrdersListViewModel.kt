@@ -23,6 +23,10 @@ class TechOrdersListViewModel : CoreViewModel() {
         resourceManager.kgSuffix()
     }
 
+    val materialIngredientKtsch: MutableLiveData<String> by unsafeLazy {
+        MutableLiveData<String>()
+    }
+
 
     val allTechOrdersList by unsafeLazy {
         MutableLiveData<List<ItemTechOrderUi>>()
@@ -30,12 +34,12 @@ class TechOrdersListViewModel : CoreViewModel() {
 
     init {
         launchUITryCatch {
-            getTechOrdersUseCase(Unit).either {
-                allTechOrdersList.value = it.mapIndexed { index, techOrderDataInfo ->
+            getTechOrdersUseCase(Unit).either { list ->
+                allTechOrdersList.value = list.filter { it.ktsch == materialIngredientKtsch.value }.mapIndexed { index, techOrderDataInfo ->
                     val position = (index + 1).toString()
                     ItemTechOrderUi(
                             position = position,
-                            text1 = techOrderDataInfo.text1.orEmpty(),
+                            text1 = techOrderDataInfo.text1.orEmpty().takeLast(valueNumber),
                             text2 = techOrderDataInfo.text2.orEmpty(),
                             plan = getFieldWithSuffix(techOrderDataInfo.plan_qnt, suffix)
                     )
@@ -44,4 +48,10 @@ class TechOrdersListViewModel : CoreViewModel() {
             }
         }
     }
+
+    companion object{
+        /**Значимые цифры заказа*/
+        const val valueNumber = 12
+    }
+
 }

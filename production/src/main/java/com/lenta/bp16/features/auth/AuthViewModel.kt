@@ -81,7 +81,6 @@ class AuthViewModel : CoreAuthViewModel() {
     }
 
     override fun handleFailure(failure: Failure) {
-        super.handleFailure(failure)
         sessionInfo.isAuthSkipped.value = false
         progress.value = false
     }

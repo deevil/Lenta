@@ -15,6 +15,7 @@ import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListener
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
+import com.lenta.shared.scan.OnScanResultListener
 import com.lenta.shared.utilities.databinding.RecyclerViewKeyHandler
 import com.lenta.shared.utilities.databinding.ViewPagerSettings
 import com.lenta.shared.utilities.extentions.provideViewModel
@@ -22,7 +23,7 @@ import com.lenta.shared.utilities.extentions.unsafeLazy
 
 class IngredientsListFragment :
         CoreFragment<FragmentIgredientsListBinding, IngredientsListViewModel>(),
-        ToolbarButtonsClickListener, ViewPagerSettings {
+        ToolbarButtonsClickListener, ViewPagerSettings, OnScanResultListener {
 
     private var byOrderRecyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
     private var byMaterialRecyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
@@ -156,6 +157,10 @@ class IngredientsListFragment :
         }
     }
 
+    override fun onScanResult(data: String) {
+        vm.onScanResult(data)
+    }
+
     companion object {
         private const val TAB_COUNTS = 2
         private const val SCREEN_NUMBER = "16/82"
@@ -163,5 +168,4 @@ class IngredientsListFragment :
         const val TAB_BY_ORDER = 0
         const val TAB_BY_MATERIALS = 1
     }
-
 }

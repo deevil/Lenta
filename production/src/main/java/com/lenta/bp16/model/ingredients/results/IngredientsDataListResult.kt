@@ -2,9 +2,11 @@ package com.lenta.bp16.model.ingredients.results
 
 import com.google.gson.annotations.SerializedName
 import com.lenta.bp16.model.ingredients.MaterialIngredientDataInfo
-import com.lenta.bp16.model.ingredients.TechOrderDataInfo
 import com.lenta.bp16.model.ingredients.OrderIngredientDataInfo
-import com.lenta.bp16.model.ingredients.ui.OrderByBarcode
+import com.lenta.bp16.model.ingredients.TechOrderDataInfo
+import com.lenta.bp16.model.ingredients.OrderByBarcode
+import com.lenta.bp16.model.ingredients.ui.IngredientsDataListResultUI
+import com.lenta.bp16.platform.converter.IConvertable
 import com.lenta.bp16.request.pojo.RetCode
 import com.lenta.shared.utilities.extentions.IResultWithRetCodes
 
@@ -21,10 +23,22 @@ data class IngredientsDataListResult(
         @SerializedName("ET_AUFNR_LIST")
         val techOrdersDataInfoList: List<TechOrderDataInfo>?,
 
+        /**Данные ШК по товарам*/
         @SerializedName("ET_EAN")
         val orderByBarcode: List<OrderByBarcode>?,
 
         /** Таблица возврата */
         @SerializedName("ET_RETCODE")
         override val retCodes: List<RetCode>?
-) : IResultWithRetCodes
+) : IResultWithRetCodes, IConvertable<IngredientsDataListResultUI> {
+
+    override fun convert(): IngredientsDataListResultUI {
+        return IngredientsDataListResultUI(
+                ordersIngredientsDataInfoList = ordersIngredientsDataInfoList.orEmpty(),
+                materialsIngredientsDataInfoList = materialsIngredientsDataInfoList.orEmpty(),
+                techOrdersDataInfoList = techOrdersDataInfoList.orEmpty(),
+                orderByBarcode = orderByBarcode.orEmpty().mapNotNull { it.convert() },
+                retCodes = retCodes.orEmpty()
+        )
+    }
+}

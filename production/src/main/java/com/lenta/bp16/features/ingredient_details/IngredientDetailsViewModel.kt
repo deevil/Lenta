@@ -4,6 +4,8 @@ import androidx.lifecycle.MutableLiveData
 import com.lenta.bp16.data.IScales
 import com.lenta.bp16.model.ingredients.OrderIngredientDataInfo
 import com.lenta.bp16.model.ingredients.params.IngredientDataCompleteParams
+import com.lenta.bp16.model.ingredients.OrderByBarcode
+import com.lenta.bp16.model.ingredients.ui.OrderByBarcodeUI
 import com.lenta.bp16.platform.navigation.IScreenNavigator
 import com.lenta.bp16.platform.resource.IResourceManager
 import com.lenta.bp16.request.CompleteIngredientByOrderNetRequest
@@ -38,6 +40,11 @@ class IngredientDetailsViewModel : CoreViewModel() {
         MutableLiveData<OrderIngredientDataInfo>()
     }
 
+    //Список параметров EAN для ингредиента
+    val eanInfo by unsafeLazy {
+        MutableLiveData<OrderByBarcodeUI>()
+    }
+
     // Комплектация
     val weightField: MutableLiveData<String> = MutableLiveData(DEFAULT_WEIGHT)
 
@@ -63,6 +70,41 @@ class IngredientDetailsViewModel : CoreViewModel() {
         "${it.dropZeros()} ${resourceManager.kgSuffix()}"
     }
 
+    /**Для проверки весового ШК*/
+    private val weightValue = listOf(VALUE_23, VALUE_24, VALUE_27, VALUE_28)
+
+    val ean = MutableLiveData("")
+
+    fun onScanResult(data: String){
+        ean.value = data
+        preparationEanForSearch()
+    }
+
+    private fun preparationEanForSearch(){
+        var barcode = ean.value.orEmpty()
+        if(weightValue.contains(barcode.substring(0 until 2))){
+            barcode = barcode.replace(barcode.takeLast(6),"000000")
+        }
+        setWeight(barcode)
+    }
+
+    /**
+     *
+     * Установка веса после сканирования ШК
+     *
+     * */
+    private fun setWeight(barcode: String){
+        val ean = eanInfo.value?.ean
+        if(ean == barcode){
+            val umrez = eanInfo.value?.ean_umrez?.toDouble() //Числитель
+            val umren = eanInfo.value?.ean_umren?.toDouble() //Знаменатель
+            val result = umrez?.div(umren ?: 0.0)
+            weighted.value = result
+        }else{
+            weighted.value = barcode.takeLast(6).take(5).toDouble().div(DIV_TO_KG)
+        }
+    }
+
     fun onCompleteClicked() = launchUITryCatch {
         val weight = total.value ?: 0.0
         if (weight == 0.0) {
@@ -76,7 +118,6 @@ class IngredientDetailsViewModel : CoreViewModel() {
                                 deviceIP = resourceManager.deviceIp,
                                 mode = IngredientDataCompleteParams.MODE_INGREDIENT,
                                 parent = parentCode,
-                                aufnr = parentCode,
                                 matnr = ingredient.matnr.orEmpty(),
                                 fact = weight,
                                 personnelNumber = sessionInfo.personnelNumber.orEmpty()
@@ -114,5 +155,11 @@ class IngredientDetailsViewModel : CoreViewModel() {
 
     companion object {
         private const val DEFAULT_WEIGHT = "0"
+        /**Показатели весового штрихкода*/
+        const val VALUE_23 = "23"
+        const val VALUE_24 = "24"
+        const val VALUE_27 = "27"
+        const val VALUE_28 = "28"
+        const val DIV_TO_KG = 1000
     }
 }
