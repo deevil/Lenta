@@ -136,12 +136,6 @@ class IngredientsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInS
 
     fun searchByBarcode() {
         launchUITryCatch {
-            /**Давай поясню логику
-             *
-             * Меня чет совсем поплавило на этом месте, поэтому мб получится исправить это позже.
-             * Главное записать чем я руководствовался в этот момент.
-             *
-             * */
             navigator.showProgressLoadingData()
             /**Поиск отсканированного ШК в данных интерфейса ZMP_UTZ_PRO_10_V001*/
             val searchStatus = withContext(Dispatchers.IO) {

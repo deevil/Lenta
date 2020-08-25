@@ -80,13 +80,7 @@ class MaterialRemakesListViewModel : CoreViewModel() {
         val lgort = when (mode) {
             MODE_5 -> mutableListOf(WarehouseParam(ingredient.value?.lgort.orEmpty()))
             MODE_6 -> mutableListOf(WarehouseParam(ingredient.value?.lgort.orEmpty()))
-            else -> {
-                val selectedWarehouseList = mutableListOf<WarehouseParam>()
-                for (element in warehouseList) {
-                    selectedWarehouseList.add(WarehouseParam(element))
-                }
-                selectedWarehouseList
-            }
+            else -> warehouseList.mapTo(mutableListOf()) { WarehouseParam(it) }
         }
 
         val result = getIngredientDataList(
