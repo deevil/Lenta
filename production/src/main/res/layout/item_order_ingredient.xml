@@ -67,7 +67,6 @@
                         style="@style/CellTextStyle"
                         android:singleLine="false"
                         android:maxLines="2"
-                        android:layout_width="match_parent"
                         android:text="@{item.name}"
                         tools:text="3682194862 / 10.09.19" />
 
@@ -84,9 +83,12 @@
 
                 <TextView
                     style="@style/CellTextStyle"
-                    android:layout_width="match_parent"
+                    app:autoSizeTextType = "uniform"
+                    app:autoSizeMaxTextSize="@dimen/text_14sp"
+                    app:autoSizeMinTextSize="@dimen/text_10sp"
+                    app:autoSizeStepGranularity="@dimen/text_2sp"
                     android:text="@{item.plan}"
-                    tools:text="3682194862" />
+                    tools:text="105.105 кг" />
 
             </LinearLayout>
 
@@ -99,9 +101,12 @@
 
                 <TextView
                     style="@style/CellTextStyle"
-                    android:layout_width="match_parent"
+                    app:autoSizeTextType = "uniform"
+                    app:autoSizeMaxTextSize="@dimen/text_14sp"
+                    app:autoSizeMinTextSize="@dimen/text_10sp"
+                    app:autoSizeStepGranularity="@dimen/text_2sp"
                     android:text="@{item.fact}"
-                    tools:text="3682194862" />
+                    tools:text="105.105 кг" />
 
             </LinearLayout>
 

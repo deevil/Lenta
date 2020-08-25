@@ -6,7 +6,8 @@ import androidx.lifecycle.lifecycleScope
 import com.lenta.bp16.R
 import com.lenta.bp16.databinding.FragmentMaterialRemakeDetailsBinding
 import com.lenta.bp16.model.ingredients.MaterialIngredientDataInfo
-import com.lenta.bp16.model.ingredients.ui.OrderByBarcode
+import com.lenta.bp16.model.ingredients.OrderByBarcode
+import com.lenta.bp16.model.ingredients.ui.OrderByBarcodeUI
 import com.lenta.bp16.platform.extention.getAppComponent
 import com.lenta.shared.platform.activity.OnBackPresserListener
 import com.lenta.shared.platform.fragment.CoreFragment
@@ -39,8 +40,8 @@ class MaterialRemakeDetailsFragment : CoreFragment<FragmentMaterialRemakeDetails
                 ?: throw IllegalArgumentException("There is no argument value with key $KEY_PARENT_CODE")
     }
 
-    private val eanInfo: OrderByBarcode by unsafeLazy {
-        arguments?.getParcelable<OrderByBarcode>(KEY_EAN_INFO)
+    private val barcode: OrderByBarcodeUI by unsafeLazy {
+        arguments?.getParcelable<OrderByBarcodeUI>(KEY_EAN_INFO)
                 ?: throw IllegalArgumentException("There is no argument value with key $KEY_EAN_INFO")
     }
 
@@ -54,7 +55,7 @@ class MaterialRemakeDetailsFragment : CoreFragment<FragmentMaterialRemakeDetails
         provideViewModel(MaterialRemakeDetailsViewModel::class.java).let {
             getAppComponent()?.inject(it)
             it.materialIngredient.value = materialIngredientDataInfo
-            it.eanInfo.value = eanInfo
+            it.eanInfo.value = barcode
             it.parentCode = arguments?.getString(KEY_PARENT_CODE, "").orEmpty()
             return it
         }
@@ -102,13 +103,13 @@ class MaterialRemakeDetailsFragment : CoreFragment<FragmentMaterialRemakeDetails
         private const val KEY_PARENT_NAME = "KEY_PARENT_NAME"
         private const val KEY_EAN_INFO = "KEY_EAN_INFO"
 
-        fun newInstance(selectedIngredient: MaterialIngredientDataInfo, parentCode: String, parentName: String, eanInfo: OrderByBarcode): MaterialRemakeDetailsFragment {
+        fun newInstance(selectedIngredient: MaterialIngredientDataInfo, parentCode: String, parentName: String, barcode: OrderByBarcodeUI): MaterialRemakeDetailsFragment {
             return MaterialRemakeDetailsFragment().apply {
                 arguments = bundleOf(
                         KEY_INGREDIENT to selectedIngredient,
                         KEY_PARENT_CODE to parentCode,
                         KEY_PARENT_NAME to parentName,
-                        KEY_EAN_INFO to eanInfo
+                        KEY_EAN_INFO to barcode
                 )
             }
         }

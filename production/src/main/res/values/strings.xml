@@ -105,8 +105,8 @@
     <string name="text_complect">Комплектация</string>
     <string name="text_weight_hint">кг</string>
     <string name="text_pf">ПФ</string>
-    <string name="text_pf_plan">ПФ План (кг)</string>
-    <string name="text_already">Скомплектовано (кг)</string>
+    <string name="text_pf_plan">ПФ План</string>
+    <string name="text_already">Скомплектовано</string>
     <string name="text_warehouse">Склад</string>
     <string name="error_weight_not_set">Вы не указали значение: количество</string>
 

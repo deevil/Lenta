@@ -7,6 +7,8 @@ import com.lenta.bp16.R
 import com.lenta.bp16.databinding.FragmentOrderDetailsBinding
 import com.lenta.bp16.platform.extention.getAppComponent
 import com.lenta.bp16.model.ingredients.IngredientInfo
+import com.lenta.bp16.model.ingredients.OrderByBarcode
+import com.lenta.bp16.model.ingredients.ui.OrderByBarcodeUI
 import com.lenta.shared.platform.fragment.CoreFragment
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
@@ -30,10 +32,16 @@ class OrderDetailsFragment : CoreFragment<FragmentOrderDetailsBinding, OrderDeta
                 ?: throw IllegalArgumentException("There is no argument value with key $KEY_INGREDIENT")
     }
 
+    private val eanInfo: OrderByBarcodeUI by unsafeLazy {
+        arguments?.getParcelable<OrderByBarcodeUI>(KEY_EAN_INFO)
+                ?: throw IllegalArgumentException("There is no argument value with key $KEY_EAN_INFO")
+    }
+
     override fun getViewModel(): OrderDetailsViewModel {
         provideViewModel(OrderDetailsViewModel::class.java).let {
             getAppComponent()?.inject(it)
             it.ingredient.value = ingredientInfo
+            it.eanInfo.value = eanInfo
             return it
         }
     }
@@ -63,10 +71,12 @@ class OrderDetailsFragment : CoreFragment<FragmentOrderDetailsBinding, OrderDeta
     companion object {
         private const val SCREEN_NUMBER = "16/83"
         private const val KEY_INGREDIENT = "KEY_INGREDIENT"
+        private const val KEY_EAN_INFO = "KEY_EAN_INFO"
 
-        fun newInstance(selectedIngredient: IngredientInfo): OrderDetailsFragment {
+        fun newInstance(selectedIngredient: IngredientInfo,eanInfo: OrderByBarcodeUI): OrderDetailsFragment {
             return OrderDetailsFragment().apply {
-                arguments = bundleOf(KEY_INGREDIENT to selectedIngredient)
+                arguments = bundleOf(KEY_INGREDIENT to selectedIngredient,
+                KEY_EAN_INFO to eanInfo)
             }
         }
     }
