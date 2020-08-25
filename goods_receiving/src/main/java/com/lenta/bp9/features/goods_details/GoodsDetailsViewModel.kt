@@ -195,15 +195,11 @@ class GoodsDetailsViewModel : CoreViewModel() {
                     val typeDiscrepancies = goodsDetailsItem?.typeDiscrepancies.orEmpty()
                     val taskRepository = taskManager.getReceivingTask()?.taskRepository
 
-                    taskRepository
-                            ?.getProductsDiscrepancies()
-                            ?.deleteProductDiscrepancy(materialNumber, typeDiscrepancies)
-
                     if (isVetProduct.value == true) {
                         processMercuryProductService.deleteDetails(typeDiscrepancies)
                     }
 
-                    if (isNonExciseAlcoProduct.value == true) {
+                    if (isBatchProduct.value == true) {
                         goodsDetails.value
                                 ?.getOrNull(position)
                                 ?.batchDiscrepancies
@@ -211,7 +207,15 @@ class GoodsDetailsViewModel : CoreViewModel() {
                                     taskRepository
                                             ?.getBatchesDiscrepancies()
                                             ?.deleteBatchDiscrepancies(it)
+
+                                    taskRepository
+                                            ?.getProductsDiscrepancies()
+                                            ?.deleteProductDiscrepancyByBatch(materialNumber, typeDiscrepancies, it.numberDiscrepancies.toDouble())
                                 }
+                    } else {
+                        taskRepository
+                                ?.getProductsDiscrepancies()
+                                ?.deleteProductDiscrepancy(materialNumber, typeDiscrepancies)
                     }
                 }
             }
