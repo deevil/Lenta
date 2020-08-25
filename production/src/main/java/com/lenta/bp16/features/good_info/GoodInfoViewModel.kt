@@ -1,6 +1,7 @@
 package com.lenta.bp16.features.good_info
 
 import androidx.lifecycle.MutableLiveData
+import com.lenta.bp16.model.movement.params.WarehouseParams
 import com.lenta.bp16.model.movement.result.WarehouseResult
 import com.lenta.bp16.model.movement.ui.ProducerUI
 import com.lenta.bp16.model.movement.ui.Warehouse
@@ -33,7 +34,7 @@ class GoodInfoViewModel : CoreViewModel() {
     lateinit var productInfoNetRequest: ProductInfoNetRequest
 
     @Inject
-    lateinit var movementNewRequest: MovementNetRequest
+    lateinit var movementNetRequest: MovementNetRequest
 
     @Inject
     lateinit var sessionInfo: ISessionInfo
@@ -177,7 +178,9 @@ class GoodInfoViewModel : CoreViewModel() {
     private fun setStockInfo() {
         launchUITryCatch {
             warehouseRequest(
-                    params = null
+                    WarehouseParams(
+                            sessionInfo.market.orEmpty()
+                    )
             ).either(::handleFailure, warehouseResult::setValue)
             warehouseResult.value?.let { warehouseResult ->
                 warehouseSender.value = warehouseResult.warehouseList?.map { it.warehouseName }
@@ -195,10 +198,13 @@ class GoodInfoViewModel : CoreViewModel() {
     fun onClickComplete() {
         launchUITryCatch {
             navigator.showProgressLoadingData()
-            val prodCodeSelectedProducer = goodParams.value?.producers?.producerCode?.getOrNull(selectedProducer.value ?: 0).orEmpty()
-            val warehouseSenderSelected = warehouseSender.value?.getOrNull(selectedWarehouseSender.value ?: 0).orEmpty()
-            val warehouseReceiverSelected =  warehouseReceiver.value?.getOrNull(selectedWarehouseReceiver.value ?: 0).orEmpty()
-            val result = movementNewRequest(
+            val prodCodeSelectedProducer = goodParams.value?.producers?.producerCode?.getOrNull(selectedProducer.value
+                    ?: 0).orEmpty()
+            val warehouseSenderSelected = warehouseSender.value?.getOrNull(selectedWarehouseSender.value
+                    ?: 0).orEmpty()
+            val warehouseReceiverSelected = warehouseReceiver.value?.getOrNull(selectedWarehouseReceiver.value
+                    ?: 0).orEmpty()
+            val result = movementNetRequest(
                     params = MovementParams(
                             tkNumber = sessionInfo.market.orEmpty(),
                             matnr = goodParams.value?.material.orEmpty(),

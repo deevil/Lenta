@@ -1,6 +1,7 @@
 package com.lenta.bp16.repository
 
 import com.lenta.bp16.model.movement.params.ProductInfoParams
+import com.lenta.bp16.model.movement.params.WarehouseParams
 import com.lenta.bp16.model.movement.result.ProductInfoResult
 import com.lenta.bp16.model.movement.result.WarehouseResult
 import com.lenta.shared.account.ISessionInfo
@@ -19,11 +20,8 @@ class MovementRepository @Inject constructor(
         return fmpRequestsHelper.restRequest(FMP_GOODS_INFO, params, ProductInfoStatus::class.java)
     }
 
-    override suspend fun getWarehouseList(params: Nothing?): Either<Failure, WarehouseResult> {
-        return fmpRequestsHelper.restRequest(
-                resourceName = FMP_WAREHOUSE_INFO,
-                data = sessionInfo.market,
-                clazz = WarehouseListStatus::class.java)
+    override suspend fun getWarehouseList(params: WarehouseParams): Either<Failure, WarehouseResult> {
+        return fmpRequestsHelper.restRequest(FMP_WAREHOUSE_INFO, params, WarehouseListStatus::class.java)
     }
 
     companion object {
@@ -47,7 +45,7 @@ interface IMovementRepository {
     /**
      * Получение списка складов
      *
-     * @param params - [Nothing]
+     * @param params - [WarehouseParams]
      * */
-    suspend fun getWarehouseList(params: Nothing?): Either<Failure, WarehouseResult>
+    suspend fun getWarehouseList(params: WarehouseParams): Either<Failure, WarehouseResult>
 }

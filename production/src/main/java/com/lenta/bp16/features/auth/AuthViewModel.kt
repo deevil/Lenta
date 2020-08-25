@@ -84,7 +84,6 @@ class AuthViewModel : CoreAuthViewModel() {
         super.handleFailure(failure)
         sessionInfo.isAuthSkipped.value = false
         progress.value = false
-        navigator.openAlertScreen(failure, pageNumber = "97")
     }
 
     override fun onClickAuxiliaryMenu() {
