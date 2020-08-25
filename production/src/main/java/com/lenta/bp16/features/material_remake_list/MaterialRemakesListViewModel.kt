@@ -8,14 +8,12 @@ import com.lenta.bp16.model.ingredients.params.GetIngredientDataParams
 import com.lenta.bp16.model.ingredients.params.UnblockIngredientsParams
 import com.lenta.bp16.model.ingredients.params.WarehouseParam
 import com.lenta.bp16.model.ingredients.ui.ItemMaterialIngredientUi
-import com.lenta.bp16.model.ingredients.results.IngredientsDataListResult
 import com.lenta.bp16.model.ingredients.ui.OrderByBarcodeUI
 import com.lenta.bp16.model.warehouse.IWarehousePersistStorage
 import com.lenta.bp16.platform.extention.getFieldWithSuffix
 import com.lenta.bp16.platform.extention.getModeType
 import com.lenta.bp16.platform.navigation.IScreenNavigator
 import com.lenta.bp16.platform.resource.IResourceManager
-import com.lenta.bp16.request.GetEanIngredientsNetRequest
 import com.lenta.bp16.request.GetIngredientsDataListNetRequest
 import com.lenta.bp16.request.UnblockIngredientNetRequest
 import com.lenta.shared.account.ISessionInfo
@@ -70,9 +68,8 @@ class MaterialRemakesListViewModel : CoreViewModel() {
         val mode = ingredient.value?.getModeType().orEmpty()
         val warehouseList = warehouseStorage.getSelectedWarehouses().toList()
 
-        val lgort = when (mode) {
-            MODE_5 -> mutableListOf(WarehouseParam(ingredient.value?.lgort.orEmpty()))
-            MODE_6 -> mutableListOf(WarehouseParam(ingredient.value?.lgort.orEmpty()))
+        val selectedWarehouseList = when (mode) {
+            MODE_5, MODE_6 -> mutableListOf(WarehouseParam(ingredient.value?.lgort.orEmpty()))
             else -> warehouseList.mapTo(mutableListOf()) { WarehouseParam(it) }
         }
 
@@ -83,7 +80,7 @@ class MaterialRemakesListViewModel : CoreViewModel() {
                         code = code,
                         mode = mode,
                         weight = "",
-                        warehouse = lgort
+                        warehouse = selectedWarehouseList
                 )
         ).also {
             navigator.hideProgress()
