@@ -25,13 +25,13 @@ class IngredientsRepository @Inject constructor(
 
     private val ordersByRemake: MutableList<TechOrderDataInfo> = mutableListOf()
 
-    override suspend fun getAllIngredients(params: GetIngredientsParams): Either<Failure, IngredientsListResultUI> {
+    override suspend fun getAllIngredients(params: GetIngredientsParams): Either<Failure, IngredientsListResult> {
 
         return fmpRequestsHelper.restRequest(FMP_ORDERS_RESOURCE_NAME, params, IngredientsListStatus::class.java)
                 .getResult()
     }
 
-    override suspend fun getIngredientListData(params: GetIngredientDataParams): Either<Failure, IngredientsDataListResultUI> {
+    override suspend fun getIngredientListData(params: GetIngredientDataParams): Either<Failure, IngredientsDataListResult> {
         return fmpRequestsHelper.restRequest(FMP_ORDERS_DATA_RESOURCE_NAME, params, IngredientsDataListStatus::class.java)
                 .getResult()
     }
@@ -84,8 +84,8 @@ class IngredientsRepository @Inject constructor(
         private const val FMP_MATERIAL_COMPLETE = "ZMP_UTZ_PRO_12_V001"
     }
 
-    internal class IngredientsListStatus : ObjectRawStatus<IngredientsListResultUI>()
-    internal class IngredientsDataListStatus : ObjectRawStatus<IngredientsDataListResultUI>()
+    internal class IngredientsListStatus : ObjectRawStatus<IngredientsListResult>()
+    internal class IngredientsDataListStatus : ObjectRawStatus<IngredientsDataListResult>()
     internal class UnlockOrderIngredientsDataStatus : ObjectRawStatus<UnblockOrderIngredientsResult>()
     internal class IngredientDataCompleteStatus : ObjectRawStatus<IngredientDataCompleteResult>()
 }
@@ -96,14 +96,14 @@ interface IIngredientsRepository {
      *
      * @param params - [GetIngredientsParams]
      */
-    suspend fun getAllIngredients(params: GetIngredientsParams): Either<Failure, IngredientsListResultUI>
+    suspend fun getAllIngredients(params: GetIngredientsParams): Either<Failure, IngredientsListResult>
 
     /**
      * Получение ингредиентов из заказа
      *
      * @param params - [GetIngredientDataParams]
      */
-    suspend fun getIngredientListData(params: GetIngredientDataParams): Either<Failure, IngredientsDataListResultUI>
+    suspend fun getIngredientListData(params: GetIngredientDataParams): Either<Failure, IngredientsDataListResult>
 
     /**
      * Разбокировка ингредиента после комплектации

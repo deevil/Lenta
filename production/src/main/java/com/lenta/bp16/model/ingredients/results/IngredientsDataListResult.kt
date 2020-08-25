@@ -30,9 +30,9 @@ data class IngredientsDataListResult(
         /** Таблица возврата */
         @SerializedName("ET_RETCODE")
         override val retCodes: List<RetCode>?
-) : IResultWithRetCodes, IConvertable<IngredientsDataListResultUI?> {
+) : IResultWithRetCodes, IConvertable<IngredientsDataListResultUI> {
 
-    override fun convert(): IngredientsDataListResultUI? {
+    override fun convert(): IngredientsDataListResultUI {
         return IngredientsDataListResultUI(
                 ordersIngredientsDataInfoList = ordersIngredientsDataInfoList.orEmpty(),
                 materialsIngredientsDataInfoList = materialsIngredientsDataInfoList.orEmpty(),

@@ -16,6 +16,6 @@ class GetIngredientsDataListNetRequest @Inject constructor(
         private val ingredientsRepository: IIngredientsRepository
 ) : UseCase<IngredientsDataListResultUI, GetIngredientDataParams> {
     override suspend fun run(params: GetIngredientDataParams): Either<Failure, IngredientsDataListResultUI> {
-        return ingredientsRepository.getIngredientListData(params)
+        return ingredientsRepository.getIngredientListData(params).flatMap { Either.Right(it.convert()) }
     }
 }
