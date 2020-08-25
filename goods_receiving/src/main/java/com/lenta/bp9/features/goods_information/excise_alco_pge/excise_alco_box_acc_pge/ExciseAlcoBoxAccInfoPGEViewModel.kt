@@ -424,8 +424,8 @@ class ExciseAlcoBoxAccInfoPGEViewModel : CoreViewModel(), OnPositionClickListene
     }
 
     private fun convertEizToBei(): Double {
-        var addNewCount = countValue.value!!.toDouble()
-        if (isEizUnit.value!!) {
+        var addNewCount = countValue.value?.toDouble() ?: 0.0
+        if (isEizUnit.value == true) {
             addNewCount *= productInfo.value?.quantityInvest?.toDouble() ?: 1.0
         }
         return addNewCount
