@@ -102,7 +102,8 @@ class GoodInfoViewModel : CoreViewModel() {
                 }
             }
 
-    var suffix: MutableLiveData<String> = MutableLiveData(Uom.KG.name)
+    val suffix: MutableLiveData<String> = MutableLiveData(Uom.KG.name)
+    val buom: MutableLiveData<String> = MutableLiveData(Uom.KG.name)
 
     init {
         setGoodInfo()
@@ -117,24 +118,25 @@ class GoodInfoViewModel : CoreViewModel() {
             val good = goodParams.value
             weight.value = goodParams.value?.weight
             /**Расчет количества и единиц измерения*/
-            val (quantity: Double?, uom: String) =
-                    weight.value?.run { div(Constants.CONVERT_TO_KG) to Uom.KG.name } ?: getPairFromUom(good)
+            val (quantity: Double?, uom: Uom) =
+                    weight.value?.run { div(Constants.CONVERT_TO_KG) to Uom.KG } ?: getPairFromUom(good)
             quantityField.value = quantity.toString()
-            suffix.value = uom
+            suffix.value = uom.name
+            buom.value = uom.code
             zPartFlag.value = goodParams.value?.zPart
         }
     }
 
-    private fun getPairFromUom(good: GoodParams?): Pair<Double?, String> {
+    private fun getPairFromUom(good: GoodParams?): Pair<Double?, Uom> {
         return when (good?.uom?.toUom()) {
             Uom.ST -> {
-                Constants.QUANTITY_DEFAULT_VALUE_1 to Uom.ST.name
+                Constants.QUANTITY_DEFAULT_VALUE_1 to Uom.ST
             }
             Uom.KAR -> {
-                good.umrez.toInt().div(good.umren.toDouble()) to Uom.KAR.name
+                good.umrez.toInt().div(good.umren.toDouble()) to Uom.KAR
             }
             else -> {
-                Constants.QUANTITY_DEFAULT_VALUE_0 to Uom.DEFAULT.name
+                Constants.QUANTITY_DEFAULT_VALUE_0 to Uom.DEFAULT
             }
         }
     }
@@ -197,8 +199,8 @@ class GoodInfoViewModel : CoreViewModel() {
                             lgortImport = warehouseReceiverSelected,
                             codeCont = "",
                             factQnt = quantityField.value.toString(),
-                            buom = suffix.value.orEmpty(),
-                            deviceIP = deviceIp.toString(),
+                            buom = buom.value.orEmpty(),
+                            deviceIP = deviceIp.value.toString(),
                             personnelNumber = sessionInfo.personnelNumber.orEmpty()
                     )
             )
