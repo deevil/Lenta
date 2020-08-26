@@ -119,7 +119,9 @@ class GoodInfoViewModel : CoreViewModel() {
             weight.value = goodParams.value?.weight
             /**Расчет количества и единиц измерения*/
             val (quantity: Double?, uom: Uom) =
-                    weight.value?.run { div(Constants.CONVERT_TO_KG) to Uom.KG } ?: getPairFromUom(good)
+                    weight.value?.takeIf { it != 0.0 }
+                            ?.run { div(Constants.CONVERT_TO_KG) to Uom.KG }
+                            ?: getPairFromUom(good)
             quantityField.value = quantity.toString()
             suffix.value = uom.name
             buom.value = uom.code
