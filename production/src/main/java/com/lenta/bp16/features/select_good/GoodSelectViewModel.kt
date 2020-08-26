@@ -38,10 +38,6 @@ class GoodSelectViewModel : CoreViewModel() {
     val enteredEanField = MutableLiveData("")
     val requestFocusEnteredEanField = MutableLiveData(true)
 
-    private val productInfoResult: MutableLiveData<ProductInfoResult> by unsafeLazy {
-        MutableLiveData<ProductInfoResult>()
-    }
-
     private val productInfo: MutableLiveData<ProductInfo> by unsafeLazy {
         MutableLiveData<ProductInfo>()
     }
@@ -56,7 +52,8 @@ class GoodSelectViewModel : CoreViewModel() {
         val ean: MutableList<String> = mutableListOf()
         var weight = DEF_WEIGHT
         var barcode = enteredEanField.value.orEmpty()
-        if(weightValueList.contains(barcode.substring(0 until 2))){
+        val firstCode = barcode.substring(0 until 2)
+        if(weightValueList.contains(firstCode)){
             weight = barcode.takeLast(6).take(5).toDouble()
             val changedBarcode = barcode.replace(barcode.takeLast(6), TAKEN_ZEROS)
             barcode = changedBarcode
@@ -69,10 +66,10 @@ class GoodSelectViewModel : CoreViewModel() {
                             ean = ean.map { Ean(it) },
                             matnr = matnr.map { Product(it) }
                     )
-            ).either(::handleFailure, productInfoResult::setValue)
-            productInfoResult.value?.let { productInfoResult ->
+            ).either(::handleFailure){productInfoResult ->
                 productInfo.value = productInfoResult.product?.getOrNull(0)
                 producerInfo.value = productInfoResult.producers?.getOrNull(0)
+                Unit
             }
             productInfo.value?.let { goodInfo ->
                 val good = GoodParams(

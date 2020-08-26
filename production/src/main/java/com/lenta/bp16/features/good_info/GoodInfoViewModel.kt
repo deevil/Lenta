@@ -1,15 +1,14 @@
 package com.lenta.bp16.features.good_info
 
 import androidx.lifecycle.MutableLiveData
+import com.lenta.bp16.model.movement.params.MovementParams
 import com.lenta.bp16.model.movement.params.WarehouseParams
-import com.lenta.bp16.model.movement.result.WarehouseResult
 import com.lenta.bp16.model.movement.ui.ProducerUI
 import com.lenta.bp16.model.pojo.GoodParams
 import com.lenta.bp16.platform.Constants
 import com.lenta.bp16.platform.navigation.IScreenNavigator
 import com.lenta.bp16.repository.DatabaseRepository
 import com.lenta.bp16.request.MovementNetRequest
-import com.lenta.bp16.request.MovementParams
 import com.lenta.bp16.request.WarehouseNetRequest
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.models.core.Uom
@@ -55,10 +54,6 @@ class GoodInfoViewModel : CoreViewModel() {
     /**Количество*/
     val quantityField = MutableLiveData("")
     val requestFocusQuantityField = MutableLiveData(true)
-
-    private val warehouseResult: MutableLiveData<WarehouseResult> by unsafeLazy {
-        MutableLiveData<WarehouseResult>()
-    }
 
     private val dateInfoSpinner = mutableListOf(PROD_DATE, SELF_LIFE)
 
@@ -135,24 +130,14 @@ class GoodInfoViewModel : CoreViewModel() {
 
     private fun setGoodInfo() {
         launchUITryCatch {
+            val good = goodParams.value
             weight.value = goodParams.value?.weight
             /**Расчет количества и единиц измерения*/
             val (quantity: Double?, uom: String) =
                     if (weight.value != 0.0) {
                         weight.value?.div(Constants.CONVERT_TO_KG) to Uom.KG.name
                     } else {
-                        when (goodParams.value?.uom?.toUom()) {
-                            Uom.ST -> {
-                                Constants.QUANTITY_DEFAULT_VALUE_1 to Uom.ST.name
-                            }
-                            Uom.KAR -> {
-                                val uomInfo = goodParams.value
-                                uomInfo?.umrez?.toInt()?.div(uomInfo.umren.toDouble()) to Uom.KAR.name
-                            }
-                            else -> {
-                                Constants.QUANTITY_DEFAULT_VALUE_0 to Uom.DEFAULT.name
-                            }
-                        }
+                        getPairFromUom(good)
                     }
             quantityField.value = quantity.toString()
             suffix.value = uom
@@ -160,9 +145,27 @@ class GoodInfoViewModel : CoreViewModel() {
         }
     }
 
+    private fun getPairFromUom(good: GoodParams?): Pair<Double?, String> {
+        return when (good?.uom?.toUom()) {
+            Uom.ST -> {
+                Constants.QUANTITY_DEFAULT_VALUE_1 to Uom.ST.name
+            }
+            Uom.KAR -> {
+                good.umrez.toInt().div(good.umren.toDouble()) to Uom.KAR.name
+            }
+            else -> {
+                Constants.QUANTITY_DEFAULT_VALUE_0 to Uom.DEFAULT.name
+            }
+        }
+    }
+
     private fun setDateInfo() {
         launchUITryCatch {
-            if (selectedDate.value == 0) producerDate = dateInfoField.value.orEmpty() else selfLifeDate = dateInfoField.value.orEmpty()
+            if (selectedDate.value == 0) {
+                producerDate = dateInfoField.value.orEmpty()
+            } else {
+                selfLifeDate = dateInfoField.value.orEmpty()
+            }
         }
     }
 
@@ -177,13 +180,14 @@ class GoodInfoViewModel : CoreViewModel() {
                     WarehouseParams(
                             sessionInfo.market.orEmpty()
                     )
-            ).either(::handleFailure, warehouseResult::setValue)
-            warehouseResult.value?.let { warehouseResult ->
+            ).either(::handleFailure) { warehouseResult ->
                 warehouseSender.value = warehouseResult.warehouseList?.map { it.warehouseName }
                 warehouseReceiver.value = warehouseResult.warehouseList?.map { it.warehouseName }
+                Unit
             }
         }
     }
+
 
     private fun setContainerInfo() {
         launchUITryCatch {
