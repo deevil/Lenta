@@ -95,11 +95,11 @@ class GoodInfoViewModel : CoreViewModel() {
                 val fillWarehouseSender = it?.first?.first?.second
                 val fillWarehouseReceiver = it?.first?.second
                 val fillContainerField = it?.second
-                if (!proFillCond.value.isNullOrBlank())
+                if (!proFillCond.value.isNullOrBlank()) {
                     !(fillQuantity.isNullOrBlank() || fillWarehouseReceiver.isNullOrEmpty() || fillWarehouseSender.isNullOrEmpty() || fillContainerField.isNullOrEmpty())
-                else
+                } else {
                     !(fillQuantity.isNullOrBlank() || fillWarehouseReceiver.isNullOrEmpty() || fillWarehouseSender.isNullOrEmpty())
-
+                }
             }
 
     var suffix: MutableLiveData<String> = MutableLiveData(Uom.KG.name)
@@ -118,11 +118,7 @@ class GoodInfoViewModel : CoreViewModel() {
             weight.value = goodParams.value?.weight
             /**Расчет количества и единиц измерения*/
             val (quantity: Double?, uom: String) =
-                    if (weight.value != 0.0) {
-                        weight.value?.div(Constants.CONVERT_TO_KG) to Uom.KG.name
-                    } else {
-                        getPairFromUom(good)
-                    }
+                    weight.value?.run { div(Constants.CONVERT_TO_KG) to Uom.KG.name } ?: getPairFromUom(good)
             quantityField.value = quantity.toString()
             suffix.value = uom
             zPartFlag.value = goodParams.value?.zPart
