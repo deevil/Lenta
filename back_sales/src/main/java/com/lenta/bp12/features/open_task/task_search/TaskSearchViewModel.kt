@@ -70,7 +70,10 @@ class TaskSearchViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
     override fun onOkInSoftKeyboard(): Boolean {
         if (searchEnabled.value == true) {
             onClickSearch()
+        } else {
+            requestFocusToProvider.value = true
         }
+
         return true
     }
 
