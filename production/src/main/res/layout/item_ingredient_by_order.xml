@@ -73,6 +73,7 @@
                         style="@style/CellTextStyle"
                         android:layout_width="match_parent"
                         android:text="@{item.text2}"
+                        app:zoom="@{true}"
                         tools:text="ООО Минторг" />
 
                 </LinearLayout>
@@ -87,6 +88,12 @@
                 style="@style/LinearCellStyle"
                 android:layout_weight="@integer/three_four_3"
                 android:orientation="horizontal">
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_done_white_24dp"
+                    app:ingredientStatusIcon="@{item.ingredientStatus}" />
 
                 <ImageView
                     android:layout_width="wrap_content"

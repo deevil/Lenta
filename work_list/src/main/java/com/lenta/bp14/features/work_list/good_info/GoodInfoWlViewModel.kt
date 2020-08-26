@@ -447,6 +447,7 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKe
     }
 
     private fun saveScanResult() {
+        val ean = good.value?.ean
         val enteredDate = enteredDate.value
         val shelfLifeType = shelfLifeTypePosition.value
 
@@ -465,7 +466,8 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKe
                 commentCode = comment?.code,
                 comment = comment?.description.orEmpty(),
                 productionDate = productionDate,
-                expirationDate = expirationDate
+                expirationDate = expirationDate,
+                ean = ean
         ))
     }
 

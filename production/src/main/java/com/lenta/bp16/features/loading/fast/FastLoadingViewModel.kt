@@ -24,22 +24,31 @@ class FastLoadingViewModel : CoreLoadingViewModel() {
 
     @Inject
     lateinit var navigator: IScreenNavigator
+
     @Inject
     lateinit var failureInterpreter: IFailureInterpreter
+
     @Inject
     lateinit var fastResourcesNetRequest: FastResourcesMultiRequest
+
     @Inject
     lateinit var appUpdateChecker: AppUpdateChecker
+
     @Inject
     lateinit var database: IDatabaseRepository
+
     @Inject
     lateinit var auth: Auth
+
     @Inject
     lateinit var appUpdateInstaller: AppUpdateInstaller
+
     @Inject
     lateinit var resourceManager: ISharedStringResourceManager
+
     @Inject
     lateinit var repoInMemoryHolder: IRepoInMemoryHolder
+
     @Inject
     lateinit var sessionInfo: ISessionInfo
 
@@ -101,7 +110,7 @@ class FastLoadingViewModel : CoreLoadingViewModel() {
         progress.postValue(false)
     }
 
-    private fun handleSuccess(notUsed: Boolean) {
+    private fun handleSuccess(b: Boolean) {
         progress.value = false
         navigator.closeAllScreen()
         navigator.openSelectPersonnelNumberScreen()

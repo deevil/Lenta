@@ -43,10 +43,9 @@ class MaterialRemakesListFragment : CoreFragment<FragmentRemakesByMaterialBindin
         }
     }
 
-    init {
-        lifecycleScope.launchWhenResumed {
-            vm.loadMaterialIngredients()
-        }
+    override fun onResume() {
+        super.onResume()
+        vm.loadMaterialIngredients()
     }
 
     override fun setupTopToolBar(topToolbarUiModel: TopToolbarUiModel) {

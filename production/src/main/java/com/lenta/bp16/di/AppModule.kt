@@ -52,6 +52,10 @@ class AppModule {
 
         @Binds
         @AppScope
+        fun bindMovementRepository(realisation: MovementRepository): IMovementRepository
+
+        @Binds
+        @AppScope
         fun bindTaskManager(realisation: TaskManager): ITaskManager
 
         @Binds

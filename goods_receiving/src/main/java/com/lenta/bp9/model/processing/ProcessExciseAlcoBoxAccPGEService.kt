@@ -4,6 +4,7 @@ import com.lenta.bp9.model.task.*
 import com.lenta.bp9.platform.TypeDiscrepanciesConstants
 import com.lenta.shared.di.AppScope
 import com.lenta.shared.models.core.ProductType
+import com.lenta.shared.models.core.Uom
 import com.lenta.shared.utilities.extentions.removeItemFromListWithPredicate
 import javax.inject.Inject
 
@@ -411,6 +412,70 @@ class ProcessExciseAlcoBoxAccPGEService
 
     fun getCountAcceptRefusal(): Double {
         return countAcceptRefusal
+    }
+
+    fun getGoodsDetails(boxNumber: String) : List<TaskProductDiscrepancies>? {
+        val taskRepository = taskManager.getReceivingTask()?.taskRepository
+        val boxDiscrepancies =
+                taskRepository
+                        ?.let { repository ->
+                            repository
+                                    .getBoxesDiscrepancies()
+                                    .findBoxesDiscrepanciesOfProduct(productInfo)
+                                    .filter { findBoxes -> findBoxes.boxNumber == boxNumber }
+                                    .groupBy { it.typeDiscrepancies }
+                        }
+                        .orEmpty()
+
+        val stampDiscrepancies =
+                        taskRepository
+                                ?.let { repository ->
+                                    repository
+                                            .getExciseStampsDiscrepancies()
+                                            .findExciseStampsDiscrepanciesOfProduct(productInfo)
+                                            .filter { findStamps -> findStamps.boxNumber == boxNumber }
+                                            .groupBy { it.typeDiscrepancies }
+                                }
+                                .orEmpty()
+
+        val allDiscrepancies = boxDiscrepancies + stampDiscrepancies
+        val goodsDetails: ArrayList<TaskProductDiscrepancies> = ArrayList()
+
+        allDiscrepancies.forEach {
+            goodsDetails.add(
+                    TaskProductDiscrepancies(
+                            materialNumber = productInfo.materialNumber,
+                            processingUnitNumber = "",
+                            numberDiscrepancies = it.value.size.toString(),
+                            uom = Uom(code = "", name = ""),
+                            typeDiscrepancies = it.key,
+                            isNotEdit = false,
+                            isNew = false,
+                            notEditNumberDiscrepancies = ""
+                    )
+            )
+        }
+
+        return goodsDetails
+    }
+
+    fun delBoxStampsDiscrepancies(boxNumber: String, typeDiscrepancies: String) {
+        currentBoxDiscrepancies
+                .removeItemFromListWithPredicate {
+                    it.boxNumber == boxNumber
+                            && it.typeDiscrepancies == typeDiscrepancies
+                }
+
+        currentExciseStampsDiscrepancies
+                .removeItemFromListWithPredicate {
+                    it.boxNumber == boxNumber
+                            && it.typeDiscrepancies == typeDiscrepancies
+                }
+    }
+
+    fun delBoxesStampsDiscrepancies(typeDiscrepancies: String) {
+        currentBoxDiscrepancies.removeItemFromListWithPredicate { it.typeDiscrepancies == typeDiscrepancies }
+        currentExciseStampsDiscrepancies.removeItemFromListWithPredicate { it.typeDiscrepancies == typeDiscrepancies }
     }
 
 }

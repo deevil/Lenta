@@ -104,7 +104,7 @@ class ExciseAlcoBoxAccInfoPGEViewModel : CoreViewModel(), OnPositionClickListene
     }
 
     val refusalTotalCount: MutableLiveData<Double> = countValue.combineLatest(spinQualitySelectedPosition).map {
-        val countRefusal = taskManager.getReceivingTask()!!.taskRepository.getProductsDiscrepancies().getCountAcceptOfProductPGE(productInfo.value!!)
+        val countRefusal = taskManager.getReceivingTask()!!.taskRepository.getProductsDiscrepancies().getCountRefusalOfProductPGE(productInfo.value!!)
         if (qualityInfo.value?.get(it!!.second)?.code == "3" || qualityInfo.value?.get(it!!.second)?.code == "4" || qualityInfo.value?.get(it!!.second)?.code == "5") {
             convertEizToBei() + countRefusal
         } else {
@@ -113,7 +113,7 @@ class ExciseAlcoBoxAccInfoPGEViewModel : CoreViewModel(), OnPositionClickListene
     }
 
     val refusalTotalCountWithUom: MutableLiveData<String> = refusalTotalCount.map {
-        val countRefusal = taskManager.getReceivingTask()!!.taskRepository.getProductsDiscrepancies().getCountAcceptOfProductPGE(productInfo.value!!)
+        val countRefusal = taskManager.getReceivingTask()!!.taskRepository.getProductsDiscrepancies().getCountRefusalOfProductPGE(productInfo.value!!)
 
         if ((it ?: 0.0) > 0.0) {
             "- ${it.toStringFormatted()} ${productInfo.value?.uom?.name}"
@@ -182,6 +182,21 @@ class ExciseAlcoBoxAccInfoPGEViewModel : CoreViewModel(), OnPositionClickListene
         (it ?: 0.0) > 0.0
     }
 
+    private val currentQualityInfoCode: String
+        get() {
+            val position = spinQualitySelectedPosition.value ?: -1
+            return position
+                    .takeIf { it >= 0 }
+                    ?.run {
+                        qualityInfo.value
+                                ?.takeIf { it.isNotEmpty() }
+                                ?.run { this[position].code }
+                                .orEmpty()
+                    }
+                    .orEmpty()
+        }
+
+
     private val scannedBoxNumber: MutableLiveData<String> = MutableLiveData("")
 
     init {
@@ -231,7 +246,13 @@ class ExciseAlcoBoxAccInfoPGEViewModel : CoreViewModel(), OnPositionClickListene
     }
 
     fun onClickDetails() {
-        screenNavigator.openGoodsDetailsScreen(productInfo.value!!)
+        productInfo.value
+                ?.also {
+                    screenNavigator.openGoodsDetailsScreen(
+                            productInfo = it,
+                            isScreenPGEBoxAlcoInfo = true
+                    )
+                }
     }
 
     fun onClickAdd(): Boolean {
@@ -243,13 +264,13 @@ class ExciseAlcoBoxAccInfoPGEViewModel : CoreViewModel(), OnPositionClickListene
                         processExciseAlcoBoxAccPGEService.setCountAcceptRefusal((acceptTotalCount.value ?: 0.0) + (refusalTotalCount.value ?: 0.0))
                         screenNavigator.openExciseAlcoBoxListPGEScreen(
                                 productInfo = productInfo.value!!,
-                                selectQualityCode = qualityInfo.value!![spinQualitySelectedPosition.value!!].code
+                                selectQualityCode = currentQualityInfoCode
                         )
                     }
             )
             false
         } else {
-            processExciseAlcoBoxAccPGEService.addProduct(convertEizToBei().toString(), qualityInfo.value!![spinQualitySelectedPosition.value!!].code)
+            processExciseAlcoBoxAccPGEService.addProduct(convertEizToBei().toString(), currentQualityInfoCode)
             true
         }
     }
@@ -403,10 +424,11 @@ class ExciseAlcoBoxAccInfoPGEViewModel : CoreViewModel(), OnPositionClickListene
     }
 
     private fun convertEizToBei(): Double {
-        var addNewCount = countValue.value!!.toDouble()
-        if (isEizUnit.value!!) {
+        var addNewCount = countValue.value?.toDouble() ?: 0.0
+        if (isEizUnit.value == true) {
             addNewCount *= productInfo.value?.quantityInvest?.toDouble() ?: 1.0
         }
         return addNewCount
     }
+
 }
