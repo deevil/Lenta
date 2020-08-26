@@ -5,20 +5,20 @@ import com.google.gson.annotations.SerializedName
 data class CheckResult(
         /** SAP-код товара */
         @SerializedName("MATNR")
-        val matNr: String,
+        val matNr: String?,
         /** Фактическое кол-во */
         @SerializedName("FACT_QNT")
-        val quantity: Double,
+        val quantity: Double?,
         /** Комментарий (код) */
         @SerializedName("COMMENT")
-        val commentCode: String,
+        val commentCode: String?,
         /** Дата производства */
         @SerializedName("DATA_PROD")
-        val producedDate: String,
+        val producedDate: String?,
         /** Срок годности */
         @SerializedName("SHELF_LIFE")
-        val shelfLife: String,
+        val shelfLife: String?,
         /**EAN код товара*/
         @SerializedName("EAN")
-        val ean: String
+        val ean: String?
 )

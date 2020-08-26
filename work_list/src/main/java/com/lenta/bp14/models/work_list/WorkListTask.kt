@@ -68,10 +68,10 @@ class WorkListTask @Inject constructor(
                     good.isProcessed = position.isProcessed.isSapTrue()
                     good.scanResults = checkResults.filter { it.matNr == position.matNr }.map { result ->
                         ScanResult(
-                                quantity = result.quantity,
+                                quantity = result.quantity ?: 0.0,
                                 comment = good.comments.find { it.code == result.commentCode }?.description.orEmpty(),
-                                productionDate = result.producedDate.getSapDate(Constants.DATE_FORMAT_yyyy_mm_dd),
-                                expirationDate = result.shelfLife.getSapDate(Constants.DATE_FORMAT_yyyy_mm_dd)
+                                productionDate = result.producedDate?.getSapDate(Constants.DATE_FORMAT_yyyy_mm_dd),
+                                expirationDate = result.shelfLife?.getSapDate(Constants.DATE_FORMAT_yyyy_mm_dd)
                         )
                     }.toMutableList()
                     good.marks = marks.filter { it.matNr == position.matNr }.map { mark ->
