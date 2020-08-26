@@ -145,6 +145,11 @@ class DatabaseRepository @Inject constructor(
         }
     }
 
+    override suspend fun getIncludeCondition(): String? {
+        return withContext(Dispatchers.IO){
+            settings.getIncludeCondition()
+        }
+    }
 
     override suspend fun getWarehouses(tkNumber: String): List<WarehouseInfo> {
         return withContext(Dispatchers.IO) {
@@ -178,6 +183,7 @@ interface IDatabaseRepository {
     suspend fun getGoodByEan(ean: String): GoodInfo?
     suspend fun getEanInfoByEan(ean: String): EanInfo?
     suspend fun getProFillCondition(): String?
+    suspend fun getIncludeCondition(): String?
 
     suspend fun getWarehouses(tkNumber: String): List<WarehouseInfo>
 }
