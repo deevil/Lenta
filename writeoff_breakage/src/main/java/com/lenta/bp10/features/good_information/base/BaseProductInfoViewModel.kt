@@ -194,7 +194,8 @@ abstract class BaseProductInfoViewModel : CoreViewModel(), OnOkInSoftKeyboardLis
     fun initCount(it: Double) {
         launchUITryCatch {
             delay(100)
-            count.postValue(it.toStringFormatted())
+            count.value = it.toStringFormatted()
+            requestFocusToQuantity.value = true
         }
     }
 
