@@ -5,6 +5,8 @@ import com.lenta.bp12.features.other.ItemCategory
 import com.lenta.bp12.features.other.ItemCategoryUi
 import com.lenta.bp12.model.CategoryType
 import com.lenta.bp12.model.IOpenTaskManager
+import com.lenta.bp12.model.pojo.extentions.removeAllMark
+import com.lenta.bp12.model.pojo.extentions.removeAllPart
 import com.lenta.bp12.platform.navigation.IScreenNavigator
 import com.lenta.bp12.platform.resource.IResourceManager
 import com.lenta.shared.platform.viewmodel.CoreViewModel

@@ -2,7 +2,7 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context="com.lenta.bp14.features.work_list.goods_list.GoodsListWlFragment">
+    tools:context="com.lenta.bp12.features.create_task.marked_good_info.MarkedGoodInfoCreateFragment">
 
     <data>
 
@@ -32,7 +32,7 @@
             android:layout_weight="1"
             app:items="@{vm.propertiesItems}"
             app:rv_config="@{rvConfig}"
-            tools:listitem="@layout/item_good_info_poperty" />
+            tools:listitem="@layout/item_good_info_property" />
 
     </LinearLayout>
 

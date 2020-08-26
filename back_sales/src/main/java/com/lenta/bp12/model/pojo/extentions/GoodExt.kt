@@ -32,7 +32,10 @@ fun Good.removePartsByBasketNumber(basketIndex: Int) {
 fun Good.removeMarksByBasketIndex(basketIndex: Int) {
     marks.removeAll { it.basketNumber == basketIndex }
 }
-
+/**
+ * Когда мы сканируем марку или партию, мы так же добавляем пустые позиции в список позиций.
+ * Этот метод удаляет эти позиции (потому что они привязаны к номеру корзины)
+ * */
 fun Good.removePositionsByBasketIndex(basketIndex: Int) {
     positions.removeAll { it.basketNumber == basketIndex }
 }
@@ -45,7 +48,8 @@ fun Good.removeAllPart() {
     parts.clear()
 }
 /**
- * Метод уменьшает количество позиций у товара, лежащего в общем списке, когда его удаляют из корзины
+ * Метод уменьшает количество позиций у товара, лежащего в общем списке, когда его удаляют из корзины.
+ * (эти позиции не привязаны к номеру корзины)
  * */
 fun Good.deletePositionsFromTask(goodFromBasket: Good, basketToGetQuantity: Basket) {
     //Найдем у этого товара позиции с подходящим количеством

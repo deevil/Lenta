@@ -47,10 +47,10 @@ object Constants {
     const val MARK_39 = 39
     val SHOES_MARK_RANGE_18_20 = IntRange(18, 20)
     val TOBACCO_MARK_RANGE_0_21 = IntRange(0, 21)
-    val TOBACCO_MARK_RANGE_21_28 = IntRange(21, 28)
-    val TOBACCO_MARK_RANGE_30_44 = IntRange(30, 44)
+    val TOBACCO_BOX_MARK_RANGE_21_28 = IntRange(21, 28)
+    val TOBACCO_MARK_BLOCK_OR_BOX_RANGE_30_44 = IntRange(30, 44)
     const val MARK_28 = 28
-    const val MARK_29 = 29
+    const val MARK_TOBACCO_PACK_29 = 29
 
     // Regex patterns
     const val GTIN_REGEX_PATTERN = "(0{6}(?<ean8gs1>\\d{8})|0(?<ean13gs1>\\d{13}))"

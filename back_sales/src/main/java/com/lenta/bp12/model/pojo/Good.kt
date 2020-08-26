@@ -2,6 +2,7 @@ package com.lenta.bp12.model.pojo
 
 import com.lenta.bp12.model.ControlType
 import com.lenta.bp12.model.GoodKind
+import com.lenta.bp12.model.MarkType
 import com.lenta.bp12.request.pojo.ProducerInfo
 import com.lenta.shared.models.core.MatrixType
 import com.lenta.shared.models.core.Uom
@@ -10,8 +11,10 @@ import com.lenta.shared.utilities.extentions.sumList
 
 /**
  * Родительский класс для всех товаров, Basket хранит именно его
- * Методы для взаимодействия со списками:
- * @see com.lenta.bp12.model.pojo.extentions.GoodExt
+ * Методы для взаимодействия со списками находятся в файле GoodExt:
+ * @see com.lenta.bp12.model.pojo.extentions.addPosition
+ * @see com.lenta.bp12.model.pojo.extentions.addPart
+ * и тд
  * */
 abstract class Good(
         var ean: String,
@@ -31,7 +34,9 @@ abstract class Good(
         val producers: MutableList<ProducerInfo> = mutableListOf(),
         val positions: MutableList<Position> = mutableListOf(),
         val marks: MutableList<Mark> = mutableListOf(),
-        val parts: MutableList<Part> = mutableListOf()
+        val parts: MutableList<Part> = mutableListOf(),
+        val markType: MarkType,
+        val maxRetailPrice: String = ""
 ) {
     fun getNameWithMaterial(delimiter: String = " "): String {
         return "${material.takeLast(6)}$delimiter$name"
@@ -73,13 +78,13 @@ abstract class Good(
 
         if (ean != other.ean) return false
         if (eans != other.eans) return false
-        
         if (material != other.material) return false
         if (name != other.name) return false
         if (kind != other.kind) return false
         if (section != other.section) return false
         if (matrix != other.matrix) return false
         if (volume != other.volume) return false
+        if (control != other.control) return false
         if (commonUnits != other.commonUnits) return false
         if (innerUnits != other.innerUnits) return false
         if (innerQuantity != other.innerQuantity) return false
@@ -87,19 +92,22 @@ abstract class Good(
         if (positions != other.positions) return false
         if (marks != other.marks) return false
         if (parts != other.parts) return false
-        if (ean != other.ean) return false
+        if (markType != other.markType) return false
+        if (maxRetailPrice != other.maxRetailPrice) return false
 
         return true
     }
 
     override fun hashCode(): Int {
-        var result = eans.hashCode()
+        var result = ean.hashCode()
+        result = 31 * result + eans.hashCode()
         result = 31 * result + material.hashCode()
         result = 31 * result + name.hashCode()
         result = 31 * result + kind.hashCode()
         result = 31 * result + section.hashCode()
         result = 31 * result + matrix.hashCode()
         result = 31 * result + volume.hashCode()
+        result = 31 * result + control.hashCode()
         result = 31 * result + commonUnits.hashCode()
         result = 31 * result + innerUnits.hashCode()
         result = 31 * result + innerQuantity.hashCode()
@@ -107,11 +115,12 @@ abstract class Good(
         result = 31 * result + positions.hashCode()
         result = 31 * result + marks.hashCode()
         result = 31 * result + parts.hashCode()
-        result = 31 * result + ean.hashCode()
+        result = 31 * result + markType.hashCode()
+        result = 31 * result + maxRetailPrice.hashCode()
         return result
     }
 
     override fun toString(): String {
-        return "Good(ean='$ean', eans=$eans, material='$material', name='$name', kind=$kind, section='$section', matrix=$matrix, volume=$volume, control=$control, commonUnits=$commonUnits, innerUnits=$innerUnits, innerQuantity=$innerQuantity, producers=$producers, positions=$positions, marks=$marks, parts=$parts)"
+        return "Good(ean='$ean', eans=$eans, material='$material', name='$name', kind=$kind, section='$section', matrix=$matrix, volume=$volume, control=$control, commonUnits=$commonUnits, innerUnits=$innerUnits, innerQuantity=$innerQuantity, producers=$producers, positions=$positions, marks=$marks, parts=$parts, markType=$markType, maxRetailPrice='$maxRetailPrice')"
     }
 }

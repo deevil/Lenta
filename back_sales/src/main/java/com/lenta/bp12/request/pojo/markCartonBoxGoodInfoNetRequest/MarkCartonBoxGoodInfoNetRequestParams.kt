@@ -2,6 +2,10 @@ package com.lenta.bp12.request.pojo.markCartonBoxGoodInfoNetRequest
 
 import com.google.gson.annotations.SerializedName
 
+/**
+ * Параметры ФМ ZMP_UTZ_WOB_07_V001 «Получение данных по марке/блоку/коробке/товару из ГМ»
+ * @see com.lenta.bp12.request.MarkCartonBoxGoodInfoNetRequest
+ * */
 data class MarkCartonBoxGoodInfoNetRequestParams(
         /** Код бизнес процесса */
         @SerializedName("IV_CODEBP")

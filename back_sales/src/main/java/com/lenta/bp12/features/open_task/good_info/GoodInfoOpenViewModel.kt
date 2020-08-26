@@ -15,9 +15,14 @@ import com.lenta.bp12.platform.extention.isWholesaleType
 import com.lenta.bp12.platform.navigation.IScreenNavigator
 import com.lenta.bp12.platform.resource.IResourceManager
 import com.lenta.bp12.repository.IDatabaseRepository
-import com.lenta.bp12.request.*
+import com.lenta.bp12.request.GoodInfoNetRequest
+import com.lenta.bp12.request.ScanInfoNetRequest
+import com.lenta.bp12.request.ScanInfoParams
+import com.lenta.bp12.request.ScanInfoResult
 import com.lenta.bp12.request.pojo.ProducerInfo
 import com.lenta.bp12.request.pojo.ProviderInfo
+import com.lenta.bp12.request.pojo.good_info.GoodInfoParams
+import com.lenta.bp12.request.pojo.good_info.GoodInfoResult
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.functional.Either
@@ -27,9 +32,6 @@ import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.requests.combined.scan_info.ScanCodeInfo
 import com.lenta.shared.utilities.*
 import com.lenta.shared.utilities.extentions.*
-import com.lenta.shared.utilities.getDateFromString
-import com.lenta.shared.utilities.getFormattedDate
-import com.lenta.shared.utilities.orIfNull
 import com.lenta.shared.view.OnPositionClickListener
 import javax.inject.Inject
 
@@ -418,7 +420,7 @@ class GoodInfoOpenViewModel : CoreViewModel() {
                 funcForSapOrBar = navigator::showTwelveCharactersEntered,
                 funcForExcise = ::loadExciseMarkInfo,
                 funcForBox = ::loadBoxInfo,
-                funcForNotValidFormat = {
+                funcForNotValidBarFormat = {
                     goBackIfSearchFromList()
                     navigator.showIncorrectEanFormat()
                 }
@@ -800,7 +802,8 @@ class GoodInfoOpenViewModel : CoreViewModel() {
                     good = changedGood,
                     provider = changedGood.provider,
                     count = quantityValue,
-                    part = null)
+                    part = null
+            )
             manager.updateCurrentGood(changedGood)
         }.orIfNull {
             Logg.e { "good null" }
@@ -818,7 +821,8 @@ class GoodInfoOpenViewModel : CoreViewModel() {
             manager.addGoodToBasketWithMark(
                     good = changedGood,
                     mark = mark,
-                    provider = changedGood.provider)
+                    provider = changedGood.provider
+            )
             manager.updateCurrentGood(changedGood)
         }.orIfNull {
             Logg.e { "good null" }
@@ -840,7 +844,8 @@ class GoodInfoOpenViewModel : CoreViewModel() {
                     good = changedGood,
                     part = part,
                     provider = changedGood.provider,
-                    count = quantityValue)
+                    count = quantityValue
+            )
         }.orIfNull {
             Logg.e { "good null" }
             navigator.showInternalError(resource.goodNotFoundErrorMsg)
@@ -858,7 +863,11 @@ class GoodInfoOpenViewModel : CoreViewModel() {
                             providerCode = changedGood.provider.code.orEmpty()
                     )
                     Logg.d { "--> add mark from box = $markFromBox" }
-                    manager.addGoodToBasketWithMark(changedGood, markFromBox, changedGood.provider)
+                    manager.addGoodToBasketWithMark(
+                            good = changedGood,
+                            mark = markFromBox,
+                            provider = changedGood.provider
+                    )
                 }
             }
 

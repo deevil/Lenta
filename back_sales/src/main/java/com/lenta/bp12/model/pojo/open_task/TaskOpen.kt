@@ -5,7 +5,7 @@ import com.lenta.bp12.model.pojo.Basket
 import com.lenta.bp12.model.pojo.Block
 import com.lenta.bp12.model.pojo.ReturnReason
 import com.lenta.bp12.model.pojo.TaskType
-import com.lenta.bp12.model.pojo.extentions.getGoodList
+import com.lenta.bp12.model.pojo.extentions.*
 import com.lenta.bp12.request.pojo.ProviderInfo
 
 data class TaskOpen(
@@ -89,21 +89,10 @@ data class TaskOpen(
                     good.removePartsByBasketNumber(basketIndex)
                     good.removePositionsByBasketIndex(basketIndex)
                     //Найдем у этого товара позиции с подходящим количеством
-                    val positionThatFits = good.positions.firstOrNull { positionFromTask ->
-                        goodToDeleteFromBasket.positions.any { it.quantity >= positionFromTask.quantity}
-                    }
-
-                    positionThatFits?.let {
-                        //Получим количество позиций этого товара
-                        val quantityOfPositionFromTask = it.quantity
-                        //Получим количество удаляемого товара из корзины
-                        val quantityToMinus = basket.goods[goodToDeleteFromBasket] ?: 0.0
-                        //Отнимем первое от второго и вернем в товар
-                        val newQuantity = quantityOfPositionFromTask.minus(quantityToMinus)
-                        it.quantity = newQuantity
-                        val index = good.positions.indexOf(it)
-                        good.positions.set(index, it)
-                    }
+                    good.deletePositionsFromTask(
+                            goodFromBasket = goodToDeleteFromBasket,
+                            basketToGetQuantity = basket
+                    )
                 }
                 baskets.remove(basket)
             }

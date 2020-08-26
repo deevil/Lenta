@@ -186,14 +186,12 @@ class ScreenNavigator @Inject constructor(
 
     override fun openMarkedGoodInfoCreateScreen() {
         runOrPostpone {
-            goBack()
             getFragmentStack()?.push(MarkedGoodInfoCreateFragment())
         }
     }
 
     override fun openMarkedGoodInfoOpenScreen() {
         runOrPostpone {
-            goBack()
             getFragmentStack()?.push(MarkedGoodInfoOpenFragment())
         }
     }
@@ -278,6 +276,17 @@ class ScreenNavigator @Inject constructor(
             getFragmentStack()?.push(AlertFragment.create(
                     pageNumber = "93",
                     message = context.getString(R.string.for_excise_alcohol_need_scan_first_mark),
+                    iconRes = R.drawable.ic_info_green_80dp,
+                    timeAutoExitInMillis = 3000
+            ))
+        }
+    }
+
+    override fun showForGoodNeedScanFirstMark() {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    pageNumber = "85",
+                    message = context.getString(R.string.for_good_need_scan_first_mark),
                     iconRes = R.drawable.ic_info_green_80dp,
                     timeAutoExitInMillis = 3000
             ))
@@ -407,6 +416,16 @@ class ScreenNavigator @Inject constructor(
             getFragmentStack()?.push(AlertFragment.create(
                     pageNumber = "119",
                     message = context.getString(R.string.incorrect_ean_format),
+                    iconRes = R.drawable.ic_warning_red_80dp
+            ))
+        }
+    }
+
+    override fun showCantScanPackAlert() {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    pageNumber = "100",
+                    message = context.getString(R.string.cant_scan_tobacco_pack_scan_carton),
                     iconRes = R.drawable.ic_warning_red_80dp
             ))
         }
@@ -548,13 +567,15 @@ interface IScreenNavigator : ICoreNavigator {
     fun openTaskListScreen()
     fun openBasketPropertiesScreen()
     fun openDiscrepancyListScreen()
-    fun openGoodInfoCreateScreen()
-    fun openGoodInfoOpenScreen()
+
     fun openGoodListScreen()
     fun openTaskCardCreateScreen()
     fun openTaskCardOpenScreen()
     fun openTaskSearchScreen()
     fun openAddProviderScreen()
+
+    fun openGoodInfoCreateScreen()
+    fun openGoodInfoOpenScreen()
     fun openMarkedGoodInfoCreateScreen()
     fun openMarkedGoodInfoOpenScreen()
 
@@ -565,6 +586,7 @@ interface IScreenNavigator : ICoreNavigator {
     fun showTaskUnsentDataWillBeDeleted(taskName: String, applyCallback: () -> Unit)
     fun showScannedMarkBelongsToProduct(productName: String)
     fun showForExciseGoodNeedScanFirstMark()
+    fun showForGoodNeedScanFirstMark()
     fun showRawGoodsRemainedInTask(yesCallback: () -> Unit)
     fun showBoxWasLastScanned(afterShowCallback: () -> Unit)
     fun showDoYouReallyWantSetZeroQuantity(yesCallback: () -> Unit, counted: Int)
@@ -577,6 +599,7 @@ interface IScreenNavigator : ICoreNavigator {
     fun showFinishProcessingCurrentBox()
     fun showGoodIsMissingInTask()
     fun showIncorrectEanFormat()
+    fun showCantScanPackAlert()
 
     fun showExciseAlcoholGoodInfoScreen()
     fun showAlcoholGoodInfoScreen()

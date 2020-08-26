@@ -2,6 +2,12 @@ package com.lenta.bp12.request.pojo
 
 import com.google.gson.annotations.SerializedName
 
+/**
+ * Товар из сапа
+ * usages:
+ * @see com.lenta.bp12.request.pojo.good_info.GoodInfoResult
+ * @see com.lenta.bp12.request.pojo.markCartonBoxGoodInfoNetRequest.MarkCartonBoxGoodInfoNetRequestResult
+ * */
 data class MaterialInfo(
         /** Sap-код товара */
         @SerializedName("MATERIAL")
@@ -53,7 +59,7 @@ data class MaterialInfo(
         val volume: String?,
         /** Единица объема */
         @SerializedName("VOLEH")
-        val volumeUnit: String?
+        val volumeUnit: String?,
         /** Тип маркировки */
         @SerializedName("ZMARKTYPE")
         val markType: String?

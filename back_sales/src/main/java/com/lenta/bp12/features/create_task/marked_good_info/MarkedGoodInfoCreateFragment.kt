@@ -1,11 +1,14 @@
 package com.lenta.bp12.features.create_task.marked_good_info
 
+import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
+import com.lenta.bp12.BR
 import com.lenta.bp12.R
-import com.lenta.bp12.databinding.FragmentGoodInfoCreateBinding
+import com.lenta.bp12.databinding.FragmentMarkedGoodInfoCreateBinding
+import com.lenta.bp12.databinding.ItemGoodInfoPropertyBinding
 import com.lenta.bp12.databinding.LayoutMarkedGoodInfoCreatePropertiesTabBinding
 import com.lenta.bp12.databinding.LayoutMarkedGoodInfoCreateQuantityTabBinding
 import com.lenta.bp12.platform.extention.getAppComponent
@@ -22,7 +25,7 @@ import com.lenta.shared.utilities.extentions.connectLiveData
 import com.lenta.shared.utilities.extentions.generateScreenNumberFromPostfix
 import com.lenta.shared.utilities.extentions.provideViewModel
 
-class MarkedGoodInfoCreateFragment : CoreFragment<FragmentGoodInfoCreateBinding, MarkedGoodInfoCreateViewModel>(),
+class MarkedGoodInfoCreateFragment : CoreFragment<FragmentMarkedGoodInfoCreateBinding, MarkedGoodInfoCreateViewModel>(),
         ViewPagerSettings, ToolbarButtonsClickListener, OnScanResultListener, OnBackPresserListener {
 
     override fun getLayoutId(): Int = R.layout.fragment_marked_good_info_create
@@ -38,7 +41,6 @@ class MarkedGoodInfoCreateFragment : CoreFragment<FragmentGoodInfoCreateBinding,
 
     override fun setupTopToolBar(topToolbarUiModel: TopToolbarUiModel) {
         topToolbarUiModel.description.value = getString(R.string.good_info)
-
         connectLiveData(vm.title, topToolbarUiModel.title)
     }
 
@@ -86,44 +88,66 @@ class MarkedGoodInfoCreateFragment : CoreFragment<FragmentGoodInfoCreateBinding,
         vm.updateData()
     }
 
-    override fun getPagerItemView(container: ViewGroup, position: Int) =
-            when (position) {
-                TAB_QUANTITY_PAGE -> initGoodInfoQuantityTab(container)
-                TAB_PROPERTIES_PAGE -> initGoodInfoPropertiesTab(container)
-                else -> View(context)
-            }
+    override fun getPagerItemView(container: ViewGroup, position: Int): View {
+        return when (position) {
+            TAB_QUANTITY_PAGE -> initGoodInfoQuantityTab(container)
+            TAB_PROPERTIES_PAGE -> initGoodInfoPropertiesTab(container)
+            else -> View(context)
+        }
+    }
 
-    override fun getTextTitle(position: Int) = when (position) {
-        TAB_QUANTITY_PAGE -> getString(R.string.quantity)
-        TAB_PROPERTIES_PAGE -> getString(R.string.properties)
-        else -> {
-            Logg.e { "Wrong pager position" }
-            getString(R.string.error)
+    override fun getTextTitle(position: Int) : String {
+        return when (position) {
+            TAB_QUANTITY_PAGE -> getString(R.string.quantity)
+            TAB_PROPERTIES_PAGE -> getString(R.string.properties)
+            else -> {
+                Logg.e { "Wrong pager position" }
+                getString(R.string.error)
+            }
         }
     }
 
     override fun countTab(): Int = TAB_QUANTITY
 
     private fun initGoodInfoQuantityTab(container: ViewGroup): View {
-        val layoutBinding = DataBindingUtil.inflate<LayoutMarkedGoodInfoCreateQuantityTabBinding>(LayoutInflater.from(container.context),
+        val layoutBinding = DataBindingUtil.inflate<LayoutMarkedGoodInfoCreateQuantityTabBinding>(
+                LayoutInflater.from(container.context),
                 R.layout.layout_marked_good_info_create_quantity_tab,
                 container,
                 false)
         layoutBinding.vm = vm
         layoutBinding.lifecycleOwner = viewLifecycleOwner
+
         return layoutBinding.root
     }
 
     private fun initGoodInfoPropertiesTab(container: ViewGroup): View {
-        val layoutBinding = DataBindingUtil.inflate<LayoutMarkedGoodInfoCreatePropertiesTabBinding>(LayoutInflater.from(container.context),
+        val layoutBinding = DataBindingUtil.inflate<LayoutMarkedGoodInfoCreatePropertiesTabBinding>(
+                LayoutInflater.from(container.context),
                 R.layout.layout_marked_good_info_create_properties_tab,
                 container,
                 false)
 
-        layoutBinding.rvConfig
+        layoutBinding.rvConfig = initRecycleAdapterDataBinding<ItemGoodInfoPropertyBinding>(
+                layoutId = R.layout.item_good_info_property,
+                itemId = BR.item
+        )
+
         layoutBinding.vm = vm
         layoutBinding.lifecycleOwner = viewLifecycleOwner
+
+        recyclerViewKeyHandler = initRecyclerViewKeyHandler(
+                recyclerView = layoutBinding.rv,
+                items = vm.propertiesItems,
+                previousPosInfo = recyclerViewKeyHandler?.posInfo?.value,
+                onClickHandler = vm::onClickItemPosition
+        )
         return layoutBinding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        binding?.viewPagerSettings = this
     }
 
     companion object {

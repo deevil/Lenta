@@ -5,9 +5,9 @@ import com.lenta.bp12.model.pojo.AlcoCodeInfo
 import com.lenta.bp12.model.pojo.ReturnReason
 import com.lenta.bp12.model.pojo.TaskType
 import com.lenta.bp12.platform.extention.*
-import com.lenta.bp12.request.GoodInfoResult
 import com.lenta.bp12.request.pojo.GoodInfo
 import com.lenta.bp12.request.pojo.ProviderInfo
+import com.lenta.bp12.request.pojo.good_info.GoodInfoResult
 import com.lenta.shared.fmp.resources.dao_ext.*
 import com.lenta.shared.fmp.resources.fast.*
 import com.lenta.shared.fmp.resources.slow.*

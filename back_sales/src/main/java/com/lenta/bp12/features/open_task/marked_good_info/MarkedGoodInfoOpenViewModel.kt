@@ -5,14 +5,21 @@ import com.lenta.bp12.model.*
 import com.lenta.bp12.model.pojo.Mark
 import com.lenta.bp12.model.pojo.Part
 import com.lenta.bp12.model.pojo.Position
+import com.lenta.bp12.model.pojo.extentions.addPosition
 import com.lenta.bp12.model.pojo.open_task.GoodOpen
+import com.lenta.bp12.platform.extention.getControlType
 import com.lenta.bp12.platform.extention.getGoodKind
 import com.lenta.bp12.platform.navigation.IScreenNavigator
 import com.lenta.bp12.platform.resource.IResourceManager
 import com.lenta.bp12.repository.IDatabaseRepository
-import com.lenta.bp12.request.*
+import com.lenta.bp12.request.GoodInfoNetRequest
+import com.lenta.bp12.request.ScanInfoNetRequest
+import com.lenta.bp12.request.ScanInfoParams
+import com.lenta.bp12.request.ScanInfoResult
 import com.lenta.bp12.request.pojo.ProducerInfo
 import com.lenta.bp12.request.pojo.ProviderInfo
+import com.lenta.bp12.request.pojo.good_info.GoodInfoParams
+import com.lenta.bp12.request.pojo.good_info.GoodInfoResult
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.functional.Either
@@ -295,18 +302,30 @@ class MarkedGoodInfoOpenViewModel : CoreViewModel() {
 
     fun onScanResult(number: String) {
         good.value?.let { good ->
-            if (applyEnabled.value == true || (good.kind == GoodKind.EXCISE && isExciseNumber(number))) {
-                if (!thereWasRollback) {
-                    saveChanges()
-                } else {
-                    thereWasRollback = false
-                }
+            launchUITryCatch {
+                if (isApplyEnabledOrIsGoodExcise(good, number)) {
+                    if (!thereWasRollback) {
+                        saveChanges()
+                    } else {
+                        thereWasRollback = false
+                    }
 
-                manager.clearSearchFromListParams()
-                checkSearchNumber(number)
+                    manager.clearSearchFromListParams()
+                    checkSearchNumber(number)
+                }
             }
+        }.orIfNull {
+            Logg.e { "good null" }
+            navigator.showInternalError(resource.goodNotFoundErrorMsg)
         }
     }
+
+    private fun isApplyEnabledOrIsGoodExcise(good: GoodOpen, number: String) =
+            isApplyEnabled() or isGoodExcise(good, number)
+
+    private fun isApplyEnabled() = applyEnabled.value == true
+    private fun isGoodExcise(good: GoodOpen, number: String) =
+            good.kind == GoodKind.EXCISE && isExciseNumber(number)
 
     private fun isExciseNumber(number: String): Boolean {
         return when (number.length) {
@@ -317,18 +336,19 @@ class MarkedGoodInfoOpenViewModel : CoreViewModel() {
 
     private fun checkSearchNumber(number: String) {
         originalSearchNumber = number
-
-        actionByNumberLength(
-                number = number,
-                funcForEan = ::getGoodByEan,
-                funcForMaterial = ::getGoodByMaterial,
-                funcForSapOrBar = navigator::showTwelveCharactersEntered,
-                funcForBox = ::loadBoxInfo,
-                funcForNotValidFormat = {
-                    goBackIfSearchFromList()
-                    navigator.showIncorrectEanFormat()
-                }
-        )
+        good.value?.let { goodValue ->
+            actionByNumber(
+                    number = number,
+                    funcForEan = ::getGoodByEan,
+                    funcForMaterial = ::getGoodByMaterial,
+                    funcForSapOrBar = navigator::showTwelveCharactersEntered,
+                    funcForBox = ::loadBoxInfo,
+                    funcForNotValidBarFormat = {
+                        goBackIfSearchFromList()
+                        navigator.showIncorrectEanFormat()
+                    }
+            )
+        }
     }
 
     private fun getGoodByEan(ean: String) {
@@ -485,11 +505,13 @@ class MarkedGoodInfoOpenViewModel : CoreViewModel() {
                         section = materialInfo?.section.orEmpty(),
                         matrix = getMatrixType(materialInfo?.matrix.orEmpty()),
                         kind = getGoodKind(),
+                        control = getControlType(),
                         commonUnits = database.getUnitsByCode(materialInfo?.commonUnitsCode.orEmpty()),
                         innerUnits = database.getUnitsByCode(materialInfo?.innerUnitsCode.orEmpty()),
                         innerQuantity = materialInfo?.innerQuantity?.toDoubleOrNull() ?: 0.0,
                         provider = task.value?.provider ?: ProviderInfo(),
-                        producers = producers.orEmpty(),
+                        producers = producers.orEmpty().toMutableList(),
+                        volume = materialInfo?.volume?.toDoubleOrNull() ?: 0.0,
                         markType = enumValueOrNull<MarkType>(materialInfo?.markType.orEmpty()).orIfNull { MarkType.UNKNOWN },
                         maxRetailPrice = ""
                 )
@@ -507,6 +529,9 @@ class MarkedGoodInfoOpenViewModel : CoreViewModel() {
                 }
 
                 Logg.d { "--> added good: $good" }
+            }.orIfNull {
+                Logg.e { "good null" }
+                navigator.showInternalError(resource.goodNotFoundErrorMsg)
             }
 
             manager.clearSearchFromListParams()
@@ -567,12 +592,13 @@ class MarkedGoodInfoOpenViewModel : CoreViewModel() {
         navigator.openAlertScreen(failure)
     }
 
+
     private fun getProducerCode(): String {
         var producerCode = ""
         if (isProducerSelected.value == true) {
             producers.value?.let { producers ->
                 producerPosition.value?.let { position ->
-                    producerCode = producers[position].code
+                    producerCode = producers.getOrNull(position)?.code.orEmpty()
                 }
             }
         }
@@ -584,9 +610,16 @@ class MarkedGoodInfoOpenViewModel : CoreViewModel() {
         sourceProducers.value = producers
     }
 
-    private fun saveChanges() {
-        screenStatus.value?.let { type ->
-            when (type) {
+    private suspend fun saveChanges() {
+        screenStatus.value?.let { status ->
+            good.value?.let { good ->
+                manager.saveGoodInTask(good)
+                isExistUnsavedData = false
+            }
+
+            Logg.e { status.description }
+
+            when (status) {
                 ScreenStatus.COMMON -> addPosition()
                 ScreenStatus.MARK_150, ScreenStatus.MARK_68 -> addMark()
                 ScreenStatus.ALCOHOL, ScreenStatus.PART -> addPart()
@@ -597,76 +630,93 @@ class MarkedGoodInfoOpenViewModel : CoreViewModel() {
             good.value?.let { good ->
                 manager.saveGoodInTask(good)
                 isExistUnsavedData = false
+            }.orIfNull {
+                Logg.e { "good null" }
+                navigator.showInternalError(resource.goodNotFoundErrorMsg)
             }
         }
     }
 
-    private fun addPosition() {
+    private suspend fun addPosition() {
         good.value?.let { changedGood ->
             changedGood.isCounted = true
+            val quantityValue = quantity.value ?: 0.0
             val position = Position(
-                    quantity = quantity.value ?: 0.0,
+                    quantity = quantityValue,
                     provider = changedGood.provider
             )
-            Logg.d { "--> add position = $position" }
+            position.materialNumber = changedGood.material
             changedGood.addPosition(position)
-
+            manager.addGoodToBasket(
+                    good = changedGood,
+                    provider = changedGood.provider,
+                    count = quantityValue,
+                    part = null)
             manager.updateCurrentGood(changedGood)
+        }.orIfNull {
+            Logg.e { "good null" }
+            navigator.showInternalError(resource.goodNotFoundErrorMsg)
         }
     }
 
-    private fun addMark() {
+    private suspend fun addMark() {
         good.value?.let { changedGood ->
-            addEmptyPosition(changedGood)
-
             val mark = Mark(
                     number = lastSuccessSearchNumber,
                     isBadMark = scanInfoResult.value?.status == ExciseMarkStatus.BAD.code,
                     providerCode = changedGood.provider.code.orEmpty()
             )
-            Logg.d { "--> add mark = $mark" }
-            changedGood.addMark(mark)
-
+            manager.addGoodToBasketWithMark(
+                    good = changedGood,
+                    mark = mark,
+                    provider = changedGood.provider)
             manager.updateCurrentGood(changedGood)
+        }.orIfNull {
+            Logg.e { "good null" }
+            navigator.showInternalError(resource.goodNotFoundErrorMsg)
         }
     }
 
-    private fun addPart() {
+    private suspend fun addPart() {
         good.value?.let { changedGood ->
-            addEmptyPosition(changedGood)
-
+            val quantityValue = quantity.value ?: 0.0
             val part = Part(
                     number = lastSuccessSearchNumber,
                     material = changedGood.material,
-                    quantity = quantity.value ?: 0.0,
                     providerCode = changedGood.provider.code.orEmpty(),
                     producerCode = getProducerCode(),
                     date = getDateFromString(date.value.orEmpty(), Constants.DATE_FORMAT_dd_mm_yyyy)
             )
-            Logg.d { "--> add part = $part" }
-            changedGood.addPart(part)
-
-            manager.updateCurrentGood(changedGood)
+            manager.addGoodToBasket(
+                    good = changedGood,
+                    part = part,
+                    provider = changedGood.provider,
+                    count = quantityValue)
+        }.orIfNull {
+            Logg.e { "good null" }
+            navigator.showInternalError(resource.goodNotFoundErrorMsg)
         }
     }
 
-    private fun addBox() {
+    private suspend fun addBox() {
         good.value?.let { changedGood ->
-            addEmptyPosition(changedGood)
 
             scanInfoResult.value?.exciseMarks?.let { marks ->
                 marks.forEach { mark ->
                     val markFromBox = Mark(
-                            number = mark.number,
+                            number = mark.number.orEmpty(),
                             boxNumber = lastSuccessSearchNumber,
                             providerCode = changedGood.provider.code.orEmpty()
                     )
                     Logg.d { "--> add mark from box = $markFromBox" }
-                    changedGood.addMark(markFromBox)
+                    manager.addGoodToBasketWithMark(changedGood, markFromBox, changedGood.provider)
                 }
             }
 
             manager.updateCurrentGood(changedGood)
+        }.orIfNull {
+            Logg.e { "good null" }
+            navigator.showInternalError(resource.goodNotFoundErrorMsg)
         }
     }
 
@@ -743,8 +793,14 @@ class MarkedGoodInfoOpenViewModel : CoreViewModel() {
     }
 
     private fun saveChangesAndExit() {
-        saveChanges()
-        navigator.goBack()
+        launchUITryCatch {
+            navigator.showProgressLoadingData()
+            saveChanges()
+            navigator.hideProgress()
+            navigator.goBack()
+            navigator.openBasketOpenGoodListScreen()
+            manager.isBasketsNeedsToBeClosed = false
+        }
     }
 
 }

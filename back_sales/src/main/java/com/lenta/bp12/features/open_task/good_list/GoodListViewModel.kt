@@ -50,7 +50,7 @@ class GoodListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
 
     val processedSelectionsHelper = SelectionItemsHelper()
 
-    val selectedPage = MutableLiveData(PROCESSING_PAGE)
+    val selectedPage = MutableLiveData(PROCESSING_PAGE_INDEX)
 
     val basketSelectionsHelper = SelectionItemsHelper()
 
@@ -420,10 +420,11 @@ class GoodListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
     }
 
     companion object {
-        private const val COUNT_TAB = 3
         private const val PROCESSING_PAGE_INDEX = 0
         private const val PROCESSED_PAGE_INDEX = 1
         private const val BASKETS_PAGE_INDEX = 2
+
+        private const val COUNT_TAB = 3
     }
 
 }

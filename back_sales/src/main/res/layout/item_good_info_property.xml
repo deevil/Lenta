@@ -11,8 +11,6 @@
 
     </data>
 
-    <?xml version="1.0" encoding="utf-8"?>
-
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="@dimen/common_row_height">
@@ -47,12 +45,18 @@
             android:ellipsize="end"
             android:gravity="center"
             android:maxLines="1"
-            android:text="@{item.postition}"
-            tools:text="1"
-            app:layout_constraintTop_toTopOf="parent"
+            android:text="@{item.position}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/vertical_guideline_1"
-            app:layout_constraintStart_toStartOf="parent"/>
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="1" />
+
+        <View
+            style="@style/VerticalDivider"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="@id/vertical_guideline_1"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
             android:id="@+id/tv_gtin"
@@ -65,12 +69,12 @@
             android:gravity="center_vertical"
             android:maxLines="1"
             android:text="@{item.gtin}"
-            tools:text="1234567891012"
-            app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toTopOf="@+id/div_hor_bottom"
             app:layout_constraintEnd_toStartOf="@+id/vertical_guideline_2"
             app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toEndOf="@+id/vertical_guideline_1"/>
+            app:layout_constraintStart_toEndOf="@+id/vertical_guideline_1"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="1234567891012" />
 
         <View
             android:id="@+id/div_hor_bottom"
@@ -81,21 +85,32 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
 
+        <View
+            style="@style/VerticalDivider"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="@id/vertical_guideline_2"
+            app:layout_constraintTop_toTopOf="parent" />
+
         <TextView
             android:id="@+id/tv_quantity"
             style="@style/TextTitle"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
             android:layout_marginEnd="8dp"
-            android:maxLines="1"
             android:ellipsize="end"
+            android:maxLines="1"
             android:text="@{item.property}"
-            tools:text="Размер"
-            app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="@id/vertical_guideline_3"
             app:layout_constraintStart_toEndOf="@+id/vertical_guideline_2"
- />
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="Размер" />
+
+        <View
+            style="@style/VerticalDivider"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="@id/vertical_guideline_3"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
             android:id="@+id/tv_value"
@@ -108,11 +123,11 @@
             android:gravity="center_vertical"
             android:maxLines="1"
             android:text="@{item.value}"
-            tools:text="38-40"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/vertical_guideline_3"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="38-40" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

@@ -2,21 +2,26 @@ package com.lenta.bp12.features.create_task.marked_good_info
 
 import androidx.lifecycle.MutableLiveData
 import com.lenta.bp12.model.*
+import com.lenta.bp12.model.pojo.Basket
 import com.lenta.bp12.model.pojo.Mark
-import com.lenta.bp12.model.pojo.Part
 import com.lenta.bp12.model.pojo.Position
-import com.lenta.bp12.model.pojo.create_task.Basket
 import com.lenta.bp12.model.pojo.create_task.GoodCreate
-import com.lenta.bp12.platform.extention.extractAlcoCode
+import com.lenta.bp12.model.pojo.extentions.addPosition
+import com.lenta.bp12.model.pojo.extentions.getQuantityOfGood
 import com.lenta.bp12.platform.extention.getControlType
 import com.lenta.bp12.platform.extention.getGoodKind
 import com.lenta.bp12.platform.extention.getMarkType
 import com.lenta.bp12.platform.navigation.IScreenNavigator
 import com.lenta.bp12.platform.resource.IResourceManager
 import com.lenta.bp12.repository.IDatabaseRepository
-import com.lenta.bp12.request.*
+import com.lenta.bp12.request.GoodInfoNetRequest
+import com.lenta.bp12.request.ScanInfoNetRequest
+import com.lenta.bp12.request.ScanInfoParams
+import com.lenta.bp12.request.ScanInfoResult
 import com.lenta.bp12.request.pojo.ProducerInfo
 import com.lenta.bp12.request.pojo.ProviderInfo
+import com.lenta.bp12.request.pojo.good_info.GoodInfoParams
+import com.lenta.bp12.request.pojo.good_info.GoodInfoResult
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.functional.Either
@@ -27,8 +32,8 @@ import com.lenta.shared.requests.combined.scan_info.ScanCodeInfo
 import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.databinding.PageSelectionListener
 import com.lenta.shared.utilities.extentions.*
-import com.lenta.shared.utilities.getDateFromString
 import com.lenta.shared.utilities.getFormattedDate
+import com.lenta.shared.utilities.orIfNull
 import com.lenta.shared.view.OnPositionClickListener
 import javax.inject.Inject
 
@@ -92,6 +97,7 @@ class MarkedGoodInfoCreateViewModel : CoreViewModel(), PageSelectionListener {
     private var thereWasRollback = false
 
     val properties = MutableLiveData(listOf<GoodProperty>())
+
     val propertiesItems = MutableLiveData(listOf<GoodPropertyItem>())
 
     /**
@@ -167,9 +173,8 @@ class MarkedGoodInfoCreateViewModel : CoreViewModel(), PageSelectionListener {
                 val isProviderSelected = it.second
 
                 if (isProviderSelected) {
-                    getBasket()?.let { basket ->
-                        good.getQuantityByProvider(basket.provider.code).sumWith(enteredQuantity)
-                    } ?: enteredQuantity
+                    getBasket()?.getQuantityOfGood(good)?.sumWith(enteredQuantity)
+                            ?: enteredQuantity
                 } else 0.0
             }
         }
@@ -340,8 +345,12 @@ class MarkedGoodInfoCreateViewModel : CoreViewModel(), PageSelectionListener {
 
     init {
         launchUITryCatch {
-            manager.clearCurrentGood()
-            checkSearchNumber(manager.searchNumber)
+            good.value?.let{
+                Logg.e{ it.toString() }
+            }.orIfNull {
+                manager.clearCurrentGood()
+                checkSearchNumber(manager.searchNumber)
+            }
         }
     }
 
@@ -374,13 +383,16 @@ class MarkedGoodInfoCreateViewModel : CoreViewModel(), PageSelectionListener {
     private fun checkSearchNumber(number: String) {
         originalSearchNumber = number
         good.value?.let { goodValue ->
-            actionByNumberLength(
+            Logg.e {
+                goodValue.toString()
+            }
+            actionByNumber(
                     number = number,
                     funcForEan = ::getGoodByEan,
                     funcForMaterial = ::getGoodByMaterial,
                     funcForSapOrBar = navigator::showTwelveCharactersEntered,
                     funcForBox = ::loadBoxInfo,
-                    funcForNotValidFormat = {
+                    funcForNotValidBarFormat = {
                         goBackIfSearchFromList()
                         navigator.showIncorrectEanFormat()
                     }
@@ -492,27 +504,33 @@ class MarkedGoodInfoCreateViewModel : CoreViewModel(), PageSelectionListener {
     private fun setGood(result: GoodInfoResult, number: String) {
         launchUITryCatch {
             with(result) {
-                good.value = GoodCreate(
-                        ean = eanInfo?.ean.orEmpty(),
-                        eans = database.getEanListByMaterialUnits(
-                                material = materialInfo?.material.orEmpty(),
-                                unitsCode = materialInfo?.commonUnitsCode.orEmpty()
-                        ),
-                        material = materialInfo?.material.orEmpty(),
-                        name = materialInfo?.name.orEmpty(),
-                        kind = getGoodKind(),
-                        type = materialInfo?.goodType.orEmpty(),
-                        control = getControlType(),
-                        section = materialInfo?.section.orEmpty(),
-                        matrix = getMatrixType(materialInfo?.matrix.orEmpty()),
-                        commonUnits = database.getUnitsByCode(materialInfo?.commonUnitsCode.orEmpty()),
-                        innerUnits = database.getUnitsByCode(materialInfo?.innerUnitsCode.orEmpty()),
-                        innerQuantity = materialInfo?.innerQuantity?.toDoubleOrNull() ?: 1.0,
-                        providers = providers.orEmpty().toMutableList(),
-                        producers = producers.orEmpty().toMutableList(),
-                        markType = getMarkType(),
-                        maxRetailPrice = ""
-                )
+                materialInfo?.let {
+                    good.value = GoodCreate(
+                            ean = eanInfo?.ean.orEmpty(),
+                            eans = database.getEanListByMaterialUnits(
+                                    material = materialInfo.material.orEmpty(),
+                                    unitsCode = materialInfo.commonUnitsCode.orEmpty()
+                            ),
+                            material = materialInfo.material.orEmpty(),
+                            name = materialInfo.name.orEmpty(),
+                            kind = getGoodKind(),
+                            type = materialInfo.goodType.orEmpty(),
+                            control = getControlType(),
+                            section = materialInfo.section.orEmpty(),
+                            matrix = getMatrixType(materialInfo.matrix.orEmpty()),
+                            commonUnits = database.getUnitsByCode(materialInfo.commonUnitsCode.orEmpty()),
+                            innerUnits = database.getUnitsByCode(materialInfo.innerUnitsCode.orEmpty()),
+                            innerQuantity = materialInfo.innerQuantity?.toDoubleOrNull() ?: 1.0,
+                            providers = providers.orEmpty().toMutableList(),
+                            producers = producers.orEmpty().toMutableList(),
+                            markType = getMarkType(),
+                            maxRetailPrice = "",
+                            volume = materialInfo.volume?.toDoubleOrNull() ?: 0.0
+                    )
+                }.orIfNull {
+                    Logg.e { "materialInfo null" }
+                    navigator.showInternalError(resource.goodNotFoundErrorMsg)
+                }
             }
 
             good.value?.let { good ->
@@ -530,26 +548,6 @@ class MarkedGoodInfoCreateViewModel : CoreViewModel(), PageSelectionListener {
             }
 
             manager.clearSearchFromListParams()
-        }
-    }
-
-    private suspend fun handleUnknownMark(number: String, result: ScanInfoResult) {
-        when (number.length) {
-            Constants.MARK_150 -> navigator.openAlertScreen(result.statusDescription)
-            Constants.MARK_68 -> {
-                val alcoCodeInfoList = database.getAlcoCodeInfoList(number.extractAlcoCode())
-
-                if (alcoCodeInfoList.isEmpty()) {
-                    navigator.openAlertScreen(resource.unknownAlcocode())
-                    return
-                }
-
-                if (alcoCodeInfoList.find { it.material == good.value?.material } != null) {
-
-                } else {
-                    navigator.openAlertScreen(resource.alcocodeDoesNotApplyToThisGood())
-                }
-            }
         }
     }
 
@@ -624,7 +622,7 @@ class MarkedGoodInfoCreateViewModel : CoreViewModel(), PageSelectionListener {
         if (isProducerSelected.value == true) {
             producers.value?.let { producers ->
                 producerPosition.value?.let { position ->
-                    producerCode = producers[position].code
+                    producerCode = producers.getOrNull(position)?.code.orEmpty()
                 }
             }
         }
@@ -652,7 +650,7 @@ class MarkedGoodInfoCreateViewModel : CoreViewModel(), PageSelectionListener {
                     basket.section == good.section &&
                             basket.goodType == good.type &&
                             basket.control == good.control &&
-                            basket.provider.code == getProviderCode()
+                            basket.provider?.code == getProviderCode()
                 }
             }
         }
@@ -667,83 +665,68 @@ class MarkedGoodInfoCreateViewModel : CoreViewModel(), PageSelectionListener {
     }
 
     private fun saveChanges() {
-        addMark()
-
         good.value?.let { good ->
             manager.saveGoodInTask(good)
             isExistUnsavedData = false
+        }.orIfNull {
+            Logg.e { "good null" }
+            navigator.showInternalError(resource.goodNotFoundErrorMsg)
         }
     }
 
-    private fun addPosition() {
+    private suspend fun addPosition() {
         good.value?.let { changedGood ->
+            val quantityValue = quantity.value ?: 0.0
             val position = Position(
-                    quantity = quantity.value ?: 0.0,
+                    quantity = quantityValue,
                     provider = getProvider()
             )
-            Logg.d { "--> add position = $position" }
+            position.materialNumber = changedGood.material
             changedGood.addPosition(position)
-
-            createBasket(changedGood)
+            manager.addGoodToBasket(
+                    good = changedGood,
+                    provider = getProvider(),
+                    count = quantityValue)
             manager.updateCurrentGood(changedGood)
+        }.orIfNull {
+            Logg.e { "good null" }
+            navigator.showInternalError(resource.goodNotFoundErrorMsg)
         }
     }
 
-    private fun addMark() {
+    private suspend fun addMark() {
         good.value?.let { changedGood ->
-            addEmptyPosition(changedGood)
-
             val mark = Mark(
                     number = lastSuccessSearchNumber,
                     isBadMark = scanInfoResult.value?.status == ExciseMarkStatus.BAD.code,
                     providerCode = getProviderCode()
             )
-            Logg.d { "--> add mark = $mark" }
-            changedGood.addMark(mark)
-
-            createBasket(changedGood)
-            manager.updateCurrentGood(changedGood)
+            manager.addGoodToBasketWithMark(changedGood, mark, getProvider())
+        }.orIfNull {
+            Logg.e { "good null" }
+            navigator.showInternalError(resource.goodNotFoundErrorMsg)
         }
     }
 
-    private fun addPart() {
+    private suspend fun addBox() {
         good.value?.let { changedGood ->
-            addEmptyPosition(changedGood)
-
-            val part = Part(
-                    number = lastSuccessSearchNumber,
-                    material = changedGood.material,
-                    quantity = quantity.value ?: 0.0,
-                    providerCode = getProviderCode(),
-                    producerCode = getProducerCode(),
-                    date = getDateFromString(date.value.orEmpty(), Constants.DATE_FORMAT_dd_mm_yyyy)
-            )
-            Logg.d { "--> add part = $part" }
-            changedGood.addPart(part)
-
-            createBasket(changedGood)
-            manager.updateCurrentGood(changedGood)
-        }
-    }
-
-    private fun addBox() {
-        good.value?.let { changedGood ->
-            addEmptyPosition(changedGood)
 
             scanInfoResult.value?.exciseMarks?.let { marks ->
                 marks.forEach { mark ->
                     val markFromBox = Mark(
-                            number = mark.number,
+                            number = mark.number.orEmpty(),
                             boxNumber = lastSuccessSearchNumber,
                             providerCode = getProviderCode()
                     )
                     Logg.d { "--> add mark from box = $markFromBox" }
-                    changedGood.addMark(markFromBox)
+                    manager.addGoodToBasketWithMark(changedGood, markFromBox, getProvider())
                 }
             }
 
-            createBasket(changedGood)
             manager.updateCurrentGood(changedGood)
+        }.orIfNull {
+            Logg.e { "good null" }
+            navigator.showInternalError(resource.goodNotFoundErrorMsg)
         }
     }
 
@@ -756,25 +739,10 @@ class MarkedGoodInfoCreateViewModel : CoreViewModel(), PageSelectionListener {
         changedGood.addPosition(position)
     }
 
-    private fun createBasket(changedGood: GoodCreate) {
-        var basket = getBasket()
-        if (basket == null) {
-            basket = Basket(
-                    section = changedGood.section,
-                    goodType = changedGood.type,
-                    control = changedGood.control,
-                    provider = getProvider()
-            )
-            Logg.d { "--> add basket = $basket" }
-            manager.addBasket(basket)
-        } else {
-            manager.updateCurrentBasket(basket)
-        }
-    }
-
     fun updateData() {
-        if (manager.isWasAddedProvider) {
-            updateProviders(good.value!!.providers)
+        val good = good.value
+        if (manager.isWasAddedProvider && good != null) {
+            updateProviders(good.providers)
             providerPosition.value = 1
             manager.isWasAddedProvider = false
         }
@@ -830,13 +798,22 @@ class MarkedGoodInfoCreateViewModel : CoreViewModel(), PageSelectionListener {
     }
 
     private fun saveChangesAndExit() {
-        saveChanges()
-        navigator.goBack()
-        navigator.openBasketGoodListScreen()
+        launchUITryCatch {
+            navigator.showProgressLoadingData()
+            saveChanges()
+            navigator.hideProgress()
+            navigator.goBack()
+            navigator.openBasketCreateGoodListScreen()
+            manager.isBasketsNeedsToBeClosed = false
+        }
     }
 
     override fun onPageSelected(position: Int) {
-        TODO("Not yet implemented")
+        selectedPage.value = position
+    }
+
+    fun onClickItemPosition(position: Int){
+
     }
 
 }

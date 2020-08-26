@@ -7,15 +7,13 @@ import com.lenta.bp12.model.pojo.Part
 import com.lenta.bp12.model.pojo.Position
 import com.lenta.bp12.model.pojo.create_task.GoodCreate
 import com.lenta.bp12.model.pojo.create_task.TaskCreate
-import com.lenta.bp12.model.pojo.extentions.addGood
-import com.lenta.bp12.model.pojo.extentions.getGoodList
-import com.lenta.bp12.model.pojo.extentions.getQuantityOfGood
+import com.lenta.bp12.model.pojo.extentions.*
 import com.lenta.bp12.platform.extention.isAlcohol
 import com.lenta.bp12.platform.extention.isCommon
 import com.lenta.bp12.repository.IDatabaseRepository
-import com.lenta.bp12.request.GoodInfoResult
 import com.lenta.bp12.request.SendTaskDataParams
 import com.lenta.bp12.request.pojo.*
+import com.lenta.bp12.request.pojo.good_info.GoodInfoResult
 import com.lenta.shared.platform.constants.Constants
 import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.extentions.dropZeros
@@ -310,7 +308,8 @@ class CreateTaskManager @Inject constructor(
                             factQuantity = quantity.dropZeros(),
                             isCounted = true.toSapBooleanString(),
                             innerQuantity = good.innerQuantity.dropZeros(),
-                            unitsCode = good.commonUnits.code
+                            unitsCode = good.commonUnits.code,
+                            maxRetailPrice = good.maxRetailPrice
                     )
                 }
 
@@ -321,7 +320,9 @@ class CreateTaskManager @Inject constructor(
                             boxNumber = mark.boxNumber,
                             isBadMark = mark.isBadMark.toSapBooleanString(),
                             providerCode = mark.providerCode,
-                            basketNumber = mark.basketNumber.toString()
+                            basketNumber = mark.basketNumber.toString(),
+                            maxRetailPrice = mark.maxRetailPrice,
+                            packNumber = mark.packNumber
                     )
                 }
 
@@ -405,5 +406,4 @@ interface ICreateTaskManager {
     fun saveGoodInTask(good: GoodCreate)
     fun clearSearchFromListParams()
     fun clearCurrentGood()
-
 }

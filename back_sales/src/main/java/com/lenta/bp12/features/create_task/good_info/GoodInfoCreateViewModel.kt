@@ -9,16 +9,18 @@ import com.lenta.bp12.model.pojo.Position
 import com.lenta.bp12.model.pojo.create_task.GoodCreate
 import com.lenta.bp12.model.pojo.extentions.addPosition
 import com.lenta.bp12.model.pojo.extentions.getQuantityOfGood
-import com.lenta.bp12.platform.extention.extractAlcoCode
-import com.lenta.bp12.platform.extention.getControlType
-import com.lenta.bp12.platform.extention.getGoodKind
-import com.lenta.bp12.platform.extention.isWholesaleType
+import com.lenta.bp12.platform.extention.*
 import com.lenta.bp12.platform.navigation.IScreenNavigator
 import com.lenta.bp12.platform.resource.IResourceManager
 import com.lenta.bp12.repository.IDatabaseRepository
-import com.lenta.bp12.request.*
+import com.lenta.bp12.request.GoodInfoNetRequest
+import com.lenta.bp12.request.ScanInfoNetRequest
+import com.lenta.bp12.request.ScanInfoParams
+import com.lenta.bp12.request.ScanInfoResult
 import com.lenta.bp12.request.pojo.ProducerInfo
 import com.lenta.bp12.request.pojo.ProviderInfo
+import com.lenta.bp12.request.pojo.good_info.GoodInfoParams
+import com.lenta.bp12.request.pojo.good_info.GoodInfoResult
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.functional.Either
@@ -45,9 +47,13 @@ class GoodInfoCreateViewModel : CoreViewModel() {
     @Inject
     lateinit var sessionInfo: ISessionInfo
 
+    /** Получение данных товара по ШК\SAP-коду
+     * "ZMP_UTZ_BKS_05_V001" */
     @Inject
     lateinit var goodInfoNetRequest: GoodInfoNetRequest
 
+    /** Получение данных по акцизному товару
+     * "ZMP_UTZ_100_V001" */
     @Inject
     lateinit var scanInfoNetRequest: ScanInfoNetRequest
 
@@ -196,7 +202,8 @@ class GoodInfoCreateViewModel : CoreViewModel() {
                 val isProviderSelected = it.second
 
                 if (isProviderSelected) {
-                    getBasket()?.getQuantityOfGood(good)?.sumWith(enteredQuantity) ?: enteredQuantity
+                    getBasket()?.getQuantityOfGood(good)?.sumWith(enteredQuantity)
+                            ?: enteredQuantity
                 } else 0.0
             }
         }
@@ -381,8 +388,9 @@ class GoodInfoCreateViewModel : CoreViewModel() {
 
     init {
         launchUITryCatch {
-            manager.clearCurrentGood()
-            checkSearchNumber(manager.searchNumber)
+            good.value?.let {
+                setFoundGood(it)
+            }
         }
     }
 
@@ -406,6 +414,7 @@ class GoodInfoCreateViewModel : CoreViewModel() {
             }
         }
     }
+
     private fun isApplyEnabledOrIsGoodExcise(good: GoodCreate, number: String) =
             isApplyEnabled() or isGoodExcise(good, number)
 
@@ -422,7 +431,6 @@ class GoodInfoCreateViewModel : CoreViewModel() {
 
     private fun checkSearchNumber(number: String) {
         originalSearchNumber = number
-
         actionByNumber(
                 number = number,
                 funcForEan = ::getGoodByEan,
@@ -430,7 +438,7 @@ class GoodInfoCreateViewModel : CoreViewModel() {
                 funcForSapOrBar = navigator::showTwelveCharactersEntered,
                 funcForExcise = ::loadExciseMarkInfo,
                 funcForBox = ::loadBoxInfo,
-                funcForNotValidFormat = {
+                funcForNotValidBarFormat = {
                     goBackIfSearchFromList()
                     navigator.showIncorrectEanFormat()
                 }
@@ -455,15 +463,13 @@ class GoodInfoCreateViewModel : CoreViewModel() {
 
     private fun setFoundGood(foundGood: GoodCreate) {
         manager.updateCurrentGood(foundGood)
-        if (foundGood.markType != MarkType.UNKNOWN) {
-            navigator.openMarkedGoodInfoCreateScreen()
-        } else {
-            setScreenStatus(foundGood)
-            updateProviders(foundGood.providers)
-            updateProducers(foundGood.producers)
-            clearSpinnerPositions()
-            setDefaultQuantity(foundGood)
-        }
+
+        setScreenStatus(foundGood)
+        updateProviders(foundGood.providers)
+        updateProducers(foundGood.producers)
+        clearSpinnerPositions()
+        setDefaultQuantity(foundGood)
+
 
         Logg.d { "--> found good: $foundGood" }
     }
@@ -553,10 +559,6 @@ class GoodInfoCreateViewModel : CoreViewModel() {
     }
 
     private fun setGood(result: GoodInfoResult, number: String) {
-        if (result.getMarkType() != MarkType.UNKNOWN) {
-            navigator
-            navigator.openMarkedGoodInfoCreateScreen()
-        }
         launchUITryCatch {
             with(result) {
                 task.value?.let { task ->
@@ -582,7 +584,7 @@ class GoodInfoCreateViewModel : CoreViewModel() {
                             producers = producers?.toMutableList().orEmpty().toMutableList(),
                             volume = materialInfo?.volume?.toDoubleOrNull() ?: 0.0,
                             markType = getMarkType(),
-                            maxRetailPrice = ""
+                            maxRetailPrice = "")
                 }.orIfNull {
                     Logg.e { "task null" }
                     navigator.showInternalError(resource.taskNotFoundErrorMsg)
@@ -615,13 +617,14 @@ class GoodInfoCreateViewModel : CoreViewModel() {
         launchUITryCatch {
             navigator.showProgressLoadingData(::handleFailure)
 
-            scanInfoNetRequest(ScanInfoParams(
-                    tkNumber = sessionInfo.market.orEmpty(),
-                    material = good.value!!.material,
-                    markNumber = number,
-                    mode = ScanInfoMode.MARK.mode,
-                    quantity = 0.0
-            )).also {
+            scanInfoNetRequest(
+                    ScanInfoParams(
+                            tkNumber = sessionInfo.market.orEmpty(),
+                            material = good.value!!.material,
+                            markNumber = number,
+                            mode = ScanInfoMode.MARK.mode,
+                            quantity = 0.0
+                    )).also {
                 navigator.hideProgress()
             }.either(::handleFailure) { result ->
                 handleLoadExciseMarkInfoResult(result, number)
@@ -690,10 +693,6 @@ class GoodInfoCreateViewModel : CoreViewModel() {
         isExistUnsavedData = true
         scanInfoResult.value = result
         quantityField.value = "1"
-
-        // todo Возможно ошибка в логике
-        // потому что тогда непонятно зачем приходит новый список при запросе по марке
-        //updateProducers(result.producers.toMutableList())
     }
 
     private fun loadBoxInfo(number: String) {
@@ -900,8 +899,9 @@ class GoodInfoCreateViewModel : CoreViewModel() {
     }
 
     fun updateData() {
-        if (manager.isWasAddedProvider) {
-            updateProviders(good.value!!.providers)
+        val good = good.value
+        if (manager.isWasAddedProvider && good != null) {
+            updateProviders(good.providers)
             providerPosition.value = 1
             manager.isWasAddedProvider = false
         }

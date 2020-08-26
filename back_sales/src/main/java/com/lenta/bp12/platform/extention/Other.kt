@@ -3,10 +3,10 @@ package com.lenta.bp12.platform.extention
 import com.lenta.bp12.R
 import com.lenta.bp12.model.ControlType
 import com.lenta.bp12.model.GoodKind
+import com.lenta.bp12.model.MarkType
 import com.lenta.bp12.model.TypeCode
 import com.lenta.bp12.model.pojo.TaskType
-import com.lenta.bp12.model.MarkType
-import com.lenta.bp12.request.GoodInfoResult
+import com.lenta.bp12.request.pojo.good_info.GoodInfoResult
 import com.lenta.shared.fmp.resources.slow.ZfmpUtz48V001
 import com.lenta.shared.utilities.enumValueOrNull
 import com.lenta.shared.utilities.extentions.isSapTrue
@@ -73,6 +73,10 @@ fun String.addZerosToStart(targetLength: Int): String {
     return value
 }
 
+fun String.extractAlcoCode(): String {
+    return BigInteger(this.substring(7, 19), 36).toString().padStart(19, '0')
+}
+
 fun ControlType.isCommon(): Boolean {
     return this == ControlType.COMMON
 }
@@ -83,10 +87,6 @@ fun ControlType.isAlcohol(): Boolean {
 
 fun ControlType.isMark(): Boolean {
     return this == ControlType.MARK
-}
-
-fun String.extractAlcoCode(): String {
-    return BigInteger(this.substring(7, 19), 36).toString().padStart(19, '0')
 }
 
 fun TaskType.isWholesaleType(): Boolean {

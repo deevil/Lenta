@@ -2,10 +2,9 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context=".features.create_task.good_info.GoodInfoCreateFragment">
+    tools:context="com.lenta.bp12.features.create_task.marked_good_info.MarkedGoodInfoCreateFragment">
 
     <data>
-
         <variable
             name="vm"
             type="com.lenta.bp12.features.create_task.marked_good_info.MarkedGoodInfoCreateViewModel" />
@@ -13,7 +12,6 @@
         <variable
             name="viewPagerSettings"
             type="com.lenta.shared.utilities.databinding.ViewPagerSettings" />
-
     </data>
 
     <LinearLayout

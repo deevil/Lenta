@@ -119,7 +119,3 @@ enum class MarkType(val description: String) {
     MEDICINE("Медицина"),
     UNKNOWN("")
 }
-
-fun main() {
-    MarkType::class.java.enumConstants
-}

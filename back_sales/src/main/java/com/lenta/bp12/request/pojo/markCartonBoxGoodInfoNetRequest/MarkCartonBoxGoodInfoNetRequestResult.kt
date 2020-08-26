@@ -4,6 +4,10 @@ import com.google.gson.annotations.SerializedName
 import com.lenta.bp12.request.pojo.MaterialInfo
 import com.lenta.shared.requests.SapResponse
 
+/**
+ * Результат ФМ ZMP_UTZ_WOB_07_V001 «Получение данных по марке/блоку/коробке/товару из ГМ»
+ * @see com.lenta.bp12.request.MarkCartonBoxGoodInfoNetRequest
+ * */
 data class MarkCartonBoxGoodInfoNetRequestResult(
         /** Статус марки */
         @SerializedName("EV_STAT")

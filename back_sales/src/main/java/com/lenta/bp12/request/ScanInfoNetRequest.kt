@@ -11,12 +11,17 @@ import com.lenta.shared.requests.FmpRequestsHelper
 import com.lenta.shared.requests.SapResponse
 import javax.inject.Inject
 
+/** Получение данных по акцизному товару "ZMP_UTZ_100_V001" */
 class ScanInfoNetRequest @Inject constructor(
         private val fmpRequestsHelper: FmpRequestsHelper
 ) : UseCase<ScanInfoResult, ScanInfoParams> {
 
     override suspend fun run(params: ScanInfoParams): Either<Failure, ScanInfoResult> {
-        return fmpRequestsHelper.restRequest("ZMP_UTZ_100_V001", params, ScanInfoStatus::class.java)
+        return fmpRequestsHelper.restRequest(RESOURCE_NAME, params, ScanInfoStatus::class.java)
+    }
+
+    companion object {
+        private const val RESOURCE_NAME = "ZMP_UTZ_100_V001"
     }
 
 }

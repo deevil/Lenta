@@ -2,19 +2,17 @@ package com.lenta.bp12.model
 
 import androidx.lifecycle.MutableLiveData
 import com.lenta.bp12.model.pojo.*
-import com.lenta.bp12.model.pojo.extentions.addGood
-import com.lenta.bp12.model.pojo.extentions.getGoodList
-import com.lenta.bp12.model.pojo.extentions.getQuantityOfGood
+import com.lenta.bp12.model.pojo.extentions.*
 import com.lenta.bp12.model.pojo.open_task.GoodOpen
 import com.lenta.bp12.model.pojo.open_task.TaskOpen
 import com.lenta.bp12.platform.extention.getControlType
 import com.lenta.bp12.platform.extention.isAlcohol
 import com.lenta.bp12.platform.extention.isCommon
 import com.lenta.bp12.repository.IDatabaseRepository
-import com.lenta.bp12.request.GoodInfoResult
 import com.lenta.bp12.request.SendTaskDataParams
 import com.lenta.bp12.request.TaskContentResult
 import com.lenta.bp12.request.pojo.*
+import com.lenta.bp12.request.pojo.good_info.GoodInfoResult
 import com.lenta.shared.models.core.getInnerUnits
 import com.lenta.shared.platform.constants.Constants
 import com.lenta.shared.utilities.Logg
@@ -317,7 +315,9 @@ class OpenTaskManager @Inject constructor(
                                         name = it.name
                                 )
                             }?.toMutableList() ?: mutableListOf(),
-                            volume = positionInfo.volume?.toDoubleOrNull() ?: 0.0
+                            volume = positionInfo.volume?.toDoubleOrNull() ?: 0.0,
+                            markType = goodInfo.markType,
+                            maxRetailPrice = positionInfo.maxRetailPrice.orEmpty()
                     )
 
                     factQuantity?.toDoubleOrNull()?.let { factQuantity ->

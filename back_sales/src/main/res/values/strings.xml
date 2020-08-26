@@ -59,8 +59,10 @@
     <string name="unknown_alcocode">Неизвестный алкокод</string>
     <string name="good_is_missing_in_task">Товар отсутствует в задании</string>
     <string name="incorrect_ean_format">Неверный формат штрихкода</string>
-    <string name="close_basket">Закрыть текущую корзину для редактирования? В случае согласия система запретит добавление товаров в текущую корзину.</string>
+    <string name="cant_scan_tobacco_pack_scan_carton">Добавление отдельной пачки запрещено. Отсканируйте целый блок.</string>
+    <string name="for_good_need_scan_first_mark">Для данного товара, необходимо дополнительно отсканировать марку.</string>
 
+    <string name="close_basket">Закрыть текущую корзину для редактирования? В случае согласия система запретит добавление товаров в текущую корзину.</string>
     <string name="some_of_chosen_baskets_not_closed">Некоторые выбранные корзины не закрыты. Закройте корзины и повторите печать</string>
     <string name="some_baskets_not_closed_cant_save">Некоторые корзины не закрыты. Сохранение заданий невозможно</string>
     <string name="some_baskets_already_printed">По некоторым выделенным корзинам уже производилась печать. Продолжить?</string>
@@ -109,7 +111,6 @@
     <string name="with_bottling_date">с датой розлива</string>
     <string name="common_product">Обычный товар</string>
     <string name="alcohol">Алкоголь</string>
-    <string name="marked_good">Маркированный товар</string>
     <string name="excise_alcohol">Акцизный алкоголь</string>
     <string name="specify_supplier_sap">Укажите SAP-код поставщика</string>
     <string name="supplier_name">Наименование поставщика:</string>

@@ -8,6 +8,8 @@ import com.lenta.bp12.model.CategoryType
 import com.lenta.bp12.model.ICreateTaskManager
 import com.lenta.bp12.model.pojo.Basket
 import com.lenta.bp12.model.pojo.extentions.getDescription
+import com.lenta.bp12.model.pojo.extentions.removeAllMark
+import com.lenta.bp12.model.pojo.extentions.removeAllPart
 import com.lenta.bp12.platform.navigation.IScreenNavigator
 import com.lenta.bp12.platform.resource.IResourceManager
 import com.lenta.shared.platform.viewmodel.CoreViewModel

@@ -2,6 +2,7 @@ package com.lenta.bp12.model.pojo.open_task
 
 import com.lenta.bp12.model.ControlType
 import com.lenta.bp12.model.GoodKind
+import com.lenta.bp12.model.MarkType
 import com.lenta.bp12.model.pojo.Good
 import com.lenta.bp12.model.pojo.Mark
 import com.lenta.bp12.model.pojo.Part
@@ -28,10 +29,12 @@ class GoodOpen(
         positions: MutableList<Position> = mutableListOf(),
         marks: MutableList<Mark> = mutableListOf(),
         parts: MutableList<Part> = mutableListOf(),
+        markType: MarkType,
+        maxRetailPrice: String,
 
         val planQuantity: Double = 0.0,
         val factQuantity: Double = 0.0,
         var isCounted: Boolean = false,
         var isDeleted: Boolean = false,
         val provider: ProviderInfo
-) : Good(ean, eans, material, name, kind, section, matrix, volume, control, commonUnits, innerUnits, innerQuantity, producers, positions, marks, parts)
+) : Good(ean, eans, material, name, kind, section, matrix, volume, control, commonUnits, innerUnits, innerQuantity, producers, positions, marks, parts, markType, maxRetailPrice)
