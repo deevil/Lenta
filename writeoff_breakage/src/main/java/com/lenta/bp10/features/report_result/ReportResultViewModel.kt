@@ -2,7 +2,7 @@ package com.lenta.bp10.features.report_result
 
 import androidx.lifecycle.MutableLiveData
 import com.lenta.bp10.platform.navigation.IScreenNavigator
-import com.lenta.bp10.requests.network.WriteOffReportResponse
+import com.lenta.bp10.requests.network.SendWriteOffDataResult
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import javax.inject.Inject
@@ -21,8 +21,8 @@ class ReportResultViewModel : CoreViewModel() {
         return sessionInfo.market.orEmpty()
     }
 
-    fun setWriteOffReportResponse(writeOffReportResponse: WriteOffReportResponse) {
-        items.value = writeOffReportResponse.taskList.map {
+    fun setWriteOffReportResponse(sendWriteOffDataResult: SendWriteOffDataResult) {
+        items.value = sendWriteOffDataResult.taskList.map {
             ItemTaskReport(
                     number = it.number.takeLast(6),
                     description = it.description

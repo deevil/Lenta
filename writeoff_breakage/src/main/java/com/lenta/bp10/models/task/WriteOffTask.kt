@@ -2,7 +2,7 @@ package com.lenta.bp10.models.task
 
 import com.lenta.bp10.fmp.resources.send_report.ExciseStamp
 import com.lenta.bp10.fmp.resources.send_report.MaterialNumber
-import com.lenta.bp10.fmp.resources.send_report.WriteOffReport
+import com.lenta.bp10.fmp.resources.send_report.SendWriteOffDataParams
 import com.lenta.bp10.models.repositories.ITaskRepository
 import com.lenta.bp10.requests.network.PrintProduct
 import com.lenta.bp10.requests.network.PrintTask
@@ -118,9 +118,9 @@ private fun WriteOffTask.getProductsPrint(): List<PrintProduct> {
 }
 
 
-fun WriteOffTask.getReport(): WriteOffReport {
+fun WriteOffTask.getReport(): SendWriteOffDataParams {
     with(taskDescription) {
-        return WriteOffReport(
+        return SendWriteOffDataParams(
                 perNo = perNo,
                 printer = printer,
                 taskName = taskName,

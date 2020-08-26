@@ -20,7 +20,7 @@ import com.lenta.bp10.features.select_market.SelectMarketFragment
 import com.lenta.bp10.features.select_personnel_number.SelectPersonnelNumberFragment
 import com.lenta.bp10.features.write_off_details.WriteOffDetailsFragment
 import com.lenta.bp10.progress.IWriteOffProgressUseCaseInformator
-import com.lenta.bp10.requests.network.WriteOffReportResponse
+import com.lenta.bp10.requests.network.SendWriteOffDataResult
 import com.lenta.shared.account.IAuthenticator
 import com.lenta.shared.features.alert.AlertFragment
 import com.lenta.shared.features.printer_change.PrinterChangeFragment
@@ -177,9 +177,9 @@ class ScreenNavigator(
         }
     }
 
-    override fun openSendingReportsScreen(writeOffReportResponse: WriteOffReportResponse) {
+    override fun openSendingReportsScreen(sendWriteOffDataResult: SendWriteOffDataResult) {
         runOrPostpone {
-            getFragmentStack()?.replace(ReportResultFragment.create(writeOffReportResponse))
+            getFragmentStack()?.replace(ReportResultFragment.create(sendWriteOffDataResult))
         }
     }
 
@@ -304,7 +304,7 @@ interface IScreenNavigator : ICoreNavigator {
     fun openGoodInfoScreen(productInfo: ProductInfo, quantity: Double = 0.0)
     fun openExciseAlcoScreen(productInfo: ProductInfo)
     fun openRemoveTaskConfirmationScreen(taskDescription: String, codeConfirmation: Int)
-    fun openSendingReportsScreen(writeOffReportResponse: WriteOffReportResponse)
+    fun openSendingReportsScreen(sendWriteOffDataResult: SendWriteOffDataResult)
     fun openSetsInfoScreen(productInfo: ProductInfo, quantity: Double)
     fun openGoodsReasonsScreen(productInfo: ProductInfo)
     fun openSuccessPrintMessage()
