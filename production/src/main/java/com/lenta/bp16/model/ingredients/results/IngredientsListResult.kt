@@ -3,7 +3,9 @@ package com.lenta.bp16.model.ingredients.results
 import com.google.gson.annotations.SerializedName
 import com.lenta.bp16.model.ingredients.GoodByOrder
 import com.lenta.bp16.model.ingredients.IngredientInfo
-import com.lenta.bp16.model.ingredients.ui.OrderByBarcode
+import com.lenta.bp16.model.ingredients.OrderByBarcode
+import com.lenta.bp16.model.ingredients.ui.IngredientsListResultUI
+import com.lenta.bp16.platform.converter.IConvertable
 import com.lenta.bp16.request.pojo.RetCode
 import com.lenta.shared.utilities.extentions.IResultWithRetCodes
 
@@ -21,4 +23,14 @@ data class IngredientsListResult(
         /** Таблица возврата */
         @SerializedName("ET_RETCODE")
         override val retCodes: List<RetCode>?
-) : IResultWithRetCodes
+) : IResultWithRetCodes, IConvertable<IngredientsListResultUI> {
+
+    override fun convert(): IngredientsListResultUI {
+        return IngredientsListResultUI(
+                ingredientsList = ingredientsList.orEmpty(),
+                goodsListByOrder = goodsListByOrder.orEmpty(),
+                goodsEanList = goodsEanList.orEmpty().mapNotNull { it.convert() },
+                retCodes = retCodes.orEmpty()
+        )
+    }
+}

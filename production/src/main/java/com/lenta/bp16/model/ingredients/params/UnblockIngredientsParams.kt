@@ -19,5 +19,7 @@ data class UnblockIngredientsParams(
     companion object {
         const val MODE_UNBLOCK_EO = "1"
         const val MODE_UNBLOCK_VP = "2"
+        const val MODE_UNBLOCK_ORDER = "4"
+        const val MODE_UNBLOCK_MATERIAL = "5"
     }
 }

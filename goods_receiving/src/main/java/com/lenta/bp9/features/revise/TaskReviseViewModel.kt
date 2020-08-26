@@ -28,7 +28,7 @@ class TaskReviseViewModel : CoreViewModel(), PageSelectionListener {
     val selectedPage = MutableLiveData(0)
 
     val taskCaption: String by lazy {
-        taskManager.getReceivingTask()?.taskHeader?.caption ?: ""
+        taskManager.getReceivingTask()?.taskHeader?.caption.orEmpty()
     }
 
     val notifications by lazy {
@@ -43,7 +43,11 @@ class TaskReviseViewModel : CoreViewModel(), PageSelectionListener {
     val checkedDocs: MutableLiveData<List<DeliveryDocumentVM>> = MutableLiveData()
 
     private val isTaskPRCorPSP by lazy {
-        MutableLiveData(taskManager.getReceivingTask()!!.taskHeader.taskType == TaskType.ReceptionDistributionCenter || taskManager.getReceivingTask()!!.taskHeader.taskType == TaskType.OwnProduction)
+        val taskType = taskManager.getTaskType()
+        MutableLiveData(taskType == TaskType.ReceptionDistributionCenter
+                || taskType == TaskType.OwnProduction
+                || taskType == TaskType.ShoppingMall
+        )
     }
 
     val nextEnabled = docsToCheck.map { document ->

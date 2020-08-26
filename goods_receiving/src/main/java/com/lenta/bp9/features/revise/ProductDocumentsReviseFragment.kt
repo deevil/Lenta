@@ -48,7 +48,9 @@ class ProductDocumentsReviseFragment : CoreFragment<FragmentProductDocumentsRevi
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
         bottomToolbarUiModel.cleanAll()
         bottomToolbarUiModel.uiModelButton1.show(ButtonDecorationInfo.back)
-        if (vm.typeTask != TaskType.ReceptionDistributionCenter && vm.typeTask != TaskType.OwnProduction) {
+        if (!(vm.typeTask == TaskType.ReceptionDistributionCenter
+                        || vm.typeTask == TaskType.OwnProduction
+                        || vm.typeTask == TaskType.ShoppingMall)) {
             bottomToolbarUiModel.uiModelButton2.show(ButtonDecorationInfo.refusal)
         }
         bottomToolbarUiModel.uiModelButton4.show(ButtonDecorationInfo.sort)

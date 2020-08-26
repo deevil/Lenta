@@ -69,7 +69,7 @@ class TaskCardFragment : CoreFragment<FragmentTaskCardBinding, TaskCardViewModel
                 TaskStatus.Unloaded -> {
                     when (vm.taskType) {
                         TaskType.RecalculationCargoUnit -> bottomToolbarUiModel.uiModelButton2.show(ButtonDecorationInfo.skipAlternate)
-                        TaskType.ReceptionDistributionCenter -> bottomToolbarUiModel.uiModelButton2.show(ButtonDecorationInfo.transportMarriage)
+                        TaskType.ReceptionDistributionCenter, TaskType.ShoppingMall -> bottomToolbarUiModel.uiModelButton2.show(ButtonDecorationInfo.transportMarriage)
                     }
                 }
                 TaskStatus.Checked -> {
@@ -88,7 +88,7 @@ class TaskCardFragment : CoreFragment<FragmentTaskCardBinding, TaskCardViewModel
 
             bottomToolbarUiModel.uiModelButton3.show(ButtonDecorationInfo.docs)
             bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.nextAlternate)
-            connectLiveData(vm.visibilitySecondBtn, bottomToolbarUiModel.uiModelButton2.visibility)
+            connectLiveData(vm.isSecondBtnVisible, bottomToolbarUiModel.uiModelButton2.visibility)
             connectLiveData(vm.enabledBtn, bottomToolbarUiModel.uiModelButton2.enabled)
             connectLiveData(vm.visibilityBtnFourth, bottomToolbarUiModel.uiModelButton4.visibility)
             connectLiveData(vm.enabledBtn, bottomToolbarUiModel.uiModelButton4.enabled)
@@ -101,7 +101,7 @@ class TaskCardFragment : CoreFragment<FragmentTaskCardBinding, TaskCardViewModel
                 TaskStatus.Unloaded -> {
                     when (vm.taskType) {
                         TaskType.RecalculationCargoUnit -> bottomToolbarUiModel.uiModelButton2.show(ButtonDecorationInfo.skipAlternate, enabled = false)
-                        TaskType.ReceptionDistributionCenter -> bottomToolbarUiModel.uiModelButton2.show(ButtonDecorationInfo.transportMarriage, enabled = false)
+                        TaskType.ReceptionDistributionCenter, TaskType.ShoppingMall -> bottomToolbarUiModel.uiModelButton2.show(ButtonDecorationInfo.transportMarriage, enabled = false)
                     }
                 }
                 TaskStatus.Checked -> {
@@ -120,7 +120,7 @@ class TaskCardFragment : CoreFragment<FragmentTaskCardBinding, TaskCardViewModel
 
             bottomToolbarUiModel.uiModelButton3.show(ButtonDecorationInfo.docs)
             bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.nextAlternate, enabled = false)
-            connectLiveData(vm.visibilitySecondBtn, bottomToolbarUiModel.uiModelButton2.visibility)
+            connectLiveData(vm.isSecondBtnVisible, bottomToolbarUiModel.uiModelButton2.visibility)
             connectLiveData(vm.visibilityBtnFourth, bottomToolbarUiModel.uiModelButton4.visibility)
             connectLiveData(vm.visibilityNextBtn, bottomToolbarUiModel.uiModelButton5.visibility)
         }
