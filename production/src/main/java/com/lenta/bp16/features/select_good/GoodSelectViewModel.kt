@@ -82,10 +82,10 @@ class GoodSelectViewModel : CoreViewModel() {
                         uom = goodInfo.uom.orEmpty(),
                         umrez = goodInfo.umrez.orEmpty(),
                         umren = goodInfo.umren.orEmpty(),
-                        producers = ProducerUI(
+                        producers = listOf(ProducerUI(
                                 producerCode = producerInfo.value?.prodCode.orEmpty(),
                                 producerName = producerInfo.value?.prodName.orEmpty()
-                        )
+                        ))
                 )
                 navigator.openGoodInfoScreen(good)
             } ?: navigator.showAlertGoodNotFound()

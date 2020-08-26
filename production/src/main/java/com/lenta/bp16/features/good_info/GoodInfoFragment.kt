@@ -1,5 +1,6 @@
 package com.lenta.bp16.features.good_info
 
+import android.os.Bundle
 import android.view.View
 import androidx.core.os.bundleOf
 import com.lenta.bp16.R

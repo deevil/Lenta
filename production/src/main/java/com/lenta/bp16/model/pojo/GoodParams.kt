@@ -14,5 +14,5 @@ data class GoodParams(
         val uom: String,
         val umrez: String,
         val umren: String,
-        val producers: ProducerUI
+        val producers: List<ProducerUI>
 ) : Parcelable
