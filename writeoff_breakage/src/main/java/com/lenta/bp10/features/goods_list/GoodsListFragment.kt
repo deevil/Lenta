@@ -103,10 +103,9 @@ class GoodsListFragment : CoreFragment<FragmentGoodsListBinding, GoodsListViewMo
                 container,
                 false).let { layoutBinding ->
             val onClickSelectionListener = View.OnClickListener {
-                (it!!.tag as Int).let { position ->
-                    vm.countedSelectionsHelper.revert(position = position)
-                    layoutBinding.rv.adapter?.notifyItemChanged(position)
-                }
+                val position = it.tag as Int
+                vm.countedSelectionsHelper.revert(position)
+                layoutBinding.rv.adapter?.notifyItemChanged(position)
             }
 
             layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
@@ -156,10 +155,9 @@ class GoodsListFragment : CoreFragment<FragmentGoodsListBinding, GoodsListViewMo
                 false).let { layoutBinding ->
 
             val onClickSelectionListener = View.OnClickListener {
-                (it!!.tag as Int).let { position ->
-                    vm.filteredSelectionsHelper.revert(position = position)
-                    layoutBinding.rv.adapter?.notifyItemChanged(position)
-                }
+                val position = it.tag as Int
+                vm.filteredSelectionsHelper.revert(position)
+                layoutBinding.rv.adapter?.notifyItemChanged(position)
             }
 
             layoutBinding.rvConfig = DataBindingRecyclerViewConfig(

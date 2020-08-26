@@ -237,7 +237,9 @@ class SearchProductDelegate @Inject constructor(
                     return
                 } else screenNavigator.openExciseAlcoScreen(productInfo)
             }
-            else -> screenNavigator.openGoodInfoScreen(productInfo, quantity)
+            else -> {
+                screenNavigator.openGoodInfoScreen(productInfo, quantity)
+            }
         }
 
         limitsChecker?.check()
