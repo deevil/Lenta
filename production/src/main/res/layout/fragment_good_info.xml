@@ -5,6 +5,7 @@
     tools:context=".features.good_info_facing.GoodInfoFacingFragment">
 
     <data>
+        <import type="android.view.View"/>
         <variable
             name="vm"
             type="com.lenta.bp16.features.good_info.GoodInfoViewModel" />
@@ -40,13 +41,14 @@
                     style="@style/LinearCellStyle"
                     android:layout_weight="1">
 
-                    <EditText
+                    <com.lenta.shared.view.EditTextWithSuffix
                         android:id="@+id/et_goods_count"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:paddingStart="@dimen/size_10dp"
                         android:paddingEnd="@dimen/size_10dp"
                         android:textSize="@dimen/text_14sp"
+                        suffix="@{vm.suffix}"
                         android:text="@={vm.quantityField}"
                         app:requestFocus="@{vm.requestFocusQuantityField}"
                         style="@style/CellEditTextStyle"
@@ -58,9 +60,11 @@
             </LinearLayout>
 
             <View
+                android:visibility="@{vm.ZPartFlag ? View.VISIBLE : View.GONE}"
                 style="@style/HorizontalDivider"/>
 
             <LinearLayout
+                android:visibility="@{vm.ZPartFlag ? View.VISIBLE : View.GONE}"
                 style="@style/LinearRowStyle">
 
                     <LinearLayout
@@ -69,8 +73,9 @@
                         android:orientation="horizontal">
 
                         <com.lenta.shared.view.ClickableSpinner
-                            android:id="@+id/spin_manufacturer"
-                            app:items="@{vm.manufactureName}"
+                            android:id="@+id/spin_producer"
+                            app:items="@{vm.producerNameField}"
+                            app:onPositionClicked="@{vm.selectedProducerPosition}"
                             style="@style/CellSpinnerStyle"
                             android:layout_height="match_parent"
                             tools:entries="@array/manufacturer_list" />
@@ -80,9 +85,11 @@
             </LinearLayout>
 
             <View
+                android:visibility="@{vm.ZPartFlag ? View.VISIBLE : View.GONE}"
                 style="@style/HorizontalDivider"/>
 
             <LinearLayout
+                android:visibility="@{vm.ZPartFlag ? View.VISIBLE : View.GONE}"
                 style="@style/LinearRowStyle">
 
                 <LinearLayout
@@ -92,6 +99,7 @@
                     <com.lenta.shared.view.ClickableSpinner
                         android:id="@+id/spin_production_date"
                         app:items="@{vm.dateInfo}"
+                        app:onPositionClicked="@{vm.selectedDatePosition}"
                         style="@style/CellSpinnerStyle"
                         android:layout_height="match_parent"
                         tools:entries="@array/date_list" />
@@ -113,6 +121,7 @@
                         android:textSize="@dimen/text_14sp"
                         android:text="@={vm.dateInfoField}"
                         app:requestFocus="@{vm.requestFocusDateInfoField}"
+                        app:maskPattern='@{"[00]{.}[00]{.}[0000]"}'
                         style="@style/CellEditTextStyle"
                         tools:text="21.06.2020"/>
 
@@ -144,9 +153,10 @@
                     android:layout_weight="1">
 
                     <com.lenta.shared.view.ClickableSpinner
-                        android:id="@+id/spin_storage_sender"
+                        android:id="@+id/spin_warehouse_sender"
                         style="@style/CellSpinnerStyle"
                         app:items="@{vm.warehouseSender}"
+                        app:onPositionClicked="@{vm.selectedWarehouseSenderPosition}"
                         android:layout_height="match_parent"
                         tools:entries="@array/storage_list" />
 
@@ -181,6 +191,7 @@
                         android:id="@+id/spin_storage_receiver"
                         style="@style/CellSpinnerStyle"
                         app:items="@{vm.warehouseReceiver}"
+                        app:onPositionClicked="@{vm.selectedWarehouseReceiverPosition}"
                         android:layout_height="match_parent"
                         tools:entries="@array/storage_list" />
 
@@ -189,9 +200,11 @@
             </LinearLayout>
 
             <View
+                android:visibility="@{vm.proIncludeCond ? View.VISIBLE : View.GONE}"
                 style="@style/HorizontalDivider"/>
 
             <LinearLayout
+                android:visibility="@{vm.proIncludeCond ? View.VISIBLE : View.GONE}"
                 style="@style/LinearRowStyle">
 
                 <LinearLayout

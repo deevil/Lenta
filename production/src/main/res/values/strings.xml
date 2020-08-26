@@ -67,7 +67,7 @@
     <string name="storage_sender">Склад отправитель</string>
     <string name="storage_receiver">Склад получатель</string>
     <string name="container">Тара</string>
-    <string name="tw_search_info">Отсканируйте штрахкод или введите товар вручную</string>
+    <string name="tw_search_info">Отсканируйте ШК или введите товар вручную</string>
     <string name="preparation_ingredients">Подготовка ингредиентов</string>
     <string name="tw_alert_part_not_found">Отсканированная партия не найдена в системе. Отложите товар и проведите инвентаризацию.</string>
     <string name="tw_alert_good_not_found">Данный товар не найден</string>
