@@ -19,6 +19,10 @@ fun ZmpUtz14V001.getProFillCondition(): String? {
     return getParams("PRO_FILL_CONT").firstOrNull()
 }
 
+fun ZmpUtz14V001.getIncludeCondition(): String?{
+    return getParams("PRO_INCL_CONT").firstOrNull()
+}
+
 fun ZmpUtz14V001.getAllowedWklAppVersion(): String? {
     return getParams("WKL_ALLOWED_VRSN_A").firstOrNull()
 }

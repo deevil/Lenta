@@ -75,8 +75,7 @@
                         <com.lenta.shared.view.ClickableSpinner
                             android:id="@+id/spin_producer"
                             app:items="@{vm.producerNameField}"
-                            app:position="@{vm.selectedProducer}"
-                            app:onPositionClickListener="@{vm.producerClicked}"
+                            app:onPositionClicked="@{vm.selectedProducerPosition}"
                             style="@style/CellSpinnerStyle"
                             android:layout_height="match_parent"
                             tools:entries="@array/manufacturer_list" />

@@ -64,12 +64,7 @@ class GoodInfoViewModel : CoreViewModel() {
     /**Производитель*/
     private val producerList: MutableLiveData<ProducerUI> = MutableLiveData()
     val producerNameField: MutableLiveData<List<String>> = MutableLiveData()
-    val selectedProducer = MutableLiveData(0);
-    val producerClicked = object : OnPositionClickListener {
-        override fun onClickPosition(position: Int) {
-            selectedProducer.value = position
-        }
-    }
+    val selectedProducerPosition = MutableLiveData(0);
 
     /**Дата производства и срок годности*/
     val dateInfoField = MutableLiveData("")
@@ -189,7 +184,7 @@ class GoodInfoViewModel : CoreViewModel() {
     fun onClickComplete() {
         launchUITryCatch {
             navigator.showProgressLoadingData()
-            val prodCodeSelectedProducer = goodParams.value?.producers?.producerCode?.getOrNull(selectedProducer.value
+            val prodCodeSelectedProducer = goodParams.value?.producers?.producerCode?.getOrNull(selectedProducerPosition.value
                     ?: 0).orEmpty()
             val warehouseSenderSelected = warehouseSender.value?.getOrNull(selectedWarehouseSenderPosition.value
                     ?: 0).orEmpty()
