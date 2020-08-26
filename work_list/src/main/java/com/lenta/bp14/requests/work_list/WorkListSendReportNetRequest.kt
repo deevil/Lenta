@@ -41,7 +41,8 @@ class WorkListSendReportNetRequest
                                 quantity = if (good.defaultUnits == Uom.G) result.quantity * 1000 else result.quantity,
                                 commentCode = result.commentCode.orEmpty(),
                                 producedDate = result.productionDate.getFormattedDate(Constants.DATE_FORMAT_yyyyMMdd),
-                                shelfLife = result.expirationDate.getFormattedDate(Constants.DATE_FORMAT_yyyyMMdd)
+                                shelfLife = result.expirationDate.getFormattedDate(Constants.DATE_FORMAT_yyyyMMdd),
+                                ean = result.ean.orEmpty()
                         )
                 )
             }
