@@ -62,7 +62,10 @@ class GoodsDetailsViewModel : CoreViewModel() {
     }
 
     private val isBatchProduct: MutableLiveData<Boolean> by lazy {
-        MutableLiveData(productInfo.value!!.type == ProductType.NonExciseAlcohol && !productInfo.value!!.isBoxFl && !productInfo.value!!.isMarkFl)
+        MutableLiveData(productInfo.value?.type == ProductType.NonExciseAlcohol
+                && productInfo.value?.isBoxFl == false
+                && productInfo.value?.isMarkFl == false
+        )
     }
 
     val categoriesSelectionsHelper = SelectionItemsHelper()
@@ -124,94 +127,131 @@ class GoodsDetailsViewModel : CoreViewModel() {
 
     private fun updateProduct() {
         if (isVetProduct.value == true && productInfo.value?.isNotEdit == false) {
-            goodsDetails.postValue(
-                    processMercuryProductService.getGoodsDetails()?.mapIndexed { index, discrepancy ->
-                        GoodsDetailsCategoriesItem(
-                                number = index + 1,
-                                name = "${reasonRejectionInfo.value?.firstOrNull { it.code == discrepancy.typeDiscrepancies }?.name}",
-                                nameBatch = "",
-                                visibilityNameBatch = false,
-                                quantityWithUom = "${discrepancy.numberDiscrepancies.toDouble().toStringFormatted()} ${uom.value?.name}",
-                                isNormDiscrepancies = isNormDiscrepancies(discrepancy.typeDiscrepancies),
-                                typeDiscrepancies = discrepancy.typeDiscrepancies,
-                                materialNumber = productInfo.value?.materialNumber ?: "",
-                                batchDiscrepancies = null,
-                                even = index % 2 == 0
-                        )
-                    }?.reversed()
-            )
+            updatingInfoVetProducts()
         } else if (productInfo.value?.type == ProductType.ExciseAlcohol
                 && productInfo.value?.isBoxFl == true
-                && !boxNumberForTaskPGEBoxAlco.value.isNullOrEmpty()) { //ПГЕ алкоголь, коробочный учет https://trello.com/c/TzUSGIH7
-            goodsDetails.value =
-                    processExciseAlcoBoxAccPGEService
-                            .getGoodsDetails(boxNumberForTaskPGEBoxAlco.value.orEmpty())
-                            ?.mapIndexed { index, discrepancy ->
-                                getItemAlcoBoxPGE(discrepancy, index)
-                            }
-                            ?.reversed()
+                && !boxNumberForTaskPGEBoxAlco.value.isNullOrEmpty()) {
+            updatingInfoPGEAlcoBoxProducts()
+        } else if (isBatchProduct.value == true || productInfo.value?.isSet == true) {
+            updatingInfoBatchesOrSetsProducts()
         } else {
-            goodsDetails.postValue(
-                    if (isBatchProduct.value == true || productInfo.value?.isSet == true) {
-                        val productNumbers = if (productInfo.value?.isSet == true) {
-                            repoInMemoryHolder.sets.value?.filter {
-                                it.setNumber == productInfo.value?.materialNumber
-                            }?.map {
-                                it.componentNumber
-                            } ?: emptyList()
-                        } else {
-                            listOf(productInfo.value!!.materialNumber)
-                        }
-                        taskManager
-                                .getReceivingTask()
-                                ?.taskRepository
-                                ?.getBatchesDiscrepancies()
-                                ?.findBatchDiscrepanciesOfProducts(productNumbers)
-                                ?.mapIndexed { index, discrepancy ->
-                                    val nameItem = if (productInfo.value?.isSet == true) {
-                                        "${discrepancy.getMaterialLastSix()} ${reasonRejectionInfo.value?.firstOrNull { it.code == discrepancy.typeDiscrepancies }?.name}"
-                                    } else {
-                                        "${reasonRejectionInfo.value?.firstOrNull { it.code == discrepancy.typeDiscrepancies }?.name}"
-                                    }
-                                    GoodsDetailsCategoriesItem(
-                                            number = index + 1,
-                                            name = nameItem,
-                                            nameBatch = "ДР-${discrepancy.bottlingDate} // ${getManufacturerName(discrepancy.egais)}",
-                                            visibilityNameBatch = true,
-                                            quantityWithUom = "${discrepancy.numberDiscrepancies.toDouble().toStringFormatted()} ${uom.value?.name}",
-                                            isNormDiscrepancies = isNormDiscrepancies(discrepancy.typeDiscrepancies),
-                                            typeDiscrepancies = discrepancy.typeDiscrepancies,
-                                            materialNumber = discrepancy.materialNumber,
-                                            batchDiscrepancies = discrepancy,
-                                            even = index % 2 == 0
-                                    )
-                                }?.reversed()
-                    } else {
-                        taskManager
-                                .getReceivingTask()
-                                ?.taskRepository
-                                ?.getProductsDiscrepancies()
-                                ?.findProductDiscrepanciesOfProduct(productInfo.value!!)
-                                ?.mapIndexed { index, discrepancy ->
-                                    GoodsDetailsCategoriesItem(
-                                            number = index + 1,
-                                            name = "${reasonRejectionInfo.value?.firstOrNull { it.code == discrepancy.typeDiscrepancies }?.name}",
-                                            nameBatch = "",
-                                            visibilityNameBatch = false,
-                                            quantityWithUom = "${discrepancy.numberDiscrepancies.toDouble().toStringFormatted()} ${uom.value?.name}",
-                                            isNormDiscrepancies = isNormDiscrepancies(discrepancy.typeDiscrepancies),
-                                            typeDiscrepancies = discrepancy.typeDiscrepancies,
-                                            materialNumber = productInfo.value?.materialNumber
-                                                    ?: "",
-                                            batchDiscrepancies = null,
-                                            even = index % 2 == 0
-                                    )
-                                }?.reversed()
-                    }
-            )
+            updatingInfoOtherProducts()
         }
         categoriesSelectionsHelper.clearPositions()
     }
+
+    private fun updatingInfoVetProducts() {
+        goodsDetails.value =
+                processMercuryProductService
+                        .getGoodsDetails()
+                        ?.mapIndexed { index, discrepancy ->
+                            GoodsDetailsCategoriesItem(
+                                    number = index + 1,
+                                    name = reasonRejectionInfo.value?.firstOrNull { it.code == discrepancy.typeDiscrepancies }?.name.orEmpty(),
+                                    nameBatch = "",
+                                    visibilityNameBatch = false,
+                                    quantityWithUom = "${discrepancy.numberDiscrepancies.toDouble().toStringFormatted()} ${uom.value?.name.orEmpty()}",
+                                    isNormDiscrepancies = isNormDiscrepancies(discrepancy.typeDiscrepancies),
+                                    typeDiscrepancies = discrepancy.typeDiscrepancies,
+                                    materialNumber = productInfo.value?.materialNumber.orEmpty(),
+                                    batchDiscrepancies = null,
+                                    even = index % 2 == 0
+                            )
+                        }
+                        ?.reversed()
+    }
+
+    private fun updatingInfoPGEAlcoBoxProducts() {
+        goodsDetails.value =
+                processExciseAlcoBoxAccPGEService
+                        .getGoodsDetails(boxNumberForTaskPGEBoxAlco.value.orEmpty())
+                        ?.mapIndexed { index, discrepancy ->
+                            getItemAlcoBoxPGE(discrepancy, index)
+                        }
+                        ?.reversed()
+    }
+
+    private fun updatingInfoBatchesOrSetsProducts() {
+        val sets =
+                repoInMemoryHolder.sets.value
+                        ?.filter { it.setNumber == productInfo.value?.materialNumber }
+                        ?.map { it.componentNumber }
+                        .orEmpty()
+
+        val productNumbers =
+                if (productInfo.value?.isSet == true) {
+                    sets
+                } else {
+                    listOf(productInfo.value?.materialNumber.orEmpty())
+                }
+
+        val batchDiscrepanciesOfProducts =
+                taskManager
+                        .getReceivingTask()
+                        ?.taskRepository
+                        ?.getBatchesDiscrepancies()
+                        ?.findBatchDiscrepanciesOfProducts(productNumbers)
+
+        goodsDetails.value =
+                batchDiscrepanciesOfProducts
+                        ?.mapIndexed { index, discrepancy ->
+                            getItemBatchesOrSets(discrepancy, index)
+                        }
+                        ?.reversed()
+    }
+
+    private fun getItemBatchesOrSets(discrepancy: TaskBatchesDiscrepancies, index: Int) : GoodsDetailsCategoriesItem {
+        val reasonRejectionName =
+                reasonRejectionInfo.value
+                        ?.firstOrNull { it.code == discrepancy.typeDiscrepancies }
+                        ?.name
+                        .orEmpty()
+
+        val nameItem =
+                if (productInfo.value?.isSet == true) {
+                    "${discrepancy.getMaterialLastSix()} $reasonRejectionName"
+                } else {
+                    reasonRejectionName
+                }
+
+        return GoodsDetailsCategoriesItem(
+                number = index + 1,
+                name = nameItem,
+                nameBatch = "ДР-${discrepancy.bottlingDate} // ${getManufacturerName(discrepancy.egais)}",
+                visibilityNameBatch = true,
+                quantityWithUom = "${discrepancy.numberDiscrepancies.toDouble().toStringFormatted()} ${uom.value?.name.orEmpty()}",
+                isNormDiscrepancies = isNormDiscrepancies(discrepancy.typeDiscrepancies),
+                typeDiscrepancies = discrepancy.typeDiscrepancies,
+                materialNumber = discrepancy.materialNumber,
+                batchDiscrepancies = discrepancy,
+                even = index % 2 == 0
+        )
+    }
+
+    private fun updatingInfoOtherProducts() {
+        goodsDetails.value =
+                taskManager
+                        .getReceivingTask()
+                        ?.taskRepository
+                        ?.getProductsDiscrepancies()
+                        ?.findProductDiscrepanciesOfProduct(productInfo.value!!)
+                        ?.mapIndexed { index, discrepancy ->
+                            GoodsDetailsCategoriesItem(
+                                    number = index + 1,
+                                    name = reasonRejectionInfo.value?.firstOrNull { it.code == discrepancy.typeDiscrepancies }?.name.orEmpty(),
+                                    nameBatch = "",
+                                    visibilityNameBatch = false,
+                                    quantityWithUom = "${discrepancy.numberDiscrepancies.toDouble().toStringFormatted()} ${uom.value?.name.orEmpty()}",
+                                    isNormDiscrepancies = isNormDiscrepancies(discrepancy.typeDiscrepancies),
+                                    typeDiscrepancies = discrepancy.typeDiscrepancies,
+                                    materialNumber = productInfo.value?.materialNumber.orEmpty(),
+                                    batchDiscrepancies = null,
+                                    even = index % 2 == 0
+                            )
+                        }
+                        ?.reversed()
+    }
+
 
     private fun getItemAlcoBoxPGE(discrepancy: TaskProductDiscrepancies, index: Int) : GoodsDetailsCategoriesItem {
         val itemName = reasonRejectionInfo.value?.firstOrNull { it.code == discrepancy.typeDiscrepancies }?.name.orEmpty()

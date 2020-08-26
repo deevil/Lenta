@@ -27,6 +27,8 @@ import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.utilities.extentions.toStringFormatted
 import com.lenta.shared.view.OnPositionClickListener
 import com.mobrun.plugin.api.HyperHive
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import java.text.SimpleDateFormat
 import javax.inject.Inject
 
@@ -300,9 +302,15 @@ class ExciseAlcoBoxCardPGEViewModel : CoreViewModel(), OnPositionClickListener {
     }
 
     private fun updateDateScreenManufacturerDateOfPour() {
-        val batchNumber = processExciseAlcoBoxAccPGEService.getLastAddExciseStamp()?.batchNumber.orEmpty()
-        spinManufacturers.value = listOf(getManufacturerName(batchNumber))
-        spinBottlingDate.value = listOf(getBottlingDate(batchNumber))
+        launchUITryCatch {
+            val batchNumber = processExciseAlcoBoxAccPGEService.getLastAddExciseStamp()?.batchNumber.orEmpty()
+            spinManufacturers.value = withContext(Dispatchers.IO) {
+                listOf(getManufacturerName(batchNumber))
+            }
+            spinBottlingDate.value = withContext(Dispatchers.IO) {
+                listOf(getBottlingDate(batchNumber))
+            }
+        }
     }
 
     private fun getManufacturerName(batchNumber: String) : String {
@@ -319,6 +327,7 @@ class ExciseAlcoBoxCardPGEViewModel : CoreViewModel(), OnPositionClickListener {
 
         return repoInMemoryHolder
                 .manufacturers.value
+                ?.takeIf { it.isNotEmpty() }
                 ?.findLast { it.code == manufacturerCode }
                 ?.name
                 .orEmpty()
