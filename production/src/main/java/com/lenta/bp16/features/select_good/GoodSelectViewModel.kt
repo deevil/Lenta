@@ -53,7 +53,7 @@ class GoodSelectViewModel : CoreViewModel() {
         var weight = DEF_WEIGHT
         var barcode = enteredEanField.value.orEmpty()
         val firstCode = barcode.substring(0 until 2)
-        if(weightValueList.contains(firstCode)){
+        if (weightValueList.contains(firstCode)) {
             weight = barcode.takeLast(6).take(5).toDouble()
             val changedBarcode = barcode.replace(barcode.takeLast(6), TAKEN_ZEROS)
             barcode = changedBarcode
@@ -65,8 +65,8 @@ class GoodSelectViewModel : CoreViewModel() {
                     ProductInfoParams(
                             ean = ean.map { Ean(it) },
                             matnr = matnr.map { Product(it) }
-                    )
-            ).either(::handleFailure){productInfoResult ->
+                    ).also { navigator.hideProgress() }
+            ).either(::handleFailure) { productInfoResult ->
                 productInfo.value = productInfoResult.product?.getOrNull(0)
                 producerInfo.value = productInfoResult.producers?.getOrNull(0)
                 Unit
@@ -92,6 +92,7 @@ class GoodSelectViewModel : CoreViewModel() {
     }
 
     fun onClickNext() {
+        navigator.showProgressLoadingData()
         searchGood()
     }
 
@@ -104,7 +105,7 @@ class GoodSelectViewModel : CoreViewModel() {
         navigator.openMainMenuScreen()
     }
 
-    companion object{
+    companion object {
         const val VALUE_23 = "23"
         const val VALUE_24 = "24"
         const val VALUE_27 = "27"

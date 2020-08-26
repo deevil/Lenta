@@ -100,7 +100,7 @@
                     <com.lenta.shared.view.ClickableSpinner
                         android:id="@+id/spin_production_date"
                         app:items="@{vm.dateInfo}"
-                        app:onPositionClickListener="@{vm.dateClicked}"
+                        app:onPositionClicked="@{vm.selectedDatePosition}"
                         style="@style/CellSpinnerStyle"
                         android:layout_height="match_parent"
                         tools:entries="@array/date_list" />
@@ -157,8 +157,7 @@
                         android:id="@+id/spin_warehouse_sender"
                         style="@style/CellSpinnerStyle"
                         app:items="@{vm.warehouseSender}"
-                        app:position="@{vm.selectedWarehouseSender}"
-                        app:onPositionClickListener="@{vm.warehouseSenderClicked}"
+                        app:onPositionClicked="@{vm.selectedWarehouseSenderPosition}"
                         android:layout_height="match_parent"
                         tools:entries="@array/storage_list" />
 
@@ -193,8 +192,7 @@
                         android:id="@+id/spin_storage_receiver"
                         style="@style/CellSpinnerStyle"
                         app:items="@{vm.warehouseReceiver}"
-                        app:position="@{vm.selectedWarehouseReceiver}"
-                        app:onPositionClickListener="@{vm.warehouseReceiverClicked}"
+                        app:onPositionClicked="@{vm.selectedWarehouseReceiverPosition}"
                         android:layout_height="match_parent"
                         tools:entries="@array/storage_list" />
 
@@ -203,9 +201,11 @@
             </LinearLayout>
 
             <View
+                android:visibility="@{vm.proIncludeCond ? View.VISIBLE : View.GONE}"
                 style="@style/HorizontalDivider"/>
 
             <LinearLayout
+                android:visibility="@{vm.proIncludeCond ? View.VISIBLE : View.GONE}"
                 style="@style/LinearRowStyle">
 
                 <LinearLayout

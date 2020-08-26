@@ -48,7 +48,11 @@ class GoodInfoViewModel : CoreViewModel() {
 
     val selectedEan = MutableLiveData<String>()
 
+    /**Свойство, указывающее на обязательное заполнение поля "Тара"*/
     private val proFillCond = MutableLiveData<String>()
+
+    /**Свойство, указывающее на отображение поля "Тара"*/
+    val proIncludeCond = MutableLiveData<Boolean>()
     val zPartFlag = MutableLiveData<Boolean>()
 
     /**Количество*/
@@ -72,32 +76,17 @@ class GoodInfoViewModel : CoreViewModel() {
     private var producerDate: String = ""
     private var selfLifeDate: String = ""
     val dateInfo: MutableLiveData<List<String>> = MutableLiveData(dateInfoSpinner)
-    val selectedDate = MutableLiveData(0)
-    val dateClicked = object : OnPositionClickListener {
-        override fun onClickPosition(position: Int) {
-            selectedDate.value = position
-        }
-    }
+    val selectedDatePosition = MutableLiveData(0)
 
     val requestFocusDateInfoField = MutableLiveData(true)
 
     /**Склад отправитель*/
     val warehouseSender: MutableLiveData<List<String>> = MutableLiveData()
-    val selectedWarehouseSender = MutableLiveData(0)
-    val warehouseSenderClicked = object : OnPositionClickListener {
-        override fun onClickPosition(position: Int) {
-            selectedWarehouseSender.value = position
-        }
-    }
+    val selectedWarehouseSenderPosition = MutableLiveData(0)
 
     /**Склад получатель*/
     val warehouseReceiver: MutableLiveData<List<String>> = MutableLiveData()
-    val selectedWarehouseReceiver = MutableLiveData(0)
-    val warehouseReceiverClicked = object : OnPositionClickListener {
-        override fun onClickPosition(position: Int) {
-            selectedWarehouseReceiver.value = position
-        }
-    }
+    val selectedWarehouseReceiverPosition = MutableLiveData(0)
 
     /**Тара*/
     val containerField = MutableLiveData("")
@@ -161,7 +150,7 @@ class GoodInfoViewModel : CoreViewModel() {
 
     private fun setDateInfo() {
         launchUITryCatch {
-            if (selectedDate.value == 0) {
+            if (selectedDatePosition.value == 0) {
                 producerDate = dateInfoField.value.orEmpty()
             } else {
                 selfLifeDate = dateInfoField.value.orEmpty()
@@ -191,6 +180,8 @@ class GoodInfoViewModel : CoreViewModel() {
 
     private fun setContainerInfo() {
         launchUITryCatch {
+            val includeCond = database.getIncludeCondition()
+            proIncludeCond.value = !includeCond.isNullOrBlank()
             proFillCond.value = database.getProFillCondition()
         }
     }
@@ -200,9 +191,9 @@ class GoodInfoViewModel : CoreViewModel() {
             navigator.showProgressLoadingData()
             val prodCodeSelectedProducer = goodParams.value?.producers?.producerCode?.getOrNull(selectedProducer.value
                     ?: 0).orEmpty()
-            val warehouseSenderSelected = warehouseSender.value?.getOrNull(selectedWarehouseSender.value
+            val warehouseSenderSelected = warehouseSender.value?.getOrNull(selectedWarehouseSenderPosition.value
                     ?: 0).orEmpty()
-            val warehouseReceiverSelected = warehouseReceiver.value?.getOrNull(selectedWarehouseReceiver.value
+            val warehouseReceiverSelected = warehouseReceiver.value?.getOrNull(selectedWarehouseReceiverPosition.value
                     ?: 0).orEmpty()
             val result = movementNetRequest(
                     params = MovementParams(
@@ -213,7 +204,7 @@ class GoodInfoViewModel : CoreViewModel() {
                             expirDate = selfLifeDate,
                             lgortExport = warehouseSenderSelected,
                             lgortImport = warehouseReceiverSelected,
-                            codeCont = "codeCont",
+                            codeCont = "",
                             factQnt = quantityField.value.toString(),
                             buom = suffix.value.orEmpty(),
                             deviceIP = deviceIp.toString(),
