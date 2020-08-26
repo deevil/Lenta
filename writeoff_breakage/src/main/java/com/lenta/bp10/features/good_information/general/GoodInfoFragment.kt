@@ -20,7 +20,6 @@ import com.lenta.shared.utilities.extentions.getFragmentResultCode
 import com.lenta.shared.utilities.extentions.provideViewModel
 import com.lenta.shared.utilities.state.state
 
-
 open class GoodInfoFragment : CoreFragment<FragmentGoodInfoBinding, BaseProductInfoViewModel>(),
         ToolbarButtonsClickListener,
         OnBackPresserListener,
@@ -48,17 +47,6 @@ open class GoodInfoFragment : CoreFragment<FragmentGoodInfoBinding, BaseProductI
         }
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        onRequestFocus()
-    }
-
-    open fun onRequestFocus() {
-        binding?.apply {
-            etWriteOff.requestFocus()
-        }
-    }
-
     override fun setupTopToolBar(topToolbarUiModel: TopToolbarUiModel) {
         topToolbarUiModel.description.value = getString(R.string.goods_info)
         productInfo?.let {
@@ -76,8 +64,6 @@ open class GoodInfoFragment : CoreFragment<FragmentGoodInfoBinding, BaseProductI
         connectLiveData(vm.enabledApplyButton, bottomToolbarUiModel.uiModelButton4.enabled)
         connectLiveData(vm.enabledApplyButton, bottomToolbarUiModel.uiModelButton5.enabled)
         connectLiveData(vm.enabledDetailsButton, bottomToolbarUiModel.uiModelButton3.enabled)
-        connectLiveData(vm.selectedPosition, bottomToolbarUiModel.uiModelButton4.requestFocus)
-
     }
 
     override fun onToolbarButtonClick(view: View) {
@@ -101,6 +87,11 @@ open class GoodInfoFragment : CoreFragment<FragmentGoodInfoBinding, BaseProductI
 
     }
 
+    override fun onResume() {
+        super.onResume()
+        vm.requestFocusToQuantity.value = true
+    }
+
     companion object {
         fun create(productInfo: ProductInfo, initCount: Double): GoodInfoFragment {
             GoodInfoFragment().let {
@@ -109,8 +100,6 @@ open class GoodInfoFragment : CoreFragment<FragmentGoodInfoBinding, BaseProductI
                 return it
             }
         }
-
     }
-
 
 }

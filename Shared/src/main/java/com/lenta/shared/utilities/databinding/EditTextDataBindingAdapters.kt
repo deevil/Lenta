@@ -62,15 +62,10 @@ fun requestFocus(editText: EditText, @Suppress("UNUSED_PARAMETER") requestFocus:
 
 @BindingAdapter("cursorToLastPos")
 fun cursorToLastPos(editText: EditText, cursorToLastPos: Boolean?) {
-    if (editText.hasFocus() && cursorToLastPos == true) {
-        editText.setSelection(editText.text.length)
-    }
-}
-
-@BindingAdapter("selectAfterFocus")
-fun selectAfterFocus(editText: EditText, selectAfterFocus: Boolean?) {
-    if (editText.hasFocus() && selectAfterFocus == true) {
-        editText.setSelection(0, editText.text.length)
+    if (cursorToLastPos == true) {
+        editText.setOnFocusChangeListener { _, hasFocus ->
+            if (hasFocus) editText.setSelection(editText.text.length)
+        }
     }
 }
 

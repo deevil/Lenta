@@ -15,7 +15,7 @@ import com.lenta.shared.models.core.ProductInfo
 import com.lenta.shared.models.core.ProductType
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.requests.combined.scan_info.ScanInfoResult
-import com.lenta.shared.utilities.Logg
+import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
 import com.lenta.shared.utilities.extentions.combineLatest
 import com.lenta.shared.utilities.extentions.launchUITryCatch
 import com.lenta.shared.utilities.extentions.map
@@ -24,7 +24,7 @@ import com.lenta.shared.view.OnPositionClickListener
 import kotlinx.coroutines.delay
 import javax.inject.Inject
 
-abstract class BaseProductInfoViewModel : CoreViewModel(), OnPositionClickListener {
+abstract class BaseProductInfoViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
     @Inject
     lateinit var processServiceManager: IWriteOffTaskManager
     @Inject
@@ -41,11 +41,13 @@ abstract class BaseProductInfoViewModel : CoreViewModel(), OnPositionClickListen
     val writeOffReasons: MutableLiveData<List<WriteOffReason>> = MutableLiveData()
     val writeOffReasonTitles: LiveData<List<String>> = writeOffReasons.map { it?.map { reason -> reason.name } }
 
-    val selectedPosition: MutableLiveData<Int> = MutableLiveData(0)
-
-    val count: MutableLiveData<String> by lazy { initCountLiveData() }
+    val count: MutableLiveData<String> by lazy {
+        initCountLiveData()
+    }
 
     val suffix: MutableLiveData<String> = MutableLiveData()
+
+    val requestFocusToQuantity = MutableLiveData(false)
 
     internal var limitsChecker: LimitsChecker? = null
 
@@ -72,7 +74,7 @@ abstract class BaseProductInfoViewModel : CoreViewModel(), OnPositionClickListen
     }
 
     open val enabledApplyButton: MutableLiveData<Boolean> by lazy {
-        countValue.combineLatest(selectedPosition).map {
+        countValue.combineLatest(reasonPosition).map {
             isEnabledApplyButtons(
                     count = it?.first,
                     productInfo = productInfo.value,
@@ -83,6 +85,13 @@ abstract class BaseProductInfoViewModel : CoreViewModel(), OnPositionClickListen
         }
     }
 
+    val reasonPosition = MutableLiveData(0)
+
+    val onSelectReason = object : OnPositionClickListener {
+        override fun onClickPosition(position: Int) {
+            reasonPosition.value = position
+        }
+    }
 
     init {
         launchUITryCatch {
@@ -118,15 +127,24 @@ abstract class BaseProductInfoViewModel : CoreViewModel(), OnPositionClickListen
                                         addAll(reasons)
                                     }.filter { filterReason(it) }
 
-                            onClickPosition(writeOffReasons.value!!.indexOfFirst { reason -> reason.code == defaultReason })
+                            writeOffReasons.value!!.indexOfFirst { reason -> reason.code == defaultReason }.let { position ->
+                                reasonPosition.value = position
+                                requestFocusToQuantity.value = true
+                            }
                         }
                     }
                 }
             }
 
             suffix.value = productInfo.value?.uom?.name
-
         }
+    }
+
+    override fun onOkInSoftKeyboard(): Boolean {
+        if (enabledApplyButton.value == true) {
+            onClickApply()
+        }
+        return true
     }
 
     open fun filterReason(writeOffReason: WriteOffReason): Boolean {
@@ -141,12 +159,11 @@ abstract class BaseProductInfoViewModel : CoreViewModel(), OnPositionClickListen
         return if (searchProductDelegate.handleResultCode(code)) {
             true
         } else super.handleFragmentResult(code)
-
     }
 
 
     protected fun getSelectedReason(): WriteOffReason {
-        return writeOffReasons.value?.getOrNull((selectedPosition.value ?: -1))
+        return writeOffReasons.value?.getOrNull((reasonPosition.value ?: -1))
                 ?: WriteOffReason.empty
     }
 
@@ -168,13 +185,6 @@ abstract class BaseProductInfoViewModel : CoreViewModel(), OnPositionClickListen
         productInfo.value?.let {
             screenNavigator.openGoodsReasonsScreen(productInfo = it)
         }
-
-    }
-
-
-    override fun onClickPosition(position: Int) {
-        Logg.d { "selectPosition $position" }
-        selectedPosition.postValue(position)
     }
 
     abstract fun onBackPressed(): Boolean
@@ -186,7 +196,6 @@ abstract class BaseProductInfoViewModel : CoreViewModel(), OnPositionClickListen
             delay(100)
             count.postValue(it.toStringFormatted())
         }
-
     }
 
 }
