@@ -63,6 +63,7 @@ class GoodSelectViewModel : CoreViewModel() {
         launchUITryCatch {
             productInfoNetRequest(
                     ProductInfoParams(
+                            werks = sessionInfo.market.orEmpty(),
                             ean = ean.map { Ean(it) },
                             matnr = matnr.map { Product(it) }
                     ).also { navigator.hideProgress() }
