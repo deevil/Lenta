@@ -224,6 +224,7 @@ class MemoryTaskProductsDiscrepanciesRepository : ITaskProductsDiscrepanciesRepo
                 quantityByDiscrepancyForProduct
                         .takeIf { it > 0.0 }
                         ?.let { it - quantityByDiscrepancyForBatch }
+                        ?: 0.0
 
 
         findProductDiscrepanciesOfProduct(materialNumber)
