@@ -1,9 +1,7 @@
 package com.lenta.bp16.features.good_info
 
-import android.os.Bundle
 import android.view.View
 import androidx.core.os.bundleOf
-import androidx.lifecycle.observe
 import com.lenta.bp16.R
 import com.lenta.bp16.databinding.FragmentGoodInfoBinding
 import com.lenta.bp16.model.pojo.GoodParams
@@ -35,6 +33,7 @@ class GoodInfoFragment : CoreFragment<FragmentGoodInfoBinding, GoodInfoViewModel
         provideViewModel(GoodInfoViewModel::class.java).let {
             getAppComponent()?.inject(it)
             it.deviceIp.value = deviceIp
+            it.goodParams.value = goodParams
             it.selectedEan.value = selectedEan
             return it
         }
@@ -72,5 +71,4 @@ class GoodInfoFragment : CoreFragment<FragmentGoodInfoBinding, GoodInfoViewModel
             arguments = bundleOf(KEY_GOOD_PARAMS to goodParams)
         }
     }
-
 }

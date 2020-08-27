@@ -6,6 +6,7 @@ import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Spinner
 import androidx.databinding.BindingAdapter
+import androidx.lifecycle.MutableLiveData
 import com.lenta.shared.view.OnPositionClickListener
 
 @BindingAdapter(value = ["items", "position", "onPositionClickListener", "android:enabled"], requireAll = false)
@@ -47,4 +48,21 @@ fun setupSpinner(spinner: Spinner, items: List<String>?, position: Int?, onPosit
         spinner.setSelection(position)
     }
     adapter.notifyDataSetChanged()
+}
+
+@BindingAdapter("onPositionClicked")
+fun onPositionClicked(spinner: Spinner, handlerLiveData: MutableLiveData<Int>?) {
+    if (spinner.onItemSelectedListener == null && handlerLiveData != null) {
+        spinner.postDelayed({
+            spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+                override fun onItemSelected(adapterView: AdapterView<*>, view: View?, position: Int, l: Long) {
+                    handlerLiveData.value = position
+                }
+
+                override fun onNothingSelected(adapterView: AdapterView<*>) = Unit
+            }
+        }, 500)
+    } else if (handlerLiveData == null) {
+        spinner.onItemSelectedListener = null
+    }
 }
