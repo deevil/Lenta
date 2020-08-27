@@ -45,6 +45,8 @@
                         android:id="@+id/et_goods_count"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:digits="0123456789."
+                        android:inputType="number"
                         android:paddingStart="@dimen/size_10dp"
                         android:paddingEnd="@dimen/size_10dp"
                         android:textSize="@dimen/text_14sp"
@@ -230,6 +232,8 @@
                         android:paddingStart="@dimen/size_10dp"
                         android:paddingEnd="@dimen/size_10dp"
                         android:textSize="@dimen/text_14sp"
+                        android:digits="0123456789."
+                        android:inputType="number"
                         android:text="@={vm.containerField}"
                         style="@style/CellEditTextStyle"
                         tools:text="123"/>

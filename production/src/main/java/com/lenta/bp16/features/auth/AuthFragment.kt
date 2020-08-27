@@ -23,7 +23,6 @@ class AuthFragment : CoreLoginFragment() {
             return it
         }
     }
-    /**какой-то комментарий*/
 
     override fun setupTopToolBar(topToolbarUiModel: TopToolbarUiModel) {
         topToolbarUiModel.title.value = context?.getAppInfo()
