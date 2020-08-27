@@ -122,5 +122,6 @@
     <string name="gtin">GTIN</string>
     <string name="property">Свойство</string>
     <string name="value">Значение</string>
+    <string name="rub">руб</string>
 
 </resources>

@@ -9,7 +9,6 @@ import com.lenta.bp12.model.actionByNumber
 import com.lenta.bp12.model.pojo.Basket
 import com.lenta.bp12.model.pojo.Mark
 import com.lenta.bp12.model.pojo.create_task.GoodCreate
-import com.lenta.bp12.model.pojo.extentions.addMarks
 import com.lenta.bp12.model.pojo.extentions.getDescription
 import com.lenta.bp12.platform.extention.getControlType
 import com.lenta.bp12.platform.extention.getGoodKind
@@ -66,11 +65,15 @@ class TaskContentViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
     @Inject
     lateinit var printPalletListNetRequest: PrintPalletListNetRequest
 
-    /** Получение данных товара по ШК / SAP-коду
-     * "ZMP_UTZ_BKS_05_V001" */
+    /** "ZMP_UTZ_BKS_05_V001"
+     * Получение данных товара по ШК / SAP-коду
+     */
     @Inject
     lateinit var goodInfoNetRequest: GoodInfoNetRequest
 
+    /** 3.1.1.15	Таблица 17. Параметры ФМ ZMP_UTZ_WOB_07_V001
+     * «Получение данных по марке/блоку/коробке/товару из ГМ»
+     */
     @Inject
     lateinit var markCartonBoxGoodInfoNetRequest: MarkCartonBoxGoodInfoNetRequest
 
@@ -276,7 +279,7 @@ class TaskContentViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
                 checkMarkNetRequest(params, foundGood)
             } else {
                 manager.updateCurrentGood(foundGood)
-                navigator.openMarkedGoodInfoCreateScreen()
+                navigator.openMarkedGoodInfoCreateScreen(emptyList())
                 navigator.showForGoodNeedScanFirstMark()
             }
         } else {
@@ -300,35 +303,44 @@ class TaskContentViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
 
     private fun handleCheckMarkNetRequestResult(result: MarkCartonBoxGoodInfoNetRequestResult, foundGood: GoodCreate) {
         val status = result.getMarkStatus()
+        val marks = result.marks
         when (status) {
             MarkStatus.GOOD_CARTON -> {
-                result.marks?.map {
-                    Mark(
-                            number = it.markNumber,
-                            packNumber = it.cartonNumber,
-                            maxRetailPrice = foundGood.maxRetailPrice
-                    )
-                }?.let { foundGood.addMarks(it) }
-                manager.updateCurrentGood(foundGood)
-                navigator.openMarkedGoodInfoCreateScreen()
+                marks?.let {
+                    val mappedMarks = marks.map {
+                        Mark(
+                                number = it.markNumber,
+                                packNumber = it.cartonNumber,
+                                maxRetailPrice = foundGood.maxRetailPrice
+                        )
+                    }
+                    manager.updateCurrentGood(foundGood)
+                    navigator.openMarkedGoodInfoCreateScreen(mappedMarks)
+                }
             }
             MarkStatus.GOOD_MARK -> {
-                result.marks?.map {
-                    Mark(number = it.markNumber)
-                }?.let { foundGood.addMarks(it) }
-                manager.updateCurrentGood(foundGood)
-                navigator.openMarkedGoodInfoCreateScreen()
+                marks?.let {
+                    val mappedMarks = marks.map {
+                        Mark(
+                                number = it.markNumber
+                        )
+                    }
+                    manager.updateCurrentGood(foundGood)
+                    navigator.openMarkedGoodInfoCreateScreen(mappedMarks)
+                }
             }
             MarkStatus.GOOD_BOX -> {
-                result.marks?.map {
-                    Mark(
-                            number = it.markNumber,
-                            boxNumber = it.boxNumber,
-                            maxRetailPrice = foundGood.maxRetailPrice
-                    )
-                }?.let { foundGood.addMarks(it) }
-                manager.updateCurrentGood(foundGood)
-                navigator.openMarkedGoodInfoCreateScreen()
+                marks?.let {
+                    val mappedMarks = marks.map {
+                        Mark(
+                                number = it.markNumber,
+                                boxNumber = it.boxNumber,
+                                maxRetailPrice = foundGood.maxRetailPrice
+                        )
+                    }
+                    manager.updateCurrentGood(foundGood)
+                    navigator.openMarkedGoodInfoCreateScreen(mappedMarks)
+                }
             }
             else -> {
                 navigator.openAlertScreen(
@@ -426,7 +438,7 @@ class TaskContentViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
                     val taskType = task.type
                     val goodEan = eanInfo?.ean.orEmpty()
                     val umrez = eanInfo?.umrez?.toDoubleOrNull().orIfNull { 1.0 }
-                    val formattedMrc = mrc.toDoubleOrNull()?.div(umrez)?.div(100).toString()
+                    val formattedMrc = getFormattedMrc(mrc, umrez)
 
                     val good = GoodCreate(
                             ean = goodEan,
@@ -460,13 +472,18 @@ class TaskContentViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
         }
     }
 
+    private fun getFormattedMrc(mrc: String, umrez: Double): String {
+        val wholeMrc = mrc.toDoubleOrNull()
+        return wholeMrc?.let {
+            val partedMrc = wholeMrc.div(umrez)
+            val partedMrcInRub = partedMrc.div(100)
+            "$partedMrcInRub"
+        } ?: ""
+    }
+
     override fun onOkInSoftKeyboard(): Boolean {
         checkSearchNumber(numberField.value.orEmpty())
         return true
-    }
-
-    private fun String.cutOutGTIN(): String {
-        return this.substringAfter("01").substringBefore("21")
     }
 
     fun onClickItemPosition(position: Int) {
@@ -478,7 +495,7 @@ class TaskContentViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
                         manager.searchNumber = good.material
                         manager.isSearchFromList = true
                         if (good.markType != MarkType.UNKNOWN) {
-                            navigator.openMarkedGoodInfoCreateScreen()
+                            navigator.openMarkedGoodInfoCreateScreen(emptyList())
                         } else {
                             navigator.openGoodInfoCreateScreen()
                         }

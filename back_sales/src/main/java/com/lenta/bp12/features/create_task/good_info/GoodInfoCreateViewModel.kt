@@ -828,7 +828,8 @@ class GoodInfoCreateViewModel : CoreViewModel() {
             manager.addGoodToBasket(
                     good = changedGood,
                     provider = getProvider(),
-                    count = quantityValue)
+                    count = quantityValue
+            )
             manager.updateCurrentGood(changedGood)
         }.orIfNull {
             Logg.e { "good null" }
@@ -843,7 +844,11 @@ class GoodInfoCreateViewModel : CoreViewModel() {
                     isBadMark = scanInfoResult.value?.status == ExciseMarkStatus.BAD.code,
                     providerCode = getProviderCode()
             )
-            manager.addGoodToBasketWithMark(changedGood, mark, getProvider())
+            manager.addGoodToBasketWithMark(
+                    good = changedGood,
+                    mark = mark,
+                    provider = getProvider()
+            )
         }.orIfNull {
             Logg.e { "good null" }
             navigator.showInternalError(resource.goodNotFoundErrorMsg)
@@ -864,7 +869,8 @@ class GoodInfoCreateViewModel : CoreViewModel() {
                     good = changedGood,
                     part = part,
                     provider = getProvider(),
-                    count = quantityValue)
+                    count = quantityValue
+            )
         }.orIfNull {
             Logg.e { "good null" }
             navigator.showInternalError(resource.goodNotFoundErrorMsg)
@@ -873,7 +879,6 @@ class GoodInfoCreateViewModel : CoreViewModel() {
 
     private suspend fun addBox() {
         good.value?.let { changedGood ->
-
             scanInfoResult.value?.exciseMarks?.let { marks ->
                 marks.forEach { mark ->
                     val markFromBox = Mark(
@@ -882,10 +887,13 @@ class GoodInfoCreateViewModel : CoreViewModel() {
                             providerCode = getProviderCode()
                     )
                     Logg.d { "--> add mark from box = $markFromBox" }
-                    manager.addGoodToBasketWithMark(changedGood, markFromBox, getProvider())
+                    manager.addGoodToBasketWithMark(
+                            good = changedGood,
+                            mark = markFromBox,
+                            provider = getProvider()
+                    )
                 }
             }
-
             manager.updateCurrentGood(changedGood)
         }.orIfNull {
             Logg.e { "good null" }
@@ -967,6 +975,7 @@ class GoodInfoCreateViewModel : CoreViewModel() {
             navigator.hideProgress()
             navigator.goBack()
             navigator.openBasketCreateGoodListScreen()
+            manager.isBasketsNeedsToBeClosed = false
             manager.isBasketsNeedsToBeClosed = false
         }
     }

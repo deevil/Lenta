@@ -25,6 +25,7 @@ import com.lenta.bp12.features.open_task.task_list.TaskListFragment
 import com.lenta.bp12.features.open_task.task_search.TaskSearchFragment
 import com.lenta.bp12.features.save_data.SaveDataFragment
 import com.lenta.bp12.features.select_market.SelectMarketFragment
+import com.lenta.bp12.model.pojo.Mark
 import com.lenta.shared.account.IAuthenticator
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.features.alert.AlertFragment
@@ -184,9 +185,9 @@ class ScreenNavigator @Inject constructor(
         }
     }
 
-    override fun openMarkedGoodInfoCreateScreen() {
+    override fun openMarkedGoodInfoCreateScreen(marks: List<Mark>) {
         runOrPostpone {
-            getFragmentStack()?.push(MarkedGoodInfoCreateFragment())
+            getFragmentStack()?.push(MarkedGoodInfoCreateFragment.newInstance(marks))
         }
     }
 
@@ -576,7 +577,7 @@ interface IScreenNavigator : ICoreNavigator {
 
     fun openGoodInfoCreateScreen()
     fun openGoodInfoOpenScreen()
-    fun openMarkedGoodInfoCreateScreen()
+    fun openMarkedGoodInfoCreateScreen(marks: List<Mark>)
     fun openMarkedGoodInfoOpenScreen()
 
     fun showUnsentDataFoundOnDevice(deleteCallback: () -> Unit, goOverCallback: () -> Unit)

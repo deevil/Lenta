@@ -11,6 +11,7 @@ data class ProviderInfo(
         val name: String? = ""
 ) {
         companion object {
+                fun getEmptyCode() = ""
                 fun getEmptyProvider() = ProviderInfo()
         }
 }

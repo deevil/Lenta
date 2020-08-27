@@ -70,7 +70,7 @@ enum class PartStatus(val code: String){
     NOT_FOUND("201")
 }
 
-enum class ScreenStatus(val description: String){
+enum class ScreenStatus(val description: String) {
     DEFAULT("Состояние до сканирование первого номера"),
     COMMON("Обычный товар"),
     ALCOHOL("Алкогольный немаркированный товар"),

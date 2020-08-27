@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.os.bundleOf
 import androidx.databinding.DataBindingUtil
 import com.lenta.bp12.BR
 import com.lenta.bp12.R
@@ -11,6 +12,7 @@ import com.lenta.bp12.databinding.FragmentMarkedGoodInfoCreateBinding
 import com.lenta.bp12.databinding.ItemGoodInfoPropertyBinding
 import com.lenta.bp12.databinding.LayoutMarkedGoodInfoCreatePropertiesTabBinding
 import com.lenta.bp12.databinding.LayoutMarkedGoodInfoCreateQuantityTabBinding
+import com.lenta.bp12.model.pojo.Mark
 import com.lenta.bp12.platform.extention.getAppComponent
 import com.lenta.shared.platform.activity.OnBackPresserListener
 import com.lenta.shared.platform.fragment.CoreFragment
@@ -33,10 +35,17 @@ class MarkedGoodInfoCreateFragment : CoreFragment<FragmentMarkedGoodInfoCreateBi
     override fun getPageNumber(): String? = generateScreenNumberFromPostfix(SCREEN_NUMBER)
 
     override fun getViewModel(): MarkedGoodInfoCreateViewModel {
-        provideViewModel(MarkedGoodInfoCreateViewModel::class.java).let {
-            getAppComponent()?.inject(it)
-            return it
+        val vm = provideViewModel(MarkedGoodInfoCreateViewModel::class.java)
+        getAppComponent()?.inject(vm)
+        arguments?.let{
+            val marks = it.getParcelableArrayList<Mark>(MARKS_KEY)
+            marks?.let { listOfMarks ->
+                vm.tempMarks.value?.addAll(listOfMarks)
+                Logg.e { marks.toString() }
+            } ?: Logg.e { "marks empty "}
         }
+        return vm
+
     }
 
     override fun setupTopToolBar(topToolbarUiModel: TopToolbarUiModel) {
@@ -58,7 +67,9 @@ class MarkedGoodInfoCreateFragment : CoreFragment<FragmentMarkedGoodInfoCreateBi
     override fun onToolbarButtonClick(view: View) {
         when (view.id) {
             R.id.b_2 -> vm.onClickRollback()
-            R.id.b_3 -> vm.onClickDetails()
+            //R.id.b_3 -> vm.onClickDetails()
+            R.id.b_3 -> vm.onScanResult("01046002660113672100000BX.8005012345.938000.92NGkg+wRXz36kBFjpfwOub5DBIIpD2iS/DMYpZuuDLU0Y3pZt1z20/1ksr4004wfhDhRxu4dgUV4QN96Qtdih9g==") // Блок
+//            R.id.b_3 -> vm.onScanResult("00000046203564000001A01238000") // Пачка
             //R.id.b_3 -> vm.onScanResult("147300249826851018001FZSIZAB5I6KZKWEQKPKZJHW6MYKVGAETXLPV7M5AIF7OXTQFIM347EWQGXAK65QGJFKTR7EQDHJQTJFSW5DNWTBU3BRLKVM7D6YZMYRBV6IOQY5ZXLPKLBHUZPBTRFTLQ") // Марка
             //R.id.b_3 -> vm.onScanResult("1734001784926710180016BZ3532QMZKOBPRTXTL7BZMZ3YNNMK53PXMB3ZU66TJ3SNVFR7YTCYVLOPKUNBQIG5XXLKNYYWMWGGUXJLVHB2NLSMF6ACBJDB73IUKGGSAEOWKBY7TW7FZ5BLIT3YT2Y") // SAP-код: 270202156641
             //R.id.b_3 -> vm.onScanResult("236200647504871018001FCCBM6EJ4RTKG5J6SZPIOVDIA4G3QGAZLK3HVONWWBVHXJYO3HOAX633MX756X27L27QPWSTGUNJM5IZL2X67XID6FSVVZAFI5OXWE5XJNHQMELI76JC45KQN2GH5VD7Y") // SAP-код: 444877
@@ -96,7 +107,7 @@ class MarkedGoodInfoCreateFragment : CoreFragment<FragmentMarkedGoodInfoCreateBi
         }
     }
 
-    override fun getTextTitle(position: Int) : String {
+    override fun getTextTitle(position: Int): String {
         return when (position) {
             TAB_QUANTITY_PAGE -> getString(R.string.quantity)
             TAB_PROPERTIES_PAGE -> getString(R.string.properties)
@@ -151,7 +162,16 @@ class MarkedGoodInfoCreateFragment : CoreFragment<FragmentMarkedGoodInfoCreateBi
     }
 
     companion object {
+        fun newInstance(marks: List<Mark>) : MarkedGoodInfoCreateFragment {
+            return MarkedGoodInfoCreateFragment().apply {
+                arguments = bundleOf(
+                        MARKS_KEY to marks
+                )
+            }
+        }
+
         const val SCREEN_NUMBER = "12"
+        private const val MARKS_KEY = "MARKS_KEY"
         private const val TAB_QUANTITY_PAGE = 0
         private const val TAB_PROPERTIES_PAGE = 1
         private const val TAB_QUANTITY = 2
