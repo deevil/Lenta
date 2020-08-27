@@ -23,6 +23,10 @@ class TechOrdersListViewModel : CoreViewModel() {
         resourceManager.kgSuffix()
     }
 
+    val materialIngredientKtsch: MutableLiveData<String> by unsafeLazy {
+        MutableLiveData<String>()
+    }
+
 
     val allTechOrdersList by unsafeLazy {
         MutableLiveData<List<ItemTechOrderUi>>()
@@ -30,8 +34,8 @@ class TechOrdersListViewModel : CoreViewModel() {
 
     init {
         launchUITryCatch {
-            getTechOrdersUseCase(Unit).either {
-                allTechOrdersList.value = it.mapIndexed { index, techOrderDataInfo ->
+            getTechOrdersUseCase(Unit).either { list ->
+                allTechOrdersList.value = list.filter { it.ktsch == materialIngredientKtsch.value }.mapIndexed { index, techOrderDataInfo ->
                     val position = (index + 1).toString()
                     ItemTechOrderUi(
                             position = position,

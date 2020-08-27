@@ -168,7 +168,4 @@ class IngredientsListFragment :
         const val TAB_BY_ORDER = 0
         const val TAB_BY_MATERIALS = 1
     }
-
-
-
 }

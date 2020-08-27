@@ -67,7 +67,7 @@
     <string name="storage_sender">Склад отправитель</string>
     <string name="storage_receiver">Склад получатель</string>
     <string name="container">Тара</string>
-    <string name="tw_search_info">Отсканируйте штрахкод или введите товар вручную</string>
+    <string name="tw_search_info">Отсканируйте ШК или введите товар вручную</string>
     <string name="preparation_ingredients">Подготовка ингредиентов</string>
     <string name="tw_alert_part_not_found">Отсканированная партия не найдена в системе. Отложите товар и проведите инвентаризацию.</string>
     <string name="tw_alert_good_not_found">Данный товар не найден</string>
@@ -105,8 +105,8 @@
     <string name="text_complect">Комплектация</string>
     <string name="text_weight_hint">кг</string>
     <string name="text_pf">ПФ</string>
-    <string name="text_pf_plan">ПФ План (кг)</string>
-    <string name="text_already">Скомплектовано (кг)</string>
+    <string name="text_pf_plan">ПФ План</string>
+    <string name="text_already">Скомплектовано</string>
     <string name="text_warehouse">Склад</string>
     <string name="error_weight_not_set">Вы не указали значение: количество</string>
 
