@@ -1,6 +1,8 @@
 package com.lenta.bp16.features.good_info
 
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.switchMap
 import com.lenta.bp16.model.movement.params.MovementParams
 import com.lenta.bp16.model.movement.params.WarehouseParams
 import com.lenta.bp16.model.movement.ui.ProducerUI
@@ -14,10 +16,8 @@ import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.models.core.Uom
 import com.lenta.shared.models.core.toUom
 import com.lenta.shared.platform.viewmodel.CoreViewModel
-import com.lenta.shared.utilities.extentions.combineLatest
-import com.lenta.shared.utilities.extentions.launchUITryCatch
-import com.lenta.shared.utilities.extentions.map
-import com.lenta.shared.utilities.extentions.unsafeLazy
+import com.lenta.shared.utilities.Logg
+import com.lenta.shared.utilities.extentions.*
 import com.lenta.shared.view.OnPositionClickListener
 import javax.inject.Inject
 
@@ -42,8 +42,8 @@ class GoodInfoViewModel : CoreViewModel() {
 
     val goodParams = MutableLiveData<GoodParams>()
 
-    val weight: MutableLiveData<Double> by unsafeLazy {
-        MutableLiveData<Double>()
+    val weight: MutableLiveData<Double> = goodParams.mapSkipNulls {
+        it?.weight ?: 0.0
     }
 
     val selectedEan = MutableLiveData<String>()
@@ -53,17 +53,43 @@ class GoodInfoViewModel : CoreViewModel() {
 
     /**Свойство, указывающее на отображение поля "Тара"*/
     val proIncludeCond = MutableLiveData<Boolean>()
-    val zPartFlag = MutableLiveData<Boolean>()
+
+    val zPartFlag = goodParams.mapSkipNulls {
+        it.zPart
+    }
+
+    val requestFocusQuantityField = MutableLiveData(true)
+
+    private val WeightAndUom: LiveData<Pair<Double?, Uom>> = goodParams.switchMap { good ->
+        weight.switchMap {
+            asyncLiveData<Pair<Double?, Uom>> {
+                val pair = weight.value?.takeIf { it != 0.0 }
+                        ?.run { div(Constants.CONVERT_TO_KG) to Uom.KG }
+                        ?: getPairFromUom(good)
+                emit(pair)
+            }
+        }
+    }
 
     /**Количество*/
-    val quantityField = MutableLiveData("")
-    val requestFocusQuantityField = MutableLiveData(true)
+    val quantityField = WeightAndUom.mapSkipNulls {
+        /**Если товар не весовой, то переводим в целый тип*/
+        if (it.second.name != Uom.KG.name) {
+            it.first?.toInt().toString()
+        } else {
+            it.first?.toString().orEmpty()
+        }
+    }
 
     private val dateInfoSpinner = mutableListOf(PROD_DATE, SELF_LIFE)
 
     /**Производитель*/
-    private val producerList: MutableLiveData<ProducerUI> = MutableLiveData()
-    val producerNameField: MutableLiveData<List<String>> = MutableLiveData()
+    val producerNameField: LiveData<List<String>> = goodParams.switchMap {
+        asyncLiveData<List<String>> {
+            val producersNameList = it.producers.map { it.producerName }
+            emit(producersNameList)
+        }
+    }
     val selectedProducerPosition = MutableLiveData(0);
 
     /**Дата производства и срок годности*/
@@ -86,55 +112,45 @@ class GoodInfoViewModel : CoreViewModel() {
     /**Тара*/
     val containerField = MutableLiveData("")
 
-    val enabledCompleteButton: MutableLiveData<Boolean> = quantityField
+    val enabledCompleteButton: MutableLiveData<Boolean> = dateInfoField
+            .combineLatest(quantityField)
             .combineLatest(warehouseSender)
             .combineLatest(warehouseReceiver)
             .combineLatest(containerField)
             .map {
-                val fillQuantity = it?.first?.first?.first
+                val fillDate = it?.first?.first?.first?.first
+                val fillQuantity = it?.first?.first?.first?.second
                 val fillWarehouseSender = it?.first?.first?.second
                 val fillWarehouseReceiver = it?.first?.second
                 val fillContainerField = it?.second
                 if (!proFillCond.value.isNullOrBlank()) {
-                    !(fillQuantity.isNullOrBlank() || fillWarehouseReceiver.isNullOrEmpty() || fillWarehouseSender.isNullOrEmpty() || fillContainerField.isNullOrEmpty())
+                    !(fillQuantity.isNullOrBlank() || fillWarehouseReceiver.isNullOrEmpty() || fillWarehouseSender.isNullOrEmpty() || fillContainerField.isNullOrEmpty() || fillDate?.length != DATE_LENGTH)
+                } else if (zPartFlag.value == true) {
+                    !(fillQuantity.isNullOrBlank() || fillWarehouseReceiver.isNullOrEmpty() || fillWarehouseSender.isNullOrEmpty() || fillDate?.length != DATE_LENGTH)
                 } else {
                     !(fillQuantity.isNullOrBlank() || fillWarehouseReceiver.isNullOrEmpty() || fillWarehouseSender.isNullOrEmpty())
                 }
             }
 
-    var suffix: MutableLiveData<String> = MutableLiveData(Uom.KG.name)
+    val suffix: LiveData<String> = WeightAndUom.mapSkipNulls { it.second.name }
+    val buom: LiveData<String> = WeightAndUom.mapSkipNulls { it.second.code }
 
     init {
-        setGoodInfo()
         setDateInfo()
-        setProducerInfo()
         setStockInfo()
         setContainerInfo()
     }
 
-    private fun setGoodInfo() {
-        launchUITryCatch {
-            val good = goodParams.value
-            weight.value = goodParams.value?.weight
-            /**Расчет количества и единиц измерения*/
-            val (quantity: Double?, uom: String) =
-                    weight.value?.run { div(Constants.CONVERT_TO_KG) to Uom.KG.name } ?: getPairFromUom(good)
-            quantityField.value = quantity.toString()
-            suffix.value = uom
-            zPartFlag.value = goodParams.value?.zPart
-        }
-    }
-
-    private fun getPairFromUom(good: GoodParams?): Pair<Double?, String> {
+    private fun getPairFromUom(good: GoodParams?): Pair<Double?, Uom> {
         return when (good?.uom?.toUom()) {
             Uom.ST -> {
-                Constants.QUANTITY_DEFAULT_VALUE_1 to Uom.ST.name
+                Constants.QUANTITY_DEFAULT_VALUE_1 to Uom.ST
             }
             Uom.KAR -> {
-                good.umrez.toInt().div(good.umren.toDouble()) to Uom.KAR.name
+                good.umrez.toInt().div(good.umren.toDouble()) to Uom.KAR
             }
             else -> {
-                Constants.QUANTITY_DEFAULT_VALUE_0 to Uom.DEFAULT.name
+                Constants.QUANTITY_DEFAULT_VALUE_0 to Uom.DEFAULT
             }
         }
     }
@@ -147,11 +163,6 @@ class GoodInfoViewModel : CoreViewModel() {
                 selfLifeDate = dateInfoField.value.orEmpty()
             }
         }
-    }
-
-    private fun setProducerInfo() {
-        producerList.value = goodParams.value?.producers
-        producerNameField.value = goodParams.value?.producers?.producerName
     }
 
     private fun setStockInfo() {
@@ -168,7 +179,6 @@ class GoodInfoViewModel : CoreViewModel() {
         }
     }
 
-
     private fun setContainerInfo() {
         launchUITryCatch {
             val includeCond = database.getIncludeCondition()
@@ -180,8 +190,8 @@ class GoodInfoViewModel : CoreViewModel() {
     fun onClickComplete() {
         launchUITryCatch {
             navigator.showProgressLoadingData()
-            val prodCodeSelectedProducer = goodParams.value?.producers?.producerCode?.getOrNull(selectedProducerPosition.value
-                    ?: 0).orEmpty()
+            val prodCodeSelectedProducer = goodParams.value?.producers?.getOrNull(selectedProducerPosition.value
+                    ?: 0)?.producerName.orEmpty()
             val warehouseSenderSelected = warehouseSender.value?.getOrNull(selectedWarehouseSenderPosition.value
                     ?: 0).orEmpty()
             val warehouseReceiverSelected = warehouseReceiver.value?.getOrNull(selectedWarehouseReceiverPosition.value
@@ -197,8 +207,8 @@ class GoodInfoViewModel : CoreViewModel() {
                             lgortImport = warehouseReceiverSelected,
                             codeCont = "",
                             factQnt = quantityField.value.toString(),
-                            buom = suffix.value.orEmpty(),
-                            deviceIP = deviceIp.toString(),
+                            buom = buom.value.orEmpty(),
+                            deviceIP = deviceIp.value.toString(),
                             personnelNumber = sessionInfo.personnelNumber.orEmpty()
                     )
             )
@@ -213,5 +223,6 @@ class GoodInfoViewModel : CoreViewModel() {
     companion object {
         const val PROD_DATE = "Дата производства"
         const val SELF_LIFE = "Срок годности"
+        const val DATE_LENGTH = 10
     }
 }

@@ -5,6 +5,8 @@ import com.lenta.bp16.request.pojo.Ean
 import com.lenta.bp16.request.pojo.Product
 
 data class ProductInfoParams(
+        @SerializedName("IV_WERKS")
+        val werks: String,
         @SerializedName("IT_MATNR_LIST")
         val matnr: List<Product>,
         @SerializedName("IT_EAN_LIST")
