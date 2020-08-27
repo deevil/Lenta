@@ -22,71 +22,45 @@ class SendWriteOffDataNetRequest
 }
 
 data class SendWriteOffDataParams(
-
-        // <summary>
-        // Табельный номер
-        // </summary>
+        /** Табельный номер */
         @SerializedName("IV_PERNR")
         val perNo: String,
-
-        // <summary>
-        // Принтер
-        // </summary>
-        @SerializedName("IV_PRINTERNAME")
-        val printer: String,
-
-        // <summary>
-        // Название задания
-        // </summary>
+        /** Название задания */
         @SerializedName("IV_DESCR")
         val taskName: String,
-
-        // <summary>
-        // Тип задания на списание
-        // </summary>
+        /** Тип задания на списание */
         @SerializedName("IV_TYPE")
         val taskType: String,
-
-        // <summary>
-        // Предп
-        // </summary>
+        /** Номер ТК */
         @SerializedName("IV_WERKS")
         val tkNumber: String,
-
-        // <summary>
-        // Склад
-        // </summary>
+        /** Склад */
         @SerializedName("IV_LGORT")
         val storloc: String,
-
-        // <summary>
-        // IP адрес ТСД
-        // </summary>
+        /** IP адрес ТСД */
         @SerializedName("IV_IP")
         val ipAdress: String,
-
-        // <summary>
-        // Список товаров для сохранения задания из ТСД
-        // </summary>
+        /** Список товаров для сохранения задания из ТСД */
         @SerializedName("IT_MATERIALS")
         val materials: List<MaterialNumber>,
-
-        // <summary>
-        // Список марок для сохранения задания из ТСД
-        // </summary>
+        /** Список марок для сохранения задания из ТСД */
         @SerializedName("IT_MARKS")
-        val exciseStamps: List<ExciseStamp>
-
-
+        val exciseStamps: List<ExciseStamp>,
+        /** Принтер */
+        @SerializedName("IV_PRINTERNAME")
+        val printer: String
 )
 
 class WriteOffReportStatus : ObjectRawStatus<SendWriteOffDataResult>()
 
 data class SendWriteOffDataResult(
+        /** Список созданных заданий */
         @SerializedName("ET_TASK_LIST")
         val taskList: List<CreatedTaskInfo>,
+        /** Код возврата */
         @SerializedName("EV_ERROR_TEXT")
         val errorText: String,
+        /** Текст ошибки */
         @SerializedName("EV_RETCODE")
         val retCode: String
 )

@@ -2,37 +2,23 @@ package com.lenta.bp10.requests.network.pojo
 
 import com.google.gson.annotations.SerializedName
 
-// Акцизная марка, элемент списка IT_MARKS в ZMP_UTZ_WOB_04_V001
-// </summary>
 data class ExciseStamp(
-        // <summary>
-        // Номер набора ("" для ненабора)
-        // </summary>
+        /** Номер набора ("" для не набора) */
         @SerializedName("MATNR_OSN")
-        val matnrOsn: String,
-
-        // <summary>
-        // Номер товара
-        // </summary>
+        val matnrOsn: String = "",
+        /** Номер товара */
         @SerializedName("MATNR")
         val matnr: String,
-
-        // <summary>
-        // Причина движения
-        // </summary>
+        /** Причина движения */
         @SerializedName("GRUND")
         val writeOffCause: String,
-
-        // <summary>
-        // Код акцизной марки
-        // </summary>
+        /** Код акцизной марки */
         @SerializedName("PDF417")
         val stamp: String,
-
-        // <summary>
-        // Признак bad mark
-        // </summary>
+        /** Номер блока */
+        @SerializedName("PACK_NUM")
+        val packNumber: String = "",
+        /** Признак bad mark */
         @SerializedName("REG")
         val reg: String
-
 )

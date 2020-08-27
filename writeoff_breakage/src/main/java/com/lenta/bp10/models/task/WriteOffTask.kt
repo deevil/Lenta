@@ -1,11 +1,11 @@
 package com.lenta.bp10.models.task
 
-import com.lenta.bp10.fmp.resources.send_report.ExciseStamp
-import com.lenta.bp10.fmp.resources.send_report.MaterialNumber
-import com.lenta.bp10.fmp.resources.send_report.SendWriteOffDataParams
 import com.lenta.bp10.models.repositories.ITaskRepository
 import com.lenta.bp10.requests.network.PrintProduct
 import com.lenta.bp10.requests.network.PrintTask
+import com.lenta.bp10.requests.network.SendWriteOffDataParams
+import com.lenta.bp10.requests.network.pojo.ExciseStamp
+import com.lenta.bp10.requests.network.pojo.MaterialNumber
 import com.lenta.shared.models.core.ProductInfo
 import com.lenta.shared.models.core.ProductType
 

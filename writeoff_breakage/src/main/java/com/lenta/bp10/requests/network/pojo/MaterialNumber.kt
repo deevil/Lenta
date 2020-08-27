@@ -3,28 +3,16 @@ package com.lenta.bp10.requests.network.pojo
 import com.google.gson.annotations.SerializedName
 
 data class MaterialNumber(
-        // <summary>
-        // Номер товара
-        // </summary>
+        /** Номер товара */
         @SerializedName("MATNR")
         val matnr: String,
-
-        // <summary>
-        // Причина движения
-        // </summary>
+        /** Причина движения */
         @SerializedName("GRUND")
         val writeOffCause: String,
-
-        // <summary>
-        // Место возникновения затрат
-        // </summary>
+        /** Место возникновения затрат */
         @SerializedName("KOSTL")
         val kostl: String,
-
-        // <summary>
-        // Введенное количество
-        // </summary>
+        /** Введенное количество */
         @SerializedName("FIRST_QNT")
         val amount: String
-
 )
