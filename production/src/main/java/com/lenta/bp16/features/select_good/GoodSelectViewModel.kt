@@ -79,6 +79,7 @@ class GoodSelectViewModel : CoreViewModel() {
                         name = goodInfo.productName.orEmpty(),
                         weight = weight,
                         zPart = goodInfo.isPart.orEmpty().isNotEmpty(),
+                        buom = goodInfo.buom.orEmpty(),
                         uom = goodInfo.uom.orEmpty(),
                         umrez = goodInfo.umrez.orEmpty(),
                         umren = goodInfo.umren.orEmpty(),

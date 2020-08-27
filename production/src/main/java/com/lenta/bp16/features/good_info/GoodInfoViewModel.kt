@@ -147,7 +147,7 @@ class GoodInfoViewModel : CoreViewModel() {
                 Constants.QUANTITY_DEFAULT_VALUE_1 to Uom.ST
             }
             Uom.KAR -> {
-                good.umrez.toInt().div(good.umren.toDouble()) to Uom.KAR
+                good.umrez.toInt().div(good.umren.toDouble()) to good.buom.toUom()
             }
             else -> {
                 Constants.QUANTITY_DEFAULT_VALUE_0 to Uom.DEFAULT
