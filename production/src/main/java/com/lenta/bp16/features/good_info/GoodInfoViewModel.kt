@@ -5,7 +5,6 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.switchMap
 import com.lenta.bp16.model.movement.params.MovementParams
 import com.lenta.bp16.model.movement.params.WarehouseParams
-import com.lenta.bp16.model.movement.ui.ProducerUI
 import com.lenta.bp16.model.pojo.GoodParams
 import com.lenta.bp16.platform.Constants
 import com.lenta.bp16.platform.navigation.IScreenNavigator
@@ -16,9 +15,7 @@ import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.models.core.Uom
 import com.lenta.shared.models.core.toUom
 import com.lenta.shared.platform.viewmodel.CoreViewModel
-import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.extentions.*
-import com.lenta.shared.view.OnPositionClickListener
 import javax.inject.Inject
 
 class GoodInfoViewModel : CoreViewModel() {
@@ -60,22 +57,25 @@ class GoodInfoViewModel : CoreViewModel() {
 
     val requestFocusQuantityField = MutableLiveData(true)
 
-    private val WeightAndUom: LiveData<Pair<Double?, Uom>> = goodParams.switchMap { good ->
-        weight.switchMap {
+    val buom: MutableLiveData<String> = MutableLiveData("")
+
+    private val weightAndUom: LiveData<Pair<Double?, Uom>> = goodParams.switchMap { good ->
+        weight.switchMap { weightValue ->
             asyncLiveData<Pair<Double?, Uom>> {
-                val pair = weight.value?.takeIf { it != 0.0 }
+                val pair = weightValue.takeIf { it != 0.0 }
                         ?.run { div(Constants.CONVERT_TO_KG) to Uom.KG }
                         ?: getPairFromUom(good)
+                buom.postValue(pair.second.code)
                 emit(pair)
             }
         }
     }
 
     /**Количество*/
-    val quantityField = WeightAndUom.mapSkipNulls {
+    val quantityField = weightAndUom.mapSkipNulls {
         /**Если товар не весовой, то переводим в целый тип*/
         if (it.second.name != Uom.KG.name) {
-            it.first?.toInt().toString()
+            it.first?.dropZeros()
         } else {
             it.first?.toString().orEmpty()
         }
@@ -132,8 +132,7 @@ class GoodInfoViewModel : CoreViewModel() {
                 }
             }
 
-    val suffix: LiveData<String> = WeightAndUom.mapSkipNulls { it.second.name }
-    val buom: LiveData<String> = WeightAndUom.mapSkipNulls { it.second.code }
+    val suffix: LiveData<String> = weightAndUom.mapSkipNulls { it.second.name }
 
     init {
         setDateInfo()
@@ -191,7 +190,7 @@ class GoodInfoViewModel : CoreViewModel() {
         launchUITryCatch {
             navigator.showProgressLoadingData()
             val prodCodeSelectedProducer = goodParams.value?.producers?.getOrNull(selectedProducerPosition.value
-                    ?: 0)?.producerName.orEmpty()
+                    ?: 0)?.producerCode.orEmpty()
             val warehouseSenderSelected = warehouseSender.value?.getOrNull(selectedWarehouseSenderPosition.value
                     ?: 0).orEmpty()
             val warehouseReceiverSelected = warehouseReceiver.value?.getOrNull(selectedWarehouseReceiverPosition.value
