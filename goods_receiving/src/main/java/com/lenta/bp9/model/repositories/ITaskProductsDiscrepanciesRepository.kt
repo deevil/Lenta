@@ -24,6 +24,7 @@ interface ITaskProductsDiscrepanciesRepository {
     fun deleteProductDiscrepancyNotRecountPGE(materialNumber: String, typeDiscrepancies: String): Boolean
     fun deleteProductsDiscrepanciesForProductNotRecountPGE(product: TaskProductInfo): Boolean
     fun deleteProductsDiscrepanciesOfProductOfDiscrepanciesNotRecountPGE(product: TaskProductInfo, typeDiscrepancies: String): Boolean
+    fun deleteProductDiscrepancyByBatch(materialNumber: String, typeDiscrepancies: String, quantityByDiscrepancyForBatch: Double)
     fun getCountAcceptOfProduct(product: TaskProductInfo): Double
     fun getCountRefusalOfProduct(product: TaskProductInfo): Double
     fun getCountProductNotProcessedOfProduct(product: TaskProductInfo): Double
