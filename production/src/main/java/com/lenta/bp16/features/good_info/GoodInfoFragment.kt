@@ -46,14 +46,9 @@ class GoodInfoFragment : CoreFragment<FragmentGoodInfoBinding, GoodInfoViewModel
     }
 
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
-        bottomToolbarUiModel.uiModelButton1.show(ButtonDecorationInfo.back,enabled = false)
+        bottomToolbarUiModel.uiModelButton1.show(ButtonDecorationInfo.back)
         bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.complete, enabled = false)
 
-        /*vm.enteredEanField.observe(viewLifecycleOwner) {
-            bottomToolbarUiModel.uiModelButton5.requestFocus()
-        }*/
-
-        connectLiveData(vm.enabledCompleteButton, bottomToolbarUiModel.uiModelButton1.enabled)
         connectLiveData(vm.enabledCompleteButton, bottomToolbarUiModel.uiModelButton5.enabled)
     }
 

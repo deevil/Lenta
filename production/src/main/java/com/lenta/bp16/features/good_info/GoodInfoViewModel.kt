@@ -112,19 +112,21 @@ class GoodInfoViewModel : CoreViewModel() {
     /**Тара*/
     val containerField = MutableLiveData("")
 
-    val enabledCompleteButton: MutableLiveData<Boolean> = quantityField
+    val enabledCompleteButton: MutableLiveData<Boolean> = dateInfoField
+            .combineLatest(quantityField)
             .combineLatest(warehouseSender)
             .combineLatest(warehouseReceiver)
             .combineLatest(containerField)
             .map {
-                val fillQuantity = it?.first?.first?.first
+                val fillDate = it?.first?.first?.first?.first
+                val fillQuantity = it?.first?.first?.first?.second
                 val fillWarehouseSender = it?.first?.first?.second
                 val fillWarehouseReceiver = it?.first?.second
                 val fillContainerField = it?.second
                 if (!proFillCond.value.isNullOrBlank()) {
-                    !(fillQuantity.isNullOrBlank() || fillWarehouseReceiver.isNullOrEmpty() || fillWarehouseSender.isNullOrEmpty() || fillContainerField.isNullOrEmpty())
+                    !(fillQuantity.isNullOrBlank() || fillWarehouseReceiver.isNullOrEmpty() || fillWarehouseSender.isNullOrEmpty() || fillContainerField.isNullOrEmpty() || fillDate?.length != DATE_LENGTH)
                 } else {
-                    !(fillQuantity.isNullOrBlank() || fillWarehouseReceiver.isNullOrEmpty() || fillWarehouseSender.isNullOrEmpty())
+                    !(fillQuantity.isNullOrBlank() || fillWarehouseReceiver.isNullOrEmpty() || fillWarehouseSender.isNullOrEmpty() || fillDate?.length != DATE_LENGTH)
                 }
             }
 
@@ -219,5 +221,6 @@ class GoodInfoViewModel : CoreViewModel() {
     companion object {
         const val PROD_DATE = "Дата производства"
         const val SELF_LIFE = "Срок годности"
+        const val DATE_LENGTH = 10
     }
 }
