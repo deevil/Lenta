@@ -73,7 +73,12 @@ class GoodInfoViewModel : CoreViewModel() {
 
     /**Количество*/
     val quantityField = WeightAndUom.mapSkipNulls {
-        it.first?.toString().orEmpty()
+        /**Если товар не весовой, то переводим в целый тип*/
+        if (it.second.name != Uom.DATA_KG) {
+            it.first?.toInt().toString()
+        } else {
+            it.first?.toString().orEmpty()
+        }
     }
 
     private val dateInfoSpinner = mutableListOf(PROD_DATE, SELF_LIFE)
