@@ -50,6 +50,11 @@ class TaskSearchFragment : CoreFragment<FragmentTaskSearchBinding, TaskSearchVie
         vm.onScanResult(data)
     }
 
+    override fun onResume() {
+        super.onResume()
+        vm.requestFocusToProvider.value = true
+    }
+
     companion object {
         const val SCREEN_NUMBER = "70"
 
