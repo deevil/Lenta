@@ -2,7 +2,14 @@ package com.lenta.bp10.models.task
 
 import com.lenta.shared.models.core.ExciseStamp
 
-class TaskExciseStamp(materialNumber: String, code: String, val setMaterialNumber: String, val writeOffReason: String, val isBadStamp: Boolean) : ExciseStamp(materialNumber, code) {
+class TaskExciseStamp(
+        materialNumber: String,
+        code: String,
+        val setMaterialNumber: String,
+        val writeOffReason: String,
+        val packNumber: String = "",
+        val isBadStamp: Boolean
+) : ExciseStamp(materialNumber, code) {
     //setMaterialNumber - материал набора
     //writeOffReason - причина списания
     //isBadStamp - признак "плохой" марки
@@ -14,6 +21,7 @@ class TaskExciseStamp(materialNumber: String, code: String, val setMaterialNumbe
                 code = this.code,
                 setMaterialNumber = this.setMaterialNumber,
                 writeOffReason = writeOffReason,
+                packNumber = this.packNumber,
                 isBadStamp = this.isBadStamp
         )
 

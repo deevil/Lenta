@@ -141,6 +141,7 @@ fun WriteOffTask.getStamps(): List<ExciseStamp> {
                 stamp = it.code,
                 matnrOsn = it.setMaterialNumber,
                 writeOffCause = it.writeOffReason,
+                packNumber = it.packNumber,
                 reg = if (it.isBadStamp) "X" else ""
         )
     }
