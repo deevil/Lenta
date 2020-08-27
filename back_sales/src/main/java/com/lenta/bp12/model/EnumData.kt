@@ -119,3 +119,12 @@ enum class MarkType(val description: String) {
     MEDICINE("Медицина"),
     UNKNOWN("")
 }
+
+enum class MarkStatus{
+    GOOD_MARK,
+    BAD_MARK,
+    GOOD_CARTON,
+    BAD_CARTON,
+    GOOD_BOX,
+    BAD_BOX
+}

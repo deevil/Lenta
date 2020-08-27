@@ -72,6 +72,10 @@ class DatabaseRepository @Inject constructor(
         }
     }
 
+    override suspend fun getEanInfo(ean: String): com.lenta.shared.requests.combined.scan_info.pojo.EanInfo? {
+        return eanInfo.getEanInfo(ean)?.toEanInfo()
+    }
+
     override suspend fun getAllowedAppVersion(): String? {
         return withContext(Dispatchers.IO) {
             settings.getAllowedBksAppVersion()
@@ -188,6 +192,7 @@ interface IDatabaseRepository {
 
     suspend fun getGoodInfoByMaterial(material: String): GoodInfo?
     suspend fun getEanListByMaterialUnits(material: String, unitsCode: String): List<String>
+    suspend fun getEanInfo(ean: String) : com.lenta.shared.requests.combined.scan_info.pojo.EanInfo?
     suspend fun getAllowedAppVersion(): String?
     suspend fun getUnitsByCode(code: String): Uom
     suspend fun getTaskTypeList(): List<TaskType>

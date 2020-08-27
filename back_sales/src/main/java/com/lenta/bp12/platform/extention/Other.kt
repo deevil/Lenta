@@ -1,12 +1,11 @@
 package com.lenta.bp12.platform.extention
 
 import com.lenta.bp12.R
-import com.lenta.bp12.model.ControlType
-import com.lenta.bp12.model.GoodKind
-import com.lenta.bp12.model.MarkType
-import com.lenta.bp12.model.TypeCode
+import com.lenta.bp12.model.*
 import com.lenta.bp12.model.pojo.TaskType
 import com.lenta.bp12.request.pojo.good_info.GoodInfoResult
+import com.lenta.bp12.request.pojo.markCartonBoxGoodInfoNetRequest.MarkCartonBoxGoodInfoNetRequestResult
+import com.lenta.bp12.request.pojo.markCartonBoxGoodInfoNetRequest.MarkRequestStatus
 import com.lenta.shared.fmp.resources.slow.ZfmpUtz48V001
 import com.lenta.shared.utilities.enumValueOrNull
 import com.lenta.shared.utilities.extentions.isSapTrue
@@ -38,6 +37,28 @@ fun GoodInfoResult.getGoodKind(): GoodKind {
 fun GoodInfoResult.getMarkType(): MarkType {
     val markTypeString = materialInfo?.markType.orEmpty()
     return enumValueOrNull<MarkType>(markTypeString).orIfNull { MarkType.UNKNOWN }
+}
+
+fun MarkCartonBoxGoodInfoNetRequestResult.getMarkStatus(): MarkStatus {
+    return when (this.markStatus) {
+        MarkRequestStatus.MARK_FOUND -> MarkStatus.GOOD_MARK
+
+        MarkRequestStatus.MARK_NOT_FOUND_IN_TASK,
+        MarkRequestStatus.MARK_NOT_FOUND_OR_PROBLEMATIC,
+        MarkRequestStatus.MARK_OF_DIFFERENT_GOOD -> MarkStatus.BAD_MARK
+
+        MarkRequestStatus.CARTON_FOUND_OR_GRAYZONE -> MarkStatus.GOOD_CARTON
+
+        MarkRequestStatus.CARTON_INCOMPLETE,
+        MarkRequestStatus.CARTON_NOT_FOUND,
+        MarkRequestStatus.CARTON_NOT_FOUND_IN_TASK,
+        MarkRequestStatus.CARTON_OF_DIFFERENT_GOOD,
+        MarkRequestStatus.CARTON_OLD -> MarkStatus.BAD_CARTON
+
+        MarkRequestStatus.BOX_FOUND -> MarkStatus.GOOD_BOX
+
+        else -> MarkStatus.BAD_BOX
+    }
 }
 
 fun ZfmpUtz48V001.ItemLocal_ET_MATNR_LIST.getGoodKind(): GoodKind {

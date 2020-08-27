@@ -291,7 +291,11 @@ class MarkedGoodInfoCreateViewModel : CoreViewModel(), PageSelectionListener {
     МРЦ
      */
 
-    val mrc = MutableLiveData("")
+    val mrc by unsafeLazy {
+        good.map {
+            it?.maxRetailPrice
+        }
+    }
 
     val isMrcVisible by unsafeLazy {
         good.map {
