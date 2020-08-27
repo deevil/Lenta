@@ -74,7 +74,7 @@ class GoodInfoViewModel : CoreViewModel() {
     /**Количество*/
     val quantityField = WeightAndUom.mapSkipNulls {
         /**Если товар не весовой, то переводим в целый тип*/
-        if (it.second.name != Uom.DATA_KG) {
+        if (it.second.name != Uom.KG.name) {
             it.first?.toInt().toString()
         } else {
             it.first?.toString().orEmpty()
@@ -125,8 +125,10 @@ class GoodInfoViewModel : CoreViewModel() {
                 val fillContainerField = it?.second
                 if (!proFillCond.value.isNullOrBlank()) {
                     !(fillQuantity.isNullOrBlank() || fillWarehouseReceiver.isNullOrEmpty() || fillWarehouseSender.isNullOrEmpty() || fillContainerField.isNullOrEmpty() || fillDate?.length != DATE_LENGTH)
-                } else {
+                } else if (zPartFlag.value == true) {
                     !(fillQuantity.isNullOrBlank() || fillWarehouseReceiver.isNullOrEmpty() || fillWarehouseSender.isNullOrEmpty() || fillDate?.length != DATE_LENGTH)
+                } else {
+                    !(fillQuantity.isNullOrBlank() || fillWarehouseReceiver.isNullOrEmpty() || fillWarehouseSender.isNullOrEmpty())
                 }
             }
 
