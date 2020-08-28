@@ -1,7 +1,9 @@
 package com.lenta.bp9.features.control_delivery_cargo_units
 
+import android.app.PendingIntent.getActivity
 import android.content.Context
 import androidx.lifecycle.MutableLiveData
+import com.google.android.material.internal.ContextUtils.getActivity
 import com.lenta.bp9.R
 import com.lenta.bp9.features.loading.tasks.TaskCardMode
 import com.lenta.bp9.model.processing.ProcessCargoUnitsService
@@ -13,6 +15,9 @@ import com.lenta.bp9.repos.IDataBaseRepo
 import com.lenta.bp9.requests.network.*
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.exception.Failure
+import com.lenta.shared.platform.activity.ForegroundActivityProvider
+import com.lenta.shared.platform.activity.OnBackPresserListener
+import com.lenta.shared.platform.navigation.FragmentStack
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.requests.combined.scan_info.pojo.QualityInfo
 import com.lenta.shared.utilities.SelectionItemsHelper
@@ -52,13 +57,18 @@ class ControlDeliveryCargoUnitsViewModel : CoreViewModel(), PageSelectionListene
 
     val selectedPage = MutableLiveData(0)
     val notProcessedSelectionsHelper = SelectionItemsHelper()
+    val isUnlockTaskLoadingScreen: MutableLiveData<Boolean> = MutableLiveData(false)
+
     private val statusInfo: MutableLiveData<List<QualityInfo>> = MutableLiveData()
     private val listProcessedHolder: MutableLiveData<List<ControlDeliveryCargoUnitItem>> = MutableLiveData()
     private val listNotProcessedHolder: MutableLiveData<List<ControlDeliveryCargoUnitItem>> = MutableLiveData()
+
     val cargoUnitNumber: MutableLiveData<String> = MutableLiveData("")
     val requestFocusToCargoUnit: MutableLiveData<Boolean> = MutableLiveData()
+
     private val searchCargoUnitNumber: MutableLiveData<String> = MutableLiveData("")
     private val statusCodeSurplus: MutableLiveData<String> = MutableLiveData("")
+
     val taskType by lazy {
         taskManager.getReceivingTask()?.taskHeader?.taskType ?: TaskType.None
     }
@@ -301,6 +311,14 @@ class ControlDeliveryCargoUnitsViewModel : CoreViewModel(), PageSelectionListene
                 screenNavigator.openCargoUnitCardScreen(TaskNewCargoUnitInfoRestData.inCargoUnitInfo(result.cargoUnitStructure, searchCargoUnitNumber.value
                         ?: ""), true)
             })
+        }
+    }
+
+    fun onBackPressed() {
+        if (isUnlockTaskLoadingScreen.value == true) {
+            screenNavigator.openUnlockTaskLoadingScreen()
+        } else {
+            screenNavigator.goBack()
         }
     }
 }
