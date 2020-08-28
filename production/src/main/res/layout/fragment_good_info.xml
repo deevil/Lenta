@@ -158,6 +158,7 @@
                         android:id="@+id/spin_warehouse_sender"
                         style="@style/CellSpinnerStyle"
                         app:items="@{vm.warehouseSender}"
+                        app:selectedPosition="@{vm.warehouseSenderPosition}"
                         app:onPositionClicked="@{vm.selectedWarehouseSenderPosition}"
                         android:layout_height="match_parent"
                         tools:entries="@array/storage_list" />
@@ -193,6 +194,7 @@
                         android:id="@+id/spin_storage_receiver"
                         style="@style/CellSpinnerStyle"
                         app:items="@{vm.warehouseReceiver}"
+                        app:selectedPosition="@{vm.warehouseReceiverPosition}"
                         app:onPositionClicked="@{vm.selectedWarehouseReceiverPosition}"
                         android:layout_height="match_parent"
                         tools:entries="@array/storage_list" />

@@ -15,13 +15,20 @@ import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.models.core.Uom
 import com.lenta.shared.models.core.toUom
 import com.lenta.shared.platform.viewmodel.CoreViewModel
+import com.lenta.shared.settings.IAppSettings
 import com.lenta.shared.utilities.extentions.*
+import com.lenta.shared.utilities.getFormattedDate
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 class GoodInfoViewModel : CoreViewModel() {
 
     @Inject
     lateinit var movementNetRequest: MovementNetRequest
+
+    @Inject
+    lateinit var appSettings: IAppSettings
 
     @Inject
     lateinit var sessionInfo: ISessionInfo
@@ -92,7 +99,35 @@ class GoodInfoViewModel : CoreViewModel() {
     }
     val selectedProducerPosition = MutableLiveData(0);
 
+    /**Склад отправитель*/
+    val warehouseSender: MutableLiveData<List<String>> = MutableLiveData()
+    val warehouseSenderPosition by unsafeLazy {
+        appSettings.warehouseSenderPosition
+    }
+    val selectedWarehouseSenderPosition by unsafeLazy {
+        MutableLiveData(warehouseSenderPosition)
+    }
+
+    /**Склад получатель*/
+    val warehouseReceiver: MutableLiveData<List<String>> = MutableLiveData()
+    val warehouseReceiverPosition by unsafeLazy {
+        appSettings.warehouseReceiverPosition
+    }
+    val selectedWarehouseReceiverPosition by unsafeLazy {
+        MutableLiveData(warehouseReceiverPosition)
+    }
+
     /**Дата производства и срок годности*/
+    private val warehouseSenderSelected by unsafeLazy {
+        selectedWarehouseSenderPosition.map {
+            warehouseSender.value?.getOrNull(it ?: 0).orEmpty()
+        }
+    }
+    private val warehouseReceiverSelected by unsafeLazy {
+        selectedWarehouseReceiverPosition.map {
+            warehouseReceiver.value?.getOrNull(it ?: 0).orEmpty()
+        }
+    }
     val dateInfoField = MutableLiveData("")
     private var producerDate: String = ""
     private var selfLifeDate: String = ""
@@ -100,14 +135,6 @@ class GoodInfoViewModel : CoreViewModel() {
     val selectedDatePosition = MutableLiveData(0)
 
     val requestFocusDateInfoField = MutableLiveData(true)
-
-    /**Склад отправитель*/
-    val warehouseSender: MutableLiveData<List<String>> = MutableLiveData()
-    val selectedWarehouseSenderPosition = MutableLiveData(0)
-
-    /**Склад получатель*/
-    val warehouseReceiver: MutableLiveData<List<String>> = MutableLiveData()
-    val selectedWarehouseReceiverPosition = MutableLiveData(0)
 
     /**Тара*/
     val containerField = MutableLiveData("")
@@ -135,7 +162,6 @@ class GoodInfoViewModel : CoreViewModel() {
     val suffix: LiveData<String> = weightAndUom.mapSkipNulls { it.second.name }
 
     init {
-        setDateInfo()
         setStockInfo()
         setContainerInfo()
     }
@@ -155,12 +181,11 @@ class GoodInfoViewModel : CoreViewModel() {
     }
 
     private fun setDateInfo() {
-        launchUITryCatch {
-            if (selectedDatePosition.value == 0) {
-                producerDate = dateInfoField.value.orEmpty()
-            } else {
-                selfLifeDate = dateInfoField.value.orEmpty()
-            }
+        val date = getFormattedDate(dateInfoField.value.orEmpty(), Constants.DATE_FORMAT_dd_mm_yyyy, Constants.DATE_FORMAT_yyyyMMdd)
+        if (selectedDatePosition.value == 0) {
+            producerDate = date
+        } else {
+            selfLifeDate = date
         }
     }
 
@@ -175,26 +200,72 @@ class GoodInfoViewModel : CoreViewModel() {
                 warehouseReceiver.value = warehouseResult.warehouseList?.map { it.warehouseName }
                 Unit
             }
+            //selectedWarehouseSenderPosition.value = findSelectedWarehouseSender()
+            //selectedWarehouseReceiverPosition.value = findSelectedWarehouseReceiver()
         }
     }
 
-    private fun setContainerInfo() {
-        launchUITryCatch {
-            val includeCond = database.getIncludeCondition()
-            proIncludeCond.value = !includeCond.isNullOrBlank()
-            proFillCond.value = database.getProFillCondition()
+    private fun setContainerInfo() = launchUITryCatch {
+        val includeCond = database.getIncludeCondition()
+        proIncludeCond.value = !includeCond.isNullOrBlank()
+        proFillCond.value = database.getProFillCondition()
+    }
+
+
+    /*private suspend fun findSelectedWarehouseSender(): Int = withContext(Dispatchers.IO) {
+        var selectedIndex = 0
+        val warehouseList = warehouseSender.value
+        appSettings.lastWarehouseSender?.let { lastWarehouse ->
+            warehouseList?.forEachIndexed { index, warehouse ->
+                if (warehouse == lastWarehouse) {
+                    warehouseSenderSelected = warehouse
+                    selectedIndex = index
+                    return@forEachIndexed
+                }
+            }
         }
+        selectedIndex
+    }*/
+
+    /*private suspend fun findSelectedWarehouseReceiver(): Int = withContext(Dispatchers.IO) {
+        var selectedIndex = 0
+        val warehouseList = warehouseReceiver.value
+        appSettings.lastWarehouseReceiver?.let { lastWarehouse ->
+            warehouseList?.forEachIndexed { index, warehouse ->
+                if (warehouse == lastWarehouse) {
+                    warehouseReceiverSelected = warehouse
+                    selectedIndex = index
+                    return@forEachIndexed
+                }
+            }
+        }
+        selectedIndex
+    }*/
+
+    private fun saveWarehouses() {
+        /*warehouseSenderSelected = warehouseSender.value?.getOrNull(selectedWarehouseSenderPosition.value
+                ?: 0).orEmpty()
+        warehouseReceiverSelected = warehouseReceiver.value?.getOrNull(selectedWarehouseReceiverPosition.value
+                ?: 0).orEmpty()
+        appSettings.lastWarehouseSender = warehouseSenderSelected
+        appSettings.lastWarehouseReceiver = warehouseReceiverSelected*/
+
+        appSettings.warehouseSenderPosition = selectedWarehouseSenderPosition.value
+        appSettings.warehouseReceiverPosition = selectedWarehouseReceiverPosition.value
+    }
+
+    fun onClickBack() {
+        saveWarehouses()
+        navigator.openSelectGoodScreen()
     }
 
     fun onClickComplete() {
         launchUITryCatch {
             navigator.showProgressLoadingData()
+            setDateInfo()
+            saveWarehouses()
             val prodCodeSelectedProducer = goodParams.value?.producers?.getOrNull(selectedProducerPosition.value
                     ?: 0)?.producerCode.orEmpty()
-            val warehouseSenderSelected = warehouseSender.value?.getOrNull(selectedWarehouseSenderPosition.value
-                    ?: 0).orEmpty()
-            val warehouseReceiverSelected = warehouseReceiver.value?.getOrNull(selectedWarehouseReceiverPosition.value
-                    ?: 0).orEmpty()
             val result = movementNetRequest(
                     params = MovementParams(
                             tkNumber = sessionInfo.market.orEmpty(),
@@ -202,8 +273,8 @@ class GoodInfoViewModel : CoreViewModel() {
                             prodCode = prodCodeSelectedProducer,
                             dateProd = producerDate,
                             expirDate = selfLifeDate,
-                            lgortExport = warehouseSenderSelected,
-                            lgortImport = warehouseReceiverSelected,
+                            lgortExport = warehouseSenderSelected.value.orEmpty(),
+                            lgortImport = warehouseReceiverSelected.value.orEmpty(),
                             codeCont = "",
                             factQnt = quantityField.value.toString(),
                             buom = buom.value.orEmpty(),
@@ -214,7 +285,11 @@ class GoodInfoViewModel : CoreViewModel() {
             result.also {
                 navigator.hideProgress()
             }.either(::handleFailure) {
-                navigator.openSelectGoodScreen()
+                with(navigator) {
+                    showMovingSuccessful {
+                        openSelectGoodScreen()
+                    }
+                }
             }
         }
     }

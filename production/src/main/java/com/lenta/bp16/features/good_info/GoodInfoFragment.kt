@@ -9,6 +9,7 @@ import com.lenta.bp16.databinding.FragmentGoodInfoBinding
 import com.lenta.bp16.model.pojo.GoodParams
 import com.lenta.bp16.platform.Constants
 import com.lenta.bp16.platform.extention.getAppComponent
+import com.lenta.shared.platform.activity.OnBackPresserListener
 import com.lenta.shared.platform.fragment.CoreFragment
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
@@ -16,7 +17,7 @@ import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListe
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
 import com.lenta.shared.utilities.extentions.*
 
-class GoodInfoFragment : CoreFragment<FragmentGoodInfoBinding, GoodInfoViewModel>(), ToolbarButtonsClickListener {
+class GoodInfoFragment : CoreFragment<FragmentGoodInfoBinding, GoodInfoViewModel>(), ToolbarButtonsClickListener, OnBackPresserListener {
 
     private val goodParams by unsafeLazy {
         arguments?.getParcelable<GoodParams>(KEY_GOOD_PARAMS)
@@ -55,14 +56,19 @@ class GoodInfoFragment : CoreFragment<FragmentGoodInfoBinding, GoodInfoViewModel
 
     override fun onToolbarButtonClick(view: View) {
         when (view.id) {
+            R.id.b_1 -> vm.onClickBack()
             R.id.b_5 -> vm.onClickComplete()
         }
+    }
+
+    override fun onBackPressed(): Boolean {
+        vm.onClickBack()
+        return false
     }
 
     companion object {
         const val SCREEN_NUMBER = Constants.GOODS_INFO_FRAGMENT
         private const val KEY_GOOD_PARAMS = "KEY_GOOD_PARAMS"
-
 
         fun newInstance(goodParams: GoodParams) = GoodInfoFragment().apply {
             arguments = bundleOf(KEY_GOOD_PARAMS to goodParams)

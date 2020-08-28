@@ -50,8 +50,13 @@ fun setupSpinner(spinner: Spinner, items: List<String>?, position: Int?, onPosit
     adapter.notifyDataSetChanged()
 }
 
-@BindingAdapter("onPositionClicked")
-fun onPositionClicked(spinner: Spinner, handlerLiveData: MutableLiveData<Int>?) {
+@BindingAdapter(value = ["onPositionClicked", "selectedPosition"], requireAll = false)
+fun onPositionClicked(spinner: Spinner, handlerLiveData: MutableLiveData<Int>?, selectedPosition: Int? = null) {
+
+    if (selectedPosition != null && spinner.selectedItemPosition != selectedPosition) {
+        spinner.setSelection(selectedPosition)
+    }
+
     if (spinner.onItemSelectedListener == null && handlerLiveData != null) {
         spinner.postDelayed({
             spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
@@ -65,4 +70,9 @@ fun onPositionClicked(spinner: Spinner, handlerLiveData: MutableLiveData<Int>?) 
     } else if (handlerLiveData == null) {
         spinner.onItemSelectedListener = null
     }
+
+    @Suppress("UNCHECKED_CAST")
+    val adapter = (spinner.adapter as ArrayAdapter<String>)
+
+    adapter.notifyDataSetChanged()
 }
