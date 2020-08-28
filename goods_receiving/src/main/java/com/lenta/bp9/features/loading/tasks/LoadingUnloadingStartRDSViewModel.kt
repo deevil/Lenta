@@ -18,21 +18,14 @@ class LoadingUnloadingStartRDSViewModel : CoreLoadingViewModel() {
 
     @Inject
     lateinit var screenNavigator: IScreenNavigator
-
     @Inject
     lateinit var unloadingStartRDSNetRequest: UnloadingStartReceptionDistrCenterNetRequest
-
     @Inject
     lateinit var sessionInfo: ISessionInfo
-
     @Inject
     lateinit var context: Context
-
     @Inject
     lateinit var taskManager: IReceivingTaskManager
-
-    @Inject
-    lateinit var taskListNetRequest: TaskListNetRequest
 
     override val title: MutableLiveData<String> = MutableLiveData()
     override val progress: MutableLiveData<Boolean> = MutableLiveData(true)
