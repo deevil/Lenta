@@ -4,10 +4,10 @@ import android.content.Context
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.lenta.bp9.R
+import com.lenta.bp9.features.goods_information.baseGoods.BaseGoodsInfo
 import com.lenta.bp9.features.goods_information.marking.TypeLastStampScanned
 import com.lenta.bp9.features.goods_list.SearchProductDelegate
 import com.lenta.bp9.model.processing.ProcessMarkingBoxProductService
-import com.lenta.bp9.model.task.IReceivingTaskManager
 import com.lenta.bp9.model.task.TaskBlockInfo
 import com.lenta.bp9.model.task.TaskProductInfo
 import com.lenta.bp9.platform.TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_NORM
@@ -20,10 +20,8 @@ import com.lenta.shared.fmp.resources.fast.ZmpUtz07V001
 import com.lenta.shared.fmp.resources.slow.ZfmpUtz48V001
 import com.lenta.shared.fmp.resources.slow.ZmpUtz25V001
 import com.lenta.shared.models.core.Uom
-import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.requests.combined.scan_info.ScanInfoResult
 import com.lenta.shared.requests.combined.scan_info.pojo.QualityInfo
-import com.lenta.shared.requests.combined.scan_info.pojo.ReasonRejectionInfo
 import com.lenta.shared.utilities.extentions.combineLatest
 import com.lenta.shared.utilities.extentions.launchUITryCatch
 import com.lenta.shared.utilities.extentions.map
@@ -34,14 +32,10 @@ import com.mobrun.plugin.api.HyperHive
 import javax.inject.Inject
 
 //https://trello.com/c/vl9wQg0Y
-class MarkingBoxInfoViewModel : CoreViewModel(),
-        OnPositionClickListener {
+class MarkingBoxInfoViewModel : BaseGoodsInfo(),  OnPositionClickListener {
 
     @Inject
     lateinit var screenNavigator: IScreenNavigator
-
-    @Inject
-    lateinit var taskManager: IReceivingTaskManager
 
     @Inject
     lateinit var processMarkingBoxProductService: ProcessMarkingBoxProductService
@@ -58,9 +52,8 @@ class MarkingBoxInfoViewModel : CoreViewModel(),
     @Inject
     lateinit var hyperHive: HyperHive
 
-    private val taskRepository by lazy { taskManager.getReceivingTask()?.taskRepository }
+//    val acceptTotalCount = countAcceptOfProduct
 
-    val productInfo: MutableLiveData<TaskProductInfo> = MutableLiveData()
     val tvAccept: MutableLiveData<String> by lazy {
         paramGrzAlternMeins.map {
             val uomName = paramGrzAlternMeins.value?.name.orEmpty()
@@ -76,15 +69,11 @@ class MarkingBoxInfoViewModel : CoreViewModel(),
     val spinQualityEnabled: MutableLiveData<Boolean> = countScannedStamps.map { it == 0 }
     val spinReasonRejectionEnabled: MutableLiveData<Boolean> = countScannedStamps.map { it == 0 }
     val spinQuality: MutableLiveData<List<String>> = MutableLiveData()
-    val spinQualitySelectedPosition: MutableLiveData<Int> = MutableLiveData(-1)
     val spinReasonRejection: MutableLiveData<List<String>> = MutableLiveData()
-    val spinReasonRejectionSelectedPosition: MutableLiveData<Int> = MutableLiveData(-1)
     val suffix: MutableLiveData<String> = MutableLiveData()
     val requestFocusToCount: MutableLiveData<Boolean> = MutableLiveData(false)
-    val isDefect: MutableLiveData<Boolean> = spinQualitySelectedPosition.map { it != 0 }
 
-    private val qualityInfo: MutableLiveData<List<QualityInfo>> = MutableLiveData()
-    private val reasonRejectionInfo: MutableLiveData<List<ReasonRejectionInfo>> = MutableLiveData()
+
     private val allTypeDiscrepancies: MutableLiveData<List<QualityInfo>> = MutableLiveData()
     private val paramGrzExclGtin: MutableLiveData<String> = MutableLiveData("")
     private val paramGrzAlternMeins: MutableLiveData<Uom> = MutableLiveData()
@@ -113,52 +102,52 @@ class MarkingBoxInfoViewModel : CoreViewModel(),
 
             return addNewCount
         }
+//
+//    private val currentQualityInfoCode: String
+//        get() {
+//            val position = spinQualitySelectedPosition.value ?: -1
+//            return position
+//                    .takeIf { it >= 0 }
+//                    ?.run {
+//                        qualityInfo.value
+//                                ?.takeIf { it.isNotEmpty() }
+//                                ?.run { this[position].code }
+//                                .orEmpty()
+//                    }
+//                    .orEmpty()
+//        }
+//
+//    private val currentReasonRejectionInfoCode: String
+//        get() {
+//            val position = spinReasonRejectionSelectedPosition.value ?: -1
+//            return position
+//                    .takeIf { it >= 0 }
+//                    ?.run {
+//                        reasonRejectionInfo.value
+//                                ?.takeIf { it.isNotEmpty() }
+//                                ?.run { this[position].code }
+//                                .orEmpty()
+//                    }
+//                    .orEmpty()
+//        }
+//
+//    private val currentTypeDiscrepanciesCode: String
+//        get() {
+//            return currentQualityInfoCode
+//                    .takeIf { it == TYPE_DISCREPANCIES_QUALITY_NORM }
+//                    ?: currentReasonRejectionInfoCode
+//        }
 
-    private val currentQualityInfoCode: String
-        get() {
-            val position = spinQualitySelectedPosition.value ?: -1
-            return position
-                    .takeIf { it >= 0 }
-                    ?.run {
-                        qualityInfo.value
-                                ?.takeIf { it.isNotEmpty() }
-                                ?.run { this[position].code }
-                                .orEmpty()
-                    }
-                    .orEmpty()
-        }
-
-    private val currentReasonRejectionInfoCode: String
-        get() {
-            val position = spinReasonRejectionSelectedPosition.value ?: -1
-            return position
-                    .takeIf { it >= 0 }
-                    ?.run {
-                        reasonRejectionInfo.value
-                                ?.takeIf { it.isNotEmpty() }
-                                ?.run { this[position].code }
-                                .orEmpty()
-                    }
-                    .orEmpty()
-        }
-
-    private val currentTypeDiscrepanciesCode: String
-        get() {
-            return currentQualityInfoCode
-                    .takeIf { it == TYPE_DISCREPANCIES_QUALITY_NORM }
-                    ?: currentReasonRejectionInfoCode
-        }
-
-    private val countAcceptOfProduct: Double
-        get() {
-            return productInfo.value
-                    ?.let { product ->
-                        taskRepository
-                                ?.getProductsDiscrepancies()
-                                ?.getCountAcceptOfProduct(product)
-                    }
-                    ?: 0.0
-        }
+//    private val countAcceptOfProduct: Double
+//        get() {
+//            return productInfo.value
+//                    ?.let { product ->
+//                        taskRepository
+//                                ?.getProductsDiscrepancies()
+//                                ?.getCountAcceptOfProduct(product)
+//                    }
+//                    ?: 0.0
+//        }
 
     val acceptTotalCount: MutableLiveData<Double> =
             isUnitBox
@@ -187,16 +176,16 @@ class MarkingBoxInfoViewModel : CoreViewModel(),
                 ?: "$totalCountAcceptOfProduct $purchaseOrderUnits"
     }
 
-    private val countRefusalOfProduct: Double
-        get() {
-            return productInfo.value
-                    ?.let { product ->
-                        taskRepository
-                                ?.getProductsDiscrepancies()
-                                ?.getCountRefusalOfProduct(product)
-                    }
-                    ?: 0.0
-        }
+//    private val countRefusalOfProduct: Double
+//        get() {
+//            return productInfo.value
+//                    ?.let { product ->
+//                        taskRepository
+//                                ?.getProductsDiscrepancies()
+//                                ?.getCountRefusalOfProduct(product)
+//                    }
+//                    ?: 0.0
+//        }
 
 
     val refusalTotalCount: MutableLiveData<Double> =
