@@ -37,6 +37,7 @@ import com.lenta.bp16.platform.navigation.IScreenNavigator
 import com.lenta.bp16.platform.resource.IResourceManager
 import com.lenta.bp16.repository.IDatabaseRepository
 import com.lenta.bp16.repository.IIngredientsRepository
+import com.lenta.bp16.repository.IMovementRepository
 import com.lenta.shared.di.AppScope
 import com.lenta.shared.di.CoreComponent
 import com.lenta.shared.di.FromParentToCoreProvider
@@ -48,6 +49,7 @@ interface AppComponent : CoreComponent, FromParentToCoreProvider {
 
     fun getScreenNavigator(): IScreenNavigator
     fun getGeneralRepository(): IDatabaseRepository
+    fun getMovementRepository(): IMovementRepository
     fun getIngredientsRepository(): IIngredientsRepository
     fun getTaskManager(): ITaskManager
     fun getResourceManager(): IResourceManager

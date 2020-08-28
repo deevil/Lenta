@@ -1,16 +1,33 @@
 package com.lenta.bp16.features.good_info
 
 import androidx.lifecycle.MutableLiveData
+import com.lenta.bp16.model.movement.params.MovementParams
+import com.lenta.bp16.model.movement.params.WarehouseParams
+import com.lenta.bp16.model.movement.ui.ProducerUI
+import com.lenta.bp16.model.pojo.GoodParams
 import com.lenta.bp16.platform.Constants
 import com.lenta.bp16.platform.navigation.IScreenNavigator
 import com.lenta.bp16.repository.DatabaseRepository
+import com.lenta.bp16.request.MovementNetRequest
+import com.lenta.bp16.request.WarehouseNetRequest
+import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.models.core.Uom
+import com.lenta.shared.models.core.toUom
 import com.lenta.shared.platform.viewmodel.CoreViewModel
+import com.lenta.shared.utilities.extentions.combineLatest
 import com.lenta.shared.utilities.extentions.launchUITryCatch
 import com.lenta.shared.utilities.extentions.map
+import com.lenta.shared.utilities.extentions.unsafeLazy
+import com.lenta.shared.view.OnPositionClickListener
 import javax.inject.Inject
 
 class GoodInfoViewModel : CoreViewModel() {
+
+    @Inject
+    lateinit var movementNetRequest: MovementNetRequest
+
+    @Inject
+    lateinit var sessionInfo: ISessionInfo
 
     @Inject
     lateinit var navigator: IScreenNavigator
@@ -18,87 +35,183 @@ class GoodInfoViewModel : CoreViewModel() {
     @Inject
     lateinit var database: DatabaseRepository
 
-    val deviceIp = MutableLiveData("")
+    @Inject
+    lateinit var warehouseRequest: WarehouseNetRequest
 
-    val weightBarcode = listOf(CONST_VALUE_23, CONST_VALUE_24, CONST_VALUE_27, CONST_VALUE_28)
+    val deviceIp = MutableLiveData<String>()
 
-    val selectedEan = MutableLiveData("")
+    val goodParams = MutableLiveData<GoodParams>()
+
+    val weight: MutableLiveData<Double> by unsafeLazy {
+        MutableLiveData<Double>()
+    }
+
+    val selectedEan = MutableLiveData<String>()
+
+    /**Свойство, указывающее на обязательное заполнение поля "Тара"*/
+    private val proFillCond = MutableLiveData<String>()
+
+    /**Свойство, указывающее на отображение поля "Тара"*/
+    val proIncludeCond = MutableLiveData<Boolean>()
+    val zPartFlag = MutableLiveData<Boolean>()
 
     /**Количество*/
     val quantityField = MutableLiveData("")
     val requestFocusQuantityField = MutableLiveData(true)
 
+    private val dateInfoSpinner = mutableListOf(PROD_DATE, SELF_LIFE)
+
     /**Производитель*/
-    val manufactureName: MutableLiveData<List<String>> = MutableLiveData()
+    private val producerList: MutableLiveData<ProducerUI> = MutableLiveData()
+    val producerNameField: MutableLiveData<List<String>> = MutableLiveData()
+    val selectedProducerPosition = MutableLiveData(0);
 
     /**Дата производства и срок годности*/
     val dateInfoField = MutableLiveData("")
-    val dateInfo: MutableLiveData<List<String>> = MutableLiveData()
+    private var producerDate: String = ""
+    private var selfLifeDate: String = ""
+    val dateInfo: MutableLiveData<List<String>> = MutableLiveData(dateInfoSpinner)
+    val selectedDatePosition = MutableLiveData(0)
+
     val requestFocusDateInfoField = MutableLiveData(true)
 
     /**Склад отправитель*/
     val warehouseSender: MutableLiveData<List<String>> = MutableLiveData()
+    val selectedWarehouseSenderPosition = MutableLiveData(0)
 
     /**Склад получатель*/
     val warehouseReceiver: MutableLiveData<List<String>> = MutableLiveData()
+    val selectedWarehouseReceiverPosition = MutableLiveData(0)
 
     /**Тара*/
     val containerField = MutableLiveData("")
 
-    val enabledCompleteButton = quantityField.map { !it.isNullOrBlank() }
+    val enabledCompleteButton: MutableLiveData<Boolean> = quantityField
+            .combineLatest(warehouseSender)
+            .combineLatest(warehouseReceiver)
+            .combineLatest(containerField)
+            .map {
+                val fillQuantity = it?.first?.first?.first
+                val fillWarehouseSender = it?.first?.first?.second
+                val fillWarehouseReceiver = it?.first?.second
+                val fillContainerField = it?.second
+                if (!proFillCond.value.isNullOrBlank()) {
+                    !(fillQuantity.isNullOrBlank() || fillWarehouseReceiver.isNullOrEmpty() || fillWarehouseSender.isNullOrEmpty() || fillContainerField.isNullOrEmpty())
+                } else {
+                    !(fillQuantity.isNullOrBlank() || fillWarehouseReceiver.isNullOrEmpty() || fillWarehouseSender.isNullOrEmpty())
+                }
+            }
+
+    var suffix: MutableLiveData<String> = MutableLiveData(Uom.KG.name)
 
     init {
         setGoodInfo()
+        setDateInfo()
+        setProducerInfo()
+        setStockInfo()
+        setContainerInfo()
     }
 
     private fun setGoodInfo() {
         launchUITryCatch {
-            val goodInfo = database.getGoodByEan(selectedEan.value.toString())
-            var weight: Int? = 0
-            if(weightBarcode.contains(selectedEan.value.toString().substring(0 until 2))){
-                weight = selectedEan.value?.takeLast(6)?.take(5)?.toInt()
-            }
-            val uom: String
-            var quantity: Int? = Constants.QUANTITY_DEFAULT_VALUE_0
+            val good = goodParams.value
+            weight.value = goodParams.value?.weight
+            /**Расчет количества и единиц измерения*/
+            val (quantity: Double?, uom: String) =
+                    weight.value?.run { div(Constants.CONVERT_TO_KG) to Uom.KG.name } ?: getPairFromUom(good)
+            quantityField.value = quantity.toString()
+            suffix.value = uom
+            zPartFlag.value = goodParams.value?.zPart
+        }
+    }
 
-            if (weight != 0){
-                quantity = weight?.div(Constants.CONVERT_TO_KG)
-                uom = Uom.KG.name
-            }else{
-                when(goodInfo?.uom){
-                    Uom.ST -> {
-                        quantity = Constants.QUANTITY_DEFAULT_VALUE_1
-                        uom = Uom.ST.name
-                    }
-                    Uom.KAR ->{
-                        val uomInfo = database.getEanInfoByEan(selectedEan.value.toString())
-                        quantity = uomInfo?.umrez?.div(uomInfo.umren)
-                        uom = Uom.KAR.name
-                    }
-                    Uom.G -> {
-                        uom = Uom.G.name
-                    }
-                    else -> {
-                        uom = Uom.DEFAULT.name
-                    }
-                }
+    private fun getPairFromUom(good: GoodParams?): Pair<Double?, String> {
+        return when (good?.uom?.toUom()) {
+            Uom.ST -> {
+                Constants.QUANTITY_DEFAULT_VALUE_1 to Uom.ST.name
             }
+            Uom.KAR -> {
+                good.umrez.toInt().div(good.umren.toDouble()) to Uom.KAR.name
+            }
+            else -> {
+                Constants.QUANTITY_DEFAULT_VALUE_0 to Uom.DEFAULT.name
+            }
+        }
+    }
 
-            quantityField.value = "$quantity $uom"
+    private fun setDateInfo() {
+        launchUITryCatch {
+            if (selectedDatePosition.value == 0) {
+                producerDate = dateInfoField.value.orEmpty()
+            } else {
+                selfLifeDate = dateInfoField.value.orEmpty()
+            }
+        }
+    }
+
+    private fun setProducerInfo() {
+        producerList.value = goodParams.value?.producers
+        producerNameField.value = goodParams.value?.producers?.producerName
+    }
+
+    private fun setStockInfo() {
+        launchUITryCatch {
+            warehouseRequest(
+                    WarehouseParams(
+                            sessionInfo.market.orEmpty()
+                    )
+            ).either(::handleFailure) { warehouseResult ->
+                warehouseSender.value = warehouseResult.warehouseList?.map { it.warehouseName }
+                warehouseReceiver.value = warehouseResult.warehouseList?.map { it.warehouseName }
+                Unit
+            }
+        }
+    }
+
+
+    private fun setContainerInfo() {
+        launchUITryCatch {
+            val includeCond = database.getIncludeCondition()
+            proIncludeCond.value = !includeCond.isNullOrBlank()
+            proFillCond.value = database.getProFillCondition()
         }
     }
 
     fun onClickComplete() {
         launchUITryCatch {
-            //TODO показать сообщение
-            navigator.goBack()
+            navigator.showProgressLoadingData()
+            val prodCodeSelectedProducer = goodParams.value?.producers?.producerCode?.getOrNull(selectedProducerPosition.value
+                    ?: 0).orEmpty()
+            val warehouseSenderSelected = warehouseSender.value?.getOrNull(selectedWarehouseSenderPosition.value
+                    ?: 0).orEmpty()
+            val warehouseReceiverSelected = warehouseReceiver.value?.getOrNull(selectedWarehouseReceiverPosition.value
+                    ?: 0).orEmpty()
+            val result = movementNetRequest(
+                    params = MovementParams(
+                            tkNumber = sessionInfo.market.orEmpty(),
+                            matnr = goodParams.value?.material.orEmpty(),
+                            prodCode = prodCodeSelectedProducer,
+                            dateProd = producerDate,
+                            expirDate = selfLifeDate,
+                            lgortExport = warehouseSenderSelected,
+                            lgortImport = warehouseReceiverSelected,
+                            codeCont = "",
+                            factQnt = quantityField.value.toString(),
+                            buom = suffix.value.orEmpty(),
+                            deviceIP = deviceIp.toString(),
+                            personnelNumber = sessionInfo.personnelNumber.orEmpty()
+                    )
+            )
+            result.also {
+                navigator.hideProgress()
+            }.either(::handleFailure) {
+                navigator.openSelectGoodScreen()
+            }
         }
     }
 
     companion object {
-        const val CONST_VALUE_23 = "23"
-        const val CONST_VALUE_24 = "24"
-        const val CONST_VALUE_27 = "27"
-        const val CONST_VALUE_28 = "28"
+        const val PROD_DATE = "Дата производства"
+        const val SELF_LIFE = "Срок годности"
     }
 }

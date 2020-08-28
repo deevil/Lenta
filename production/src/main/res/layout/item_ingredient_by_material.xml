@@ -61,6 +61,7 @@
                     android:textSize="@dimen/text_12sp"
                     android:text="@{item.text1}"
                     tools:text="Ингредиент 1"
+                    app:zoom="@{true}"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toStartOf="@id/arrow_next"
                     app:layout_constraintStart_toStartOf="parent"

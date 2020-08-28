@@ -9,14 +9,19 @@ import com.lenta.bp16.model.ingredients.GoodByOrder
 import com.lenta.bp16.model.ingredients.IngredientInfo
 import com.lenta.bp16.model.ingredients.params.GetIngredientsParams
 import com.lenta.bp16.model.ingredients.params.WarehouseParam
+import com.lenta.bp16.model.ingredients.results.IngredientsListResult
+import com.lenta.bp16.model.ingredients.ui.IngredientsListResultUI
 import com.lenta.bp16.model.ingredients.ui.ItemIngredientUi
-import com.lenta.bp16.model.ingredients.ui.OrderByBarcode
+import com.lenta.bp16.model.ingredients.ui.OrderByBarcodeUI
+import com.lenta.bp16.model.ingredients.ui.OrderByBarcodeUI.Companion.EAN_NOM
+import com.lenta.bp16.model.ingredients.ui.OrderByBarcodeUI.Companion.EAN_UMREN
+import com.lenta.bp16.model.ingredients.ui.OrderByBarcodeUI.Companion.EAN_UMREZ
+import com.lenta.bp16.model.ingredients.ui.OrderByBarcodeUI.Companion.FAKE_EAN
+import com.lenta.bp16.model.ingredients.ui.OrderByBarcodeUI.Companion.FAKE_MATNR
 import com.lenta.bp16.model.warehouse.IWarehousePersistStorage
 import com.lenta.bp16.platform.extention.getIngredientStatus
 import com.lenta.bp16.platform.navigation.IScreenNavigator
 import com.lenta.bp16.platform.resource.IResourceManager
-import com.lenta.bp16.request.GetGoodsByOrderNetRequest
-import com.lenta.bp16.request.GetIngredientsEanInfoNetRequest
 import com.lenta.bp16.request.GetIngredientsNetRequest
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.platform.viewmodel.CoreViewModel
@@ -47,24 +52,18 @@ class IngredientsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInS
     @Inject
     lateinit var getIngredientsRequest: GetIngredientsNetRequest
 
-    @Inject
-    lateinit var getIngredientsEanInfoNetRequest: GetIngredientsEanInfoNetRequest
-
-    @Inject
-    lateinit var getGoodsByOrderNetRequest: GetGoodsByOrderNetRequest
-
     val selectedPage by unsafeLazy { MutableLiveData(0) }
     val numberField by unsafeLazy { MutableLiveData<String>("") }
     val requestFocusToNumberField by unsafeLazy { MutableLiveData(true) }
     val marketNumber by unsafeLazy { sessionInfo.market }
     private val selectedMatnr by unsafeLazy { MutableLiveData<String>("") }
 
-    private val allIngredients: MutableLiveData<List<IngredientInfo>> by unsafeLazy {
+    private val allIngredientsInfo: MutableLiveData<List<IngredientInfo>> by unsafeLazy {
         MutableLiveData<List<IngredientInfo>>()
     }
 
-    private val allIngredientsEanInfo: MutableLiveData<List<OrderByBarcode>> by unsafeLazy {
-        MutableLiveData<List<OrderByBarcode>>()
+    private val allIngredientsEanInfo: MutableLiveData<List<OrderByBarcodeUI>> by unsafeLazy {
+        MutableLiveData<List<OrderByBarcodeUI>>()
     }
 
     private val goodsByOrderList: MutableLiveData<List<GoodByOrder>> by unsafeLazy {
@@ -72,7 +71,7 @@ class IngredientsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInS
     }
 
     val ingredientsByOrder by unsafeLazy {
-        allIngredients.switchMap {
+        allIngredientsInfo.switchMap {
             asyncLiveData<List<ItemIngredientUi>> {
                 emit(filterIngredientsBy(it, IngredientInfo.TYPE_ORDER))
             }
@@ -80,33 +79,15 @@ class IngredientsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInS
     }
 
     val ingredientsByMaterial by unsafeLazy {
-        allIngredients.switchMap {
+        allIngredientsInfo.switchMap {
             asyncLiveData<List<ItemIngredientUi>> {
                 emit(filterIngredientsBy(it, IngredientInfo.TYPE_MATERIAL))
             }
         }
     }
 
-    /**
-     *
-     * О боже, зачем я это сделал?
-     *
-     * */
     fun loadIngredients() {
         navigator.showProgressLoadingData()
-        loadIngredientsInfo()
-        loadEanInfoIngredients()
-        loadGoodsByOrder()
-        navigator.hideProgress()
-    }
-
-    /**
-     * То что ты сейчас прочитаешь выглядит мягко скажу некрасиво, я чуток запутался в коде и сделал не ок.
-     * Надо будет сделать все через один запрос(изначально думал разбиение выглядит ок, но чет хз даже)
-     *
-     */
-
-    fun loadIngredientsInfo() {
         launchUITryCatch {
             getIngredientsRequest(
                     GetIngredientsParams(
@@ -114,35 +95,13 @@ class IngredientsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInS
                             deviceIP = resourceManager.deviceIp,
                             workhousesList = warehouseStorage.getSelectedWarehouses().map { WarehouseParam(it) }
                     )
-            ).either(::handleFailure, allIngredients::setValue)
-        }
-    }
-
-    /**Another one*/
-
-    fun loadEanInfoIngredients() {
-        launchUITryCatch {
-            getIngredientsEanInfoNetRequest(
-                    GetIngredientsParams(
-                            tkMarket = sessionInfo.market.orEmpty(),
-                            deviceIP = resourceManager.deviceIp,
-                            workhousesList = warehouseStorage.getSelectedWarehouses().map { WarehouseParam(it) }
-                    )
-            ).either(::handleFailure, allIngredientsEanInfo::setValue)
-        }
-    }
-
-    /**And Another one*/
-
-    fun loadGoodsByOrder() {
-        launchUITryCatch {
-            getGoodsByOrderNetRequest(
-                    GetIngredientsParams(
-                            tkMarket = sessionInfo.market.orEmpty(),
-                            deviceIP = resourceManager.deviceIp,
-                            workhousesList = warehouseStorage.getSelectedWarehouses().map { WarehouseParam(it) }
-                    )
-            ).either(::handleFailure, goodsByOrderList::setValue)
+            ).either(::handleFailure) { ingredientListResult ->
+                allIngredientsInfo.value = ingredientListResult.ingredientsList
+                allIngredientsEanInfo.value = ingredientListResult.goodsEanList
+                goodsByOrderList.value = ingredientListResult.goodsListByOrder
+                Unit
+            }
+            navigator.hideProgress()
         }
     }
 
@@ -174,12 +133,6 @@ class IngredientsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInS
 
     fun searchByBarcode() {
         launchUITryCatch {
-            /**Давай поясню логику
-             *
-             * Меня чет совсем поплавило на этом месте, поэтому мб получится исправить это позже.
-             * Главное записать чем я руководствовался в этот момент.
-             *
-             * */
             navigator.showProgressLoadingData()
             /**Поиск отсканированного ШК в данных интерфейса ZMP_UTZ_PRO_10_V001*/
             val searchStatus = withContext(Dispatchers.IO) {
@@ -188,7 +141,7 @@ class IngredientsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInS
                     selectedMatnr.value = ean.matnr
 
                     /**Поиск вхождения в список материалов*/
-                    allIngredients.value?.find { it.code == selectedMatnr.value }?.let {
+                    allIngredientsInfo.value?.find { it.code == selectedMatnr.value }?.let {
                         status = SearchStatus.FOUND_INGREDIENT
                     }
                     /**Поиск вхождения в список заказов*/
@@ -203,16 +156,16 @@ class IngredientsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInS
 
             navigator.hideProgress()
 
-            when (searchStatus) {
+            /*when (searchStatus) {
                 SearchStatus.DUALISM -> navigator.showAlertDualism()
                 SearchStatus.FOUND_INGREDIENT -> allIngredients.value?.find { it.code == selectedMatnr.value }?.let { selectedIngredient ->
-                    navigator.openOrderDetailsScreen(selectedIngredient)
+                    navigator.openOrderDetailsScreen(selectedIngredient, barcode)
                 }
                 SearchStatus.FOUND_ORDER -> allIngredients.value?.find { it.code == selectedMatnr.value }?.let { selectedIngredient ->
                     navigator.openMaterialRemakesScreen(selectedIngredient)
                 }
                 SearchStatus.NOT_FOUND -> navigator.showAlertGoodNotFoundInCurrentShift()
-            }
+            }*/
 
         }
     }
@@ -228,9 +181,20 @@ class IngredientsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInS
                 TAB_BY_MATERIALS -> ingredientsByMaterial.value?.get(position)
                 else -> null
             }?.let { ingredientUI ->
-                allIngredients.value?.find { it.code == ingredientUI.code }?.let { selectedIngredient ->
+                allIngredientsInfo.value?.find { it.code == ingredientUI.code }?.let { selectedIngredient ->
+                    val positionInList = ingredientUI.position.toInt()
                     if (selectedIngredient.isByOrder) {
-                        navigator.openOrderDetailsScreen(selectedIngredient)
+                        val barcode = allIngredientsEanInfo.value?.getOrNull(positionInList)
+                                .orIfNull {
+                                    OrderByBarcodeUI(
+                                            matnr = FAKE_MATNR,
+                                            ean = FAKE_EAN,
+                                            ean_nom = EAN_NOM,
+                                            ean_umrez = EAN_UMREZ,
+                                            ean_umren = EAN_UMREN
+                                    )
+                                }
+                        navigator.openOrderDetailsScreen(selectedIngredient, barcode)
                     } else {
                         navigator.openMaterialRemakesScreen(selectedIngredient)
                     }
@@ -247,5 +211,4 @@ class IngredientsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInS
         numberField.value = data
         searchByBarcode()
     }
-
 }

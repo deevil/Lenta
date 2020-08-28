@@ -18,15 +18,11 @@ data class IngredientDataCompleteParams(
         3 - Тара
          */
         @SerializedName("IV_MODE")
-        val mode: String = "",
+        val mode: String,
 
         /** Номер родительской связи  */
         @SerializedName("IV_PARENT")
         val parent: String,
-
-        /** Номер технологического заказа  */
-        @SerializedName("IV_AUFNR")
-        val aufnr: String = "",
 
         /** SAP – код товара  */
         @SerializedName("IV_MATNR")
@@ -42,5 +38,6 @@ data class IngredientDataCompleteParams(
 ) {
         companion object {
                 const val MODE_INGREDIENT = "4"
+                const val MODE_MATERIAL = "5"
         }
 }

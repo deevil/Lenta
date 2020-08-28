@@ -33,11 +33,11 @@ class TransportConditionsReviseViewModel : CoreViewModel(), PageSelectionListene
 
 
     val taskCaption: String by lazy {
-        taskManager.getReceivingTask()?.taskHeader?.caption ?: ""
+        taskManager.getReceivingTask()?.taskHeader?.caption.orEmpty()
     }
 
     val typeTask: TaskType by lazy {
-        taskManager.getReceivingTask()?.taskHeader?.taskType ?: TaskType.None
+        taskManager.getTaskType()
     }
 
     val notifications by lazy {
@@ -54,8 +54,9 @@ class TransportConditionsReviseViewModel : CoreViewModel(), PageSelectionListene
     val saveEnabled = conditionsToCheck.map { conditions -> conditions?.findLast { it.isObligatory } == null }
     val isTaskPRCorPSPStatusUnloading: MutableLiveData<Boolean> by lazy {
         val currentStatus = taskManager.getReceivingTask()?.taskDescription?.currentStatus
-        MutableLiveData((typeTask == TaskType.ReceptionDistributionCenter || typeTask == TaskType.OwnProduction) &&
-                (currentStatus == TaskStatus.Unloading || currentStatus == TaskStatus.Arrived)) //добавлен статус Прибыло, т.к. при первом проходе задания вызывается 20 рест, который не возвращает новый статус Разгружено и нет соответствующего потом переход к экрану 09/26
+        MutableLiveData((typeTask == TaskType.ReceptionDistributionCenter || typeTask == TaskType.OwnProduction || typeTask == TaskType.ShoppingMall)
+                && (currentStatus == TaskStatus.Unloading || currentStatus == TaskStatus.Arrived)
+        ) //добавлен статус Прибыло, т.к. при первом проходе задания вызывается 20 рест, который не возвращает новый статус Разгружено и нет соответствующего потом переход к экрану 09/26
     }
 
     override fun onPageSelected(position: Int) {
@@ -63,7 +64,7 @@ class TransportConditionsReviseViewModel : CoreViewModel(), PageSelectionListene
     }
 
     fun onClickSecondButton() {
-        if (typeTask == TaskType.ReceptionDistributionCenter || typeTask == TaskType.OwnProduction) {
+        if (typeTask == TaskType.ReceptionDistributionCenter || typeTask == TaskType.OwnProduction || typeTask == TaskType.ShoppingMall) {
             screenNavigator.openSealDamageDialog(
                     nextCallbackFunc = {
                         checkedConditions.value?.map {

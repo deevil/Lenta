@@ -250,9 +250,9 @@ class ScreenNavigator(
         )
     }
 
-    override fun openGoodsDetailsScreen(productInfo: TaskProductInfo) {
+    override fun openGoodsDetailsScreen(productInfo: TaskProductInfo, boxNumberForTaskPGEBoxAlco: String, isScreenPGEBoxAlcoInfo: Boolean) {
         runOrPostpone {
-            getFragmentStack()?.push(GoodsDetailsFragment.create(productInfo))
+            getFragmentStack()?.push(GoodsDetailsFragment.create(productInfo, boxNumberForTaskPGEBoxAlco, isScreenPGEBoxAlcoInfo))
         }
     }
 
@@ -1744,7 +1744,7 @@ interface IScreenNavigator : ICoreNavigator {
     fun openTaskReviseScreen()
     fun openGoodsInfoScreen(productInfo: TaskProductInfo, isDiscrepancy: Boolean, initialCount: Double = 0.0)
     fun openAlertWrongProductType()
-    fun openGoodsDetailsScreen(productInfo: TaskProductInfo)
+    fun openGoodsDetailsScreen(productInfo: TaskProductInfo, boxNumberForTaskPGEBoxAlco: String = "", isScreenPGEBoxAlcoInfo: Boolean = false)
     fun openInvoiceReviseScreen()
     fun openRejectScreen()
     fun openProductDocumentsReviseScreen()
