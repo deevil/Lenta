@@ -54,6 +54,7 @@ class GoodSelectViewModel : CoreViewModel() {
 
     val enabledNextButton = enteredEanField.map { !it.isNullOrBlank() }
 
+    /**Поиск по EAN*/
     private fun searchGoodByEan() {
         var barcode = enteredEanField.value.orEmpty()
         val firstCode = barcode.substring(0 until 2)
@@ -67,7 +68,9 @@ class GoodSelectViewModel : CoreViewModel() {
         startRequest(eanParams, matnrParams)
     }
 
+    /**Поиск по SAP-коду*/
     private fun searchGoodBySapCode() {
+        /**Добиваем нулями до 18 символов*/
         var sapcode = enteredEanField.value.orEmpty()
         sapcode = if (sapcode.toInt() == 6) {
             ZEROS_FOR_SAPCODE_12 + sapcode
@@ -135,7 +138,8 @@ class GoodSelectViewModel : CoreViewModel() {
         }
     }
 
-    fun clearListParams() {
+    /**Очистка параметров запроса*/
+    private fun clearListParams() {
         eanParams.clear()
         matnrParams.clear()
     }
