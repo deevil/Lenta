@@ -1,5 +1,8 @@
 package com.lenta.bp9.features.goods_information.baseGoods
 
+import com.lenta.shared.utilities.date_time.DateTimeUtil
+import java.util.*
+
 interface IBaseIsPerishable : IBaseVariables {
 
 //    val paramGrzUffMhdhb = dataBase.getParamGrzUffMhdhb()?.toInt() ?: 60

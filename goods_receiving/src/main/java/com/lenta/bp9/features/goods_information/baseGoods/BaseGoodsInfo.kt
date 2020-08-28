@@ -3,6 +3,7 @@ package com.lenta.bp9.features.goods_information.baseGoods
 import androidx.lifecycle.MutableLiveData
 import com.lenta.bp9.model.task.IReceivingTaskManager
 import com.lenta.bp9.model.task.TaskProductInfo
+import com.lenta.bp9.repos.IDataBaseRepo
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.requests.combined.scan_info.pojo.QualityInfo
 import com.lenta.shared.requests.combined.scan_info.pojo.ReasonRejectionInfo
@@ -24,6 +25,8 @@ abstract class BaseGoodsInfo : CoreViewModel(),
 {
     @Inject
     override lateinit var taskManager: IReceivingTaskManager
+    @Inject
+    override lateinit var dataBase: IDataBaseRepo
 
     override val productInfo: MutableLiveData<TaskProductInfo> = MutableLiveData()
     final override val spinQualitySelectedPosition: MutableLiveData<Int> = MutableLiveData(-1)

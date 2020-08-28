@@ -41,9 +41,6 @@ class MarkingBoxInfoViewModel : BaseGoodsInfo(),  OnPositionClickListener {
     lateinit var processMarkingBoxProductService: ProcessMarkingBoxProductService
 
     @Inject
-    lateinit var dataBase: IDataBaseRepo
-
-    @Inject
     lateinit var searchProductDelegate: SearchProductDelegate
 
     @Inject
