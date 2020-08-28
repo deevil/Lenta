@@ -5,6 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.liveData
 import androidx.lifecycle.switchMap
 import com.lenta.bp12.model.ICreateTaskManager
+import com.lenta.bp12.model.MarkType
 import com.lenta.bp12.model.pojo.Basket
 import com.lenta.bp12.model.pojo.create_task.TaskCreate
 import com.lenta.bp12.model.pojo.extentions.*
@@ -70,7 +71,8 @@ class BasketCreateGoodListViewModel : CoreViewModel(), OnOkInSoftKeyboardListene
                             position = "${index + 1}",
                             name = good.getNameWithMaterial(),
                             quantity = "${quantity.dropZeros()} $units",
-                            material = good.material
+                            material = good.material,
+                            good = good
                     )
                 }
             }.orEmpty()
@@ -134,11 +136,15 @@ class BasketCreateGoodListViewModel : CoreViewModel(), OnOkInSoftKeyboardListene
     }
 
     fun onClickItemPosition(position: Int) {
-        goods.value?.get(position)?.material?.let { material ->
-            createTaskManager.searchNumber = material
-            createTaskManager.isSearchFromList = true
-            navigator.goBack()
-            navigator.openGoodInfoCreateScreen()
+        goods.value?.get(position)?.let{ item ->
+            item.material.let { material ->
+                createTaskManager.searchNumber = material
+                createTaskManager.isSearchFromList = true
+                navigator.goBack()
+                if (item.good.markType == MarkType.UNKNOWN)
+                    navigator.openGoodInfoCreateScreen()
+                else navigator.openMarkedGoodInfoCreateScreen(listOf(), listOf())
+            }
         }
     }
 

@@ -50,7 +50,7 @@ class TaskContentFragment : CoreFragment<FragmentTaskContentBinding, TaskContent
 
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
         bottomToolbarUiModel.uiModelButton1.show(ButtonDecorationInfo.back)
-        bottomToolbarUiModel.uiModelButton2.show(ButtonDecorationInfo.yes)
+//        bottomToolbarUiModel.uiModelButton2.show(ButtonDecorationInfo.yes) //ForTesting
         bottomToolbarUiModel.uiModelButton3.show(ButtonDecorationInfo.delete, enabled = false)
         bottomToolbarUiModel.uiModelButton4.show(ButtonDecorationInfo.print, enabled = false)
         bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.save, enabled = false)
@@ -63,8 +63,10 @@ class TaskContentFragment : CoreFragment<FragmentTaskContentBinding, TaskContent
 
     override fun onToolbarButtonClick(view: View) {
         when (view.id) {
-            R.id.b_2 -> vm.onScanResult("01046002660113672100000BX.8005012345.938000.92NGkg+wRXz36kBFjpfwOub5DBIIpD2iS/DMYpZuuDLU0Y3pZt1z20/1ksr4004wfhDhRxu4dgUV4QN96Qtdih9g==") // Блок
+//            R.id.b_2 -> vm.onScanResult("01046002660113672100000BX.8005012345.938000.92NGkg+wRXz36kBFjpfwOub5DBIIpD2iS/DMYpZuuDLU0Y3pZt1z20/1ksr4004wfhDhRxu4dgUV4QN96Qtdih9g==") // Блок
 //            R.id.b_2 -> vm.onScanResult("00000046203564000001A01238000") // Пачка
+//            R.id.b_2 -> vm.onScanResult("010871947716364521Gl8hHnSNy0SsN91800092NGkg+wRXz36kBFjpfwOub5DBIIpD2iS/DMYpZuuDLU0Y3pZt1z20/1ksr4004wfhDhRxu4dgUV4QN96Qtdih9g==") // Тапки
+//            R.id.b_2 -> vm.onScanResult("8719477163645") // Тапки
             R.id.b_3 -> vm.onClickDelete()
             R.id.b_4 -> vm.onPrint()
             R.id.b_5 -> vm.onClickSave()

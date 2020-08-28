@@ -57,9 +57,6 @@ fun actionByNumber(
             Constants.MARK_150, Constants.MARK_68 -> {
                 funcForExcise?.invoke(number) ?: funcForNotValidBarFormat()
             }
-//            Constants.BOX_26 -> {
-//                funcForBox?.invoke(number) ?: funcForNotValidBarFormat()
-//            }
             in TOBACCO_BOX_MARK_RANGE_21_28 -> {
                 funcForBox?.invoke(number) ?: funcForNotValidBarFormat()
             }

@@ -10,226 +10,46 @@
             name="vm"
             type="com.lenta.bp12.features.open_task.marked_good_info.MarkedGoodInfoOpenViewModel" />
 
+        <variable
+            name="viewPagerSettings"
+            type="com.lenta.shared.utilities.databinding.ViewPagerSettings" />
     </data>
 
-    <FrameLayout
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
+        <androidx.viewpager.widget.ViewPager
+            android:id="@+id/view_pager"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            app:pageSelectionListener="@{vm}"
+            app:tabPosition="@{vm.selectedPage}"
+            app:viewPagerSettings="@{viewPagerSettings}">
 
-            <!-- Количество -->
-            <LinearLayout style="@style/LinearRowStyle">
-
-                <LinearLayout
-                    style="@style/LinearCellStyle"
-                    android:layout_weight="1">
-
-                    <EditText
-                        style="@style/CellEditTextStyle"
-                        android:drawableEnd="@drawable/spinner_arrow_down_disabled"
-                        android:enabled="false"
-                        android:focusable="false"
-                        android:text="@{vm.accountingType}"
-                        tools:text="Количество" />
-
-                </LinearLayout>
-
-                <View style="@style/VerticalDivider" />
-
-                <LinearLayout
-                    style="@style/LinearCellStyle"
-                    android:layout_weight="1">
-
-                    <com.lenta.shared.view.EditTextWithSuffix
-                        style="@style/CellEditTextStyle"
-                        android:enabled="@{vm.quantityFieldEnabled}"
-                        android:text="@={vm.quantityField}"
-                        app:digitsForUom="@{vm.good.commonUnits}"
-                        app:quantityTypeIcon="@{vm.good.isDifferentUnits()}"
-                        app:suffix="@{vm.good.commonUnits.name}"
-                        tools:drawableEnd="@drawable/ic_bei_12dp"
-                        tools:text="1 шт" />
-
-                </LinearLayout>
-
-            </LinearLayout>
-
-            <View style="@style/HorizontalDivider" />
-
-            <!-- Итого -->
-            <LinearLayout style="@style/LinearRowStyle">
-
-                <LinearLayout
-                    style="@style/LinearCellStyle"
-                    android:layout_weight="1">
-
-                    <TextView
-                        style="@style/CellTextStyle"
-                        android:text="@{vm.totalTitle}"
-                        android:textColor="@color/color_text_title_header"
-                        tools:text="Итого" />
-
-                </LinearLayout>
-
-                <View style="@style/VerticalDivider" />
-
-                <LinearLayout
-                    style="@style/LinearCellStyle"
-                    android:layout_weight="1">
-
-                    <TextView
-                        style="@style/CellTextStyle"
-                        android:text="@{vm.totalWithUnits}"
-                        tools:text="1 шт" />
-
-                </LinearLayout>
-
-            </LinearLayout>
-
-            <View style="@style/HorizontalDivider" />
-
-            <!-- Производитель -->
-            <LinearLayout style="@style/LinearRowStyle">
-
-                <LinearLayout
-                    style="@style/LinearCellStyle"
-                    android:layout_weight="1"
-                    android:orientation="horizontal">
-
-                    <EditText
-                        style="@style/CellEditTextStyle"
-                        android:drawableEnd="@drawable/spinner_arrow_down_disabled"
-                        android:enabled="false"
-                        android:text="@{vm.good.provider.name}"
-                        tools:text="123123 ООО Поставщик" />
-
-                </LinearLayout>
-
-            </LinearLayout>
-
-            <View style="@style/HorizontalDivider" />
-
-            <!-- Алкогольная часть -->
-            <LinearLayout
+            <com.google.android.material.tabs.TabLayout
+                android:id="@+id/tab_strip"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:visibility="@{!vm.isCompactMode}">
+                android:layout_height="@dimen/tab_height"
+                android:background="@color/colorBottomPanelBackground"
+                android:elevation="0dp"
+                app:tabIndicatorColor="@color/colorTabIndicator"
+                app:tabIndicatorHeight="@dimen/tab_indicator_height"
+                app:tabMode="scrollable"
+                app:tabSelectedTextColor="@color/colorTabIndicator"
+                app:tabTextAppearance="@style/TabLayoutStyle"
+                app:tabTextColor="@color/colorWhite"
+                tools:targetApi="lollipop" />
 
-                <!-- Импортер -->
-                <LinearLayout style="@style/LinearRowStyle">
-
-                    <LinearLayout
-                        style="@style/LinearCellStyle"
-                        android:layout_weight="1">
-
-                        <com.lenta.shared.view.ClickableSpinner
-                            android:id="@+id/spin_importer"
-                            style="@style/CellSpinnerStyle"
-                            android:layout_height="match_parent"
-                            android:enabled="@{vm.producerEnabled}"
-                            app:items="@{vm.producerList}"
-                            app:onPositionClickListener="@{vm.onSelectProducer}"
-                            app:position="@{vm.producerPosition}"
-                            tools:entries="@array/test_list" />
-
-                    </LinearLayout>
-
-                </LinearLayout>
-
-                <View style="@style/HorizontalDivider" />
-
-                <!-- Дата партии -->
-                <LinearLayout style="@style/LinearRowStyle">
-
-                    <LinearLayout
-                        style="@style/LinearCellStyle"
-                        android:layout_weight="1">
-
-                        <TextView
-                            style="@style/CellTextStyle"
-                            android:text="@string/consignment"
-                            android:textColor="@color/color_text_title_header" />
-
-                        <TextView
-                            style="@style/CellTextStyle"
-                            android:text="@string/with_bottling_date"
-                            android:textColor="@color/color_text_title_header" />
-
-                    </LinearLayout>
-
-                    <View style="@style/VerticalDivider" />
-
-                    <LinearLayout
-                        style="@style/LinearCellStyle"
-                        android:layout_weight="1">
-
-                        <EditText
-                            style="@style/CellEditTextStyle"
-                            android:digits="1234567890."
-                            android:enabled="@{vm.dateEnabled}"
-                            android:inputType="number"
-                            android:text="@={vm.date}"
-                            app:maskPattern='@{"[00]{.}[00]{.}[0000]"}'
-                            tools:text="25.12.2016" />
-
-                    </LinearLayout>
-
-                </LinearLayout>
-
-                <View style="@style/HorizontalDivider" />
-
-                <!-- МРЦ -->
-                <LinearLayout
-                    style="@style/LinearRowStyle"
-                    android:visibility="@{vm.isMrcVisible}">
-
-                    <LinearLayout
-                        style="@style/LinearCellStyle"
-                        android:layout_weight="1">
-
-                        <TextView
-                            style="@style/CellTextStyle"
-                            android:text="@string/mrc"
-                            android:textColor="@color/color_text_title_header" />
-
-                    </LinearLayout>
-
-                    <View style="@style/VerticalDivider" />
-
-                    <LinearLayout
-                        style="@style/LinearCellStyle"
-                        android:layout_weight="1">
-
-                        <EditText
-                            style="@style/CellEditTextStyle"
-                            android:text="@={vm.mrc}"
-                            tools:text="150 руб" />
-
-                    </LinearLayout>
-
-                </LinearLayout>
-
-            </LinearLayout>
-
-        </LinearLayout>
+        </androidx.viewpager.widget.ViewPager>
 
 
         <!-- Блок с иконками -->
-        <LinearLayout
-            style="@style/BottomIconBarStyle"
-            android:layout_gravity="bottom">
+        <LinearLayout style="@style/BottomIconBarStyle">
 
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:gravity="center"
-                android:orientation="horizontal">
+            <LinearLayout style="@style/BottomIconContainerStyle">
 
                 <TextView
                     android:layout_width="30dp"
@@ -242,12 +62,7 @@
 
             </LinearLayout>
 
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:gravity="center"
-                android:orientation="horizontal">
+            <LinearLayout style="@style/BottomIconContainerStyle">
 
                 <TextView
                     android:layout_width="30dp"
@@ -265,11 +80,25 @@
                 app:goodKindIcon="@{vm.good.kind}"
                 tools:src="@drawable/ic_excise_alcohol_white_32dp" />
 
+            <FrameLayout style="@style/BottomIconStyle">
 
-            <ImageView
-                style="@style/BottomIconStyle"
-                android:src="@drawable/ic_clear_basket_32dp"
-                android:visibility="invisible" />
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:src="@drawable/ic_clear_basket_32dp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="1dp"
+                    android:text="@{vm.basketNumber}"
+                    android:textColor="@color/button_bg_color"
+                    android:textSize="12sp"
+                    tools:text="5" />
+
+            </FrameLayout>
 
             <ImageView
                 style="@style/BottomIconStyle"
@@ -288,6 +117,6 @@
 
         </LinearLayout>
 
-    </FrameLayout>
+    </LinearLayout>
 
 </layout>

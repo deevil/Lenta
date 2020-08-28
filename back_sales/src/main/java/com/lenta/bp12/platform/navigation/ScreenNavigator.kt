@@ -9,6 +9,7 @@ import com.lenta.bp12.features.basket.basket_properties.BasketPropertiesFragment
 import com.lenta.bp12.features.create_task.add_provider.AddProviderFragment
 import com.lenta.bp12.features.create_task.good_details.GoodDetailsCreateFragment
 import com.lenta.bp12.features.create_task.good_info.GoodInfoCreateFragment
+import com.lenta.bp12.features.create_task.marked_good_info.GoodProperty
 import com.lenta.bp12.features.create_task.marked_good_info.MarkedGoodInfoCreateFragment
 import com.lenta.bp12.features.create_task.task_card.TaskCardCreateFragment
 import com.lenta.bp12.features.create_task.task_content.TaskContentFragment
@@ -185,9 +186,9 @@ class ScreenNavigator @Inject constructor(
         }
     }
 
-    override fun openMarkedGoodInfoCreateScreen(marks: List<Mark>) {
+    override fun openMarkedGoodInfoCreateScreen(marks: List<Mark>, properties: List<GoodProperty>) {
         runOrPostpone {
-            getFragmentStack()?.push(MarkedGoodInfoCreateFragment.newInstance(marks))
+            getFragmentStack()?.push(MarkedGoodInfoCreateFragment.newInstance(marks, properties))
         }
     }
 
@@ -544,6 +545,42 @@ class ScreenNavigator @Inject constructor(
         }
     }
 
+    override fun showMarkAlreadyScannedDelete(yesCallback: () -> Unit) {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    pageNumber = "93",
+                    message = context.getString(R.string.mark_already_scanned_delete),
+                    iconRes = R.drawable.ic_warning_red_80dp,
+                    rightButtonDecorationInfo = ButtonDecorationInfo.yes,
+                    codeConfirmForRight = backFragmentResultHelper.setFuncForResult(yesCallback)
+            ))
+        }
+    }
+
+    override fun showCartonAlreadyScannedDelete(yesCallback: () -> Unit) {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    pageNumber = "91",
+                    message = context.getString(R.string.carton_already_scanned_delete),
+                    iconRes = R.drawable.ic_warning_red_80dp,
+                    rightButtonDecorationInfo = ButtonDecorationInfo.yes,
+                    codeConfirmForRight = backFragmentResultHelper.setFuncForResult(yesCallback)
+            ))
+        }
+    }
+
+    override fun showBoxAlreadyScannedDelete(yesCallback: () -> Unit) {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    pageNumber = "89",
+                    message = context.getString(R.string.box_already_scanned_delete),
+                    iconRes = R.drawable.ic_warning_red_80dp,
+                    rightButtonDecorationInfo = ButtonDecorationInfo.yes,
+                    codeConfirmForRight = backFragmentResultHelper.setFuncForResult(yesCallback)
+            ))
+        }
+    }
+
     override fun showInternalError(cause: String) {
         openAlertScreen(Failure.MessageFailure("Внутренняя ошибка программы: $cause", R.drawable.ic_warning_red_80dp))
     }
@@ -577,7 +614,7 @@ interface IScreenNavigator : ICoreNavigator {
 
     fun openGoodInfoCreateScreen()
     fun openGoodInfoOpenScreen()
-    fun openMarkedGoodInfoCreateScreen(marks: List<Mark>)
+    fun openMarkedGoodInfoCreateScreen(marks: List<Mark>, properties: List<GoodProperty>)
     fun openMarkedGoodInfoOpenScreen()
 
     fun showUnsentDataFoundOnDevice(deleteCallback: () -> Unit, goOverCallback: () -> Unit)
@@ -617,4 +654,8 @@ interface IScreenNavigator : ICoreNavigator {
 
     fun showInternalError(cause: String)
     fun showQuantityMoreThenPlannedScreen()
+
+    fun showMarkAlreadyScannedDelete(yesCallback: () -> Unit)
+    fun showCartonAlreadyScannedDelete(yesCallback: () -> Unit)
+    fun showBoxAlreadyScannedDelete(yesCallback: () -> Unit)
 }

@@ -5,13 +5,12 @@ import com.lenta.bp12.model.*
 import com.lenta.bp12.model.pojo.Mark
 import com.lenta.bp12.model.pojo.Part
 import com.lenta.bp12.model.pojo.Position
+import com.lenta.bp12.model.pojo.extentions.addMark
+import com.lenta.bp12.model.pojo.extentions.addMarks
 import com.lenta.bp12.model.pojo.extentions.addPosition
 import com.lenta.bp12.model.pojo.extentions.getQuantityOfGood
 import com.lenta.bp12.model.pojo.open_task.GoodOpen
-import com.lenta.bp12.platform.extention.extractAlcoCode
-import com.lenta.bp12.platform.extention.getControlType
-import com.lenta.bp12.platform.extention.getGoodKind
-import com.lenta.bp12.platform.extention.isWholesaleType
+import com.lenta.bp12.platform.extention.*
 import com.lenta.bp12.platform.navigation.IScreenNavigator
 import com.lenta.bp12.platform.resource.IResourceManager
 import com.lenta.bp12.repository.IDatabaseRepository
@@ -30,8 +29,11 @@ import com.lenta.shared.models.core.getMatrixType
 import com.lenta.shared.platform.constants.Constants
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.requests.combined.scan_info.ScanCodeInfo
-import com.lenta.shared.utilities.*
+import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.extentions.*
+import com.lenta.shared.utilities.getDateFromString
+import com.lenta.shared.utilities.getFormattedDate
+import com.lenta.shared.utilities.orIfNull
 import com.lenta.shared.view.OnPositionClickListener
 import javax.inject.Inject
 
@@ -583,7 +585,7 @@ class GoodInfoOpenViewModel : CoreViewModel() {
                         provider = task.value?.provider ?: ProviderInfo(),
                         producers = producers.orEmpty().toMutableList(),
                         volume = materialInfo?.volume?.toDoubleOrNull() ?: 0.0,
-                        markType = enumValueOrNull<MarkType>(materialInfo?.markType.orEmpty()).orIfNull { MarkType.UNKNOWN },
+                        markType = getMarkType(),
                         maxRetailPrice = ""
                 )
             }
@@ -818,12 +820,12 @@ class GoodInfoOpenViewModel : CoreViewModel() {
                     isBadMark = scanInfoResult.value?.status == ExciseMarkStatus.BAD.code,
                     providerCode = changedGood.provider.code.orEmpty()
             )
+            changedGood.addMark(mark)
             manager.addGoodToBasketWithMark(
                     good = changedGood,
                     mark = mark,
                     provider = changedGood.provider
             )
-            manager.updateCurrentGood(changedGood)
         }.orIfNull {
             Logg.e { "good null" }
             navigator.showInternalError(resource.goodNotFoundErrorMsg)
@@ -854,14 +856,17 @@ class GoodInfoOpenViewModel : CoreViewModel() {
 
     private suspend fun addBox() {
         good.value?.let { changedGood ->
-
             scanInfoResult.value?.exciseMarks?.let { marks ->
-                marks.forEach { mark ->
-                    val markFromBox = Mark(
+
+                val mappedMarks = marks.map{ mark ->
+                    Mark(
                             number = mark.number.orEmpty(),
                             boxNumber = lastSuccessSearchNumber,
                             providerCode = changedGood.provider.code.orEmpty()
                     )
+                }
+                changedGood.addMarks(mappedMarks)
+                mappedMarks.forEach { markFromBox ->
                     Logg.d { "--> add mark from box = $markFromBox" }
                     manager.addGoodToBasketWithMark(
                             good = changedGood,
@@ -870,7 +875,6 @@ class GoodInfoOpenViewModel : CoreViewModel() {
                     )
                 }
             }
-
             manager.updateCurrentGood(changedGood)
         }.orIfNull {
             Logg.e { "good null" }

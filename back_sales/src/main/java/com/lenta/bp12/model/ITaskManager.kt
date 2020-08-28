@@ -1,7 +1,21 @@
 package com.lenta.bp12.model
 
-import com.lenta.bp12.model.pojo.Good
+import androidx.lifecycle.MutableLiveData
+import com.lenta.bp12.model.pojo.Mark
+import com.lenta.bp12.request.pojo.markCartonBoxGoodInfoNetRequest.MarkCartonBoxGoodInfoNetRequestResult
 
-interface ITaskManager {
-    fun isGoodInTask(good: Good)
+interface IMarkManager {
+
+    val tempMarks: MutableLiveData<List<Mark>>
+
+    fun addMarksFromResult(result: MarkCartonBoxGoodInfoNetRequestResult)
+}
+
+class MarkManager() : IMarkManager {
+    override val tempMarks: MutableLiveData<List<Mark>> = MutableLiveData(mutableListOf())
+
+    override fun addMarksFromResult(result: MarkCartonBoxGoodInfoNetRequestResult) {
+        TODO("Not yet implemented")
+    }
+
 }

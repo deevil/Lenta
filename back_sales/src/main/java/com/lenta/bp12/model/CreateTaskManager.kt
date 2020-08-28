@@ -108,7 +108,7 @@ class CreateTaskManager @Inject constructor(
             // Добавим марке номер корзины
             mark.basketNumber = suitableBasket.index
             // Положим в товар
-            good.addMark(mark)
+//            good.addMark(mark)
             // Продублируем марку в позиции (просто надо)
             addEmptyPosition(good, provider, suitableBasket)
             // Добавим товар в корзину
@@ -121,6 +121,8 @@ class CreateTaskManager @Inject constructor(
             if (isBasketsNeedsToBeClosed) {
                 suitableBasket.isLocked = true
             }
+
+            Logg.e { "BASKET GOODS: ${suitableBasket.goods}" }
         }
     }
 

@@ -7,6 +7,8 @@ import com.lenta.bp12.model.pojo.Mark
 import com.lenta.bp12.model.pojo.Part
 import com.lenta.bp12.model.pojo.Position
 import com.lenta.bp12.model.pojo.create_task.GoodCreate
+import com.lenta.bp12.model.pojo.extentions.addMark
+import com.lenta.bp12.model.pojo.extentions.addMarks
 import com.lenta.bp12.model.pojo.extentions.addPosition
 import com.lenta.bp12.model.pojo.extentions.getQuantityOfGood
 import com.lenta.bp12.platform.extention.*
@@ -293,6 +295,7 @@ class GoodInfoCreateViewModel : CoreViewModel() {
 
     val producerPosition = MutableLiveData(0)
 
+    // TODO use onPositionClicekd adapter instead
     val onSelectProducer = object : OnPositionClickListener {
         override fun onClickPosition(position: Int) {
             producerPosition.value = position
@@ -844,6 +847,7 @@ class GoodInfoCreateViewModel : CoreViewModel() {
                     isBadMark = scanInfoResult.value?.status == ExciseMarkStatus.BAD.code,
                     providerCode = getProviderCode()
             )
+            changedGood.addMark(mark)
             manager.addGoodToBasketWithMark(
                     good = changedGood,
                     mark = mark,
@@ -880,12 +884,16 @@ class GoodInfoCreateViewModel : CoreViewModel() {
     private suspend fun addBox() {
         good.value?.let { changedGood ->
             scanInfoResult.value?.exciseMarks?.let { marks ->
-                marks.forEach { mark ->
-                    val markFromBox = Mark(
+
+                val mappedMarks = marks.map{ mark ->
+                    Mark(
                             number = mark.number.orEmpty(),
                             boxNumber = lastSuccessSearchNumber,
                             providerCode = getProviderCode()
                     )
+                }
+                changedGood.addMarks(mappedMarks)
+                mappedMarks.forEach { markFromBox ->
                     Logg.d { "--> add mark from box = $markFromBox" }
                     manager.addGoodToBasketWithMark(
                             good = changedGood,

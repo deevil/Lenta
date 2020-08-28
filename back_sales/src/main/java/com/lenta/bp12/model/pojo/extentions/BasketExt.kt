@@ -2,9 +2,13 @@ package com.lenta.bp12.model.pojo.extentions
 
 import com.lenta.bp12.model.pojo.Basket
 import com.lenta.bp12.model.pojo.Good
+import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.orIfNull
 
 fun Basket.addGood(good: Good, quantity: Double) {
+    Logg.e {
+        good.toString()
+    }
     if (freeVolume >= good.volume * quantity) {
         freeVolume -= (good.volume * quantity)
         val oldQuantity = goods[good].orIfNull { 0.0 }

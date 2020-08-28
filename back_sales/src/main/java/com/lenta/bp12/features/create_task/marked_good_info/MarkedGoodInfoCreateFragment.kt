@@ -43,6 +43,11 @@ class MarkedGoodInfoCreateFragment : CoreFragment<FragmentMarkedGoodInfoCreateBi
                 vm.tempMarks.value?.addAll(listOfMarks)
                 Logg.e { marks.toString() }
             } ?: Logg.e { "marks empty "}
+            val properties = it.getParcelableArrayList<GoodProperty>(PROPERTIES_KEY)
+            properties?.let { listOfProperties ->
+                vm.properties.value?.addAll(listOfProperties)
+                Logg.e { properties.toString() }
+            } ?: Logg.e { "properties empty "}
         }
         return vm
 
@@ -150,8 +155,7 @@ class MarkedGoodInfoCreateFragment : CoreFragment<FragmentMarkedGoodInfoCreateBi
         recyclerViewKeyHandler = initRecyclerViewKeyHandler(
                 recyclerView = layoutBinding.rv,
                 items = vm.propertiesItems,
-                previousPosInfo = recyclerViewKeyHandler?.posInfo?.value,
-                onClickHandler = vm::onClickItemPosition
+                previousPosInfo = recyclerViewKeyHandler?.posInfo?.value
         )
         return layoutBinding.root
     }
@@ -162,16 +166,18 @@ class MarkedGoodInfoCreateFragment : CoreFragment<FragmentMarkedGoodInfoCreateBi
     }
 
     companion object {
-        fun newInstance(marks: List<Mark>) : MarkedGoodInfoCreateFragment {
+        fun newInstance(marks: List<Mark>, properties: List<GoodProperty>) : MarkedGoodInfoCreateFragment {
             return MarkedGoodInfoCreateFragment().apply {
                 arguments = bundleOf(
-                        MARKS_KEY to marks
+                        MARKS_KEY to marks,
+                        PROPERTIES_KEY to properties
                 )
             }
         }
 
         const val SCREEN_NUMBER = "12"
         private const val MARKS_KEY = "MARKS_KEY"
+        private const val PROPERTIES_KEY = "PROPERTIES_KEY"
         private const val TAB_QUANTITY_PAGE = 0
         private const val TAB_PROPERTIES_PAGE = 1
         private const val TAB_QUANTITY = 2

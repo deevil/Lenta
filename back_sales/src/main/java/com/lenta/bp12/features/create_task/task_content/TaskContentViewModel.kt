@@ -2,6 +2,7 @@ package com.lenta.bp12.features.create_task.task_content
 
 import androidx.lifecycle.MutableLiveData
 import com.lenta.bp12.features.basket.ItemWholesaleBasketUi
+import com.lenta.bp12.features.create_task.marked_good_info.GoodProperty
 import com.lenta.bp12.model.ICreateTaskManager
 import com.lenta.bp12.model.MarkStatus
 import com.lenta.bp12.model.MarkType
@@ -32,6 +33,7 @@ import com.lenta.shared.exception.Failure
 import com.lenta.shared.models.core.Uom
 import com.lenta.shared.models.core.getMatrixType
 import com.lenta.shared.platform.constants.Constants.MARK_TOBACCO_PACK_29
+import com.lenta.shared.platform.constants.Constants.SHOES_MARK_REGEX_PATTERN
 import com.lenta.shared.platform.constants.Constants.TOBACCO_MARK_BLOCK_OR_BOX_RANGE_30_44
 import com.lenta.shared.platform.constants.Constants.TOBACCO_MARK_CARTON_REGEX_PATTERN
 import com.lenta.shared.platform.device_info.DeviceInfo
@@ -218,12 +220,20 @@ class TaskContentViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
                 funcForMaterial = ::getGoodByMaterial,
                 funcForSapOrBar = navigator::showTwelveCharactersEntered,
                 funcForMark = ::checkMark,
-                funcForNotValidBarFormat = navigator::showIncorrectEanFormat
+                funcForNotValidBarFormat = navigator::showIncorrectEanFormat,
+                funcForBox = ::loadBoxInfo
         )
     }
 
+    //TODO Обычные и акцизные коробки
+    private fun loadBoxInfo(number: String) {
+
+    }
+
     private fun checkMark(number: String) {
-        when (number.length) {
+        if (isShoesMark(number)) {
+            openMarkedGoodWithShoe(number)
+        } else when (number.length) {
             MARK_TOBACCO_PACK_29 -> {
                 if (isTobaccoPackMark(number))
                     navigator.showCantScanPackAlert()
@@ -243,11 +253,27 @@ class TaskContentViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
         }
     }
 
+    /**
+     * Метод вычленяет регулярным выражением шк и гтин и мрц из марки обуви
+     * */
+    private fun openMarkedGoodWithShoe(number: String){
+        val regex = Regex(SHOES_MARK_REGEX_PATTERN).find(number)
+        regex?.let {
+            val (gtin, serial, _, _, _) = it.destructured // gtin, serial, tradeCode, verificationKey, verificationCode
+            val barCode = "01${gtin}21$serial"
+            val container = Pair(barCode, Mark.Container.SHOE)
+            getGoodByEan(gtin, container)
+        }
+    }
+
+    /**
+     * Метод вычленяет регулярным выражением шк, гтин и мрц из марки блока
+     * */
     private fun openMarkedGoodWithCarton(number: String) {
         val regex = Regex(TOBACCO_MARK_CARTON_REGEX_PATTERN).find(number)
         regex?.let {
-            val (blockBarcode, gtin, serial, mrc, verificationKey, other) = it.destructured
-            val container = Triple(number, gtin, Mark.Container.CARTON)
+            val (blockBarcode, gtin, _, mrc, _, _) = it.destructured // blockBarcode, gtin, serial, mrc, verificationKey, other
+            val container = Pair(blockBarcode, Mark.Container.CARTON)
             getGoodByEan(gtin, container, mrc)
         }
     }
@@ -257,21 +283,25 @@ class TaskContentViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
      * если есть то отправляет на его карточку
      * если нет то создает товар
      * */
-    private fun getGoodByEan(ean: String, container: Triple<String, String, Mark.Container>? = null, mrc: String = "") {
+    private fun getGoodByEan(ean: String, container: Pair<String, Mark.Container>? = null, mrc: String = "") {
         manager.findGoodByEan(ean)?.let { foundGood ->
             lastSuccessSearchNumber = ean
             isEanLastScanned = true
             setFoundGood(foundGood)
         } ?: loadGoodInfoByEan(ean, container, mrc)
     }
-
+    /**
+     * Метод ищет есть ли уже товар в задании по Sap коду,
+     * если есть то отправляет на его карточку
+     * если нет то создает товар
+     * */
     private fun getGoodByMaterial(material: String) {
         manager.findGoodByMaterial(material)?.let { foundGood ->
             setFoundGood(foundGood)
         } ?: loadGoodInfoByMaterial(material)
     }
 
-    private fun setFoundGood(foundGood: GoodCreate, container: Triple<String, String, Mark.Container>? = null) {
+    private fun setFoundGood(foundGood: GoodCreate, container: Pair<String, Mark.Container>? = null) {
 
         if (foundGood.markType != MarkType.UNKNOWN) {
             if (container != null) {
@@ -279,7 +309,7 @@ class TaskContentViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
                 checkMarkNetRequest(params, foundGood)
             } else {
                 manager.updateCurrentGood(foundGood)
-                navigator.openMarkedGoodInfoCreateScreen(emptyList())
+                navigator.openMarkedGoodInfoCreateScreen(emptyList(), emptyList())
                 navigator.showForGoodNeedScanFirstMark()
             }
         } else {
@@ -304,6 +334,13 @@ class TaskContentViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
     private fun handleCheckMarkNetRequestResult(result: MarkCartonBoxGoodInfoNetRequestResult, foundGood: GoodCreate) {
         val status = result.getMarkStatus()
         val marks = result.marks
+        val properties = result.properties?.map {
+            GoodProperty(
+                    gtin = it.ean,
+                    property = it.propertyName,
+                    value = it.propertyValue
+            )
+        }.orEmpty()
         when (status) {
             MarkStatus.GOOD_CARTON -> {
                 marks?.let {
@@ -315,7 +352,7 @@ class TaskContentViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
                         )
                     }
                     manager.updateCurrentGood(foundGood)
-                    navigator.openMarkedGoodInfoCreateScreen(mappedMarks)
+                    navigator.openMarkedGoodInfoCreateScreen(mappedMarks, properties)
                 }
             }
             MarkStatus.GOOD_MARK -> {
@@ -326,7 +363,7 @@ class TaskContentViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
                         )
                     }
                     manager.updateCurrentGood(foundGood)
-                    navigator.openMarkedGoodInfoCreateScreen(mappedMarks)
+                    navigator.openMarkedGoodInfoCreateScreen(mappedMarks, properties)
                 }
             }
             MarkStatus.GOOD_BOX -> {
@@ -339,7 +376,7 @@ class TaskContentViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
                         )
                     }
                     manager.updateCurrentGood(foundGood)
-                    navigator.openMarkedGoodInfoCreateScreen(mappedMarks)
+                    navigator.openMarkedGoodInfoCreateScreen(mappedMarks, properties)
                 }
             }
             else -> {
@@ -352,8 +389,8 @@ class TaskContentViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
         }
     }
 
-    private fun getMarkParams(foundGood: GoodCreate, container: Triple<String, String, Mark.Container>): MarkCartonBoxGoodInfoNetRequestParams {
-        return when (container.third) {
+    private fun getMarkParams(foundGood: GoodCreate, container: Pair<String, Mark.Container>): MarkCartonBoxGoodInfoNetRequestParams {
+        return when (container.second) {
             Mark.Container.CARTON -> {
                 MarkCartonBoxGoodInfoNetRequestParams(
                         cartonNumber = container.first,
@@ -378,7 +415,7 @@ class TaskContentViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
         }
     }
 
-    private fun loadGoodInfoByEan(ean: String, container: Triple<String, String, Mark.Container>? = null, mrc: String = "") {
+    private fun loadGoodInfoByEan(ean: String, container: Pair<String, Mark.Container>? = null, mrc: String = "") {
         launchUITryCatch {
             navigator.showProgressLoadingData(::handleFailure)
             goodInfoNetRequest(GoodInfoParams(
@@ -411,7 +448,7 @@ class TaskContentViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
 
     private fun handleLoadGoodInfoResult(
             result: GoodInfoResult,
-            container: Triple<String, String, Mark.Container>? = null,
+            container: Pair<String, Mark.Container>? = null,
             mrc: String = "") {
         launchUITryCatch {
             if (manager.isGoodCanBeAdded(result)) {
@@ -430,7 +467,7 @@ class TaskContentViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
      */
     private fun setGood(
             result: GoodInfoResult,
-            container: Triple<String, String, Mark.Container>? = null,
+            container: Pair<String, Mark.Container>? = null,
             mrc: String = "") {
         launchUITryCatch {
             with(result) {
@@ -472,7 +509,13 @@ class TaskContentViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
         }
     }
 
+    /**
+     * Форматирует мрц, если он есть
+     * Он приходит в копейках и общий для всех товаров в блоке/коробке.
+     * Умрез - количество в блоке/коробке, приходит из ФМ. Делим на него и делим на 100 чтобы в рублях получить
+     * */
     private fun getFormattedMrc(mrc: String, umrez: Double): String {
+        Logg.e { "мрц до: $mrc умрез: $umrez" }
         val wholeMrc = mrc.toDoubleOrNull()
         return wholeMrc?.let {
             val partedMrc = wholeMrc.div(umrez)
@@ -495,7 +538,7 @@ class TaskContentViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
                         manager.searchNumber = good.material
                         manager.isSearchFromList = true
                         if (good.markType != MarkType.UNKNOWN) {
-                            navigator.openMarkedGoodInfoCreateScreen(emptyList())
+                            navigator.openMarkedGoodInfoCreateScreen(emptyList(), emptyList())
                         } else {
                             navigator.openGoodInfoCreateScreen()
                         }

@@ -73,8 +73,8 @@ class BasketOpenGoodListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener 
                             position = "${index + 1}",
                             name = good.getNameWithMaterial(),
                             quantity = "${quantity.dropZeros()} $units",
-                            material = good.material
-                    )
+                            material = good.material,
+                            good = good)
                 }
 
             }.orEmpty()

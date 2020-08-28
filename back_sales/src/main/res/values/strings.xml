@@ -73,6 +73,12 @@
     <string name="basket_not_found_error_msg">корзина не найдена</string>
     <string name="task_not_found_error_msg">задание не найдено</string>
 
+
+    <string name="quantity_more_than_planned">Превышено плановое количество. Добавление невозможно.</string>
+    <string name="mark_already_scanned_delete">Отсканированная марка уже была добавлена в задание. Удалить марку?</string>
+    <string name="carton_already_scanned_delete">Отсканированный блок уже был добавлен в задание. Удалить блок?</string>
+    <string name="box_already_scanned_delete">Отсканированная коробка уже была добавлена в задание. Удалить коробку?</string>
+
     // Описание иконок
     <string name="alcohol_good">Алкогольный товар</string>
     <string name="common_good">Обычный товар</string>
@@ -117,7 +123,6 @@
     <string name="all_suppliers">Все поставщики</string>
     <string name="wholesale_buyer">Оптовый покупатель</string>
     <string name="picking_warehouse">Склад\nкомплектации</string>
-    <string name="quantity_more_than_planned">Превышено плановое количество. Добавление невозможно.</string>
     <string name="mrc">МРЦ</string>
     <string name="gtin">GTIN</string>
     <string name="property">Свойство</string>

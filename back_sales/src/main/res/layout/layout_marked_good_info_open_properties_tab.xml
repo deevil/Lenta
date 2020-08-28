@@ -8,7 +8,7 @@
 
         <variable
             name="vm"
-            type="com.lenta.bp12.features.create_task.marked_good_info.MarkedGoodInfoCreateViewModel" />
+            type="com.lenta.bp12.features.open_task.marked_good_info.MarkedGoodInfoOpenViewModel" />
 
         <variable
             name="rvConfig"
