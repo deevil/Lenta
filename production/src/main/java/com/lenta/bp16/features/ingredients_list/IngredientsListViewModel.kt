@@ -9,8 +9,6 @@ import com.lenta.bp16.model.ingredients.GoodByOrder
 import com.lenta.bp16.model.ingredients.IngredientInfo
 import com.lenta.bp16.model.ingredients.params.GetIngredientsParams
 import com.lenta.bp16.model.ingredients.params.WarehouseParam
-import com.lenta.bp16.model.ingredients.results.IngredientsListResult
-import com.lenta.bp16.model.ingredients.ui.IngredientsListResultUI
 import com.lenta.bp16.model.ingredients.ui.ItemIngredientUi
 import com.lenta.bp16.model.ingredients.ui.OrderByBarcodeUI
 import com.lenta.bp16.model.ingredients.ui.OrderByBarcodeUI.Companion.EAN_NOM
@@ -19,7 +17,8 @@ import com.lenta.bp16.model.ingredients.ui.OrderByBarcodeUI.Companion.EAN_UMREZ
 import com.lenta.bp16.model.ingredients.ui.OrderByBarcodeUI.Companion.FAKE_EAN
 import com.lenta.bp16.model.ingredients.ui.OrderByBarcodeUI.Companion.FAKE_MATNR
 import com.lenta.bp16.model.warehouse.IWarehousePersistStorage
-import com.lenta.bp16.platform.extention.getIngredientStatus
+import com.lenta.bp16.platform.extention.getIngredientStatusBlock
+import com.lenta.bp16.platform.extention.getIngredientStatusWork
 import com.lenta.bp16.platform.navigation.IScreenNavigator
 import com.lenta.bp16.platform.resource.IResourceManager
 import com.lenta.bp16.request.GetIngredientsNetRequest
@@ -116,7 +115,8 @@ class IngredientsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInS
                                 position = position,
                                 text1 = ingredientInfo.text1.orEmpty(),
                                 text2 = ingredientInfo.text2.orEmpty(),
-                                ingredientStatus = ingredientInfo.getIngredientStatus()
+                                ingredientStatusBlock = ingredientInfo.getIngredientStatusBlock(),
+                                ingredientStatusWork = ingredientInfo.getIngredientStatusWork()
                         )
                     }
                 }.toList()
