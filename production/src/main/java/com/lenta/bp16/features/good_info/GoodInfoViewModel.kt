@@ -181,7 +181,12 @@ class GoodInfoViewModel : CoreViewModel() {
     }
 
     private fun setDateInfo() {
-        val date = getFormattedDate(dateInfoField.value.orEmpty(), Constants.DATE_FORMAT_dd_mm_yyyy, Constants.DATE_FORMAT_yyyyMMdd)
+        /**Изменения формата даты только правильном заполнении поля*/
+        var date = dateInfoField.value.orEmpty()
+        if(date.isNotEmpty() && date.length == DATE_LENGTH){
+            date = getFormattedDate(dateInfoField.value.orEmpty(), Constants.DATE_FORMAT_dd_mm_yyyy, Constants.DATE_FORMAT_yyyyMMdd)
+        }
+
         if (selectedDatePosition.value == 0) {
             producerDate = date
         } else {
