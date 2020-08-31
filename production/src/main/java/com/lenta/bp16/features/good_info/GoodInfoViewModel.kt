@@ -187,10 +187,13 @@ class GoodInfoViewModel : CoreViewModel() {
             date = getFormattedDate(dateInfoField.value.orEmpty(), Constants.DATE_FORMAT_dd_mm_yyyy, Constants.DATE_FORMAT_yyyyMMdd)
         }
 
+        //Заполненной может быть только одна дата
         if (selectedDatePosition.value == 0) {
             producerDate = date
+            selfLifeDate = ""
         } else {
             selfLifeDate = date
+            producerDate = ""
         }
     }
 
