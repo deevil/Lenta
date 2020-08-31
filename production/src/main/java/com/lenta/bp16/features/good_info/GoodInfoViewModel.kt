@@ -97,7 +97,7 @@ class GoodInfoViewModel : CoreViewModel() {
             emit(producersNameList)
         }
     }
-    val selectedProducerPosition = MutableLiveData(0);
+    val selectedProducerPosition = MutableLiveData(0)
 
     /**Склад отправитель*/
     val warehouseSender: MutableLiveData<List<String>> = MutableLiveData()
@@ -183,7 +183,7 @@ class GoodInfoViewModel : CoreViewModel() {
     private fun setDateInfo() {
         /**Изменения формата даты только правильном заполнении поля*/
         var date = dateInfoField.value.orEmpty()
-        if(date.isNotEmpty() && date.length == DATE_LENGTH){
+        if (date.isNotEmpty() && date.length == DATE_LENGTH) {
             date = getFormattedDate(dateInfoField.value.orEmpty(), Constants.DATE_FORMAT_dd_mm_yyyy, Constants.DATE_FORMAT_yyyyMMdd)
         }
 
@@ -262,6 +262,30 @@ class GoodInfoViewModel : CoreViewModel() {
         appSettings.warehouseReceiverPosition = selectedWarehouseReceiverPosition.value
     }
 
+    /**Проверка даты на корректность*/
+    private fun checkDate(): Boolean {
+        val checkDate = dateInfoField.value.orEmpty()
+        val splitCheckDate = checkDate.split(".")
+        val day = splitCheckDate[0].toInt()
+        val month = splitCheckDate[1].toInt()
+        val year = splitCheckDate[2].toInt()
+        val monthWith31Days = listOf(1, 3, 5, 7, 8, 10, 12)
+        val monthWith30Days = listOf(4, 6, 9, 11)
+        return if (year in 2000..2100 && month in 1..12 && day in 1..31) {
+            if (monthWith31Days.contains(month)) {
+                day <= 31
+            } else if (monthWith30Days.contains(month) && month != 2) {
+                day <= 30
+            } else if (year % 4 == 0) {
+                day <= 29
+            } else {
+                day <= 28
+            }
+        } else {
+            false
+        }
+    }
+
     fun onClickBack() {
         saveWarehouses()
         navigator.openSelectGoodScreen()
@@ -274,28 +298,38 @@ class GoodInfoViewModel : CoreViewModel() {
             saveWarehouses()
             val prodCodeSelectedProducer = goodParams.value?.producers?.getOrNull(selectedProducerPosition.value
                     ?: 0)?.producerCode.orEmpty()
-            val result = movementNetRequest(
-                    params = MovementParams(
-                            tkNumber = sessionInfo.market.orEmpty(),
-                            matnr = goodParams.value?.material.orEmpty(),
-                            prodCode = prodCodeSelectedProducer,
-                            dateProd = producerDate,
-                            expirDate = selfLifeDate,
-                            lgortExport = warehouseSenderSelected.value.orEmpty(),
-                            lgortImport = warehouseReceiverSelected.value.orEmpty(),
-                            codeCont = "",
-                            factQnt = quantityField.value.toString(),
-                            buom = buom.value.orEmpty(),
-                            deviceIP = deviceIp.value.toString(),
-                            personnelNumber = sessionInfo.personnelNumber.orEmpty()
-                    )
-            )
-            result.also {
+            val dateIsCorrect = if (zPartFlag.value == true) {
+                checkDate()
+            } else {
+                true
+            }
+            if (!dateIsCorrect) {
                 navigator.hideProgress()
-            }.either(::handleFailure) {
-                with(navigator) {
-                    showMovingSuccessful {
-                        openSelectGoodScreen()
+                navigator.showAlertWrongDate()
+            } else {
+                val result = movementNetRequest(
+                        params = MovementParams(
+                                tkNumber = sessionInfo.market.orEmpty(),
+                                matnr = goodParams.value?.material.orEmpty(),
+                                prodCode = prodCodeSelectedProducer,
+                                dateProd = producerDate,
+                                expirDate = selfLifeDate,
+                                lgortExport = warehouseSenderSelected.value.orEmpty(),
+                                lgortImport = warehouseReceiverSelected.value.orEmpty(),
+                                codeCont = "",
+                                factQnt = quantityField.value.toString(),
+                                buom = buom.value.orEmpty(),
+                                deviceIP = deviceIp.value.toString(),
+                                personnelNumber = sessionInfo.personnelNumber.orEmpty()
+                        )
+                )
+                result.also {
+                    navigator.hideProgress()
+                }.either(::handleFailure) {
+                    with(navigator) {
+                        showMovingSuccessful {
+                            openSelectGoodScreen()
+                        }
                     }
                 }
             }
