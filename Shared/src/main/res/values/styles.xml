@@ -286,8 +286,8 @@
     </style>
 
     <style name="AutosizeCellTextStyle">
-        <item name="android:autoSizeTextType" tools:targetApi="o">uniform</item>
-        <item name="android:autoSizePresetSizes" tools:targetApi="o">@array/autosize_text_sizes</item>
+        <item name="autoSizeTextType">uniform</item>
+        <item name="autoSizePresetSizes" >@array/autosize_text_sizes</item>
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:maxLines">1</item>
