@@ -63,10 +63,12 @@ class MarkedFragment : CoreFragment<FragmentMarkedBinding, MarkedViewModel>(),
 
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
         bottomToolbarUiModel.uiModelButton1.show(ButtonDecorationInfo.back)
+        bottomToolbarUiModel.uiModelButton2.show(ButtonDecorationInfo.rollback)
         bottomToolbarUiModel.uiModelButton3.show(ButtonDecorationInfo.details)
         bottomToolbarUiModel.uiModelButton4.show(ButtonDecorationInfo.add)
         bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.apply)
 
+        connectLiveData(vm.rollBackEnabled, bottomToolbarUiModel.uiModelButton2.enabled)
         connectLiveData(vm.enabledApplyButton, bottomToolbarUiModel.uiModelButton4.enabled)
         connectLiveData(vm.enabledApplyButton, bottomToolbarUiModel.uiModelButton5.enabled)
         connectLiveData(vm.enabledDetailsButton, bottomToolbarUiModel.uiModelButton3.enabled)
@@ -83,6 +85,7 @@ class MarkedFragment : CoreFragment<FragmentMarkedBinding, MarkedViewModel>(),
 
     override fun onToolbarButtonClick(view: View) {
         when (view.id) {
+            R.id.b_2 -> vm.onClickRollBack()
             R.id.b_3 -> vm.onClickDetails()
             R.id.b_4 -> vm.onClickAdd()
             R.id.b_5 -> vm.onClickApply()

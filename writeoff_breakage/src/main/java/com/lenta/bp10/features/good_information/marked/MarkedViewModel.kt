@@ -1,8 +1,11 @@
 package com.lenta.bp10.features.good_information.marked
 
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.lenta.bp10.features.good_information.base.BaseProductInfoViewModel
+import com.lenta.bp10.models.StampCollector
 import com.lenta.bp10.models.repositories.ITaskRepository
+import com.lenta.bp10.models.task.ProcessExciseAlcoProductService
 import com.lenta.bp10.models.task.TaskDescription
 import com.lenta.bp10.platform.navigation.IScreenNavigator
 import com.lenta.bp10.requests.network.PrintTaskNetRequest
@@ -12,6 +15,7 @@ import com.lenta.shared.analytics.AnalyticsHelper
 import com.lenta.shared.platform.resources.ISharedStringResourceManager
 import com.lenta.shared.requests.combined.scan_info.ScanInfoResult
 import com.lenta.shared.utilities.databinding.PageSelectionListener
+import com.lenta.shared.utilities.extentions.map
 import javax.inject.Inject
 
 class MarkedViewModel : BaseProductInfoViewModel(), PageSelectionListener {
@@ -35,6 +39,14 @@ class MarkedViewModel : BaseProductInfoViewModel(), PageSelectionListener {
     lateinit var analyticsHelper: AnalyticsHelper
 
 
+    private val processExciseAlcoProductService: ProcessExciseAlcoProductService by lazy {
+        processServiceManager.getWriteOffTask()!!.processExciseAlcoProduct(productInfo.value!!)!!
+    }
+
+    private val stampCollector: StampCollector by lazy {
+        StampCollector(processExciseAlcoProductService)
+    }
+
     var selectedPage = MutableLiveData(0)
 
     val properties by lazy {
@@ -48,8 +60,16 @@ class MarkedViewModel : BaseProductInfoViewModel(), PageSelectionListener {
         )
     }
 
+    val rollBackEnabled: LiveData<Boolean> by lazy {
+        countValue.map { it ?: 0.0 > 0.0 }
+    }
+
     override fun onPageSelected(position: Int) {
         selectedPage.value = position
+    }
+
+    fun onClickRollBack() {
+        stampCollector.rollback()
     }
 
     override fun handleProductSearchResult(scanInfoResult: ScanInfoResult?): Boolean {
