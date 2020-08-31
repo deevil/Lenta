@@ -80,7 +80,7 @@ class GoodInfoViewModel : CoreViewModel() {
 
     /**Количество*/
     val quantityField = weightAndUom.mapSkipNulls {
-        /**Если товар не весовой, то переводим в целый тип*/
+        /**Если товар не весовой, то отбрасываем нули*/
         if (it.second.name != Uom.KG.name) {
             it.first?.dropZeros()
         } else {
@@ -172,10 +172,10 @@ class GoodInfoViewModel : CoreViewModel() {
                 Constants.QUANTITY_DEFAULT_VALUE_1 to Uom.ST
             }
             Uom.KAR -> {
-                good.umrez.toInt().div(good.umren.toDouble()) to good.buom.toUom()
+                good.umrez.toDouble().div(good.umren.toDouble()) to good.buom.toUom()
             }
             else -> {
-                Constants.QUANTITY_DEFAULT_VALUE_0 to Uom.DEFAULT
+                Constants.QUANTITY_DEFAULT_VALUE_0 to Uom.KG
             }
         }
     }
