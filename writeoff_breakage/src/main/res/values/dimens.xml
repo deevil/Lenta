@@ -9,4 +9,9 @@
     <integer name="three_one_2">60</integer>
     <integer name="three_one_3">25</integer>
 
+    <!-- Три колонки / Тип 2 -->
+    <integer name="three_two_1">10</integer>
+    <integer name="three_two_2">45</integer>
+    <integer name="three_two_3">45</integer>
+
 </resources>

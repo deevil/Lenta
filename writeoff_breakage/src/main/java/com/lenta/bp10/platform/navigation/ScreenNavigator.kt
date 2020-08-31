@@ -224,6 +224,19 @@ class ScreenNavigator(
 
     }
 
+    /*override fun showTwelveCharactersEntered(sapCallback: () -> Unit, barCallback: () -> Unit) {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    pageNumber = "68",
+                    message = context.getString(R.string.twelve_characters_entered),
+                    codeConfirmForLeft = backFragmentResultHelper.setFuncForResult(sapCallback),
+                    codeConfirmForRight = backFragmentResultHelper.setFuncForResult(barCallback),
+                    leftButtonDecorationInfo = ButtonDecorationInfo.sap,
+                    rightButtonDecorationInfo = ButtonDecorationInfo.barcode
+            ))
+        }
+    }*/
+
     override fun openAlertDoubleScanStamp() {
         openAlertScreen(
                 message = context.getString(R.string.alert_double_scan_stamp),
