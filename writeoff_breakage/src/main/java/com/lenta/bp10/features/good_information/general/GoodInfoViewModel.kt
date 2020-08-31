@@ -96,7 +96,7 @@ class GoodInfoViewModel : BaseProductInfoViewModel() {
     }
 
     override fun initCountLiveData(): MutableLiveData<String> {
-        return MutableLiveData()
+        return MutableLiveData("0")
     }
 
 }
