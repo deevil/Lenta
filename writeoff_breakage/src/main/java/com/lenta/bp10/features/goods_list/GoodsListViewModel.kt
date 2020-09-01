@@ -39,18 +39,25 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
 
     @Inject
     lateinit var screenNavigator: IScreenNavigator
+
     @Inject
     lateinit var processServiceManager: IWriteOffTaskManager
+
     @Inject
     lateinit var sharedStringResourceManager: ISharedStringResourceManager
+
     @Inject
     lateinit var sendWriteOffReportRequest: SendWriteOffReportRequest
+
     @Inject
     lateinit var printTaskNetRequest: PrintTaskNetRequest
+
     @Inject
     lateinit var sessionInfo: ISessionInfo
+
     @Inject
     lateinit var searchProductDelegate: SearchProductDelegate
+
     @Inject
     lateinit var analyticsHelper: AnalyticsHelper
 
@@ -104,6 +111,8 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
     fun onResume() {
         updateCounted()
         updateFilter()
+
+        requestFocusToEan.value = true
     }
 
     override fun onOkInSoftKeyboard(): Boolean {
@@ -223,11 +232,6 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
         }?.let {
             searchProductDelegate.openProductScreen(it, 0.0)
         }
-    }
-
-    fun onDigitPressed(digit: Int) {
-        requestFocusToEan.value = true
-        eanCode.value = eanCode.value.orEmpty() + digit
     }
 
     private fun saveData() {

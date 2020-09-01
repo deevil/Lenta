@@ -54,15 +54,21 @@ fun setDigitsForUom(editText: EditText, uom: Uom?, isOnlyDigits: Boolean = false
     }
 }
 
-@BindingAdapter("requestFocus", "cursorToLastPos")
-fun requestFocus(editText: EditText, @Suppress("UNUSED_PARAMETER") requestFocus: Boolean?, cursorToLastPos: Boolean?) {
-    requestFocus?.let {
-        if (it) {
+@BindingAdapter("requestFocus")
+fun requestFocus(editText: EditText, @Suppress("UNUSED_PARAMETER") requestFocus: Boolean?) {
+    requestFocus?.let { focus ->
+        if (focus) {
             editText.isFocusableInTouchMode = true
             editText.requestFocus()
-            if (cursorToLastPos == true) {
-                editText.setSelection(editText.text.length)
-            }
+        }
+    }
+}
+
+@BindingAdapter("cursorToLastPos")
+fun cursorToLastPos(editText: EditText, cursorToLastPos: Boolean?) {
+    if (cursorToLastPos == true) {
+        editText.setOnFocusChangeListener { _, hasFocus ->
+            if (hasFocus) editText.setSelection(editText.text.length)
         }
     }
 }

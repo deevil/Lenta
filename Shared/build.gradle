@@ -38,17 +38,6 @@ android {
     testOptions {
         unitTests.returnDefaultValues = true
     }
-    compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
-    }
-
-    compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
-    }
-
-    kotlinOptions { jvmTarget = "1.8" }
 
 }
 
@@ -97,15 +86,9 @@ dependencies {
     testImplementation("io.mockk:mockk:1.9.3")
 
     // Mask for EditText
-    implementation 'com.redmadrobot:input-mask-android:4.3.1'
+    implementation 'com.redmadrobot:input-mask-android:6.0.0'
 
     // Style attribute for recycler view
-    implementation 'androidx.recyclerview:recyclerview:1.2.0-alpha04'
-    implementation "androidx.core:core-ktx:+"
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+    implementation 'androidx.recyclerview:recyclerview:1.2.0-alpha05'
 
-}
-repositories {
-    maven { url 'https://dl.bintray.com/kotlin/kotlin-eap' }
-    mavenCentral()
 }

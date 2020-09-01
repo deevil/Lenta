@@ -82,11 +82,7 @@
                 android:orientation="horizontal">
 
                 <TextView
-                    style="@style/CellTextStyle"
-                    app:autoSizeTextType = "uniform"
-                    app:autoSizeMaxTextSize="@dimen/text_14sp"
-                    app:autoSizeMinTextSize="@dimen/text_10sp"
-                    app:autoSizeStepGranularity="@dimen/text_2sp"
+                    style="@style/AutosizeCellTextStyle"
                     android:text="@{item.plan}"
                     tools:text="105.105 кг" />
 
@@ -100,11 +96,7 @@
                 android:orientation="horizontal">
 
                 <TextView
-                    style="@style/CellTextStyle"
-                    app:autoSizeTextType = "uniform"
-                    app:autoSizeMaxTextSize="@dimen/text_14sp"
-                    app:autoSizeMinTextSize="@dimen/text_10sp"
-                    app:autoSizeStepGranularity="@dimen/text_2sp"
+                    style="@style/AutosizeCellTextStyle"
                     android:text="@{item.fact}"
                     tools:text="105.105 кг" />
 
