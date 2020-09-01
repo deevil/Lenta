@@ -199,7 +199,7 @@ class IngredientsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInS
                 }
             }
         }
-        return@withContext status
+        status
     }
 
     fun onClickMenu() {
