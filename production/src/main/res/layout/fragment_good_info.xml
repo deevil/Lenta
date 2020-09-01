@@ -121,6 +121,8 @@
                         android:paddingEnd="@dimen/size_10dp"
                         android:text="@={vm.dateInfoField}"
                         android:textSize="@dimen/text_14sp"
+                        android:inputType="number"
+                        android:digits="0123456789 -."
                         app:maskPattern='@{"[00]{.}[00]{.}[0000]"}'
                         app:requestFocus="@{vm.requestFocusDateInfoField}"
                         tools:text="21.06.2020" />
