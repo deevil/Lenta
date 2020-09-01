@@ -150,5 +150,7 @@ data class TaskComposition(
         @SerializedName("IS_GRAYZONE")
         val isGrayZone: String, //маркированный товар
         @SerializedName("QNTINCL_ALT_BSTME")
-        val countPiecesBox: String //маркированный товар, сколько пачек (штук) в одной коробке
+        val countPiecesBox: String, //маркированный товар, сколько пачек (штук) в одной коробке
+        @SerializedName("IS_ZPARTS")
+        val isZBatches: String? // Z-партии
 )

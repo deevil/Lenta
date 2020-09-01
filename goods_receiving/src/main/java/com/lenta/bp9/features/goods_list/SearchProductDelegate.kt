@@ -19,8 +19,10 @@ import com.lenta.bp9.requests.network.ZmpUtzGrz31V001Params
 import com.lenta.bp9.requests.network.ZmpUtzGrz31V001Result
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.exception.Failure
+import com.lenta.shared.fmp.resources.dao_ext.getEanInfoFromMaterial
 import com.lenta.shared.fmp.resources.dao_ext.getProductInfoByMaterial
 import com.lenta.shared.fmp.resources.slow.ZfmpUtz48V001
+import com.lenta.shared.fmp.resources.slow.ZmpUtz25V001
 import com.lenta.shared.models.core.MatrixType
 import com.lenta.shared.models.core.ProductType
 import com.lenta.shared.models.core.Uom
@@ -56,10 +58,6 @@ class SearchProductDelegate @Inject constructor(
     private var scanResultHandler: ((ScanInfoResult?) -> Boolean)? = null
 
     private var codeWith12Digits: String? = null
-
-    private val zfmpUtz48V001: ZfmpUtz48V001 by lazy {
-        ZfmpUtz48V001(hyperHive)
-    }
 
     fun copy(): SearchProductDelegate {
         val searchProductDelegate = SearchProductDelegate(
@@ -156,7 +154,8 @@ class SearchProductDelegate @Inject constructor(
     private fun handleSuccessAddGoodsSurplus(result: ZmpUtzGrz31V001Result) {
         Logg.d { "AddGoodsSurplus ${result}" }
         repoInMemoryHolder.manufacturers.value = result.manufacturers
-        val materialInfo = zfmpUtz48V001.getProductInfoByMaterial(result.productSurplusDataPGE.materialNumber)
+        val materialInfo = ZfmpUtz48V001(hyperHive).getProductInfoByMaterial(result.productSurplusDataPGE.materialNumber)
+        val eanInfo = ZmpUtz25V001(hyperHive).getEanInfoFromMaterial(result.productSurplusDataPGE.materialNumber)
         val goodsSurplus = TaskProductInfo(
                 materialNumber = result.productSurplusDataPGE.materialNumber,
                 description = result.productSurplusDataPGE.materialName,
@@ -197,7 +196,10 @@ class SearchProductDelegate @Inject constructor(
                 nestingInOneBlock = "0.0",
                 isControlGTIN = false,
                 isGrayZone = false,
-                countPiecesBox = "0"
+                countPiecesBox = "0",
+                numeratorConvertBaseUnitMeasure = eanInfo?.umrez?.toDouble() ?: 0.0,
+                denominatorConvertBaseUnitMeasure = eanInfo?.umren?.toDouble() ?: 0.0,
+                isZBatches = false
         )
         taskManager
                 .getReceivingTask()
@@ -244,6 +246,14 @@ class SearchProductDelegate @Inject constructor(
             return
         }
 
+        /**Z-партии, логика пересчета вет товара не меняется если он является партионным.
+        Z-партии ППП -> это IS_VET= пусто, IS_ZPARTS=X
+        если IS_VET=X + IS_ZPARTS=X товар считается как обычный меркурианский в дополнение просто отображается признак z-партионного учета*/
+        if (!taskProductInfo.isZBatches && !taskProductInfo.isVet) {
+            screenNavigator.openZBatchesInfoPPPScreen(taskProductInfo, isDiscrepancy)
+            return
+        }
+
         when (taskProductInfo.type) {
             ProductType.General -> openGeneralProductScreen(taskProductInfo)
             ProductType.ExciseAlcohol -> openExciseAlcoholProductScreen(taskProductInfo)
@@ -256,7 +266,7 @@ class SearchProductDelegate @Inject constructor(
         when(getMarkingGoodsRegime(taskManager, taskProductInfo)) {
             MarkingGoodsRegime.UomStWithoutBoxes -> screenNavigator.openMarkingInfoScreen(taskProductInfo)
             MarkingGoodsRegime.UomStWithBoxes -> screenNavigator.openMarkingBoxInfoScreen(taskProductInfo)
-            else -> screenNavigator.openInfoScreen(context.getString(R.string.data_retrieval_error)) //Ошибка получения данных
+            else -> screenNavigator.openInfoScreen(context.getString(R.string.data_retrieval_error))
         }
     }
 

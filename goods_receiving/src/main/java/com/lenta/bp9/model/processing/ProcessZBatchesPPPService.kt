@@ -24,9 +24,9 @@ class ProcessZBatchesPPPService
     private lateinit var productInfo: TaskProductInfo
     private val currentProductDiscrepancies: ArrayList<TaskProductDiscrepancies> = ArrayList()
 
-    fun newProcessZBatchesPPPService(productInfo: TaskProductInfo) : ProcessZBatchesPPPService? {
-        return if (productInfo.isVet) {
-            this.productInfo = productInfo.copy()
+    fun newProcessZBatchesPPPService(initProductInfo: TaskProductInfo) : ProcessZBatchesPPPService? {
+        return if (!initProductInfo.isZBatches) {
+            this.productInfo = initProductInfo.copy()
             val taskRepository = taskManager.getReceivingTask()?.taskRepository
             currentProductDiscrepancies.clear()
             taskRepository

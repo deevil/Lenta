@@ -6,16 +6,13 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.lenta.bp9.R
 import com.lenta.bp9.features.goods_list.SearchProductDelegate
-import com.lenta.bp9.model.processing.ProcessMercuryProductService
 import com.lenta.bp9.model.processing.ProcessZBatchesPPPService
 import com.lenta.bp9.model.task.IReceivingTaskManager
 import com.lenta.bp9.model.task.TaskProductInfo
-import com.lenta.bp9.model.task.TaskType
 import com.lenta.bp9.platform.TypeDiscrepanciesConstants
 import com.lenta.bp9.platform.TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_NORM
 import com.lenta.bp9.platform.navigation.IScreenNavigator
 import com.lenta.bp9.repos.IDataBaseRepo
-import com.lenta.shared.models.core.Uom
 import com.lenta.shared.platform.constants.Constants
 import com.lenta.shared.platform.time.ITimeMonitor
 import com.lenta.shared.platform.viewmodel.CoreViewModel
@@ -78,7 +75,7 @@ class ZBatchesInfoPPPViewModel : CoreViewModel() {
                     .map {
                         isDiscrepancy.value
                                 ?.takeIf { !it }
-                                ?.let { currentQualityInfoCode != TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_NORM }
+                                ?.let { currentQualityInfoCode != TYPE_DISCREPANCIES_QUALITY_NORM }
                                 ?: true
                     }
 
@@ -89,8 +86,14 @@ class ZBatchesInfoPPPViewModel : CoreViewModel() {
         } else {
             val purchaseOrderUnitsName = productInfo.value?.purchaseOrderUnits?.name.orEmpty()
             val uomName = productInfo.value?.uom?.name.orEmpty()
-            val quantity = productInfo.value?.quantityInvest?.toDouble().toStringFormatted()
-            MutableLiveData(context.getString(R.string.accept, "$purchaseOrderUnitsName=$quantity $uomName"))
+            val numeratorConvertBaseUnitMeasure = productInfo.value?.numeratorConvertBaseUnitMeasure ?: 0.0
+            val denominatorConvertBaseUnitMeasure = productInfo.value?.denominatorConvertBaseUnitMeasure ?: 0.0
+            val quantity =
+                    denominatorConvertBaseUnitMeasure
+                            .takeIf { it > 0.0 }
+                            ?.let { numeratorConvertBaseUnitMeasure / denominatorConvertBaseUnitMeasure }
+                            ?: 0.0
+            MutableLiveData(context.getString(R.string.accept, "$purchaseOrderUnitsName=${quantity.toStringFormatted()} $uomName"))
         }
     }
 
@@ -100,6 +103,7 @@ class ZBatchesInfoPPPViewModel : CoreViewModel() {
     private val expirationDate: MutableLiveData<Calendar> = MutableLiveData()
     private val qualityInfo: MutableLiveData<List<QualityInfo>> = MutableLiveData()
     private val reasonRejectionInfo: MutableLiveData<List<ReasonRejectionInfo>> = MutableLiveData()
+
     @SuppressLint("SimpleDateFormat")
     private val formatterRU = SimpleDateFormat(Constants.DATE_FORMAT_dd_mm_yyyy)
     @SuppressLint("SimpleDateFormat")
