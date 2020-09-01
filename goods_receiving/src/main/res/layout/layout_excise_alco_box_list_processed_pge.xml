@@ -7,7 +7,7 @@
 
         <variable
             name="vm"
-            type="com.lenta.bp9.features.goods_information.excise_alco_pge.excise_alco_box_acc_pge.excise_alco_box_list.ExciseAlcoBoxListPGEViewModel" />
+            type="com.lenta.bp9.features.goods_information.excise_alco.task_pge.alco_boxed.box_list.ExciseAlcoBoxListPGEViewModel" />
 
         <variable
             name="rvConfig"

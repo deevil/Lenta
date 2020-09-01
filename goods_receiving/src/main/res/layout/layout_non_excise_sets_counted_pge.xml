@@ -7,7 +7,7 @@
     <data>
         <variable
             name="vm"
-            type="com.lenta.bp9.features.goods_information.non_excise_sets_pge.NonExciseSetsPGEViewModel" />
+            type="com.lenta.bp9.features.goods_information.sets.task_pge.NonExciseSetsPGEViewModel" />
 
     </data>
 

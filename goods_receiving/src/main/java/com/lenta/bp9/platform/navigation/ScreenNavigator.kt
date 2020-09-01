@@ -14,28 +14,29 @@ import com.lenta.bp9.features.editing_invoice.EditingInvoiceFragment
 import com.lenta.bp9.features.formed_docs.FormedDocsFragment
 import com.lenta.bp9.features.goods_details.GoodsDetailsFragment
 import com.lenta.bp9.features.goods_details.marking_goods_details.MarkingGoodsDetailsFragment
-import com.lenta.bp9.features.goods_information.excise_alco_pge.excise_alco_box_acc_pge.ExciseAlcoBoxAccInfoPGEFragment
-import com.lenta.bp9.features.goods_information.excise_alco_pge.excise_alco_box_acc_pge.excise_alco_box_card.ExciseAlcoBoxCardPGEFragment
-import com.lenta.bp9.features.goods_information.excise_alco_pge.excise_alco_box_acc_pge.excise_alco_box_list.ExciseAlcoBoxListPGEFragment
-import com.lenta.bp9.features.goods_information.excise_alco_pge.excise_alco_stamp_acc_pge.ExciseAlcoStampAccInfoPGEFragment
-import com.lenta.bp9.features.goods_information.excise_alco_pge.excise_alco_stamp_acc_pge.batch_signs.ExciseAlcoStampPGEBatchSignsFragment
-import com.lenta.bp9.features.goods_information.excise_alco_receiving.excise_alco_box_acc.ExciseAlcoBoxAccInfoFragment
-import com.lenta.bp9.features.goods_information.excise_alco_receiving.excise_alco_box_acc.excise_alco_box_card.ExciseAlcoBoxCardFragment
-import com.lenta.bp9.features.goods_information.excise_alco_receiving.excise_alco_box_acc.excise_alco_box_list.ExciseAlcoBoxListFragment
-import com.lenta.bp9.features.goods_information.excise_alco_receiving.excise_alco_box_acc.excise_alco_box_product_failure.ExciseAlcoBoxProductFailureFragment
-import com.lenta.bp9.features.goods_information.excise_alco_receiving.excise_alco_stamp_acc.ExciseAlcoStampAccInfoFragment
-import com.lenta.bp9.features.goods_information.general.GoodsInfoFragment
-import com.lenta.bp9.features.goods_information.general_opp.GoodsInfoShipmentPPFragment
+import com.lenta.bp9.features.goods_information.excise_alco.task_pge.alco_boxed.ExciseAlcoBoxAccInfoPGEFragment
+import com.lenta.bp9.features.goods_information.excise_alco.task_pge.alco_boxed.box_card.ExciseAlcoBoxCardPGEFragment
+import com.lenta.bp9.features.goods_information.excise_alco.task_pge.alco_boxed.box_list.ExciseAlcoBoxListPGEFragment
+import com.lenta.bp9.features.goods_information.excise_alco.task_pge.alco_stamp.ExciseAlcoStampAccInfoPGEFragment
+import com.lenta.bp9.features.goods_information.excise_alco.task_pge.alco_stamp.batch_signs.ExciseAlcoStampPGEBatchSignsFragment
+import com.lenta.bp9.features.goods_information.excise_alco.task_ppp.alco_boxed.ExciseAlcoBoxAccInfoFragment
+import com.lenta.bp9.features.goods_information.excise_alco.task_ppp.alco_boxed.box_card.ExciseAlcoBoxCardFragment
+import com.lenta.bp9.features.goods_information.excise_alco.task_ppp.alco_boxed.box_list.ExciseAlcoBoxListFragment
+import com.lenta.bp9.features.goods_information.excise_alco.task_ppp.alco_boxed.box_product_failure.ExciseAlcoBoxProductFailureFragment
+import com.lenta.bp9.features.goods_information.excise_alco.task_ppp.alco_stamp.ExciseAlcoStampAccInfoFragment
+import com.lenta.bp9.features.goods_information.general.task_ppp_pge.GoodsInfoFragment
+import com.lenta.bp9.features.goods_information.general.task_opp.GoodsInfoShipmentPPFragment
 import com.lenta.bp9.features.goods_information.marking.uom_st_without_counting_in_boxes.MarkingInfoFragment
 import com.lenta.bp9.features.goods_information.marking.marking_product_failure.MarkingProductFailureFragment
 import com.lenta.bp9.features.goods_information.marking.uom_st_with_counting_in_boxes.MarkingBoxInfoFragment
 import com.lenta.bp9.features.goods_information.mercury.GoodsMercuryInfoFragment
-import com.lenta.bp9.features.goods_information.non_excise_alco_pge.NonExciseAlcoInfoPGEFragment
-import com.lenta.bp9.features.goods_information.non_excise_alco_receiving.NonExciseAlcoInfoFragment
-import com.lenta.bp9.features.goods_information.non_excise_sets_pge.NonExciseSetsPGEFragment
-import com.lenta.bp9.features.goods_information.non_excise_sets_pge.set_component_pge.NonExciseSetComponentInfoPGEFragment
-import com.lenta.bp9.features.goods_information.non_excise_sets_receiving.NonExciseSetsReceivingFragment
-import com.lenta.bp9.features.goods_information.non_excise_sets_receiving.set_component_receiving.NonExciseSetComponentInfoReceivingFragment
+import com.lenta.bp9.features.goods_information.non_excise_alco.task_pge.NonExciseAlcoInfoPGEFragment
+import com.lenta.bp9.features.goods_information.non_excise_alco.task_ppp.NonExciseAlcoInfoFragment
+import com.lenta.bp9.features.goods_information.sets.task_pge.NonExciseSetsPGEFragment
+import com.lenta.bp9.features.goods_information.sets.task_pge.set_component_pge.NonExciseSetComponentInfoPGEFragment
+import com.lenta.bp9.features.goods_information.sets.task_ppp.NonExciseSetsReceivingFragment
+import com.lenta.bp9.features.goods_information.sets.task_ppp.set_component_receiving.NonExciseSetComponentInfoReceivingFragment
+import com.lenta.bp9.features.goods_information.z_batches.task_ppp.ZBatchesInfoPPPFragment
 import com.lenta.bp9.features.goods_list.GoodsListFragment
 import com.lenta.bp9.features.input_outgoing_fillings.InputOutgoingFillingsFragment
 import com.lenta.bp9.features.list_goods_transfer.ListGoodsTransferFragment
@@ -1717,6 +1718,12 @@ class ScreenNavigator(
         }
     }
 
+    override fun openZBatchesInfoPPPScreen(productInfo: TaskProductInfo, isDiscrepancy: Boolean) {
+        runOrPostpone {
+            getFragmentStack()?.push(ZBatchesInfoPPPFragment.newInstance(productInfo, isDiscrepancy))
+        }
+    }
+
     private fun getFragmentStack() = foregroundActivityProvider.getActivity()?.fragmentStack
 }
 
@@ -1910,4 +1917,5 @@ interface IScreenNavigator : ICoreNavigator {
     fun openMarkingBoxNotIncludedDeliveryScreen()
     fun openMarkingPerformRateControlScreen()
     fun openMarkingBlockDeclaredDifferentCategoryScreen(typeDiscrepanciesName: String)
+    fun openZBatchesInfoPPPScreen(productInfo: TaskProductInfo, isDiscrepancy: Boolean)
 }
