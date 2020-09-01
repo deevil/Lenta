@@ -9,10 +9,13 @@ import androidx.databinding.DataBindingUtil
 import com.lenta.bp9.BR
 import com.lenta.bp9.R
 import com.lenta.bp9.databinding.*
+import com.lenta.bp9.features.goods_information.general.GoodsInfoFragment
+import com.lenta.bp9.model.task.TaskProductInfo
 import com.lenta.bp9.model.task.TaskType
 import com.lenta.bp9.platform.extentions.getAppComponent
 import com.lenta.shared.keys.KeyCode
 import com.lenta.shared.keys.OnKeyDownListener
+import com.lenta.shared.platform.activity.OnBackPresserListener
 import com.lenta.shared.platform.fragment.CoreFragment
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
@@ -25,13 +28,16 @@ import com.lenta.shared.utilities.databinding.RecyclerViewKeyHandler
 import com.lenta.shared.utilities.databinding.ViewPagerSettings
 import com.lenta.shared.utilities.extentions.connectLiveData
 import com.lenta.shared.utilities.extentions.provideViewModel
+import com.lenta.shared.utilities.state.state
 
 class ControlDeliveryCargoUnitsFragment : CoreFragment<FragmentControlDeliveryCargoUnitsBinding, ControlDeliveryCargoUnitsViewModel>(),
         ViewPagerSettings,
         ToolbarButtonsClickListener,
         OnKeyDownListener,
-        OnScanResultListener {
+        OnScanResultListener,
+        OnBackPresserListener {
 
+    private var isUnlockTaskLoadingScreen: Boolean? = null
     private var notProcessedRecyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
     private var processedRecyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
 
@@ -42,6 +48,7 @@ class ControlDeliveryCargoUnitsFragment : CoreFragment<FragmentControlDeliveryCa
     override fun getViewModel(): ControlDeliveryCargoUnitsViewModel {
         provideViewModel(ControlDeliveryCargoUnitsViewModel::class.java).let {vm ->
             getAppComponent()?.inject(vm)
+            vm.isUnlockTaskLoadingScreen.value = isUnlockTaskLoadingScreen
             return vm
         }
     }
@@ -334,6 +341,20 @@ class ControlDeliveryCargoUnitsFragment : CoreFragment<FragmentControlDeliveryCa
 
     override fun onScanResult(data: String) {
         vm.onScanResult(data)
+    }
+
+    override fun onBackPressed(): Boolean {
+        vm.onBackPressed()
+        return false
+    }
+
+    companion object {
+        fun newInstance(isUnlockTaskLoadingScreen: Boolean?): ControlDeliveryCargoUnitsFragment {
+            ControlDeliveryCargoUnitsFragment().let {
+                it.isUnlockTaskLoadingScreen = isUnlockTaskLoadingScreen
+                return it
+            }
+        }
     }
 
 }
