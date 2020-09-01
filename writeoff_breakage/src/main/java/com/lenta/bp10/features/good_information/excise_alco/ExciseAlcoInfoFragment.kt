@@ -40,12 +40,6 @@ open class ExciseAlcoInfoFragment : GoodInfoFragment() {
         }
     }
 
-    override fun onRequestFocus() {
-        binding?.apply {
-            spinnerWriteOffType.requestFocus()
-        }
-    }
-
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
         super.setupBottomToolBar(bottomToolbarUiModel)
         bottomToolbarUiModel.uiModelButton2.show(ButtonDecorationInfo.rollback)
