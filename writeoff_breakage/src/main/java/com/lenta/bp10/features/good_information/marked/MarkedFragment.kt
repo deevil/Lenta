@@ -72,7 +72,6 @@ class MarkedFragment : CoreFragment<FragmentMarkedBinding, MarkedViewModel>(),
         connectLiveData(vm.enabledApplyButton, bottomToolbarUiModel.uiModelButton4.enabled)
         connectLiveData(vm.enabledApplyButton, bottomToolbarUiModel.uiModelButton5.enabled)
         connectLiveData(vm.enabledDetailsButton, bottomToolbarUiModel.uiModelButton3.enabled)
-        connectLiveData(vm.selectedPosition, bottomToolbarUiModel.uiModelButton4.requestFocus)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
