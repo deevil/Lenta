@@ -82,20 +82,6 @@ enum class ScreenStatus(val description: String) {
     MARK("Марка")
 }
 
-enum class MarkedScreenStatus(val description: String){
-    BOX("Коробка"),
-    TOBACCO("Табак"),
-    SHOES("Обувь"),
-    TIRES("Шины"),
-    PERFUME("Парфюм"),
-    CLOTHES("Одежда"),
-    PHOTO("Фото"),
-    BEER("Пиво"),
-    MILK("Молоко"),
-    MEDICINE("Медицина"),
-    UNKNOWN("")
-}
-
 enum class ScanInfoMode(val mode: Int){
     MARK(1),
     BOX(2),
@@ -127,4 +113,25 @@ enum class MarkStatus{
     BAD_CARTON,
     GOOD_BOX,
     BAD_BOX
+}
+
+enum class MarkScreenStatus {
+    OK,
+    OK_BUT_NEED_TO_SCAN_MARK,
+    CARTON_ALREADY_SCANNED,
+    MARK_ALREADY_SCANNED,
+    BOX_ALREADY_SCANNED,
+    FAILURE,
+    INCORRECT_EAN_FORMAT,
+    GOOD_CANNOT_BE_ADDED,
+    INTERNAL_ERROR,
+    CANT_SCAN_PACK,
+    GOOD_IS_MISSING_IN_TASK,
+    MRC_NOT_SAME,
+    NOT_MARKED_GOOD
+}
+
+enum class WorkType {
+    CREATE,
+    OPEN
 }

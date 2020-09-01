@@ -58,3 +58,7 @@ fun Basket.getQuantityFromGoodList() : Int {
 fun Basket.getQuantityOfGood(good: Good): Double {
     return goods[good] ?: 0.0
 }
+
+fun Basket?.getPosition(): Int {
+    return this?.index ?: 0
+}

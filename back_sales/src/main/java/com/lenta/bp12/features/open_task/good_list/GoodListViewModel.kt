@@ -4,6 +4,7 @@ import androidx.lifecycle.MutableLiveData
 import com.lenta.bp12.features.basket.ItemWholesaleBasketUi
 import com.lenta.bp12.features.create_task.task_content.ItemCommonBasketUi
 import com.lenta.bp12.model.IOpenTaskManager
+import com.lenta.bp12.model.MarkType
 import com.lenta.bp12.model.pojo.Basket
 import com.lenta.bp12.model.pojo.extentions.getDescription
 import com.lenta.bp12.model.pojo.extentions.getGoodList
@@ -247,10 +248,13 @@ class GoodListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
 
     private fun openGoodByMaterial(material: String) {
         task.value?.let { task ->
-            task.goods.find { it.material == material }?.let {
-                manager.searchNumber = material
-                manager.isSearchFromList = true
-                navigator.openGoodInfoOpenScreen()
+            task.goods.find { it.material == material }?.let { good ->
+                manager.currentGood.value = good
+                if (good.markType != MarkType.UNKNOWN) {
+                    navigator.openMarkedGoodInfoOpenScreen(good.marks, listOf())
+                } else {
+                    navigator.openGoodInfoOpenScreen()
+                }
             }
         }.orIfNull {
             Logg.e { "task null" }

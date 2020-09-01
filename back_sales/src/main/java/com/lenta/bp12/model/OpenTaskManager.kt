@@ -6,6 +6,7 @@ import com.lenta.bp12.model.pojo.extentions.*
 import com.lenta.bp12.model.pojo.open_task.GoodOpen
 import com.lenta.bp12.model.pojo.open_task.TaskOpen
 import com.lenta.bp12.platform.extention.getControlType
+import com.lenta.bp12.platform.extention.getMarkType
 import com.lenta.bp12.platform.extention.isAlcohol
 import com.lenta.bp12.platform.extention.isCommon
 import com.lenta.bp12.repository.IDatabaseRepository
@@ -56,7 +57,7 @@ class OpenTaskManager @Inject constructor(
     private var startStateHashOfCurrentTask = -1
 
     /** Метод добавляет обычные в товары в корзину */
-    override suspend fun addGoodToBasket(good: GoodOpen, provider: ProviderInfo, count: Double, part: Part?) {
+    override suspend fun addGoodToBasket(good: GoodOpen, part: Part?, provider: ProviderInfo, count: Double) {
         currentTask.value?.let { taskValue ->
             // Переменная которая служит счётчиком - сколько товаров надо добавить
             var leftToAdd = count
@@ -165,7 +166,8 @@ class OpenTaskManager @Inject constructor(
                                 volume = basketVolume,
                                 provider = provider,
                                 control = good.control,
-                                goodType = task.goodType
+                                goodType = task.goodType,
+                                markType = good.markType
                         ).also {
                             addBasket(it)
                         }
@@ -179,14 +181,26 @@ class OpenTaskManager @Inject constructor(
         return currentTask.value?.let { task ->
             currentGood.value?.let { good ->
                 task.baskets.lastOrNull { basket ->
-                    isLastBasketMatches(basket, good, providerCode)
+                    val divByMark = if (task.type?.isDivByMark == true) basket.markType == good.markType else true
+                    isLastBasketMatches(
+                            basket = basket,
+                            good = good,
+                            providerCode = providerCode,
+                            divByMark = divByMark
+                    )
                 }
             }
         }
     }
 
-    private fun isLastBasketMatches(basket: Basket, good: GoodOpen, providerCode: String): Boolean {
-        return basket.section == good.section &&
+    private fun isLastBasketMatches(
+            basket: Basket,
+            good: GoodOpen,
+            providerCode: String,
+            divByMark: Boolean
+    ): Boolean {
+        return divByMark &&
+                basket.section == good.section &&
                 basket.control == good.control &&
                 basket.provider?.code == providerCode &&
                 !basket.isLocked &&
@@ -270,10 +284,11 @@ class OpenTaskManager @Inject constructor(
         }
     }
 
-    override suspend fun addGoodsInCurrentTask(taskContentResult: TaskContentResult) {
+    override suspend fun addTaskContentInCurrentTask(taskContentResult: TaskContentResult) {
         currentTask.value?.let { task ->
             task.addGoodsToTask(taskContentResult)
             task.addBasketsToTask(taskContentResult)
+            task.addMrcListToTask(taskContentResult)
             updateCurrentTask(task)
             Logg.e {
                 """
@@ -281,6 +296,13 @@ class OpenTaskManager @Inject constructor(
                     taskBaskets: ${task.baskets}
                 """.trimIndent()
             }
+        }
+    }
+
+    private fun TaskOpen.addMrcListToTask(taskContentResult: TaskContentResult) {
+        taskContentResult.mrcList?.let {
+            mrcList.clear()
+            mrcList.addAll(it)
         }
     }
 
@@ -317,7 +339,7 @@ class OpenTaskManager @Inject constructor(
                             }?.toMutableList() ?: mutableListOf(),
                             volume = positionInfo.volume?.toDoubleOrNull() ?: 0.0,
                             markType = goodInfo.markType,
-                            maxRetailPrice = positionInfo.maxRetailPrice.orEmpty()
+                            maxRetailPrice = positionInfo.maxRetailPrice?.toDoubleOrNull().dropZeros()
                     )
 
                     factQuantity?.toDoubleOrNull()?.let { factQuantity ->
@@ -354,7 +376,8 @@ class OpenTaskManager @Inject constructor(
                     goodType = restBasket.goodType.orEmpty(),
                     control = control,
                     provider = taskGoods.firstOrNull()?.provider,
-                    volume = basketVolume
+                    volume = basketVolume,
+                    markType = restBasket.getMarkType()
             ).apply {
                 isLocked = restBasket.isClose.isSapTrue()
                 isPrinted = restBasket.isPrint.isSapTrue()
@@ -623,55 +646,40 @@ class OpenTaskManager @Inject constructor(
         private const val NULL_BASKET_VOLUME = "Объем корзины отсутствует"
         private const val INDEX_OF_FIRST_BASKET = 1
     }
-
 }
 
 
-interface IOpenTaskManager {
+interface IOpenTaskManager: ITaskManager {
 
-    var searchNumber: String
-    var isSearchFromList: Boolean
     var isNeedLoadTaskListByParams: Boolean
-    var isWholesaleTaskType: Boolean
     var searchParams: TaskSearchParams?
-    var isBasketsNeedsToBeClosed: Boolean
 
+    val currentGood: MutableLiveData<GoodOpen>
+    val currentTask: MutableLiveData<TaskOpen>
     val tasks: MutableLiveData<List<TaskOpen>>
     val foundTasks: MutableLiveData<List<TaskOpen>>
-    val currentTask: MutableLiveData<TaskOpen>
-    val currentGood: MutableLiveData<GoodOpen>
-    val currentBasket: MutableLiveData<Basket>
 
-    suspend fun addGoodToBasket(good: GoodOpen, provider: ProviderInfo, count: Double, part: Part?)
+    suspend fun addGoodToBasket(good: GoodOpen, part: Part? = null, provider: ProviderInfo, count: Double)
     suspend fun addGoodToBasketWithMark(good: GoodOpen, mark: Mark, provider: ProviderInfo)
     suspend fun getOrCreateSuitableBasket(task: TaskOpen, good: GoodOpen, provider: ProviderInfo): Basket?
 
-    fun addBasket(basket: Basket)
-    fun getBasket(providerCode: String): Basket?
-    fun removeBaskets(basketList: MutableList<Basket>)
     fun deleteGoodsFromBaskets(materials: List<String>)
 
     fun updateTasks(taskList: List<TaskOpen>?)
     fun updateFoundTasks(taskList: List<TaskOpen>?)
-
     fun updateCurrentTask(task: TaskOpen?)
     fun updateCurrentGood(good: GoodOpen?)
-    fun updateCurrentBasket(basket: Basket?)
 
     fun saveGoodInTask(good: GoodOpen)
     fun findGoodByEan(ean: String): GoodOpen?
     fun findGoodByMaterial(material: String): GoodOpen?
     fun isGoodCorrespondToTask(goodInfo: GoodInfoResult): Boolean
-    suspend fun isGoodCanBeAdded(goodInfo: GoodInfoResult): Boolean
     fun finishCurrentTask()
     suspend fun addTasks(tasksInfo: List<TaskInfo>)
     suspend fun addFoundTasks(tasksInfo: List<TaskInfo>)
-    suspend fun addGoodsInCurrentTask(taskContentResult: TaskContentResult)
-    fun prepareSendTaskDataParams(deviceIp: String, tkNumber: String, userNumber: String)
+    suspend fun addTaskContentInCurrentTask(taskContentResult: TaskContentResult)
     fun markGoodsDeleted(materials: List<String>)
     fun markGoodsUncounted(materials: List<String>)
-    fun clearSearchFromListParams()
-    fun clearCurrentGood()
     fun isExistStartTaskInfo(): Boolean
     fun saveStartTaskInfo()
     fun isTaskWasChanged(): Boolean

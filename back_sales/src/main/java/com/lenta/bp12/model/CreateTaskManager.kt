@@ -153,7 +153,8 @@ class CreateTaskManager @Inject constructor(
                                 volume = basketVolume,
                                 provider = provider,
                                 control = good.control,
-                                goodType = good.type
+                                goodType = good.type,
+                                markType = good.markType
                         ).also {
                             addBasket(it)
                         }
@@ -162,19 +163,26 @@ class CreateTaskManager @Inject constructor(
     }
 
     /** Метод ищет корзины в списке корзин задания,
-     * и проверяет подходят ли параметры, закрыта она или нет, и есть ли свободный объём */
+     * и проверяет подходят ли параметры, закрыта она или нет, и есть ли свободный объём
+     * divByMark проверяет нужно ли деление корзины по маркам, если нужно то сравнивает марку корзины и товара
+     * если нельзя то просто передает true */
     override fun getBasket(providerCode: String): Basket? {
         return currentTask.value?.let { task ->
             currentGood.value?.let { good ->
                 task.baskets.lastOrNull { basket ->
-                    isLastBasketMatches(basket, good, providerCode)
+                    val divByMark = if (task.type.isDivByMark) basket.markType == good.markType else true
+                    isLastBasketMatches(basket, good, providerCode, divByMark)
                 }
             }
         }
     }
 
-    private fun isLastBasketMatches(basket: Basket, good: GoodCreate, providerCode: String): Boolean {
-        return basket.section == good.section &&
+    private fun isLastBasketMatches(
+            basket: Basket,
+            good: GoodCreate,
+            providerCode: String,
+            divByMark: Boolean): Boolean {
+        return divByMark && basket.section == good.section &&
                 basket.goodType == good.type &&
                 basket.control == good.control &&
                 basket.provider?.code == providerCode &&
@@ -239,10 +247,6 @@ class CreateTaskManager @Inject constructor(
         }
 
         updateCurrentBasket(basket)
-    }
-
-    override fun getBasketPosition(basket: Basket?): Int {
-        return basket?.index ?: 0
     }
 
     override fun removeGoodByMaterials(materialList: List<String>) {
@@ -374,38 +378,23 @@ class CreateTaskManager @Inject constructor(
 }
 
 
-interface ICreateTaskManager {
+interface ICreateTaskManager : ITaskManager {
 
-    var searchNumber: String
-    var isSearchFromList: Boolean
-    var isWasAddedProvider: Boolean
-    var isWholesaleTaskType: Boolean
-    var isBasketsNeedsToBeClosed: Boolean
-
-    val currentTask: MutableLiveData<TaskCreate>
     val currentGood: MutableLiveData<GoodCreate>
-    val currentBasket: MutableLiveData<Basket>
+    val currentTask: MutableLiveData<TaskCreate>
+    var isWasAddedProvider: Boolean
 
     suspend fun addGoodToBasket(good: GoodCreate, part: Part? = null, provider: ProviderInfo, count: Double)
     suspend fun addGoodToBasketWithMark(good: GoodCreate, mark: Mark, provider: ProviderInfo)
     suspend fun getOrCreateSuitableBasket(task: TaskCreate, good: GoodCreate, provider: ProviderInfo): Basket?
 
-    fun getBasket(providerCode: String): Basket?
-
     fun updateCurrentTask(task: TaskCreate?)
     fun updateCurrentGood(good: GoodCreate?)
-    fun updateCurrentBasket(basket: Basket?)
 
     fun findGoodByEan(ean: String): GoodCreate?
     fun findGoodByMaterial(material: String): GoodCreate?
-    suspend fun isGoodCanBeAdded(goodInfo: GoodInfoResult): Boolean
-    fun addBasket(basket: Basket)
-    fun getBasketPosition(basket: Basket?): Int
+
     fun removeGoodByMaterials(materialList: List<String>)
-    fun removeBaskets(basketList: MutableList<Basket>)
     fun addProviderInCurrentGood(providerInfo: ProviderInfo)
-    fun prepareSendTaskDataParams(deviceIp: String, tkNumber: String, userNumber: String)
     fun saveGoodInTask(good: GoodCreate)
-    fun clearSearchFromListParams()
-    fun clearCurrentGood()
 }

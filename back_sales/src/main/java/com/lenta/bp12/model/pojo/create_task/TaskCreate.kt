@@ -1,22 +1,23 @@
 package com.lenta.bp12.model.pojo.create_task
 
 import com.lenta.bp12.model.ControlType
+import com.lenta.bp12.model.Taskable
 import com.lenta.bp12.model.pojo.Basket
 import com.lenta.bp12.model.pojo.ReturnReason
 import com.lenta.bp12.model.pojo.TaskType
 import com.lenta.bp12.model.pojo.extentions.*
 
 data class TaskCreate(
-        val name: String,
+        override val name: String,
         val storage: String,
         val reason: ReturnReason,
         val type: TaskType,
-        val control: ControlType = ControlType.UNKNOWN,
+        override val control: ControlType = ControlType.UNKNOWN,
         var isProcessed: Boolean = false,
 
         val goods: MutableList<GoodCreate> = mutableListOf(),
-        val baskets: MutableList<Basket> = mutableListOf()
-) {
+        override val baskets: MutableList<Basket> = mutableListOf()
+) : Taskable {
 
     fun getFormattedName(): String {
         return "${type.code} // $name"
@@ -46,13 +47,13 @@ data class TaskCreate(
         removeEmptyBaskets()
     }
 
-    fun updateBasket(basket: Basket) {
+    override fun updateBasket(basket: Basket) {
         val oldBasketIndex = baskets.indexOfFirst { it.index == basket.index }
         baskets[oldBasketIndex] = basket
     }
 
 
-    fun removeBaskets(basketList: MutableList<Basket>) {
+    override fun removeBaskets(basketList: MutableList<Basket>) {
         //Пройдемся по всем корзинам что нужно удалить
         basketList.forEach { basket ->
             val basketIndex = basket.index
@@ -80,11 +81,11 @@ data class TaskCreate(
         }
     }
 
-    fun removeEmptyGoods() {
+    override fun removeEmptyGoods() {
         goods.removeAll(goods.filter { it.getTotalQuantity() == 0.0 })
     }
 
-    fun removeEmptyBaskets() {
+    override fun removeEmptyBaskets() {
         baskets.removeAll(baskets.filter { it.getGoodList().isEmpty() })
     }
 }

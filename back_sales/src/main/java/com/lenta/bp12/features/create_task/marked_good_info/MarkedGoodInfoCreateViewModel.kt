@@ -3,42 +3,24 @@ package com.lenta.bp12.features.create_task.marked_good_info
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.liveData
 import androidx.lifecycle.switchMap
-import com.lenta.bp12.model.ICreateTaskManager
-import com.lenta.bp12.model.MarkStatus
-import com.lenta.bp12.model.MarkType
-import com.lenta.bp12.model.actionByNumber
+import com.lenta.bp12.model.*
 import com.lenta.bp12.model.pojo.Basket
 import com.lenta.bp12.model.pojo.Mark
-import com.lenta.bp12.model.pojo.create_task.GoodCreate
 import com.lenta.bp12.model.pojo.extentions.addMarks
 import com.lenta.bp12.model.pojo.extentions.getQuantityOfGood
-import com.lenta.bp12.platform.extention.getControlType
-import com.lenta.bp12.platform.extention.getGoodKind
-import com.lenta.bp12.platform.extention.getMarkStatus
-import com.lenta.bp12.platform.extention.getMarkType
 import com.lenta.bp12.platform.navigation.IScreenNavigator
 import com.lenta.bp12.platform.resource.IResourceManager
 import com.lenta.bp12.repository.IDatabaseRepository
 import com.lenta.bp12.request.GoodInfoNetRequest
 import com.lenta.bp12.request.MarkCartonBoxGoodInfoNetRequest
 import com.lenta.bp12.request.ScanInfoNetRequest
-import com.lenta.bp12.request.ScanInfoResult
-import com.lenta.bp12.request.pojo.ProducerInfo
 import com.lenta.bp12.request.pojo.ProviderInfo
-import com.lenta.bp12.request.pojo.good_info.GoodInfoParams
-import com.lenta.bp12.request.pojo.good_info.GoodInfoResult
-import com.lenta.bp12.request.pojo.markCartonBoxGoodInfoNetRequest.MarkCartonBoxGoodInfoNetRequestParams
-import com.lenta.bp12.request.pojo.markCartonBoxGoodInfoNetRequest.MarkCartonBoxGoodInfoNetRequestResult
-import com.lenta.bp12.request.pojo.markCartonBoxGoodInfoNetRequest.PropertiesInfo
 import com.lenta.shared.account.ISessionInfo
-import com.lenta.shared.exception.Failure
-import com.lenta.shared.models.core.getMatrixType
-import com.lenta.shared.platform.constants.Constants
 import com.lenta.shared.platform.viewmodel.CoreViewModel
-import com.lenta.shared.utilities.*
+import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.databinding.PageSelectionListener
 import com.lenta.shared.utilities.extentions.*
-import com.lenta.shared.view.OnPositionClickListener
+import com.lenta.shared.utilities.orIfNull
 import javax.inject.Inject
 
 class MarkedGoodInfoCreateViewModel : CoreViewModel(), PageSelectionListener {
@@ -52,12 +34,17 @@ class MarkedGoodInfoCreateViewModel : CoreViewModel(), PageSelectionListener {
     @Inject
     lateinit var sessionInfo: ISessionInfo
 
+    @Inject
+    lateinit var markManager: IMarkManager
+
     /** "ZMP_UTZ_BKS_05_V001"
      * Получение данных товара по ШК / SAP-коду
      */
     @Inject
     lateinit var goodInfoNetRequest: GoodInfoNetRequest
 
+    /** "ZMP_UTZ_100_V001"
+     * Получение данных по акцизному товару  */
     @Inject
     lateinit var scanInfoNetRequest: ScanInfoNetRequest
 
@@ -95,17 +82,12 @@ class MarkedGoodInfoCreateViewModel : CoreViewModel(), PageSelectionListener {
 
     private var originalSearchNumber = ""
 
-    private var lastSuccessSearchNumber = ""
-
     val accountingType by unsafeLazy {
         resource.typeMark()
     }
 
-    private val scanInfoResult = MutableLiveData<ScanInfoResult>()
-
     private var isExistUnsavedData = false
 
-    private var isEanLastScanned = false
 
     private var thereWasRollback = false
 
@@ -132,6 +114,11 @@ class MarkedGoodInfoCreateViewModel : CoreViewModel(), PageSelectionListener {
      * После нажатия применить все марки обрабатываются менедежером по корзинам и сохраняется в задании.
      * */
     val tempMarks = MutableLiveData(mutableListOf<Mark>())
+
+    /**
+     * Последние отсканированные марки, для удаления их из общего списка по кнопке Откат
+     * */
+    private var lastScannedMarks: List<Mark> = listOf()
 
     /**
     Ввод количества
@@ -221,45 +208,6 @@ class MarkedGoodInfoCreateViewModel : CoreViewModel(), PageSelectionListener {
         }
     }
 
-
-    /**
-    Список производителей
-     */
-
-    private val sourceProducers = MutableLiveData(mutableListOf<ProducerInfo>())
-
-    private val producers = sourceProducers.map {
-        it?.let { producers ->
-            val list = producers.toMutableList()
-            if (list.size > 1) {
-                list.add(0, ProducerInfo(name = resource.chooseProducer()))
-            }
-
-            list.toList()
-        }
-    }
-
-    val producerList by lazy {
-        producers.map { list ->
-            list?.map { it.name }
-        }
-    }
-
-    val producerEnabled by lazy {
-        producers.map { producers ->
-            producers?.size ?: 0 > 1
-        }
-    }
-
-    val producerPosition = MutableLiveData(0)
-
-    val onSelectProducer = object : OnPositionClickListener {
-        override fun onClickPosition(position: Int) {
-            producerPosition.value = position
-        }
-    }
-
-
     /**
     МРЦ
      */
@@ -302,10 +250,10 @@ class MarkedGoodInfoCreateViewModel : CoreViewModel(), PageSelectionListener {
                 }
     }
 
-    val rollbackVisibility = MutableLiveData(false)
+    val rollbackVisibility = MutableLiveData(true)
 
-    val rollbackEnabled = scanInfoResult.map { info ->
-        info != null
+    val rollbackEnabled = tempMarks.map {
+        it?.isEmpty()?.not()
     }
 
     /**
@@ -315,8 +263,12 @@ class MarkedGoodInfoCreateViewModel : CoreViewModel(), PageSelectionListener {
     init {
         launchUITryCatch {
             good.value?.let {
-                val size = tempMarks.value?.size
-                if (size != null && size > 0) isExistUnsavedData = true
+                val tempMarksValue = tempMarks.value
+                val size = tempMarksValue?.size
+                if (size != null && size > 0) {
+                    isExistUnsavedData = true
+                    lastScannedMarks = tempMarksValue
+                }
             }.orIfNull {
                 manager.clearCurrentGood()
                 checkSearchNumber(manager.searchNumber)
@@ -355,406 +307,112 @@ class MarkedGoodInfoCreateViewModel : CoreViewModel(), PageSelectionListener {
         }
     }
 
+    private fun loadBoxInfo(number: String) {
+        launchUITryCatch {
+            val screenStatus = markManager.loadBoxInfo(number)
+            when (screenStatus) {
+                MarkScreenStatus.OK -> {
+                    handleOkMark()
+                }
+                MarkScreenStatus.INTERNAL_ERROR -> {
+                    handleInternalError()
+                }
+                MarkScreenStatus.FAILURE -> {
+                    handleMarkFailure()
+                }
+                MarkScreenStatus.MARK_ALREADY_SCANNED -> {
+                    handleMarkAlreadyScanned()
+                }
+                MarkScreenStatus.CARTON_ALREADY_SCANNED -> {
+                    handleCartonAlreadyScanned()
+                }
+                MarkScreenStatus.BOX_ALREADY_SCANNED -> {
+                    handleBoxAlreadyScanned()
+                }
+                else -> {
+                    handleIncorrectEanFormat()
+                }
+            }
+        }
+    }
+
     /**
      * Метод уже конкретно определяет Марка обуви, Коробка, или Блок
      * */
     private fun checkMark(number: String) {
-        if (isShoesMark(number)) {
-            openMarkedGoodWithShoe(number)
-        } else when (number.length) {
-            in Constants.TOBACCO_BOX_MARK_RANGE_21_28 -> {
-                loadBoxInfo(number)
-            }
-            Constants.MARK_TOBACCO_PACK_29 -> {
-                if (isTobaccoPackMark(number))
-                    navigator.showCantScanPackAlert()
-                else {
-                    loadBoxInfo(number)
+        launchUITryCatch {
+            navigator.showProgressLoadingData()
+            when (markManager.checkMark(number, WorkType.CREATE)) {
+                MarkScreenStatus.OK -> {
+                    tempMarks.value = markManager.getTempMarks()
+                    properties.value = markManager.getProperties()
+                    navigator.hideProgress()
                 }
-            }
-            in Constants.TOBACCO_MARK_BLOCK_OR_BOX_RANGE_30_44 -> {
-                if (isTobaccoCartonMark(number)) {
-                    openMarkedGoodWithCarton(number)
+                MarkScreenStatus.CARTON_ALREADY_SCANNED -> {
+                    navigator.hideProgress()
+                    navigator.showCartonAlreadyScannedDelete(
+                            yesCallback = ::handleYesDeleteMappedMarksFromTempCallBack
+                    )
                 }
-                else {
-                    loadBoxInfo(number)
+                MarkScreenStatus.MARK_ALREADY_SCANNED -> {
+                    navigator.hideProgress()
+                    navigator.showMarkAlreadyScannedDelete(
+                            yesCallback = ::handleYesDeleteMappedMarksFromTempCallBack
+                    )
                 }
-            }
-            else -> {
-                if (isTobaccoCartonMark(number)) {
-                    openMarkedGoodWithCarton(number)
-                } else {
+                MarkScreenStatus.BOX_ALREADY_SCANNED -> {
+                    navigator.hideProgress()
+                    navigator.showBoxAlreadyScannedDelete(
+                            yesCallback = ::handleYesDeleteMappedMarksFromTempCallBack
+                    )
+                }
+                MarkScreenStatus.FAILURE -> {
+                    navigator.hideProgress()
+                    handleFailure(markManager.getMarkFailure())
+                }
+                MarkScreenStatus.INCORRECT_EAN_FORMAT -> {
+                    navigator.hideProgress()
                     navigator.showIncorrectEanFormat()
                 }
-            }
-        }
-    }
-
-    private fun openMarkedGoodWithShoe(number: String){
-        if (good.value?.markType == MarkType.SHOES) {
-            val regex = Regex(Constants.SHOES_MARK_REGEX_PATTERN).find(number)
-            regex?.let {
-                val (gtin, serial, _, _, _) = it.destructured // gtin, serial, tradeCode, verificationKey, verificationCode
-                val barCode = "01${gtin}21$serial"
-                val container = Pair(barCode, Mark.Container.SHOE)
-                getGoodByEan(gtin, container)
-            }
-        } else {
-            navigator.showIncorrectEanFormat()
-        }
-    }
-
-    /**
-     * Метод вычленяет регулярным выражением шк, гтин и мрц из марки блока
-     * */
-    private fun openMarkedGoodWithCarton(number: String) {
-        if (good.value?.markType == MarkType.TOBACCO) {
-            val regex = Regex(Constants.TOBACCO_MARK_CARTON_REGEX_PATTERN).find(number)
-            regex?.let {
-                val (blocBarcode, gtin, _, mrc, _, _) = it.destructured // blockBarcode, gtin, serial, mrc, verificationKey, other
-                val container = Pair(blocBarcode, Mark.Container.CARTON)
-                getGoodByEan(gtin, container, mrc)
-            }
-        } else {
-            navigator.showIncorrectEanFormat()
-        }
-    }
-
-    private fun loadBoxInfo(number: String) {
-        val container = Pair(number, Mark.Container.BOX)
-        getGoodByEan(number, container)
-    }
-
-    /**
-     * Метод определяет есть ли такой товар в менеджере или нет,
-     * Если есть, то откроет его, если нет то создаст
-     * */
-    private fun getGoodByEan(ean: String, container: Pair<String, Mark.Container>? = null, mrc: String = "") {
-        manager.findGoodByEan(ean)?.let { foundGood ->
-            lastSuccessSearchNumber = ean
-            isEanLastScanned = true
-            setFoundGood(foundGood)
-        } ?: loadGoodInfoByEan(ean, container, mrc)
-    }
-
-    /**
-     * Если в метод передали контейнер, то это значит что отсканирована марка, и надо выполнять дальнейшие проверки
-     * Если нет, то значит отсканирован штрихкод товара и его надо показать
-     * */
-    private fun setFoundGood(foundGood: GoodCreate, container: Pair<String, Mark.Container>? = null) {
-        if (container != null) {
-            val params = getMarkParams(foundGood, container)
-            checkMarkNetRequest(params, foundGood)
-        } else {
-            manager.updateCurrentGood(foundGood)
-            navigator.openMarkedGoodInfoCreateScreen(listOf(), listOf())
-            navigator.showForGoodNeedScanFirstMark()
-        }
-
-        manager.updateCurrentGood(foundGood)
-
-        Logg.d { "--> found good: $foundGood" }
-    }
-
-    /**
-     * Метод вызывает ФМ ZMP_UTZ_WOB_07_V001
-     * */
-    private fun checkMarkNetRequest(params: MarkCartonBoxGoodInfoNetRequestParams, foundGood: GoodCreate) {
-        launchUITryCatch {
-            val request = markCartonBoxGoodInfoNetRequest(params)
-            request.either(
-                    fnL = ::handleFailure,
-                    fnR = { result ->
-                        handleCheckMarkNetRequestResult(result, foundGood)
-                    }
-            )
-        }
-    }
-
-    /**
-     * Метод обрабатывает результат ФМ ZMP_UTZ_WOB_07_V001
-     * В зависимости от типа сканированного товара (марка, коробка, блок)
-     * создает марку. Затем если она присутствует показывает сообщение что она уже присутствует
-     * и по нажатию Да, удаляет ее( их если коробка/блок), если нет то добавляет в общий список.
-     * */
-    private fun handleCheckMarkNetRequestResult(result: MarkCartonBoxGoodInfoNetRequestResult, foundGood: GoodCreate) {
-        val status = result.getMarkStatus()
-        val marks = result.marks
-        val properties = result.properties
-        marks?.let { resultMarks ->
-            tempMarks.value?.let { localTempMarks ->
-                when (status) {
-                    MarkStatus.GOOD_CARTON -> {
-                        val mappedMarks = resultMarks.map {
-                            Mark(
-                                    number = it.markNumber,
-                                    packNumber = it.cartonNumber,
-                                    maxRetailPrice = foundGood.maxRetailPrice
-                            )
-                        }
-                        addOrDeleteMarksFromTemp(
-                                restProperties = properties,
-                                localTempMarks = localTempMarks,
-                                mappedMarks = mappedMarks
-                        ) { showNavigatorCartonAlreadyScanned(localTempMarks, mappedMarks) }
-                    }
-                    MarkStatus.GOOD_MARK -> {
-                        val mappedMarks = marks.map {
-                            Mark(
-                                    number = it.markNumber
-                            )
-                        }
-                        addOrDeleteMarksFromTemp(
-                                restProperties = properties,
-                                localTempMarks = localTempMarks,
-                                mappedMarks = mappedMarks
-                        ) { showNavigatorMarkAlreadyScanned(localTempMarks, mappedMarks) }
-                    }
-                    MarkStatus.GOOD_BOX -> {
-                        val mappedMarks = marks.map {
-                            Mark(
-                                    number = it.markNumber,
-                                    boxNumber = it.boxNumber,
-                                    maxRetailPrice = foundGood.maxRetailPrice
-                            )
-                        }
-                        addOrDeleteMarksFromTemp(
-                                restProperties = properties,
-                                localTempMarks = localTempMarks,
-                                mappedMarks = mappedMarks
-                        ) { showNavigatorBoxAlreadyScanned(localTempMarks, mappedMarks) }
-                    }
-                    else -> {
-                        navigator.openAlertScreen(
-                                Failure.MessageFailure(
-                                        message = result.markStatusText
-                                )
-                        )
-                    }
+                MarkScreenStatus.GOOD_CANNOT_BE_ADDED -> {
+                    navigator.hideProgress()
+                    navigator.showGoodCannotBeAdded()
                 }
-            }
-        }
-    }
-
-    /**
-     * Вызывает экран с сообщение о том что марка уже отсканирована
-     * */
-    private fun showNavigatorMarkAlreadyScanned(localTempMarks: MutableList<Mark>, mappedMarks: List<Mark>) {
-        navigator.showMarkAlreadyScannedDelete(
-                yesCallback = {
-                    handleYesDeleteMappedMarksFromTempCallBack(
-                            tempList = localTempMarks,
-                            mappedList = mappedMarks
+                MarkScreenStatus.INTERNAL_ERROR -> {
+                    navigator.hideProgress()
+                    navigator.showInternalError(
+                            cause = markManager.getInternalErrorMessage()
                     )
                 }
-        )
-    }
-
-    /**
-     * Вызывает экран с сообщение о том что блок уже отсканирован
-     * */
-    private fun showNavigatorCartonAlreadyScanned(localTempMarks: MutableList<Mark>, mappedMarks: List<Mark>) {
-        navigator.showCartonAlreadyScannedDelete(
-                yesCallback = {
-                    handleYesDeleteMappedMarksFromTempCallBack(
-                            tempList = localTempMarks,
-                            mappedList = mappedMarks
-                    )
+                MarkScreenStatus.CANT_SCAN_PACK -> {
+                    navigator.hideProgress()
+                    navigator.showCantScanPackAlert()
                 }
-        )
-    }
-
-    /**
-     * Вызывает экран с сообщение о том что коробка уже отсканирована
-     * */
-    private fun showNavigatorBoxAlreadyScanned(localTempMarks: MutableList<Mark>, mappedMarks: List<Mark>) {
-        navigator.showBoxAlreadyScannedDelete(
-                yesCallback = {
-                    handleYesDeleteMappedMarksFromTempCallBack(
-                            tempList = localTempMarks,
-                            mappedList = mappedMarks
-                    )
+                MarkScreenStatus.GOOD_IS_MISSING_IN_TASK -> {
+                    navigator.hideProgress()
+                    navigator.showGoodIsMissingInTask()
                 }
-        )
-    }
-
-    /**
-     * Определяет есть ли марка в общем списке, если есть то вызывает сообщение о том что она есть
-     * (кнопка да удаляет марки)
-     * Если нет то добавляет, и обновляет лайв дату
-     * */
-    private fun addOrDeleteMarksFromTemp(
-            restProperties: List<PropertiesInfo>?,
-            localTempMarks: MutableList<Mark>,
-            mappedMarks: List<Mark>, navigatorCallBack: () -> Unit
-    ) {
-        if (localTempMarks.any { tempMark ->
-                    mappedMarks.any { tempMark.number == it.number }
-                }
-        ) {
-            navigatorCallBack()
-        } else {
-            val restPropertiesMapped = restProperties?.map{ propertyFromRest ->
-                GoodProperty(
-                        gtin = propertyFromRest.ean,
-                        property = propertyFromRest.propertyName,
-                        value = propertyFromRest.propertyValue
-                )
-            }.orEmpty()
-            properties.value?.let {
-                val list = it
-                list.union(restPropertiesMapped)
-                properties.value = list
-            }
-            mappedMarks.forEach { mappedMark ->
-                localTempMarks.add(mappedMark)
-                isExistUnsavedData = true
-            }
-            tempMarks.value = localTempMarks
-        }
-    }
-
-    /**
-     * Удаляет марки из общего списка
-     * */
-    private fun handleYesDeleteMappedMarksFromTempCallBack(tempList: MutableList<Mark>, mappedList: List<Mark>) {
-        tempList.removeAll(mappedList)
-        tempMarks.value = tempList
-    }
-
-    /**
-     * Возвращает параметры для запроса ФМ ZMP_UTZ_WOB_07_V001
-     * в зависимости от того что мы сканируем
-     * */
-    private fun getMarkParams(foundGood: GoodCreate, container: Pair<String, Mark.Container>): MarkCartonBoxGoodInfoNetRequestParams {
-        return when (container.second) {
-            Mark.Container.CARTON -> {
-                MarkCartonBoxGoodInfoNetRequestParams(
-                        cartonNumber = container.first,
-                        goodNumber = foundGood.material,
-                        markType = foundGood.markType.name
-                )
-            }
-            Mark.Container.BOX -> {
-                MarkCartonBoxGoodInfoNetRequestParams(
-                        boxNumber = container.first,
-                        goodNumber = foundGood.material,
-                        markType = foundGood.markType.name
-                )
-            }
-            Mark.Container.SHOE -> {
-                MarkCartonBoxGoodInfoNetRequestParams(
-                        markNumber = container.first,
-                        goodNumber = foundGood.material,
-                        markType = foundGood.markType.name
-                )
-            }
-        }
-    }
-
-    /**
-     * Метод делает запрос ФМ "ZMP_UTZ_BKS_05_V001" о товаре по ШК
-     * */
-
-    private fun loadGoodInfoByEan(ean: String, container: Pair<String, Mark.Container>? = null, mrc: String = "") {
-        launchUITryCatch {
-            navigator.showProgressLoadingData(::handleFailure)
-            goodInfoNetRequest(GoodInfoParams(
-                    tkNumber = sessionInfo.market.orEmpty(),
-                    ean = ean,
-                    taskType = task.value?.type?.code.orEmpty()
-            )).also {
-                navigator.hideProgress()
-            }.either(::handleFailure) {
-                handleLoadGoodInfoResult(it, container, mrc)
-            }
-        }
-    }
-
-    /**
-     * Метод обрабатывает результат запроса фм "ZMP_UTZ_BKS_05_V001"
-     * */
-    private fun handleLoadGoodInfoResult(
-            result: GoodInfoResult,
-            container: Pair<String, Mark.Container>? = null,
-            mrc: String = "") {
-        launchUITryCatch {
-            if (manager.isGoodCanBeAdded(result)) {
-                setGood(result, container, mrc)
-            } else {
-                manager.clearSearchFromListParams()
-                navigator.showGoodCannotBeAdded()
-            }
-        }
-    }
-
-    /**
-     * Метод создает товар и устанавливает ему мрц
-     * */
-    private fun setGood(
-            result: GoodInfoResult,
-            container: Pair<String, Mark.Container>? = null,
-            mrc: String = "") {
-        launchUITryCatch {
-            with(result) {
-                task.value?.let { task ->
-                    val taskType = task.type
-                    val goodEan = eanInfo?.ean.orEmpty()
-                    val umrez = eanInfo?.umrez?.toDoubleOrNull().orIfNull { 1.0 }
-                    val formattedMrc = getFormattedMrc(mrc, umrez)
-
-                    val createdGood = GoodCreate(
-                            ean = goodEan,
-                            eans = database.getEanListByMaterialUnits(
-                                    material = materialInfo?.material.orEmpty(),
-                                    unitsCode = materialInfo?.commonUnitsCode.orEmpty()
-                            ),
-                            material = materialInfo?.material.orEmpty(),
-                            name = materialInfo?.name.orEmpty(),
-                            kind = getGoodKind(),
-                            type = materialInfo?.goodType.takeIf { taskType.isDivByGoodType }.orEmpty(),
-                            control = getControlType(),
-                            section = materialInfo?.section.takeIf { taskType.isDivBySection }.orEmpty(),
-                            matrix = getMatrixType(materialInfo?.matrix.orEmpty()),
-                            commonUnits = database.getUnitsByCode(materialInfo?.commonUnitsCode.orEmpty()),
-                            innerUnits = database.getUnitsByCode(materialInfo?.innerUnitsCode.orEmpty()),
-                            innerQuantity = materialInfo?.innerQuantity?.toDoubleOrNull()
-                                    ?: 1.0,
-                            providers = providers?.toMutableList().takeIf { taskType.isDivByProvider }.orEmpty().toMutableList(),
-                            producers = producers?.toMutableList().orEmpty().toMutableList(),
-                            volume = materialInfo?.volume?.toDoubleOrNull() ?: 0.0,
-                            markType = getMarkType(),
-                            maxRetailPrice = formattedMrc)
-                    if (createdGood.markType == good.value?.markType) {
-                        setFoundGood(createdGood, container)
+                MarkScreenStatus.MRC_NOT_SAME -> {
+                    navigator.hideProgress()
+                    markManager.getCreatedGoodForError()?.let {
+                        navigator.showMrcNotSameAlert(it)
                     }
-                }.orIfNull {
-                    Logg.e { "task null" }
-                    navigator.showInternalError(resource.taskNotFoundErrorMsg)
+                }
+                MarkScreenStatus.NOT_MARKED_GOOD -> {
+                    navigator.hideProgress()
+                    navigator.showIncorrectEanFormat()
+                }
+                MarkScreenStatus.OK_BUT_NEED_TO_SCAN_MARK -> {
+                    Unit
                 }
             }
-
-            good.value?.let { good ->
-                lastSuccessSearchNumber = container?.first.orEmpty()
-                Logg.d { "--> added good: $good" }
-            }
-
-            manager.clearSearchFromListParams()
         }
     }
 
-    /**
-     * Форматирует мрц, если он есть
-     * Он приходит в копейках и общий для всех товаров в блоке/коробке.
-     * Умрез - количество в блоке/коробке, приходит из ФМ. Делим на него и делим на 100 чтобы в рублях получить
-     * */
-    private fun getFormattedMrc(mrc: String, umrez: Double): String {
-        val wholeMrc = mrc.toDoubleOrNull()
-        return wholeMrc?.let {
-            val partedMrc = wholeMrc.div(umrez)
-            val partedMrcInRub = partedMrc.div(100)
-            "$partedMrcInRub"
-        } ?: ""
+
+    private fun handleYesDeleteMappedMarksFromTempCallBack() {
+        markManager.handleYesDeleteMappedMarksFromTempCallBack()
+        tempMarks.value = markManager.getTempMarks()
     }
 
     private fun getBasket(): Basket? {
@@ -813,8 +471,9 @@ class MarkedGoodInfoCreateViewModel : CoreViewModel(), PageSelectionListener {
     fun onClickRollback() {
         good.value?.let {
             thereWasRollback = true
-            scanInfoResult.value = null
-            tempMarks.value = mutableListOf()
+            val tempList = tempMarks.value
+            tempList?.removeAll(lastScannedMarks)
+            tempMarks.value = tempList
         }
     }
 
@@ -840,5 +499,49 @@ class MarkedGoodInfoCreateViewModel : CoreViewModel(), PageSelectionListener {
 
     override fun onPageSelected(position: Int) {
         selectedPage.value = position
+    }
+
+    private fun handleCartonAlreadyScanned() {
+        navigator.hideProgress()
+        navigator.showCartonAlreadyScannedDelete(
+                yesCallback = ::handleYesDeleteMappedMarksFromTempCallBack
+        )
+    }
+
+    private fun handleMarkAlreadyScanned() {
+        navigator.hideProgress()
+        navigator.showMarkAlreadyScannedDelete(
+                yesCallback = ::handleYesDeleteMappedMarksFromTempCallBack
+        )
+    }
+
+    private fun handleBoxAlreadyScanned() {
+        navigator.hideProgress()
+        navigator.showBoxAlreadyScannedDelete(
+                yesCallback = ::handleYesDeleteMappedMarksFromTempCallBack
+        )
+    }
+
+    private fun handleInternalError() {
+        navigator.hideProgress()
+        navigator.showInternalError(
+                cause = markManager.getInternalErrorMessage()
+        )
+    }
+
+    private fun handleMarkFailure() {
+        navigator.hideProgress()
+        handleFailure(markManager.getMarkFailure())
+    }
+
+    private fun handleIncorrectEanFormat() {
+        navigator.hideProgress()
+        navigator.showIncorrectEanFormat()
+    }
+
+    private fun handleOkMark(){
+        tempMarks.value = markManager.getTempMarks()
+        properties.value = markManager.getProperties()
+        navigator.hideProgress()
     }
 }

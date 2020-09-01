@@ -220,14 +220,8 @@ class TaskContentViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
                 funcForMaterial = ::getGoodByMaterial,
                 funcForSapOrBar = navigator::showTwelveCharactersEntered,
                 funcForMark = ::checkMark,
-                funcForNotValidBarFormat = navigator::showIncorrectEanFormat,
-                funcForBox = ::loadBoxInfo
+                funcForNotValidBarFormat = navigator::showIncorrectEanFormat
         )
-    }
-
-    //TODO Обычные и акцизные коробки
-    private fun loadBoxInfo(number: String) {
-
     }
 
     private fun checkMark(number: String) {

@@ -26,6 +26,7 @@ import com.lenta.bp12.features.open_task.task_list.TaskListFragment
 import com.lenta.bp12.features.open_task.task_search.TaskSearchFragment
 import com.lenta.bp12.features.save_data.SaveDataFragment
 import com.lenta.bp12.features.select_market.SelectMarketFragment
+import com.lenta.bp12.model.pojo.Good
 import com.lenta.bp12.model.pojo.Mark
 import com.lenta.shared.account.IAuthenticator
 import com.lenta.shared.exception.Failure
@@ -192,9 +193,9 @@ class ScreenNavigator @Inject constructor(
         }
     }
 
-    override fun openMarkedGoodInfoOpenScreen() {
+    override fun openMarkedGoodInfoOpenScreen(marks: List<Mark>, properties: List<GoodProperty>) {
         runOrPostpone {
-            getFragmentStack()?.push(MarkedGoodInfoOpenFragment())
+            getFragmentStack()?.push(MarkedGoodInfoOpenFragment.newInstance(marks, properties))
         }
     }
 
@@ -581,6 +582,16 @@ class ScreenNavigator @Inject constructor(
         }
     }
 
+    override fun showMrcNotSameAlert(good: Good) {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    pageNumber = "98",
+                    message = context.getString(R.string.scanned_wrong_mrc, good.ean, good.name),
+                    iconRes = R.drawable.ic_warning_red_80dp
+            ))
+        }
+    }
+
     override fun showInternalError(cause: String) {
         openAlertScreen(Failure.MessageFailure("Внутренняя ошибка программы: $cause", R.drawable.ic_warning_red_80dp))
     }
@@ -615,7 +626,7 @@ interface IScreenNavigator : ICoreNavigator {
     fun openGoodInfoCreateScreen()
     fun openGoodInfoOpenScreen()
     fun openMarkedGoodInfoCreateScreen(marks: List<Mark>, properties: List<GoodProperty>)
-    fun openMarkedGoodInfoOpenScreen()
+    fun openMarkedGoodInfoOpenScreen(marks: List<Mark>, properties: List<GoodProperty>)
 
     fun showUnsentDataFoundOnDevice(deleteCallback: () -> Unit, goOverCallback: () -> Unit)
     fun showTwelveCharactersEntered(sapCallback: () -> Unit, barCallback: () -> Unit)
@@ -658,4 +669,5 @@ interface IScreenNavigator : ICoreNavigator {
     fun showMarkAlreadyScannedDelete(yesCallback: () -> Unit)
     fun showCartonAlreadyScannedDelete(yesCallback: () -> Unit)
     fun showBoxAlreadyScannedDelete(yesCallback: () -> Unit)
+    fun showMrcNotSameAlert(good: Good)
 }

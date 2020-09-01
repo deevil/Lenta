@@ -78,6 +78,7 @@
     <string name="mark_already_scanned_delete">Отсканированная марка уже была добавлена в задание. Удалить марку?</string>
     <string name="carton_already_scanned_delete">Отсканированный блок уже был добавлен в задание. Удалить блок?</string>
     <string name="box_already_scanned_delete">Отсканированная коробка уже была добавлена в задание. Удалить коробку?</string>
+    <string name="scanned_wrong_mrc">Отсканированный МРЦ товара, 1%s 2%s, не соответствует МРЦ заказа.</string>
 
     // Описание иконок
     <string name="alcohol_good">Алкогольный товар</string>

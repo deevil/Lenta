@@ -3,6 +3,7 @@ package com.lenta.bp12.platform.extention
 import com.lenta.bp12.R
 import com.lenta.bp12.model.*
 import com.lenta.bp12.model.pojo.TaskType
+import com.lenta.bp12.request.pojo.CreateTaskBasketInfo
 import com.lenta.bp12.request.pojo.good_info.GoodInfoResult
 import com.lenta.bp12.request.pojo.markCartonBoxGoodInfoNetRequest.MarkCartonBoxGoodInfoNetRequestResult
 import com.lenta.bp12.request.pojo.markCartonBoxGoodInfoNetRequest.MarkRequestStatus
@@ -36,6 +37,11 @@ fun GoodInfoResult.getGoodKind(): GoodKind {
 
 fun GoodInfoResult.getMarkType(): MarkType {
     val markTypeString = materialInfo?.markType.orEmpty()
+    return enumValueOrNull<MarkType>(markTypeString).orIfNull { MarkType.UNKNOWN }
+}
+
+fun CreateTaskBasketInfo.getMarkType(): MarkType {
+    val markTypeString = marktypeGroup.orEmpty()
     return enumValueOrNull<MarkType>(markTypeString).orIfNull { MarkType.UNKNOWN }
 }
 

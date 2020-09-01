@@ -2,6 +2,7 @@ package com.lenta.bp12.features.basket.basket_properties
 
 import com.lenta.bp12.model.ICreateTaskManager
 import com.lenta.bp12.model.pojo.extentions.getDescription
+import com.lenta.bp12.model.pojo.extentions.getPosition
 import com.lenta.bp12.platform.navigation.IScreenNavigator
 import com.lenta.bp12.platform.resource.IResourceManager
 import com.lenta.shared.platform.viewmodel.CoreViewModel
@@ -31,7 +32,7 @@ class BasketPropertiesViewModel : CoreViewModel() {
 
     val title by lazy {
         basket.map { basket ->
-            val position = manager.getBasketPosition(basket)
+            val position = basket.getPosition()
             val description = basket?.getDescription(task.value?.type?.isDivBySection ?: false)
             resource.basket("$position: $description")
         }

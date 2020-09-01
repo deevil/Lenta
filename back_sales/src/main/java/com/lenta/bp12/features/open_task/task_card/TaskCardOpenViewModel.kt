@@ -38,6 +38,10 @@ class TaskCardOpenViewModel : CoreViewModel(), PageSelectionListener {
     @Inject
     lateinit var deviceInfo: DeviceInfo
 
+    /**
+     * ZMP_UTZ_BKS_03_V001
+     * "Получение состава задания"
+     **/
     @Inject
     lateinit var taskContentNetRequest: TaskContentNetRequest
 
@@ -123,7 +127,7 @@ class TaskCardOpenViewModel : CoreViewModel(), PageSelectionListener {
     private fun handleTaskContentResult(result: TaskContentResult) {
         launchUITryCatch {
             navigator.showProgressLoadingData()
-            manager.addGoodsInCurrentTask(result)
+            manager.addTaskContentInCurrentTask(result)
             navigator.hideProgress()
 
             openGoodListScreen()

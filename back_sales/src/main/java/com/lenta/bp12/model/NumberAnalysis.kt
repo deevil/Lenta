@@ -11,6 +11,7 @@ import com.lenta.shared.utilities.isTobaccoCartonMark
 
 fun actionByNumber(
         number: String,
+        actionFromGood: Boolean? = null,
         funcForEan: ((ean: String) -> Unit)? = null,
         funcForMaterial: ((material: String) -> Unit)? = null,
         funcForSapOrBar: ((sapCallback: () -> Unit, barCallback: () -> Unit) -> Unit)? = null,
@@ -32,7 +33,10 @@ fun actionByNumber(
                 funcForMaterial?.invoke(materialInCommonFormat) ?: funcForNotValidBarFormat()
             }
             Constants.SAP_18 -> {
-                funcForMaterial?.invoke(number) ?: funcForNotValidBarFormat()
+                if (actionFromGood != null && actionFromGood) {
+                    funcForBox?.invoke(number) ?: funcForNotValidBarFormat
+                }
+                else funcForMaterial?.invoke(number) ?: funcForNotValidBarFormat()
             }
             Constants.SAP_OR_BAR_12 -> {
                 funcForSapOrBar?.invoke({

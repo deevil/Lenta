@@ -1,21 +1,23 @@
 package com.lenta.bp12.model.pojo.open_task
 
 import com.lenta.bp12.model.ControlType
+import com.lenta.bp12.model.Taskable
 import com.lenta.bp12.model.pojo.Basket
 import com.lenta.bp12.model.pojo.Block
 import com.lenta.bp12.model.pojo.ReturnReason
 import com.lenta.bp12.model.pojo.TaskType
 import com.lenta.bp12.model.pojo.extentions.*
 import com.lenta.bp12.request.pojo.ProviderInfo
+import com.lenta.bp12.request.pojo.taskContentNetRequest.MrcInfo
 
 data class TaskOpen(
         val number: String,
-        val name: String,
+        override val name: String,
         val type: TaskType?,
         val block: Block,
 
         val storage: String,
-        val control: ControlType,
+        override val control: ControlType,
         val provider: ProviderInfo,
         val reason: ReturnReason?,
         var comment: String,
@@ -26,11 +28,12 @@ data class TaskOpen(
 
         val numberOfGoods: Int,
         val goods: MutableList<GoodOpen> = mutableListOf(),
-        val baskets: MutableList<Basket> = mutableListOf(),
+        override val baskets: MutableList<Basket> = mutableListOf(),
+        val mrcList: MutableList<MrcInfo> = mutableListOf(),
 
         val isStrict: Boolean,
         var isFinished: Boolean
-) {
+): Taskable {
 
     fun getProviderCodeWithName(): String {
         with(provider){
@@ -59,20 +62,13 @@ data class TaskOpen(
         return "${type?.code}-$number // $formattedName"
     }
 
-    fun removeEmptyGoods() {
-        goods.removeAll(goods.filter { it.getTotalQuantity() == 0.0 })
-    }
 
-    fun removeEmptyBaskets() {
-        baskets.removeAll(baskets.filter { it.getGoodList().isEmpty() })
-    }
-
-    fun updateBasket(basket: Basket) {
+    override fun updateBasket(basket: Basket) {
         val oldBasketIndex = baskets.indexOfFirst { it.index == basket.index }
         baskets[oldBasketIndex] = basket
     }
 
-    fun removeBaskets(basketList: MutableList<Basket>) {
+    override fun removeBaskets(basketList: MutableList<Basket>) {
         //Пройдемся по всем корзинам что нужно удалить
         basketList.forEach { basket ->
             val basketIndex = basket.index
@@ -99,5 +95,14 @@ data class TaskOpen(
             removeEmptyGoods()
         }
     }
+
+    override fun removeEmptyGoods() {
+        goods.removeAll(goods.filter { it.getTotalQuantity() == 0.0 })
+    }
+
+    override fun removeEmptyBaskets() {
+        baskets.removeAll(baskets.filter { it.getGoodList().isEmpty() })
+    }
+
 
 }

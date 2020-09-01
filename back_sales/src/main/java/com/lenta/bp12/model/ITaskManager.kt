@@ -1,21 +1,28 @@
 package com.lenta.bp12.model
 
 import androidx.lifecycle.MutableLiveData
-import com.lenta.bp12.model.pojo.Mark
-import com.lenta.bp12.request.pojo.markCartonBoxGoodInfoNetRequest.MarkCartonBoxGoodInfoNetRequestResult
+import com.lenta.bp12.model.pojo.Basket
+import com.lenta.bp12.request.pojo.good_info.GoodInfoResult
 
-interface IMarkManager {
+interface ITaskManager{
+    var searchNumber: String
+    var isSearchFromList: Boolean
+    var isWholesaleTaskType: Boolean
+    var isBasketsNeedsToBeClosed: Boolean
 
-    val tempMarks: MutableLiveData<List<Mark>>
+    val currentBasket: MutableLiveData<Basket>
 
-    fun addMarksFromResult(result: MarkCartonBoxGoodInfoNetRequestResult)
-}
+    fun addBasket(basket: Basket)
+    fun getBasket(providerCode: String): Basket?
 
-class MarkManager() : IMarkManager {
-    override val tempMarks: MutableLiveData<List<Mark>> = MutableLiveData(mutableListOf())
+    fun updateCurrentBasket(basket: Basket?)
 
-    override fun addMarksFromResult(result: MarkCartonBoxGoodInfoNetRequestResult) {
-        TODO("Not yet implemented")
-    }
+    suspend fun isGoodCanBeAdded(goodInfo: GoodInfoResult): Boolean
 
+    fun clearCurrentGood()
+    fun removeBaskets(basketList: MutableList<Basket>)
+
+    fun prepareSendTaskDataParams(deviceIp: String, tkNumber: String, userNumber: String)
+
+    fun clearSearchFromListParams()
 }

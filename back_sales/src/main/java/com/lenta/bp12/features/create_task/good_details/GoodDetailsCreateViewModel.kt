@@ -8,6 +8,7 @@ import com.lenta.bp12.model.CategoryType
 import com.lenta.bp12.model.ICreateTaskManager
 import com.lenta.bp12.model.pojo.Basket
 import com.lenta.bp12.model.pojo.extentions.getDescription
+import com.lenta.bp12.model.pojo.extentions.getPosition
 import com.lenta.bp12.model.pojo.extentions.removeAllMark
 import com.lenta.bp12.model.pojo.extentions.removeAllPart
 import com.lenta.bp12.platform.navigation.IScreenNavigator
@@ -63,7 +64,7 @@ class GoodDetailsCreateViewModel : CoreViewModel(), PageSelectionListener {
                     ItemBasketUi(
                             basket = basket,
                             position = "${baskets.size - index}",
-                            name = resource.basket("${manager.getBasketPosition(basket)}"),
+                            name = resource.basket("${basket.getPosition()}"),
                             description = basket.getDescription(task.type.isDivBySection),
                             quantity = "${task.getCountByBasket(basket)}"
                     )

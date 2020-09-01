@@ -2,6 +2,7 @@ package com.lenta.bp12.request
 
 import com.google.gson.annotations.SerializedName
 import com.lenta.bp12.request.pojo.*
+import com.lenta.bp12.request.pojo.taskContentNetRequest.MrcInfo
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.fmp.ObjectRawStatus
 import com.lenta.shared.functional.Either
@@ -11,12 +12,20 @@ import com.lenta.shared.requests.SapResponse
 import com.lenta.shared.utilities.extentions.toSapBooleanString
 import javax.inject.Inject
 
+/**
+ * ZMP_UTZ_BKS_03_V001
+ * "Получение состава задания"
+ **/
 class TaskContentNetRequest @Inject constructor(
         private val fmpRequestsHelper: FmpRequestsHelper
 ) : UseCase<TaskContentResult, TaskContentParams> {
 
     override suspend fun run(params: TaskContentParams): Either<Failure, TaskContentResult> {
-        return fmpRequestsHelper.restRequest("ZMP_UTZ_BKS_03_V001", params, TaskContentStatus::class.java)
+        return fmpRequestsHelper.restRequest(RESOURCE_NAME, params, TaskContentStatus::class.java)
+    }
+
+    companion object {
+        private const val RESOURCE_NAME = "ZMP_UTZ_BKS_03_V001"
     }
 
 }
@@ -63,6 +72,8 @@ data class TaskContentResult(
         /** Таблица производителей */
         @SerializedName("ET_PROD")
         val producers: List<TaskProducerInfo>?,
+        @SerializedName("ET_MPR")
+        val mrcList: List<MrcInfo>?,
         /** Код возврата */
         @SerializedName("EV_RETCODE")
         override val retCode: Int?,

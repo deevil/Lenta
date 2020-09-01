@@ -73,5 +73,4 @@ interface AppComponent : CoreComponent {
     fun inject(it: GoodInfoOpenViewModel)
     fun inject(it: MarkedGoodInfoOpenViewModel)
     fun inject(it: MarkedGoodInfoCreateViewModel)
-
 }

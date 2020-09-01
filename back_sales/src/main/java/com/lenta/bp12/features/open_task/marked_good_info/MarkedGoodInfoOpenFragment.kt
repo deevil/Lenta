@@ -13,9 +13,10 @@ import com.lenta.bp12.databinding.ItemGoodInfoPropertyBinding
 import com.lenta.bp12.databinding.LayoutMarkedGoodInfoOpenPropertiesTabBinding
 import com.lenta.bp12.databinding.LayoutMarkedGoodInfoOpenQuantityTabBinding
 import com.lenta.bp12.features.create_task.marked_good_info.GoodProperty
-import com.lenta.bp12.features.create_task.marked_good_info.MarkedGoodInfoCreateFragment
 import com.lenta.bp12.model.pojo.Mark
 import com.lenta.bp12.platform.extention.getAppComponent
+import com.lenta.shared.keys.KeyCode
+import com.lenta.shared.keys.OnKeyDownListener
 import com.lenta.shared.platform.activity.OnBackPresserListener
 import com.lenta.shared.platform.fragment.CoreFragment
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
@@ -30,7 +31,8 @@ import com.lenta.shared.utilities.extentions.generateScreenNumberFromPostfix
 import com.lenta.shared.utilities.extentions.provideViewModel
 
 class MarkedGoodInfoOpenFragment : CoreFragment<FragmentMarkedGoodInfoOpenBinding, MarkedGoodInfoOpenViewModel>(),
-        ViewPagerSettings, ToolbarButtonsClickListener, OnScanResultListener, OnBackPresserListener {
+        ViewPagerSettings, ToolbarButtonsClickListener, OnScanResultListener, OnBackPresserListener,
+        OnKeyDownListener {
 
     override fun getLayoutId(): Int = R.layout.fragment_marked_good_info_open
 
@@ -39,17 +41,17 @@ class MarkedGoodInfoOpenFragment : CoreFragment<FragmentMarkedGoodInfoOpenBindin
     override fun getViewModel(): MarkedGoodInfoOpenViewModel {
         val vm = provideViewModel(MarkedGoodInfoOpenViewModel::class.java)
         getAppComponent()?.inject(vm)
-        arguments?.let{
+        arguments?.let {
             val marks = it.getParcelableArrayList<Mark>(MARKS_KEY)
             marks?.let { listOfMarks ->
                 vm.tempMarks.value?.addAll(listOfMarks)
                 Logg.e { marks.toString() }
-            } ?: Logg.e { "marks empty "}
+            } ?: Logg.e { "marks empty " }
             val properties = it.getParcelableArrayList<GoodProperty>(PROPERTIES_KEY)
             properties?.let { listOfProperties ->
                 vm.properties.value?.addAll(listOfProperties)
                 Logg.e { properties.toString() }
-            } ?: Logg.e { "properties empty "}
+            } ?: Logg.e { "properties empty " }
         }
         return vm
 
@@ -74,8 +76,8 @@ class MarkedGoodInfoOpenFragment : CoreFragment<FragmentMarkedGoodInfoOpenBindin
     override fun onToolbarButtonClick(view: View) {
         when (view.id) {
             R.id.b_2 -> vm.onClickRollback()
-            //R.id.b_3 -> vm.onClickDetails()
-            R.id.b_3 -> vm.onScanResult("01046002660113672100000BX.8005012345.938000.92NGkg+wRXz36kBFjpfwOub5DBIIpD2iS/DMYpZuuDLU0Y3pZt1z20/1ksr4004wfhDhRxu4dgUV4QN96Qtdih9g==") // Блок
+            R.id.b_3 -> vm.onClickDetails()
+//            R.id.b_3 -> vm.onScanResult("01046002660113672100000BX.8005012345.938000.92NGkg+wRXz36kBFjpfwOub5DBIIpD2iS/DMYpZuuDLU0Y3pZt1z20/1ksr4004wfhDhRxu4dgUV4QN96Qtdih9g==") // Блок
 //            R.id.b_3 -> vm.onScanResult("00000046203564000001A01238000") // Пачка
             //R.id.b_3 -> vm.onScanResult("147300249826851018001FZSIZAB5I6KZKWEQKPKZJHW6MYKVGAETXLPV7M5AIF7OXTQFIM347EWQGXAK65QGJFKTR7EQDHJQTJFSW5DNWTBU3BRLKVM7D6YZMYRBV6IOQY5ZXLPKLBHUZPBTRFTLQ") // Марка
             //R.id.b_3 -> vm.onScanResult("1734001784926710180016BZ3532QMZKOBPRTXTL7BZMZ3YNNMK53PXMB3ZU66TJ3SNVFR7YTCYVLOPKUNBQIG5XXLKNYYWMWGGUXJLVHB2NLSMF6ACBJDB73IUKGGSAEOWKBY7TW7FZ5BLIT3YT2Y") // SAP-код: 270202156641
@@ -163,8 +165,8 @@ class MarkedGoodInfoOpenFragment : CoreFragment<FragmentMarkedGoodInfoOpenBindin
     }
 
     companion object {
-        fun newInstance(marks: List<Mark>, properties: List<GoodProperty>) : MarkedGoodInfoCreateFragment {
-            return MarkedGoodInfoCreateFragment().apply {
+        fun newInstance(marks: List<Mark>, properties: List<GoodProperty>): MarkedGoodInfoOpenFragment {
+            return MarkedGoodInfoOpenFragment().apply {
                 arguments = bundleOf(
                         MARKS_KEY to marks,
                         PROPERTIES_KEY to properties
@@ -178,6 +180,42 @@ class MarkedGoodInfoOpenFragment : CoreFragment<FragmentMarkedGoodInfoOpenBindin
         private const val TAB_QUANTITY_PAGE = 0
         private const val TAB_PROPERTIES_PAGE = 1
         private const val TAB_QUANTITY = 2
+    }
+
+    override fun onKeyDown(keyCode: KeyCode): Boolean {
+        return when (keyCode) {
+            //Блок Мрц 106
+            KeyCode.KEYCODE_0 -> {
+                vm.onScanResult("01046002660113672100000Ce.8005021200.938000.92NGkg+wRXz36kBFjpfwOub5DBIIpD2iS/DMYpZuuDLU0Y3pZt1z20/1ksr4004wfhDhRxu4dgUV4QN96Qtdih9g==")
+                true
+            }
+            //Блок Мрц 100
+            KeyCode.KEYCODE_1 -> {
+                vm.onScanResult("01046002660121422100000L?.8005020000.938000.92NGkg+wRXz36kBFjpfwOub5DBIIpD2iS/DMYpZuuDLU0Y3pZt1z20/1ksr4004wfhDhRxu4dgUV4QN96Qtdih9g==")
+                true
+            }
+            //пачка
+            KeyCode.KEYCODE_2 -> {
+                vm.onScanResult("00000046203564000003B01238000")
+                true
+            }
+            //Коробка обуви
+            KeyCode.KEYCODE_3 -> {
+                vm.onScanResult("946060680019389537")
+                true
+            }
+            //Марка из этой коробки
+            KeyCode.KEYCODE_4 -> {
+                vm.onScanResult("010460606832937221bBjpnxLePjMmv.918000.92NGkg+wRXz36kBFjpfwOub5DBIIpD2iS/DMYpZuuDLU0Y3pZt1z20/1ksr4004wfhDhRxu4dgUV4QN96Qtdih9g==")
+                true
+            }
+            //Марка не из этой коробки
+            KeyCode.KEYCODE_5 -> {
+                vm.onScanResult("010460606832938921q8Pk81bQ/9GPR.918000.92NGkg+wRXz36kBFjpfwOub5DBIIpD2iS/DMYpZuuDLU0Y3pZt1z20/1ksr4004wfhDhRxu4dgUV4QN96Qtdih9g==")
+                true
+            }
+            else -> false
+        }
     }
 
 }

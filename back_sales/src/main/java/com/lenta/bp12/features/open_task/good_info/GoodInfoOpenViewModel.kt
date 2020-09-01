@@ -48,9 +48,14 @@ class GoodInfoOpenViewModel : CoreViewModel() {
     @Inject
     lateinit var sessionInfo: ISessionInfo
 
+    /** "ZMP_UTZ_BKS_05_V001"
+     * Получение данных товара по ШК / SAP-коду
+     */
     @Inject
     lateinit var goodInfoNetRequest: GoodInfoNetRequest
 
+    /** "ZMP_UTZ_100_V001"
+     * Получение данных по акцизному товару  */
     @Inject
     lateinit var scanInfoNetRequest: ScanInfoNetRequest
 
@@ -369,8 +374,9 @@ class GoodInfoOpenViewModel : CoreViewModel() {
 
     init {
         launchUITryCatch {
-            manager.clearCurrentGood()
-            checkSearchNumber(manager.searchNumber)
+            good.value?.let {
+                setFoundGood(it)
+            }
         }
     }
 
