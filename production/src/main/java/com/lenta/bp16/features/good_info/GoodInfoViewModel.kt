@@ -62,7 +62,7 @@ class GoodInfoViewModel : CoreViewModel() {
 
     val requestFocusQuantityField = MutableLiveData(true)
 
-    val buom: MutableLiveData<String> = MutableLiveData("")
+    private val buom: MutableLiveData<String> = MutableLiveData("")
 
     private val weightAndUom: LiveData<Pair<Double?, Uom>> = goodParams.switchMap { good ->
         weight.switchMap { weightValue ->
@@ -99,20 +99,14 @@ class GoodInfoViewModel : CoreViewModel() {
 
     /**Склад отправитель*/
     val warehouseSender: MutableLiveData<List<String>> = MutableLiveData()
-    val warehouseSenderPosition by unsafeLazy {
-        appSettings.warehouseSenderPosition
-    }
     val selectedWarehouseSenderPosition by unsafeLazy {
-        MutableLiveData(warehouseSenderPosition)
+        MutableLiveData(appSettings.warehouseSenderPosition)
     }
 
     /**Склад получатель*/
     val warehouseReceiver: MutableLiveData<List<String>> = MutableLiveData()
-    val warehouseReceiverPosition by unsafeLazy {
-        appSettings.warehouseReceiverPosition
-    }
     val selectedWarehouseReceiverPosition by unsafeLazy {
-        MutableLiveData(warehouseReceiverPosition)
+        MutableLiveData(appSettings.warehouseReceiverPosition)
     }
 
     /**Дата производства и срок годности*/
@@ -206,8 +200,6 @@ class GoodInfoViewModel : CoreViewModel() {
                 warehouseReceiver.value = warehouseResult.warehouseList?.map { it.warehouseName }
                 Unit
             }
-            //selectedWarehouseSenderPosition.value = findSelectedWarehouseSender()
-            //selectedWarehouseReceiverPosition.value = findSelectedWarehouseReceiver()
         }
     }
 
@@ -217,45 +209,7 @@ class GoodInfoViewModel : CoreViewModel() {
         proFillCond.value = database.getProFillCondition()
     }
 
-
-    /*private suspend fun findSelectedWarehouseSender(): Int = withContext(Dispatchers.IO) {
-        var selectedIndex = 0
-        val warehouseList = warehouseSender.value
-        appSettings.lastWarehouseSender?.let { lastWarehouse ->
-            warehouseList?.forEachIndexed { index, warehouse ->
-                if (warehouse == lastWarehouse) {
-                    warehouseSenderSelected = warehouse
-                    selectedIndex = index
-                    return@forEachIndexed
-                }
-            }
-        }
-        selectedIndex
-    }*/
-
-    /*private suspend fun findSelectedWarehouseReceiver(): Int = withContext(Dispatchers.IO) {
-        var selectedIndex = 0
-        val warehouseList = warehouseReceiver.value
-        appSettings.lastWarehouseReceiver?.let { lastWarehouse ->
-            warehouseList?.forEachIndexed { index, warehouse ->
-                if (warehouse == lastWarehouse) {
-                    warehouseReceiverSelected = warehouse
-                    selectedIndex = index
-                    return@forEachIndexed
-                }
-            }
-        }
-        selectedIndex
-    }*/
-
     private fun saveWarehouses() {
-        /*warehouseSenderSelected = warehouseSender.value?.getOrNull(selectedWarehouseSenderPosition.value
-                ?: 0).orEmpty()
-        warehouseReceiverSelected = warehouseReceiver.value?.getOrNull(selectedWarehouseReceiverPosition.value
-                ?: 0).orEmpty()
-        appSettings.lastWarehouseSender = warehouseSenderSelected
-        appSettings.lastWarehouseReceiver = warehouseReceiverSelected*/
-
         appSettings.warehouseSenderPosition = selectedWarehouseSenderPosition.value
         appSettings.warehouseReceiverPosition = selectedWarehouseReceiverPosition.value
     }
