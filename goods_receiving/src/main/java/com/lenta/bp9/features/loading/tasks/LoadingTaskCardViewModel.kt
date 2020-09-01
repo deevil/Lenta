@@ -163,8 +163,7 @@ class LoadingTaskCardViewModel : CoreLoadingViewModel() {
             val newTask = taskManager.newReceivingTask(taskHeader, TaskDescription.from(result.taskDescription))
             newTask?.taskRepository?.getNotifications()?.updateWithNotifications(notifications, null, null, null)
             taskManager.setTask(newTask)
-            screenNavigator.openTaskCardScreen(mode, taskManager.getTaskType()
-                    ?: TaskType.None)
+            screenNavigator.openTaskCardScreen(mode, taskManager.getTaskType())
         }
     }
 
@@ -318,8 +317,7 @@ class LoadingTaskCardViewModel : CoreLoadingViewModel() {
                             screenNavigator.openControlDeliveryCargoUnitsScreen() //экран Контроль погрузки ГЕ
                         }
                         else -> {
-                            screenNavigator.openTaskCardScreen(TaskCardMode.Full, taskManager.getTaskType()
-                                    ?: TaskType.None)
+                            screenNavigator.openTaskCardScreen(TaskCardMode.Full, taskManager.getTaskType())
                         }
                     }
                 }
@@ -352,10 +350,8 @@ class LoadingTaskCardViewModel : CoreLoadingViewModel() {
                     if (task.taskRepository.getReviseDocuments().getTransportConditions().isNotEmpty()) {
                         screenNavigator.openTransportConditionsScreen()
                     } else {
-                        screenNavigator.openTaskListScreen()
-                        screenNavigator.openCheckingNotNeededAlert(context.getString(R.string.revise_not_needed_unloading)) {
-                            screenNavigator.openFinishConditionsReviseLoadingScreen()
-                        }
+                        screenNavigator.goBack()
+                        screenNavigator.openControlDeliveryCargoUnitsScreen() //экран Контроль погрузки ГЕ
                     }
                 }
                 TaskStatus.Recounting -> {

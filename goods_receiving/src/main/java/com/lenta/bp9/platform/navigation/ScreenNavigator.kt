@@ -655,9 +655,9 @@ class ScreenNavigator(
         }
     }
 
-    override fun openControlDeliveryCargoUnitsScreen() {
+    override fun openControlDeliveryCargoUnitsScreen(isUnlockTaskLoadingScreen: Boolean?) {
         runOrPostpone {
-            getFragmentStack()?.push(ControlDeliveryCargoUnitsFragment())
+            getFragmentStack()?.push(ControlDeliveryCargoUnitsFragment.newInstance(isUnlockTaskLoadingScreen))
         }
     }
 
@@ -1804,7 +1804,7 @@ interface IScreenNavigator : ICoreNavigator {
     fun openSealDamageDialog(nextCallbackFunc: () -> Unit)
     fun openAlertSealDamageScreen()
     fun openCargoUnitCardScreen(cargoUnitInfo: TaskCargoUnitInfo, isSurplus: Boolean? = false)
-    fun openControlDeliveryCargoUnitsScreen()
+    fun openControlDeliveryCargoUnitsScreen(isUnlockTaskLoadingScreen: Boolean? = false)
     fun openNewCargoUnitAnotherTransportationDialog(cargoUnitNumber: String, marketNumber: String, nextCallbackFunc: () -> Unit)
     fun openNewCargoUnitCurrentTransportationDialog(cargoUnitNumber: String, marketNumber: String, nextCallbackFunc: () -> Unit)
     fun openAlertNewCargoUnitScreen(cargoUnitNumber: String, marketNumber: String)

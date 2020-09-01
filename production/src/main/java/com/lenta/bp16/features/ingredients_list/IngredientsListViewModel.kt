@@ -9,8 +9,6 @@ import com.lenta.bp16.model.ingredients.GoodByOrder
 import com.lenta.bp16.model.ingredients.IngredientInfo
 import com.lenta.bp16.model.ingredients.params.GetIngredientsParams
 import com.lenta.bp16.model.ingredients.params.WarehouseParam
-import com.lenta.bp16.model.ingredients.results.IngredientsListResult
-import com.lenta.bp16.model.ingredients.ui.IngredientsListResultUI
 import com.lenta.bp16.model.ingredients.ui.ItemIngredientUi
 import com.lenta.bp16.model.ingredients.ui.OrderByBarcodeUI
 import com.lenta.bp16.model.ingredients.ui.OrderByBarcodeUI.Companion.EAN_NOM
@@ -19,12 +17,14 @@ import com.lenta.bp16.model.ingredients.ui.OrderByBarcodeUI.Companion.EAN_UMREZ
 import com.lenta.bp16.model.ingredients.ui.OrderByBarcodeUI.Companion.FAKE_EAN
 import com.lenta.bp16.model.ingredients.ui.OrderByBarcodeUI.Companion.FAKE_MATNR
 import com.lenta.bp16.model.warehouse.IWarehousePersistStorage
-import com.lenta.bp16.platform.extention.getIngredientStatus
+import com.lenta.bp16.platform.extention.getIngredientStatusBlock
+import com.lenta.bp16.platform.extention.getIngredientStatusWork
 import com.lenta.bp16.platform.navigation.IScreenNavigator
 import com.lenta.bp16.platform.resource.IResourceManager
 import com.lenta.bp16.request.GetIngredientsNetRequest
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.platform.viewmodel.CoreViewModel
+import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
 import com.lenta.shared.utilities.databinding.PageSelectionListener
 import com.lenta.shared.utilities.extentions.asyncLiveData
@@ -56,16 +56,21 @@ class IngredientsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInS
     val numberField by unsafeLazy { MutableLiveData<String>("") }
     val requestFocusToNumberField by unsafeLazy { MutableLiveData(true) }
     val marketNumber by unsafeLazy { sessionInfo.market }
-    private val selectedMatnr by unsafeLazy { MutableLiveData<String>("") }
+    private var shortSapcode = ""
+    private var aufnr = ""
+    private var selectedEan = ""
 
+    /**Общий список заказов и материалов*/
     private val allIngredientsInfo: MutableLiveData<List<IngredientInfo>> by unsafeLazy {
         MutableLiveData<List<IngredientInfo>>()
     }
 
+    /**Список ШК*/
     private val allIngredientsEanInfo: MutableLiveData<List<OrderByBarcodeUI>> by unsafeLazy {
         MutableLiveData<List<OrderByBarcodeUI>>()
     }
 
+    /**Список технических заказов*/
     private val goodsByOrderList: MutableLiveData<List<GoodByOrder>> by unsafeLazy {
         MutableLiveData<List<GoodByOrder>>()
     }
@@ -116,7 +121,8 @@ class IngredientsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInS
                                 position = position,
                                 text1 = ingredientInfo.text1.orEmpty(),
                                 text2 = ingredientInfo.text2.orEmpty(),
-                                ingredientStatus = ingredientInfo.getIngredientStatus()
+                                ingredientStatusBlock = ingredientInfo.getIngredientStatusBlock(),
+                                ingredientStatusWork = ingredientInfo.getIngredientStatusWork()
                         )
                     }
                 }.toList()
@@ -135,39 +141,65 @@ class IngredientsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInS
         launchUITryCatch {
             navigator.showProgressLoadingData()
             /**Поиск отсканированного ШК в данных интерфейса ZMP_UTZ_PRO_10_V001*/
-            val searchStatus = withContext(Dispatchers.IO) {
-                var status = SearchStatus.NOT_FOUND
-                allIngredientsEanInfo.value?.find { numberField.value == it.ean }?.let { ean ->
-                    selectedMatnr.value = ean.matnr
-
-                    /**Поиск вхождения в список материалов*/
-                    allIngredientsInfo.value?.find { it.code == selectedMatnr.value }?.let {
-                        status = SearchStatus.FOUND_INGREDIENT
-                    }
-                    /**Поиск вхождения в список заказов*/
-                    goodsByOrderList.value?.find { it.matnr == selectedMatnr.value }?.let {
-                        if (status == SearchStatus.FOUND_INGREDIENT)
-                            status = SearchStatus.DUALISM
-                        status = SearchStatus.FOUND_ORDER
-                    }
-                }
-                return@withContext status
-            }
-
+            selectedEan = numberField.value.orEmpty()
+            val searchStatus = findSearchStatus()
             navigator.hideProgress()
+            processSearchStatus(searchStatus)
+        }
+    }
 
-            /*when (searchStatus) {
-                SearchStatus.DUALISM -> navigator.showAlertDualism()
-                SearchStatus.FOUND_INGREDIENT -> allIngredients.value?.find { it.code == selectedMatnr.value }?.let { selectedIngredient ->
+    /**Результаты поиска по статусу*/
+    private suspend fun processSearchStatus(searchStatus: SearchStatus) {
+        when (searchStatus) {
+            SearchStatus.DUALISM -> navigator.showAlertDualism()
+            SearchStatus.FOUND_ORDER -> {
+                val selectedIngredient = withContext(Dispatchers.IO) { allIngredientsInfo.value?.find { it.code == aufnr } }
+                selectedIngredient?.let {
+                    val barcode = withContext(Dispatchers.IO) {
+                        allIngredientsEanInfo.value?.find { it.ean == selectedEan }.orIfNull {
+                            OrderByBarcodeUI(
+                                    matnr = FAKE_MATNR,
+                                    ean = FAKE_EAN,
+                                    ean_nom = EAN_NOM,
+                                    ean_umrez = EAN_UMREZ,
+                                    ean_umren = EAN_UMREN
+                            )
+                        }
+                    }
                     navigator.openOrderDetailsScreen(selectedIngredient, barcode)
                 }
-                SearchStatus.FOUND_ORDER -> allIngredients.value?.find { it.code == selectedMatnr.value }?.let { selectedIngredient ->
-                    navigator.openMaterialRemakesScreen(selectedIngredient)
-                }
-                SearchStatus.NOT_FOUND -> navigator.showAlertGoodNotFoundInCurrentShift()
-            }*/
-
+            }
+            SearchStatus.FOUND_MATERIAL -> {
+                val selectedIngredient = withContext(Dispatchers.IO) { allIngredientsInfo.value?.find { it.code == shortSapcode } }
+                selectedIngredient?.let(navigator::openMaterialRemakesScreen)
+            }
+            SearchStatus.NOT_FOUND -> navigator.showAlertGoodNotFoundInCurrentShift()
         }
+    }
+
+    /**Определение статуса поиска*/
+    private suspend fun findSearchStatus() = withContext(Dispatchers.IO) {
+        var status = SearchStatus.NOT_FOUND
+        allIngredientsEanInfo.value?.find { selectedEan == it.ean }?.let { ean ->
+            val longSapcode = ean.matnr
+            /**Поиск вхождения в список заказов*/
+            goodsByOrderList.value?.find { it.matnr == longSapcode }?.let { order ->
+                aufnr = order.aufnr.orEmpty()
+                status = SearchStatus.FOUND_ORDER
+            }
+            shortSapcode = longSapcode.takeLast(6) //Берем последние 6 значащих цифр
+            /**Поиск на двойное вхождение*/
+            allIngredientsInfo.value?.find { it.code == aufnr && it.code == shortSapcode }?.let {
+                status = SearchStatus.DUALISM
+            }
+            /**В случае, если двойное вхождение не было найдено, то выполнить поиск по MATNR*/
+            if (status != SearchStatus.DUALISM) {
+                allIngredientsInfo.value?.find { it.code == shortSapcode }?.let {
+                    status = SearchStatus.FOUND_MATERIAL
+                }
+            }
+        }
+        status
     }
 
     fun onClickMenu() {
