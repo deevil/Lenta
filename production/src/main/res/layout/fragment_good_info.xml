@@ -20,7 +20,6 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-
             <LinearLayout
                 style="@style/LinearRowStyle">
 
@@ -76,10 +75,10 @@
 
                         <com.lenta.shared.view.ClickableSpinner
                             android:id="@+id/spin_producer"
-                            app:items="@{vm.producerNameField}"
-                            app:onPositionClicked="@{vm.selectedProducerPosition}"
                             style="@style/CellSpinnerStyle"
                             android:layout_height="match_parent"
+                            app:listItems="@{vm.producerNameField}"
+                            app:selectedPosition="@{vm.selectedProducerPosition}"
                             tools:entries="@array/manufacturer_list" />
 
                 </LinearLayout>
@@ -100,10 +99,10 @@
 
                     <com.lenta.shared.view.ClickableSpinner
                         android:id="@+id/spin_production_date"
-                        app:items="@{vm.dateInfo}"
-                        app:onPositionClicked="@{vm.selectedDatePosition}"
                         style="@style/CellSpinnerStyle"
                         android:layout_height="match_parent"
+                        app:listItems="@{vm.dateInfo}"
+                        app:selectedPosition="@{vm.selectedDatePosition}"
                         tools:entries="@array/date_list" />
 
                 </LinearLayout>
@@ -157,9 +156,8 @@
                     <com.lenta.shared.view.ClickableSpinner
                         android:id="@+id/spin_warehouse_sender"
                         style="@style/CellSpinnerStyle"
-                        app:items="@{vm.warehouseSender}"
-                        app:selectedPosition="@{vm.warehouseSenderPosition}"
-                        app:onPositionClicked="@{vm.selectedWarehouseSenderPosition}"
+                        app:listItems="@{vm.warehouseSender}"
+                        app:selectedPosition="@{vm.selectedWarehouseSenderPosition}"
                         android:layout_height="match_parent"
                         tools:entries="@array/storage_list" />
 
@@ -193,9 +191,8 @@
                     <com.lenta.shared.view.ClickableSpinner
                         android:id="@+id/spin_storage_receiver"
                         style="@style/CellSpinnerStyle"
-                        app:items="@{vm.warehouseReceiver}"
-                        app:selectedPosition="@{vm.warehouseReceiverPosition}"
-                        app:onPositionClicked="@{vm.selectedWarehouseReceiverPosition}"
+                        app:listItems="@{vm.warehouseReceiver}"
+                        app:selectedPosition="@{vm.selectedWarehouseReceiverPosition}"
                         android:layout_height="match_parent"
                         tools:entries="@array/storage_list" />
 
