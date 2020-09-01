@@ -1,11 +1,15 @@
 package com.lenta.bp16.model
 
-enum class IngredientStatus {
+enum class IngredientStatusWork {
     IS_PLAY,
     IS_DONE,
-    COMMON,
+    COMMON
+}
+
+enum class IngredientStatusBlock{
     SELF_LOCK,
-    LOCK
+    LOCK,
+    COMMON
 }
 
 enum class TaskStatus {

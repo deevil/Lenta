@@ -38,7 +38,7 @@ class ComponentViewModel : BaseProductInfoViewModel() {
     }
 
     override val enabledApplyButton: MutableLiveData<Boolean> by lazy {
-        countValue.combineLatest(selectedPosition).map {
+        countValue.combineLatest(reasonPosition).map {
             isEnabledApplyButtons(
                     count = it?.first,
                     productInfo = productInfo.value,
@@ -66,6 +66,13 @@ class ComponentViewModel : BaseProductInfoViewModel() {
             )
         }
 
+    }
+
+    override fun onOkInSoftKeyboard(): Boolean {
+        if (enabledApplyButton.value == true) {
+            onClickApply()
+        }
+        return true
     }
 
     fun setComponentItem(componentItem: ComponentItem) {

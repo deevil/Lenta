@@ -43,22 +43,32 @@ fun setTextAllCaps(editText: EditText, textAllCaps: Boolean?) {
     }
 }
 
-@BindingAdapter(value = ["digitsForUom"])
-fun setDigitsForUom(editText: EditText, uom: Uom?) {
+@BindingAdapter(value = ["digitsForUom", "onlyDigits"], requireAll = false)
+fun setDigitsForUom(editText: EditText, uom: Uom?, isOnlyDigits: Boolean = false) {
     uom?.let {
-        editText.keyListener = DigitsKeyListener.getInstance(if (uom.isOnlyInt()) "0123456789-" else "0123456789.-")
+        if (isOnlyDigits) {
+            editText.keyListener = DigitsKeyListener.getInstance("0123456789")
+        } else {
+            editText.keyListener = DigitsKeyListener.getInstance(if (uom.isOnlyInt()) "0123456789-" else "0123456789.-")
+        }
     }
 }
 
-@BindingAdapter("requestFocus", "cursorToLastPos")
-fun requestFocus(editText: EditText, @Suppress("UNUSED_PARAMETER") requestFocus: Boolean?, cursorToLastPos: Boolean?) {
-    requestFocus?.let {
-        if (it) {
+@BindingAdapter("requestFocus")
+fun requestFocus(editText: EditText, @Suppress("UNUSED_PARAMETER") requestFocus: Boolean?) {
+    requestFocus?.let { focus ->
+        if (focus) {
             editText.isFocusableInTouchMode = true
             editText.requestFocus()
-            if (cursorToLastPos == true) {
-                editText.setSelection(editText.text.length)
-            }
+        }
+    }
+}
+
+@BindingAdapter("cursorToLastPos")
+fun cursorToLastPos(editText: EditText, cursorToLastPos: Boolean?) {
+    if (cursorToLastPos == true) {
+        editText.setOnFocusChangeListener { _, hasFocus ->
+            if (hasFocus) editText.setSelection(editText.text.length)
         }
     }
 }
