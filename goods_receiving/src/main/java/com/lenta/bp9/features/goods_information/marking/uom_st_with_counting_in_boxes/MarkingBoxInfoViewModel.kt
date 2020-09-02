@@ -49,8 +49,6 @@ class MarkingBoxInfoViewModel : BaseGoodsInfo(),  OnPositionClickListener {
     @Inject
     lateinit var hyperHive: HyperHive
 
-//    val acceptTotalCount = countAcceptOfProduct
-
     val tvAccept: MutableLiveData<String> by lazy {
         paramGrzAlternMeins.map {
             val uomName = paramGrzAlternMeins.value?.name.orEmpty()
@@ -99,52 +97,6 @@ class MarkingBoxInfoViewModel : BaseGoodsInfo(),  OnPositionClickListener {
 
             return addNewCount
         }
-//
-//    private val currentQualityInfoCode: String
-//        get() {
-//            val position = spinQualitySelectedPosition.value ?: -1
-//            return position
-//                    .takeIf { it >= 0 }
-//                    ?.run {
-//                        qualityInfo.value
-//                                ?.takeIf { it.isNotEmpty() }
-//                                ?.run { this[position].code }
-//                                .orEmpty()
-//                    }
-//                    .orEmpty()
-//        }
-//
-//    private val currentReasonRejectionInfoCode: String
-//        get() {
-//            val position = spinReasonRejectionSelectedPosition.value ?: -1
-//            return position
-//                    .takeIf { it >= 0 }
-//                    ?.run {
-//                        reasonRejectionInfo.value
-//                                ?.takeIf { it.isNotEmpty() }
-//                                ?.run { this[position].code }
-//                                .orEmpty()
-//                    }
-//                    .orEmpty()
-//        }
-//
-//    private val currentTypeDiscrepanciesCode: String
-//        get() {
-//            return currentQualityInfoCode
-//                    .takeIf { it == TYPE_DISCREPANCIES_QUALITY_NORM }
-//                    ?: currentReasonRejectionInfoCode
-//        }
-
-//    private val countAcceptOfProduct: Double
-//        get() {
-//            return productInfo.value
-//                    ?.let { product ->
-//                        taskRepository
-//                                ?.getProductsDiscrepancies()
-//                                ?.getCountAcceptOfProduct(product)
-//                    }
-//                    ?: 0.0
-//        }
 
     val acceptTotalCount: MutableLiveData<Double> =
             isUnitBox
@@ -172,18 +124,6 @@ class MarkingBoxInfoViewModel : BaseGoodsInfo(),  OnPositionClickListener {
                 ?.run { "+ ${this.toStringFormatted()} $purchaseOrderUnits" }
                 ?: "$totalCountAcceptOfProduct $purchaseOrderUnits"
     }
-
-//    private val countRefusalOfProduct: Double
-//        get() {
-//            return productInfo.value
-//                    ?.let { product ->
-//                        taskRepository
-//                                ?.getProductsDiscrepancies()
-//                                ?.getCountRefusalOfProduct(product)
-//                    }
-//                    ?: 0.0
-//        }
-
 
     val refusalTotalCount: MutableLiveData<Double> =
             isUnitBox

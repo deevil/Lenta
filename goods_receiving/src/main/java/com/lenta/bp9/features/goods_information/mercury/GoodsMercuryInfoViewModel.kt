@@ -100,61 +100,6 @@ class GoodsMercuryInfoViewModel : BaseGoodsInfo(), OnPositionClickListener {
                             .orEmpty()
                     }
 
-//    private val currentQualityInfoCode: String
-//        get() {
-//            val position = spinQualitySelectedPosition.value ?: -1
-//            return position
-//                    .takeIf { it >= 0 }
-//                    ?.run {
-//                        qualityInfo.value
-//                                ?.takeIf { it.isNotEmpty() }
-//                                ?.run { this[position].code }
-//                                .orEmpty()
-//                    }
-//                    .orEmpty()
-//        }
-
-//    private val currentReasonRejectionInfoCode: String
-//        get() {
-//            val position = spinReasonRejectionSelectedPosition.value ?: -1
-//            return position
-//                    .takeIf { it >= 0 }
-//                    ?.run {
-//                        reasonRejectionInfo.value
-//                                ?.takeIf { it.isNotEmpty() }
-//                                ?.run { this[position].code }
-//                                .orEmpty()
-//                    }
-//                    .orEmpty()
-//        }
-
-//    private val currentManufacture: String
-//        get() {
-//            val position = spinManufacturersSelectedPosition.value ?: -1
-//            return position
-//                    .takeIf { it >= 0 }
-//                    ?.run {
-//                        spinManufacturers.value
-//                                ?.takeIf { it.isNotEmpty() }
-//                                ?.run { this[position] }
-//                                .orEmpty()
-//                    }
-//                    .orEmpty()
-//        }
-
-//    private val currentProductionDate: String
-//        get() {
-//            val position = spinProductionDateSelectedPosition.value ?: -1
-//            return position
-//                    .takeIf { it >= 0 }
-//                    ?.run {
-//                        spinProductionDate.value
-//                                ?.takeIf { it.isNotEmpty() }
-//                                ?.run { this[position] }
-//                                .orEmpty()
-//                    }
-//                    .orEmpty()
-//        }
 
     private val currentProductionDateFormatterEN: String
         get() {
