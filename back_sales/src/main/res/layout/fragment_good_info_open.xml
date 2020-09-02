@@ -150,8 +150,7 @@
                             android:layout_height="match_parent"
                             android:enabled="@{vm.producerEnabled}"
                             app:items="@{vm.producerList}"
-                            app:onPositionClickListener="@{vm.onSelectProducer}"
-                            app:position="@{vm.producerPosition}"
+                            app:position="@={vm.producerPosition}"
                             tools:entries="@array/test_list" />
 
                     </LinearLayout>

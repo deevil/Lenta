@@ -3,10 +3,7 @@ package com.lenta.bp12.model.pojo.open_task
 import com.lenta.bp12.model.ControlType
 import com.lenta.bp12.model.GoodKind
 import com.lenta.bp12.model.MarkType
-import com.lenta.bp12.model.pojo.Good
-import com.lenta.bp12.model.pojo.Mark
-import com.lenta.bp12.model.pojo.Part
-import com.lenta.bp12.model.pojo.Position
+import com.lenta.bp12.model.pojo.*
 import com.lenta.bp12.request.pojo.ProducerInfo
 import com.lenta.bp12.request.pojo.ProviderInfo
 import com.lenta.shared.models.core.MatrixType
@@ -30,6 +27,7 @@ class GoodOpen(
         marks: MutableList<Mark> = mutableListOf(),
         parts: MutableList<Part> = mutableListOf(),
         markType: MarkType,
+        markTypeGroup: MarkTypeGroup?,
         maxRetailPrice: String,
 
         val planQuantity: Double = 0.0,
@@ -37,4 +35,4 @@ class GoodOpen(
         var isCounted: Boolean = false,
         var isDeleted: Boolean = false,
         val provider: ProviderInfo
-) : Good(ean, eans, material, name, kind, section, matrix, volume, control, commonUnits, innerUnits, innerQuantity, producers, positions, marks, parts, markType, maxRetailPrice)
+) : Good(ean, eans, material, name, kind, section, matrix, volume, control, commonUnits, innerUnits, innerQuantity, producers, positions, marks, parts, markType, markTypeGroup, maxRetailPrice)

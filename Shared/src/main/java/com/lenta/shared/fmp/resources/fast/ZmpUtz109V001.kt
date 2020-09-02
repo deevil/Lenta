@@ -12,10 +12,10 @@ import com.mobrun.plugin.models.StatusSelectTable
  * Справочник BKS – группы маркировки
  */
 class ZmpUtz109V001(private val hyperHive: HyperHive) {
-    val localHelper_ET_MVM_TXT: LocalTableResourceHelper<Item_Local_ET_MARK_GROUP, Status_ET_MARK_GROUP>
+    val localHelper_ET_MARK_GROUP: LocalTableResourceHelper<Item_Local_ET_MARK_GROUP, Status_ET_MARK_GROUP>
 
     init {
-        localHelper_ET_MVM_TXT = LocalTableResourceHelper<Item_Local_ET_MARK_GROUP, Status_ET_MARK_GROUP>(
+        localHelper_ET_MARK_GROUP = LocalTableResourceHelper<Item_Local_ET_MARK_GROUP, Status_ET_MARK_GROUP>(
                 NAME_RESOURCE,
                 NAME_OUT_PARAM_ET_TASK_TSP,
                 hyperHive,

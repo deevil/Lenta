@@ -337,7 +337,9 @@ class MarkedGoodInfoOpenViewModel : CoreViewModel(), PageSelectionListener {
     private fun checkMark(number: String) {
         launchUITryCatch {
             navigator.showProgressLoadingData()
-            when (markManager.checkMark(number, WorkType.OPEN)) {
+            val status = markManager.checkMark(number, WorkType.OPEN)
+            Logg.e { status.name }
+            when (status) {
                 MarkScreenStatus.OK -> {
                     handleOkMark()
                 }
@@ -383,6 +385,10 @@ class MarkedGoodInfoOpenViewModel : CoreViewModel(), PageSelectionListener {
                 MarkScreenStatus.OK_BUT_NEED_TO_SCAN_MARK -> {
                     Unit
                 }
+                MarkScreenStatus.NO_MARKTYPE_IN_SETTINGS -> {
+                    handleNoMarkTypeInSettings()
+                }
+
             }
         }
     }
@@ -465,15 +471,13 @@ class MarkedGoodInfoOpenViewModel : CoreViewModel(), PageSelectionListener {
         } else {
             navigator.goBack()
         }
+        markManager.clearData()
     }
 
     fun onClickRollback() {
-        good.value?.let {
-            thereWasRollback = true
-            val tempList = tempMarks.value
-            tempList?.removeAll(lastScannedMarks)
-            tempMarks.value = tempList
-        }
+        thereWasRollback = true
+        markManager.onRollback()
+        tempMarks.value = markManager.getTempMarks()
     }
 
     fun onClickDetails() {
@@ -502,6 +506,7 @@ class MarkedGoodInfoOpenViewModel : CoreViewModel(), PageSelectionListener {
             navigator.goBack()
             navigator.openBasketCreateGoodListScreen()
             manager.isBasketsNeedsToBeClosed = false
+            markManager.clearData()
         }
     }
 
@@ -547,11 +552,16 @@ class MarkedGoodInfoOpenViewModel : CoreViewModel(), PageSelectionListener {
         navigator.showIncorrectEanFormat()
     }
 
-    private fun handleOkMark(){
+    private fun handleOkMark() {
         isExistUnsavedData = true
         tempMarks.value = markManager.getTempMarks()
         properties.value = markManager.getProperties()
         navigator.hideProgress()
+    }
+
+    private fun handleNoMarkTypeInSettings() {
+        navigator.hideProgress()
+        navigator.showNoMarkTypeInSettings()
     }
 
     companion object {

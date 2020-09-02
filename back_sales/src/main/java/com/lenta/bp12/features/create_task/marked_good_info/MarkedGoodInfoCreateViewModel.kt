@@ -263,6 +263,8 @@ class MarkedGoodInfoCreateViewModel : CoreViewModel(), PageSelectionListener {
     init {
         launchUITryCatch {
             good.value?.let {
+                tempMarks.value = markManager.getTempMarks()
+                properties.value = markManager.getProperties()
                 val tempMarksValue = tempMarks.value
                 val size = tempMarksValue?.size
                 if (size != null && size > 0) {
@@ -466,15 +468,13 @@ class MarkedGoodInfoCreateViewModel : CoreViewModel(), PageSelectionListener {
         } else {
             navigator.goBack()
         }
+        markManager.clearData()
     }
 
     fun onClickRollback() {
-        good.value?.let {
-            thereWasRollback = true
-            val tempList = tempMarks.value
-            tempList?.removeAll(lastScannedMarks)
-            tempMarks.value = tempList
-        }
+        thereWasRollback = true
+        markManager.onRollback()
+        tempMarks.value = markManager.getTempMarks()
     }
 
     fun onClickDetails() {
@@ -494,6 +494,7 @@ class MarkedGoodInfoCreateViewModel : CoreViewModel(), PageSelectionListener {
             navigator.goBack()
             navigator.openBasketCreateGoodListScreen()
             manager.isBasketsNeedsToBeClosed = false
+            markManager.clearData()
         }
     }
 

@@ -8,7 +8,7 @@ import com.lenta.bp12.model.pojo.ReturnReason
 import com.lenta.bp12.model.pojo.TaskType
 import com.lenta.bp12.model.pojo.extentions.*
 import com.lenta.bp12.request.pojo.ProviderInfo
-import com.lenta.bp12.request.pojo.taskContentNetRequest.MrcInfo
+import com.lenta.bp12.request.pojo.taskContentNetRequest.Mrc
 
 data class TaskOpen(
         val number: String,
@@ -29,7 +29,7 @@ data class TaskOpen(
         val numberOfGoods: Int,
         val goods: MutableList<GoodOpen> = mutableListOf(),
         override val baskets: MutableList<Basket> = mutableListOf(),
-        val mrcList: MutableList<MrcInfo> = mutableListOf(),
+        val mrcList: MutableList<Mrc> = mutableListOf(),
 
         val isStrict: Boolean,
         var isFinished: Boolean

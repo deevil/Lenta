@@ -2,6 +2,7 @@ package com.lenta.bp12.repository
 
 import com.lenta.bp12.model.MarkType
 import com.lenta.bp12.model.pojo.AlcoCodeInfo
+import com.lenta.bp12.model.pojo.MarkTypeGroup
 import com.lenta.bp12.model.pojo.ReturnReason
 import com.lenta.bp12.model.pojo.TaskType
 import com.lenta.bp12.platform.extention.*
@@ -13,6 +14,7 @@ import com.lenta.shared.fmp.resources.fast.*
 import com.lenta.shared.fmp.resources.slow.*
 import com.lenta.shared.models.core.Uom
 import com.lenta.shared.models.core.getMatrixType
+import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.enumValueOrNull
 import com.lenta.shared.utilities.extentions.isSapTrue
 import com.lenta.shared.utilities.orIfNull
@@ -42,6 +44,8 @@ class DatabaseRepository @Inject constructor(
     private val goods: ZmpUtz30V001 by lazy { ZmpUtz30V001(hyperHive) } // Товары
     private val producers: ZmpUtz43V001 by lazy { ZmpUtz43V001(hyperHive) } // Производители
     private val markGroup: ZmpUtz109V001 by lazy { ZmpUtz109V001(hyperHive) } //группы маркировки
+
+    private var markTypeGroups: Set<MarkTypeGroup> = mutableSetOf()
 
     override suspend fun getGoodInfoByMaterial(material: String): GoodInfo? {
         return withContext(Dispatchers.IO) {
@@ -181,18 +185,45 @@ class DatabaseRepository @Inject constructor(
     }
 
     override suspend fun getBasketVolume(): Double? {
-        return withContext(Dispatchers.IO){
+        return withContext(Dispatchers.IO) {
             settings.getBKSBasketVolume()
         }
     }
 
+    override suspend fun isMarkTypeInDatabase(markType: MarkType): Boolean {
+        return withContext(Dispatchers.IO) {
+            val markTypeString = markType.name
+            markGroup.isMarkTypeInDatabase(markTypeString)
+        }
+    }
+
+    override suspend fun getMarkTypeGroupByMarkType(markType: MarkType): MarkTypeGroup? {
+        return getMarkTypeGroups().firstOrNull() {
+            it.markTypes.contains(markType)
+        }
+    }
+
+    override suspend fun getMarkTypeGroupByCode(markTypeGroupCode: String?): MarkTypeGroup? {
+        return getMarkTypeGroups().firstOrNull() { it.code == markTypeGroupCode }
+    }
+
+    private suspend fun getMarkTypeGroups(): Set<MarkTypeGroup> {
+
+        return withContext(Dispatchers.IO) {
+            if (markTypeGroups.isEmpty()) {
+                markTypeGroups = markGroup.getMarkTypeGroups()
+            }
+            Logg.e { markTypeGroups.toString() }
+            markTypeGroups
+        }
+
+    }
 }
 
 interface IDatabaseRepository {
-
     suspend fun getGoodInfoByMaterial(material: String): GoodInfo?
     suspend fun getEanListByMaterialUnits(material: String, unitsCode: String): List<String>
-    suspend fun getEanInfo(ean: String) : com.lenta.shared.requests.combined.scan_info.pojo.EanInfo?
+    suspend fun getEanInfo(ean: String): com.lenta.shared.requests.combined.scan_info.pojo.EanInfo?
     suspend fun getAllowedAppVersion(): String?
     suspend fun getUnitsByCode(code: String): Uom
     suspend fun getTaskTypeList(): List<TaskType>
@@ -204,6 +235,8 @@ interface IDatabaseRepository {
     suspend fun isGoodCanBeAdded(goodInfo: GoodInfoResult, taskType: String): Boolean
     suspend fun getProviderInfo(code: String): ProviderInfo?
     suspend fun getAlcoCodeInfoList(alcoCode: String): List<AlcoCodeInfo>
-    suspend fun getBasketVolume() : Double?
-
+    suspend fun getBasketVolume(): Double?
+    suspend fun isMarkTypeInDatabase(markType: MarkType): Boolean
+    suspend fun getMarkTypeGroupByMarkType(markType: MarkType): MarkTypeGroup?
+    suspend fun getMarkTypeGroupByCode(markTypeGroupCode: String?): MarkTypeGroup?
 }

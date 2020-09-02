@@ -143,7 +143,7 @@ class BasketCreateGoodListViewModel : CoreViewModel(), OnOkInSoftKeyboardListene
                 navigator.goBack()
                 if (item.good.markType == MarkType.UNKNOWN)
                     navigator.openGoodInfoCreateScreen()
-                else navigator.openMarkedGoodInfoCreateScreen(listOf(), listOf())
+                else navigator.openMarkedGoodInfoCreateScreen()
             }
         }
     }

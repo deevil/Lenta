@@ -128,7 +128,8 @@ enum class MarkScreenStatus {
     CANT_SCAN_PACK,
     GOOD_IS_MISSING_IN_TASK,
     MRC_NOT_SAME,
-    NOT_MARKED_GOOD
+    NOT_MARKED_GOOD,
+    NO_MARKTYPE_IN_SETTINGS
 }
 
 enum class WorkType {

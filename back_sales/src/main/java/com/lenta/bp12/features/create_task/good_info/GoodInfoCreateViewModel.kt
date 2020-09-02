@@ -2,10 +2,7 @@ package com.lenta.bp12.features.create_task.good_info
 
 import androidx.lifecycle.MutableLiveData
 import com.lenta.bp12.model.*
-import com.lenta.bp12.model.pojo.Basket
-import com.lenta.bp12.model.pojo.Mark
-import com.lenta.bp12.model.pojo.Part
-import com.lenta.bp12.model.pojo.Position
+import com.lenta.bp12.model.pojo.*
 import com.lenta.bp12.model.pojo.create_task.GoodCreate
 import com.lenta.bp12.model.pojo.extentions.addMark
 import com.lenta.bp12.model.pojo.extentions.addMarks
@@ -35,7 +32,6 @@ import com.lenta.shared.utilities.extentions.*
 import com.lenta.shared.utilities.getDateFromString
 import com.lenta.shared.utilities.getFormattedDate
 import com.lenta.shared.utilities.orIfNull
-import com.lenta.shared.view.OnPositionClickListener
 import javax.inject.Inject
 
 class GoodInfoCreateViewModel : CoreViewModel() {
@@ -65,6 +61,7 @@ class GoodInfoCreateViewModel : CoreViewModel() {
     @Inject
     lateinit var resource: IResourceManager
 
+    private var markTypeGroups: MutableSet<MarkTypeGroup> = mutableSetOf()
 
     /**
     Переменные
@@ -251,12 +248,6 @@ class GoodInfoCreateViewModel : CoreViewModel() {
 
     val providerPosition = MutableLiveData(0)
 
-    val onSelectProvider = object : OnPositionClickListener {
-        override fun onClickPosition(position: Int) {
-            providerPosition.value = position
-        }
-    }
-
     private val isProviderSelected = providerEnabled.combineLatest(providerPosition).map {
         val isEnabled = it?.first ?: false
         val position = it?.second ?: 0
@@ -294,13 +285,6 @@ class GoodInfoCreateViewModel : CoreViewModel() {
     }
 
     val producerPosition = MutableLiveData(0)
-
-    // TODO use onPositionClicekd adapter instead
-    val onSelectProducer = object : OnPositionClickListener {
-        override fun onClickPosition(position: Int) {
-            producerPosition.value = position
-        }
-    }
 
     private val isProducerSelected = producerEnabled.combineLatest(producerPosition).map {
         val isEnabled = it?.first ?: false
@@ -400,7 +384,6 @@ class GoodInfoCreateViewModel : CoreViewModel() {
     /**
     Методы
      */
-
     fun onScanResult(number: String) {
         good.value?.let { good ->
             launchUITryCatch {
@@ -587,7 +570,9 @@ class GoodInfoCreateViewModel : CoreViewModel() {
                             producers = producers?.toMutableList().orEmpty().toMutableList(),
                             volume = materialInfo?.volume?.toDoubleOrNull() ?: 0.0,
                             markType = getMarkType(),
-                            maxRetailPrice = "")
+                            markTypeGroup = markTypeGroups.first { it.markTypes.contains(getMarkType()) },
+                            maxRetailPrice = ""
+                    )
                 }.orIfNull {
                     Logg.e { "task null" }
                     navigator.showInternalError(resource.taskNotFoundErrorMsg)
@@ -885,7 +870,7 @@ class GoodInfoCreateViewModel : CoreViewModel() {
         good.value?.let { changedGood ->
             scanInfoResult.value?.exciseMarks?.let { marks ->
 
-                val mappedMarks = marks.map{ mark ->
+                val mappedMarks = marks.map { mark ->
                     Mark(
                             number = mark.number.orEmpty(),
                             boxNumber = lastSuccessSearchNumber,

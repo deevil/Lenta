@@ -6,7 +6,6 @@ import com.lenta.bp12.model.pojo.extentions.*
 import com.lenta.bp12.model.pojo.open_task.GoodOpen
 import com.lenta.bp12.model.pojo.open_task.TaskOpen
 import com.lenta.bp12.platform.extention.getControlType
-import com.lenta.bp12.platform.extention.getMarkType
 import com.lenta.bp12.platform.extention.isAlcohol
 import com.lenta.bp12.platform.extention.isCommon
 import com.lenta.bp12.repository.IDatabaseRepository
@@ -14,6 +13,7 @@ import com.lenta.bp12.request.SendTaskDataParams
 import com.lenta.bp12.request.TaskContentResult
 import com.lenta.bp12.request.pojo.*
 import com.lenta.bp12.request.pojo.good_info.GoodInfoResult
+import com.lenta.bp12.request.pojo.taskContentNetRequest.toMrcList
 import com.lenta.shared.models.core.getInnerUnits
 import com.lenta.shared.platform.constants.Constants
 import com.lenta.shared.utilities.Logg
@@ -167,7 +167,7 @@ class OpenTaskManager @Inject constructor(
                                 provider = provider,
                                 control = good.control,
                                 goodType = task.goodType,
-                                markType = good.markType
+                                markTypeGroup = good.markTypeGroup
                         ).also {
                             addBasket(it)
                         }
@@ -181,7 +181,7 @@ class OpenTaskManager @Inject constructor(
         return currentTask.value?.let { task ->
             currentGood.value?.let { good ->
                 task.baskets.lastOrNull { basket ->
-                    val divByMark = if (task.type?.isDivByMark == true) basket.markType == good.markType else true
+                    val divByMark = if (task.type?.isDivByMark == true) basket.markTypeGroup == good.markTypeGroup else true
                     isLastBasketMatches(
                             basket = basket,
                             good = good,
@@ -302,7 +302,8 @@ class OpenTaskManager @Inject constructor(
     private fun TaskOpen.addMrcListToTask(taskContentResult: TaskContentResult) {
         taskContentResult.mrcList?.let {
             mrcList.clear()
-            mrcList.addAll(it)
+            val newMrcList = it.toMrcList()
+            mrcList.addAll(newMrcList)
         }
     }
 
@@ -312,6 +313,7 @@ class OpenTaskManager @Inject constructor(
                 database.getGoodInfoByMaterial(material.orEmpty())?.let { goodInfo ->
                     val commonUnits = database.getUnitsByCode(unitsCode.orEmpty())
                     val provider = ProviderInfo(providerCode.orEmpty(), providerName.orEmpty())
+                    val markType = goodInfo.markType
 
                     val good = GoodOpen(
                             ean = goodInfo.ean,
@@ -338,7 +340,8 @@ class OpenTaskManager @Inject constructor(
                                 )
                             }?.toMutableList() ?: mutableListOf(),
                             volume = positionInfo.volume?.toDoubleOrNull() ?: 0.0,
-                            markType = goodInfo.markType,
+                            markType = markType,
+                            markTypeGroup = database.getMarkTypeGroupByMarkType(markType),
                             maxRetailPrice = positionInfo.maxRetailPrice?.toDoubleOrNull().dropZeros()
                     )
 
@@ -369,6 +372,7 @@ class OpenTaskManager @Inject constructor(
         val mapOfGoodsByMaterial = restBasketsProducts?.groupBy { it.material.orEmpty() }.orEmpty()
 
         val mappedBaskets = restBaskets?.map { restBasket ->
+            val markTypeGroup = database.getMarkTypeGroupByCode(restBasket.marktypeGroup)
             Basket(
                     index = restBasket.basketNumber?.toIntOrNull()
                             ?: baskets.size + 1,
@@ -377,7 +381,7 @@ class OpenTaskManager @Inject constructor(
                     control = control,
                     provider = taskGoods.firstOrNull()?.provider,
                     volume = basketVolume,
-                    markType = restBasket.getMarkType()
+                    markTypeGroup = markTypeGroup
             ).apply {
                 isLocked = restBasket.isClose.isSapTrue()
                 isPrinted = restBasket.isPrint.isSapTrue()

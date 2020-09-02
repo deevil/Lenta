@@ -9,7 +9,6 @@ import com.lenta.bp12.features.basket.basket_properties.BasketPropertiesFragment
 import com.lenta.bp12.features.create_task.add_provider.AddProviderFragment
 import com.lenta.bp12.features.create_task.good_details.GoodDetailsCreateFragment
 import com.lenta.bp12.features.create_task.good_info.GoodInfoCreateFragment
-import com.lenta.bp12.features.create_task.marked_good_info.GoodProperty
 import com.lenta.bp12.features.create_task.marked_good_info.MarkedGoodInfoCreateFragment
 import com.lenta.bp12.features.create_task.task_card.TaskCardCreateFragment
 import com.lenta.bp12.features.create_task.task_content.TaskContentFragment
@@ -27,7 +26,6 @@ import com.lenta.bp12.features.open_task.task_search.TaskSearchFragment
 import com.lenta.bp12.features.save_data.SaveDataFragment
 import com.lenta.bp12.features.select_market.SelectMarketFragment
 import com.lenta.bp12.model.pojo.Good
-import com.lenta.bp12.model.pojo.Mark
 import com.lenta.shared.account.IAuthenticator
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.features.alert.AlertFragment
@@ -187,15 +185,26 @@ class ScreenNavigator @Inject constructor(
         }
     }
 
-    override fun openMarkedGoodInfoCreateScreen(marks: List<Mark>, properties: List<GoodProperty>) {
+//    override fun openMarkedGoodInfoCreateScreen(marks: List<Mark>, properties: List<GoodProperty>) {
+//        runOrPostpone {
+//            getFragmentStack()?.push(MarkedGoodInfoCreateFragment.newInstance(marks, properties))
+//        }
+//    }
+//
+//    override fun openMarkedGoodInfoOpenScreen(marks: List<Mark>, properties: List<GoodProperty>) {
+//        runOrPostpone {
+//            getFragmentStack()?.push(MarkedGoodInfoOpenFragment.newInstance(marks, properties))
+//        }
+//    }
+    override fun openMarkedGoodInfoCreateScreen() {
         runOrPostpone {
-            getFragmentStack()?.push(MarkedGoodInfoCreateFragment.newInstance(marks, properties))
+            getFragmentStack()?.push(MarkedGoodInfoCreateFragment())
         }
     }
 
-    override fun openMarkedGoodInfoOpenScreen(marks: List<Mark>, properties: List<GoodProperty>) {
+    override fun openMarkedGoodInfoOpenScreen() {
         runOrPostpone {
-            getFragmentStack()?.push(MarkedGoodInfoOpenFragment.newInstance(marks, properties))
+            getFragmentStack()?.push(MarkedGoodInfoOpenFragment())
         }
     }
 
@@ -592,6 +601,16 @@ class ScreenNavigator @Inject constructor(
         }
     }
 
+    override fun showNoMarkTypeInSettings() {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    pageNumber = "98",
+                    message = context.getString(R.string.no_settings_for_that_markType),
+                    iconRes = R.drawable.ic_warning_red_80dp
+            ))
+        }
+    }
+
     override fun showInternalError(cause: String) {
         openAlertScreen(Failure.MessageFailure("Внутренняя ошибка программы: $cause", R.drawable.ic_warning_red_80dp))
     }
@@ -625,8 +644,8 @@ interface IScreenNavigator : ICoreNavigator {
 
     fun openGoodInfoCreateScreen()
     fun openGoodInfoOpenScreen()
-    fun openMarkedGoodInfoCreateScreen(marks: List<Mark>, properties: List<GoodProperty>)
-    fun openMarkedGoodInfoOpenScreen(marks: List<Mark>, properties: List<GoodProperty>)
+    fun openMarkedGoodInfoCreateScreen()
+    fun openMarkedGoodInfoOpenScreen()
 
     fun showUnsentDataFoundOnDevice(deleteCallback: () -> Unit, goOverCallback: () -> Unit)
     fun showTwelveCharactersEntered(sapCallback: () -> Unit, barCallback: () -> Unit)
@@ -670,4 +689,6 @@ interface IScreenNavigator : ICoreNavigator {
     fun showCartonAlreadyScannedDelete(yesCallback: () -> Unit)
     fun showBoxAlreadyScannedDelete(yesCallback: () -> Unit)
     fun showMrcNotSameAlert(good: Good)
+
+    fun showNoMarkTypeInSettings()
 }

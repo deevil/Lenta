@@ -36,6 +36,7 @@ abstract class Good(
         val marks: MutableList<Mark> = mutableListOf(),
         val parts: MutableList<Part> = mutableListOf(),
         val markType: MarkType,
+        val markTypeGroup: MarkTypeGroup?,
         val maxRetailPrice: String = ""
 ) {
     fun getNameWithMaterial(delimiter: String = " "): String {
@@ -93,6 +94,7 @@ abstract class Good(
         if (marks != other.marks) return false
         if (parts != other.parts) return false
         if (markType != other.markType) return false
+        if (markTypeGroup != other.markTypeGroup) return false
         if (maxRetailPrice != other.maxRetailPrice) return false
 
         return true
@@ -116,11 +118,14 @@ abstract class Good(
         result = 31 * result + marks.hashCode()
         result = 31 * result + parts.hashCode()
         result = 31 * result + markType.hashCode()
+        result = 31 * result + (markTypeGroup?.hashCode() ?: 0)
         result = 31 * result + maxRetailPrice.hashCode()
         return result
     }
 
     override fun toString(): String {
-        return "Good(ean='$ean', eans=$eans, material='$material', name='$name', kind=$kind, section='$section', matrix=$matrix, volume=$volume, control=$control, commonUnits=$commonUnits, innerUnits=$innerUnits, innerQuantity=$innerQuantity, producers=$producers, positions=$positions, marks=$marks, parts=$parts, markType=$markType, maxRetailPrice='$maxRetailPrice')"
+        return "Good(ean='$ean', eans=$eans, material='$material', name='$name', kind=$kind, section='$section', matrix=$matrix, volume=$volume, control=$control, commonUnits=$commonUnits, innerUnits=$innerUnits, innerQuantity=$innerQuantity, producers=$producers, positions=$positions, marks=$marks, parts=$parts, markType=$markType, markTypeGroup=$markTypeGroup, maxRetailPrice='$maxRetailPrice')"
     }
+
+
 }

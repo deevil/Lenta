@@ -34,7 +34,6 @@ import com.lenta.shared.utilities.extentions.*
 import com.lenta.shared.utilities.getDateFromString
 import com.lenta.shared.utilities.getFormattedDate
 import com.lenta.shared.utilities.orIfNull
-import com.lenta.shared.view.OnPositionClickListener
 import javax.inject.Inject
 
 class GoodInfoOpenViewModel : CoreViewModel() {
@@ -257,12 +256,6 @@ class GoodInfoOpenViewModel : CoreViewModel() {
 
     val producerPosition = MutableLiveData(0)
 
-    val onSelectProducer = object : OnPositionClickListener {
-        override fun onClickPosition(position: Int) {
-            producerPosition.value = position
-        }
-    }
-
     private val isProducerSelected = producerEnabled.combineLatest(producerPosition).map {
         val isEnabled = it?.first ?: false
         val position = it?.second ?: 0
@@ -429,7 +422,6 @@ class GoodInfoOpenViewModel : CoreViewModel() {
                 funcForExcise = ::loadExciseMarkInfo,
                 funcForBox = ::loadBoxInfo,
                 funcForNotValidBarFormat = {
-                    goBackIfSearchFromList()
                     navigator.showIncorrectEanFormat()
                 }
         )
@@ -577,6 +569,7 @@ class GoodInfoOpenViewModel : CoreViewModel() {
     private fun setGood(result: GoodInfoResult, number: String) {
         launchUITryCatch {
             with(result) {
+                val markType = getMarkType()
                 good.value = GoodOpen(
                         ean = eanInfo?.ean.orEmpty(),
                         material = materialInfo?.material.orEmpty(),
@@ -591,7 +584,8 @@ class GoodInfoOpenViewModel : CoreViewModel() {
                         provider = task.value?.provider ?: ProviderInfo(),
                         producers = producers.orEmpty().toMutableList(),
                         volume = materialInfo?.volume?.toDoubleOrNull() ?: 0.0,
-                        markType = getMarkType(),
+                        markType = markType,
+                        markTypeGroup = database.getMarkTypeGroupByMarkType(markType),
                         maxRetailPrice = ""
                 )
             }

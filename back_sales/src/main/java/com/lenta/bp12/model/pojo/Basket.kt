@@ -1,7 +1,6 @@
 package com.lenta.bp12.model.pojo
 
 import com.lenta.bp12.model.ControlType
-import com.lenta.bp12.model.MarkType
 import com.lenta.bp12.request.pojo.ProviderInfo
 
 data class Basket(
@@ -12,7 +11,7 @@ data class Basket(
         val provider: ProviderInfo?,
         val volume: Double = 0.0,
         val goods: MutableMap<Good, Double> = mutableMapOf(),
-        val markType: MarkType
+        val markTypeGroup: MarkTypeGroup?
 ) {
     /**
      * Распечатана ли

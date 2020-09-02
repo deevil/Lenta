@@ -29,7 +29,6 @@
                     style="@style/CellSpinnerStyle"
                     android:layout_height="match_parent"
                     app:items="@{vm.taskTypeList}"
-                    app:onPositionClickListener="@{vm.onSelectTaskType}"
                     app:position="@{vm.taskTypePosition}"
                     tools:entries="@array/test_list" />
 
@@ -106,7 +105,6 @@
                     style="@style/CellSpinnerStyle"
                     android:layout_height="match_parent"
                     app:items="@{vm.storage}"
-                    app:onPositionClickListener="@{vm.onSelectStorage}"
                     app:position="@{vm.storagePosition}"
                     tools:entries="@array/test_list" />
 
@@ -128,7 +126,6 @@
                     style="@style/CellSpinnerStyle"
                     android:layout_height="match_parent"
                     app:items="@{vm.returnReasonList}"
-                    app:onPositionClickListener="@{vm.onSelectReturnReason}"
                     app:position="@{vm.returnReasonPosition}"
                     tools:entries="@array/test_list" />
 

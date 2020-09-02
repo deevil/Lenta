@@ -9,6 +9,9 @@ import com.lenta.shared.interactor.UseCase
 import com.lenta.shared.requests.FmpRequestsHelper
 import javax.inject.Inject
 
+/** "ZMP_UTZ_BKS_07_V001"
+ * Печать паллетной ведомости
+ */
 class PrintPalletListNetRequest @Inject constructor(
         private val fmpRequestsHelper: FmpRequestsHelper
 ) : UseCase<PrintPalletListResult, PrintPalletListParams> {

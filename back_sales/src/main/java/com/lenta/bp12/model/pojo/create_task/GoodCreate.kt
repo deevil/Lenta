@@ -3,10 +3,7 @@ package com.lenta.bp12.model.pojo.create_task
 import com.lenta.bp12.model.ControlType
 import com.lenta.bp12.model.GoodKind
 import com.lenta.bp12.model.MarkType
-import com.lenta.bp12.model.pojo.Good
-import com.lenta.bp12.model.pojo.Mark
-import com.lenta.bp12.model.pojo.Part
-import com.lenta.bp12.model.pojo.Position
+import com.lenta.bp12.model.pojo.*
 import com.lenta.bp12.request.pojo.ProducerInfo
 import com.lenta.bp12.request.pojo.ProviderInfo
 import com.lenta.shared.models.core.MatrixType
@@ -30,10 +27,11 @@ class GoodCreate(
         marks: MutableList<Mark> = mutableListOf(),
         parts: MutableList<Part> = mutableListOf(),
         markType: MarkType,
-        maxRetailPrice: String,
+        markTypeGroup: MarkTypeGroup?,
+        maxRetailPrice: String = "",
 
         val type: String,
 
         val providers: MutableList<ProviderInfo> = mutableListOf()
 
-) : Good(ean, eans, material, name, kind, section, matrix, volume, control, commonUnits, innerUnits, innerQuantity, producers, positions, marks, parts, markType, maxRetailPrice)
+) : Good(ean, eans, material, name, kind, section, matrix, volume, control, commonUnits, innerUnits, innerQuantity, producers, positions, marks, parts, markType, markTypeGroup, maxRetailPrice)

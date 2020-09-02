@@ -46,7 +46,12 @@ class CreateTaskManager @Inject constructor(
     override val currentBasket = MutableLiveData<Basket>()
 
     /** Метод добавляет обычные в товары в корзину */
-    override suspend fun addGoodToBasket(good: GoodCreate, part: Part?, provider: ProviderInfo, count: Double) {
+    override suspend fun addGoodToBasket(
+            good: GoodCreate,
+            part: Part?,
+            provider: ProviderInfo,
+            count: Double
+    ) {
         currentTask.value?.let { taskValue ->
             // Переменная которая служит счетчиком - сколько товаров надо добавить
             var leftToAdd = count
@@ -108,7 +113,6 @@ class CreateTaskManager @Inject constructor(
             // Добавим марке номер корзины
             mark.basketNumber = suitableBasket.index
             // Положим в товар
-//            good.addMark(mark)
             // Продублируем марку в позиции (просто надо)
             addEmptyPosition(good, provider, suitableBasket)
             // Добавим товар в корзину
@@ -154,7 +158,7 @@ class CreateTaskManager @Inject constructor(
                                 provider = provider,
                                 control = good.control,
                                 goodType = good.type,
-                                markType = good.markType
+                                markTypeGroup = good.markTypeGroup
                         ).also {
                             addBasket(it)
                         }
@@ -170,7 +174,7 @@ class CreateTaskManager @Inject constructor(
         return currentTask.value?.let { task ->
             currentGood.value?.let { good ->
                 task.baskets.lastOrNull { basket ->
-                    val divByMark = if (task.type.isDivByMark) basket.markType == good.markType else true
+                    val divByMark = if (task.type.isDivByMark) basket.markTypeGroup == good.markTypeGroup else true
                     isLastBasketMatches(basket, good, providerCode, divByMark)
                 }
             }
@@ -181,7 +185,8 @@ class CreateTaskManager @Inject constructor(
             basket: Basket,
             good: GoodCreate,
             providerCode: String,
-            divByMark: Boolean): Boolean {
+            divByMark: Boolean
+    ): Boolean {
         return divByMark && basket.section == good.section &&
                 basket.goodType == good.type &&
                 basket.control == good.control &&

@@ -2,6 +2,12 @@ package com.lenta.bp12.request.pojo
 
 import com.google.gson.annotations.SerializedName
 
+/**
+ * ZMP_UTZ_BKS_03_V001
+ * "Получение состава задания"
+ * @see com.lenta.bp12.request.TaskContentNetRequest
+ **/
+
 data class CreateTaskBasketInfo(
         /** Номер корзины */
         @SerializedName("BASKET_NUM")
