@@ -62,7 +62,7 @@ class GoodInfoViewModel : CoreViewModel() {
 
     val requestFocusQuantityField = MutableLiveData(true)
 
-    private val buom: MutableLiveData<String> = MutableLiveData("")
+    val buom: MutableLiveData<Uom> = MutableLiveData()
 
     private val weightAndUom: LiveData<Pair<Double?, Uom>> = goodParams.switchMap { good ->
         weight.switchMap { weightValue ->
@@ -70,7 +70,7 @@ class GoodInfoViewModel : CoreViewModel() {
                 val pair = weightValue.takeIf { it != 0.0 }
                         ?.run { div(Constants.CONVERT_TO_KG) to Uom.KG }
                         ?: getPairFromUom(good)
-                buom.postValue(pair.second.code)
+                buom.postValue(pair.second)
                 emit(pair)
             }
         }
@@ -263,7 +263,7 @@ class GoodInfoViewModel : CoreViewModel() {
                             lgortImport = warehouseReceiverSelected,
                             codeCont = "",
                             factQnt = quantityField.value.toString(),
-                            buom = buom.value.orEmpty(),
+                            buom = buom.value?.code.orEmpty(),
                             deviceIP = deviceIp.value.toString(),
                             personnelNumber = sessionInfo.personnelNumber.orEmpty()
                     )
