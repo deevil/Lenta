@@ -50,6 +50,7 @@
                 android:text="@={vm.eanCode}"
                 app:onOkInSoftKeyboard="@{vm}"
                 app:requestFocus="@{vm.requestFocusToEan}"
+                app:selectAfterFocus="@{true}"
                 tools:ignore="Autofill" />
 
             <ImageButton
