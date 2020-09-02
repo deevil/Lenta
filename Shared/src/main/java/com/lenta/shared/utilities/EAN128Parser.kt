@@ -35,20 +35,68 @@ object EAN128Parser {
     }
 
     fun parseBy(barcode: String): MutableMap<AII, String> {
-        val result: MutableMap<AII, String> = HashMap()
         val splitted = barcode.split("[/((?!^)\\{.*?\\})/]".toRegex())
-        val splittedSize = splitted.size
-        splitted.forEachIndexed { index, code ->
+        return addToMap(splitted)
+    }
+
+    fun addToMap(list: List<String>): MutableMap<AII, String> {
+        val result: MutableMap<AII, String> = HashMap()
+        list.forEachIndexed { index, code ->
             val ai: AII? = aiiDict[code]
             ai?.let {
                 val nextCodeIndex = index + 1
-                if (splittedSize > nextCodeIndex) {
-                    result[ai] = splitted[nextCodeIndex]
+                if (list.size > nextCodeIndex) {
+                    result[ai] = list[nextCodeIndex]
                 }
             }
         }
         return result
     }
+
+//    fun batchNumber(barcode: String): String{
+//        var batch = barcode.substring(18)
+//        val list = mutableListOf<String>()
+//        if (batch.contains("8008")){
+//           return batch.split("8008")[0]
+//        }else{
+//            return  batch.split("7003")[0]
+//        }
+//    }
+//
+//    @Throws(InvalidObjectException::class)
+//    fun parseWithoutQuotes(barcode: String): MutableMap<AII, String> {
+//        var list = mutableListOf<String>()
+//        if ((barcode[0]) != '(') {
+//            with(list) {
+//                with(barcode) {
+//                    add(substring(0, 2))
+//                    add(substring(2, 16))
+//                    if (substring(16, 18) == "11") {          // Ветка  идентификатор(01) -> дата производства(11) -> количество(30) или вес(310)
+//                        add(substring(16, 18))
+//                        add(substring(18, 24))
+//                        if (substring(24, 27) == "310") {
+//                            add("310d")
+//                            add(substring(27, length))
+//                        } else {
+//                            add(substring(24, 26))
+//                            add(substring(26, length))
+//                        }
+//                    } else {                                   // Ветка  идентификатор(01) -> номер партии(10) -> дата (8008)ГГГГММДДЧЧММ или  (7003) ГГММДДЧЧММ
+//                        add(substring(16, 18))
+//                        add(batchNumber(barcode))
+//                        if (substring(28, length).contains("8008")) {
+//                            add("8008")
+//                            add(substring(length - 12, length))
+//                        } else {
+//                            list.add("7003")
+//                            list.add(substring(length - 10, length))
+//                        }
+//                    }
+//                }
+//            }
+//            return addToMap(list)
+//        } else return parseBy(barcode)
+//    }
 
     /**
      * Main Parsing barcode function
@@ -132,6 +180,11 @@ object EAN128Parser {
             } else {
                 // get the data of the current AI till the group seperator with out it
                 result = data.substring(localIndex, lenghtToRead + localIndex)
+            }
+            val (resultAI: AII?, count: Int)= getAI(result, 0, false)
+            resultAI?.let {
+                result = data.substring(localIndex, lenghtToRead + count)
+//                getCode(result, ai, 8)
             }
         }
 
@@ -264,6 +317,7 @@ object EAN128Parser {
         addAi("421", "ZipCodeOfRecipient_withCountryCode", 3, DataType.Alphanumeric, 12, true)
         addAi("422", "BasisCountryOfTheWares_ISO3166Format", 3, DataType.Numeric, 3, false)
         addAi("7001", "Nato Stock Number", 4, DataType.Numeric, 13, false)
+        addAi("7003", "DataAndTimeOfManufacturing", 4, DataType.Alphanumeric, 10, false)
         addAi("8001", "RolesProducts", 4, DataType.Numeric, 14, false)
         addAi("8002", "SerialNumberForMobilePhones", 4, DataType.Alphanumeric, 20, true)
         addAi("8003", "GlobalReturnableAssetIdentifier", 4, DataType.Alphanumeric, 34, true)
