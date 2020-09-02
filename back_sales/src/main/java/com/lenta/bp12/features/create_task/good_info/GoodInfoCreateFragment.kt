@@ -52,7 +52,7 @@ class GoodInfoCreateFragment : CoreFragment<FragmentGoodInfoCreateBinding, GoodI
     override fun onToolbarButtonClick(view: View) {
         when (view.id) {
             R.id.b_2 -> vm.onClickRollback()
-            R.id.b_3 -> vm.onClickDetails()
+//            R.id.b_3 -> vm.onClickDetails()
             R.id.b_4 -> vm.onClickClose()
 //            R.id.b_3 -> vm.onScanResult("147300249826851018001FZSIZAB5I6KZKWEQKPKZJHW6MYKVGAETXLPV7M5AIF7OXTQFIM347EWQGXAK65QGJFKTR7EQDHJQTJFSW5DNWTBU3BRLKVM7D6YZMYRBV6IOQY5ZXLPKLBHUZPBTRFTLQ") // Марка
             //R.id.b_3 -> vm.onScanResult("1734001784926710180016BZ3532QMZKOBPRTXTL7BZMZ3YNNMK53PXMB3ZU66TJ3SNVFR7YTCYVLOPKUNBQIG5XXLKNYYWMWGGUXJLVHB2NLSMF6ACBJDB73IUKGGSAEOWKBY7TW7FZ5BLIT3YT2Y") // SAP-код: 270202156641
@@ -65,6 +65,8 @@ class GoodInfoCreateFragment : CoreFragment<FragmentGoodInfoCreateBinding, GoodI
             //R.id.b_3 -> vm.onScanResult("03000042907513119000404111") // Коробка 082682
             //R.id.b_3 -> vm.onScanResult("4607055090121") // ШК
             //R.id.b_3 -> vm.onScanResult("4607149780501") // ШК
+
+            R.id.b_3 -> vm.onScanResult("22N00002NWKKIF6RWF30123456789012345678901234567890123456789000000004") // Акиза 351076
             R.id.b_5 -> vm.onClickApply()
         }
     }

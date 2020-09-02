@@ -14,6 +14,11 @@ data class Basket(
         val markTypeGroup: MarkTypeGroup?
 ) {
     /**
+     * МРЦ
+     * */
+
+    var maxRetailPrice: String = ""
+    /**
      * Распечатана ли
      */
     var isPrinted: Boolean = false

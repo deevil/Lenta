@@ -160,6 +160,7 @@ class CreateTaskManager @Inject constructor(
                                 goodType = good.type,
                                 markTypeGroup = good.markTypeGroup
                         ).also {
+                            it.maxRetailPrice = good.maxRetailPrice
                             addBasket(it)
                         }
                     }
@@ -175,7 +176,8 @@ class CreateTaskManager @Inject constructor(
             currentGood.value?.let { good ->
                 task.baskets.lastOrNull { basket ->
                     val divByMark = if (task.type.isDivByMark) basket.markTypeGroup == good.markTypeGroup else true
-                    isLastBasketMatches(basket, good, providerCode, divByMark)
+                    val divByMrc = if (task.type.isDivByMinimalPrice)  basket.maxRetailPrice == good.maxRetailPrice else true
+                    isLastBasketMatches(basket, good, providerCode, divByMark, divByMrc)
                 }
             }
         }
@@ -185,9 +187,11 @@ class CreateTaskManager @Inject constructor(
             basket: Basket,
             good: GoodCreate,
             providerCode: String,
-            divByMark: Boolean
+            divByMark: Boolean,
+            divByMrc: Boolean
     ): Boolean {
-        return divByMark && basket.section == good.section &&
+        return divByMark && divByMrc &&
+                basket.section == good.section &&
                 basket.goodType == good.type &&
                 basket.control == good.control &&
                 basket.provider?.code == providerCode &&

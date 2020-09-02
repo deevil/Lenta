@@ -182,11 +182,13 @@ class OpenTaskManager @Inject constructor(
             currentGood.value?.let { good ->
                 task.baskets.lastOrNull { basket ->
                     val divByMark = if (task.type?.isDivByMark == true) basket.markTypeGroup == good.markTypeGroup else true
+                    val divByMrc = if (task.type?.isDivByMinimalPrice == true)  basket.maxRetailPrice == good.maxRetailPrice else true
                     isLastBasketMatches(
                             basket = basket,
                             good = good,
                             providerCode = providerCode,
-                            divByMark = divByMark
+                            divByMark = divByMark,
+                            divByMrc = divByMrc
                     )
                 }
             }
@@ -197,9 +199,10 @@ class OpenTaskManager @Inject constructor(
             basket: Basket,
             good: GoodOpen,
             providerCode: String,
-            divByMark: Boolean
+            divByMark: Boolean,
+            divByMrc: Boolean
     ): Boolean {
-        return divByMark &&
+        return divByMark && divByMrc &&
                 basket.section == good.section &&
                 basket.control == good.control &&
                 basket.provider?.code == providerCode &&
@@ -368,7 +371,7 @@ class OpenTaskManager @Inject constructor(
         val restBaskets = taskContentResult.basketInfo
         // Таблица соотношения товаров и корзин, приходит так: [BasketPositionInfo{ХЛЕБ, КОРЗИНА 1, 32ШТ}, BasketPositionInfo{ХЛЕБ, КОРЗИНА 2, 15ШТ}]
         val restBasketsProducts = taskContentResult.basketProducts
-        // Выше мы создали мапу - [ХЛЕБ - [BasketPositionInfo{ХЛЕБ, КОРЗИНА 1, 32ШТ}, BasketPositionInfo{ХЛЕБ, КОРЗИНА 2, 15ШТ}]].
+        // Выше мы создали мапу - [ХЛЕБ - [BasketPositionInfo{ХЛЕБ, КОРЗИНА 1, 32ШТ, ""}, BasketPositionInfo{ХЛЕБ, КОРЗИНА 2, 15ШТ}]].
         val mapOfGoodsByMaterial = restBasketsProducts?.groupBy { it.material.orEmpty() }.orEmpty()
 
         val mappedBaskets = restBaskets?.map { restBasket ->
@@ -404,6 +407,7 @@ class OpenTaskManager @Inject constructor(
                     ?.firstOrNull { it.basketNumber == index.toString() }
                     ?.quantity?.toDoubleOrNull()
                     ?: 0.0
+            maxRetailPrice = good.maxRetailPrice
             addGood(good, goodQuantity)
         }
     }
@@ -653,7 +657,7 @@ class OpenTaskManager @Inject constructor(
 }
 
 
-interface IOpenTaskManager: ITaskManager {
+interface IOpenTaskManager : ITaskManager {
 
     var isNeedLoadTaskListByParams: Boolean
     var searchParams: TaskSearchParams?

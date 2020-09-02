@@ -32,6 +32,7 @@ import com.lenta.shared.utilities.extentions.*
 import com.lenta.shared.utilities.getDateFromString
 import com.lenta.shared.utilities.getFormattedDate
 import com.lenta.shared.utilities.orIfNull
+import java.util.*
 import javax.inject.Inject
 
 class GoodInfoCreateViewModel : CoreViewModel() {
@@ -549,7 +550,6 @@ class GoodInfoCreateViewModel : CoreViewModel() {
             with(result) {
                 task.value?.let { task ->
                     val taskType = task.type
-                    Logg.e { "$taskType" }
                     good.value = GoodCreate(
                             ean = eanInfo?.ean.orEmpty(),
                             eans = database.getEanListByMaterialUnits(
@@ -608,7 +608,7 @@ class GoodInfoCreateViewModel : CoreViewModel() {
             scanInfoNetRequest(
                     ScanInfoParams(
                             tkNumber = sessionInfo.market.orEmpty(),
-                            material = good.value!!.material,
+                            material = good.value?.material.orEmpty(),
                             markNumber = number,
                             mode = ScanInfoMode.MARK.mode,
                             quantity = 0.0
@@ -847,12 +847,20 @@ class GoodInfoCreateViewModel : CoreViewModel() {
     private suspend fun addPart() {
         good.value?.let { changedGood ->
             val quantityValue = quantity.value ?: 0.0
+
+            val localDate =  date.value?.let {
+                if (it.length == 10) {
+                    getDateFromString(it, Constants.DATE_FORMAT_dd_mm_yyyy)
+                }
+                else Date()
+            }?: Date()
+
             val part = Part(
                     number = lastSuccessSearchNumber,
                     material = changedGood.material,
                     providerCode = getProviderCode(),
                     producerCode = getProducerCode(),
-                    date = getDateFromString(date.value.orEmpty(), Constants.DATE_FORMAT_dd_mm_yyyy)
+                    date = localDate
             )
             manager.addGoodToBasket(
                     good = changedGood,

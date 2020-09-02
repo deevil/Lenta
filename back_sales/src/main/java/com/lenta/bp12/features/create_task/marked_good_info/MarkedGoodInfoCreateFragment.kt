@@ -72,7 +72,7 @@ class MarkedGoodInfoCreateFragment : CoreFragment<FragmentMarkedGoodInfoCreateBi
     override fun onToolbarButtonClick(view: View) {
         when (view.id) {
             R.id.b_2 -> vm.onClickRollback()
-            R.id.b_3 -> vm.onClickDetails()
+//            R.id.b_3 -> vm.onClickDetails()
 //            R.id.b_3 -> vm.onScanResult("01046002660113672100000BX.8005012345.938000.92NGkg+wRXz36kBFjpfwOub5DBIIpD2iS/DMYpZuuDLU0Y3pZt1z20/1ksr4004wfhDhRxu4dgUV4QN96Qtdih9g==") // Блок
 //            R.id.b_3 -> vm.onScanResult("00000046203564000001A01238000") // Пачка
             //R.id.b_3 -> vm.onScanResult("147300249826851018001FZSIZAB5I6KZKWEQKPKZJHW6MYKVGAETXLPV7M5AIF7OXTQFIM347EWQGXAK65QGJFKTR7EQDHJQTJFSW5DNWTBU3BRLKVM7D6YZMYRBV6IOQY5ZXLPKLBHUZPBTRFTLQ") // Марка
@@ -86,6 +86,7 @@ class MarkedGoodInfoCreateFragment : CoreFragment<FragmentMarkedGoodInfoCreateBi
             //R.id.b_3 -> vm.onScanResult("03000042907513119000404111") // Коробка 082682
             //R.id.b_3 -> vm.onScanResult("4607055090121") // ШК
             //R.id.b_3 -> vm.onScanResult("4607149780501") // ШК
+//            R.id.b_3 -> vm.onScanResult("22N00002NWKKIF6RWF30123456789012345678901234567890123456789000000004") // Акиза 351076
             R.id.b_5 -> vm.onClickApply()
         }
     }
