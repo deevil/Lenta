@@ -261,8 +261,8 @@ class GoodInfoViewModel : CoreViewModel() {
                             expirDate = selfLifeDate,
                             lgortExport = warehouseSenderSelected,
                             lgortImport = warehouseReceiverSelected,
-                            codeCont = "",
-                            factQnt = quantityField.value.toString(),
+                            codeCont = containerField.value.orEmpty(),
+                            factQnt = quantityField.value.orEmpty(),
                             buom = buom.value?.code.orEmpty(),
                             deviceIP = deviceIp.value.toString(),
                             personnelNumber = sessionInfo.personnelNumber.orEmpty()
