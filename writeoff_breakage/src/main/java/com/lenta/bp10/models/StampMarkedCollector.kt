@@ -3,12 +3,13 @@ package com.lenta.bp10.models
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.lenta.bp10.models.memory.containsStamp
-import com.lenta.bp10.models.task.ProcessExciseAlcoProductService
+import com.lenta.bp10.models.task.ProcessMarkProductService
 import com.lenta.bp10.models.task.TaskExciseStamp
 import com.lenta.bp10.models.task.WriteOffReason
 import com.lenta.shared.utilities.extentions.map
 
-class StampCollector(private val processExciseAlcoProductService: ProcessExciseAlcoProductService) {
+class StampMarkedCollector(private val processMarkProductService: ProcessMarkProductService) {
+
     private val countLiveData: MutableLiveData<Double> = MutableLiveData()
     private val stamps = mutableListOf<TaskExciseStamp>()
     private var preparedStampCode: String = ""
@@ -57,23 +58,23 @@ class StampCollector(private val processExciseAlcoProductService: ProcessExciseA
 
 
     fun processAll(reason: WriteOffReason) {
-        stamps.forEach { processExciseAlcoProductService.add(reason, 1.0, it) }
+        stamps.forEach { processMarkProductService.add(reason, 1.0, it) }
         clear()
     }
 
     fun processAllForSet(reason: WriteOffReason, count: Double) {
-        processExciseAlcoProductService.add(
+        processMarkProductService.add(
                 reason = reason,
                 count = count,
                 stamp = null
         )
-        stamps.forEach { processExciseAlcoProductService.addStamp(reason = reason, stamp = it) }
+        stamps.forEach { processMarkProductService.addStamp(reason = reason, stamp = it) }
         clear()
     }
 
     fun containsStamp(code: String): Boolean {
         return stamps.firstOrNull { it.code == code } != null ||
-                processExciseAlcoProductService.taskRepository.getExciseStamps().containsStamp(code)
+                processMarkProductService.taskRepository.getExciseStamps().containsStamp(code)
     }
 
 
@@ -106,10 +107,10 @@ class StampCollector(private val processExciseAlcoProductService: ProcessExciseA
         onDataChanged()
     }
 
-    fun moveStampsFrom(anotherStampCollector: StampCollector?) {
-        anotherStampCollector?.stamps?.let {
-            stamps.addAll(anotherStampCollector.stamps)
-            anotherStampCollector.clear()
+    fun moveStampsFrom(anotherStampAlcoCollector: StampMarkedCollector?) {
+        anotherStampAlcoCollector?.stamps?.let {
+            stamps.addAll(anotherStampAlcoCollector.stamps)
+            anotherStampAlcoCollector.clear()
         }
 
     }

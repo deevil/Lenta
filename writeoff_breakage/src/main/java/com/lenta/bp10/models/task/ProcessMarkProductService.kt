@@ -6,7 +6,7 @@ import com.lenta.bp10.models.repositories.ITaskRepository
 import com.lenta.bp10.models.repositories.getTotalCountForProduct
 import com.lenta.shared.models.core.ProductInfo
 
-class ProcessExciseAlcoProductService(
+class ProcessMarkProductService(
         val taskDescription: TaskDescription,
         val taskRepository: ITaskRepository,
         val productInfo: ProductInfo
@@ -36,10 +36,10 @@ class ProcessExciseAlcoProductService(
         return WriteOffTask(taskDescription, taskRepository)
     }
 
-    fun add(reason: WriteOffReason, count: Double, stamp: TaskExciseStamp? = null): ProcessExciseAlcoProductService {
+    fun add(reason: WriteOffReason, count: Double, stamp: TaskExciseStamp? = null): ProcessMarkProductService {
         // добавить товар если его нету в таске товаров, в репозитории найти причину списания для данного товара, если есть, то увеличить count иначе создать новый, добавить марку
         if (stamp != null && taskRepository.getExciseStamps().containsStamp(stamp.code)) {
-            return ProcessExciseAlcoProductService(taskDescription, taskRepository, productInfo)
+            return ProcessMarkProductService(taskDescription, taskRepository, productInfo)
         }
         var taskWriteOfReason = TaskWriteOffReason(reason, productInfo.materialNumber, count)
         if (taskRepository.getProducts().findProduct(productInfo) == null) {
@@ -65,7 +65,7 @@ class ProcessExciseAlcoProductService(
 
         }
         addStamp(reason, stamp)
-        return ProcessExciseAlcoProductService(taskDescription, taskRepository, productInfo)
+        return ProcessMarkProductService(taskDescription, taskRepository, productInfo)
     }
 
     fun addStamp(reason: WriteOffReason, stamp: TaskExciseStamp?): Boolean {

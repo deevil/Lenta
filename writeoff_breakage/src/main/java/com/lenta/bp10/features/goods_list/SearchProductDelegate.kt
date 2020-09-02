@@ -21,6 +21,7 @@ import com.lenta.shared.requests.combined.scan_info.ScanInfoRequest
 import com.lenta.shared.requests.combined.scan_info.ScanInfoRequestParams
 import com.lenta.shared.requests.combined.scan_info.ScanInfoResult
 import com.lenta.shared.utilities.Logg
+import com.lenta.shared.utilities.actionByNumber
 import com.mobrun.plugin.api.HyperHive
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -28,7 +29,7 @@ import javax.inject.Inject
 
 class SearchProductDelegate @Inject constructor(
         private val hyperHive: HyperHive,
-        private val screenNavigator: IScreenNavigator,
+        private val navigator: IScreenNavigator,
         private val scanInfoRequest: ScanInfoRequest,
         private val processServiceManager: IWriteOffTaskManager,
         private val sessionInfo: ISessionInfo,
@@ -54,7 +55,7 @@ class SearchProductDelegate @Inject constructor(
     fun copy(): SearchProductDelegate {
         val searchProductDelegate = SearchProductDelegate(
                 hyperHive,
-                screenNavigator,
+                navigator,
                 scanInfoRequest,
                 processServiceManager,
                 sessionInfo,
@@ -79,14 +80,40 @@ class SearchProductDelegate @Inject constructor(
 
         checksEnabled = true
 
+        actionByNumber(
+                number = code,
+                funcForEan = ::actionWithEan,
+                funcForMaterial = ::actionWithMaterial,
+                funcForSapOrBar = navigator::showTwelveCharactersEntered,
+                funcForExcise = ::loadMarkInfo,
+                funcForBox = ::loadBoxInfo,
+                funcForNotValidFormat = {
+                    goBackIfSearchFromList()
+                    navigator.showIncorrectEanFormat()
+                }
+        )
+
+    }
+
+    fun actionWithMaterial(number: String) {
+        searchCode("000000000000${codeWith12Digits?.takeLast(6)}", fromScan = false, isBarCode = false)
+        codeWith12Digits = null
+    }
+
+    fun actionWithEan(number: String) {
+        searchCode(code = codeWith12Digits.orEmpty(), fromScan = false, isBarCode = true)
+        codeWith12Digits = null
+    }
+
+    fun oldSearchVariant(code: String, fromScan: Boolean, isBarCode: Boolean? = null) {
         if (checksEnabled && isBarCode == null && code.length == 12) {
             codeWith12Digits = code
-            screenNavigator.openSelectTypeCodeScreen(requestCodeTypeSap, requestCodeTypeBarCode)
+            navigator.openSelectTypeCodeScreen(requestCodeTypeSap, requestCodeTypeBarCode)
             return
         }
 
         viewModelScope().launch {
-            screenNavigator.showProgress(scanInfoRequest)
+            navigator.showProgress(scanInfoRequest)
             scanInfoRequest(
                     ScanInfoRequestParams(
                             number = code,
@@ -96,7 +123,7 @@ class SearchProductDelegate @Inject constructor(
                     )
             ).either(::handleFailure, ::handleSearchSuccess)
 
-            screenNavigator.hideProgress()
+            navigator.hideProgress()
         }
     }
 
@@ -126,7 +153,7 @@ class SearchProductDelegate @Inject constructor(
 
     private fun checkPermissions() {
         if (checksEnabled && zmpUtz29V001.isChkOwnpr(processServiceManager.getWriteOffTask()?.taskDescription!!.taskType.code)) {
-            screenNavigator.showProgress(permissionToWriteoffNetRequest)
+            navigator.showProgress(permissionToWriteoffNetRequest)
 
             viewModelScope().launch {
                 permissionToWriteoffNetRequest(
@@ -137,7 +164,7 @@ class SearchProductDelegate @Inject constructor(
             }
 
             checksEnabled = false
-            screenNavigator.hideProgress()
+            navigator.hideProgress()
 
             return
         }
@@ -163,7 +190,7 @@ class SearchProductDelegate @Inject constructor(
     }
 
     private fun handleFailure(failure: Failure) {
-        screenNavigator.openAlertScreen(failure, "97")
+        navigator.openAlertScreen(failure, "97")
     }
 
     private fun handleSearchSuccess(scanInfoResult: ScanInfoResult) {
@@ -174,7 +201,7 @@ class SearchProductDelegate @Inject constructor(
 
     private fun handlePermissionsSuccess(permissionToWriteoff: PermissionToWriteoffRestInfo) {
         if (permissionToWriteoff.ownr.isEmpty()) {
-            screenNavigator.openWriteOffToProductionConfirmationScreen(requestCodeAddAddToProduction)
+            navigator.openWriteOffToProductionConfirmationScreen(requestCodeAddAddToProduction)
         } else searchProduct()
     }
 
@@ -195,31 +222,28 @@ class SearchProductDelegate @Inject constructor(
 
 
             if (!goodsForTask) {
-                screenNavigator.openAlertGoodsNotForTaskScreen()
+                navigator.openAlertGoodsNotForTaskScreen()
                 return
             }
 
             goodsForTask = false
 
-            if (it.productInfo.type == ProductType.ExciseAlcohol || it.productInfo.type == ProductType.NonExciseAlcohol) {
-                processServiceManager.getWriteOffTask()?.taskDescription!!.gisControls.forEach { gis ->
-                    if (gis == "A") goodsForTask = true
-                }
+            val gisControls = processServiceManager.getWriteOffTask()?.taskDescription!!.gisControls
 
-            } else if (it.productInfo.type == ProductType.General) {
-                processServiceManager.getWriteOffTask()?.taskDescription!!.gisControls.forEach { gis ->
-                    if (gis == "N") goodsForTask = true
-                }
+            Logg.d { "--> gisControls = $gisControls" }
+
+            if (gisControls.contains(it.productInfo.type.code)) {
+                goodsForTask = true
             }
 
             if (!goodsForTask) {
-                screenNavigator.openAlertGoodsNotForTaskScreen()
+                navigator.openAlertGoodsNotForTaskScreen()
                 return
             }
 
             it.productInfo.matrixType.let { matrixType ->
                 if (checksEnabled && !matrixType.isNormal()) {
-                    screenNavigator.openMatrixAlertScreen(matrixType = matrixType, codeConfirmation = requestCodeAddProductWithBadStamp)
+                    navigator.openMatrixAlertScreen(matrixType = matrixType, codeConfirmation = requestCodeAddProductWithBadStamp)
                     return
                 }
             }
@@ -230,16 +254,17 @@ class SearchProductDelegate @Inject constructor(
 
     fun openProductScreen(productInfo: ProductInfo, quantity: Double) {
         when (productInfo.type) {
-            ProductType.General -> screenNavigator.openGoodInfoScreen(productInfo, quantity)
+            ProductType.General -> navigator.openGoodInfoScreen(productInfo, quantity)
             ProductType.ExciseAlcohol -> {
                 if (productInfo.isSet) {
-                    screenNavigator.openSetsInfoScreen(productInfo, quantity)
+                    navigator.openSetsInfoScreen(productInfo, quantity)
                     return
                 } else {
-                    screenNavigator.openExciseAlcoScreen(productInfo)
+                    navigator.openExciseAlcoScreen(productInfo)
                 }
             }
-            else -> screenNavigator.openGoodInfoScreen(productInfo, quantity)
+            ProductType.Marked -> navigator.openMarkedInfoScreen(productInfo, quantity)
+            else -> navigator.openGoodInfoScreen(productInfo, quantity)
         }
 
         limitsChecker?.check()

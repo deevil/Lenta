@@ -7,10 +7,7 @@ import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import com.lenta.bp10.BR
 import com.lenta.bp10.R
-import com.lenta.bp10.databinding.FragmentMarkedBinding
-import com.lenta.bp10.databinding.ItemMarkedGoodPropertyBinding
-import com.lenta.bp10.databinding.LayoutMarkedPropertiesBinding
-import com.lenta.bp10.databinding.LayoutMarkedQuantityBinding
+import com.lenta.bp10.databinding.*
 import com.lenta.bp10.platform.extentions.getAppComponent
 import com.lenta.shared.models.core.ProductInfo
 import com.lenta.shared.platform.activity.OnBackPresserListener
@@ -27,19 +24,19 @@ import com.lenta.shared.utilities.extentions.getFragmentResultCode
 import com.lenta.shared.utilities.extentions.provideViewModel
 import com.lenta.shared.utilities.state.state
 
-class MarkedFragment : CoreFragment<FragmentMarkedBinding, MarkedViewModel>(),
+class MarkedInfoFragment : CoreFragment<FragmentMarkedInfoBinding, MarkedInfoViewModel>(),
         ViewPagerSettings, OnScanResultListener, ToolbarButtonsClickListener, OnBackPresserListener {
 
     var productInfo by state<ProductInfo?>(null)
 
     var initCount by state<Double?>(null)
 
-    override fun getLayoutId(): Int = R.layout.fragment_marked
+    override fun getLayoutId(): Int = R.layout.fragment_marked_info
 
     override fun getPageNumber() = generateScreenNumber()
 
-    override fun getViewModel(): MarkedViewModel {
-        provideViewModel(MarkedViewModel::class.java).let { viewModel ->
+    override fun getViewModel(): MarkedInfoViewModel {
+        provideViewModel(MarkedInfoViewModel::class.java).let { viewModel ->
             getAppComponent()?.inject(viewModel)
 
             productInfo?.let {
@@ -100,8 +97,8 @@ class MarkedFragment : CoreFragment<FragmentMarkedBinding, MarkedViewModel>(),
     }
 
     private fun initMarkedGoodQuantity(container: ViewGroup): View {
-        DataBindingUtil.inflate<LayoutMarkedQuantityBinding>(LayoutInflater.from(container.context),
-                R.layout.layout_marked_quantity,
+        DataBindingUtil.inflate<LayoutMarkedInfoQuantityBinding>(LayoutInflater.from(container.context),
+                R.layout.layout_marked_info_quantity,
                 container,
                 false
         ).let { layoutBinding ->
@@ -113,8 +110,8 @@ class MarkedFragment : CoreFragment<FragmentMarkedBinding, MarkedViewModel>(),
     }
 
     private fun initMarkedGoodProperties(container: ViewGroup): View {
-        DataBindingUtil.inflate<LayoutMarkedPropertiesBinding>(LayoutInflater.from(container.context),
-                R.layout.layout_marked_properties,
+        DataBindingUtil.inflate<LayoutMarkedInfoPropertiesBinding>(LayoutInflater.from(container.context),
+                R.layout.layout_marked_info_properties,
                 container,
                 false
         ).let { layoutBinding ->
@@ -158,8 +155,8 @@ class MarkedFragment : CoreFragment<FragmentMarkedBinding, MarkedViewModel>(),
         private const val TAB_QUANTITY = 0
         private const val TAB_PROPERTIES = 1
 
-        fun create(productInfo: ProductInfo, initCount: Double): MarkedFragment {
-            MarkedFragment().let {
+        fun create(productInfo: ProductInfo, initCount: Double): MarkedInfoFragment {
+            MarkedInfoFragment().let {
                 it.productInfo = productInfo
                 it.initCount = initCount
                 return it

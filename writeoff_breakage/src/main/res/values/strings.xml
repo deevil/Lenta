@@ -44,5 +44,6 @@
     <string name="properties">Свойства</string>
     <string name="property">Свойство</string>
     <string name="value">Значение</string>
+    <string name="mark">Марка</string>
 
 </resources>

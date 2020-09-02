@@ -8,7 +8,7 @@
 
         <variable
             name="vm"
-            type="com.lenta.bp10.features.good_information.marked.MarkedViewModel" />
+            type="com.lenta.bp10.features.good_information.marked.MarkedInfoViewModel" />
 
         <variable
             name="rvConfig"

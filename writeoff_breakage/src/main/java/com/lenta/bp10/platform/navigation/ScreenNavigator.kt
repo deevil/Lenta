@@ -7,6 +7,7 @@ import com.lenta.bp10.features.auth.AuthFragment
 import com.lenta.bp10.features.detection_saved_data.DetectionSavedDataFragment
 import com.lenta.bp10.features.good_information.excise_alco.ExciseAlcoInfoFragment
 import com.lenta.bp10.features.good_information.general.GoodInfoFragment
+import com.lenta.bp10.features.good_information.marked.MarkedInfoFragment
 import com.lenta.bp10.features.good_information.sets.ComponentItem
 import com.lenta.bp10.features.good_information.sets.SetsFragment
 import com.lenta.bp10.features.good_information.sets.component.ComponentFragment
@@ -112,6 +113,12 @@ class ScreenNavigator(
     override fun openGoodInfoScreen(productInfo: ProductInfo, quantity: Double) {
         runOrPostpone {
             getFragmentStack()?.push(GoodInfoFragment.create(productInfo, quantity))
+        }
+    }
+
+    override fun openMarkedInfoScreen(productInfo: ProductInfo, quantity: Double) {
+        runOrPostpone {
+            getFragmentStack()?.push(MarkedInfoFragment.create(productInfo, quantity))
         }
     }
 
@@ -302,6 +309,7 @@ class ScreenNavigator(
     override fun openNotPossibleSaveWithoutReasonScreen() {
         openInfoScreen(message = context.getString(R.string.not_possible_save_without_reason))
     }
+
 }
 
 interface IScreenNavigator : ICoreNavigator {
@@ -315,6 +323,7 @@ interface IScreenNavigator : ICoreNavigator {
     fun openLoadingTaskSettingsScreen()
     fun openGoodsListScreen()
     fun openGoodInfoScreen(productInfo: ProductInfo, quantity: Double = 0.0)
+    fun openMarkedInfoScreen(productInfo: ProductInfo, quantity: Double = 0.0)
     fun openExciseAlcoScreen(productInfo: ProductInfo)
     fun openRemoveTaskConfirmationScreen(taskDescription: String, codeConfirmation: Int)
     fun openSendingReportsScreen(sendWriteOffDataResult: SendWriteOffDataResult)

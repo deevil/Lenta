@@ -7,7 +7,7 @@ import com.lenta.bp10.features.auth.AuthViewModel
 import com.lenta.bp10.features.detection_saved_data.DetectionSavedDataViewModel
 import com.lenta.bp10.features.good_information.excise_alco.ExciseAlcoInfoViewModel
 import com.lenta.bp10.features.good_information.general.GoodInfoViewModel
-import com.lenta.bp10.features.good_information.marked.MarkedViewModel
+import com.lenta.bp10.features.good_information.marked.MarkedInfoViewModel
 import com.lenta.bp10.features.good_information.sets.SetsViewModel
 import com.lenta.bp10.features.good_information.sets.component.ComponentViewModel
 import com.lenta.bp10.features.goods_list.GoodsListViewModel
@@ -57,6 +57,6 @@ interface AppComponent : FromParentToCoreProvider {
     fun inject(it: DetectionSavedDataViewModel)
     fun inject(it: ExceptionHandler)
     fun inject(viewModel: ExciseAlcoInfoViewModel)
-    fun inject(it: MarkedViewModel)
+    fun inject(it: MarkedInfoViewModel)
 }
 

@@ -1,7 +1,7 @@
 package com.lenta.bp10.stamps_collector_manager
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import com.lenta.bp10.models.StampCollector
+import com.lenta.bp10.models.StampAlcoCollector
 import com.lenta.bp10.models.memory.MemoryTaskExciseStampRepository
 import com.lenta.bp10.models.memory.MemoryTaskProductRepository
 import com.lenta.bp10.models.memory.MemoryTaskRepository
@@ -40,13 +40,13 @@ import java.util.*
 @ObsoleteCoroutinesApi
 @ExperimentalCoroutinesApi
 @RunWith(MockitoJUnitRunner::class)
-class StampCollectorTest {
+class StampAlcoCollectorTest {
 
     @get:Rule
     val rule = InstantTaskExecutorRule()
 
     private lateinit var processExciseAlcoProductService: ProcessExciseAlcoProductService
-    private lateinit var stampCollector : StampCollector
+    private lateinit var stampAlcoCollector : StampAlcoCollector
     private lateinit var taskDescription: TaskDescription
 
     var taskProductRepository: ITaskProductRepository = MemoryTaskProductRepository()
@@ -82,38 +82,38 @@ class StampCollectorTest {
 
         processExciseAlcoProductService = ProcessExciseAlcoProductService(taskDescription, taskRepository, product1)
 
-        stampCollector = StampCollector(processExciseAlcoProductService)
+        stampAlcoCollector = StampAlcoCollector(processExciseAlcoProductService)
 
     }
 
     @Test(expected = UnsupportedOperationException::class)
     fun `Добавление марки без подготовки`() {
-        stampCollector.add("1","", writeOffReason = "001", isBadStamp = false)
+        stampAlcoCollector.add("1","", writeOffReason = "001", isBadStamp = false)
 
     }
 
     @Test()
     fun `Добавление марки правильно`() = runBlocking {
 
-        assertEquals("", stampCollector.getPreparedStampCode())
+        assertEquals("", stampAlcoCollector.getPreparedStampCode())
         val stampCode = "123456789123456789"
 
-        assertEquals(null, stampCollector.observeCount().value)
+        assertEquals(null, stampAlcoCollector.observeCount().value)
 
-        stampCollector.prepare(stampCode = stampCode).apply {
+        stampAlcoCollector.prepare(stampCode = stampCode).apply {
             assertTrue(this)
         }
 
-        assertEquals(stampCode, stampCollector.getPreparedStampCode())
+        assertEquals(stampCode, stampAlcoCollector.getPreparedStampCode())
 
-        stampCollector.add("1","", writeOffReason = "001", isBadStamp = false).apply {
+        stampAlcoCollector.add("1","", writeOffReason = "001", isBadStamp = false).apply {
             assertTrue(this)
         }
 
-        assertEquals("", stampCollector.getPreparedStampCode())
+        assertEquals("", stampAlcoCollector.getPreparedStampCode())
 
 
-        stampCollector.observeCount().observeOnce {
+        stampAlcoCollector.observeCount().observeOnce {
             assertEquals(1.0, it)
         }
 

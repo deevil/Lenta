@@ -2,19 +2,21 @@ package com.lenta.shared.models.core
 
 import com.lenta.shared.R
 
-enum class ProductType {
-    General,
-    NonExciseAlcohol,
-    ExciseAlcohol,
-    Unknown
+enum class ProductType(val code: String) {
+    General("N"),
+    NonExciseAlcohol("A"),
+    ExciseAlcohol("A"),
+    Marked("M"),
+    Unknown("UNKNOWN")
 }
 
-
-fun getProductType(isAlco: Boolean, isExcise: Boolean): ProductType {
-    if (isAlco) {
-        return if (isExcise) ProductType.ExciseAlcohol else ProductType.NonExciseAlcohol
+fun getProductType(isAlco: Boolean, isExcise: Boolean, isMark: Boolean = false): ProductType {
+    return when{
+        isMark -> ProductType.Marked
+        isExcise -> ProductType.ExciseAlcohol
+        isAlco -> ProductType.NonExciseAlcohol
+        else -> ProductType.General
     }
-    return ProductType.General
 }
 
 fun ProductType?.getDescriptionResId(): Int {
@@ -22,6 +24,7 @@ fun ProductType?.getDescriptionResId(): Int {
         ProductType.General ->  R.string.general_product
         ProductType.ExciseAlcohol -> R.string.excise_alco
         ProductType.NonExciseAlcohol -> R.string.non_excise_alco
+        ProductType.Marked -> R.string.marked_good
         else -> 0
     }
 }
