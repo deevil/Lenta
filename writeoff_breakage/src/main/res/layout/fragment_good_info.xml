@@ -76,8 +76,8 @@
             app:layout_constraintTop_toTopOf="@+id/div_vert"
             app:maxLengthForScanProtect="@{6}"
             app:onOkInSoftKeyboard="@{vm}"
-            app:selectAfterFocus="@{true}"
             app:requestFocus="@{vm.requestFocusToQuantity}"
+            app:selectAfterFocus="@{true}"
             app:suffix="@{vm.suffix}"
             tools:text="1 ШТ" />
 
