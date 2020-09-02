@@ -105,7 +105,8 @@
             app:layout_constraintBottom_toBottomOf="@+id/tv_accept_val"
             app:layout_constraintEnd_toStartOf="@+id/div_vert"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/tv_accept_val" />
+            app:layout_constraintTop_toTopOf="@+id/tv_accept_val"
+            tools:text="Принять (КОР=2 ШТ)"/>
 
         <TextView
             android:id="@+id/tv_accept_val"
@@ -167,6 +168,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="1dp"
+            android:visibility="@{!vm.isDefect}"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/div_hor3">
@@ -240,19 +242,39 @@
                 app:position="@{vm.spinProductionDateSelectedPosition}"
                 tools:entries="@array/test_list" />
 
-            <EditText
-                android:id="@+id/et_production_date"
+            <LinearLayout
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginEnd="8dp"
-                android:ems="10"
-                android:hint="@string/format_date"
-                android:inputType="date"
-                android:text="@={vm.productionDate}"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:orientation="horizontal"
+                app:layout_constraintBottom_toTopOf="@+id/div_hor8"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/div_vert1"
-                app:layout_constraintTop_toTopOf="@+id/spinner_production_date" />
+                app:layout_constraintTop_toTopOf="parent">
+
+                <EditText
+                    android:id="@+id/et_production_date"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginEnd="8dp"
+                    android:layout_weight="40"
+                    android:hint="@string/format_date"
+                    android:inputType="date"
+                    android:text="@={vm.productionDate}" />
+
+                <EditText
+                    android:id="@+id/et_production_time"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="8dp"
+                    android:layout_weight="60"
+                    android:visibility="@{vm.isVisibilityProductionTime}"
+                    android:hint="@string/format_time"
+                    android:inputType="time"
+                    android:text="@={vm.productionTime}" />
+
+            </LinearLayout>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -295,7 +317,7 @@
             android:id="@+id/ConstraintShelfLife"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:visibility="@{vm.isPerishable}"
+            android:visibility="@{vm.isPerishable &amp;&amp;  !vm.isDefect}"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/ConstraintDefect">

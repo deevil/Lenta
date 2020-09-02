@@ -243,6 +243,10 @@ class DataBaseRepo(
     override suspend fun getGrzAlternMeins(): String? = withContext(Dispatchers.IO) {
         zmpUtz14V001.getGrzAlternMeins()
     }
+
+    override suspend fun getParamGrzPerishableHH(): String? = withContext(Dispatchers.IO) {
+        zmpUtz14V001.getParamGrzPerishableHH()
+    }
 }
 
 interface IDataBaseRepo {
@@ -289,4 +293,5 @@ interface IDataBaseRepo {
     suspend fun getGrzGrundMarkName(code: String): String?
     suspend fun getReasonRejectionMercuryInfoOfQuality(quality: String): List<ReasonRejectionInfo>?
     suspend fun getGrzAlternMeins(): String?
+    suspend fun getParamGrzPerishableHH(): String?
 }

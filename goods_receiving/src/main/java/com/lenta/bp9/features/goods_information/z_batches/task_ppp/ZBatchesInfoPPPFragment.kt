@@ -17,6 +17,7 @@ import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListe
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
 import com.lenta.shared.scan.OnScanResultListener
 import com.lenta.shared.utilities.DateInputMask
+import com.lenta.shared.utilities.TimeInputMask
 import com.lenta.shared.utilities.extentions.connectLiveData
 import com.lenta.shared.utilities.extentions.provideViewModel
 import com.lenta.shared.utilities.state.state
@@ -116,6 +117,7 @@ class ZBatchesInfoPPPFragment : CoreFragment<FragmentZBatchesInfoPppBinding, ZBa
         })
 
         binding?.etProductionDate?.let { DateInputMask(it).listen() }
+        binding?.etProductionTime?.let { TimeInputMask(it).listen() }
     }
 
     override fun onToolbarButtonClick(view: View) {

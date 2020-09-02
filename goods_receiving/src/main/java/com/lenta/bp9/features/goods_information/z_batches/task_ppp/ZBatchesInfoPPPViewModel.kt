@@ -13,6 +13,7 @@ import com.lenta.bp9.platform.TypeDiscrepanciesConstants
 import com.lenta.bp9.platform.TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_NORM
 import com.lenta.bp9.platform.navigation.IScreenNavigator
 import com.lenta.bp9.repos.IDataBaseRepo
+import com.lenta.bp9.repos.IRepoInMemoryHolder
 import com.lenta.shared.platform.constants.Constants
 import com.lenta.shared.platform.time.ITimeMonitor
 import com.lenta.shared.platform.viewmodel.CoreViewModel
@@ -51,6 +52,9 @@ class ZBatchesInfoPPPViewModel : CoreViewModel() {
     @Inject
     lateinit var context: Context
 
+    @Inject
+    lateinit var repoInMemoryHolder: IRepoInMemoryHolder
+
     val requestFocusToCount: MutableLiveData<Boolean> = MutableLiveData(false)
     val productInfo: MutableLiveData<TaskProductInfo> = MutableLiveData()
     val isPerishable: MutableLiveData<Boolean> = MutableLiveData()
@@ -63,6 +67,7 @@ class ZBatchesInfoPPPViewModel : CoreViewModel() {
     val spinReasonRejection: MutableLiveData<List<String>> = MutableLiveData()
     val spinReasonRejectionSelectedPosition: MutableLiveData<Int> = MutableLiveData(-1)
     val productionDate: MutableLiveData<String> = MutableLiveData("")
+    val productionTime: MutableLiveData<String> = MutableLiveData("")
     val suffix: MutableLiveData<String> = MutableLiveData()
     val generalShelfLife: MutableLiveData<String> = MutableLiveData()
     val remainingShelfLife: MutableLiveData<String> = MutableLiveData()
@@ -81,7 +86,7 @@ class ZBatchesInfoPPPViewModel : CoreViewModel() {
 
     val tvAccept: MutableLiveData<String> by lazy {
         val isEizUnit = productInfo.value?.purchaseOrderUnits?.code != productInfo.value?.uom?.code
-        if (isEizUnit) {
+        if (!isEizUnit) {
             MutableLiveData(context.getString(R.string.accept_txt))
         } else {
             val purchaseOrderUnitsName = productInfo.value?.purchaseOrderUnits?.name.orEmpty()
@@ -112,6 +117,8 @@ class ZBatchesInfoPPPViewModel : CoreViewModel() {
     val enabledApplyButton: MutableLiveData<Boolean> = countValue.map {
         (it ?: 0.0) > 0.0
     }
+
+    val isVisibilityProductionTime: MutableLiveData<Boolean> = MutableLiveData(false)
 
     private val currentQualityInfoCode: String
         get() {
@@ -291,6 +298,18 @@ class ZBatchesInfoPPPViewModel : CoreViewModel() {
                 qualityInfo.value = dataBase.getQualityMercuryInfo().orEmpty()
             }
 
+            spinQuality.value = qualityInfo.value?.map { it.name }
+
+            spinManufacturers.value =
+                    repoInMemoryHolder
+                            .manufacturersForZBatches.value
+                            ?.takeIf { it.isNotEmpty() }
+                            ?.groupBy { it.manufactureName }
+                            ?.map { it.key }
+                            ?: listOf(context.getString(R.string.no_manufacturer_selection_required))
+
+            spinProductionDate.value = dataBase.getTermControlInfo()?.map {it.name}.orEmpty()
+
             /** определяем, что товар скоропорт, это общий для всех алгоритм https://trello.com/c/8sOTWtB7 */
             val paramGrzUffMhdhb = dataBase.getParamGrzUffMhdhb()?.toInt() ?: 60
             val productGeneralShelfLife = productInfo.value?.generalShelfLife?.toInt() ?: 0
@@ -298,34 +317,24 @@ class ZBatchesInfoPPPViewModel : CoreViewModel() {
             val productMhdhbDays = productInfo.value?.mhdhbDays ?: 0
             val productMhdrzDays = productInfo.value?.mhdrzDays ?: 0
 
-            isPerishable.value = productGeneralShelfLife > 0
+            isPerishable.value =
+                    productGeneralShelfLife > 0
                     || productRemainingShelfLife > 0
                     || (productMhdhbDays in 1 until paramGrzUffMhdhb)
 
-            isPerishable.value
-                    ?.takeIf { it }
-                    ?.run {
-                        if ( productGeneralShelfLife > 0 || productRemainingShelfLife > 0 ) { //https://trello.com/c/XSAxdgjt
-                            generalShelfLife.value = productGeneralShelfLife.toString()
-                            remainingShelfLife.value = productRemainingShelfLife.toString()
-                        } else {
-                            generalShelfLife.value = productMhdhbDays.toString()
-                            remainingShelfLife.value = productMhdrzDays.toString()
-                        }
-                    }
+            if (isPerishable.value == true) {
+                if ( productGeneralShelfLife > 0 || productRemainingShelfLife > 0 ) { //https://trello.com/c/XSAxdgjt
+                    generalShelfLife.value = productGeneralShelfLife.toString()
+                    remainingShelfLife.value = productRemainingShelfLife.toString()
+                } else {
+                    generalShelfLife.value = productMhdhbDays.toString()
+                    remainingShelfLife.value = productMhdrzDays.toString()
+                }
+            }
 
-            spinQuality.value = qualityInfo.value?.map { it.name }
-
-            spinManufacturers.value =
-                    taskManager
-                            .getReceivingTask()
-                            ?.taskRepository
-                            ?.getMercuryDiscrepancies()
-                            ?.getManufacturesOfProduct(productInfo.value!!)
-
-            /**paramGrzRoundLackRatio.value = dataBase.getParamGrzRoundLackRatio()
-            paramGrzRoundLackUnit.value = dataBase.getParamGrzRoundLackUnit()
-            paramGrzRoundHeapRatio.value = dataBase.getParamGrzRoundHeapRatio()*/
+            val paramGrzPerishableHH = dataBase.getParamGrzPerishableHH()?.toDoubleOrNull() ?: 0.0
+            val generalShelfLifeValue = generalShelfLife.value?.toDoubleOrNull() ?: 0.0
+            isVisibilityProductionTime.value = true //todo generalShelfLifeValue <= paramGrzPerishableHH
         }
     }
 

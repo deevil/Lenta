@@ -68,6 +68,8 @@ data class StartRecountPGERestInfo(
         val taskBlocksDiscrepancies: List<TaskBlockDiscrepanciesRestData>,
         @SerializedName("ET_PROPERTIES")//таблица свойств для маркированного товара
         val markingGoodsProperties: List<TaskMarkingGoodsPropertiesRestData>,
+        @SerializedName("ET_ZPRODUCERS")//Таблица данных производителей для Z-партий
+        val manufacturersForZBatches: List<TaskManufacturersForZBatchesRestData>?,
         @SerializedName("EV_RETCODE")
         override val retCode: Int,
         @SerializedName("EV_ERROR_TEXT")
