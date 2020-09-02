@@ -224,6 +224,10 @@ class TaskContentViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
                     navigator.hideProgress()
                     navigator.showNoMarkTypeInSettings()
                 }
+                MarkScreenStatus.INCORRECT_EAN_FORMAT -> {
+                    navigator.hideProgress()
+                    navigator.showIncorrectEanFormat()
+                }
                 else -> {
                     navigator.hideProgress()
                 }
