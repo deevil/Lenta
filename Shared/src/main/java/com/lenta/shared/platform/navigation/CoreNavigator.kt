@@ -517,6 +517,16 @@ class CoreNavigator @Inject constructor(
         }
     }
 
+    override fun showIncorrectEanFormat() {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    pageNumber = "119",
+                    message = context.getString(R.string.incorrect_ean_format),
+                    iconRes = R.drawable.ic_warning_red_80dp
+            ))
+        }
+    }
+
 }
 
 fun ICoreNavigator.runOrPostpone(function: () -> Unit) {
@@ -584,6 +594,7 @@ interface ICoreNavigator {
     fun openMarkingGoodsInfoScreen()
     fun openExceptionsShelfLifeScreen()
     fun showTwelveCharactersEntered(sapCallback: () -> Unit, barCallback: () -> Unit)
+    fun showIncorrectEanFormat()
 }
 
 class FunctionsCollector(private val needCollectLiveData: LiveData<Boolean>) {

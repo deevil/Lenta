@@ -85,12 +85,7 @@ class SearchProductDelegate @Inject constructor(
                 funcForEan = ::actionWithEan,
                 funcForMaterial = ::actionWithMaterial,
                 funcForSapOrBar = navigator::showTwelveCharactersEntered,
-                funcForExcise = ::loadMarkInfo,
-                funcForBox = ::loadBoxInfo,
-                funcForNotValidFormat = {
-                    goBackIfSearchFromList()
-                    navigator.showIncorrectEanFormat()
-                }
+                funcForNotValidFormat = navigator::showIncorrectEanFormat
         )
 
     }

@@ -398,17 +398,6 @@ class ScreenNavigator @Inject constructor(
         }
     }
 
-    override fun showTwelveCharactersEntered(sapCallback: () -> Unit, barCallback: () -> Unit) {
-        runOrPostpone {
-            getFragmentStack()?.push(AlertFragment.create(message = context.getString(R.string.twelve_characters_entered),
-                    pageNumber = "40",
-                    codeConfirmForLeft = backFragmentResultHelper.setFuncForResult(sapCallback),
-                    codeConfirmForRight = backFragmentResultHelper.setFuncForResult(barCallback),
-                    leftButtonDecorationInfo = ButtonDecorationInfo.sap,
-                    rightButtonDecorationInfo = ButtonDecorationInfo.barcode))
-        }
-    }
-
     override fun openVideoScanProductScreen() {
         runOrPostpone {
             getFragmentStack()?.push(EanVideoScannerFragment())
@@ -534,7 +523,6 @@ interface IScreenNavigator : ICoreNavigator {
     fun showNoNetworkToSaveTask(nextCallback: () -> Unit)
     fun showGoodNotFound()
     fun showWrongBarcodeFormat()
-    fun showTwelveCharactersEntered(sapCallback: () -> Unit, barCallback: () -> Unit)
     fun showDeviceNotSupportVideoScan()
     fun openAddMarkToList(nextCallback: () -> Unit, message: String)
     fun showIncorrectProductionDate(backCallback: () -> Unit)
