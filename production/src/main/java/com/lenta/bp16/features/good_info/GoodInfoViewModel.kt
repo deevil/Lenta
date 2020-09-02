@@ -237,12 +237,16 @@ class GoodInfoViewModel : CoreViewModel() {
         navigator.showProgressLoadingData()
         setDateInfo()
         saveWarehouses()
-        val prodCodeSelectedProducer = goodParams.value?.producers?.getOrNull(selectedProducerPosition.value
-                ?: 0)?.producerCode.orEmpty()
-        val warehouseSenderSelected = warehouseSender.value?.getOrNull(selectedWarehouseSenderPosition.value
-                ?: 0).orEmpty()
-        val warehouseReceiverSelected = warehouseReceiver.value?.getOrNull(selectedWarehouseReceiverPosition.value
-                ?: 0).orEmpty()
+
+        val warehouseSenderIndex = selectedWarehouseSenderPosition.getOrDefaultWithNull()
+        val warehouseSenderSelected = warehouseSender.getOrEmpty(warehouseSenderIndex)
+
+        val warehouseReceiverIndex = selectedWarehouseReceiverPosition.getOrDefaultWithNull()
+        val warehouseReceiverSelected = warehouseReceiver.getOrEmpty(warehouseReceiverIndex)
+
+        val prodCodeIndex = selectedProducerPosition.getOrDefault()
+        val prodCodeSelectedProducer = goodParams.value?.producers?.getOrNull(prodCodeIndex)?.producerCode
+
         val dateIsCorrect = if (zPartFlag.value == true) {
             checkDate()
         } else {
@@ -256,7 +260,7 @@ class GoodInfoViewModel : CoreViewModel() {
                     params = MovementParams(
                             tkNumber = sessionInfo.market.orEmpty(),
                             matnr = goodParams.value?.material.orEmpty(),
-                            prodCode = prodCodeSelectedProducer,
+                            prodCode = prodCodeSelectedProducer.orEmpty(),
                             dateProd = producerDate,
                             expirDate = selfLifeDate,
                             lgortExport = warehouseSenderSelected,
