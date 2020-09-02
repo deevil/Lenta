@@ -403,7 +403,8 @@ class ScreenNavigator @Inject constructor(
                     message = context.getString(R.string.tw_moving_successful),
                     iconRes = R.drawable.ic_info_green_80dp,
                     rightButtonDecorationInfo = ButtonDecorationInfo.next,
-                    codeConfirmForRight = backFragmentResultHelper.setFuncForResult(nextCallback)
+                    codeConfirmForRight = backFragmentResultHelper.setFuncForResult(nextCallback),
+                    isVisibleLeftButton = false
             ))
         }
     }

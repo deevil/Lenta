@@ -97,29 +97,19 @@ class GoodInfoViewModel : CoreViewModel() {
     }
     val selectedProducerPosition = MutableLiveData(0)
 
-    /**Склад отправитель*/
+    /**Список складов отправителей*/
     val warehouseSender: MutableLiveData<List<String>> = MutableLiveData()
     val selectedWarehouseSenderPosition by unsafeLazy {
         MutableLiveData(appSettings.warehouseSenderPosition)
     }
 
-    /**Склад получатель*/
+    /**Список складов получателей*/
     val warehouseReceiver: MutableLiveData<List<String>> = MutableLiveData()
     val selectedWarehouseReceiverPosition by unsafeLazy {
         MutableLiveData(appSettings.warehouseReceiverPosition)
     }
 
     /**Дата производства и срок годности*/
-    private val warehouseSenderSelected by unsafeLazy {
-        selectedWarehouseSenderPosition.map {
-            warehouseSender.value?.getOrNull(it ?: 0).orEmpty()
-        }
-    }
-    private val warehouseReceiverSelected by unsafeLazy {
-        selectedWarehouseReceiverPosition.map {
-            warehouseReceiver.value?.getOrNull(it ?: 0).orEmpty()
-        }
-    }
     val dateInfoField = MutableLiveData("")
     private var producerDate: String = ""
     private var selfLifeDate: String = ""
@@ -243,45 +233,47 @@ class GoodInfoViewModel : CoreViewModel() {
         navigator.openSelectGoodScreen()
     }
 
-    fun onClickComplete() {
-        launchUITryCatch {
-            navigator.showProgressLoadingData()
-            setDateInfo()
-            saveWarehouses()
-            val prodCodeSelectedProducer = goodParams.value?.producers?.getOrNull(selectedProducerPosition.value
-                    ?: 0)?.producerCode.orEmpty()
-            val dateIsCorrect = if (zPartFlag.value == true) {
-                checkDate()
-            } else {
-                true
-            }
-            if (!dateIsCorrect) {
+    fun onClickComplete() = launchUITryCatch {
+        navigator.showProgressLoadingData()
+        setDateInfo()
+        saveWarehouses()
+        val prodCodeSelectedProducer = goodParams.value?.producers?.getOrNull(selectedProducerPosition.value
+                ?: 0)?.producerCode.orEmpty()
+        val warehouseSenderSelected = warehouseSender.value?.getOrNull(selectedWarehouseSenderPosition.value
+                ?: 0).orEmpty()
+        val warehouseReceiverSelected = warehouseReceiver.value?.getOrNull(selectedWarehouseReceiverPosition.value
+                ?: 0).orEmpty()
+        val dateIsCorrect = if (zPartFlag.value == true) {
+            checkDate()
+        } else {
+            true
+        }
+        if (!dateIsCorrect) {
+            navigator.hideProgress()
+            navigator.showAlertWrongDate()
+        } else {
+            val result = movementNetRequest(
+                    params = MovementParams(
+                            tkNumber = sessionInfo.market.orEmpty(),
+                            matnr = goodParams.value?.material.orEmpty(),
+                            prodCode = prodCodeSelectedProducer,
+                            dateProd = producerDate,
+                            expirDate = selfLifeDate,
+                            lgortExport = warehouseSenderSelected,
+                            lgortImport = warehouseReceiverSelected,
+                            codeCont = "",
+                            factQnt = quantityField.value.toString(),
+                            buom = buom.value.orEmpty(),
+                            deviceIP = deviceIp.value.toString(),
+                            personnelNumber = sessionInfo.personnelNumber.orEmpty()
+                    )
+            )
+            result.also {
                 navigator.hideProgress()
-                navigator.showAlertWrongDate()
-            } else {
-                val result = movementNetRequest(
-                        params = MovementParams(
-                                tkNumber = sessionInfo.market.orEmpty(),
-                                matnr = goodParams.value?.material.orEmpty(),
-                                prodCode = prodCodeSelectedProducer,
-                                dateProd = producerDate,
-                                expirDate = selfLifeDate,
-                                lgortExport = warehouseSenderSelected.value.orEmpty(),
-                                lgortImport = warehouseReceiverSelected.value.orEmpty(),
-                                codeCont = "",
-                                factQnt = quantityField.value.toString(),
-                                buom = buom.value.orEmpty(),
-                                deviceIP = deviceIp.value.toString(),
-                                personnelNumber = sessionInfo.personnelNumber.orEmpty()
-                        )
-                )
-                result.also {
-                    navigator.hideProgress()
-                }.either(::handleFailure) {
-                    with(navigator) {
-                        showMovingSuccessful {
-                            openSelectGoodScreen()
-                        }
+            }.either(::handleFailure) {
+                with(navigator) {
+                    showMovingSuccessful {
+                        openSelectGoodScreen()
                     }
                 }
             }
