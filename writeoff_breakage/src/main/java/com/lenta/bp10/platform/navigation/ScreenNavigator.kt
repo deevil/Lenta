@@ -166,11 +166,11 @@ class ScreenNavigator(
         }
     }
 
-    override fun openMatrixAlertScreen(matrixType: MatrixType, codeConfirmation: Int) {
+    override fun openMatrixAlertScreen(matrixType: MatrixType, yesCallback: () -> Unit) {
         runOrPostpone {
             getFragmentStack()?.push(AlertFragment.create(
                     message = context.getString(if (matrixType == MatrixType.Deleted) R.string.allert_deleted_matrix_message else R.string.allert_unknown_matrix_message),
-                    codeConfirmForRight = codeConfirmation,
+                    codeConfirmForRight = backFragmentResultHelper.setFuncForResult(yesCallback),
                     leftButtonDecorationInfo = ButtonDecorationInfo.no,
                     rightButtonDecorationInfo = ButtonDecorationInfo.yes)
             )
@@ -310,6 +310,19 @@ class ScreenNavigator(
         openInfoScreen(message = context.getString(R.string.not_possible_save_without_reason))
     }
 
+    override fun showWriteOffToProductionConfirmation(nextCallback: () -> Unit) {
+        runOrPostpone {
+            getFragmentStack()?.push(
+                    AlertFragment.create(
+                            message = context.getString(com.lenta.shared.R.string.writeoff_to_production_confirmation),
+                            pageNumber = "95",
+                            codeConfirmForRight = backFragmentResultHelper.setFuncForResult(nextCallback),
+                            rightButtonDecorationInfo = ButtonDecorationInfo.nextAlternate
+                    )
+            )
+        }
+    }
+
 }
 
 interface IScreenNavigator : ICoreNavigator {
@@ -333,7 +346,7 @@ interface IScreenNavigator : ICoreNavigator {
     fun openComponentSetScreen(productInfo: ProductInfo, componentItem: ComponentItem, targetTotalCount: Double)
     fun openDetectionSavedDataScreen()
     fun openRemoveLinesConfirmationScreen(taskDescription: String, count: Int, codeConfirmation: Int)
-    fun openMatrixAlertScreen(matrixType: MatrixType, codeConfirmation: Int)
+    fun openMatrixAlertScreen(matrixType: MatrixType, yesCallback: () -> Unit)
     fun openAlertGoodsNotForTaskScreen()
     fun openNotPossibleSaveNegativeQuantityScreen()
     fun openSelectTypeCodeScreen(codeConfirmationForSap: Int, codeConfirmationForBarCode: Int)
@@ -345,4 +358,5 @@ interface IScreenNavigator : ICoreNavigator {
     fun openLimitExceededScreen()
     fun openNotPossibleSaveWithoutReasonScreen()
     fun openConfirmationToBackNotEmptyStampsScreen(callbackFunc: () -> Unit)
+    fun showWriteOffToProductionConfirmation(nextCallback: () -> Unit)
 }

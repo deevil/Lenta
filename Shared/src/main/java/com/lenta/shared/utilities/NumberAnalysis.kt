@@ -2,8 +2,6 @@ package com.lenta.shared.utilities
 
 import com.lenta.shared.platform.constants.Constants
 import com.lenta.shared.requests.combined.scan_info.ScanCodeInfo
-import com.lenta.shared.utilities.Logg
-import com.lenta.shared.utilities.getMaterialInCommonFormat
 
 fun actionByNumber(
         number: String,
@@ -11,8 +9,11 @@ fun actionByNumber(
         funcForMaterial: (material: String) -> Unit,
         funcForSapOrBar: ((sapCallback: () -> Unit, barCallback: () -> Unit) -> Unit)?,
         funcForExcise: ((exciseNumber: String) -> Unit)? = null,
-        funcForBox: ((boxNumber: String) -> Unit)? = null,
+        funcForExciseBox: ((boxNumber: String) -> Unit)? = null,
         funcForMark: ((markNumber: String) -> Unit)? = null,
+        funcForShoes: ((ean: String, markNumber: String) -> Unit)? = null,
+        funcForCigarettes: ((markNumber: String) -> Unit)? = null,
+        funcForCigarettesBox: ((markNumber: String) -> Unit)? = null,
         funcForNotValidFormat: () -> Unit
 ) {
 
@@ -33,18 +34,43 @@ fun actionByNumber(
             }
             else -> funcForEan(numberInfo.eanWithoutWeight)
         }
-    } else {
-        when (numberLength) {
-            Constants.MARK_150, Constants.MARK_68 -> {
-                funcForExcise?.invoke(number) ?: funcForNotValidFormat()
-            }
-            Constants.MARK_134, Constants.MARK_39 -> {
-                funcForMark?.invoke(number) ?: funcForNotValidFormat()
-            }
-            Constants.BOX_26 -> {
-                funcForBox?.invoke(number) ?: funcForNotValidFormat()
-            }
-            else -> funcForNotValidFormat()
-        }
+
+        return
     }
+
+    if (isShoesMark(number)) {
+        val matchResult = Regex(Constants.SHOES_MARK_PATTERN).find(number)
+        matchResult?.let {
+            val (barcode, _, _, _, _, _) = it.destructured // barcode, gtin, serial, tradeCode, verificationKey, verificationCode
+            barcode
+        }?.let { ean ->
+            funcForShoes?.invoke(ean, number) ?: funcForNotValidFormat()
+        } ?: funcForNotValidFormat()
+
+        return
+    }
+
+    if (isCigarettesMark(number)) {
+        funcForCigarettes?.invoke(number) ?: funcForNotValidFormat()
+        return
+    }
+
+    if (isCigarettesBox(number)) {
+        funcForCigarettesBox?.invoke(number) ?: funcForNotValidFormat()
+        return
+    }
+
+    when (numberLength) {
+        Constants.EXCISE_MARK_150, Constants.EXCISE_MARK_68 -> {
+            funcForExcise?.invoke(number) ?: funcForNotValidFormat()
+        }
+        Constants.MARK_134, Constants.MARK_39 -> {
+            funcForMark?.invoke(number) ?: funcForNotValidFormat()
+        }
+        Constants.EXCISE_BOX_26 -> {
+            funcForExciseBox?.invoke(number) ?: funcForNotValidFormat()
+        }
+        else -> funcForNotValidFormat()
+    }
+
 }

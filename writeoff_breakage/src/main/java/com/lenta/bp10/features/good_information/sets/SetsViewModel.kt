@@ -393,9 +393,9 @@ class SetsViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftKeyboa
 
             return
         }
-        if (!setsAlcoStampSearchDelegate.handleResult(fragmentResultCode)) {
+        /*if (!setsAlcoStampSearchDelegate.handleResult(fragmentResultCode)) {
             searchProductDelegate.handleResultCode(fragmentResultCode)
-        }
+        }*/
     }
 
     fun onClickItemPosition(position: Int) {

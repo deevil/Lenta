@@ -35,13 +35,13 @@ fun actionByNumber(
         }
     } else {
         when (numberLength) {
-            Constants.MARK_150, Constants.MARK_68 -> {
+            Constants.EXCISE_MARK_150, Constants.EXCISE_MARK_68 -> {
                 funcForExcise?.invoke(number) ?: funcForNotValidFormat()
             }
             Constants.MARK_134, Constants.MARK_39 -> {
                 funcForMark?.invoke(number) ?: funcForNotValidFormat()
             }
-            Constants.BOX_26 -> {
+            Constants.EXCISE_BOX_26 -> {
                 funcForBox?.invoke(number) ?: funcForNotValidFormat()
             }
             else -> funcForNotValidFormat()

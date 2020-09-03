@@ -155,11 +155,11 @@ abstract class BaseProductInfoViewModel : CoreViewModel(), OnOkInSoftKeyboardLis
         this.productInfo.value = productInfo
     }
 
-    override fun handleFragmentResult(code: Int?): Boolean {
+    /*override fun handleFragmentResult(code: Int?): Boolean {
         return if (searchProductDelegate.handleResultCode(code)) {
             true
         } else super.handleFragmentResult(code)
-    }
+    }*/
 
 
     protected fun getSelectedReason(): WriteOffReason {

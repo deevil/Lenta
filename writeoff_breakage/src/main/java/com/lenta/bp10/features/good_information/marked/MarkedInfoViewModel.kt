@@ -120,7 +120,18 @@ class MarkedInfoViewModel : BaseProductInfoViewModel(), PageSelectionListener {
     }
 
     override fun onScanResult(data: String) {
+        if (data.length > 60) {
+            if (stampMarkedCollector.prepare(stampCode = data)) {
+                exciseAlcoDelegate.searchExciseStamp(data)
+            } else {
+                screenNavigator.openAlertDoubleScanStamp()
+            }
 
+        } else {
+            if (addGood()) {
+                searchProductDelegate.searchCode(data, fromScan = true)
+            }
+        }
     }
 
 

@@ -202,9 +202,9 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
     }
 
     fun onResult(code: Int?) {
-        if (searchProductDelegate.handleResultCode(code)) {
+        /*if (searchProductDelegate.handleResultCode(code)) {
             return
-        }
+        }*/
         when (code) {
             requestCodeDelete -> onConfirmAllDelete()
             requestCodeSelectPersonnelNumber -> saveData()

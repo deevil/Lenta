@@ -5,6 +5,7 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import com.google.android.material.tabs.TabLayout
 import com.lenta.shared.R
+import com.lenta.shared.platform.constants.Constants
 import com.lenta.shared.requests.combined.scan_info.ScanCodeInfo
 import java.text.SimpleDateFormat
 import java.util.*
@@ -49,4 +50,19 @@ fun isCommonFormatNumber(number: String): Boolean {
 
 fun getMaterialInCommonFormat(number: String): String {
     return "000000000000${number.takeLast(6)}"
+}
+
+fun isCigarettesMark(number: String) : Boolean {
+    val cigarettesMarkPattern = Regex(Constants.CIGARETTES_MARK_PATTERN)
+    return number.matches(cigarettesMarkPattern)
+}
+
+fun isCigarettesBox(number: String) : Boolean {
+    val cigarettesBoxPattern = Regex(Constants.CIGARETTES_BOX_PATTERN)
+    return number.matches(cigarettesBoxPattern)
+}
+
+fun isShoesMark(number: String) : Boolean {
+    val shoesMarkPattern = Regex(Constants.SHOES_MARK_PATTERN)
+    return number.matches(shoesMarkPattern)
 }
