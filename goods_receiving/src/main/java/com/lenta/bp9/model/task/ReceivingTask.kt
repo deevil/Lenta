@@ -42,6 +42,10 @@ class ReceivingTask(val taskHeader: TaskInfo,
         return taskRepository.getBatchesDiscrepancies().getBatchesDiscrepancies()
     }
 
+    fun getProcessedZBatchesDiscrepancies(): List<TaskZBatchesDiscrepancies> {
+        return taskRepository.getZBatchesDiscrepancies().getZBatchesDiscrepancies()
+    }
+
     fun getProcessedBoxes(): List<TaskBoxInfo> {
         return taskRepository.getBoxes().getBoxes()
     }

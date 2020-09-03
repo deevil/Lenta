@@ -453,6 +453,10 @@ class GoodsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKey
                     taskRepository
                             .getBlocksDiscrepancies()
                             .deleteBlocksDiscrepanciesForProduct(product)
+
+                    taskRepository
+                            .getZBatchesDiscrepancies()
+                            .deleteZBatchesDiscrepanciesForProduct(product.materialNumber)
                 }
     }
 
@@ -610,6 +614,10 @@ class GoodsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKey
                         discrepanciesBlocks = receivingTask
                                 ?.getProcessedBlocksDiscrepancies()
                                 ?.map { TaskBlockDiscrepanciesRestData.from(it) }
+                                .orEmpty(),
+                        discrepanciesZBatches = receivingTask
+                                ?.getProcessedZBatchesDiscrepancies()
+                                ?.map { TaskZBatchesDiscrepanciesRestData.from(it) }
                                 .orEmpty()
                 )).either(::handleFailure, ::handleSuccess)
                 screenNavigator.hideProgress()

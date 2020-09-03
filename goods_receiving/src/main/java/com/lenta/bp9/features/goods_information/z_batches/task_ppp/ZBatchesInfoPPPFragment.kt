@@ -97,9 +97,9 @@ class ZBatchesInfoPPPFragment : CoreFragment<FragmentZBatchesInfoPppBinding, ZBa
             }
         }
 
-        binding?.spinnerProductionDate?.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+        binding?.spinnerEnteredDate?.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(adapterView: AdapterView<*>, view: View?, position: Int, l: Long) {
-                vm.onClickPositionSpinProductionDate(position)
+                vm.onClickPositionSpinsEnteredDate(position)
             }
 
             override fun onNothingSelected(adapterView: AdapterView<*>) {
@@ -116,8 +116,8 @@ class ZBatchesInfoPPPFragment : CoreFragment<FragmentZBatchesInfoPppBinding, ZBa
             false
         })
 
-        binding?.etProductionDate?.let { DateInputMask(it).listen() }
-        binding?.etProductionTime?.let { TimeInputMask(it).listen() }
+        binding?.etEnteredDate?.let { DateInputMask(it).listen() }
+        binding?.etEnteredTime?.let { TimeInputMask(it).listen() }
     }
 
     override fun onToolbarButtonClick(view: View) {

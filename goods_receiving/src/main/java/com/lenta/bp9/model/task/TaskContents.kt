@@ -2,6 +2,7 @@ package com.lenta.bp9.model.task
 
 import android.annotation.SuppressLint
 import android.content.Context
+import androidx.lifecycle.MutableLiveData
 import com.lenta.bp9.model.processing.ProcessExciseAlcoBoxAccService
 import com.lenta.bp9.repos.IDataBaseRepo
 import com.lenta.bp9.repos.IRepoInMemoryHolder
@@ -31,12 +32,6 @@ class TaskContents
 
     @Inject
     lateinit var hyperHive: HyperHive
-
-    @Inject
-    lateinit var taskManager: IReceivingTaskManager
-
-    @Inject
-    lateinit var repoInMemoryHolder: IRepoInMemoryHolder
 
     @SuppressLint("SimpleDateFormat")
     private val formatterEN = SimpleDateFormat(DATE_FORMAT_yyyy_mm_dd)
@@ -86,7 +81,10 @@ class TaskContents
                 },
                 startRecountRestInfo.taskBlocksDiscrepancies.map {
                     TaskBlockDiscrepancies.from(it)
-                }
+                },
+                startRecountRestInfo.taskZBatchesDiscrepancies
+                        ?.map { TaskZBatchesDiscrepancies.from(hyperHive, it) }
+                        .orEmpty()
         )
     }
 
@@ -132,7 +130,10 @@ class TaskContents
                 },
                 startRecountRestInfo.taskBlocksDiscrepancies.map {
                     TaskBlockDiscrepancies.from(it)
-                }
+                },
+                startRecountRestInfo.taskZBatchesDiscrepancies
+                        ?.map { TaskZBatchesDiscrepancies.from(hyperHive, it) }
+                        .orEmpty()
         )
     }
 
@@ -178,7 +179,10 @@ class TaskContents
                 },
                 startRecountRestInfo.taskBlocksDiscrepancies.map {
                     TaskBlockDiscrepancies.from(it)
-                }
+                },
+                startRecountRestInfo.taskZBatchesDiscrepancies
+                        ?.map { TaskZBatchesDiscrepancies.from(hyperHive, it) }
+                        .orEmpty()
         )
     }
 
@@ -224,7 +228,10 @@ class TaskContents
                 },
                 startRecountRestInfo.taskBlocksDiscrepancies.map {
                     TaskBlockDiscrepancies.from(it)
-                }
+                },
+                startRecountRestInfo.taskZBatchesDiscrepancies
+                        ?.map { TaskZBatchesDiscrepancies.from(hyperHive, it) }
+                        .orEmpty()
         )
     }
 
@@ -310,5 +317,6 @@ data class TaskContentsInfo(
         val taskBoxes: List<TaskBoxInfo>,
         val taskBoxesDiscrepancies: List<TaskBoxDiscrepancies>,
         val taskBlock: List<TaskBlockInfo>,
-        val taskBlockDiscrepancies: List<TaskBlockDiscrepancies>
+        val taskBlockDiscrepancies: List<TaskBlockDiscrepancies>,
+        val taskZBatchesDiscrepancies: List<TaskZBatchesDiscrepancies>
 )

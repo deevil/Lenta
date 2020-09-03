@@ -19,4 +19,5 @@ interface ITaskRepository {
     fun getTransportMarriage():ITaskTransportMarriageRepository
     fun getBlocks():ITaskBlocksRepository
     fun getBlocksDiscrepancies(): ITaskBlocksDiscrepanciesRepository
+    fun getZBatchesDiscrepancies(): ITaskZBatchesDiscrepanciesRepository
 }

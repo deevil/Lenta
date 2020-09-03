@@ -9,7 +9,7 @@ import com.lenta.bp9.features.goods_list.SearchProductDelegate
 import com.lenta.bp9.model.processing.ProcessZBatchesPPPService
 import com.lenta.bp9.model.task.IReceivingTaskManager
 import com.lenta.bp9.model.task.TaskProductInfo
-import com.lenta.bp9.platform.TypeDiscrepanciesConstants
+import com.lenta.bp9.platform.TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_DELIVERY_ERRORS
 import com.lenta.bp9.platform.TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_NORM
 import com.lenta.bp9.platform.navigation.IScreenNavigator
 import com.lenta.bp9.repos.IDataBaseRepo
@@ -25,6 +25,8 @@ import com.lenta.shared.utilities.extentions.launchUITryCatch
 import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.utilities.extentions.toStringFormatted
 import com.lenta.shared.utilities.orIfNull
+import org.joda.time.DateTime
+import org.joda.time.Days
 import java.text.SimpleDateFormat
 import java.util.*
 import javax.inject.Inject
@@ -57,17 +59,16 @@ class ZBatchesInfoPPPViewModel : CoreViewModel() {
 
     val requestFocusToCount: MutableLiveData<Boolean> = MutableLiveData(false)
     val productInfo: MutableLiveData<TaskProductInfo> = MutableLiveData()
-    val isPerishable: MutableLiveData<Boolean> = MutableLiveData()
     val spinQuality: MutableLiveData<List<String>> = MutableLiveData()
     val spinQualitySelectedPosition: MutableLiveData<Int> = MutableLiveData(-1)
     val spinManufacturers: MutableLiveData<List<String>> = MutableLiveData()
     val spinManufacturersSelectedPosition: MutableLiveData<Int> = MutableLiveData(-1)
-    val spinProductionDate: MutableLiveData<List<String>> = MutableLiveData()
-    val spinProductionDateSelectedPosition: MutableLiveData<Int> = MutableLiveData(-1)
+    val spinEnteredDate: MutableLiveData<List<String>> = MutableLiveData()
+    val spinEnteredDateSelectedPosition: MutableLiveData<Int> = MutableLiveData(-1)
     val spinReasonRejection: MutableLiveData<List<String>> = MutableLiveData()
     val spinReasonRejectionSelectedPosition: MutableLiveData<Int> = MutableLiveData(-1)
-    val productionDate: MutableLiveData<String> = MutableLiveData("")
-    val productionTime: MutableLiveData<String> = MutableLiveData("")
+    val enteredDate: MutableLiveData<String> = MutableLiveData("")
+    val enteredTime: MutableLiveData<String> = MutableLiveData("")
     val suffix: MutableLiveData<String> = MutableLiveData()
     val generalShelfLife: MutableLiveData<String> = MutableLiveData()
     val remainingShelfLife: MutableLiveData<String> = MutableLiveData()
@@ -91,8 +92,10 @@ class ZBatchesInfoPPPViewModel : CoreViewModel() {
         } else {
             val purchaseOrderUnitsName = productInfo.value?.purchaseOrderUnits?.name.orEmpty()
             val uomName = productInfo.value?.uom?.name.orEmpty()
-            val numeratorConvertBaseUnitMeasure = productInfo.value?.numeratorConvertBaseUnitMeasure ?: 0.0
-            val denominatorConvertBaseUnitMeasure = productInfo.value?.denominatorConvertBaseUnitMeasure ?: 0.0
+            val numeratorConvertBaseUnitMeasure = productInfo.value?.numeratorConvertBaseUnitMeasure
+                    ?: 0.0
+            val denominatorConvertBaseUnitMeasure = productInfo.value?.denominatorConvertBaseUnitMeasure
+                    ?: 0.0
             val quantity =
                     denominatorConvertBaseUnitMeasure
                             .takeIf { it > 0.0 }
@@ -108,17 +111,25 @@ class ZBatchesInfoPPPViewModel : CoreViewModel() {
     private val expirationDate: MutableLiveData<Calendar> = MutableLiveData()
     private val qualityInfo: MutableLiveData<List<QualityInfo>> = MutableLiveData()
     private val reasonRejectionInfo: MutableLiveData<List<ReasonRejectionInfo>> = MutableLiveData()
+    private val infoForSpinEnteredDate: MutableLiveData<List<QualityInfo>> = MutableLiveData()
+    private val addGoods: MutableLiveData<Boolean> = MutableLiveData(false)
+    private val isClickApply: MutableLiveData<Boolean> = MutableLiveData(false)
+    private val paramGrsGrundNeg: MutableLiveData<String> = MutableLiveData("")
 
     @SuppressLint("SimpleDateFormat")
     private val formatterRU = SimpleDateFormat(Constants.DATE_FORMAT_dd_mm_yyyy)
+
     @SuppressLint("SimpleDateFormat")
     private val formatterEN = SimpleDateFormat(Constants.DATE_FORMAT_yyyy_mm_dd)
+
+    @SuppressLint("SimpleDateFormat")
+    private val formatterERP = SimpleDateFormat(Constants.DATE_FORMAT_yyyyMMdd)
 
     val enabledApplyButton: MutableLiveData<Boolean> = countValue.map {
         (it ?: 0.0) > 0.0
     }
 
-    val isVisibilityProductionTime: MutableLiveData<Boolean> = MutableLiveData(false)
+    val isVisibilityEnteredTime: MutableLiveData<Boolean> = MutableLiveData(false)
 
     private val currentQualityInfoCode: String
         get() {
@@ -148,48 +159,39 @@ class ZBatchesInfoPPPViewModel : CoreViewModel() {
                     .orEmpty()
         }
 
-    private val currentManufacture: String
+    private val currentManufactureName: String
         get() {
             val position = spinManufacturersSelectedPosition.value ?: -1
             return position
                     .takeIf { it >= 0 }
-                    ?.run {
+                    ?.let {
                         spinManufacturers.value
                                 ?.takeIf { it.isNotEmpty() }
-                                ?.run { this[position] }
+                                ?.let { it[position] }
                                 .orEmpty()
                     }
                     .orEmpty()
         }
 
-    private val currentProductionDate: String
+    private val currentManufactureCode: String
         get() {
-            val position = spinProductionDateSelectedPosition.value ?: -1
+            val position = spinManufacturersSelectedPosition.value ?: -1
             return position
                     .takeIf { it >= 0 }
-                    ?.run {
-                        spinProductionDate.value
+                    ?.let {
+                        repoInMemoryHolder.manufacturersForZBatches.value
                                 ?.takeIf { it.isNotEmpty() }
-                                ?.run { this[position] }
+                                ?.findLast { it.manufactureName == currentManufactureName }
+                                ?.manufactureCode
                                 .orEmpty()
                     }
                     .orEmpty()
         }
-
-    private val currentProductionDateFormatterEN: String
-        get() {
-            return currentProductionDate
-                    .takeIf { it.isNotEmpty() }
-                    ?.run { formatterEN.format(formatterRU.parse(this)) }
-                    .orEmpty()
-        }
-
-
 
     private val currentTypeDiscrepanciesCode: String
         get() {
             return currentQualityInfoCode
-                    .takeIf { it == TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_NORM }
+                    .takeIf { it == TYPE_DISCREPANCIES_QUALITY_NORM }
                     ?: currentReasonRejectionInfoCode
         }
 
@@ -292,7 +294,7 @@ class ZBatchesInfoPPPViewModel : CoreViewModel() {
                 qualityInfo.value = dataBase.getQualityMercuryInfoForDiscrepancy().orEmpty()
                 spinQualitySelectedPosition.value =
                         qualityInfo.value
-                                ?.indexOfLast { it.code == TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_DELIVERY_ERRORS }
+                                ?.indexOfLast { it.code == TYPE_DISCREPANCIES_QUALITY_DELIVERY_ERRORS }
                                 ?: -1
             } else {
                 qualityInfo.value = dataBase.getQualityMercuryInfo().orEmpty()
@@ -308,33 +310,29 @@ class ZBatchesInfoPPPViewModel : CoreViewModel() {
                             ?.map { it.key }
                             ?: listOf(context.getString(R.string.no_manufacturer_selection_required))
 
-            spinProductionDate.value = dataBase.getTermControlInfo()?.map {it.name}.orEmpty()
+            infoForSpinEnteredDate.value = dataBase.getTermControlInfo()
+            spinEnteredDate.value = dataBase.getTermControlInfo()?.map { it.name }.orEmpty()
 
-            /** определяем, что товар скоропорт, это общий для всех алгоритм https://trello.com/c/8sOTWtB7 */
+            /** Z-партии всегда скоропорт */
             val paramGrzUffMhdhb = dataBase.getParamGrzUffMhdhb()?.toInt() ?: 60
             val productGeneralShelfLife = productInfo.value?.generalShelfLife?.toInt() ?: 0
             val productRemainingShelfLife = productInfo.value?.remainingShelfLife?.toInt() ?: 0
             val productMhdhbDays = productInfo.value?.mhdhbDays ?: 0
             val productMhdrzDays = productInfo.value?.mhdrzDays ?: 0
 
-            isPerishable.value =
-                    productGeneralShelfLife > 0
-                    || productRemainingShelfLife > 0
-                    || (productMhdhbDays in 1 until paramGrzUffMhdhb)
-
-            if (isPerishable.value == true) {
-                if ( productGeneralShelfLife > 0 || productRemainingShelfLife > 0 ) { //https://trello.com/c/XSAxdgjt
-                    generalShelfLife.value = productGeneralShelfLife.toString()
-                    remainingShelfLife.value = productRemainingShelfLife.toString()
-                } else {
-                    generalShelfLife.value = productMhdhbDays.toString()
-                    remainingShelfLife.value = productMhdrzDays.toString()
-                }
+            if (productGeneralShelfLife > 0 || productRemainingShelfLife > 0) { //https://trello.com/c/XSAxdgjt
+                generalShelfLife.value = productGeneralShelfLife.toString()
+                remainingShelfLife.value = productRemainingShelfLife.toString()
+            } else {
+                generalShelfLife.value = productMhdhbDays.toString()
+                remainingShelfLife.value = productMhdrzDays.toString()
             }
+
+            paramGrsGrundNeg.value = dataBase.getParamGrsGrundNeg().orEmpty()
 
             val paramGrzPerishableHH = dataBase.getParamGrzPerishableHH()?.toDoubleOrNull() ?: 0.0
             val generalShelfLifeValue = generalShelfLife.value?.toDoubleOrNull() ?: 0.0
-            isVisibilityProductionTime.value = true //todo generalShelfLifeValue <= paramGrzPerishableHH
+            isVisibilityEnteredTime.value = generalShelfLifeValue <= paramGrzPerishableHH
         }
     }
 
@@ -351,8 +349,26 @@ class ZBatchesInfoPPPViewModel : CoreViewModel() {
         isDiscrepancy.value = initDiscrepancy
     }
 
-    fun getTitle() : String {
+    fun getTitle(): String {
         return "${productInfo.value?.getMaterialLastSix().orEmpty()} ${productInfo.value?.description.orEmpty()}"
+    }
+
+    private fun isCorrectDate(checkDate: String?): Boolean {
+        return try {
+            val date = formatterRU.parse(checkDate)
+            !(checkDate != formatterRU.format(date) || date!! > currentDate.value)
+        } catch (e: Exception) {
+            false
+        }
+    }
+
+    private fun isCorrectTime(checkTime: String?): Boolean {
+        return try {
+            val date = formatterRU.parse(checkDate)
+            !(checkDate != formatterRU.format(date) || date!! > currentDate.value)
+        } catch (e: Exception) {
+            false
+        }
     }
 
     fun onClickPositionSpinQuality(position: Int) {
@@ -370,7 +386,7 @@ class ZBatchesInfoPPPViewModel : CoreViewModel() {
             if (isDiscrepancy.value == true) {
                 spinReasonRejectionSelectedPosition.value =
                         reasonRejectionInfo.value
-                                ?.indexOfLast {it.code == "44"}
+                                ?.indexOfLast { it.code == "44" }
                                 .let {
                                     val reasonRejectionInfoValue = it ?: 0
                                     if (reasonRejectionInfoValue < 0) {
@@ -391,8 +407,8 @@ class ZBatchesInfoPPPViewModel : CoreViewModel() {
         spinManufacturersSelectedPosition.value = position
     }
 
-    fun onClickPositionSpinProductionDate(position: Int) {
-        spinProductionDateSelectedPosition.value = position
+    fun onClickPositionSpinsEnteredDate(position: Int) {
+        spinEnteredDateSelectedPosition.value = position
     }
 
     fun onClickPositionSpinRejectRejection(position: Int) {
@@ -412,19 +428,262 @@ class ZBatchesInfoPPPViewModel : CoreViewModel() {
     }
 
     fun checkScanResult(data: String) {
-        //searchProductDelegate.searchCode(code = data, fromScan = true, isBarCode = true)
+        addGoods.value = false
+        onClickAdd()
+        if (addGoods.value == true) {
+            searchProductDelegate.searchCode(code = data, fromScan = true, isBarCode = true)
+        }
     }
 
     fun onClickDetails() {
         productInfo.value?.let { screenNavigator.openGoodsDetailsScreen(it) }
     }
 
-    fun onClickAdd() {
-        return
+    fun onClickApply() {
+        isClickApply.value = true
+        onClickAdd()
     }
 
-    fun onClickApply() {
-        return
+    fun onClickAdd() {
+        addPerishable()
+    }
+
+    //Z-партии скоропорт расчитываются как и ППП(обычный товар)-скоропорт. в блок-схеме лист 6 "Карточка товара ППП" блок - 6.3
+    private fun addPerishable() {
+        //блок 6.101
+        if (currentQualityInfoCode != TYPE_DISCREPANCIES_QUALITY_NORM) {
+            addOrdinaryGoods()
+            return
+        }
+
+        if (!isCorrectDate(enteredDate.value)) {
+            screenNavigator.openAlertNotCorrectDate()
+            return
+        }
+
+        //блок 6.131
+        if (spinEnteredDateSelectedPosition.value == infoForSpinEnteredDate.value?.indexOfLast { it.code == "001" }) {
+            //блок 6.146
+            expirationDate.value?.time = formatterRU.parse(enteredDate.value)
+        } else {
+            //блок 6.144
+            expirationDate.value?.time = formatterRU.parse(enteredDate.value)
+            expirationDate.value?.add(Calendar.DATE, generalShelfLife.value?.toInt() ?: 0)
+        }
+
+
+        if (expirationDate.value!!.time <= currentDate.value
+                && currentTypeDiscrepanciesCode == TYPE_DISCREPANCIES_QUALITY_NORM) {
+            //блок 6.158
+            screenNavigator.openShelfLifeExpiredDialog(
+                    //блок 6.170
+                    yesCallbackFunc = {
+                        //блок 6.174
+                        spinQualitySelectedPosition.value = qualityInfo.value!!.indexOfLast { it.code == "7" }
+                    }
+            )
+            return
+        }
+
+        //блоки 6.157 и 6.182
+        if (Days.daysBetween(DateTime(currentDate.value), DateTime(expirationDate.value!!.time)).days > remainingShelfLife.value?.toLong() ?: 0) {
+            //блок 6.192
+            addOrdinaryGoods()
+            return
+        }
+
+        //блок 6.184
+        screenNavigator.openShelfLifeExpiresDialog(
+                //блок 6.189
+                noCallbackFunc = {
+                    //блок 6.191
+                    spinQualitySelectedPosition.value = qualityInfo.value!!.indexOfLast { it.code == "7" }
+                },
+                //блок 6.188
+                yesCallbackFunc = {
+                    //блок 6.192
+                    addOrdinaryGoods()
+                },
+                expiresThrough = Days.daysBetween(DateTime(currentDate.value), DateTime(expirationDate.value!!.time)).days.toString()
+        )
+    }
+
+    //как и ППП-обычный товар. в блок-схеме лист 6 "Карточка товара ППП" блок - 6.8
+    private fun addOrdinaryGoods() {
+        val enteredCount = countValue.value ?: 0.0
+        //блок 6.16
+        if (processZBatchesPPPService.countEqualOrigQuantity(enteredCount)) {//блок 6.16 (да)
+            //блок 6.172
+            saveCategory()
+        } else {//блок 6.16 (нет)
+            //блок 6.22
+            if (processZBatchesPPPService.countMoreOrigQuantity(enteredCount)) {//блок 6.22 (да)
+                //блок 6.58
+                checkParamGrsGrundNeg()
+            } else {//блок 6.22 (нет)
+                //блок 6.26
+                if (productInfo.value!!.uom.code == "G") {//блок 6.26 (да)
+                    //блок 6.49
+                    val roundingQuantity = processZBatchesPPPService.getRoundingQuantity() - enteredCount // "- countValue.value!!" -> этого в блок-схеме нету, но без этого не правильно расчитывается необходимость округления, добавлено при отработке карточки https://trello.com/c/hElr3cn3
+                    //блок 6.90
+                    val productRoundingShortages = productInfo.value?.roundingShortages?.toDoubleOrNull()
+                            ?: 0.0
+                    if (roundingQuantity <= productRoundingShortages) {//блок 6.90 (да)
+                        //блок 6.109
+                        screenNavigator.openRoundingIssueDialog(
+                                //блок 6.148
+                                noCallbackFunc = {
+                                    //блок 6.172
+                                    saveCategory()
+                                },
+                                //блок 6.149
+                                yesCallbackFunc = {
+                                    //блок 6.154
+                                    count.value = (enteredCount + roundingQuantity).toString()
+                                    //блок 6.172
+                                    saveCategory()
+                                }
+                        )
+                    } else {//блок 6.90 (нет)
+                        //блок 6.172
+                        saveCategory()
+                    }
+                } else {//блок 6.26 (нет)
+                    //блок 6.172
+                    saveCategory()
+                }
+            }
+        }
+    }
+
+    //ППП блок 6.58
+    private fun checkParamGrsGrundNeg() {
+        val paramGrsGrundNegValue = paramGrsGrundNeg.value.orEmpty()
+        if (processZBatchesPPPService.checkParam(paramGrsGrundNegValue)) {//блок 6.58 (да)
+            //блок 6.93
+            val countWithoutParamGrsGrundNeg = processZBatchesPPPService.countWithoutParamGrsGrundNeg(paramGrsGrundNegValue)
+            //блок 6.130
+            if (countWithoutParamGrsGrundNeg == 0.0) {//блок 6.130 (да)
+                //блок 6.121
+                processZBatchesPPPService.removeDiscrepancyFromProduct(paramGrsGrundNegValue)
+                //блок 6.172
+                saveCategory()
+            } else {//блок 6.130 (нет)
+                //блок 6.147
+                if (countWithoutParamGrsGrundNeg > 0.0) {//блок 6.147 (да)
+                    //блок 6.145
+                    processZBatchesPPPService.addWithoutUnderload(
+                            typeDiscrepancies = paramGrsGrundNegValue,
+                            count = countWithoutParamGrsGrundNeg.toString(),
+                            manufactureCode = currentManufactureCode,
+                            shelfLifeDate = enteredDate.value.orEmpty(),
+                            shelfLifeTime = enteredTime.value.orEmpty()
+                    )
+                    //блок 6.172
+                    saveCategory()
+                } else {//блок 6.147 (нет)
+                    //блок 6.155
+                    processZBatchesPPPService.removeDiscrepancyFromProduct(paramGrsGrundNegValue)
+                    noParamGrsGrundNeg()
+                }
+            }
+        } else {//блок 6.58 (нет)
+            noParamGrsGrundNeg()
+        }
+    }
+
+    //ППП блок 6.163
+    private fun noParamGrsGrundNeg() {
+        if (productInfo.value?.uom?.code == "G") {//блок 6.163 (да)
+            //блок 6.167
+            val enteredCount = countValue.value ?: 0.0
+            val roundingQuantity = processZBatchesPPPService.getRoundingQuantity() - enteredCount // "- enteredCount" -> этого в блок-схеме нету, но без этого не правильно расчитывается необходимость округления, добавлено при доработке карточки https://trello.com/c/hElr3cn3
+            //блок 6.173
+            val productRoundingSurplus = productInfo.value?.roundingSurplus?.toDoubleOrNull() ?: 0.0
+            if (roundingQuantity <= productRoundingSurplus) {//блок 6.173 (да)
+                //блок 6.175
+                screenNavigator.openRoundingIssueDialog(
+                        //блок 6.178
+                        noCallbackFunc = {
+                            //блок 6.187
+                            calculationOverdelivery()
+                        },
+                        //блок 6.179
+                        yesCallbackFunc = {
+                            //блок 6.185
+                            count.value = (enteredCount + roundingQuantity).toString()
+                            //блок 6.172
+                            saveCategory()
+                        }
+                )
+            } else {//блок 6.173 (нет)
+                //блок 6.187
+                calculationOverdelivery()
+            }
+        } else {//блок 6.163 (нет)
+            //блок 6.187
+            calculationOverdelivery()
+        }
+    }
+
+    //ППП блок 6.187
+    private fun calculationOverdelivery() {
+        val enteredCount = countValue.value ?: 0.0
+        //блок 6.187
+        val productOrderQuantity = productInfo.value?.orderQuantity?.toDoubleOrNull() ?: 0.0
+        val productOverdToleranceLimit = productInfo.value?.overdToleranceLimit?.toDoubleOrNull()
+                ?: 0.0
+        val countOverdelivery = productOrderQuantity + (productOverdToleranceLimit / 100) * productOrderQuantity
+
+        //блок 6.190
+        if (processZBatchesPPPService.getQuantityAllCategory(enteredCount) > countOverdelivery) {//блок 6.190 (да)
+            //блок 6.193
+            screenNavigator.openAlertCountMoreOverdelivery()
+            return
+        }
+
+        //блок 6.190 (нет)
+        val productOrigQuantity = productInfo.value?.origQuantity?.toDoubleOrNull() ?: 0.0
+        if (productOrigQuantity > productOrderQuantity) {
+            val calculationOne = productOrigQuantity - productOrderQuantity
+            val calculationTwo = productOrigQuantity - processZBatchesPPPService.getQuantityAllCategory(enteredCount)
+            val calculation = if (calculationOne < calculationTwo) calculationOne else calculationTwo
+            if (calculation > 0.0) {
+                processZBatchesPPPService.add(calculation.toString(), "41", currentManufactureCode, enteredDate.value.orEmpty(), enteredTime.value.orEmpty())
+            }
+        }
+
+        //блок 6.196
+        if (currentQualityInfoCode == TYPE_DISCREPANCIES_QUALITY_NORM) {
+            saveCategory()
+        } else {
+            if (processZBatchesPPPService.categNormNotOrderMoreOrigQuantity()) {
+                screenNavigator.openAlertCountMoreOverdelivery()
+            } else {
+                saveCategory()
+            }
+        }
+    }
+
+    //ППП блок 6.172
+    private fun saveCategory() {
+        val countAdd = if (currentQualityInfoCode == TYPE_DISCREPANCIES_QUALITY_NORM) acceptTotalCount.value.toString() else count.value
+        val shelfLifeDate = formatterERP.format(formatterEN.parse(enteredDate.value.orEmpty()))
+        val shelfLifeTime = enteredTime.value.orEmpty()
+        processZBatchesPPPService.add(countAdd.orEmpty(), TYPE_DISCREPANCIES_QUALITY_NORM, currentManufactureCode, shelfLifeDate, shelfLifeTime)
+
+        //ППП блок 6.176
+        clickBtnApply()
+    }
+
+    //ППП блок 6.176 и ПГЕ блок 7.188
+    private fun clickBtnApply() {
+        addGoods.value = true
+        if (isClickApply.value == true) {
+            screenNavigator.goBack()
+        } else {
+            count.value = "0"
+        }
     }
 
 }

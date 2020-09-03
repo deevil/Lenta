@@ -732,6 +732,10 @@ class DiscrepancyListViewModel : CoreViewModel(), PageSelectionListener {
                     taskRepository
                             .getBlocksDiscrepancies()
                             .deleteBlocksDiscrepanciesForProductAndDiscrepancies(materialNumber, typeDiscrepancies)
+
+                    taskRepository
+                            .getZBatchesDiscrepancies()
+                            .deleteZBatchesDiscrepanciesForProductAndDiscrepancies(materialNumber, typeDiscrepancies)
                 }
     }
 
@@ -767,6 +771,10 @@ class DiscrepancyListViewModel : CoreViewModel(), PageSelectionListener {
                     taskRepository
                             .getBlocksDiscrepancies()
                             .deleteBlocksDiscrepanciesNotNormForProduct(product.materialNumber)
+
+                    taskRepository
+                            .getZBatchesDiscrepancies()
+                            .deleteZBatchesDiscrepanciesNotNormForProduct(product.materialNumber)
                 }
     }
 
@@ -848,6 +856,10 @@ class DiscrepancyListViewModel : CoreViewModel(), PageSelectionListener {
                     discrepanciesBlocks = receivingTask
                             ?.getProcessedBlocksDiscrepancies()
                             ?.map { TaskBlockDiscrepanciesRestData.from(it) }
+                            .orEmpty(),
+                    discrepanciesZBatches = receivingTask
+                            ?.getProcessedZBatchesDiscrepancies()
+                            ?.map { TaskZBatchesDiscrepanciesRestData.from(it) }
                             .orEmpty()
             )).either(::handleFailure, ::handleSuccess)
             screenNavigator.hideProgress()

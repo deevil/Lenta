@@ -16,6 +16,7 @@ class RepoInMemoryHolder : IRepoInMemoryHolder {
     override var sets: MutableLiveData<List<TaskSetsInfo>> = MutableLiveData()
     override var markingGoodsProperties: MutableLiveData<List<TaskMarkingGoodsProperties>> = MutableLiveData()
     override var manufacturersForZBatches: MutableLiveData<List<TaskManufacturersForZBatches>> = MutableLiveData()
+    override var taskZBatchInfo: MutableLiveData<List<TaskZBatchInfo>> = MutableLiveData()
 }
 
 interface IRepoInMemoryHolder {
@@ -28,4 +29,5 @@ interface IRepoInMemoryHolder {
     var sets: MutableLiveData<List<TaskSetsInfo>>
     var markingGoodsProperties: MutableLiveData<List<TaskMarkingGoodsProperties>>
     var manufacturersForZBatches: MutableLiveData<List<TaskManufacturersForZBatches>>
+    var taskZBatchInfo: MutableLiveData<List<TaskZBatchInfo>>
 }
