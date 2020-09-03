@@ -62,9 +62,11 @@ object EAN128Parser {
     @Throws(InvalidObjectException::class)
     fun parseWith(barcode: String, ai: String = EAN_01, throwException: Boolean = false): String? {
         var parsedBarcode: String? = null
-        val ean128Barcode = parse(barcode, throwException).entries.find { pair ->
+        val allCodesMap = parse(barcode, throwException)
+        val ean128Barcode = allCodesMap.entries.find { pair ->
             pair.key.AI == ai
         }?.value
+
         if (ean128Barcode != null) {
             parsedBarcode = if (ean128Barcode.first().toString() == EAN_WEIGHT_PREFIX) {
                 ean128Barcode.substring(1 until ean128Barcode.length)
@@ -121,6 +123,7 @@ object EAN128Parser {
         var localIndex = index
         var lenghtToRead = min(ai.LengthOfData, data.length - localIndex)
         // get the data of the current AI
+        val lastPosition = lenghtToRead + localIndex
         var result = data.substring(localIndex, lenghtToRead + localIndex)
         // check if the AI support a group seperator
         if (ai.FNC1) {
