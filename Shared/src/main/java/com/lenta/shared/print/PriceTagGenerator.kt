@@ -216,7 +216,13 @@ enum class PrintTemplate(
 ) {
     Zebra_Red_6_6(NetPrinterType.Zebra, "print_templates/Red6x6_Zebra.zpl"),
     Zebra_Yellow_6_6(NetPrinterType.Zebra, "print_templates/Yellow6x6_Zebra.zpl"),
+    Zebra_Red_Small(NetPrinterType.Zebra,"print_templates/RedSmall_Zebra.zpl"),
+    Zebra_Yellow_Big(NetPrinterType.Zebra,"print_templates/YellowBig_Zebra.zpl"),
+    Zebra_Yellow_Small(NetPrinterType.Zebra,"print_templates/YellowSmall_Zebra.zpl"),
     Datamax_Red_6_6(NetPrinterType.Oneil, "print_templates/Red6x6_Datamax.trf"),
-    Datamax_Yellow_6_6(NetPrinterType.Oneil, "print_templates/Yellow6x6_Datamax.trf")
+    Datamax_Yellow_6_6(NetPrinterType.Oneil, "print_templates/Yellow6x6_Datamax.trf"),
+    Datamax_Red_Small(NetPrinterType.Oneil,"print_templates/RedSmall_Datamax.trf"),
+    Datamax_Yellow_Big(NetPrinterType.Oneil,"print_templates/YellowBig_Datamax.trf"),
+    Datamax_Yellow_Small(NetPrinterType.Oneil,"print_templates/YellowSmall_Datamax.trf")
 }
 
