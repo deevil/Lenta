@@ -103,7 +103,7 @@
 
             <View style="@style/HorizontalDivider" />
 
-            <!-- Производитель -->
+            <!-- Поставщик -->
             <LinearLayout
                 style="@style/LinearRowStyle"
                 android:visibility="@{!vm.isWholesaleTaskType}">
@@ -147,7 +147,7 @@
                 android:orientation="vertical"
                 android:visibility="@{!vm.isCommonGood}">
 
-                <!-- Импортер -->
+                <!-- Производитель -->
                 <LinearLayout style="@style/LinearRowStyle">
 
                     <LinearLayout

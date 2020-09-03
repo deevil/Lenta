@@ -29,7 +29,7 @@
                     style="@style/CellSpinnerStyle"
                     android:layout_height="match_parent"
                     app:items="@{vm.taskTypeList}"
-                    app:position="@{vm.taskTypePosition}"
+                    app:position="@={vm.taskTypePosition}"
                     tools:entries="@array/test_list" />
 
             </LinearLayout>

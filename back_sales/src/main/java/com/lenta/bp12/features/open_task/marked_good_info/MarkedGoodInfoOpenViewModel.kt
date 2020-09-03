@@ -10,6 +10,7 @@ import com.lenta.bp12.model.pojo.Basket
 import com.lenta.bp12.model.pojo.Mark
 import com.lenta.bp12.model.pojo.extentions.addMarks
 import com.lenta.bp12.model.pojo.extentions.getQuantityOfGood
+import com.lenta.bp12.platform.extention.isWholesaleType
 import com.lenta.bp12.platform.navigation.IScreenNavigator
 import com.lenta.bp12.platform.resource.IResourceManager
 import com.lenta.bp12.repository.IDatabaseRepository
@@ -79,6 +80,12 @@ class MarkedGoodInfoOpenViewModel : CoreViewModel(), PageSelectionListener {
     val title by unsafeLazy {
         good.map { good ->
             good?.getNameWithMaterial() ?: task.value?.getFormattedName()
+        }
+    }
+
+    val isWholesaleTaskType by lazy {
+        task.map {
+            it?.type?.isWholesaleType()
         }
     }
 
@@ -232,6 +239,44 @@ class MarkedGoodInfoOpenViewModel : CoreViewModel(), PageSelectionListener {
     }
 
     /**
+    Список поставщиков
+     */
+
+    private val sourceProviders = MutableLiveData(mutableListOf<ProviderInfo>())
+
+    private val providers = sourceProviders.map {
+        it?.let { providers ->
+            val list = providers.toMutableList()
+            if (list.size > 1) {
+                list.add(0, ProviderInfo(name = resource.chooseProvider()))
+            }
+
+            list.toList()
+        }
+    }
+
+    val providerList by lazy {
+        providers.map { list ->
+            list?.map { it.name }
+        }
+    }
+
+    val providerEnabled by lazy {
+        providerList.map { providers ->
+            providers?.size ?: 0 > 1
+        }
+    }
+
+    val providerPosition = MutableLiveData(0)
+
+    private val isProviderSelected = providerEnabled.combineLatest(providerPosition).map {
+        val isEnabled = it?.first ?: false
+        val position = it?.second ?: 0
+
+        isEnabled && position > 0 || !isEnabled && position == 0
+    }
+
+    /**
     МРЦ
      */
 
@@ -256,11 +301,15 @@ class MarkedGoodInfoOpenViewModel : CoreViewModel(), PageSelectionListener {
      */
 
     val applyEnabled by lazy {
-        good.combineLatest(quantity)
+        isProviderSelected
+                .combineLatest(good)
+                .combineLatest(quantity)
                 .combineLatest(totalQuantity)
                 .combineLatest(basketQuantity)
                 .map {
                     it?.let {
+                        val isProviderSelected = it.first.first.first.first
+                        val good = it.first.first.first.second
                         val enteredQuantity = it.first.first.second
                         val totalQuantity = it.first.second
                         val basketQuantity = it.second
@@ -268,7 +317,7 @@ class MarkedGoodInfoOpenViewModel : CoreViewModel(), PageSelectionListener {
                         val isEnteredQuantityNotZero = enteredQuantity != 0.0
                         val isTotalQuantityMoreThenZero = totalQuantity > 0.0
 
-                        isEnteredQuantityNotZero && isTotalQuantityMoreThenZero && basketQuantity > 0.0
+                        isProviderSelected && isEnteredQuantityNotZero && isTotalQuantityMoreThenZero && basketQuantity > 0.0
                     } ?: false
                 }
     }
@@ -451,7 +500,7 @@ class MarkedGoodInfoOpenViewModel : CoreViewModel(), PageSelectionListener {
                     manager.addGoodToBasketWithMark(
                             good = changedGood,
                             mark = mark,
-                            provider = ProviderInfo.getEmptyProvider()
+                            provider = getProvider()
                     )
                 }
             }
@@ -562,6 +611,23 @@ class MarkedGoodInfoOpenViewModel : CoreViewModel(), PageSelectionListener {
     private fun handleNoMarkTypeInSettings() {
         navigator.hideProgress()
         navigator.showNoMarkTypeInSettings()
+    }
+
+    fun addProvider() {
+        navigator.openAddProviderScreen()
+    }
+
+    private fun getProvider(): ProviderInfo {
+        var provider = ProviderInfo.getEmptyProvider()
+        if (isProviderSelected.value == true) {
+            providers.value?.let { providers ->
+                providerPosition.value?.let { position ->
+                    provider = providers.getOrNull(position).orIfNull { ProviderInfo.getEmptyProvider() }
+                }
+            }
+        }
+
+        return provider
     }
 
     companion object {

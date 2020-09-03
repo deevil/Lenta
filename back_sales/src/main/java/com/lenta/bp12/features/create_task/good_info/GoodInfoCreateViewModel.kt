@@ -579,8 +579,8 @@ class GoodInfoCreateViewModel : CoreViewModel() {
                             commonUnits = database.getUnitsByCode(materialInfo?.commonUnitsCode.orEmpty()),
                             innerUnits = database.getUnitsByCode(materialInfo?.innerUnitsCode.orEmpty()),
                             innerQuantity = materialInfo?.innerQuantity?.toDoubleOrNull() ?: 1.0,
-                            providers = providers?.toMutableList().takeIf { taskType.isDivByProvider }.orEmpty().toMutableList(),
-                            producers = producers?.toMutableList().orEmpty().toMutableList(),
+                            providers = providers?.takeIf { taskType.isDivByProvider }.orEmpty().toMutableList(),
+                            producers = producers.orEmpty().toMutableList(),
                             volume = materialInfo?.volume?.toDoubleOrNull() ?: 0.0,
                             markType = getMarkType(),
                             markTypeGroup = markTypeGroups.first { it.markTypes.contains(getMarkType()) },
@@ -781,7 +781,7 @@ class GoodInfoCreateViewModel : CoreViewModel() {
     }
 
     private fun getProvider(): ProviderInfo {
-        var provider = ProviderInfo()
+        var provider = ProviderInfo.getEmptyProvider()
         if (isProviderSelected.value == true) {
             providers.value?.let { providers ->
                 providerPosition.value?.let { position ->
