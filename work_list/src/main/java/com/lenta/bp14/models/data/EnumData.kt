@@ -29,14 +29,16 @@ enum class GoodType {
     COMMON,
     ALCOHOL,
     EXCISE,
-    MARKED
+    MARKED,
+    VRUS
 }
 
-fun getGoodType(alcohol: String, excise: String, marked: String): GoodType {
+fun getGoodType(alcohol: String, excise: String, marked: String, vrus: String): GoodType {
     return when {
         excise.isSapTrue() -> GoodType.EXCISE
         alcohol.isSapTrue() -> GoodType.ALCOHOL
         marked.isSapTrue() -> GoodType.MARKED
+        vrus.isSapTrue() -> GoodType.VRUS
         else -> GoodType.COMMON
     }
 }
@@ -46,6 +48,7 @@ fun ProductInfo.getGoodType(): GoodType {
         this.isExcise.isSapTrue() -> GoodType.EXCISE
         this.isAlco.isSapTrue() -> GoodType.ALCOHOL
         this.isMarked.isSapTrue() -> GoodType.MARKED
+        this.isVRus.isSapTrue() -> GoodType.VRUS
         else -> GoodType.COMMON
     }
 }
@@ -56,5 +59,6 @@ fun GoodType.getDescriptionResId(): Int {
         GoodType.ALCOHOL -> R.string.alcohol
         GoodType.EXCISE -> R.string.excise_alcohol
         GoodType.MARKED -> R.string.marked_product
+        GoodType.VRUS -> R.string.vrus
     }
 }

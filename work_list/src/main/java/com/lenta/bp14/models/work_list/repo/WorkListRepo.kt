@@ -60,7 +60,8 @@ class WorkListRepo @Inject constructor(
                                 goodType = getGoodType(
                                         alcohol = goodInfo.isAlcohol,
                                         excise = goodInfo.isExcise,
-                                        marked = goodInfo.isMark),
+                                        marked = goodInfo.isMark,
+                                        vrus = goodInfo.isVRus),
                                 healthFood = goodInfo.healthFood.isSapTrue(),
                                 novelty = goodInfo.novelty.isSapTrue()
                         )
@@ -102,7 +103,8 @@ class WorkListRepo @Inject constructor(
                                     goodType = getGoodType(
                                             alcohol = goodInfo.isAlcohol,
                                             excise = goodInfo.isExcise,
-                                            marked = goodInfo.isMark),
+                                            marked = goodInfo.isMark,
+                                            vrus = goodInfo.isVRus),
                                     healthFood = goodInfo.healthFood.isSapTrue(),
                                     novelty = goodInfo.novelty.isSapTrue()
                             )

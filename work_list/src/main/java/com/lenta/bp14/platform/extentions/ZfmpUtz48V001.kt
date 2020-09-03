@@ -24,6 +24,7 @@ fun ZfmpUtz48V001.ItemLocal_ET_MATNR_LIST.toWorkListGoodInfo(): WorkListGoodInfo
             isExcise = isExc,
             isAlcohol = isAlco,
             isMark = isMark,
+            isVRus = isVRus,
             healthFood = isHf,
             novelty = isNew
     )
@@ -47,6 +48,7 @@ data class WorkListGoodInfo(
         val section: String,
         val isExcise: String,
         val isAlcohol: String,
+        val isVRus: String,
         val isMark: String,
         val healthFood: String,
         val novelty: String
