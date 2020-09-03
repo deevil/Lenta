@@ -5,23 +5,18 @@ import android.content.Context
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.lenta.bp9.R
+import com.lenta.bp9.features.goods_information.baseGoods.BaseGoodsInfo
 import com.lenta.bp9.features.goods_list.SearchProductDelegate
 import com.lenta.bp9.model.processing.*
-import com.lenta.bp9.model.task.IReceivingTaskManager
-import com.lenta.bp9.model.task.TaskProductInfo
 import com.lenta.bp9.model.task.TaskType
 import com.lenta.bp9.platform.TypeDiscrepanciesConstants
 import com.lenta.bp9.platform.navigation.IScreenNavigator
-import com.lenta.bp9.repos.IDataBaseRepo
 import com.lenta.bp9.repos.IRepoInMemoryHolder
 import com.lenta.shared.models.core.Uom
 import com.lenta.shared.platform.constants.Constants.DATE_FORMAT_dd_mm_yyyy
 import com.lenta.shared.platform.constants.Constants.DATE_FORMAT_yyyy_mm_dd
 import com.lenta.shared.platform.time.ITimeMonitor
-import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.requests.combined.scan_info.ScanInfoResult
-import com.lenta.shared.requests.combined.scan_info.pojo.QualityInfo
-import com.lenta.shared.requests.combined.scan_info.pojo.ReasonRejectionInfo
 import com.lenta.shared.utilities.extentions.combineLatest
 import com.lenta.shared.utilities.extentions.launchUITryCatch
 import com.lenta.shared.utilities.extentions.map
@@ -34,14 +29,10 @@ import java.text.SimpleDateFormat
 import java.util.*
 import javax.inject.Inject
 
-class GoodsMercuryInfoViewModel : CoreViewModel(), OnPositionClickListener {
+class GoodsMercuryInfoViewModel : BaseGoodsInfo(), OnPositionClickListener {
 
     @Inject
     lateinit var screenNavigator: IScreenNavigator
-    @Inject
-    lateinit var taskManager: IReceivingTaskManager
-    @Inject
-    lateinit var dataBase: IDataBaseRepo
     @Inject
     lateinit var context: Context
     @Inject
@@ -53,7 +44,6 @@ class GoodsMercuryInfoViewModel : CoreViewModel(), OnPositionClickListener {
     @Inject
     lateinit var timeMonitor: ITimeMonitor
 
-    val productInfo: MutableLiveData<TaskProductInfo> = MutableLiveData()
     val requestFocusToCount: MutableLiveData<Boolean> = MutableLiveData(false)
     val uom: MutableLiveData<Uom?> by lazy {
         if (taskManager.getReceivingTask()?.taskHeader?.taskType == TaskType.DirectSupplier) {
@@ -87,17 +77,11 @@ class GoodsMercuryInfoViewModel : CoreViewModel(), OnPositionClickListener {
 
     private val currentDate: MutableLiveData<Date> = MutableLiveData()
     private val expirationDate: MutableLiveData<Calendar> = MutableLiveData()
-    private val qualityInfo: MutableLiveData<List<QualityInfo>> = MutableLiveData()
-    private val reasonRejectionInfo: MutableLiveData<List<ReasonRejectionInfo>> = MutableLiveData()
     val spinQuality: MutableLiveData<List<String>> = MutableLiveData()
-    val spinQualitySelectedPosition: MutableLiveData<Int> = MutableLiveData(-1)
-    val spinManufacturers: MutableLiveData<List<String>> = MutableLiveData()
-    val spinManufacturersSelectedPosition: MutableLiveData<Int> = MutableLiveData(-1)
-    val spinProductionDateSelectedPosition: MutableLiveData<Int> = MutableLiveData(0)
     val spinReasonRejection: MutableLiveData<List<String>> = MutableLiveData()
-    val spinReasonRejectionSelectedPosition: MutableLiveData<Int> = MutableLiveData(-1)
 
-    val spinProductionDate: MutableLiveData<List<String>> =
+
+    override val spinProductionDate: MutableLiveData<List<String>> =
             spinManufacturersSelectedPosition
                     .map { pos ->
                     val position = pos ?: 0
@@ -116,61 +100,6 @@ class GoodsMercuryInfoViewModel : CoreViewModel(), OnPositionClickListener {
                             .orEmpty()
                     }
 
-    private val currentQualityInfoCode: String
-        get() {
-            val position = spinQualitySelectedPosition.value ?: -1
-            return position
-                    .takeIf { it >= 0 }
-                    ?.run {
-                        qualityInfo.value
-                                ?.takeIf { it.isNotEmpty() }
-                                ?.run { this[position].code }
-                                .orEmpty()
-                    }
-                    .orEmpty()
-        }
-
-    private val currentReasonRejectionInfoCode: String
-        get() {
-            val position = spinReasonRejectionSelectedPosition.value ?: -1
-            return position
-                    .takeIf { it >= 0 }
-                    ?.run {
-                        reasonRejectionInfo.value
-                                ?.takeIf { it.isNotEmpty() }
-                                ?.run { this[position].code }
-                                .orEmpty()
-                    }
-                    .orEmpty()
-        }
-
-    private val currentManufacture: String
-        get() {
-            val position = spinManufacturersSelectedPosition.value ?: -1
-            return position
-                    .takeIf { it >= 0 }
-                    ?.run {
-                        spinManufacturers.value
-                                ?.takeIf { it.isNotEmpty() }
-                                ?.run { this[position] }
-                                .orEmpty()
-                    }
-                    .orEmpty()
-        }
-
-    private val currentProductionDate: String
-        get() {
-            val position = spinProductionDateSelectedPosition.value ?: -1
-            return position
-                    .takeIf { it >= 0 }
-                    ?.run {
-                        spinProductionDate.value
-                                ?.takeIf { it.isNotEmpty() }
-                                ?.run { this[position] }
-                                .orEmpty()
-                    }
-                    .orEmpty()
-        }
 
     private val currentProductionDateFormatterEN: String
         get() {
@@ -182,7 +111,7 @@ class GoodsMercuryInfoViewModel : CoreViewModel(), OnPositionClickListener {
 
 
 
-    private val currentTypeDiscrepanciesCode: String
+    override val currentTypeDiscrepanciesCode: String
         get() {
             return if (isTaskPGE.value == true) {
                 currentQualityInfoCode
@@ -228,7 +157,7 @@ class GoodsMercuryInfoViewModel : CoreViewModel(), OnPositionClickListener {
     }
 
     val isDiscrepancy: MutableLiveData<Boolean> = MutableLiveData(false)
-    val isDefect: MutableLiveData<Boolean> =
+    override val isDefect: MutableLiveData<Boolean> =
             spinQualitySelectedPosition
                     .combineLatest(isDiscrepancy)
                     .map {
