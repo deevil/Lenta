@@ -5,6 +5,7 @@ import com.lenta.bp9.model.task.TaskMercuryDiscrepancies
 import com.lenta.bp9.model.task.TaskProductDiscrepancies
 import com.lenta.bp9.model.task.TaskProductInfo
 import com.lenta.shared.models.core.Uom
+import com.lenta.shared.utilities.extentions.removeItemFromListWithPredicate
 import com.mobrun.plugin.api.HyperHive
 
 class MemoryTaskProductsDiscrepanciesRepository : ITaskProductsDiscrepanciesRepository {
@@ -46,12 +47,12 @@ class MemoryTaskProductsDiscrepanciesRepository : ITaskProductsDiscrepanciesRepo
 
     override fun addProductDiscrepancyOfMercuryDiscrepancy(mercuryDiscrepancies: List<TaskMercuryDiscrepancies>) {
         mercuryDiscrepancies
-                .asSequence()
+                .filter { it.typeDiscrepancies.isNotEmpty() }
                 .groupBy { it.materialNumber }
-                .map { groupByMaterialNumberMercuryDiscrepancies ->
+                .forEach { groupByMaterialNumberMercuryDiscrepancies ->
                     groupByMaterialNumberMercuryDiscrepancies.value
                             .groupBy { it.typeDiscrepancies }
-                            .map { groupByMercuryDiscrepancies ->
+                            .forEach { groupByMercuryDiscrepancies ->
                                 val countDiscrepancies =
                                         groupByMercuryDiscrepancies.value
                                                 .map { it.numberDiscrepancies }
@@ -65,7 +66,6 @@ class MemoryTaskProductsDiscrepanciesRepository : ITaskProductsDiscrepanciesRepo
                                         }
                             }
                 }
-                .toList()
     }
 
     override fun updateProductsDiscrepancy(newProductsDiscrepancies: List<TaskProductDiscrepancies>) {
@@ -207,6 +207,29 @@ class MemoryTaskProductsDiscrepanciesRepository : ITaskProductsDiscrepanciesRepo
         }.let {
             return it.isNotEmpty()
         }
+    }
+
+    override fun deleteProductDiscrepancyByBatch(materialNumber: String, typeDiscrepancies: String, quantityByDiscrepancyForBatch: Double) {
+        val quantityByDiscrepancyForProduct =
+                productsDiscrepancies
+                        .findLast {
+                            it.materialNumber == materialNumber
+                                    && it.typeDiscrepancies == typeDiscrepancies
+                        }
+                        ?.numberDiscrepancies
+                        ?.toDouble()
+                        ?: 0.0
+
+        val residueByDiscrepancyForProduct =
+                quantityByDiscrepancyForProduct
+                        .takeIf { it > 0.0 }
+                        ?.let { it - quantityByDiscrepancyForBatch }
+                        ?: 0.0
+
+
+        findProductDiscrepanciesOfProduct(materialNumber)
+                .findLast { it.typeDiscrepancies == typeDiscrepancies }
+                ?.let { changeProductDiscrepancy(it.copy(numberDiscrepancies = residueByDiscrepancyForProduct.toString())) }
     }
 
     override fun getCountAcceptOfProduct(product: TaskProductInfo): Double {

@@ -111,7 +111,7 @@
     <string name="ean_info">Доступно сканирование штрихкода EAN</string>
     <string name="es_info">Доступно сканирование акцизной марки</string>
     <string name="box_info">Доступно сканирование номера коробки</string>
-    <string name="gs128_info">Доступно сканирование штрихкода GS1\-128</string>
+    <string name="gs128_info">Доступно сканирование штрихкода GS1 Databar</string>
     <string name="empty_category">Пустая категория</string>
     <string name="good_not_found">Товар не найден в справочниках</string>
     <string name="not_valid_format_ean">Неверный формат штрихкода</string>
@@ -208,4 +208,5 @@
     <string name="stickers">Этикетки</string>
     <string name="marking_goods">Маркированный товар</string>
     <string name="exceptions_shelf_life">Исключение по СГ</string>
+    <string name="data_retrieval_error">Ошибка получения данных</string>
 </resources>

@@ -83,23 +83,26 @@ class LoadingTaskCardViewModel : CoreLoadingViewModel() {
                             ?.findLast { it.taskNumber == taskNumber }
             if (loadFullData) {
                 when (taskHeader?.taskType) {
-                    TaskType.ReceptionDistributionCenter, TaskType.OwnProduction -> {
+                    TaskType.ReceptionDistributionCenter, TaskType.OwnProduction, TaskType.ShoppingMall -> {
                         if (taskHeader.status == TaskStatus.Traveling) {
                             taskCardNetRequest(params).either(::handleFailure, ::handleSuccess)
                         } else {
-                            if (taskHeader.taskType == TaskType.ReceptionDistributionCenter && taskHeader.status == TaskStatus.Cancel) { //https://trello.com/c/pBXnVYkp
+                            if ((taskHeader.taskType == TaskType.ReceptionDistributionCenter || taskHeader.taskType == TaskType.ShoppingMall)
+                                    && taskHeader.status == TaskStatus.Cancel) { //https://trello.com/c/pBXnVYkp
                                 screenNavigator.goBack()
                             } else {
+                                val taskTypeString =
+                                        when(taskHeader.taskType) {
+                                            TaskType.ReceptionDistributionCenter -> TaskType.ReceptionDistributionCenter.taskTypeString
+                                            TaskType.ShoppingMall -> TaskType.ShoppingMall.taskTypeString
+                                            else -> TaskType.OwnProduction.taskTypeString
+                                        }
                                 val paramsRDS = TaskContentsReceptionDistrCenterParameters(
                                         mode = mode.TaskCardModeString,
                                         deviceIP = context.getDeviceIp(),
-                                        personalNumber = sessionInfo.personnelNumber ?: "",
+                                        personalNumber = sessionInfo.personnelNumber.orEmpty(),
                                         taskNumber = taskNumber,
-                                        taskType = if (taskHeader.taskType == TaskType.ReceptionDistributionCenter) {
-                                            TaskType.ReceptionDistributionCenter.taskTypeString
-                                        } else {
-                                            TaskType.OwnProduction.taskTypeString
-                                        },
+                                        taskType = taskTypeString,
                                         operatingSystem = OPERATING_SYSTEM_ANDROID
                                 )
                                 taskContentsReceptionDistrCenterNetRequest(paramsRDS).either(::handleFailure, ::handleSuccessRDS)
@@ -125,7 +128,7 @@ class LoadingTaskCardViewModel : CoreLoadingViewModel() {
                         val params = ZmpUtzGrz43V001Params(
                                 mode = mode.TaskCardModeString,
                                 deviceIP = context.getDeviceIp(),
-                                personalNumber = sessionInfo.personnelNumber ?: "",
+                                personalNumber = sessionInfo.personnelNumber.orEmpty(),
                                 taskNumber = taskNumber
                         )
                         zmpUtzGrz43V001NetRequest(params).either(::handleFailure, ::handleSuccessShipmentRC)
@@ -160,8 +163,7 @@ class LoadingTaskCardViewModel : CoreLoadingViewModel() {
             val newTask = taskManager.newReceivingTask(taskHeader, TaskDescription.from(result.taskDescription))
             newTask?.taskRepository?.getNotifications()?.updateWithNotifications(notifications, null, null, null)
             taskManager.setTask(newTask)
-            screenNavigator.openTaskCardScreen(mode, taskManager.getReceivingTask()?.taskHeader?.taskType
-                    ?: TaskType.None)
+            screenNavigator.openTaskCardScreen(mode, taskManager.getTaskType())
         }
     }
 
@@ -315,8 +317,7 @@ class LoadingTaskCardViewModel : CoreLoadingViewModel() {
                             screenNavigator.openControlDeliveryCargoUnitsScreen() //экран Контроль погрузки ГЕ
                         }
                         else -> {
-                            screenNavigator.openTaskCardScreen(TaskCardMode.Full, taskManager.getReceivingTask()?.taskHeader?.taskType
-                                    ?: TaskType.None)
+                            screenNavigator.openTaskCardScreen(TaskCardMode.Full, taskManager.getTaskType())
                         }
                     }
                 }
@@ -349,10 +350,8 @@ class LoadingTaskCardViewModel : CoreLoadingViewModel() {
                     if (task.taskRepository.getReviseDocuments().getTransportConditions().isNotEmpty()) {
                         screenNavigator.openTransportConditionsScreen()
                     } else {
-                        screenNavigator.openTaskListScreen()
-                        screenNavigator.openCheckingNotNeededAlert(context.getString(R.string.revise_not_needed_unloading)) {
-                            screenNavigator.openFinishConditionsReviseLoadingScreen()
-                        }
+                        screenNavigator.goBack()
+                        screenNavigator.openControlDeliveryCargoUnitsScreen() //экран Контроль погрузки ГЕ
                     }
                 }
                 TaskStatus.Recounting -> {
@@ -362,8 +361,7 @@ class LoadingTaskCardViewModel : CoreLoadingViewModel() {
                     screenNavigator.openTransferGoodsSectionScreen()
                 }
                 else -> {
-                    screenNavigator.openTaskCardScreen(TaskCardMode.Full, taskManager.getReceivingTask()?.taskHeader?.taskType
-                            ?: TaskType.None)
+                    screenNavigator.openTaskCardScreen(TaskCardMode.Full, taskManager.getTaskType())
                 }
             }
         }

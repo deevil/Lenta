@@ -58,6 +58,7 @@
             android:background="?selectableItemBackground"
             app:layout_constraintEnd_toStartOf="@+id/ib_scan"
             android:src="@drawable/ic_barcode_white_32dp"
+            android:onClick="@{(v) -> vm.navigator.openGS128InfoScreen()}"
             android:layout_marginEnd="@dimen/size_8dp"
             android:layout_height="wrap_content"/>
 
@@ -69,6 +70,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="@dimen/size_8dp"
+            android:onClick="@{(v) -> vm.navigator.openEanInfoScreen()}"
             android:background="?selectableItemBackground"
             android:src="@drawable/ic_scan_barcode_white_32dp" />
 

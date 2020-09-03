@@ -106,6 +106,11 @@ class ExciseAlcoBoxCardPGEFragment : CoreFragment<FragmentExciseAlcoBoxCardPgeBi
         return false
     }
 
+    override fun onResume() {
+        super.onResume()
+        vm.onResume()
+    }
+
     companion object {
         private const val PAGE_NUMBER = "09/62"
 

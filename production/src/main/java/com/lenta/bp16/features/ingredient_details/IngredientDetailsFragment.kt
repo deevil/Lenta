@@ -6,7 +6,8 @@ import androidx.lifecycle.lifecycleScope
 import com.lenta.bp16.R
 import com.lenta.bp16.databinding.FragmentIngredientDetailsBinding
 import com.lenta.bp16.model.ingredients.OrderIngredientDataInfo
-import com.lenta.bp16.model.ingredients.ui.OrderByBarcode
+import com.lenta.bp16.model.ingredients.OrderByBarcode
+import com.lenta.bp16.model.ingredients.ui.OrderByBarcodeUI
 import com.lenta.bp16.platform.extention.getAppComponent
 import com.lenta.shared.platform.activity.OnBackPresserListener
 import com.lenta.shared.platform.fragment.CoreFragment
@@ -34,8 +35,8 @@ class IngredientDetailsFragment : CoreFragment<FragmentIngredientDetailsBinding,
                 ?: throw IllegalArgumentException("There is no argument value with key $KEY_INGREDIENT")
     }
 
-    private val eanInfo: OrderByBarcode by unsafeLazy {
-        arguments?.getParcelable<OrderByBarcode>(KEY_EAN_INFO)
+    private val eanInfo: OrderByBarcodeUI by unsafeLazy {
+        arguments?.getParcelable<OrderByBarcodeUI>(KEY_EAN_INFO)
                 ?: throw IllegalArgumentException("There is no argument value with key $KEY_EAN_INFO")
     }
 
@@ -94,7 +95,7 @@ class IngredientDetailsFragment : CoreFragment<FragmentIngredientDetailsBinding,
         private const val KEY_PARENT_CODE = "KEY_PARENT_CODE"
         private const val KEY_EAN_INFO = "KEY_EAN_INFO"
 
-        fun newInstance(selectedIngredient: OrderIngredientDataInfo, parentCode: String, eanInfo: OrderByBarcode): IngredientDetailsFragment {
+        fun newInstance(selectedIngredient: OrderIngredientDataInfo, parentCode: String, eanInfo: OrderByBarcodeUI): IngredientDetailsFragment {
             return IngredientDetailsFragment().apply {
                 arguments = bundleOf(KEY_INGREDIENT to selectedIngredient, KEY_PARENT_CODE to parentCode, KEY_EAN_INFO to eanInfo)
             }

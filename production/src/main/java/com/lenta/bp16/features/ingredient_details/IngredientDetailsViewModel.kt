@@ -4,13 +4,13 @@ import androidx.lifecycle.MutableLiveData
 import com.lenta.bp16.data.IScales
 import com.lenta.bp16.model.ingredients.OrderIngredientDataInfo
 import com.lenta.bp16.model.ingredients.params.IngredientDataCompleteParams
-import com.lenta.bp16.model.ingredients.ui.OrderByBarcode
+import com.lenta.bp16.model.ingredients.OrderByBarcode
+import com.lenta.bp16.model.ingredients.ui.OrderByBarcodeUI
 import com.lenta.bp16.platform.navigation.IScreenNavigator
 import com.lenta.bp16.platform.resource.IResourceManager
 import com.lenta.bp16.request.CompleteIngredientByOrderNetRequest
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.platform.viewmodel.CoreViewModel
-import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.extentions.*
 import javax.inject.Inject
 import kotlin.properties.Delegates
@@ -42,7 +42,7 @@ class IngredientDetailsViewModel : CoreViewModel() {
 
     //Список параметров EAN для ингредиента
     val eanInfo by unsafeLazy {
-        MutableLiveData<OrderByBarcode>()
+        MutableLiveData<OrderByBarcodeUI>()
     }
 
     // Комплектация
@@ -118,7 +118,6 @@ class IngredientDetailsViewModel : CoreViewModel() {
                                 deviceIP = resourceManager.deviceIp,
                                 mode = IngredientDataCompleteParams.MODE_INGREDIENT,
                                 parent = parentCode,
-                                aufnr = parentCode,
                                 matnr = ingredient.matnr.orEmpty(),
                                 fact = weight,
                                 personnelNumber = sessionInfo.personnelNumber.orEmpty()

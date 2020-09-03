@@ -512,7 +512,7 @@ class GoodsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKey
                 productInfo.type == ProductType.NonExciseAlcohol
                         && !productInfo.isBoxFl
                         && !productInfo.isMarkFl
-        val isVetProduct = productInfo.isVet
+        val isVetProduct = productInfo.isVet && !productInfo.isNotEdit
         //коробочный или марочный алкоголь
         val isExciseAlcoholProduct =
                 productInfo.type == ProductType.ExciseAlcohol
@@ -531,8 +531,14 @@ class GoodsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKey
                     task.getProcessedProducts()
                             .mapNotNull { productInfo ->
                                 if (taskType == TaskType.RecalculationCargoUnit) {
+                                    val countOrderQuantity =
+                                            task.taskRepository
+                                                    .getProducts()
+                                                    .getProcessingUnitsOfProduct(productInfo.materialNumber)
+                                                    .map { unitInfo -> unitInfo.orderQuantity.toDouble() }
+                                                    .sumByDouble { orderQuantity -> orderQuantity }
                                     productsDiscrepancies
-                                            .getCountProductNotProcessedOfProductPGE(productInfo)
+                                            .getCountProductNotProcessedOfProductPGEOfProcessingUnits(productInfo, countOrderQuantity)
                                             .takeIf { it > 0.0 }
                                 } else {
                                     productsDiscrepancies

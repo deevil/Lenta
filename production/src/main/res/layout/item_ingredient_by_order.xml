@@ -73,6 +73,7 @@
                         style="@style/CellTextStyle"
                         android:layout_width="match_parent"
                         android:text="@{item.text2}"
+                        app:zoom="@{true}"
                         tools:text="ООО Минторг" />
 
                 </LinearLayout>
@@ -91,8 +92,14 @@
                 <ImageView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:src="@drawable/ic_play_arrow_gray_24dp"
-                    app:ingredientStatusIcon="@{item.ingredientStatus}" />
+                    android:src="@drawable/ic_done_white_24dp"
+                    app:ingredientStatusWorkIcon="@{item.ingredientStatusWork}" />
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_self_lock_status_gray_24dp"
+                    app:ingredientStatusBlockIcon="@{item.ingredientStatusBlock}" />
 
             </LinearLayout>
 

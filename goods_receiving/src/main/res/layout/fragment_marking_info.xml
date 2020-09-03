@@ -2,13 +2,13 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context=".features.goods_information.marking.MarkingInfoFragment">
+    tools:context=".features.goods_information.marking.uom_st_without_counting_in_boxes.MarkingInfoFragment">
 
     <data>
 
         <variable
             name="vm"
-            type="com.lenta.bp9.features.goods_information.marking.MarkingInfoViewModel" />
+            type="com.lenta.bp9.features.goods_information.marking.uom_st_without_counting_in_boxes.MarkingInfoViewModel" />
 
     </data>
 
@@ -72,6 +72,7 @@
             android:maxLines="1"
             android:text="@={vm.count}"
             app:digitsForUom="@{vm.productInfo.uom}"
+            app:onlyDigits="@{true}"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/div_vert1"
             app:layout_constraintTop_toTopOf="@+id/div_vert1"

@@ -53,7 +53,7 @@ class ChangeDateTimeViewModel : CoreViewModel() {
 
     val dateCaption: String by lazy {
         val currentStatus = taskManager.getReceivingTask()?.taskDescription?.currentStatus
-        val taskType = taskManager.getReceivingTask()?.taskHeader?.taskType
+        val taskType = taskManager.getTaskType()
         if (currentStatus == TaskStatus.Checked)
             context.getString(R.string.unloading_date)
         else if (currentStatus == TaskStatus.Arrived && mode.value == ChangeDateTimeMode.NextStatus && taskType != TaskType.ShipmentRC)
@@ -66,7 +66,7 @@ class ChangeDateTimeViewModel : CoreViewModel() {
 
     val timeCaption: String by lazy {
         val currentStatus = taskManager.getReceivingTask()?.taskDescription?.currentStatus
-        val taskType = taskManager.getReceivingTask()?.taskHeader?.taskType
+        val taskType = taskManager.getTaskType()
         if (currentStatus == TaskStatus.Checked)
             context.getString(R.string.unloading_time)
         else if (currentStatus == TaskStatus.Arrived && mode.value == ChangeDateTimeMode.NextStatus && taskType != TaskType.ShipmentRC)
@@ -125,15 +125,17 @@ class ChangeDateTimeViewModel : CoreViewModel() {
     @SuppressLint("SimpleDateFormat")
     private fun isCorrectDateTime(checkDateTime: String?): Boolean {
         return try {
+            val taskType = taskManager.getTaskType()
             val selectedDateTime = SimpleDateFormat("dd.MM.yy HH:mm:ss").parse(checkDateTime)
             if (mode.value == ChangeDateTimeMode.NextStatus) {
                 val minNextStatusDate = Calendar.getInstance()
                 minNextStatusDate.time = SimpleDateFormat("yyyy-MM-dd").parse(taskManager.getReceivingTask()?.taskDescription?.nextStatusDate)
                 minNextStatusDate.add(Calendar.DATE, (permittedNumberDays.value ?: 0) * -1)
-                if (taskManager.getReceivingTask()?.taskDescription?.currentStatus == TaskStatus.Traveling &&
-                        (taskManager.getReceivingTask()?.taskHeader?.taskType == TaskType.DirectSupplier ||
-                                taskManager.getReceivingTask()?.taskHeader?.taskType == TaskType.ReceptionDistributionCenter ||
-                                taskManager.getReceivingTask()?.taskHeader?.taskType == TaskType.OwnProduction)) {
+                if (taskManager.getReceivingTask()?.taskDescription?.currentStatus == TaskStatus.Traveling
+                        && (taskType == TaskType.DirectSupplier
+                                || taskType == TaskType.ReceptionDistributionCenter
+                                || taskType == TaskType.OwnProduction
+                                || taskType == TaskType.ShoppingMall)) {
                     selectedDateTime <= timeMonitor.getServerDate() && selectedDateTime >= minNextStatusDate.time
                 } else {
                     val currentStatusDateTime = SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse("${taskManager.getReceivingTask()?.taskDescription?.currentStatusDate} ${taskManager.getReceivingTask()?.taskDescription?.currentStatusTime}")

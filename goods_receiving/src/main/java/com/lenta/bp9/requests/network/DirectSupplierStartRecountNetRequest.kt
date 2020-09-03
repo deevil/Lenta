@@ -148,5 +148,7 @@ data class TaskComposition(
         @SerializedName("IS_CHECK_GTIN")
         val isControlGTIN: String, //маркированный товар, Контроль GTIN
         @SerializedName("IS_GRAYZONE")
-        val isGrayZone: String //маркированный товар
+        val isGrayZone: String, //маркированный товар
+        @SerializedName("QNTINCL_ALT_BSTME")
+        val countPiecesBox: String //маркированный товар, сколько пачек (штук) в одной коробке
 )

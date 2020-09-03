@@ -2,10 +2,10 @@ package com.lenta.bp14.features.work_list.good_info
 
 import android.widget.EditText
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
 import com.lenta.bp14.models.check_price.IPriceInfoParser
 import com.lenta.bp14.models.data.GoodType
 import com.lenta.bp14.models.data.ShelfLifeType
+import com.lenta.bp14.models.ui.*
 import com.lenta.bp14.models.work_list.AdditionalGoodInfo
 import com.lenta.bp14.models.work_list.ScanResult
 import com.lenta.bp14.models.work_list.WorkListTask
@@ -18,7 +18,6 @@ import com.lenta.bp14.requests.work_list.IAdditionalGoodInfoNetRequest
 import com.lenta.bp14.requests.work_list.ICheckMarkNetRequest
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.exception.Failure
-import com.lenta.shared.models.core.MatrixType
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.requests.combined.scan_info.analyseCode
 import com.lenta.shared.utilities.Logg
@@ -26,7 +25,6 @@ import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
 import com.lenta.shared.utilities.databinding.PageSelectionListener
 import com.lenta.shared.utilities.extentions.*
 import com.lenta.shared.view.OnPositionClickListener
-import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.*
 import javax.inject.Inject
@@ -35,16 +33,22 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKe
 
     @Inject
     lateinit var navigator: IScreenNavigator
+
     @Inject
     lateinit var task: WorkListTask
+
     @Inject
     lateinit var additionalGoodInfoNetRequest: IAdditionalGoodInfoNetRequest
+
     @Inject
     lateinit var sessionInfo: ISessionInfo
+
     @Inject
     lateinit var priceInfoParser: IPriceInfoParser
+
     @Inject
     lateinit var checkMarkNetRequest: ICheckMarkNetRequest
+
     @Inject
     lateinit var resourceManager: IResourceManager
 
@@ -342,7 +346,7 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKe
     }
 
     private fun searchCode(ean: String? = null, material: String? = null) {
-        viewModelScope.launch {
+        launchUITryCatch {
             require((ean != null) xor (material != null)) {
                 "Only one param allowed - ean: $ean, material: $material"
             }
@@ -362,7 +366,7 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKe
                 }
                 task.addGoodToList(good)
                 navigator.openGoodInfoWlScreen(popLast = true)
-                return@launch
+                return@launchUITryCatch
             }
 
             navigator.showGoodNotFound()
@@ -370,7 +374,7 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKe
     }
 
     private fun searchGoodMark(goodMark: String) {
-        if (good.value!!.options.goodType != GoodType.MARKED) {
+        if (good.value?.options?.goodType != GoodType.MARKED) {
             navigator.showWrongBarcodeFormat()
             return
         }
@@ -385,7 +389,7 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKe
 
                 checkMarkNetRequest(CheckMarkParams(
                         tkNumber = sessionInfo.market.orEmpty(),
-                        material = good.value!!.material,
+                        material = good.value?.material.orEmpty(),
                         markNumber = goodMark,
                         mode = "2"
                 )).also {
@@ -398,7 +402,7 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKe
     }
 
     private fun searchExciseMark(exciseMark: String) {
-        if (good.value!!.options.goodType != GoodType.EXCISE) {
+        if (good.value?.options?.goodType != GoodType.EXCISE) {
             navigator.showWrongBarcodeFormat()
             return
         }
@@ -413,7 +417,7 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKe
 
                 checkMarkNetRequest(CheckMarkParams(
                         tkNumber = sessionInfo.market.orEmpty(),
-                        material = good.value!!.material,
+                        material = good.value?.material.orEmpty(),
                         markNumber = exciseMark,
                         mode = "1"
                 )).also {
@@ -443,6 +447,7 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKe
     }
 
     private fun saveScanResult() {
+        val ean = good.value?.ean
         val enteredDate = enteredDate.value
         val shelfLifeType = shelfLifeTypePosition.value
 
@@ -454,14 +459,15 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKe
             if (shelfLifeType == ShelfLifeType.EXPIRATION.position) it else null
         }
 
-        val comment = good.value!!.comments[commentsPosition.value ?: 0]
+        val comment = good.value?.comments?.get(commentsPosition.value ?: 0)
 
         task.addScanResult(ScanResult(
                 quantity = quantity.value?.toDoubleOrNull() ?: 0.0,
-                commentCode = comment.code,
-                comment = comment.description,
+                commentCode = comment?.code,
+                comment = comment?.description.orEmpty(),
                 productionDate = productionDate,
-                expirationDate = expirationDate
+                expirationDate = expirationDate,
+                ean = ean
         ))
     }
 
@@ -484,48 +490,6 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKe
             year.requestFocus()
             return true
         }
-
         return false
     }
-
 }
-
-
-data class OptionsUi(
-        val matrixType: MatrixType,
-        val goodType: GoodType,
-        val section: String,
-        val healthFood: Boolean,
-        val novelty: Boolean
-)
-
-data class CommonInfoUi(
-        val shelfLife: String,
-        val remainingShelfLife: String,
-        val eanWithUnits: String,
-        val groups: String
-)
-
-data class AdditionalInfoUi(
-        val storagePlaces: String,
-        val minStock: String,
-        val inventory: String,
-        val arrival: String,
-        val commonPrice: String,
-        val discountPrice: String,
-        val promoName: String,
-        val promoPeriod: String
-)
-
-data class ItemProviderUi(
-        val number: String,
-        val code: String,
-        val name: String,
-        val period: String
-)
-
-data class ItemStockUi(
-        val number: String,
-        val storage: String,
-        val quantity: String
-)

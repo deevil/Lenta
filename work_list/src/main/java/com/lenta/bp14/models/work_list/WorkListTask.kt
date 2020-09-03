@@ -20,9 +20,13 @@ import com.lenta.shared.models.core.MatrixType
 import com.lenta.shared.models.core.StateFromToString
 import com.lenta.shared.models.core.Uom
 import com.lenta.shared.platform.constants.Constants
+import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.extentions.*
+import com.lenta.shared.utilities.orIfNull
+import kotlinx.coroutines.*
 import java.util.*
 import javax.inject.Inject
+import kotlin.coroutines.CoroutineContext
 
 @WorkListScope
 class WorkListTask @Inject constructor(
@@ -31,7 +35,7 @@ class WorkListTask @Inject constructor(
         private val taskDescription: WorkListTaskDescription,
         private val filterableDelegate: IFilterable,
         private val gson: Gson
-) : IWorkListTask, StateFromToString, IFilterable by filterableDelegate {
+) : IWorkListTask, StateFromToString, CoroutineScope, IFilterable by filterableDelegate {
 
     private val checkResults by lazy {
         taskDescription.taskInfoResult?.checkResults?.toList() ?: emptyList()
@@ -40,6 +44,9 @@ class WorkListTask @Inject constructor(
     private val marks by lazy {
         taskDescription.taskInfoResult?.marks?.toList() ?: emptyList()
     }
+
+    private val job = SupervisorJob()
+    override val coroutineContext: CoroutineContext = Dispatchers.IO + job
 
     override var isLoadedTaskList = false
 
@@ -61,10 +68,10 @@ class WorkListTask @Inject constructor(
                     good.isProcessed = position.isProcessed.isSapTrue()
                     good.scanResults = checkResults.filter { it.matNr == position.matNr }.map { result ->
                         ScanResult(
-                                quantity = result.quantity,
+                                quantity = result.quantity ?: 0.0,
                                 comment = good.comments.find { it.code == result.commentCode }?.description.orEmpty(),
-                                productionDate = result.producedDate.getSapDate(Constants.DATE_FORMAT_yyyy_mm_dd),
-                                expirationDate = result.shelfLife.getSapDate(Constants.DATE_FORMAT_yyyy_mm_dd)
+                                productionDate = result.producedDate?.getSapDate(Constants.DATE_FORMAT_yyyy_mm_dd),
+                                expirationDate = result.shelfLife?.getSapDate(Constants.DATE_FORMAT_yyyy_mm_dd)
                         )
                     }.toMutableList()
                     good.marks = marks.filter { it.matNr == position.matNr }.map { mark ->
@@ -115,7 +122,29 @@ class WorkListTask @Inject constructor(
     }
 
     override fun addScanResult(scanResult: ScanResult) {
-        currentGood.value!!.scanResults.add(scanResult)
+        launch {
+            currentGood.value?.scanResults?.let { scanResultList ->
+                /**Ищем совпадение по списку*/
+                scanResultList.find { searchScanResult ->
+                    searchScanResult.findScanResultBy(scanResult)
+                }?.let {
+                    /**Получение идекса дублирующегося элемента*/
+                    val index = scanResultList.indexOf(scanResult)
+
+                    /**Создание нового элемента, который заменит дублирующиеся, с увеличением количества*/
+                    val replaceScanResult = ScanResult(
+                            quantity = it.quantity.plus(scanResult.quantity),
+                            commentCode = scanResult.commentCode,
+                            comment = scanResult.comment,
+                            expirationDate = scanResult.expirationDate,
+                            productionDate = scanResult.productionDate,
+                            ean = scanResult.ean
+                    )
+                    /**Замена элемента*/
+                    scanResultList.set(index, replaceScanResult)
+                }.orIfNull { scanResultList.add(scanResult) }
+            }
+        }
     }
 
     override fun getTaskType(): ITaskTypeInfo {
@@ -125,6 +154,7 @@ class WorkListTask @Inject constructor(
     override fun getDescription(): ITaskDescription {
         return taskDescription
     }
+
 
     fun deleteScanResultsByComments(comments: List<String>) {
         val good = currentGood.value!!
@@ -192,12 +222,11 @@ class WorkListTask @Inject constructor(
 
     override fun setMissing(matNrList: List<String>) {
         val goodsList = goods.value
-        matNrList.forEach {material ->
+        matNrList.forEach { material ->
             goodsList?.find { it.material == material }?.let { good ->
                 good.isProcessed = true
             }
         }
-
         goods.value = goodsList
     }
 
@@ -221,7 +250,6 @@ class WorkListTask @Inject constructor(
                 }
             }
         }
-
         goods.value = goodsList
     }
 
@@ -241,6 +269,15 @@ class WorkListTask @Inject constructor(
                 emptyList()
             }
         }
+    }
+
+    private fun ScanResult.findScanResultBy(scanResult: ScanResult): Boolean {
+        return this.markNumber == scanResult.markNumber &&
+                this.productionDate == scanResult.productionDate &&
+                this.expirationDate == scanResult.expirationDate &&
+                this.commentCode == scanResult.commentCode &&
+                this.comment == scanResult.comment &&
+                this.ean == scanResult.ean
     }
 
     private fun filter(good: Good): Boolean {
@@ -479,8 +516,21 @@ data class ScanResult(
         val comment: String,
         val productionDate: Date?,
         val expirationDate: Date?,
-        val markNumber: String? = null
+        val markNumber: String? = null,
+        val ean: String? = null
 ) {
+
+    override fun equals(other: Any?): Boolean {
+        if (other == null || other !is ScanResult) return false
+        return other.markNumber == markNumber &&
+                other.productionDate == productionDate &&
+                other.expirationDate == expirationDate &&
+                other.commentCode == commentCode &&
+                other.comment == comment &&
+                other.ean == ean
+    }
+
+    override fun hashCode() = Objects.hash(markNumber, commentCode, comment, productionDate, expirationDate, ean)
 
     fun getFormattedProductionDate(): String {
         return if (productionDate != null) "ДП ${productionDate.getFormattedDate()}" else ""

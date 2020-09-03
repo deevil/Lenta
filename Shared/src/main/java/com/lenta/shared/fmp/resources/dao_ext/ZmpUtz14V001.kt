@@ -15,6 +15,14 @@ fun ZmpUtz14V001.getServerAddress(): String? {
     return getParams("PRO_WEIGHTADDRESS").firstOrNull()
 }
 
+fun ZmpUtz14V001.getProFillCondition(): String? {
+    return getParams("PRO_FILL_CONT").firstOrNull()
+}
+
+fun ZmpUtz14V001.getIncludeCondition(): String?{
+    return getParams("PRO_INCL_CONT").firstOrNull()
+}
+
 fun ZmpUtz14V001.getAllowedWklAppVersion(): String? {
     return getParams("WKL_ALLOWED_VRSN_A").firstOrNull()
 }
@@ -150,6 +158,10 @@ fun ZmpUtz14V001.getGrzMarkRef(): String? {
 
 fun ZmpUtz14V001.getGrzGrundMark(): String? {
     return getParams("GRZ_GRUND_MARK").firstOrNull()
+}
+
+fun ZmpUtz14V001.getGrzAlternMeins(): String? {
+    return getParams("GRZ_ALTERN_MEINS").firstOrNull()
 }
 
 private fun ZmpUtz14V001.getParams(paramName: String): List<String> {

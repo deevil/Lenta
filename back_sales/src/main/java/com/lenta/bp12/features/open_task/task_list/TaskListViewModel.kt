@@ -199,11 +199,6 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
         }
     }
 
-    override fun handleFailure(failure: Failure) {
-        super.handleFailure(failure)
-        navigator.openAlertScreen(failure)
-    }
-
     fun onClickItemPosition(position: Int) {
         selectedPage.value?.let { page ->
             when (page) {
@@ -215,7 +210,7 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
                     }
                 }
                 1 -> {
-                    tasks.value?.let { tasks ->
+                    foundTasks.value?.let { tasks ->
                         tasks.find { it.number == search.value!![position].number }?.let { task ->
                             prepareToOpenTask(task)
                         }

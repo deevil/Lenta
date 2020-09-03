@@ -7,6 +7,7 @@ import androidx.lifecycle.lifecycleScope
 import com.lenta.bp16.BR
 import com.lenta.bp16.R
 import com.lenta.bp16.databinding.FragmentRemakesByMaterialBinding
+import com.lenta.bp16.databinding.ItemMaterialIngredientBinding
 import com.lenta.bp16.databinding.ItemOrderIngredientBinding
 import com.lenta.bp16.model.ingredients.IngredientInfo
 import com.lenta.bp16.platform.extention.getAppComponent
@@ -43,10 +44,9 @@ class MaterialRemakesListFragment : CoreFragment<FragmentRemakesByMaterialBindin
         }
     }
 
-    init {
-        lifecycleScope.launchWhenResumed {
-            vm.loadMaterialIngredients()
-        }
+    override fun onResume() {
+        super.onResume()
+        vm.loadMaterialIngredients()
     }
 
     override fun setupTopToolBar(topToolbarUiModel: TopToolbarUiModel) {
@@ -72,7 +72,7 @@ class MaterialRemakesListFragment : CoreFragment<FragmentRemakesByMaterialBindin
 
     private fun initRvConfig() {
         binding?.let { layoutBinding ->
-            layoutBinding.rvConfig = initRecycleAdapterDataBinding<ItemOrderIngredientBinding>(
+            layoutBinding.rvConfig = initRecycleAdapterDataBinding<ItemMaterialIngredientBinding>(
                     layoutId = R.layout.item_material_ingredient,
                     itemId = BR.item
             )

@@ -23,16 +23,9 @@ import com.lenta.shared.utilities.state.state
 
 class GoodsDetailsFragment : CoreFragment<FragmentGoodsDetailsBinding, GoodsDetailsViewModel>(), ToolbarButtonsClickListener {
 
-    companion object {
-        fun create(productInfo: TaskProductInfo): GoodsDetailsFragment {
-            GoodsDetailsFragment().let {
-                it.productInfo = productInfo
-                return it
-            }
-        }
-    }
-
     private var productInfo by state<TaskProductInfo?>(null)
+    private var boxNumberForTaskPGEBoxAlco by state<String?>(null)
+    private var isScreenPGEBoxAlcoInfo by state<Boolean?>(null)
 
     override fun getLayoutId(): Int = R.layout.fragment_goods_details
 
@@ -41,7 +34,9 @@ class GoodsDetailsFragment : CoreFragment<FragmentGoodsDetailsBinding, GoodsDeta
     override fun getViewModel(): GoodsDetailsViewModel {
         provideViewModel(GoodsDetailsViewModel::class.java).let { vm ->
             getAppComponent()?.inject(vm)
-            vm.productInfo.value = this.productInfo
+            this.productInfo?.also { vm.initProduct(it) }
+            this.boxNumberForTaskPGEBoxAlco?.also { vm.initBoxNumber(it) }
+            this.isScreenPGEBoxAlcoInfo?.also { vm.initScreenPGEBoxAlcoInfo(it) }
             return vm
         }
     }
@@ -110,6 +105,17 @@ class GoodsDetailsFragment : CoreFragment<FragmentGoodsDetailsBinding, GoodsDeta
     override fun onToolbarButtonClick(view: View) {
         when (view.id) {
             R.id.b_3 -> vm.onClickDelete()
+        }
+    }
+
+    companion object {
+        fun create(productInfo: TaskProductInfo, boxNumberForTaskPGEBoxAlco: String, isScreenPGEBoxAlcoInfo: Boolean): GoodsDetailsFragment {
+            GoodsDetailsFragment().let {
+                it.productInfo = productInfo
+                it.boxNumberForTaskPGEBoxAlco = boxNumberForTaskPGEBoxAlco
+                it.isScreenPGEBoxAlcoInfo = isScreenPGEBoxAlcoInfo
+                return it
+            }
         }
     }
 

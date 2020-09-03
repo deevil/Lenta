@@ -26,8 +26,9 @@ import com.lenta.bp9.features.goods_information.excise_alco_receiving.excise_alc
 import com.lenta.bp9.features.goods_information.excise_alco_receiving.excise_alco_stamp_acc.ExciseAlcoStampAccInfoFragment
 import com.lenta.bp9.features.goods_information.general.GoodsInfoFragment
 import com.lenta.bp9.features.goods_information.general_opp.GoodsInfoShipmentPPFragment
-import com.lenta.bp9.features.goods_information.marking.MarkingInfoFragment
+import com.lenta.bp9.features.goods_information.marking.uom_st_without_counting_in_boxes.MarkingInfoFragment
 import com.lenta.bp9.features.goods_information.marking.marking_product_failure.MarkingProductFailureFragment
+import com.lenta.bp9.features.goods_information.marking.uom_st_with_counting_in_boxes.MarkingBoxInfoFragment
 import com.lenta.bp9.features.goods_information.mercury.GoodsMercuryInfoFragment
 import com.lenta.bp9.features.goods_information.non_excise_alco_pge.NonExciseAlcoInfoPGEFragment
 import com.lenta.bp9.features.goods_information.non_excise_alco_receiving.NonExciseAlcoInfoFragment
@@ -249,9 +250,9 @@ class ScreenNavigator(
         )
     }
 
-    override fun openGoodsDetailsScreen(productInfo: TaskProductInfo) {
+    override fun openGoodsDetailsScreen(productInfo: TaskProductInfo, boxNumberForTaskPGEBoxAlco: String, isScreenPGEBoxAlcoInfo: Boolean) {
         runOrPostpone {
-            getFragmentStack()?.push(GoodsDetailsFragment.create(productInfo))
+            getFragmentStack()?.push(GoodsDetailsFragment.create(productInfo, boxNumberForTaskPGEBoxAlco, isScreenPGEBoxAlcoInfo))
         }
     }
 
@@ -653,9 +654,9 @@ class ScreenNavigator(
         }
     }
 
-    override fun openControlDeliveryCargoUnitsScreen() {
+    override fun openControlDeliveryCargoUnitsScreen(isUnlockTaskLoadingScreen: Boolean?) {
         runOrPostpone {
-            getFragmentStack()?.push(ControlDeliveryCargoUnitsFragment())
+            getFragmentStack()?.push(ControlDeliveryCargoUnitsFragment.newInstance(isUnlockTaskLoadingScreen))
         }
     }
 
@@ -1112,7 +1113,7 @@ class ScreenNavigator(
             val materialNumberLastSix = if (materialNumber.length > 6) materialNumber.substring(materialNumber.length - 6) else materialNumber
             getFragmentStack()?.push(AlertFragment.create(
                     message = context.getString(R.string.scanned_box_belongs_to_another_product, materialNumberLastSix, materialName),
-                    iconRes = R.drawable.ic_info_pink_80dp,
+                    iconRes = R.drawable.ic_warning_red_80dp,
                     textColor = ContextCompat.getColor(context, R.color.color_text_dialogWarning),
                     pageNumber = "97")
             )
@@ -1677,6 +1678,45 @@ class ScreenNavigator(
         openAlertWrongProductType()
     }
 
+    override fun openMarkingBoxInfoScreen(productInfo: TaskProductInfo) {
+        runOrPostpone {
+            getFragmentStack()?.push(MarkingBoxInfoFragment.newInstance(productInfo))
+        }
+    }
+
+    override fun openMarkingBoxNotIncludedDeliveryScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    message = context.getString(R.string.marking_box_not_included_delivery),
+                    iconRes = R.drawable.ic_warning_red_80dp,
+                    textColor = ContextCompat.getColor(context, R.color.color_text_dialogWarning),
+                    pageNumber = PAGE_NUMBER_97)
+            )
+        }
+    }
+
+    override fun openMarkingPerformRateControlScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    message = context.getString(R.string.marking_perform_rate_control),
+                    iconRes = R.drawable.ic_warning_red_80dp,
+                    textColor = ContextCompat.getColor(context, R.color.color_text_dialogWarning),
+                    pageNumber = PAGE_NUMBER_97)
+            )
+        }
+    }
+
+    override fun openMarkingBlockDeclaredDifferentCategoryScreen(typeDiscrepanciesName: String) {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    message = context.getString(R.string.marking_block_declared_different_category, typeDiscrepanciesName),
+                    iconRes = R.drawable.ic_warning_red_80dp,
+                    textColor = ContextCompat.getColor(context, R.color.color_text_dialogWarning),
+                    pageNumber = PAGE_NUMBER_97)
+            )
+        }
+    }
+
     private fun getFragmentStack() = foregroundActivityProvider.getActivity()?.fragmentStack
 }
 
@@ -1704,7 +1744,7 @@ interface IScreenNavigator : ICoreNavigator {
     fun openTaskReviseScreen()
     fun openGoodsInfoScreen(productInfo: TaskProductInfo, isDiscrepancy: Boolean, initialCount: Double = 0.0)
     fun openAlertWrongProductType()
-    fun openGoodsDetailsScreen(productInfo: TaskProductInfo)
+    fun openGoodsDetailsScreen(productInfo: TaskProductInfo, boxNumberForTaskPGEBoxAlco: String = "", isScreenPGEBoxAlcoInfo: Boolean = false)
     fun openInvoiceReviseScreen()
     fun openRejectScreen()
     fun openProductDocumentsReviseScreen()
@@ -1757,7 +1797,7 @@ interface IScreenNavigator : ICoreNavigator {
     fun openSealDamageDialog(nextCallbackFunc: () -> Unit)
     fun openAlertSealDamageScreen()
     fun openCargoUnitCardScreen(cargoUnitInfo: TaskCargoUnitInfo, isSurplus: Boolean? = false)
-    fun openControlDeliveryCargoUnitsScreen()
+    fun openControlDeliveryCargoUnitsScreen(isUnlockTaskLoadingScreen: Boolean? = false)
     fun openNewCargoUnitAnotherTransportationDialog(cargoUnitNumber: String, marketNumber: String, nextCallbackFunc: () -> Unit)
     fun openNewCargoUnitCurrentTransportationDialog(cargoUnitNumber: String, marketNumber: String, nextCallbackFunc: () -> Unit)
     fun openAlertNewCargoUnitScreen(cargoUnitNumber: String, marketNumber: String)
@@ -1866,4 +1906,8 @@ interface IScreenNavigator : ICoreNavigator {
     fun openAlertScannedStampIsAlreadyProcessedAlternativeScreen()
     fun openAlertScanProductGtinScreen()
     fun goBackAndShowAlertWrongProductType()
+    fun openMarkingBoxInfoScreen(productInfo: TaskProductInfo)
+    fun openMarkingBoxNotIncludedDeliveryScreen()
+    fun openMarkingPerformRateControlScreen()
+    fun openMarkingBlockDeclaredDifferentCategoryScreen(typeDiscrepanciesName: String)
 }

@@ -86,9 +86,9 @@ dependencies {
     testImplementation("io.mockk:mockk:1.9.3")
 
     // Mask for EditText
-    implementation 'com.redmadrobot:input-mask-android:4.3.1'
+    implementation 'com.redmadrobot:input-mask-android:6.0.0'
 
     // Style attribute for recycler view
-    implementation 'androidx.recyclerview:recyclerview:1.2.0-alpha04'
+    implementation 'androidx.recyclerview:recyclerview:1.2.0-alpha05'
 
 }

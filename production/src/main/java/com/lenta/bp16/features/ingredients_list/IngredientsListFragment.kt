@@ -5,7 +5,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
-import androidx.lifecycle.lifecycleScope
 import com.lenta.bp16.BR
 import com.lenta.bp16.R
 import com.lenta.bp16.databinding.*
@@ -19,7 +18,6 @@ import com.lenta.shared.scan.OnScanResultListener
 import com.lenta.shared.utilities.databinding.RecyclerViewKeyHandler
 import com.lenta.shared.utilities.databinding.ViewPagerSettings
 import com.lenta.shared.utilities.extentions.provideViewModel
-import com.lenta.shared.utilities.extentions.unsafeLazy
 
 class IngredientsListFragment :
         CoreFragment<FragmentIgredientsListBinding, IngredientsListViewModel>(),
@@ -168,7 +166,4 @@ class IngredientsListFragment :
         const val TAB_BY_ORDER = 0
         const val TAB_BY_MATERIALS = 1
     }
-
-
-
 }
