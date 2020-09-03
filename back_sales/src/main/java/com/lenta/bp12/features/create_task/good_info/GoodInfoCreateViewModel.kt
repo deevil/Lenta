@@ -738,17 +738,29 @@ class GoodInfoCreateViewModel : CoreViewModel() {
     private suspend fun checkPart(): Either<Failure, ScanInfoResult> {
         navigator.showProgressLoadingData(::handleFailure)
 
+        val formattedDate = getFormattedDate(
+                date = date.value.orEmpty(),
+                sourcePattern = Constants.DATE_FORMAT_dd_mm_yyyy,
+                targetPattern = Constants.DATE_FORMAT_yyyy_mm_dd
+        )
+
+        val allPartsQuantity = good.value?.getPartQuantityByDateAndProducer(
+                date = date.value.orEmpty(),
+                producerCode = getProducerCode()
+        ) ?: quantity.value ?: 0.0
+
         return scanInfoNetRequest(ScanInfoParams(
                 tkNumber = sessionInfo.market.orEmpty(),
                 material = good.value?.material.orEmpty(),
                 producerCode = getProducerCode(),
-                bottledDate = getFormattedDate(date.value.orEmpty(), Constants.DATE_FORMAT_dd_mm_yyyy, Constants.DATE_FORMAT_yyyy_mm_dd),
+                bottledDate = formattedDate,
                 mode = ScanInfoMode.PART.mode,
-                quantity = quantity.value ?: 0.0
+                quantity = allPartsQuantity
         )).also {
             navigator.hideProgress()
         }
     }
+
 
     private fun handleCheckPartFailure(failure: Failure) {
         navigator.openAlertScreen(failure)

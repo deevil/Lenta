@@ -6,8 +6,10 @@ import com.lenta.bp12.model.MarkType
 import com.lenta.bp12.request.pojo.ProducerInfo
 import com.lenta.shared.models.core.MatrixType
 import com.lenta.shared.models.core.Uom
+import com.lenta.shared.platform.constants.Constants
 import com.lenta.shared.utilities.extentions.dropZeros
 import com.lenta.shared.utilities.extentions.sumList
+import com.lenta.shared.utilities.getDateFromString
 
 /**
  * Родительский класс для всех товаров, Basket хранит именно его
@@ -65,6 +67,17 @@ abstract class Good(
 
     fun getPartQuantity(): Double {
         return parts.map { it.quantity }.sumList()
+    }
+
+    fun getPartQuantityByDateAndProducer(date: String, producerCode: String): Double? {
+        return try {
+            val dateFromString = getDateFromString(date, Constants.DATE_FORMAT_dd_mm_yyyy)
+            parts.filter { part ->
+                part.date == dateFromString && part.producerCode == producerCode
+            }.sumByDouble { it.quantity }
+        } catch (e: RuntimeException) {
+            null
+        }
     }
 
     fun isEmpty(): Boolean {
