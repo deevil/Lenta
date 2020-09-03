@@ -4,6 +4,8 @@ import android.view.View
 import com.lenta.bp12.R
 import com.lenta.bp12.databinding.FragmentGoodInfoCreateBinding
 import com.lenta.bp12.platform.extention.getAppComponent
+import com.lenta.shared.keys.KeyCode
+import com.lenta.shared.keys.OnKeyDownListener
 import com.lenta.shared.platform.activity.OnBackPresserListener
 import com.lenta.shared.platform.fragment.CoreFragment
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
@@ -16,7 +18,7 @@ import com.lenta.shared.utilities.extentions.generateScreenNumberFromPostfix
 import com.lenta.shared.utilities.extentions.provideViewModel
 
 class GoodInfoCreateFragment : CoreFragment<FragmentGoodInfoCreateBinding, GoodInfoCreateViewModel>(),
-        ToolbarButtonsClickListener, OnScanResultListener, OnBackPresserListener {
+        ToolbarButtonsClickListener, OnScanResultListener, OnBackPresserListener, OnKeyDownListener {
 
     override fun getLayoutId(): Int = R.layout.fragment_good_info_create
 
@@ -66,7 +68,6 @@ class GoodInfoCreateFragment : CoreFragment<FragmentGoodInfoCreateBinding, GoodI
             //R.id.b_3 -> vm.onScanResult("4607055090121") // ШК
             //R.id.b_3 -> vm.onScanResult("4607149780501") // ШК
 
-//            R.id.b_3 -> vm.onScanResult("22N00002NWKKIF6RWF30123456789012345678901234567890123456789000000004") // Акиза 351076
             R.id.b_5 -> vm.onClickApply()
         }
     }
@@ -89,4 +90,14 @@ class GoodInfoCreateFragment : CoreFragment<FragmentGoodInfoCreateBinding, GoodI
         const val SCREEN_NUMBER = "12"
     }
 
+    override fun onKeyDown(keyCode: KeyCode): Boolean {
+        return when (keyCode) {
+            //Блок Мрц 106
+            KeyCode.KEYCODE_0 -> {
+                vm.onScanResult("22N00002NWKKIF6RWF30123456789012345678901234567890123456789000000004") // Акиза 351076 марка 68
+                true
+            }
+            else -> false
+        }
+    }
 }

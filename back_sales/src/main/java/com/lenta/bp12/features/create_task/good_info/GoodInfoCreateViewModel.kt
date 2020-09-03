@@ -386,35 +386,48 @@ class GoodInfoCreateViewModel : CoreViewModel() {
     Методы
      */
     fun onScanResult(number: String) {
-        good.value?.let { good ->
+        good.value?.let {
             launchUITryCatch {
-                if (isApplyEnabledOrIsGoodExcise(good, number)) {
-                    if (!thereWasRollback) {
-                        saveChanges()
-                    } else {
-                        thereWasRollback = false
-                    }
+                if (isApplyEnabled()) {
+                    savePreviousScannedExcise()
+                }
+                checkSearchNumber(number)
+            }
+        }.orIfNull {
+            Logg.e { "good is null" }
+            navigator.showInternalError(resource.goodNotFoundErrorMsg)
+        }
+    }
 
-                    manager.clearSearchFromListParams()
-                    checkSearchNumber(number)
+    private suspend fun savePreviousScannedExcise() {
+        if (!thereWasRollback) {
+            when (screenStatus.value) {
+                ScreenStatus.ALCOHOL, ScreenStatus.PART -> {
+                    checkPart().either(
+                            fnL = ::handleCheckPartFailure,
+                            fnR = ::handleCheckPartSuccessResult
+                    )
+                }
+                else -> saveChanges()
+            }
+        } else {
+            thereWasRollback = false
+        }
+    }
+
+    private fun handleCheckPartSuccessResult(result: ScanInfoResult) {
+        launchUITryCatch {
+            result.status.let { status ->
+                if (status == PartStatus.FOUND.code) {
+                    saveChanges()
+                } else {
+                    navigator.openAlertScreen(result.statusDescription)
                 }
             }
         }
     }
 
-    private fun isApplyEnabledOrIsGoodExcise(good: GoodCreate, number: String) =
-            isApplyEnabled() or isGoodExcise(good, number)
-
     private fun isApplyEnabled() = applyEnabled.value == true
-    private fun isGoodExcise(good: GoodCreate, number: String) =
-            good.kind == GoodKind.EXCISE && isExciseNumber(number)
-
-    private fun isExciseNumber(number: String): Boolean {
-        return when (number.length) {
-            Constants.MARK_150, Constants.MARK_68, Constants.BOX_26 -> true
-            else -> false
-        }
-    }
 
     private fun checkSearchNumber(number: String) {
         originalSearchNumber = number
@@ -642,6 +655,10 @@ class GoodInfoCreateViewModel : CoreViewModel() {
             Constants.MARK_68 -> {
                 val alcoCodeInfoList = database.getAlcoCodeInfoList(number.extractAlcoCode())
 
+                Logg.e {
+                    alcoCodeInfoList.toString()
+                }
+
                 if (alcoCodeInfoList.isEmpty()) {
                     navigator.openAlertScreen(resource.unknownAlcocode())
                     return
@@ -848,12 +865,11 @@ class GoodInfoCreateViewModel : CoreViewModel() {
         good.value?.let { changedGood ->
             val quantityValue = quantity.value ?: 0.0
 
-            val localDate =  date.value?.let {
+            val localDate = date.value?.let {
                 if (it.length == 10) {
                     getDateFromString(it, Constants.DATE_FORMAT_dd_mm_yyyy)
-                }
-                else Date()
-            }?: Date()
+                } else Date()
+            } ?: Date()
 
             val part = Part(
                     number = lastSuccessSearchNumber,
@@ -976,7 +992,6 @@ class GoodInfoCreateViewModel : CoreViewModel() {
             navigator.hideProgress()
             navigator.goBack()
             navigator.openBasketCreateGoodListScreen()
-            manager.isBasketsNeedsToBeClosed = false
             manager.isBasketsNeedsToBeClosed = false
         }
     }

@@ -40,18 +40,22 @@ fun Basket.getDescription(isDivBySection: Boolean): String {
         val providerBlock = if (provider?.code.isNullOrEmpty()) "" else "/ПП-${provider?.code}"
 
         append(providerBlock)
+
+        val markTypeGroupAbr = markTypeGroup?.let { "/${it.abbreviation}" }.orEmpty()
+
+        append(markTypeGroupAbr)
     }
 }
 
-fun Basket.getGoodList() : List<Good> {
+fun Basket.getGoodList(): List<Good> {
     return goods.keys.toList()
 }
 
-fun Basket.getSize() : Int {
+fun Basket.getSize(): Int {
     return getGoodList().size
 }
 
-fun Basket.getQuantityFromGoodList() : Int {
+fun Basket.getQuantityFromGoodList(): Int {
     return getGoodList().size
 }
 

@@ -380,20 +380,42 @@ class GoodInfoOpenViewModel : CoreViewModel() {
     fun onScanResult(number: String) {
         good.value?.let { good ->
             launchUITryCatch {
-                if (isApplyEnabledOrIsGoodExcise(good, number)) {
-                    if (!thereWasRollback) {
-                        saveChanges()
-                    } else {
-                        thereWasRollback = false
-                    }
-
-                    manager.clearSearchFromListParams()
-                    checkSearchNumber(number)
+                if (isApplyEnabled()) {
+                    savePreviousScannedExcise()
                 }
+                checkSearchNumber(number)
             }
         }.orIfNull {
             Logg.e { "good null" }
             navigator.showInternalError(resource.goodNotFoundErrorMsg)
+        }
+    }
+
+    private suspend fun savePreviousScannedExcise() {
+        if (!thereWasRollback) {
+            when (screenStatus.value) {
+                ScreenStatus.ALCOHOL, ScreenStatus.PART -> {
+                    checkPart().either(
+                            fnL = ::handleCheckPartFailure,
+                            fnR = ::handleCheckPartSuccessResult
+                    )
+                }
+                else -> saveChanges()
+            }
+        } else {
+            thereWasRollback = false
+        }
+    }
+
+    private fun handleCheckPartSuccessResult(result: ScanInfoResult) {
+        launchUITryCatch {
+            result.status.let { status ->
+                if (status == PartStatus.FOUND.code) {
+                    saveChanges()
+                } else {
+                    navigator.openAlertScreen(result.statusDescription)
+                }
+            }
         }
     }
 
