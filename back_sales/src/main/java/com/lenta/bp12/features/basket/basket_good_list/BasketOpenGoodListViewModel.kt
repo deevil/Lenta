@@ -18,6 +18,7 @@ import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
 import com.lenta.shared.utilities.extentions.dropZeros
 import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.utilities.extentions.unsafeLazy
+import com.lenta.shared.utilities.orIfNull
 import javax.inject.Inject
 
 class BasketOpenGoodListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
@@ -50,7 +51,6 @@ class BasketOpenGoodListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener 
             resource.basket("$position: $description")
         }
     }
-
 
     private val isWholesaleBasket by unsafeLazy {
         openTaskManager.isWholesaleTaskType
@@ -173,7 +173,7 @@ class BasketOpenGoodListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener 
         return materials
     }
 
-    private fun deleteGoodsFromBasketAndTask(materials: List<String>) {
+    private fun deleteGoodsFromBasketAndTask2(materials: List<String>) {
         task.value?.let { task ->
             basket.value?.let { basket ->
                 val basketIndex = basket.index
@@ -184,6 +184,7 @@ class BasketOpenGoodListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener 
                     goodToDeleteFromBasket?.let { goodFromBasket ->
                         //Найдем этот товар в общем списке задания
                         task.goods.firstOrNull { it.material == goodMaterial }?.let { goodFromTask ->
+
                             //Удалим у этого товара марки и партии с номером корзины
                             goodFromTask.removeMarksByBasketIndex(basketIndex)
                             goodFromTask.removePartsByBasketNumber(basketIndex)
@@ -192,9 +193,11 @@ class BasketOpenGoodListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener 
                             goodFromTask.deletePositionsFromTask(
                                     goodFromBasket = goodFromBasket,
                                     basketToGetQuantity = basket)
+
                         }
                         //Удалим товар из корзины
                         basket.deleteGood(goodFromBasket)
+
                     }
                 }
                 removeEmptyBasketsAndGoods(task, basket)
@@ -202,6 +205,35 @@ class BasketOpenGoodListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener 
                 openTaskManager.updateCurrentBasket(basket)
                 openTaskManager.updateCurrentTask(task)
             }
+        }
+    }
+
+    private fun deleteGoodsFromBasketAndTask(materials: List<String>) {
+        task.value?.let { task ->
+            basket.value?.let { basket ->
+                val basketIndex = basket.index
+                // Найдем товары в корзине которые нужно удалить
+                val goodsToDeleteFromBasket = basket.goods.keys.filter { materials.contains(it.material) }
+                goodsToDeleteFromBasket.forEach { goodFromBasket ->
+                    goodFromBasket.removePartsMarksPositionsByBasketIndex(basketIndex)
+                    //Найдем у этого товара позиции с подходящим количеством
+                    goodFromBasket.deletePositionsFromTask(
+                            goodFromBasket = goodFromBasket,
+                            basketToGetQuantity = basket
+                    )
+                    //Удалим товар из корзины
+                    basket.deleteGood(goodFromBasket)
+                }
+                removeEmptyBasketsAndGoods(task, basket)
+                openTaskManager.updateCurrentBasket(basket)
+                openTaskManager.updateCurrentTask(task)
+            }.orIfNull {
+                Logg.e { "basket null"}
+                navigator.showInternalError(resource.basketNotFoundErrorMsg)
+            }
+        }.orIfNull {
+            Logg.e { "task null"}
+            navigator.showInternalError(resource.taskNotFoundErrorMsg)
         }
     }
 
@@ -229,9 +261,9 @@ class BasketOpenGoodListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener 
     private fun lockAndUpdateBasketAndTask(isNeedLock: Boolean) {
         val taskValue = task.value
         val basketValue = basket.value
-        if (taskValue == null && basketValue != null) {
+        if (taskValue != null && basketValue != null) {
             basketValue.isLocked = isNeedLock
-            taskValue?.updateBasket(basketValue)
+            taskValue.updateBasket(basketValue)
             with(openTaskManager) {
                 updateCurrentBasket(basketValue)
                 updateCurrentTask(taskValue)

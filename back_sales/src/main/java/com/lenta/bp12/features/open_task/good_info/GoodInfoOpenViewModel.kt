@@ -366,11 +366,7 @@ class GoodInfoOpenViewModel : CoreViewModel() {
      */
 
     init {
-        launchUITryCatch {
-            good.value?.let {
-                setFoundGood(it)
-            }
-        }
+        onInitGoodInfo()
     }
 
     /**
@@ -380,16 +376,10 @@ class GoodInfoOpenViewModel : CoreViewModel() {
     fun onScanResult(number: String) {
         good.value?.let { good ->
             launchUITryCatch {
-                if (isApplyEnabledOrIsGoodExcise(good, number)) {
-                    if (!thereWasRollback) {
-                        saveChanges()
-                    } else {
-                        thereWasRollback = false
-                    }
-
-                    manager.clearSearchFromListParams()
-                    checkSearchNumber(number)
+                if (isApplyEnabled()) {
+                    savePreviousScannedExcise()
                 }
+                checkSearchNumber(number)
             }
         }.orIfNull {
             Logg.e { "good null" }
@@ -397,19 +387,35 @@ class GoodInfoOpenViewModel : CoreViewModel() {
         }
     }
 
-    private fun isApplyEnabledOrIsGoodExcise(good: GoodOpen, number: String) =
-            isApplyEnabled() or isGoodExcise(good, number)
-
-    private fun isApplyEnabled() = applyEnabled.value == true
-    private fun isGoodExcise(good: GoodOpen, number: String) =
-            good.kind == GoodKind.EXCISE && isExciseNumber(number)
-
-    private fun isExciseNumber(number: String): Boolean {
-        return when (number.length) {
-            Constants.MARK_150, Constants.MARK_68, Constants.BOX_26 -> true
-            else -> false
+    private suspend fun savePreviousScannedExcise() {
+        if (!thereWasRollback) {
+            when (screenStatus.value) {
+                ScreenStatus.ALCOHOL, ScreenStatus.PART -> {
+                    checkPart().either(
+                            fnL = ::handleCheckPartFailure,
+                            fnR = ::handleCheckPartSuccessResult
+                    )
+                }
+                else -> saveChanges()
+            }
+        } else {
+            thereWasRollback = false
         }
     }
+
+    private fun handleCheckPartSuccessResult(result: ScanInfoResult) {
+        launchUITryCatch {
+            result.status.let { status ->
+                if (status == PartStatus.FOUND.code) {
+                    saveChanges()
+                } else {
+                    navigator.openAlertScreen(result.statusDescription)
+                }
+            }
+        }
+    }
+
+    private fun isApplyEnabled() = applyEnabled.value == true
 
     private fun checkSearchNumber(number: String) {
         originalSearchNumber = number
@@ -768,9 +774,10 @@ class GoodInfoOpenViewModel : CoreViewModel() {
             good.value?.let { good ->
                 manager.saveGoodInTask(good)
                 isExistUnsavedData = false
+            }.orIfNull {
+                Logg.e { "good null" }
+                navigator.showInternalError(resource.goodNotFoundErrorMsg)
             }
-
-            Logg.e { status.description }
 
             when (status) {
                 ScreenStatus.COMMON -> addPosition()
@@ -778,14 +785,6 @@ class GoodInfoOpenViewModel : CoreViewModel() {
                 ScreenStatus.ALCOHOL, ScreenStatus.PART -> addPart()
                 ScreenStatus.BOX -> addBox()
                 else -> Logg.e { "wrong screenStatus" }
-            }
-
-            good.value?.let { good ->
-                manager.saveGoodInTask(good)
-                isExistUnsavedData = false
-            }.orIfNull {
-                Logg.e { "good null" }
-                navigator.showInternalError(resource.goodNotFoundErrorMsg)
             }
         }
     }
@@ -858,7 +857,7 @@ class GoodInfoOpenViewModel : CoreViewModel() {
         good.value?.let { changedGood ->
             scanInfoResult.value?.exciseMarks?.let { marks ->
 
-                val mappedMarks = marks.map{ mark ->
+                val mappedMarks = marks.map { mark ->
                     Mark(
                             number = mark.number.orEmpty(),
                             boxNumber = lastSuccessSearchNumber,
@@ -936,12 +935,12 @@ class GoodInfoOpenViewModel : CoreViewModel() {
 
     fun onClickApply() {
         if (isPlannedQuantityMoreThanZero) {
-                quantity.value?.let{ quantityValue ->
-                    if (quantityValue > plannedQuantity) {
-                        navigator.showQuantityMoreThenPlannedScreen()
-                        return
-                    }
+            quantity.value?.let { quantityValue ->
+                if (quantityValue > plannedQuantity) {
+                    navigator.showQuantityMoreThenPlannedScreen()
+                    return
                 }
+            }
         }
 
         when (screenStatus.value) {
@@ -962,6 +961,10 @@ class GoodInfoOpenViewModel : CoreViewModel() {
         }
     }
 
+    fun onClickClose() {
+        navigator.showCloseBasketDialog(::handleYesOnClickCloseCallback)
+    }
+
     private fun saveChangesAndExit() {
         launchUITryCatch {
             navigator.showProgressLoadingData()
@@ -973,9 +976,15 @@ class GoodInfoOpenViewModel : CoreViewModel() {
         }
     }
 
-
-    fun onClickClose() {
-        navigator.showCloseBasketDialog(::handleYesOnClickCloseCallback)
+    private fun onInitGoodInfo() {
+        launchUITryCatch {
+            good.value?.let {
+                setFoundGood(it)
+            }.orIfNull {
+                Logg.e { "good null" }
+                navigator.showInternalError(resource.goodNotFoundErrorMsg)
+            }
+        }
     }
 
     private fun handleYesOnClickCloseCallback() {

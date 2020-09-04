@@ -29,7 +29,7 @@
                     style="@style/CellSpinnerStyle"
                     android:layout_height="match_parent"
                     app:items="@{vm.taskTypeList}"
-                    app:position="@{vm.taskTypePosition}"
+                    app:position="@={vm.taskTypePosition}"
                     tools:entries="@array/test_list" />
 
             </LinearLayout>
@@ -48,6 +48,7 @@
                 <EditText
                     style="@style/CellEditTextStyle"
                     android:text="@={vm.taskName}"
+                    android:inputType="textNoSuggestions"
                     tools:text="Возврат от 05.08.2020 15:16" />
 
             </LinearLayout>
@@ -105,7 +106,7 @@
                     style="@style/CellSpinnerStyle"
                     android:layout_height="match_parent"
                     app:items="@{vm.storage}"
-                    app:position="@{vm.storagePosition}"
+                    app:position="@={vm.storagePosition}"
                     tools:entries="@array/test_list" />
 
             </LinearLayout>
@@ -126,7 +127,7 @@
                     style="@style/CellSpinnerStyle"
                     android:layout_height="match_parent"
                     app:items="@{vm.returnReasonList}"
-                    app:position="@{vm.returnReasonPosition}"
+                    app:position="@={vm.returnReasonPosition}"
                     tools:entries="@array/test_list" />
 
             </LinearLayout>

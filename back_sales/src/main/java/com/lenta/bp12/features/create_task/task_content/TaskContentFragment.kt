@@ -78,7 +78,7 @@ class TaskContentFragment : CoreFragment<FragmentTaskContentBinding, TaskContent
         return when (position) {
             TAB_GOODS -> initTaskContentGoods(container)
             TAB_BASKETS -> {
-                if(vm.manager.isWholesaleTaskType) {
+                if (vm.manager.isWholesaleTaskType) {
                     initTaskContentWholesaleBaskets(container)
                 } else {
                     initTaskContentCommonBaskets(container)
@@ -101,40 +101,33 @@ class TaskContentFragment : CoreFragment<FragmentTaskContentBinding, TaskContent
                 }
             }
 
-            layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
+            layoutBinding.rvConfig = initRecycleAdapterDataBinding(
                     layoutId = R.layout.item_task_content_good,
                     itemId = BR.item,
-                    realisation = object : DataBindingAdapter<ItemTaskContentGoodBinding> {
-                        override fun onCreate(binding: ItemTaskContentGoodBinding) {
-                        }
-
-                        override fun onBind(binding: ItemTaskContentGoodBinding, position: Int) {
-                            binding.tvItemNumber.tag = position
-                            binding.tvItemNumber.setOnClickListener(onClickSelectionListener)
-                            binding.selectedForDelete = vm.goodSelectionsHelper.isSelected(position)
-                            goodRecyclerViewKeyHandler?.let {
-                                binding.root.isSelected = it.isSelected(position)
-                            }
+                    onAdapterItemBind = { binding: ItemTaskContentGoodBinding, position: Int ->
+                        binding.tvItemNumber.tag = position
+                        binding.tvItemNumber.setOnClickListener(onClickSelectionListener)
+                        binding.selectedForDelete = vm.goodSelectionsHelper.isSelected(position)
+                        goodRecyclerViewKeyHandler?.let {
+                            binding.root.isSelected = it.isSelected(position)
                         }
                     },
-                    onItemClickListener = AdapterView.OnItemClickListener { _, _, position, _ ->
-                        goodRecyclerViewKeyHandler?.let {
-                            if (it.isSelected(position)) {
-                                vm.onClickItemPosition(position)
-                            } else {
-                                it.selectPosition(position)
-                            }
-                        }
+                    onAdapterItemClicked = { position ->
+                        goodRecyclerViewKeyHandler?.onItemClicked(position)
                     }
             )
 
+
             layoutBinding.vm = vm
             layoutBinding.lifecycleOwner = viewLifecycleOwner
-            goodRecyclerViewKeyHandler = RecyclerViewKeyHandler(
-                    rv = layoutBinding.rv,
+
+            goodRecyclerViewKeyHandler = initRecyclerViewKeyHandler(
+                    recyclerView = layoutBinding.rv,
                     items = vm.goods,
-                    lifecycleOwner = layoutBinding.lifecycleOwner!!,
-                    initPosInfo = goodRecyclerViewKeyHandler?.posInfo?.value
+                    previousPosInfo = goodRecyclerViewKeyHandler?.posInfo?.value,
+                    onClickHandler = { position ->
+                        vm.onClickItemPosition(position)
+                    }
             )
 
             return layoutBinding.root

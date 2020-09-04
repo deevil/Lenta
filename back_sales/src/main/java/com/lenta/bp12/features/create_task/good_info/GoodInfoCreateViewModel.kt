@@ -186,7 +186,7 @@ class GoodInfoCreateViewModel : CoreViewModel() {
                 if (isProviderSelected) {
                     task.value?.let { task ->
                         getBasket()?.let { basket ->
-                            "${task.baskets.indexOf(basket) + 1}"
+                            "${basket.index}"
                         } ?: "${task.baskets.size + 1}"
                     }.orEmpty()
                 } else ""
@@ -375,46 +375,56 @@ class GoodInfoCreateViewModel : CoreViewModel() {
      */
 
     init {
-        launchUITryCatch {
-            good.value?.let {
-                setFoundGood(it)
-            }
-        }
+        onInitGoodInfo()
     }
+
 
     /**
     Методы
      */
     fun onScanResult(number: String) {
-        good.value?.let { good ->
+        good.value?.let {
             launchUITryCatch {
-                if (isApplyEnabledOrIsGoodExcise(good, number)) {
-                    if (!thereWasRollback) {
-                        saveChanges()
-                    } else {
-                        thereWasRollback = false
-                    }
+                if (isApplyEnabled()) {
+                    savePreviousScannedExcise()
+                }
+                checkSearchNumber(number)
+            }
+        }.orIfNull {
+            Logg.e { "good is null" }
+            navigator.showInternalError(resource.goodNotFoundErrorMsg)
+        }
+    }
 
-                    manager.clearSearchFromListParams()
-                    checkSearchNumber(number)
+    private suspend fun savePreviousScannedExcise() {
+        if (!thereWasRollback) {
+            when (screenStatus.value) {
+                ScreenStatus.ALCOHOL, ScreenStatus.PART -> {
+                    checkPart().either(
+                            fnL = ::handleCheckPartFailure,
+                            fnR = ::handleCheckPartSuccessResult
+                    )
+                }
+                else -> saveChanges()
+            }
+        } else {
+            thereWasRollback = false
+        }
+    }
+
+    private fun handleCheckPartSuccessResult(result: ScanInfoResult) {
+        launchUITryCatch {
+            result.status.let { status ->
+                if (status == PartStatus.FOUND.code) {
+                    saveChanges()
+                } else {
+                    navigator.openAlertScreen(result.statusDescription)
                 }
             }
         }
     }
 
-    private fun isApplyEnabledOrIsGoodExcise(good: GoodCreate, number: String) =
-            isApplyEnabled() or isGoodExcise(good, number)
-
     private fun isApplyEnabled() = applyEnabled.value == true
-    private fun isGoodExcise(good: GoodCreate, number: String) =
-            good.kind == GoodKind.EXCISE && isExciseNumber(number)
-
-    private fun isExciseNumber(number: String): Boolean {
-        return when (number.length) {
-            Constants.MARK_150, Constants.MARK_68, Constants.BOX_26 -> true
-            else -> false
-        }
-    }
 
     private fun checkSearchNumber(number: String) {
         originalSearchNumber = number
@@ -566,8 +576,8 @@ class GoodInfoCreateViewModel : CoreViewModel() {
                             commonUnits = database.getUnitsByCode(materialInfo?.commonUnitsCode.orEmpty()),
                             innerUnits = database.getUnitsByCode(materialInfo?.innerUnitsCode.orEmpty()),
                             innerQuantity = materialInfo?.innerQuantity?.toDoubleOrNull() ?: 1.0,
-                            providers = providers?.toMutableList().takeIf { taskType.isDivByProvider }.orEmpty().toMutableList(),
-                            producers = producers?.toMutableList().orEmpty().toMutableList(),
+                            providers = providers?.takeIf { taskType.isDivByProvider }.orEmpty().toMutableList(),
+                            producers = producers.orEmpty().toMutableList(),
                             volume = materialInfo?.volume?.toDoubleOrNull() ?: 0.0,
                             markType = getMarkType(),
                             markTypeGroup = markTypeGroups.first { it.markTypes.contains(getMarkType()) },
@@ -848,12 +858,13 @@ class GoodInfoCreateViewModel : CoreViewModel() {
         good.value?.let { changedGood ->
             val quantityValue = quantity.value ?: 0.0
 
-            val localDate =  date.value?.let {
-                if (it.length == 10) {
+            val localDate = date.value?.let {
+                try {
                     getDateFromString(it, Constants.DATE_FORMAT_dd_mm_yyyy)
+                } catch (e: RuntimeException) {
+                    Date()
                 }
-                else Date()
-            }?: Date()
+            } ?: Date()
 
             val part = Part(
                     number = lastSuccessSearchNumber,
@@ -902,6 +913,16 @@ class GoodInfoCreateViewModel : CoreViewModel() {
         }
     }
 
+    private fun onInitGoodInfo(){
+        launchUITryCatch {
+            good.value?.let {
+                setFoundGood(it)
+            }.orIfNull {
+                Logg.e { "good null" }
+                navigator.showInternalError(resource.goodNotFoundErrorMsg)
+            }
+        }
+    }
 
     private fun getBasket(): Basket? {
         return manager.getBasket(getProviderCode())

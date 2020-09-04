@@ -41,15 +41,8 @@ class MarkedGoodInfoOpenFragment : CoreFragment<FragmentMarkedGoodInfoOpenBindin
         getAppComponent()?.inject(vm)
         arguments?.let {
             val marks = it.getParcelableArrayList<Mark>(MARKS_KEY)
-            marks?.let { listOfMarks ->
-                vm.tempMarks.value?.addAll(listOfMarks)
-                Logg.e { marks.toString() }
-            } ?: Logg.e { "marks empty " }
             val properties = it.getParcelableArrayList<GoodProperty>(PROPERTIES_KEY)
-            properties?.let { listOfProperties ->
-                vm.properties.value?.addAll(listOfProperties)
-                Logg.e { properties.toString() }
-            } ?: Logg.e { "properties empty " }
+            vm.setupData(marks, properties)
         }
         return vm
 
