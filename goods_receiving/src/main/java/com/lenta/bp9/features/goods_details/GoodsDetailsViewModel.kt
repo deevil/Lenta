@@ -300,6 +300,10 @@ class GoodsDetailsViewModel : CoreViewModel() {
                             ?.getExciseStampsDiscrepancies()
                             ?.deleteExciseStampsDiscrepanciesForProductAndDiscrepancies(materialNumber, typeDiscrepancies)
 
+                    taskRepository
+                            ?.getZBatchesDiscrepancies()
+                            ?.deleteZBatchesDiscrepanciesForProductAndDiscrepancies(materialNumber, typeDiscrepancies)
+
 
                     if (isVetProduct.value == true) {
                             processMercuryProductService.deleteDetails(typeDiscrepancies)

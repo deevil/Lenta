@@ -93,15 +93,22 @@ class ZBatchesInfoPPPViewModel : CoreViewModel() {
         } else {
             val purchaseOrderUnitsName = productInfo.value?.purchaseOrderUnits?.name.orEmpty()
             val uomName = productInfo.value?.uom?.name.orEmpty()
-            val numeratorConvertBaseUnitMeasure = productInfo.value?.numeratorConvertBaseUnitMeasure
-                    ?: 0.0
-            val denominatorConvertBaseUnitMeasure = productInfo.value?.denominatorConvertBaseUnitMeasure
-                    ?: 0.0
+            val numeratorConvertBaseUnitMeasure =
+                    productInfo.value
+                            ?.numeratorConvertBaseUnitMeasure
+                            ?: 0.0
+
+            val denominatorConvertBaseUnitMeasure =
+                    productInfo.value
+                            ?.denominatorConvertBaseUnitMeasure
+                            ?: 0.0
+
             val quantity =
                     denominatorConvertBaseUnitMeasure
                             .takeIf { it > 0.0 }
                             ?.let { numeratorConvertBaseUnitMeasure / denominatorConvertBaseUnitMeasure }
                             ?: 0.0
+
             MutableLiveData(context.getString(R.string.accept, "$purchaseOrderUnitsName=${quantity.toStringFormatted()} $uomName"))
         }
     }
@@ -126,9 +133,15 @@ class ZBatchesInfoPPPViewModel : CoreViewModel() {
     @SuppressLint("SimpleDateFormat")
     private val formatterERP = SimpleDateFormat(Constants.DATE_FORMAT_yyyyMMdd)
 
-    val enabledApplyButton: MutableLiveData<Boolean> = countValue.map {
-        (it ?: 0.0) > 0.0
-    }
+    val enabledApplyButton: MutableLiveData<Boolean> =
+            countValue
+                    .combineLatest(enteredDate)
+                    .combineLatest(enteredTime)
+                    .map {
+                        (it?.first?.first ?: 0.0) > 0.0
+                                && enteredDate.value.orEmpty().length == 10
+                                && (isVisibilityEnteredTime.value == false || (isVisibilityEnteredTime.value == true && enteredTime.value.orEmpty().length == 5))
+                    }
 
     val isVisibilityEnteredTime: MutableLiveData<Boolean> = MutableLiveData(false)
 
@@ -315,7 +328,6 @@ class ZBatchesInfoPPPViewModel : CoreViewModel() {
             spinEnteredDate.value = dataBase.getTermControlInfo()?.map { it.name }.orEmpty()
 
             /** Z-партии всегда скоропорт */
-            val paramGrzUffMhdhb = dataBase.getParamGrzUffMhdhb()?.toInt() ?: 60
             val productGeneralShelfLife = productInfo.value?.generalShelfLife?.toInt() ?: 0
             val productRemainingShelfLife = productInfo.value?.remainingShelfLife?.toInt() ?: 0
             val productMhdhbDays = productInfo.value?.mhdhbDays ?: 0
@@ -333,7 +345,7 @@ class ZBatchesInfoPPPViewModel : CoreViewModel() {
 
             val paramGrzPerishableHH = dataBase.getParamGrzPerishableHH()?.toDoubleOrNull() ?: 0.0
             val generalShelfLifeValue = generalShelfLife.value?.toDoubleOrNull() ?: 0.0
-            isVisibilityEnteredTime.value = true //generalShelfLifeValue <= paramGrzPerishableHH
+            isVisibilityEnteredTime.value = generalShelfLifeValue <= paramGrzPerishableHH
         }
     }
 

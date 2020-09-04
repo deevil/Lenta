@@ -249,7 +249,7 @@ class SearchProductDelegate @Inject constructor(
         /**Z-партии, логика пересчета вет товара не меняется если он является партионным.
         Z-партии ППП -> это IS_VET= пусто, IS_ZPARTS=X
         если IS_VET=X + IS_ZPARTS=X товар считается как обычный меркурианский в дополнение просто отображается признак z-партионного учета*/
-        if (!taskProductInfo.isZBatches && !taskProductInfo.isVet) {
+        if (taskProductInfo.isZBatches && !taskProductInfo.isVet) {
             screenNavigator.openZBatchesInfoPPPScreen(taskProductInfo, isDiscrepancy)
             return
         }

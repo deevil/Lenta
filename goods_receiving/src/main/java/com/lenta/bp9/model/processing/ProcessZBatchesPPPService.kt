@@ -19,7 +19,7 @@ class ProcessZBatchesPPPService
     val taskRepository by lazy { taskManager.getReceivingTask()?.taskRepository }
 
     fun newProcessZBatchesPPPService(initProductInfo: TaskProductInfo): ProcessZBatchesPPPService? {
-        return if (!initProductInfo.isZBatches) { //todo убрать знак !
+        return if (initProductInfo.isZBatches) {
             this.productInfo = initProductInfo.copy()
             this
         } else null
