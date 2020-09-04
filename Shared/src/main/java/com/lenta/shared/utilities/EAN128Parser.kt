@@ -34,6 +34,22 @@ object EAN128Parser {
         aiiDict[ai] = AII(ai, description, lengthOfAI, dataDescription, lengthOfData, fnc1)
     }
 
+    fun parseBy(barcode: String): MutableMap<AII, String> {
+        val result: MutableMap<AII, String> = HashMap()
+        val splitted = barcode.split("[/((?!^)\\{.*?\\})/]".toRegex())
+        val splittedSize = splitted.size
+        splitted.forEachIndexed { index, code ->
+            val ai: AII? = aiiDict[code]
+            ai?.let {
+                val nextCodeIndex = index + 1
+                if (splittedSize > nextCodeIndex) {
+                    result[ai] = splitted[nextCodeIndex]
+                }
+            }
+        }
+        return result
+    }
+
     /**
      * Main Parsing barcode function
      *
@@ -51,7 +67,7 @@ object EAN128Parser {
         }?.value
         if (ean128Barcode != null) {
             parsedBarcode = if (ean128Barcode.first().toString() == EAN_WEIGHT_PREFIX) {
-                ean128Barcode.substring(1..barcode.length)
+                ean128Barcode.substring(1 until ean128Barcode.length)
             } else {
                 ean128Barcode
             }
@@ -89,11 +105,13 @@ object EAN128Parser {
                 return result
             } else {
                 // Shift the index to the next
-                index += count
+                //index += ai.LengthOfData + count
             }
             // get the data to the current AI
-            val code = getCode(localData, ai, index)
+            val code = getCode(localData, ai, count)
             result[ai] = code
+            // Shift the index to the next
+            index += code.length + count
         }
         return result
     }
@@ -144,7 +162,7 @@ object EAN128Parser {
             // try to get the ai from the dictionary
             result = aiiDict[ai]
             result?.let {
-                return result to i
+                return result to addedIndex
             }
             // if no AI found, try it with the next lenght
         }
@@ -269,7 +287,7 @@ object EAN128Parser {
         //Add("97", "Company specific", 2, DataType.Alphanumeric, 30, true);
         //Add("98", "Company specific", 2, DataType.Alphanumeric, 30, true);
         //Add("99", "Company specific", 2, DataType.Alphanumeric, 30, true);
-        minLengthOfAI = aiiDict.values.indexOf(aiiDict.values.minBy { it.LengthOfAI })
-        maxLengthOfAI = aiiDict.values.indexOf(aiiDict.values.maxBy { it.LengthOfAI })
+        minLengthOfAI = aiiDict.values.minBy { it.LengthOfAI }?.LengthOfAI ?: 0
+        maxLengthOfAI = aiiDict.values.maxBy { it.LengthOfAI }?.LengthOfAI ?: 2
     }
 }
