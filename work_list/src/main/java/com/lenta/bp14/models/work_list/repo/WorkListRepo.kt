@@ -61,7 +61,7 @@ class WorkListRepo @Inject constructor(
                                         alcohol = goodInfo.isAlcohol,
                                         excise = goodInfo.isExcise,
                                         marked = goodInfo.isMark,
-                                        rusWine = goodInfo.isVRus),
+                                        rusWine = goodInfo.isRusWine),
                                 healthFood = goodInfo.healthFood.isSapTrue(),
                                 novelty = goodInfo.novelty.isSapTrue()
                         )
@@ -104,7 +104,7 @@ class WorkListRepo @Inject constructor(
                                             alcohol = goodInfo.isAlcohol,
                                             excise = goodInfo.isExcise,
                                             marked = goodInfo.isMark,
-                                            rusWine = goodInfo.isVRus),
+                                            rusWine = goodInfo.isRusWine),
                                     healthFood = goodInfo.healthFood.isSapTrue(),
                                     novelty = goodInfo.novelty.isSapTrue()
                             )
