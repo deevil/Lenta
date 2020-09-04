@@ -9,6 +9,7 @@ import com.lenta.shared.models.core.Uom
 import com.lenta.shared.platform.constants.Constants
 import com.lenta.shared.utilities.extentions.dropZeros
 import com.lenta.shared.utilities.extentions.sumList
+import com.lenta.shared.utilities.extentions.sumWith
 import com.lenta.shared.utilities.getDateFromString
 
 /**
@@ -69,12 +70,12 @@ abstract class Good(
         return parts.map { it.quantity }.sumList()
     }
 
-    fun getPartQuantityByDateAndProducer(date: String, producerCode: String): Double? {
+    fun getPartQuantityByDateAndProducer(date: String, producerCode: String, quantityFromField: Double): Double? {
         return try {
             val dateFromString = getDateFromString(date, Constants.DATE_FORMAT_dd_mm_yyyy)
             parts.filter { part ->
                 part.date == dateFromString && part.producerCode == producerCode
-            }.sumByDouble { it.quantity }
+            }.sumByDouble { it.quantity }.sumWith(quantityFromField)
         } catch (e: RuntimeException) {
             null
         }

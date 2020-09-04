@@ -612,7 +612,7 @@ class ScreenNavigator @Inject constructor(
     }
 
     override fun showInternalError(cause: String) {
-        openAlertScreen(Failure.MessageFailure("Внутренняя ошибка программы: $cause", R.drawable.ic_warning_red_80dp))
+        openAlertScreen(Failure.MessageFailure("Внутренняя ошибка программы: $cause"))
     }
 
 }

@@ -32,7 +32,6 @@ import com.lenta.shared.utilities.SelectionItemsHelper
 import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
 import com.lenta.shared.utilities.databinding.PageSelectionListener
 import com.lenta.shared.utilities.extentions.*
-import com.lenta.shared.utilities.isCommonFormatNumber
 import com.lenta.shared.utilities.orIfNull
 import javax.inject.Inject
 
@@ -283,6 +282,7 @@ class GoodListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
                 funcForMark = ::checkMark,
                 funcForNotValidBarFormat = navigator::showIncorrectEanFormat
         )
+        numberField.value = ""
     }
 
     /**
@@ -370,7 +370,7 @@ class GoodListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
         launchUITryCatch {
             with(result) {
                 val markType = getMarkType()
-                good.value = GoodOpen(
+                val good = GoodOpen(
                         ean = eanInfo?.ean.orEmpty(),
                         material = materialInfo?.material.orEmpty(),
                         name = materialInfo?.name.orEmpty(),
@@ -388,31 +388,23 @@ class GoodListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
                         markTypeGroup = database.getMarkTypeGroupByMarkType(markType),
                         maxRetailPrice = ""
                 )
-            }
-
-            good.value?.let { good ->
 
                 if (good.kind == GoodKind.EXCISE) {
                     navigator.showForExciseGoodNeedScanFirstMark()
                 }
 
-                Logg.d { "--> added good: $good" }
-            }.orIfNull {
-                Logg.e { "good null" }
-                navigator.showInternalError(resource.goodNotFoundErrorMsg)
+                setFoundGood(good)
             }
-
-            manager.clearSearchFromListParams()
         }
     }
 
     private fun setFoundGood(foundGood: GoodOpen) {
         manager.updateCurrentGood(foundGood)
         if (foundGood.markType != MarkType.UNKNOWN) {
-            navigator.openMarkedGoodInfoCreateScreen()
+            navigator.openMarkedGoodInfoOpenScreen()
             navigator.showForGoodNeedScanFirstMark()
         } else {
-            navigator.openGoodInfoCreateScreen()
+            navigator.openGoodInfoOpenScreen()
         }
         Logg.d { "--> found good: $foundGood" }
     }
@@ -431,6 +423,10 @@ class GoodListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
                     navigator.hideProgress()
                     navigator.showNoMarkTypeInSettings()
                 }
+                MarkScreenStatus.INCORRECT_EAN_FORMAT -> {
+                    navigator.hideProgress()
+                    navigator.showIncorrectEanFormat()
+                }
                 else -> {
                     navigator.hideProgress()
                 }
@@ -439,7 +435,7 @@ class GoodListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
     }
 
     override fun onOkInSoftKeyboard(): Boolean {
-        openGoodInfoByNumber(numberField.value.orEmpty())
+        checkSearchNumber(numberField.value.orEmpty())
         return true
     }
 
@@ -456,18 +452,6 @@ class GoodListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
         }.orIfNull {
             Logg.e { "task null" }
             navigator.showInternalError(resource.taskNotFoundErrorMsg)
-        }
-    }
-
-    private fun openGoodInfoByNumber(number: String) {
-        numberField.value = ""
-
-        if (isCommonFormatNumber(number)) {
-            manager.searchNumber = number
-            manager.isSearchFromList = true
-            navigator.openGoodInfoOpenScreen()
-        } else {
-            navigator.showIncorrectEanFormat()
         }
     }
 

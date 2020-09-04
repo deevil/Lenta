@@ -10,8 +10,6 @@ import com.lenta.bp12.BR
 import com.lenta.bp12.R
 import com.lenta.bp12.databinding.*
 import com.lenta.bp12.platform.extention.getAppComponent
-import com.lenta.shared.keys.KeyCode
-import com.lenta.shared.keys.OnKeyDownListener
 import com.lenta.shared.platform.activity.OnBackPresserListener
 import com.lenta.shared.platform.fragment.CoreFragment
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
@@ -28,7 +26,7 @@ import com.lenta.shared.utilities.extentions.generateScreenNumberFromPostfix
 import com.lenta.shared.utilities.extentions.provideViewModel
 
 class TaskContentFragment : CoreFragment<FragmentTaskContentBinding, TaskContentViewModel>(),
-        ToolbarButtonsClickListener, ViewPagerSettings, OnBackPresserListener, OnScanResultListener, OnKeyDownListener {
+        ToolbarButtonsClickListener, ViewPagerSettings, OnBackPresserListener, OnScanResultListener/*, OnKeyDownListener*/ {
 
     private var goodRecyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
     private var basketRecyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
@@ -52,7 +50,6 @@ class TaskContentFragment : CoreFragment<FragmentTaskContentBinding, TaskContent
 
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
         bottomToolbarUiModel.uiModelButton1.show(ButtonDecorationInfo.back)
-//        bottomToolbarUiModel.uiModelButton2.show(ButtonDecorationInfo.yes) //ForTesting
         bottomToolbarUiModel.uiModelButton3.show(ButtonDecorationInfo.delete, enabled = false)
         bottomToolbarUiModel.uiModelButton4.show(ButtonDecorationInfo.print, enabled = false)
         bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.save, enabled = false)
@@ -270,30 +267,30 @@ class TaskContentFragment : CoreFragment<FragmentTaskContentBinding, TaskContent
         private const val TAB_BASKETS = 1
     }
 
-    override fun onKeyDown(keyCode: KeyCode): Boolean {
-        when (keyCode) {
-            KeyCode.KEYCODE_0 -> { // Блок
-                vm.onScanResult("01046002660113672100000Ce.8005021200.938000.92NGkg+wRXz36kBFjpfwOub5DBIIpD2iS/DMYpZuuDLU0Y3pZt1z20/1ksr4004wfhDhRxu4dgUV4QN96Qtdih9g==")
-                return true
-            }
-            KeyCode.KEYCODE_1 -> { // Пачка
-                vm.onScanResult("00000046203564000001A01238000")
-                return true
-            }
-            KeyCode.KEYCODE_2 -> { // Тапки
-                vm.onScanResult("010871947716364521Gl8hHnSNy0SsN91800092NGkg+wRXz36kBFjpfwOub5DBIIpD2iS/DMYpZuuDLU0Y3pZt1z20/1ksr4004wfhDhRxu4dgUV4QN96Qtdih9g==")
-                return true
-            }
-            KeyCode.KEYCODE_3 -> { // Тапки
-                vm.onScanResult("8719477163645")
-                return true
-            }
-            KeyCode.KEYCODE_4 -> { // Коробка 082682
-                vm.onScanResult("03000042907513119000404111")
-                return true
-            }
-        }
-        return false
-    }
+//    override fun onKeyDown(keyCode: KeyCode): Boolean {
+//        when (keyCode) {
+//            KeyCode.KEYCODE_0 -> { // Блок
+//                vm.onScanResult("01046002660113672100000Ce.8005021200.938000.92NGkg+wRXz36kBFjpfwOub5DBIIpD2iS/DMYpZuuDLU0Y3pZt1z20/1ksr4004wfhDhRxu4dgUV4QN96Qtdih9g==")
+//                return true
+//            }
+//            KeyCode.KEYCODE_1 -> { // Пачка
+//                vm.onScanResult("00000046203564000001A01238000")
+//                return true
+//            }
+//            KeyCode.KEYCODE_2 -> { // Тапки
+//                vm.onScanResult("010871947716364521Gl8hHnSNy0SsN91800092NGkg+wRXz36kBFjpfwOub5DBIIpD2iS/DMYpZuuDLU0Y3pZt1z20/1ksr4004wfhDhRxu4dgUV4QN96Qtdih9g==")
+//                return true
+//            }
+//            KeyCode.KEYCODE_3 -> { // Тапки
+//                vm.onScanResult("8719477163645")
+//                return true
+//            }
+//            KeyCode.KEYCODE_4 -> { // Коробка 082682
+//                vm.onScanResult("03000042907513119000404111")
+//                return true
+//            }
+//        }
+//        return false
+//    }
 
 }

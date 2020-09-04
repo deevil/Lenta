@@ -210,6 +210,7 @@ class TaskContentViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
                 funcForMark = ::checkMark,
                 funcForNotValidBarFormat = navigator::showIncorrectEanFormat
         )
+        numberField.value = ""
     }
 
     private fun checkMark(number: String) {
@@ -352,6 +353,10 @@ class TaskContentViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
                             markType = markType,
                             markTypeGroup = database.getMarkTypeGroupByMarkType(markType)
                     )
+
+                    if (good.kind == GoodKind.EXCISE) {
+                        navigator.showForExciseGoodNeedScanFirstMark()
+                    }
 
                     setFoundGood(good)
                 }.orIfNull {

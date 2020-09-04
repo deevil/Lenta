@@ -736,10 +736,13 @@ class GoodInfoOpenViewModel : CoreViewModel() {
     private suspend fun checkPart(): Either<Failure, ScanInfoResult> {
         navigator.showProgressLoadingData(::handleFailure)
 
+        val quantityFromField = quantity.value ?: 0.0
+
         val allPartsQuantity = good.value?.getPartQuantityByDateAndProducer(
                 date = date.value.orEmpty(),
-                producerCode = getProducerCode()
-        ) ?: quantity.value ?: 0.0
+                producerCode = getProducerCode(),
+                quantityFromField = quantityFromField
+        ) ?: quantityFromField
 
         return scanInfoNetRequest(ScanInfoParams(
                 tkNumber = sessionInfo.market.orEmpty(),

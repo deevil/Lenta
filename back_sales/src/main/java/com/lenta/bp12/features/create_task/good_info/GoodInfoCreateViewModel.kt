@@ -736,10 +736,13 @@ class GoodInfoCreateViewModel : CoreViewModel() {
                 targetPattern = Constants.DATE_FORMAT_yyyy_mm_dd
         )
 
+        val quantityFromField = quantity.value ?: 0.0
+
         val allPartsQuantity = good.value?.getPartQuantityByDateAndProducer(
                 date = date.value.orEmpty(),
-                producerCode = getProducerCode()
-        ) ?: quantity.value ?: 0.0
+                producerCode = getProducerCode(),
+                quantityFromField = quantityFromField
+        ) ?: quantityFromField
 
         return scanInfoNetRequest(ScanInfoParams(
                 tkNumber = sessionInfo.market.orEmpty(),
