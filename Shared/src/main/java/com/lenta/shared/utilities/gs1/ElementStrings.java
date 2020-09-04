@@ -1,18 +1,3 @@
-/*
- * Copyright 2017 the original author or authors.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package com.lenta.shared.utilities.gs1;
 
 import java.math.BigDecimal;
@@ -98,6 +83,7 @@ public class ElementStrings {
         public Map<ApplicationIdentifier, Object> getElementsByEnum() {
             return elementsByEnum;
         }
+
     }
 
     public static ParseResult parse(String sequence) {
@@ -130,18 +116,14 @@ public class ElementStrings {
             ApplicationIdentifier identifier = null;
 
             try {
-
                 // Standard AIs defined in ApplicationIdentifier
-                for (ApplicationIdentifier candidate : ApplicationIdentifier.values()) {
-                    if (reader.startsWith(candidate.getKey())) {
-                        identifier = candidate;
-                        key = reader.read(identifier.getKey().length());
-                        if (identifier.getFormat() == ApplicationIdentifier.Format.CUSTOM) {
-                            data = readDataFieldInCustomFormat(identifier, reader);
-                        } else {
-                            data = readDataFieldInStandardFormat(identifier, reader);
-                        }
-                        break;
+                identifier = ApplicationIdentifierTree.get(reader.peek());
+                if (identifier != null) {
+                    key = reader.read(identifier.getKey().length());
+                    if (identifier.getFormat() == ApplicationIdentifier.Format.CUSTOM) {
+                        data = readDataFieldInCustomFormat(identifier, reader);
+                    } else {
+                        data = readDataFieldInStandardFormat(identifier, reader);
                     }
                 }
 
@@ -162,16 +144,6 @@ public class ElementStrings {
                         data = reader.readVariableLengthAlphanumeric(1, 20);
                     }
                 }
-
-                // Support for AIs 91-99 Company internal information
-                if (key == null && reader.remainingLength() >= 2 && reader.startsWith("9")) {
-                    String start = reader.peek(2);
-                    if (start.charAt(1) >= '1' && start.charAt(1) <= '9') {
-                        key = reader.read(2);
-                        data = reader.readVariableLengthAlphanumeric(1, 30);
-                    }
-                }
-
             } catch (Exception e) {
                 result.partial = true;
                 result.errorMessage = "Error parsing data field for AI " + key + " at position " + identifierPosition + ", " + e.getMessage();
@@ -210,8 +182,9 @@ public class ElementStrings {
                 return reader.readDecimal(identifier.getMinLength(), identifier.getMaxLength());
             case DATE:
                 return reader.readDate();
+            default:
+                return null;
         }
-        return null;
     }
 
     private static Object readDataFieldInCustomFormat(ApplicationIdentifier identifier, SequenceReader reader) {
@@ -233,18 +206,17 @@ public class ElementStrings {
                 return reader.readDateOrDateRange();
             case PRODUCTION_DATE_AND_TIME:
                 return reader.readDateAndTimeWithOptionalMinutesAndSeconds();
+            default:
+                return null;
         }
-        return null;
     }
 
     static class SequenceReader {
 
-        private static final char SEPARATOR_CHAR = 0x1D;
+        private char[] separator;
 
         private String sequence;
         private int position = 0;
-
-        private char[] separator;
 
         SequenceReader(String sequence) {
             this(sequence, "\u001d");
@@ -253,6 +225,23 @@ public class ElementStrings {
         SequenceReader(String sequence, String separator) {
             this.sequence = sequence;
             this.separator = separator.toCharArray();
+        }
+
+        boolean isSeparator(String sequence, int index) {
+            try {
+                for (int i = 0; i < this.separator.length; i++) {
+                    if (this.separator[i] != sequence.charAt(index + i))
+                        return false;
+                }
+                return true;
+            } catch (IndexOutOfBoundsException e) {
+                return false;
+            }
+        }
+
+        void skipSeparatorIfPresent() {
+            if (isSeparator(sequence, position))
+                position += this.separator.length;
         }
 
         String readFixedLengthNumeric(int length) {
@@ -280,18 +269,6 @@ public class ElementStrings {
                 return parseDateAndTime(readNumericDataField(6, 6));
             } catch (NumberFormatException e) {
                 throw new IllegalArgumentException("data field must be numeric");
-            }
-        }
-
-        boolean isSeparator(String sequence, int index) {
-            try {
-                for (int i = 0; i < this.separator.length; i++) {
-                    if (this.separator[i] != sequence.charAt(index + i))
-                        return false;
-                }
-                return true;
-            } catch (IndexOutOfBoundsException e) {
-                return false;
             }
         }
 
@@ -327,7 +304,7 @@ public class ElementStrings {
             }
         }
 
-        Date parseDateAndTime(String s) {
+        public static Date parseDateAndTime(String s) {
             int year, month, day, hour, minutes, seconds;
             try {
                 year = Integer.parseInt(s.substring(0, 2));
@@ -364,7 +341,7 @@ public class ElementStrings {
          * @param year        two digit year
          * @param currentYear four digit century and year
          */
-        int resolveTwoDigitYear(int year, int currentYear) {
+        private static int resolveTwoDigitYear(int year, int currentYear) {
             int century = currentYear - (currentYear % 100);
             int difference = year - (currentYear % 100);
             if (difference >= 51 && difference <= 99) {
@@ -395,7 +372,7 @@ public class ElementStrings {
             return decimalPointIndicator - '0';
         }
 
-        List readCurrencyAndAmount() {
+        List<?> readCurrencyAndAmount() {
             int decimalPointPosition = readDecimalPointPosition();
             String currencyCode = readNumericDataField(3, 3);
             String digits = readDataField(1, 15);
@@ -403,7 +380,7 @@ public class ElementStrings {
             return Arrays.asList(currencyCode, amount);
         }
 
-        List readCountryList() {
+        List<String> readCountryList() {
             String dataField = readNumericDataField(3, 15);
             if (dataField.length() % 3 != 0) {
                 throw new IllegalArgumentException("invalid data field length");
@@ -427,7 +404,7 @@ public class ElementStrings {
             int length = 0;
             int endIndex = position;
             while (length < maxLength && endIndex < sequence.length()) {
-                if (sequence.charAt(endIndex) == SEPARATOR_CHAR) {
+                if (isSeparator(sequence, endIndex)) {
                     break;
                 }
                 endIndex++;
@@ -442,15 +419,6 @@ public class ElementStrings {
             String dataField = sequence.substring(position, endIndex);
             position = endIndex;
             return dataField;
-        }
-
-        void skipSeparatorIfPresent() {
-            if (isSeparator(sequence, position))
-                position += this.separator.length;
-
-            if (position < sequence.length() && sequence.charAt(position) == SEPARATOR_CHAR) {
-                position++;
-            }
         }
 
         int remainingLength() {
@@ -477,6 +445,10 @@ public class ElementStrings {
 
         String peek(int length) {
             return sequence.substring(position, position + length);
+        }
+
+        String peek() {
+            return sequence.substring(position);
         }
     }
 }

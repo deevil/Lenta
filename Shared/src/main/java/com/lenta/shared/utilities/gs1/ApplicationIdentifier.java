@@ -45,7 +45,7 @@ public enum ApplicationIdentifier {
      * the trade item to which the element string is applied. The data may refer to the trade item itself or to items
      * contained.
      */
-    BATCH_OR_LOT_NUMBER("10", Format.ALPHANUMERIC_VARIABLE, 20),
+    BATCH_OR_LOT_NUMBER("10", Format.ALPHANUMERIC_VARIABLE, 10, 20),
 
     /**
      * Production date, the production or assembly date determined by the manufacturer. The date may refer to the trade
@@ -104,6 +104,11 @@ public enum ApplicationIdentifier {
     CONSUMER_PRODUCT_VARIANT("22", Format.ALPHANUMERIC_VARIABLE, 20),
 
     /**
+     * Variable count, number of items contained in a variable measure trade item.
+     */
+    VARIABLE_COUNT("30", Format.NUMERIC_VARIABLE, 8),
+
+    /**
      * Additional product identification assigned by the manufacturer.
      */
     ADDITIONAL_ITEM_ID("240", Format.ALPHANUMERIC_VARIABLE, 30),
@@ -155,12 +160,7 @@ public enum ApplicationIdentifier {
      */
     GCN("255", Format.NUMERIC_VARIABLE, 13, 25),
 
-    /**
-     * Variable count, number of items contained in a variable measure trade item.
-     */
-    VARIABLE_COUNT("30", Format.NUMERIC_VARIABLE, 8),
-
-    ITEM_NET_WEIGHT_KG("310", Format.DECIMAL),
+    ITEM_NET_WEIGHT_KG("310", Format.ALPHANUMERIC_VARIABLE, 1, 6),
     ITEM_LENGTH_METRES("311", Format.DECIMAL),
     ITEM_WIDTH_METRES("312", Format.DECIMAL),
     ITEM_HEIGHT_METRES("313", Format.DECIMAL),
@@ -602,7 +602,10 @@ public enum ApplicationIdentifier {
     ApplicationIdentifier(String key, Format format) {
         this.key = key;
         this.format = format;
-        if (format == Format.DECIMAL || format == Format.DATE) {
+        if (format == Format.DECIMAL) {
+            this.minLength = 1;
+            this.maxLength = 6;
+        } else if (format == Format.DATE) {
             this.minLength = 6;
             this.maxLength = 6;
         } else {

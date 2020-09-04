@@ -3,11 +3,10 @@ package com.lenta.shared.platform.viewmodel
 import com.lenta.shared.models.core.BarcodeData
 import com.lenta.shared.models.core.BarcodeInfo
 import com.lenta.shared.models.core.Batch
-import com.lenta.shared.utilities.EAN128Parser
+import com.lenta.shared.utilities.gs1.EAN128Parser
 import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.extentions.unsafeLazy
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
+import com.lenta.shared.utilities.gs1.GTIN
 
 abstract class BarcodeViewModel : CoreViewModel() {
 
@@ -24,7 +23,13 @@ abstract class BarcodeViewModel : CoreViewModel() {
         when {
             // SAP-код (только ручной ввод)
             barcodeLenght in 0..MAX_SAP_CODE_LENGTH -> {
+                if (GTIN.convertibleToGTIN8(data)) {
+                    barcode = GTIN.toGTIN8(data)
+                }
+                isWeight = GTIN.isVariableMeasureItem(barcode)
+                if (isWeight) {
 
+                }
             }
             //EAN (ручной ввод и сканирование)
             barcodeLenght in MAX_SAP_CODE_LENGTH..MAX_EAN_CODE_LENGTH -> {

@@ -1,4 +1,4 @@
-package com.lenta.shared.utilities
+package com.lenta.shared.utilities.gs1
 
 import java.io.InvalidObjectException
 import java.util.*
@@ -34,12 +34,12 @@ object EAN128Parser {
         aiiDict[ai] = AII(ai, description, lengthOfAI, dataDescription, lengthOfData, fnc1)
     }
 
-    fun parseBy(barcode: String): MutableMap<AII, String> {
+    fun parseBy(barcode: String): Map<AII, String> {
         val splitted = barcode.split("[/((?!^)\\{.*?\\})/]".toRegex())
         return addToMap(splitted)
     }
 
-    fun addToMap(list: List<String>): MutableMap<AII, String> {
+    private fun addToMap(list: List<String>): Map<AII, String> {
         val result: MutableMap<AII, String> = HashMap()
         list.forEachIndexed { index, code ->
             val ai: AII? = aiiDict[code]
@@ -52,51 +52,6 @@ object EAN128Parser {
         }
         return result
     }
-
-//    fun batchNumber(barcode: String): String{
-//        var batch = barcode.substring(18)
-//        val list = mutableListOf<String>()
-//        if (batch.contains("8008")){
-//           return batch.split("8008")[0]
-//        }else{
-//            return  batch.split("7003")[0]
-//        }
-//    }
-//
-//    @Throws(InvalidObjectException::class)
-//    fun parseWithoutQuotes(barcode: String): MutableMap<AII, String> {
-//        var list = mutableListOf<String>()
-//        if ((barcode[0]) != '(') {
-//            with(list) {
-//                with(barcode) {
-//                    add(substring(0, 2))
-//                    add(substring(2, 16))
-//                    if (substring(16, 18) == "11") {          // Ветка  идентификатор(01) -> дата производства(11) -> количество(30) или вес(310)
-//                        add(substring(16, 18))
-//                        add(substring(18, 24))
-//                        if (substring(24, 27) == "310") {
-//                            add("310d")
-//                            add(substring(27, length))
-//                        } else {
-//                            add(substring(24, 26))
-//                            add(substring(26, length))
-//                        }
-//                    } else {                                   // Ветка  идентификатор(01) -> номер партии(10) -> дата (8008)ГГГГММДДЧЧММ или  (7003) ГГММДДЧЧММ
-//                        add(substring(16, 18))
-//                        add(batchNumber(barcode))
-//                        if (substring(28, length).contains("8008")) {
-//                            add("8008")
-//                            add(substring(length - 12, length))
-//                        } else {
-//                            list.add("7003")
-//                            list.add(substring(length - 10, length))
-//                        }
-//                    }
-//                }
-//            }
-//            return addToMap(list)
-//        } else return parseBy(barcode)
-//    }
 
     /**
      * Main Parsing barcode function
