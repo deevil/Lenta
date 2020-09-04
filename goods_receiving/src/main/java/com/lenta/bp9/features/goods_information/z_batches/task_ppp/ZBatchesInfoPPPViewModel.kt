@@ -20,6 +20,7 @@ import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.requests.combined.scan_info.ScanInfoResult
 import com.lenta.shared.requests.combined.scan_info.pojo.QualityInfo
 import com.lenta.shared.requests.combined.scan_info.pojo.ReasonRejectionInfo
+import com.lenta.shared.utilities.date_time.DateTimeUtil
 import com.lenta.shared.utilities.extentions.combineLatest
 import com.lenta.shared.utilities.extentions.launchUITryCatch
 import com.lenta.shared.utilities.extentions.map
@@ -332,7 +333,7 @@ class ZBatchesInfoPPPViewModel : CoreViewModel() {
 
             val paramGrzPerishableHH = dataBase.getParamGrzPerishableHH()?.toDoubleOrNull() ?: 0.0
             val generalShelfLifeValue = generalShelfLife.value?.toDoubleOrNull() ?: 0.0
-            isVisibilityEnteredTime.value = generalShelfLifeValue <= paramGrzPerishableHH
+            isVisibilityEnteredTime.value = true //generalShelfLifeValue <= paramGrzPerishableHH
         }
     }
 
@@ -356,16 +357,21 @@ class ZBatchesInfoPPPViewModel : CoreViewModel() {
     private fun isCorrectDate(checkDate: String?): Boolean {
         return try {
             val date = formatterRU.parse(checkDate)
-            !(checkDate != formatterRU.format(date) || date!! > currentDate.value)
+            !(checkDate != formatterRU.format(date) || date > currentDate.value)
         } catch (e: Exception) {
             false
         }
     }
 
+    @SuppressLint("SimpleDateFormat")
     private fun isCorrectTime(checkTime: String?): Boolean {
         return try {
-            val date = formatterRU.parse(checkDate)
-            !(checkDate != formatterRU.format(date) || date!! > currentDate.value)
+            val milliseconds = timeMonitor.getUnixTime()
+            val currentTimeStr = DateTimeUtil.formatDate(milliseconds, Constants.TIME_FORMAT_HHmm)
+            val currentTime = SimpleDateFormat(Constants.TIME_FORMAT_HHmm).parse(currentTimeStr)
+            val enteredTime = SimpleDateFormat(Constants.TIME_FORMAT_HHmm).parse(checkTime)
+            val enteredTimeStr = SimpleDateFormat(Constants.TIME_FORMAT_HHmm).format(enteredTime)
+            !(checkTime != enteredTimeStr || enteredTime > currentTime)
         } catch (e: Exception) {
             false
         }
@@ -457,6 +463,11 @@ class ZBatchesInfoPPPViewModel : CoreViewModel() {
         }
 
         if (!isCorrectDate(enteredDate.value)) {
+            screenNavigator.openAlertNotCorrectDate()
+            return
+        }
+
+        if (!isCorrectTime(enteredTime.value) && isVisibilityEnteredTime.value == true) {
             screenNavigator.openAlertNotCorrectDate()
             return
         }
@@ -572,12 +583,14 @@ class ZBatchesInfoPPPViewModel : CoreViewModel() {
                 //блок 6.147
                 if (countWithoutParamGrsGrundNeg > 0.0) {//блок 6.147 (да)
                     //блок 6.145
+                    val shelfLifeDate = formatterERP.format(formatterRU.parse(enteredDate.value.orEmpty()))
+                    val shelfLifeTime = enteredTime.value.orEmpty().replace(":", "") + "00"
                     processZBatchesPPPService.addWithoutUnderload(
                             typeDiscrepancies = paramGrsGrundNegValue,
                             count = countWithoutParamGrsGrundNeg.toString(),
                             manufactureCode = currentManufactureCode,
-                            shelfLifeDate = enteredDate.value.orEmpty(),
-                            shelfLifeTime = enteredTime.value.orEmpty()
+                            shelfLifeDate = shelfLifeDate,
+                            shelfLifeTime = shelfLifeTime
                     )
                     //блок 6.172
                     saveCategory()
@@ -649,7 +662,9 @@ class ZBatchesInfoPPPViewModel : CoreViewModel() {
             val calculationTwo = productOrigQuantity - processZBatchesPPPService.getQuantityAllCategory(enteredCount)
             val calculation = if (calculationOne < calculationTwo) calculationOne else calculationTwo
             if (calculation > 0.0) {
-                processZBatchesPPPService.add(calculation.toString(), "41", currentManufactureCode, enteredDate.value.orEmpty(), enteredTime.value.orEmpty())
+                val shelfLifeDate = formatterERP.format(formatterRU.parse(enteredDate.value.orEmpty()))
+                val shelfLifeTime = enteredTime.value.orEmpty().replace(":", "") + "00"
+                processZBatchesPPPService.add(calculation.toString(), "41", currentManufactureCode, shelfLifeDate, shelfLifeTime)
             }
         }
 
@@ -666,10 +681,11 @@ class ZBatchesInfoPPPViewModel : CoreViewModel() {
     }
 
     //ППП блок 6.172
+    @SuppressLint("SimpleDateFormat")
     private fun saveCategory() {
         val countAdd = if (currentQualityInfoCode == TYPE_DISCREPANCIES_QUALITY_NORM) acceptTotalCount.value.toString() else count.value
-        val shelfLifeDate = formatterERP.format(formatterEN.parse(enteredDate.value.orEmpty()))
-        val shelfLifeTime = enteredTime.value.orEmpty()
+        val shelfLifeDate = formatterERP.format(formatterRU.parse(enteredDate.value.orEmpty()))
+        val shelfLifeTime = enteredTime.value.orEmpty().replace(":", "") + "00"
         processZBatchesPPPService.add(countAdd.orEmpty(), TYPE_DISCREPANCIES_QUALITY_NORM, currentManufactureCode, shelfLifeDate, shelfLifeTime)
 
         //ППП блок 6.176
