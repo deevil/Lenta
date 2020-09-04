@@ -23,7 +23,7 @@ data class MarkCartonBoxGoodInfoNetRequestParams(
         @SerializedName("IV_MARK_NUM")
         val markNumber: String = "",
         /** Номер товара */
-        @SerializedName("IV_MATNR") // Для BKS не используется
+        @SerializedName("IV_MATNR")
         val goodNumber: String = "",
         /** Тип маркировки */
         @SerializedName("IV_ZMARKTYPE")

@@ -6,6 +6,7 @@ import androidx.lifecycle.switchMap
 import com.lenta.bp12.model.*
 import com.lenta.bp12.model.pojo.Basket
 import com.lenta.bp12.model.pojo.Mark
+import com.lenta.bp12.model.pojo.create_task.GoodCreate
 import com.lenta.bp12.model.pojo.extentions.addMarks
 import com.lenta.bp12.model.pojo.extentions.getQuantityOfGood
 import com.lenta.bp12.platform.extention.isWholesaleType
@@ -126,7 +127,7 @@ class MarkedGoodInfoCreateViewModel : CoreViewModel(), PageSelectionListener {
     /**
      * Последние отсканированные марки, для удаления их из общего списка по кнопке Откат
      * */
-    private var lastScannedMarks: List<Mark> = listOf()
+    private var lastScannedMarks: List<Mark> = emptyList()
 
     /**
     Ввод количества
@@ -259,11 +260,11 @@ class MarkedGoodInfoCreateViewModel : CoreViewModel(), PageSelectionListener {
      */
 
     val mrc by unsafeLazy {
-        good.map {
-            it?.let { good ->
+        good.map { goodValue ->
+            goodValue?.let { good ->
                 val mrc = good.maxRetailPrice
-                if (mrc.isNotEmpty()) "${it.maxRetailPrice} ${resource.rub}"
-                else ""
+                mrc.takeIf { it.isNotEmpty() }
+                        ?.run { "${good.maxRetailPrice} ${resource.rub}" }.orEmpty()
             }
         }
     }
@@ -338,11 +339,9 @@ class MarkedGoodInfoCreateViewModel : CoreViewModel(), PageSelectionListener {
      */
 
     fun onScanResult(number: String) {
-        good.value?.let {
-            launchUITryCatch {
-                manager.clearSearchFromListParams()
-                checkSearchNumber(number)
-            }
+        launchUITryCatch {
+            manager.clearSearchFromListParams()
+            checkSearchNumber(number)
         }
     }
 
@@ -480,25 +479,24 @@ class MarkedGoodInfoCreateViewModel : CoreViewModel(), PageSelectionListener {
         good.value?.let { good ->
             manager.saveGoodInTask(good)
             isExistUnsavedData = false
+            addMarks(good)
         }.orIfNull {
             Logg.e { "good null" }
             navigator.showInternalError(resource.goodNotFoundErrorMsg)
         }
 
-        addMarks()
+
     }
 
-    private suspend fun addMarks() {
-        good.value?.let { changedGood ->
-            tempMarks.value?.let { tempMarksValue ->
-                changedGood.addMarks(tempMarksValue)
-                tempMarksValue.forEach { mark ->
-                    manager.addGoodToBasketWithMark(
-                            good = changedGood,
-                            mark = mark,
-                            provider = getProvider()
-                    )
-                }
+    private suspend fun addMarks(changedGood: GoodCreate) {
+        tempMarks.value?.let { tempMarksValue ->
+            changedGood.addMarks(tempMarksValue)
+            tempMarksValue.forEach { mark ->
+                manager.addGoodToBasketWithMark(
+                        good = changedGood,
+                        mark = mark,
+                        provider = getProvider()
+                )
             }
         }
     }
@@ -599,6 +597,17 @@ class MarkedGoodInfoCreateViewModel : CoreViewModel(), PageSelectionListener {
         tempMarks.value = markManager.getTempMarks()
         properties.value = markManager.getProperties()
         navigator.hideProgress()
+    }
+
+    fun setupData(marksFromBundle: List<Mark>?, propertiesFromBundle: List<GoodProperty>?) {
+        marksFromBundle?.let { listOfMarks ->
+            tempMarks.value?.addAll(listOfMarks)
+            Logg.e { marksFromBundle.toString() }
+        } ?: Logg.e { "marks empty " }
+        propertiesFromBundle?.let { listOfProperties ->
+            properties.value?.addAll(listOfProperties)
+            Logg.e { propertiesFromBundle.toString() }
+        } ?: Logg.e { "properties empty " }
     }
 
     fun addProvider() {

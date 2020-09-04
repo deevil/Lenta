@@ -90,50 +90,13 @@ abstract class Good(
 
         other as Good
 
-        if (ean != other.ean) return false
-        if (eans != other.eans) return false
         if (material != other.material) return false
-        if (name != other.name) return false
-        if (kind != other.kind) return false
-        if (section != other.section) return false
-        if (matrix != other.matrix) return false
-        if (volume != other.volume) return false
-        if (control != other.control) return false
-        if (commonUnits != other.commonUnits) return false
-        if (innerUnits != other.innerUnits) return false
-        if (innerQuantity != other.innerQuantity) return false
-        if (producers != other.producers) return false
-        if (positions != other.positions) return false
-        if (marks != other.marks) return false
-        if (parts != other.parts) return false
-        if (markType != other.markType) return false
-        if (markTypeGroup != other.markTypeGroup) return false
-        if (maxRetailPrice != other.maxRetailPrice) return false
 
         return true
     }
 
     override fun hashCode(): Int {
-        var result = ean.hashCode()
-        result = 31 * result + eans.hashCode()
-        result = 31 * result + material.hashCode()
-        result = 31 * result + name.hashCode()
-        result = 31 * result + kind.hashCode()
-        result = 31 * result + section.hashCode()
-        result = 31 * result + matrix.hashCode()
-        result = 31 * result + volume.hashCode()
-        result = 31 * result + control.hashCode()
-        result = 31 * result + commonUnits.hashCode()
-        result = 31 * result + innerUnits.hashCode()
-        result = 31 * result + innerQuantity.hashCode()
-        result = 31 * result + producers.hashCode()
-        result = 31 * result + positions.hashCode()
-        result = 31 * result + marks.hashCode()
-        result = 31 * result + parts.hashCode()
-        result = 31 * result + markType.hashCode()
-        result = 31 * result + (markTypeGroup?.hashCode() ?: 0)
-        result = 31 * result + maxRetailPrice.hashCode()
-        return result
+        return material.hashCode()
     }
 
     override fun toString(): String {

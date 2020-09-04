@@ -366,11 +366,7 @@ class GoodInfoOpenViewModel : CoreViewModel() {
      */
 
     init {
-        launchUITryCatch {
-            good.value?.let {
-                setFoundGood(it)
-            }
-        }
+        onInitGoodInfo()
     }
 
     /**
@@ -419,19 +415,7 @@ class GoodInfoOpenViewModel : CoreViewModel() {
         }
     }
 
-    private fun isApplyEnabledOrIsGoodExcise(good: GoodOpen, number: String) =
-            isApplyEnabled() or isGoodExcise(good, number)
-
     private fun isApplyEnabled() = applyEnabled.value == true
-    private fun isGoodExcise(good: GoodOpen, number: String) =
-            good.kind == GoodKind.EXCISE && isExciseNumber(number)
-
-    private fun isExciseNumber(number: String): Boolean {
-        return when (number.length) {
-            Constants.MARK_150, Constants.MARK_68, Constants.BOX_26 -> true
-            else -> false
-        }
-    }
 
     private fun checkSearchNumber(number: String) {
         originalSearchNumber = number
@@ -795,9 +779,10 @@ class GoodInfoOpenViewModel : CoreViewModel() {
             good.value?.let { good ->
                 manager.saveGoodInTask(good)
                 isExistUnsavedData = false
+            }.orIfNull {
+                Logg.e { "good null" }
+                navigator.showInternalError(resource.goodNotFoundErrorMsg)
             }
-
-            Logg.e { status.description }
 
             when (status) {
                 ScreenStatus.COMMON -> addPosition()
@@ -805,14 +790,6 @@ class GoodInfoOpenViewModel : CoreViewModel() {
                 ScreenStatus.ALCOHOL, ScreenStatus.PART -> addPart()
                 ScreenStatus.BOX -> addBox()
                 else -> Logg.e { "wrong screenStatus" }
-            }
-
-            good.value?.let { good ->
-                manager.saveGoodInTask(good)
-                isExistUnsavedData = false
-            }.orIfNull {
-                Logg.e { "good null" }
-                navigator.showInternalError(resource.goodNotFoundErrorMsg)
             }
         }
     }
@@ -989,6 +966,10 @@ class GoodInfoOpenViewModel : CoreViewModel() {
         }
     }
 
+    fun onClickClose() {
+        navigator.showCloseBasketDialog(::handleYesOnClickCloseCallback)
+    }
+
     private fun saveChangesAndExit() {
         launchUITryCatch {
             navigator.showProgressLoadingData()
@@ -1000,9 +981,15 @@ class GoodInfoOpenViewModel : CoreViewModel() {
         }
     }
 
-
-    fun onClickClose() {
-        navigator.showCloseBasketDialog(::handleYesOnClickCloseCallback)
+    private fun onInitGoodInfo() {
+        launchUITryCatch {
+            good.value?.let {
+                setFoundGood(it)
+            }.orIfNull {
+                Logg.e { "good null" }
+                navigator.showInternalError(resource.goodNotFoundErrorMsg)
+            }
+        }
     }
 
     private fun handleYesOnClickCloseCallback() {

@@ -50,10 +50,10 @@ class TaskCardCreateViewModel : CoreViewModel(), PageSelectionListener {
 
     val taskName by lazy {
         selectedType.map { type ->
-            if (type?.isWholesaleType() == false) {
+            type?.takeIf { !it.isWholesaleType() }?.run {
                 val date = SimpleDateFormat(Constants.DATE_FORMAT_dd_mm_yyyy_hh_mm, Locale.getDefault()).format(Date())
                 resource.backSalesFromDate(date)
-            } else ""
+            }.orEmpty()
         }
     }
 
@@ -79,7 +79,7 @@ class TaskCardCreateViewModel : CoreViewModel(), PageSelectionListener {
         types.combineLatest(taskTypePosition).map {
             it?.let {
                 val (list, position) = it
-                if (list.isNotEmpty()) list[position] else null
+                list.getOrNull(position)
             }
         }
     }

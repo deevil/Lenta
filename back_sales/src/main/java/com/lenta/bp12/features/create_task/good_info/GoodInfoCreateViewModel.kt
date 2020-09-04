@@ -186,7 +186,7 @@ class GoodInfoCreateViewModel : CoreViewModel() {
                 if (isProviderSelected) {
                     task.value?.let { task ->
                         getBasket()?.let { basket ->
-                            "${task.baskets.indexOf(basket) + 1}"
+                            "${basket.index}"
                         } ?: "${task.baskets.size + 1}"
                     }.orEmpty()
                 } else ""
@@ -375,11 +375,7 @@ class GoodInfoCreateViewModel : CoreViewModel() {
      */
 
     init {
-        launchUITryCatch {
-            good.value?.let {
-                setFoundGood(it)
-            }
-        }
+        onInitGoodInfo()
     }
 
     /**
@@ -655,10 +651,6 @@ class GoodInfoCreateViewModel : CoreViewModel() {
             Constants.MARK_68 -> {
                 val alcoCodeInfoList = database.getAlcoCodeInfoList(number.extractAlcoCode())
 
-                Logg.e {
-                    alcoCodeInfoList.toString()
-                }
-
                 if (alcoCodeInfoList.isEmpty()) {
                     navigator.openAlertScreen(resource.unknownAlcocode())
                     return
@@ -760,7 +752,6 @@ class GoodInfoCreateViewModel : CoreViewModel() {
             navigator.hideProgress()
         }
     }
-
 
     private fun handleCheckPartFailure(failure: Failure) {
         navigator.openAlertScreen(failure)
@@ -878,9 +869,11 @@ class GoodInfoCreateViewModel : CoreViewModel() {
             val quantityValue = quantity.value ?: 0.0
 
             val localDate = date.value?.let {
-                if (it.length == 10) {
+                try {
                     getDateFromString(it, Constants.DATE_FORMAT_dd_mm_yyyy)
-                } else Date()
+                } catch (e: RuntimeException) {
+                    Date()
+                }
             } ?: Date()
 
             val part = Part(
@@ -930,6 +923,16 @@ class GoodInfoCreateViewModel : CoreViewModel() {
         }
     }
 
+    private fun onInitGoodInfo(){
+        launchUITryCatch {
+            good.value?.let {
+                setFoundGood(it)
+            }.orIfNull {
+                Logg.e { "good null" }
+                navigator.showInternalError(resource.goodNotFoundErrorMsg)
+            }
+        }
+    }
 
     private fun getBasket(): Basket? {
         return manager.getBasket(getProviderCode())

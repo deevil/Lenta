@@ -34,6 +34,8 @@ import com.lenta.shared.utilities.extentions.dropZeros
 import com.lenta.shared.utilities.extentions.launchUITryCatch
 import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.utilities.orIfNull
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 class TaskContentViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyboardListener {
@@ -111,7 +113,7 @@ class TaskContentViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
                             markType = good.markType
                     )
                 }
-            }
+            }.orEmpty()
         }
     }
 
@@ -128,7 +130,7 @@ class TaskContentViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
                             quantity = "${task.getCountByBasket(basket)}"
                     )
                 }
-            }
+            }.orEmpty()
         }
     }
 
@@ -223,6 +225,10 @@ class TaskContentViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
                 MarkScreenStatus.NO_MARKTYPE_IN_SETTINGS -> {
                     navigator.hideProgress()
                     navigator.showNoMarkTypeInSettings()
+                }
+                MarkScreenStatus.INCORRECT_EAN_FORMAT -> {
+                    navigator.hideProgress()
+                    navigator.showIncorrectEanFormat()
                 }
                 else -> {
                     navigator.hideProgress()
@@ -364,87 +370,96 @@ class TaskContentViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
     fun onClickItemPosition(position: Int) {
         selectedPage.value?.let { page ->
             when (page) {
-                GOOD_TAB_INDEX -> {
-                    val good = goods.value?.getOrNull(position)
-                    good?.let {
-                        manager.searchNumber = good.material
-                        manager.isSearchFromList = true
-                        if (good.markType != MarkType.UNKNOWN) {
-                            navigator.openMarkedGoodInfoCreateScreen()
-                        } else {
-                            navigator.openGoodInfoCreateScreen()
-                        }
-                    }.orIfNull {
-                        Logg.e { "good null" }
-                        navigator.showInternalError(resource.goodNotFoundErrorMsg)
-                    }
-                }
-                BASKET_TAB_INDEX -> {
-                    val basket = if (manager.isWholesaleTaskType) {
-                        wholesaleBaskets.value?.getOrNull(position)?.basket
-                    } else {
-                        commonBaskets.value?.getOrNull(position)?.basket
-
-                    }
-                    manager.updateCurrentBasket(basket)
-                    navigator.openBasketCreateGoodListScreen()
-                }
+                GOOD_TAB_INDEX -> handleItemClickGoodTab(position)
+                BASKET_TAB_INDEX -> handleItemClickBasketTab(position)
                 else -> throw IllegalArgumentException("Wrong pager position!")
             }
         }
+    }
+
+    private fun handleItemClickGoodTab(position: Int) {
+        val good = goods.value?.getOrNull(position)
+        good?.let {
+            manager.searchNumber = good.material
+            manager.isSearchFromList = true
+            if (good.markType != MarkType.UNKNOWN) {
+                navigator.openMarkedGoodInfoCreateScreen()
+            } else {
+                navigator.openGoodInfoCreateScreen()
+            }
+        }.orIfNull {
+            Logg.e { "good null" }
+            navigator.showInternalError(resource.goodNotFoundErrorMsg)
+        }
+    }
+
+    private fun handleItemClickBasketTab(position: Int) {
+        val basket = if (manager.isWholesaleTaskType) {
+            wholesaleBaskets.value?.getOrNull(position)?.basket
+        } else {
+            commonBaskets.value?.getOrNull(position)?.basket
+        }
+        manager.updateCurrentBasket(basket)
+        navigator.openBasketCreateGoodListScreen()
     }
 
     fun onClickDelete() {
         selectedPage.value?.let { page ->
             when (page) {
-                GOOD_TAB_INDEX -> {
-                    val materials = mutableListOf<String>()
-                    goodSelectionsHelper.selectedPositions.value?.mapNotNullTo(materials) { position ->
-                        goods.value?.get(position)?.material
-                    }
-
-                    goodSelectionsHelper.clearPositions()
-                    manager.removeGoodByMaterials(materials)
-                }
-                BASKET_TAB_INDEX -> {
-                    val basketList = mutableListOf<Basket>()
-                    basketSelectionsHelper.selectedPositions.value?.mapNotNullTo(basketList) { position ->
-                        commonBaskets.value?.get(position)?.basket
-                    }
-
-                    basketSelectionsHelper.clearPositions()
-                    manager.removeBaskets(basketList)
-                }
+                GOOD_TAB_INDEX -> handleDeleteItemGoodTab()
+                BASKET_TAB_INDEX -> handleDeleteItemBasketTab()
                 else -> throw IllegalArgumentException("Wrong pager position!")
             }
         }
     }
 
+    private fun handleDeleteItemGoodTab() {
+        val materials = mutableListOf<String>()
+        goodSelectionsHelper.selectedPositions.value?.mapNotNullTo(materials) { position ->
+            goods.value?.get(position)?.material
+        }
+
+        goodSelectionsHelper.clearPositions()
+        manager.removeGoodByMaterials(materials)
+    }
+
+    private fun handleDeleteItemBasketTab() {
+        val basketList = mutableListOf<Basket>()
+        basketSelectionsHelper.selectedPositions.value?.mapNotNullTo(basketList) { position ->
+            commonBaskets.value?.get(position)?.basket
+        }
+
+        basketSelectionsHelper.clearPositions()
+        manager.removeBaskets(basketList)
+    }
+
     fun onPrint() {
         task.value?.let { taskValue ->
             goodSelectionsHelper.selectedPositions.value?.let { positions ->
-
                 val taskValueBaskets = taskValue.baskets
                 val baskets = positions.takeIf { it.isNotEmpty() }
                         ?.mapNotNullTo(mutableListOf()) {
                             taskValueBaskets.getOrNull(it)
                         }.orIfNull { taskValueBaskets }
+                printBaskets(baskets)
+            }
+        }
+    }
 
-                //Если какие-то корзины не закрыты
-                if (baskets.any { it.isLocked.not() }) {
-                    // Вывести экран сообщения «Некоторые выбранные корзины не закрыты. Закройте корзины и повторите печать», с кнопкой «Назад»
-                    navigator.showSomeOfChosenBasketsNotClosedScreen()
-                } else {
-                    //Если какие-то корзины напечатаны
-                    if (baskets.any { it.isPrinted }) {
-                        // «По некоторым выделенным корзинам уже производилась печать. Продолжить?», с кнопками «Да», «Назад» (макеты, экран №81)
-                        navigator.showSomeBasketsAlreadyPrinted(
-                                yesCallback = { printPalletList(baskets) }
-                        )
-                    } else {
-                        printPalletList(baskets)
-                    }
-                }
+    private fun printBaskets(baskets: List<Basket>) {
+        //Если какие-то корзины не закрыты
+        if (baskets.any { it.isLocked.not() }) {
+            // Вывести экран сообщения «Некоторые выбранные корзины не закрыты. Закройте корзины и повторите печать», с кнопкой «Назад»
+            navigator.showSomeOfChosenBasketsNotClosedScreen()
+        } else {
+            //Если какие-то корзины напечатаны
+            if (baskets.any { it.isPrinted }) {
+                // «По некоторым выделенным корзинам уже производилась печать. Продолжить?», с кнопками «Да», «Назад» (макеты, экран №81)
+                navigator.showSomeBasketsAlreadyPrinted(
+                        yesCallback = { printPalletList(baskets) }
+                )
+            } else {
+                printPalletList(baskets)
             }
         }
     }
@@ -454,26 +469,30 @@ class TaskContentViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
         launchUITryCatch {
             navigator.showProgressLoadingData()
             // Cобираем в один список все товары
-            val goodListRest = baskets.flatMap { basket ->
-                val distinctGoods = basket.goods.keys
-                distinctGoods.map { good ->
-                    val quantity = basket.goods[good]
-                    PrintPalletListParamsGood(
-                            materialNumber = good.material,
-                            basketNumber = basket.index.toString(),
-                            quantity = quantity.toString(),
-                            uom = good.commonUnits.code
-                    )
+            val goodListRest = withContext(Dispatchers.IO) {
+                baskets.flatMap { basket ->
+                    val distinctGoods = basket.goods.keys
+                    distinctGoods.map { good ->
+                        val quantity = basket.goods[good]
+                        PrintPalletListParamsGood(
+                                materialNumber = good.material,
+                                basketNumber = basket.index.toString(),
+                                quantity = quantity.toString(),
+                                uom = good.commonUnits.code
+                        )
+                    }
                 }
             }
 
-            val basketListRest = baskets.map {
-                val description = it.getDescription(task.value?.type?.isDivBySection ?: false)
-                PrintPalletListParamsBasket(
-                        number = it.index.toString(),
-                        description = description,
-                        section = it.section.orEmpty()
-                )
+            val basketListRest = withContext(Dispatchers.IO) {
+                baskets.map {
+                    val description = it.getDescription(task.value?.type?.isDivBySection ?: false)
+                    PrintPalletListParamsBasket(
+                            number = it.index.toString(),
+                            description = description,
+                            section = it.section.orEmpty()
+                    )
+                }
             }
 
             printPalletListNetRequest(
@@ -489,8 +508,8 @@ class TaskContentViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
                         handlePrintSuccess(baskets)
                     }
             )
-
         }
+
     }
 
     fun onClickSave() {

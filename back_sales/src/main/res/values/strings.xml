@@ -70,6 +70,7 @@
     <string name="open_basket">Открыть текущую корзину для редактирования? В случае согласия система разрешит добавление товаров в текущую корзину.</string>
 
     <string name="good_not_found_error_msg">товар не найден</string>
+    <string name="goods_not_found_error_msg">товары не найден</string>
     <string name="basket_not_found_error_msg">корзина не найдена</string>
     <string name="task_not_found_error_msg">задание не найдено</string>
 

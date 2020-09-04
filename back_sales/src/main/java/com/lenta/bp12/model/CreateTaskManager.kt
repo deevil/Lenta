@@ -174,9 +174,10 @@ class CreateTaskManager @Inject constructor(
     override fun getBasket(providerCode: String): Basket? {
         return currentTask.value?.let { task ->
             currentGood.value?.let { good ->
-                task.baskets.lastOrNull { basket ->
+                val basketsFromTask = task.baskets
+                basketsFromTask.lastOrNull { basket ->
                     val divByMark = if (task.type.isDivByMark) basket.markTypeGroup == good.markTypeGroup else true
-                    val divByMrc = if (task.type.isDivByMinimalPrice)  basket.maxRetailPrice == good.maxRetailPrice else true
+                    val divByMrc = if (task.type.isDivByMinimalPrice) basket.maxRetailPrice == good.maxRetailPrice else true
                     isLastBasketMatches(basket, good, providerCode, divByMark, divByMrc)
                 }
             }
