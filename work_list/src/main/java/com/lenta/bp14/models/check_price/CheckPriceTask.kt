@@ -93,7 +93,7 @@ class CheckPriceTask @Inject constructor(
                                             alcohol = productInfo?.isAlco.orEmpty(),
                                             excise = productInfo?.isExcise.orEmpty(),
                                             marked = productInfo?.isMarked.orEmpty(),
-                                            vrus = productInfo?.isVRus.orEmpty()),
+                                            rusWine = productInfo?.isRusWine.orEmpty()),
                                     healthFood = productInfo?.isHealthyFood.isSapTrue(),
                                     novelty = productInfo?.isNew.isSapTrue()
                             )
@@ -223,7 +223,7 @@ class CheckPriceTask @Inject constructor(
                                         alcohol = productInfo?.isAlco.orEmpty(),
                                         excise = productInfo?.isExcise.orEmpty(),
                                         marked = productInfo?.isMarked.orEmpty(),
-                                        vrus = productInfo?.isVRus.orEmpty()),
+                                        rusWine = productInfo?.isRusWine.orEmpty()),
                                 healthFood = productInfo?.isHealthyFood.isSapTrue(),
                                 novelty = productInfo?.isNew.isSapTrue()
                         )

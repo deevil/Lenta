@@ -24,7 +24,7 @@ fun ZfmpUtz48V001.ItemLocal_ET_MATNR_LIST.toWorkListGoodInfo(): WorkListGoodInfo
             isExcise = isExc,
             isAlcohol = isAlco,
             isMark = isMark,
-            isVRus = isVRus,
+            isVRus = isRusWine,
             healthFood = isHf,
             novelty = isNew
     )

@@ -115,7 +115,7 @@ class PrintTask @Inject constructor(
                                     alcohol = productInfo.isAlco,
                                     excise = productInfo.isExcise,
                                     marked = productInfo.isMarked,
-                                    vrus = productInfo.isVRus),
+                                    rusWine = productInfo.isRusWine),
                             healthFood = productInfo.isHealthyFood.isSapTrue(),
                             novelty = productInfo.isNew.isSapTrue()
                     )
@@ -127,33 +127,22 @@ class PrintTask @Inject constructor(
             /**Измерение длины EAN для выбора шаблона*/
             val eanLength = productInfo.ean.length
 
+            /**Условие использования EAN8*/
+            val isEan8Length = eanLength == Constants.EAN_8_LENGTH
+
             /**Если EAN8, то выбираем короткий шаблон, иначе 6*6*/
             val printTemplate = when (printerType.id) {
-                "01" -> if (isRegular) {
-                    if (eanLength == Constants.EAN_8_LENGTH) {
-                        PrintTemplate.ZEBRA_YELLOW_SMALL
-                    } else {
-                        PrintTemplate.ZEBRA_YELLOW_6_6
-                    }
-                } else {
-                    if (eanLength == Constants.EAN_8_LENGTH) {
-                        PrintTemplate.ZEBRA_RED_SMALL
-                    } else {
-                        PrintTemplate.ZEBRA_RED_6_6
-                    }
+                "01" -> when (isRegular) {
+                    isRegular && isEan8Length -> PrintTemplate.ZEBRA_YELLOW_SMALL
+                    isRegular -> PrintTemplate.ZEBRA_YELLOW_6_6
+                    !isRegular && isEan8Length -> PrintTemplate.ZEBRA_RED_SMALL
+                    else -> PrintTemplate.ZEBRA_RED_6_6
                 }
-                "02" -> if (isRegular) {
-                    if (eanLength == Constants.EAN_8_LENGTH) {
-                        PrintTemplate.DATAMAX_YELLOW_SMALL
-                    } else {
-                        PrintTemplate.DATAMAX_YELLOW_6_6
-                    }
-                } else {
-                    if (eanLength == Constants.EAN_8_LENGTH) {
-                        PrintTemplate.DATAMAX_RED_SMALL
-                    } else {
-                        PrintTemplate.DATAMAX_RED_6_6
-                    }
+                "02" -> when (isRegular) {
+                    isRegular && isEan8Length -> PrintTemplate.DATAMAX_YELLOW_SMALL
+                    isRegular -> PrintTemplate.DATAMAX_YELLOW_6_6
+                    !isRegular && isEan8Length -> PrintTemplate.DATAMAX_RED_SMALL
+                    else -> PrintTemplate.DATAMAX_RED_6_6
                 }
                 else -> null
 

@@ -38,7 +38,7 @@ class CheckPriceNetRequest
                                     alcohol = productInfo.isAlco,
                                     excise = productInfo.isExcise,
                                     marked = productInfo.isMarked,
-                                    vrus = productInfo.isVRus),
+                                    rusWine = productInfo.isRusWine),
                             healthFood = productInfo.isHealthyFood.isSapTrue(),
                             novelty = productInfo.isNew.isSapTrue()
                     )
