@@ -36,6 +36,8 @@ import com.lenta.bp9.features.goods_information.sets.task_ppp.set_component_rece
 import com.lenta.bp9.features.goods_information.z_batches.task_ppp.ZBatchesInfoPPPViewModel
 import com.lenta.bp9.features.goods_list.GoodsListViewModel
 import com.lenta.bp9.features.input_outgoing_fillings.InputOutgoingFillingsViewModel
+import com.lenta.bp9.features.label_printing.LabelPrintingViewModel
+import com.lenta.bp9.features.label_printing.print_labels_count_copies.PrintLabelsCountCopiesViewModel
 import com.lenta.bp9.features.list_goods_transfer.ListGoodsTransferViewModel
 import com.lenta.bp9.features.loading.fast.FastDataLoadingViewModel
 import com.lenta.bp9.features.loading.tasks.*
@@ -160,4 +162,6 @@ interface AppComponent : FromParentToCoreProvider {
     fun inject(it: MarkingProductFailureViewModel)
     fun inject(it: MarkingBoxInfoViewModel)
     fun inject(it: ZBatchesInfoPPPViewModel)
+    fun inject(it: LabelPrintingViewModel)
+    fun inject(it: PrintLabelsCountCopiesViewModel)
 }
