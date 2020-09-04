@@ -29,5 +29,17 @@ data class DataLabel(
         val planAufUnit: String,
         /** Штрих код товара (из MEAN) */
         @SerializedName("EAN")
-        val ean: String
+        val ean: String,
+        /** Срок годности Z-партии */
+        @SerializedName("DATE_EXPIR_Z")
+        val dateExpirZ: String,
+        /** Дата производства Z-партии */
+        @SerializedName("DATE_PROD_Z")
+        val dateProdZ: String,
+        /** Номер Z-партии */
+        @SerializedName("BATCHID")
+        val batchId: String,
+        /** Код производителя */
+        @SerializedName("PRODUCER")
+        val prodCode: String
 )

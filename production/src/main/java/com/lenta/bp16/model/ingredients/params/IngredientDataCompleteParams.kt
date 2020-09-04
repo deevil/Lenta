@@ -1,6 +1,7 @@
 package com.lenta.bp16.model.ingredients.params
 
 import com.google.gson.annotations.SerializedName
+import com.lenta.bp16.model.BatchNewDataInfo
 
 data class IngredientDataCompleteParams(
         /** Код предприятия */
@@ -11,6 +12,10 @@ data class IngredientDataCompleteParams(
         @SerializedName("IV_IP")
         val deviceIP: String,
 
+        /** Ключ образца */
+        @SerializedName("IV_KTSCH")
+        val ktsch: String? = null, //Не используется в ZTM_UTZ_PRO_04_V001 интерфейсе, но необходим в ZTM_UTZ_PRO_12_V001 интерфейсе
+
         /**
         Тип родительской связи для создания тары:
         1 – ЕО
@@ -20,21 +25,37 @@ data class IngredientDataCompleteParams(
         @SerializedName("IV_MODE")
         val mode: String,
 
-        /** Номер родительской связи  */
+        /** Номер родительской связи */
         @SerializedName("IV_PARENT")
         val parent: String,
 
-        /** SAP – код товара  */
+        /** Номер технологического заказа */
+        @SerializedName("IV_AUFNR")
+        val aufnr: String,
+
+        /** SAP – код товара */
         @SerializedName("IV_MATNR")
         val matnr: String,
 
-        /** Фактическое количество сырья  */
+        /** Фактическое количество сырья */
         @SerializedName("IV_FACT_QNT")
         val fact: Double,
 
         /** Табельный номер */
         @SerializedName("IV_PERNR")
-        val personnelNumber: String
+        val personnelNumber: String,
+
+        /** Номер ЗСЖ */
+        @SerializedName("IV_ENTRYID")
+        val entryId: String,
+
+        /** Номер Z-партии */
+        @SerializedName("IV_BATCHID")
+        val batchId: String,
+
+        /** Таблица партионных признаков для создания новой партии */
+        val batchNew : List<BatchNewDataInfo>
+
 ) {
         companion object {
                 const val MODE_INGREDIENT = "4"

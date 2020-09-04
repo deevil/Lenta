@@ -43,5 +43,29 @@ data class MaterialIngredientDataInfo(
          * Скомплектованное количество ингредиента в рамках данного заказа
          */
         @SerializedName("DONE_QNT")
-        val done_qnt: String?
+        val done_qnt: String?,
+
+        /**
+         * Признак товар релевантен Z-партионному учету
+         * */
+        @SerializedName("IS_ZPART")
+        val isZpart: String?,
+
+        /**
+         * Признак Меркурианский товар
+         * */
+        @SerializedName("IS_VET")
+        val isVet: String?,
+
+        /**
+         * Признак "Товар списывается в производство по факту"
+         * */
+        @SerializedName("IS_FACT")
+        val isFact: String?,
+
+        /**
+         * Общий срок годности
+         * */
+        @SerializedName("MHDHB")
+        val shelfLife: String?
 ) : Parcelable

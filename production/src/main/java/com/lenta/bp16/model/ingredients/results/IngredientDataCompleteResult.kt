@@ -7,19 +7,19 @@ import com.lenta.shared.utilities.extentions.IResultWithRetCodes
 
 data class IngredientDataCompleteResult(
 
+        /** Код тары */
+        @SerializedName("EV_CODE_CONT")
+        val packCode: String?,
+
         /** Признак «Была произведена фиксация на следующем переделе»  */
-        @SerializedName("IS_AUTOFIX")
+        @SerializedName("EV_AUTOFIX")
         val isAutofix: Boolean?,
 
         /** Структура данных для этикетки */
         @SerializedName("ES_DATA_LABEL")
         val dataLabel: DataLabel?,
 
-        /** Код тары */
-        @SerializedName("EV_CODE_CONT")
-        val packCode: String,
-
         /** Таблица возврата */
         @SerializedName("ET_RETCODE")
-        override val retCodes: List<RetCode>
+        override val retCodes: List<RetCode>?
 ) : IResultWithRetCodes

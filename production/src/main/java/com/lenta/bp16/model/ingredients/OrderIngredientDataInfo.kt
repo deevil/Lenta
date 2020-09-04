@@ -39,30 +39,55 @@ data class OrderIngredientDataInfo(
          * Скомплектованное количество ингредиента в рамках данного заказа
          */
         @SerializedName("DONE_QNT")
-        val done_qnt: Double?
+        val done_qnt: Double?,
+
+        /**
+         * Признак товара релевантен Z-партионному учету
+         * */
+        @SerializedName("IS_ZPART")
+        val isZpart: String?,
+
+        /**
+         * Признак Меркурианский товар
+         * */
+        @SerializedName("IS_VET")
+        val isVet: String?,
+
+        /**
+         * Признак "Товар списывается в производство по факту"
+         * */
+        @SerializedName("IS_FACT")
+        val isFact: String?,
+
+        /**
+         * Общий срок годности товара
+         * */
+        @SerializedName("MHDHB")
+        val shelfLife: String?
+
 ) : Parcelable {
 
-        fun getSuffix(): String {
-                return buom?.toUom()?.name.orEmpty()
-        }
+    fun getSuffix(): String {
+        return buom?.toUom()?.name.orEmpty()
+    }
 
-        fun getPlanCount(): String {
-                return buildString {
-                        append(plan_qnt.dropZeros())
-                        append(" ")
-                        append(getSuffix())
-                }
+    fun getPlanCount(): String {
+        return buildString {
+            append(plan_qnt.dropZeros())
+            append(" ")
+            append(getSuffix())
         }
+    }
 
-        fun getDoneCount(): String {
-                return buildString {
-                        append(done_qnt.dropZeros())
-                        append(" ")
-                        append(getSuffix())
-                }
+    fun getDoneCount(): String {
+        return buildString {
+            append(done_qnt.dropZeros())
+            append(" ")
+            append(getSuffix())
         }
+    }
 
-        fun getFormattedMaterial() : String{
-                return matnr?.takeLast(6).orEmpty()
-        }
+    fun getFormattedMaterial(): String {
+        return matnr?.takeLast(6).orEmpty()
+    }
 }
