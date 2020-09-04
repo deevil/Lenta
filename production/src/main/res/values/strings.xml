@@ -108,6 +108,8 @@
     <string name="text_pf">ПФ</string>
     <string name="text_pf_plan">ПФ План</string>
     <string name="text_already">Скомплектовано</string>
+    <string name="text_add_attribute">Укажите партионные признаки \n с этикетки</string>
+    <string name="text_production_date">Дата производства</string>
     <string name="text_warehouse">Склад</string>
     <string name="error_weight_not_set">Вы не указали значение: количество</string>
 

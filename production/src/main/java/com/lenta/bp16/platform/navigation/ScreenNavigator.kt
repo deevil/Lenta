@@ -2,6 +2,7 @@ package com.lenta.bp16.platform.navigation
 
 import android.content.Context
 import com.lenta.bp16.R
+import com.lenta.bp16.features.add_attribute.AddAttributeFragment
 import com.lenta.bp16.features.auth.AuthFragment
 import com.lenta.bp16.features.defect_info.DefectInfoFragment
 import com.lenta.bp16.features.defect_list.DefectListFragment
@@ -182,6 +183,12 @@ class ScreenNavigator @Inject constructor(
     override fun openSelectGoodScreen() {
         runOrPostpone {
             getFragmentStack()?.push(GoodSelectFragment())
+        }
+    }
+
+    override fun openAddAttributeScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(AddAttributeFragment())
         }
     }
 
@@ -464,6 +471,7 @@ interface IScreenNavigator : ICoreNavigator {
     fun openDefectListScreen()
     fun openGoodInfoScreen(goodParams: GoodParams)
     fun openSelectGoodScreen()
+    fun openAddAttributeScreen()
     fun openIngredientsListScreen()
     fun openOrderDetailsScreen(selectedIngredient: IngredientInfo, barcode: OrderByBarcodeUI)
     fun openIngredientDetailsScreen(selectedIngredient: OrderIngredientDataInfo, parentCode: String, eanInfo: OrderByBarcodeUI)

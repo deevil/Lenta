@@ -3,6 +3,7 @@ package com.lenta.bp16.di
 import com.lenta.bp16.ExceptionHandler
 import com.lenta.bp16.data.IPrinter
 import com.lenta.bp16.data.IScales
+import com.lenta.bp16.features.add_attribute.AddAttributeViewModel
 import com.lenta.bp16.features.auth.AuthViewModel
 import com.lenta.bp16.features.defect_info.DefectInfoViewModel
 import com.lenta.bp16.features.defect_list.DefectListViewModel
@@ -87,4 +88,5 @@ interface AppComponent : CoreComponent, FromParentToCoreProvider {
     fun inject(it: MaterialRemakesListViewModel)
     fun inject(it: MaterialRemakeDetailsViewModel)
     fun inject(it: TechOrdersListViewModel)
+    fun inject(it: AddAttributeViewModel)
 }
