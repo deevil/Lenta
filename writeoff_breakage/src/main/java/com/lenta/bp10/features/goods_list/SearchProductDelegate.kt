@@ -1,14 +1,8 @@
 package com.lenta.bp10.features.goods_list
 
 import com.lenta.bp10.features.good_information.LimitsChecker
-import com.lenta.bp10.fmp.resources.dao_ext.isChkOwnpr
-import com.lenta.bp10.fmp.resources.tasks_settings.ZmpUtz29V001Rfc
 import com.lenta.bp10.models.repositories.IWriteOffTaskManager
 import com.lenta.bp10.platform.navigation.IScreenNavigator
-import com.lenta.bp10.platform.requestCodeAddAddToProduction
-import com.lenta.bp10.platform.requestCodeAddProductWithBadStamp
-import com.lenta.bp10.platform.requestCodeTypeBarCode
-import com.lenta.bp10.platform.requestCodeTypeSap
 import com.lenta.bp10.repos.DatabaseRepository
 import com.lenta.bp10.requests.network.PermissionToWriteoffNetRequest
 import com.lenta.bp10.requests.network.PermissionToWriteoffPrams
@@ -23,13 +17,12 @@ import com.lenta.shared.requests.combined.scan_info.ScanInfoRequestParams
 import com.lenta.shared.requests.combined.scan_info.ScanInfoResult
 import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.actionByNumber
-import com.mobrun.plugin.api.HyperHive
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class SearchProductDelegate @Inject constructor(
-        private val hyperHive: HyperHive,
+        //private val hyperHive: HyperHive,
         private val database: DatabaseRepository,
         private val navigator: IScreenNavigator,
         private val scanInfoRequest: ScanInfoRequest,
@@ -38,9 +31,9 @@ class SearchProductDelegate @Inject constructor(
         private var permissionToWriteoffNetRequest: PermissionToWriteoffNetRequest
 ) {
 
-    private val zmpUtz29V001: ZmpUtz29V001Rfc by lazy {
+    /*private val zmpUtz29V001: ZmpUtz29V001Rfc by lazy {
         ZmpUtz29V001Rfc(hyperHive)
-    }
+    }*/
 
     private var scanInfoResult: ScanInfoResult? = null
 
@@ -56,7 +49,7 @@ class SearchProductDelegate @Inject constructor(
 
     fun copy(): SearchProductDelegate {
         val searchProductDelegate = SearchProductDelegate(
-                hyperHive,
+                //hyperHive,
                 database,
                 navigator,
                 scanInfoRequest,
@@ -142,24 +135,27 @@ class SearchProductDelegate @Inject constructor(
     }*/
 
     private fun checkPermissions() {
-        if (checksEnabled && zmpUtz29V001.isChkOwnpr(processServiceManager.getWriteOffTask()?.taskDescription!!.taskType.code)) {
-            navigator.showProgress(permissionToWriteoffNetRequest)
+        viewModelScope().launch {
+            val taskTypeCode = processServiceManager.getWriteOffTask()?.taskDescription?.taskType?.code.orEmpty()
+            if (checksEnabled && database.isChkOwnpr(taskTypeCode)) {
+                navigator.showProgress(permissionToWriteoffNetRequest)
 
-            viewModelScope().launch {
-                permissionToWriteoffNetRequest(
-                        PermissionToWriteoffPrams(
-                                matnr = scanInfoResult!!.productInfo.materialNumber,
-                                werks = sessionInfo.market!!)
-                ).either(::handleFailure, ::handlePermissionsSuccess)
+                viewModelScope().launch {
+                    permissionToWriteoffNetRequest(
+                            PermissionToWriteoffPrams(
+                                    matnr = scanInfoResult!!.productInfo.materialNumber,
+                                    werks = sessionInfo.market!!)
+                    ).either(::handleFailure, ::handlePermissionsSuccess)
+                }
+
+                checksEnabled = false
+                navigator.hideProgress()
+
+                return@launch
             }
 
-            checksEnabled = false
-            navigator.hideProgress()
-
-            return
+            handleSearchResultOrOpenProductScreen()
         }
-
-        handleSearchResultOrOpenProductScreen()
     }
 
     private fun handleSearchResultOrOpenProductScreen() {

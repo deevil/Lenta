@@ -5,7 +5,9 @@ import com.lenta.bp10.models.task.TaskExciseStamp
 import com.lenta.shared.models.core.ProductInfo
 import java.util.*
 
-class MemoryTaskExciseStampRepository(private val stamps: ArrayList<TaskExciseStamp> = ArrayList()) : ITaskExciseStampRepository {
+class MemoryTaskExciseStampRepository(
+        private val stamps: ArrayList<TaskExciseStamp> = ArrayList()
+) : ITaskExciseStampRepository {
 
     override fun getExciseStamps(): List<TaskExciseStamp> {
         return stamps
@@ -16,7 +18,7 @@ class MemoryTaskExciseStampRepository(private val stamps: ArrayList<TaskExciseSt
     }
 
     override fun findExciseStampsOfProduct(materialNumber: String): List<TaskExciseStamp> {
-        return stamps.filter { it.materialNumber == materialNumber || it.setMaterialNumber == materialNumber}
+        return stamps.filter { it.materialNumber == materialNumber || it.setMaterialNumber == materialNumber }
     }
 
     override fun addExciseStamp(exciseStamp: TaskExciseStamp): Boolean {
@@ -106,6 +108,10 @@ class MemoryTaskExciseStampRepository(private val stamps: ArrayList<TaskExciseSt
     }
 }
 
-fun ITaskExciseStampRepository.containsStamp(code: String): Boolean {
+fun ITaskExciseStampRepository.isContainsStamp(code: String): Boolean {
     return getExciseStamps().firstOrNull { it.code == code } != null
+}
+
+fun ITaskExciseStampRepository.isContainsBox(boxNumber: String): Boolean {
+    return getExciseStamps().firstOrNull { it.boxNumber == boxNumber } != null
 }

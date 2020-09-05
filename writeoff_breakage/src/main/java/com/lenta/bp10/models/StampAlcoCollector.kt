@@ -2,7 +2,7 @@ package com.lenta.bp10.models
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.lenta.bp10.models.memory.containsStamp
+import com.lenta.bp10.models.memory.isContainsStamp
 import com.lenta.bp10.models.task.ProcessExciseAlcoProductService
 import com.lenta.bp10.models.task.TaskExciseStamp
 import com.lenta.bp10.models.task.WriteOffReason
@@ -29,8 +29,8 @@ class StampAlcoCollector(private val processExciseAlcoProductService: ProcessExc
         }
 
         val stamp = TaskExciseStamp(
-                materialNumber = materialNumber,
-                code = preparedStampCode,
+                material = materialNumber,
+                markNumber = preparedStampCode,
                 setMaterialNumber = setMaterialNumber,
                 writeOffReason = writeOffReason,
                 isBadStamp = isBadStamp
@@ -74,7 +74,7 @@ class StampAlcoCollector(private val processExciseAlcoProductService: ProcessExc
 
     fun containsStamp(code: String): Boolean {
         return stamps.firstOrNull { it.code == code } != null ||
-                processExciseAlcoProductService.taskRepository.getExciseStamps().containsStamp(code)
+                processExciseAlcoProductService.taskRepository.getExciseStamps().isContainsStamp(code)
     }
 
 

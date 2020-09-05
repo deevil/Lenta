@@ -5,13 +5,13 @@ import com.lenta.shared.requests.combined.scan_info.ScanCodeInfo
 
 fun actionByNumber(
         number: String,
-        funcForEan: (ean: String) -> Unit,
-        funcForMaterial: (material: String) -> Unit,
-        funcForSapOrBar: ((sapCallback: () -> Unit, barCallback: () -> Unit) -> Unit)?,
+        funcForEan: ((ean: String) -> Unit)? = null,
+        funcForMaterial: ((material: String) -> Unit)? = null,
+        funcForSapOrBar: ((sapCallback: () -> Unit, barCallback: () -> Unit) -> Unit)? = null,
         funcForExcise: ((exciseNumber: String) -> Unit)? = null,
         funcForExciseBox: ((boxNumber: String) -> Unit)? = null,
         funcForMark: ((markNumber: String) -> Unit)? = null,
-        funcForShoes: ((ean: String, markNumber: String) -> Unit)? = null,
+        funcForShoes: ((ean: String, correctedNumber: String, originalNumber: String) -> Unit)? = null,
         funcForCigarettes: ((markNumber: String) -> Unit)? = null,
         funcForCigarettesBox: ((markNumber: String) -> Unit)? = null,
         funcForNotValidFormat: () -> Unit
@@ -24,15 +24,15 @@ fun actionByNumber(
 
     if (numberInfo.isEnterCodeValid) {
         when (numberLength) {
-            Constants.SAP_6 -> funcForMaterial(getMaterialInCommonFormat(number))
-            Constants.SAP_18 -> funcForMaterial(number)
+            Constants.SAP_6 -> funcForMaterial?.invoke(getMaterialInCommonFormat(number))
+            Constants.SAP_18 -> funcForMaterial?.invoke(number)
             Constants.SAP_OR_BAR_12 -> {
                 funcForSapOrBar?.invoke(
-                        { funcForMaterial(getMaterialInCommonFormat(number)) },
-                        { funcForEan(numberInfo.eanWithoutWeight) }
+                        { funcForMaterial?.invoke(getMaterialInCommonFormat(number)) },
+                        { funcForEan?.invoke(numberInfo.eanWithoutWeight) }
                 ) ?: funcForNotValidFormat()
             }
-            else -> funcForEan(numberInfo.eanWithoutWeight)
+            else -> funcForEan?.invoke(numberInfo.eanWithoutWeight)
         }
 
         return
@@ -44,7 +44,9 @@ fun actionByNumber(
             val (barcode, _, _, _, _, _) = it.destructured // barcode, gtin, serial, tradeCode, verificationKey, verificationCode
             barcode
         }?.let { ean ->
-            funcForShoes?.invoke(ean, number) ?: funcForNotValidFormat()
+            val correctedNumber = number // todo Нужно отбросить криптохвост. Как?
+
+            funcForShoes?.invoke(ean, correctedNumber, number) ?: funcForNotValidFormat()
         } ?: funcForNotValidFormat()
 
         return
