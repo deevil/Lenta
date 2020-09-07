@@ -2,6 +2,7 @@ package com.lenta.bp16.features.material_remake_details
 
 import androidx.lifecycle.MutableLiveData
 import com.lenta.bp16.data.IScales
+import com.lenta.bp16.model.GoodTypeIcon
 import com.lenta.bp16.model.ingredients.MaterialIngredientDataInfo
 import com.lenta.bp16.model.ingredients.params.IngredientDataCompleteParams
 import com.lenta.bp16.model.ingredients.OrderByBarcode
@@ -54,7 +55,25 @@ class MaterialRemakeDetailsViewModel : CoreViewModel() {
         resourceManager.kgSuffix()
     }
 
-    /**Для проверки весового ШК*/
+    /** Определение типа товара */
+    val goodTypeIcon = /*if (!materialIngredient.value?.isVet.isNullOrBlank()) { //Ветеринарный пока никак не должен определяться
+        GoodTypeIcon.IS_VET
+    } else */if (!materialIngredient.value?.isFact.isNullOrBlank()) {
+        GoodTypeIcon.IS_FACT
+    } else {
+        GoodTypeIcon.IS_PLAN
+    }
+
+    /** Условие отображения производителя и даты производства */
+    val producerAndDateVisibleCondition = !materialIngredient.value?.isVet.isNullOrBlank() || !materialIngredient.value?.isZpart.isNullOrBlank()
+
+    /** Условие отображения кнопки для показа информации о меркурианском товаре*/
+    val vetIconInfoCondition = !materialIngredient.value?.isVet.isNullOrBlank()
+
+    /** Условие активности кнопки добавления партии*/
+    val addPartAttributeEnable = materialIngredient.value?.isVet.isNullOrBlank()
+
+    /** Для проверки весового ШК */
     private val weightValue = listOf(VALUE_23, VALUE_24, VALUE_27, VALUE_28)
 
     val ean = MutableLiveData("")
@@ -102,7 +121,11 @@ class MaterialRemakeDetailsViewModel : CoreViewModel() {
                             matnr = parentCode,
                             fact = weight,
                             mode = IngredientDataCompleteParams.MODE_MATERIAL,
-                            personnelNumber = sessionInfo.personnelNumber.orEmpty()
+                            personnelNumber = sessionInfo.personnelNumber.orEmpty(),
+                            aufnr = "",
+                            batchId = "",
+                            batchNew = listOf(),
+                            entryId = ""
                     )
             )
             result.also {

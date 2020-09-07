@@ -2,6 +2,7 @@ package com.lenta.bp16.features.add_attribute
 
 import android.view.View
 import com.lenta.bp16.R
+import com.lenta.bp16.databinding.FragmentAddAttributeBinding
 import com.lenta.bp16.platform.extention.getAppComponent
 import com.lenta.shared.platform.activity.OnBackPresserListener
 import com.lenta.shared.platform.fragment.CoreFragment

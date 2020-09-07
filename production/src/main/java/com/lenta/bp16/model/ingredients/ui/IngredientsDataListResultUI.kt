@@ -1,6 +1,9 @@
 package com.lenta.bp16.model.ingredients.ui
 
+import com.lenta.bp16.model.ProducerDataInfo
+import com.lenta.bp16.model.ZPartDataInfo
 import com.lenta.bp16.model.ingredients.MaterialIngredientDataInfo
+import com.lenta.bp16.model.ingredients.MercuryPartDataInfo
 import com.lenta.bp16.model.ingredients.OrderIngredientDataInfo
 import com.lenta.bp16.model.ingredients.TechOrderDataInfo
 import com.lenta.bp16.request.pojo.RetCode
@@ -12,6 +15,15 @@ data class IngredientsDataListResultUI(
 
         /** Данные по материалу */
         val materialsIngredientsDataInfoList: List<MaterialIngredientDataInfo>?,
+
+        /** Данные по меркурианским партиям */
+        val mercuryPartDataInfoList: List<MercuryPartDataInfo>?,
+
+        /** Данные по Z-партиям */
+        val zPartDataInfoList: List<ZPartDataInfo>?,
+
+        /** Справочник производителей */
+        val producerDataInfoList: List<ProducerDataInfo>?,
 
         /** Список заказов по переделу */
         val techOrdersDataInfoList: List<TechOrderDataInfo>?,

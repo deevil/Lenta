@@ -8,7 +8,7 @@ import kotlinx.android.parcel.Parcelize
  * Данные по Z-партиям
  * */
 @Parcelize
-data class ZPartDateInfo(
+data class ZPartDataInfo(
 
         /** SAP-код */
         @SerializedName("MATNR")

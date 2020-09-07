@@ -6,6 +6,12 @@ enum class IngredientStatusWork {
     COMMON
 }
 
+enum class GoodTypeIcon{
+    IS_PLAN,
+    IS_FACT,
+    IS_VET
+}
+
 enum class IngredientStatusBlock{
     SELF_LOCK,
     LOCK,

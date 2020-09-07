@@ -2,7 +2,11 @@ package com.lenta.bp16.features.order_ingredients_list
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.switchMap
+import com.lenta.bp16.model.ProducerDataInfo
+import com.lenta.bp16.model.ZPartDataInfo
+import com.lenta.bp16.model.data_storage.IIngredientDataPersistStorage
 import com.lenta.bp16.model.ingredients.IngredientInfo
+import com.lenta.bp16.model.ingredients.MercuryPartDataInfo
 import com.lenta.bp16.model.ingredients.OrderIngredientDataInfo
 import com.lenta.bp16.model.ingredients.params.GetIngredientDataParams
 import com.lenta.bp16.model.ingredients.params.UnblockIngredientsParams
@@ -17,6 +21,9 @@ import com.lenta.bp16.platform.navigation.IScreenNavigator
 import com.lenta.bp16.platform.resource.IResourceManager
 import com.lenta.bp16.request.GetIngredientsDataListNetRequest
 import com.lenta.bp16.request.UnblockIngredientNetRequest
+import com.lenta.bp16.request.ingredients_use_case.set_data.SetMercuryPartDataInfoUseCase
+import com.lenta.bp16.request.ingredients_use_case.set_data.SetProducerDataInfoUseCase
+import com.lenta.bp16.request.ingredients_use_case.set_data.SetZPartDataInfoUseCase
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.extentions.asyncLiveData
@@ -46,6 +53,15 @@ class OrderIngredientsListViewModel : CoreViewModel() {
     @Inject
     lateinit var getIngredientData: GetIngredientsDataListNetRequest
 
+    @Inject
+    lateinit var setMercuryPartDataInfoUseCase: SetMercuryPartDataInfoUseCase
+
+    @Inject
+    lateinit var setProducerDataInfoUseCase: SetProducerDataInfoUseCase
+
+    @Inject
+    lateinit var setZPartDataInfoUseCase: SetZPartDataInfoUseCase
+
     // выбранное количество
     var weight: String by Delegates.notNull()
 
@@ -60,6 +76,18 @@ class OrderIngredientsListViewModel : CoreViewModel() {
 
     private val allEanIngredients: MutableLiveData<List<OrderByBarcodeUI>> by unsafeLazy {
         MutableLiveData<List<OrderByBarcodeUI>>()
+    }
+
+    private val allProducersList: MutableLiveData<List<ProducerDataInfo>> by unsafeLazy {
+        MutableLiveData<List<ProducerDataInfo>>()
+    }
+
+    private val allMercuryPartDataInfoList: MutableLiveData<List<MercuryPartDataInfo>> by unsafeLazy {
+        MutableLiveData<List<MercuryPartDataInfo>>()
+    }
+
+    private val zPartDataInfoList: MutableLiveData<List<ZPartDataInfo>> by unsafeLazy {
+        MutableLiveData<List<ZPartDataInfo>>()
     }
 
     fun loadOrderIngredientsList() = launchUITryCatch {
@@ -90,6 +118,9 @@ class OrderIngredientsListViewModel : CoreViewModel() {
         result.either(::handleFailure) { ingredientsDataListResult ->
             allEanIngredients.value = ingredientsDataListResult.orderByBarcode
             allOrderIngredients.value = ingredientsDataListResult.ordersIngredientsDataInfoList
+            allProducersList.value = ingredientsDataListResult.producerDataInfoList
+            allMercuryPartDataInfoList.value = ingredientsDataListResult.mercuryPartDataInfoList
+            zPartDataInfoList.value = ingredientsDataListResult.zPartDataInfoList
             Unit
         }
     }
@@ -122,7 +153,22 @@ class OrderIngredientsListViewModel : CoreViewModel() {
         }.either(fnL = ::handleFailure)
     }
 
+    /** Сохранение списков в IngredientDataPersistStorage */
+    private fun saveDataInStorage() {
+        val producerDataInfoList = allProducersList.value
+        val zPartDataInfoList = zPartDataInfoList.value
+        val mercuryPartDataInfoList = allMercuryPartDataInfoList.value
+        launchUITryCatch {
+            setZPartDataInfoUseCase(zPartDataInfoList.orEmpty())
+            setMercuryPartDataInfoUseCase(mercuryPartDataInfoList.orEmpty())
+            setProducerDataInfoUseCase(producerDataInfoList.orEmpty())
+        }
+    }
+
     fun onClickItemPosition(position: Int) {
+
+        saveDataInStorage()
+
         ingredient.value?.let { selectedIngredient ->
             allOrderIngredients.value?.getOrNull(position)?.let { orderDataInfo ->
                 allEanIngredients.value?.getOrNull(position)?.let { barcode ->

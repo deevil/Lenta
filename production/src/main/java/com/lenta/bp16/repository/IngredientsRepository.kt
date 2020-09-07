@@ -1,5 +1,7 @@
 package com.lenta.bp16.repository
 
+import androidx.lifecycle.MutableLiveData
+import com.lenta.bp16.model.ProducerDataInfo
 import com.lenta.bp16.model.ingredients.TechOrderDataInfo
 import com.lenta.bp16.model.ingredients.params.*
 import com.lenta.bp16.model.ingredients.results.*
@@ -16,6 +18,7 @@ class IngredientsRepository @Inject constructor(
 ) : IIngredientsRepository {
 
     private val ordersByRemake: MutableList<TechOrderDataInfo> = mutableListOf()
+    private val producersByEan: MutableList<ProducerDataInfo> = mutableListOf()
 
     override suspend fun getAllIngredients(params: GetIngredientsParams): Either<Failure, IngredientsListResult> {
 
@@ -57,6 +60,10 @@ class IngredientsRepository @Inject constructor(
 
     override suspend fun getTechOrdersByRemake(): List<TechOrderDataInfo> {
         return ordersByRemake
+    }
+
+    override suspend fun getProducerByEan(): List<ProducerDataInfo> {
+        return producersByEan
     }
 
     override suspend fun getMercuryDataInfo(params: MercuryDataInfoParams): Either<Failure, MercuryDataInfoResult> {
@@ -130,6 +137,11 @@ interface IIngredientsRepository {
      * Получаем список переделов
      */
     suspend fun getTechOrdersByRemake(): List<TechOrderDataInfo>
+
+    /**
+     * Получение списка производителей
+     **/
+    suspend fun getProducerByEan(): List<ProducerDataInfo>
 
     /**
      * Определение данных по меркурианской партии по номеру ЕО

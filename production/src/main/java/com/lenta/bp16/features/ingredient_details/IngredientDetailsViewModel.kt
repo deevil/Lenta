@@ -2,9 +2,9 @@ package com.lenta.bp16.features.ingredient_details
 
 import androidx.lifecycle.MutableLiveData
 import com.lenta.bp16.data.IScales
+import com.lenta.bp16.model.GoodTypeIcon
 import com.lenta.bp16.model.ingredients.OrderIngredientDataInfo
 import com.lenta.bp16.model.ingredients.params.IngredientDataCompleteParams
-import com.lenta.bp16.model.ingredients.OrderByBarcode
 import com.lenta.bp16.model.ingredients.ui.OrderByBarcodeUI
 import com.lenta.bp16.platform.navigation.IScreenNavigator
 import com.lenta.bp16.platform.resource.IResourceManager
@@ -70,20 +70,44 @@ class IngredientDetailsViewModel : CoreViewModel() {
         "${it.dropZeros()} ${resourceManager.kgSuffix()}"
     }
 
+    val producerNameList by unsafeLazy {
+        MutableLiveData<List<String>>()
+    }
+
+    /** Определение типа товара */
+    val goodTypeIcon = /*if (!orderIngredient.value?.isVet.isNullOrBlank()) { //Ветеринарный пока никак не должен определяться
+        GoodTypeIcon.IS_VET
+    } else */if (!orderIngredient.value?.isFact.isNullOrBlank()) {
+        GoodTypeIcon.IS_FACT
+    } else {
+        GoodTypeIcon.IS_PLAN
+    }
+
+    /** Условие отображения производителя и даты производства */
+    val producerAndDateVisibleCondition = !orderIngredient.value?.isVet.isNullOrBlank() || !orderIngredient.value?.isZpart.isNullOrBlank()
+
+    /** Условие отображения кнопки для показа информации о меркурианском товаре*/
+    val vetIconInfoCondition = !orderIngredient.value?.isVet.isNullOrBlank()
+
+    /** Условие активности кнопки добавления партии*/
+    val addPartAttributeEnable = orderIngredient.value?.isVet.isNullOrBlank()
+
+    //val nextAndAddButtonEnabled = /* Z-партионные признаки */
+
     /**Для проверки весового ШК*/
     private val weightValue = listOf(VALUE_23, VALUE_24, VALUE_27, VALUE_28)
 
     val ean = MutableLiveData("")
 
-    fun onScanResult(data: String){
+    fun onScanResult(data: String) {
         ean.value = data
         preparationEanForSearch()
     }
 
-    private fun preparationEanForSearch(){
+    private fun preparationEanForSearch() {
         var barcode = ean.value.orEmpty()
-        if(weightValue.contains(barcode.substring(0 until 2))){
-            barcode = barcode.replace(barcode.takeLast(6),"000000")
+        if (weightValue.contains(barcode.substring(0 until 2))) {
+            barcode = barcode.replace(barcode.takeLast(6), "000000")
         }
         setWeight(barcode)
     }
@@ -93,14 +117,14 @@ class IngredientDetailsViewModel : CoreViewModel() {
      * Установка веса после сканирования ШК
      *
      * */
-    private fun setWeight(barcode: String){
+    private fun setWeight(barcode: String) {
         val ean = eanInfo.value?.ean
-        if(ean == barcode){
+        if (ean == barcode) {
             val umrez = eanInfo.value?.ean_umrez?.toDouble() //Числитель
             val umren = eanInfo.value?.ean_umren?.toDouble() //Знаменатель
             val result = umrez?.div(umren ?: 0.0)
             weighted.value = result
-        }else{
+        } else {
             weighted.value = barcode.takeLast(6).take(5).toDouble().div(DIV_TO_KG)
         }
     }
@@ -120,7 +144,11 @@ class IngredientDetailsViewModel : CoreViewModel() {
                                 parent = parentCode,
                                 matnr = ingredient.matnr.orEmpty(),
                                 fact = weight,
-                                personnelNumber = sessionInfo.personnelNumber.orEmpty()
+                                personnelNumber = sessionInfo.personnelNumber.orEmpty(),
+                                aufnr = "",
+                                batchId = "",
+                                batchNew = listOf(),
+                                entryId = ""
                         )
                 )
                 result.also {
@@ -155,6 +183,7 @@ class IngredientDetailsViewModel : CoreViewModel() {
 
     companion object {
         private const val DEFAULT_WEIGHT = "0"
+
         /**Показатели весового штрихкода*/
         const val VALUE_23 = "23"
         const val VALUE_24 = "24"

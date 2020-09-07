@@ -6,6 +6,8 @@
 
     <data>
 
+        <import type="android.view.View" />
+
         <variable
             name="vm"
             type="com.lenta.bp16.features.material_remake_details.MaterialRemakeDetailsViewModel" />
@@ -150,9 +152,11 @@
 
         </LinearLayout>
 
-        <View style="@style/HorizontalDivider" />
+        <View style="@style/HorizontalDivider"
+            android:visibility="@{vm.producerAndDateVisibleCondition ? View.VISIBLE : View.GONE}"/>
 
-        <LinearLayout style="@style/LinearRowStyle">
+        <LinearLayout style="@style/LinearRowStyle"
+            android:visibility="@{vm.producerAndDateVisibleCondition ? View.VISIBLE : View.GONE}">
 
             <com.lenta.shared.view.ClickableSpinner
                 style="@style/CellSpinnerStyle"
@@ -161,9 +165,12 @@
         </LinearLayout>
 
         <View
+            android:visibility="@{vm.producerAndDateVisibleCondition ? View.VISIBLE : View.GONE}"
             style="@style/HorizontalDivider"/>
 
-        <LinearLayout style="@style/LinearRowStyle">
+        <LinearLayout
+            android:visibility="@{vm.producerAndDateVisibleCondition ? View.VISIBLE : View.GONE}"
+            style="@style/LinearRowStyle">
 
             <LinearLayout
                 style="@style/LinearCellStyle"
@@ -190,6 +197,7 @@
                     tools:entries="@array/date_list" />
 
                 <ImageButton
+                    android:enabled="@{vm.addPartAttributeEnable}"
                     android:layout_width="40dp"
                     android:layout_height="40dp"
                     android:layout_marginEnd="8dp"
@@ -207,17 +215,18 @@
 
     </LinearLayout>
 
-        <ImageButton
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            android:layout_margin="@dimen/size_8dp"
-            android:layout_marginStart="@dimen/size_8dp"
+        <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="?selectableItemBackground"
-            android:src="@drawable/ic_mercury_white_32dp"/>
+            android:layout_margin="@dimen/size_8dp"
+            android:layout_marginStart="@dimen/size_8dp"
+            android:src="@drawable/ic_mercury_white_32dp"
+            app:goodTypeIcon="@{vm.goodTypeIcon}"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
 
         <ImageButton
+            android:visibility="@{vm.vetIconInfoCondition ? View.VISIBLE : View.GONE}"
             android:id="@+id/ib_scan"
             android:layout_margin="@dimen/size_8dp"
             app:layout_constraintBottom_toBottomOf="parent"

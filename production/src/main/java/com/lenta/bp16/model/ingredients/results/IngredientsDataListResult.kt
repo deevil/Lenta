@@ -4,7 +4,7 @@ import com.google.gson.annotations.SerializedName
 import com.lenta.bp16.model.ProducerDataInfo
 import com.lenta.bp16.model.ingredients.*
 import com.lenta.bp16.model.ingredients.ui.IngredientsDataListResultUI
-import com.lenta.bp16.model.ZPartDateInfo
+import com.lenta.bp16.model.ZPartDataInfo
 import com.lenta.bp16.platform.converter.IConvertable
 import com.lenta.bp16.request.pojo.RetCode
 import com.lenta.shared.utilities.extentions.IResultWithRetCodes
@@ -20,15 +20,15 @@ data class IngredientsDataListResult(
 
         /** Данные по меркурианским партиям */
         @SerializedName("ET_VET_PARTS")
-        val mercuryPartDataInfoList: List<MercuryPartDataInfo>,
+        val mercuryPartDataInfoList: List<MercuryPartDataInfo>?,
 
         /** Данные по Z-партиям */
         @SerializedName("ET_Z_PARTS")
-        val zPartDateInfoList: List<ZPartDateInfo>,
+        val zPartDataInfoList: List<ZPartDataInfo>?,
 
         /** Справочник производителей */
         @SerializedName("ET_PROD_TEXT")
-        val producerDataInfoList: List<ProducerDataInfo>,
+        val producerDataInfoList: List<ProducerDataInfo>?,
 
         /** Список заказов по переделу */
         @SerializedName("ET_AUFNR_LIST")
@@ -48,6 +48,9 @@ data class IngredientsDataListResult(
                 ordersIngredientsDataInfoList = ordersIngredientsDataInfoList.orEmpty(),
                 materialsIngredientsDataInfoList = materialsIngredientsDataInfoList.orEmpty(),
                 techOrdersDataInfoList = techOrdersDataInfoList.orEmpty(),
+                mercuryPartDataInfoList = mercuryPartDataInfoList.orEmpty(),
+                producerDataInfoList = producerDataInfoList.orEmpty(),
+                zPartDataInfoList = zPartDataInfoList.orEmpty(),
                 orderByBarcode = orderByBarcode.orEmpty().mapNotNull { it.convert() },
                 retCodes = retCodes.orEmpty()
         )
