@@ -11,7 +11,10 @@ import com.lenta.bp12.model.pojo.create_task.GoodCreate
 import com.lenta.bp12.model.pojo.extentions.addMark
 import com.lenta.bp12.model.pojo.extentions.addMarks
 import com.lenta.bp12.model.pojo.extentions.addPosition
-import com.lenta.bp12.platform.extention.*
+import com.lenta.bp12.platform.extention.extractAlcoCode
+import com.lenta.bp12.platform.extention.getControlType
+import com.lenta.bp12.platform.extention.getGoodKind
+import com.lenta.bp12.platform.extention.getMarkType
 import com.lenta.bp12.platform.navigation.IScreenNavigator
 import com.lenta.bp12.platform.resource.IResourceManager
 import com.lenta.bp12.repository.IDatabaseRepository
@@ -20,7 +23,6 @@ import com.lenta.bp12.request.ScanInfoNetRequest
 import com.lenta.bp12.request.ScanInfoParams
 import com.lenta.bp12.request.ScanInfoResult
 import com.lenta.bp12.request.pojo.ProducerInfo
-import com.lenta.bp12.request.pojo.ProviderInfo
 import com.lenta.bp12.request.pojo.good_info.GoodInfoParams
 import com.lenta.bp12.request.pojo.good_info.GoodInfoResult
 import com.lenta.shared.account.ISessionInfo
@@ -28,7 +30,6 @@ import com.lenta.shared.exception.Failure
 import com.lenta.shared.functional.Either
 import com.lenta.shared.models.core.getMatrixType
 import com.lenta.shared.platform.constants.Constants
-import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.requests.combined.scan_info.ScanCodeInfo
 import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.extentions.*
@@ -74,12 +75,6 @@ class GoodInfoCreateViewModel : BaseGoodInfoCreateViewModel() {
     private var originalSearchNumber = ""
 
     private var lastSuccessSearchNumber = ""
-
-    val isWholesaleTaskType by lazy {
-        task.map {
-            it?.type?.isWholesaleType()
-        }
-    }
 
     val isCommonGood by lazy {
         good.map { good ->

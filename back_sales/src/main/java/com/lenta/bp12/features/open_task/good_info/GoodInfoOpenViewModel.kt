@@ -1,6 +1,7 @@
 package com.lenta.bp12.features.open_task.good_info
 
 import androidx.lifecycle.MutableLiveData
+import com.lenta.bp12.features.open_task.base_good_info.BaseGoodInfoOpenViewModel
 import com.lenta.bp12.model.*
 import com.lenta.bp12.model.pojo.Mark
 import com.lenta.bp12.model.pojo.Part
@@ -8,9 +9,11 @@ import com.lenta.bp12.model.pojo.Position
 import com.lenta.bp12.model.pojo.extentions.addMark
 import com.lenta.bp12.model.pojo.extentions.addMarks
 import com.lenta.bp12.model.pojo.extentions.addPosition
-import com.lenta.bp12.model.pojo.extentions.getQuantityOfGood
 import com.lenta.bp12.model.pojo.open_task.GoodOpen
-import com.lenta.bp12.platform.extention.*
+import com.lenta.bp12.platform.extention.extractAlcoCode
+import com.lenta.bp12.platform.extention.getControlType
+import com.lenta.bp12.platform.extention.getGoodKind
+import com.lenta.bp12.platform.extention.getMarkType
 import com.lenta.bp12.platform.navigation.IScreenNavigator
 import com.lenta.bp12.platform.resource.IResourceManager
 import com.lenta.bp12.repository.IDatabaseRepository
@@ -27,7 +30,6 @@ import com.lenta.shared.exception.Failure
 import com.lenta.shared.functional.Either
 import com.lenta.shared.models.core.getMatrixType
 import com.lenta.shared.platform.constants.Constants
-import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.requests.combined.scan_info.ScanCodeInfo
 import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.extentions.*
@@ -72,12 +74,6 @@ class GoodInfoOpenViewModel : BaseGoodInfoOpenViewModel() {
     private var originalSearchNumber = ""
 
     private var lastSuccessSearchNumber = ""
-
-    val isWholesaleTaskType by lazy {
-        task.map {
-            it?.type?.isWholesaleType()
-        }
-    }
 
     val isCommonGood by lazy {
         good.map { good ->

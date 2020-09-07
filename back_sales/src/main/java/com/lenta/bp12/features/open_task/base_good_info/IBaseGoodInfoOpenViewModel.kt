@@ -18,6 +18,8 @@ interface IBaseGoodInfoOpenViewModel {
     var sessionInfo: ISessionInfo
     var manager: IOpenTaskManager
 
+    val isWholesaleTaskType: MutableLiveData<Boolean>
+
     val quantityFieldEnabled : MutableLiveData<Boolean>
     val quantity: MutableLiveData<Double>
 

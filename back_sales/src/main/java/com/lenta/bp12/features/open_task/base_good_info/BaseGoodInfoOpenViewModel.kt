@@ -24,6 +24,12 @@ abstract class BaseGoodInfoOpenViewModel : CoreViewModel(), IBaseGoodInfoOpenVie
         }
     }
 
+    override val isWholesaleTaskType by lazy {
+        task.map {
+            it?.type?.isWholesaleType()
+        }
+    }
+
     val isWholesale by lazy {
         manager.isWholesaleTaskType
     }

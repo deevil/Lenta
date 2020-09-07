@@ -24,6 +24,12 @@ abstract class BaseGoodInfoCreateViewModel : CoreViewModel(), IBaseGoodInfoCreat
         }
     }
 
+    override val isWholesaleTaskType by lazy {
+        task.map {
+            it?.type?.isWholesaleType()
+        }
+    }
+
     /**
     Ввод количества
      */
