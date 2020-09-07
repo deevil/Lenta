@@ -1,16 +1,24 @@
 package com.lenta.bp16.features.ingredient_details
 
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.switchMap
 import com.lenta.bp16.data.IScales
 import com.lenta.bp16.model.GoodTypeIcon
+import com.lenta.bp16.model.ProducerDataInfo
+import com.lenta.bp16.model.ZPartDataInfo
+import com.lenta.bp16.model.ingredients.MercuryPartDataInfo
 import com.lenta.bp16.model.ingredients.OrderIngredientDataInfo
 import com.lenta.bp16.model.ingredients.params.IngredientDataCompleteParams
 import com.lenta.bp16.model.ingredients.ui.OrderByBarcodeUI
 import com.lenta.bp16.platform.navigation.IScreenNavigator
 import com.lenta.bp16.platform.resource.IResourceManager
 import com.lenta.bp16.request.CompleteIngredientByOrderNetRequest
+import com.lenta.bp16.request.ingredients_use_case.get_data.GetMercuryPartDataInfoUseCase
+import com.lenta.bp16.request.ingredients_use_case.get_data.GetProducerDataInfoUseCase
+import com.lenta.bp16.request.ingredients_use_case.get_data.GetZPartDataInfoUseCase
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.platform.viewmodel.CoreViewModel
+import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.extentions.*
 import javax.inject.Inject
 import kotlin.properties.Delegates
@@ -31,6 +39,15 @@ class IngredientDetailsViewModel : CoreViewModel() {
 
     @Inject
     lateinit var packIngredientsNetRequest: CompleteIngredientByOrderNetRequest
+
+    @Inject
+    lateinit var producerDataInfoUseCase: GetProducerDataInfoUseCase
+
+    @Inject
+    lateinit var mercuryPartDataInfoUseCase: GetMercuryPartDataInfoUseCase
+
+    @Inject
+    lateinit var zPartDataInfoUseCase: GetZPartDataInfoUseCase
 
     // значение параметра OBJ_CODE из родительского компонента заказа
     var parentCode: String by Delegates.notNull()
@@ -70,27 +87,57 @@ class IngredientDetailsViewModel : CoreViewModel() {
         "${it.dropZeros()} ${resourceManager.kgSuffix()}"
     }
 
+    private val producerDataInfo by unsafeLazy {
+        MutableLiveData<List<ProducerDataInfo>>()
+    }
+
+    private val mercuryDataInfo by unsafeLazy {
+        MutableLiveData<List<MercuryPartDataInfo>>()
+    }
+
+    private val zPartDataInfo by unsafeLazy {
+        MutableLiveData<List<ZPartDataInfo>>()
+    }
+
     val producerNameList by unsafeLazy {
-        MutableLiveData<List<String>>()
+        producerDataInfo.switchMap {
+            asyncLiveData<List<String>> {
+                val producerNameList = it.map { it.prodName.orEmpty() }
+                emit(producerNameList)
+            }
+        }
     }
 
     /** Определение типа товара */
-    val goodTypeIcon = /*if (!orderIngredient.value?.isVet.isNullOrBlank()) { //Ветеринарный пока никак не должен определяться
+    val goodTypeIcon by unsafeLazy {
+        /*if (!orderIngredient.value?.isVet.isNullOrBlank()) { //Ветеринарный пока никак не должен определяться
         GoodTypeIcon.IS_VET
     } else */if (!orderIngredient.value?.isFact.isNullOrBlank()) {
         GoodTypeIcon.IS_FACT
     } else {
         GoodTypeIcon.IS_PLAN
     }
+    }
 
-    /** Условие отображения производителя и даты производства */
-    val producerAndDateVisibleCondition = !orderIngredient.value?.isVet.isNullOrBlank() || !orderIngredient.value?.isZpart.isNullOrBlank()
+    /** Условие отображения производителя */
+    val producerVisibleCondition by unsafeLazy {
+        !orderIngredient.value?.isVet.isNullOrBlank() || !orderIngredient.value?.isZpart.isNullOrBlank() && !producerNameList.value.isNullOrEmpty()
+    }
+
+    /** Условие отображения даты производства */
+    val dateVisibleCondition by unsafeLazy {
+        !orderIngredient.value?.isVet.isNullOrBlank() || !orderIngredient.value?.isZpart.isNullOrBlank()
+    }
 
     /** Условие отображения кнопки для показа информации о меркурианском товаре*/
-    val vetIconInfoCondition = !orderIngredient.value?.isVet.isNullOrBlank()
+    val vetIconInfoCondition by unsafeLazy {
+        !orderIngredient.value?.isVet.isNullOrBlank()
+    }
 
     /** Условие активности кнопки добавления партии*/
-    val addPartAttributeEnable = orderIngredient.value?.isVet.isNullOrBlank()
+    val addPartAttributeEnable by unsafeLazy {
+        orderIngredient.value?.isVet.isNullOrBlank()
+    }
 
     //val nextAndAddButtonEnabled = /* Z-партионные признаки */
 
@@ -98,6 +145,15 @@ class IngredientDetailsViewModel : CoreViewModel() {
     private val weightValue = listOf(VALUE_23, VALUE_24, VALUE_27, VALUE_28)
 
     val ean = MutableLiveData("")
+
+    init {
+        launchUITryCatch {
+            producerDataInfo.value = producerDataInfoUseCase.invoke()
+            mercuryDataInfo.value = mercuryPartDataInfoUseCase.invoke()
+            zPartDataInfo.value = zPartDataInfoUseCase.invoke()
+        }
+
+    }
 
     fun onScanResult(data: String) {
         ean.value = data
@@ -130,6 +186,7 @@ class IngredientDetailsViewModel : CoreViewModel() {
     }
 
     fun onCompleteClicked() = launchUITryCatch {
+        val kek = producerDataInfoUseCase.invoke()
         val weight = total.value ?: 0.0
         if (weight == 0.0) {
             navigator.showAlertWeightNotSet()
