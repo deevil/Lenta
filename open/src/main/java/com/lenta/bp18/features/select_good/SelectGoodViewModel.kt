@@ -10,12 +10,8 @@ import com.lenta.bp18.repository.IDatabaseRepo
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.platform.viewmodel.BarcodeViewModel
 import com.lenta.shared.settings.IAppSettings
-import com.lenta.shared.utilities.gs1.EAN128Parser
-import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.extentions.launchUITryCatch
 import com.lenta.shared.utilities.extentions.map
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 class SelectGoodViewModel : BarcodeViewModel() {
@@ -37,48 +33,26 @@ class SelectGoodViewModel : BarcodeViewModel() {
 
     private val ean: MutableLiveData<String> = MutableLiveData()
 
-    //private val weightValue by unsafeLazy { listOf(VALUE_23, VALUE_24, VALUE_27, VALUE_28) }
-
     val barcodeField: MutableLiveData<String> = MutableLiveData()
     val nextButtonEnabled = barcodeField.map { !it.isNullOrBlank() }
     val requestFocusToBarcode = MutableLiveData<Boolean>(false)
 
     fun onClickNext() = launchUITryCatch {
         ean.value = barcodeField.value ?: Constants.GOOD_BARCODE
-        processBarcode(ean.value.orEmpty())
+        preparationEanForSearch(ean.value.orEmpty())
     }
 
     fun onScanResult(data: String) = launchUITryCatch {
         barcodeField.value = data
         ean.value = data
-        processBarcode(data)
+        preparationEanForSearch(data)
     }
 
-    private fun preparationEanForSearch() = launchUITryCatch {
+    private fun preparationEanForSearch(barcode: String) = launchUITryCatch {
         navigator.showProgress(context.getString(R.string.load_barcode_data))
-        var barcode = ean.value.toString()
-        var weight = DEFAULT_WEIGHT
-
-        if (barcode.length >= MINIMUM_GS1_CODE_LENGTH) {
-            val ean128Barcode = withContext(Dispatchers.Default) {
-                EAN128Parser.parseWith(barcode, EAN128Parser.EAN_01)
-            }
-            if (ean128Barcode != null) {
-                barcode = ean128Barcode
-            }
-        } else {
-            Logg.d { "----->  barcode EAN 128 less than 16 chars" }
-        }
-
-        val weightCollider = barcode.substring(0 until 2)
-        if (weightValue.any { weightCollider == it }) {
-            val changedBarcode = barcode.replace(barcode.takeLast(6), TAKEN_ZEROS)
-            weight = barcode.takeLast(6).take(5)
-            barcode = changedBarcode
-        }
-
-        ean.value = barcode
-        searchEan(barcode, weight)
+        val barcodeData = processBarcode(barcode)
+        ean.value = barcodeData.barcodeInfo.barcode
+        searchEan(barcode, barcodeData.barcodeInfo.weight)
     }
 
     private suspend fun searchEan(ean: String, weight: String) {
@@ -104,16 +78,5 @@ class SelectGoodViewModel : BarcodeViewModel() {
             hideProgress()
             showAlertGoodsNotFound()
         }
-    }
-
-    companion object {
-        const val VALUE_23 = "23"
-        const val VALUE_24 = "24"
-        const val VALUE_27 = "27"
-        const val VALUE_28 = "28"
-
-        private const val MINIMUM_GS1_CODE_LENGTH = 16
-        private const val TAKEN_ZEROS = "000000"
-        private const val DEFAULT_WEIGHT = "0"
     }
 }

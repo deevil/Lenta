@@ -59,7 +59,7 @@ abstract class BarcodeViewModel : CoreViewModel() {
                 barcodeInfo = BarcodeInfo(
                         barcode = barcode,
                         isWeight = isWeight,
-                        weight = weight.toDouble()
+                        weight = weight
 
                 ), batch = batch
         )
