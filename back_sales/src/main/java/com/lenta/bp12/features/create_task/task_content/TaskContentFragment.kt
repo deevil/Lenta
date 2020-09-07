@@ -89,49 +89,48 @@ class TaskContentFragment : CoreFragment<FragmentTaskContentBinding, TaskContent
     }
 
     private fun initTaskContentGoods(container: ViewGroup): View {
-        DataBindingUtil.inflate<LayoutTaskContentGoodsBinding>(LayoutInflater.from(container.context),
+        val layoutBinding = DataBindingUtil.inflate<LayoutTaskContentGoodsBinding>(LayoutInflater.from(container.context),
                 R.layout.layout_task_content_goods,
                 container,
-                false).let { layoutBinding ->
+                false)
 
-            val onClickSelectionListener = View.OnClickListener {
-                (it!!.tag as Int).let { position ->
-                    vm.goodSelectionsHelper.revert(position = position)
-                    layoutBinding.rv.adapter?.notifyItemChanged(position)
-                }
-            }
-
-            layoutBinding.rvConfig = initRecycleAdapterDataBinding(
-                    layoutId = R.layout.item_task_content_good,
-                    itemId = BR.item,
-                    onAdapterItemBind = { binding: ItemTaskContentGoodBinding, position: Int ->
-                        binding.tvItemNumber.tag = position
-                        binding.tvItemNumber.setOnClickListener(onClickSelectionListener)
-                        binding.selectedForDelete = vm.goodSelectionsHelper.isSelected(position)
-                        goodRecyclerViewKeyHandler?.let {
-                            binding.root.isSelected = it.isSelected(position)
-                        }
-                    },
-                    onAdapterItemClicked = { position ->
-                        goodRecyclerViewKeyHandler?.onItemClicked(position)
-                    }
-            )
-
-
-            layoutBinding.vm = vm
-            layoutBinding.lifecycleOwner = viewLifecycleOwner
-
-            goodRecyclerViewKeyHandler = initRecyclerViewKeyHandler(
-                    recyclerView = layoutBinding.rv,
-                    items = vm.goods,
-                    previousPosInfo = goodRecyclerViewKeyHandler?.posInfo?.value,
-                    onClickHandler = { position ->
-                        vm.onClickItemPosition(position)
-                    }
-            )
-
-            return layoutBinding.root
+        val onClickSelectionListener = View.OnClickListener {
+            val position = (it?.tag as Int)
+            vm.goodSelectionsHelper.revert(position = position)
+            layoutBinding.rv.adapter?.notifyItemChanged(position)
         }
+
+        layoutBinding.rvConfig = initRecycleAdapterDataBinding(
+                layoutId = R.layout.item_task_content_good,
+                itemId = BR.item,
+                onAdapterItemBind = { binding: ItemTaskContentGoodBinding, position: Int ->
+                    binding.tvItemNumber.tag = position
+                    binding.tvItemNumber.setOnClickListener(onClickSelectionListener)
+                    binding.selectedForDelete = vm.goodSelectionsHelper.isSelected(position)
+                    goodRecyclerViewKeyHandler?.let {
+                        binding.root.isSelected = it.isSelected(position)
+                    }
+                },
+                onAdapterItemClicked = { position ->
+                    goodRecyclerViewKeyHandler?.onItemClicked(position)
+                }
+        )
+
+
+        layoutBinding.vm = vm
+        layoutBinding.lifecycleOwner = viewLifecycleOwner
+
+        goodRecyclerViewKeyHandler = initRecyclerViewKeyHandler(
+                recyclerView = layoutBinding.rv,
+                items = vm.goods,
+                previousPosInfo = goodRecyclerViewKeyHandler?.posInfo?.value,
+                onClickHandler = { position ->
+                    vm.onClickItemPosition(position)
+                }
+        )
+
+        return layoutBinding.root
+
     }
 
     private fun initTaskContentCommonBaskets(container: ViewGroup): View {

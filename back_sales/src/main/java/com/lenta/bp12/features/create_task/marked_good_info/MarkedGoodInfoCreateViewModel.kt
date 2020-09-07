@@ -3,37 +3,37 @@ package com.lenta.bp12.features.create_task.marked_good_info
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.liveData
 import androidx.lifecycle.switchMap
+import com.lenta.bp12.features.create_task.base_good_info.BaseGoodInfoCreateViewModel
 import com.lenta.bp12.model.*
-import com.lenta.bp12.model.pojo.Basket
 import com.lenta.bp12.model.pojo.Mark
 import com.lenta.bp12.model.pojo.create_task.GoodCreate
 import com.lenta.bp12.model.pojo.extentions.addMarks
-import com.lenta.bp12.model.pojo.extentions.getQuantityOfGood
 import com.lenta.bp12.platform.navigation.IScreenNavigator
 import com.lenta.bp12.platform.resource.IResourceManager
 import com.lenta.bp12.repository.IDatabaseRepository
 import com.lenta.bp12.request.GoodInfoNetRequest
 import com.lenta.bp12.request.MarkCartonBoxGoodInfoNetRequest
 import com.lenta.bp12.request.ScanInfoNetRequest
-import com.lenta.bp12.request.pojo.ProviderInfo
 import com.lenta.shared.account.ISessionInfo
-import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.databinding.PageSelectionListener
-import com.lenta.shared.utilities.extentions.*
+import com.lenta.shared.utilities.extentions.combineLatest
+import com.lenta.shared.utilities.extentions.launchUITryCatch
+import com.lenta.shared.utilities.extentions.map
+import com.lenta.shared.utilities.extentions.unsafeLazy
 import com.lenta.shared.utilities.orIfNull
 import javax.inject.Inject
 
-class MarkedGoodInfoCreateViewModel : CoreViewModel(), PageSelectionListener {
+class MarkedGoodInfoCreateViewModel : BaseGoodInfoCreateViewModel(), PageSelectionListener {
 
     @Inject
-    lateinit var navigator: IScreenNavigator
+    override lateinit var navigator: IScreenNavigator
 
     @Inject
-    lateinit var manager: ICreateTaskManager
+    override lateinit var manager: ICreateTaskManager
 
     @Inject
-    lateinit var sessionInfo: ISessionInfo
+    override lateinit var sessionInfo: ISessionInfo
 
     @Inject
     lateinit var markManager: IMarkManager
@@ -47,7 +47,7 @@ class MarkedGoodInfoCreateViewModel : CoreViewModel(), PageSelectionListener {
     /** "ZMP_UTZ_100_V001"
      * Получение данных по акцизному товару  */
     @Inject
-    lateinit var scanInfoNetRequest: ScanInfoNetRequest
+    override lateinit var scanInfoNetRequest: ScanInfoNetRequest
 
     /** ZMP_UTZ_WOB_07_V001
      * «Получение данных по марке/блоку/коробке/товару из ГМ»
@@ -56,30 +56,16 @@ class MarkedGoodInfoCreateViewModel : CoreViewModel(), PageSelectionListener {
     lateinit var markCartonBoxGoodInfoNetRequest: MarkCartonBoxGoodInfoNetRequest
 
     @Inject
-    lateinit var database: IDatabaseRepository
+    override lateinit var database: IDatabaseRepository
 
     @Inject
-    lateinit var resource: IResourceManager
+    override lateinit var resource: IResourceManager
 
     val selectedPage = MutableLiveData(0)
 
     /**
     Переменные
      */
-
-    val task by unsafeLazy {
-        manager.currentTask
-    }
-
-    val good by unsafeLazy {
-        manager.currentGood
-    }
-
-    val title by unsafeLazy {
-        good.map { good ->
-            good?.getNameWithMaterial() ?: task.value?.getFormattedName()
-        }
-    }
 
     private var originalSearchNumber = ""
 
@@ -88,7 +74,6 @@ class MarkedGoodInfoCreateViewModel : CoreViewModel(), PageSelectionListener {
     }
 
     private var isExistUnsavedData = false
-
 
     private var thereWasRollback = false
 
@@ -114,7 +99,7 @@ class MarkedGoodInfoCreateViewModel : CoreViewModel(), PageSelectionListener {
      * Все сканированные марки хранятся в этом списке до нажатия кнопки применить.
      * После нажатия применить все марки обрабатываются менедежером по корзинам и сохраняется в задании.
      * */
-    val tempMarks = MutableLiveData(mutableListOf<Mark>())
+    private val tempMarks = MutableLiveData(mutableListOf<Mark>())
 
     /**
      * Последние отсканированные марки, для удаления их из общего списка по кнопке Откат
@@ -133,80 +118,8 @@ class MarkedGoodInfoCreateViewModel : CoreViewModel(), PageSelectionListener {
         }
     }
 
-    val quantity = quantityField.map {
+    override val quantity = quantityField.map {
         it?.toDoubleOrNull() ?: 0.0
-    }
-
-    val quantityFieldEnabled by lazy {
-        false
-    }
-
-    /**
-    Количество товара итого
-     */
-
-    val totalTitle by lazy {
-        good.map { good ->
-            resource.totalWithConvertingInfo(good?.getConvertingInfo().orEmpty())
-        }
-    }
-
-    private val totalQuantity by lazy {
-        good.combineLatest(quantity).map {
-            it?.let {
-                val total = it.first.getTotalQuantity()
-                val current = it.second
-
-                total.sumWith(current)
-            }
-        }
-    }
-
-    val totalWithUnits by lazy {
-        totalQuantity.map { quantity ->
-            "${quantity.dropZeros()} ${good.value?.commonUnits?.name}"
-        }
-    }
-
-    /**
-    Количество товара по корзинам
-     */
-
-    val basketTitle by lazy {
-        MutableLiveData(resource.byBasket())
-    }
-
-    val basketNumber by lazy {
-        good.combineLatest(quantity).map {
-            it?.let {
-                task.value?.let { task ->
-                    getBasket()?.let { basket ->
-                        "${task.baskets.indexOf(basket) + 1}"
-                    } ?: "${task.baskets.size + 1}"
-                }.orEmpty()
-            }
-        }
-    }
-
-    private val basketQuantity by lazy {
-        good.combineLatest(quantity).map {
-            it?.let {
-                val good = it.first
-                val enteredQuantity = it.second
-
-                getBasket()?.getQuantityOfGood(good)?.sumWith(enteredQuantity)
-                        ?: enteredQuantity
-            }
-        }
-    }
-
-    val basketQuantityWithUnits by lazy {
-        good.combineLatest(basketQuantity).map {
-            it?.let {
-                val (good, quantity) = it
-                "${quantity.dropZeros()} ${good.commonUnits.name}"
-            }
-        }
     }
 
     /**
@@ -233,12 +146,16 @@ class MarkedGoodInfoCreateViewModel : CoreViewModel(), PageSelectionListener {
     Кнопки нижнего тулбара
      */
 
-    val applyEnabled by lazy {
-        good.combineLatest(quantity)
+    override val applyEnabled by lazy {
+        isProviderSelected
+                .combineLatest(good)
+                .combineLatest(quantity)
                 .combineLatest(totalQuantity)
                 .combineLatest(basketQuantity)
                 .map {
                     it?.let {
+                        val isProviderSelected = it.first.first.first.first
+                        val good = it.first.first.first.second
                         val enteredQuantity = it.first.first.second
                         val totalQuantity = it.first.second
                         val basketQuantity = it.second
@@ -246,12 +163,11 @@ class MarkedGoodInfoCreateViewModel : CoreViewModel(), PageSelectionListener {
                         val isEnteredQuantityNotZero = enteredQuantity != 0.0
                         val isTotalQuantityMoreThenZero = totalQuantity > 0.0
 
-                        isEnteredQuantityNotZero && isTotalQuantityMoreThenZero && basketQuantity > 0.0
+                        isProviderSelected && isEnteredQuantityNotZero && isTotalQuantityMoreThenZero && basketQuantity > 0.0
                     } ?: false
                 }
     }
 
-    val rollbackVisibility = MutableLiveData(true)
 
     val rollbackEnabled = tempMarks.map {
         it?.isEmpty()?.not()
@@ -262,38 +178,17 @@ class MarkedGoodInfoCreateViewModel : CoreViewModel(), PageSelectionListener {
      */
 
     init {
-        launchUITryCatch {
-            good.value?.let {
-                tempMarks.value = markManager.getTempMarks()
-                properties.value = markManager.getProperties()
-                val tempMarksValue = tempMarks.value
-                val size = tempMarksValue?.size
-                if (size != null && size > 0) {
-                    isExistUnsavedData = true
-                    lastScannedMarks = tempMarksValue
-                }
-            }.orIfNull {
-                manager.clearCurrentGood()
-                checkSearchNumber(manager.searchNumber)
-            }
-        }
+        onInitGoodInfo()
     }
 
     /**
     Методы
      */
 
-    fun onScanResult(number: String) {
-        launchUITryCatch {
-            manager.clearSearchFromListParams()
-            checkSearchNumber(number)
-        }
-    }
-
     /**
      * Метод actionByNumber - общий, просто определяет марка внутри или коробка
      * */
-    private fun checkSearchNumber(number: String) {
+    override fun checkSearchNumber(number: String) {
         originalSearchNumber = number
         good.value?.let { goodValue ->
             Logg.e {
@@ -308,7 +203,7 @@ class MarkedGoodInfoCreateViewModel : CoreViewModel(), PageSelectionListener {
         }
     }
 
-    private fun loadBoxInfo(number: String) {
+    override fun loadBoxInfo(number: String) {
         launchUITryCatch {
             val screenStatus = markManager.loadBoxInfo(number)
             when (screenStatus) {
@@ -406,21 +301,21 @@ class MarkedGoodInfoCreateViewModel : CoreViewModel(), PageSelectionListener {
                 MarkScreenStatus.OK_BUT_NEED_TO_SCAN_MARK -> {
                     Unit
                 }
+                else -> {
+                    navigator.hideProgress()
+                    navigator.showIncorrectEanFormat()
+                }
             }
         }
     }
-
 
     private fun handleYesDeleteMappedMarksFromTempCallBack() {
         markManager.handleYesDeleteMappedMarksFromTempCallBack()
         tempMarks.value = markManager.getTempMarks()
     }
 
-    private fun getBasket(): Basket? {
-        return manager.getBasket(ProviderInfo.getEmptyCode())
-    }
 
-    private suspend fun saveChanges() {
+    override suspend fun saveChanges() {
         good.value?.let { good ->
             manager.saveGoodInTask(good)
             isExistUnsavedData = false
@@ -429,27 +324,16 @@ class MarkedGoodInfoCreateViewModel : CoreViewModel(), PageSelectionListener {
             Logg.e { "good null" }
             navigator.showInternalError(resource.goodNotFoundErrorMsg)
         }
-
-
     }
 
     private suspend fun addMarks(changedGood: GoodCreate) {
         tempMarks.value?.let { tempMarksValue ->
             changedGood.addMarks(tempMarksValue)
-            tempMarksValue.forEach { mark ->
-                manager.addGoodToBasketWithMark(
-                        good = changedGood,
-                        mark = mark,
-                        provider = ProviderInfo.getEmptyProvider()
-                )
-            }
-        }
-    }
-
-    fun updateData() {
-        val good = good.value
-        if (manager.isWasAddedProvider && good != null) {
-            manager.isWasAddedProvider = false
+            manager.addGoodToBasketWithMarks(
+                    good = changedGood,
+                    marks = tempMarksValue,
+                    provider = getProvider()
+            )
         }
     }
 
@@ -457,7 +341,7 @@ class MarkedGoodInfoCreateViewModel : CoreViewModel(), PageSelectionListener {
     Обработка нажатий кнопок
      */
 
-    fun onBackPressed() {
+    override fun onBackPressed() {
         if (isExistUnsavedData) {
             navigator.showUnsavedDataWillBeLost {
                 manager.clearSearchFromListParams()
@@ -469,22 +353,17 @@ class MarkedGoodInfoCreateViewModel : CoreViewModel(), PageSelectionListener {
         markManager.clearData()
     }
 
-    fun onClickRollback() {
+    override fun onClickRollback() {
         thereWasRollback = true
         markManager.onRollback()
         tempMarks.value = markManager.getTempMarks()
     }
 
-    fun onClickDetails() {
-        manager.updateCurrentGood(good.value)
-        navigator.openGoodDetailsCreateScreen()
-    }
-
-    fun onClickApply() {
+    override fun onClickApply() {
         saveChangesAndExit()
     }
 
-    private fun saveChangesAndExit() {
+    override fun saveChangesAndExit() {
         launchUITryCatch {
             navigator.showProgressLoadingData()
             saveChanges()
@@ -553,5 +432,24 @@ class MarkedGoodInfoCreateViewModel : CoreViewModel(), PageSelectionListener {
             properties.value?.addAll(listOfProperties)
             Logg.e { propertiesFromBundle.toString() }
         } ?: Logg.e { "properties empty " }
+    }
+
+    private fun onInitGoodInfo() {
+        launchUITryCatch {
+            good.value?.let {
+                tempMarks.value = markManager.getTempMarks()
+                properties.value = markManager.getProperties()
+                updateProviders(it.providers)
+                val tempMarksValue = tempMarks.value
+                val size = tempMarksValue?.size
+                if (size != null && size > 0) {
+                    isExistUnsavedData = true
+                    lastScannedMarks = tempMarksValue
+                }
+            }.orIfNull {
+                Logg.e { "good null" }
+                navigator.showInternalError(resource.goodNotFoundErrorMsg)
+            }
+        }
     }
 }

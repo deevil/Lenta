@@ -130,6 +130,35 @@ class CreateTaskManager @Inject constructor(
         }
     }
 
+    override suspend fun addGoodToBasketWithMarks(good: GoodCreate, marks: List<Mark>, provider: ProviderInfo) {
+        currentTask.value?.let { taskValue ->
+            marks.forEach { mark ->
+                val suitableBasket = getOrCreateSuitableBasket(taskValue, good, provider)
+
+                // Добавим марке номер корзины
+                mark.basketNumber = suitableBasket.index
+                // Положим в товар
+                // Продублируем марку в позиции (просто надо)
+                addEmptyPosition(good, provider, suitableBasket)
+                // Добавим товар в корзину
+                suitableBasket.addGood(good, 1.0)
+                // Добавим товар в задание
+                saveGoodInTask(good)
+                // Обновим товар в менеджере
+                updateCurrentGood(good)
+
+                if (isBasketsNeedsToBeClosed) {
+                    suitableBasket.markedForLock = true
+                }
+            }
+
+            taskValue.baskets.filter { it.markedForLock }.forEach {
+                it.isLocked = true
+                it.markedForLock = false
+            }
+        }
+    }
+
     private fun addEmptyPosition(good: GoodCreate, provider: ProviderInfo, basket: Basket) {
         val position = Position(
                 quantity = 0.0,
@@ -396,6 +425,7 @@ interface ICreateTaskManager : ITaskManager {
 
     suspend fun addGoodToBasket(good: GoodCreate, part: Part? = null, provider: ProviderInfo, count: Double)
     suspend fun addGoodToBasketWithMark(good: GoodCreate, mark: Mark, provider: ProviderInfo)
+    suspend fun addGoodToBasketWithMarks(good: GoodCreate, marks: List<Mark>, provider: ProviderInfo)
     suspend fun getOrCreateSuitableBasket(task: TaskCreate, good: GoodCreate, provider: ProviderInfo): Basket?
 
     fun updateCurrentTask(task: TaskCreate?)

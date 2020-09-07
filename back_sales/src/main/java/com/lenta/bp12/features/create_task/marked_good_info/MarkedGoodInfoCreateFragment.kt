@@ -57,10 +57,13 @@ class MarkedGoodInfoCreateFragment : CoreFragment<FragmentMarkedGoodInfoCreateBi
         bottomToolbarUiModel.uiModelButton1.show(ButtonDecorationInfo.back)
         bottomToolbarUiModel.uiModelButton2.show(ButtonDecorationInfo.rollback)
         bottomToolbarUiModel.uiModelButton3.show(ButtonDecorationInfo.details)
+        bottomToolbarUiModel.uiModelButton4.show(ButtonDecorationInfo.close)
         bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.apply, enabled = false)
 
         connectLiveData(vm.rollbackVisibility, bottomToolbarUiModel.uiModelButton2.visibility)
         connectLiveData(vm.rollbackEnabled, bottomToolbarUiModel.uiModelButton2.enabled)
+        connectLiveData(vm.closeEnabled, bottomToolbarUiModel.uiModelButton4.enabled)
+        connectLiveData(vm.closeVisibility, bottomToolbarUiModel.uiModelButton4.visibility)
         connectLiveData(vm.applyEnabled, bottomToolbarUiModel.uiModelButton5.enabled)
     }
 
@@ -68,6 +71,7 @@ class MarkedGoodInfoCreateFragment : CoreFragment<FragmentMarkedGoodInfoCreateBi
         when (view.id) {
             R.id.b_2 -> vm.onClickRollback()
             R.id.b_3 -> vm.onClickDetails()
+            R.id.b_4 -> vm.onClickClose()
             R.id.b_5 -> vm.onClickApply()
         }
     }

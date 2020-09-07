@@ -112,7 +112,8 @@ enum class MarkStatus{
     GOOD_CARTON,
     BAD_CARTON,
     GOOD_BOX,
-    BAD_BOX
+    BAD_BOX,
+    UNKNOWN
 }
 
 enum class MarkScreenStatus {

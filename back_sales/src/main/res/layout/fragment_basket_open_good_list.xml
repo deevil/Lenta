@@ -71,7 +71,7 @@
             android:id="@+id/rv"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_marginBottom="8dp"
+            android:layout_marginBottom="@dimen/size_8dp"
             android:layout_weight="1"
             app:items="@{vm.goods}"
             app:rv_config="@{rvConfig}"
@@ -95,7 +95,7 @@
             <ImageButton
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="8dp"
+                android:layout_marginEnd="@dimen/size_8dp"
                 android:background="?selectableItemBackground"
                 android:onClick="@{(v) -> vm.navigator.openEanInfoScreen()}"
                 android:src="@drawable/ic_scan_barcode_white_32dp" />

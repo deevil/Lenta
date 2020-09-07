@@ -63,7 +63,12 @@ fun MarkCartonBoxGoodInfoNetRequestResult.getMarkStatus(): MarkStatus {
 
         MarkRequestStatus.BOX_FOUND -> MarkStatus.GOOD_BOX
 
-        else -> MarkStatus.BAD_BOX
+        MarkRequestStatus.BOX_NOT_FOUND,
+        MarkRequestStatus.BOX_OF_DIFFERENT_GOOD,
+        MarkRequestStatus.BOX_INCOMPLETE,
+        MarkRequestStatus.BOX_NOT_FOUND_IN_TASK -> MarkStatus.BAD_BOX
+
+        else -> MarkStatus.UNKNOWN
     }
 }
 

@@ -5,11 +5,11 @@ import com.google.gson.annotations.SerializedName
 /** Список марок задания для передачи в МП */
 data class MarkInfo (
         @SerializedName("MATNR")
-        val goodNumber: String,
+        val goodNumber: String?,
         @SerializedName("BOX_NUM")
-        val boxNumber: String,
+        val boxNumber: String?,
         @SerializedName("MARK_NUM")
-        val markNumber: String,
+        val markNumber: String?,
         @SerializedName("PACK_NUM")
-        val cartonNumber: String
+        val cartonNumber: String?
 )
