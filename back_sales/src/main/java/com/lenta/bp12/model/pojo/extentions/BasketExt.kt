@@ -9,7 +9,8 @@ fun Basket.addGood(good: Good, quantity: Double) {
     Logg.e {
         good.toString()
     }
-    if (freeVolume >= good.volume * quantity) {
+    val goodWholeVolume = good.volume * quantity
+    if (freeVolume >= goodWholeVolume) {
         freeVolume -= (good.volume * quantity)
         val oldQuantity = goods[good].orIfNull { 0.0 }
         val newQuantity = quantity + oldQuantity
@@ -18,7 +19,8 @@ fun Basket.addGood(good: Good, quantity: Double) {
 }
 
 fun Basket.deleteGood(good: Good) {
-    if (freeVolume + good.volume <= volume) {
+    val basketsFreeVolumePlusGoodsVolume = freeVolume + good.volume
+    if (basketsFreeVolumePlusGoodsVolume <= volume) {
         val oldQuantity = goods[good].orIfNull { 0.0 }
         val volumeToReturnToBasket = oldQuantity * good.volume
         freeVolume += volumeToReturnToBasket
@@ -66,3 +68,6 @@ fun Basket.getQuantityOfGood(good: Good): Double {
 fun Basket?.getPosition(): Int {
     return this?.index ?: 0
 }
+
+fun List<Basket>.isAnyNotLocked() = this.any { it.isLocked.not() }
+fun List<Basket>.isAnyPrinted() = this.any { it.isPrinted }

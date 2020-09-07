@@ -136,4 +136,5 @@ class GoodInfoCreateFragment : CoreFragment<FragmentGoodInfoCreateBinding, GoodI
 //        }
 //    }
 
+>>>>>>>>> Temporary merge branch 2
 }

@@ -73,6 +73,7 @@
     <string name="goods_not_found_error_msg">товары не найден</string>
     <string name="basket_not_found_error_msg">корзина не найдена</string>
     <string name="task_not_found_error_msg">задание не найдено</string>
+    <string name="no_status_mark">Статус марки не найден</string>
 
     <string name="quantity_more_than_planned">Превышено плановое количество. Добавление невозможно.</string>
     <string name="mark_already_scanned_delete">Отсканированная марка уже была добавлена в задание. Удалить марку?</string>

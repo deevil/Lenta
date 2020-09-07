@@ -630,7 +630,7 @@ class OpenTaskManager @Inject constructor(
     }
 
     override fun isTaskWasChanged(): Boolean {
-        return if (startStateHashOfCurrentTask != -1) {
+        return if (isExistStartTaskInfo()) {
             currentTask.value.hashCode() != startStateHashOfCurrentTask
         } else false
     }
@@ -638,6 +638,7 @@ class OpenTaskManager @Inject constructor(
     override fun clearStartTaskInfo() {
         startStateHashOfCurrentTask = -1
     }
+
 
     override fun clearCurrentTask() {
         tasks.value?.let { tasks ->

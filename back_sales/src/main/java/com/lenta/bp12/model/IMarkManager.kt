@@ -315,7 +315,7 @@ class MarkManager @Inject constructor(
                     taskFromManager.value?.let { task ->
                         goodFromManager.value?.let { good ->
                             val goodEan = eanInfo?.ean.orEmpty()
-                            val umrez = eanInfo?.umrez?.toDoubleOrNull().orIfNull { 1.0 }
+                            val umrez = eanInfo?.umrez?.toDoubleOrNull().orIfNull { DEFAULT_UMREZ }
                             val formattedMrc = getFormattedMrc(mrc, umrez)
                             val markType = getMarkType()
 
@@ -330,10 +330,10 @@ class MarkManager @Inject constructor(
                                     commonUnits = database.getUnitsByCode(materialInfo?.commonUnitsCode.orEmpty()),
                                     innerUnits = database.getUnitsByCode(materialInfo?.innerUnitsCode.orEmpty()),
                                     innerQuantity = materialInfo?.innerQuantity?.toDoubleOrNull()
-                                            ?: 1.0,
+                                            ?: DEFAULT_INNER_QUALITY_VALUE,
                                     provider = task.provider,
                                     producers = producers?.toMutableList().orEmpty().toMutableList(),
-                                    volume = materialInfo?.volume?.toDoubleOrNull() ?: 0.0,
+                                    volume = materialInfo?.volume?.toDoubleOrNull() ?: DEFAULT_VOLUME_VALUE,
                                     markType = markType,
                                     markTypeGroup = database.getMarkTypeGroupByMarkType(markType),
                                     maxRetailPrice = formattedMrc)
@@ -378,7 +378,7 @@ class MarkManager @Inject constructor(
                     taskFromManager.value?.let { task ->
                         val taskType = task.type
                         val goodEan = eanInfo?.ean.orEmpty()
-                        val umrez = eanInfo?.umrez?.toDoubleOrNull().orIfNull { 1.0 }
+                        val umrez = eanInfo?.umrez?.toDoubleOrNull().orIfNull { DEFAULT_UMREZ }
                         val formattedMrc = getFormattedMrc(mrc, umrez)
                         val markType = getMarkType()
                         val createdGood = GoodCreate(
@@ -515,8 +515,8 @@ class MarkManager @Inject constructor(
                     MarkStatus.GOOD_CARTON -> {
                         val mappedMarks = resultMarks.map {
                             Mark(
-                                    number = it.markNumber,
-                                    packNumber = it.cartonNumber,
+                                    number = it.markNumber.orEmpty(),
+                                    packNumber = it.cartonNumber.orEmpty(),
                                     maxRetailPrice = foundGood.maxRetailPrice
                             )
                         }
@@ -530,7 +530,7 @@ class MarkManager @Inject constructor(
                     MarkStatus.GOOD_MARK -> {
                         val mappedMarks = marks.map {
                             Mark(
-                                    number = it.markNumber
+                                    number = it.markNumber.orEmpty()
                             )
                         }
                         addOrDeleteMarksFromTemp(
@@ -543,8 +543,8 @@ class MarkManager @Inject constructor(
                     MarkStatus.GOOD_BOX -> {
                         val mappedMarks = marks.map {
                             Mark(
-                                    number = it.markNumber,
-                                    boxNumber = it.boxNumber,
+                                    number = it.markNumber.orEmpty(),
+                                    boxNumber = it.boxNumber.orEmpty(),
                                     maxRetailPrice = foundGood.maxRetailPrice
                             )
                         }
@@ -557,7 +557,7 @@ class MarkManager @Inject constructor(
                     }
                     else -> {
                         failure = Failure.MessageFailure(
-                                message = result.markStatusText
+                                message = result.markStatusText.orIfNull { resource.noStatusMark }
                         )
                         MarkScreenStatus.FAILURE
                     }
@@ -592,9 +592,9 @@ class MarkManager @Inject constructor(
         } else {
             val restPropertiesMapped = restProperties?.map { propertyFromRest ->
                 GoodProperty(
-                        gtin = propertyFromRest.ean,
-                        property = propertyFromRest.propertyName,
-                        value = propertyFromRest.propertyValue
+                        gtin = propertyFromRest.ean.orEmpty(),
+                        property = propertyFromRest.propertyName.orEmpty(),
+                        value = propertyFromRest.propertyValue.orEmpty()
                 )
             }.orEmpty()
             properties = properties.union(restPropertiesMapped).toMutableList()
@@ -655,5 +655,11 @@ class MarkManager @Inject constructor(
 
     override fun getMarkFailure(): Failure {
         return failure
+    }
+
+    companion object {
+        private const val DEFAULT_UMREZ = 1.0
+        private const val DEFAULT_INNER_QUALITY_VALUE = 1.0
+        private const val DEFAULT_VOLUME_VALUE = 0.0
     }
 }

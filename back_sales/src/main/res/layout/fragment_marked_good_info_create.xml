@@ -51,11 +51,11 @@
             <LinearLayout style="@style/BottomIconContainerStyle">
 
                 <TextView
-                    android:layout_width="30dp"
-                    android:layout_height="30dp"
+                    android:layout_width="@dimen/size_30dp"
+                    android:layout_height="@dimen/size_30dp"
                     android:background="@drawable/bg_white_circle"
                     android:gravity="center"
-                    android:textSize="12sp"
+                    android:textSize="@dimen/text_12sp"
                     app:matrixType="@{vm.good.matrix}"
                     tools:text="A" />
 
@@ -64,11 +64,11 @@
             <LinearLayout style="@style/BottomIconContainerStyle">
 
                 <TextView
-                    android:layout_width="30dp"
-                    android:layout_height="30dp"
+                    android:layout_width="@dimen/size_30dp"
+                    android:layout_height="@dimen/size_30dp"
                     android:background="@drawable/bg_white_circle"
                     android:gravity="center"
-                    android:textSize="12sp"
+                    android:textSize="@dimen/text_12sp"
                     app:section="@{vm.good.section}"
                     tools:text="02" />
 
@@ -91,10 +91,10 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:layout_marginTop="1dp"
+                    android:layout_marginTop="@dimen/size_2dp"
                     android:text="@{vm.basketNumber}"
                     android:textColor="@color/button_bg_color"
-                    android:textSize="12sp"
+                    android:textSize="@dimen/text_12sp"
                     tools:text="5" />
 
             </FrameLayout>
