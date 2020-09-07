@@ -186,7 +186,6 @@ class IngredientDetailsViewModel : CoreViewModel() {
     }
 
     fun onCompleteClicked() = launchUITryCatch {
-        val kek = producerDataInfoUseCase.invoke()
         val weight = total.value ?: 0.0
         if (weight == 0.0) {
             navigator.showAlertWeightNotSet()
