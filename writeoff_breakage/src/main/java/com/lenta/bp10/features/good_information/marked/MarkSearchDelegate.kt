@@ -15,14 +15,10 @@ import javax.inject.Inject
 
 class MarkSearchDelegate @Inject constructor(
         private val navigator: IScreenNavigator,
-        private val productInfoDbRequest: ProductInfoDbRequest,
-        private val exciseStampNetRequest: ExciseStampNetRequest,
         private val markedInfoNetRequest: MarkedInfoNetRequest
 ) {
 
     private lateinit var viewModelScope: () -> CoroutineScope
-
-    //private lateinit var tkNumber: String
 
     private lateinit var material: String
 
@@ -44,38 +40,6 @@ class MarkSearchDelegate @Inject constructor(
         this.updateProperties = updateProperties
         this.handleScannedMark = handleScannedMark
         this.handleScannedBox = handleScannedBox
-    }
-
-    fun searchExciseStamp(code: String) {
-        /*actionByNumber(
-                number = code,
-                funcForShoes = { ean, correctedNumber, originalNumber ->
-                    requestMarkInfo(correctedNumber)
-                },
-                funcForCigarettes = ::requestBoxInfo,
-                funcForCigarettesBox = ::requestBoxInfo,
-                funcForNotValidFormat = navigator::showIncorrectEanFormat
-        )*/
-
-
-        /*if (!(code.length == 68 || code.length == 150)) {
-            navigator.openAlertNotValidFormatStamp()
-            return
-        }
-
-        viewModelScope().launch {
-            navigator.showProgress(exciseStampNetRequest)
-
-            exciseStampNetRequest(ExciseStampParams(
-                    pdf417 = code,
-                    werks = tkNumber,
-                    matnr = materialNumber))
-                    .either(::handleFailure, ::handleExciseStampSuccess)
-
-            navigator.hideProgress()
-        }*/
-
-
     }
 
     fun requestMarkInfo(number: String) {
@@ -109,7 +73,7 @@ class MarkSearchDelegate @Inject constructor(
     }
 
     private fun handleMarkRequestResult(markNumber: String, result: MarkedInfoResult) {
-        if (result.status == "0") {
+        if (result.status == MARK_CODE_OK) {
             updateProperties.invoke(result.properties.orEmpty())
             handleScannedMark.invoke(markNumber)
         } else {
@@ -118,7 +82,7 @@ class MarkSearchDelegate @Inject constructor(
     }
 
     private fun handleBoxRequestResult(result: MarkedInfoResult) {
-        if (result.status == "100") {
+        if (result.status == BOX_CODE_OK) {
             updateProperties.invoke(result.properties.orEmpty())
             handleScannedBox(result.marks.orEmpty())
         } else {
@@ -126,46 +90,9 @@ class MarkSearchDelegate @Inject constructor(
         }
     }
 
-
-    /*fun handleResult(code: Int?): Boolean {
-        if (code == requestCodeAddBadStamp) {
-            val isBadStamp = true
-            handleScannedMark(isBadStamp)
-            return true
-        }
-        return false
-    }*/
-
-    /*private fun handleExciseStampSuccess(exciseStampRestInfo: ExciseStampRestInfo) {
-        val retCode = exciseStampRestInfo.retCode
-        val serverDescription = exciseStampRestInfo.errorText
-
-        when (retCode) {
-            0 -> {
-                val isBadStamp = false
-                handleScannedMark(isBadStamp)
-            }
-            2 -> {
-                navigator.openStampAnotherMarketAlert(requestCodeAddBadStamp)
-            }
-            1 -> {
-                viewModelScope().launch {
-                    navigator.showProgress(productInfoDbRequest)
-                    productInfoDbRequest(ProductInfoRequestParams(number = exciseStampRestInfo.matNr))
-                            .either(::handleFailure, ::openAlertForAnotherProductStamp)
-                    navigator.hideProgress()
-
-                }
-
-            }
-            else -> navigator.openInfoScreen(serverDescription)
-        }
-
-    }*/
-
-
-    /*private fun openAlertForAnotherProductStamp(productInfo: ProductInfo) {
-        navigator.openAnotherProductStampAlert(productName = productInfo.description)
-    }*/
+    companion object {
+        private const val MARK_CODE_OK = "0"
+        private const val BOX_CODE_OK = "100"
+    }
 
 }

@@ -164,6 +164,10 @@ fun ZmpUtz14V001.getGrzAlternMeins(): String? {
     return getParams("GRZ_ALTERN_MEINS").firstOrNull()
 }
 
+fun ZmpUtz14V001.getSpecialTaskTypes(): List<String> {
+    return getParams("WOB_SPEC_TASK_TYPE")
+}
+
 private fun ZmpUtz14V001.getParams(paramName: String): List<String> {
     @Suppress("INACCESSIBLE_TYPE")
     return localHelper_ET_PARAMS.getWhere("PARAMNAME = \"$paramName\"").map { it.paramvalue }

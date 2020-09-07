@@ -43,11 +43,10 @@ class WriteOffTask(val taskDescription: TaskDescription, internal val taskReposi
 
     }
 
-    fun processMarkProduct(product: ProductInfo): ProcessMarkProductService? {
+    fun processMarkedGoodProduct(product: ProductInfo): ProcessMarkedGoodProductService? {
         return if (product.type == ProductType.Marked) {
-            ProcessMarkProductService(taskDescription, taskRepository, product)
+            ProcessMarkedGoodProductService(taskDescription, taskRepository, product)
         } else null
-
     }
 
     fun getProcessedProducts(): List<ProductInfo> {

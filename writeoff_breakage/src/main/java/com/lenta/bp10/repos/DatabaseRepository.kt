@@ -2,12 +2,9 @@ package com.lenta.bp10.repos
 
 import com.lenta.bp10.fmp.resources.dao_ext.isChkOwnpr
 import com.lenta.bp10.fmp.resources.tasks_settings.ZmpUtz29V001Rfc
-import com.lenta.shared.fmp.resources.dao_ext.*
+import com.lenta.shared.fmp.resources.dao_ext.getSpecialTaskTypes
 import com.lenta.shared.fmp.resources.fast.*
 import com.lenta.shared.fmp.resources.slow.*
-import com.lenta.shared.models.core.Uom
-import com.lenta.shared.models.core.getMatrixType
-import com.lenta.shared.utilities.extentions.isSapTrue
 import com.mobrun.plugin.api.HyperHive
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -42,101 +39,17 @@ class DatabaseRepository @Inject constructor(
         }
     }
 
-
-    /*override suspend fun getGoodInfoByMaterial(material: String): GoodInfo? {
+    override suspend fun isSpecialMode(taskTypeCode: String): Boolean {
         return withContext(Dispatchers.IO) {
-            products.getProductInfoByMaterial(material)?.let { goodInfo ->
-                GoodInfo(
-                        ean = getEanByMaterialUnits(material, goodInfo.buom),
-                        eans = getEanListByMaterialUnits(material, goodInfo.buom),
-                        material = material,
-                        name = goodInfo.name,
-                        kind = goodInfo.getGoodKind(),
-                        section = goodInfo.abtnr,
-                        matrix = getMatrixType(goodInfo.matrType)
-                )
-            }
-        }
-    }*/
-
-    private suspend fun getEanByMaterialUnits(material: String, unitsCode: String): String {
-        return withContext(Dispatchers.IO) {
-            eanInfo.getEanInfoByMaterialUnits(material, unitsCode)?.toEanInfo()?.ean.orEmpty()
+            settings.getSpecialTaskTypes().contains(taskTypeCode)
         }
     }
-
-    override suspend fun getEanListByMaterialUnits(material: String, unitsCode: String): List<String> {
-        return withContext(Dispatchers.IO) {
-            eanInfo.getEanListByMaterialUnits(material, unitsCode)
-        }
-    }
-
-    override suspend fun getAllowedAppVersion(): String? {
-        return withContext(Dispatchers.IO) {
-            settings.getAllowedBksAppVersion()
-        }
-    }
-
-    override suspend fun getUnitsByCode(code: String): Uom {
-        return withContext(Dispatchers.IO) {
-            units.getUnitName(code)?.let { name ->
-                Uom(code, name)
-            } ?: Uom.ST
-        }
-    }
-
-    /*override suspend fun getTaskTypeList(): List<TaskType> {
-        return withContext(Dispatchers.IO) {
-            taskTypes.getTaskTypeList()
-        }
-    }
-
-    override suspend fun getTaskType(code: String): TaskType? {
-        return withContext(Dispatchers.IO) {
-            taskTypes.getTaskType(code)
-        }
-    }
-
-    override suspend fun getStorageList(taskType: String): List<String> {
-        return withContext(Dispatchers.IO) {
-            storages.getStorageList(taskType)
-        }
-    }
-
-    override suspend fun getReturnReason(taskType: String, reasonCode: String): ReturnReason? {
-        return withContext(Dispatchers.IO) {
-            returnReasons.getReturnReason(taskType, reasonCode)
-        }
-    }
-
-    override suspend fun getReturnReasonList(taskType: String): List<ReturnReason> {
-        return withContext(Dispatchers.IO) {
-            returnReasons.getReturnReasonList(taskType)
-        }
-    }
-
-    override suspend fun getTaskAttributes(taskType: String): Set<String> {
-        return withContext(Dispatchers.IO) {
-            allowed.getTaskAttributeList(taskType)
-        }
-    }*/
-
-
 
 }
 
 interface IDatabaseRepository {
 
     suspend fun isChkOwnpr(taskTypeCode: String): Boolean
-    //suspend fun getGoodInfoByMaterial(material: String): GoodInfo?
-    suspend fun getEanListByMaterialUnits(material: String, unitsCode: String): List<String>
-    suspend fun getAllowedAppVersion(): String?
-    suspend fun getUnitsByCode(code: String): Uom
-    /*suspend fun getTaskTypeList(): List<TaskType>
-    suspend fun getTaskType(code: String): TaskType?
-    suspend fun getStorageList(taskType: String): List<String>
-    suspend fun getReturnReason(taskType: String, reasonCode: String): ReturnReason?
-    suspend fun getReturnReasonList(taskType: String): List<ReturnReason>
-    suspend fun getTaskAttributes(taskType: String): Set<String>*/
+    suspend fun isSpecialMode(taskTypeCode: String): Boolean
 
 }

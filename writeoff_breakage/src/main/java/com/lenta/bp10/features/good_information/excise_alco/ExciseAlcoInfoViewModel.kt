@@ -4,7 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.lenta.bp10.features.good_information.base.BaseProductInfoViewModel
-import com.lenta.bp10.models.StampAlcoCollector
+import com.lenta.bp10.models.AlcoholStampCollector
 import com.lenta.bp10.models.repositories.ITaskRepository
 import com.lenta.bp10.models.task.ProcessExciseAlcoProductService
 import com.lenta.bp10.models.task.TaskDescription
@@ -28,8 +28,8 @@ class ExciseAlcoInfoViewModel : BaseProductInfoViewModel() {
         processServiceManager.getWriteOffTask()!!.processExciseAlcoProduct(productInfo.value!!)!!
     }
 
-    private val stampAlcoCollector: StampAlcoCollector by lazy {
-        StampAlcoCollector(processExciseAlcoProductService)
+    private val alcoholStampCollector: AlcoholStampCollector by lazy {
+        AlcoholStampCollector(processExciseAlcoProductService)
     }
 
     init {
@@ -87,7 +87,7 @@ class ExciseAlcoInfoViewModel : BaseProductInfoViewModel() {
             }
 
             if (it != 0.0) {
-                stampAlcoCollector.processAll(getSelectedReason())
+                alcoholStampCollector.processAll(getSelectedReason())
             }
 
             count.value = ""
@@ -98,7 +98,7 @@ class ExciseAlcoInfoViewModel : BaseProductInfoViewModel() {
     }
 
     private fun handleNewStamp(isBadStamp: Boolean) {
-        if (!stampAlcoCollector.add(
+        if (!alcoholStampCollector.add(
                         materialNumber = productInfo.value!!.materialNumber,
                         setMaterialNumber = "",
                         writeOffReason = getSelectedReason().code,
@@ -110,7 +110,7 @@ class ExciseAlcoInfoViewModel : BaseProductInfoViewModel() {
 
 
     override fun onBackPressed(): Boolean {
-        if (stampAlcoCollector.isNotEmpty()) {
+        if (alcoholStampCollector.isNotEmpty()) {
             screenNavigator.openConfirmationToBackNotEmptyStampsScreen {
                 screenNavigator.goBack()
             }
@@ -122,7 +122,7 @@ class ExciseAlcoInfoViewModel : BaseProductInfoViewModel() {
 
     override fun onScanResult(data: String) {
         if (data.length > 60) {
-            if (stampAlcoCollector.prepare(stampCode = data)) {
+            if (alcoholStampCollector.prepare(stampCode = data)) {
                 exciseAlcoDelegate.searchExciseStamp(data)
             } else {
                 screenNavigator.openAlertDoubleScanStamp()
@@ -146,11 +146,11 @@ class ExciseAlcoInfoViewModel : BaseProductInfoViewModel() {
     }
 
     override fun initCountLiveData(): MutableLiveData<String> {
-        return stampAlcoCollector.observeCount().map { it.toStringFormatted() }
+        return alcoholStampCollector.observeCount().map { it.toStringFormatted() }
     }
 
     fun onClickRollBack() {
-        stampAlcoCollector.rollback()
+        alcoholStampCollector.rollback()
     }
 
 }

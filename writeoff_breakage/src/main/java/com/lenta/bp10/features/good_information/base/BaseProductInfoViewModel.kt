@@ -25,20 +25,27 @@ import kotlinx.coroutines.delay
 import javax.inject.Inject
 
 abstract class BaseProductInfoViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
+
     @Inject
     lateinit var processServiceManager: IWriteOffTaskManager
+
     @Inject
     lateinit var screenNavigator: IScreenNavigator
+
     @Inject
     lateinit var resourceManager: IStringResourceManager
+
     @Inject
     lateinit var goodInformationRepo: IGoodInformationRepo
+
     @Inject
     lateinit var searchProductDelegate: SearchProductDelegate
+
 
     val productInfo: MutableLiveData<ProductInfo> = MutableLiveData()
 
     val writeOffReasons: MutableLiveData<List<WriteOffReason>> = MutableLiveData()
+
     val writeOffReasonTitles: LiveData<List<String>> = writeOffReasons.map { it?.map { reason -> reason.name } }
 
     val count: MutableLiveData<String> by lazy {
@@ -63,7 +70,7 @@ abstract class BaseProductInfoViewModel : CoreViewModel(), OnOkInSoftKeyboardLis
         }
     }
 
-    val enabledDetailsButton: MutableLiveData<Boolean>  by lazy {
+    val enabledDetailsButton: MutableLiveData<Boolean> by lazy {
         totalCount.map {
             isEnabledDetailsButton(getProcessTotalCount())
         }

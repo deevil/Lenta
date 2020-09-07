@@ -8,7 +8,7 @@ import com.lenta.bp10.models.task.TaskExciseStamp
 import com.lenta.bp10.models.task.WriteOffReason
 import com.lenta.shared.utilities.extentions.map
 
-class StampAlcoCollector(private val processExciseAlcoProductService: ProcessExciseAlcoProductService) {
+class AlcoholStampCollector(private val processExciseAlcoProductService: ProcessExciseAlcoProductService) {
 
     private val countLiveData: MutableLiveData<Double> = MutableLiveData()
     private val stamps = mutableListOf<TaskExciseStamp>()
@@ -107,10 +107,10 @@ class StampAlcoCollector(private val processExciseAlcoProductService: ProcessExc
         onDataChanged()
     }
 
-    fun moveStampsFrom(anotherStampAlcoCollector: StampAlcoCollector?) {
-        anotherStampAlcoCollector?.stamps?.let {
-            stamps.addAll(anotherStampAlcoCollector.stamps)
-            anotherStampAlcoCollector.clear()
+    fun moveStampsFrom(anotherAlcoholStampCollector: AlcoholStampCollector?) {
+        anotherAlcoholStampCollector?.stamps?.let {
+            stamps.addAll(anotherAlcoholStampCollector.stamps)
+            anotherAlcoholStampCollector.clear()
         }
 
     }

@@ -6,9 +6,10 @@ import androidx.lifecycle.viewModelScope
 import com.lenta.bp10.features.good_information.base.BaseProductInfoViewModel
 import com.lenta.bp10.models.MarkedGoodStampCollector
 import com.lenta.bp10.models.repositories.ITaskRepository
-import com.lenta.bp10.models.task.ProcessMarkProductService
+import com.lenta.bp10.models.task.ProcessMarkedGoodProductService
 import com.lenta.bp10.models.task.TaskDescription
 import com.lenta.bp10.models.task.WriteOffReason
+import com.lenta.bp10.repos.DatabaseRepository
 import com.lenta.bp10.requests.network.pojo.MarkInfo
 import com.lenta.bp10.requests.network.pojo.Property
 import com.lenta.shared.requests.combined.scan_info.ScanInfoResult
@@ -24,16 +25,25 @@ class MarkedInfoViewModel : BaseProductInfoViewModel(), PageSelectionListener {
     @Inject
     lateinit var markSearchDelegate: MarkSearchDelegate
 
+    @Inject
+    lateinit var database: DatabaseRepository
 
-    private val processMarkProductService: ProcessMarkProductService by lazy {
-        processServiceManager.getWriteOffTask()!!.processMarkProduct(productInfo.value!!)!!
+
+    /**
+    Переменные
+     */
+
+    private val processMarkedGoodProductService: ProcessMarkedGoodProductService by lazy {
+        processServiceManager.getWriteOffTask()!!.processMarkedGoodProduct(productInfo.value!!)!!
     }
 
     private val markedGoodStampCollector: MarkedGoodStampCollector by lazy {
-        MarkedGoodStampCollector(processMarkProductService)
+        MarkedGoodStampCollector(processMarkedGoodProductService)
     }
 
     var selectedPage = MutableLiveData(0)
+
+    val isSpecialMode = MutableLiveData(false)
 
     private val properties = MutableLiveData(listOf<Property>())
 
@@ -49,12 +59,23 @@ class MarkedInfoViewModel : BaseProductInfoViewModel(), PageSelectionListener {
         }
     }
 
+    /**
+    Кнопки нижнего тулбара
+     */
+
     val rollBackEnabled: LiveData<Boolean> by lazy {
         countValue.map { it ?: 0.0 > 0.0 }
     }
 
+    /**
+    Блок инициализации
+     */
+
     init {
         launchUITryCatch {
+            val taskType = processMarkedGoodProductService.taskDescription.taskType.code
+            isSpecialMode.value = database.isSpecialMode(taskType)
+
             markSearchDelegate.init(
                     updateProperties = this@MarkedInfoViewModel::updateProperties,
                     viewModelScope = this@MarkedInfoViewModel::viewModelScope,
@@ -64,6 +85,10 @@ class MarkedInfoViewModel : BaseProductInfoViewModel(), PageSelectionListener {
             )
         }
     }
+
+    /**
+    Методы
+     */
 
     override fun onPageSelected(position: Int) {
         selectedPage.value = position
@@ -84,15 +109,15 @@ class MarkedInfoViewModel : BaseProductInfoViewModel(), PageSelectionListener {
     }
 
     override fun getTaskDescription(): TaskDescription {
-        return processMarkProductService.taskDescription
+        return processMarkedGoodProductService.taskDescription
     }
 
     override fun getTaskRepo(): ITaskRepository {
-        return processMarkProductService.taskRepository
+        return processMarkedGoodProductService.taskRepository
     }
 
     override fun getProcessTotalCount(): Double {
-        return processMarkProductService.getTotalCount()
+        return processMarkedGoodProductService.getTotalCount()
     }
 
     override fun onClickAdd() {
@@ -101,7 +126,7 @@ class MarkedInfoViewModel : BaseProductInfoViewModel(), PageSelectionListener {
 
     override fun onClickApply() {
         addGood()
-        processMarkProductService.apply()
+        processMarkedGoodProductService.apply()
         screenNavigator.goBack()
     }
 
@@ -116,7 +141,7 @@ class MarkedInfoViewModel : BaseProductInfoViewModel(), PageSelectionListener {
             }
             return false
         }
-        processMarkProductService.discard()
+        processMarkedGoodProductService.discard()
         return true
     }
 
@@ -147,22 +172,13 @@ class MarkedInfoViewModel : BaseProductInfoViewModel(), PageSelectionListener {
                 number = data,
                 funcForShoes = { _, _, originalNumber -> actionForMark(originalNumber) },
                 funcForCigarettes = ::actionForMark,
-                funcForCigarettesBox = ::actionForBox,
+                funcForCigaretteBox = { boxNumber ->
+                    if (isSpecialMode.value == false) {
+                        actionForBox(boxNumber)
+                    }
+                },
                 funcForNotValidFormat = { searchGood(data) }
         )
-
-        /*if (data.length > 60) {
-            if (stampMarkedCollector.prepare(stampCode = data)) {
-                markedDelegate.searchExciseStamp(data)
-            } else {
-                screenNavigator.openAlertDoubleScanStamp()
-            }
-
-        } else {
-            if (addGood()) {
-                searchProductDelegate.searchCode(data, fromScan = true)
-            }
-        }*/
     }
 
     private fun actionForMark(markNumber: String) {
@@ -193,10 +209,6 @@ class MarkedInfoViewModel : BaseProductInfoViewModel(), PageSelectionListener {
                 markNumber = mark,
                 writeOffReason = getSelectedReason().code
         )
-
-        /*if (isDoubleMark) {
-            screenNavigator.openAlertDoubleScanStamp()
-        }*/
     }
 
     private fun handleScannedBox(marks: List<MarkInfo>) {
@@ -209,6 +221,13 @@ class MarkedInfoViewModel : BaseProductInfoViewModel(), PageSelectionListener {
 
     private fun updateProperties(properties: List<Property>) {
         this.properties.value = properties
+    }
+
+    fun onClickDamaged() {
+        markedGoodStampCollector.addBadMark(
+                material = productInfo.value?.materialNumber.orEmpty(),
+                writeOffReason = getSelectedReason().code
+        )
     }
 
 }

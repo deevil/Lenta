@@ -13,7 +13,7 @@ fun actionByNumber(
         funcForMark: ((markNumber: String) -> Unit)? = null,
         funcForShoes: ((ean: String, correctedNumber: String, originalNumber: String) -> Unit)? = null,
         funcForCigarettes: ((markNumber: String) -> Unit)? = null,
-        funcForCigarettesBox: ((markNumber: String) -> Unit)? = null,
+        funcForCigaretteBox: ((markNumber: String) -> Unit)? = null,
         funcForNotValidFormat: () -> Unit
 ) {
 
@@ -58,7 +58,7 @@ fun actionByNumber(
     }
 
     if (isCigarettesBox(number)) {
-        funcForCigarettesBox?.invoke(number) ?: funcForNotValidFormat()
+        funcForCigaretteBox?.invoke(number) ?: funcForNotValidFormat()
         return
     }
 

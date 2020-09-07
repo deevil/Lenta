@@ -5,9 +5,13 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.Observer
 import com.lenta.bp10.BR
 import com.lenta.bp10.R
-import com.lenta.bp10.databinding.*
+import com.lenta.bp10.databinding.FragmentMarkedInfoBinding
+import com.lenta.bp10.databinding.ItemMarkedGoodPropertyBinding
+import com.lenta.bp10.databinding.LayoutMarkedInfoPropertiesBinding
+import com.lenta.bp10.databinding.LayoutMarkedInfoQuantityBinding
 import com.lenta.bp10.platform.extentions.getAppComponent
 import com.lenta.shared.models.core.ProductInfo
 import com.lenta.shared.platform.activity.OnBackPresserListener
@@ -62,8 +66,13 @@ class MarkedInfoFragment : CoreFragment<FragmentMarkedInfoBinding, MarkedInfoVie
         bottomToolbarUiModel.uiModelButton1.show(ButtonDecorationInfo.back)
         bottomToolbarUiModel.uiModelButton2.show(ButtonDecorationInfo.rollback)
         bottomToolbarUiModel.uiModelButton3.show(ButtonDecorationInfo.details)
-        bottomToolbarUiModel.uiModelButton4.show(ButtonDecorationInfo.add)
         bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.apply)
+
+        vm.isSpecialMode.observe(viewLifecycleOwner, Observer { isSpecialMode ->
+            bottomToolbarUiModel.uiModelButton4.show(
+                    if (isSpecialMode) ButtonDecorationInfo.damaged else ButtonDecorationInfo.add
+            )
+        })
 
         connectLiveData(vm.rollBackEnabled, bottomToolbarUiModel.uiModelButton2.enabled)
         connectLiveData(vm.enabledApplyButton, bottomToolbarUiModel.uiModelButton4.enabled)
@@ -76,14 +85,13 @@ class MarkedInfoFragment : CoreFragment<FragmentMarkedInfoBinding, MarkedInfoVie
         binding?.let {
             it.viewPagerSettings = this
         }
-
     }
 
     override fun onToolbarButtonClick(view: View) {
         when (view.id) {
             R.id.b_2 -> vm.onClickRollBack()
             R.id.b_3 -> vm.onClickDetails()
-            R.id.b_4 -> vm.onClickAdd()
+            R.id.b_4 -> if (vm.isSpecialMode.value == true) vm.onClickDamaged() else vm.onClickAdd()
             R.id.b_5 -> vm.onClickApply()
         }
     }

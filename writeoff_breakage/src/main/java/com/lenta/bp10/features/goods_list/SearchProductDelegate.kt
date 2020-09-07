@@ -22,7 +22,6 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class SearchProductDelegate @Inject constructor(
-        //private val hyperHive: HyperHive,
         private val database: DatabaseRepository,
         private val navigator: IScreenNavigator,
         private val scanInfoRequest: ScanInfoRequest,
@@ -30,10 +29,6 @@ class SearchProductDelegate @Inject constructor(
         private val sessionInfo: ISessionInfo,
         private var permissionToWriteoffNetRequest: PermissionToWriteoffNetRequest
 ) {
-
-    /*private val zmpUtz29V001: ZmpUtz29V001Rfc by lazy {
-        ZmpUtz29V001Rfc(hyperHive)
-    }*/
 
     private var scanInfoResult: ScanInfoResult? = null
 
@@ -45,11 +40,8 @@ class SearchProductDelegate @Inject constructor(
 
     private var scanResultHandler: ((ScanInfoResult?) -> Boolean)? = null
 
-    //private var codeWith12Digits: String? = null
-
     fun copy(): SearchProductDelegate {
         val searchProductDelegate = SearchProductDelegate(
-                //hyperHive,
                 database,
                 navigator,
                 scanInfoRequest,
@@ -81,7 +73,7 @@ class SearchProductDelegate @Inject constructor(
                 funcForEan = { actionWithEan(code, fromScan) },
                 funcForMaterial = { actionWithMaterial(code, fromScan) },
                 funcForSapOrBar = navigator::showTwelveCharactersEntered,
-                funcForShoes = { ean, _ -> actionWithEan(ean, fromScan) },
+                funcForShoes = { ean, _, _ -> actionWithEan(ean, fromScan) },
                 funcForNotValidFormat = navigator::showIncorrectEanFormat
         )
     }
@@ -109,30 +101,6 @@ class SearchProductDelegate @Inject constructor(
             navigator.hideProgress()
         }
     }
-
-    /*fun handleResultCode(code: Int?): Boolean {
-        return when (code) {
-            requestCodeAddProductWithBadStamp -> {
-                checkPermissions()
-                true
-            }
-            requestCodeTypeSap -> {
-                searchCode("000000000000${codeWith12Digits?.takeLast(6)}", fromScan = false, isBarCode = false)
-                codeWith12Digits = null
-                true
-            }
-            requestCodeTypeBarCode -> {
-                searchCode(code = codeWith12Digits.orEmpty(), fromScan = false, isBarCode = true)
-                codeWith12Digits = null
-                true
-            }
-            requestCodeAddAddToProduction -> {
-                handleSearchResultOrOpenProductScreen()
-                true
-            }
-            else -> false
-        }
-    }*/
 
     private fun checkPermissions() {
         viewModelScope().launch {
