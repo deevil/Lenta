@@ -23,6 +23,9 @@ class MarkedInfoNetRequest
 }
 
 data class MarkedInfoParams(
+        /** Номер ТК */
+        @SerializedName("IV_WERKS")
+        val tkNumber: String,
         /** Номер задания */
         @SerializedName("IV_TASK_NUM")
         val taskNumber: String,

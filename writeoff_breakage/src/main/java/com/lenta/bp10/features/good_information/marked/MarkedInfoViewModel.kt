@@ -77,6 +77,7 @@ class MarkedInfoViewModel : BaseProductInfoViewModel(), PageSelectionListener {
             isSpecialMode.value = database.isSpecialMode(taskType)
 
             markSearchDelegate.init(
+                    tkNumber = getTaskDescription().tkNumber,
                     updateProperties = this@MarkedInfoViewModel::updateProperties,
                     viewModelScope = this@MarkedInfoViewModel::viewModelScope,
                     handleScannedMark = this@MarkedInfoViewModel::handleScannedMark,
@@ -170,7 +171,7 @@ class MarkedInfoViewModel : BaseProductInfoViewModel(), PageSelectionListener {
     override fun onScanResult(data: String) {
         actionByNumber(
                 number = data,
-                funcForShoes = { _, _, originalNumber -> actionForMark(originalNumber) },
+                funcForShoes = { _, markWithoutTail, _ -> actionForMark(markWithoutTail) },
                 funcForCigarettes = ::actionForMark,
                 funcForCigaretteBox = { boxNumber ->
                     if (isSpecialMode.value == false) {
@@ -182,7 +183,7 @@ class MarkedInfoViewModel : BaseProductInfoViewModel(), PageSelectionListener {
     }
 
     private fun actionForMark(markNumber: String) {
-        if (markedGoodStampCollector.isContainsStamp(markNumber)) {
+        if (!markedGoodStampCollector.isContainsStamp(markNumber)) {
             markSearchDelegate.requestMarkInfo(markNumber)
         } else {
             screenNavigator.openAlertDoubleScanStamp()
@@ -190,7 +191,7 @@ class MarkedInfoViewModel : BaseProductInfoViewModel(), PageSelectionListener {
     }
 
     private fun actionForBox(boxNumber: String) {
-        if (markedGoodStampCollector.isContainsBox(boxNumber)) {
+        if (!markedGoodStampCollector.isContainsBox(boxNumber)) {
             markSearchDelegate.requestBoxInfo(boxNumber)
         } else {
             screenNavigator.openAlertDoubleScanStamp()

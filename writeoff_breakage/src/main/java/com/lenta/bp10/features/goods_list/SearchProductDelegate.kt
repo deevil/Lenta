@@ -147,7 +147,8 @@ class SearchProductDelegate @Inject constructor(
             with(infoResult) {
                 openProductScreen(
                         productInfo = productInfo,
-                        quantity = if (productInfo.type == ProductType.ExciseAlcohol && !productInfo.isSet) 0.0 else quantity
+                        quantity = if (productInfo.type == ProductType.ExciseAlcohol && !productInfo.isSet ||
+                                productInfo.type == ProductType.Marked) 0.0 else quantity
                 )
             }
         }

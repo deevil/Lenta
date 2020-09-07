@@ -20,6 +20,8 @@ class MarkSearchDelegate @Inject constructor(
 
     private lateinit var viewModelScope: () -> CoroutineScope
 
+    private lateinit var tkNumber: String
+
     private lateinit var material: String
 
     private lateinit var updateProperties: (properties: List<Property>) -> Unit
@@ -30,12 +32,14 @@ class MarkSearchDelegate @Inject constructor(
 
 
     fun init(viewModelScope: () -> CoroutineScope,
+             tkNumber: String,
              material: String,
              handleScannedMark: (mark: String) -> Unit,
              handleScannedBox: (marks: List<MarkInfo>) -> Unit,
              updateProperties: (properties: List<Property>) -> Unit) {
 
         this.viewModelScope = viewModelScope
+        this.tkNumber = tkNumber
         this.material = material
         this.updateProperties = updateProperties
         this.handleScannedMark = handleScannedMark
@@ -46,10 +50,13 @@ class MarkSearchDelegate @Inject constructor(
         viewModelScope().launch {
             navigator.showProgress(markedInfoNetRequest)
             markedInfoNetRequest(MarkedInfoParams(
+                    tkNumber = tkNumber,
                     taskNumber = "",
                     material = material,
                     markNumber = number
-            )).either(::handleFailure) { result ->
+            )).also {
+                navigator.hideProgress()
+            }.either(::handleFailure) { result ->
                 handleMarkRequestResult(number, result)
             }
         }
@@ -59,10 +66,13 @@ class MarkSearchDelegate @Inject constructor(
         viewModelScope().launch {
             navigator.showProgress(markedInfoNetRequest)
             markedInfoNetRequest(MarkedInfoParams(
+                    tkNumber = tkNumber,
                     taskNumber = "",
                     material = material,
                     boxNumber = number
-            )).either(::handleFailure) { result ->
+            )).also {
+                navigator.hideProgress()
+            }.either(::handleFailure) { result ->
                 handleBoxRequestResult(result)
             }
         }

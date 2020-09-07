@@ -8,11 +8,12 @@ import com.lenta.bp10.models.task.ProcessMarkedGoodProductService
 import com.lenta.bp10.models.task.TaskExciseStamp
 import com.lenta.bp10.models.task.WriteOffReason
 import com.lenta.bp10.requests.network.pojo.MarkInfo
+import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.extentions.map
 
 class MarkedGoodStampCollector(private val processMarkedGoodProductService: ProcessMarkedGoodProductService) {
 
-    private val countLiveData: MutableLiveData<Double> = MutableLiveData()
+    private val countLiveData = MutableLiveData(0.0)
 
     private val stamps = mutableListOf<TaskExciseStamp>()
 
@@ -99,6 +100,12 @@ class MarkedGoodStampCollector(private val processMarkedGoodProductService: Proc
 
 
     fun isContainsStamp(code: String): Boolean {
+        /*Logg.d { "--> code = $code" }
+        val isExistMarkInStamps = stamps.firstOrNull { it.code == code } != null
+        val isExistMarkInRepo = processMarkedGoodProductService.taskRepository.getExciseStamps().isContainsStamp(code)
+        Logg.d { "--> isExistMarkInStamps = $isExistMarkInStamps / isExistMarkInRepo = $isExistMarkInRepo" }
+
+        return isExistMarkInStamps || isExistMarkInRepo*/
         return stamps.firstOrNull { it.code == code } != null ||
                 processMarkedGoodProductService.taskRepository.getExciseStamps().isContainsStamp(code)
     }

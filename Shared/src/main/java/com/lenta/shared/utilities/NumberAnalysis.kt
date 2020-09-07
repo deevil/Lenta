@@ -11,7 +11,7 @@ fun actionByNumber(
         funcForExcise: ((exciseNumber: String) -> Unit)? = null,
         funcForExciseBox: ((boxNumber: String) -> Unit)? = null,
         funcForMark: ((markNumber: String) -> Unit)? = null,
-        funcForShoes: ((ean: String, correctedNumber: String, originalNumber: String) -> Unit)? = null,
+        funcForShoes: ((ean: String, markWithoutTail: String, originalNumber: String) -> Unit)? = null,
         funcForCigarettes: ((markNumber: String) -> Unit)? = null,
         funcForCigaretteBox: ((markNumber: String) -> Unit)? = null,
         funcForNotValidFormat: () -> Unit
@@ -41,12 +41,8 @@ fun actionByNumber(
     if (isShoesMark(number)) {
         val matchResult = Regex(Constants.SHOES_MARK_PATTERN).find(number)
         matchResult?.let {
-            val (_, barcode, _, _, _, _) = it.destructured // gtin, barcode, serial, tradeCode, verificationKey, verificationCode
-            barcode
-        }?.let { ean ->
-            val correctedNumber = number // todo Нужно отбросить криптохвост. Что это и как?
-
-            funcForShoes?.invoke(ean, correctedNumber, number) ?: funcForNotValidFormat()
+            val (markWithoutTail, ean, _, _, _, _) = it.destructured // markWithoutTail, ean, serial, tradeCode, verificationKey, verificationCode
+            funcForShoes?.invoke(ean, markWithoutTail, number) ?: funcForNotValidFormat()
         } ?: funcForNotValidFormat()
 
         return
