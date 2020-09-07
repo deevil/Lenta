@@ -217,6 +217,10 @@ class IngredientDetailsViewModel : CoreViewModel() {
         }
     }
 
+    fun onClickAddAttributeButton(){
+        navigator.openAddAttributeScreen()
+    }
+
     fun onClickAdd() {
         weighted.value = total.value
         weightField.value = DEFAULT_WEIGHT

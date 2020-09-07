@@ -195,6 +195,10 @@ class MaterialRemakeDetailsViewModel : CoreViewModel() {
         }
     }
 
+    fun onClickAddAttributeButton(){
+        navigator.openAddAttributeScreen()
+    }
+
     fun onScanResult(data: String) {
         ean.value = data
         preparationEanForSearch()

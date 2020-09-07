@@ -7,11 +7,12 @@ import com.lenta.bp16.platform.extention.getAppComponent
 import com.lenta.shared.platform.activity.OnBackPresserListener
 import com.lenta.shared.platform.fragment.CoreFragment
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
+import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListener
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
 import com.lenta.shared.utilities.extentions.provideViewModel
 
-class AddAttributeFragment : CoreFragment<FragmentAddAttributeBinding, AddAttributeViewModel>(), ToolbarButtonsClickListener, OnBackPresserListener {
+class AddAttributeFragment : CoreFragment<FragmentAddAttributeBinding, AddAttributeViewModel>(), ToolbarButtonsClickListener {
 
     override fun getLayoutId(): Int = R.layout.fragment_add_attribute
 
@@ -25,19 +26,24 @@ class AddAttributeFragment : CoreFragment<FragmentAddAttributeBinding, AddAttrib
     }
 
     override fun setupTopToolBar(topToolbarUiModel: TopToolbarUiModel) {
-        TODO("Not yet implemented")
+       /* topToolbarUiModel.title.value = buildString {
+            append(parentCode)
+            append(" ")
+            append(name)
+        }
+        topToolbarUiModel.description.value = ltxa1*/
     }
 
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
-        TODO("Not yet implemented")
+        bottomToolbarUiModel.uiModelButton1.show(ButtonDecorationInfo.back)
+        bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.complete)
     }
 
     override fun onToolbarButtonClick(view: View) {
-        TODO("Not yet implemented")
-    }
-
-    override fun onBackPressed(): Boolean {
-        TODO("Not yet implemented")
+        when(view.id){
+            //R.id.b_1 -> vm.onClickBack()
+            R.id.b_5 -> vm.onClickComplete()
+        }
     }
 
     companion object{
