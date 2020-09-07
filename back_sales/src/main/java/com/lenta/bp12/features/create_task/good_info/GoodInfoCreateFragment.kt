@@ -4,8 +4,6 @@ import android.view.View
 import com.lenta.bp12.R
 import com.lenta.bp12.databinding.FragmentGoodInfoCreateBinding
 import com.lenta.bp12.platform.extention.getAppComponent
-import com.lenta.shared.keys.KeyCode
-import com.lenta.shared.keys.OnKeyDownListener
 import com.lenta.shared.platform.activity.OnBackPresserListener
 import com.lenta.shared.platform.fragment.CoreFragment
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
@@ -19,7 +17,7 @@ import com.lenta.shared.utilities.extentions.provideViewModel
 
 class GoodInfoCreateFragment : CoreFragment<FragmentGoodInfoCreateBinding, GoodInfoCreateViewModel>(),
         ToolbarButtonsClickListener, OnScanResultListener, OnBackPresserListener
-        , OnKeyDownListener {
+        /*, OnKeyDownListener*/ {
 
     override fun getLayoutId(): Int = R.layout.fragment_good_info_create
 
@@ -79,7 +77,7 @@ class GoodInfoCreateFragment : CoreFragment<FragmentGoodInfoCreateBinding, GoodI
         const val SCREEN_NUMBER = "12"
     }
 
-    //Для тестов
+/*    //Для тестов
     override fun onKeyDown(keyCode: KeyCode): Boolean {
         return when (keyCode) {
             //Блок Мрц 106
@@ -134,6 +132,6 @@ class GoodInfoCreateFragment : CoreFragment<FragmentGoodInfoCreateBinding, GoodI
             }
             else -> false
         }
-    }
+    }*/
 
 }
