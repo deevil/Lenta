@@ -12,9 +12,11 @@ class ResourceManager @Inject constructor(
 
     override val deviceIp: String by lazy { context.getDeviceIp() }
     override val goodNotFoundErrorMsg: String by lazy { context.getString(R.string.good_not_found_error_msg) }
+    override val goodsNotFoundErrorMsg: String by lazy { context.getString(R.string.goods_not_found_error_msg) }
     override val basketNotFoundErrorMsg: String by lazy { context.getString(R.string.basket_not_found_error_msg) }
     override val taskNotFoundErrorMsg: String by lazy { context.getString(R.string.task_not_found_error_msg) }
     override val rub: String by lazy { context.getString(R.string.rub) }
+    override val noStatusMark: String by lazy { context.getString(R.string.no_status_mark) }
 
     override fun tk(number: String): String = context.getString(R.string.tk_number, number)
 
@@ -55,8 +57,10 @@ interface IResourceManager {
 
     val deviceIp: String
     val goodNotFoundErrorMsg: String
+    val goodsNotFoundErrorMsg: String
     val basketNotFoundErrorMsg: String
     val taskNotFoundErrorMsg: String
+    val noStatusMark: String
     val rub: String
 
     fun tk(number: String): String

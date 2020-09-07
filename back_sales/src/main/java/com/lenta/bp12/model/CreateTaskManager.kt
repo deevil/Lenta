@@ -130,6 +130,35 @@ class CreateTaskManager @Inject constructor(
         }
     }
 
+    override suspend fun addGoodToBasketWithMarks(good: GoodCreate, marks: List<Mark>, provider: ProviderInfo) {
+        currentTask.value?.let { taskValue ->
+            marks.forEach { mark ->
+                val suitableBasket = getOrCreateSuitableBasket(taskValue, good, provider)
+
+                // Добавим марке номер корзины
+                mark.basketNumber = suitableBasket.index
+                // Положим в товар
+                // Продублируем марку в позиции (просто надо)
+                addEmptyPosition(good, provider, suitableBasket)
+                // Добавим товар в корзину
+                suitableBasket.addGood(good, 1.0)
+                // Добавим товар в задание
+                saveGoodInTask(good)
+                // Обновим товар в менеджере
+                updateCurrentGood(good)
+
+                if (isBasketsNeedsToBeClosed) {
+                    suitableBasket.markedForLock = true
+                }
+            }
+
+            taskValue.baskets.filter { it.markedForLock }.forEach {
+                it.isLocked = true
+                it.markedForLock = false
+            }
+        }
+    }
+
     private fun addEmptyPosition(good: GoodCreate, provider: ProviderInfo, basket: Basket) {
         val position = Position(
                 quantity = 0.0,
@@ -174,9 +203,10 @@ class CreateTaskManager @Inject constructor(
     override fun getBasket(providerCode: String): Basket? {
         return currentTask.value?.let { task ->
             currentGood.value?.let { good ->
-                task.baskets.lastOrNull { basket ->
+                val basketsFromTask = task.baskets
+                basketsFromTask.lastOrNull { basket ->
                     val divByMark = if (task.type.isDivByMark) basket.markTypeGroup == good.markTypeGroup else true
-                    val divByMrc = if (task.type.isDivByMinimalPrice)  basket.maxRetailPrice == good.maxRetailPrice else true
+                    val divByMrc = if (task.type.isDivByMinimalPrice) basket.maxRetailPrice == good.maxRetailPrice else true
                     isLastBasketMatches(basket, good, providerCode, divByMark, divByMrc)
                 }
             }
@@ -395,6 +425,7 @@ interface ICreateTaskManager : ITaskManager {
 
     suspend fun addGoodToBasket(good: GoodCreate, part: Part? = null, provider: ProviderInfo, count: Double)
     suspend fun addGoodToBasketWithMark(good: GoodCreate, mark: Mark, provider: ProviderInfo)
+    suspend fun addGoodToBasketWithMarks(good: GoodCreate, marks: List<Mark>, provider: ProviderInfo)
     suspend fun getOrCreateSuitableBasket(task: TaskCreate, good: GoodCreate, provider: ProviderInfo): Basket?
 
     fun updateCurrentTask(task: TaskCreate?)

@@ -53,14 +53,14 @@
             <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
+                android:layout_marginStart="@dimen/size_16dp"
                 android:src="@drawable/ic_not_strict_list_white_32dp"
                 app:isStrictList="@{false}" />
 
             <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
+                android:layout_marginStart="@dimen/size_8dp"
                 android:onClick="@{(v) -> vm.navigator.showExciseAlcoholGoodInfoScreen()}"
                 android:src="@drawable/ic_excise_alcohol_white_32dp"
                 android:visibility="@{vm.alcohol}" />
@@ -68,7 +68,7 @@
             <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
+                android:layout_marginStart="@dimen/size_8dp"
                 android:onClick="@{(v) -> vm.navigator.showCommonGoodInfoScreen()}"
                 android:src="@drawable/ic_kandy_white_32dp"
                 android:visibility="@{vm.common}" />
@@ -76,7 +76,7 @@
             <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
+                android:layout_marginStart="@dimen/size_8dp"
                 android:onClick="@{(v) -> vm.navigator.showMarkedGoodInfoScreen()}"
                 android:src="@drawable/ic_marked_white_32dp" />
 

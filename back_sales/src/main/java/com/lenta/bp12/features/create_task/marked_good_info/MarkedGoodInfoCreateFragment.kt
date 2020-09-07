@@ -30,7 +30,7 @@ import com.lenta.shared.utilities.extentions.generateScreenNumberFromPostfix
 import com.lenta.shared.utilities.extentions.provideViewModel
 
 class MarkedGoodInfoCreateFragment : CoreFragment<FragmentMarkedGoodInfoCreateBinding, MarkedGoodInfoCreateViewModel>(),
-        ViewPagerSettings, ToolbarButtonsClickListener, OnScanResultListener, OnBackPresserListener, OnKeyDownListener {
+        ViewPagerSettings, ToolbarButtonsClickListener, OnScanResultListener, OnBackPresserListener/*, OnKeyDownListener*/ {
 
     override fun getLayoutId(): Int = R.layout.fragment_marked_good_info_create
 
@@ -41,15 +41,8 @@ class MarkedGoodInfoCreateFragment : CoreFragment<FragmentMarkedGoodInfoCreateBi
         getAppComponent()?.inject(vm)
         arguments?.let {
             val marks = it.getParcelableArrayList<Mark>(MARKS_KEY)
-            marks?.let { listOfMarks ->
-                vm.tempMarks.value?.addAll(listOfMarks)
-                Logg.e { marks.toString() }
-            } ?: Logg.e { "marks empty " }
             val properties = it.getParcelableArrayList<GoodProperty>(PROPERTIES_KEY)
-            properties?.let { listOfProperties ->
-                vm.properties.value?.addAll(listOfProperties)
-                Logg.e { properties.toString() }
-            } ?: Logg.e { "properties empty " }
+            vm.setupData(marks, properties)
         }
         return vm
 
@@ -64,10 +57,13 @@ class MarkedGoodInfoCreateFragment : CoreFragment<FragmentMarkedGoodInfoCreateBi
         bottomToolbarUiModel.uiModelButton1.show(ButtonDecorationInfo.back)
         bottomToolbarUiModel.uiModelButton2.show(ButtonDecorationInfo.rollback)
         bottomToolbarUiModel.uiModelButton3.show(ButtonDecorationInfo.details)
+        bottomToolbarUiModel.uiModelButton4.show(ButtonDecorationInfo.close)
         bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.apply, enabled = false)
 
         connectLiveData(vm.rollbackVisibility, bottomToolbarUiModel.uiModelButton2.visibility)
         connectLiveData(vm.rollbackEnabled, bottomToolbarUiModel.uiModelButton2.enabled)
+        connectLiveData(vm.closeEnabled, bottomToolbarUiModel.uiModelButton4.enabled)
+        connectLiveData(vm.closeVisibility, bottomToolbarUiModel.uiModelButton4.visibility)
         connectLiveData(vm.applyEnabled, bottomToolbarUiModel.uiModelButton5.enabled)
     }
 
@@ -75,9 +71,7 @@ class MarkedGoodInfoCreateFragment : CoreFragment<FragmentMarkedGoodInfoCreateBi
         when (view.id) {
             R.id.b_2 -> vm.onClickRollback()
             R.id.b_3 -> vm.onClickDetails()
-//            R.id.b_3 -> vm.onScanResult("01046002660113672100000BX.8005012345.938000.92NGkg+wRXz36kBFjpfwOub5DBIIpD2iS/DMYpZuuDLU0Y3pZt1z20/1ksr4004wfhDhRxu4dgUV4QN96Qtdih9g==") // Блок
-//            R.id.b_3 -> vm.onScanResult("00000046203564000001A01238000") // Пачка
-            //R.id.b_3 -> vm.onScanResult("147300249826851018001FZSIZAB5I6KZKWEQKPKZJHW6MYKVGAETXLPV7M5AIF7OXTQFIM347EWQGXAK65QGJFKTR7EQDHJQTJFSW5DNWTBU3BRLKVM7D6YZMYRBV6IOQY5ZXLPKLBHUZPBTRFTLQ") // Марка
+            R.id.b_4 -> vm.onClickClose()
             R.id.b_5 -> vm.onClickApply()
         }
     }
@@ -157,8 +151,9 @@ class MarkedGoodInfoCreateFragment : CoreFragment<FragmentMarkedGoodInfoCreateBi
         binding?.viewPagerSettings = this
     }
 
-    override fun onKeyDown(keyCode: KeyCode): Boolean {
+ /*   override fun onKeyDown(keyCode: KeyCode): Boolean {
         return when (keyCode) {
+            // 504550
             //Блок Мрц 106
             KeyCode.KEYCODE_0 -> {
                 vm.onScanResult("01046002660113672100000Ce.8005021200.938000.92NGkg+wRXz36kBFjpfwOub5DBIIpD2iS/DMYpZuuDLU0Y3pZt1z20/1ksr4004wfhDhRxu4dgUV4QN96Qtdih9g==")
@@ -191,7 +186,7 @@ class MarkedGoodInfoCreateFragment : CoreFragment<FragmentMarkedGoodInfoCreateBi
             }
             else -> false
         }
-    }
+    }*/
 
     companion object {
         fun newInstance(marks: List<Mark>, properties: List<GoodProperty>): MarkedGoodInfoCreateFragment {

@@ -5,11 +5,11 @@ import com.google.gson.annotations.SerializedName
 data class PropertiesInfo(
         /** ШК товара */
         @SerializedName("EAN")
-        val ean: String,
+        val ean: String?,
         /** Наименование свойства */
         @SerializedName("NAME")
-        val propertyName: String,
+        val propertyName: String?,
         /** Значение свойства */
         @SerializedName("VALUE")
-        val propertyValue: String
+        val propertyValue: String?
 )

@@ -185,17 +185,6 @@ class ScreenNavigator @Inject constructor(
         }
     }
 
-//    override fun openMarkedGoodInfoCreateScreen(marks: List<Mark>, properties: List<GoodProperty>) {
-//        runOrPostpone {
-//            getFragmentStack()?.push(MarkedGoodInfoCreateFragment.newInstance(marks, properties))
-//        }
-//    }
-//
-//    override fun openMarkedGoodInfoOpenScreen(marks: List<Mark>, properties: List<GoodProperty>) {
-//        runOrPostpone {
-//            getFragmentStack()?.push(MarkedGoodInfoOpenFragment.newInstance(marks, properties))
-//        }
-//    }
     override fun openMarkedGoodInfoCreateScreen() {
         runOrPostpone {
             getFragmentStack()?.push(MarkedGoodInfoCreateFragment())

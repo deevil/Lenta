@@ -11,10 +11,10 @@ import com.lenta.shared.requests.SapResponse
 data class MarkCartonBoxGoodInfoNetRequestResult(
         /** Статус марки */
         @SerializedName("EV_STAT")
-        val markStatus: MarkRequestStatus,
+        val markStatus: MarkRequestStatus?,
         /** Текст статуса */
         @SerializedName("EV_STAT_TEXT")
-        val markStatusText: String,
+        val markStatusText: String?,
         /** Список марок задания для передачи в МП */
         @SerializedName("ET_MARKS")
         val marks: List<MarkInfo>?,

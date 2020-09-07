@@ -28,7 +28,7 @@
             android:id="@+id/rv"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_marginBottom="8dp"
+            android:layout_marginBottom="@dimen/size_8dp"
             android:layout_weight="1"
             app:items="@{vm.propertiesItems}"
             app:rv_config="@{rvConfig}"

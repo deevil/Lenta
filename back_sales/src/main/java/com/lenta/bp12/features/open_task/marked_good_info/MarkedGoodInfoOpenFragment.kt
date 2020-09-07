@@ -30,7 +30,7 @@ import com.lenta.shared.utilities.extentions.provideViewModel
 
 class MarkedGoodInfoOpenFragment : CoreFragment<FragmentMarkedGoodInfoOpenBinding, MarkedGoodInfoOpenViewModel>(),
         ViewPagerSettings, ToolbarButtonsClickListener, OnScanResultListener, OnBackPresserListener
-        /*,OnKeyDownListener*/ {
+/*,OnKeyDownListener*/ {
 
     override fun getLayoutId(): Int = R.layout.fragment_marked_good_info_open
 
@@ -41,15 +41,8 @@ class MarkedGoodInfoOpenFragment : CoreFragment<FragmentMarkedGoodInfoOpenBindin
         getAppComponent()?.inject(vm)
         arguments?.let {
             val marks = it.getParcelableArrayList<Mark>(MARKS_KEY)
-            marks?.let { listOfMarks ->
-                vm.tempMarks.value?.addAll(listOfMarks)
-                Logg.e { marks.toString() }
-            } ?: Logg.e { "marks empty " }
             val properties = it.getParcelableArrayList<GoodProperty>(PROPERTIES_KEY)
-            properties?.let { listOfProperties ->
-                vm.properties.value?.addAll(listOfProperties)
-                Logg.e { properties.toString() }
-            } ?: Logg.e { "properties empty " }
+            vm.setupData(marks, properties)
         }
         return vm
 
@@ -69,25 +62,17 @@ class MarkedGoodInfoOpenFragment : CoreFragment<FragmentMarkedGoodInfoOpenBindin
         connectLiveData(vm.rollbackVisibility, bottomToolbarUiModel.uiModelButton2.visibility)
         connectLiveData(vm.rollbackEnabled, bottomToolbarUiModel.uiModelButton2.enabled)
         connectLiveData(vm.applyEnabled, bottomToolbarUiModel.uiModelButton5.enabled)
+
+        if (vm.isWholesale) {
+            bottomToolbarUiModel.uiModelButton4.show(ButtonDecorationInfo.close)
+            connectLiveData(vm.closeEnabled, bottomToolbarUiModel.uiModelButton4.enabled)
+        }
     }
 
     override fun onToolbarButtonClick(view: View) {
         when (view.id) {
             R.id.b_2 -> vm.onClickRollback()
             R.id.b_3 -> vm.onClickDetails()
-//            R.id.b_3 -> vm.onScanResult("01046002660113672100000BX.8005012345.938000.92NGkg+wRXz36kBFjpfwOub5DBIIpD2iS/DMYpZuuDLU0Y3pZt1z20/1ksr4004wfhDhRxu4dgUV4QN96Qtdih9g==") // Блок
-//            R.id.b_3 -> vm.onScanResult("00000046203564000001A01238000") // Пачка
-            //R.id.b_3 -> vm.onScanResult("147300249826851018001FZSIZAB5I6KZKWEQKPKZJHW6MYKVGAETXLPV7M5AIF7OXTQFIM347EWQGXAK65QGJFKTR7EQDHJQTJFSW5DNWTBU3BRLKVM7D6YZMYRBV6IOQY5ZXLPKLBHUZPBTRFTLQ") // Марка
-            //R.id.b_3 -> vm.onScanResult("1734001784926710180016BZ3532QMZKOBPRTXTL7BZMZ3YNNMK53PXMB3ZU66TJ3SNVFR7YTCYVLOPKUNBQIG5XXLKNYYWMWGGUXJLVHB2NLSMF6ACBJDB73IUKGGSAEOWKBY7TW7FZ5BLIT3YT2Y") // SAP-код: 270202156641
-            //R.id.b_3 -> vm.onScanResult("236200647504871018001FCCBM6EJ4RTKG5J6SZPIOVDIA4G3QGAZLK3HVONWWBVHXJYO3HOAX633MX756X27L27QPWSTGUNJM5IZL2X67XID6FSVVZAFI5OXWE5XJNHQMELI76JC45KQN2GH5VD7Y") // SAP-код: 444877
-            //R.id.b_3 -> vm.onScanResult("22N00000XOIJT87CH2W0123456789012345678901234567890123456789000000001") // Марка 156641
-            //R.id.b_3 -> vm.onScanResult("22N00001CRDKFRWFBZ90123456789012345678901234567890123456789000000001") // Марка 377456
-            //R.id.b_3 -> vm.onScanResult("22N00002NWKKIF6RWF30123456789012345678901234567890123456789000000004") // Партия
-            //R.id.b_3 -> vm.onScanResult("03000048752210319000100516") // Коробка
-            //R.id.b_3 -> vm.onScanResult("01000000637810119000001340") // Коробка
-            //R.id.b_3 -> vm.onScanResult("03000042907513119000404111") // Коробка 082682
-            //R.id.b_3 -> vm.onScanResult("4607055090121") // ШК
-            //R.id.b_3 -> vm.onScanResult("4607149780501") // ШК
             R.id.b_5 -> vm.onClickApply()
         }
     }
@@ -128,6 +113,7 @@ class MarkedGoodInfoOpenFragment : CoreFragment<FragmentMarkedGoodInfoOpenBindin
                 R.layout.layout_marked_good_info_open_quantity_tab,
                 container,
                 false)
+
         layoutBinding.vm = vm
         layoutBinding.lifecycleOwner = viewLifecycleOwner
 
@@ -180,6 +166,7 @@ class MarkedGoodInfoOpenFragment : CoreFragment<FragmentMarkedGoodInfoOpenBindin
         private const val TAB_QUANTITY = 2
     }
 
+    //FOR TESTING
 //    override fun onKeyDown(keyCode: KeyCode): Boolean {
 //        return when (keyCode) {
 //            //Блок Мрц 106
