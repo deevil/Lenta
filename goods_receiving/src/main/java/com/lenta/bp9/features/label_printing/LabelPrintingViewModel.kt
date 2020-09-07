@@ -45,7 +45,7 @@ class LabelPrintingViewModel : CoreViewModel() {
                                 productName = "${product?.getMaterialLastSix().orEmpty()} ${product?.description.orEmpty()}",
                                 batchName = "ДП-${label.shelfLifeDate} // ${label.manufactureCode}", //todo заменить на наименование производителя
                                 quantityUnit = "${productDiscrepancies?.numberDiscrepancies.orEmpty()} ${product?.uom?.name.orEmpty()}",
-                                isPrinted = batch.isCheck,
+                                isPrinted = false,
                                 batchNumber = label.batchNumber
                         )
                     }
