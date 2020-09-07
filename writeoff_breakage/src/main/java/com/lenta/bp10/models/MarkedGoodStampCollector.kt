@@ -109,6 +109,7 @@ class MarkedGoodStampCollector(private val processMarkedGoodProductService: Proc
     fun clear() {
         stamps.clear()
         boxes.clear()
+        lastAddedMarks.clear()
 
         onDataChanged()
     }
