@@ -121,25 +121,26 @@ object EAN128Parser {
 
     private fun getCode(data: String, ai: AII, index: Int): String {
         // get the max lenght to read.
-        var localIndex = index
-        var lenghtToRead = min(ai.LengthOfData, data.length - localIndex)
+        var lenghtToRead = min(ai.LengthOfData, data.length - index)
+        // final position
+        val finalReadIndex = lenghtToRead + index
         // get the data of the current AI
-        var result = data.substring(localIndex, lenghtToRead + localIndex)
+        var result = data.substring(index, finalReadIndex)
         // check if the AI support a group seperator
         if (ai.FNC1) {
             // try to find the index of the group seperator
             val indexOfGroupTermination = result.indexOf(groutSeperator)
             if (indexOfGroupTermination >= 0) {
-                result = data.substring(localIndex, indexOfGroupTermination + localIndex)
+                result = data.substring(index, indexOfGroupTermination + index)
                 lenghtToRead = indexOfGroupTermination + 1
             } else {
                 // get the data of the current AI till the group seperator with out it
-                result = data.substring(localIndex, lenghtToRead + localIndex)
+                result = data.substring(index, finalReadIndex)
             }
         }
 
-        if (localIndex + lenghtToRead < data.length
-                && data[localIndex + lenghtToRead] == groutSeperator) {
+        if (finalReadIndex < data.length
+                && data[finalReadIndex] == groutSeperator) {
             position++
         }
 

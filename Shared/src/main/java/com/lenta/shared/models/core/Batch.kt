@@ -4,7 +4,7 @@ import java.util.*
 
 data class Batch(
         val batchNumber: String,
-        val count: Double? = null,
+        val count: String? = null,
         val dateOfProduction: Date? = null,
         val dateOfExpiration: Date? = null,
         val manufacturer: Manufacturer? = null

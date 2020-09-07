@@ -47,7 +47,7 @@ abstract class BarcodeViewModel : CoreViewModel() {
                 weight = parsedEntities.getString(ApplicationIdentifier.ITEM_NET_WEIGHT_KG)
                 isWeight = GTIN.isVariableMeasureItem(barcode)
                 val batchNumber = parsedEntities.getString(ApplicationIdentifier.BATCH_OR_LOT_NUMBER)
-                val count = parsedEntities.getDouble(ApplicationIdentifier.COUNT_OF_TRADE_ITEMS)
+                val count = parsedEntities.getString(ApplicationIdentifier.COUNT_OF_TRADE_ITEMS)
                 val dateProduction = parsedEntities.getDate(ApplicationIdentifier.PRODUCTION_DATE_AND_TIME)
                 val dateExpiration = parsedEntities.getDate(ApplicationIdentifier.EXPIRATION_DATE_AND_TIME)
 
