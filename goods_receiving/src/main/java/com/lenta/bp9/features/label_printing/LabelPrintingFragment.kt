@@ -12,11 +12,13 @@ import com.lenta.bp9.platform.extentions.getAppComponent
 import com.lenta.shared.platform.fragment.CoreFragment
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
+import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListener
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
 import com.lenta.shared.utilities.extentions.connectLiveData
 import com.lenta.shared.utilities.extentions.provideViewModel
 
-class LabelPrintingFragment : CoreFragment<FragmentLabelPrintingBinding, LabelPrintingViewModel>() {
+class LabelPrintingFragment : CoreFragment<FragmentLabelPrintingBinding, LabelPrintingViewModel>(),
+        ToolbarButtonsClickListener {
 
     override fun getLayoutId(): Int = R.layout.fragment_label_printing
 
@@ -59,7 +61,7 @@ class LabelPrintingFragment : CoreFragment<FragmentLabelPrintingBinding, LabelPr
             layoutBinding.rvConfig = initRecycleAdapterDataBinding(
                     layoutId = R.layout.item_tile_label_printing,
                     itemId = BR.item,
-                    onAdapterItemBind = { binding: ItemTileGoodsDetailsDelBinding, position: Int ->
+                    onAdapterItemBind = { binding: ItemTileLabelPrintingBinding, position: Int ->
                         binding.tvItemNumber.tag = position
                         binding.tvItemNumber.setOnClickListener(onClickSelectionListener)
                         binding.selectedForDelete = vm.labelSelectionsHelper.isSelected(position)
@@ -71,9 +73,17 @@ class LabelPrintingFragment : CoreFragment<FragmentLabelPrintingBinding, LabelPr
         }
     }
 
-    override fun onResume() {
-        super.onResume()
-        vm.onResume()
+    override fun onToolbarButtonClick(view: View) {
+        when (view.id) {
+            R.id.b_4 -> vm.onClickPrint()
+            R.id.b_5 -> vm.onClickNext()
+        }
     }
+
+    override fun onFragmentResult(arguments: Bundle) {
+        super.onFragmentResult(arguments)
+        vm.markPrintedLabels(arguments)
+    }
+
 
 }

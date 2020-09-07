@@ -348,4 +348,6 @@
     <string name="no_manufacturer_selection_required">Выбор производителя не требуется</string>
     <string name="format_time">чч:мм</string>
     <string name="label_printing">Печать этикеток</string>
+    <string name="specify_the_number_of_copies">Укажите количество копий</string>
+    <string name="printing_by_goods">Печать по товарам</string>
 </resources>

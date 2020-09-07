@@ -39,6 +39,9 @@ import com.lenta.bp9.features.goods_information.sets.task_ppp.set_component_rece
 import com.lenta.bp9.features.goods_information.z_batches.task_ppp.ZBatchesInfoPPPFragment
 import com.lenta.bp9.features.goods_list.GoodsListFragment
 import com.lenta.bp9.features.input_outgoing_fillings.InputOutgoingFillingsFragment
+import com.lenta.bp9.features.label_printing.LabelPrintingFragment
+import com.lenta.bp9.features.label_printing.LabelPrintingItem
+import com.lenta.bp9.features.label_printing.print_labels_count_copies.PrintLabelsCountCopiesFragment
 import com.lenta.bp9.features.list_goods_transfer.ListGoodsTransferFragment
 import com.lenta.bp9.features.loading.fast.FastDataLoadingFragment
 import com.lenta.bp9.features.loading.tasks.*
@@ -1724,6 +1727,18 @@ class ScreenNavigator(
         }
     }
 
+    override fun openLabelPrintingScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(LabelPrintingFragment())
+        }
+    }
+
+    override fun openPrintLabelsCountCopiesScreen(labels: List<LabelPrintingItem>?) {
+        runOrPostpone {
+            getFragmentStack()?.push(PrintLabelsCountCopiesFragment.newInstance(labels))
+        }
+    }
+
     private fun getFragmentStack() = foregroundActivityProvider.getActivity()?.fragmentStack
 }
 
@@ -1918,4 +1933,6 @@ interface IScreenNavigator : ICoreNavigator {
     fun openMarkingPerformRateControlScreen()
     fun openMarkingBlockDeclaredDifferentCategoryScreen(typeDiscrepanciesName: String)
     fun openZBatchesInfoPPPScreen(productInfo: TaskProductInfo, isDiscrepancy: Boolean)
+    fun openLabelPrintingScreen()
+    fun openPrintLabelsCountCopiesScreen(labels: List<LabelPrintingItem>? = null)
 }

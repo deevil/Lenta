@@ -4,21 +4,64 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context=".features.label_printing.print_labels_count_copies.PrintLabelsCountCopiesFragment">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
-    </androidx.constraintlayout.widget.ConstraintLayout>
-
-
     <data>
 
         <variable
             name="vm"
             type="com.lenta.bp9.features.label_printing.print_labels_count_copies.PrintLabelsCountCopiesViewModel" />
 
-
     </data>
 
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <TextView
+            android:id="@+id/tv_printing_by_goods"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@{vm.tvPrintingByGoods}"
+            app:layout_constraintBottom_toTopOf="@+id/tv_production_date"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            tools:text="Печать по товарам" />
+
+        <TextView
+            android:id="@+id/tv_production_date"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@{vm.tvProductionDate}"
+            android:visibility="@{vm.isVisibilityProductionDate}"
+            app:layout_constraintBottom_toTopOf="@+id/tv_specify_count_copies"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            tools:text="Дата производства" />
+
+        <TextView
+            android:id="@+id/tv_specify_count_copies"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:paddingTop="@dimen/size_24dp"
+            android:text="@string/specify_the_number_of_copies"
+            app:layout_constraintBottom_toTopOf="@+id/et_count_copies"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <EditText
+            android:id="@+id/et_count_copies"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:digits="1234567890"
+            android:ems="10"
+            android:inputType="numberDecimal"
+            android:maxLines="1"
+            android:text="@={vm.countCopies}"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:requestFocus="@{true}" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 </layout>
