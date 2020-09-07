@@ -30,19 +30,22 @@ object EAN128Parser {
     var eAN128StartCode = "]C1"
     var HasCheckSum = false
 
+    private var position = 0
+
     private fun addAi(ai: String, description: String, lengthOfAI: Int, dataDescription: DataType, lengthOfData: Int, fnc1: Boolean) {
         aiiDict[ai] = AII(ai, description, lengthOfAI, dataDescription, lengthOfData, fnc1)
     }
 
     fun parseBy(barcode: String): Map<AII, String> {
-        val splitted = barcode.split("[/((?!^)\\{.*?\\})/]".toRegex())
+        val splitted = barcode.split("[/((?!^)\\{*?\\})/]".toRegex())
         return addToMap(splitted)
     }
 
     private fun addToMap(list: List<String>): Map<AII, String> {
         val result: MutableMap<AII, String> = HashMap()
         list.forEachIndexed { index, code ->
-            val ai: AII? = aiiDict[code]
+            val coded = "${code}d"
+            val ai: AII? = aiiDict[code] ?: aiiDict[coded]
             ai?.let {
                 val nextCodeIndex = index + 1
                 if (list.size > nextCodeIndex) {
@@ -88,6 +91,7 @@ object EAN128Parser {
      */
     @Throws(InvalidObjectException::class)
     fun parse(barcode: String, throwException: Boolean): Map<AII, String> {
+        position = 0
         var localData = barcode.replace("(", "").replace(")", "")
         // cut off the EAN128 start code
         if (localData.startsWith(eAN128StartCode)) {
@@ -98,25 +102,19 @@ object EAN128Parser {
             localData = localData.substring(0, localData.length - 2)
         }
         val result: MutableMap<AII, String> = HashMap()
-        var index = 0
         // walk through the EAN128 code
-        while (index < localData.length) {
+        while (position < localData.length) {
             // try to get the AI at the current position
-            val (ai: AII?, count: Int) = getAI(localData, index, false)
+            val ai: AII? = getAI(localData, position, false)
             if (ai == null) {
                 if (throwException) {
                     throw InvalidObjectException("AI not found")
                 }
                 return result
-            } else {
-                // Shift the index to the next
-                //index += ai.LengthOfData + count
             }
             // get the data to the current AI
-            val code = getCode(localData, ai, count)
+            val code = getCode(localData, ai, position)
             result[ai] = code
-            // Shift the index to the next
-            index += code.length + count
         }
         return result
     }
@@ -126,7 +124,6 @@ object EAN128Parser {
         var localIndex = index
         var lenghtToRead = min(ai.LengthOfData, data.length - localIndex)
         // get the data of the current AI
-        val lastPosition = lenghtToRead + localIndex
         var result = data.substring(localIndex, lenghtToRead + localIndex)
         // check if the AI support a group seperator
         if (ai.FNC1) {
@@ -139,30 +136,25 @@ object EAN128Parser {
                 // get the data of the current AI till the group seperator with out it
                 result = data.substring(localIndex, lenghtToRead + localIndex)
             }
-            val (resultAI: AII?, count: Int)= getAI(result, 0, false)
-            resultAI?.let {
-                result = data.substring(localIndex, lenghtToRead + count)
-//                getCode(result, ai, 8)
-            }
         }
 
         if (localIndex + lenghtToRead < data.length
                 && data[localIndex + lenghtToRead] == groutSeperator) {
-            lenghtToRead++
+            position++
         }
 
         // Shift the index to the next
-        localIndex += lenghtToRead
+        position += lenghtToRead
         return result
     }
 
-    private fun getAI(data: String, index: Int, usePlaceHolder: Boolean): Pair<AII?, Int> {
+    private fun getAI(data: String, index: Int, usePlaceHolder: Boolean): AII? {
         var result: AII? = null
         // Step through the different lenghts of the AIs
-        for (i in minLengthOfAI..maxLengthOfAI) {
+        for (i in minLengthOfAI..maxLengthOfAI + 1) {
             val addedIndex = index + i
             if (addedIndex > data.length) {
-                return null to i
+                return null
             }
             // get the AI sub string
             var ai = data.substring(index, addedIndex)
@@ -173,7 +165,8 @@ object EAN128Parser {
             // try to get the ai from the dictionary
             result = aiiDict[ai]
             result?.let {
-                return result to addedIndex
+                position += i
+                return result
             }
             // if no AI found, try it with the next lenght
         }
@@ -181,7 +174,7 @@ object EAN128Parser {
         if (!usePlaceHolder) {
             return getAI(data, index, true)
         }
-        return result to 0
+        return result
     }
 
     init {
@@ -203,6 +196,7 @@ object EAN128Parser {
         addAi("251", "ReferenceToTheBasisUnit", 3, DataType.Alphanumeric, 30, true)
         addAi("252", "GlobalIdentifierSerialisedForTrade", 3, DataType.Numeric, 2, false)
         addAi("30", "AmountInParts", 2, DataType.Numeric, 8, true)
+        addAi("310", "NetWeight_Kilogram", 2, DataType.Numeric, 8, false)
         addAi("310d", "NetWeight_Kilogram", 4, DataType.Numeric, 6, false)
         addAi("311d", "Length_Meter", 4, DataType.Numeric, 6, false)
         addAi("312d", "Width_Meter", 4, DataType.Numeric, 6, false)
@@ -275,7 +269,7 @@ object EAN128Parser {
         addAi("421", "ZipCodeOfRecipient_withCountryCode", 3, DataType.Alphanumeric, 12, true)
         addAi("422", "BasisCountryOfTheWares_ISO3166Format", 3, DataType.Numeric, 3, false)
         addAi("7001", "Nato Stock Number", 4, DataType.Numeric, 13, false)
-        addAi("7003", "DataAndTimeOfManufacturing", 4, DataType.Alphanumeric, 10, false)
+        addAi("7003", "DataAndTimeOfManufacturing", 4, DataType.Alphanumeric, 10, true)
         addAi("8001", "RolesProducts", 4, DataType.Numeric, 14, false)
         addAi("8002", "SerialNumberForMobilePhones", 4, DataType.Alphanumeric, 20, true)
         addAi("8003", "GlobalReturnableAssetIdentifier", 4, DataType.Alphanumeric, 34, true)

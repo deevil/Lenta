@@ -160,7 +160,7 @@ public enum ApplicationIdentifier {
      */
     GCN("255", Format.NUMERIC_VARIABLE, 13, 25),
 
-    ITEM_NET_WEIGHT_KG("310", Format.ALPHANUMERIC_VARIABLE, 1, 6),
+    ITEM_NET_WEIGHT_KG("310", Format.CUSTOM, 1, 6),
     ITEM_LENGTH_METRES("311", Format.DECIMAL),
     ITEM_WIDTH_METRES("312", Format.DECIMAL),
     ITEM_HEIGHT_METRES("313", Format.DECIMAL),

@@ -7,8 +7,10 @@ class BarcodePatternTest {
 
     @Test
     fun barcodePattern() {
-        val barcode4 = "(01)02877311000054(10)500001150580(8008)202008101515"
-        var gsResult = EAN128Parser.parseBy(barcode4)
+        var groutSeperator = 29.toChar()
+        val barcode4 = "010245675434568910500087654345${groutSeperator}80082007231640${groutSeperator}70032007251640${groutSeperator}310001"
+        val weightBarcode = "(01)02911423000011(310)0.01"
+        var gsResult = EAN128Parser.parse(barcode4, false)
 
         val gtin = gsResult.getString(ApplicationIdentifier.GTIN)
         val batch = gsResult.getString(ApplicationIdentifier.BATCH_OR_LOT_NUMBER)

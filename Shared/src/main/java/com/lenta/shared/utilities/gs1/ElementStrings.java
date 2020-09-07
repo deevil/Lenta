@@ -341,7 +341,7 @@ public class ElementStrings {
          * @param year        two digit year
          * @param currentYear four digit century and year
          */
-        private static int resolveTwoDigitYear(int year, int currentYear) {
+        public static int resolveTwoDigitYear(int year, int currentYear) {
             int century = currentYear - (currentYear % 100);
             int difference = year - (currentYear % 100);
             if (difference >= 51 && difference <= 99) {

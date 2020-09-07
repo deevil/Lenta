@@ -4,14 +4,15 @@ import java.util.*
 
 data class Batch(
         val batchNumber: String,
-        val manufacturer: Manufacturer? = null,
-        val bottlingDate: Date? = null,
-        val count: Int? = null
+        val count: Double? = null,
+        val dateOfProduction: Date? = null,
+        val dateOfExpiration: Date? = null,
+        val manufacturer: Manufacturer? = null
 ) {
 
     companion object {
-        fun setBottlingDate(batch: Batch, bottlingDate: Date): Batch {
-            return Batch(batch.batchNumber, batch.manufacturer, bottlingDate, batch.count)
+        fun setBottlingDate(batch: Batch, dateOfProduction: Date, dateOfExpiration: Date? = null): Batch {
+            return Batch(batch.batchNumber, batch.count, dateOfProduction, dateOfExpiration, batch.manufacturer)
         }
     }
 }
