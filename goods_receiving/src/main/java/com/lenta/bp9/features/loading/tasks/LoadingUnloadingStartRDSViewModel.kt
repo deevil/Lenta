@@ -2,14 +2,10 @@ package com.lenta.bp9.features.loading.tasks
 
 import android.content.Context
 import androidx.lifecycle.MutableLiveData
-import com.lenta.bp9.model.task.IReceivingTaskManager
-import com.lenta.bp9.model.task.TaskCargoUnitInfo
-import com.lenta.bp9.model.task.TaskNotification
+import com.lenta.bp9.model.task.*
 import com.lenta.bp9.model.task.revise.TransportCondition
 import com.lenta.bp9.platform.navigation.IScreenNavigator
-import com.lenta.bp9.requests.network.UnloadingStartReceptionDistrCenterNetRequest
-import com.lenta.bp9.requests.network.UnloadingStartReceptionDistrCenterParameters
-import com.lenta.bp9.requests.network.UnloadingStartReceptionDistrCenterResult
+import com.lenta.bp9.requests.network.*
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.features.loading.CoreLoadingViewModel
@@ -19,6 +15,7 @@ import com.lenta.shared.utilities.extentions.launchUITryCatch
 import javax.inject.Inject
 
 class LoadingUnloadingStartRDSViewModel : CoreLoadingViewModel() {
+
     @Inject
     lateinit var screenNavigator: IScreenNavigator
     @Inject
@@ -65,15 +62,22 @@ class LoadingUnloadingStartRDSViewModel : CoreLoadingViewModel() {
         screenNavigator.goBack()
         screenNavigator.goBack()
 
+        val  taskRepository = taskManager.getReceivingTask()?.taskRepository
+
         val conditionNotifications = result.conditionNotifications.map { TaskNotification.from(it) }
-        taskManager.getReceivingTask()?.taskRepository?.getNotifications()?.updateWithNotifications(null, null, null, conditionNotifications)
+        taskRepository?.getNotifications()?.updateWithNotifications(null, null, null, conditionNotifications)
 
         val cargoUnits = result.cargoUnits.map { TaskCargoUnitInfo.from(it) }
-        taskManager.getReceivingTask()?.taskRepository?.getCargoUnits()?.updateCargoUnits(cargoUnits)
+        taskRepository?.getCargoUnits()?.updateCargoUnits(cargoUnits)
 
         val transportConditions = result.transportConditions.map { TransportCondition.from(it) }
-        taskManager.getReceivingTask()?.taskRepository?.getReviseDocuments()?.updateTransportCondition(transportConditions)
-        screenNavigator.openTransportConditionsScreen()
+        taskRepository?.getReviseDocuments()?.updateTransportCondition(transportConditions)
+
+        if (transportConditions.isNotEmpty()) {
+            screenNavigator.openTransportConditionsScreen()
+        } else {
+            screenNavigator.openControlDeliveryCargoUnitsScreen(true) //экран Контроль погрузки ГЕ
+        }
     }
 
     override fun clean() {

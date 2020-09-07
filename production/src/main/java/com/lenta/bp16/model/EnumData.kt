@@ -32,7 +32,7 @@ enum class Tabs(val page: Int) {
 
 enum class SearchStatus {
     DUALISM,
-    FOUND_INGREDIENT,
     FOUND_ORDER,
+    FOUND_MATERIAL,
     NOT_FOUND
 }

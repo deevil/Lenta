@@ -113,6 +113,18 @@ class AppSettings(
             sharedPrefferences.edit().putString("lastGroup$lastLogin",value).commit()
         }
 
+    override var warehouseReceiverPosition: Int?
+        get() = sharedPrefferences.getInt("warehouseReceiverPosition$lastLogin", 0)
+        set(value) {
+            sharedPrefferences.edit().putInt("warehouseReceiverPosition$lastLogin",value ?: 0).commit()
+        }
+
+    override var warehouseSenderPosition: Int?
+        get() = sharedPrefferences.getInt("warehouseSenderPosition$lastLogin", 0)
+        set(value) {
+            sharedPrefferences.edit().putInt("warehouseSenderPosition$lastLogin",value ?: 0).commit()
+        }
+
     override var lastPersonnelNumber: String?
         get() = sharedPrefferences.getString("lastPersonnelNumber$lastLogin", null)
         set(value) {
@@ -194,6 +206,9 @@ interface IAppSettings {
     var lastGroup: String?
     var lastPersonnelNumber: String?
     var lastPersonnelFullName: String?
+
+    var warehouseSenderPosition: Int?
+    var warehouseReceiverPosition: Int?
 
     fun getCurrentServerAddress(): String
     fun getCurrentEnvironment(): String

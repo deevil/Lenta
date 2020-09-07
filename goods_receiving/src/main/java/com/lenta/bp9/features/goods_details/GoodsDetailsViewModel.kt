@@ -287,11 +287,7 @@ class GoodsDetailsViewModel : CoreViewModel() {
                         processExciseAlcoBoxAccPGEService.delBoxesStampsDiscrepancies(typeDiscrepancies)
                     }
 
-                    if (boxNumberForTaskPGEBoxAlco.value.isNullOrEmpty()) {
-                        taskRepository
-                                ?.getProductsDiscrepancies()
-                                ?.deleteProductDiscrepancy(materialNumber, typeDiscrepancies)
-                    } else {
+                    if (!boxNumberForTaskPGEBoxAlco.value.isNullOrEmpty()) {
                         processExciseAlcoBoxAccPGEService.delBoxStampsDiscrepancies(boxNumberForTaskPGEBoxAlco.value.orEmpty(), typeDiscrepancies)
                     }
 
