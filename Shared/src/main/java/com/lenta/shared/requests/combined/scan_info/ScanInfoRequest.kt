@@ -51,6 +51,8 @@ class ScanInfoRequest(private val hyperHive: HyperHive, private val gson: Gson, 
     }
 
     private fun searchMaterialFromServer(scanCodeInfo: ScanCodeInfo, tk: String): Either<Failure, ScanInfoResult> {
+        Logg.d { "--> Product search from server" }
+
         val productInfoNetRequestParams = ProductInfoNetRequestParams(
                 ean = scanCodeInfo.eanNumberForSearch.orEmpty(),
                 tk = tk,
@@ -103,6 +105,7 @@ class ScanInfoRequest(private val hyperHive: HyperHive, private val gson: Gson, 
     }
 
     private fun searchMaterialFromDb(scanCodeInfo: ScanCodeInfo, eanInfo: EanInfo?): Either<Failure, ScanInfoResult>? {
+        Logg.d { "--> Product search from db" }
 
         val quantity = scanCodeInfo.extractQuantityFromEan(eanInfo = eanInfo)
 
@@ -139,11 +142,13 @@ class ScanInfoRequest(private val hyperHive: HyperHive, private val gson: Gson, 
             return null
         }
 
+        val isMarkedGood = material.isMark.orEmpty().isNotEmpty() || material.markType.orEmpty().isNotEmpty()
+
         return ProductInfo(
                 materialNumber = material.material,
                 description = material.name,
                 uom = Uom(code = uomInfo.uom, name = uomInfo.name),
-                type = getProductType(isAlco = material.isAlco.isNotEmpty(), isExcise = material.isExcise.isNotEmpty()),
+                type = getProductType(isAlco = material.isAlco.isNotEmpty(), isExcise = material.isExcise.isNotEmpty(), isMarkedGood = isMarkedGood),
                 isSet = !set.isNullOrEmpty(),
                 sectionId = material.abtnr,
                 matrixType = getMatrixType(material.matrixType),

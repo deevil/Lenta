@@ -77,7 +77,7 @@ class MarkedInfoFragment : CoreFragment<FragmentMarkedInfoBinding, MarkedInfoVie
         connectLiveData(vm.rollBackEnabled, bottomToolbarUiModel.uiModelButton2.enabled)
         connectLiveData(vm.enabledApplyButton, bottomToolbarUiModel.uiModelButton4.enabled)
         connectLiveData(vm.enabledApplyButton, bottomToolbarUiModel.uiModelButton5.enabled)
-        connectLiveData(vm.enabledDetailsButton, bottomToolbarUiModel.uiModelButton3.enabled)
+        //connectLiveData(vm.enabledDetailsButton, bottomToolbarUiModel.uiModelButton3.enabled)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -90,7 +90,8 @@ class MarkedInfoFragment : CoreFragment<FragmentMarkedInfoBinding, MarkedInfoVie
     override fun onToolbarButtonClick(view: View) {
         when (view.id) {
             R.id.b_2 -> vm.onClickRollBack()
-            R.id.b_3 -> vm.onClickDetails()
+            //R.id.b_3 -> vm.onClickDetails()
+            R.id.b_3 -> vm.onScanResult("010460606832938921SkBoU)pIP8hKg91pqrs92ZfetuVyAMPGOpWAWcpKZDOCZIpKcvMTxzlwdtOuqhdnXBhGMswLgWAhbDfThrjBrXXnbgKVZGQZhTGIsvcuvfBKg")
             R.id.b_4 -> if (vm.isSpecialMode.value == true) vm.onClickDamaged() else vm.onClickAdd()
             R.id.b_5 -> vm.onClickApply()
         }

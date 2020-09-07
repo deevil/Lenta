@@ -41,8 +41,7 @@ fun actionByNumber(
     if (isShoesMark(number)) {
         val matchResult = Regex(Constants.SHOES_MARK_PATTERN).find(number)
         matchResult?.let {
-            val (barcode, _, _, _, _, _) = it.destructured // barcode, gtin, serial, tradeCode, verificationKey, verificationCode
-            Logg.d { "--> shoes barcode = $barcode" }
+            val (_, barcode, _, _, _, _) = it.destructured // gtin, barcode, serial, tradeCode, verificationKey, verificationCode
             barcode
         }?.let { ean ->
             val correctedNumber = number // todo Нужно отбросить криптохвост. Что это и как?

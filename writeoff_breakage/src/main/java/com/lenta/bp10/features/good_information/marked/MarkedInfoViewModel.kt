@@ -64,7 +64,7 @@ class MarkedInfoViewModel : BaseProductInfoViewModel(), PageSelectionListener {
      */
 
     val rollBackEnabled: LiveData<Boolean> by lazy {
-        countValue.map { it ?: 0.0 > 0.0 }
+        markedGoodStampCollector.isCanBeRollback.map { it }
     }
 
     /**

@@ -20,8 +20,10 @@ class MarkedGoodStampCollector(private val processMarkedGoodProductService: Proc
 
     private val lastAddedMarks = mutableListOf<TaskExciseStamp>()
 
+    val isCanBeRollback = MutableLiveData(false)
+
     fun addMark(markNumber: String, material: String, writeOffReason: String) {
-        lastAddedMarks.clear()
+        clearLastAddedList()
 
         val stamp = TaskExciseStamp(
                 material = material,
@@ -30,13 +32,13 @@ class MarkedGoodStampCollector(private val processMarkedGoodProductService: Proc
         )
 
         stamps.add(stamp)
-        lastAddedMarks.add(stamp)
+        addMarkToLastAddedList(stamp)
 
         onDataChanged()
     }
 
     fun addMarks(marks: List<MarkInfo>, material: String, writeOffReason: String) {
-        lastAddedMarks.clear()
+        clearLastAddedList()
 
         marks.forEach { mark ->
             val boxNumber = mark.boxNumber.orEmpty()
@@ -55,14 +57,14 @@ class MarkedGoodStampCollector(private val processMarkedGoodProductService: Proc
             }
 
             stamps.add(stamp)
-            lastAddedMarks.add(stamp)
+            addMarkToLastAddedList(stamp)
         }
 
         onDataChanged()
     }
 
     fun addBadMark(material: String, writeOffReason: String) {
-        lastAddedMarks.clear()
+        clearLastAddedList()
 
         val stamp = TaskExciseStamp(
                 material = material,
@@ -72,7 +74,7 @@ class MarkedGoodStampCollector(private val processMarkedGoodProductService: Proc
         )
 
         stamps.add(stamp)
-        lastAddedMarks.add(stamp)
+        addMarkToLastAddedList(stamp)
 
         onDataChanged()
     }
@@ -90,11 +92,11 @@ class MarkedGoodStampCollector(private val processMarkedGoodProductService: Proc
         }
     }
 
-
     fun processAll(reason: WriteOffReason) {
         stamps.forEach { processMarkedGoodProductService.add(reason, 1.0, it) }
         clear()
     }
+
 
     fun isContainsStamp(code: String): Boolean {
         return stamps.firstOrNull { it.code == code } != null ||
@@ -109,9 +111,19 @@ class MarkedGoodStampCollector(private val processMarkedGoodProductService: Proc
     fun clear() {
         stamps.clear()
         boxes.clear()
-        lastAddedMarks.clear()
+        clearLastAddedList()
 
         onDataChanged()
+    }
+
+    private fun addMarkToLastAddedList(stamp: TaskExciseStamp) {
+        lastAddedMarks.add(stamp)
+        isCanBeRollback.value = true
+    }
+
+    private fun clearLastAddedList() {
+        lastAddedMarks.clear()
+        isCanBeRollback.value = false
     }
 
     private fun onDataChanged() {

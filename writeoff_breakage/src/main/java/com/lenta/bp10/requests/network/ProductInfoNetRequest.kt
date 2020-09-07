@@ -82,7 +82,7 @@ class ProductInfoNetRequest
                 materialNumber = material.material,
                 description = material.name,
                 uom = Uom(code = uomInfo.uom, name = uomInfo.name),
-                type = getProductType(isAlco = material.isAlco.isNotEmpty(), isExcise = material.isExcise.isNotEmpty(), isMark = material.isMark.isNotEmpty()),
+                type = getProductType(isAlco = material.isAlco.isNotEmpty(), isExcise = material.isExcise.isNotEmpty(), isMarkedGood = material.isMark.isNotEmpty()),
                 isSet = !set.isNullOrEmpty(),
                 sectionId = material.abtnr,
                 matrixType = getMatrixType(material.matrixType),

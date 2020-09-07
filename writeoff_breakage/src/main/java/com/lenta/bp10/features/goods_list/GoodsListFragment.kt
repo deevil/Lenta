@@ -75,7 +75,7 @@ class GoodsListFragment : KeyDownCoreFragment<FragmentGoodsListBinding, GoodsLis
     override fun onToolbarButtonClick(view: View) {
         when (view.id) {
             //R.id.b_3 -> vm.onClickDelete()
-            R.id.b_3 -> vm.onScanResult("010460606831008021tPQxy3tt1g2pp240640291ffd092NGkg+wRXz36kBFjpfwOub5DBIIpD2iS/DMYpZuuDLU0Y3pZt1z20/1ksr4004whDhRxu4g6sLUBVQEGN9Qih9g==")
+            R.id.b_3 -> vm.onScanResult("010460606832938921SkBoU)pIP8hKg91pqrs92ZfetuVyAMPGOpWAWcpKZDOCZIpKcvMTxzlwdtOuqhdnXBhGMswLgWAhbDfThrjBrXXnbgKVZGQZhTGIsvcuvfBKg")
             R.id.b_4 -> vm.onClickPrint()
             R.id.b_5 -> vm.onClickSave()
         }

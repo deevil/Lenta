@@ -10,9 +10,9 @@ enum class ProductType(val code: String) {
     Unknown("UNKNOWN")
 }
 
-fun getProductType(isAlco: Boolean, isExcise: Boolean, isMark: Boolean = false): ProductType {
+fun getProductType(isAlco: Boolean, isExcise: Boolean, isMarkedGood: Boolean = false): ProductType {
     return when{
-        isMark -> ProductType.Marked
+        isMarkedGood -> ProductType.Marked
         isExcise -> ProductType.ExciseAlcohol
         isAlco -> ProductType.NonExciseAlcohol
         else -> ProductType.General
