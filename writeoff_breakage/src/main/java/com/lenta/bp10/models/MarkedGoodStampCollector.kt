@@ -100,12 +100,6 @@ class MarkedGoodStampCollector(private val processMarkedGoodProductService: Proc
 
 
     fun isContainsStamp(code: String): Boolean {
-        /*Logg.d { "--> code = $code" }
-        val isExistMarkInStamps = stamps.firstOrNull { it.code == code } != null
-        val isExistMarkInRepo = processMarkedGoodProductService.taskRepository.getExciseStamps().isContainsStamp(code)
-        Logg.d { "--> isExistMarkInStamps = $isExistMarkInStamps / isExistMarkInRepo = $isExistMarkInRepo" }
-
-        return isExistMarkInStamps || isExistMarkInRepo*/
         return stamps.firstOrNull { it.code == code } != null ||
                 processMarkedGoodProductService.taskRepository.getExciseStamps().isContainsStamp(code)
     }
