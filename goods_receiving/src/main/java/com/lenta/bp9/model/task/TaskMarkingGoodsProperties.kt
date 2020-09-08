@@ -17,9 +17,9 @@ data class TaskMarkingGoodsProperties (
     companion object {
         fun from(restData: TaskMarkingGoodsPropertiesRestData): TaskMarkingGoodsProperties {
             return TaskMarkingGoodsProperties(
-                    ean = restData.ean,
-                    properties = restData.properties,
-                    value = restData.value
+                    ean = restData.ean.orEmpty(),
+                    properties = restData.properties.orEmpty(),
+                    value = restData.value.orEmpty()
             )
         }
     }
@@ -28,9 +28,9 @@ data class TaskMarkingGoodsProperties (
 
 data class TaskMarkingGoodsPropertiesRestData(
         @SerializedName("EAN")
-        val ean: String, //Номер набора
+        val ean: String?, //Номер набора
         @SerializedName("PROPERTIES")
-        val properties: String, // название свойства
+        val properties: String?, // название свойства
         @SerializedName("VALUE")
-        val value: String //значение для свойства
+        val value: String? //значение для свойства
 )
