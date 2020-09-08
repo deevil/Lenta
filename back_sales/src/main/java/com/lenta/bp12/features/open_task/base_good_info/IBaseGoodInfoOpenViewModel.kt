@@ -65,4 +65,6 @@ interface IBaseGoodInfoOpenViewModel {
     fun getProvider(): ProviderInfo
 
     fun loadBoxInfo(number: String)
+
+    fun isPlannedQuantityActual(): Boolean
 }

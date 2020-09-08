@@ -16,9 +16,6 @@ import com.lenta.bp12.request.GoodInfoNetRequest
 import com.lenta.bp12.request.PrintPalletListNetRequest
 import com.lenta.bp12.request.pojo.good_info.GoodInfoParams
 import com.lenta.bp12.request.pojo.good_info.GoodInfoResult
-import com.lenta.bp12.request.pojo.print_pallet_list.PrintPalletListParams
-import com.lenta.bp12.request.pojo.print_pallet_list.PrintPalletListParamsBasket
-import com.lenta.bp12.request.pojo.print_pallet_list.PrintPalletListParamsGood
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.models.core.Uom
@@ -34,8 +31,6 @@ import com.lenta.shared.utilities.extentions.dropZeros
 import com.lenta.shared.utilities.extentions.launchUITryCatch
 import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.utilities.orIfNull
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 class TaskContentViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyboardListener {
@@ -473,40 +468,9 @@ class TaskContentViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
     private fun printPalletList(baskets: List<Basket>) {
         launchUITryCatch {
             navigator.showProgressLoadingData()
-            // Cобираем в один список все товары
-            val goodListRest = withContext(Dispatchers.IO) {
-                baskets.flatMap { basket ->
-                    val distinctGoods = basket.goods.keys
-                    distinctGoods.map { good ->
-                        val quantity = basket.goods[good]
-                        PrintPalletListParamsGood(
-                                materialNumber = good.material,
-                                basketNumber = basket.index.toString(),
-                                quantity = quantity.toString(),
-                                uom = good.commonUnits.code
-                        )
-                    }
-                }
-            }
-
-            val basketListRest = withContext(Dispatchers.IO) {
-                baskets.map {
-                    val description = it.getDescription(task.value?.type?.isDivBySection ?: false)
-                    PrintPalletListParamsBasket(
-                            number = it.index.toString(),
-                            description = description,
-                            section = it.section.orEmpty()
-                    )
-                }
-            }
-
+            val isDivBySection = task.value?.type?.isDivBySection ?: false
             printPalletListNetRequest(
-                    PrintPalletListParams(
-                            userNumber = sessionInfo.personnelNumber.orEmpty(),
-                            deviceIp = resource.deviceIp,
-                            baskets = basketListRest,
-                            goods = goodListRest
-                    )
+                    baskets to isDivBySection
             ).either(
                     fnL = ::handleFailure,
                     fnR = {

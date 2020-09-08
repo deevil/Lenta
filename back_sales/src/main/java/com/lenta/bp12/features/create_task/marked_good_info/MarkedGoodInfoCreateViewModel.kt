@@ -428,11 +428,9 @@ class MarkedGoodInfoCreateViewModel : BaseGoodInfoCreateViewModel(), PageSelecti
     fun setupData(marksFromBundle: List<Mark>?, propertiesFromBundle: List<GoodProperty>?) {
         marksFromBundle?.let { listOfMarks ->
             tempMarks.value?.addAll(listOfMarks)
-            Logg.e { marksFromBundle.toString() }
         } ?: Logg.e { "marks empty " }
         propertiesFromBundle?.let { listOfProperties ->
             properties.value?.addAll(listOfProperties)
-            Logg.e { propertiesFromBundle.toString() }
         } ?: Logg.e { "properties empty " }
     }
 

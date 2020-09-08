@@ -173,41 +173,6 @@ class BasketOpenGoodListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener 
         return materials
     }
 
-    private fun deleteGoodsFromBasketAndTask2(materials: List<String>) {
-        task.value?.let { task ->
-            basket.value?.let { basket ->
-                val basketIndex = basket.index
-                // Пройдемся по всем номерам товара которые нужно удалить
-                materials.forEach { goodMaterial ->
-                    // Найдем товары в корзине которые нужно удалить
-                    val goodToDeleteFromBasket = basket.goods.keys.firstOrNull { it.material == goodMaterial }
-                    goodToDeleteFromBasket?.let { goodFromBasket ->
-                        //Найдем этот товар в общем списке задания
-                        task.goods.firstOrNull { it.material == goodMaterial }?.let { goodFromTask ->
-
-                            //Удалим у этого товара марки и партии с номером корзины
-                            goodFromTask.removeMarksByBasketIndex(basketIndex)
-                            goodFromTask.removePartsByBasketNumber(basketIndex)
-                            goodFromTask.removePositionsByBasketIndex(basketIndex)
-                            //Найдем у этого товара позиции с подходящим количеством
-                            goodFromTask.deletePositionsFromTask(
-                                    goodFromBasket = goodFromBasket,
-                                    basketToGetQuantity = basket)
-
-                        }
-                        //Удалим товар из корзины
-                        basket.deleteGood(goodFromBasket)
-
-                    }
-                }
-                removeEmptyBasketsAndGoods(task, basket)
-
-                openTaskManager.updateCurrentBasket(basket)
-                openTaskManager.updateCurrentTask(task)
-            }
-        }
-    }
-
     private fun deleteGoodsFromBasketAndTask(materials: List<String>) {
         task.value?.let { task ->
             basket.value?.let { basket ->
@@ -225,8 +190,7 @@ class BasketOpenGoodListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener 
                     basket.deleteGood(goodFromBasket)
                 }
                 removeEmptyBasketsAndGoods(task, basket)
-                openTaskManager.updateCurrentBasket(basket)
-                openTaskManager.updateCurrentTask(task)
+                openTaskManager.updateBasketAndTask(task, basket)
             }.orIfNull {
                 Logg.e { "basket null"}
                 navigator.showInternalError(resource.basketNotFoundErrorMsg)
@@ -235,6 +199,11 @@ class BasketOpenGoodListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener 
             Logg.e { "task null"}
             navigator.showInternalError(resource.taskNotFoundErrorMsg)
         }
+    }
+
+    private fun IOpenTaskManager.updateBasketAndTask(task: TaskOpen, basket: Basket) {
+        updateCurrentBasket(basket)
+        updateCurrentTask(task)
     }
 
     private fun removeEmptyBasketsAndGoods(task: TaskOpen, basket: Basket) {

@@ -206,6 +206,7 @@ class MarkManager @Inject constructor(
         }
     }
 
+
     /**
      * Метод определяет есть ли такой товар в менеджере или нет,
      * Если есть, то откроет его, если нет то создаст
@@ -490,6 +491,7 @@ class MarkManager @Inject constructor(
             createManager.updateCurrentGood(foundGood)
             MarkScreenStatus.OK_BUT_NEED_TO_SCAN_MARK
         }
+
     }
 
     /**
@@ -511,6 +513,7 @@ class MarkManager @Inject constructor(
         )
         return screenStatus
     }
+
 
     /**
      * Метод обрабатывает результат ФМ ZMP_UTZ_WOB_07_V001

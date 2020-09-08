@@ -5,7 +5,10 @@ import com.lenta.bp12.features.basket.ItemWholesaleBasketUi
 import com.lenta.bp12.features.create_task.task_content.ItemCommonBasketUi
 import com.lenta.bp12.model.*
 import com.lenta.bp12.model.pojo.Basket
-import com.lenta.bp12.model.pojo.extentions.*
+import com.lenta.bp12.model.pojo.extentions.getDescription
+import com.lenta.bp12.model.pojo.extentions.getQuantityFromGoodList
+import com.lenta.bp12.model.pojo.extentions.isAnyNotLocked
+import com.lenta.bp12.model.pojo.extentions.isAnyPrinted
 import com.lenta.bp12.model.pojo.open_task.GoodOpen
 import com.lenta.bp12.platform.extention.getControlType
 import com.lenta.bp12.platform.extention.getGoodKind
@@ -18,9 +21,6 @@ import com.lenta.bp12.request.PrintPalletListNetRequest
 import com.lenta.bp12.request.pojo.ProviderInfo
 import com.lenta.bp12.request.pojo.good_info.GoodInfoParams
 import com.lenta.bp12.request.pojo.good_info.GoodInfoResult
-import com.lenta.bp12.request.pojo.print_pallet_list.PrintPalletListParams
-import com.lenta.bp12.request.pojo.print_pallet_list.PrintPalletListParamsBasket
-import com.lenta.bp12.request.pojo.print_pallet_list.PrintPalletListParamsGood
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.models.core.getMatrixType
 import com.lenta.shared.platform.device_info.DeviceInfo
@@ -256,7 +256,7 @@ class GoodListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
     }
 
     private fun onBasketsItemClick(position: Int) {
-        val basket = if (manager.isWholesaleTaskType) {
+        if (manager.isWholesaleTaskType) {
             wholesaleBaskets.value?.let { wholesaleBasketsValue ->
                 wholesaleBasketsValue.getOrNull(position)?.basket
             }
@@ -264,8 +264,7 @@ class GoodListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
             commonBaskets.value?.let { commonBasketsValue ->
                 commonBasketsValue.getOrNull(position)?.basket
             }
-        }
-        basket?.let {
+        }?.let {
             manager.updateCurrentBasket(it)
             navigator.openBasketOpenGoodListScreen()
         }.orIfNull {
@@ -410,22 +409,27 @@ class GoodListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
 
     private fun setFoundGood(foundGood: GoodOpen) {
         manager.updateCurrentGood(foundGood)
-        if (foundGood.markType != MarkType.UNKNOWN) {
-            navigator.openMarkedGoodInfoOpenScreen()
-            navigator.showForGoodNeedScanFirstMark()
-        } else {
-            navigator.openGoodInfoOpenScreen()
+
+        with(navigator) {
+            if (foundGood.markType != MarkType.UNKNOWN) {
+                openMarkedGoodInfoCreateScreen()
+                showForGoodNeedScanFirstMark()
+            } else {
+                openGoodInfoCreateScreen()
+            }
         }
+
         Logg.d { "--> found good: $foundGood" }
     }
 
     private fun checkMark(number: String) {
         launchUITryCatch {
-            navigator.showProgressLoadingData()
-            val screenStatus = markManager.checkMark(number, WorkType.CREATE)
-            Logg.e { screenStatus.name }
             with(navigator) {
+                showProgressLoadingData()
+                val screenStatus = markManager.checkMark(number, WorkType.CREATE)
+                Logg.e { screenStatus.name }
                 hideProgress()
+
                 when (screenStatus) {
                     MarkScreenStatus.OK -> openMarkedGoodInfoCreateScreen()
                     MarkScreenStatus.NO_MARKTYPE_IN_SETTINGS -> showNoMarkTypeInSettings()
@@ -470,10 +474,9 @@ class GoodListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
                     manager.markGoodsDeleted(materials)
                 }
                 PROCESSED_PAGE_INDEX -> {
-                    val materials = mutableListOf<String>()
-                    processedSelectionsHelper.selectedPositions.value?.mapNotNullTo(materials) { position ->
+                    val materials = processedSelectionsHelper.selectedPositions.value?.mapNotNullTo(mutableListOf()) { position ->
                         processed.value?.get(position)?.material
-                    }
+                    }.orEmpty()
 
                     processedSelectionsHelper.clearPositions()
                     manager.markGoodsUncounted(materials)
@@ -532,14 +535,7 @@ class GoodListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
                     // «Некоторые выбранные корзины не закрыты. Закройте корзины и повторите печать», с кнопкой «Назад»
                     navigator.showSomeOfChosenBasketsNotClosedScreen()
                 } else {
-                    if (baskets.isAnyPrinted()) {
-                        // «По некоторым выделенным корзинам уже производилась печать. Продолжить?», с кнопками «Да», «Назад» (макеты, экран №81)
-                        navigator.showSomeBasketsAlreadyPrinted(
-                                yesCallback = { printPalletList(baskets) }
-                        )
-                    } else {
-                        printPalletList(baskets)
-                    }
+                    printLockedBasket(baskets)
                 }
             }
         }.orIfNull {
@@ -548,40 +544,25 @@ class GoodListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
         }
     }
 
+    private fun printLockedBasket(baskets: List<Basket>) {
+        if (baskets.isAnyPrinted()) {
+            // «По некоторым выделенным корзинам уже производилась печать. Продолжить?», с кнопками «Да», «Назад» (макеты, экран №81)
+            navigator.showSomeBasketsAlreadyPrinted(
+                    yesCallback = { printPalletList(baskets) }
+            )
+        } else {
+            printPalletList(baskets)
+        }
+    }
+
     // TODO Функция не проверена (13.08.2020 САП еще не создан)
     private fun printPalletList(baskets: List<Basket>) {
         launchUITryCatch {
             // Собираем в один список все товары
             navigator.showProgressLoadingData()
-            val goodListRest = baskets.flatMap { basket ->
-                val distinctGoods = basket.getGoodList()
-                distinctGoods.map { good ->
-                    val quantity = basket.goods[good]
-                    PrintPalletListParamsGood(
-                            materialNumber = good.material,
-                            basketNumber = basket.index.toString(),
-                            quantity = quantity.toString(),
-                            uom = good.commonUnits.code
-                    )
-                }
-            }
-
-            val basketListRest = baskets.map {
-                val description = it.getDescription(task.value?.type?.isDivBySection ?: false)
-                PrintPalletListParamsBasket(
-                        number = it.index.toString(),
-                        description = description,
-                        section = it.section.orEmpty()
-                )
-            }
-
+            val isDivBySection = task.value?.type?.isDivBySection ?: false
             val request = printPalletListNetRequest(
-                    PrintPalletListParams(
-                            userNumber = sessionInfo.personnelNumber.orEmpty(),
-                            deviceIp = resource.deviceIp,
-                            baskets = basketListRest,
-                            goods = goodListRest
-                    )
+                    baskets to isDivBySection
             )
             navigator.hideProgress()
             request.either(
