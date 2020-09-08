@@ -4,6 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
+        <import type="android.view.View"/>
+
         <variable
             name="vm"
             type="com.lenta.bp16.features.add_attribute.AddAttributeViewModel" />
@@ -36,6 +38,7 @@
     </LinearLayout>
 
     <View style="@style/HorizontalDivider"
+        android:visibility="@{vm.producerVisibleCondition ? View.VISIBLE : View.GONE}"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@id/text_view_add_attribute"
@@ -45,6 +48,7 @@
     <LinearLayout
         android:id="@+id/spinner_producer"
         style="@style/LinearRowStyle"
+        android:visibility="@{vm.producerVisibleCondition ? View.VISIBLE : View.GONE}"
         app:layout_constraintBottom_toTopOf="@id/spinner_producer_date"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -55,6 +59,8 @@
             android:layout_width="0dp"
             android:layout_margin="8dp"
             android:layout_weight="1"
+            app:items = "@{vm.producerNameList}"
+            app:position="@={vm.selectedProducerPosition}"
             tools:entries="@array/manufacturer_list" />
 
     </LinearLayout>
@@ -90,6 +96,7 @@
 
             <com.lenta.shared.view.EditTextWithSuffix
                 style="@style/CellEditTextStyle"
+                android:text="@{vm.dateInfoField}"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:paddingStart="@dimen/size_10dp"

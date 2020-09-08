@@ -70,9 +70,10 @@ class IngredientDetailsFragment : CoreFragment<FragmentIngredientDetailsBinding,
         bottomToolbarUiModel.uiModelButton1.show(ButtonDecorationInfo.back)
         bottomToolbarUiModel.uiModelButton3.show(ButtonDecorationInfo.getWeight)
         bottomToolbarUiModel.uiModelButton4.show(ButtonDecorationInfo.add, enabled = false)
-        bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.complete/*, enabled = false*/)
+        bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.complete, enabled = false)
 
-        //connectLiveData()
+        connectLiveData(vm.nextAndAddButtonEnabled, bottomToolbarUiModel.uiModelButton4.enabled)
+        connectLiveData(vm.nextAndAddButtonEnabled, bottomToolbarUiModel.uiModelButton5.enabled)
     }
 
     override fun onToolbarButtonClick(view: View) {

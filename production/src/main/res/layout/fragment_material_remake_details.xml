@@ -159,7 +159,9 @@
             android:visibility="@{vm.producerVisibleCondition ? View.VISIBLE : View.GONE}">
 
             <com.lenta.shared.view.ClickableSpinner
+                android:enabled="@{vm.disableSpinner}"
                 app:items="@{vm.producerNameList}"
+                app:position="@={vm.selectedProducerPosition}"
                 style="@style/CellSpinnerStyle"
                 tools:entries="@array/manufacturer_list" />
 
@@ -195,6 +197,9 @@
                     android:layout_width="0dp"
                     android:layout_margin="8dp"
                     android:layout_weight="1"
+                    android:enabled="@{vm.disableSpinner}"
+                    app:items="@{vm.productionDateField}"
+                    app:position="@={vm.selectedDateProductionPosition}"
                     tools:entries="@array/date_list" />
 
                 <ImageButton

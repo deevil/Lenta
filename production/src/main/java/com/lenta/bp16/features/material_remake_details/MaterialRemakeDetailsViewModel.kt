@@ -42,9 +42,6 @@ class MaterialRemakeDetailsViewModel : CoreViewModel() {
     lateinit var completePackMaterialNetRequest: CompleteIngredientByMaterialNetRequest
 
     @Inject
-    lateinit var producerDataInfoUseCase: GetProducerDataInfoUseCase
-
-    @Inject
     lateinit var mercuryPartDataInfoUseCase: GetMercuryPartDataInfoUseCase
 
     @Inject
@@ -71,10 +68,6 @@ class MaterialRemakeDetailsViewModel : CoreViewModel() {
         resourceManager.kgSuffix()
     }
 
-    private val producerDataInfo by unsafeLazy {
-        MutableLiveData<List<ProducerDataInfo>>()
-    }
-
     private val mercuryDataInfo by unsafeLazy {
         MutableLiveData<List<MercuryPartDataInfo>>()
     }
@@ -84,13 +77,44 @@ class MaterialRemakeDetailsViewModel : CoreViewModel() {
     }
 
     val producerNameList by unsafeLazy {
-        producerDataInfo.switchMap {
-            asyncLiveData<List<String>> {
-                val producerNameList = it.map { it.prodName.orEmpty() }
-                emit(producerNameList)
+        if (!materialIngredient.value?.isVet.isNullOrBlank()) {
+            mercuryDataInfo.switchMap {
+                asyncLiveData<List<String>> {
+                    val producerNameList = it.map { it.prodName.orEmpty() }
+                    emit(producerNameList)
+                }
+            }
+
+        } else {
+            zPartDataInfo.switchMap {
+                asyncLiveData<List<String>> {
+                    val producerNameList = it.map { it.prodName.orEmpty() }
+                    emit(producerNameList)
+                }
             }
         }
     }
+    val selectedProducerPosition = MutableLiveData(0)
+
+    val productionDateField by unsafeLazy {
+        if (!materialIngredient.value?.isVet.isNullOrBlank()) {
+            mercuryDataInfo.switchMap {
+                asyncLiveData<List<String>> {
+                    val productionDate = it.map { it.prodDate.orEmpty() }
+                    emit(productionDate)
+                }
+            }
+        } else {
+            zPartDataInfo.switchMap {
+                asyncLiveData<List<String>> {
+                    val productionDate = it.map { it.prodDate.orEmpty() }
+                    emit(productionDate)
+                }
+            }
+        }
+    }
+
+    val selectedDateProductionPosition = MutableLiveData(0)
 
     /** Определение типа товара */
     val goodTypeIcon by unsafeLazy {
@@ -105,7 +129,10 @@ class MaterialRemakeDetailsViewModel : CoreViewModel() {
 
     /** Условие отображения производителя */
     val producerVisibleCondition by unsafeLazy {
-        !materialIngredient.value?.isVet.isNullOrBlank() || !materialIngredient.value?.isZpart.isNullOrBlank() && !producerNameList.value.isNullOrEmpty()
+        producerNameList.mapSkipNulls {
+            val condition = it.isNotEmpty() && (!materialIngredient.value?.isVet.isNullOrBlank() || !materialIngredient.value?.isZpart.isNullOrBlank())
+            condition
+        }
     }
 
     /** Условие отображения даты производства */
@@ -122,6 +149,24 @@ class MaterialRemakeDetailsViewModel : CoreViewModel() {
     val addPartAttributeEnable by unsafeLazy {
         materialIngredient.value?.isVet.isNullOrBlank()
     }
+
+    /** Условие блокировки спиннеров производителя и даты*/
+    val disableSpinner by unsafeLazy {
+        true //Заменить на условие
+    }
+
+    /** Условие разблокировки кнопок добавить и завершить */
+    val nextAndAddButtonEnabled: MutableLiveData<Boolean> = producerNameList
+            .combineLatest(productionDateField)
+            .map {
+                val producerName = it?.first
+                val productionDate = it?.second
+                if (!materialIngredient.value?.isVet.isNullOrBlank()) {
+                    !(producerName.isNullOrEmpty() || productionDate.isNullOrEmpty())
+                } else {
+                    !productionDate.isNullOrEmpty()
+                }
+            }
 
     /** Для проверки весового ШК */
     private val weightValue = listOf(VALUE_23, VALUE_24, VALUE_27, VALUE_28)
@@ -159,7 +204,6 @@ class MaterialRemakeDetailsViewModel : CoreViewModel() {
 
     init {
         launchUITryCatch {
-            producerDataInfo.value = producerDataInfoUseCase.invoke()
             mercuryDataInfo.value = mercuryPartDataInfoUseCase.invoke()
             zPartDataInfo.value = zPartDataInfoUseCase.invoke()
         }
@@ -195,7 +239,7 @@ class MaterialRemakeDetailsViewModel : CoreViewModel() {
         }
     }
 
-    fun onClickAddAttributeButton(){
+    fun onClickAddAttributeButton() {
         navigator.openAddAttributeScreen()
     }
 

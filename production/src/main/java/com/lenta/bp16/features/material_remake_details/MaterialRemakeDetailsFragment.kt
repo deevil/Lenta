@@ -16,6 +16,7 @@ import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListener
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
 import com.lenta.shared.scan.OnScanResultListener
+import com.lenta.shared.utilities.extentions.connectLiveData
 import com.lenta.shared.utilities.extentions.provideViewModel
 import com.lenta.shared.utilities.extentions.unsafeLazy
 
@@ -74,8 +75,11 @@ class MaterialRemakeDetailsFragment : CoreFragment<FragmentMaterialRemakeDetails
         bottomToolbarUiModel.uiModelButton1.show(ButtonDecorationInfo.back)
         bottomToolbarUiModel.uiModelButton2.show(ButtonDecorationInfo.orders)
         bottomToolbarUiModel.uiModelButton3.show(ButtonDecorationInfo.getWeight)
-        bottomToolbarUiModel.uiModelButton4.show(ButtonDecorationInfo.add)
-        bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.complete)
+        bottomToolbarUiModel.uiModelButton4.show(ButtonDecorationInfo.add, enabled = false)
+        bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.complete, enabled = false)
+
+        connectLiveData(vm.nextAndAddButtonEnabled, bottomToolbarUiModel.uiModelButton4.enabled)
+        connectLiveData(vm.nextAndAddButtonEnabled, bottomToolbarUiModel.uiModelButton5.enabled)
     }
 
     override fun onToolbarButtonClick(view: View) {

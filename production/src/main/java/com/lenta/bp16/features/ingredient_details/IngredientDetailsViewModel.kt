@@ -3,6 +3,7 @@ package com.lenta.bp16.features.ingredient_details
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.switchMap
 import com.lenta.bp16.data.IScales
+import com.lenta.bp16.model.BatchNewDataInfo
 import com.lenta.bp16.model.GoodTypeIcon
 import com.lenta.bp16.model.ProducerDataInfo
 import com.lenta.bp16.model.ZPartDataInfo
@@ -20,6 +21,8 @@ import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.extentions.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 import kotlin.properties.Delegates
 
@@ -39,9 +42,6 @@ class IngredientDetailsViewModel : CoreViewModel() {
 
     @Inject
     lateinit var packIngredientsNetRequest: CompleteIngredientByOrderNetRequest
-
-    @Inject
-    lateinit var producerDataInfoUseCase: GetProducerDataInfoUseCase
 
     @Inject
     lateinit var mercuryPartDataInfoUseCase: GetMercuryPartDataInfoUseCase
@@ -87,10 +87,6 @@ class IngredientDetailsViewModel : CoreViewModel() {
         "${it.dropZeros()} ${resourceManager.kgSuffix()}"
     }
 
-    private val producerDataInfo by unsafeLazy {
-        MutableLiveData<List<ProducerDataInfo>>()
-    }
-
     private val mercuryDataInfo by unsafeLazy {
         MutableLiveData<List<MercuryPartDataInfo>>()
     }
@@ -100,13 +96,43 @@ class IngredientDetailsViewModel : CoreViewModel() {
     }
 
     val producerNameList by unsafeLazy {
-        producerDataInfo.switchMap {
-            asyncLiveData<List<String>> {
-                val producerNameList = it.map { it.prodName.orEmpty() }
-                emit(producerNameList)
+        if (!orderIngredient.value?.isVet.isNullOrBlank()) {
+            mercuryDataInfo.switchMap {
+                asyncLiveData<List<String>> {
+                    val producerNameList = it.map { it.prodName.orEmpty() }
+                    emit(producerNameList)
+                }
+            }
+        } else {
+            zPartDataInfo.switchMap {
+                asyncLiveData<List<String>> {
+                    val producerNameList = it.map { it.prodName.orEmpty() }
+                    emit(producerNameList)
+                }
             }
         }
     }
+    val selectedProducerPosition = MutableLiveData(0)
+
+    val productionDateField by unsafeLazy {
+        if (!orderIngredient.value?.isVet.isNullOrBlank()) {
+            mercuryDataInfo.switchMap {
+                asyncLiveData<List<String>> {
+                    val productionDate = it.map { it.prodDate.orEmpty() }
+                    emit(productionDate)
+                }
+            }
+        } else {
+            zPartDataInfo.switchMap {
+                asyncLiveData<List<String>> {
+                    val productionDate = it.map { it.prodDate.orEmpty() }
+                    emit(productionDate)
+                }
+            }
+        }
+    }
+
+    val selectedDateProductionPosition = MutableLiveData(0)
 
     /** Определение типа товара */
     val goodTypeIcon by unsafeLazy {
@@ -121,7 +147,10 @@ class IngredientDetailsViewModel : CoreViewModel() {
 
     /** Условие отображения производителя */
     val producerVisibleCondition by unsafeLazy {
-        !orderIngredient.value?.isVet.isNullOrBlank() || !orderIngredient.value?.isZpart.isNullOrBlank() && !producerNameList.value.isNullOrEmpty()
+        producerNameList.mapSkipNulls {
+            val condition = it.isNotEmpty() && (!orderIngredient.value?.isVet.isNullOrBlank() || !orderIngredient.value?.isZpart.isNullOrBlank())
+            condition
+        }
     }
 
     /** Условие отображения даты производства */
@@ -139,7 +168,22 @@ class IngredientDetailsViewModel : CoreViewModel() {
         orderIngredient.value?.isVet.isNullOrBlank()
     }
 
-    //val nextAndAddButtonEnabled = /* Z-партионные признаки */
+    /** Условие блокировки спиннеров производителя и даты*/
+    val disableSpinner by unsafeLazy {
+        true //Заменить на условие
+    }
+
+    val nextAndAddButtonEnabled: MutableLiveData<Boolean> = producerNameList
+            .combineLatest(productionDateField)
+            .map {
+                val producerName = it?.first
+                val productionDate = it?.second
+                if (!orderIngredient.value?.isVet.isNullOrBlank()) {
+                    !(producerName.isNullOrEmpty() || productionDate.isNullOrEmpty())
+                } else {
+                    !productionDate.isNullOrEmpty()
+                }
+            }
 
     /**Для проверки весового ШК*/
     private val weightValue = listOf(VALUE_23, VALUE_24, VALUE_27, VALUE_28)
@@ -148,11 +192,9 @@ class IngredientDetailsViewModel : CoreViewModel() {
 
     init {
         launchUITryCatch {
-            producerDataInfo.value = producerDataInfoUseCase.invoke()
             mercuryDataInfo.value = mercuryPartDataInfoUseCase.invoke()
             zPartDataInfo.value = zPartDataInfoUseCase.invoke()
         }
-
     }
 
     fun onScanResult(data: String) {
@@ -187,6 +229,26 @@ class IngredientDetailsViewModel : CoreViewModel() {
 
     fun onCompleteClicked() = launchUITryCatch {
         val weight = total.value ?: 0.0
+
+        val matnr = orderIngredient.value?.matnr.orEmpty()
+        var entryId = ""
+        var batchId = ""
+        var batchNew = emptyList<BatchNewDataInfo>()
+
+        orderIngredient.value?.isVet?.let {
+            val selectedIngredient = withContext(Dispatchers.IO) {
+                mercuryDataInfo.value?.filter { it.matnr == matnr }
+            }
+            entryId = selectedIngredient?.getOrNull(0)?.entryId.orEmpty()
+        }
+
+        zPartDataInfo.value?.let {
+            val selectedZPartData = withContext(Dispatchers.IO) {
+                zPartDataInfo.value?.filter { it.matnr == matnr }
+            }
+            batchId = selectedZPartData?.getOrNull(0)?.batchId.orEmpty()
+        }
+
         if (weight == 0.0) {
             navigator.showAlertWeightNotSet()
         } else {
@@ -201,10 +263,10 @@ class IngredientDetailsViewModel : CoreViewModel() {
                                 matnr = ingredient.matnr.orEmpty(),
                                 fact = weight,
                                 personnelNumber = sessionInfo.personnelNumber.orEmpty(),
-                                aufnr = "",
-                                batchId = "",
-                                batchNew = listOf(),
-                                entryId = ""
+                                aufnr = matnr,
+                                batchId = batchId,
+                                batchNew = batchNew,
+                                entryId = entryId
                         )
                 )
                 result.also {
@@ -216,7 +278,7 @@ class IngredientDetailsViewModel : CoreViewModel() {
         }
     }
 
-    fun onClickAddAttributeButton(){
+    fun onClickAddAttributeButton() {
         navigator.openAddAttributeScreen()
     }
 
