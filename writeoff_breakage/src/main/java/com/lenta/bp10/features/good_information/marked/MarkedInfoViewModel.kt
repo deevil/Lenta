@@ -171,8 +171,8 @@ class MarkedInfoViewModel : BaseProductInfoViewModel(), PageSelectionListener {
     override fun onScanResult(data: String) {
         actionByNumber(
                 number = data,
-                funcForShoes = { _, markWithoutTail, _ -> actionForShoesMark(markWithoutTail) },
-                funcForCigarettes = ::actionForCigaretteMark,
+                funcForShoes = { _, markWithoutTail -> actionForMark(markWithoutTail) },
+                funcForCigarettes = ::actionForMark,
                 funcForCigaretteBox = { boxNumber ->
                     if (isSpecialMode.value == false) {
                         actionForCigaretteBox(boxNumber)
@@ -182,17 +182,9 @@ class MarkedInfoViewModel : BaseProductInfoViewModel(), PageSelectionListener {
         )
     }
 
-    private fun actionForShoesMark(markNumber: String) {
+    private fun actionForMark(markNumber: String) {
         if (!markedGoodStampCollector.isContainsStamp(markNumber)) {
-            markSearchDelegate.requestShoesMarkInfo(markNumber)
-        } else {
-            screenNavigator.openAlertDoubleScanStamp()
-        }
-    }
-
-    private fun actionForCigaretteMark(markNumber: String) {
-        if (!markedGoodStampCollector.isContainsStamp(markNumber)) {
-            markSearchDelegate.requestCigaretteMarkInfo(markNumber)
+            markSearchDelegate.requestMarkInfo(markNumber)
         } else {
             screenNavigator.openAlertDoubleScanStamp()
         }
@@ -200,7 +192,7 @@ class MarkedInfoViewModel : BaseProductInfoViewModel(), PageSelectionListener {
 
     private fun actionForCigaretteBox(boxNumber: String) {
         if (!markedGoodStampCollector.isContainsBox(boxNumber)) {
-            markSearchDelegate.requestCigaretteBoxInfo(boxNumber)
+            markSearchDelegate.requestPackInfo(boxNumber)
         } else {
             screenNavigator.openAlertDoubleScanStamp()
         }

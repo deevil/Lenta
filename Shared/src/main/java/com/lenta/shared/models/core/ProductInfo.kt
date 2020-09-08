@@ -9,7 +9,7 @@ open class ProductInfo(
         val sectionId: String,
         val matrixType: MatrixType,
         val materialType: String,
-        val markType:  String = ""
+        val markedGoodType:  String = ""
 ) : IProduct {
 
 

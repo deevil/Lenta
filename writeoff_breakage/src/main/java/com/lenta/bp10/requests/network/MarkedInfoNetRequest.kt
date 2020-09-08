@@ -46,7 +46,13 @@ data class MarkedInfoParams(
         val bpCode: String = "WOB",
         /** Тип маркировки */
         @SerializedName("IV_ZMARKTYPE")
-        val markType: String
+        val markType: String,
+        /** Тип задания */
+        @SerializedName("IV_TASK_TYPE")
+        val taskType: String = "",
+        /** Максимальная розничная цена */
+        @SerializedName("IV_MPR")
+        val mpr: String = ""
 )
 
 class MarkedInfoStatus : ObjectRawStatus<MarkedInfoResult>()

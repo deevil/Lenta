@@ -45,14 +45,14 @@ class MarkSearchDelegate @Inject constructor(
         this.handleScannedBox = handleScannedBox
     }
 
-    fun requestShoesMarkInfo(number: String) {
+    fun requestMarkInfo(number: String) {
         viewModelScope().launch {
             navigator.showProgress(markedInfoNetRequest)
             markedInfoNetRequest(MarkedInfoParams(
                     tkNumber = tkNumber,
                     material = productInfo?.materialNumber.orEmpty(),
                     markNumber = number,
-                    markType = productInfo?.markType.orEmpty()
+                    markType = productInfo?.markedGoodType.orEmpty()
             )).also {
                 navigator.hideProgress()
             }.either(::handleFailure) { result ->
@@ -61,30 +61,14 @@ class MarkSearchDelegate @Inject constructor(
         }
     }
 
-    fun requestCigaretteMarkInfo(number: String) {
+    fun requestPackInfo(number: String) {
         viewModelScope().launch {
             navigator.showProgress(markedInfoNetRequest)
             markedInfoNetRequest(MarkedInfoParams(
                     tkNumber = tkNumber,
                     material = productInfo?.materialNumber.orEmpty(),
                     packNumber = number,
-                    markType = productInfo?.markType.orEmpty()
-            )).also {
-                navigator.hideProgress()
-            }.either(::handleFailure) { result ->
-                handleMarkRequestResult(number, result)
-            }
-        }
-    }
-
-    fun requestCigaretteBoxInfo(number: String) {
-        viewModelScope().launch {
-            navigator.showProgress(markedInfoNetRequest)
-            markedInfoNetRequest(MarkedInfoParams(
-                    tkNumber = tkNumber,
-                    material = productInfo?.materialNumber.orEmpty(),
-                    boxNumber = number,
-                    markType = productInfo?.markType.orEmpty()
+                    markType = productInfo?.markedGoodType.orEmpty()
             )).also {
                 navigator.hideProgress()
             }.either(::handleFailure) { result ->

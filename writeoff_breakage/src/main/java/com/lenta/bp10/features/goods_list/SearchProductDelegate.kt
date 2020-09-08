@@ -73,7 +73,7 @@ class SearchProductDelegate @Inject constructor(
                 funcForEan = { actionWithEan(code, fromScan) },
                 funcForMaterial = { actionWithMaterial(code, fromScan) },
                 funcForSapOrBar = navigator::showTwelveCharactersEntered,
-                funcForShoes = { ean, _, _ -> actionWithShoesBarcode(ean, fromScan) },
+                funcForShoes = { ean, _ -> actionWithShoesBarcode(ean, fromScan) },
                 funcForNotValidFormat = navigator::showIncorrectEanFormat
         )
     }
