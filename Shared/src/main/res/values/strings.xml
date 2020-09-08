@@ -194,6 +194,7 @@
     <string name="enter_printer_address">Введите IP-адрес принтера для печати с этого терминала</string>
     <string name="inStock">В наличии</string>
     <string name="proceed">Продолжить</string>
+    <string name="to_close">Закрыть</string>
     <string name="properties">Свойства</string>
     <string name="boxes">Короба</string>
     <string name="handle_goods">Обработать</string>
@@ -209,4 +210,5 @@
     <string name="marking_goods">Маркированный товар</string>
     <string name="exceptions_shelf_life">Исключение по СГ</string>
     <string name="data_retrieval_error">Ошибка получения данных</string>
+    <string name="open">Открыть</string>
 </resources>

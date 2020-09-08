@@ -53,13 +53,13 @@ data class SendTaskDataParams(
         val positions: List<PositionInfo>,
         /** Таблица марок задания */
         @SerializedName("IT_TASK_MARK")
-        val marks: List<MarkInfo>,
+        val exciseMarks: List<ExciseMarkInfo>,
         /** Таблица партий */
         @SerializedName("IT_TASK_PARTS")
         val parts: List<PartInfo>,
         /** Таблица корзин */
         @SerializedName("IT_TASK_BASKET")
-        val baskets: List<BasketInfo> = emptyList(),
+        val baskets: List<CreateTaskBasketInfo> = emptyList(),
         /**  Таблица товаров разбитых по корзинам */
         @SerializedName("IT_TASK_BASKET_POS")
         val basketPositions: List<BasketPositionInfo> = emptyList()

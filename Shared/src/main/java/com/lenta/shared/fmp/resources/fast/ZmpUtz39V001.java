@@ -10,7 +10,7 @@ import com.mobrun.plugin.models.StatusSelectTable;
 
 public class ZmpUtz39V001 {
 
-    public static final String NAME_RESOURCE = "ZMP_UTZ_39_V001";
+    public static final String NAME_RESOURCE = "ZMP_UTZ_39_V002";
     public static final String NAME_OUT_PARAM_ET_TASK_TPS = "ET_TASK_TPS";
     public static final String LIFE_TIME = "1 day, 0:00:00";
 
@@ -37,22 +37,44 @@ public class ZmpUtz39V001 {
 
     public static class ItemLocal_ET_TASK_TPS {
         //  type: TEXT, source: {'name': 'SAP', 'type': 'C'}
+        /** Тип задания */
         @SerializedName("TASK_TYPE")
         public String taskType;
 
+        /** Аннотация к типу задания*/
         //  type: TEXT, source: {'name': 'SAP', 'type': 'C'}
         @SerializedName("ANNOTATION")
         public String annotation;
 
+        /** Флаг – делить по ГИС-контролю */
+        @SerializedName("DIV_CNTRL")
+        public String isDivByGis;
+
+        /** Флаг – Делить по поставщику */
+        @SerializedName("DIV_LIFNR")
+        public String isDivByProvider;
+
+        /** Флаг – Делить по виду товара */
+        @SerializedName("DIV_MTART")
+        public String isDivByMaterialType;
+
+        /** Флаг - Делить по секции */
         //  type: TEXT, source: {'name': 'SAP', 'type': 'C'}
         @SerializedName("DIV_ABTNR")
         public String divAbtnr;
 
+        /** Флаг - Делить по группе закупок товаров */
         //  type: TEXT, source: {'name': 'SAP', 'type': 'C'}
         @SerializedName("DIV_EKGRP")
         public String divEkgrp;
 
+        /** Флаг - Делить группе маркировки */
+        @SerializedName("DIV_MARKTYPE")
+        public String isDivByMarkType;
 
+        /** Флаг – Делить по МРЦ */
+        @SerializedName("DIV_MPR")
+        public String isDivByMinimalPrice;
     }
 
 
