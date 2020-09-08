@@ -4,8 +4,6 @@ import android.view.View
 import com.lenta.bp12.R
 import com.lenta.bp12.databinding.FragmentGoodInfoCreateBinding
 import com.lenta.bp12.platform.extention.getAppComponent
-import com.lenta.shared.keys.KeyCode
-import com.lenta.shared.keys.OnKeyDownListener
 import com.lenta.shared.platform.activity.OnBackPresserListener
 import com.lenta.shared.platform.fragment.CoreFragment
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
@@ -136,5 +134,4 @@ class GoodInfoCreateFragment : CoreFragment<FragmentGoodInfoCreateBinding, GoodI
 //        }
 //    }
 
->>>>>>>>> Temporary merge branch 2
 }

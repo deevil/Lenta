@@ -5,21 +5,16 @@ import androidx.lifecycle.liveData
 import androidx.lifecycle.switchMap
 import com.lenta.bp12.features.create_task.base_good_info.BaseGoodInfoCreateViewModel
 import com.lenta.bp12.model.*
-import com.lenta.bp12.model.pojo.Basket
 import com.lenta.bp12.model.pojo.Mark
 import com.lenta.bp12.model.pojo.create_task.GoodCreate
 import com.lenta.bp12.model.pojo.extentions.addMarks
-import com.lenta.bp12.model.pojo.extentions.getQuantityOfGood
-import com.lenta.bp12.platform.extention.isWholesaleType
 import com.lenta.bp12.platform.navigation.IScreenNavigator
 import com.lenta.bp12.platform.resource.IResourceManager
 import com.lenta.bp12.repository.IDatabaseRepository
 import com.lenta.bp12.request.GoodInfoNetRequest
 import com.lenta.bp12.request.MarkCartonBoxGoodInfoNetRequest
 import com.lenta.bp12.request.ScanInfoNetRequest
-import com.lenta.bp12.request.pojo.ProviderInfo
 import com.lenta.shared.account.ISessionInfo
-import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.databinding.PageSelectionListener
 import com.lenta.shared.utilities.extentions.combineLatest
@@ -341,13 +336,6 @@ class MarkedGoodInfoCreateViewModel : BaseGoodInfoCreateViewModel(), PageSelecti
                         provider = getProvider()
                 )
             }
-        }
-    }
-
-    fun updateData() {
-        val good = good.value
-        if (manager.isWasAddedProvider && good != null) {
-            manager.isWasAddedProvider = false
         }
     }
 

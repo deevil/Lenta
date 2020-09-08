@@ -137,7 +137,6 @@ class CreateTaskManager @Inject constructor(
 
                 // Добавим марке номер корзины
                 mark.basketNumber = suitableBasket.index
-                // Положим в товар
                 // Продублируем марку в позиции (просто надо)
                 addEmptyPosition(good, provider, suitableBasket)
                 // Добавим товар в корзину

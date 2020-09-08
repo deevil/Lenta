@@ -104,5 +104,5 @@ data class TaskOpen(
         baskets.removeAll(baskets.filter { it.getGoodList().isEmpty() })
     }
 
-
+    fun isMrcNotInTaskMrcList(formattedMrc: String) = this.mrcList.none { it.maxRetailPrice == formattedMrc }
 }

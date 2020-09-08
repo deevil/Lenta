@@ -85,6 +85,9 @@ abstract class Good(
         return positions.isEmpty() && marks.isEmpty() && parts.isEmpty()
     }
 
+    fun isTobacco() = this.markType == MarkType.TOBACCO
+    fun isTobaccoAndFoundGoodHasDifferentMrc(other: Good) = this.isTobacco() && maxRetailPrice != other.maxRetailPrice
+
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (javaClass != other?.javaClass) return false
@@ -103,6 +106,5 @@ abstract class Good(
     override fun toString(): String {
         return "Good(ean='$ean', eans=$eans, material='$material', name='$name', kind=$kind, section='$section', matrix=$matrix, volume=$volume, control=$control, commonUnits=$commonUnits, innerUnits=$innerUnits, innerQuantity=$innerQuantity, producers=$producers, positions=$positions, marks=$marks, parts=$parts, markType=$markType, markTypeGroup=$markTypeGroup, maxRetailPrice='$maxRetailPrice')"
     }
-
 
 }

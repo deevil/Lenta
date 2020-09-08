@@ -9,9 +9,7 @@ import com.lenta.bp12.features.open_task.base_good_info.BaseGoodInfoOpenViewMode
 import com.lenta.bp12.model.*
 import com.lenta.bp12.model.pojo.Mark
 import com.lenta.bp12.model.pojo.extentions.addMarks
-import com.lenta.bp12.model.pojo.extentions.getQuantityOfGood
 import com.lenta.bp12.model.pojo.open_task.GoodOpen
-import com.lenta.bp12.platform.extention.isWholesaleType
 import com.lenta.bp12.platform.navigation.IScreenNavigator
 import com.lenta.bp12.platform.resource.IResourceManager
 import com.lenta.bp12.repository.IDatabaseRepository
@@ -187,9 +185,6 @@ class MarkedGoodInfoOpenViewModel : BaseGoodInfoOpenViewModel(), PageSelectionLi
     }
 
 
-
-
-
     /**
      * Метод actionByNumber - общий, просто определяет марка внутри или коробка
      * */
@@ -257,6 +252,9 @@ class MarkedGoodInfoOpenViewModel : BaseGoodInfoOpenViewModel(), PageSelectionLi
                         navigator.showMrcNotSameAlert(it)
                     }
                 }
+                MarkScreenStatus.MRC_NOT_SAME_IN_BASKET -> {
+                    handleMrcNotSameInBasket()
+                }
                 MarkScreenStatus.NOT_MARKED_GOOD -> {
                     handleIncorrectEanFormat()
                 }
@@ -270,6 +268,12 @@ class MarkedGoodInfoOpenViewModel : BaseGoodInfoOpenViewModel(), PageSelectionLi
             }
         }
     }
+  //TODO
+    private fun handleMrcNotSameInBasket() {
+        navigator.hideProgress()
+        navigator.showMrcNotSameInBasketAlert {  }
+    }
+
 
     override fun loadBoxInfo(number: String) {
         launchUITryCatch {

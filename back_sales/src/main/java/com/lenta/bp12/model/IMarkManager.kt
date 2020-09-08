@@ -6,6 +6,8 @@ import com.lenta.bp12.features.create_task.marked_good_info.GoodProperty
 import com.lenta.bp12.model.pojo.Good
 import com.lenta.bp12.model.pojo.Mark
 import com.lenta.bp12.model.pojo.create_task.GoodCreate
+import com.lenta.bp12.model.pojo.extentions.isAnyAlreadyIn
+import com.lenta.bp12.model.pojo.extentions.mapToMarkList
 import com.lenta.bp12.model.pojo.open_task.GoodOpen
 import com.lenta.bp12.platform.extention.getControlType
 import com.lenta.bp12.platform.extention.getGoodKind
@@ -35,6 +37,7 @@ interface IMarkManager {
     fun setWorkType(workType: WorkType)
     suspend fun checkMark(number: String, workType: WorkType): MarkScreenStatus
     fun handleYesDeleteMappedMarksFromTempCallBack()
+    fun handleYesSaveAndOpenAnotherBox()
     fun getMarkFailure(): Failure
     fun getTempMarks(): MutableList<Mark>
     fun getProperties(): MutableList<GoodProperty>
@@ -125,7 +128,7 @@ class MarkManager @Inject constructor(
     }
 
     /**
-     * Метод вычленяет регулярным выражением шк, гтин и мрц из марки блока
+     * Метод вычленяет регулярным выражением шк(barcode), гтин и мрц из марки блока
      * */
     private suspend fun openMarkedGoodWithCarton(number: String): MarkScreenStatus {
         val good = when (workType) {
@@ -203,7 +206,6 @@ class MarkManager @Inject constructor(
         }
     }
 
-
     /**
      * Метод определяет есть ли такой товар в менеджере или нет,
      * Если есть, то откроет его, если нет то создаст
@@ -242,36 +244,36 @@ class MarkManager @Inject constructor(
             container: Pair<String, Mark.Container>? = null,
             mrc: String = ""
     ): MarkScreenStatus {
-        when (workType) {
+        return when (workType) {
             WorkType.CREATE -> {
                 val task = createManager.currentTask
-                var screenStatus = MarkScreenStatus.FAILURE
-                goodInfoNetRequest(GoodInfoParams(
-                        tkNumber = sessionInfo.market.orEmpty(),
-                        ean = ean,
-                        taskType = task.value?.type?.code.orEmpty()
-                )).either(::handleFailure) {
-                    screenStatus = handleLoadGoodInfoResult(it, container, mrc)
-                    Unit
-                }
-                return screenStatus
+                val createTaskTypeCode = task.value?.type?.code.orEmpty()
+                goodInfoRequest(createTaskTypeCode, ean, container, mrc)
             }
             WorkType.OPEN -> {
                 val task = openManager.currentTask
-                var screenStatus = MarkScreenStatus.FAILURE
-                goodInfoNetRequest(GoodInfoParams(
-                        tkNumber = sessionInfo.market.orEmpty(),
-                        ean = ean,
-                        taskType = task.value?.type?.code.orEmpty()
-                )).either(::handleFailure) {
-                    screenStatus = handleLoadGoodInfoResult(it, container, mrc)
-                    Unit
-                }
-                return screenStatus
+                val openTaskTypeCode = task.value?.type?.code.orEmpty()
+                goodInfoRequest(openTaskTypeCode, ean, container, mrc)
             }
         }
+    }
 
-
+    private suspend fun goodInfoRequest(
+            taskTypeCode: String,
+            ean: String,
+            container: Pair<String, Mark.Container>? = null,
+            mrc: String = ""
+    ): MarkScreenStatus {
+        var screenStatus = MarkScreenStatus.FAILURE
+        goodInfoNetRequest(GoodInfoParams(
+                tkNumber = sessionInfo.market.orEmpty(),
+                ean = ean,
+                taskType = taskTypeCode
+        )).either(::handleFailure) {
+            screenStatus = handleLoadGoodInfoResult(it, container, mrc)
+            Unit
+        }
+        return screenStatus
     }
 
     private fun handleFailure(failure: Failure): MarkScreenStatus {
@@ -306,120 +308,133 @@ class MarkManager @Inject constructor(
             container: Pair<String, Mark.Container>? = null,
             mrc: String = ""
     ): MarkScreenStatus {
-        when (workType) {
-            WorkType.OPEN -> {
-                openManager.clearSearchFromListParams()
-                val taskFromManager = openManager.currentTask
-                val goodFromManager = openManager.currentGood
-                return with(result) {
-                    taskFromManager.value?.let { task ->
-                        goodFromManager.value?.let { good ->
-                            val goodEan = eanInfo?.ean.orEmpty()
-                            val umrez = eanInfo?.umrez?.toDoubleOrNull().orIfNull { DEFAULT_UMREZ }
-                            val formattedMrc = getFormattedMrc(mrc, umrez)
-                            val markType = getMarkType()
+        return when (workType) {
+            WorkType.OPEN -> setOpenGood(result, container, mrc)
+            WorkType.CREATE -> setCreateGood(result, container, mrc)
+        }
+    }
 
-                            val createdGood = GoodOpen(
-                                    ean = goodEan,
-                                    material = materialInfo?.material.orEmpty(),
-                                    name = materialInfo?.name.orEmpty(),
-                                    kind = getGoodKind(),
-                                    control = getControlType(),
-                                    section = materialInfo?.section.orEmpty(),
-                                    matrix = getMatrixType(materialInfo?.matrix.orEmpty()),
-                                    commonUnits = database.getUnitsByCode(materialInfo?.commonUnitsCode.orEmpty()),
-                                    innerUnits = database.getUnitsByCode(materialInfo?.innerUnitsCode.orEmpty()),
-                                    innerQuantity = materialInfo?.innerQuantity?.toDoubleOrNull()
-                                            ?: DEFAULT_INNER_QUALITY_VALUE,
-                                    provider = task.provider,
-                                    producers = producers?.toMutableList().orEmpty().toMutableList(),
-                                    volume = materialInfo?.volume?.toDoubleOrNull() ?: DEFAULT_VOLUME_VALUE,
-                                    markType = markType,
-                                    markTypeGroup = database.getMarkTypeGroupByMarkType(markType),
-                                    maxRetailPrice = formattedMrc)
-
-                            if (database.isMarkTypeInDatabase(good.markType)) {
-                                if (createdGood.markType == good.markType) {
-                                    Logg.e {
-                                        task.mrcList.toString()
-                                    }
-                                    if (good.markType == MarkType.TOBACCO
-                                            && task.mrcList.none { it.maxRetailPrice == formattedMrc }
-                                    ) {
-                                        createdGoodToShowError.value = createdGood
-                                        MarkScreenStatus.MRC_NOT_SAME
-                                    } else {
-                                        setFoundGoodOpen(createdGood, container)
-                                    }
-                                } else {
-                                    MarkScreenStatus.NOT_MARKED_GOOD
-                                }
-                            } else {
-                                MarkScreenStatus.NO_MARKTYPE_IN_SETTINGS
-                            }
-                        }.orIfNull {
-                            internalErrorMessage = resource.goodNotFoundErrorMsg
-                            Logg.e { internalErrorMessage }
-                            MarkScreenStatus.INTERNAL_ERROR
-                        }
-                    }.orIfNull {
-                        internalErrorMessage = resource.taskNotFoundErrorMsg
-                        Logg.e { internalErrorMessage }
-                        MarkScreenStatus.INTERNAL_ERROR
-                    }
-                }
-            }
-            WorkType.CREATE -> {
-                createManager.clearSearchFromListParams()
-                val taskFromManager = createManager.currentTask
-                val goodFromManager = createManager.currentGood
-                val good = goodFromManager.value
-                return with(result) {
-                    taskFromManager.value?.let { task ->
-                        val taskType = task.type
-                        val goodEan = eanInfo?.ean.orEmpty()
-                        val umrez = eanInfo?.umrez?.toDoubleOrNull().orIfNull { DEFAULT_UMREZ }
-                        val formattedMrc = getFormattedMrc(mrc, umrez)
-                        val markType = getMarkType()
-                        val createdGood = GoodCreate(
-                                ean = goodEan,
-                                eans = database.getEanListByMaterialUnits(
-                                        material = materialInfo?.material.orEmpty(),
-                                        unitsCode = materialInfo?.commonUnitsCode.orEmpty()
-                                ),
+    private suspend fun setCreateGood(
+            result: GoodInfoResult,
+            container: Pair<String, Mark.Container>? = null,
+            mrc: String = ""
+    ): MarkScreenStatus {
+        createManager.clearSearchFromListParams()
+        val taskFromManager = createManager.currentTask
+        val goodFromManager = createManager.currentGood
+        val good = goodFromManager.value
+        return with(result) {
+            taskFromManager.value?.let { task ->
+                val taskType = task.type
+                val goodEan = eanInfo?.ean.orEmpty()
+                val umrez = eanInfo?.umrez?.toDoubleOrNull().orIfNull { DEFAULT_UMREZ }
+                val formattedMrc = getFormattedMrc(mrc, umrez)
+                val markType = getMarkType()
+                val createdGood = GoodCreate(
+                        ean = goodEan,
+                        eans = database.getEanListByMaterialUnits(
                                 material = materialInfo?.material.orEmpty(),
-                                name = materialInfo?.name.orEmpty(),
-                                kind = getGoodKind(),
-                                type = materialInfo?.goodType.takeIf { taskType.isDivByGoodType }.orEmpty(),
-                                control = getControlType(),
-                                section = materialInfo?.section.takeIf { taskType.isDivBySection }.orEmpty(),
-                                matrix = getMatrixType(materialInfo?.matrix.orEmpty()),
-                                commonUnits = database.getUnitsByCode(materialInfo?.commonUnitsCode.orEmpty()),
-                                innerUnits = database.getUnitsByCode(materialInfo?.innerUnitsCode.orEmpty()),
-                                innerQuantity = materialInfo?.innerQuantity?.toDoubleOrNull()
-                                        ?: 1.0,
-                                providers = providers?.toMutableList().takeIf { taskType.isDivByProvider }.orEmpty().toMutableList(),
-                                producers = producers?.toMutableList().orEmpty().toMutableList(),
-                                volume = materialInfo?.volume?.toDoubleOrNull() ?: 0.0,
-                                markType = markType,
-                                markTypeGroup = database.getMarkTypeGroupByMarkType(markType),
-                                maxRetailPrice = formattedMrc
-                        )
-                        if (good == null || createdGood.markType == good.markType) {
-                            setFoundGoodCreate(createdGood, container)
-                        } else {
-                            MarkScreenStatus.INCORRECT_EAN_FORMAT
-                        }
-
-                    }.orIfNull {
-                        internalErrorMessage = resource.taskNotFoundErrorMsg
-                        Logg.e { internalErrorMessage }
-                        MarkScreenStatus.INTERNAL_ERROR
+                                unitsCode = materialInfo?.commonUnitsCode.orEmpty()
+                        ),
+                        material = materialInfo?.material.orEmpty(),
+                        name = materialInfo?.name.orEmpty(),
+                        kind = getGoodKind(),
+                        type = materialInfo?.goodType.takeIf { taskType.isDivByGoodType }.orEmpty(),
+                        control = getControlType(),
+                        section = materialInfo?.section.takeIf { taskType.isDivBySection }.orEmpty(),
+                        matrix = getMatrixType(materialInfo?.matrix.orEmpty()),
+                        commonUnits = database.getUnitsByCode(materialInfo?.commonUnitsCode.orEmpty()),
+                        innerUnits = database.getUnitsByCode(materialInfo?.innerUnitsCode.orEmpty()),
+                        innerQuantity = materialInfo?.innerQuantity?.toDoubleOrNull()
+                                ?: 1.0,
+                        providers = providers?.takeIf { taskType.isDivByProvider }.orEmpty().toMutableList(),
+                        producers = producers.orEmpty().toMutableList(),
+                        volume = materialInfo?.volume?.toDoubleOrNull() ?: DEFAULT_VOLUME_VALUE,
+                        markType = markType,
+                        markTypeGroup = database.getMarkTypeGroupByMarkType(markType),
+                        maxRetailPrice = formattedMrc
+                )
+                if (database.isMarkTypeInDatabase(createdGood.markType)) {
+                    if (good == null || createdGood.markType == good.markType) {
+                        setFoundGoodCreate(createdGood, container)
+                    } else {
+                        MarkScreenStatus.INCORRECT_EAN_FORMAT
                     }
+                } else {
+                    MarkScreenStatus.NO_MARKTYPE_IN_SETTINGS
                 }
+            }.orIfNull {
+                internalErrorMessage = resource.taskNotFoundErrorMsg
+                Logg.e { internalErrorMessage }
+                MarkScreenStatus.INTERNAL_ERROR
             }
         }
     }
+
+    private suspend fun setOpenGood(
+            result: GoodInfoResult,
+            container: Pair<String, Mark.Container>? = null,
+            mrc: String = ""
+    ): MarkScreenStatus {
+
+        openManager.clearSearchFromListParams()
+        val taskFromManager = openManager.currentTask
+        val goodFromManager = openManager.currentGood
+
+        return with(result) {
+            taskFromManager.value?.let { task ->
+                goodFromManager.value?.let { good ->
+                    val goodEan = eanInfo?.ean.orEmpty()
+                    val umrez = eanInfo?.umrez?.toDoubleOrNull().orIfNull { DEFAULT_UMREZ }
+                    val formattedMrc = getFormattedMrc(mrc, umrez)
+                    val markType = getMarkType()
+
+                    val createdGood = GoodOpen(
+                            ean = goodEan,
+                            material = materialInfo?.material.orEmpty(),
+                            name = materialInfo?.name.orEmpty(),
+                            kind = getGoodKind(),
+                            control = getControlType(),
+                            section = materialInfo?.section.orEmpty(),
+                            matrix = getMatrixType(materialInfo?.matrix.orEmpty()),
+                            commonUnits = database.getUnitsByCode(materialInfo?.commonUnitsCode.orEmpty()),
+                            innerUnits = database.getUnitsByCode(materialInfo?.innerUnitsCode.orEmpty()),
+                            innerQuantity = materialInfo?.innerQuantity?.toDoubleOrNull()
+                                    ?: DEFAULT_INNER_QUALITY_VALUE,
+                            provider = task.provider,
+                            producers = producers?.toMutableList().orEmpty().toMutableList(),
+                            volume = materialInfo?.volume?.toDoubleOrNull() ?: DEFAULT_VOLUME_VALUE,
+                            markType = markType,
+                            markTypeGroup = database.getMarkTypeGroupByMarkType(markType),
+                            maxRetailPrice = formattedMrc)
+
+                    if (database.isMarkTypeInDatabase(createdGood.markType)) {
+                        if (createdGood.markType == good.markType) {
+                            if (good.isTobacco() && task.isMrcNotInTaskMrcList(formattedMrc)) {
+                                createdGoodToShowError.value = createdGood
+                                MarkScreenStatus.MRC_NOT_SAME
+                            } else {
+                                setFoundGoodOpen(createdGood, container)
+                            }
+                        } else {
+                            MarkScreenStatus.NOT_MARKED_GOOD
+                        }
+                    } else {
+                        MarkScreenStatus.NO_MARKTYPE_IN_SETTINGS
+                    }
+                }.orIfNull {
+                    internalErrorMessage = resource.goodNotFoundErrorMsg
+                    Logg.e { internalErrorMessage }
+                    MarkScreenStatus.INTERNAL_ERROR
+                }
+            }.orIfNull {
+                internalErrorMessage = resource.taskNotFoundErrorMsg
+                Logg.e { internalErrorMessage }
+                MarkScreenStatus.INTERNAL_ERROR
+            }
+        }
+    }
+
 
     /**
      * Форматирует мрц, если он есть
@@ -475,7 +490,6 @@ class MarkManager @Inject constructor(
             createManager.updateCurrentGood(foundGood)
             MarkScreenStatus.OK_BUT_NEED_TO_SCAN_MARK
         }
-
     }
 
     /**
@@ -498,61 +512,52 @@ class MarkManager @Inject constructor(
         return screenStatus
     }
 
-
     /**
      * Метод обрабатывает результат ФМ ZMP_UTZ_WOB_07_V001
      * В зависимости от типа сканированного товара (марка, коробка, блок)
      * создает марку. Затем если она присутствует показывает сообщение что она уже присутствует
      * и по нажатию Да, удаляет ее( их если коробка/блок), если нет то добавляет в общий список.
      * */
-    private fun handleCheckMarkNetRequestResult(result: MarkCartonBoxGoodInfoNetRequestResult, foundGood: Good): MarkScreenStatus {
+    private fun handleCheckMarkNetRequestResult(
+            result: MarkCartonBoxGoodInfoNetRequestResult,
+            foundGood: Good
+    ): MarkScreenStatus {
         val status = result.getMarkStatus()
         val marks = result.marks
         val properties = result.properties
         return marks?.let { resultMarks ->
             tempMarks.let { localTempMarks ->
-                when (status) {
+                val mappedMarks = resultMarks.mapToMarkList(foundGood)
+                val currentGood = when (workType) {
+                    WorkType.CREATE -> createManager.currentGood
+                    WorkType.OPEN -> openManager.currentGood
+                }
+                if (foundGood.isTobaccoAndFoundGoodHasDifferentMrc(foundGood)) {
+                    MarkScreenStatus.MRC_NOT_SAME_IN_BASKET
+                }
+                else when (status) {
                     MarkStatus.GOOD_CARTON -> {
-                        val mappedMarks = resultMarks.map {
-                            Mark(
-                                    number = it.markNumber.orEmpty(),
-                                    packNumber = it.cartonNumber.orEmpty(),
-                                    maxRetailPrice = foundGood.maxRetailPrice
-                            )
-                        }
                         addOrDeleteMarksFromTemp(
                                 restProperties = properties,
                                 localTempMarks = localTempMarks,
                                 mappedMarks = mappedMarks,
-                                screenStatus = MarkScreenStatus.CARTON_ALREADY_SCANNED
+                                screenStatusIfAlreadyScanned = MarkScreenStatus.CARTON_ALREADY_SCANNED
                         )
                     }
                     MarkStatus.GOOD_MARK -> {
-                        val mappedMarks = marks.map {
-                            Mark(
-                                    number = it.markNumber.orEmpty()
-                            )
-                        }
                         addOrDeleteMarksFromTemp(
                                 restProperties = properties,
                                 localTempMarks = localTempMarks,
                                 mappedMarks = mappedMarks,
-                                screenStatus = MarkScreenStatus.MARK_ALREADY_SCANNED
+                                screenStatusIfAlreadyScanned = MarkScreenStatus.MARK_ALREADY_SCANNED
                         )
                     }
                     MarkStatus.GOOD_BOX -> {
-                        val mappedMarks = marks.map {
-                            Mark(
-                                    number = it.markNumber.orEmpty(),
-                                    boxNumber = it.boxNumber.orEmpty(),
-                                    maxRetailPrice = foundGood.maxRetailPrice
-                            )
-                        }
                         addOrDeleteMarksFromTemp(
                                 restProperties = properties,
                                 localTempMarks = localTempMarks,
                                 mappedMarks = mappedMarks,
-                                screenStatus = MarkScreenStatus.BOX_ALREADY_SCANNED
+                                screenStatusIfAlreadyScanned = MarkScreenStatus.BOX_ALREADY_SCANNED
                         )
                     }
                     else -> {
@@ -579,17 +584,13 @@ class MarkManager @Inject constructor(
             restProperties: List<PropertiesInfo>?,
             localTempMarks: MutableList<Mark>,
             mappedMarks: List<Mark>,
-            screenStatus: MarkScreenStatus
+            screenStatusIfAlreadyScanned: MarkScreenStatus
     ): MarkScreenStatus {
-        return if (localTempMarks.any { tempMark ->
-                    mappedMarks.any {
-                        tempMark.number == it.number
-                    }
-                }
-        ) {
+        return if (localTempMarks.isAnyAlreadyIn(mappedMarks)) {
             this.mappedMarks = mappedMarks
-            screenStatus
+            screenStatusIfAlreadyScanned
         } else {
+
             val restPropertiesMapped = restProperties?.map { propertyFromRest ->
                 GoodProperty(
                         gtin = propertyFromRest.ean.orEmpty(),
@@ -598,11 +599,12 @@ class MarkManager @Inject constructor(
                 )
             }.orEmpty()
             properties = properties.union(restPropertiesMapped).toMutableList()
-            mappedMarks.forEach { mappedMark ->
-                localTempMarks.add(mappedMark)
-            }
+
+            localTempMarks.addAll(mappedMarks)
+
             tempMarks = localTempMarks
             lastScannedMarks = mappedMarks
+
             MarkScreenStatus.OK
         }
     }
@@ -651,6 +653,10 @@ class MarkManager @Inject constructor(
 
     override fun handleYesDeleteMappedMarksFromTempCallBack() {
         tempMarks.removeAll(mappedMarks)
+    }
+
+    override fun handleYesSaveAndOpenAnotherBox() {
+
     }
 
     override fun getMarkFailure(): Failure {

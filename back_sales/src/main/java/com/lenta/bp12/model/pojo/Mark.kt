@@ -21,5 +21,4 @@ data class Mark(
         CARTON,
         BOX
     }
-
 }
