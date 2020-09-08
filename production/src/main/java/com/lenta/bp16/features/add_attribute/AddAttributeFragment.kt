@@ -1,5 +1,6 @@
 package com.lenta.bp16.features.add_attribute
 
+import android.os.Bundle
 import android.view.View
 import com.lenta.bp16.R
 import com.lenta.bp16.databinding.FragmentAddAttributeBinding
@@ -44,6 +45,11 @@ class AddAttributeFragment : CoreFragment<FragmentAddAttributeBinding, AddAttrib
             //R.id.b_1 -> vm.onClickBack()
             R.id.b_5 -> vm.onClickComplete()
         }
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        vm.updateData()
     }
 
     companion object{

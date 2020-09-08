@@ -1,5 +1,6 @@
 package com.lenta.bp16.features.material_remake_details
 
+import android.os.Bundle
 import android.view.View
 import androidx.core.os.bundleOf
 import androidx.lifecycle.lifecycleScope
@@ -89,6 +90,11 @@ class MaterialRemakeDetailsFragment : CoreFragment<FragmentMaterialRemakeDetails
             R.id.b_4 -> vm.onClickAdd()
             R.id.b_5 -> vm.onCompleteClicked()
         }
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        vm.updateData()
     }
 
     override fun onBackPressed(): Boolean {

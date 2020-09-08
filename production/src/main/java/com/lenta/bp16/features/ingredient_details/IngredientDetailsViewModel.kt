@@ -3,17 +3,16 @@ package com.lenta.bp16.features.ingredient_details
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.switchMap
 import com.lenta.bp16.data.IScales
-import com.lenta.bp16.model.BatchNewDataInfo
-import com.lenta.bp16.model.GoodTypeIcon
-import com.lenta.bp16.model.ProducerDataInfo
-import com.lenta.bp16.model.ZPartDataInfo
+import com.lenta.bp16.model.*
 import com.lenta.bp16.model.ingredients.MercuryPartDataInfo
 import com.lenta.bp16.model.ingredients.OrderIngredientDataInfo
 import com.lenta.bp16.model.ingredients.params.IngredientDataCompleteParams
 import com.lenta.bp16.model.ingredients.ui.OrderByBarcodeUI
+import com.lenta.bp16.platform.Constants
 import com.lenta.bp16.platform.navigation.IScreenNavigator
 import com.lenta.bp16.platform.resource.IResourceManager
 import com.lenta.bp16.request.CompleteIngredientByOrderNetRequest
+import com.lenta.bp16.request.ingredients_use_case.get_data.GetAddAttributeInfoUseCase
 import com.lenta.bp16.request.ingredients_use_case.get_data.GetMercuryPartDataInfoUseCase
 import com.lenta.bp16.request.ingredients_use_case.get_data.GetProducerDataInfoUseCase
 import com.lenta.bp16.request.ingredients_use_case.get_data.GetZPartDataInfoUseCase
@@ -48,6 +47,9 @@ class IngredientDetailsViewModel : CoreViewModel() {
 
     @Inject
     lateinit var zPartDataInfoUseCase: GetZPartDataInfoUseCase
+
+    @Inject
+    lateinit var addAttributeInfoUseCase: GetAddAttributeInfoUseCase
 
     // значение параметра OBJ_CODE из родительского компонента заказа
     var parentCode: String by Delegates.notNull()
@@ -87,46 +89,72 @@ class IngredientDetailsViewModel : CoreViewModel() {
         "${it.dropZeros()} ${resourceManager.kgSuffix()}"
     }
 
-    private val mercuryDataInfo by unsafeLazy {
-        MutableLiveData<List<MercuryPartDataInfo>>()
-    }
+    private val mercuryDataInfo = MutableLiveData<List<MercuryPartDataInfo>>()
+    private val zPartDataInfo = MutableLiveData<List<ZPartDataInfo>>()
+    private val addedAttribute = MutableLiveData<List<AddAttributeInfo>>()
 
-    private val zPartDataInfo by unsafeLazy {
-        MutableLiveData<List<ZPartDataInfo>>()
-    }
-
-    val producerNameList by unsafeLazy {
-        if (!orderIngredient.value?.isVet.isNullOrBlank()) {
-            mercuryDataInfo.switchMap {
-                asyncLiveData<List<String>> {
-                    val producerNameList = it.map { it.prodName.orEmpty() }
-                    emit(producerNameList)
+    val producerNameList =
+            /** Если был передан производитель из AddAttributeFragment, то заполнять данными из нее*/
+            if (!addedAttribute.value.isNullOrEmpty()) {
+                addedAttribute.mapSkipNulls {
+                    val producerNameList = it.map { it.prodName }
+                    producerNameList
+                }
+            } else {
+                if (!orderIngredient.value?.isVet.isNullOrBlank()) {
+                    mercuryDataInfo.switchMap {
+                        asyncLiveData<List<String>> {
+                            val producerNameList = it.map { it.prodName.orEmpty() }.toMutableList()
+                            if (producerNameList.size > 1) {
+                                producerNameList.add(0, Constants.CHOOSE_PRODUCER)
+                            }
+                            emit(producerNameList)
+                        }
+                    }
+                } else {
+                    zPartDataInfo.switchMap {
+                        asyncLiveData<List<String>> {
+                            val producerNameList = it.map { it.prodName.orEmpty() }.toMutableList()
+                            if (producerNameList.size > 1) {
+                                producerNameList.add(0, Constants.CHOOSE_PRODUCER)
+                            }
+                            emit(producerNameList)
+                        }
+                    }
                 }
             }
-        } else {
-            zPartDataInfo.switchMap {
-                asyncLiveData<List<String>> {
-                    val producerNameList = it.map { it.prodName.orEmpty() }
-                    emit(producerNameList)
-                }
-            }
-        }
-    }
+
     val selectedProducerPosition = MutableLiveData(0)
 
     val productionDateField by unsafeLazy {
-        if (!orderIngredient.value?.isVet.isNullOrBlank()) {
-            mercuryDataInfo.switchMap {
+        /** Если была передана дата из AddAttributeFragment, то заполнять данными из нее*/
+        if (!addedAttribute.value.isNullOrEmpty()) {
+            addedAttribute.switchMap {
                 asyncLiveData<List<String>> {
-                    val productionDate = it.map { it.prodDate.orEmpty() }
+                    val productionDate = it.map { it.prodDate }
                     emit(productionDate)
                 }
             }
         } else {
-            zPartDataInfo.switchMap {
-                asyncLiveData<List<String>> {
-                    val productionDate = it.map { it.prodDate.orEmpty() }
-                    emit(productionDate)
+            if (!orderIngredient.value?.isVet.isNullOrBlank()) {
+                mercuryDataInfo.switchMap {
+                    asyncLiveData<List<String>> {
+                        val productionDate = it.map { it.prodDate.orEmpty() }.toMutableList()
+                        if (productionDate.size > 1) {
+                            productionDate.add(0, Constants.CHOOSE_PRODUCTION_DATE)
+                        }
+                        emit(productionDate)
+                    }
+                }
+            } else {
+                zPartDataInfo.switchMap {
+                    asyncLiveData<List<String>> {
+                        val productionDate = it.map { it.prodDate.orEmpty() }.toMutableList()
+                        if (productionDate.size > 1) {
+                            productionDate.add(0, Constants.CHOOSE_PRODUCTION_DATE)
+                        }
+                        emit(productionDate)
+                    }
                 }
             }
         }
@@ -145,12 +173,20 @@ class IngredientDetailsViewModel : CoreViewModel() {
     }
     }
 
+    /** Условие отображения ошибки, если лист производителей заполнен с пробелами */
+    private val alertNotFoundProducerName = MutableLiveData<Boolean>()
+
     /** Условие отображения производителя */
     val producerVisibleCondition by unsafeLazy {
-        producerNameList.mapSkipNulls {
-            val condition = it.isNotEmpty() && (!orderIngredient.value?.isVet.isNullOrBlank() || !orderIngredient.value?.isZpart.isNullOrBlank())
-            condition
+        val isVet = !orderIngredient.value?.isVet.isNullOrBlank()
+        val isZPart = !orderIngredient.value?.isZpart.isNullOrBlank()
+        val condition = when {
+            isVet -> true
+            !isVet && isZPart -> checkZPartProducerVisibleCondition().first
+            else -> false
         }
+        alertNotFoundProducerName.value = checkZPartProducerVisibleCondition().second
+        condition
     }
 
     /** Условие отображения даты производства */
@@ -190,10 +226,46 @@ class IngredientDetailsViewModel : CoreViewModel() {
 
     val ean = MutableLiveData("")
 
-    init {
+    private fun checkZPartProducerVisibleCondition(): Pair<Boolean, Boolean> {
+
+        val producerVisibleCondition = zPartDataInfo.switchMap {
+            asyncLiveData<List<String>> {
+                val zPartProducerNameList = it.map { it.prodName.orEmpty() }
+                emit(zPartProducerNameList)
+            }
+        }
+
+        val producersList = producerVisibleCondition.value.orEmpty()
+
+        var fullItemCount = 0
+        for (zPartName in producersList) {
+            if (zPartName.isNotEmpty()) {
+                fullItemCount++ //Считаем количество не пустых полей в списке
+            }
+        }
+
+        val visibleStatus = when {
+            (fullItemCount == 0) -> ProducerDataStatus.GONE
+            (fullItemCount == producersList.size) -> ProducerDataStatus.VISIBLE
+            else -> ProducerDataStatus.ALERT
+        }
+
+        return when(visibleStatus){
+            ProducerDataStatus.GONE -> false to false
+            ProducerDataStatus.VISIBLE -> true to false
+            ProducerDataStatus.ALERT -> true to true
+        }
+    }
+
+    fun updateData() {
         launchUITryCatch {
             mercuryDataInfo.value = mercuryPartDataInfoUseCase.invoke()
             zPartDataInfo.value = zPartDataInfoUseCase.invoke()
+            addedAttribute.value = addAttributeInfoUseCase.invoke()
+            if(alertNotFoundProducerName.value == true){
+                navigator.goBack()
+                navigator.showAlertProducerCodeNotFound()
+            }
         }
     }
 

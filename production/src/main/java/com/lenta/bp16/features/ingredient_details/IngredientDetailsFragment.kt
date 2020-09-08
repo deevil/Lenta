@@ -1,5 +1,6 @@
 package com.lenta.bp16.features.ingredient_details
 
+import android.os.Bundle
 import android.view.View
 import androidx.core.os.bundleOf
 import androidx.lifecycle.lifecycleScope
@@ -91,6 +92,11 @@ class IngredientDetailsFragment : CoreFragment<FragmentIngredientDetailsBinding,
 
     override fun onScanResult(data: String) {
         vm.onScanResult(data)
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        vm.updateData()
     }
 
     companion object {

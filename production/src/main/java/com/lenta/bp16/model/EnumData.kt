@@ -25,6 +25,12 @@ enum class TaskStatus {
     LOCK
 }
 
+enum class ProducerDataStatus{
+    VISIBLE,
+    GONE,
+    ALERT
+}
+
 enum class TaskType(val abbreviation: String, val numberLength: Int) {
     WAREHOUSE_INGREDIENTS("ИН", 30),
     PROCESSING_UNIT("ЕО", 20),

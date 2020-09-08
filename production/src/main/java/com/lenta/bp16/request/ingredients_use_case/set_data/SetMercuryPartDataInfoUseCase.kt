@@ -9,9 +9,9 @@ import javax.inject.Inject
 
 class SetMercuryPartDataInfoUseCase @Inject constructor(
         private val ingredientDataPersistStorage: IIngredientDataPersistStorage
-): IUseCase.In<MercuryPartDataInfo> {
+) : IUseCase.In<MercuryPartDataInfo> {
     override suspend fun invoke(params: List<MercuryPartDataInfo>) {
-        return withContext(Dispatchers.IO){
+        return withContext(Dispatchers.IO) {
             ingredientDataPersistStorage.saveMercuryDataInfo(params)
         }
     }

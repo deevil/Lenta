@@ -448,6 +448,16 @@ class ScreenNavigator @Inject constructor(
         }
     }
 
+    override fun showAlertProducerCodeNotFound() {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    message = context.getString(R.string.tw_producer_code_not_found),
+                    iconRes = R.drawable.ic_warning_red_80dp,
+                    pageNumber = Constants.ALERT_FRAGMENT
+            ))
+        }
+    }
+
 }
 
 interface IScreenNavigator : ICoreNavigator {
@@ -501,4 +511,5 @@ interface IScreenNavigator : ICoreNavigator {
     fun showAlertIngredientNotFound()
     fun showNotFoundedBarcodeForPosition()
     fun showAlertWrongDate()
+    fun showAlertProducerCodeNotFound()
 }

@@ -1,5 +1,6 @@
 package com.lenta.bp16.model.data_storage
 
+import com.lenta.bp16.model.AddAttributeInfo
 import com.lenta.bp16.model.ProducerDataInfo
 import com.lenta.bp16.model.ZPartDataInfo
 import com.lenta.bp16.model.ingredients.MercuryPartDataInfo
@@ -13,4 +14,7 @@ interface IIngredientDataPersistStorage {
 
     fun saveProducerDataInfo(list: List<ProducerDataInfo>)
     fun getProducerDataInfo(): List<ProducerDataInfo>
+
+    fun saveAddAttributeInfo(list: List<AddAttributeInfo>)
+    fun getAddAttributeInfo(): List<AddAttributeInfo>
 }

@@ -2,6 +2,7 @@ package com.lenta.bp16.model.data_storage
 
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import com.lenta.bp16.model.AddAttributeInfo
 import com.lenta.bp16.model.ProducerDataInfo
 import com.lenta.bp16.model.ZPartDataInfo
 import com.lenta.bp16.model.ingredients.MercuryPartDataInfo
@@ -54,9 +55,24 @@ class IngredientDataPersistStorage @Inject constructor(
         } ?: emptyList()
     }
 
+    override fun saveAddAttributeInfo(list: List<AddAttributeInfo>) {
+        hyperHive.stateAPI.saveParamToDB(
+                KEY_ADD_ATTRIBUTE_INFO,
+                gson.toJson(list)
+        )
+    }
+
+    override fun getAddAttributeInfo(): List<AddAttributeInfo> {
+        return hyperHive.stateAPI.getParamFromDB(KEY_ADD_ATTRIBUTE_INFO)?.let { json ->
+            val type = object : TypeToken<List<AddAttributeInfo>>() {}.type
+            gson.fromJson(json, type) as? List<AddAttributeInfo>
+        } ?: emptyList()
+    }
+
     companion object {
         private const val KEY_PRODUCER_DATA_INFO = "KEY_PRODUCER_DATA_INFO"
         private const val KEY_ZPART_DATA_INFO = "KEY_ZPART_DATA_INFO"
         private const val KEY_MERCURY_DATA_INFO = "KEY_MERCURY_DATA_INFO"
+        private const val KEY_ADD_ATTRIBUTE_INFO = "KEY_ADD_ATTRIBUTE_INFO"
     }
 }
