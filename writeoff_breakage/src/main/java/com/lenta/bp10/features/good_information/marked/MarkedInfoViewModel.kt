@@ -82,7 +82,7 @@ class MarkedInfoViewModel : BaseProductInfoViewModel(), PageSelectionListener {
                     viewModelScope = this@MarkedInfoViewModel::viewModelScope,
                     handleScannedMark = this@MarkedInfoViewModel::handleScannedMark,
                     handleScannedBox = this@MarkedInfoViewModel::handleScannedBox,
-                    material = productInfo.value?.materialNumber.orEmpty()
+                    productInfo = productInfo.value
             )
         }
     }
@@ -171,28 +171,36 @@ class MarkedInfoViewModel : BaseProductInfoViewModel(), PageSelectionListener {
     override fun onScanResult(data: String) {
         actionByNumber(
                 number = data,
-                funcForShoes = { _, markWithoutTail, _ -> actionForMark(markWithoutTail) },
-                funcForCigarettes = ::actionForMark,
+                funcForShoes = { _, markWithoutTail, _ -> actionForShoesMark(markWithoutTail) },
+                funcForCigarettes = ::actionForCigaretteMark,
                 funcForCigaretteBox = { boxNumber ->
                     if (isSpecialMode.value == false) {
-                        actionForBox(boxNumber)
+                        actionForCigaretteBox(boxNumber)
                     }
                 },
                 funcForNotValidFormat = { searchGood(data) }
         )
     }
 
-    private fun actionForMark(markNumber: String) {
+    private fun actionForShoesMark(markNumber: String) {
         if (!markedGoodStampCollector.isContainsStamp(markNumber)) {
-            markSearchDelegate.requestMarkInfo(markNumber)
+            markSearchDelegate.requestShoesMarkInfo(markNumber)
         } else {
             screenNavigator.openAlertDoubleScanStamp()
         }
     }
 
-    private fun actionForBox(boxNumber: String) {
+    private fun actionForCigaretteMark(markNumber: String) {
+        if (!markedGoodStampCollector.isContainsStamp(markNumber)) {
+            markSearchDelegate.requestCigaretteMarkInfo(markNumber)
+        } else {
+            screenNavigator.openAlertDoubleScanStamp()
+        }
+    }
+
+    private fun actionForCigaretteBox(boxNumber: String) {
         if (!markedGoodStampCollector.isContainsBox(boxNumber)) {
-            markSearchDelegate.requestBoxInfo(boxNumber)
+            markSearchDelegate.requestCigaretteBoxInfo(boxNumber)
         } else {
             screenNavigator.openAlertDoubleScanStamp()
         }

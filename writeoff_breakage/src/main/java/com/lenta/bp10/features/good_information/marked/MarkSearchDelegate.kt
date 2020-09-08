@@ -1,14 +1,13 @@
 package com.lenta.bp10.features.good_information.marked
 
 import com.lenta.bp10.platform.navigation.IScreenNavigator
-import com.lenta.bp10.requests.db.ProductInfoDbRequest
-import com.lenta.bp10.requests.network.ExciseStampNetRequest
 import com.lenta.bp10.requests.network.MarkedInfoNetRequest
 import com.lenta.bp10.requests.network.MarkedInfoParams
 import com.lenta.bp10.requests.network.MarkedInfoResult
 import com.lenta.bp10.requests.network.pojo.MarkInfo
 import com.lenta.bp10.requests.network.pojo.Property
 import com.lenta.shared.exception.Failure
+import com.lenta.shared.models.core.ProductInfo
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -22,7 +21,7 @@ class MarkSearchDelegate @Inject constructor(
 
     private lateinit var tkNumber: String
 
-    private lateinit var material: String
+    private var productInfo: ProductInfo? = null
 
     private lateinit var updateProperties: (properties: List<Property>) -> Unit
 
@@ -33,27 +32,27 @@ class MarkSearchDelegate @Inject constructor(
 
     fun init(viewModelScope: () -> CoroutineScope,
              tkNumber: String,
-             material: String,
+             productInfo: ProductInfo?,
              handleScannedMark: (mark: String) -> Unit,
              handleScannedBox: (marks: List<MarkInfo>) -> Unit,
              updateProperties: (properties: List<Property>) -> Unit) {
 
         this.viewModelScope = viewModelScope
         this.tkNumber = tkNumber
-        this.material = material
+        this.productInfo = productInfo
         this.updateProperties = updateProperties
         this.handleScannedMark = handleScannedMark
         this.handleScannedBox = handleScannedBox
     }
 
-    fun requestMarkInfo(number: String) {
+    fun requestShoesMarkInfo(number: String) {
         viewModelScope().launch {
             navigator.showProgress(markedInfoNetRequest)
             markedInfoNetRequest(MarkedInfoParams(
                     tkNumber = tkNumber,
-                    taskNumber = "",
-                    material = material,
-                    markNumber = number
+                    material = productInfo?.materialNumber.orEmpty(),
+                    markNumber = number,
+                    markType = productInfo?.markType.orEmpty()
             )).also {
                 navigator.hideProgress()
             }.either(::handleFailure) { result ->
@@ -62,14 +61,30 @@ class MarkSearchDelegate @Inject constructor(
         }
     }
 
-    fun requestBoxInfo(number: String) {
+    fun requestCigaretteMarkInfo(number: String) {
         viewModelScope().launch {
             navigator.showProgress(markedInfoNetRequest)
             markedInfoNetRequest(MarkedInfoParams(
                     tkNumber = tkNumber,
-                    taskNumber = "",
-                    material = material,
-                    boxNumber = number
+                    material = productInfo?.materialNumber.orEmpty(),
+                    packNumber = number,
+                    markType = productInfo?.markType.orEmpty()
+            )).also {
+                navigator.hideProgress()
+            }.either(::handleFailure) { result ->
+                handleMarkRequestResult(number, result)
+            }
+        }
+    }
+
+    fun requestCigaretteBoxInfo(number: String) {
+        viewModelScope().launch {
+            navigator.showProgress(markedInfoNetRequest)
+            markedInfoNetRequest(MarkedInfoParams(
+                    tkNumber = tkNumber,
+                    material = productInfo?.materialNumber.orEmpty(),
+                    boxNumber = number,
+                    markType = productInfo?.markType.orEmpty()
             )).also {
                 navigator.hideProgress()
             }.either(::handleFailure) { result ->

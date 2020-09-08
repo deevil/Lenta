@@ -28,10 +28,13 @@ data class MarkedInfoParams(
         val tkNumber: String,
         /** Номер задания */
         @SerializedName("IV_TASK_NUM")
-        val taskNumber: String,
+        val taskNumber: String = "",
         /** Номер короба */
         @SerializedName("IV_BOX_NUM")
         val boxNumber: String = "",
+        /** Номер блока */
+        @SerializedName("IV_PACK_NUM")
+        val packNumber: String = "",
         /** Номер марки */
         @SerializedName("IV_MARK_NUM")
         val markNumber: String = "",
@@ -40,7 +43,10 @@ data class MarkedInfoParams(
         val material: String,
         /** Код бизнес процесса */
         @SerializedName("IV_CODEBP")
-        val bpCode: String = "WOB"
+        val bpCode: String = "WOB",
+        /** Тип маркировки */
+        @SerializedName("IV_ZMARKTYPE")
+        val markType: String
 )
 
 class MarkedInfoStatus : ObjectRawStatus<MarkedInfoResult>()

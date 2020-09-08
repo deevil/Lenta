@@ -130,7 +130,8 @@ class ScanInfoRequest(private val hyperHive: HyperHive, private val gson: Gson, 
                                 isSet = zmpUtz46V001.isSet(materialInfo.material),
                                 sectionId = materialInfo.abtnr,
                                 matrixType = materialInfo.getMatrixType(),
-                                materialType = materialInfo.matype
+                                materialType = materialInfo.matype,
+                                markType = materialInfo.markType.orEmpty()
                         ),
                         quantity = quantity
                 )
@@ -152,7 +153,8 @@ class ScanInfoRequest(private val hyperHive: HyperHive, private val gson: Gson, 
                 isSet = !set.isNullOrEmpty(),
                 sectionId = material.abtnr,
                 matrixType = getMatrixType(material.matrixType),
-                materialType = material.materialType
+                materialType = material.materialType,
+                markType = material.markType.orEmpty()
         )
 
     }
