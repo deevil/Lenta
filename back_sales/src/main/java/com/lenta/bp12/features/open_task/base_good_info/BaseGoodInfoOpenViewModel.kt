@@ -212,7 +212,6 @@ abstract class BaseGoodInfoOpenViewModel : CoreViewModel(), IBaseGoodInfoOpenVie
         return manager.getBasket(good.value?.provider?.code.orEmpty())
     }
 
-
     override fun onClickDetails() {
         manager.updateCurrentGood(good.value)
         navigator.openGoodDetailsCreateScreen()
@@ -242,6 +241,11 @@ abstract class BaseGoodInfoOpenViewModel : CoreViewModel(), IBaseGoodInfoOpenVie
     private fun handleYesOnClickCloseCallback() {
         manager.isBasketsNeedsToBeClosed = true
         saveChangesAndExit()
+    }
+
+    override fun isPlannedQuantityActual(): Boolean {
+        val quantityValue = quantity.value ?: -1.0
+        return isPlannedQuantityMoreThanZero && (quantityValue > plannedQuantity)
     }
 
     companion object {

@@ -15,7 +15,7 @@ class GoodOpen(
         material: String,
         name: String,
         kind: GoodKind,
-        control: ControlType = ControlType.COMMON, //TODO
+        control: ControlType = ControlType.COMMON,
         section: String,
         matrix: MatrixType,
         volume: Double,

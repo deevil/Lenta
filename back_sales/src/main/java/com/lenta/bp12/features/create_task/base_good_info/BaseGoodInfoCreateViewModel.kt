@@ -1,4 +1,5 @@
 package com.lenta.bp12.features.create_task.base_good_info
+
 import androidx.lifecycle.MutableLiveData
 import com.lenta.bp12.model.pojo.Basket
 import com.lenta.bp12.model.pojo.extentions.getQuantityOfGood
@@ -64,42 +65,37 @@ abstract class BaseGoodInfoCreateViewModel : CoreViewModel(), IBaseGoodInfoCreat
      * */
 
     override val basketNumber by unsafeLazy {
-        good.combineLatest(quantity).combineLatest(isProviderSelected).map {
-            it?.let {
-                val isProviderSelected = it.second
-
-                if (isProviderSelected) {
-                    task.value?.let { task ->
-                        getBasket()?.let { basket ->
-                            "${basket.index}"
-                        } ?: "${task.baskets.size + 1}"
-                    }.orEmpty()
-                } else ""
-            }
-        }
+        good.combineLatest(quantity)
+                .combineLatest(isProviderSelected)
+                .mapSkipNulls {
+                    val isProviderSelected = it.second
+                    if (isProviderSelected) {
+                        val index = getBasket()?.index.orIfNull { task.value?.baskets?.size?.plus(1) }
+                        index?.run { "$index" }.orEmpty()
+                    } else ""
+                }
     }
 
     override val basketQuantity by unsafeLazy {
-        good.combineLatest(quantity).combineLatest(isProviderSelected).map {
-            it?.let {
-                val good = it.first.first
-                val enteredQuantity = it.first.second
-                val isProviderSelected = it.second
+        good.combineLatest(quantity)
+                .combineLatest(isProviderSelected)
+                .mapSkipNulls {
+                    val good = it.first.first
+                    val enteredQuantity = it.first.second
+                    val isProviderSelected = it.second
 
-                if (isProviderSelected) {
-                    getBasket()?.getQuantityOfGood(good)?.sumWith(enteredQuantity)
-                            ?: enteredQuantity
-                } else 0.0
-            }
-        }
+                    if (isProviderSelected) {
+                        getBasket()?.run {
+                            getQuantityOfGood(good).sumWith(enteredQuantity)
+                        }.orIfNull { enteredQuantity }
+                    } else DEFAULT_QUANTITY
+                }
     }
 
     override val basketQuantityWithUnits by unsafeLazy {
-        good.combineLatest(basketQuantity).map {
-            it?.let {
-                val (good, quantity) = it
-                "${quantity.dropZeros()} ${good.commonUnits.name}"
-            }
+        good.combineLatest(basketQuantity).mapSkipNulls {
+            val (good, quantity) = it
+            "${quantity.dropZeros()} ${good.commonUnits.name}"
         }
     }
 
@@ -107,20 +103,18 @@ abstract class BaseGoodInfoCreateViewModel : CoreViewModel(), IBaseGoodInfoCreat
     Список поставщиков
      */
 
-    override val sourceProviders = MutableLiveData(mutableListOf<ProviderInfo>())
+    final override val sourceProviders = MutableLiveData(mutableListOf<ProviderInfo>())
 
-    override val providers = sourceProviders.map {
-        it?.let { providers ->
-            val list = providers.toMutableList()
-            if (list.size > 1) {
-                list.add(0,
-                        ProviderInfo(
-                                name = resource.chooseProvider()
-                        ))
-            }
-
-            list.toList()
+    override val providers = sourceProviders.mapSkipNulls {
+        val list = it.toMutableList()
+        if (list.size > 1) {
+            list.add(0,
+                    ProviderInfo(
+                            name = resource.chooseProvider()
+                    ))
         }
+
+        list.toList()
     }
 
     override val providerList by unsafeLazy {
@@ -137,18 +131,18 @@ abstract class BaseGoodInfoCreateViewModel : CoreViewModel(), IBaseGoodInfoCreat
 
     override val providerPosition = MutableLiveData(0)
 
-    override val isProviderSelected = providerEnabled.combineLatest(providerPosition).map {
-        val isEnabled = it?.first ?: false
-        val position = it?.second ?: 0
+    override val isProviderSelected by unsafeLazy {
+        providerEnabled.combineLatest(providerPosition).map {
+            val isEnabled = it?.first ?: false
+            val position = it?.second ?: 0
 
-        isProviderEnabledAndPositionChanged(isEnabled, position)  or
-                isProviderNotEnabledAndPositionDidntChanged(isEnabled, position)
+            isProviderEnabledAndPositionChanged(isEnabled, position) or
+                    isProviderNotEnabledAndPositionDidntChanged(isEnabled, position)
+        }
     }
 
-    private fun isProviderEnabledAndPositionChanged(isEnabled: Boolean, position: Int)
-            = isEnabled && position > DEFAULT_POSITION
-    private fun isProviderNotEnabledAndPositionDidntChanged(isEnabled: Boolean, position: Int)
-            = !isEnabled && position == DEFAULT_POSITION
+    private fun isProviderEnabledAndPositionChanged(isEnabled: Boolean, position: Int) = isEnabled && position > DEFAULT_POSITION
+    private fun isProviderNotEnabledAndPositionDidntChanged(isEnabled: Boolean, position: Int) = !isEnabled && position == DEFAULT_POSITION
 
     /**
     Количество товара по корзинам
@@ -162,13 +156,13 @@ abstract class BaseGoodInfoCreateViewModel : CoreViewModel(), IBaseGoodInfoCreat
 
     override val closeVisibility by unsafeLazy {
         task.map { task ->
-            task?.type?.isWholesaleType()
+            task?.type?.isWholesaleType() ?: false
         }
     }
 
     override val closeEnabled by unsafeLazy {
-        basketQuantity.map { baksetQuantityValue ->
-            baksetQuantityValue?.let { it > 0 }
+        basketQuantity.map { basketQuantityValue ->
+            basketQuantityValue?.let { it > 0 }
         }
     }
 
@@ -229,6 +223,7 @@ abstract class BaseGoodInfoCreateViewModel : CoreViewModel(), IBaseGoodInfoCreat
 
     companion object {
         private const val DEFAULT_POSITION = 0
+        private const val DEFAULT_QUANTITY = 0.0
     }
 }
 

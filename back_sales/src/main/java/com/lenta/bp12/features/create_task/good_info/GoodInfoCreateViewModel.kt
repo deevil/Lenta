@@ -176,14 +176,11 @@ class GoodInfoCreateViewModel : BaseGoodInfoCreateViewModel() {
     val date = MutableLiveData("")
 
     private val isCorrectDate = date.map { date ->
-        date?.length ?: 0 == 10
+        (date?.length ?: 0) == DATE_STRING_LENGHT
     }
 
     val dateEnabled = screenStatus.map { status ->
-        when (status) {
-            ScreenStatus.ALCOHOL, ScreenStatus.PART -> true
-            else -> false
-        }
+        (status == ScreenStatus.ALCOHOL || status == ScreenStatus.PART)
     }
 
     /**
@@ -223,10 +220,7 @@ class GoodInfoCreateViewModel : BaseGoodInfoCreateViewModel() {
     }
 
     override val rollbackVisibility = screenStatus.map { status ->
-        when (status) {
-            ScreenStatus.MARK_150, ScreenStatus.MARK_68, ScreenStatus.BOX -> true
-            else -> false
-        }
+        isStatusForRollback(status)
     }
 
     val rollbackEnabled = scanInfoResult.map { info ->
@@ -273,6 +267,10 @@ class GoodInfoCreateViewModel : BaseGoodInfoCreateViewModel() {
         } else {
             thereWasRollback = false
         }
+    }
+
+    private fun isStatusForRollback(status: ScreenStatus?): Boolean {
+        return (status == ScreenStatus.MARK_150 || status == ScreenStatus.MARK_68 || status == ScreenStatus.BOX)
     }
 
     private fun handleCheckPartSuccessResult(result: ScanInfoResult) {
@@ -785,7 +783,7 @@ class GoodInfoCreateViewModel : BaseGoodInfoCreateViewModel() {
             thereWasRollback = true
             updateProducers(good.producers)
             scanInfoResult.value = null
-            quantityField.value = "0"
+            quantityField.value = DEFAULT_QUANTITY_FIELD
             date.value = ""
         }
     }
@@ -818,5 +816,10 @@ class GoodInfoCreateViewModel : BaseGoodInfoCreateViewModel() {
             navigator.openBasketCreateGoodListScreen()
             manager.isBasketsNeedsToBeClosed = false
         }
+    }
+
+    companion object {
+        private const val DEFAULT_QUANTITY_FIELD = "0"
+        private const val DATE_STRING_LENGHT = 10
     }
 }

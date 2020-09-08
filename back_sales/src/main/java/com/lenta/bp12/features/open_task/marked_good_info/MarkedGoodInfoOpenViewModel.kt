@@ -302,22 +302,20 @@ class MarkedGoodInfoOpenViewModel : BaseGoodInfoOpenViewModel(), PageSelectionLi
     }
 
     override suspend fun saveChanges() {
-        withContext(Dispatchers.Main) {
-            navigator.showProgressLoadingData()
-        }
+        navigator.showProgressLoadingData()
 
         good.value?.let { good ->
-            manager.saveGoodInTask(good)
-            isExistUnsavedData = false
-            addMarks(good)
+            withContext(Dispatchers.IO) {
+                manager.saveGoodInTask(good)
+                isExistUnsavedData = false
+                addMarks(good)
+            }
         }.orIfNull {
             Logg.e { "good null" }
             navigator.showInternalError(resource.goodNotFoundErrorMsg)
         }
 
-        withContext(Dispatchers.Main) {
-            navigator.hideProgress()
-        }
+        navigator.hideProgress()
     }
 
     private suspend fun addMarks(changedGood: GoodOpen) {
@@ -363,11 +361,6 @@ class MarkedGoodInfoOpenViewModel : BaseGoodInfoOpenViewModel(), PageSelectionLi
         }
 
         saveChangesAndExit()
-    }
-
-    private fun isPlannedQuantityActual(): Boolean {
-        val quantityValue = quantity.value ?: -1.0
-        return isPlannedQuantityMoreThanZero && (quantityValue > plannedQuantity)
     }
 
     override fun saveChangesAndExit() {
@@ -464,9 +457,5 @@ class MarkedGoodInfoOpenViewModel : BaseGoodInfoOpenViewModel(), PageSelectionLi
     companion object {
         private const val DEFAULT_PAGE = 0
         private const val DEFAULT_QUANTITY_VALUE = 0.0
-        private const val DEFAULT_QUANTITY_STRING_FOR_EAN = "1"
-        private const val DEFAULT_QUANTITY_STRING = "0"
-        private const val DEFAULT_POSITION = 0
-        private const val FROM_STRING = "из"
     }
 }

@@ -398,8 +398,8 @@ class MarkManager @Inject constructor(
                                 innerUnits = database.getUnitsByCode(materialInfo?.innerUnitsCode.orEmpty()),
                                 innerQuantity = materialInfo?.innerQuantity?.toDoubleOrNull()
                                         ?: 1.0,
-                                providers = providers?.toMutableList().takeIf { taskType.isDivByProvider }.orEmpty().toMutableList(),
-                                producers = producers?.toMutableList().orEmpty().toMutableList(),
+                                providers = providers?.takeIf { taskType.isDivByProvider }.orEmpty().toMutableList(),
+                                producers = producers.orEmpty().toMutableList(),
                                 volume = materialInfo?.volume?.toDoubleOrNull() ?: 0.0,
                                 markType = markType,
                                 markTypeGroup = database.getMarkTypeGroupByMarkType(markType),
