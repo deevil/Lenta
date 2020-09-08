@@ -62,7 +62,7 @@ class GoodInfoViewModel : CoreViewModel() {
 
     val requestFocusQuantityField = MutableLiveData(true)
 
-    val buom: MutableLiveData<String> = MutableLiveData("")
+    val buom: MutableLiveData<Uom> = MutableLiveData()
 
     private val weightAndUom: LiveData<Pair<Double?, Uom>> = goodParams.switchMap { good ->
         weight.switchMap { weightValue ->
@@ -70,7 +70,7 @@ class GoodInfoViewModel : CoreViewModel() {
                 val pair = weightValue.takeIf { it != 0.0 }
                         ?.run { div(Constants.CONVERT_TO_KG) to Uom.KG }
                         ?: getPairFromUom(good)
-                buom.postValue(pair.second.code)
+                buom.postValue(pair.second)
                 emit(pair)
             }
         }
@@ -97,35 +97,19 @@ class GoodInfoViewModel : CoreViewModel() {
     }
     val selectedProducerPosition = MutableLiveData(0)
 
-    /**Склад отправитель*/
+    /**Список складов отправителей*/
     val warehouseSender: MutableLiveData<List<String>> = MutableLiveData()
-    val warehouseSenderPosition by unsafeLazy {
-        appSettings.warehouseSenderPosition
-    }
     val selectedWarehouseSenderPosition by unsafeLazy {
-        MutableLiveData(warehouseSenderPosition)
+        MutableLiveData(appSettings.warehouseSenderPosition)
     }
 
-    /**Склад получатель*/
+    /**Список складов получателей*/
     val warehouseReceiver: MutableLiveData<List<String>> = MutableLiveData()
-    val warehouseReceiverPosition by unsafeLazy {
-        appSettings.warehouseReceiverPosition
-    }
     val selectedWarehouseReceiverPosition by unsafeLazy {
-        MutableLiveData(warehouseReceiverPosition)
+        MutableLiveData(appSettings.warehouseReceiverPosition)
     }
 
     /**Дата производства и срок годности*/
-    private val warehouseSenderSelected by unsafeLazy {
-        selectedWarehouseSenderPosition.map {
-            warehouseSender.value?.getOrNull(it ?: 0).orEmpty()
-        }
-    }
-    private val warehouseReceiverSelected by unsafeLazy {
-        selectedWarehouseReceiverPosition.map {
-            warehouseReceiver.value?.getOrNull(it ?: 0).orEmpty()
-        }
-    }
     val dateInfoField = MutableLiveData("")
     private var producerDate: String = ""
     private var selfLifeDate: String = ""
@@ -206,8 +190,6 @@ class GoodInfoViewModel : CoreViewModel() {
                 warehouseReceiver.value = warehouseResult.warehouseList?.map { it.warehouseName }
                 Unit
             }
-            //selectedWarehouseSenderPosition.value = findSelectedWarehouseSender()
-            //selectedWarehouseReceiverPosition.value = findSelectedWarehouseReceiver()
         }
     }
 
@@ -217,45 +199,7 @@ class GoodInfoViewModel : CoreViewModel() {
         proFillCond.value = database.getProFillCondition()
     }
 
-
-    /*private suspend fun findSelectedWarehouseSender(): Int = withContext(Dispatchers.IO) {
-        var selectedIndex = 0
-        val warehouseList = warehouseSender.value
-        appSettings.lastWarehouseSender?.let { lastWarehouse ->
-            warehouseList?.forEachIndexed { index, warehouse ->
-                if (warehouse == lastWarehouse) {
-                    warehouseSenderSelected = warehouse
-                    selectedIndex = index
-                    return@forEachIndexed
-                }
-            }
-        }
-        selectedIndex
-    }*/
-
-    /*private suspend fun findSelectedWarehouseReceiver(): Int = withContext(Dispatchers.IO) {
-        var selectedIndex = 0
-        val warehouseList = warehouseReceiver.value
-        appSettings.lastWarehouseReceiver?.let { lastWarehouse ->
-            warehouseList?.forEachIndexed { index, warehouse ->
-                if (warehouse == lastWarehouse) {
-                    warehouseReceiverSelected = warehouse
-                    selectedIndex = index
-                    return@forEachIndexed
-                }
-            }
-        }
-        selectedIndex
-    }*/
-
     private fun saveWarehouses() {
-        /*warehouseSenderSelected = warehouseSender.value?.getOrNull(selectedWarehouseSenderPosition.value
-                ?: 0).orEmpty()
-        warehouseReceiverSelected = warehouseReceiver.value?.getOrNull(selectedWarehouseReceiverPosition.value
-                ?: 0).orEmpty()
-        appSettings.lastWarehouseSender = warehouseSenderSelected
-        appSettings.lastWarehouseReceiver = warehouseReceiverSelected*/
-
         appSettings.warehouseSenderPosition = selectedWarehouseSenderPosition.value
         appSettings.warehouseReceiverPosition = selectedWarehouseReceiverPosition.value
     }
@@ -289,45 +233,51 @@ class GoodInfoViewModel : CoreViewModel() {
         navigator.openSelectGoodScreen()
     }
 
-    fun onClickComplete() {
-        launchUITryCatch {
-            navigator.showProgressLoadingData()
-            setDateInfo()
-            saveWarehouses()
-            val prodCodeSelectedProducer = goodParams.value?.producers?.getOrNull(selectedProducerPosition.value
-                    ?: 0)?.producerCode.orEmpty()
-            val dateIsCorrect = if (zPartFlag.value == true) {
-                checkDate()
-            } else {
-                true
-            }
-            if (!dateIsCorrect) {
+    fun onClickComplete() = launchUITryCatch {
+        navigator.showProgressLoadingData()
+        setDateInfo()
+        saveWarehouses()
+
+        val warehouseSenderIndex = selectedWarehouseSenderPosition.getOrDefaultWithNull()
+        val warehouseSenderSelected = warehouseSender.getOrEmpty(warehouseSenderIndex)
+
+        val warehouseReceiverIndex = selectedWarehouseReceiverPosition.getOrDefaultWithNull()
+        val warehouseReceiverSelected = warehouseReceiver.getOrEmpty(warehouseReceiverIndex)
+
+        val prodCodeIndex = selectedProducerPosition.getOrDefault()
+        val prodCodeSelectedProducer = goodParams.value?.producers?.getOrNull(prodCodeIndex)?.producerCode
+
+        val dateIsCorrect = if (zPartFlag.value == true) {
+            checkDate()
+        } else {
+            true
+        }
+        if (!dateIsCorrect) {
+            navigator.hideProgress()
+            navigator.showAlertWrongDate()
+        } else {
+            val result = movementNetRequest(
+                    params = MovementParams(
+                            tkNumber = sessionInfo.market.orEmpty(),
+                            matnr = goodParams.value?.material.orEmpty(),
+                            prodCode = prodCodeSelectedProducer.orEmpty(),
+                            dateProd = producerDate,
+                            expirDate = selfLifeDate,
+                            lgortExport = warehouseSenderSelected,
+                            lgortImport = warehouseReceiverSelected,
+                            codeCont = containerField.value.orEmpty(),
+                            factQnt = quantityField.value.orEmpty(),
+                            buom = buom.value?.code.orEmpty(),
+                            deviceIP = deviceIp.value.toString(),
+                            personnelNumber = sessionInfo.personnelNumber.orEmpty()
+                    )
+            )
+            result.also {
                 navigator.hideProgress()
-                navigator.showAlertWrongDate()
-            } else {
-                val result = movementNetRequest(
-                        params = MovementParams(
-                                tkNumber = sessionInfo.market.orEmpty(),
-                                matnr = goodParams.value?.material.orEmpty(),
-                                prodCode = prodCodeSelectedProducer,
-                                dateProd = producerDate,
-                                expirDate = selfLifeDate,
-                                lgortExport = warehouseSenderSelected.value.orEmpty(),
-                                lgortImport = warehouseReceiverSelected.value.orEmpty(),
-                                codeCont = "",
-                                factQnt = quantityField.value.toString(),
-                                buom = buom.value.orEmpty(),
-                                deviceIP = deviceIp.value.toString(),
-                                personnelNumber = sessionInfo.personnelNumber.orEmpty()
-                        )
-                )
-                result.also {
-                    navigator.hideProgress()
-                }.either(::handleFailure) {
-                    with(navigator) {
-                        showMovingSuccessful {
-                            openSelectGoodScreen()
-                        }
+            }.either(::handleFailure) {
+                with(navigator) {
+                    showMovingSuccessful {
+                        openSelectGoodScreen()
                     }
                 }
             }
