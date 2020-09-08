@@ -559,8 +559,9 @@ class GoodsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKey
     }
 
     fun onClickSave() {
-        screenNavigator.openLabelPrintingScreen()
-        return
+        //todo
+        /***screenNavigator.openLabelPrintingScreen()
+        return*/
         launchUITryCatch {
             if (getCountProductNotProcessed() > 0.0) {
                 screenNavigator.openDiscrepancyListScreen()

@@ -7,8 +7,8 @@ import app_update.AppUpdaterInstallerFromFmp
 import com.lenta.bp9.BuildConfig.APPLICATION_ID
 import com.lenta.bp9.model.task.IReceivingTaskManager
 import com.lenta.bp9.model.task.ReceivingTaskManager
-import com.lenta.bp9.platform.data.IPrinter
-import com.lenta.bp9.platform.data.Printer
+import com.lenta.bp9.data.IPrinter
+import com.lenta.bp9.data.Printer
 import com.lenta.bp9.platform.navigation.IScreenNavigator
 import com.lenta.bp9.platform.navigation.ScreenNavigator
 import com.lenta.bp9.repos.DataBaseRepo

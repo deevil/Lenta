@@ -5,7 +5,7 @@ import android.content.Context
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.lenta.bp9.R
-import com.lenta.bp9.features.goods_information.baseGoods.BaseGoodsInfo
+import com.lenta.bp9.features.goods_information.base.BaseGoodsInfoImpl
 import com.lenta.bp9.features.goods_list.SearchProductDelegate
 import com.lenta.bp9.model.processing.*
 import com.lenta.bp9.model.task.TaskType
@@ -29,18 +29,14 @@ import java.text.SimpleDateFormat
 import java.util.*
 import javax.inject.Inject
 
-class GoodsMercuryInfoViewModel : BaseGoodsInfo(), OnPositionClickListener {
+class GoodsMercuryInfoViewModel : BaseGoodsInfoImpl(), OnPositionClickListener {
 
     @Inject
-    lateinit var screenNavigator: IScreenNavigator
-    @Inject
-    lateinit var context: Context
-    @Inject
     lateinit var processMercuryProductService: ProcessMercuryProductService
+
     @Inject
     lateinit var searchProductDelegate: SearchProductDelegate
-    @Inject
-    lateinit var repoInMemoryHolder: IRepoInMemoryHolder
+
     @Inject
     lateinit var timeMonitor: ITimeMonitor
 
@@ -69,11 +65,6 @@ class GoodsMercuryInfoViewModel : BaseGoodsInfo(), OnPositionClickListener {
         }
     }
     val productionDate: MutableLiveData<String> = MutableLiveData("")
-
-    @SuppressLint("SimpleDateFormat")
-    private val formatterRU = SimpleDateFormat(DATE_FORMAT_dd_mm_yyyy)
-    @SuppressLint("SimpleDateFormat")
-    private val formatterEN = SimpleDateFormat(DATE_FORMAT_yyyy_mm_dd)
 
     private val currentDate: MutableLiveData<Date> = MutableLiveData()
     private val expirationDate: MutableLiveData<Calendar> = MutableLiveData()
@@ -139,8 +130,8 @@ class GoodsMercuryInfoViewModel : BaseGoodsInfo(), OnPositionClickListener {
             spinManufacturersSelectedPosition
                     .combineLatest(spinProductionDateSelectedPosition)
                     .map {
-                        val countMercuryVolume = processMercuryProductService.getVolumeAllMercury(currentManufacture, currentProductionDateFormatterEN)
-                        val mercuryUomName = processMercuryProductService.getUomNameOfMercury(currentManufacture, currentProductionDateFormatterEN)
+                        val countMercuryVolume = processMercuryProductService.getVolumeAllMercury(currentManufactureName, currentProductionDateFormatterEN)
+                        val mercuryUomName = processMercuryProductService.getUomNameOfMercury(currentManufactureName, currentProductionDateFormatterEN)
                         buildString {
                             append(countMercuryVolume.toStringFormatted())
                             append(" ")
@@ -274,9 +265,9 @@ class GoodsMercuryInfoViewModel : BaseGoodsInfo(), OnPositionClickListener {
 
     val enabledApplyButton: MutableLiveData<Boolean> = countValue.map {
         if (isGoodsAddedAsSurplus.value == true) { //карточка трелло https://trello.com/c/eo1nRdKC) (ТП (меркурий по ПГЕ) -> 3.2.2.16 Обработка расхождений при пересчете ГЕ (Меркурий) -> 2.1.Излишек по товару
-            (it ?: 0.0) > 0.0 && currentManufacture.isNotEmpty()
+            (it ?: 0.0) > 0.0 && currentManufactureName.isNotEmpty()
         } else {
-            (it ?: 0.0) > 0.0 && currentManufacture.isNotEmpty() && currentProductionDate.isNotEmpty()
+            (it ?: 0.0) > 0.0 && currentManufactureName.isNotEmpty() && currentProductionDate.isNotEmpty()
         }
     }
 
@@ -342,7 +333,7 @@ class GoodsMercuryInfoViewModel : BaseGoodsInfo(), OnPositionClickListener {
                                                 .toStringFormatted()
                                     }
 
-                    qualityInfo.value = dataBase.getQualityMercuryInfoForDiscrepancy().orEmpty()
+                    qualityInfo.value = dataBase.getQualityInfoForDiscrepancy().orEmpty()
                     spinQualitySelectedPosition.value =
                             qualityInfo.value
                                     ?.indexOfLast { it.code == TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_DELIVERY_ERRORS }
@@ -546,7 +537,7 @@ class GoodsMercuryInfoViewModel : BaseGoodsInfo(), OnPositionClickListener {
                 processing = processMercuryProductService.checkConditionsOfPreservationOfProduct(
                                 count = count.value ?: "0",
                                 typeDiscrepancies = currentTypeDiscrepanciesCode,
-                                manufacturer = currentManufacture,
+                                manufacturer = currentManufactureName,
                                 productionDate = currentProductionDateFormatterEN,
                                 paramGrzRoundLackRatio = paramGrzRoundLackRatio.value?.replace(",", ".")?.toDouble() ?: 0.0,
                                 paramGrzRoundLackUnit = paramGrzRoundLackUnit.value?.replace(",", ".")?.toDouble() ?: 0.0,
@@ -565,7 +556,7 @@ class GoodsMercuryInfoViewModel : BaseGoodsInfo(), OnPositionClickListener {
                             count = addCount,
                             isConvertUnit = false,
                             typeDiscrepancies = TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_NORM,
-                            manufacturer = currentManufacture,
+                            manufacturer = currentManufactureName,
                             productionDate = currentProductionDateFormatterEN
                     )
                 } else {
@@ -573,7 +564,7 @@ class GoodsMercuryInfoViewModel : BaseGoodsInfo(), OnPositionClickListener {
                             count = addCount,
                             isConvertUnit = false,
                             typeDiscrepancies = currentReasonRejectionInfoCode,
-                            manufacturer = currentManufacture,
+                            manufacturer = currentManufactureName,
                             productionDate = currentProductionDateFormatterEN
                     )
                 }
@@ -597,7 +588,7 @@ class GoodsMercuryInfoViewModel : BaseGoodsInfo(), OnPositionClickListener {
                                     processing = processMercuryProductService.checkConditionsOfPreservationOfVSD(
                                                     count = addCount,
                                                     typeDiscrepancies = typeDiscrepancies,
-                                                    manufacturer = currentManufacture,
+                                                    manufacturer = currentManufactureName,
                                                     productionDate = currentProductionDateFormatterEN
                                     ),
                                     addCount = addCount,
@@ -613,7 +604,7 @@ class GoodsMercuryInfoViewModel : BaseGoodsInfo(), OnPositionClickListener {
                                     processing = processMercuryProductService.checkConditionsOfPreservationOfVSD(
                                                         count = enteredCount.toString(),
                                                         typeDiscrepancies = typeDiscrepancies,
-                                                        manufacturer = currentManufacture,
+                                                        manufacturer = currentManufactureName,
                                                         productionDate = currentProductionDateFormatterEN
                                     ),
                                     addCount = enteredCount.toString(),
@@ -632,7 +623,7 @@ class GoodsMercuryInfoViewModel : BaseGoodsInfo(), OnPositionClickListener {
                                 count = addCount,
                                 isConvertUnit = false,
                                 typeDiscrepancies = currentReasonRejectionInfoCode,
-                                manufacturer = currentManufacture,
+                                manufacturer = currentManufactureName,
                                 productionDate = currentProductionDateFormatterEN
                         )
             }
@@ -642,7 +633,7 @@ class GoodsMercuryInfoViewModel : BaseGoodsInfo(), OnPositionClickListener {
                                 count = addCount,
                                 isConvertUnit = false,
                                 typeDiscrepancies = currentReasonRejectionInfoCode,
-                                manufacturer = currentManufacture,
+                                manufacturer = currentManufactureName,
                                 productionDate = currentProductionDateFormatterEN
                         )
             }
@@ -663,7 +654,7 @@ class GoodsMercuryInfoViewModel : BaseGoodsInfo(), OnPositionClickListener {
                                     .getMercuryDiscrepancies()
                                     .findMercuryDiscrepanciesOfProduct(productInfo.value!!)
                                     .last { mercuryDiscrepancies ->
-                                        mercuryDiscrepancies.manufacturer == currentManufacture
+                                        mercuryDiscrepancies.manufacturer == currentManufactureName
                                                 && mercuryDiscrepancies.productionDate == currentProductionDateFormatterEN
                                     }
                                     .uom
@@ -685,7 +676,7 @@ class GoodsMercuryInfoViewModel : BaseGoodsInfo(), OnPositionClickListener {
                         count = convertEizToBei().toString(),
                         isConvertUnit = isConvertUnit,
                         typeDiscrepancies = currentQualityInfoCode,
-                        manufacturer = currentManufacture,
+                        manufacturer = currentManufactureName,
                         productionDate = productionDateSave
                 )
                 count.value = "0"
@@ -702,7 +693,7 @@ class GoodsMercuryInfoViewModel : BaseGoodsInfo(), OnPositionClickListener {
                                 count = convertEizToBei(),
                                 isConvertUnit = isConvertUnit,
                                 reasonRejectionCode = currentQualityInfoCode,
-                                manufacturer = currentManufacture,
+                                manufacturer = currentManufactureName,
                                 productionDate = currentProductionDateFormatterEN
                         )
         when (checkConditionsOfPreservationPGE) {
@@ -711,7 +702,7 @@ class GoodsMercuryInfoViewModel : BaseGoodsInfo(), OnPositionClickListener {
                         count = convertEizToBei().toString(),
                         isConvertUnit = isConvertUnit,
                         typeDiscrepancies = currentQualityInfoCode,
-                        manufacturer = currentManufacture,
+                        manufacturer = currentManufactureName,
                         productionDate = currentProductionDateFormatterEN
                 )
                 count.value = "0"
@@ -734,7 +725,7 @@ class GoodsMercuryInfoViewModel : BaseGoodsInfo(), OnPositionClickListener {
                                     .addSurplusInQuantityPGE(
                                             count = convertEizToBei(),
                                             isConvertUnit = isConvertUnit,
-                                            manufacturer = currentManufacture,
+                                            manufacturer = currentManufactureName,
                                             productionDate = currentProductionDateFormatterEN
                                     )
                             count.value = "0"
@@ -748,7 +739,7 @@ class GoodsMercuryInfoViewModel : BaseGoodsInfo(), OnPositionClickListener {
                         .addNormAndUnderloadExceededInvoicePGE(
                                 count = convertEizToBei(),
                                 isConvertUnit = isConvertUnit,
-                                manufacturer = currentManufacture,
+                                manufacturer = currentManufactureName,
                                 productionDate = currentProductionDateFormatterEN
                         )
                 count.value = "0"
@@ -760,7 +751,7 @@ class GoodsMercuryInfoViewModel : BaseGoodsInfo(), OnPositionClickListener {
                         .addNormAndUnderloadExceededVetDocPGE(
                                 count = convertEizToBei(),
                                 isConvertUnit = isConvertUnit,
-                                manufacturer = currentManufacture,
+                                manufacturer = currentManufactureName,
                                 productionDate = currentProductionDateFormatterEN
                         )
                 count.value = "0"

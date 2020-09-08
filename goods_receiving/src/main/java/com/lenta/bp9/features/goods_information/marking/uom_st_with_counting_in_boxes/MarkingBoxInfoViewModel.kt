@@ -4,7 +4,7 @@ import android.content.Context
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.lenta.bp9.R
-import com.lenta.bp9.features.goods_information.baseGoods.BaseGoodsInfo
+import com.lenta.bp9.features.goods_information.base.BaseGoodsInfoImpl
 import com.lenta.bp9.features.goods_information.marking.TypeLastStampScanned
 import com.lenta.bp9.features.goods_list.SearchProductDelegate
 import com.lenta.bp9.model.processing.ProcessMarkingBoxProductService
@@ -12,7 +12,6 @@ import com.lenta.bp9.model.task.TaskBlockInfo
 import com.lenta.bp9.model.task.TaskProductInfo
 import com.lenta.bp9.platform.TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_NORM
 import com.lenta.bp9.platform.navigation.IScreenNavigator
-import com.lenta.bp9.repos.IDataBaseRepo
 import com.lenta.shared.fmp.resources.dao_ext.getEansFromMaterial
 import com.lenta.shared.fmp.resources.dao_ext.getProductInfoByMaterial
 import com.lenta.shared.fmp.resources.dao_ext.getUomInfo
@@ -32,19 +31,13 @@ import com.mobrun.plugin.api.HyperHive
 import javax.inject.Inject
 
 //https://trello.com/c/vl9wQg0Y
-class MarkingBoxInfoViewModel : BaseGoodsInfo(),  OnPositionClickListener {
-
-    @Inject
-    lateinit var screenNavigator: IScreenNavigator
+class MarkingBoxInfoViewModel : BaseGoodsInfoImpl(),  OnPositionClickListener {
 
     @Inject
     lateinit var processMarkingBoxProductService: ProcessMarkingBoxProductService
 
     @Inject
     lateinit var searchProductDelegate: SearchProductDelegate
-
-    @Inject
-    lateinit var context: Context
 
     @Inject
     lateinit var hyperHive: HyperHive

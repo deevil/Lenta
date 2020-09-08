@@ -1739,6 +1739,15 @@ class ScreenNavigator(
         }
     }
 
+    override fun showAlertNoIpPrinter() {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    pageNumber = PAGE_NUMBER_96,
+                    message = context.getString(R.string.no_ip_printer_alert)
+            ))
+        }
+    }
+
     private fun getFragmentStack() = foregroundActivityProvider.getActivity()?.fragmentStack
 }
 
@@ -1935,4 +1944,5 @@ interface IScreenNavigator : ICoreNavigator {
     fun openZBatchesInfoPPPScreen(productInfo: TaskProductInfo, isDiscrepancy: Boolean)
     fun openLabelPrintingScreen()
     fun openPrintLabelsCountCopiesScreen(labels: List<LabelPrintingItem>? = null)
+    fun showAlertNoIpPrinter()
 }

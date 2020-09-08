@@ -1,4 +1,4 @@
-package com.lenta.bp9.features.goods_information.baseGoods
+package com.lenta.bp9.features.goods_information.base
 
 interface IBaseCurrentProductionDate : IBaseVariables {
     val currentProductionDate: String
@@ -6,10 +6,10 @@ interface IBaseCurrentProductionDate : IBaseVariables {
             val position = spinProductionDateSelectedPosition.value ?: -1
             return position
                     .takeIf { it >= 0 }
-                    ?.run {
+                    ?.let {
                         spinProductionDate.value
                                 ?.takeIf { it.isNotEmpty() }
-                                ?.run { this[position] }
+                                ?.let { it[position] }
                                 .orEmpty()
                     }
                     .orEmpty()

@@ -350,4 +350,5 @@
     <string name="label_printing">Печать этикеток</string>
     <string name="specify_the_number_of_copies">Укажите количество копий</string>
     <string name="printing_by_goods">Печать по товарам</string>
+    <string name="no_ip_printer_alert">IP адрес принтера не указан</string>
 </resources>

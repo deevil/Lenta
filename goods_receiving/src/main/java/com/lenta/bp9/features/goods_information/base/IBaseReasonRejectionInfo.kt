@@ -1,4 +1,4 @@
-package com.lenta.bp9.features.goods_information.baseGoods
+package com.lenta.bp9.features.goods_information.base
 
 interface IBaseReasonRejectionInfo : IBaseVariables {
     val currentReasonRejectionInfoCode: String

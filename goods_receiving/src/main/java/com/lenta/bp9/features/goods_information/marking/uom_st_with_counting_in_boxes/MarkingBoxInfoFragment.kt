@@ -6,7 +6,6 @@ import android.view.View
 import android.widget.AdapterView
 import com.lenta.bp9.R
 import com.lenta.bp9.databinding.FragmentMarkingBoxInfoBinding
-import com.lenta.bp9.features.goods_information.marking.uom_st_without_counting_in_boxes.MarkingInfoFragment
 import com.lenta.bp9.model.task.TaskProductInfo
 import com.lenta.bp9.platform.extentions.getAppComponent
 import com.lenta.shared.platform.activity.OnBackPresserListener

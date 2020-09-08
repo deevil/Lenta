@@ -36,12 +36,6 @@ class DataBaseRepo(
         }
     }
 
-    override suspend fun getQualityMercuryInfoForDiscrepancy(): List<QualityInfo>? = withContext(Dispatchers.IO) {
-        zmpUtz17V001.getAllQuality()?.toQualityInfoList()?.filter {
-            it.id == "005" && it.code != "1"
-        }
-    }
-
     override suspend fun getReasonRejectionInfoOfQuality(quality: String): List<ReasonRejectionInfo>? = withContext(Dispatchers.IO) {
             zmpUtz20V001.getAllReasonRejection()?.toReasonRejectionInfoList()?.filter {
                 it.id == "005" && it.qualityCode == quality
@@ -253,7 +247,6 @@ interface IDataBaseRepo {
     suspend fun getQualityInfo(): List<QualityInfo>?
     suspend fun getQualityMercuryInfo(): List<QualityInfo>?
     suspend fun getQualityInfoForDiscrepancy(): List<QualityInfo>?
-    suspend fun getQualityMercuryInfoForDiscrepancy(): List<QualityInfo>?
     suspend fun getReasonRejectionInfoOfQuality(quality: String): List<ReasonRejectionInfo>?
     suspend fun getAllReasonRejectionInfo(): List<ReasonRejectionInfo>?
     suspend fun getTermControlInfo(): List<QualityInfo>?

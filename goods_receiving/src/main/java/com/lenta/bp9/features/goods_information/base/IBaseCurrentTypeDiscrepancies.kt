@@ -1,4 +1,4 @@
-package com.lenta.bp9.features.goods_information.baseGoods
+package com.lenta.bp9.features.goods_information.base
 
 import com.lenta.bp9.platform.TypeDiscrepanciesConstants
 

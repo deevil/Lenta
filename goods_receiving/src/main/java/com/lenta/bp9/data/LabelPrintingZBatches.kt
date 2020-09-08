@@ -1,4 +1,4 @@
-package com.lenta.bp9.platform.data
+package com.lenta.bp9.data
 
 import android.content.Context
 import androidx.annotation.WorkerThread
@@ -15,13 +15,13 @@ import java.nio.charset.StandardCharsets
 import java.util.*
 import javax.inject.Inject
 
-class Printer @Inject constructor(
+class LabelPrintingZBatches @Inject constructor(
         private val context: Context,
         private val gson: Gson,
         private val analyticsHelper: AnalyticsHelper
-) : IPrinter {
+) : IPrinterZBatches {
 
-    override fun printLabel(labelInfo: LabelInfo, ip: String): Either<Failure, Boolean> {
+    override fun printLabel(labelInfo: LabelZBatchesInfo, ip: String): Either<Failure, Boolean> {
         val template = readTemplateFromAsset() ?: return Either.Left(Failure.FileReadingError)
 
         generatePriceLabelFromTemplate(labelInfo, template).let {
@@ -74,7 +74,7 @@ class Printer @Inject constructor(
         })
     }
 
-    private fun generatePriceLabelFromTemplate(labelInfo: LabelInfo, template: String): String? {
+    private fun generatePriceLabelFromTemplate(labelInfo: LabelZBatchesInfo, template: String): String? {
         if (template.isBlank()) {
             return null
         }
@@ -82,16 +82,16 @@ class Printer @Inject constructor(
         var res = template
 
         mutableMapOf<String, String>().apply {
-            put("QUANTITY", labelInfo.quantity)
-            put("CODECONT", labelInfo.codeCont)
-            put("PLANAUFFINISH", labelInfo.planAufFinish)
-            put("AUFNR", labelInfo.aufnr)
-            put("NAMEOSN", labelInfo.nameOsn)
-            put("DATEEXPIR", labelInfo.dateExpir)
             put("GOODSNAME", labelInfo.goodsName)
-            put("WEIGHER", labelInfo.weigher)
+            put("GOODSCODE", labelInfo.goodsName)
+            put("DATEEXPIR", labelInfo.shelfLife)
             put("PRODUCTTIME", labelInfo.productTime)
-            put("GOODSCODE", labelInfo.goodsCode)
+            put("DELIVERY", labelInfo.delivery)
+            put("PROVIDER", labelInfo.provider)
+            put("ZBATCH", labelInfo.batchNumber)
+            put("PRODUCER", labelInfo.manufacturer)
+            put("WEIGHER", labelInfo.weigher)
+            put("QIANTITY", labelInfo.quantity)
             put("BARCODE", labelInfo.barcode)
             put("TEXTBARCODE", labelInfo.barcodeText)
         }.forEach {
@@ -105,7 +105,7 @@ class Printer @Inject constructor(
         val sbTemplate = StringBuilder()
 
         return try {
-            val inputStream = context.assets.open("print_templates/inner_grz_tag.prn")
+            val inputStream = context.assets.open("print_templates/inner_grz_zbatches_tag.prn")
             val reader = BufferedReader(InputStreamReader(inputStream, StandardCharsets.UTF_8))
             var s: String?
             var prefix = ""
@@ -125,37 +125,34 @@ class Printer @Inject constructor(
 
 }
 
-interface IPrinter {
-
-    fun printLabel(labelInfo: LabelInfo, ip: String): Either<Failure, Boolean>
-
+interface IPrinterZBatches {
+    fun printLabel(labelInfo: LabelZBatchesInfo, ip: String): Either<Failure, Boolean>
 }
 
-data class LabelInfo(
-        /** Количество **/
-        val quantity: String,
-        /** Номер тары **/
-        val codeCont: String,
-        /** Плановое окончание тех. процесса */
-        val planAufFinish: String,
-        /** Номер технологического заказа */
-        val aufnr: String,
-        /** Наименование следующего передела */
-        val nameOsn: String,
-        /** Годен до: */
-        val dateExpir: String,
+//https://trello.com/c/MoGz5T0x
+data class LabelZBatchesInfo(
         /** Наименование продукта */
         val goodsName: String,
+        /** sap-код товара */
+        val goodsCode: String,
+        /** срок годности, брать из ФМ GRZ_45 */
+        val shelfLife: String,
+        /** дата, которую ввел пользователь при приемке */
+        val productTime: String,
+        /** поставка, ФМ GRZ_15, структура ES_TASK~VBELN **/
+        val delivery: String,
+        /** поставщик **/
+        val provider: String,
+        /** номер Z-партии, брать из ФМ GZR_45, ET_ZPARTS_DIFF~BATCH **/
+        val batchNumber: String,
+        /** производитель **/
+        val manufacturer: String,
         /** Табельный номер */
         val weigher: String,
-        /** Изготовлено */
-        val productTime: String,
-        /** Код товара */
-        val goodsCode: String,
+        /** Количество **/
+        val quantity: String,
         /** Штрихкод */
         val barcode: String,
         /** Штрихкод для отображения в текстовом виде */
-        val barcodeText: String,
-        /** Время печати */
-        val printTime: Date
+        val barcodeText: String
 )

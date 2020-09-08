@@ -1,15 +1,15 @@
-package com.lenta.bp9.features.goods_information.baseGoods
+package com.lenta.bp9.features.goods_information.base
 
 interface IBaseCurrentManufacture : IBaseVariables {
-    val currentManufacture: String
+    val currentManufactureName: String
         get() {
             val position = spinManufacturersSelectedPosition.value ?: -1
             return position
                     .takeIf { it >= 0 }
-                    ?.run {
+                    ?.let {
                         spinManufacturers.value
                                 ?.takeIf { it.isNotEmpty() }
-                                ?.run { this[position] }
+                                ?.let { it[position] }
                                 .orEmpty()
                     }
                     .orEmpty()

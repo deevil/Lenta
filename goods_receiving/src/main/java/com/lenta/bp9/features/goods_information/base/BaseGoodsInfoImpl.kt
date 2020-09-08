@@ -1,42 +1,56 @@
-package com.lenta.bp9.features.goods_information.baseGoods
+package com.lenta.bp9.features.goods_information.base
 
+import android.annotation.SuppressLint
+import android.content.Context
 import androidx.lifecycle.MutableLiveData
-import com.lenta.bp9.model.task.IReceivingTaskManager
+import com.lenta.bp9.features.base.BaseFeatures
 import com.lenta.bp9.model.task.TaskProductInfo
+import com.lenta.bp9.platform.navigation.IScreenNavigator
 import com.lenta.bp9.repos.IDataBaseRepo
-import com.lenta.shared.platform.viewmodel.CoreViewModel
+import com.lenta.shared.platform.constants.Constants
 import com.lenta.shared.requests.combined.scan_info.pojo.QualityInfo
 import com.lenta.shared.requests.combined.scan_info.pojo.ReasonRejectionInfo
-import com.lenta.shared.utilities.extentions.map
+import java.text.SimpleDateFormat
 import javax.inject.Inject
 
-abstract class BaseGoodsInfo : CoreViewModel(),
+abstract class BaseGoodsInfoImpl : BaseFeatures(),
         IBaseVariables,
-        IBaseCountAcceptOfProduct,
-        IBaseCountRefusalOfProduct,
+        IBaseCountAcceptOfProductByTaskType,
+        IBaseCountRefusalOfProductByTaskType,
         IBaseCurrentManufacture,
         IBaseCurrentProductionDate,
         IBaseCurrentTypeDiscrepancies,
         IBaseDefectable,
         IBaseProductInfo,
         IBaseQualityInfo,
-        IBaseReasonRejectionInfo,
-        IBaseTaskManager
+        IBaseReasonRejectionInfo
 {
     @Inject
-    override lateinit var taskManager: IReceivingTaskManager
+    lateinit var screenNavigator: IScreenNavigator
+
     @Inject
-    override lateinit var dataBase: IDataBaseRepo
+    lateinit var dataBase: IDataBaseRepo
+
+    @Inject
+    lateinit var context: Context
+
+    @SuppressLint("SimpleDateFormat")
+    override val formatterRU = SimpleDateFormat(Constants.DATE_FORMAT_dd_mm_yyyy)
+
+    @SuppressLint("SimpleDateFormat")
+    override val formatterEN = SimpleDateFormat(Constants.DATE_FORMAT_yyyy_mm_dd)
+
+    @SuppressLint("SimpleDateFormat")
+    override val formatterERP = SimpleDateFormat(Constants.DATE_FORMAT_yyyyMMdd)
 
     override val productInfo: MutableLiveData<TaskProductInfo> = MutableLiveData()
     final override val spinQualitySelectedPosition: MutableLiveData<Int> = MutableLiveData(DEFAULT_SPINNER_POSITION)
     override val spinReasonRejectionSelectedPosition: MutableLiveData<Int> = MutableLiveData(DEFAULT_SPINNER_POSITION)
+    override val spinProductionDateSelectedPosition: MutableLiveData<Int> = MutableLiveData(DEFAULT_SPINNER_POSITION)
+    override val spinManufacturersSelectedPosition: MutableLiveData<Int> = MutableLiveData(-DEFAULT_SPINNER_POSITION)
     override val qualityInfo: MutableLiveData<List<QualityInfo>> = MutableLiveData()
     override val reasonRejectionInfo: MutableLiveData<List<ReasonRejectionInfo>> = MutableLiveData()
-    override val isDefect: MutableLiveData<Boolean> = spinQualitySelectedPosition.map { it != 0 }
-    override val spinProductionDateSelectedPosition: MutableLiveData<Int> = MutableLiveData(DEFAULT_SPINNER_POSITION)
     override val spinProductionDate: MutableLiveData<List<String>> = MutableLiveData()
-    override val spinManufacturersSelectedPosition: MutableLiveData<Int> = MutableLiveData(-DEFAULT_SPINNER_POSITION)
     override val spinManufacturers: MutableLiveData<List<String>> = MutableLiveData()
 
     companion object {

@@ -57,7 +57,7 @@ class LabelPrintingViewModel : CoreViewModel() {
                             quantityUnit = "30 шт",
                             isPrinted = false,
                             productionDate = "ДП-04.09.2020",
-                            batchNumber = "3"
+                            batchDiscrepancies = null
                     ),
                             LabelPrintingItem(
                                     number = 2,
@@ -66,7 +66,7 @@ class LabelPrintingViewModel : CoreViewModel() {
                                     quantityUnit = "5 шт",
                                     isPrinted = false,
                                     productionDate = "ДП-08.08.2020",
-                                    batchNumber = "2"
+                                    batchDiscrepancies = null
                             ),
                             LabelPrintingItem(
                                     number = 1,
@@ -75,7 +75,7 @@ class LabelPrintingViewModel : CoreViewModel() {
                                     quantityUnit = "77 шт",
                                     isPrinted = false,
                                     productionDate = "ДП-12.12.2020",
-                                    batchNumber = "1"
+                                    batchDiscrepancies = null
                             ))
                     /**it.mapIndexed { index, label ->
                         val productDiscrepancies =
@@ -118,7 +118,7 @@ class LabelPrintingViewModel : CoreViewModel() {
                 ?.map {
                     it?.let { batchNumber ->
                         labels.value
-                                ?.findLast { item -> item.batchNumber == batchNumber }
+                                ?.findLast { item -> item.batchDiscrepancies?.batchNumber == batchNumber }
                                 ?.isPrinted = true
                     }
                 }
@@ -248,5 +248,5 @@ data class LabelPrintingItem(
         val quantityUnit: String,
         var isPrinted: Boolean,
         val productionDate: String,
-        val batchNumber: String
+        val batchDiscrepancies: TaskZBatchesDiscrepancies?
 )
