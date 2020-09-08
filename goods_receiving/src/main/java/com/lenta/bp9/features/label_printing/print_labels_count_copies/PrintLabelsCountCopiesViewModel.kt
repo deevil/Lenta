@@ -110,27 +110,30 @@ class PrintLabelsCountCopiesViewModel : CoreViewModel() {
                     val product = taskManager.getReceivingTask()?.taskRepository?.getProducts()?.findProduct(labelItem.batchDiscrepancies?.materialNumber.orEmpty())
                     val eanInfo = ZmpUtz25V001(hyperHive).getEanInfoByMaterialUnits(product?.materialNumber.orEmpty(), product?.uom?.code.orEmpty())
                     val weight = eanInfo?.ean?.substring(6, 6)?.toDouble() ?: 0.0
-                    val barCodeText = if (eanInfo?.uom == "ST") {
+                    val barCodeText = if (eanInfo?.uom == UNIT_G) {
                         "(01)${getFormattedEan(eanInfo.ean.orEmpty(), weight)}"
                     } else {
                         eanInfo?.ean.orEmpty()
                     }
 
                     val barcode = barCodeText.replace("(", "").replace(")", "")
-                    printLabel(LabelZBatchesInfo(
-                            goodsName = product?.description.orEmpty(),
-                            goodsCode = product?.materialNumber.orEmpty(),
-                            shelfLife = labelItem.batchDiscrepancies?.shelfLifeDate.orEmpty(),
-                            productTime = labelItem.batchDiscrepancies?.shelfLifeDate.orEmpty(), //todo должно быть дата, которую ввел пользователь при приемке;
-                            delivery = taskManager.getReceivingTask()?.taskDescription?.deliveryNumber.orEmpty(),
-                            provider = "",
-                            batchNumber = labelItem.batchDiscrepancies?.batchNumber.orEmpty(),
-                            manufacturer = labelItem.batchDiscrepancies?.manufactureCode.orEmpty(), //todo наверное должено быть наименование
-                            weigher = sessionInfo.personnelNumber.orEmpty(),
-                            quantity = labelItem.batchDiscrepancies?.numberDiscrepancies.orEmpty(),
-                            barcode = barcode,
-                            barcodeText = barCodeText
-                    ))
+                    val countCopiesValue = countCopies.value?.toIntOrNull() ?: 1
+                    for (i in 1..countCopiesValue) {
+                        printLabel(LabelZBatchesInfo(
+                                goodsName = product?.description.orEmpty(),
+                                goodsCode = product?.materialNumber.orEmpty(),
+                                shelfLife = labelItem.batchDiscrepancies?.shelfLifeDate.orEmpty(),
+                                productTime = labelItem.batchDiscrepancies?.shelfLifeDate.orEmpty(), //todo должно быть дата, которую ввел пользователь при приемке;
+                                delivery = taskManager.getReceivingTask()?.taskDescription?.deliveryNumber.orEmpty(),
+                                provider = "",
+                                batchNumber = labelItem.batchDiscrepancies?.batchNumber.orEmpty(),
+                                manufacturer = labelItem.batchDiscrepancies?.manufactureCode.orEmpty(), //todo наверное должено быть наименование
+                                weigher = sessionInfo.personnelNumber.orEmpty(),
+                                quantity = labelItem.batchDiscrepancies?.numberDiscrepancies.orEmpty(),
+                                barcode = barcode,
+                                barcodeText = barCodeText
+                        ))
+                    }
                 } catch (e: Exception) {
                     Logg.e { "Create print label exception: $e" }
                 }
@@ -216,7 +219,6 @@ class PrintLabelsCountCopiesViewModel : CoreViewModel() {
     companion object {
         private const val DEFAULT_COUNT_COPiES = "1"
         private const val FIRST_LABEL = 0
-        private const val MINUTE = "m"
-        private const val HOUR = "h"
+        private const val UNIT_G = "G"
     }
 }
