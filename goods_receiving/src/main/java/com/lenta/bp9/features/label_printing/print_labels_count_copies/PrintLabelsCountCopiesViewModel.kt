@@ -5,6 +5,7 @@ import android.os.Bundle
 import androidx.lifecycle.MutableLiveData
 import com.lenta.bp9.R
 import com.lenta.bp9.data.IPrinterZBatches
+import com.lenta.bp9.data.LabelPrintingZBatches
 import com.lenta.bp9.data.LabelZBatchesInfo
 import com.lenta.bp9.features.label_printing.LabelPrintingItem
 import com.lenta.bp9.model.task.IReceivingTaskManager
@@ -12,12 +13,16 @@ import com.lenta.bp9.platform.navigation.IScreenNavigator
 import com.lenta.bp9.repos.IDataBaseRepo
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.exception.Failure
+import com.lenta.shared.fmp.resources.dao_ext.getEanInfoByMaterialUnits
+import com.lenta.shared.fmp.resources.dao_ext.getEanInfoFromMaterial
+import com.lenta.shared.fmp.resources.slow.ZmpUtz25V001
 import com.lenta.shared.platform.constants.Constants
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.settings.IAppSettings
 import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.extentions.launchUITryCatch
 import com.lenta.shared.utilities.extentions.map
+import com.mobrun.plugin.api.HyperHive
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.text.SimpleDateFormat
@@ -43,7 +48,10 @@ class PrintLabelsCountCopiesViewModel : CoreViewModel() {
     lateinit var appSettings: IAppSettings
 
     @Inject
-    lateinit var printer: IPrinterZBatches
+    lateinit var printer: LabelPrintingZBatches
+
+    @Inject
+    lateinit var hyperHive: HyperHive
 
     private val labels: MutableLiveData<List<LabelPrintingItem>> = MutableLiveData()
 
@@ -97,14 +105,18 @@ class PrintLabelsCountCopiesViewModel : CoreViewModel() {
 
     private fun printingLabels() {
         launchUITryCatch {
-            val barCodeText = "(01)${getFormattedEan(packCodeResult.dataLabel.ean, total.value!!)}" +
-                    "(91)${packCodeResult.packCode}"
-
-            val barcode = barCodeText.replace("(", "").replace(")", "")
-
             labels.value?.map { labelItem ->
                 try {
                     val product = taskManager.getReceivingTask()?.taskRepository?.getProducts()?.findProduct(labelItem.batchDiscrepancies?.materialNumber.orEmpty())
+                    val eanInfo = ZmpUtz25V001(hyperHive).getEanInfoByMaterialUnits(product?.materialNumber.orEmpty(), product?.uom?.code.orEmpty())
+                    val weight = eanInfo?.ean?.substring(6, 6)?.toDouble() ?: 0.0
+                    val barCodeText = if (eanInfo?.uom == "ST") {
+                        "(01)${getFormattedEan(eanInfo.ean.orEmpty(), weight)}"
+                    } else {
+                        eanInfo?.ean.orEmpty()
+                    }
+
+                    val barcode = barCodeText.replace("(", "").replace(")", "")
                     printLabel(LabelZBatchesInfo(
                             goodsName = product?.description.orEmpty(),
                             goodsCode = product?.materialNumber.orEmpty(),
