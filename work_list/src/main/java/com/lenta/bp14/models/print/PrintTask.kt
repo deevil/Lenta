@@ -132,15 +132,15 @@ class PrintTask @Inject constructor(
 
             /**Если EAN8, то выбираем короткий шаблон, иначе 6*6*/
             val printTemplate = when (printerType.id) {
-                "01" -> when (isRegular) {
+                "01" -> when {
                     isRegular && isEan8Length -> PrintTemplate.ZEBRA_YELLOW_SMALL
-                    isRegular -> PrintTemplate.ZEBRA_YELLOW_6_6
+                    isRegular && !isEan8Length -> PrintTemplate.ZEBRA_YELLOW_6_6
                     !isRegular && isEan8Length -> PrintTemplate.ZEBRA_RED_SMALL
                     else -> PrintTemplate.ZEBRA_RED_6_6
                 }
-                "02" -> when (isRegular) {
+                "02" -> when {
                     isRegular && isEan8Length -> PrintTemplate.DATAMAX_YELLOW_SMALL
-                    isRegular -> PrintTemplate.DATAMAX_YELLOW_6_6
+                    isRegular && !isEan8Length -> PrintTemplate.DATAMAX_YELLOW_6_6
                     !isRegular && isEan8Length -> PrintTemplate.DATAMAX_RED_SMALL
                     else -> PrintTemplate.DATAMAX_RED_6_6
                 }
