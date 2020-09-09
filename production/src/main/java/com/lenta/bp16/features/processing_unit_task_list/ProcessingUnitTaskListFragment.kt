@@ -29,7 +29,7 @@ import com.lenta.shared.utilities.extentions.provideViewModel
 class ProcessingUnitTaskListFragment : KeyDownCoreFragment<FragmentProcessingUnitTaskListBinding, ProcessingUnitTaskListViewModel>(),
         ViewPagerSettings, ToolbarButtonsClickListener, OnScanResultListener {
 
-    private var processedRecyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
+    //private var processedRecyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
 
     override fun getLayoutId(): Int = R.layout.fragment_processing_unit_task_list
 
@@ -80,19 +80,22 @@ class ProcessingUnitTaskListFragment : KeyDownCoreFragment<FragmentProcessingUni
                 false
         ).let { layoutBinding ->
 
-            layoutBinding.rvConfig = initRecycleAdapterDataBinding<ItemPuTaskBinding>(
+            layoutBinding.rvConfig = initRecycleAdapterDataBinding<ItemProcessingUnitTaskUi, ItemPuTaskBinding>(
                     layoutId = R.layout.item_pu_task,
-                    itemId = BR.item
+                    itemId = BR.item,
+                    recyclerView = layoutBinding.rv,
+                    items = vm.processing,
+                    onClickHandler = vm::onClickItemPosition
             )
 
             layoutBinding.vm = vm
             layoutBinding.lifecycleOwner = viewLifecycleOwner
 
-            recyclerViewKeyHandler = initRecyclerViewKeyHandler(
+            /*recyclerViewKeyHandler = initRecyclerViewKeyHandler(
                     recyclerView = layoutBinding.rv,
                     items = vm.processing,
                     onClickHandler = vm::onClickItemPosition
-            )
+            )*/
             return layoutBinding.root
         }
     }
@@ -104,28 +107,31 @@ class ProcessingUnitTaskListFragment : KeyDownCoreFragment<FragmentProcessingUni
                 false
         ).let { layoutBinding ->
 
-            layoutBinding.rvConfig = initRecycleAdapterDataBinding<ItemPuTaskBinding>(
+            layoutBinding.rvConfig = initRecycleAdapterDataBinding<ItemProcessingUnitTaskUi, ItemPuTaskBinding>(
                     layoutId = R.layout.item_pu_task,
                     itemId = BR.item,
-                    onAdapterItemBind = { bindItem, position ->
-                        processedRecyclerViewKeyHandler?.let {
+                    onAdapterItemBind = { bindItem, keyHandler, position ->
+                        keyHandler?.let {
                             bindItem.root.isSelected = it.isSelected(position)
                         }
                     },
-                    onAdapterItemClicked = { position ->
-                        processedRecyclerViewKeyHandler?.onItemClicked(position)
-                    }
+                    onAdapterItemClicked = { keyHandler, position ->
+                        keyHandler?.onItemClicked(position)
+                    },
+                    recyclerView = layoutBinding.rv,
+                    items = vm.processed,
+                    onClickHandler = vm::onClickItemPosition
             )
 
             layoutBinding.vm = vm
             layoutBinding.lifecycleOwner = viewLifecycleOwner
 
-            processedRecyclerViewKeyHandler = initRecyclerViewKeyHandler(
+            /*processedRecyclerViewKeyHandler = initRecyclerViewKeyHandler(
                     recyclerView = layoutBinding.rv,
                     previousPosInfo = processedRecyclerViewKeyHandler?.posInfo?.value,
                     items = vm.processed,
                     onClickHandler = vm::onClickItemPosition
-            )
+            )*/
 
             return layoutBinding.root
         }
@@ -165,10 +171,10 @@ class ProcessingUnitTaskListFragment : KeyDownCoreFragment<FragmentProcessingUni
         }?.onKeyDown(keyCode) ?: false
     }
 
-    override fun onDestroyView() {
+    /*override fun onDestroyView() {
         processedRecyclerViewKeyHandler?.onClickPositionFunc = null
         super.onDestroyView()
-    }
+    }*/
 
     companion object {
         const val SCREEN_NUMBER = "51"
