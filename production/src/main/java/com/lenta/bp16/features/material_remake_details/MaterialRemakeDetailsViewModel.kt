@@ -15,6 +15,7 @@ import com.lenta.bp16.platform.resource.IResourceManager
 import com.lenta.bp16.request.CompleteIngredientByMaterialNetRequest
 import com.lenta.bp16.request.ingredients_use_case.get_data.GetAddAttributeInfoUseCase
 import com.lenta.bp16.request.ingredients_use_case.get_data.GetMercuryPartDataInfoUseCase
+import com.lenta.bp16.request.ingredients_use_case.get_data.GetWarehouseForSelectedItemUseCase
 import com.lenta.bp16.request.ingredients_use_case.get_data.GetZPartDataInfoUseCase
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.models.core.Uom
@@ -43,13 +44,16 @@ class MaterialRemakeDetailsViewModel : CoreViewModel() {
     lateinit var completePackMaterialNetRequest: CompleteIngredientByMaterialNetRequest
 
     @Inject
-    lateinit var mercuryPartDataInfoUseCase: GetMercuryPartDataInfoUseCase
+    lateinit var getMercuryPartDataInfoUseCase: GetMercuryPartDataInfoUseCase
 
     @Inject
-    lateinit var zPartDataInfoUseCase: GetZPartDataInfoUseCase
+    lateinit var getZPartDataInfoUseCase: GetZPartDataInfoUseCase
 
     @Inject
-    lateinit var addAttributeInfoUseCase: GetAddAttributeInfoUseCase
+    lateinit var getAddAttributeInfoUseCase: GetAddAttributeInfoUseCase
+
+    @Inject
+    lateinit var warehouseForSelectedItemUseCase: GetWarehouseForSelectedItemUseCase
 
     // значение параметра OBJ_CODE из родительского компонента заказа
     var parentCode: String by Delegates.notNull()
@@ -71,7 +75,7 @@ class MaterialRemakeDetailsViewModel : CoreViewModel() {
     private val mercuryDataInfo = MutableLiveData<List<MercuryPartDataInfo>>()
     private val zPartDataInfo = MutableLiveData<List<ZPartDataInfo>>()
     private val addedAttribute = MutableLiveData<List<AddAttributeInfo>>()
-
+    private val warehouseSelected = MutableLiveData<List<String>>()
 
     val producerNameList =
             /** Если был передан производитель из AddAttributeFragment, то заполнять данными из нее*/
@@ -270,9 +274,10 @@ class MaterialRemakeDetailsViewModel : CoreViewModel() {
 
     fun updateData() {
         launchUITryCatch {
-            mercuryDataInfo.value = mercuryPartDataInfoUseCase.invoke()
-            zPartDataInfo.value = zPartDataInfoUseCase.invoke()
-            addedAttribute.value = addAttributeInfoUseCase.invoke()
+            mercuryDataInfo.value = getMercuryPartDataInfoUseCase.invoke()
+            zPartDataInfo.value = getZPartDataInfoUseCase.invoke()
+            addedAttribute.value = getAddAttributeInfoUseCase.invoke()
+            warehouseSelected.value = warehouseForSelectedItemUseCase.invoke()
             if(alertNotFoundProducerName.value == true){
                 navigator.goBack()
                 navigator.showAlertProducerCodeNotFound()
@@ -296,10 +301,24 @@ class MaterialRemakeDetailsViewModel : CoreViewModel() {
         }
 
         zPartDataInfo.value?.let {
-            val selectedZPartData = withContext(Dispatchers.IO) {
-                zPartDataInfo.value?.filter { it.matnr == matnr }
+            withContext(Dispatchers.IO) {
+                val zPartInfo = zPartDataInfo.value?.filter { it.matnr == matnr }?.let {
+                    batchId = it.getOrNull(0)?.batchId.orEmpty()
+                }
+                /** Если не удалось определить партию*/
+                if (zPartInfo == null) {
+                    val addedAttributeInfo = addedAttribute.value?.getOrNull(0)
+                    val selectedWarehouse = warehouseSelected.value?.getOrNull(0).orEmpty()
+                    addedAttributeInfo?.let {
+                        batchNew = listOf(BatchNewDataInfo(
+                                prodCode = addedAttributeInfo.prodCode,
+                                prodDate = addedAttributeInfo.prodDate,
+                                prodTime = addedAttributeInfo.prodTime,
+                                lgort = selectedWarehouse
+                        ))
+                    }
+                }
             }
-            batchId = selectedZPartData?.getOrNull(0)?.batchId.orEmpty()
         }
 
         if (weight == 0.0) {
@@ -330,10 +349,11 @@ class MaterialRemakeDetailsViewModel : CoreViewModel() {
     }
 
     fun onClickAddAttributeButton() {
-        val material = materialIngredient.value?.ltxa1.orEmpty()
-        val name = materialIngredient.value?.name.orEmpty()
-
-        navigator.openAddAttributeScreen(material, name, parentCode)
+        val ingredient = materialIngredient.value
+        val material = ingredient?.ltxa1.orEmpty()
+        val name = ingredient?.name.orEmpty()
+        val shelfLife = ingredient?.shelfLife.orEmpty()
+        navigator.openAddAttributeScreen(material, name, parentCode, shelfLife)
     }
 
     fun onScanResult(data: String) {

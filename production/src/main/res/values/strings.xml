@@ -78,6 +78,8 @@
     <string name="tw_moving_successful">Перемещение товара выполнено</string>
     <string name="tw_exceeded_limit">Превышено количество по партии</string>
     <string name="tw_wrong_date">Некорректная дата</string>
+    <string name="tw_wrong_time">Некорректное время</string>
+    <string name="tw_shelflife_expired">Срок годности товара истек. \n Отложите товар и проведите инвентаризацию</string>
     <string name="tw_producer_code_not_found">По товару получены партии с указанным и отсутствующим \n кодом производителя одновременно.
         Проверьте данные</string>
     <string name="title_good_sap_name">%1$s %2$s</string>
@@ -112,6 +114,7 @@
     <string name="text_already">Скомплектовано</string>
     <string name="text_add_attribute">Укажите партионные признаки \n с этикетки</string>
     <string name="text_production_date">Дата производства</string>
+    <string name="text_production_time">Время производства</string>
     <string name="text_warehouse">Склад</string>
     <string name="error_weight_not_set">Вы не указали значение: количество</string>
 

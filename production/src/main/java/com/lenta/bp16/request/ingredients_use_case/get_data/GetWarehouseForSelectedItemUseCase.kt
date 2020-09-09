@@ -1,18 +1,17 @@
-package com.lenta.bp16.request.ingredients_use_case.set_data
+package com.lenta.bp16.request.ingredients_use_case.get_data
 
-import com.lenta.bp16.model.AddAttributeInfo
 import com.lenta.bp16.model.data_storage.IIngredientDataPersistStorage
 import com.lenta.shared.interactor.IUseCase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
-class SetAddAttributeInfoUseCase @Inject constructor(
+class GetWarehouseForSelectedItemUseCase @Inject constructor(
         private val ingredientDataPersistStorage: IIngredientDataPersistStorage
-) : IUseCase.In<AddAttributeInfo> {
-    override suspend fun invoke(params: List<AddAttributeInfo>) {
+) : IUseCase.Out<List<String>> {
+    override suspend fun invoke(): List<String> {
         return withContext(Dispatchers.IO) {
-            ingredientDataPersistStorage.saveAddAttributeInfo(params)
+            ingredientDataPersistStorage.getWarehouseForItemSelected()
         }
     }
 }

@@ -16,17 +16,6 @@ import com.lenta.shared.utilities.extentions.unsafeLazy
 
 class AddAttributeFragment : CoreFragment<FragmentAddAttributeBinding, AddAttributeViewModel>(), ToolbarButtonsClickListener {
 
-    override fun getLayoutId(): Int = R.layout.fragment_add_attribute
-
-    override fun getPageNumber(): String = SCREEN_NUMBER
-
-    override fun getViewModel(): AddAttributeViewModel {
-        provideViewModel(AddAttributeViewModel::class.java).let {
-            getAppComponent()?.inject(it)
-            return it
-        }
-    }
-
     private val parentCode: String by unsafeLazy {
         arguments?.getString(KEY_PARENT_CODE)
                 ?: throw IllegalArgumentException("There is no argument value with key $KEY_PARENT_CODE")
@@ -42,13 +31,30 @@ class AddAttributeFragment : CoreFragment<FragmentAddAttributeBinding, AddAttrib
                 ?: throw IllegalArgumentException("There is no argument value with key $KEY_PARENT_CODE")
     }
 
+    private val shelfLife: String by unsafeLazy {
+        arguments?.getString(KEY_SHELFLIFE)
+                ?: throw IllegalArgumentException("There is no argument value with key $KEY_SHELFLIFE")
+    }
+
+    override fun getLayoutId(): Int = R.layout.fragment_add_attribute
+
+    override fun getPageNumber(): String = SCREEN_NUMBER
+
+    override fun getViewModel(): AddAttributeViewModel {
+        provideViewModel(AddAttributeViewModel::class.java).let {
+            getAppComponent()?.inject(it)
+            it.shelfLife.value = shelfLife
+            return it
+        }
+    }
+
     override fun setupTopToolBar(topToolbarUiModel: TopToolbarUiModel) {
-         topToolbarUiModel.title.value = buildString {
-             append(material)
-             append(" ")
-             append(name)
-         }
-         topToolbarUiModel.description.value = parentCode
+        topToolbarUiModel.title.value = buildString {
+            append(material)
+            append(" ")
+            append(name)
+        }
+        topToolbarUiModel.description.value = parentCode
     }
 
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
@@ -66,6 +72,7 @@ class AddAttributeFragment : CoreFragment<FragmentAddAttributeBinding, AddAttrib
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         vm.updateData()
+        vm.getServerTime()
     }
 
     companion object {
@@ -73,9 +80,15 @@ class AddAttributeFragment : CoreFragment<FragmentAddAttributeBinding, AddAttrib
         private const val KEY_MATERIAL = "KEY_MATERIAL"
         private const val KEY_NAME = "KEY_NAME"
         private const val KEY_PARENT_CODE = "KEY_PARENT_CODE"
+        private const val KEY_SHELFLIFE = "KEY_SHELFLIFE"
 
-        fun newInstance(material: String, name: String, parentCode: String) = AddAttributeFragment().apply {
-            arguments = bundleOf(KEY_MATERIAL to material, KEY_NAME to name, KEY_PARENT_CODE to parentCode)
+        fun newInstance(material: String, name: String, parentCode: String, shelfLife: String) = AddAttributeFragment().apply {
+            arguments = bundleOf(
+                    KEY_MATERIAL to material,
+                    KEY_NAME to name,
+                    KEY_PARENT_CODE to parentCode,
+                    KEY_SHELFLIFE to shelfLife
+            )
         }
     }
 }

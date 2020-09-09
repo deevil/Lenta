@@ -7,6 +7,7 @@ import com.lenta.bp16.model.ingredients.IngredientInfo
 import com.lenta.bp16.model.ingredients.OrderByBarcode
 import com.lenta.bp16.model.ingredients.ui.OrderByBarcodeUI
 import com.lenta.bp16.platform.navigation.IScreenNavigator
+import com.lenta.bp16.request.ingredients_use_case.set_data.SetWarehouseForSelectedItemUseCase
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.models.core.Uom
 import com.lenta.shared.platform.viewmodel.CoreViewModel
@@ -26,6 +27,9 @@ class OrderDetailsViewModel : CoreViewModel() {
 
     @Inject
     lateinit var context: Context
+
+    @Inject
+    lateinit var warehouseForSelectedItemUseCase: SetWarehouseForSelectedItemUseCase
 
     // Комплектация
     val weightField: MutableLiveData<String> = MutableLiveData(DEFAULT_WEIGHT)
@@ -48,7 +52,7 @@ class OrderDetailsViewModel : CoreViewModel() {
     val planQntWithSuffix by unsafeLazy {
         ingredient.combineLatest(eanInfo).map {
             val uom: String? =
-                    when(eanInfo.value?.ean_nom.orEmpty()){
+                    when (eanInfo.value?.ean_nom.orEmpty()) {
                         OrderByBarcode.KAR -> Uom.KAR.name
                         OrderByBarcode.ST -> Uom.KAR.name
                         else -> Uom.KG.name
@@ -60,7 +64,7 @@ class OrderDetailsViewModel : CoreViewModel() {
     val doneQntWithSuffix by unsafeLazy {
         ingredient.combineLatest(eanInfo).map {
             val uom: String =
-                    when(eanInfo.value?.ean_nom.orEmpty()){
+                    when (eanInfo.value?.ean_nom.orEmpty()) {
                         OrderByBarcode.KAR -> Uom.KAR.name
                         OrderByBarcode.ST -> Uom.KAR.name
                         else -> Uom.KG.name
@@ -79,6 +83,8 @@ class OrderDetailsViewModel : CoreViewModel() {
         if (weight == DEFAULT_WEIGHT || weight.isEmpty()) {
             navigator.showAlertWeightNotSet()
         } else {
+            val warehouse = ingredient.value?.lgort.orEmpty()
+            warehouseForSelectedItemUseCase(listOf(warehouse))
             ingredient.value?.let {
                 navigator.openOrderIngredientsListScreen(
                         weight = weight,

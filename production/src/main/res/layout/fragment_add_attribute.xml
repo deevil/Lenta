@@ -49,7 +49,7 @@
         android:id="@+id/spinner_producer"
         style="@style/LinearRowStyle"
         android:visibility="@{vm.producerVisibleCondition ? View.VISIBLE : View.GONE}"
-        app:layout_constraintBottom_toTopOf="@id/spinner_producer_date"
+        app:layout_constraintBottom_toTopOf="@id/producer_date"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/text_view_add_attribute">
@@ -67,12 +67,12 @@
 
     <View style="@style/HorizontalDivider"
         app:layout_constraintTop_toBottomOf="@id/spinner_producer"
-        app:layout_constraintBottom_toTopOf="@id/spinner_producer_date"
+        app:layout_constraintBottom_toTopOf="@id/producer_date"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"/>
 
     <LinearLayout
-        android:id="@+id/spinner_producer_date"
+        android:id="@+id/producer_date"
         style="@style/LinearRowStyle"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -115,7 +115,55 @@
     <View style="@style/HorizontalDivider"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/spinner_producer_date"/>
+        app:layout_constraintTop_toBottomOf="@id/producer_date"/>
+
+    <LinearLayout
+        android:id="@+id/producer_time"
+        android:visibility="@{vm.timeFieldVisibleCondition ? View.VISIBLE : View.GONE}"
+        style="@style/LinearRowStyle"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/producer_date">
+
+        <LinearLayout
+            style="@style/LinearCellStyle"
+            android:layout_weight="1">
+
+            <TextView
+                style="@style/CellTextStyle"
+                android:text="@string/text_production_time" />
+
+        </LinearLayout>
+
+        <View style="@style/VerticalDivider" />
+
+        <LinearLayout
+            style="@style/LinearCellStyle"
+            android:layout_weight="1">
+
+            <com.lenta.shared.view.EditTextWithSuffix
+                style="@style/CellEditTextStyle"
+                android:text="@={vm.timeField}"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingStart="@dimen/size_10dp"
+                android:paddingEnd="@dimen/size_10dp"
+                android:textSize="@dimen/text_14sp"
+                android:inputType="number"
+                android:digits="0123456789"
+                app:maskPattern='@{"[00]{:}[00]"}'
+                tools:text="19:42" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <View style="@style/HorizontalDivider"
+        android:visibility="@{vm.timeFieldVisibleCondition ? View.VISIBLE : View.GONE}"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/producer_time"/>
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

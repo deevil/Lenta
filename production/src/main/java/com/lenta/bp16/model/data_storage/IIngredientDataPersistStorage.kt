@@ -17,4 +17,7 @@ interface IIngredientDataPersistStorage {
 
     fun saveAddAttributeInfo(list: List<AddAttributeInfo>)
     fun getAddAttributeInfo(): List<AddAttributeInfo>
+
+    fun saveWarehouseForItemSelected(list: List<String>)
+    fun getWarehouseForItemSelected(): List<String>
 }

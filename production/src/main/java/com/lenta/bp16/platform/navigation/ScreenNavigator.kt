@@ -185,9 +185,9 @@ class ScreenNavigator @Inject constructor(
         }
     }
 
-    override fun openAddAttributeScreen(material: String, name: String, parentCode: String) {
+    override fun openAddAttributeScreen(material: String, name: String, parentCode: String, shelfLife: String) {
         runOrPostpone {
-            getFragmentStack()?.push(AddAttributeFragment.newInstance(material, name, parentCode))
+            getFragmentStack()?.push(AddAttributeFragment.newInstance(material, name, parentCode, shelfLife))
         }
     }
 
@@ -447,6 +447,26 @@ class ScreenNavigator @Inject constructor(
         }
     }
 
+    override fun showAlertWrongTime() {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    message = context.getString(R.string.tw_wrong_time),
+                    iconRes = R.drawable.ic_warning_red_80dp,
+                    pageNumber = Constants.ALERT_FRAGMENT
+            ))
+        }
+    }
+
+    override fun showAlertShelfLifeExpired() {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    message = context.getString(R.string.tw_shelflife_expired),
+                    iconRes = R.drawable.ic_warning_red_80dp,
+                    pageNumber = Constants.ALERT_FRAGMENT
+            ))
+        }
+    }
+
     override fun showAlertProducerCodeNotFound() {
         runOrPostpone {
             getFragmentStack()?.push(AlertFragment.create(
@@ -481,7 +501,7 @@ interface IScreenNavigator : ICoreNavigator {
     fun openDefectListScreen()
     fun openGoodInfoScreen(goodParams: GoodParams)
     fun openSelectGoodScreen()
-    fun openAddAttributeScreen(material: String, name: String, parentCode: String)
+    fun openAddAttributeScreen(material: String, name: String, parentCode: String, shelfLife: String)
     fun openIngredientsListScreen()
     fun openOrderDetailsScreen(selectedIngredient: IngredientInfo, barcode: OrderByBarcodeUI)
     fun openIngredientDetailsScreen(selectedIngredient: OrderIngredientDataInfo, parentCode: String, eanInfo: OrderByBarcodeUI)
@@ -510,5 +530,7 @@ interface IScreenNavigator : ICoreNavigator {
     fun showAlertIngredientNotFound()
     fun showNotFoundedBarcodeForPosition()
     fun showAlertWrongDate()
+    fun showAlertWrongTime()
+    fun showAlertShelfLifeExpired()
     fun showAlertProducerCodeNotFound()
 }

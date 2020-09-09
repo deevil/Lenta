@@ -22,6 +22,7 @@ import com.lenta.bp16.request.GetIngredientsDataListNetRequest
 import com.lenta.bp16.request.UnblockIngredientNetRequest
 import com.lenta.bp16.request.ingredients_use_case.set_data.SetMercuryPartDataInfoUseCase
 import com.lenta.bp16.request.ingredients_use_case.set_data.SetProducerDataInfoUseCase
+import com.lenta.bp16.request.ingredients_use_case.set_data.SetWarehouseForSelectedItemUseCase
 import com.lenta.bp16.request.ingredients_use_case.set_data.SetZPartDataInfoUseCase
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.platform.viewmodel.CoreViewModel
@@ -58,6 +59,9 @@ class MaterialRemakesListViewModel : CoreViewModel() {
 
     @Inject
     lateinit var setZPartDataInfoUseCase: SetZPartDataInfoUseCase
+
+    @Inject
+    lateinit var setWarehouseForSelectedItemUseCase:SetWarehouseForSelectedItemUseCase
 
 
     // выбранный ингредиент
@@ -172,6 +176,10 @@ class MaterialRemakesListViewModel : CoreViewModel() {
         allMaterialIngredients.value?.getOrNull(position)?.let { selectedMaterial ->
             val code = ingredient.value?.getFormattedCode().orEmpty()
             val name = ingredient.value?.nameMatnrOsn.orEmpty()
+            val warehouse = ingredient.value?.lgort.orEmpty()
+            launchUITryCatch {
+                setWarehouseForSelectedItemUseCase(listOf(warehouse))
+            }
             allEanMaterialIngredients.value?.getOrNull(position)?.let { barcode ->
                 navigator.openMaterialRemakeDetailsScreen(selectedMaterial, code, name, barcode)
             }

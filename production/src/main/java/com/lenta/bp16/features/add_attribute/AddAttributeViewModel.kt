@@ -8,12 +8,16 @@ import com.lenta.bp16.model.ProducerDataStatus
 import com.lenta.bp16.model.ZPartDataInfo
 import com.lenta.bp16.platform.Constants
 import com.lenta.bp16.platform.navigation.IScreenNavigator
-import com.lenta.bp16.request.ingredients_use_case.get_data.GetAddAttributeInfoUseCase
 import com.lenta.bp16.request.ingredients_use_case.get_data.GetProducerDataInfoUseCase
 import com.lenta.bp16.request.ingredients_use_case.get_data.GetZPartDataInfoUseCase
 import com.lenta.bp16.request.ingredients_use_case.set_data.SetAddAttributeInfoUseCase
 import com.lenta.bp16.request.ingredients_use_case.set_data.SetProducerDataInfoUseCase
+import com.lenta.shared.account.ISessionInfo
+import com.lenta.shared.platform.time.ITimeMonitor
 import com.lenta.shared.platform.viewmodel.CoreViewModel
+import com.lenta.shared.requests.network.ServerTime
+import com.lenta.shared.requests.network.ServerTimeRequest
+import com.lenta.shared.requests.network.ServerTimeRequestParam
 import com.lenta.shared.utilities.extentions.*
 import com.lenta.shared.utilities.getFormattedDate
 import javax.inject.Inject
@@ -22,6 +26,15 @@ class AddAttributeViewModel : CoreViewModel() {
 
     @Inject
     lateinit var navigator: IScreenNavigator
+
+    @Inject
+    lateinit var timeMonitor: ITimeMonitor
+
+    @Inject
+    lateinit var sessionInfo: ISessionInfo
+
+    @Inject
+    lateinit var serverTimeRequest: ServerTimeRequest
 
     @Inject
     lateinit var producerDataInfoUseCase: GetProducerDataInfoUseCase
@@ -37,6 +50,7 @@ class AddAttributeViewModel : CoreViewModel() {
 
     private val producerDataInfo = MutableLiveData<List<ProducerDataInfo>>()
     private val zPartDataInfo = MutableLiveData<List<ZPartDataInfo>>()
+    val shelfLife = MutableLiveData<String>() //Срок годности
 
     val producerNameList = producerDataInfo.switchMap {
         asyncLiveData<List<String>> {
@@ -45,10 +59,19 @@ class AddAttributeViewModel : CoreViewModel() {
         }
     }
 
+    val producerCodeList = producerDataInfo.switchMap {
+        asyncLiveData<List<String>> {
+            val producerCodeList = it.map { it.prodCode.orEmpty() }
+            emit(producerCodeList)
+        }
+    }
+
     val selectedProducerPosition = MutableLiveData(0)
 
-    val dateInfoField = MutableLiveData<String>("")
     private var productionDate = ""
+    private var productionTime = ""
+    val dateInfoField = MutableLiveData<String>("")
+    val timeField = MutableLiveData<String>("")
 
     /** Условие отображения ошибки, если лист производителей заполнен с пробелами */
     private val alertNotFoundProducerName = MutableLiveData<Boolean>()
@@ -60,16 +83,38 @@ class AddAttributeViewModel : CoreViewModel() {
         condition
     }
 
+    val timeFieldVisibleCondition by unsafeLazy {
+        false
+        //TODO: Реализовать логику отображения поля времени
+       /* var convertedTime: Int
+        shelfLife.value?.let {
+            val time = shelfLife.value?.toInt()
+            convertedTime = time?.div(HOURS_IN_DAY) ?: 0
+        }
+        val timeVisibleCondition = if( convertedTime )*/
+    }
+
+    fun getServerTime() {
+        launchUITryCatch {
+            serverTimeRequest(ServerTimeRequestParam(sessionInfo.market
+                    .orEmpty())).either(::handleFailure, ::handleSuccessServerTime)
+        }
+    }
+
+    private fun handleSuccessServerTime(serverTime: ServerTime) {
+        timeMonitor.setServerTime(time = serverTime.time, date = serverTime.date)
+    }
+
     private fun checkZPartProducerVisibleCondition(): Pair<Boolean, Boolean> {
 
-        val producerVisibleCondition = zPartDataInfo.switchMap {
+        val producerVisibleList = zPartDataInfo.switchMap {
             asyncLiveData<List<String>> {
                 val zPartProducerNameList = it.map { it.prodName.orEmpty() }
                 emit(zPartProducerNameList)
             }
         }
 
-        val producersList = producerVisibleCondition.value.orEmpty()
+        val producersList = producerVisibleList.value.orEmpty()
 
         var fullItemCount = 0
         for (zPartName in producersList) {
@@ -147,9 +192,12 @@ class AddAttributeViewModel : CoreViewModel() {
         } else {
             val producerIndex = selectedProducerPosition.getOrDefaultWithNull()
             val producerSelected = producerNameList.getOrEmpty(producerIndex)
+            val prodCode = producerCodeList.getOrEmpty(producerIndex)
 
             val result = AddAttributeInfo(
                     prodName = producerSelected,
+                    prodTime = "",
+                    prodCode = prodCode,
                     prodDate = productionDate
             )
             setAddAttributeInfoUseCase(listOf(result))
@@ -159,5 +207,6 @@ class AddAttributeViewModel : CoreViewModel() {
 
     companion object {
         const val DATE_LENGTH = 10
+        const val HOURS_IN_DAY = 24
     }
 }

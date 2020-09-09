@@ -69,10 +69,25 @@ class IngredientDataPersistStorage @Inject constructor(
         } ?: emptyList()
     }
 
+    override fun saveWarehouseForItemSelected(list: List<String>) {
+        hyperHive.stateAPI.saveParamToDB(
+                KEY_WAREHOUSE_FOR_ITEM_SELECTED,
+                gson.toJson(list)
+        )
+    }
+
+    override fun getWarehouseForItemSelected(): List<String> {
+        return hyperHive.stateAPI.getParamFromDB(KEY_WAREHOUSE_FOR_ITEM_SELECTED)?.let { json ->
+            val type = object : TypeToken<List<String>>() {}.type
+            gson.fromJson(json, type) as? List<String>
+        } ?: emptyList()
+    }
+
     companion object {
         private const val KEY_PRODUCER_DATA_INFO = "KEY_PRODUCER_DATA_INFO"
         private const val KEY_ZPART_DATA_INFO = "KEY_ZPART_DATA_INFO"
         private const val KEY_MERCURY_DATA_INFO = "KEY_MERCURY_DATA_INFO"
         private const val KEY_ADD_ATTRIBUTE_INFO = "KEY_ADD_ATTRIBUTE_INFO"
+        private const val KEY_WAREHOUSE_FOR_ITEM_SELECTED = "KEY_WAREHOUSE_FOR_ITEM_SELECTED"
     }
 }
