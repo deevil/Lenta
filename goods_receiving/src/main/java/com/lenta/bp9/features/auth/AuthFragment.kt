@@ -18,6 +18,7 @@ class AuthFragment : CoreLoginFragment() {
     override fun getViewModel(): CoreAuthViewModel {
         provideViewModel(AuthViewModel::class.java).let {
             getAppComponent()?.inject(it)
+            it.packageName.value = context!!.packageName
             it.msgUserNoRights.value = getString(R.string.user_no_rights)
             return it
         }

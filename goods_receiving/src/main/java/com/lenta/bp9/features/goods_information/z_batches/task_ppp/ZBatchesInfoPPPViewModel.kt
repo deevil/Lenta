@@ -91,9 +91,15 @@ class ZBatchesInfoPPPViewModel : BaseGoodsInfoImpl() {
                     .combineLatest(enteredDate)
                     .combineLatest(enteredTime)
                     .map {
-                        (it?.first?.first ?: 0.0) > 0.0
-                                && ((enteredDate.value.orEmpty().length == 10 && (isVisibilityEnteredTime.value == false || (isVisibilityEnteredTime.value == true && enteredTime.value.orEmpty().length == 5)))
-                                || isDefect.value == true)
+                        val enteredCount = it?.first?.first ?: 0.0
+                        val isEnteredTime = isVisibilityEnteredTime.value == false
+                                || (isVisibilityEnteredTime.value == true && enteredTime.value.orEmpty().length == 5)
+
+                        val isNorm = enteredDate.value.orEmpty().length == 10
+                                && isEnteredTime
+
+                        enteredCount > 0.0
+                                && (isNorm || isDefect.value == true)
                     }
 
     val isVisibilityEnteredTime: MutableLiveData<Boolean> = MutableLiveData(false)
@@ -202,6 +208,7 @@ class ZBatchesInfoPPPViewModel : BaseGoodsInfoImpl() {
             spinManufacturers.value =
                     manufacturersForZBatches
                             ?.takeIf { it.isNotEmpty() }
+                            ?.filter { it.materialNumber == productMaterialNumber }
                             ?.groupBy { it.manufactureName }
                             ?.map { it.key }
                             ?: listOf(context.getString(R.string.no_manufacturer_selection_required))
